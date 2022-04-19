@@ -45,7 +45,7 @@ jobs:
           cd docs-site
           # check out branch that will contain update and unsure there are no remote differences
           git checkout -b ${{ env.DOCS_SITE_COMMIT_BRANCH }}
-          git pull origin ${{ env.DOCS_SITE_COMMIT_BRANCH }} || true # swallow error in case branch doesn't exist in remote
+          git pull origin ${{ env.DOCS_SITE_COMMIT_BRANCH }} --allow-unrelated-histories || true # swallow error in case branch doesn't exist in remote
           cp -R ../${{ env.ZWE_DOC_GENERATION_DIR }}/generated/* ${{ env.DOCS_SITE_ZWE_COMMAND_REFERENCE_DIR }}
       
       - name: Commit changes to branch and push
