@@ -2,9 +2,9 @@ name: Update zwe documentation
 
 on:
   # Will run this on push when v2 is out
-  # push:
-  #   branches:
-  #     - v2.x/staging
+  push:
+    branches:
+      - v2.x/rc
   workflow_dispatch:
 
 env:
