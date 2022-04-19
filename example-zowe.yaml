@@ -293,12 +293,12 @@ zowe:
   # This is an ID you use to separate multiple Zowe installs when determining
   # resource names used in RBAC authorization checks such as dataservices with RBAC
   # expects this ID in SAF resources 
-  rbacProfileIdentifier: 1
+  rbacProfileIdentifier: "1"
 
   # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   # This is an ID that can be used by servers that distinguish their cookies from unrelated Zowe installs, 
   # for purposes such as to allow multiple copies of Zowe to be used within the same client
-  cookieIdentifier: 1
+  cookieIdentifier: "1"
 
   # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   # **COMMONLY_CUSTOMIZED**
