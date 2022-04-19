@@ -508,6 +508,9 @@ components:
     port: 7557
     crossMemoryServerName: ZWESIS_STD
     tls: true
+    agent:
+      jwt:
+        fallback: true
 
   # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   jobs-api:
