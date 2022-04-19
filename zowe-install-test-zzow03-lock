@@ -1,15 +1,1 @@
-{
-  "lockAcquiredTime": "Tue Apr 19 2022 19:32:13 GMT+0000 (Coordinated Universal Time)",
-  "uid": "1650396733894280692",
-  "repository": {
-    "owner": "zowe",
-    "repo": "zowe-install-packaging"
-  },
-  "branch": "users/jack/fix-playbooks-failures",
-  "workflow": "Zowe CICD Integration Tests",
-  "job": "cicd-test",
-  "actor": "jackjia-ibm",
-  "runId": 2191753287,
-  "runNumber": 649,
-  "link": "https://github.com/zowe/zowe-install-packaging/actions/runs/2191753287"
-}
+""
