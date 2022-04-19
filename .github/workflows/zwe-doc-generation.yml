@@ -2,9 +2,9 @@ name: Update zwe documentation
 
 on:
   # Will run this on push when v2 is out
-  # push:
-  #   branches:
-  #     - v2.x/staging
+  push:
+    branches:
+      - v2.x/rc
   workflow_dispatch:
 
 env:
@@ -45,7 +45,9 @@ jobs:
           cd docs-site
           # check out branch that will contain update and unsure there are no remote differences
           git checkout -b ${{ env.DOCS_SITE_COMMIT_BRANCH }}
-          git pull origin ${{ env.DOCS_SITE_COMMIT_BRANCH }} || true # swallow error in case branch doesn't exist in remote
+          # if commit branch exists on remote then pull it in
+          git ls-remote | grep "${{ env.DOCS_SITE_COMMIT_BRANCH }}$" &&
+                git pull origin ${{ env.DOCS_SITE_COMMIT_BRANCH }} --allow-unrelated-histories -X theirs
           cp -R ../${{ env.ZWE_DOC_GENERATION_DIR }}/generated/* ${{ env.DOCS_SITE_ZWE_COMMAND_REFERENCE_DIR }}
       
       - name: Commit changes to branch and push
