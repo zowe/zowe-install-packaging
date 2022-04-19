@@ -37,3 +37,5 @@ zos_zosmf_ca: zOSMFCA
 zowe_uninstall_extra_data_sets:
 - ZOWEAD3.JCLLIB
 - ZOWEAD3.PLUGLIB
+- ZOWEAD3.LOADLIB
+- ZOWEAD3.PARMLIB

@@ -1,0 +1,19 @@
+Collect and package Zowe runtime information for support purpose.
+
+This command will collect these information:
+
+- Environment
+  * z/OS version
+  * Java version
+  * Node.js version
+- Zowe configurations
+  * Zowe manifest.json
+  * Zowe configuration file
+  * Zowe installation logs
+  * Zowe PKCS#12 keystore if used
+  * Zowe temporary configuration files under `<workspace>/.env`
+  * Zowe APIML static registration files under `<workspace>/api-mediation/api-defs`
+- Zowe runtime
+  * Active running Zowe processes
+  * Zowe job log
+- Zowe fingerprints and validation result

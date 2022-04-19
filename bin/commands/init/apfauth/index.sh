@@ -29,6 +29,7 @@ fi
 
 ###############################
 # APF authorize loadlib
+job_has_failures=
 for key in ${auth_libs}; do
   # read def and validate
   ds=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.dataset.${key}")
@@ -45,7 +46,11 @@ for key in ${auth_libs}; do
   apf_authorize_data_set "${ds}"
   code=$?
   if [ $code -ne 0 ]; then
-    exit $code
+    if [ "${ZWE_CLI_PARAMETER_IGNORE_SECURITY_FAILURES}" = "true" ]; then
+      job_has_failures=true
+    else
+      exit $code
+    fi
   else
     print_debug "- APF authorized successfully."
   fi
@@ -53,4 +58,8 @@ done
 
 ###############################
 # exit message
-print_level2_message "Zowe load libraries are APF authorized successfully."
+if [ "${job_has_failures}" = "true" ]; then
+  print_level2_message "Failed to APF authorize Zowe load libraries. Please check log for details."
+else
+  print_level2_message "Zowe load libraries are APF authorized successfully."
+fi

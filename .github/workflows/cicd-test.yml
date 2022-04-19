@@ -54,8 +54,7 @@ env:
   SANITY_TEST_PATH: tests/sanity
   DEFAULT_ZOWE_PAX_ARTIFACTORY_PATTERN: libs-snapshot-local/org/zowe/*zowe*{branch-name}*.pax
   DEFAULT_ZOWE_SMPE_ARTIFACTORY_PATTERN: libs-snapshot-local/org/zowe/*zowe-smpe*{branch-name}*.zip
-  # FIXME: next line change '-1' to '-2'
-  DEFAULT_ZOWE_CLI_ARTIFACTORY_PATTERN: PLACE_HOLDER/org/zowe/cli/zowe-cli-package/*/zowe-cli-package-1*.zip
+  DEFAULT_ZOWE_CLI_ARTIFACTORY_PATTERN: PLACE_HOLDER/org/zowe/cli/zowe-cli-package/next/zowe-cli-package-next-*.zip
   DEFAULT_ZOWE_EXT_ARTIFACTORY_PATTERN: libs-snapshot-local/org/zowe/{ext-name}/*/{ext-name}-*.pax
 
   # can be overwritten, adjusted by DevOps only
@@ -213,7 +212,12 @@ jobs:
       - name: '[Prep 1] Checkout'
         uses: actions/checkout@v2
 
-      - name: '[Prep 2] Cache node modules'
+      - name: '[Prep 2] Setup Node'
+        uses: actions/setup-node@v3
+        with:
+          node-version: '12'
+
+      - name: '[Prep 3] Cache node modules'
         uses: actions/cache@v2
         with:
           # npm cache files are stored in `~/.npm` on Linux/macOS
@@ -225,18 +229,18 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-build-cache-node-modules-
 
-      - name: '[Prep 3] Setup jFrog CLI'
+      - name: '[Prep 4] Setup jFrog CLI'
         uses: jfrog/setup-jfrog-cli@v2
         env:
           JF_ENV_1: ${{ secrets.JF_ARTIFACTORY_TOKEN }}
 
-      - name: '[Prep 4] Validate package.json'
+      - name: '[Prep 5] Validate package.json'
         uses: zowe-actions/shared-actions/validate-package-json@main
 
-      - name: '[Prep 5] Prepare workflow'
+      - name: '[Prep 6] Prepare workflow'
         uses: zowe-actions/shared-actions/prepare-workflow@main
 
-      - name: '[Prep 6] Additional Prep work'
+      - name: '[Prep 7] Additional Prep work'
         id: more-test-prep
         run: |
           RED='\033[0;31m'
