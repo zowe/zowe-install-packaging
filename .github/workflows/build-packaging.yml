@@ -352,7 +352,7 @@ jobs:
           ./build/parse-manifest-to-deployment.sh
           zip -r zowe-containerization.zip kubernetes
 
-      - name: 'Upload everything to artifactory'
+      - name: '[Upload] Upload everything to artifactory'
         timeout-minutes: 10
         uses: zowe-actions/shared-actions/publish@main
         with:
