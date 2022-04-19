@@ -59,7 +59,7 @@ jobs:
           then 
             echo ">>>>>Changes committed to ${{ env.DOCS_SITE_COMMIT_BRANCH }}, now pushing";
             git push origin ${{ env.DOCS_SITE_COMMIT_BRANCH }}
-            echo "::set-output name=createPr::false" # TODO back to true
+            echo "::set-output name=createPr::true"
           else
             echo ">>>>>No update to documentation";
             echo "::set-output name=createPr::false"
