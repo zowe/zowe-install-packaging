@@ -355,6 +355,10 @@
             }
           }
         },
+        "rbacProfileIdentifier": {
+          "type": "string",
+          "description": " "
+        },
         "externalDomains": {
           "type": "array",
           "description": "List of domain names of how you access Zowe from your local computer.",

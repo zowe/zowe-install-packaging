@@ -290,6 +290,11 @@ zowe:
     prefix: ZWE1
 
   # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+  # 
+  # 
+  rbacProfileIdentifier: 1
+
+  # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   # **COMMONLY_CUSTOMIZED**
   # You can list your external domains how you want to access Zowe.
   # This should be the domain list you would like to put into your web browser
