@@ -357,7 +357,7 @@
         },
         "rbacProfileIdentifier": {
           "type": "string",
-          "description": " "
+          "description": "An ID used for determining resource names used in RBAC authorization checks"
         },
         "externalDomains": {
           "type": "array",

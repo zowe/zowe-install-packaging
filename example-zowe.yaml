@@ -290,8 +290,9 @@ zowe:
     prefix: ZWE1
 
   # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-  # 
-  # 
+  # This is an ID you use to separate multiple Zowe installs when determining
+  # resource names used in RBAC authorization checks such as dataservices with RBAC
+  # expects this ID in SAF resources 
   rbacProfileIdentifier: 1
 
   # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
