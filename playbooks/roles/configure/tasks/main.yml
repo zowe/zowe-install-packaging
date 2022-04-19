@@ -175,7 +175,6 @@
         "zowe.setup.certificate.keyring.import.dsName": "{{ zowe_external_certficate }}"
         "zowe.setup.certificate.keyring.import.password": "{{ zowe_external_certficate_alias }}"
   - name: Update keyring setup to help import z/OSMF CA
-    when: zowe_external_certficate is not none and zowe_external_certficate != ''
     import_role:
       name: zos
       tasks_from: update_zowe_yaml
