@@ -456,6 +456,7 @@ process_component_discovery_shared_libs() {
   # make sure $ZWE_DISCOVERY_SHARED_LIBS exists
   mkdir -p "${ZWE_DISCOVERY_SHARED_LIBS}"
 
+
   all_succeed=true
   iterator_index=0
   plugin_name=
