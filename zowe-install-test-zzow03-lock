@@ -1,1 +1,15 @@
-""
+{
+  "lockAcquiredTime": "Tue Apr 19 2022 17:55:21 GMT+0000 (Coordinated Universal Time)",
+  "uid": "1650390921969328460",
+  "repository": {
+    "owner": "zowe",
+    "repo": "zowe-install-packaging"
+  },
+  "branch": "users/aditya/add-rbac-profile-identifier-parameter-in-config",
+  "workflow": "Zowe CICD Integration Tests",
+  "job": "cicd-test",
+  "actor": "zowe-robot",
+  "runId": 2191282979,
+  "runNumber": 643,
+  "link": "https://github.com/zowe/zowe-install-packaging/actions/runs/2191282979"
+}
