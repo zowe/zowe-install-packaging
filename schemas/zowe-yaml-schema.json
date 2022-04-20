@@ -15,12 +15,12 @@
           "additionalProperties": false,
           "description": "Zowe setup configurations used by \"zwe install\" and \"zwe init\" commands.",
           "properties": {
-            "mvs": {
+            "dataset": {
               "type": "object",
               "additionalProperties": false,
               "description": "MVS data set related configurations",
               "properties": {
-                "hlq": {
+                "prefix": {
                   "type": "string",
                   "description": "Where Zowe MVS data sets will be installed"
                 },
