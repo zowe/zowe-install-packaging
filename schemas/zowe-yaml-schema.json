@@ -355,6 +355,14 @@
             }
           }
         },
+        "rbacProfileIdentifier": {
+          "type": "string",
+          "description": "An ID used for determining resource names used in RBAC authorization checks"
+        },
+        "cookieIdentifier": {
+          "type": "string",
+          "description": "An ID that can be used by servers that distinguish their cookies from unrelated Zowe installs"
+        },
         "externalDomains": {
           "type": "array",
           "description": "List of domain names of how you access Zowe from your local computer.",
