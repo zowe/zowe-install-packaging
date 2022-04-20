@@ -492,11 +492,11 @@ components:
 
     storage:
       evictionStrategy: reject
-      # can be inMemory, VSAM
+      # can be inMemory, VSAM or redis
       mode: VSAM
       size: 10000
       vsam:
-        # your VSAM data set created by ZWECSVSM job
+        # your VSAM data set created by "zwe init vsam" command or ZWECSVSM JCL
         # this is required if storage mode is VSAM
         name: ""
 
