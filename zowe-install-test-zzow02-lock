@@ -1,1 +1,15 @@
-""
+{
+  "lockAcquiredTime": "Wed Apr 20 2022 07:10:50 GMT+0000 (Coordinated Universal Time)",
+  "uid": "1650438650588196971",
+  "repository": {
+    "owner": "zowe",
+    "repo": "zowe-install-packaging"
+  },
+  "branch": "users/aditya/test/container-plugin-install-1",
+  "workflow": "Zowe CICD Integration Tests",
+  "job": "cicd-test",
+  "actor": "zowe-robot",
+  "runId": 2194125237,
+  "runNumber": 661,
+  "link": "https://github.com/zowe/zowe-install-packaging/actions/runs/2194125237"
+}
