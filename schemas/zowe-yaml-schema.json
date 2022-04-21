@@ -199,6 +199,10 @@
                   "additionalProperties": false,
                   "description": "Configure this section if you are using z/OS JCERACFKS keyring",
                   "properties": {
+                    "owner": {
+                      "type": "string",
+                      "description": "keyring owner. If this is empty, Zowe will use the user ID defined as zowe.setup.security.users.zowe."
+                    },
                     "name": {
                       "type": "string",
                       "description": "keyring name"
@@ -240,6 +244,21 @@
                         "password": {
                           "type": "string",
                           "description": "Password for the PKCS12 data set."
+                        }
+                      }
+                    },
+                    "zOSMF": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "description": "Configure this section if you want to trust z/OSMF certificate authority in Zowe keyring.",
+                      "properties": {
+                        "ca": {
+                          "type": "string",
+                          "description": "z/OSMF certificate authority alias"
+                        },
+                        "user": {
+                          "type": "string",
+                          "description": "z/OSMF user. Zowe initialization utility can detect alias of z/OSMF CA for RACF security system. The automated detection requires this z/OSMF user as input."
                         }
                       }
                     }
