@@ -104,7 +104,7 @@ fi
 # read z/OSMF info
 for item in user ca; do
   var_name="zosmf_${item}"
-  var_val=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.certificate.zOSMF.${item}")
+  var_val=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.certificate.keyring.zOSMF.${item}")
   eval "${var_name}=\"${var_val}\""
 done
 for item in host port; do
