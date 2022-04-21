@@ -20,10 +20,11 @@ if [ -n "$ACCOUNT" ]
 then
 export JOBST1="//"${JOBNAME}" JOB ("${ACCOUNT}"),'PSWI',MSGCLASS=A,REGION=0M"
 else
-export JOBST1="//"${JOBNAME}" JOB 'PSWI',MSGCLASS=A,REGION=0M"
+export JOBST1="//"${JOBNAME}" JOB 'PSWI',MSGCLASS=A,REGION=0M,"
 fi
 #export JOBST2="/*JOBPARM SYSAFF=${SYSAFF}"
-export JOBST2="//*"
+export JOBST2="//      MSGLEVEL=(1,1),NOTIFY=&SYSUID
+"
 export DEPLOY_NAME="DEPLOY"
 export PSWI="zowe-PSWI"
 export SWI_NAME=$PSWI
