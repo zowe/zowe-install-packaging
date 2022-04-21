@@ -285,7 +285,8 @@ if [ "${cert_type}" = "PKCS12" ]; then
 
   # lock keystore directory with proper permission
   # - group permission is none
-  if [ "$(lower_case "${pkcs12_directory}")" != "false" ]; then
+  # NOTE: njq returns `null` or empty for boolean false, so let's check true
+  if [ "$(lower_case "${pkcs12_lock}")" = "true" ]; then
     zwecli_inline_execute_command \
       certificate pkcs12 lock \
         --keystore-dir "${pkcs12_directory}" \
