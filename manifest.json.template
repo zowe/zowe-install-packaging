@@ -117,7 +117,7 @@
       "version": "2.0.0"
     },
     "org.zowe.licenses": {
-      "version": "1.27.0",
+      "version": "2.0.0",
       "artifact": "zowe_licenses_full.zip"
     }
   },
