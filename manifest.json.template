@@ -14,7 +14,7 @@
     "org.zowe.zlux.zlux-core": {
       "version": "2.0.0-RC",
       "repository": "libs-snapshot-local",
-      "artifact": "zlux-core-2.0.0-20220413.023352.pax"
+      "artifact": "zlux-core-2.0.0-20220421.162129.pax"
     },
     "org.zowe.zlux.sample-angular-app": {
       "version": "2.0.0-RC",
@@ -49,7 +49,7 @@
     "org.zowe.zss": {
       "version": "2.0.0-RC",
       "repository": "libs-snapshot-local",
-      "artifact": "zss-2.0.0-rc-161-20220414205833.pax"
+      "artifact": "zss-2.0.0-rc-185-20220421161538.pax"
     },
     "org.zowe.explorer.jobs.jobs-api-package": {
       "version": "2.0.3",
@@ -152,7 +152,7 @@
         },
         {
           "repository": "zlux-app-server",
-          "tag": "v2.0.0-RC1",
+          "tag": "v2.0.0-RC2",
           "destinations": ["Zowe PAX"]
         },
         {
@@ -172,7 +172,7 @@
         },
         {
           "repository": "zlux-server-framework",
-          "tag": "v2.0.0-RC1",
+          "tag": "v2.0.0-RC2",
           "destinations": ["Zowe PAX"]
         },
         {
@@ -192,12 +192,12 @@
         },
         {
           "repository": "zss",
-          "tag": "v2.0.0-RC1",
+          "tag": "v2.0.0-RC2",
           "destinations": ["Zowe PAX"]
         },
         {
           "repository": "zowe-common-c",
-          "tag": "zss-v2.0.0-RC1",
+          "tag": "zss-v2.0.0-RC2",
           "destinations": ["Zowe PAX"]
         }
       ]
