@@ -15,12 +15,12 @@
           "additionalProperties": false,
           "description": "Zowe setup configurations used by \"zwe install\" and \"zwe init\" commands.",
           "properties": {
-            "mvs": {
+            "dataset": {
               "type": "object",
               "additionalProperties": false,
               "description": "MVS data set related configurations",
               "properties": {
-                "hlq": {
+                "prefix": {
                   "type": "string",
                   "description": "Where Zowe MVS data sets will be installed"
                 },
@@ -199,6 +199,10 @@
                   "additionalProperties": false,
                   "description": "Configure this section if you are using z/OS JCERACFKS keyring",
                   "properties": {
+                    "owner": {
+                      "type": "string",
+                      "description": "keyring owner. If this is empty, Zowe will use the user ID defined as zowe.setup.security.users.zowe."
+                    },
                     "name": {
                       "type": "string",
                       "description": "keyring name"
@@ -240,6 +244,21 @@
                         "password": {
                           "type": "string",
                           "description": "Password for the PKCS12 data set."
+                        }
+                      }
+                    },
+                    "zOSMF": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "description": "Configure this section if you want to trust z/OSMF certificate authority in Zowe keyring.",
+                      "properties": {
+                        "ca": {
+                          "type": "string",
+                          "description": "z/OSMF certificate authority alias"
+                        },
+                        "user": {
+                          "type": "string",
+                          "description": "z/OSMF user. Zowe initialization utility can detect alias of z/OSMF CA for RACF security system. The automated detection requires this z/OSMF user as input."
                         }
                       }
                     }
@@ -354,6 +373,14 @@
               "description": "A short prefix to customize address spaces created by Zowe job."
             }
           }
+        },
+        "rbacProfileIdentifier": {
+          "type": "string",
+          "description": "An ID used for determining resource names used in RBAC authorization checks"
+        },
+        "cookieIdentifier": {
+          "type": "string",
+          "description": "An ID that can be used by servers that distinguish their cookies from unrelated Zowe installs"
         },
         "externalDomains": {
           "type": "array",
