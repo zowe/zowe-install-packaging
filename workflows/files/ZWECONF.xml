@@ -135,14 +135,16 @@
         </string>
     </variable>
     <variable name="zowe_runtimeDirectory" scope="instance" visibility="public">
-        <label>Zowe runtime directory</label>
-        <abstract>Zowe runtime (root) directory</abstract>
-        <description>Zowe runtime (root) directory.
-This value is required by ZWESLSTC to know where is Zowe runtime.</description>
+        <label>Existing Zowe runtime directory</label>
+        <abstract>Zowe runtime (root) directory with libraries</abstract>
+        <description>Existing Zowe runtime.&lt;br /&gt;
+If you created ZOWE via PSWI, &lt;br /&gt;
+zowe runtime is your Target Mount Point from PSWI deployment. &lt;br /&gt;
+It is used by ZWESLSTC or by zwe command</description>
         <category>zowe</category>
         <string valueMustBeChoice="false" multiLine="false">
-            <!-- Put validation here -->
-            <!-- Specify choices here -->
+            <regularExpression>~?(\/[^\/]+)+</regularExpression>
+            <errorMessage>Please specify proper full USS path ending without a trailing slash.</errorMessage>
         </string>
     </variable>
     <variable name="zowe_logDirectory" scope="instance" visibility="public">
@@ -1933,7 +1935,7 @@ export NODE_HOME='${instance-node_home}'
 
 export PATH=$PATH:'${instance-zowe_runtimeDirectory}/bin'
 
-zwe install -c '${instance-zowe_runtimeDirectory}/zowe.yml'</inlineTemplate>
+zwe install -c '${instance-zowe_runtimeDirectory}/zowe.yaml'</inlineTemplate>
                 <submitAs maxRc="0">shell-JCL</submitAs>
                 <maxLrecl>1024</maxLrecl>
                 <!-- zosmfOutput -->
@@ -1946,7 +1948,17 @@ zwe install -c '${instance-zowe_runtimeDirectory}/zowe.yml'</inlineTemplate>
             <!-- condition -->
             <!--variableValues-->
             <instructions substitution="true"><![CDATA[
-            This step runs the command: <code>zwe init -c ${instance-zowe_runtimeDirectory}/zowe.yml</code>
+            This step runs the command: <code>zwe init -c ${instance-zowe_runtimeDirectory}/zowe.yml</code> <br/><br/>
+            <b>NOTE:</b> The <b>zwe init</b> command is a combination of the following sub-commands. <br/>
+            Each sub-command defines a configuration. 
+<ul>
+<li><b>mvs:</b> Copy the data sets provided with Zowe to custom data sets.</li>
+<li><b>security:</b> Create the user IDs and security manager settings.</li>
+<li><b>apfauth:</b> APF authorize the LOADLIB containing the modules that need to perform z/OS priviledged security calls.</li>
+<li><b>certificate:</b> Configure Zowe to use TLS certificates.</li>
+<li><b>vsam:</b> Configure the VSAM files needed to run the Zowe caching service used for high availability (HA).</li>
+<li><b>stc:</b> Configure the system to launch the Zowe started task.</li>
+</ul>
             ]]></instructions>
             <weight>1</weight>
             <skills>z/OS System Programmer</skills>
@@ -1961,7 +1973,7 @@ export NODE_HOME='${instance-node_home}'
 
 export PATH=$PATH:'${instance-zowe_runtimeDirectory}/bin'
 
-zwe init -c '${instance-zowe_runtimeDirectory}/zowe.yml'</inlineTemplate>
+zwe init -c '${instance-zowe_runtimeDirectory}/zowe.yaml'</inlineTemplate>
                 <submitAs maxRc="0">shell-JCL</submitAs>
                 <maxLrecl>1024</maxLrecl>
                 <!-- zosmfOutput -->
