@@ -526,11 +526,13 @@ components:
   # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   jobs-api:
     enabled: false
+    debug: false
     port: 7558
 
   # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   files-api:
     enabled: false
+    debug: false
     port: 7559
 
   # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
