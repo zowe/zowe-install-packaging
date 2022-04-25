@@ -1,1 +1,15 @@
-""
+{
+  "lockAcquiredTime": "Mon Apr 25 2022 15:43:51 GMT+0000 (Coordinated Universal Time)",
+  "uid": "1650901431651869757",
+  "repository": {
+    "owner": "zowe",
+    "repo": "zowe-install-packaging"
+  },
+  "branch": "users/jack/test-zlux-core-fix-for-keyring",
+  "workflow": "Zowe CICD Integration Tests",
+  "job": "cicd-test",
+  "actor": "jackjia-ibm",
+  "runId": 2221267659,
+  "runNumber": 759,
+  "link": "https://github.com/zowe/zowe-install-packaging/actions/runs/2221267659"
+}
