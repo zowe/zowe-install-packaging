@@ -27,7 +27,8 @@ echo "z/OSMF version     :" $ZOSMF_V
 # JSONs      
 ADD_SWI_JSON='{"name":"'${SWI_NAME}'","system":"'${ZOSMF_SYSTEM}'","description":"ZOWE v'${VERSION}' Portable Software Instance",
 "globalzone":"'${GLOBAL_ZONE}'","targetzones":["'${TZONE}'"],"workflows":[{"name":"ZOWE Mount Workflow","description":"This workflow performs mount action of ZOWE zFS.",
-"location": {"dsname":"'${WORKFLOW_DSN}'(ZWEWRF02)"}},{"name":"ZOWE Creation of CSR request workflow","description":"This workflow creates a certificate sign request.",
+"location": {"dsname":"'${WORKFLOW_DSN}'(ZWEWRF02)"}},{"name":"ZOWE Configuration of Zowe 2.0","description":"This workflow configures Zowe v2.0.",
+"location": {"dsname":"'${WORKFLOW_DSN}'(ZWECONF)"}},{"name":"ZOWE Creation of CSR request workflow","description":"This workflow creates a certificate sign request.",
 "location": {"dsname":"'${WORKFLOW_DSN}'(ZWECRECR)"}},{"name":"ZOWE Sign a CSR request","description":"This workflow signs the certificate sign request by a local CA.",
 "location": {"dsname":"'${WORKFLOW_DSN}'(ZWESIGNC)"}},{"name":"ZOWE Load Authentication Certificate into ESM","description":"This workflow loads a signed client authentication certificate to the ESM.",
 "location": {"dsname":"'${WORKFLOW_DSN}'(ZWELOADC)"}},{"name":"ZOWE Define key ring and certificates","description":"This workflow defines key ring and certificates for Zowe.",
@@ -148,6 +149,10 @@ echo "source=\"${ZOWE_MOUNT}files/workflows/ZWESIGNC.xml\";" >> JCL
 echo "target=\"//'${WORKFLOW_DSN}(ZWESIGNC)'\";" >> JCL
 echo "sed 's|UTF-8|IBM-1047|g' \$source > _ZWESIGNC;" >> JCL                         
 echo "cp -T _ZWESIGNC \$target;" >> JCL
+echo "source=\"${ZOWE_MOUNT}files/workflows/ZWECONF.xml\";" >> JCL
+echo "target=\"//'${WORKFLOW_DSN}(ZWECONF)'\";" >> JCL
+echo "sed 's|UTF-8|IBM-1047|g' \$source > _ZWECONF;" >> JCL                         
+echo "cp -T _ZWECONF \$target;" >> JCL
 echo "/*" >> JCL
 
 sh scripts/submit_jcl.sh "`cat JCL`"
