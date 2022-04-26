@@ -258,32 +258,7 @@ jobs:
           source 04_process_cli_art_pattern.sh
           source 05_process_ext_list.sh
           source 06_process_docker_art_pattern.sh 
-
-          ##################################################################################################
-          ### Set outputs
-          ##################################################################################################
-          echo ::set-output name=ZOWE_ARTIFACTORY_FINAL::$ZOWE_ARTIFACTORY_FINAL
-          echo ::set-output name=ZOWE_ARTIFACTORY_FINAL_FILENAME::$ZOWE_ARTIFACTORY_FINAL_FILENAME
-          echo ::set-output name=NODE_HOME_PATTERN::/ZOWE/node/node-${{ env.ZOS_NODE_VERSION }}-os390-s390x
-          echo ::set-output name=TEST_SERVER::$TEST_SERVER
-          echo ::set-output name=TEST_SERVER_NICKNAME::$TEST_SERVER_NICKNAME
-          echo ::set-output name=EXTENSION_LIST::$EXTENSION_LIST
-          echo ::set-output name=ZOWE_CLI_ARTIFACTORY_FINAL::$ZOWE_CLI_ARTIFACTORY_FINAL
-          echo ::set-output name=ZOWE_TP_DOCKER_ARTIFACTORY_URL::$ZOWE_TP_DOCKER_ARTIFACTORY_URL
-
-          ##################################################################################################
-          ### Echo all processed outputs
-          ##################################################################################################
-          echo
-          echo "#######################Summary of outputs:#######################"
-          printf "Zowe artifactory path: ${CYAN}$ZOWE_ARTIFACTORY_FINAL${NC}\n"
-          printf "Zowe artifactory file name: ${CYAN}$ZOWE_ARTIFACTORY_FINAL_FILENAME${NC}\n"
-          printf "Zowe CLI artifactory path: ${CYAN}$ZOWE_CLI_ARTIFACTORY_FINAL${NC}\n"
-          printf "Zowe TP Docker artifactory path: ${CYAN}$ZOWE_TP_DOCKER_ARTIFACTORY_URL${NC}\n"
-          printf "Zowe extension list: ${CYAN}$EXTENSION_LIST${NC}\n"
-          printf "Test server: ${CYAN}$TEST_SERVER${NC}\n"
-          printf "Test server nickname: ${CYAN}$TEST_SERVER_NICKNAME${NC}\n"
-          printf "Node home pattern on z/OS: ${CYAN}/ZOWE/node/node-${{ env.ZOS_NODE_VERSION }}-os390-s390x${NC}\n"
+          source 07_process_outputs.sh
         env:
           CURRENT_BRANCH: ${{ env.CURRENT_BRANCH }}
           MATRIX_TEST: ${{ matrix.test }}
