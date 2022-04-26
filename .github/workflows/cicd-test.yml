@@ -249,7 +249,7 @@ jobs:
       - name: '[Prep 7] Additional Prep work'
         id: more-test-prep
         run: |
-          cd .github/scripts
+          cd .github/scripts/cicd_test/prep7_more_test_prep
           chmod +x *.sh
           source 00_init.sh
           source 01_helper_functions.sh
