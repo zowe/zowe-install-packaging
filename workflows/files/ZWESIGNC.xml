@@ -21,19 +21,19 @@
     <variable name="uss_infile" scope="instance" visibility="public">
         <label>Input file</label>
         <abstract>Specifies the CSR file that will be signed by CA</abstract>
-        <description>Specifies the CSR file that will be signed by CA.</description>
+        <description>Specifies the CSR file that will be signed by CA. File name should be together with the Path.</description>
         <category>General</category>
         <string valueMustBeChoice="false" multiLine="false">
-            <default>user.csr</default>
+            <default>/c/input/user.csr</default>
         </string>
     </variable>
     <variable name="uss_outfile" scope="instance" visibility="public">
         <label>Output file</label>
         <abstract>Specifies the location for the signed certificate</abstract>
-        <description>Specifies the location for the signed certificate.</description>
+        <description>Specifies the location for the signed certificate. File name should be together with the Path.</description>
         <category>General</category>
         <string valueMustBeChoice="false" multiLine="false">
-            <default>user.pem</default>
+            <default>/c/ouput/user.pem</default>
         </string>
     </variable>
     <variable name="keystore" scope="instance" visibility="public">
