@@ -29,13 +29,14 @@ Workflow trigger is at [cicd-test](https://github.com/zowe/zowe-install-packagin
   - SMPE PTF
   - Extensions
   - Keyring
-  - z/OS node v8
   - z/OS node v12
   - z/OS node v14
+  - z/OS node v16
   - Non-strict Verify External Certificate
   - Install PTF twice
   - Generate API documentation
   - Zowe Release Tests
+  - Zowe Nightly Tests
 - Note that `Zowe Release Tests` is generally run by the DevOps engineer during RC phase. It includes most of the tests above across all three zzow servers.  
 - Generally speaking, all tests listed above can be run on any zzow server.
 - For the tests automatically triggered by your PR build, it is running `Convenience Pax` test on any zzow server.
