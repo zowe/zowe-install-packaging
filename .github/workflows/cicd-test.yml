@@ -111,7 +111,7 @@ jobs:
         run: | 
           cd .github/scripts/cicd_test
           chmod +x make_matrix.sh
-          source make-matrix.sh
+          source make_matrix.sh
         env:
           test_server: ${{ github.event.inputs.test-server }}
           install_test_choice: ${{ github.event.inputs.install-test }}
