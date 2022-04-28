@@ -1,15 +1,1 @@
-{
-  "lockAcquiredTime": "Thu Apr 28 2022 11:13:48 GMT+0000 (Coordinated Universal Time)",
-  "uid": "1651144428363886036",
-  "repository": {
-    "owner": "zowe",
-    "repo": "zowe-install-packaging"
-  },
-  "branch": "apiml/GH2210/test_infinispan",
-  "workflow": "Zowe CICD Integration Tests",
-  "job": "cicd-test",
-  "actor": "taban03",
-  "runId": 2238889365,
-  "runNumber": 812,
-  "link": "https://github.com/zowe/zowe-install-packaging/actions/runs/2238889365"
-}
+""
