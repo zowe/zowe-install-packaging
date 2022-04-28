@@ -18,7 +18,7 @@ import {
 } from '../../../constants';
 
 const testServer = process.env.TEST_SERVER;
-const testSuiteName = 'Test convenience build installation with Infinispan as storage method for the Caching Service';
+const testSuiteName = 'Test convenience build installation with VSAM as storage method for the Caching Service';
 describe(testSuiteName, () => {
   beforeAll(() => {
     // validate variables

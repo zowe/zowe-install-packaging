@@ -79,8 +79,6 @@ data:
     ZWE_CACHING_SERVICE_VSAM_DATASET=IBMUSER.ZWE.CACHE1
     # specify the jgroup bind port for infinispan
     JGROUPS_BIND_PORT=7600
-    # specify the path where the Soft-Index store will keep its data files for the Infinispan Soft-Index Cache Store
-    CACHING_STORAGE_INFINISPAN_PERSISTENCE_DATALOCATION=data
     # Infinispan/Jgroup TCPPING property that specifies the list of cluster nodes (members)
     CACHING_STORAGE_INFINISPAN_INITIALHOSTS="${ZOWE_EXPLORER_HOST}[${JGROUPS_BIND_PORT}]"
 
