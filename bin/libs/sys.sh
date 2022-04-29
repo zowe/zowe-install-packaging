@@ -12,7 +12,10 @@
 #######################################################################
 
 export ZWE_RUN_ON_ZOS=$(test `uname` = "OS/390" && echo "true")
-export ZWE_PWD=$(pwd)
+export ZWE_PWD=$(pwd 2>/dev/null)
+if [ -z "${ZWE_PWD}" ]; then
+  export ZWE_PWD="/"
+fi
 
 ###############################
 # Return system name in lower case
