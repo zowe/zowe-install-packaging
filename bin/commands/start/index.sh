@@ -18,7 +18,13 @@ print_level0_message "Starting Zowe"
 require_zowe_yaml
 
 # read job name and validate
-jobname=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.job.name")
+jobname=
+if [ -n "${ZWE_CLI_PARAMETER_HA_INSTANCE}" ]; then
+  jobname=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".haInstances.${ZWE_CLI_PARAMETER_HA_INSTANCE}.zowe.job.name")
+fi
+if [ -z "${jobname}" ]; then
+  jobname=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.job.name")
+fi
 security_stcs_zowe=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.security.stcs.zowe")
 if [ -z "${security_stcs_zowe}" ]; then
   security_stcs_zowe=${ZWE_PRIVATE_DEFAULT_ZOWE_STC}
