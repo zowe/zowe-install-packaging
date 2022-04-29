@@ -31,6 +31,7 @@ on:
           - Install PTF Twice
           - Generate API Documentation
           - Zowe Nightly Tests
+          - Zowe Weekly Tests
           - Zowe Release Tests
       custom-zowe-artifactory-pattern-or-build-number:
         description: 'Custom Zowe Artifactory Pattern or Build Number:'
@@ -57,9 +58,9 @@ env:
   DEFAULT_ZOWE_CLI_ARTIFACTORY_PATTERN: PLACE_HOLDER/org/zowe/cli/zowe-cli-package/*zowe-cli-package-2*.zip
   DEFAULT_ZOWE_EXT_ARTIFACTORY_PATTERN: libs-snapshot-local/org/zowe/{ext-name}/*/{ext-name}-*.pax
 
-  # can be overwritten, adjusted by DevOps only
-  ZOS_NODE_VERSION: v12.18.4
+  # below block can be overwritten, adjusted by DevOps only
   # ZOS_NODE_VERSION more to choose from: v14.15.1, v16.13.0
+  ZOS_NODE_VERSION: v12.18.4
   CLIENT_NODE_VERSION: v12.18.3
   INSTALL_TEST_DEBUG_INFORMATION: zowe-install-test:*
   SANITY_TEST_DEBUG_INFORMATION: zowe-sanity-test:*
@@ -76,10 +77,11 @@ env:
   NON_STRICT_VERIFY_EXTERNAL_CERTIFICATE_TESTFILE: extended/certificates/nonstrict-verify-external-certificate.ts
   INSTALL_PTF_TWICE_TESTFILE: extended/install-ptf-two-times.ts
   GENERAL_API_DOCUMENTATION_TESTFILE: basic/install-api-gen.ts
-  # FIXME: after Zowe v2 started to build PTF, this should be changed back to install-ptf.ts
-  ZOWE_RELEAE_TESTS_FULL: basic/install.ts(zzow02,zzow03,zzow04);basic/install-fmid.ts(zzow02,zzow03,zzow04);basic/install-ext.ts(zzow03);extended/keyring.ts(zzow02,zzow03,zzow04);extended/node-versions/node-v12.ts(zzow02,zzow03,zzow04);extended/node-versions/node-v14.ts(zzow02,zzow03,zzow04);extended/node-versions/node-v16.ts(zzow02,zzow03,zzow04);extended/certificates/nonstrict-verify-external-certificate.ts(zzow02)
+  # FIXME: after Zowe v2 started to build PTF, those lines below should be changed back to install-ptf.ts
   ZOWE_NIGHTLY_TESTS_FULL: basic/install.ts(zzow02,zzow03,zzow04);basic/install-fmid.ts(zzow02,zzow03,zzow04)
-
+  ZOWE_WEEKLY_TESTS_FULL: basic/install.ts(zzow02,zzow03,zzow04);basic/install-fmid.ts(zzow02,zzow03,zzow04);extended/keyring.ts(zzow02,zzow03,zzow04);extended/certificates/nonstrict-verify-external-certificate.ts(zzow02)
+  ZOWE_RELEAE_TESTS_FULL: basic/install.ts(zzow02,zzow03,zzow04);basic/install-fmid.ts(zzow02,zzow03,zzow04);basic/install-ext.ts(zzow03);extended/keyring.ts(zzow02,zzow03,zzow04);extended/node-versions/node-v12.ts(zzow02,zzow03,zzow04);extended/node-versions/node-v14.ts(zzow02,zzow03,zzow04);extended/node-versions/node-v16.ts(zzow02,zzow03,zzow04);extended/certificates/nonstrict-verify-external-certificate.ts(zzow02)
+  
 jobs:
   display-dispatch-event-id:
     if: github.event.inputs.RANDOM_DISPATCH_EVENT_ID != ''
