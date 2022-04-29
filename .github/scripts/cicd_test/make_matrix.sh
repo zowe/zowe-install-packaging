@@ -61,6 +61,11 @@ case $install_test_choice in
     dont_parse_test_server=true
     ;;
 
+    "Zowe Weekly Tests")
+    test_file="$ZOWE_WEEKLY_TESTS_FULL"
+    dont_parse_test_server=true
+    ;;
+
     "Zowe Release Tests")
     test_file="$ZOWE_RELEAE_TESTS_FULL"
     dont_parse_test_server=true
@@ -74,7 +79,7 @@ esac
 
 if [[ -z "$dont_parse_test_server" ]]; then
     if [[ "$test_server" == "Any zzow servers" ]]; then
-    test_server="zzow0"$(echo $(($RANDOM % 3 + 2)) )
+        test_server="zzow0"$(echo $(($RANDOM % 3 + 2)) )
     fi
     TEST_FILE_SERVER="$test_file($test_server)"
 else
@@ -93,7 +98,7 @@ do
     test_file=$(echo "$each_test_file_server" | cut -d "(" -f1)
     for test_server in $(echo "$each_test_file_server" | cut -d "(" -f2 | cut -d ")" -f1 | sed "s/,/ /g")
     do
-    MATRIX_JSON_STRING="$MATRIX_JSON_STRING{\"test\":\"$test_file\",\"server\":\"marist-$test_server\"},"
+        MATRIX_JSON_STRING="$MATRIX_JSON_STRING{\"test\":\"$test_file\",\"server\":\"marist-$test_server\"},"
     done
 done
 
