@@ -221,9 +221,22 @@ for component in launcher zlux-core zss apiml-common-lib common-java-lib apiml-s
   rm "${component_file}"
 done
 
+# FIXME: zss install.sh will delete SAMPLIB/LOADLIB directories, but we need them in pax
+#        this should be fixed in zss. this is temporary before we fix zss
+if [ -d "${ZOWE_ROOT_DIR}/components/zss" ]; then
+  for bak in LOADLIB SAMPLIB ; do
+    if [ -d "${ZOWE_ROOT_DIR}/components/zss/${bak}" ]; then
+      mkdir "${ZOWE_ROOT_DIR}/components/zss/${bak}.bak"
+      cd "${ZOWE_ROOT_DIR}/components/zss/${bak}"
+      pax -rw -px * "${ZOWE_ROOT_DIR}/components/zss/${bak}.bak/"
+    fi
+  done
+fi
+
 echo "[$SCRIPT_NAME] process commands.install hooks"
+component_list=$(cd "${ZOWE_ROOT_DIR}/components" && ls -1)
 # not all core components has commands.install
-for component in app-server; do
+for component in ${component_list}; do
   echo "[$SCRIPT_NAME] - ${component}"
   # FIXME: these environment variables are changed in v2
   ZOWE_ROOT_DIR=${ZOWE_ROOT_DIR} \
@@ -235,6 +248,19 @@ for component in app-server; do
     --config "${BASE_DIR}/zowe.yaml" \
     --trace \
     --log-dir "${BASE_DIR}/logs"
+done
+
+# FIXME: recover zss SAMPLIB/LOADLIB directories
+for bak in LOADLIB SAMPLIB ; do
+  if [ -d "${ZOWE_ROOT_DIR}/components/zss/${bak}.bak" ]; then
+    if [ -d "${ZOWE_ROOT_DIR}/components/zss/${bak}" ]; then
+      # not deleted, zss fixed, remove backup
+      rm -fr "${ZOWE_ROOT_DIR}/components/zss/${bak}.bak"
+    else
+      # deleted, rename backup
+      mv "${ZOWE_ROOT_DIR}/components/zss/${bak}.bak" "${ZOWE_ROOT_DIR}/components/zss/${bak}"
+    fi
+  fi
 done
 
 # >>>>>
