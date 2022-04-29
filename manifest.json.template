@@ -403,7 +403,7 @@
       "componentGroup": "Utilities",
       "entries": [{
         "repository": "keyring-utilities",
-        "tag": "master", #FIXME
+        "tag": "master",
         "destinations": ["Zowe PAX"]
       }, {
         "repository": "zowe-install-packaging-tools",
