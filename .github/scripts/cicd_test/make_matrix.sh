@@ -61,13 +61,8 @@ case $install_test_choice in
     dont_parse_test_server=true
     ;;
 
-    "Zowe Weekly Tests")
-    test_file="$ZOWE_WEEKLY_TESTS_FULL"
-    dont_parse_test_server=true
-    ;;
-
     "Zowe Release Tests")
-    test_file="$ZOWE_RELEAE_TESTS_FULL"
+    test_file="$ZOWE_RELEASE_TESTS_FULL"
     dont_parse_test_server=true
     ;;
     
