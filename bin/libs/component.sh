@@ -408,6 +408,154 @@ process_zss_plugin_install() {
   fi
 }
 
+process_zis_plugin_install() {
+  if [ "${ZWE_RUN_ON_ZOS}" = "true" ]; then
+    zwes_zis_pluginlib=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.dataset.authPluginLib")
+    zwes_zis_parmlib=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.dataset.parmlib")
+    zwes_zis_parmlib_member="ZWESIP00"
+    print_trace "- Checking for zis plugins and verifying them"
+    component_dir="${1}"
+    
+    iterator_index=0
+    zis_plugin_id=$(read_component_manifest "${component_dir}" ".zisPlugins[${iterator_index}].id" 2>/dev/null)
+    zis_plugin_path=$(read_component_manifest "${component_dir}" ".zisPlugins[${iterator_index}].path" 2>/dev/null)
+    while [ -n "${zis_plugin_path}" ]; do
+      cd "${component_dir}"
+      zis_plugin_install "${zis_plugin_path}" "${zwes_zis_pluginlib}" "${zwes_zis_parmlib}" "${zwes_zis_parmlib_member}" "${zis_plugin_id}" "${component_dir}"
+
+      iterator_index=`expr $iterator_index + 1`
+      zis_plugin_path=$(read_component_manifest "${component_dir}" ".zisPlugins[${iterator_index}].id" 2>/dev/null)
+      zis_plugin_id=$(read_component_manifest "${component_dir}" ".zisPlugins[${iterator_index}].id" 2>/dev/null)
+    done
+  fi
+}
+
+# $1 - needle
+# $2 - haystack
+is_substr_of() {
+  is_substring=$(echo "$2" | grep -c "$1")
+  return "$is_substring"
+}
+
+# $1 - file_name
+# $2 - data_set_name
+copy_uss_to_mvs() {
+  cp "$1" "//'$2'"
+  return $?
+}
+
+# $1 = data_set_name
+# $2 = file_name
+copy_mvs_to_uss() {
+  cp "//'$1'" "$2"
+  return $?
+}
+
+# $1 = key=value
+get_key_of_string() {
+  echo "$1" | sed 's/=/ /g' | awk '{print $1}'
+}
+
+# $1 = key=value
+get_value_of_string() {
+  echo "$1" | sed 's/=/ /g' | awk '{print $2}'
+}
+
+# $1 = line number
+# $2 = file
+get_string_at_line_number() {
+  awk -v n="$1" 'NR == n {print $0}' "$2"
+}
+
+# $1 = search_key
+# $2 = file
+get_line_number_of_key() {
+  grep "$1" "$2" > /dev/null
+  if [ $? -eq 0 ]; then
+    awk -v s="$1" '$0 ~ s {print NR}' "$2"
+  else
+    echo ""
+  fi
+}
+
+# $1 = line number
+# $2 = file
+remove_key_value_at_line_number() {
+  mv "$2" "$2.tmp"
+  awk -v n=$1 'NR != n' "$2.tmp" > "$2"
+  rm -f "$2.tmp"
+}
+
+# $1 = key=value
+# $2 = file
+add_key_value_at_end_of_file() {
+  echo "$1" >> "$2"
+}
+
+zis_plugin_install() {
+  plugin_path="${1}"
+  zwes_zis_pluginlib="${2}"
+  zwes_zis_parmlib="${3}"
+  zwes_zis_parmlib_member="${4}"
+  plugin_id="${5}"
+  component_dir="${6}"
+  parmlib_member_as_unix_file="./${zwes_zis_parmlib_member}.txt"
+
+  if [ ! -f "$parmlib_member_as_unix_file" ]; then
+    copy_mvs_to_uss "${zwes_zis_parmlib}(${zwes_zis_parmlib_member})" "${parmlib_member_as_unix_file}"
+  fi
+
+  changed=0
+
+  if [ -d "${component_dir}${plugin_path}" ]; then
+    if [ -d "${component_dir}${plugin_path}/loadlib" ] && [ -d "${component_dir}${plugin_path}/samplib" ]; then
+      for module in $(ls ${component_dir}${plugin_path}/loadlib); do
+        copy_uss_to_mvs "${component_dir}${plugin_path}/loadlib/${module}" "$zwes_zis_pluginlib"
+        if [ $? != 0 ]; then
+          exit 1
+        fi
+      done
+      for params in $(ls ${component_dir}${plugin_path}/samplib); do
+        if [ ! -f "${component_dir}${plugin_path}/samplib/${params}" ]; then
+          exit 2
+        fi
+        while read samplib_key_value; do
+          prefix=$(echo "$samplib_key_value" | cut -c -2)
+          if [ "$prefix" = "//" ] || [ "$prefix" = "* " ] || [ "$prefix" = "" ]; then
+            continue
+          fi
+          grep -x "$samplib_key_value" "$parmlib_member_as_unix_file" > /dev/null
+          if [ $? -eq 0 ]; then
+            echo "The key-value pair $samplib_key_value is being skipped because it's already there and hasn't changed."
+            continue
+          else
+            samplib_key=$(get_key_of_string "$samplib_key_value")
+            if [ "$samplib_key" = "" ]; then
+              exit 3
+            fi
+            # In the case of a key not being there, an empty string will be returned.
+            num=$(get_line_number_of_key "$samplib_key" "$parmlib_member_as_unix_file")
+            if [ "$num" != "" ]; then
+              remove_key_value_at_line_number "$num" "$parmlib_member_as_unix_file"
+              add_key_value_at_end_of_file "$samplib_key_value" "$parmlib_member_as_unix_file"
+              changed=1
+            else
+              # The key doesn't exist. Just add the key-value pair to the end of the file.
+              add_key_value_at_end_of_file "$samplib_key_value" "$parmlib_member_as_unix_file"
+              changed=1
+            fi
+          fi
+        done < "${component_dir}${plugin_path}/samplib/${params}"
+      done
+    fi
+  echo "Successfully installed ZIS plugin: ${plugin_id}"
+  fi
+
+  if [ $changed -eq 1 ]; then
+    copy_uss_to_mvs "$parmlib_member_as_unix_file" "$zwes_zis_parmlib($zwes_zis_parmlib_member)"
+  fi
+}
+
 process_component_appfw_plugin() {
   print_trace "- Starting appfw plugin configure check"
   component_dir="${1}"
