@@ -181,7 +181,7 @@
         },
         {
           "repository": "zlux-grid",
-          "tag": "master", #FIXME
+          "tag": "v1.x/master",
           "destinations": ["Zowe PAX"]
         },
         {
@@ -201,7 +201,7 @@
         },
         {
           "repository": "zlux-widgets",
-          "tag": "master", #FIXME
+          "tag": "v1.x/master",
           "destinations": ["Zowe PAX"]
         },
         {
@@ -395,7 +395,7 @@
       "componentGroup": "Zowe Desktop Workflows Plugin-in",
       "entries": [{
         "repository": "zlux-workflow",
-        "tag": "staging", #FIXME
+        "tag": "v1.x/master",
         "destinations": ["Zowe PAX"]
       }]
     },
