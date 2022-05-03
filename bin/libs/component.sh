@@ -412,7 +412,7 @@ process_zis_plugin_install() {
   if [ "${ZWE_RUN_ON_ZOS}" = "true" ]; then
     zwes_zis_pluginlib=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.dataset.authPluginLib")
     zwes_zis_parmlib=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.dataset.parmlib")
-    zwes_zis_parmlib_member="ZWESIP00"
+    zwes_zis_parmlib_member=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.dataset.parmlibMembers.zis")
     print_trace "- Checking for zis plugins and verifying them"
     component_dir="${1}"
     
