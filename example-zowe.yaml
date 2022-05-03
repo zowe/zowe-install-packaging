@@ -46,8 +46,9 @@ zowe:
       # **COMMONLY_CUSTOMIZED**
       # Zowe PARMLIB
       parmlib: IBMUSER.ZWEV2.CUST.PARMLIB
-      # Zowe PARMLIB member for ZIS
+      # Holds Zowe PARMLIB members for plugins
       parmlibMembers:
+        # For ZIS plugins
         zis: ZWESIP00
       # **COMMONLY_CUSTOMIZED**
       # JCL library where Zowe will store temporary JCLs during initialization

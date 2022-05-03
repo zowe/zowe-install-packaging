@@ -35,11 +35,11 @@
                 "parmlibMembers": {
                   "type": "object",
                   "additionalProperties": false,
-                  "description": "Holds Zowe PARMLIB members",
+                  "description": "Holds Zowe PARMLIB members for plugins",
                   "properties": {
                     "zis": {
-                      "type": "string",
-                      "description": "PARMLIB member for ZIS plugins"
+                      "$ref": "/schemas/v2/server-common#zoweDatasetMember",
+                      "description": "PARMLIB member used by ZIS"
                     }
                   }
                 },
