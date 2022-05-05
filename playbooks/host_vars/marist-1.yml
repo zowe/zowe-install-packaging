@@ -1,3 +1,3 @@
 ---
-zowe_sanity_test_testcases: "./test/explorer-apis/ ./test/apiml/ ./test/e2e/"
+zowe_sanity_test_testcases: "./test/explorer-apis/ ./test/apiml/ ./test/e2e/ ./test/cli/"
 zowe_apiml_security_x509_enabled: true
