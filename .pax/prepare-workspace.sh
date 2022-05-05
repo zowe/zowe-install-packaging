@@ -124,6 +124,7 @@ cp ZOWE.md             "${CONTENT_DIR}/README.md"
 cp DEVELOPERS.md       "${CONTENT_DIR}/DEVELOPERS.md"
 cp -R bin/*            "${CONTENT_DIR}/bin"
 cp -R files/*          "${CONTENT_DIR}/files"
+cp -R schemas/*        "${CONTENT_DIR}/schemas"
 
 # move licenses
 mkdir -p "${CONTENT_DIR}/licenses"
