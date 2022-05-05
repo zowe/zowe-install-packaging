@@ -275,31 +275,31 @@ jobs:
             // get ETA for each test run
             switch(installTest) {
               case 'Convenience Pax':
-                eta = 27
+                eta = 53
                 break;
               case 'SMPE PTF':
-                eta = 47
+                eta = 68
                 break;
               case 'Extensions':
-                eta = 35
+                eta = 67
                 break;
               case 'Keyring':
-                eta = 27
+                eta = 53
                 break;
               case 'z/OS node v12':
-                eta = 25
+                eta = 45
                 break;
               case 'z/OS node v14':
-                eta = 25
+                eta = 45
                 break;
               case 'z/OS node v16':
-                eta = 25
+                eta = 45
                 break;
               case 'Non-strict Verify External Certificate':
-                eta = 25
+                eta = 51
                 break;
               case 'Zowe Release Tests':
-                eta = 240
+                eta = 376
                 break;
               default:
             }
