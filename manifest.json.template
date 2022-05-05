@@ -1,6 +1,6 @@
 {
   "name": "Zowe",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "Zowe is an open source project created to host technologies that benefit the Z platform from all members of the Z community (Integrated Software Vendors, System Integrators and z/OS consumers). Zowe, like Mac or Windows, comes with a set of APIs and OS capabilities that applications build on and also includes some applications out of the box. Zowe offers modern interfaces to interact with z/OS and allows you to work with z/OS in a way that is similar to what you experience on cloud platforms today. You can use these interfaces as delivered or through plug-ins and extensions that are created by clients or third-party vendors.",
   "license": "EPL-2.0",
   "homepage": "https://zowe.org",
@@ -44,12 +44,12 @@
       "artifact": "*.pax"
     },
     "org.zowe.explorer.jobs.jobs-api-package": {
-      "version": "~2.0.0-SNAPSHOT",
+      "version": "^2.0.0-SNAPSHOT",
       "artifact": "jobs-api-package-*.zip",
       "exclusions": ["*PR*.zip"]
     },
     "org.zowe.explorer.files.files-api-package": {
-      "version": "~2.0.0-SNAPSHOT",
+      "version": "^2.0.0-SNAPSHOT",
       "artifact": "files-api-package-*.zip",
       "exclusions": ["*PR*.zip"]
     },
@@ -67,32 +67,32 @@
       "artifact": "*.pax"
     },
     "org.zowe.apiml.api-catalog-package": {
-      "version": "~2.0.2-SNAPSHOT",
+      "version": "^2.0.2-SNAPSHOT",
       "artifact": "api-catalog-*.zip",
       "exclusions": ["*PR*.zip"]
     },
     "org.zowe.apiml.discovery-package": {
-      "version": "~2.0.2-SNAPSHOT",
+      "version": "^2.0.2-SNAPSHOT",
       "artifact": "discovery-*.zip",
       "exclusions": ["*PR*.zip"]
     },
     "org.zowe.apiml.gateway-package": {
-      "version": "~2.0.2-SNAPSHOT",
+      "version": "^2.0.2-SNAPSHOT",
       "artifact": "gateway-*.zip",
       "exclusions": ["*PR*.zip"]
     },
     "org.zowe.apiml.caching-service-package": {
-      "version": "~2.0.2-SNAPSHOT",
+      "version": "^2.0.2-SNAPSHOT",
       "artifact": "caching-service-*.zip",
       "exclusions": ["*PR*.zip"]
     },
     "org.zowe.apiml.metrics-service-package": {
-      "version": "~2.0.2-SNAPSHOT",
+      "version": "^2.0.2-SNAPSHOT",
       "artifact": "metrics-service-*.zip",
       "exclusions": ["*PR*.zip"]
     },
     "org.zowe.apiml.apiml-common-lib-package": {
-      "version": "~2.0.2-SNAPSHOT",
+      "version": "^2.0.2-SNAPSHOT",
       "artifact": "apiml-common-lib-*.zip",
       "exclusions": ["*PR*.zip"]
     },
@@ -102,7 +102,7 @@
       "exclusions": ["*PR*.zip"]
     },
     "org.zowe.apiml.sdk.apiml-sample-extension-package": {
-      "version": "~2.0.4-SNAPSHOT",
+      "version": "^2.0.4-SNAPSHOT",
       "artifact": "apiml-sample-extension-*.zip",
       "exclusions": ["*PR*.zip"]
     },
