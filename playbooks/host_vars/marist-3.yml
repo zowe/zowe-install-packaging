@@ -1,5 +1,5 @@
 ---
 zos_security_system: TSS
-zowe_sanity_test_testcases: "./test/explorer-apis/ ./test/apiml/ ./test/e2e/"
+zowe_sanity_test_testcases: "./test/explorer-apis/ ./test/apiml/ ./test/e2e/ ./test/install/"
 zowe_apiml_security_x509_enabled: true
 zos_zosmf_ca: ZOSMFCA
