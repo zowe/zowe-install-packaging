@@ -136,6 +136,7 @@
       "components.apiml-sample-extension.enabled": "true"
       # debug mode for troubleshooting/profiling
       "zowe.launchScript.logLevel": "trace"
+      "zowe.environments.LOGGING_LEVEL_ORG_SPRINGFRAMEWORK_WEB_SERVLET": "DEBUG"
       # # this must be commented out to avoid flooding spool
       # "components.gateway.debug": "true"
       # # trace java apps
