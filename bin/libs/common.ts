@@ -15,6 +15,7 @@ import * as os from 'os';
 import * as nodelib from './node';
 import * as fs from './fs';
 import * as shell from './shell';
+import { ConfigManager } from 'Configuration';
 
 // these are shell environments we want to enforce in all cases
 std.setenv('_CEE_RUNOPTS', "FILETAG(AUTOCVT,AUTOTAG) POSIX(ON)");
@@ -24,6 +25,10 @@ std.setenv('_TAG_REDIR_ERR', 'txt');
 std.setenv('_BPXK_AUTOCVT', "ON");
 std.setenv('_EDC_ADD_ERRNO2', '1'); //show details on error
 std.unsetenv('ENV'); // just in case, as it can cause unexpected output
+
+export const CONFIG_MGR = new ConfigManager();
+CONFIG_MGR.setTraceLevel(0);
+
 
 enum LOG_LEVEL {
   ERROR = 0,

@@ -14,6 +14,7 @@ import * as os from 'os';
 import * as fs from './fs';
 import * as shell from './shell';
 import * as common from './common';
+import * as stringlib from './string';
 
 // internal errors counter for validations
 std.setenv('ZWE_PRIVATE_ERRORS_FOUND', '0');
@@ -33,112 +34,123 @@ export function functionExists(fn: string): boolean {
 
 
 // if a string has any env variables, replace them with values
-export function parseStringVars() {
-  eval "echo \"${1}\""
+export function parseStringVars(key: string): string|undefined {
+  return std.getenv(key);
 }
 
 // return value of the variable
-export function getVarValue() {
-  eval "echo \"\${${1}}\""
+export function getVarValue(key: string): string {
+  return `\$\{${std.getenv(key)}`;
 }
 
 // get all environment variable exports line by line
-export function get_environment_exports() {
-  export -p | \
-    grep -v -E '^export (run_zowe_start_component_id=|ZWELS_START_COMPONENT_ID|ZWE_LAUNCH_COMPONENTS|env_file=|key=|line=|service=|logger=|level=|expected_log_level_val=|expected_log_level_var=|display_log=|message=|utils_dir=|print_formatted_function_available=|LINENO=|ENV|opt|OPTARG|OPTIND|LOGNAME=|USER=|SSH_|SHELL=|PWD=|OLDPWD=|PS1=|ENV=|LS_COLORS=|_=)' | \
-    grep -v -E '^declare -x (run_zowe_start_component_id=|ZWELS_START_COMPONENT_ID|ZWE_LAUNCH_COMPONENTS|env_file=|key=|line=|service=|logger=|level=|expected_log_level_val=|expected_log_level_var=|display_log=|message=|utils_dir=|print_formatted_function_available=|LINENO=|ENV|opt|OPTARG|OPTIND|LOGNAME=|USER=|SSH_|SHELL=|PWD=|OLDPWD|PS1=|ENV=|LS_COLORS=|_=)'
+const exportFilter=/^export (run_zowe_start_component_id=|ZWELS_START_COMPONENT_ID|ZWE_LAUNCH_COMPONENTS|env_file=|key=|line=|service=|logger=|level=|expected_log_level_val=|expected_log_level_var=|display_log=|message=|utils_dir=|print_formatted_function_available=|LINENO=|ENV|opt|OPTARG|OPTIND|LOGNAME=|USER=|SSH_|SHELL=|PWD=|OLDPWD=|PS1=|ENV=|LS_COLORS=|_=)/
+  const declareFilter=/^declare -x (run_zowe_start_component_id=|ZWELS_START_COMPONENT_ID|ZWE_LAUNCH_COMPONENTS|env_file=|key=|line=|service=|logger=|level=|expected_log_level_val=|expected_log_level_var=|display_log=|message=|utils_dir=|print_formatted_function_available=|LINENO=|ENV|opt|OPTARG|OPTIND|LOGNAME=|USER=|SSH_|SHELL=|PWD=|OLDPWD|PS1=|ENV=|LS_COLORS=|_=)/
+
+const keyFilter=/^(run_zowe_start_component_id|ZWELS_START_COMPONENT_ID|ZWE_LAUNCH_COMPONENTS|env_file|key|line|service|logger|level|expected_log_level_val|expected_log_level_var|display_log|message|utils_dir|print_formatted_function_available|LINENO|ENV|opt|OPTARG|OPTIND|LOGNAME|USER|SSH_|SHELL|PWD|OLDPWD|PS1|ENV|LS_COLORS|_)$/
+
+export function getEnvironmentExports(): string {
+  let envvars = std.getenviron();
+  let keys = Object.keys(envvars);
+  let exports=[];
+  keys.forEach((key: string)=> {
+    if (keyFilter.test(key)) {
+      exports.push(`export ${key}=${envvars[key]}`);
+    }
+  });
+  return exports.join('\n');
 }
 
-###############################
-# get all environment variable exports line by line
-export function get_environments() {
-  export -p | \
-    grep -v -E '^export (run_zowe_start_component_id=|ZWELS_START_COMPONENT_ID|ZWE_LAUNCH_COMPONENTS|env_file=|key=|line=|service=|logger=|level=|expected_log_level_val=|expected_log_level_var=|display_log=|message=|utils_dir=|print_formatted_function_available=|LINENO=|ENV|opt|OPTARG|OPTIND|LOGNAME=|USER=|SSH_|SHELL=|PWD=|OLDPWD=|PS1=|ENV=|LS_COLORS=|_=)' | \
-    grep -v -E '^declare -x (run_zowe_start_component_id=|ZWELS_START_COMPONENT_ID|ZWE_LAUNCH_COMPONENTS|env_file=|key=|line=|service=|logger=|level=|expected_log_level_val=|expected_log_level_var=|display_log=|message=|utils_dir=|print_formatted_function_available=|LINENO=|ENV|opt|OPTARG|OPTIND|LOGNAME=|USER=|SSH_|SHELL=|PWD=|OLDPWD|PS1=|ENV=|LS_COLORS=|_=)' | \
-    sed -e 's#^export ##' | \
-    sed -e 's#^declare -x ##'
+// get all environment variable exports line by line
+export function getEnvironments(): string {
+  let envvars = std.getenviron();
+  let keys = Object.keys(envvars);
+  let exports=[];
+  keys.forEach((key: string)=> {
+    if (keyFilter.test(key)) {
+      exports.push(`${key}=${envvars[key]}`);
+    }
+  });
+  return exports.join('\n');
 }
 
-###############################
-# Shell sourcing an environment env file
-#
-# All variables defined in env file will be exported.
-#
-# @param string   env file name
-export function source_env() {
-  env_file="${1}"
+// Shell sourcing an environment env file
+//
+// All variables defined in env file will be exported.
+export function sourceEnv(envFile: string): boolean {
+  //TODO i hope encoding is correct here
+  let fileContents = std.loadFile(envFile);
+  if (fileContents === null) {
+    common.printError(`Error loading file ${envFile}`);
+    return false;
+  }
 
-  . "${env_file}"
-
-  while read -r line ; do
-    # skip line if first char is #
-    test -z "${line%%#*}" && continue
-    key=${line%%=*}
-    export $key
-  done < "${env_file}"
+  let fileLines = fileContents.split('\n');
+  let index;
+  fileLines.forEach((line: string)=> {
+    if ((index = line.indexOf('=')) != -1) {
+      std.setenv(line.substring(0,index), line.substring(index+1));
+      common.printTrace(`Set env var ${line.substring(0, index)} to ${std.getenv(line.substring(0,index)}`);
+    }
+  });
 }
 
-# Takes in a single parameter - the name of the variable
-export function is_variable_set() {
-  variable_name="${1}"
-  message="${2}"
-  if [ -z "${message}" ]; then
-    message="${variable_name} is not defined or empty."
-  fi
-
-  value=$(get_var_value "${variable_name}")
-  if [ -z "${value}" ]; then
-    print_error "${message}"
-    return 1
-  fi
+// Takes in a single parameter - the name of the variable
+export function isVariableSet(variableName: string, message?: string): boolean {
+  if (!message) {
+    message=`${variableName} is not defined or empty.`
+  }
+  const value = std.getenv(variableName);
+  if (value === undefined) {
+    common.printError(message);
+    return false;
+  }
+  return true;
 }
 
-# Takes in a list of space separated names of the variables
-export function are_variables_set() {
-  invalid=0
-
-  for var in $(echo $1 | sed "s/,/ /g"); do
-    is_variable_set "${var}"
-    valid_rc=$?
-    if [ ${valid_rc} -ne 0 ]; then
-      let "invalid=${invalid}+1"
-    fi
-  done
-
-  return ${invalid}
+// Takes in a list of space separated names of the variables
+export function areVariablesSet(variables: string[]): number {
+  let invalid=0
+  
+  variables.forEach((variable: string) => {
+    if (!isVariableSet(variable)) {
+      invalid++;
+    }
+  });
+  
+  return invalid;
 }
 
-export function validate_this() {
-  cmd="${1}"
-  origin="${2}"
+export function validateThis(cmd: string, origin: string): number {
+  common.printFormattedTrace("ZWELS", origin, `Validate: ${cmd}`);
+  let shellReturn = shell.execOutErrSync('sh', `eval \"${cmd}\"`);
+  if (!shellReturn.rc) {
+    if (shellReturn.out) {
+      common.printFormattedDebug("ZWELS", origin, `${stringlib.paddingLeft(shellReturn.out)} - )`);
+    } else {
+      common.printFormattedTrace("ZWELS", origin, "- Passed.");
+    }
+  } else {
+    common.printFormattedTrace("ZWELS", origin, `- Failed with exit code ${shellReturn.rc}`);
+    if (shellReturn.err) {
+      common.printFormattedError("ZWELS", origin, `${stringlib.paddingLeft(shellReturn.err)} - )`);
+    }
+  }
 
-  print_formatted_trace "ZWELS" "${origin}" "Validate: ${cmd}"
-  result=$(eval "${cmd}")
-  retval=$?
-  if [ "${retval}" = "0" ]; then
-    if [ -n "${result}" ]; then
-      print_formatted_debug "ZWELS" "${origin}" "$(padding_left "${result}" "- ")"
-    else
-      print_formatted_trace "ZWELS" "${origin}" "- Passed."
-    fi
-  else
-    print_formatted_trace "ZWELS" "${origin}" "- Failed with exit code ${retval}"
-    if [ -n "${result}" ]; then
-      print_formatted_error "ZWELS" "${origin}" "$(padding_left "${result}" "- ")"
-    fi
-  fi
-
-  let "ZWE_PRIVATE_ERRORS_FOUND=${ZWE_PRIVATE_ERRORS_FOUND}+${retval}"
-
-  return ${retval}
+  let prevErr = std.getenv("ZWE_PRIVATE_ERRORS_FOUND");
+  let prevErrCount = !prevErr ? 0 : Number(prevErr);
+  if (shellReturn.rc) {
+    std.setenv("ZWE_PRIVATE_ERRORS_FOUND",prevErr+1);
+  }
+  return shellReturn.rc;
 }
 
-export function check_runtime_validation_result() {
-  origin="${1}"
-
-  # Summary errors check, exit if errors found
-  if [ ${ZWE_PRIVATE_ERRORS_FOUND} -gt 0 ]; then
-    print_formatted_warn "ZWELS" "${origin}" "${ZWE_PRIVATE_ERRORS_FOUND} errors were found during validation, please check the message, correct any properties required in ${ZWE_CLI_PARAMETER_CONFIG} and re-launch Zowe."
-    exit ${ZWE_PRIVATE_ERRORS_FOUND}
-  fi
+export function checkRuntimeValidationResult(origin: string) {
+  // Summary errors check, exit if errors found
+  let prevErr = std.getenv("ZWE_PRIVATE_ERRORS_FOUND");
+  let prevErrCount = !prevErr ? 0 : Number(prevErr);
+  if ( prevErrCount > 0) {
+    common.printFormattedWarn("ZWELS", origin,  `${prevErrCount} errors were found during validation, please check the message, correct any properties required in ${std.getenv('ZWE_CLI_PARAMETER_CONFIG')} and re-launch Zowe.`);
+    std.exit(std.getenv('ZWE_PRIVATE_ERRORS_FOUND'));
+  }
 }

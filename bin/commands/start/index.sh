@@ -11,6 +11,10 @@
 # Copyright Contributors to the Zowe Project.
 #######################################################################
 
+if [ "${ZWE_CLI_CONFIGMGR}" = "true" ]; then
+  _CEE_RUNOPTS="XPLINK(ON),HEAPPOOLS(OFF)" ${ZWE_zowe_runtimeDirectory}/bin/utils/configmgr -script "${ZWE_zowe_runtimeDirectory}/bin/commands/start/index.js"
+else
+
 print_level0_message "Starting Zowe"
 
 ###############################

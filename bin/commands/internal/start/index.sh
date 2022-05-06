@@ -11,6 +11,11 @@
 # Copyright Contributors to the Zowe Project.
 #######################################################################
 
+if [ "${ZWE_CLI_CONFIGMGR}" = "true" ]; then
+  _CEE_RUNOPTS="XPLINK(ON),HEAPPOOLS(OFF)" ${ZWE_zowe_runtimeDirectory}/bin/utils/configmgr -script "${ZWE_zowe_runtimeDirectory}/bin/commands/internal/start/index.js"
+else
+
+
 ###############################
 # validation
 require_zowe_yaml
@@ -32,4 +37,6 @@ else
     # only run in background when it's not in container, on z/OS
     zwecli_inline_execute_command internal start component --component "${run_zowe_start_component_id}" --run-in-background
   done
+fi
+
 fi
