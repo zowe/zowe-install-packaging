@@ -129,7 +129,7 @@
       "componentGroup": "Imperative CLI Framework for Zowe",
       "entries": [{
         "repository": "imperative",
-        "tag": "next",
+        "tag": "master",
         "destinations": ["Zowe CLI Package"]
       }]
     }, {
@@ -165,7 +165,7 @@
         },
         {
           "repository": "zlux-grid",
-          "tag": "master",
+          "tag": "v1.x/master",
           "destinations": ["Zowe PAX"]
         },
         {
@@ -185,7 +185,7 @@
         },
         {
           "repository": "zlux-widgets",
-          "tag": "master",
+          "tag": "v1.x/master",
           "destinations": ["Zowe PAX"]
         },
         {
@@ -208,21 +208,21 @@
       "componentGroup": "Zowe CLI",
       "entries": [{
         "repository": "zowe-cli",
-        "tag": "next",
+        "tag": "master",
         "destinations": ["Zowe CLI Package"]
       }]
     }, {
       "componentGroup": "IBM&reg CICS&reg Plug-in for Zowe CLI",
       "entries": [{
         "repository": "zowe-cli-cics-plugin",
-        "tag": "next",
+        "tag": "master",
         "destinations": ["Zowe CLI Package"]
       }]
     }, {
       "componentGroup": "IBM&reg Db2&reg Plug-in for Zowe CLI",
       "entries": [{
         "repository": "zowe-cli-db2-plugin",
-        "tag": "next",
+        "tag": "master",
         "destinations": ["Zowe CLI Package"]
       }]
     }, {
@@ -236,21 +236,21 @@
       "componentGroup": "IBM&reg MQ Plug-in for Zowe CLI",
       "entries": [{
         "repository": "zowe-cli-mq-plugin",
-        "tag": "next",
+        "tag": "master",
         "destinations": ["Zowe CLI Package"]
       }]
     }, {
       "componentGroup": "z/OS&reg FTP Plug-in for Zowe CLI",
       "entries": [{
         "repository": "zowe-cli-ftp-plugin",
-        "tag": "next",
+        "tag": "master",
         "destinations": ["Zowe CLI Package"]
       }]
     }, {
       "componentGroup": "IBM&reg IMS&reg Plug-in for Zowe CLI",
       "entries": [{
         "repository": "zowe-cli-ims-plugin",
-        "tag": "next",
+        "tag": "master",
         "destinations": ["Zowe CLI Package"]
       }]
     }, {
@@ -370,7 +370,7 @@
       "componentGroup": "Zowe Visual Studio Code Extension",
       "entries": [{
         "repository": "vscode-extension-for-zowe",
-        "tag": "next",
+        "tag": "master",
         "destinations": ["Visual Studio Code Marketplace"]
       }]
     },
