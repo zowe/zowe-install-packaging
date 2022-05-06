@@ -1,5 +1,5 @@
 ---
-zowe_sanity_test_testcases: "./test/explorer-apis/ ./test/apiml/ ./test/e2e/"
+zowe_sanity_test_testcases: "./test/zlux/ ./test/explorer-apis/"
 zowe_apiml_security_x509_enabled: true
 
 work_dir_remote: /ZOWE/ansible

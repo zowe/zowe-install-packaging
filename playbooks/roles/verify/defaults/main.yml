@@ -11,7 +11,7 @@ work_dir_local: .tmp
 # if run test in debug mode. for example, set to "test:*"
 zowe_sanity_test_debug_mode: ""
 # only run subset of test cases
-zowe_sanity_test_testcases: "\"./test/explorer-apis/\" \"./test/apiml/\" \"./test/e2e/\""
+zowe_sanity_test_testcases: "\"./test/zlux/\" \"./test/explorer-apis/\""
 # default folder of sanity test
 zowe_sanity_test_root_dir: ../tests/sanity
 
