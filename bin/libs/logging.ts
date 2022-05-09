@@ -21,7 +21,7 @@ export function prepareLogFile(logDir: string, logFilePrefix: string): void {
 
   const logFile=`${logDir}/${logFilePrefix}-${common.date('+%Y%m%dT%H%M%S')}.log`;
   if (!fs.fileExists(logFile)) {
-    fs.mkdirp(logDir);
+    fs.mkdirp(logDir, 0o770);
     if (!fs.isDirectoryWritable(logDir)) {
       common.printErrorAndExit("Error ZWEL0110E: Doesn't have write permission on ${1} directory.", undefined, 110);
     }

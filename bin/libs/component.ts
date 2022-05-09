@@ -34,7 +34,7 @@ const ZOWE_SCHEMA_ID = 'https://zowe.org/schemas/v2/server-base';
 const MANIFEST_SCHEMA_ID = 'https://zowe.org/schemas/v2/server-component-manifest';
 const MANIFEST_SCHEMAS = `${runtimeDirectory}/schemas/manifest-schema.json:${COMMON_SCHEMA}`;
 
-function initGlobalSchemas(runtimeDirectory) {
+export function initGlobalSchemas(runtimeDirectory) {
   configMgr.addConfig(ZOWE_SCHEMA_ID) || configMgrFailMessage(ZOWE_SCHEMA_ID);
   configMgr.loadSchemas(ZOWE_SCHEMA_ID, `${runtimeDirectory}/schemas/zowe-yaml-schema.json:${COMMON_SCHEMA}`) || configMgrFailMessage(ZOWE_SCHEMA_ID);
 }
@@ -42,7 +42,7 @@ function initGlobalSchemas(runtimeDirectory) {
 
 
 
-function getComponentManifest(componentDir: string): string|undefined {
+export function getManifestPath(componentDir: string): string|undefined {
   if (fs.fileExists(`${componentDir}/manifest.yaml`)) {
     return `${componentDir}/manifest.yaml`;
   } else if (fs.fileExists(`${componentDir}/manifest.yml`)) {
@@ -52,7 +52,7 @@ function getComponentManifest(componentDir: string): string|undefined {
   }
 }
 
-function findComponentDirectory(componentId: string): string|undefined {
+export function findComponentDirectory(componentId: string): string|undefined {
   if (fs.directoryExists(`${runtimeDirectory}/components/${componentId}`)) {
     return `${runtimeDirectory}/components/${componentId}`;
   } else if (extensionDirectory && fs.directoryExists(`${extensionDirectory}/${componentId}`)) {
@@ -61,7 +61,7 @@ function findComponentDirectory(componentId: string): string|undefined {
 }
 
 const pluginPointerDirectory = `${workspaceDirectory}/app-server/plugins`;
-function registerPlugin(path, pluginDefinition) {
+export function registerPlugin(path, pluginDefinition) {
   const filePath = `${pluginPointerDirectory}/${pluginDefinition.identifier}.json`;
   if (fs.fileExists(filePath)) {
     return true;
@@ -89,7 +89,7 @@ function registerPlugin(path, pluginDefinition) {
 const PLUGIN_DEF_SCHEMA_ID = "https://zowe.org/schemas/v2/appfw-plugin-definition";
 const PLUGIN_DEF_SCHEMAS = `${runtimeDirectory}/components/app-server/schemas/plugindefinition-schema.json`;
 
-function getPluginDefinition(pluginRootPath) {
+export function getPluginDefinition(pluginRootPath) {
   const pluginDefinitionPath = `${pluginRootPath}/pluginDefinition.json`;
 
   if (fs.fileExists(pluginDefinitionPath)) {
@@ -136,8 +136,8 @@ function getPluginDefinition(pluginRootPath) {
 }
 
 
-function getManifest(componentDirectory: string): any {
-  let manifestPath = getComponentManifest(componentDirectory);
+export function getManifest(componentDirectory: string): any {
+  let manifestPath = getManifestPath(componentDirectory);
 
   if (manifestPath) {
     let status;
@@ -185,28 +185,28 @@ function getManifest(componentDirectory: string): any {
   }
 }
 
-function readComponentManifest(componentDir: string, manifestKey: string): any {
+export function readComponentManifest(componentDir: string, manifestKey: string): any {
   let manifest = getManifest(componentDir);
   if (manifest) {
     //TODO
   }
 }
 
-function detectcomponentManifestEncoding(componentDir: string) {
+export function detectcomponentManifestEncoding(componentDir: string) {
   //TODO
 }
 
-function detectIfComponentTagged(componentDir: string): boolean {
+export function detectIfComponentTagged(componentDir: string): boolean {
   return false;
   //TODO
 }
 
-function findAllInstalledComponents(): string {
+export function findAllInstalledComponents(): string {
   let components='';
   let subDirectories = fs.getSubdirectories(`${runtimeDirectory}/components`);
   if (subDirectories) {
     subDirectories.forEach((component:string)=> {
-      if (getComponentManifest(`${runtimeDirectory}/components/${component}`)) {
+      if (getManifestPath(`${runtimeDirectory}/components/${component}`)) {
         components=`${components},${component}`;
       }
     });
@@ -216,7 +216,7 @@ function findAllInstalledComponents(): string {
     subDirectories = fs.getSubdirectories(extensionDirectory);
     if (subDirectories) {
       subDirectories.forEach((component: string)=> {
-        if (getComponentManifest(`${extensionDirectory}/${component}`)) {
+        if (getManifestPath(`${extensionDirectory}/${component}`)) {
           components=`${components},${component}`;  
         }
       });
@@ -225,12 +225,12 @@ function findAllInstalledComponents(): string {
   return components.length > 1 ? components.substring(1) : components;
 }
 
-function findAllInstalledComponents2(): string[] {
+export function findAllInstalledComponents2(): string[] {
   let components=[];
   let subDirectories = fs.getSubdirectories(`${runtimeDirectory}/components`);
   if (subDirectories) {
     subDirectories.forEach((component:string)=> {
-      if (getComponentManifest(`${runtimeDirectory}/components/${component}`)) {
+      if (getManifestPath(`${runtimeDirectory}/components/${component}`)) {
         components.push(component);
       }
     });
@@ -240,7 +240,7 @@ function findAllInstalledComponents2(): string[] {
     subDirectories = fs.getSubdirectories(extensionDirectory);
     if (subDirectories) {
       subDirectories.forEach((component: string)=> {
-        if (getComponentManifest(`${extensionDirectory}/${component}`)) {
+        if (getManifestPath(`${extensionDirectory}/${component}`)) {
           components.push(component);
         }
       });
@@ -249,11 +249,11 @@ function findAllInstalledComponents2(): string[] {
   return components;
 }
 
-function findAllEnabledComponents(): string {
+export function findAllEnabledComponents(): string {
   return findAllEnabledComponents2().join(',');
 }
 
-function findAllEnabledComponents2(): string[] {
+export function findAllEnabledComponents2(): string[] {
   let installedComponentsEnv=std.getenv('ZWE_INSTALLED_COMPONENTS');
   let installedComponents = installedComponentsEnv ? installedComponentsEnv.split(',') : null;
   if (!installedComponents) {
@@ -265,11 +265,11 @@ function findAllEnabledComponents2(): string[] {
   });
 }
 
-function findAllLaunchComponents(): string {
+export function findAllLaunchComponents(): string {
   return findAllLaunchComponents2().join(',');
 }
 
-function findAllLaunchComponents2(): string[] {
+export function findAllLaunchComponents2(): string[] {
   let enabledComponentsEnv=std.getenv('ZWE_ENABLED_COMPONENTS');
   let enabledComponents = enabledComponentsEnv ? enabledComponentsEnv.split(',') : null;
   if (!enabledComponents) {
@@ -329,7 +329,7 @@ ${var#Pattern}, ${var##Pattern}
 
    consider ${parameter:-default}
 
-function substituteEnv(contents: string) {
+export function substituteEnv(contents: string) {
   let index: number = 0;
   
 }
@@ -337,7 +337,7 @@ function substituteEnv(contents: string) {
 
 
 const STATIC_DEF_DIR=std.getenv('ZWE_STATIC_DEFINITIONS_DIR');
-function processComponentApimlStaticDefinitions(componentDir: string): boolean {
+export function processComponentApimlStaticDefinitions(componentDir: string): boolean {
   if (!STATIC_DEF_DIR) {
     common.printError("Error: ZWE_STATIC_DEFINITIONS_DIR is required to process component definitions for API Mediation Layer.");
     return false;
@@ -391,7 +391,7 @@ function processComponentApimlStaticDefinitions(componentDir: string): boolean {
  The supported manifest entry is ".appfwPlugins". All plugins
  defined will be passed to install-app.sh for proper installation.
 */
-function testOrSetPcBit(path: string): boolean {
+export function testOrSetPcBit(path: string): boolean {
   //zos.changeTag
   if (!hasPCBit(path)) {
     console.log("Plugin ZSS API not program controlled. Attempting to add PC bit.");
@@ -406,7 +406,7 @@ function testOrSetPcBit(path: string): boolean {
   }
 }
 
-function hasPCBit(path: string): boolean {
+export function hasPCBit(path: string): boolean {
   const returnArray = zos.zstat(path);
   if (!returnArray[1]) { //no error
     return returnArray[0].extattrs == zos.EXTATTR_PROGCTL
@@ -419,7 +419,7 @@ function hasPCBit(path: string): boolean {
 }
 
 
-function checkZssPcBit(appfwPluginPath: string): void {
+export function checkZssPcBit(appfwPluginPath: string): void {
   const pluginDefinition = getPluginDefinition(appfwPluginPath);
   if (pluginDefinition) {
     if (pluginDefinition.dataServices) {
@@ -443,7 +443,7 @@ function checkZssPcBit(appfwPluginPath: string): void {
   }
 }
 
-function processZssPluginInstall(componentDir: string): void {
+export function processZssPluginInstall(componentDir: string): void {
   if (os.platform == 'zos') {
     console.log(`- Checking for zss plugins and verifying them`);
     const manifest = getManifest(componentDir);
@@ -458,7 +458,7 @@ function processZssPluginInstall(componentDir: string): void {
 
 
 
-function processComponentAppfwPlugin(componentDir: string): boolean {
+export function processComponentAppfwPlugin(componentDir: string): boolean {
   const manifest = getManifest(componentDir);
   if (manifest && manifest.appfwPlugins) {
     manifest.appfwPlugins.forEach((appfwPlugin: any) => {
@@ -472,7 +472,7 @@ function processComponentAppfwPlugin(componentDir: string): boolean {
         const pluginDefinition = getPluginDefinition(fullPath);
         if (pluginDefinition && pluginDefinition.identifier) {
           const pluginDirsPath=`${workspaceDirectory}/app-server`;
-          let rc = fs.mkdirp(`${workspaceDirectory}/app-server/pluginDirs/${pluginDefinition.identifier}`);
+          let rc = fs.mkdirp(`${workspaceDirectory}/app-server/pluginDirs/${pluginDefinition.identifier}`, 0o770);
           if (rc) {
             common.printError(`Plugin registration failed because cannot make directory = ${workspaceDirectory}/app-server/pluginDirs/${pluginDefinition.identifier}`);
           }
@@ -496,8 +496,8 @@ function processComponentAppfwPlugin(componentDir: string): boolean {
  defined will be passed to install-app.sh for proper installation.
 */
 const gatewaySharedLibs = std.getenv('ZWE_GATEWAY_SHARED_LIBS');
-function processComponentGatewaySharedLibs(componentDir: string): boolean {
-  fs.mkdirp(gatewaySharedLibs);
+export function processComponentGatewaySharedLibs(componentDir: string): boolean {
+  fs.mkdirp(gatewaySharedLibs, 0o770);
 
   const manifest = getManifest(componentDir);
   let pluginName;
@@ -513,10 +513,10 @@ function processComponentGatewaySharedLibs(componentDir: string): boolean {
           return false;
         }
         gatewaySharedLibsWorkspacePath = `${gatewaySharedLibs}/${pluginName}`;
-        fs.mkdirp(gatewaySharedLibsWorkspacePath);
+        fs.mkdirp(gatewaySharedLibsWorkspacePath, 0o770);
       }
 
-      const manifestPath = getComponentManifest(componentDir);
+      const manifestPath = getManifestPath(componentDir);
       if (manifestPath) {
         fs.cp(manifestPath, gatewaySharedLibsWorkspacePath);
       }
@@ -542,8 +542,8 @@ function processComponentGatewaySharedLibs(componentDir: string): boolean {
  defined will be passed to install-app.sh for proper installation.
 */
 const discoverySharedLibs = std.getenv('ZWE_DISCOVERY_SHARED_LIBS');
-function processComponentDiscoverySharedLibs(componentDir: string): boolean {
-  fs.mkdirp(discoverySharedLibs);
+export function processComponentDiscoverySharedLibs(componentDir: string): boolean {
+  fs.mkdirp(discoverySharedLibs, 0o770);
 
   const manifest = getManifest(componentDir);
   let pluginName;
@@ -559,10 +559,10 @@ function processComponentDiscoverySharedLibs(componentDir: string): boolean {
           return false;
         }
         discoverySharedLibsWorkspacePath = `${discoverySharedLibs}/${pluginName}`;
-        fs.mkdirp(discoverySharedLibsWorkspacePath);
+        fs.mkdirp(discoverySharedLibsWorkspacePath, 0o770);
       }
 
-      const manifestPath = getComponentManifest(componentDir);
+      const manifestPath = getManifestPath(componentDir);
       if (manifestPath) {
         fs.cp(manifestPath, discoverySharedLibsWorkspacePath);
       }
@@ -586,7 +586,7 @@ const catalogPort = Number(std.getenv('ZWE_components_api_catalog_port'));
 const zoweCertificatePemKey = std.getenv('ZWE_zowe_certificate_pem_key');
 const zoweCertificatePemCertificate = std.getenv('ZWE_zowe_certificate_pem_certificate');
 const zoweCertificatePemCertificateAuthorities = std.getenv('ZWE_zowe_certificate_pem_certificateAuthorities');
-function refreshStaticRegistration(apimlcatalogHost: string=gatewayHost, apimlcatalogPort: number= catalogPort,
+export function refreshStaticRegistration(apimlcatalogHost: string=gatewayHost, apimlcatalogPort: number= catalogPort,
                                    authKey: string=zoweCertificatePemKey, authCert: string=zoweCertificatePemCertificate,
                                    caCert: string=zoweCertificatePemCertificateAuthorities): number{
   if (!apimlcatalogHost) {

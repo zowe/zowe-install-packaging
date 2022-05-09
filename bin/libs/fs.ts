@@ -40,12 +40,12 @@ const S_IXOTH = 0x0001;
 const S_IRWXO = 0x0007;
 
 
-export function mkdirp(path:string): number {
+export function mkdirp(path:string, mode?: number): number {
   const parts = path.split('/');
   let dir = '/';
   for (let i = 0; i < parts.length; i++) {
     dir+=parts[i]+'/';
-    let rc = os.mkdir(dir);
+    let rc = os.mkdir(dir, mode ? mode : 0o777);
     if (rc) {
       return rc;
     }
