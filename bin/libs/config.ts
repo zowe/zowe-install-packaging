@@ -190,6 +190,13 @@ export function sanitizeHaInstanceId() {
   std.setenv('ZWE_CLI_PARAMETER_HA_INSTANCE', zweCliParameterHaInstance);
 }
 
+export function applyEnviron(environ: any): void {
+  let keys = Object.keys(environ);
+  keys.forEach(function(key:string) {
+    std.setenv(key, environ[key]);
+  });
+}
+
 //////////////////////////////////////////////////////////////
 // Load environment variables used by components
 //
@@ -204,17 +211,18 @@ export function loadEnvironmentVariables(componentId: string) {
   if (!workspaceDirectory) {
     let zoweConfig = getZoweConfig();
     workspaceDirectory=zoweConfig.zowe.workspaceDirectory;
+    std.setenv('ZWE_zowe_workspaceDirectory',workspaceDirectory);
   }
 
   if (!std.getenv('ZWE_VERSION')) {
     const runtimeManifestString=std.loadFile(`${runtimeDirectory}/manifest.json`);
     if (runtimeManifestString) {
-      std.setenv('ZWE_VERSION', JSON.parse(runtimeManifestString).varsion);
+      std.setenv('ZWE_VERSION', JSON.parse(runtimeManifestString).version);
     }
-
+  }
 
   // we must have $workspaceDirectory at this point
-  if (fs.fileExists("${workspaceDirectory}/.init-for-container")) {
+  if (fs.fileExists(`${workspaceDirectory}/.init-for-container`)) {
     std.setenv('ZWE_RUN_IN_CONTAINER','true');
   }
 
@@ -252,4 +260,5 @@ export function loadEnvironmentVariables(componentId: string) {
   if (std.getenv('ZWE_RUN_IN_CONTAINER') == "true") {
     container.prepareContainerRuntimeEnvironments();
   }
+  return std.getenviron();
 }

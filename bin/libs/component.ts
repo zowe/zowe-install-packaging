@@ -22,6 +22,9 @@ const runtimeDirectory=std.getenv('ZWE_zowe_runtimeDirectory');
 const extensionDirectory=std.getenv('ZWE_zowe_extensionDirectory');
 const workspaceDirectory=std.getenv('ZWE_zowe_workspaceDirectory');
 
+//key: name of config, value: boolean on if it is cached already
+const configLoadedList = {};
+
 const configMgr = new ConfigManager();
 configMgr.setTraceLevel(0);
 
@@ -143,6 +146,9 @@ export function getManifest(componentDirectory: string): any {
     let status;
 
     let manifestId = componentDirectory;
+    if (configLoadedList[manifestId] === true) {
+      return configMgr.getConfigData(manifestId);
+    }
 
     if ((status = configMgr.addConfig(manifestId))) {
       console.log(`Could not add config for ${manifestPath}, status=${status}`);
@@ -173,6 +179,7 @@ export function getManifest(componentDirectory: string): any {
         }
         return null;
       } else {
+        configLoadedList[manifestId] = true;
         return configMgr.getConfigData(manifestId);
       }
     } else {
