@@ -35,6 +35,7 @@ Workflow trigger is at [cicd-test](https://github.com/zowe/zowe-install-packagin
   - z/OS node v16
   - Non-strict Verify External Certificate
   - Install PTF twice
+  - VSAM Caching storage method
   - Infinispan Caching storage method
   - Generate API documentation
   - Zowe Nightly Tests
