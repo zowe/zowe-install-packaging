@@ -90,7 +90,7 @@ export function sourceEnv(envFile: string): boolean {
   fileLines.forEach((line: string)=> {
     if ((index = line.indexOf('=')) != -1) {
       std.setenv(line.substring(0,index), line.substring(index+1));
-      common.printTrace(`Set env var ${line.substring(0, index)} to ${std.getenv(line.substring(0,index)}`);
+      common.printTrace(`Set env var ${line.substring(0, index)} to ${std.getenv(line.substring(0,index))}`);
     }
   });
 }

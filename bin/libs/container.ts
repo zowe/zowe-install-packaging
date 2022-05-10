@@ -16,13 +16,14 @@ import * as common from './common';
 import * as shell from './shell';
 import * as sys from './sys';
 import * as component from './component';
+import * as network from './network';
 
-std.setenv('ZWE_PRIVATE_CONTAINER_HOME_DIRECTORY', /home/zowe);
-std.setenv('ZWE_PRIVATE_CONTAINER_RUNTIME_DIRECTORY', /home/zowe/runtime);
-std.setenv('ZWE_PRIVATE_CONTAINER_COMPONENT_RUNTIME_DIRECTORY', /component);
-std.setenv('ZWE_PRIVATE_CONTAINER_WORKSPACE_DIRECTORY', /home/zowe/instance/workspace);
-std.setenv('ZWE_PRIVATE_CONTAINER_LOG_DIRECTORY', /home/zowe/instance/logs);
-std.setenv('ZWE_PRIVATE_CONTAINER_KEYSTORE_DIRECTORY', /home/zowe/keystore);
+std.setenv('ZWE_PRIVATE_CONTAINER_HOME_DIRECTORY', '/home/zowe');
+std.setenv('ZWE_PRIVATE_CONTAINER_RUNTIME_DIRECTORY', '/home/zowe/runtime');
+std.setenv('ZWE_PRIVATE_CONTAINER_COMPONENT_RUNTIME_DIRECTORY', '/component');
+std.setenv('ZWE_PRIVATE_CONTAINER_WORKSPACE_DIRECTORY', '/home/zowe/instance/workspace');
+std.setenv('ZWE_PRIVATE_CONTAINER_LOG_DIRECTORY', '/home/zowe/instance/logs');
+std.setenv('ZWE_PRIVATE_CONTAINER_KEYSTORE_DIRECTORY', '/home/zowe/keystore');
 
 // prepare all environment variables used in containerization
 // these variables shouldn't be modified
@@ -63,18 +64,18 @@ export function prepareContainerRuntimeEnvironments() {
 
   // in kubernetes, replace ZWE_haInstance_hostname with pod dns name
   const hostName=sys.getSysname()
-  const hostUp=sys.getIpAddress(hostName);
+  const hostIp=network.getIpAddress(hostName);
   std.setenv('ZWE_haInstance_hostname', `$(echo "${hostIp}" | sed -e 's#\.#-#g').${podNamespace}.pod.${podClustername}`);
 
   // kubernetes gateway service internal dns name
   std.setenv('GATEWAY_HOST', `gateway-service.${podNamespace}.svc.${podClustername}`);
 
   // overwrite ZWE_DISCOVERY_SERVICES_LIST from ZWE_DISCOVERY_SERVICES_REPLICAS
-  ZWE_DISCOVERY_SERVICES_REPLICAS=$(echo "${ZWE_DISCOVERY_SERVICES_REPLICAS}" | tr -cd '[[:digit:]]' | tr -d '[[:space:]]')
-  let zweDiscoveryServiceReplicas = std.getenv('ZWE_DISCOVERY_SERVICES_REPLICAS');
-  if (!zweDiscoveryServiceReplicas) {
+  let echoVal=shell.execOutSync('sh', `echo "${std.getenv('ZWE_DISCOVERY_SERVICES_REPLICAS')}" | tr -cd '[[:digit:]]' | tr -d '[[:space:]]`); //'
+  let zweDiscoveryServiceReplicas=Number(echoVal.out);
+  if (isNaN(zweDiscoveryServiceReplicas)) {
     zweDiscoveryServiceReplicas=1;
-    std.setenv('ZWE_DISCOVERY_SERVICES_REPLICAS', zweDiscoveryServiceReplicas);
+    std.setenv('ZWE_DISCOVERY_SERVICES_REPLICAS', ""+zweDiscoveryServiceReplicas);
   }
   
   let discoveryIndex=0;

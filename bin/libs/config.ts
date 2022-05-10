@@ -19,6 +19,8 @@ import * as stringlib from './string';
 import * as shell from './shell';
 import * as sys from './sys';
 import * as component from './component';
+import * as container from './container';
+import * as varlib from './var';
 
 const runtimeDirectory=std.getenv('ZWE_zowe_runtimeDirectory');
 const extensionDirectory=std.getenv('ZWE_zowe_extensionDirectory');
@@ -165,7 +167,7 @@ export function generateInstanceEnvFromYamlConfig(haInstance: string) {
 
   common.printFormattedTrace("ZWELS", "bin/libs/config.sh,generate_instance_env_from_yaml_config", `- Exit code: ${result.rc}: ${result.out}`);
   
-  if (!fs.fileExists("${zwePrivateWorkspaceEnvDir}/.instance-${haInstance}.env") {
+  if (!fs.fileExists("${zwePrivateWorkspaceEnvDir}/.instance-${haInstance}.env")) {
     common.printFormattedError("ZWELS", "bin/libs/config.sh,generate_instance_env_from_yaml_config", `ZWEL0140E: Failed to translate Zowe configuration (${zweCliParameterConfig}).`);
     std.exit(140);
   }
@@ -205,11 +207,14 @@ export function loadEnvironmentVariables(componentId: string) {
   }
 
   if (!std.getenv('ZWE_VERSION')) {
-    std.setenv('ZWE_VERSION', shellReadJsonConfig(`${runtimeDirectory}/manifest.json`, 'version', 'version'));
-  }
+    const runtimeManifestString=std.loadFile(`${runtimeDirectory}/manifest.json`);
+    if (runtimeManifestString) {
+      std.setenv('ZWE_VERSION', JSON.parse(runtimeManifestString).varsion);
+    }
+
 
   // we must have $workspaceDirectory at this point
-  if (fs.fileExists("${workspaceDirectory}/.init-for-container") {
+  if (fs.fileExists("${workspaceDirectory}/.init-for-container")) {
     std.setenv('ZWE_RUN_IN_CONTAINER','true');
   }
 
@@ -220,10 +225,12 @@ export function loadEnvironmentVariables(componentId: string) {
   std.setenv('ZWE_DISCOVERY_SHARED_LIBS', `${workspaceDirectory}/discovery/sharedLibs/`);
 
   // now we can load all variables
+  let zweCliParameterHaInstance=std.getenv('ZWE_CLI_PARAMETER_HA_INSTANCE');
+  let zwePrivateWorkspaceEnvDir=std.getenv('ZWE_PRIVATE_WORKSPACE_ENV_DIR');    
   if (componentId && fs.fileExists(`${workspaceDirectory}/.env/${componentId}/.instance-${zweCliParameterHaInstance}.env`)) {
-    source_env "${zwePrivateWorkspaceEnvDir}/${componentId}/.instance-${zweCliParameterHaInstance}.env"
+    varlib.sourceEnv(`${zwePrivateWorkspaceEnvDir}/${componentId}/.instance-${zweCliParameterHaInstance}.env`);
   } else if (fs.fileExists(`${zwePrivateWorkspaceEnvDir}/.instance-${zweCliParameterHaInstance}.env`)) {
-    source_env "${zwePrivateWorkspaceEnvDir}/.instance-${zweCliParameterHaInstance}.env"
+    varlib.sourceEnv(`${zwePrivateWorkspaceEnvDir}/.instance-${zweCliParameterHaInstance}.env`);
   } else {
     common.printErrorAndExit( "Error ZWEL0112E: Zowe runtime environment must be prepared first with \"zwe internal start prepare\" command.", undefined, 112);
   }
@@ -243,6 +250,6 @@ export function loadEnvironmentVariables(componentId: string) {
   // ZWE_DISCOVERY_SERVICES_LIST should have been prepared in zowe-install-packaging-tools
 
   if (std.getenv('ZWE_RUN_IN_CONTAINER') == "true") {
-    prepareContainerRuntimeEnvironments();
+    container.prepareContainerRuntimeEnvironments();
   }
 }
