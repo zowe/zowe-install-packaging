@@ -143,7 +143,7 @@
       "componentGroup": "Imperative CLI Framework for Zowe",
       "entries": [{
         "repository": "imperative",
-        "tag": "v4.17.3",
+        "tag": "v4.18.6",
         "destinations": ["Zowe CLI Package"]
       }]
     }, {
@@ -222,21 +222,21 @@
       "componentGroup": "Zowe CLI",
       "entries": [{
         "repository": "zowe-cli",
-        "tag": "v6.37.2",
+        "tag": "v6.40.4",
         "destinations": ["Zowe CLI Package"]
       }]
     }, {
       "componentGroup": "IBM&reg CICS&reg Plug-in for Zowe CLI",
       "entries": [{
         "repository": "zowe-cli-cics-plugin",
-        "tag": "v4.0.3",
+        "tag": "v4.0.7",
         "destinations": ["Zowe CLI Package"]
       }]
     }, {
       "componentGroup": "IBM&reg Db2&reg Plug-in for Zowe CLI",
       "entries": [{
         "repository": "zowe-cli-db2-plugin",
-        "tag": "v4.1.1",
+        "tag": "v4.1.6",
         "destinations": ["Zowe CLI Package"]
       }]
     }, {
@@ -264,14 +264,14 @@
       "componentGroup": "z/OS&reg FTP Plug-in for Zowe CLI",
       "entries": [{
         "repository": "zowe-cli-ftp-plugin",
-        "tag": "v1.8.3",
+        "tag": "v1.8.7",
         "destinations": ["Zowe CLI Package"]
       }]
     }, {
       "componentGroup": "IBM&reg IMS&reg Plug-in for Zowe CLI",
       "entries": [{
         "repository": "zowe-cli-ims-plugin",
-        "tag": "v2.0.1",
+        "tag": "v2.0.4",
         "destinations": ["Zowe CLI Package"]
       }]
     }, {
