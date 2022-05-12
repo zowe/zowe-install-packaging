@@ -1,0 +1,3 @@
+zwe components upgrade --component-name gateway
+
+zwe components upgrade --component-name gateway --ha-instance lpar1

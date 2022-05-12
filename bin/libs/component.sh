@@ -636,3 +636,142 @@ refresh_static_registration() {
 
   return ${code}
 }
+
+###############################
+
+error_handler() {
+    print_error_message "$1"
+    exit 1
+}
+
+# Downloading the Zowe component artifact from Zowe artifactory and saving it into the temporary components directory.
+download_apiml_artifacts() {
+  artifact_group="apiml/sdk"
+  path=https://zowe.jfrog.io/artifactory/$repository_path/org/zowe/$artifact_group/$artifact_name
+  version=$("${NODE_HOME}/bin/node" "${utils_dir}/curl.js" \ $path/maven-metadata.xml -k | grep latest | sed "s/.*<latest>\([^<]*\)<\/latest>.*/\1/")
+  build=$("${NODE_HOME}/bin/node" "${utils_dir}/curl.js" $path/"$version"/maven-metadata.xml -k | grep '<value>' | head -1 | sed "s/.*<value>\([^<]*\)<\/value>.*/\1/")
+  full_name=$artifact_name-$build.zip
+  print_and_log_message "Downloading the ${artifact_name} artifact..."
+  "${NODE_HOME}/bin/node" "${utils_dir}/curl.js" $path/"$version"/"$full_name" -o ${temporary_components_directory}/"$full_name"
+  rc=$?;
+
+  if [ $rc != 0 ]; then
+    error_handler "The ${artifact_name} artifact download failed."
+  else
+    print_and_log_message "The ${artifact_name} artifact has been downloaded into the directory ${temporary_components_directory}"
+  fi
+}
+
+download_other_artifacts() {
+  artifact_group=$1
+  repository_path=$2
+  path=https://zowe.jfrog.io/artifactory/api/storage/$repository_path/org/zowe/$artifact_group/?lastModified
+  jq="${SCRIPT_DIR}"/utils/njq/src/index.js
+  url=$("${NODE_HOME}/bin/node" "${utils_dir}/curl.js" "$path" -k | node "${jq}" -r '.uri')
+  url=$("${NODE_HOME}/bin/node" "${utils_dir}/curl.js" "$url" -k | node "${jq}" -r '.downloadUri')
+  print_and_log_message "Downloading the ${artifact_name} artifact..."
+  "${NODE_HOME}/bin/node" "${utils_dir}/curl.js" "$url" -o ${temporary_components_directory}/$(basename "$url")
+  rc=$?;
+
+  if [ $rc != 0 ]; then
+    error_handler "The ${artifact_name} artifact download failed."
+  else
+    print_and_log_message "The ${artifact_name} artifact has been downloaded into the directory ${temporary_components_directory}"
+  fi
+}
+
+#######################################################################
+# Parse command line options
+
+upgrade_component() {
+  while [ $# -gt 0 ]; do #Checks for parameters
+    arg="$1"
+        case $arg in
+            -o|--component-package)
+                shift
+                artifact_name=$(basename $1)
+                temporary_components_directory=$(get_full_path "$1")
+                temporary_components_directory=$(cd $(dirname "$temporary_components_directory") && pwd)
+                shift
+            ;;
+            -l|--logs-dir) # Represents the path to the installation logs
+                shift
+                LOG_DIRECTORY=$1
+                shift
+            ;;
+            -f|--log-file) # write logs to target file if specified
+                shift
+                LOG_FILE=$1
+                shift
+            ;;
+            *)
+                error_handler "$1 is an invalid option\ntry: zowe-upgrade-component.sh -o <PATH_TO_COMPONENT>"
+                shift
+        esac
+  done
+
+  #######################################################################
+  # Parse component package
+  artifact_name=$(read_component_manifest "${component_dir}" ".name")
+  case $artifact_name in
+    launcher)
+      full_name=launcher-[RELEASE].pax
+      download_other_artifacts "launcher" "libs-release-local"
+      ;;
+    jobs-api)
+      full_name=jobs-api-package-[RELEASE].zip
+      download_other_artifacts "explorer/jobs" "libs-release-local"
+      ;;
+    files-api)
+      full_name=files-api-package-[RELEASE].zip
+      download_other_artifacts "explorer/files" "libs-release-local"
+      ;;
+    api-catalog)
+      artifact_name=api-catalog-package
+      download_apiml_artifacts
+      ;;
+    discovery)
+      artifact_name=discovery-package
+      download_apiml_artifacts
+      ;;
+    gateway)
+      artifact_name=gateway-package
+      download_apiml_artifacts
+      ;;
+    caching-service)
+      artifact_name=caching-service-package
+      download_apiml_artifacts
+      ;;
+    apiml-common-lib)
+      artifact_name=apiml-common-lib-package
+      download_apiml_artifacts
+      ;;
+    explorer-ui-server)
+      full_name=$artifact_name-[RELEASE].pax
+      download_other_artifacts "explorer-ui-server" "libs-snapshot-local"
+      ;;
+    explorer-jes)
+      full_name=$artifact_name-[RELEASE].pax
+      download_other_artifacts "explorer-jes" "libs-release-local"
+      ;;
+    explorer-mvs)
+      full_name=$artifact_name-[RELEASE].pax
+      download_other_artifacts "explorer-mvs" "libs-release-local"
+      ;;
+    explorer-uss)
+      full_name=$artifact_name-[RELEASE].pax
+      download_other_artifacts "explorer-uss" "libs-release-local"
+      ;;
+     zss)
+      artifact_name=zss
+      full_name=$artifact_name-[RELEASE].pax
+      download_other_artifacts "zss" "libs-snapshot-local"
+      ;;
+     app-server)
+      artifact_name=zlux-core
+      full_name=$artifact_name-[RELEASE].pax
+      download_other_artifacts "zlux/zlux-core" "libs-snapshot-local"
+      ;;
+  esac
+
+}
