@@ -48,7 +48,7 @@ spec:
             claimName: zowe-workspace-pvc
       containers:
         - name: app-server
-          image: zowe-docker-release.jfrog.io/ompzowe/app-server:1-ubuntu
+          image: zowe-docker-snapshot.jfrog.io/ompzowe/app-server:1.28.0-ubuntu.users-jack-trace
           imagePullPolicy: Always
           resources:
             requests:
@@ -108,7 +108,7 @@ spec:
       initContainers:
         - name: init-zowe
           # image: zowe-docker-release.jfrog.io/ompzowe/zowe-launch-scripts:latest
-          image: zowe-docker-snapshot.jfrog.io/ompzowe/zowe-launch-scripts:1.25.0-ubuntu.staging
+          image: zowe-docker-snapshot.jfrog.io/ompzowe/zowe-launch-scripts:1.28.0-ubuntu.users-jack-test-zlux-tracing
           imagePullPolicy: Always
           resources:
             requests:

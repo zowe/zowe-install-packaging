@@ -81,6 +81,16 @@ spec:
               valueFrom:
                 fieldRef:
                   fieldPath: metadata.namespace
+
+            - name: JAVA_OPTS
+              value: "-javaagent:/home/zowe/runtime/bin/opentelemetry-javaagent.jar"
+            - name: OTEL_TRACES_EXPORTER
+              value: otlp
+            - name: OTEL_RESOURCE_ATTRIBUTES
+              value: "service.name=files-api"
+            - name: OTEL_EXPORTER_OTLP_TRACES_ENDPOINT
+              value: "http://34.71.61.249:4317"
+
           lifecycle:
             preStop:
               exec:
@@ -108,7 +118,7 @@ spec:
       initContainers:
         - name: init-zowe
           # image: zowe-docker-release.jfrog.io/ompzowe/zowe-launch-scripts:latest
-          image: zowe-docker-snapshot.jfrog.io/ompzowe/zowe-launch-scripts:1.25.0-ubuntu.staging
+          image: zowe-docker-snapshot.jfrog.io/ompzowe/zowe-launch-scripts:1.28.0-ubuntu.users-jack-test-zlux-tracing
           imagePullPolicy: Always
           resources:
             requests:
