@@ -33,6 +33,7 @@ WORKDIR /component
 # copy files
 COPY --chown=zowe:zowe zowe .
 COPY --chown=zowe:zowe zowe/LICENSE /licenses
+RUN curl https://github.com/open-telemetry/opentelemetry-java-instrumentation/releases/download/v1.12.0/opentelemetry-javaagent.jar --output /component/bin/opentelemetry-javaagent.jar
 
 ##################################
 # start command
