@@ -1,1 +1,15 @@
-""
+{
+  "lockAcquiredTime": "Thu May 12 2022 16:07:18 GMT+0000 (Coordinated Universal Time)",
+  "uid": "1652371638300522342",
+  "repository": {
+    "owner": "zowe",
+    "repo": "zowe-install-packaging"
+  },
+  "branch": "users/jack/test-zlux-tracing",
+  "workflow": "Zowe CICD Integration Tests",
+  "job": "cicd-test",
+  "actor": "zowe-robot",
+  "runId": 2314624633,
+  "runNumber": 936,
+  "link": "https://github.com/zowe/zowe-install-packaging/actions/runs/2314624633"
+}
