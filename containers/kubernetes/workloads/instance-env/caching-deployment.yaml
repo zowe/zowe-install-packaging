@@ -85,16 +85,8 @@ spec:
                   fieldPath: metadata.namespace
             - name: CMMN_LB
               value: apiml-common-lib/bin/api-layer-lite-lib-all.jar
-
-            - name: JAVA_OPTS
-              value: "-javaagent:/home/zowe/runtime/bin/opentelemetry-javaagent.jar"
-            - name: OTEL_TRACES_EXPORTER
-              value: otlp
-            - name: OTEL_RESOURCE_ATTRIBUTES
-              value: "service.name=caching-service"
-            - name: OTEL_EXPORTER_OTLP_TRACES_ENDPOINT
-              value: "http://34.71.61.249:4317"
-
+            - name: QUICK_START
+              value: "-javaagent:/home/zowe/runtime/bin/opentelemetry-javaagent.jar -Dotel.traces.exporter=otlp -Dotel.resource.attributes=service.name=caching-service -Dotel.exporter.otlp.traces.endpoint=http://34.71.61.249:4317"
           lifecycle:
             preStop:
               exec:
