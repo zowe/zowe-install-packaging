@@ -12,6 +12,7 @@
   },
   "binaryDependencies": {
     "org.zowe.zlux.zlux-core": {
+      "repository": "libs-snapshot-local",
       "version": "1.28.0-114-v1.x-staging-zlux-build",
       "artifact": "zlux-core-1.28.0-20220512.145208.pax"
     },
