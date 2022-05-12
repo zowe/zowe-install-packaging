@@ -67,10 +67,12 @@
       "artifact": "zss-1.28.0-rc-213-20220511205935.pax"
     },
     "org.zowe.explorer.jobs.jobs-api-package": {
-      "version": "1.0.14"
+      "version": "1.0.14",
+      "artifact": "jobs-api*.zip"
     },
     "org.zowe.explorer.files.files-api-package": {
-      "version": "1.0.16"
+      "version": "1.0.16",
+      "artifact": "files-api*.zip"
     },
     "org.zowe.explorer-jes": {
       "version": "1.0.21"
