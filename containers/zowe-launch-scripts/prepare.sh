@@ -227,6 +227,11 @@ cd "${REPO_ROOT_DIR}"
 rm -f zlux-core.tar
 
 ###############################
+# add otel java agent
+echo ">>>>> copy opentelemetry-javaagent.jar"
+curl https://github.com/open-telemetry/opentelemetry-java-instrumentation/releases/download/v1.12.0/opentelemetry-javaagent.jar --output "${BASE_DIR}/${WORK_DIR}/bin/opentelemetry-javaagent.jar"
+
+###############################
 # copy to target context
 echo ">>>>> copy to target build context"
 cp -r "${BASE_DIR}/${WORK_DIR}" "${BASE_DIR}/${linux_distro}/${cpu_arch}/zowe"
