@@ -67,19 +67,19 @@
       "artifact": "zss-1.27.0-rc-83-20220111184458.pax"
     },
     "org.zowe.explorer.jobs": {
-      "version": "1.0.13"
+      "version": "1.0.14"
     },
     "org.zowe.explorer.files": {
-      "version": "1.0.15"
+      "version": "1.0.16"
     },
     "org.zowe.explorer-jes": {
-      "version": "1.0.20"
+      "version": "1.0.21"
     },
     "org.zowe.explorer-mvs": {
-      "version": "1.0.18"
+      "version": "1.0.19"
     },
     "org.zowe.explorer-uss": {
-      "version": "1.0.19"
+      "version": "1.0.21"
     },
     "org.zowe.explorer-ui-server": {
       "version": "0.2.19"
@@ -134,7 +134,7 @@
       "version": "0.0.10"
     },
     "org.zowe.licenses": {
-      "version": "1.27.0",
+      "version": "1.28.0",
       "artifact": "zowe_licenses_full.zip"
     }
   },
@@ -143,7 +143,7 @@
       "componentGroup": "Imperative CLI Framework for Zowe",
       "entries": [{
         "repository": "imperative",
-        "tag": "v4.17.3",
+        "tag": "v4.18.6",
         "destinations": ["Zowe CLI Package"]
       }]
     }, {
@@ -222,21 +222,21 @@
       "componentGroup": "Zowe CLI",
       "entries": [{
         "repository": "zowe-cli",
-        "tag": "v6.37.2",
+        "tag": "v6.40.4",
         "destinations": ["Zowe CLI Package"]
       }]
     }, {
       "componentGroup": "IBM&reg CICS&reg Plug-in for Zowe CLI",
       "entries": [{
         "repository": "zowe-cli-cics-plugin",
-        "tag": "v4.0.3",
+        "tag": "v4.0.7",
         "destinations": ["Zowe CLI Package"]
       }]
     }, {
       "componentGroup": "IBM&reg Db2&reg Plug-in for Zowe CLI",
       "entries": [{
         "repository": "zowe-cli-db2-plugin",
-        "tag": "v4.1.1",
+        "tag": "v4.1.6",
         "destinations": ["Zowe CLI Package"]
       }]
     }, {
@@ -264,21 +264,21 @@
       "componentGroup": "z/OS&reg FTP Plug-in for Zowe CLI",
       "entries": [{
         "repository": "zowe-cli-ftp-plugin",
-        "tag": "v1.8.3",
+        "tag": "v1.8.7",
         "destinations": ["Zowe CLI Package"]
       }]
     }, {
       "componentGroup": "IBM&reg IMS&reg Plug-in for Zowe CLI",
       "entries": [{
         "repository": "zowe-cli-ims-plugin",
-        "tag": "v2.0.1",
+        "tag": "v2.0.4",
         "destinations": ["Zowe CLI Package"]
       }]
     }, {
       "componentGroup": "Zowe Desktop Data Sets UI Plugin",
       "entries": [{
         "repository": "explorer-mvs",
-        "tag": "v1.0.18",
+        "tag": "v1.0.19",
         "destinations": ["Zowe PAX"]
       }]
     }, {
@@ -292,7 +292,7 @@
       "componentGroup": "Zowe Desktop JES UI Plugin",
       "entries": [{
         "repository": "explorer-jes",
-        "tag": "v1.0.20",
+        "tag": "v1.0.21",
         "destinations": ["Zowe PAX"]
       }]
     }, {
@@ -306,28 +306,28 @@
       "componentGroup": "Zowe Desktop z/OS Unix Files UI Plugin",
       "entries": [{
         "repository": "explorer-uss",
-        "tag": "v1.0.19",
+        "tag": "v1.0.21",
         "destinations": ["Zowe PAX"]
       }]
     }, {
       "componentGroup": "Zowe Explorer Common REST Server",
       "entries": [{
         "repository": "explorer-api-common",
-        "tag": "v1.1.8",
+        "tag": "v1.1.12",
         "destinations": ["Zowe PAX"]
       }]
     }, {
       "componentGroup": "Zowe Explorer Data Sets REST Server",
       "entries": [{
         "repository": "data-sets",
-        "tag": "v1.0.15",
+        "tag": "v1.0.16",
         "destinations": ["Zowe PAX"]
       }]
     }, {
       "componentGroup": "Zowe Explorer Jobs REST Server",
       "entries": [{
         "repository": "jobs",
-        "tag": "v1.0.13",
+        "tag": "v1.0.14",
         "destinations": ["Zowe PAX"]
       }]
     }, {
@@ -471,27 +471,27 @@
     "explorer-jes": {
       "registry": "zowe-docker-release.jfrog.io",
       "name": "ompzowe/explorer-jes",
-      "tag" : "1.0.20-ubuntu"
+      "tag" : "1.0.21-ubuntu"
     },
     "explorer-mvs": {
       "registry": "zowe-docker-release.jfrog.io",
       "name": "ompzowe/explorer-mvs",
-      "tag" : "1.0.18-ubuntu"
+      "tag" : "1.0.19-ubuntu"
     },
     "explorer-uss": {
       "registry": "zowe-docker-release.jfrog.io",
       "name": "ompzowe/explorer-uss",
-      "tag" : "1.0.19-ubuntu"
+      "tag" : "1.0.21-ubuntu"
     },
     "files-api": {
       "registry": "zowe-docker-release.jfrog.io",
       "name": "ompzowe/files-api",
-      "tag" : "1.0.15-ubuntu"
+      "tag" : "1.0.16-ubuntu"
     },
     "jobs-api": {
       "registry": "zowe-docker-release.jfrog.io",
       "name": "ompzowe/jobs-api",
-      "tag" : "1.0.13-ubuntu"
+      "tag" : "1.0.14-ubuntu"
     }
   },
   "dependencyDecisions": {
