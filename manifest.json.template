@@ -66,10 +66,10 @@
       "repository": "libs-snapshot-local",
       "artifact": "zss-1.28.0-rc-213-20220511205935.pax"
     },
-    "org.zowe.explorer.jobs": {
+    "org.zowe.explorer.jobs.jobs-api-package": {
       "version": "1.0.14"
     },
-    "org.zowe.explorer.files": {
+    "org.zowe.explorer.files.files-api-package": {
       "version": "1.0.16"
     },
     "org.zowe.explorer-jes": {
