@@ -59,6 +59,9 @@
   raw: find "{{ zowe_install_logs_dir }}" -type f | xargs -i sh -c 'echo ">>>>>>>>>>>>>>>>>>>>>>>> {} >>>>>>>>>>>>>>>>>>>>>>>" && cat {}'
   ignore_errors: True
 
+- name: Show httptrace from gateway
+  raw: curl -k --user {{ ansible_user }}:{{ ansible_password }} https://{{ zowe_external_domain_name }}:{{ zowe_apiml_gateway_port }}/application/httptrace
+
 # ============================================================================
 - name: List runtime log dir
   raw: ls -l "{{ zowe_instance_dir }}/logs"
