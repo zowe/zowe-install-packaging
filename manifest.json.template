@@ -46,12 +46,12 @@
     "org.zowe.explorer.jobs.jobs-api-package": {
       "version": "^2.0.0-SNAPSHOT",
       "artifact": "jobs-api-package-*.zip",
-      "exclusions": ["*PR*.zip","*USERS*","*users*"]
+      "exclusions": ["*PR*.zip","*BRANCH*"]
     },
     "org.zowe.explorer.files.files-api-package": {
       "version": "^2.0.0-SNAPSHOT",
       "artifact": "files-api-package-*.zip",
-      "exclusions": ["*PR*.zip","*USERS*","*users*"]
+      "exclusions": ["*PR*.zip","*BRANCH*"]
     },
     "org.zowe.explorer-jes": {
       "version": "~2.0.0-SNAPSHOT"
