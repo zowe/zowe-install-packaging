@@ -9,35 +9,38 @@
   Copyright Contributors to the Zowe Project.
 */
 
+// @ts-ignore
 import * as std from 'std';
+// @ts-ignore
 import * as os from 'os';
+// @ts-ignore
 import * as zos from 'zos';
+
 import * as common from './common';
-import * as stringlib from './string';
 import * as shell from './shell';
 
 /* 
    Below are not found in os module, but can be used against os.stat mode return values. 
    They were pulled from a system header which I hope is portable on all platforms
 */
-const S_ISUID = 0x0800;
-const S_ISGID = 0x0400;
-const S_ISVTX = 0x0200;
+//const S_ISUID = 0x0800;
+//const S_ISGID = 0x0400;
+//const S_ISVTX = 0x0200;
 /* User permissions, rwx */
-const S_IRUSR = 0x0100;
+//const S_IRUSR = 0x0100;
 const S_IWUSR = 0x0080;
-const S_IXUSR = 0x0040;
-const S_IRWXU = 0x01C0;
+//const S_IXUSR = 0x0040;
+//const S_IRWXU = 0x01C0;
 /* group permissions, rwx */
-const S_IRGRP = 0x0020;
-const S_IWGRP = 0x0010;
-const S_IXGRP = 0x0008;
-const S_IRWXG = 0x0038;
+//const S_IRGRP = 0x0020;
+//const S_IWGRP = 0x0010;
+//const S_IXGRP = 0x0008;
+//const S_IRWXG = 0x0038;
 /* other permissions, rwx */
-const S_IROTH = 0x0004;
-const S_IWOTH = 0x0002;
-const S_IXOTH = 0x0001;
-const S_IRWXO = 0x0007;
+//const S_IROTH = 0x0004;
+//const S_IWOTH = 0x0002;
+//const S_IXOTH = 0x0001;
+//const S_IRWXO = 0x0007;
 
 
 export function mkdirp(path:string, mode?: number): number {
@@ -54,25 +57,26 @@ export function mkdirp(path:string, mode?: number): number {
 }
 
 export function cp(from: string, to: string): void {
-  shell.execSync('cp', `-r "${from}" "${to}"`);
+  shell.execSync('cp', `-r`, from, to);
 }
 
 
 export function cpr(from: string, to: string): void {
-  shell.execSync('cp', `-r "${from}" "${to}"`);
+  shell.execSync('cp', `-r`, from, to);
 }
 
 export function appendToFile(path, content) {
-
+  //TODO
 }
 
 export function createFile(path: string, mode: number, content?: string): boolean {
-  const fd = os.open(path, os.O_CREAT | os.O_WRONLY, mode);
-  if (fd<0) {
-    common.printError(`File create failed for ${path}, error=${fd}`);
+  let errObj = {errno:undefined};
+  const file = std.open(path, os.O_CREAT | os.O_WRONLY, errObj);
+  if (errObj.errno) {
+    common.printError(`File create failed for ${path}, error=${errObj.errno}`);
     return false;
   }
-
+/*  
   if (content) {
     let offset = 0;
 
@@ -80,29 +84,36 @@ export function createFile(path: string, mode: number, content?: string): boolea
     
     os.write(fd, buff.buffer, offset, buff.byteLength);
   }
-
-  os.close(fd);
+*/
+  if (content) {
+    file.puts(content);
+  }
+  file.close();
   return true;
-  
-  console.log(`TODO: write ${path}`);
 }
 
 export function createFileFromBuffer(path: string, mode: number, buff?: Uint8Array) {
-  const fd = os.open(path, os.O_CREAT | os.O_WRONLY, mode);
-  if (fd<0) {
-    common.printError(`File create failed for ${path}, error=${fd}`);
+
+  let errObj = {errno:undefined};
+  const file = std.open(path, os.O_CREAT | os.O_WRONLY, errObj);
+  if (errObj.errno) {
+    common.printError(`File create failed for ${path}, error=${errObj.errno}`);
     return false;
   }
-
-  if (buff) {
+/*  
+  if (content) {
     let offset = 0;
+
+    const buff = true ? stringlib.stringTo1047Buffer(content) : stringlib.stringToBuffer(content);
+    
     os.write(fd, buff.buffer, offset, buff.byteLength);
   }
-
-  os.close(fd);
+*/
+  if (buff) {
+    file.write(buff.buffer, 0, buff.byteLength);
+  }
+  file.close();
   return true;
-  
-  console.log(`TODO: write ${path}`);
 }
 
 export function getFilesInDirectory(path: string): string[]|undefined {
@@ -155,7 +166,7 @@ export function fileExists(path: string, silenceNotFound?: boolean): boolean {
     return ((returnArray[0].mode & os.S_IFREG) == os.S_IFREG)
   } else {
     if ((returnArray[1] != std.ENOENT) && !silenceNotFound) {
-      common.printError(`fileExists path=${path}, err=`,returnArray[1]);
+      common.printError(`fileExists path=${path}, err=${returnArray[1]}`);
     }
     return false;
   }
@@ -187,6 +198,7 @@ export function convertToAbsolutePath(file: string): string|undefined {
   } else {
     common.printError(`Could not convert ${file} to absolute path, err=${result[1]}`);
   }
+  return undefined;
 }
 
 export function getTmpDir(): string {

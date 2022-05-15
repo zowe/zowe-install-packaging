@@ -9,13 +9,20 @@
   Copyright Contributors to the Zowe Project.
 */
 
+// @ts-ignore
 import * as std from 'std';
+// @ts-ignore
 import * as os from 'os';
+// @ts-ignore
+
+import * as common from './common';
 import * as fs from './fs';
 import * as stringlib from './string';
-import * as common from './common';
+
 
 std.unsetenv('ZWE_PRIVATE_LOG_FILE');
+
+
 export function prepareLogFile(logDir: string, logFilePrefix: string): void {
   logDir=stringlib.removeTrailingSlash(fs.convertToAbsolutePath(logDir));
 

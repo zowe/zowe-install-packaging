@@ -9,9 +9,13 @@
   Copyright Contributors to the Zowe Project.
 */
 
+// @ts-ignore
 import * as std from 'std';
+// @ts-ignore
 import * as os from 'os';
+// @ts-ignore
 import * as zos from 'zos';
+
 import * as common from './common';
 import * as stringlib from './string';
 import * as shell from './shell';
@@ -23,8 +27,9 @@ export function getFileEncoding(filePath: string): number|undefined {
   if (!returnArray[1] && ((returnArray[0].mode & os.S_IFREG) == os.S_IFREG)) { //no error, and is file
     return returnArray[0].ccsid;
   } else {
-    common.printError(`getFileEncoding path=${filePath}, err=`,returnArray[1]);
+    common.printError(`getFileEncoding path=${filePath}, err=${returnArray[1]}`);
   }
+  return undefined;
 }
 
 // TODO logic rewritten, needs more testing
@@ -53,25 +58,28 @@ export function detectFileEncoding(fileName: string, expectedSample: string, exp
   if (currentTag) {
     return currentTag;
   } else {
+    //loadfile does not convert untagged ebcdic
     let fileContents = std.loadFile(fileName);
     if (fileContents) {
       if ((!expectedEncoding ||
            expectedEncodingNumber == 1047 ||
-           autoEncoding) && fileContents.includes(expectedSample)) {
+           autoEncoding) && !fileContents.includes(expectedSample)) {
         return 1047;
       } else if (expectedEncodingNumber) {
-        let execReturn = shell.execOutSync('sh', `iconv -f ${expectedEncodingNumber} -t 1047 ${fileName} | grep ${expectedSample}`);
+        let execReturn = shell.execOutSync('sh', `iconv`, `-f`, `${expectedEncodingNumber}`, `-t`, `1047`, `${fileName}`, `|`, `grep`, `${expectedSample}`);
         if (execReturn.rc == 0 && execReturn.out) {
           return expectedEncodingNumber;
         }
       } else {
         //Common encodings, 8859-1 and ascii 850
-        [819, 850].forEach((encoding:number)=> {
-          let execReturn = shell.execOutSync('sh', `iconv -f ${encoding} -t 1047 ${fileName} | grep ${expectedSample}`);
+        const commonEncodings = [819, 850];
+        for (let i = 0; i < commonEncodings.length; i++) {
+          const encoding = commonEncodings[i];
+          let execReturn = shell.execOutSync('sh', `iconv`, `-f`, `${encoding}`, `-t`, `1047`, `${fileName}`, `|`, `grep`, `${expectedSample}`);
           if (execReturn.rc == 0 && execReturn.out) {
             return encoding;
           }
-        });
+        }
       }
     }
   }
@@ -92,9 +100,9 @@ export function ensureFileEncoding(file: string, expectedSample: string, expecte
     // TODO  any cases we cannot find encoding?
     if (fileEncoding != expectedEncoding) {
       common.printTrace(`- Convert encoding of ${file} from ${fileEncoding} to ${expectedEncoding}.`);
-      let shellReturn = shell.execSync('sh', `iconv -f ${fileEncoding} -t ${expectedEncoding} ${file} > ${file}.tmp`);
+      let shellReturn = shell.execSync('sh', `iconv`, `-f`, `${fileEncoding}`, `-t`, `${expectedEncoding}`, `${file}`, `>`, `${file}.tmp`);
       if (!shellReturn.rc) {
-        shell.execSync('mv', `${file}.tmp ${file}`);
+        shell.execSync('mv', `${file}.tmp`, `${file}`);
       }
     }
     common.printTrace(`- Remove encoding tag of ${file}.`);

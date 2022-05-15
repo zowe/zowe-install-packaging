@@ -9,11 +9,15 @@
   Copyright Contributors to the Zowe Project.
 */
 
+// @ts-ignore
 import * as std from 'std';
+// @ts-ignore
 import * as os from 'os';
+// @ts-ignore
 import * as fs from './fs';
 import * as common from './common';
 import * as shell from './shell';
+import * as config from './config';
 
 const JAVA_MIN_VERSION=8;
 
@@ -25,8 +29,8 @@ export function ensureJavaIsOnPath(): void {
   }
 }
 
-export function shellReadYamlJavaHome(configList: string, skipValidate: boolean): string {
-  const zoweConfig = getZoweConfig(configList);
+export function shellReadYamlJavaHome(configList?: string, skipValidate?: boolean): string {
+  const zoweConfig = config.getZoweConfig();
   if (zoweConfig && zoweConfig.java && zoweConfig.java.home) {
     if (!skipValidate) {
       if (validateJavaHome(zoweConfig.java.home)) {
@@ -50,6 +54,7 @@ export function detectJavaHome(): string|undefined {
   if (!javaBinHome && fs.fileExists('/usr/lpp/java/J8.0_64/bin/java')) {
     return '/usr/lpp/java/J8.0_64';
   }
+  return undefined;
 }
 
 export function requireJava() {
@@ -105,12 +110,12 @@ export function validateJavaHome(javaHome:string=std.getenv("JAVA_HOME")): boole
     if (javaMajorVersion != '1') {
       tooLow=true;
     }
-    if (javaMajorVersion != '1' && Number(javaMinorVersion) < 8) {
+    if (javaMajorVersion != '1' && Number(javaMinorVersion) < JAVA_MIN_VERSION) {
       tooLow=true;
     }
 
     if (tooLow) {
-      common.printError(`Java ${javaVersionShort} is less than the minimum level required of Java 8 (1.8.0).`);
+      common.printError(`Java ${javaVersionShort} is less than the minimum level required of Java ${JAVA_MIN_VERSION} (1.${JAVA_MIN_VERSION}.0).`);
       return false;
     }
 

@@ -9,8 +9,11 @@
   Copyright Contributors to the Zowe Project.
 */
 
+// @ts-ignore
 import * as std from 'std';
+// @ts-ignore
 import * as os from 'os';
+
 import * as fs from './fs';
 
 export type ExecReturn = {
@@ -21,8 +24,8 @@ export type ExecReturn = {
 
 export type path = string;
 
-export function execSync(command: string, args: string): ExecReturn {
-  const rc = os.exec([command, args],
+export function execSync(command: string, ...args: string[]): ExecReturn {
+  const rc = os.exec([command, ...args],
                      {block: true, usePath: true});
   return {
     rc
@@ -30,19 +33,19 @@ export function execSync(command: string, args: string): ExecReturn {
 }
 
 
-export function execOutSync(command: string, args: string): ExecReturn {
+export function execOutSync(command: string, ...args: string[]): ExecReturn {
   let out;
   let handler = (data:string)=> {
     out=data;
   }
-  const rc = os.exec([command, args],
-                     {block: true, usePath: true, out: handler});
+  const rc = os.exec([command, ...args],
+                     {block: true, usePath: true, stdout: handler});
   return {
     rc, out
   };
 }
 
-export function execOutErrSync(command: string, args: string): ExecReturn {
+export function execOutErrSync(command: string, ...args: string[]): ExecReturn {
   let out;
   let handler = (data:string)=> {
     out=data;
@@ -51,8 +54,8 @@ export function execOutErrSync(command: string, args: string): ExecReturn {
   let errHandler = (data:string)=> {
     err=data;
   }
-  const rc = os.exec([command, args],
-                     {block: true, usePath: true, out: handler, err: errHandler});
+  const rc = os.exec([command, ...args],
+                     {block: true, usePath: true, stdout: handler, stderr: errHandler});
   return {
     rc, out, err
   };
@@ -64,8 +67,9 @@ export function which(command: string): path|undefined {
   let pathParts = std.getenv('PATH').split(':');
   for (let i = 0; i < pathParts; i++) {
     let files = fs.getFilesInDirectory(pathParts[i]);
-    if (files.includes(command)) {
+    if (files.indexOf(command) != -1) {
       return `${pathParts[i]}/command`;
     }
   }
+  return undefined;
 }

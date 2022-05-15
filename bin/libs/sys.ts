@@ -9,11 +9,14 @@
   Copyright Contributors to the Zowe Project.
 */
 
+// @ts-ignore
 import * as std from 'std';
+// @ts-ignore
 import * as os from 'os';
-import * as fs from './fs';
-import * as shell from './shell';
+
 import * as common from './common';
+import * as shell from './shell';
+import * as stringlib from './string';
 
 std.setenv('ZWE_RUN_ON_ZOS', os.platform == 'zos');
 std.setenv('ZWE_PWD', os.getcwd()[0]);
@@ -31,23 +34,12 @@ export function getSysname(): string|undefined {
   if (shellReturn.out) {
     return shellReturn.out.toLowerCase();
   }
+  return undefined;
 }
 
 export function getUserId(): string|undefined {
-  let user = std.getenv('USER');
-  if (!user) {
-    user = std.getenv('USERNAME');
-  }
-  if (!user) {
-    user = std.getenv('LOGNAME');
-  }
-  if (!user) {
-    let shellReturn = shell.execOutSync('whoami', undefined);
-    if (shellReturn.out) {
-      return shellReturn.out;
-    }
-  }
-  return user;
+  //moved to simplify dependency
+  return common.getUserId();
 }
 
 export function requireZos(): void {
@@ -61,7 +53,7 @@ export function findDirectChildProcesses(parent: number, tree?: string[]): numbe
   let pids:number[] = [];
   
   if (!tree) {
-    let shellReturn = shell.execOutSync('ps', '-o pid,ppid,comm -A');
+    let shellReturn = shell.execOutSync('ps', '-o', `pid,ppid,comm`, '-A');
     if (shellReturn.out) {
       tree=shellReturn.out.split('\n').slice(2);
     }
@@ -85,7 +77,7 @@ export function findAllChildProcesses(parent: number, tree?: string[]): number[]
   let pids:number[] = [];
   
   if (!tree) {
-    let shellReturn = shell.execOutSync('ps', '-o pid,ppid,comm -A');
+    let shellReturn = shell.execOutSync('ps', '-o', `pid,ppid,comm`, '-A');
     if (shellReturn.out) {
       tree=shellReturn.out.split('\n').slice(2);
     }
@@ -107,14 +99,14 @@ export function waitForProcessExit(pid: number): boolean {
   let iteratorIndex=0;
   const maxIteratorIndex=30;
 
-  let shellReturn=shell.execOutSync('ps', `-p ${pid} -o pid`);
+  let shellReturn=shell.execOutSync('ps', `-p`, `${pid}`, `-o`, `pid`);
   while (shellReturn.rc == 0) { //0 when there are processes in the list
     os.sleep(1000);
     iteratorIndex++;
     if (iteratorIndex > maxIteratorIndex) {
       break;
     }
-    shellReturn=shell.execOutSync('ps', `-p ${pid} -o pid`);
+    shellReturn=shell.execOutSync('ps', `-p`, `${pid}`, `-o`, `pid`);
   }
   
   if (shellReturn.rc == 0) {
@@ -127,9 +119,9 @@ export function waitForProcessExit(pid: number): boolean {
 }
 
 export function gracefullyShutdown(pid?: number): boolean {
-  if (!Number.isInteger(pid)) {
+  if (pid === undefined || pid < 1) {
     pid = std.getenv("ZWE_GRACEFULLY_SHUTDOWN_PID");
-    if (!Number.isInteger(pid) && os.platform == 'linux') {
+    if ((pid===undefined || pid < 1) && os.platform == 'linux') {
       //container case
       pid = 1;
     } else {
@@ -137,7 +129,7 @@ export function gracefullyShutdown(pid?: number): boolean {
       return false;
     }
   }
-  if (pid) {
+  if (pid >= 1) {
     let children = findAllChildProcesses(pid);
     common.printFormattedDebug("ZWELS", "sys-utils.sh,gracefully_shutdown", "SIGTERM signal received, shutting down process ${pid} and all child processes");
 
@@ -169,14 +161,14 @@ export function executeCommand(...args:string[]) {
     common.printTrace(`  * Exit code: ${rc}`);
     common.printTrace(`  * Output:`);
     if (out) {
-      common.printTrace(`${paddingLeft(out)}    `);
+      common.printTrace(stringlib.paddingLeft(out,'    '));
     }
   } else {
     common.printDebug(`  * Failed`);
     common.printError(`  * Exit code: ${rc}`);
     common.printError(`  * Output:`);
     if (err) {
-      common.printError(`${paddingLeft(err)}    `);
+      common.printError(stringlib.paddingLeft(err,'    '));
     }
   }
   return {

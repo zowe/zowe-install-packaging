@@ -9,11 +9,14 @@
   Copyright Contributors to the Zowe Project.
 */
 
+// @ts-ignore
 import * as std from 'std';
+// @ts-ignore
 import * as os from 'os';
+// @ts-ignore
 import * as zos from 'zos';
+
 import * as common from './common';
-import * as stringlib from './string';
 import * as shell from './shell';
 
 export function validateZosmfHostAndPort(zosmfHost: string, zosmfPort: number): boolean {
@@ -31,7 +34,7 @@ export function validateZosmfHostAndPort(zosmfHost: string, zosmfPort: number): 
     common.printError(`Warning: Could not validate if z/OS MF is available on 'https://${zosmfHost}:${zosmfPort}/zosmf/info'. NODE_HOME is not defined.`);
     zosmfCheckPassed=false;
   } else {
-    let execReturn = shell.execOutSync(`${std.getenv('NODE_HOME')}/bin/node`, `${std.getenv('ZWE_zowe_runtimeDirectory')}/bin/utils/curl.js "https://${zosmfHost}:${zosmfPort}/zosmf/info" -k -H "X-CSRF-ZOSMF-HEADER: true" --response-type status`);
+    let execReturn = shell.execOutSync(`${std.getenv('NODE_HOME')}/bin/node`, `${std.getenv('ZWE_zowe_runtimeDirectory')}/bin/utils/curl.js`, `"https://${zosmfHost}:${zosmfPort}/zosmf/info"`, `-k`, `-H`, `"X-CSRF-ZOSMF-HEADER: true"`, `--response-type`, `status`);
     if (execReturn.rc || !execReturn.out) {
       common.printError(`Warning: Could not validate if z/OS MF is available on 'https://${zosmfHost}:${zosmfPort}/zosmf/info'. No response code from z/OSMF server.`);
       zosmfCheckPassed=false

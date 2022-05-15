@@ -9,13 +9,15 @@
 // Copyright Contributors to the Zowe Project.
 */
 
+// @ts-ignore
 import * as std from 'std';
+// @ts-ignore
 import * as os from 'os';
 import * as fs from './fs';
-import * as common from './common';
 import * as shell from './shell';
 import * as sys from './sys';
 import * as component from './component';
+import * as config from './config';
 import * as network from './network';
 
 std.setenv('ZWE_PRIVATE_CONTAINER_HOME_DIRECTORY', '/home/zowe');
@@ -35,7 +37,7 @@ export function prepareContainerRuntimeEnvironments() {
   // in kubernetes, Gateway creates 2 additional health indicators and they are causing this OUT_OF_SERVICE, but this
   // status is coming from spring, not from eureka
   std.setenv('MANAGEMENT_ENDPOINT_HEALTH_PROBES_ENABLED', false);
-
+  
   let podNamespace;
   if (!"${ZWE_POD_NAMESPACE}" && fs.fileExists('/var/run/secrets/kubernetes.io/serviceaccount/namespace')) {
     // try to detect ZWE_POD_NAMESPACE, this requires automountServiceAccountToken to be true
@@ -71,7 +73,7 @@ export function prepareContainerRuntimeEnvironments() {
   std.setenv('GATEWAY_HOST', `gateway-service.${podNamespace}.svc.${podClustername}`);
 
   // overwrite ZWE_DISCOVERY_SERVICES_LIST from ZWE_DISCOVERY_SERVICES_REPLICAS
-  let echoVal=shell.execOutSync('sh', `echo "${std.getenv('ZWE_DISCOVERY_SERVICES_REPLICAS')}" | tr -cd '[[:digit:]]' | tr -d '[[:space:]]`); //'
+  let echoVal=shell.execOutSync('sh', `echo`, std.getenv('ZWE_DISCOVERY_SERVICES_REPLICAS'), `|`, `tr`, `-cd`, `'[[:digit:]]'`, `|`, `tr`, `-d`, `'[[:space:]]'`);
   let zweDiscoveryServiceReplicas=Number(echoVal.out);
   if (isNaN(zweDiscoveryServiceReplicas)) {
     zweDiscoveryServiceReplicas=1;
@@ -80,7 +82,8 @@ export function prepareContainerRuntimeEnvironments() {
   
   let discoveryIndex=0;
   let zweDiscoveryServiceList;
-  const discoveryPort=std.getenv('ZWE_components_discovery_port');
+  const zoweConfig=config.getZoweConfig();
+  const discoveryPort=zoweConfig.components.discovery ? zoweConfig.components.discovery.port : undefined;
   while (discoveryIndex < zweDiscoveryServiceReplicas) {
     if (zweDiscoveryServiceList) {
       zweDiscoveryServiceList=`${zweDiscoveryServiceList},`

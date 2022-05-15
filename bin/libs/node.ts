@@ -9,11 +9,15 @@
   Copyright Contributors to the Zowe Project.
 */
 
+// @ts-ignore
 import * as std from 'std';
+// @ts-ignore
 import * as os from 'os';
+
 import * as fs from './fs';
 import * as common from './common';
 import * as shell from './shell';
+import * as config from './config';
 
 const NODE_MIN_VERSION=12;
 
@@ -27,7 +31,7 @@ std.setenv('NODE_STDIN_CCSID','1047');
 std.setenv('__UNTAGGED_READ_MODE','V6');
 
 
-xoexport function ensureNodeIsOnPath(): void {
+export function ensureNodeIsOnPath(): void {
   let path=std.getenv('PATH');
   let nodeHome=std.getenv('NODE_HOME');
   if (!path.contains(`:${nodeHome}/bin:`)) {
@@ -35,8 +39,8 @@ xoexport function ensureNodeIsOnPath(): void {
   }
 }
 
-export function shellReadYamlNodeHome(configList: string, skipValidate: boolean): string {
-  const zoweConfig = getZoweConfig(configList);
+export function shellReadYamlNodeHome(configList?: string, skipValidate?: boolean): string {
+  const zoweConfig = config.getZoweConfig();
   if (zoweConfig && zoweConfig.node && zoweConfig.node.home) {
     if (!skipValidate) {
       if (validateNodeHome(zoweConfig.node.home)) {
@@ -56,11 +60,12 @@ export function detectNodeHome(): string|undefined {
       return returnVal[0];
     }
   }
+  return undefined;
 }
 
 export function requireNode() {
   if (std.getenv('ZWE_CLI_PARAMETER_CONFIG')) {
-    std.setenv('NODE_HOME', shellReadYamlNodeHome(std.getenv('ZWE_CLI_PARAMETER_CONFIG')));
+    std.setenv('NODE_HOME', shellReadYamlNodeHome());
   }
   if (!std.getenv('NODE_HOME')) {
     std.setenv('NODE_HOME', detectNodeHome());
@@ -100,8 +105,8 @@ export function validateNodeHome(nodeHome:string=std.getenv("NODE_HOME")): boole
     if (version.startsWith('v')) {
       let parts = version.split('.');
       const nodeMajorVersion = Number(parts[0].substring(1));
-      const nodeMinorVersion = Number(parts[1]);
-      const nodePatchVersion = Number(parts[2]);
+      //const nodeMinorVersion = Number(parts[1]);
+      //const nodePatchVersion = Number(parts[2]);
 
       if (version == 'v14.17.2') {
         common.printError(`Node ${version} specifically is not compatible with Zowe. Please use a different version. See https://docs.zowe.org/stable/troubleshoot/app-framework/app-known-issues.html#desktop-apps-fail-to-load for more details.`);
@@ -124,6 +129,9 @@ export function validateNodeHome(nodeHome:string=std.getenv("NODE_HOME")): boole
       common.printDebug(`Node check is successful.`);
       
       return true;
+    } else {
+      common.printError(`Cannot validate node version '${version}'. Unexpected format`);
+      return false;
     }
   } catch (e) {
     return false;

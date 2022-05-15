@@ -9,7 +9,9 @@
   Copyright Contributors to the Zowe Project.
 */
 
+// @ts-ignore
 import * as std from 'std';
+// @ts-ignore
 import * as os from 'os';
 
 if (!std.getenv("ZWE_zowe_runtimeDirectory")) {
@@ -17,8 +19,6 @@ if (!std.getenv("ZWE_zowe_runtimeDirectory")) {
   std.exit(101);
 }
 
-std.setenv('ZWE_PRIVATE_DS_SZWEAUTH', 'SZWEAUTH');
-std.setenv('ZWE_PRIVATE_DS_SZWEPLUG', 'SZWEPLUG');
 std.setenv('ZWE_PRIVATE_DS_SZWESAMP', 'SZWESAMP');
 std.setenv('ZWE_PRIVATE_DS_SZWEEXEC', 'SZWEEXEC');
 std.setenv('ZWE_PRIVATE_DEFAULT_ADMIN_GROUP', 'ZWEADMIN');

@@ -9,12 +9,16 @@
   Copyright Contributors to the Zowe Project.
 */
 
+// @ts-ignore
 import * as std from 'std';
+// @ts-ignore
 import * as os from 'os';
-import * as fs from './fs';
-import * as shell from './shell';
+
 import * as common from './common';
+import * as shell from './shell';
 import * as stringlib from './string';
+//if zos
+import * as zosfs from './zos-fs';
 
 // internal errors counter for validations
 std.setenv('ZWE_PRIVATE_ERRORS_FOUND', '0');
@@ -44,8 +48,8 @@ export function getVarValue(key: string): string {
 }
 
 // get all environment variable exports line by line
-const exportFilter=/^export (run_zowe_start_component_id=|ZWELS_START_COMPONENT_ID|ZWE_LAUNCH_COMPONENTS|env_file=|key=|line=|service=|logger=|level=|expected_log_level_val=|expected_log_level_var=|display_log=|message=|utils_dir=|print_formatted_function_available=|LINENO=|ENV|opt|OPTARG|OPTIND|LOGNAME=|USER=|SSH_|SHELL=|PWD=|OLDPWD=|PS1=|ENV=|LS_COLORS=|_=)/
-  const declareFilter=/^declare -x (run_zowe_start_component_id=|ZWELS_START_COMPONENT_ID|ZWE_LAUNCH_COMPONENTS|env_file=|key=|line=|service=|logger=|level=|expected_log_level_val=|expected_log_level_var=|display_log=|message=|utils_dir=|print_formatted_function_available=|LINENO=|ENV|opt|OPTARG|OPTIND|LOGNAME=|USER=|SSH_|SHELL=|PWD=|OLDPWD|PS1=|ENV=|LS_COLORS=|_=)/
+//const exportFilter=/^export (run_zowe_start_component_id=|ZWELS_START_COMPONENT_ID|ZWE_LAUNCH_COMPONENTS|env_file=|key=|line=|service=|logger=|level=|expected_log_level_val=|expected_log_level_var=|display_log=|message=|utils_dir=|print_formatted_function_available=|LINENO=|ENV|opt|OPTARG|OPTIND|LOGNAME=|USER=|SSH_|SHELL=|PWD=|OLDPWD=|PS1=|ENV=|LS_COLORS=|_=)/
+//const declareFilter=/^declare -x (run_zowe_start_component_id=|ZWELS_START_COMPONENT_ID|ZWE_LAUNCH_COMPONENTS|env_file=|key=|line=|service=|logger=|level=|expected_log_level_val=|expected_log_level_var=|display_log=|message=|utils_dir=|print_formatted_function_available=|LINENO=|ENV|opt|OPTARG|OPTIND|LOGNAME=|USER=|SSH_|SHELL=|PWD=|OLDPWD|PS1=|ENV=|LS_COLORS=|_=)/
 
 const keyFilter=/^(run_zowe_start_component_id|ZWELS_START_COMPONENT_ID|ZWE_LAUNCH_COMPONENTS|env_file|key|line|service|logger|level|expected_log_level_val|expected_log_level_var|display_log|message|utils_dir|print_formatted_function_available|LINENO|ENV|opt|OPTARG|OPTIND|LOGNAME|USER|SSH_|SHELL|PWD|OLDPWD|PS1|ENV|LS_COLORS|_)$/
 
@@ -84,6 +88,12 @@ export function sourceEnv(envFile: string): boolean {
     common.printError(`Error loading file ${envFile}`);
     return false;
   }
+  if (os.platform == 'zos') {
+    let encoding = zosfs.detectFileEncoding(envFile,'ZWE_',1047);
+    if (encoding==1047) {
+      fileContents = stringlib.ebcdicToAscii(fileContents);
+    }
+  }
 
   let fileLines = fileContents.split('\n');
   let index;
@@ -93,6 +103,7 @@ export function sourceEnv(envFile: string): boolean {
       common.printTrace(`Set env var ${line.substring(0, index)} to ${std.getenv(line.substring(0,index))}`);
     }
   });
+  return true;
 }
 
 // Takes in a single parameter - the name of the variable
@@ -123,24 +134,25 @@ export function areVariablesSet(variables: string[]): number {
 
 export function validateThis(cmd: string, origin: string): number {
   common.printFormattedTrace("ZWELS", origin, `Validate: ${cmd}`);
-  let shellReturn = shell.execOutErrSync('sh', `eval \"${cmd}\"`);
+  let shellReturn = shell.execOutErrSync('sh', `eval`, `\"${cmd}\"`);
   if (!shellReturn.rc) {
     if (shellReturn.out) {
-      common.printFormattedDebug("ZWELS", origin, `${stringlib.paddingLeft(shellReturn.out)} - )`);
+      common.printFormattedDebug("ZWELS", origin, stringlib.paddingLeft(shellReturn.out, '- '));
     } else {
       common.printFormattedTrace("ZWELS", origin, "- Passed.");
     }
   } else {
     common.printFormattedTrace("ZWELS", origin, `- Failed with exit code ${shellReturn.rc}`);
     if (shellReturn.err) {
-      common.printFormattedError("ZWELS", origin, `${stringlib.paddingLeft(shellReturn.err)} - )`);
+      common.printFormattedError("ZWELS", origin, stringlib.paddingLeft(shellReturn.err, '- '));
     }
   }
 
   let prevErr = std.getenv("ZWE_PRIVATE_ERRORS_FOUND");
   let prevErrCount = !prevErr ? 0 : Number(prevErr);
   if (shellReturn.rc) {
-    std.setenv("ZWE_PRIVATE_ERRORS_FOUND",prevErr+1);
+    prevErrCount++;
+    std.setenv("ZWE_PRIVATE_ERRORS_FOUND",''+prevErrCount);
   }
   return shellReturn.rc;
 }

@@ -9,39 +9,38 @@
   Copyright Contributors to the Zowe Project.
 */
 
+// @ts-ignore
 import * as std from 'std';
+// @ts-ignore
 import * as os from 'os';
+// @ts-ignore
 import * as zos from 'zos';
-
+// @ts-ignore
 import { ConfigManager } from 'Configuration';
-import * as fs from './fs';
-import * as stringlib from './string';
-import * as common from './common';
 
-const runtimeDirectory=std.getenv('ZWE_zowe_runtimeDirectory');
-const extensionDirectory=std.getenv('ZWE_zowe_extensionDirectory');
-const workspaceDirectory=std.getenv('ZWE_zowe_workspaceDirectory');
+import * as common from './common';
+import * as fs from './fs';
+import * as zosfs from './zos-fs';
+import * as stringlib from './string';
+import * as configmgr from './configmgr';
+
+const CONFIG_MGR=configmgr.CONFIG_MGR;
+const ZOWE_CONFIG=configmgr.ZOWE_CONFIG;
+const runtimeDirectory=ZOWE_CONFIG.runtimeDirectory;
+const extensionDirectory=ZOWE_CONFIG.extensionDirectory;
+const workspaceDirectory=ZOWE_CONFIG.workspaceDirectory;
 
 //key: name of config, value: boolean on if it is cached already
 const configLoadedList = {};
 
-const configMgr = new ConfigManager();
-configMgr.setTraceLevel(0);
 
+//TODO this file is full of printErrorAndExit. unreasonable?
 
-/*
-  Init the global schemas like manifest and zowe.yaml.
-*/
 const COMMON_SCHEMA = `${runtimeDirectory}/schemas/server-common.json`;
-const ZOWE_SCHEMA_ID = 'https://zowe.org/schemas/v2/server-base';
 const MANIFEST_SCHEMA_ID = 'https://zowe.org/schemas/v2/server-component-manifest';
 const MANIFEST_SCHEMAS = `${runtimeDirectory}/schemas/manifest-schema.json:${COMMON_SCHEMA}`;
-
-export function initGlobalSchemas(runtimeDirectory) {
-  configMgr.addConfig(ZOWE_SCHEMA_ID) || configMgrFailMessage(ZOWE_SCHEMA_ID);
-  configMgr.loadSchemas(ZOWE_SCHEMA_ID, `${runtimeDirectory}/schemas/zowe-yaml-schema.json:${COMMON_SCHEMA}`) || configMgrFailMessage(ZOWE_SCHEMA_ID);
-}
-
+const PLUGIN_DEF_SCHEMA_ID = "https://zowe.org/schemas/v2/appfw-plugin-definition";
+const PLUGIN_DEF_SCHEMAS = `${runtimeDirectory}/components/app-server/schemas/plugindefinition-schema.json`;
 
 
 
@@ -53,6 +52,7 @@ export function getManifestPath(componentDir: string): string|undefined {
   } else if (fs.fileExists(`${componentDir}/manifest.yaml`)) {
     return `${componentDir}/manifest.json`;
   }
+  return undefined;
 }
 
 export function findComponentDirectory(componentId: string): string|undefined {
@@ -61,6 +61,7 @@ export function findComponentDirectory(componentId: string): string|undefined {
   } else if (extensionDirectory && fs.directoryExists(`${extensionDirectory}/${componentId}`)) {
     return `${extensionDirectory}/${componentId}`;
   }
+  return undefined;
 }
 
 const pluginPointerDirectory = `${workspaceDirectory}/app-server/plugins`;
@@ -89,51 +90,49 @@ export function registerPlugin(path, pluginDefinition) {
 }
 
 
-const PLUGIN_DEF_SCHEMA_ID = "https://zowe.org/schemas/v2/appfw-plugin-definition";
-const PLUGIN_DEF_SCHEMAS = `${runtimeDirectory}/components/app-server/schemas/plugindefinition-schema.json`;
-
 export function getPluginDefinition(pluginRootPath) {
   const pluginDefinitionPath = `${pluginRootPath}/pluginDefinition.json`;
 
   if (fs.fileExists(pluginDefinitionPath)) {
     let status;
-    if ((status = configMgr.addConfig(pluginRootPath))) {
-      console.log(`Could not add config for ${pluginRootPath}, status=${status}`);
+    if ((status = CONFIG_MGR.addConfig(pluginRootPath))) {
+      common.printErrorAndExit(`Could not add config for ${pluginRootPath}, status=${status}`);
       return null;
     }
     
-    if ((status = configMgr.loadSchemas(pluginRootPath, PLUGIN_DEF_SCHEMAS))) {
-      console.log(`Could not load schemas ${PLUGIN_DEF_SCHEMAS} for plugin ${pluginRootPath}, status=${status}`);
+    if ((status = CONFIG_MGR.loadSchemas(pluginRootPath, PLUGIN_DEF_SCHEMAS))) {
+      common.printErrorAndExit(`Could not load schemas ${PLUGIN_DEF_SCHEMAS} for plugin ${pluginRootPath}, status=${status}`);
       return null;
     }
 
 
-    if ((status = configMgr.setConfigPath(pluginRootPath, `FILE(${pluginDefinitionPath})`))) {
-      console.log(`Could not set config path for ${pluginDefinitionPath}, status=${status}`);
+    if ((status = CONFIG_MGR.setConfigPath(pluginRootPath, `FILE(${pluginDefinitionPath})`))) {
+      common.printErrorAndExit(`Could not set config path for ${pluginDefinitionPath}, status=${status}`);
       return null;
     }
-    if ((status = configMgr.loadConfiguration(pluginRootPath))) {
-      console.log(`Could not load config for ${pluginDefinitionPath}, status=${status}`);
+    if ((status = CONFIG_MGR.loadConfiguration(pluginRootPath))) {
+      common.printErrorAndExit(`Could not load config for ${pluginDefinitionPath}, status=${status}`);
       return null;
     }
 
-    let validation = configMgr.validate(pluginRootPath);
+    let validation = CONFIG_MGR.validate(pluginRootPath);
     if (validation.ok){
       if (validation.exceptions){
-        console.log(`Validation of ${pluginDefinitionPath} against schema ${PLUGIN_DEF_SCHEMA_ID} found invalid JSON Schema data`);
+        common.printError(`Validation of ${pluginDefinitionPath} against schema ${PLUGIN_DEF_SCHEMA_ID} found invalid JSON Schema data`);
         for (let i=0; i<validation.exceptions.length; i++){
-          console.log("    "+validation.exceptions[i]);
+          common.printError("    "+validation.exceptions[i]);
         }
+        std.exit(1);
         return null;
       } else {
-        return configMgr.getConfigData(pluginRootPath);
+        return CONFIG_MGR.getConfigData(pluginRootPath);
       }
     } else {
-      console.log(`Error occurred on validation of ${pluginDefinitionPath} against schema ${PLUGIN_DEF_SCHEMA_ID} `);
+      common.printErrorAndExit(`Error occurred on validation of ${pluginDefinitionPath} against schema ${PLUGIN_DEF_SCHEMA_ID} `);
       return null;
     }
   } else {
-    console.log(`Plugin at ${pluginRootPath} has no pluginDefinition.json`);
+    common.printErrorAndExit(`Plugin at ${pluginRootPath} has no pluginDefinition.json`);
     return null;
   }
 }
@@ -147,65 +146,71 @@ export function getManifest(componentDirectory: string): any {
 
     let manifestId = componentDirectory;
     if (configLoadedList[manifestId] === true) {
-      return configMgr.getConfigData(manifestId);
+      return CONFIG_MGR.getConfigData(manifestId);
     }
 
-    if ((status = configMgr.addConfig(manifestId))) {
-      console.log(`Could not add config for ${manifestPath}, status=${status}`);
+    if ((status = CONFIG_MGR.addConfig(manifestId))) {
+      common.printErrorAndExit(`Could not add config for ${manifestPath}, status=${status}`);
       return null;
     }
 
-    if ((status = configMgr.loadSchemas(manifestId, MANIFEST_SCHEMAS))) {
-      console.log(`Could not load schemas ${MANIFEST_SCHEMAS} for manifest ${manifestPath}, status=${status}`);
+    if ((status = CONFIG_MGR.loadSchemas(manifestId, MANIFEST_SCHEMAS))) {
+      common.printErrorAndExit(`Could not load schemas ${MANIFEST_SCHEMAS} for manifest ${manifestPath}, status=${status}`);
       return null;
     }
 
-    if ((status = configMgr.setConfigPath(manifestId, `FILE(${manifestPath})`))) {
-      console.log(`Could not set config path for ${manifestPath}, status=${status}`);
+    if ((status = CONFIG_MGR.setConfigPath(manifestId, `FILE(${manifestPath})`))) {
+      common.printErrorAndExit(`Could not set config path for ${manifestPath}, status=${status}`);
       return null;
     }
 
-    if ((status = configMgr.loadConfiguration(manifestId))) {
-      console.log(`Could not load config for ${manifestPath}, status=${status}`);
+    if ((status = CONFIG_MGR.loadConfiguration(manifestId))) {
+      common.printErrorAndExit(`Could not load config for ${manifestPath}, status=${status}`);
       return null;
     }
 
-    let validation = configMgr.validate(manifestId);
+    let validation = CONFIG_MGR.validate(manifestId);
     if (validation.ok){
       if (validation.exceptions){
-        console.log(`Validation of ${manifestPath} against schema ${MANIFEST_SCHEMA_ID} found invalid JSON Schema data`);
+        common.printError(`Validation of ${manifestPath} against schema ${MANIFEST_SCHEMA_ID} found invalid JSON Schema data`);
         for (let i=0; i<validation.exceptions.length; i++){
-          console.log("    "+validation.exceptions[i]);
+          common.printError("    "+validation.exceptions[i]);
         }
+        std.exit(1);
         return null;
       } else {
         configLoadedList[manifestId] = true;
-        return configMgr.getConfigData(manifestId);
+        return CONFIG_MGR.getConfigData(manifestId);
       }
     } else {
-      console.log(`Error occurred on validation of ${manifestPath} against schema ${MANIFEST_SCHEMA_ID} `);
+      common.printErrorAndExit(`Error occurred on validation of ${manifestPath} against schema ${MANIFEST_SCHEMA_ID} `);
       return null;
     }
   } else {
-    console.log(`Component at ${componentDirectory} has no manifest`);
+    common.printErrorAndExit(`Component at ${componentDirectory} has no manifest`);
     return null;
   }
 }
 
-export function readComponentManifest(componentDir: string, manifestKey: string): any {
-  let manifest = getManifest(componentDir);
-  if (manifest) {
-    //TODO
+export function detectComponentManifestEncoding(componentDir: string): number|undefined {
+  const manifestPath = getManifestPath(componentDir);
+  if (!manifestPath) {
+    return undefined;
   }
-}
-
-export function detectcomponentManifestEncoding(componentDir: string) {
-  //TODO
+  const encoding = zosfs.detectFileEncoding(manifestPath, 'name');
+  return encoding!==-1 ? encoding : undefined;
 }
 
 export function detectIfComponentTagged(componentDir: string): boolean {
-  return false;
-  //TODO
+  const manifestPath = getManifestPath(componentDir);
+  if (!manifestPath) {
+    return false;
+  }
+  const encoding = zosfs.getFileEncoding(manifestPath);
+  if (encoding===undefined) {
+    return false;
+  }
+  return encoding!==0;
 }
 
 export function findAllInstalledComponents(): string {
@@ -369,12 +374,12 @@ export function processComponentApimlStaticDefinitions(componentDir: string): bo
         allSucceed=false;
         break;
       } else {
-        console.log(`Process ${componentName} service static definition file ${file}`);
+        common.printDebug(`Process ${componentName} service static definition file ${file}`);
         const sanitizedDefName=stringlib.sanitizeAlphanum(file);
 
         //TODO handle env var resolution in template file
         const outHandler = function(data: any) {
-          console.log('Out handler got',data);
+          common.printDebug('Out handler got',data);
         };
         const defContents = os.exec(['sh', `( echo "cat <<EOF" ; cat "${path}" ; echo EOF ) | sh`],
                                     {block: true, usePath: true, stdout: outHandler});
@@ -399,13 +404,12 @@ export function processComponentApimlStaticDefinitions(componentDir: string): bo
  defined will be passed to install-app.sh for proper installation.
 */
 export function testOrSetPcBit(path: string): boolean {
-  //zos.changeTag
   if (!hasPCBit(path)) {
-    console.log("Plugin ZSS API not program controlled. Attempting to add PC bit.");
+    common.printError("Plugin ZSS API not program controlled. Attempting to add PC bit.");
     zos.changeExtAttr(path, zos.EXTATTR_PROGCTL, true);
     const success = hasPCBit(path);
     if (!success) {
-      console.log("PC bit not set. This must be set such as by executing 'extattr +p $COMPONENT_HOME/lib/sys.so' as a user with sufficient privilege.");
+      common.printErrorAndExit("PC bit not set. This must be set such as by executing 'extattr +p $COMPONENT_HOME/lib/sys.so' as a user with sufficient privilege.");
     }
     return success;
   } else {
@@ -419,7 +423,7 @@ export function hasPCBit(path: string): boolean {
     return returnArray[0].extattrs == zos.EXTATTR_PROGCTL
   } else {
     if (returnArray[1] != std.ENOENT) {
-      console.log(`hasPCBit path=${path}, err=`,returnArray[1]);
+      common.printError(`hasPCBit path=${path}, err=`,returnArray[1]);
     }
     return false;
   }
@@ -430,7 +434,7 @@ export function checkZssPcBit(appfwPluginPath: string): void {
   const pluginDefinition = getPluginDefinition(appfwPluginPath);
   if (pluginDefinition) {
     if (pluginDefinition.dataServices) {
-      console.log(`Checking ZSS services in plugin path=${appfwPluginPath}`);
+      common.printDebug(`Checking ZSS services in plugin path=${appfwPluginPath}`);
       pluginDefinition.dataServices.forEach(function(service: any){
         if (service.type == 'service') {
           if (service.libraryName31) {
@@ -446,13 +450,13 @@ export function checkZssPcBit(appfwPluginPath: string): void {
       });
     }
   } else {
-    console.log(`Skipping ZSS PC bit check of plugin at ${appfwPluginPath} due to pluginDefinition missing or invalid`);
+    common.printErrorAndExit(`Skipping ZSS PC bit check of plugin at ${appfwPluginPath} due to pluginDefinition missing or invalid`);
   }
 }
 
 export function processZssPluginInstall(componentDir: string): void {
   if (os.platform == 'zos') {
-    console.log(`- Checking for zss plugins and verifying them`);
+    common.printDebug(`- Checking for zss plugins and verifying them`);
     const manifest = getManifest(componentDir);
     if (manifest && manifest.appfwPlugins) {
       manifest.appfwPlugins.forEach(function(appfwPlugin: any) {
@@ -468,8 +472,9 @@ export function processZssPluginInstall(componentDir: string): void {
 export function processComponentAppfwPlugin(componentDir: string): boolean {
   const manifest = getManifest(componentDir);
   if (manifest && manifest.appfwPlugins) {
-    manifest.appfwPlugins.forEach((appfwPlugin: any) => {
-      const fullPath = `${componentDir}/appfwPlugin.path`;
+    for (let i = 0; i < manifest.appfwPlugins.length; i++) {
+      const appfwPlugin = manifest.appfwPlugins[i];
+      const fullPath = `${componentDir}/${appfwPlugin}.path`;
       if (!fs.fileExists(`${fullPath}/pluginDefinition.json`)) {
         common.printError(`App Framework plugin directory ${fullPath} does not have pluginDefinition.json`);
         return false;
@@ -478,12 +483,12 @@ export function processComponentAppfwPlugin(componentDir: string): boolean {
       if (os.platform != 'zos') {
         const pluginDefinition = getPluginDefinition(fullPath);
         if (pluginDefinition && pluginDefinition.identifier) {
-          const pluginDirsPath=`${workspaceDirectory}/app-server`;
-          let rc = fs.mkdirp(`${workspaceDirectory}/app-server/pluginDirs/${pluginDefinition.identifier}`, 0o770);
+          const pluginDirsPath=`${workspaceDirectory}/app-server/pluginDirs`;
+          let rc = fs.mkdirp(`${pluginDirsPath}/${pluginDefinition.identifier}`, 0o770);
           if (rc) {
-            common.printError(`Plugin registration failed because cannot make directory = ${workspaceDirectory}/app-server/pluginDirs/${pluginDefinition.identifier}`);
+            common.printError(`Plugin registration failed because cannot make directory = ${pluginDirsPath}/${pluginDefinition.identifier}`);
           }
-          fs.cpr(`${fullPath}/.`, `${workspaceDirectory}/app-server/pluginDirs/${pluginDefinition.identifier}`);
+          fs.cpr(`${fullPath}/.`, `${pluginDirsPath}/${pluginDefinition.identifier}`);
 
           return registerPlugin(fullPath, pluginDefinition);
         } else {
@@ -491,7 +496,7 @@ export function processComponentAppfwPlugin(componentDir: string): boolean {
           return false;
         }
       }
-    });
+    }
   }
   return true;
 }
@@ -511,7 +516,8 @@ export function processComponentGatewaySharedLibs(componentDir: string): boolean
   let gatewaySharedLibsWorkspacePath;
   
   if (manifest && manifest.gatewaySharedLibs) {
-    manifest.gatewaySharedLibs.forEach((gatewaySharedLibsDef: any) => {
+    for (let i = 0; i < manifest.gatewaySharedLibs.length; i++) {
+      const gatewaySharedLibsDef = manifest.gatewaySharedLibs[i];
       const fileOrDir=`${componentDir}/${gatewaySharedLibsDef}`;
       if (!pluginName) {
         pluginName = manifest.name;
@@ -536,7 +542,7 @@ export function processComponentGatewaySharedLibs(componentDir: string): boolean
         common.printError(`Gateway shared libs directory ${fileOrDir} is not accessible`);
         return false;
       }
-    });
+    }
   }
   return true;
 }
@@ -557,7 +563,8 @@ export function processComponentDiscoverySharedLibs(componentDir: string): boole
   let discoverySharedLibsWorkspacePath;
   
   if (manifest && manifest.discoverySharedLibs) {
-    manifest.discoverySharedLibs.forEach((discoverySharedLibsDef: any) => {
+    for (let i = 0; i < manifest.discoverySharedLibs.length; i++) {
+      const discoverySharedLibsDef = manifest.discoverySharedLibs[i];
       const fileOrDir=`${componentDir}/${discoverySharedLibsDef}`;
       if (!pluginName) {
         pluginName = manifest.name;
@@ -582,17 +589,19 @@ export function processComponentDiscoverySharedLibs(componentDir: string): boole
         common.printError(`Discovery shared libs directory ${fileOrDir} is not accessible`);
         return false;
       }
-    });
+    }
   }
   return true;
 }
-
+/*
 const gatewayHost = std.getenv('ZWE_GATEWAY_HOST');
 const haInstanceHostname = std.getenv('ZWE_haInstance_hostname');
 const catalogPort = Number(std.getenv('ZWE_components_api_catalog_port'));
 const zoweCertificatePemKey = std.getenv('ZWE_zowe_certificate_pem_key');
 const zoweCertificatePemCertificate = std.getenv('ZWE_zowe_certificate_pem_certificate');
 const zoweCertificatePemCertificateAuthorities = std.getenv('ZWE_zowe_certificate_pem_certificateAuthorities');
+//TODO implement refreshStaticRegistration
+
 export function refreshStaticRegistration(apimlcatalogHost: string=gatewayHost, apimlcatalogPort: number= catalogPort,
                                    authKey: string=zoweCertificatePemKey, authCert: string=zoweCertificatePemCertificate,
                                    caCert: string=zoweCertificatePemCertificateAuthorities): number{
@@ -603,6 +612,5 @@ export function refreshStaticRegistration(apimlcatalogHost: string=gatewayHost, 
       apimlcatalogHost = 'localhost';
     }
   }
-
-  
 }
+*/

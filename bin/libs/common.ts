@@ -9,13 +9,14 @@
   Copyright Contributors to the Zowe Project.
 */
 
+// @ts-ignore
 import * as std from 'std';
+// @ts-ignore
 import * as os from 'os';
 
-import * as nodelib from './node';
+import * as stringlib from './string';
 import * as fs from './fs';
 import * as shell from './shell';
-import { ConfigManager } from 'Configuration';
 
 // these are shell environments we want to enforce in all cases
 std.setenv('_CEE_RUNOPTS', "FILETAG(AUTOCVT,AUTOTAG) POSIX(ON)");
@@ -26,10 +27,6 @@ std.setenv('_BPXK_AUTOCVT', "ON");
 std.setenv('_EDC_ADD_ERRNO2', '1'); //show details on error
 std.unsetenv('ENV'); // just in case, as it can cause unexpected output
 
-export const CONFIG_MGR = new ConfigManager();
-CONFIG_MGR.setTraceLevel(0);
-
-
 enum LOG_LEVEL {
   ERROR = 0,
   WARN,
@@ -39,9 +36,7 @@ enum LOG_LEVEL {
 };
 
 export function requireZoweYaml() {
-  nodelib.requireNode();
-
-  const configFiles = 'ZWE_CLI_PARAMETER_CONFIG';
+  const configFiles = std.getenv('ZWE_CLI_PARAMETER_CONFIG');
   if (!configFiles) {
     printErrorAndExit(`Error ZWEL0108E: Zowe YAML config file is required.`);
   } else {
@@ -54,15 +49,44 @@ export function requireZoweYaml() {
   }
 }
 
-export function date(args?: string): string|undefined {
-  const result = shell.execOutSync('date', args);
-  if (!result.rc) {
-    return result.out;
+export function getUserId(): string|undefined {
+  //moved from sys to simplify dependency
+  let user = std.getenv('USER');
+  if (!user) {
+    user = std.getenv('USERNAME');
   }
+  if (!user) {
+    user = std.getenv('LOGNAME');
+  }
+  if (!user) {
+    let out;
+    let handler = (data:string)=> {
+      out=data;
+    }
+    const rc = os.exec(['whoami'],
+                       {block: true, usePath: true, out: handler});
+    if (!rc) {
+      return out;
+    }
+  }
+  return user;
+}
+
+export function date(...args: string[]): string|undefined {
+  let out;
+  let handler = (data:string)=> {
+    out=data;
+  }
+  const rc = os.exec(['date', ...args],
+                     {block: true, usePath: true, out: handler});
+   if (!rc) {
+    return out;
+  }
+  return undefined;
 }
 
 let logExists = false;
-let logFd;
+let logFile;
 
 function writeLog(message: string): boolean {
   if (!logExists) {
@@ -71,8 +95,26 @@ function writeLog(message: string): boolean {
       logExists = fs.fileExists(filename);
       if (!logExists) {
         fs.createFile(filename, 0o640, message);
+        logExists = fs.fileExists(filename);
+      }
+      if (logExists) {
+        let errObj = {errno:undefined};
+        logFile = std.open(filename, os.O_CREAT|os.O_WRONLY, errObj);
+        if (errObj.errno) {
+          printError(`Error opening file ${filename}, errno=${errObj.errno}`);
+          logFile=null;
+          logExists=false;
+          return false;
+        }
       }
     }
+  }
+  if (logFile===undefined || logFile===null) {
+    return false;
+  } else {
+    //TODO this does utf8. should we flip it to 1047 on zos?
+    logFile.puts(message);
+    return true;
   }
 }
 
@@ -86,7 +128,7 @@ export function printRawMessage(message: string, isError: boolean, writeTo:strin
     }
   }
   if (writeTo.includes('log')) {
-    return writeLog(message+'\n');
+    writeLog(message+'\n');
   }
   return true;
 }
@@ -105,6 +147,7 @@ export function printDebug(message: string, writeTo?:string[]): boolean {
   if (level == 'DEBUG' || level == 'TRACE') {
     return printRawMessage(message, false, writeTo);
   }
+  return false;
 }
 
 export function printTrace(message: string, writeTo?:string[]): boolean {
@@ -112,10 +155,11 @@ export function printTrace(message: string, writeTo?:string[]): boolean {
   if (level == 'TRACE') {
     return printRawMessage(message, false, writeTo);
   }
+  return false;
 }
 
-export function printErrorAndExit(message: string, writeTo:string[]=['console','log'], exitCode:number=1): boolean {
-  return printError(message, writeTo);
+export function printErrorAndExit(message: string, writeTo:string[]=['console','log'], exitCode:number=1): void {
+  printError(message, writeTo);
   std.exit(exitCode);
 }
 
@@ -123,7 +167,7 @@ export function printEmptyLine(writeTo?:string[]): boolean {
   return printMessage("", writeTo);
 }
 
-export function printLevel0Message(message: string, writeTo?:string[]): boolean {
+export function printLevel0Message(message?: string, writeTo?:string[]): boolean {
   printMessage("===============================================================================", writeTo);
   if (message) {
     printMessage(`>> ${message.toUpperCase()}`, writeTo);
@@ -131,7 +175,7 @@ export function printLevel0Message(message: string, writeTo?:string[]): boolean 
   return printEmptyLine(writeTo);
 }
 
-export function printLevel1Message(message: string, writeTo?:string[]): boolean {
+export function printLevel1Message(message?: string, writeTo?:string[]): boolean {
   printMessage("-------------------------------------------------------------------------------", writeTo);
   if (message) {
     printMessage(`>> ${message}`, writeTo);
@@ -139,7 +183,7 @@ export function printLevel1Message(message: string, writeTo?:string[]): boolean 
   return printEmptyLine(writeTo);
 }
 
-export function printLevel2Message(message: string, writeTo?:string[]): boolean {
+export function printLevel2Message(message?: string, writeTo?:string[]): boolean {
   printEmptyLine(writeTo);
   if (message) {
     printMessage(`>> ${message}`, writeTo);
@@ -147,7 +191,7 @@ export function printLevel2Message(message: string, writeTo?:string[]): boolean 
   return printEmptyLine(writeTo);
 }
 
-export function printLevel0Debug(message: string, writeTo?:string[]): boolean {
+export function printLevel0Debug(message?: string, writeTo?:string[]): boolean {
   printDebug("===============================================================================", writeTo);
   if (message) {
     printDebug(`>> ${message.toUpperCase()}`, writeTo);
@@ -155,7 +199,7 @@ export function printLevel0Debug(message: string, writeTo?:string[]): boolean {
   return printDebug('', writeTo);
 }
 
-export function printLevel1Debug(message: string, writeTo?:string[]): boolean {
+export function printLevel1Debug(message?: string, writeTo?:string[]): boolean {
   printDebug("-------------------------------------------------------------------------------", writeTo);
   if (message) {
     printDebug(`>> ${message}`, writeTo);
@@ -163,15 +207,15 @@ export function printLevel1Debug(message: string, writeTo?:string[]): boolean {
   return printDebug('', writeTo);
 }
 
-export function printLevel2Debug(message: string, writeTo?:string[]): boolean {
-  return printDebug('', writeTo);
+export function printLevel2Debug(message?: string, writeTo?:string[]): boolean {
+  printDebug('', writeTo);
   if (message) {
     printDebug(`>> ${message}`, writeTo);
   }
   return printDebug('', writeTo);
 }
 
-export function printLevel0Trace(message: string, writeTo?:string[]): boolean {
+export function printLevel0Trace(message?: string, writeTo?:string[]): boolean {
   printTrace("===============================================================================", writeTo);
   if (message) {
     printTrace(`>> ${message.toUpperCase()}`, writeTo);
@@ -179,7 +223,7 @@ export function printLevel0Trace(message: string, writeTo?:string[]): boolean {
   return printTrace('', writeTo);
 }
 
-export function printLevel1Trace(message: string, writeTo?:string[]): boolean {
+export function printLevel1Trace(message?: string, writeTo?:string[]): boolean {
   printTrace("-------------------------------------------------------------------------------", writeTo);
   if (message) {
     printTrace(`>> ${message}`, writeTo);
@@ -187,7 +231,8 @@ export function printLevel1Trace(message: string, writeTo?:string[]): boolean {
   return printTrace('', writeTo);
 }
 
-export function printLevel2Trace(message: string, writeTo?:string[]): boolean {
+//TODO is message ever missing or should we just enforce it
+export function printLevel2Trace(message?: string, writeTo?:string[]): boolean {
   printTrace('', writeTo);
   if (message) {
     printTrace(`>> ${message}`, writeTo);
@@ -208,13 +253,13 @@ export function printFormattedMessage(service: string, logger: string, level: st
 
   const levelNum=LOG_LEVEL[level.toUpperCase()];
 
-  let expectedLogLevelVal=LOG_LEVEL[getVarValue(`ZWE_PRIVATE_LOG_LEVEL_${service}`).toUpperCase() || 'INFO'];
+  let expectedLogLevelVal=LOG_LEVEL[std.getenv(`ZWE_PRIVATE_LOG_LEVEL_${service}`).toUpperCase() || 'INFO'];
   let displayLog = expectedLogLevelVal >= levelNum;
   if (!displayLog) {
     return false;
   }
 
-  const logLinePrefix=`${date("-u '+%Y-%m-%d %T'")} <${service}:$$> ${getUserId()} ${level.toUpperCase()} (${logger})`;
+  const logLinePrefix=`${date("-u", "'+%Y-%m-%d %T'")} <${service}:$$> ${getUserId()} ${level.toUpperCase()} (${logger})`;
   let lines = message.split('\n');
   lines.forEach((line: string)=> {
     if (!FORMATTING_TEST.test(line)) {
@@ -225,6 +270,7 @@ export function printFormattedMessage(service: string, logger: string, level: st
     }
     return printMessage(line, ['console']);
   });
+  return true;
 }
 
 export function printFormattedTrace(service: string, logger: string, message: string): boolean {
@@ -245,4 +291,28 @@ export function printFormattedWarn(service: string, logger: string, message: str
 
 export function printFormattedError(service: string, logger: string, message: string): boolean {
   return printFormattedMessage(service, logger, "ERROR", message);
+}
+
+
+let runtimeManifest;
+export function getZoweRuntimeManifest(): any|undefined {
+  if (!runtimeManifest) {
+    const result = shell.execOutSync(`cat`, `${std.getenv('ZWE_zowe_runtimeDirectory')}/manifest.json`);
+    if (result.rc) {
+      printError('Could not read runtime manifest, err='+result.rc);
+    } else {
+      runtimeManifest=JSON.parse(result.out);
+    }
+  }
+  return runtimeManifest;
+}
+
+export function getZoweVersion(): string|undefined {
+  if (!std.getenv('ZWE_VERSION')) {
+    let manifest = getZoweRuntimeManifest();
+    if (manifest) {
+      std.setenv('ZWE_VERSION', manifest.version);
+    }
+  }
+  return std.getenv('ZWE_VERSION');
 }
