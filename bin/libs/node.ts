@@ -34,7 +34,7 @@ std.setenv('__UNTAGGED_READ_MODE','V6');
 export function ensureNodeIsOnPath(): void {
   let path=std.getenv('PATH');
   let nodeHome=std.getenv('NODE_HOME');
-  if (!path.contains(`:${nodeHome}/bin:`)) {
+  if (!path.includes(`:${nodeHome}/bin:`)) {
     std.setenv('PATH', `${nodeHome}/bin:${path}`);
   }
 }
@@ -82,22 +82,15 @@ export function validateNodeHome(nodeHome:string=std.getenv("NODE_HOME")): boole
     common.printError("Cannot find node. Please define NODE_HOME environment variable.");
     return false;
   }
-  if (!fs.fileExists(`${nodeHome}/bin/node`)) {
+  if (!fs.fileExists(fs.resolvePath(nodeHome,`/bin/node`))) {
     common.printError(`NODE_HOME: ${nodeHome}/bin does not point to a valid install of Node.`);
     return false;
   }
 
-  let out;
-
-  let handler = (data: string) => {
-    out = data;
-  }
-
-  let rc = os.exec([`${nodeHome}/bin/node`, `--version`],
-                   {block: true, usePath: true, stdout: handler});
-  const version = out;
-  if (rc != 0) {
-    common.printError(`Node version check failed with return code: ${rc}: ${version}`);
+  let shellReturn = shell.execOutSync(fs.resolvePath(nodeHome,`/bin/node`), `--version`);
+  const version = shellReturn.out;
+  if (shellReturn.rc != 0) {
+    common.printError(`Node version check failed with return code: ${shellReturn.rc}: ${version}`);
     return false;
   }
  
@@ -118,11 +111,10 @@ export function validateNodeHome(nodeHome:string=std.getenv("NODE_HOME")): boole
       }
       common.printDebug(`Node ${version} is supported.`)
 
-      rc = os.exec([`${nodeHome}/bin/node`, `-e "console.log('ok')"`],
-                   {block: true, usePath: true, stdout: handler});
-      const ok = out;
-      if (ok != 'ok' || rc != 0) {
-        common.printError(`${nodeHome}/bin/node is not functioning correctly (exit code ${rc}): ${ok}`);
+      shellReturn = shell.execOutSync(fs.resolvePath(nodeHome,`/bin/node`), `-e`, "const process = require('process'); console.log('ok'); process.exit(0);");
+      const ok = shellReturn.out;
+      if (ok != 'ok' || shellReturn.rc != 0) {
+        common.printError(`${nodeHome}/bin/node is not functioning correctly (exit code ${shellReturn.rc}): ${ok}`);
         return false;
       }
 

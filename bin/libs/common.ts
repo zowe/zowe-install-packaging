@@ -14,9 +14,15 @@ import * as std from 'std';
 // @ts-ignore
 import * as os from 'os';
 
-import * as stringlib from './string';
 import * as fs from './fs';
+//import * as stringlib from './string';
 import * as shell from './shell';
+import * as strftime from './strftime';
+
+declare namespace console {
+  function log(...args:string[]): void;
+};
+
 
 // these are shell environments we want to enforce in all cases
 std.setenv('_CEE_RUNOPTS', "FILETAG(AUTOCVT,AUTOTAG) POSIX(ON)");
@@ -72,18 +78,19 @@ export function getUserId(): string|undefined {
   return user;
 }
 
+
 export function date(...args: string[]): string|undefined {
-  let out;
-  let handler = (data:string)=> {
-    out=data;
+  if (!args) {
+    return strftime.strftime('%a %b %e %T %Z %Y');
+  } else {
+    let arg = args.length == 1 ? args[0] : args[args.length-1];
+    if (arg.startsWith("'+")) {
+      arg=arg.substring(2,arg.length-1);
+    }
+    return strftime.strftime(arg);
   }
-  const rc = os.exec(['date', ...args],
-                     {block: true, usePath: true, out: handler});
-   if (!rc) {
-    return out;
-  }
-  return undefined;
 }
+
 
 let logExists = false;
 let logFile;
@@ -122,9 +129,12 @@ function writeLog(message: string): boolean {
 export function printRawMessage(message: string, isError: boolean, writeTo:string[]=['console','log']): boolean {
   if (writeTo.includes('console')) {
     if (isError) {
-      std.err.printf(message+'\n');
+      //TODO this prints junk
+      //std.err.printf(stringlib.asciiToEbcdic(message+'\n'));
+      console.log('ERROR: '+message);
     } else if (std.getenv('ZWE_CLI_PARAMETER_SILENT') != 'true') {
-      std.out.printf(message+'\n');
+      
+      console.log(message);
     }
   }
   if (writeTo.includes('log')) {
@@ -316,3 +326,17 @@ export function getZoweVersion(): string|undefined {
   }
   return std.getenv('ZWE_VERSION');
 }
+
+
+//From 'index.sh'
+std.setenv('ZWE_PRIVATE_DS_SZWESAMP', 'SZWESAMP');
+std.setenv('ZWE_PRIVATE_DS_SZWEEXEC', 'SZWEEXEC');
+std.setenv('ZWE_PRIVATE_DEFAULT_ADMIN_GROUP', 'ZWEADMIN');
+std.setenv('ZWE_PRIVATE_DEFAULT_ZOWE_USER', 'ZWESVUSR');
+std.setenv('ZWE_PRIVATE_DEFAULT_ZIS_USER', 'ZWESIUSR');
+std.setenv('ZWE_PRIVATE_DEFAULT_ZOWE_STC', 'ZWESLSTC');
+std.setenv('ZWE_PRIVATE_DEFAULT_ZIS_STC', 'ZWESISTC');
+std.setenv('ZWE_PRIVATE_DEFAULT_AUX_STC', 'ZWESASTC');
+std.setenv('ZWE_PRIVATE_CORE_COMPONENTS_REQUIRE_JAVA', 'gateway,discovery,api-catalog,caching-service,metrics-service,files-api,jobs-api');
+
+std.setenv('ZWE_PRIVATE_CLI_LIBRARY_LOADED', 'true');

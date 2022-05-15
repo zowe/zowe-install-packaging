@@ -102,7 +102,7 @@ export function ensureFileEncoding(file: string, expectedSample: string, expecte
       common.printTrace(`- Convert encoding of ${file} from ${fileEncoding} to ${expectedEncoding}.`);
       let shellReturn = shell.execSync('sh', `iconv`, `-f`, `${fileEncoding}`, `-t`, `${expectedEncoding}`, `${file}`, `>`, `${file}.tmp`);
       if (!shellReturn.rc) {
-        shell.execSync('mv', `${file}.tmp`, `${file}`);
+        os.rename(`${file}.tmp`, file);
       }
     }
     common.printTrace(`- Remove encoding tag of ${file}.`);

@@ -19,14 +19,3 @@ if (!std.getenv("ZWE_zowe_runtimeDirectory")) {
   std.exit(101);
 }
 
-std.setenv('ZWE_PRIVATE_DS_SZWESAMP', 'SZWESAMP');
-std.setenv('ZWE_PRIVATE_DS_SZWEEXEC', 'SZWEEXEC');
-std.setenv('ZWE_PRIVATE_DEFAULT_ADMIN_GROUP', 'ZWEADMIN');
-std.setenv('ZWE_PRIVATE_DEFAULT_ZOWE_USER', 'ZWESVUSR');
-std.setenv('ZWE_PRIVATE_DEFAULT_ZIS_USER', 'ZWESIUSR');
-std.setenv('ZWE_PRIVATE_DEFAULT_ZOWE_STC', 'ZWESLSTC');
-std.setenv('ZWE_PRIVATE_DEFAULT_ZIS_STC', 'ZWESISTC');
-std.setenv('ZWE_PRIVATE_DEFAULT_AUX_STC', 'ZWESASTC');
-std.setenv('ZWE_PRIVATE_CORE_COMPONENTS_REQUIRE_JAVA', 'gateway,discovery,api-catalog,caching-service,metrics-service,files-api,jobs-api');
-
-std.setenv('ZWE_PRIVATE_CLI_LIBRARY_LOADED', 'true');

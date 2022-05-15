@@ -43,13 +43,36 @@ const S_IWUSR = 0x0080;
 //const S_IRWXO = 0x0007;
 
 
+export function resolvePath(...parts:string[]): string {
+  let separator=os.platform == 'win32' ? '\\' : '/';
+//  let badSeparator = os.platform == 'win32' ? '/' : '\\';
+  let path='';
+  parts.forEach((part:string)=> {
+//    part=part.replaceAll(badSeparator, separator);
+    if (part.startsWith('"') && part.endsWith('"')) {
+      part=part.substring(1,part.length-1);
+    } else if (part.startsWith("'") && part.endsWith("'")) {
+      part=part.substring(1,part.length-1);
+    }
+    
+    if (part.startsWith(separator)) {
+      part=part.substring(1);
+    }
+    if (part.endsWith(separator)) {
+      part = part.substring(0,part.length-1);
+    }
+    path+=separator+part;
+  });
+  return path;
+}
+
 export function mkdirp(path:string, mode?: number): number {
   const parts = path.split('/');
   let dir = '/';
   for (let i = 0; i < parts.length; i++) {
     dir+=parts[i]+'/';
     let rc = os.mkdir(dir, mode ? mode : 0o777);
-    if (rc) {
+    if (rc && (rc!=(0-std.Error.EEXIST))) {
       return rc;
     }
   }

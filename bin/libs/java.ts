@@ -24,7 +24,7 @@ const JAVA_MIN_VERSION=8;
 export function ensureJavaIsOnPath(): void {
   let path=std.getenv('PATH');
   let javaHome=std.getenv('JAVA_HOME');
-  if (!path.contains(`:${javaHome}/bin:`)) {
+  if (!path.includes(`:${javaHome}/bin:`)) {
     std.setenv('PATH', `${javaHome}/bin:${path}`);
   }
 }
@@ -76,12 +76,12 @@ export function validateJavaHome(javaHome:string=std.getenv("JAVA_HOME")): boole
     common.printError("Cannot find java. Please define JAVA_HOME environment variable.");
     return false;
   }
-  if (!fs.fileExists(`${javaHome}/bin/java`)) {
+  if (!fs.fileExists(fs.resolvePath(javaHome,`/bin/java`))) {
     common.printError(`JAVA_HOME: ${javaHome}/bin does not point to a valid install of Java.`);
     return false;
   }
 
-  let execReturn = shell.execOutSync(`${javaHome}/bin/java`, `-version`);
+  let execReturn = shell.execOutSync(fs.resolvePath(javaHome,`/bin/java`), `-version`);
   const version = execReturn.out;
   if (execReturn.rc != 0) {
     common.printError(`Java version check failed with return code: ${execReturn.rc}: ${version}`);

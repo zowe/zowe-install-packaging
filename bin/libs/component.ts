@@ -43,6 +43,16 @@ const PLUGIN_DEF_SCHEMA_ID = "https://zowe.org/schemas/v2/appfw-plugin-definitio
 const PLUGIN_DEF_SCHEMAS = `${runtimeDirectory}/components/app-server/schemas/plugindefinition-schema.json`;
 
 
+export function getEnabledComponents(): string[] {
+  let components = Object.keys(ZOWE_CONFIG.components);
+  let enabled = [];
+  components.forEach((key:string) => {
+    if (ZOWE_CONFIG.components[key].enabled == true) {
+      enabled.push(key);
+    }
+  });
+  return enabled;
+}
 
 export function getManifestPath(componentDir: string): string|undefined {
   if (fs.fileExists(`${componentDir}/manifest.yaml`)) {

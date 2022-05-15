@@ -17,8 +17,6 @@ import * as os from 'os';
 import * as common from './common';
 import * as shell from './shell';
 import * as stringlib from './string';
-//if zos
-import * as zosfs from './zos-fs';
 
 // internal errors counter for validations
 std.setenv('ZWE_PRIVATE_ERRORS_FOUND', '0');
@@ -83,19 +81,13 @@ export function getEnvironments(): string {
 // All variables defined in env file will be exported.
 export function sourceEnv(envFile: string): boolean {
   //TODO i hope encoding is correct here
-  let fileContents = std.loadFile(envFile);
-  if (fileContents === null) {
+  let fileContents = shell.execOutSync('cat', envFile);
+  if (!fileContents.out) {
     common.printError(`Error loading file ${envFile}`);
     return false;
   }
-  if (os.platform == 'zos') {
-    let encoding = zosfs.detectFileEncoding(envFile,'ZWE_',1047);
-    if (encoding==1047) {
-      fileContents = stringlib.ebcdicToAscii(fileContents);
-    }
-  }
 
-  let fileLines = fileContents.split('\n');
+  let fileLines = fileContents.out.split('\n');
   let index;
   fileLines.forEach((line: string)=> {
     if ((index = line.indexOf('=')) != -1) {

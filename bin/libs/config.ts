@@ -87,11 +87,17 @@ export function generateInstanceEnvFromYamlConfig(haInstance: string) {
   }
 
   // delete old files to avoid potential issues
-  common.printFormattedTrace( "ZWELS", "bin/libs/config.sh,generate_instance_env_from_yaml_config", "deleting old files under ${zwePrivateWorkspaceEnvDir}");
-  shell.execSync('sh', `find`, zwePrivateWorkspaceEnvDir, `-type`, `f`, `-name`, ".*-${haInstance}.env", `|`, `xargs`, `rm`, `-f`);
-  shell.execSync('sh', `find`, zwePrivateWorkspaceEnvDir, `-type`, `f`, `-name`, ".*-${haInstance}.json", `|`, `xargs`, `rm`, `-f`);
-  shell.execSync('sh', `find`, zwePrivateWorkspaceEnvDir, `-type`, `f`, `-name`, ".zowe.json", `|`, `xargs`, `rm`, `-f`);
-
+  common.printFormattedTrace( "ZWELS", "bin/libs/config.sh,generate_instance_env_from_yaml_config", `deleting old files under ${zwePrivateWorkspaceEnvDir}`);
+  let foundFiles = fs.getFilesInDirectory(zwePrivateWorkspaceEnvDir);
+  if (foundFiles) {
+    foundFiles.forEach((file:string)=> {
+      if (file.endsWith(".zowe.json")
+          || file.endsWith(`-${haInstance}.env`)
+          || file.endsWith(`-${haInstance}.json`)) {
+        os.remove(zwePrivateWorkspaceEnvDir+'/'+file);
+      }
+    });
+  }
   // prepare .zowe.json and .zowe-<ha-id>.json
   common.printFormattedTrace("ZWELS", "bin/libs/config.sh,generate_instance_env_from_yaml_config", `config-converter yaml convert --ha ${haInstance} ${cliParameterConfig}`);
   let result = shell.execOutSync('node', `${runtimeDirectory}/bin/utils/config-converter/src/cli.js`, `yaml`, `convert`, `--wd`, zwePrivateWorkspaceEnvDir, `--ha`, haInstance, cliParameterConfig, `--verbose`);
@@ -108,7 +114,7 @@ export function generateInstanceEnvFromYamlConfig(haInstance: string) {
 
   common.printFormattedTrace("ZWELS", "bin/libs/config.sh,generate_instance_env_from_yaml_config", `- Exit code: ${result.rc}: ${result.out}`);
   
-  if (!fs.fileExists("${zwePrivateWorkspaceEnvDir}/.instance-${haInstance}.env")) {
+  if (!fs.fileExists(`${zwePrivateWorkspaceEnvDir}/.instance-${haInstance}.env`)) {
     common.printFormattedError("ZWELS", "bin/libs/config.sh,generate_instance_env_from_yaml_config", `ZWEL0140E: Failed to translate Zowe configuration (${cliParameterConfig}).`);
     std.exit(140);
   }

@@ -165,6 +165,14 @@ export function ebcdicToAscii(input: string): string {
   return String.fromCharCode.apply(null, ascii);
 }
 
+export function asciiToEbcdic(input: string): string {
+  let ebcdic = [];
+  for (let i = 0; i < input.length; i++){
+    ebcdic.push(MAP_819_TO_1047[input.charCodeAt(i)]);
+  }
+  return String.fromCharCode.apply(null, ebcdic);
+}
+
 
 // via https://gist.github.com/joni/3760795
 export function stringToBuffer(input: string) {
@@ -321,6 +329,9 @@ export function base64Encode(input: string): string {
   return String.fromCharCode.apply(null, out);
 }
 
-export function itemInList(stringList: string, stringToFind: string, separator: string=','): boolean {
+export function itemInList(stringList: string, stringToFind?: string, separator: string=','): boolean {
+  if (!stringToFind) {
+    return false;
+  }
   return stringList.split[separator].includes(stringToFind);
 }
