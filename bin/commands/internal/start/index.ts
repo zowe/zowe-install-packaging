@@ -9,15 +9,18 @@
   Copyright Contributors to the Zowe Project.
 */
 
+// @ts-ignore
 import * as std from 'std';
+// @ts-ignore
 import * as os from 'os';
+// @ts-ignore
 import * as zos from 'zos';
-import * as common from '../../libs/common';
-import * as stringlib from '../../libs/string';
-import * as shell from '../../libs/shell';
-import * as config from '../../libs/config';
+import * as common from '../../../libs/common';
+//import * as stringlib from '../../../libs/string';
+//import * as shell from '../../../libs/shell';
+//import * as config from '../../../libs/config';
 import * as internalStartPrepare from './prepare/index';
-import * as internalStartComponent from './component/index';
+//import * as internalStartComponent from './component/index';
 
 // Validation
 common.requireZoweYaml();
@@ -29,11 +32,11 @@ common.requireZoweYaml();
 internalStartPrepare.execute();
 
 if (std.getenv('ZWE_PRIVATE_CONTAINER_COMPONENT_ID')) {
-  internalStartComponent.execute(std.getenv("ZWE_PRIVATE_CONTAINER_COMPONENT_ID"), false);
+//  internalStartComponent.execute(std.getenv("ZWE_PRIVATE_CONTAINER_COMPONENT_ID"), false);
   //TODO ensure this waits
 } else {
   const launchComponents = std.getenv("ZWE_LAUNCH_COMPONENTS").split(',');
   launchComponents.forEach(function(componentName:string) {
-    internalStartComponent.execute(componentName, true);
+//    internalStartComponent.execute(componentName, true);
   });
 }
