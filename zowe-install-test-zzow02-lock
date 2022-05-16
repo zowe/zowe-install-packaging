@@ -1,15 +1,1 @@
-{
-  "lockAcquiredTime": "Mon May 16 2022 13:43:35 GMT+0000 (Coordinated Universal Time)",
-  "uid": "1652708615895624061",
-  "repository": {
-    "owner": "zowe",
-    "repo": "zowe-install-packaging"
-  },
-  "branch": "users/carson/update-explorer-apis",
-  "workflow": "Zowe CICD Integration Tests",
-  "job": "cicd-test",
-  "actor": "zowe-robot",
-  "runId": 2332292771,
-  "runNumber": 958,
-  "link": "https://github.com/zowe/zowe-install-packaging/actions/runs/2332292771"
-}
+""
