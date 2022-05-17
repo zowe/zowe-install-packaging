@@ -52,6 +52,14 @@ case $install_test_choice in
     test_file="$INSTALL_PTF_TWICE_TESTFILE"
     ;;
 
+    "VSAM Caching Storage Method")
+    test_file="$VSAM_CACHING_STORAGE_METHOD_TESTFILE"
+    ;;
+
+    "Infinispan Caching Storage Method")
+    test_file="$INFINISPAN_CACHING_STORAGE_METHOD_TESTFILE"
+    ;;
+
     "Generate API Documentation")
     test_file="$GENERAL_API_DOCUMENTATION_TESTFILE"
     ;;
