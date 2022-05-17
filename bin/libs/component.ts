@@ -20,12 +20,13 @@ import * as zosfs from './zos-fs';
 import * as stringlib from './string';
 import * as shell from './shell';
 import * as configmgr from './configmgr';
+//import * as shell from './shell';
 
 const CONFIG_MGR=configmgr.CONFIG_MGR;
 const ZOWE_CONFIG=configmgr.ZOWE_CONFIG;
-const runtimeDirectory=ZOWE_CONFIG.runtimeDirectory;
-const extensionDirectory=ZOWE_CONFIG.extensionDirectory;
-const workspaceDirectory=ZOWE_CONFIG.workspaceDirectory;
+const runtimeDirectory=ZOWE_CONFIG.zowe.runtimeDirectory;
+const extensionDirectory=ZOWE_CONFIG.zowe.extensionDirectory;
+const workspaceDirectory=ZOWE_CONFIG.zowe.workspaceDirectory;
 
 //key: name of config, value: boolean on if it is cached already
 const configLoadedList:any = {};
@@ -231,7 +232,7 @@ export function findAllInstalledComponents(): string {
     });
   }
 
-  if (extensionDirectory) {
+  if (extensionDirectory && fs.directoryExists(extensionDirectory)) {
     subDirectories = fs.getSubdirectories(extensionDirectory);
     if (subDirectories) {
       subDirectories.forEach((component: string)=> {
@@ -255,7 +256,7 @@ export function findAllInstalledComponents2(): string[] {
     });
   }
 
-  if (extensionDirectory) {
+  if (extensionDirectory && fs.directoryExists(extensionDirectory)) {
     subDirectories = fs.getSubdirectories(extensionDirectory);
     if (subDirectories) {
       subDirectories.forEach((component: string)=> {
@@ -355,8 +356,8 @@ export function substituteEnv(contents: string) {
 */
 
 
-const STATIC_DEF_DIR=std.getenv('ZWE_STATIC_DEFINITIONS_DIR');
 export function processComponentApimlStaticDefinitions(componentDir: string): boolean {
+  const STATIC_DEF_DIR=std.getenv('ZWE_STATIC_DEFINITIONS_DIR');
   if (!STATIC_DEF_DIR) {
     common.printError("Error: ZWE_STATIC_DEFINITIONS_DIR is required to process component definitions for API Mediation Layer.");
     return false;
@@ -369,7 +370,7 @@ export function processComponentApimlStaticDefinitions(componentDir: string): bo
   }
 
   let allSucceed=true;
-  const componentName = manifest.name;
+//  const componentName = manifest.name;
   if (manifest.apimlServices && manifest.apimlServices.static) {
     let staticDefs = manifest.apimlServices.static;
     for (let i = 0; i < staticDefs.length; i++) {
@@ -381,22 +382,21 @@ export function processComponentApimlStaticDefinitions(componentDir: string): bo
         allSucceed=false;
         break;
       } else {
+        /*
         common.printDebug(`Process ${componentName} service static definition file ${file}`);
         const sanitizedDefName=stringlib.sanitizeAlphanum(file);
 
-        const defContents = shell.execOutSync('sh', `( echo "cat <<EOF" ; cat "${path}" ; echo EOF ) | sh`);
+        //TODO handle env var resolution in template file
+        const contentsReturn = shell.execOutSync('sh', '-c', `( echo "cat <<EOF" ; cat "${path}" ; echo ; echo EOF ) | sh)`);
 
         const zweCliParameterHaInstance=std.getenv("ZWE_CLI_PARAMETER_HA_INSTANCE");
         const outPath=`${STATIC_DEF_DIR}/${componentName}.${sanitizedDefName}.${zweCliParameterHaInstance}.yaml`;
 
-        if (defContents.rc != 0){
-          common.printDebug('defContents shell exec failed');
-          allSucceed = false;
-        } else {
-          common.printDebug(`- writing ${outPath}`);
-          const buff = stringlib.stringToBuffer(defContents.out as string);
-          fs.createFileFromBuffer(outPath, 0o770, buff);
-        }
+        common.printDebug(`- writing ${outPath}`);
+
+        const buff = stringlib.stringToBuffer(contentsReturn.out);
+        fs.createFileFromBuffer(outPath, 0o770, buff);
+        */
       }
     }
   }
@@ -480,7 +480,7 @@ export function processComponentAppfwPlugin(componentDir: string): boolean {
   if (manifest && manifest.appfwPlugins) {
     for (let i = 0; i < manifest.appfwPlugins.length; i++) {
       const appfwPlugin = manifest.appfwPlugins[i];
-      const fullPath = `${componentDir}/${appfwPlugin}.path`;
+      const fullPath = `${componentDir}/${appfwPlugin.path}`;
       if (!fs.fileExists(`${fullPath}/pluginDefinition.json`)) {
         common.printError(`App Framework plugin directory ${fullPath} does not have pluginDefinition.json`);
         return false;
@@ -513,8 +513,8 @@ export function processComponentAppfwPlugin(componentDir: string): boolean {
  The supported manifest entry is ".gatewaySharedLibs". All shared libs
  defined will be passed to install-app.sh for proper installation.
 */
-const gatewaySharedLibs = std.getenv('ZWE_GATEWAY_SHARED_LIBS');
 export function processComponentGatewaySharedLibs(componentDir: string): boolean {
+  const gatewaySharedLibs = std.getenv('ZWE_GATEWAY_SHARED_LIBS');
   fs.mkdirp(gatewaySharedLibs, 0o770);
 
   const manifest = getManifest(componentDir);
@@ -565,8 +565,8 @@ export function processComponentGatewaySharedLibs(componentDir: string): boolean
  The supported manifest entry is ".discoverySharedLibs". All shared libs
  defined will be passed to install-app.sh for proper installation.
 */
-const discoverySharedLibs = std.getenv('ZWE_DISCOVERY_SHARED_LIBS');
 export function processComponentDiscoverySharedLibs(componentDir: string): boolean {
+  const discoverySharedLibs = std.getenv('ZWE_DISCOVERY_SHARED_LIBS');
   fs.mkdirp(discoverySharedLibs, 0o770);
 
   const manifest = getManifest(componentDir);

@@ -16,6 +16,11 @@ import * as xplatform from 'xplatform';
 import * as fs from './fs';
 import * as stringlib from './string';
 
+declare namespace console {
+  function log(...args:string[]): void;
+};
+
+
 const BUFFER_SIZE=4096;
 
 export type ExecReturn = {
@@ -134,12 +139,117 @@ export function execOutErrSync(command: string, ...args: string[]): ExecReturn {
     let err = readStreamFully(errArray[0]);
     os.close(errArray[0]);
     os.close(errArray[1]);
-
     return {
-        rc, out, err
+        rc, err
     };
 }
 
+
+export function execOutErrSync(command: string, ...args: string[]): ExecReturn {
+  let pipeArray = os.pipe();
+  let errArray = os.pipe();
+  const rc = os.exec([command, ...args], { block: true, usePath: true, stdout: pipeArray[1], stderr: errArray[1]});
+
+  let buff = new Uint8Array(BUFFER_SIZE);
+  os.open(pipeArray[0]);
+  let bytesRead = os.read(pipeArray[0], buff.buffer, 0, BUFFER_SIZE);
+  let out = '';
+  while (bytesRead == BUFFER_SIZE) {
+    out+=String.fromCharCode.apply(null, buff);
+    buff.fill(0, 0, bytesRead);
+    bytesRead = os.read(pipeArray[0], buff.buffer, 0, BUFFER_SIZE);
+  }
+  if (bytesRead>0) {
+    out+=String.fromCharCode.apply(null, buff.slice(0,bytesRead-1));
+  }
+  os.close(pipeArray[0]);
+  os.close(pipeArray[1]);
+  if (os.platform == 'zos') {
+    out=stringlib.ebcdicToAscii(out);
+  }
+
+
+  let errBuff = new Uint8Array(BUFFER_SIZE);
+  os.open(errArray[0]);
+  bytesRead = os.read(errArray[0], errBuff.buffer, 0, BUFFER_SIZE);
+  let err = '';
+  while (bytesRead == BUFFER_SIZE) {
+    err+=String.fromCharCode.apply(null, errBuff);
+    errBuff.fill(0, 0, bytesRead);
+    bytesRead = os.read(errArray[0], errBuff.buffer, 0, BUFFER_SIZE);
+  }
+  if (bytesRead>0) {
+    err+=String.fromCharCode.apply(null, errBuff.slice(0,bytesRead-1));
+  }
+  os.close(errArray[0]);
+  os.close(errArray[1]);
+  if (os.platform == 'zos') {
+    err=stringlib.ebcdicToAscii(err);
+  }
+  return {
+    rc, out, err
+  };
+}
+
+export function execOutErrSync2(command: string, ...args: string[]): ExecReturn {
+  let pipeArray = os.pipe();
+  let errArray = os.pipe();
+
+  let shouldReadOut = false;
+  let shouldReadErr = false;
+
+  std.setReadHandler
+  
+  const pid = os.exec([command, ...args], { block: false, usePath: true, stdout: pipeArray[1], stderr: errArray[1]});
+  console.log(`Executed command ${command}, pid=${pid}, awaiting completion`);
+  let result = os.waitpid(pid);
+  let rc = result[1];
+  if (result[0] < 0) {
+    console.log(`Call to ${command} failed, error=${result[0]}`);
+    return { rc };
+  }
+
+  
+  let buff = new Uint8Array(BUFFER_SIZE);
+  os.open(pipeArray[0]);
+  let bytesRead = shouldReadOut ? os.read(pipeArray[0], buff.buffer, 0, BUFFER_SIZE) : 0;
+  let out = '';
+  while (bytesRead == BUFFER_SIZE) {
+    out+=String.fromCharCode.apply(null, buff);
+    buff.fill(0, 0, bytesRead);
+    bytesRead = os.read(pipeArray[0], buff.buffer, 0, BUFFER_SIZE);
+  }
+  if (bytesRead>0) {
+    out+=String.fromCharCode.apply(null, buff.slice(0,bytesRead-1));
+  }
+  os.close(pipeArray[0]);
+  os.close(pipeArray[1]);
+  if (os.platform == 'zos') {
+    out=stringlib.ebcdicToAscii(out);
+  }
+
+
+  let errBuff = new Uint8Array(BUFFER_SIZE);
+  os.open(errArray[0]);
+  bytesRead = shouldReadErr ? os.read(errArray[0], errBuff.buffer, 0, BUFFER_SIZE) : 0;
+  let err = '';
+  while (bytesRead == BUFFER_SIZE) {
+    err+=String.fromCharCode.apply(null, errBuff);
+    errBuff.fill(0, 0, bytesRead);
+    bytesRead = os.read(errArray[0], errBuff.buffer, 0, BUFFER_SIZE);
+  }
+  if (bytesRead>0) {
+    err+=String.fromCharCode.apply(null, errBuff.slice(0,bytesRead-1));
+  }
+  os.close(errArray[0]);
+  os.close(errArray[1]);
+  if (os.platform == 'zos') {
+    err=stringlib.ebcdicToAscii(err);
+  }
+  return {
+    rc, out, err
+  };
+}
 
 export function which(command: string): path|undefined {
   //TODO not windows

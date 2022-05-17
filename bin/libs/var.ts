@@ -93,8 +93,16 @@ export function sourceEnv(envFile: string): boolean {
   let index;
   fileLines.forEach((line: string)=> {
     if ((index = line.indexOf('=')) != -1) {
-      std.setenv(line.substring(0,index), line.substring(index+1));
-      common.printTrace(`Set env var ${line.substring(0, index)} to ${std.getenv(line.substring(0,index))}`);
+      let key = line.substring(0, index);
+      if ((line[index+1] == "'" && line.endsWith("'")) || (line[index+1] == '"' && line.endsWith('"'))) {
+        let val = line.substring(index + 2, line.length-1);
+        std.setenv(key, val);
+        common.printTrace(`Set env var ${key} to ${val}`);
+      } else {
+        let val = line.substring(index + 1);
+        std.setenv(key, val);
+        common.printTrace(`Set env var ${key} to ${val}`);
+      }
     }
   });
   return true;

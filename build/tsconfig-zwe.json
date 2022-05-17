@@ -13,10 +13,15 @@
     "noFallthroughCasesInSwitch": false,
     "allowUnreachableCode": false,
     "allowJs": false,
-    "listEmittedFiles": true
+    "listEmittedFiles": true,
+    "strict": true,
+    
   },
   "include": [
-    "../bin/lib/*",
+    "../bin/libs/*",
     "../bin/commands/**/*"
+  ],
+  "exclude": [
+    "../bin/libs/json.ts"
   ]
 }

@@ -162,17 +162,12 @@ export function loadEnvironmentVariables(componentId?: string) {
   std.setenv('ZWE_zowe_workspaceDirectory',workspaceDirectory);
 
   if (!std.getenv('ZWE_VERSION')) {
-    let runtimeManifestString=std.loadFile(`${runtimeDirectory}/manifest.json`);
-    if (runtimeManifestString) {
-      if (os.platform=='zos') {
-        let encoding = zosfs.detectFileEncoding(`${runtimeDirectory}/manifest.json`,'version',1047);
-        if (encoding==1047) {
-          runtimeManifestString = stringlib.ebcdicToAscii(runtimeManifestString);
-        }
-      }
+// display starting information
+    let manifestReturn = shell.execOutSync('cat', `${runtimeDirectory}/manifest.json`);
 
-      std.setenv('ZWE_VERSION', JSON.parse(runtimeManifestString).version);
-    }
+    const runtimeManifest = manifestReturn.rc == 0 ? JSON.parse(manifestReturn.out) : undefined;
+    const zoweVersion = runtimeManifest ? runtimeManifest.version : undefined;
+    std.setenv('ZWE_VERSION', zoweVersion);
   }
 
   // we must have $workspaceDirectory at this point
@@ -181,14 +176,15 @@ export function loadEnvironmentVariables(componentId?: string) {
   }
 
   // these are already set in prepare stage, re-ensure for start
-  std.setenv('ZWE_PRIVATE_WORKSPACE_ENV_DIR', `${workspaceDirectory}/.env`);
+  let zwePrivateWorkspaceEnvDir=`${workspaceDirectory}/.env`;
+  std.setenv('ZWE_PRIVATE_WORKSPACE_ENV_DIR', zwePrivateWorkspaceEnvDir);
   std.setenv('ZWE_STATIC_DEFINITIONS_DIR', `${workspaceDirectory}/api-mediation/api-defs`);
   std.setenv('ZWE_GATEWAY_SHARED_LIBS', `${workspaceDirectory}/gateway/sharedLibs/`);
   std.setenv('ZWE_DISCOVERY_SHARED_LIBS', `${workspaceDirectory}/discovery/sharedLibs/`);
 
   // now we can load all variables
   let zweCliParameterHaInstance=std.getenv('ZWE_CLI_PARAMETER_HA_INSTANCE');
-  let zwePrivateWorkspaceEnvDir=std.getenv('ZWE_PRIVATE_WORKSPACE_ENV_DIR');    
+
   if (componentId && fs.fileExists(`${workspaceDirectory}/.env/${componentId}/.instance-${zweCliParameterHaInstance}.env`)) {
     varlib.sourceEnv(`${zwePrivateWorkspaceEnvDir}/${componentId}/.instance-${zweCliParameterHaInstance}.env`);
   } else if (fs.fileExists(`${zwePrivateWorkspaceEnvDir}/.instance-${zweCliParameterHaInstance}.env`)) {

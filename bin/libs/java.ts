@@ -81,8 +81,8 @@ export function validateJavaHome(javaHome:string|undefined=std.getenv("JAVA_HOME
     return false;
   }
 
-  let execReturn = shell.execOutSync(fs.resolvePath(javaHome,`/bin/java`), `-version`);
-  const version = execReturn.out;
+  let execReturn = shell.execErrSync(fs.resolvePath(javaHome,`/bin/java`), `-version`);
+  const version = execReturn.err;
   if (execReturn.rc != 0) {
     common.printError(`Java version check failed with return code: ${execReturn.rc}: ${version}`);
     return false;
@@ -95,10 +95,10 @@ export function validateJavaHome(javaHome:string|undefined=std.getenv("JAVA_HOME
     for (let i = 0; i < versionLines.length; i++) {
       if ((index = versionLines[i].indexOf('java version')) != -1) {
         //format of: java version "1.8.0_321"
-        javaVersionShort=versionLines[i].substring(index+('java version'.length)+2);
+        javaVersionShort=versionLines[i].substring(index+('java version'.length)+2, versionLines[i].length-1);
         break;
       } else if ((index = versionLines[i].indexOf('openjdk version')) != -1) {
-        javaVersionShort=versionLines[i].substring(index+('openjdk version'.length)+2);
+        javaVersionShort=versionLines[i].substring(index+('openjdk version'.length)+2, versionLines[i].length-1);
         break;
       }
     }

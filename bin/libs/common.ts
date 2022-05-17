@@ -281,7 +281,7 @@ export function printFormattedMessage(service: string, logger: string, levelName
     return false;
   }
 
-  const logLinePrefix=`${date("-u '+%Y-%m-%d %T'")} <${service}:$$> ${getUserId()} ${canonicalLevelName} (${logger})`;
+  const logLinePrefix=`${date("-u", "'+%Y-%m-%d %T'")} <${service}:${xplatform.getpid()})> ${getUserId()} ${level.toUpperCase()} (${logger})`;
   let lines = message.split('\n');
   lines.forEach((line: string)=> {
     if (!FORMATTING_TEST.test(line)) {

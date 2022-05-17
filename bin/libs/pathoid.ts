@@ -1,6 +1,10 @@
 import * as os from 'os';
 import * as xplatform from 'xplatform';
 
+declare namespace console {
+  function log(...args:string[]): void;
+};
+
 export class PathObject {
     
 }

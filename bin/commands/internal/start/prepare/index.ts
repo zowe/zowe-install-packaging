@@ -122,7 +122,7 @@ function prepareWorkspaceDirectory() {
 }
 
 // Global validations
-function globalValidate(enabledComponents:string[]) {
+function globalValidate(enabledComponents:string[]): void {
   common.printFormattedInfo("ZWELS", "zwe-internal-start-prepare,global_validate", "process global validations ...");
 
   // validate_runtime_user
@@ -139,7 +139,7 @@ function globalValidate(enabledComponents:string[]) {
   let writable = fs.isDirectoryWritable(workspaceDirectory);
   if (!writable) {
     privateErrors++;
-    common.printFormattedError('ZWELS', "zwe-internal-start-prepare,global_validate", `workspace directory ${workspaceDirectory} is not writable`);
+    common.printFormattedError('ZWELS', "zwe-internal-start-prepare,global_validate", `Workspace directory ${workspaceDirectory} is not writable`);
   }
 
   console.log('Check if in container');
@@ -231,8 +231,12 @@ function validateComponents(enabledComponents:string[]): any {
           //TODO verify that this returns things that we want, currently it just uses setenv
           const envVars = config.loadEnvironmentVariables(componentId);
           componentEnvironments[manifest.name] = envVars;
-          let result = shell.execOutErrSync('sh', fullPath);
-          privateErrors=prevErrors+result.rc;
+          let result = shell.execSync('sh', '-c', `. ${runtimeDirectory}/bin/libs/index.sh`, `;`, fullPath);
+          privateErrors=prevErrors;
+          if (result.rc) {
+            privateErrors++;
+            common.printFormattedError(`ZWELS`, "zwe-internal-start-prepare,validate_components", `Error: Component ${componentId} ended with nonzero rc=${result.rc}`);
+          }
         } else {
           common.printFormattedError("ZWELS", "zwe-internal-start-prepare,validate_components", `Error ZWEL0172E: Component ${componentId} has commands.validate defined but the file is missing.`);
         }
@@ -278,7 +282,7 @@ function configureComponents(componentEnvironments?: any, enabledComponents?:str
       fs.mkdirp(privateWorkspaceEnvDir, 0o700);
 
       // copy manifest to workspace
-      shell.execSync('cp', `"${manifestPath}"`, `"${privateWorkspaceEnvDir}/"`);
+      shell.execSync('cp', manifestPath, `${privateWorkspaceEnvDir}/`);
 
       common.printFormattedDebug("ZWELS", "zwe-internal-start-prepare,configure_components", `- configure ${componentId}`);
 
@@ -296,7 +300,7 @@ function configureComponents(componentEnvironments?: any, enabledComponents?:str
           } else {
             config.loadEnvironmentVariables(componentId);
           }
-          const result = shell.execOutErrSync('sh', preconfigurePath);
+          const result = shell.execOutErrSync('sh', '-c', `. ${runtimeDirectory}/bin/libs/index.sh`, `;`, preconfigurePath);
           common.printFormattedDebug("ZWELS", "zwe-internal-start-prepare,configure_components", result.rc ? result.err : result.out);
         } else {
           common.printFormattedError("ZWELS", "zwe-internal-start-prepare,configure_components", `Error ZWEL0172E: Component ${componentId} has commands.preConfigure defined but the file is missing.`);
@@ -345,7 +349,7 @@ function configureComponents(componentEnvironments?: any, enabledComponents?:str
           // execute configure step and generate environment snapshot
           // NOTE: env var list is not updated because it should not have changed between preconfigure step and now
 
-          const result = shell.execOutErrSync('sh', ...`${fullPath} ; rc=$? ; export -p | grep -v -E '^export (run_zowe_start_component_id=|ZWELS_START_COMPONENT_ID|ZWE_LAUNCH_COMPONENTS|env_file=|key=|line=|service=|logger=|level=|expected_log_level_val=|expected_log_level_var=|display_log=|message=|utils_dir=|print_formatted_function_available=|LINENO=|ENV|opt|OPTARG|OPTIND|LOGNAME=|USER=|SSH_|SHELL=|PWD=|OLDPWD=|PS1=|ENV=|LS_COLORS=|_=)' | grep -v -E '^declare -x (run_zowe_start_component_id=|ZWELS_START_COMPONENT_ID|ZWE_LAUNCH_COMPONENTS|env_file=|key=|line=|service=|logger=|level=|expected_log_level_val=|expected_log_level_var=|display_log=|message=|utils_dir=|print_formatted_function_available=|LINENO=|ENV|opt|OPTARG|OPTIND|LOGNAME=|USER=|SSH_|SHELL=|PWD=|OLDPWD|PS1=|ENV=|LS_COLORS=|_=)' > "${zwePrivateWorkspaceEnvDir}/${componentName}/.${zweCliParameterHaInstance}.env" ; return $rc`.split(' '));
+          const result = shell.execOutErrSync('sh', '-c', `. ${runtimeDirectory}/bin/libs/index.sh`, `;`, ...`${fullPath} ; rc=$? ; export -p | grep -v -E '^export (run_zowe_start_component_id=|ZWELS_START_COMPONENT_ID|ZWE_LAUNCH_COMPONENTS|env_file=|key=|line=|service=|logger=|level=|expected_log_level_val=|expected_log_level_var=|display_log=|message=|utils_dir=|print_formatted_function_available=|LINENO=|ENV|opt|OPTARG|OPTIND|LOGNAME=|USER=|SSH_|SHELL=|PWD=|OLDPWD=|PS1=|ENV=|LS_COLORS=|_=)' | grep -v -E '^declare -x (run_zowe_start_component_id=|ZWELS_START_COMPONENT_ID|ZWE_LAUNCH_COMPONENTS|env_file=|key=|line=|service=|logger=|level=|expected_log_level_val=|expected_log_level_var=|display_log=|message=|utils_dir=|print_formatted_function_available=|LINENO=|ENV|opt|OPTARG|OPTIND|LOGNAME=|USER=|SSH_|SHELL=|PWD=|OLDPWD|PS1=|ENV=|LS_COLORS=|_=)' > "${zwePrivateWorkspaceEnvDir}/${componentName}/.${zweCliParameterHaInstance}.env" ; return $rc`.split(' '));
 
           common.printFormattedDebug("ZWELS", "zwe-internal-start-prepare,configure_components", result.rc ? result.err : result.out);
 
@@ -454,10 +458,11 @@ export function execute() {
   // no validation for running in container
   globalValidate(enabledComponents);
   // no validation for running in container
+  let environments;
   if (runInContainer != 'true') {
-    validateComponents(enabledComponents);
+    environments = validateComponents(enabledComponents);
   }
-  configureComponents(undefined, enabledComponents);
+  configureComponents(environments, enabledComponents);
 
   // display instance prepared info
   common.printFormattedInfo("ZWELS", "zwe-internal-start-prepare", "Zowe runtime environment prepared");
