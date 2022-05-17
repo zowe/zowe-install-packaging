@@ -85,6 +85,8 @@ spec:
                   fieldPath: metadata.namespace
             - name: CMMN_LB
               value: apiml-common-lib/bin/api-layer-lite-lib-all.jar
+            - name: QUICK_START
+              value: "-javaagent:/home/zowe/runtime/bin/opentelemetry-javaagent.jar -Dotel.traces.exporter=otlp -Dotel.resource.attributes=service.name=gateway -Dotel.exporter.otlp.traces.endpoint=http://34.71.61.249:4317"
           lifecycle:
             preStop:
               exec:
@@ -114,7 +116,7 @@ spec:
       initContainers:
         - name: init-zowe
           # image: zowe-docker-release.jfrog.io/ompzowe/zowe-launch-scripts:latest
-          image: zowe-docker-snapshot.jfrog.io/ompzowe/zowe-launch-scripts:1.25.0-ubuntu.staging
+          image: zowe-docker-snapshot.jfrog.io/ompzowe/zowe-launch-scripts:1.28.0-ubuntu.users-jack-test-zlux-tracing
           imagePullPolicy: Always
           resources:
             requests:

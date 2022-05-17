@@ -45,7 +45,7 @@ spec:
           containers:
             - name: cleanup-static-definitions
               # image: zowe-docker-release.jfrog.io/ompzowe/zowe-launch-scripts:latest
-              image: zowe-docker-snapshot.jfrog.io/ompzowe/zowe-launch-scripts:1.25.0-ubuntu.staging
+              image: zowe-docker-snapshot.jfrog.io/ompzowe/zowe-launch-scripts:1.28.0-ubuntu.users-jack-test-zlux-tracing
               imagePullPolicy: Always
               resources:
                 requests:
