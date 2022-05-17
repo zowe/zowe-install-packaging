@@ -4,6 +4,10 @@
 
 */
 
+declare namespace console {
+  function log(...args:string[]): void;
+};
+
 export class Objutils {
     static isObject(x:any){
         let type = typeof x;

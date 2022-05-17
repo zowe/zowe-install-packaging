@@ -35,6 +35,7 @@ export function readdir(path:string):[string[],number];
 export function realpath(path:string):[string,number]
 export function getcwd():[string,number];
 export function chdir(path:string):number;
+export function symlink(target: string, linkpath: string):number;
 export function mkdir(path:string, mode?:number):number;
 export function dup2(oldfd:number, newfd:number):void;
 export function sleep(millis:number):void;
