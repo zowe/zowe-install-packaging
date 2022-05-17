@@ -9,11 +9,8 @@
   Copyright Contributors to the Zowe Project.
 */
 
-// @ts-ignore
 import * as std from 'std';
-// @ts-ignore
 import * as os from 'os';
-// @ts-ignore
 
 import * as common from './common';
 import * as fs from './fs';
@@ -24,7 +21,7 @@ std.unsetenv('ZWE_PRIVATE_LOG_FILE');
 
 
 export function prepareLogFile(logDir: string, logFilePrefix: string): void {
-  logDir=stringlib.removeTrailingSlash(fs.convertToAbsolutePath(logDir));
+  logDir=stringlib.removeTrailingSlash(fs.convertToAbsolutePath(logDir) as string);
 
   const logFile=`${logDir}/${logFilePrefix}-${common.date('+%Y%m%dT%H%M%S')}.log`;
   if (!fs.fileExists(logFile)) {

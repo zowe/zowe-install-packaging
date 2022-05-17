@@ -9,16 +9,14 @@
   Copyright Contributors to the Zowe Project.
 */
 
-// @ts-ignore
 import * as std from 'std';
-// @ts-ignore
 import * as os from 'os';
 
 import * as common from './common';
 import * as shell from './shell';
 import * as stringlib from './string';
 
-std.setenv('ZWE_RUN_ON_ZOS', os.platform == 'zos');
+std.setenv('ZWE_RUN_ON_ZOS', ""+(os.platform == 'zos'));
 std.setenv('ZWE_PWD', os.getcwd()[0]);
 
 // Return system name in lower case
@@ -120,7 +118,10 @@ export function waitForProcessExit(pid: number): boolean {
 
 export function gracefullyShutdown(pid?: number): boolean {
   if (pid === undefined || pid < 1) {
-    pid = std.getenv("ZWE_GRACEFULLY_SHUTDOWN_PID");
+    let pidString = std.getenv("ZWE_GRACEFULLY_SHUTDOWN_PID");
+    if (pidString){
+      pid = parseInt(pidString);      
+    }
     if ((pid===undefined || pid < 1) && os.platform == 'linux') {
       //container case
       pid = 1;

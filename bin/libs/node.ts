@@ -9,9 +9,7 @@
   Copyright Contributors to the Zowe Project.
 */
 
-// @ts-ignore
 import * as std from 'std';
-// @ts-ignore
 import * as os from 'os';
 
 import * as fs from './fs';
@@ -34,7 +32,7 @@ std.setenv('__UNTAGGED_READ_MODE','V6');
 export function ensureNodeIsOnPath(): void {
   let path=std.getenv('PATH');
   let nodeHome=std.getenv('NODE_HOME');
-  if (!path.includes(`:${nodeHome}/bin:`)) {
+  if (path && !path.includes(`:${nodeHome}/bin:`)) {
     std.setenv('PATH', `${nodeHome}/bin:${path}`);
   }
 }
@@ -55,7 +53,7 @@ export function shellReadYamlNodeHome(configList?: string, skipValidate?: boolea
 export function detectNodeHome(): string|undefined {
   let nodeBinHome = shell.which(`node`);
   if (nodeBinHome) {
-    let returnVal = std.realpath(`${nodeBinHome}/../..`);
+    let returnVal = os.realpath(`${nodeBinHome}/../..`);
     if (!returnVal[1]) {
       return returnVal[0];
     }
@@ -68,7 +66,10 @@ export function requireNode() {
     std.setenv('NODE_HOME', shellReadYamlNodeHome());
   }
   if (!std.getenv('NODE_HOME')) {
-    std.setenv('NODE_HOME', detectNodeHome());
+    let discoveredHome = detectNodeHome();
+    if (discoveredHome){
+      std.setenv('NODE_HOME', discoveredHome);
+    }
   }
   if (!std.getenv('NODE_HOME')) {
     common.printErrorAndExit("Error ZWEL0121E: Cannot find node. Please define NODE_HOME environment variable.", undefined, 121);
@@ -77,7 +78,7 @@ export function requireNode() {
   ensureNodeIsOnPath();
 }
 
-export function validateNodeHome(nodeHome:string=std.getenv("NODE_HOME")): boolean {
+export function validateNodeHome(nodeHome:string|undefined=std.getenv("NODE_HOME")): boolean {
   if (!nodeHome) {
     common.printError("Cannot find node. Please define NODE_HOME environment variable.");
     return false;
@@ -95,8 +96,8 @@ export function validateNodeHome(nodeHome:string=std.getenv("NODE_HOME")): boole
   }
  
   try {
-    if (version.startsWith('v')) {
-      let parts = version.split('.');
+    if ((version as string).startsWith('v')) { // valid because rc check
+      let parts = (version as string).split('.');
       const nodeMajorVersion = Number(parts[0].substring(1));
       //const nodeMinorVersion = Number(parts[1]);
       //const nodePatchVersion = Number(parts[2]);

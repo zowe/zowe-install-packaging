@@ -9,9 +9,7 @@
   Copyright Contributors to the Zowe Project.
 */
 
-// @ts-ignore
 import * as std from 'std';
-// @ts-ignore
 import * as os from 'os';
 
 if (!std.getenv("ZWE_zowe_runtimeDirectory")) {

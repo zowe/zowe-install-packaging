@@ -9,9 +9,7 @@
 // Copyright Contributors to the Zowe Project.
 */
 
-// @ts-ignore
 import * as std from 'std';
-// @ts-ignore
 import * as os from 'os';
 
 import * as common from './common';
@@ -62,7 +60,7 @@ export function isPortAvailable(port: number): boolean {
       common.printError(`Netstat test fail with exit code ${retVal.rc} (${retVal.err})`);
       return false;
     }
-    if (retVal.out.includes('Listen')) {
+    if ((retVal.out as string).includes('Listen')) { 
       common.printError(`Port ${port} is already in use by process (${retVal.out})`);
       return false;
     }
@@ -73,7 +71,7 @@ export function isPortAvailable(port: number): boolean {
       common.printError(`Netstat test fail with exit code ${retVal.rc} (${retVal.err})`);
       return false
     }
-    lines = retVal.out.split('\n');
+    lines = (retVal.out as string).split('\n');
     for (let i = 0; i < lines.length; i++) {
       const line = lines[i];
       if (line.includes('LISTEN') && line.includes(''+port)) {
@@ -89,7 +87,7 @@ export function isPortAvailable(port: number): boolean {
       common.printError(`Netstat test fail with exit code ${retVal.rc} (${retVal.err})`);
       return false;
     }
-    lines = retVal.out.split('\n');
+    lines = (retVal.out as string).split('\n');
     for (let i = 0; i < lines.length; i++) {
       const line = lines[i];
       if (line.includes('LISTEN') && line.includes(''+port)) {
@@ -111,7 +109,9 @@ export function getIpAddress(hostname: string): string|undefined {
   if (digResult.out) {
     const digLines = digResult.out.split('\n');
     for (let i = 0; i < digLines.length; i++) {
-      if ((ip=digLines[0].match(ipv4Regexp))) {
+      let matchResult = digLines[0].match(ipv4Regexp); // Type error was here
+      if (matchResult){
+        ip = matchResult[0];  
         break;
       }
     }
@@ -133,11 +133,12 @@ export function getIpAddress(hostname: string): string|undefined {
         pingResult=shell.execOutErrSync('sh', ping, `-c`, `1`, `-4`, `-W`, ""+timeout, hostname);
       }
       if (pingResult.rc==0) {
-        let index = pingResult.out.indexOf('(');
+        let pingOut:string = pingResult.out as string;
+        let index = pingOut.indexOf('(');
         if (index != -1) {
-          let index2 = pingResult.out.indexOf(')',index);
+          let index2 = pingOut.indexOf(')',index);
           if (index2 != -1) {
-            ip=pingResult.out.substring(index+1,index2);
+            ip=pingOut.substring(index+1,index2);
           }
         }
       }
@@ -155,12 +156,12 @@ export function getIpAddress(hostname: string): string|undefined {
           hosts = stringlib.ebcdicToAscii(hosts);
         }
       }
-    }
-    const lines = hosts.split('\n');
-    for (let i = 0; i < lines.length; i++) {
-      let cols = lines[i].split(' ');
-      if (cols.includes(hostname)) {
-        return cols[0];
+      const lines = hosts.split('\n');
+      for (let i = 0; i < lines.length; i++) {
+        let cols = lines[i].split(' ');
+        if (cols.includes(hostname)) {
+          return cols[0];
+        }
       }
     }
   }

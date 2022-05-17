@@ -9,19 +9,16 @@
   Copyright Contributors to the Zowe Project.
 */
 
-// @ts-ignore
 import * as std from 'std';
-// @ts-ignore
 import * as os from 'os';
-// @ts-ignore
 import * as zos from 'zos';
-// @ts-ignore
 import { ConfigManager } from 'Configuration';
 
 import * as common from './common';
 import * as fs from './fs';
 import * as zosfs from './zos-fs';
 import * as stringlib from './string';
+import * as shell from './shell';
 import * as configmgr from './configmgr';
 
 const CONFIG_MGR=configmgr.CONFIG_MGR;
@@ -31,7 +28,7 @@ const extensionDirectory=ZOWE_CONFIG.extensionDirectory;
 const workspaceDirectory=ZOWE_CONFIG.workspaceDirectory;
 
 //key: name of config, value: boolean on if it is cached already
-const configLoadedList = {};
+const configLoadedList:any = {};
 
 
 //TODO this file is full of printErrorAndExit. unreasonable?
@@ -45,7 +42,7 @@ const PLUGIN_DEF_SCHEMAS = `${runtimeDirectory}/components/app-server/schemas/pl
 
 export function getEnabledComponents(): string[] {
   let components = Object.keys(ZOWE_CONFIG.components);
-  let enabled = [];
+  let enabled:string[] = [];
   components.forEach((key:string) => {
     if (ZOWE_CONFIG.components[key].enabled == true) {
       enabled.push(key);
@@ -75,7 +72,7 @@ export function findComponentDirectory(componentId: string): string|undefined {
 }
 
 const pluginPointerDirectory = `${workspaceDirectory}/app-server/plugins`;
-export function registerPlugin(path, pluginDefinition) {
+export function registerPlugin(path:string, pluginDefinition:any){
   const filePath = `${pluginPointerDirectory}/${pluginDefinition.identifier}.json`;
   if (fs.fileExists(filePath)) {
     return true;
@@ -100,7 +97,7 @@ export function registerPlugin(path, pluginDefinition) {
 }
 
 
-export function getPluginDefinition(pluginRootPath) {
+export function getPluginDefinition(pluginRootPath:string) {
   const pluginDefinitionPath = `${pluginRootPath}/pluginDefinition.json`;
 
   if (fs.fileExists(pluginDefinitionPath)) {
@@ -248,7 +245,7 @@ export function findAllInstalledComponents(): string {
 }
 
 export function findAllInstalledComponents2(): string[] {
-  let components=[];
+  let components:string[] = [];
   let subDirectories = fs.getSubdirectories(`${runtimeDirectory}/components`);
   if (subDirectories) {
     subDirectories.forEach((component:string)=> {
@@ -387,20 +384,19 @@ export function processComponentApimlStaticDefinitions(componentDir: string): bo
         common.printDebug(`Process ${componentName} service static definition file ${file}`);
         const sanitizedDefName=stringlib.sanitizeAlphanum(file);
 
-        //TODO handle env var resolution in template file
-        const outHandler = function(data: any) {
-          common.printDebug('Out handler got',data);
-        };
-        const defContents = os.exec(['sh', `( echo "cat <<EOF" ; cat "${path}" ; echo EOF ) | sh`],
-                                    {block: true, usePath: true, stdout: outHandler});
+        const defContents = shell.execOutSync('sh', `( echo "cat <<EOF" ; cat "${path}" ; echo EOF ) | sh`);
 
         const zweCliParameterHaInstance=std.getenv("ZWE_CLI_PARAMETER_HA_INSTANCE");
         const outPath=`${STATIC_DEF_DIR}/${componentName}.${sanitizedDefName}.${zweCliParameterHaInstance}.yaml`;
 
-        common.printDebug(`- writing ${outPath}`);
-
-        const buff = stringlib.stringToBuffer(defContents);
-        fs.createFileFromBuffer(outPath, 0o770, buff);
+        if (defContents.rc != 0){
+          common.printDebug('defContents shell exec failed');
+          allSucceed = false;
+        } else {
+          common.printDebug(`- writing ${outPath}`);
+          const buff = stringlib.stringToBuffer(defContents.out as string);
+          fs.createFileFromBuffer(outPath, 0o770, buff);
+        }
       }
     }
   }
@@ -432,8 +428,8 @@ export function hasPCBit(path: string): boolean {
   if (!returnArray[1]) { //no error
     return returnArray[0].extattrs == zos.EXTATTR_PROGCTL
   } else {
-    if (returnArray[1] != std.ENOENT) {
-      common.printError(`hasPCBit path=${path}, err=`,returnArray[1]);
+    if (returnArray[1] != std.Error.ENOENT) {
+      common.printError(`hasPCBit path=${path}, err=${returnArray[1]}`);
     }
     return false;
   }
@@ -523,7 +519,7 @@ export function processComponentGatewaySharedLibs(componentDir: string): boolean
 
   const manifest = getManifest(componentDir);
   let pluginName;
-  let gatewaySharedLibsWorkspacePath;
+  let gatewaySharedLibsWorkspacePath:string|undefined;
   
   if (manifest && manifest.gatewaySharedLibs) {
     for (let i = 0; i < manifest.gatewaySharedLibs.length; i++) {
@@ -539,8 +535,13 @@ export function processComponentGatewaySharedLibs(componentDir: string): boolean
         fs.mkdirp(gatewaySharedLibsWorkspacePath, 0o770);
       }
 
+      if (!gatewaySharedLibsWorkspacePath){
+        common.printError("Unexpected error: did not find gatewaySharedLibsWorkspacePath");
+        return false;
+      }
+
       const manifestPath = getManifestPath(componentDir);
-      if (manifestPath) {
+      if (manifestPath){
         fs.cp(manifestPath, gatewaySharedLibsWorkspacePath);
       }
 
@@ -584,6 +585,11 @@ export function processComponentDiscoverySharedLibs(componentDir: string): boole
         }
         discoverySharedLibsWorkspacePath = `${discoverySharedLibs}/${pluginName}`;
         fs.mkdirp(discoverySharedLibsWorkspacePath, 0o770);
+      }
+
+      if (!discoverySharedLibsWorkspacePath){
+        common.printError('Unexpected error: did not find discoverySharedLibsWorkspacePath');
+        return false;
       }
 
       const manifestPath = getManifestPath(componentDir);

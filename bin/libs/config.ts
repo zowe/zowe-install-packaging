@@ -9,13 +9,9 @@
   Copyright Contributors to the Zowe Project.
 */
 
-// @ts-ignore
 import * as std from 'std';
-// @ts-ignore
 import * as os from 'os';
-// @ts-ignore
 import * as zos from 'zos';
-// @ts-ignore
 import { ConfigManager } from 'Configuration';
 
 import * as common from './common';
@@ -30,7 +26,14 @@ import * as sys from './sys';
 import * as container from './container';
 import * as node from './node';
 
-const cliParameterConfig = std.getenv('ZWE_CLI_PARAMETER_CONFIG');
+const cliParameterConfig:string = function() {
+    let value = std.getenv('ZWE_CLI_PARAMETER_CONFIG');
+    if (!value){
+        std.out.printf("No ZWE_CLI_PARAMETER_CONFIG env var, exiting");
+        std.exit(0);
+    }
+    return (value as string);
+}();
 
 const runtimeDirectory=configmgr.ZOWE_CONFIG.zowe.runtimeDirectory;
 //const extensionDirectory=ZOWE_CONFIG.zowe.extensionDirectory;
@@ -72,7 +75,7 @@ export function zosConvertEnvDirFileEncoding(file: string) {
     shell.execSync('chmod', `640`, file);
     common.printTrace(`>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>AFTER ${file}`);
     const lsReturn = shell.execOutSync('ls', `-laT`, file);
-    common.printTrace(lsReturn.out);
+    common.printTrace(lsReturn.out || "");
   }
 }
 
@@ -133,8 +136,10 @@ export function sanitizeHaInstanceId() {
     zweCliParameterHaInstance=sys.getSysname();
   }
   // sanitize instance id
-  zweCliParameterHaInstance=stringlib.sanitizeAlphanum(zweCliParameterHaInstance.toLowerCase());
-  std.setenv('ZWE_CLI_PARAMETER_HA_INSTANCE', zweCliParameterHaInstance);
+  if (zweCliParameterHaInstance){
+    zweCliParameterHaInstance=stringlib.sanitizeAlphanum(zweCliParameterHaInstance.toLowerCase());
+    std.setenv('ZWE_CLI_PARAMETER_HA_INSTANCE', zweCliParameterHaInstance );
+  }
 }
 
 export function applyEnviron(environ: any): void {

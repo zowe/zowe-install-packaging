@@ -9,9 +9,7 @@
   Copyright Contributors to the Zowe Project.
 */
 
-// @ts-ignore
 import * as std from 'std';
-// @ts-ignore
 import * as os from 'os';
 
 import * as common from './common';
@@ -23,10 +21,14 @@ std.setenv('ZWE_PRIVATE_ERRORS_FOUND', '0');
 
 // Check if a shell function is defined
 export function functionExists(fn: string): boolean {
-  let lcAll=std.getenv('LC_ALL');
+  let lcAll=std.getenv('LC_ALL'); 
   std.setenv('LC_ALL', 'C');
   let shellReturn = shell.execOutSync('type', fn);// 2>&1 | grep 'function')
-  std.setenv('LC_ALL', lcAll);
+  if (lcAll){
+    std.setenv('LC_ALL', lcAll);
+  } else {
+    std.unsetenv('LC_ALL');
+  }
   
   if (shellReturn.out) {
     return shellReturn.out.split('\n')[0].endsWith('function');
@@ -54,7 +56,7 @@ const keyFilter=/^(run_zowe_start_component_id|ZWELS_START_COMPONENT_ID|ZWE_LAUN
 export function getEnvironmentExports(): string {
   let envvars = std.getenviron();
   let keys = Object.keys(envvars);
-  let exports=[];
+  let exports:string[]=[];
   keys.forEach((key: string)=> {
     if (keyFilter.test(key)) {
       exports.push(`export ${key}=${envvars[key]}`);
@@ -67,7 +69,7 @@ export function getEnvironmentExports(): string {
 export function getEnvironments(): string {
   let envvars = std.getenviron();
   let keys = Object.keys(envvars);
-  let exports=[];
+  let exports:string[]=[];
   keys.forEach((key: string)=> {
     if (keyFilter.test(key)) {
       exports.push(`${key}=${envvars[key]}`);
@@ -155,6 +157,6 @@ export function checkRuntimeValidationResult(origin: string) {
   let prevErrCount = !prevErr ? 0 : Number(prevErr);
   if ( prevErrCount > 0) {
     common.printFormattedWarn("ZWELS", origin,  `${prevErrCount} errors were found during validation, please check the message, correct any properties required in ${std.getenv('ZWE_CLI_PARAMETER_CONFIG')} and re-launch Zowe.`);
-    std.exit(std.getenv('ZWE_PRIVATE_ERRORS_FOUND'));
+    std.exit(prevErrCount ); 
   }
 }

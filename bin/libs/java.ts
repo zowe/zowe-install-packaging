@@ -9,11 +9,8 @@
   Copyright Contributors to the Zowe Project.
 */
 
-// @ts-ignore
 import * as std from 'std';
-// @ts-ignore
 import * as os from 'os';
-// @ts-ignore
 import * as fs from './fs';
 import * as common from './common';
 import * as shell from './shell';
@@ -24,7 +21,7 @@ const JAVA_MIN_VERSION=8;
 export function ensureJavaIsOnPath(): void {
   let path=std.getenv('PATH');
   let javaHome=std.getenv('JAVA_HOME');
-  if (!path.includes(`:${javaHome}/bin:`)) {
+  if (path && !path.includes(`:${javaHome}/bin:`)) {
     std.setenv('PATH', `${javaHome}/bin:${path}`);
   }
 }
@@ -45,7 +42,7 @@ export function shellReadYamlJavaHome(configList?: string, skipValidate?: boolea
 export function detectJavaHome(): string|undefined {
   let javaBinHome = shell.which(`java`);
   if (javaBinHome) {
-    let returnVal = std.realpath(`${javaBinHome}/../..`);
+    let returnVal = os.realpath(`${javaBinHome}/../..`);
     if (!returnVal[1]) {
       return returnVal[0];
     }
@@ -62,7 +59,10 @@ export function requireJava() {
     std.setenv('JAVA_HOME', shellReadYamlJavaHome(std.getenv('ZWE_CLI_PARAMETER_CONFIG')));
   }
   if (!std.getenv('JAVA_HOME')) {
-    std.setenv('JAVA_HOME', detectJavaHome());
+    let detectedHome = detectJavaHome();
+    if (detectedHome){
+      std.setenv('JAVA_HOME', detectedHome);
+    } 
   }
   if (!std.getenv('JAVA_HOME')) {
     common.printErrorAndExit("Error ZWEL0122E: Cannot find java. Please define JAVA_HOME environment variable.", undefined, 122);
@@ -71,7 +71,7 @@ export function requireJava() {
   ensureJavaIsOnPath();
 }
 
-export function validateJavaHome(javaHome:string=std.getenv("JAVA_HOME")): boolean {
+export function validateJavaHome(javaHome:string|undefined=std.getenv("JAVA_HOME")): boolean {
   if (!javaHome) {
     common.printError("Cannot find java. Please define JAVA_HOME environment variable.");
     return false;
@@ -91,7 +91,7 @@ export function validateJavaHome(javaHome:string=std.getenv("JAVA_HOME")): boole
   try {
     let index = 0;
     let javaVersionShort;
-    let versionLines = version.split('\n');
+    let versionLines = (version as string).split('\n'); // valid because of above rc check
     for (let i = 0; i < versionLines.length; i++) {
       if ((index = versionLines[i].indexOf('java version')) != -1) {
         //format of: java version "1.8.0_321"
@@ -101,6 +101,10 @@ export function validateJavaHome(javaHome:string=std.getenv("JAVA_HOME")): boole
         javaVersionShort=versionLines[i].substring(index+('openjdk version'.length)+2);
         break;
       }
+    }
+    if (!javaVersionShort){
+      common.printError("could not find java version");
+      return false;
     }
     let versionParts = javaVersionShort.split('.');
     const javaMajorVersion=versionParts[0];

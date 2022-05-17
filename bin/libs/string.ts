@@ -9,12 +9,10 @@
   Copyright Contributors to the Zowe Project.
 */
 
-// @ts-ignore
 import * as std from 'std';
-// @ts-ignore
 import * as os from 'os';
 
-export const ENCODING_NAME_TO_CCSID = {
+export const ENCODING_NAME_TO_CCSID:any = {
   'IBM-037': 37,
   'IBM-273': 273,
   'IBM-277': 277,
@@ -333,5 +331,5 @@ export function itemInList(stringList: string, stringToFind?: string, separator:
   if (!stringToFind) {
     return false;
   }
-  return stringList.split[separator].includes(stringToFind);
+  return stringList.split(separator).includes(stringToFind);
 }

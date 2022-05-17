@@ -9,10 +9,9 @@
   Copyright Contributors to the Zowe Project.
 */
 
-// @ts-ignore
 import * as std from 'std';
-// @ts-ignore
 import * as os from 'os';
+import * as xplatform from 'xplatform';
 
 import * as fs from './fs';
 //import * as stringlib from './string';
@@ -40,6 +39,18 @@ enum LOG_LEVEL {
   DEBUG,
   TRACE
 };
+
+function getLogLevel(name:string, defaultLevel:LOG_LEVEL):LOG_LEVEL {
+    switch (name.toUpperCase()){
+        case "ERROR": return LOG_LEVEL.ERROR;
+        case "WARN": return LOG_LEVEL.WARN;
+        case "INFO": return LOG_LEVEL.INFO;
+        case "DEBUG": return LOG_LEVEL.DEBUG;
+        case "TRACE": return LOG_LEVEL.TRACE;
+        default: return defaultLevel;
+    }
+}
+
 
 export function requireZoweYaml() {
   const configFiles = std.getenv('ZWE_CLI_PARAMETER_CONFIG');
@@ -93,7 +104,7 @@ export function date(...args: string[]): string|undefined {
 
 
 let logExists = false;
-let logFile;
+let logFile:std.File|null = null;
 
 function writeLog(message: string): boolean {
   if (!logExists) {
@@ -253,7 +264,7 @@ export function printLevel2Trace(message?: string, writeTo?:string[]): boolean {
 
 const FORMATTING_TEST = /^[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}/;
 // runtime logging functions, follow zowe service logging standard
-export function printFormattedMessage(service: string, logger: string, level: string, message: string): boolean {
+export function printFormattedMessage(service: string, logger: string, levelName: string, message: string): boolean {
   if (message == '-') {
     //TODO readmessage
     if (!message) {
@@ -261,21 +272,22 @@ export function printFormattedMessage(service: string, logger: string, level: st
     }
   }
 
-  const levelNum=LOG_LEVEL[level.toUpperCase()];
-
-  let expectedLogLevelVal=LOG_LEVEL[std.getenv(`ZWE_PRIVATE_LOG_LEVEL_${service}`).toUpperCase() || 'INFO'];
-  let displayLog = expectedLogLevelVal >= levelNum;
+  const level:LOG_LEVEL = getLogLevel(levelName,LOG_LEVEL.INFO);
+  const canonicalLevelName = LOG_LEVEL[level];
+  const envLogValue = std.getenv(`ZWE_PRIVATE_LOG_LEVEL_${service}`);
+  const expectedLogLevelVal:LOG_LEVEL = envLogValue ? getLogLevel(envLogValue,LOG_LEVEL.INFO) : LOG_LEVEL.INFO;
+  let displayLog = expectedLogLevelVal >= level;
   if (!displayLog) {
     return false;
   }
 
-  const logLinePrefix=`${date("-u", "'+%Y-%m-%d %T'")} <${service}:$$> ${getUserId()} ${level.toUpperCase()} (${logger})`;
+  const logLinePrefix=`${date("-u '+%Y-%m-%d %T'")} <${service}:$$> ${getUserId()} ${canonicalLevelName} (${logger})`;
   let lines = message.split('\n');
   lines.forEach((line: string)=> {
     if (!FORMATTING_TEST.test(line)) {
       line = `${logLinePrefix} ${line}`;
     }
-    if (levelNum == LOG_LEVEL.ERROR) {
+    if (level == LOG_LEVEL.ERROR) {
       return printError(line, ['console']);
     }
     return printMessage(line, ['console']);
@@ -304,14 +316,15 @@ export function printFormattedError(service: string, logger: string, message: st
 }
 
 
-let runtimeManifest;
+let runtimeManifest:any;
 export function getZoweRuntimeManifest(): any|undefined {
   if (!runtimeManifest) {
-    const result = shell.execOutSync(`cat`, `${std.getenv('ZWE_zowe_runtimeDirectory')}/manifest.json`);
-    if (result.rc) {
-      printError('Could not read runtime manifest, err='+result.rc);
+    const manifestFileName = `${std.getenv('ZWE_zowe_runtimeDirectory')}/manifest.json`;
+    const result = xplatform.loadFileUTF8(manifestFileName,xplatform.AUTO_DETECT);
+    if (result){
+      printError('Could not read runtime manifest in '+manifestFileName);
     } else {
-      runtimeManifest=JSON.parse(result.out);
+      runtimeManifest=JSON.parse(result);
     }
   }
   return runtimeManifest;

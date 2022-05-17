@@ -9,11 +9,8 @@
   Copyright Contributors to the Zowe Project.
 */
 
-// @ts-ignore
 import * as std from 'std';
-// @ts-ignore
 import * as os from 'os';
-// @ts-ignore
 import * as zos from 'zos';
 
 import * as common from './common';
@@ -88,16 +85,20 @@ export function cpr(from: string, to: string): void {
   shell.execSync('cp', `-r`, from, to);
 }
 
-export function appendToFile(path, content) {
+export function appendToFile(path:string, content:string):void {
   //TODO
+  throw 'Implement me!';  
 }
 
 export function createFile(path: string, mode: number, content?: string): boolean {
   let errObj = {errno:undefined};
-  const file = std.open(path, os.O_CREAT | os.O_WRONLY, errObj);
+  const file:std.File|null = std.open(path, os.O_CREAT | os.O_WRONLY, errObj);
   if (errObj.errno) {
     common.printError(`File create failed for ${path}, error=${errObj.errno}`);
     return false;
+  } else if (file == null){
+    common.printError(`File create failed for ${path} unexpectedly`);
+    return false;       
   }
 /*  
   if (content) {
@@ -122,6 +123,9 @@ export function createFileFromBuffer(path: string, mode: number, buff?: Uint8Arr
   if (errObj.errno) {
     common.printError(`File create failed for ${path}, error=${errObj.errno}`);
     return false;
+  } else if (file == null){
+    common.printError(`File create failed for ${path} unexpectedly`);
+    return false;       
   }
 /*  
   if (content) {
@@ -141,7 +145,7 @@ export function createFileFromBuffer(path: string, mode: number, buff?: Uint8Arr
 
 export function getFilesInDirectory(path: string): string[]|undefined {
   let returnArray = os.readdir(path);
-  let files = [];
+  let files:string[] = [];
   if (!returnArray[1]) { //no error
     returnArray[0].forEach((file:string)=> {
       if (fileExists(file)) {
@@ -157,7 +161,7 @@ export function getFilesInDirectory(path: string): string[]|undefined {
 
 export function getSubdirectories(path: string): string[]|undefined {
   let returnArray = os.readdir(path);
-  let subdirs = [];
+  let subdirs:string[] = [];
   if (!returnArray[1]) { //no error
     returnArray[0].forEach((dir:string)=> {
       if (directoryExists(dir)) {
@@ -176,7 +180,7 @@ export function directoryExists(path: string, silenceNotFound?: boolean): boolea
   if (!returnArray[1]) { //no error
     return ((returnArray[0].mode & os.S_IFDIR) == os.S_IFDIR)
   } else {
-    if ((returnArray[1] != std.ENOENT) && !silenceNotFound) {
+    if ((returnArray[1] != std.Error.ENOENT) && !silenceNotFound) {
       common.printError(`directoryExists path=${path}, err=`+returnArray[1]);
     }
     return false;
@@ -188,7 +192,7 @@ export function fileExists(path: string, silenceNotFound?: boolean): boolean {
   if (!returnArray[1]) { //no error
     return ((returnArray[0].mode & os.S_IFREG) == os.S_IFREG)
   } else {
-    if ((returnArray[1] != std.ENOENT) && !silenceNotFound) {
+    if ((returnArray[1] != std.Error.ENOENT) && !silenceNotFound) {
       common.printError(`fileExists path=${path}, err=${returnArray[1]}`);
     }
     return false;
@@ -200,7 +204,7 @@ export function pathExists(path: string): boolean {
   if (!returnArray[1]) { //no error
     return true;
   } else {
-    return returnArray[1] != std.ENOENT;
+    return returnArray[1] != std.Error.ENOENT;
   }
 
 }

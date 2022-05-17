@@ -21,8 +21,8 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
-export function strftime(sFormat:string, date?:Date) {
-  if (!(date instanceof Date)) date = new Date();
+export function strftime(sFormat:string, dateArg?:Date) {
+  let date:Date = (dateArg instanceof Date) ? dateArg : new Date();
   var nDay = date.getDay(),
     nDate = date.getDate(),
     nMonth = date.getMonth(),
@@ -34,7 +34,7 @@ export function strftime(sFormat:string, date?:Date) {
     isLeapYear = function() {
       return (nYear%4===0 && nYear%100!==0) || nYear%400===0;
     },
-    zeroPad = function(nNum, nPad) {
+    zeroPad = function(nNum:number, nPad:number) {
       return ((Math.pow(10, nPad) + nNum) + '').slice(1);
     };
   return sFormat.replace(/%[a-z]/gi, function(sMatch) {
