@@ -104,7 +104,7 @@
     },
     "org.zowe.apiml.sdk.caching-service-package": {
       "version": "1.28.4",
-      "artifact": "caching-service*.zip"
+      "artifact": "caching-service-package-1.28.5-PR-PR-TEST-INDEX-20220518.210351-1.zip"
     },
     "org.zowe.apiml.sdk.metrics-service-package": {
       "version": "1.28.4",
