@@ -419,16 +419,19 @@
       "tag" : "1.0.1-ubuntu"
     },
     "explorer-jes": {
+      "kind": "job",
       "registry": "zowe-docker-release.jfrog.io",
       "name": "ompzowe/explorer-jes",
       "tag" : "2.0.0-ubuntu"
     },
     "explorer-mvs": {
+      "kind": "job",
       "registry": "zowe-docker-release.jfrog.io",
       "name": "ompzowe/explorer-mvs",
       "tag" : "2.0.0-ubuntu"
     },
     "explorer-uss": {
+      "kind": "job",
       "registry": "zowe-docker-release.jfrog.io",
       "name": "ompzowe/explorer-uss",
       "tag" : "2.0.0-ubuntu"
