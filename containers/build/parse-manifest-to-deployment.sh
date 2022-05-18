@@ -61,6 +61,11 @@ do
             fi
         done
         # replace image line with information parsed from manifest
+    elif [ "${eachImageDep}" = "base" ] || [ "${eachImageDep}" = "base-jdk" ] || [ "${eachImageDep}" = "base-node" ]; then
+        # NOP do nothing
+        if [ -n "${debug}" ]; then
+            echo "    base image ${eachImageDep} will skip updating yml file"
+        fi
     else
         if [ -n "${debug}" ]; then
             echo "    updating: workloads/${eachImageDep}-${kind}.yaml"
