@@ -419,16 +419,19 @@
       "tag" : "1.0.1-ubuntu"
     },
     "explorer-jes": {
+      "kind": "job",
       "registry": "zowe-docker-release.jfrog.io",
       "name": "ompzowe/explorer-jes",
       "tag" : "2.0.0-ubuntu"
     },
     "explorer-mvs": {
+      "kind": "job",
       "registry": "zowe-docker-release.jfrog.io",
       "name": "ompzowe/explorer-mvs",
       "tag" : "2.0.0-ubuntu"
     },
     "explorer-uss": {
+      "kind": "job",
       "registry": "zowe-docker-release.jfrog.io",
       "name": "ompzowe/explorer-uss",
       "tag" : "2.0.0-ubuntu"
@@ -442,6 +445,21 @@
       "registry": "zowe-docker-release.jfrog.io",
       "name": "ompzowe/jobs-api",
       "tag" : "2.0.4-ubuntu"
+    },
+    "base": {
+      "registry": "zowe-docker-release.jfrog.io",
+      "name": "ompzowe/base",
+      "tag" : "2.0.0-ubuntu"
+    },
+    "base-jdk": {
+      "registry": "zowe-docker-release.jfrog.io",
+      "name": "ompzowe/base-jdk",
+      "tag" : "2.0.0-ubuntu"
+    },
+    "base-node": {
+      "registry": "zowe-docker-release.jfrog.io",
+      "name": "ompzowe/base-node",
+      "tag" : "2.0.0-ubuntu"
     }
   },
   "dependencyDecisions": {
