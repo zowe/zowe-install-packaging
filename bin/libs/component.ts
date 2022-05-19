@@ -486,7 +486,6 @@ export function processComponentApimlStaticDefinitions(componentDir: string): bo
         common.printDebug(`Process ${componentName} service static definition file ${file}`);
         const sanitizedDefName=stringlib.sanitizeAlphanum(file);
 
-        //const contentsReturn = shell.execOutSync('sh', '-c', `( echo "cat <<EOF" ; cat "${path}" ; echo ; echo EOF ) | sh)`);
         const contents = xplatform.loadFileUTF8(path,xplatform.AUTO_DETECT);
         if (contents) {
           const resolvedContents = resolveShellTemplate(contents);

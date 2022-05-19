@@ -117,7 +117,6 @@ export function generateInstanceEnvFromYamlConfig(haInstance: string) {
 
   // convert YAML configurations to backward compatible .instance-<ha-id>.env files
   common.printFormattedTrace("ZWELS", "bin/libs/config.sh,generate_instance_env_from_yaml_config", `config-converter yaml env --ha ${haInstance}`);
-  //result=shell.execOutSync('node', `${runtimeDirectory}/bin/utils/config-converter/src/cli.js`, `yaml`, `env`, `--wd`, zwePrivateWorkspaceEnvDir, `--ha`, haInstance, `--verbose`);
   const envs = configmgr.getZoweConfigEnv();
   common.printFormattedTrace("ZWELS", "bin/libs/config.sh,generate_instance_env_from_yaml_config", `- Output: ${JSON.stringify(envs, null, 2)}`);
   const envKeys = Object.keys(envs);

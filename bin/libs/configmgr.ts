@@ -11,6 +11,7 @@
 
 import * as std from 'std';
 import * as os from 'os';
+import * as xplatform from 'xplatform';
 import { ConfigManager } from 'Configuration';
 
 import * as objUtils from '../utils/ObjUtils';
@@ -22,7 +23,9 @@ declare namespace console {
 export const CONFIG_MGR = new ConfigManager();
 CONFIG_MGR.setTraceLevel(0);
 
-let parameterConfig = std.getenv('ZWE_CLI_PARAMETER_CONFIG');
+//these show the list of files used for zowe config prior to merging into a unified one.
+// ZWE_CLI_PARAMETER_CONFIG gets updated to point to the unified one once written.
+const parameterConfig = std.getenv('ZWE_CLI_PARAMETER_CONFIG');
 const configPath = (parameterConfig && !parameterConfig.startsWith('FILE(')) ? `FILE(${parameterConfig})` : parameterConfig;
 let configLoaded = false;
 
@@ -32,6 +35,43 @@ const ZOWE_SCHEMA_ID = 'https://zowe.org/schemas/v2/server-base';
 const ZOWE_SCHEMA_SET=`${ZOWE_SCHEMA}:${COMMON_SCHEMA}`;
 
 export const ZOWE_CONFIG=getZoweConfig();
+
+function mkdirp(path:string, mode?: number): number {
+  const parts = path.split('/');
+  let dir = '/';
+  for (let i = 0; i < parts.length; i++) {
+    dir+=parts[i]+'/';
+    let rc = os.mkdir(dir, mode ? mode : 0o777);
+    if (rc && (rc!=(0-std.Error.EEXIST))) {
+      return rc;
+    }
+  }
+  return 0;
+}
+
+function writeMergedConfig(config: any): number {
+  const workspace = config.zowe.workspaceDirectory;
+  let zwePrivateWorkspaceEnvDir = std.getenv('ZWE_PRIVATE_WORKSPACE_ENV_DIR');
+  if (!zwePrivateWorkspaceEnvDir) {
+    zwePrivateWorkspaceEnvDir=`${workspace}/.env`;
+    std.setenv('ZWE_PRIVATE_WORKSPACE_ENV_DIR', zwePrivateWorkspaceEnvDir);
+  }
+  const mkdirrc = mkdirp(zwePrivateWorkspaceEnvDir);
+  if (mkdirrc) { return mkdirrc; }
+  const destination = `${zwePrivateWorkspaceEnvDir}/.zowe-merged.yaml`;
+  //const yamlReturn = CONFIG_MGR.writeYAML('zowe-server-base', destination);
+  let [ yamlStatus, textOrNull ] = CONFIG_MGR.writeYAML('zowe-server-base');
+  console.log("here's the whole config as yaml, status="+yamlStatus);
+  if (yamlStatus == 0){
+    console.log(""+textOrNull);
+    const rc = xplatform.storeFileUTF8(destination, xplatform.AUTO_DETECT, textOrNull);
+    if (!rc) {
+      std.setenv('ZWE_CLI_PARAMETER_CONFIG', destination);
+    }
+    return rc;
+  }
+  return yamlStatus;
+}
 
 function showExceptions(e: any,depth: number): void {
   let blanks = "                                                                 ";
@@ -80,7 +120,10 @@ export function getZoweConfig(): any {
         std.exit(1);
       } else {
         configLoaded = true;
-        return CONFIG_MGR.getConfigData('zowe-server-base');
+        
+        const config = CONFIG_MGR.getConfigData('zowe-server-base');
+        const writeResult = writeMergedConfig(config);
+        return config;
       }
     } else {
       console.log(`Error: Error occurred on validation of ${configPath} against schema ${ZOWE_SCHEMA_ID}<`);
