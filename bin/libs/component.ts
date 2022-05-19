@@ -12,6 +12,7 @@
 import * as std from 'std';
 import * as os from 'os';
 import * as zos from 'zos';
+import * as xplatform from 'xplatform';
 import { ConfigManager } from 'Configuration';
 
 import * as common from './common';
@@ -97,6 +98,16 @@ export function registerPlugin(path:string, pluginDefinition:any){
   }
 }
 
+function showExceptions(e: any,depth: number): void {
+  let blanks = "                                                                 ";
+  let subs = e.subExceptions;
+  common.printError(blanks.substring(0,depth*2)+e.message);
+  if (subs){
+    for (const sub of subs){
+      showExceptions(sub,depth+1);
+    }
+  }
+}
 
 export function getPluginDefinition(pluginRootPath:string) {
   const pluginDefinitionPath = `${pluginRootPath}/pluginDefinition.json`;
@@ -125,11 +136,9 @@ export function getPluginDefinition(pluginRootPath:string) {
 
     let validation = CONFIG_MGR.validate(pluginRootPath);
     if (validation.ok){
-      if (validation.exceptions){
+      if (validation.exceptionTree){
         common.printError(`Validation of ${pluginDefinitionPath} against schema ${PLUGIN_DEF_SCHEMA_ID} found invalid JSON Schema data`);
-        for (let i=0; i<validation.exceptions.length; i++){
-          common.printError("    "+validation.exceptions[i]);
-        }
+        showExceptions(validation.exceptionTree, 0);
         std.exit(1);
         return null;
       } else {
@@ -179,11 +188,9 @@ export function getManifest(componentDirectory: string): any {
 
     let validation = CONFIG_MGR.validate(manifestId);
     if (validation.ok){
-      if (validation.exceptions){
+      if (validation.exceptionTree){
         common.printError(`Validation of ${manifestPath} against schema ${MANIFEST_SCHEMA_ID} found invalid JSON Schema data`);
-        for (let i=0; i<validation.exceptions.length; i++){
-          common.printError("    "+validation.exceptions[i]);
-        }
+        showExceptions(validation.exceptionTree, 0);
         std.exit(1);
         return null;
       } else {
@@ -308,52 +315,146 @@ export function findAllLaunchComponents2(): string[] {
   });
 }
 
-/* if i run through ${} and $ i can call std.getenv to do substitution without invoking shell
-rules:
-
-${parameter}
-
-    Same as $parameter, i.e., value of the variable parameter. In certain contexts, only the less ambiguous ${parameter} form works.
-
-${parameter-default}, ${parameter:-default}
-
-    If parameter not set, use default.
-
-	
-
-${parameter-default} and ${parameter:-default} are almost equivalent. The extra : makes a difference only when parameter has been declared, but is null. 
-
-${parameter=default}, ${parameter:=default}
-
-    If parameter not set, set it to default.
-
-${parameter+alt_value}, ${parameter:+alt_value}
-
-    If parameter set, use alt_value, else use null string.
-
-${parameter?err_msg}, ${parameter:?err_msg}
-
-    If parameter set, use it, else print err_msg and abort the script with an exit status of 1.
-
-${#var}
-
-    String length (number of characters in $var). For an array, ${#array} is the length of the first element in the array.
-
+/* 
 ${var#Pattern}, ${var##Pattern}
 
     ${var#Pattern} Remove from $var the shortest part of $Pattern that matches the front end of $var.
 
     ${var##Pattern} Remove from $var the longest part of $Pattern that matches the front end of $var. 
 
-
-
-   consider ${parameter:-default}
-
-export function substituteEnv(contents: string) {
-  let index: number = 0;
-  
-}
 */
+
+function resolveShellVariable(previousKey: string, currentKey: string, currentValue: string|undefined, modifier: string): string|undefined {
+  switch (modifier) {
+  //${parameter-default}, ${parameter:-default}
+  //  If parameter not set, use default.
+  case '-': {
+    return std.getenv(currentKey);
+  }
+  //${parameter+alt_value}, ${parameter:+alt_value}
+  //  If parameter set, use alt_value, else use null string.
+  case '+': {
+    return std.getenv(previousKey) ? std.getenv(currentKey) : 'null';
+  }
+  //${parameter?err_msg}, ${parameter:?err_msg}
+  //  If parameter set, use it, else print err_msg and abort the script with an exit status of 1.
+  case '?': {
+    let prev;
+    if ((prev=std.getenv(previousKey))) {
+      return prev;
+    } else {
+      common.printError(currentKey);
+      return currentValue;
+    }
+  }
+  //${parameter=default}, ${parameter:=default}
+  //  If parameter not set, set it to default.
+  case '=': {
+    if (!std.getenv(previousKey)) {
+      std.setenv(previousKey, std.getenv(currentKey));
+    }
+    return std.getenv(previousKey);
+  }
+  default:
+    return undefined;
+  }
+}
+
+
+export function resolveShellTemplate(content: string): string {
+  let position = 0;
+  let output = '';
+  
+  while (position != -1 && position < content.length) {
+    let index = content.indexOf('$', position);
+    if (index == -1) {
+      output+=content.substring(position);
+      return output;
+    } else {
+      output+=content.substring(position, index);
+      if (content[index+1] === '{') {
+        let endIndex = content.indexOf('}', index+2);
+        if (endIndex == -1) {
+          output+=content.substring(position);
+          return output;
+        }
+        
+        //${#var}
+        //  String length (number of characters in $var). For an array, ${#array} is the length of the first element in the array.
+        if (content[index+2] === '#') {
+          let value = std.getenv(content.substring(index+3, endIndex));
+          if (value!==undefined) {
+            output+=value.length;
+            position=endIndex;
+            continue;
+          }
+        }
+
+        let accumIndex = index+2;
+        let currentIndex = index+2;
+        let envValue;
+        let firstKey;
+        let previousKey=null;
+        let currentKey;
+        let previousModifier;
+        while ((currentIndex<endIndex) && (envValue===undefined)) {
+          const char = content[currentIndex];
+          if (char == '-' || char == '=' || char == '+' || char == '?') {
+            currentKey=content.substring(accumIndex, currentIndex);
+            if (currentKey.endsWith(':')) {
+              //TODO this does not handle : cases different from non-: cases, unsure what to do with them
+              currentKey = currentKey.substring(0,currentKey.length-1);
+            }
+            accumIndex=currentIndex+1;
+            if (currentKey) {
+              if (firstKey===undefined) {
+                firstKey=currentKey;
+                envValue=std.getenv(firstKey);
+              }
+            }
+            if (previousModifier) {
+              envValue = resolveShellVariable(previousKey, currentKey, envValue, previousModifier);
+            }
+            previousKey=currentKey;
+            previousModifier = char;
+          }
+          currentIndex++;
+        }
+        
+        currentKey=content.substring(accumIndex, currentIndex);
+        if (currentKey.endsWith(':')) {
+          //TODO this does not handle : cases different from non-: cases, unsure what to do with them
+          currentKey = currentKey.substring(0,currentKey.length-1);
+        }
+        if (currentKey) {
+          if (firstKey===undefined) {
+            firstKey=currentKey;
+            envValue=std.getenv(firstKey);
+          }
+        }
+        if (previousModifier) {
+          envValue = resolveShellVariable(previousKey, currentKey, envValue, previousModifier);
+        }
+        if (envValue!==undefined) {
+          output+=envValue;
+        }
+        position=endIndex+1;
+      } else {
+        let keyIndex = index+1;
+        let charCode = content.charCodeAt(keyIndex);
+        while ((charCode <0x5b && charCode > 0x40) || (charCode < 0x7b && charCode > 0x60) || (charCode > 0x2f && charCode < 0x40) || (charCode == 0x5f)) {
+          keyIndex++;
+        }
+        let val = std.getenv(content.substring(index+1, keyIndex));
+        if (val!==undefined) {
+          output+=val;
+        }
+        position=keyIndex;
+      }
+    }
+  }
+  return output;
+}
 
 
 export function processComponentApimlStaticDefinitions(componentDir: string): boolean {
@@ -370,7 +471,7 @@ export function processComponentApimlStaticDefinitions(componentDir: string): bo
   }
 
   let allSucceed=true;
-//  const componentName = manifest.name;
+  const componentName = manifest.name;
   if (manifest.apimlServices && manifest.apimlServices.static) {
     let staticDefs = manifest.apimlServices.static;
     for (let i = 0; i < staticDefs.length; i++) {
@@ -382,21 +483,23 @@ export function processComponentApimlStaticDefinitions(componentDir: string): bo
         allSucceed=false;
         break;
       } else {
-        /*
         common.printDebug(`Process ${componentName} service static definition file ${file}`);
         const sanitizedDefName=stringlib.sanitizeAlphanum(file);
 
-        //TODO handle env var resolution in template file
-        const contentsReturn = shell.execOutSync('sh', '-c', `( echo "cat <<EOF" ; cat "${path}" ; echo ; echo EOF ) | sh)`);
+        //const contentsReturn = shell.execOutSync('sh', '-c', `( echo "cat <<EOF" ; cat "${path}" ; echo ; echo EOF ) | sh)`);
+        const contents = xplatform.loadFileUTF8(path,xplatform.AUTO_DETECT);
+        if (contents) {
+          const resolvedContents = resolveShellTemplate(contents);
 
-        const zweCliParameterHaInstance=std.getenv("ZWE_CLI_PARAMETER_HA_INSTANCE");
-        const outPath=`${STATIC_DEF_DIR}/${componentName}.${sanitizedDefName}.${zweCliParameterHaInstance}.yaml`;
+          const zweCliParameterHaInstance=std.getenv("ZWE_CLI_PARAMETER_HA_INSTANCE");
+          const outPath=`${STATIC_DEF_DIR}/${componentName}.${sanitizedDefName}.${zweCliParameterHaInstance}.yaml`;
 
-        common.printDebug(`- writing ${outPath}`);
+          common.printDebug(`- writing ${outPath}`);
 
-        const buff = stringlib.stringToBuffer(contentsReturn.out);
-        fs.createFileFromBuffer(outPath, 0o770, buff);
-        */
+
+          xplatform.storeFileUTF8(outPath, xplatform.AUTO_DETECT, resolvedContents);
+          shell.execSync(`chmod`, `770`, outPath);
+        }
       }
     }
   }

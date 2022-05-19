@@ -117,7 +117,7 @@ function writeLog(message: string): boolean {
       }
       if (logExists) {
         let errObj = {errno:undefined};
-        logFile = std.open(filename, os.O_CREAT|os.O_WRONLY, errObj);
+        logFile = std.open(filename, 'w', errObj);
         if (errObj.errno) {
           printError(`Error opening file ${filename}, errno=${errObj.errno}`);
           logFile=null;
@@ -281,7 +281,7 @@ export function printFormattedMessage(service: string, logger: string, levelName
     return false;
   }
 
-  const logLinePrefix=`${date("-u", "'+%Y-%m-%d %T'")} <${service}:${xplatform.getpid()})> ${getUserId()} ${level.toUpperCase()} (${logger})`;
+  const logLinePrefix=`${date("-u", "'+%Y-%m-%d %T'")} <${service}:${xplatform.getpid()}> ${getUserId()} ${canonicalLevelName} (${logger})`;
   let lines = message.split('\n');
   lines.forEach((line: string)=> {
     if (!FORMATTING_TEST.test(line)) {

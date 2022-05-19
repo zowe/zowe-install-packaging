@@ -11,6 +11,7 @@
 
 import * as std from 'std';
 import * as os from 'os';
+import * as xplatform from 'xplatform';
 
 import * as common from './common';
 import * as shell from './shell';
@@ -48,20 +49,29 @@ export function getVarValue(key: string): string {
 }
 
 // get all environment variable exports line by line
-//const exportFilter=/^export (run_zowe_start_component_id=|ZWELS_START_COMPONENT_ID|ZWE_LAUNCH_COMPONENTS|env_file=|key=|line=|service=|logger=|level=|expected_log_level_val=|expected_log_level_var=|display_log=|message=|utils_dir=|print_formatted_function_available=|LINENO=|ENV|opt|OPTARG|OPTIND|LOGNAME=|USER=|SSH_|SHELL=|PWD=|OLDPWD=|PS1=|ENV=|LS_COLORS=|_=)/
-//const declareFilter=/^declare -x (run_zowe_start_component_id=|ZWELS_START_COMPONENT_ID|ZWE_LAUNCH_COMPONENTS|env_file=|key=|line=|service=|logger=|level=|expected_log_level_val=|expected_log_level_var=|display_log=|message=|utils_dir=|print_formatted_function_available=|LINENO=|ENV|opt|OPTARG|OPTIND|LOGNAME=|USER=|SSH_|SHELL=|PWD=|OLDPWD|PS1=|ENV=|LS_COLORS=|_=)/
+const exportFilter=/^export (run_zowe_start_component_id=|ZWELS_START_COMPONENT_ID|ZWE_LAUNCH_COMPONENTS|env_file=|key=|line=|service=|logger=|level=|expected_log_level_val=|expected_log_level_var=|display_log=|message=|utils_dir=|print_formatted_function_available=|LINENO=|ENV|opt|OPTARG|OPTIND|LOGNAME=|USER=|SSH_|SHELL=|PWD=|OLDPWD=|PS1=|ENV=|LS_COLORS=|_=)/
+const declareFilter=/^declare -x (run_zowe_start_component_id=|ZWELS_START_COMPONENT_ID|ZWE_LAUNCH_COMPONENTS|env_file=|key=|line=|service=|logger=|level=|expected_log_level_val=|expected_log_level_var=|display_log=|message=|utils_dir=|print_formatted_function_available=|LINENO=|ENV|opt|OPTARG|OPTIND|LOGNAME=|USER=|SSH_|SHELL=|PWD=|OLDPWD|PS1=|ENV=|LS_COLORS=|_=)/
 
 const keyFilter=/^(run_zowe_start_component_id|ZWELS_START_COMPONENT_ID|ZWE_LAUNCH_COMPONENTS|env_file|key|line|service|logger|level|expected_log_level_val|expected_log_level_var|display_log|message|utils_dir|print_formatted_function_available|LINENO|ENV|opt|OPTARG|OPTIND|LOGNAME|USER|SSH_|SHELL|PWD|OLDPWD|PS1|ENV|LS_COLORS|_)$/
 
-export function getEnvironmentExports(): string {
-  let envvars = std.getenviron();
-  let keys = Object.keys(envvars);
+export function getEnvironmentExports(input?:string): string {
   let exports:string[]=[];
-  keys.forEach((key: string)=> {
-    if (keyFilter.test(key)) {
-      exports.push(`export ${key}=${envvars[key]}`);
-    }
-  });
+  if (!input) {
+    let envvars = std.getenviron();
+    let keys = Object.keys(envvars);
+    keys.forEach((key: string)=> {
+      if (!keyFilter.test(key)) {
+        exports.push(`export ${key}=${envvars[key]}`);
+      }
+    });
+  } else {
+    const lines = input.split('\n');
+    lines.forEach((line:string)=> {
+      if ((line.startsWith('export ') || line.startsWith('declare -x ')) && (!exportFilter.test(line) && !declareFilter.test(line))) {
+        exports.push(line);
+      }
+    });
+  }
   return exports.join('\n');
 }
 
@@ -83,13 +93,9 @@ export function getEnvironments(): string {
 // All variables defined in env file will be exported.
 export function sourceEnv(envFile: string): boolean {
   //TODO i hope encoding is correct here
-  let fileContents = shell.execOutSync('cat', envFile);
-  if (!fileContents.out) {
-    common.printError(`Error loading file ${envFile}`);
-    return false;
-  }
-
-  let fileLines = fileContents.out.split('\n');
+  
+  let fileContents = xplatform.loadFileUTF8(envFile,xplatform.AUTO_DETECT);
+  let fileLines = fileContents.split('\n');
   let index;
   fileLines.forEach((line: string)=> {
     if ((index = line.indexOf('=')) != -1) {

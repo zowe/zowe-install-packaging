@@ -18,6 +18,13 @@ export var S_IFGID:number;
 export var S_IFUID:number;
 export var ENOENT:number;
 
+export var SIGINT: number;
+export var SIGABRT: number;
+export var SIGFPE: number;
+export var SIGILL: number;
+export var SIGSEGV: number;
+export var SIGTERM: number;
+
 export function open(filename:string, flags:number, mode:number):number;
 export function close(fd:number):number;
 export function read(fd:number, buffer:ArrayBuffer, offset:number, length:number):number;
@@ -29,12 +36,15 @@ export function rename(oldname: string, newname :string):number;
 export function stat(path:string):[any,number];
 export function lstat(path:string):[any,number];
 
+export function signal(signal:number, fun:() => void):void;
 export function kill(pid:number, signal:number):void;
+export function waitpid(pid:number, options:any):[number, number];
 
 export function readdir(path:string):[string[],number];
 export function realpath(path:string):[string,number]
 export function getcwd():[string,number];
 export function chdir(path:string):number;
+
 export function symlink(target: string, linkpath: string):number;
 export function mkdir(path:string, mode?:number):number;
 export function dup2(oldfd:number, newfd:number):void;

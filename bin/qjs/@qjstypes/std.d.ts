@@ -26,9 +26,9 @@ export interface File {
     write(buffer:ArrayBuffer, position:number, length:number):number;
 }
 
-export function fdopen(fd:number, flags:number, errorObj?:any):File|null;
-export function open(command:string, flags:number, errorObj?:any):File|null;
-export function popen(command:string, flags:number, errorObj?:any):File|null;
+export function fdopen(fd:number, fopenMode:string, errorObj?:any):File|null;
+export function open(command:string, fopenMode:string, errorObj?:any):File|null;
+export function popen(command:string, fopenMode:string, errorObj?:any):File|null;
 
 /* STDOUT convenience functions */
 export function puts(s:string):void;

@@ -53,7 +53,7 @@ export class PathAPI {
         let upCount = 0;
         for (let i=tokens.length-1; i>=0; i--){
             let token = tokens[i];
-            console.log("token '"+token+"'");
+            //console.log("token '"+token+"'");
             if (token == "."){
                 // do nothing
             } else if (token == ".."){

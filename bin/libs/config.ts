@@ -12,7 +12,7 @@
 import * as std from 'std';
 import * as os from 'os';
 import * as zos from 'zos';
-import { ConfigManager } from 'Configuration';
+import * as xplatform from 'xplatform';
 
 import * as common from './common';
 import * as fs from './fs';
@@ -101,6 +101,10 @@ export function generateInstanceEnvFromYamlConfig(haInstance: string) {
       }
     });
   }
+
+  const components = component.findAllInstalledComponents2();
+  //TODO use configmgr to write json and ha json, and components json
+  
   // prepare .zowe.json and .zowe-<ha-id>.json
   common.printFormattedTrace("ZWELS", "bin/libs/config.sh,generate_instance_env_from_yaml_config", `config-converter yaml convert --ha ${haInstance} ${cliParameterConfig}`);
   let result = shell.execOutSync('node', `${runtimeDirectory}/bin/utils/config-converter/src/cli.js`, `yaml`, `convert`, `--wd`, zwePrivateWorkspaceEnvDir, `--ha`, haInstance, cliParameterConfig, `--verbose`);
@@ -113,14 +117,53 @@ export function generateInstanceEnvFromYamlConfig(haInstance: string) {
 
   // convert YAML configurations to backward compatible .instance-<ha-id>.env files
   common.printFormattedTrace("ZWELS", "bin/libs/config.sh,generate_instance_env_from_yaml_config", `config-converter yaml env --ha ${haInstance}`);
-  result=shell.execOutSync('node', `${runtimeDirectory}/bin/utils/config-converter/src/cli.js`, `yaml`, `env`, `--wd`, zwePrivateWorkspaceEnvDir, `--ha`, haInstance, `--verbose`);
-
-  common.printFormattedTrace("ZWELS", "bin/libs/config.sh,generate_instance_env_from_yaml_config", `- Exit code: ${result.rc}: ${result.out}`);
+  //result=shell.execOutSync('node', `${runtimeDirectory}/bin/utils/config-converter/src/cli.js`, `yaml`, `env`, `--wd`, zwePrivateWorkspaceEnvDir, `--ha`, haInstance, `--verbose`);
+  const envs = configmgr.getZoweConfigEnv();
+  common.printFormattedTrace("ZWELS", "bin/libs/config.sh,generate_instance_env_from_yaml_config", `- Output: ${JSON.stringify(envs, null, 2)}`);
+  const envKeys = Object.keys(envs);
+  let envFileArray=[];
   
-  if (!fs.fileExists(`${zwePrivateWorkspaceEnvDir}/.instance-${haInstance}.env`)) {
+  envFileArray.push('#!/bin/sh');
+  envKeys.forEach((key:string)=> {
+    envFileArray.push(`${key}=${envs[key]}`);
+  });
+
+  let envFileContent = envFileArray.join('\n');
+  let rc = xplatform.storeFileUTF8(`${zwePrivateWorkspaceEnvDir}/.instance-${haInstance}.env`, xplatform.AUTO_DETECT, envFileContent);
+  if (rc) {
     common.printFormattedError("ZWELS", "bin/libs/config.sh,generate_instance_env_from_yaml_config", `ZWEL0140E: Failed to translate Zowe configuration (${cliParameterConfig}).`);
     std.exit(140);
+    return;
   }
+  
+
+  components.forEach((component:string)=> {
+    const componentAlpha = stringlib.sanitizeAlpha(component);
+    const folderName = `${zwePrivateWorkspaceEnvDir}/${component}`;
+    let rc = fs.mkdirp(folderName, 0o700);
+    if (rc) {
+      //TODO error code
+      common.printFormattedError("ZWELS", "bin/libs/config.sh,generate_instance_env_from_yaml_config", `Failed to make env var folder for component=${component}`);
+    }
+    let componentFileArray = [];
+    componentFileArray.push('#!/bin/sh');
+
+    envKeys.forEach((key:string)=> {
+      componentFileArray.push(`${key}=${envs[key]}`);
+      if (key.startsWith(`ZWE_components_${componentAlpha}_`)) {
+        let keyPrefixLength=`ZWE_components_${componentAlpha}_`.length;
+        componentFileArray.push(`ZWE_configs_${key.substring(keyPrefixLength)}=${envs[key]}`);
+      }
+    });
+
+    const componentFileContent = componentFileArray.join('\n');
+    rc = xplatform.storeFileUTF8(`${folderName}/.instance-${haInstance}.env`, xplatform.AUTO_DETECT, componentFileContent);
+    if (rc) { 
+      common.printFormattedError("ZWELS", "bin/libs/config.sh,generate_instance_env_from_yaml_config", `ZWEL0140E: Failed to translate Zowe configuration (${cliParameterConfig}).`);
+      std.exit(140);
+      return;
+    }
+  });
 }
 
 
@@ -145,6 +188,7 @@ export function sanitizeHaInstanceId() {
 export function applyEnviron(environ: any): void {
   let keys = Object.keys(environ);
   keys.forEach(function(key:string) {
+    common.printMessage(`applyEnviron setting ${key}=${environ[key]}`);
     std.setenv(key, environ[key]);
   });
 }
@@ -163,9 +207,9 @@ export function loadEnvironmentVariables(componentId?: string) {
 
   if (!std.getenv('ZWE_VERSION')) {
 // display starting information
-    let manifestReturn = shell.execOutSync('cat', `${runtimeDirectory}/manifest.json`);
+    let manifestReturn = xplatform.loadFileUTF8(`${runtimeDirectory}/manifest.json`,xplatform.AUTO_DETECT);
 
-    const runtimeManifest = manifestReturn.rc == 0 ? JSON.parse(manifestReturn.out) : undefined;
+    const runtimeManifest = manifestReturn ? JSON.parse(manifestReturn) : undefined;
     const zoweVersion = runtimeManifest ? runtimeManifest.version : undefined;
     std.setenv('ZWE_VERSION', zoweVersion);
   }

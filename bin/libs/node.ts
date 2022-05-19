@@ -16,6 +16,12 @@ import * as fs from './fs';
 import * as common from './common';
 import * as shell from './shell';
 import * as config from './config';
+import { PathAPI as pathoid } from './pathoid';
+
+declare namespace console {
+  function log(...args:string[]): void;
+};
+
 
 const NODE_MIN_VERSION=12;
 
@@ -52,11 +58,11 @@ export function shellReadYamlNodeHome(configList?: string, skipValidate?: boolea
 
 export function detectNodeHome(): string|undefined {
   let nodeBinHome = shell.which(`node`);
+  console.log('Which returned='+nodeBinHome);
   if (nodeBinHome) {
-    let returnVal = os.realpath(`${nodeBinHome}/../..`);
-    if (!returnVal[1]) {
-      return returnVal[0];
-    }
+    let returnVal = pathoid.normalize(`${nodeBinHome}/../..`);
+    console.log(`normalize of ${nodeBinHome} says ${returnVal}`);
+    return returnVal;
   }
   return undefined;
 }
@@ -66,6 +72,7 @@ export function requireNode() {
     std.setenv('NODE_HOME', shellReadYamlNodeHome());
   }
   if (!std.getenv('NODE_HOME')) {
+    console.log('Going to detect node home');
     let discoveredHome = detectNodeHome();
     if (discoveredHome){
       std.setenv('NODE_HOME', discoveredHome);
@@ -115,7 +122,7 @@ export function validateNodeHome(nodeHome:string|undefined=std.getenv("NODE_HOME
       shellReturn = shell.execOutSync(fs.resolvePath(nodeHome,`/bin/node`), `-e`, "const process = require('process'); console.log('ok'); process.exit(0);");
       const ok = shellReturn.out;
       if (ok != 'ok' || shellReturn.rc != 0) {
-        common.printError(`${nodeHome}/bin/node is not functioning correctly (exit code ${shellReturn.rc}): ${ok}`);
+        common.printError(`${nodeHome}/bin/node is not functioning correctly (exit code ${shellReturn.rc}): '${ok}', len=${ok.length}`);
         return false;
       }
 

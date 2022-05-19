@@ -15,6 +15,12 @@ import * as zos from 'zos';
 
 import * as common from './common';
 import * as shell from './shell';
+import { PathAPI as pathoid } from './pathoid';
+
+declare namespace console {
+  function log(...args:string[]): void;
+};
+
 
 /* 
    Below are not found in os module, but can be used against os.stat mode return values. 
@@ -92,7 +98,7 @@ export function appendToFile(path:string, content:string):void {
 
 export function createFile(path: string, mode: number, content?: string): boolean {
   let errObj = {errno:undefined};
-  const file:std.File|null = std.open(path, os.O_CREAT | os.O_WRONLY, errObj);
+  const file:std.File|null = std.open(path, 'w', errObj);
   if (errObj.errno) {
     common.printError(`File create failed for ${path}, error=${errObj.errno}`);
     return false;
@@ -117,9 +123,8 @@ export function createFile(path: string, mode: number, content?: string): boolea
 }
 
 export function createFileFromBuffer(path: string, mode: number, buff?: Uint8Array) {
-
   let errObj = {errno:undefined};
-  const file = std.open(path, os.O_CREAT | os.O_WRONLY, errObj);
+  const file = std.open(path, 'w', errObj);
   if (errObj.errno) {
     common.printError(`File create failed for ${path}, error=${errObj.errno}`);
     return false;
@@ -148,7 +153,7 @@ export function getFilesInDirectory(path: string): string[]|undefined {
   let files:string[] = [];
   if (!returnArray[1]) { //no error
     returnArray[0].forEach((file:string)=> {
-      if (fileExists(file)) {
+      if (fileExists(pathoid.join(path, file))) {
         files.push(file);
       }
     });
@@ -164,7 +169,7 @@ export function getSubdirectories(path: string): string[]|undefined {
   let subdirs:string[] = [];
   if (!returnArray[1]) { //no error
     returnArray[0].forEach((dir:string)=> {
-      if (directoryExists(dir)) {
+      if (directoryExists(pathoid.join(path,dir))) {
         subdirs.push(dir);
       }
     });

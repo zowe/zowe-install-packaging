@@ -15,7 +15,7 @@
     "allowUnreachableCode": false,
     "allowJs": false,
     "listEmittedFiles": true,
-    "strict": true,
+    "strict": false,
     "baseUrl": "../bin",
     "paths": {
 	    // A series of entries which re-map imports to lookup locations relative to the baseUrl,
