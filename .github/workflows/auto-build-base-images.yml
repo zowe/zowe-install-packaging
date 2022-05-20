@@ -4,17 +4,21 @@ on:
   workflow_dispatch:
   # push:
   schedule:
-    # every sunday morning
-    - cron:  '04 2 * * 0'
-
-env:
-  BRANCH_NAME: v2.x/master
+    # every sunday/tue/thu morning
+    - cron:  '04 2 * * 0,2,4'
 
 jobs:
 
   build-base-images:
     runs-on: ubuntu-latest
     steps:
+      - name: 'Determine branch name'
+        run: |
+          if [[ "${{ github.event_name }}" == "pull_request" ]]; then
+            echo "BRANCH_NAME=$(echo ${GITHUB_HEAD_REF})" >> $GITHUB_ENV
+          else
+            echo "BRANCH_NAME=$(echo ${GITHUB_REF_NAME})" >> $GITHUB_ENV
+          fi
 
       - name: Build Base Images
         uses: zowe-actions/shared-actions/workflow-remote-call-wait@main
