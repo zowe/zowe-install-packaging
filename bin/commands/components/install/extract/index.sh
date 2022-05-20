@@ -15,8 +15,12 @@
 # Constants
 tmp_ext_dir=tmp_ext_dir
 
+###############################
+# node is required to read module manifest
+require_node
 require_zowe_yaml
 
+###############################
 # read extensionDirectory
 extensionDir=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.extensionDirectory")
 if [ -z "${extensionDir}" ]; then
@@ -27,8 +31,14 @@ target_dir=$(remove_trailing_slash "${extensionDir}")
 module_file_short=$(basename "${ZWE_CLI_PARAMETER_COMPONENT_FILE}")
 
 ###############################
-# node is required to read module manifest
-require_node
+# check existence of extension directory, create if it's not there
+cd "${ZWE_PWD}"
+if [ ! -d "${target_dir}" ]; then
+  mkdir -p "${target_dir}"
+fi
+if [ ! -d "${target_dir}" ]; then
+  print_error_and_exit "Error ZWEL0139E: Failed to create directory ${target_dir}." "" 139
+fi
 
 ###############################
 # clean up

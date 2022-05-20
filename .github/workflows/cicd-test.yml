@@ -43,7 +43,9 @@ on:
       custom-extension-list:
         description: 'Custom Extension List:'
         required: false
-        default: 'sample-node-api;sample-trial-app'
+        # FIXME: too slow to test 2, temporarily only test 1
+        # default: 'sample-node-api;sample-trial-app'
+        default: 'sample-node-api'
       RANDOM_DISPATCH_EVENT_ID:
         description: 'random dispatch event id'
         required: false

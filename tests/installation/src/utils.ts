@@ -174,6 +174,25 @@ export function runAnsiblePlaybook(testcase: string, playbook: string, serverId:
   });
 }
 
+async function verifyZowe(testcase: string, serverId: string, extraVars: {[key: string]: string} = {}): Promise<PlaybookResponse> {
+  debug(`run verify.yml on ${serverId}`);
+  let resultVerify;
+
+  try {
+    resultVerify = await runAnsiblePlaybook(
+      testcase,
+      'verify.yml',
+      serverId,
+      extraVars
+    );
+  } catch (e) {
+    resultVerify = e;
+  }
+  expect(resultVerify).toHaveProperty('reportHash');
+
+  return resultVerify;
+}
+
 /**
  * Install and verify a Zowe build
  *
@@ -202,23 +221,18 @@ async function installAndVerifyZowe(testcase: string, installPlaybook: string, s
   // clean up sanity test folder
   cleanupSanityTestReportDir();
 
-  debug(`run verify.yml on ${serverId}`);
-  let resultVerify;
-  try {
-    resultVerify = await runAnsiblePlaybook(
-      testcase,
-      'verify.yml',
-      serverId
-    );
-  } catch (e) {
-    resultVerify = e;
+  if (extraVars && extraVars['skip_start'] && extraVars['skip_start'] === 'true') {
+    debug(`running ${installPlaybook} playbook with skip_start=true, skip verify`);
+
+  } else {
+    // verify zowe instance with sanity test
+    const resultVerify = await verifyZowe(testcase, serverId, {});
+
+    // copy sanity test result to install test report folder
+    copySanityTestReport(resultVerify.reportHash);
+
+    expect(resultVerify.code).toBe(0);
   }
-  expect(resultVerify).toHaveProperty('reportHash');
-
-  // copy sanity test result to install test report folder
-  copySanityTestReport(resultVerify.reportHash);
-
-  expect(resultVerify.code).toBe(0);
 }
 
 async function installExtension(testcase: string, serverId: string, extraVars: {[key: string]: string} = {}): Promise<void> {
@@ -235,7 +249,21 @@ async function installExtension(testcase: string, serverId: string, extraVars: {
   expect(resultInstall.stderr).toBe('');
 }
 
-async function restartZowe(testcase: string, serverId: string): Promise<void> {
+async function startZowe(testcase: string, serverId: string): Promise<void> {
+
+  debug(`start zowe on ${serverId}`);
+  const resultStop = await runAnsiblePlaybook(
+    testcase,
+    'start.yml',
+    serverId,
+    {}
+  );
+
+  expect(resultStop.code).toBe(0);
+
+}
+
+async function stopZowe(testcase: string, serverId: string): Promise<void> {
 
   debug(`stop zowe on ${serverId}`);
   const resultStop = await runAnsiblePlaybook(
@@ -247,20 +275,23 @@ async function restartZowe(testcase: string, serverId: string): Promise<void> {
 
   expect(resultStop.code).toBe(0);
 
-  debug(`start zowe on ${serverId}`);
-  const resultStart = await runAnsiblePlaybook(
-    testcase,
-    'start.yml',
-    serverId,
-    {}
-  );
+}
 
-  expect(resultStart.code).toBe(0);
+async function restartZowe(testcase: string, serverId: string): Promise<void> {
+
+  await stopZowe(testcase, serverId);
+
+  // sleep extra 2 minutes
+  debug(`wait extra 2 min before sanity test`);
+  await sleep(120000);
+
+  await startZowe(testcase, serverId);
 
 }
 
 async function verifyExtension(testcase: string, serverId: string, extraVars: {[key: string]: string} = {}): Promise<PlaybookResponse> {
   debug(`run verify-ext.yml on ${serverId}`);
+  // FIXME: how to verify in v2?
   let resultVerify;
   try {
     resultVerify = await runAnsiblePlaybook(
@@ -316,24 +347,18 @@ export async function installAndVerifyDockerBuild(testcase: string, serverId: st
   // clean up sanity test folder
   cleanupSanityTestReportDir();
 
-  debug(`run verify.yml on ${serverId}`);
-  let resultVerify;
-  try {
-    resultVerify = await runAnsiblePlaybook(
-      testcase,
-      'verify.yml',
-      serverId,
-      extraVars
-    );
-  } catch (e) {
-    resultVerify = e;
+  if (extraVars && extraVars['skip_start'] && extraVars['skip_start'] === 'true') {
+    debug('running install-docker.yml playbook with skip_start=true, skip verify');
+
+  } else {
+    // verify zowe instance with sanity test
+    const resultVerify = await verifyZowe(testcase, serverId, extraVars);
+
+    // copy sanity test result to install test report folder
+    copySanityTestReport(resultVerify.reportHash);
+
+    expect(resultVerify.code).toBe(0);
   }
-  expect(resultVerify).toHaveProperty('reportHash');
-
-  // copy sanity test result to install test report folder
-  copySanityTestReport(resultVerify.reportHash);
-
-  expect(resultVerify.code).toBe(0);
 }
 
 /**
@@ -357,12 +382,17 @@ export async function installAndVerifyExtension(testcase: string, serverId: stri
   // clean up sanity test folder
   cleanupSanityTestReportDir();
 
-  const resultVerify = await verifyExtension(testcase, serverId, extraVars);
+  // const resultVerify = await verifyExtension(testcase, serverId, extraVars);
+  // expect(resultVerify).toHaveProperty('reportHash');
 
+  // verify zowe instance with sanity test
+  const resultVerify = await verifyZowe(testcase, serverId, {});
   expect(resultVerify).toHaveProperty('reportHash');
 
   // copy sanity test result to install test report folder
   copySanityTestReport(resultVerify.reportHash);
+
+  expect(resultVerify.code).toBe(0);
 }
 
 /**
@@ -404,23 +434,18 @@ export async function installAndVerifySmpePtf(testcase: string, serverId: string
   // clean up sanity test folder
   cleanupSanityTestReportDir();
 
-  debug(`run verify.yml on ${serverId}`);
-  let resultVerify;
-  try {
-    resultVerify = await runAnsiblePlaybook(
-      testcase,
-      'verify.yml',
-      serverId
-    );
-  } catch (e) {
-    resultVerify = e;
+  if (extraVars && extraVars['skip_start'] && extraVars['skip_start'] === 'true') {
+    debug('running install-ptf.yml playbook with skip_start=true, skip verify');
+
+  } else {
+    // verify zowe instance with sanity test
+    const resultVerify = await verifyZowe(testcase, serverId, {});
+
+    // copy sanity test result to install test report folder
+    copySanityTestReport(resultVerify.reportHash);
+
+    expect(resultVerify.code).toBe(0);
   }
-  expect(resultVerify).toHaveProperty('reportHash');
-
-  // copy sanity test result to install test report folder
-  copySanityTestReport(resultVerify.reportHash);
-
-  expect(resultVerify.code).toBe(0);
 }
 
 /**

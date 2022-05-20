@@ -36,6 +36,7 @@ describe(testSuiteName, () => {
         'zowe_custom_for_test': 'true',
         'zowe_lock_keystore': 'false',
         //skip_start - for optimal runtime purposes
+        'skip_start': 'true',
       }
     );
     beforeAllResult = true;
