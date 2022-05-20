@@ -111,6 +111,8 @@ echo "[${SCRIPT_NAME}] preparing folders ..."
 rm -fr "${ASCII_DIR}" && mkdir -p "${ASCII_DIR}"
 rm -fr "${CONTENT_DIR}" && mkdir -p "${CONTENT_DIR}/bin"
 mkdir -p "${CONTENT_DIR}/files"
+mkdir -p "${CONTENT_DIR}/schemas"
+
 # FIXME: remove these debug code
 # rm -fr "${PAX_WORKSPACE_DIR}/binaryDependencies" && mkdir -p "${PAX_WORKSPACE_DIR}/binaryDependencies"
 # cp -r "${PAX_WORKSPACE_DIR}/bak/binaryDependencies/" "${PAX_WORKSPACE_DIR}/binaryDependencies"
