@@ -27,7 +27,7 @@ jobs:
           github-token: ${{ secrets.ZOWE_ROBOT_TOKEN }}
           owner: zowe
           repo: zowe-install-packaging
-          workflow-filename: .github/workflows/base-images.yml
+          workflow-filename: base-images.yml
           branch-name: ${{ env.BRANCH_NAME }}
           poll-frequency: 3
           inputs-json-string: '{"release":"true"}'
@@ -48,7 +48,7 @@ jobs:
           github-token: ${{ secrets.ZOWE_ROBOT_TOKEN }}
           owner: zowe
           repo: zowe-install-packaging
-          workflow-filename: .github/workflows/base-jdk-images.yml
+          workflow-filename: base-jdk-images.yml
           branch-name: ${{ env.BRANCH_NAME }}
           poll-frequency: 3
           inputs-json-string: '{"release":"true"}'
@@ -69,7 +69,7 @@ jobs:
           github-token: ${{ secrets.ZOWE_ROBOT_TOKEN }}
           owner: zowe
           repo: zowe-install-packaging
-          workflow-filename: .github/workflows/base-node-images.yml
+          workflow-filename: base-node-images.yml
           branch-name: ${{ env.BRANCH_NAME }}
           poll-frequency: 3
           inputs-json-string: '{"release":"true"}'
