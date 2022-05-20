@@ -29,7 +29,7 @@ jobs:
           repo: zowe-install-packaging
           workflow-filename: base-images.yml
           branch-name: ${{ env.BRANCH_NAME }}
-          poll-frequency: 3
+          poll-frequency: 1
           inputs-json-string: '{"release":"true"}'
         env:
           DEBUG: zowe-actions:*
@@ -50,7 +50,7 @@ jobs:
           repo: zowe-install-packaging
           workflow-filename: base-jdk-images.yml
           branch-name: ${{ env.BRANCH_NAME }}
-          poll-frequency: 3
+          poll-frequency: 1
           inputs-json-string: '{"release":"true"}'
         # env:
         #   DEBUG: 'workflow-remote-call-wait'
@@ -71,7 +71,7 @@ jobs:
           repo: zowe-install-packaging
           workflow-filename: base-node-images.yml
           branch-name: ${{ env.BRANCH_NAME }}
-          poll-frequency: 3
+          poll-frequency: 1
           inputs-json-string: '{"release":"true"}'
         # env:
         #   DEBUG: 'workflow-remote-call-wait'
