@@ -177,6 +177,7 @@ export function runAnsiblePlaybook(testcase: string, playbook: string, serverId:
 async function verifyZowe(testcase: string, serverId: string, extraVars: {[key: string]: string} = {}): Promise<void> {
   debug(`run verify.yml on ${serverId}`);
   let resultVerify;
+
   try {
     resultVerify = await runAnsiblePlaybook(
       testcase,
@@ -188,6 +189,8 @@ async function verifyZowe(testcase: string, serverId: string, extraVars: {[key: 
     resultVerify = e;
   }
   expect(resultVerify).toHaveProperty('reportHash');
+
+  return resultVerify;
 }
 
 /**
@@ -219,7 +222,7 @@ async function installAndVerifyZowe(testcase: string, installPlaybook: string, s
   cleanupSanityTestReportDir();
 
   // verify zowe instance with sanity test
-  verifyZowe(testcase, serverId, {});
+  const resultVerify = await verifyZowe(testcase, serverId, {});
 
   // copy sanity test result to install test report folder
   copySanityTestReport(resultVerify.reportHash);
@@ -327,7 +330,7 @@ export async function installAndVerifyDockerBuild(testcase: string, serverId: st
   cleanupSanityTestReportDir();
 
   // verify zowe instance with sanity test
-  verifyZowe(testcase, serverId, extraVars);
+  const resultVerify = await verifyZowe(testcase, serverId, extraVars);
 
   // copy sanity test result to install test report folder
   copySanityTestReport(resultVerify.reportHash);
@@ -360,7 +363,7 @@ export async function installAndVerifyExtension(testcase: string, serverId: stri
   // expect(resultVerify).toHaveProperty('reportHash');
 
   // verify zowe instance with sanity test
-  verifyZowe(testcase, serverId, {});
+  const resultVerify = await verifyZowe(testcase, serverId, {});
 
   // copy sanity test result to install test report folder
   copySanityTestReport(resultVerify.reportHash);
@@ -406,7 +409,7 @@ export async function installAndVerifySmpePtf(testcase: string, serverId: string
   cleanupSanityTestReportDir();
 
   // verify zowe instance with sanity test
-  verifyZowe(testcase, serverId, {});
+  const resultVerify = await verifyZowe(testcase, serverId, {});
 
   // copy sanity test result to install test report folder
   copySanityTestReport(resultVerify.reportHash);
