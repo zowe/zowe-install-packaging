@@ -32,7 +32,7 @@ jobs:
           poll-frequency: 3
           inputs-json-string: '{"release":"true"}'
         env:
-          DEBUG: 'workflow-remote-call-wait'
+          DEBUG: zowe-actions:*
 
       - name: Exit if build failed
         if: ${{ steps.build-base.outputs.workflow-run-conclusion != 'success' }}
