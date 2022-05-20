@@ -3,8 +3,9 @@
   "version": "2.0.0",
   "description": "A CLI and set of libraries that constitute the Zowe server infrastructure",
   "scripts": {
-    "clean": "tsc --build tsconfig-zwe.json --clean",
-    "build": "tsc --build tsconfig-zwe.json --force",
+    "clean": "tsc --build tsconfig.json --clean",
+    "dev": "tsc --build tsconfig.dev.json --force",
+    "prod": "tsc --build tsconfig.prod.json --force",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -21,6 +22,6 @@
   },
   "homepage": "https://github.com/zowe/zowe-install-packaging#readme",
   "devDependencies": {
-    "typescript": "^4.6.4"
+    "typescript": "4.6.4"
   }
 }

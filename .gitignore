@@ -26,6 +26,7 @@ tmp/
 
 # Compiled TS files
 bin/libs/*.js
+build/zwe/out
 
 # Mac files
 .DS_Store
