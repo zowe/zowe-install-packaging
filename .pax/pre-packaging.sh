@@ -200,6 +200,13 @@ echo "[$SCRIPT_NAME] templates is not part of zowe.pax, moving it out ..."
 mv ./content/templates  .
 chmod +x templates/*.rex
 
+echo "[$SCRIPT_NAME] extract configmgr"
+mkdir -p "${ZOWE_ROOT_DIR}/bin/utils"
+configmgr=$(find "${ZOWE_ROOT_DIR}/files" -type -f \( -name "configmgr*.pax" \) | head -n 1)
+cd "${ZOWE_ROOT_DIR}/bin/utils"
+pax -ppx -rf "${ZOWE_ROOT_DIR}/files/${configmgr}"
+cd "${BASE_DIR}"
+
 echo "[$SCRIPT_NAME] create dummy zowe.yaml for install"
 cat <<EOT >> "${BASE_DIR}/zowe.yaml"
 zowe:
