@@ -59,4 +59,4 @@ fi
 
 ###############################
 # exit message
-print_level1_message "Job ${jobname} is stopped successfully."
+print_level1_message "Terminate command on job ${jobname} is sent successfully. Please check job log for details."

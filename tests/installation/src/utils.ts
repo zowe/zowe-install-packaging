@@ -253,6 +253,9 @@ async function restartZowe(testcase: string, serverId: string): Promise<void> {
 
   expect(resultStop.code).toBe(0);
 
+  // wait for 2 min before starting again
+  await sleep(120000);
+
   debug(`start zowe on ${serverId}`);
   const resultStart = await runAnsiblePlaybook(
     testcase,
