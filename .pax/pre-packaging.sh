@@ -206,6 +206,7 @@ configmgr=$(find "${ZOWE_ROOT_DIR}/files" -type f \( -name "configmgr*.pax" \) |
 echo "[$SCRIPT_NAME] extract configmgr $configmgr"
 cd "${ZOWE_ROOT_DIR}/bin/utils"
 pax -ppx -rf "${configmgr}"
+rm "${configmgr}"
 cd "${BASE_DIR}"
 
 
