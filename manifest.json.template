@@ -106,6 +106,10 @@
       "artifact": "apiml-sample-extension-*.zip",
       "exclusions": ["*PR*.zip"]
     },
+    "org.zowe.configmgr": {
+      "version": "~0.3.0-feature_configmgr-integration",
+      "artifact": "*.pax"
+    },
     "org.zowe.launcher": {
       "version": "~2.0.0-SNAPSHOT"
     },
