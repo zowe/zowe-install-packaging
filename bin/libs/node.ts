@@ -18,11 +18,6 @@ import * as shell from './shell';
 import * as config from './config';
 import { PathAPI as pathoid } from './pathoid';
 
-declare namespace console {
-  function log(...args:string[]): void;
-};
-
-
 const NODE_MIN_VERSION=12;
 
 // enforce encoding of stdio/stdout/stderr
@@ -58,10 +53,8 @@ export function shellReadYamlNodeHome(configList?: string, skipValidate?: boolea
 
 export function detectNodeHome(): string|undefined {
   let nodeBinHome = shell.which(`node`);
-  console.log('Which returned='+nodeBinHome);
   if (nodeBinHome) {
     let returnVal = pathoid.normalize(`${nodeBinHome}/../..`);
-    console.log(`normalize of ${nodeBinHome} says ${returnVal}`);
     return returnVal;
   }
   return undefined;
@@ -72,7 +65,6 @@ export function requireNode() {
     std.setenv('NODE_HOME', shellReadYamlNodeHome());
   }
   if (!std.getenv('NODE_HOME')) {
-    console.log('Going to detect node home');
     let discoveredHome = detectNodeHome();
     if (discoveredHome){
       std.setenv('NODE_HOME', discoveredHome);

@@ -21,7 +21,6 @@ import * as zosfs from './zos-fs';
 import * as stringlib from './string';
 import * as shell from './shell';
 import * as configmgr from './configmgr';
-//import * as shell from './shell';
 
 const CONFIG_MGR=configmgr.CONFIG_MGR;
 const ZOWE_CONFIG=configmgr.ZOWE_CONFIG;

@@ -17,11 +17,6 @@ import * as common from './common';
 import * as shell from './shell';
 import { PathAPI as pathoid } from './pathoid';
 
-declare namespace console {
-  function log(...args:string[]): void;
-};
-
-
 /* 
    Below are not found in os module, but can be used against os.stat mode return values. 
    They were pulled from a system header which I hope is portable on all platforms

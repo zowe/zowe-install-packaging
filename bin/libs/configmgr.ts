@@ -61,9 +61,7 @@ function writeMergedConfig(config: any): number {
   const destination = `${zwePrivateWorkspaceEnvDir}/.zowe-merged.yaml`;
   //const yamlReturn = CONFIG_MGR.writeYAML('zowe-server-base', destination);
   let [ yamlStatus, textOrNull ] = CONFIG_MGR.writeYAML('zowe-server-base');
-  console.log("here's the whole config as yaml, status="+yamlStatus);
   if (yamlStatus == 0){
-    console.log(""+textOrNull);
     const rc = xplatform.storeFileUTF8(destination, xplatform.AUTO_DETECT, textOrNull);
     if (!rc) {
       std.setenv('ZWE_CLI_PARAMETER_CONFIG', destination);

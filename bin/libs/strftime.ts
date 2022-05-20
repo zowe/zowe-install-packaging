@@ -1,4 +1,17 @@
-/* Port of strftime() by T. H. Doan (https://thdoan.github.io/strftime/)
+/*
+  This program and the accompanying materials are made available
+  under the terms of the Eclipse Public License v2.0 which
+  accompanies this distribution, and is available at
+  https://www.eclipse.org/legal/epl-v20.html
+ 
+  SPDX-License-Identifier: EPL-2.0
+ 
+  Copyright Contributors to the Zowe Project.
+*/
+
+/* 
+Derived from strftime() by T. H. Doan (https://thdoan.github.io/strftime/)
+Licensed:
 MIT License
 
 Copyright (c) 2016 Tom Doan
@@ -21,22 +34,24 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
-export function strftime(sFormat:string, dateArg?:Date) {
+export function strftime(sFormat:string, dateArg?:Date): string {
   let date:Date = (dateArg instanceof Date) ? dateArg : new Date();
-  var nDay = date.getDay(),
-    nDate = date.getDate(),
-    nMonth = date.getMonth(),
-    nYear = date.getFullYear(),
-    nHour = date.getHours(),
-    aDays = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
-    aMonths = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
-    aDayCount = [0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334],
-    isLeapYear = function() {
-      return (nYear%4===0 && nYear%100!==0) || nYear%400===0;
-    },
-    zeroPad = function(nNum:number, nPad:number) {
-      return ((Math.pow(10, nPad) + nNum) + '').slice(1);
-    };
+  const nDay = date.getDay();
+  const nDate = date.getDate();
+  const nMonth = date.getMonth();
+  const nYear = date.getFullYear();
+  const nHour = date.getHours();
+  const aDays = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+  const aMonths = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+  const aDayCount = [0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334];
+  
+  let isLeapYear = function() {
+    return (nYear%4===0 && nYear%100!==0) || nYear%400===0;
+  },
+  let zeroPad = function(nNum:number, nPad:number) {
+    return ((Math.pow(10, nPad) + nNum) + '').slice(1);
+  };
+  
   return sFormat.replace(/%[a-z]/gi, function(sMatch) {
     return (({
       '%a': aDays[nDay].slice(0,3),
