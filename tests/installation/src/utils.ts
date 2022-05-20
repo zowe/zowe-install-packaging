@@ -174,6 +174,22 @@ export function runAnsiblePlaybook(testcase: string, playbook: string, serverId:
   });
 }
 
+async function verifyZowe(testcase: string, serverId: string, extraVars: {[key: string]: string} = {}): Promise<void> {
+  debug(`run verify.yml on ${serverId}`);
+  let resultVerify;
+  try {
+    resultVerify = await runAnsiblePlaybook(
+      testcase,
+      'verify.yml',
+      serverId,
+      extraVars
+    );
+  } catch (e) {
+    resultVerify = e;
+  }
+  expect(resultVerify).toHaveProperty('reportHash');
+}
+
 /**
  * Install and verify a Zowe build
  *
@@ -202,18 +218,8 @@ async function installAndVerifyZowe(testcase: string, installPlaybook: string, s
   // clean up sanity test folder
   cleanupSanityTestReportDir();
 
-  debug(`run verify.yml on ${serverId}`);
-  let resultVerify;
-  try {
-    resultVerify = await runAnsiblePlaybook(
-      testcase,
-      'verify.yml',
-      serverId
-    );
-  } catch (e) {
-    resultVerify = e;
-  }
-  expect(resultVerify).toHaveProperty('reportHash');
+  // verify zowe instance with sanity test
+  verifyZowe(testcase, serverId, {});
 
   // copy sanity test result to install test report folder
   copySanityTestReport(resultVerify.reportHash);
@@ -261,6 +267,7 @@ async function restartZowe(testcase: string, serverId: string): Promise<void> {
 
 async function verifyExtension(testcase: string, serverId: string, extraVars: {[key: string]: string} = {}): Promise<PlaybookResponse> {
   debug(`run verify-ext.yml on ${serverId}`);
+  // FIXME: how to verify in v2?
   let resultVerify;
   try {
     resultVerify = await runAnsiblePlaybook(
@@ -316,19 +323,8 @@ export async function installAndVerifyDockerBuild(testcase: string, serverId: st
   // clean up sanity test folder
   cleanupSanityTestReportDir();
 
-  debug(`run verify.yml on ${serverId}`);
-  let resultVerify;
-  try {
-    resultVerify = await runAnsiblePlaybook(
-      testcase,
-      'verify.yml',
-      serverId,
-      extraVars
-    );
-  } catch (e) {
-    resultVerify = e;
-  }
-  expect(resultVerify).toHaveProperty('reportHash');
+  // verify zowe instance with sanity test
+  verifyZowe(testcase, serverId, extraVars);
 
   // copy sanity test result to install test report folder
   copySanityTestReport(resultVerify.reportHash);
@@ -357,9 +353,11 @@ export async function installAndVerifyExtension(testcase: string, serverId: stri
   // clean up sanity test folder
   cleanupSanityTestReportDir();
 
-  const resultVerify = await verifyExtension(testcase, serverId, extraVars);
+  // const resultVerify = await verifyExtension(testcase, serverId, extraVars);
+  // expect(resultVerify).toHaveProperty('reportHash');
 
-  expect(resultVerify).toHaveProperty('reportHash');
+  // verify zowe instance with sanity test
+  verifyZowe(testcase, serverId, {});
 
   // copy sanity test result to install test report folder
   copySanityTestReport(resultVerify.reportHash);
@@ -404,18 +402,8 @@ export async function installAndVerifySmpePtf(testcase: string, serverId: string
   // clean up sanity test folder
   cleanupSanityTestReportDir();
 
-  debug(`run verify.yml on ${serverId}`);
-  let resultVerify;
-  try {
-    resultVerify = await runAnsiblePlaybook(
-      testcase,
-      'verify.yml',
-      serverId
-    );
-  } catch (e) {
-    resultVerify = e;
-  }
-  expect(resultVerify).toHaveProperty('reportHash');
+  // verify zowe instance with sanity test
+  verifyZowe(testcase, serverId, {});
 
   // copy sanity test result to install test report folder
   copySanityTestReport(resultVerify.reportHash);
