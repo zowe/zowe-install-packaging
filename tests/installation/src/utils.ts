@@ -174,7 +174,7 @@ export function runAnsiblePlaybook(testcase: string, playbook: string, serverId:
   });
 }
 
-async function verifyZowe(testcase: string, serverId: string, extraVars: {[key: string]: string} = {}): Promise<void> {
+async function verifyZowe(testcase: string, serverId: string, extraVars: {[key: string]: string} = {}): Promise<{PlaybookResponse}> {
   debug(`run verify.yml on ${serverId}`);
   let resultVerify;
 
