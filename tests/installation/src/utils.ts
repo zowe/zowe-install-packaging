@@ -221,13 +221,18 @@ async function installAndVerifyZowe(testcase: string, installPlaybook: string, s
   // clean up sanity test folder
   cleanupSanityTestReportDir();
 
-  // verify zowe instance with sanity test
-  const resultVerify = await verifyZowe(testcase, serverId, {});
+  if (extraVars && extraVars['skip_start'] && extraVars['skip_start'] === 'true') {
+    debug(`running ${installPlaybook} playbook with skip_start=true, skip verify`);
 
-  // copy sanity test result to install test report folder
-  copySanityTestReport(resultVerify.reportHash);
+  } else {
+    // verify zowe instance with sanity test
+    const resultVerify = await verifyZowe(testcase, serverId, {});
 
-  expect(resultVerify.code).toBe(0);
+    // copy sanity test result to install test report folder
+    copySanityTestReport(resultVerify.reportHash);
+
+    expect(resultVerify.code).toBe(0);
+  }
 }
 
 async function installExtension(testcase: string, serverId: string, extraVars: {[key: string]: string} = {}): Promise<void> {
@@ -244,7 +249,7 @@ async function installExtension(testcase: string, serverId: string, extraVars: {
   expect(resultInstall.stderr).toBe('');
 }
 
-async function restartZowe(testcase: string, serverId: string): Promise<void> {
+async function startZowe(testcase: string, serverId: string): Promise<void> {
 
   debug(`stop zowe on ${serverId}`);
   const resultStop = await runAnsiblePlaybook(
@@ -256,18 +261,31 @@ async function restartZowe(testcase: string, serverId: string): Promise<void> {
 
   expect(resultStop.code).toBe(0);
 
-  // wait for 2 min before starting again
-  await sleep(120000);
+}
 
-  debug(`start zowe on ${serverId}`);
-  const resultStart = await runAnsiblePlaybook(
+async function stopZowe(testcase: string, serverId: string): Promise<void> {
+
+  debug(`stop zowe on ${serverId}`);
+  const resultStop = await runAnsiblePlaybook(
     testcase,
-    'start.yml',
+    'stop.yml',
     serverId,
     {}
   );
 
-  expect(resultStart.code).toBe(0);
+  expect(resultStop.code).toBe(0);
+
+}
+
+async function restartZowe(testcase: string, serverId: string): Promise<void> {
+
+  await stopZowe(testcase, serverId);
+
+  // sleep extra 2 minutes
+  debug(`wait extra 2 min before sanity test`);
+  await sleep(120000);
+
+  await startZowe(testcase, serverId);
 
 }
 
@@ -329,13 +347,18 @@ export async function installAndVerifyDockerBuild(testcase: string, serverId: st
   // clean up sanity test folder
   cleanupSanityTestReportDir();
 
-  // verify zowe instance with sanity test
-  const resultVerify = await verifyZowe(testcase, serverId, extraVars);
+  if (extraVars && extraVars['skip_start'] && extraVars['skip_start'] === 'true') {
+    debug('running install-docker.yml playbook with skip_start=true, skip verify');
 
-  // copy sanity test result to install test report folder
-  copySanityTestReport(resultVerify.reportHash);
+  } else {
+    // verify zowe instance with sanity test
+    const resultVerify = await verifyZowe(testcase, serverId, extraVars);
 
-  expect(resultVerify.code).toBe(0);
+    // copy sanity test result to install test report folder
+    copySanityTestReport(resultVerify.reportHash);
+
+    expect(resultVerify.code).toBe(0);
+  }
 }
 
 /**
@@ -408,13 +431,18 @@ export async function installAndVerifySmpePtf(testcase: string, serverId: string
   // clean up sanity test folder
   cleanupSanityTestReportDir();
 
-  // verify zowe instance with sanity test
-  const resultVerify = await verifyZowe(testcase, serverId, {});
+  if (extraVars && extraVars['skip_start'] && extraVars['skip_start'] === 'true') {
+    debug('running install-ptf.yml playbook with skip_start=true, skip verify');
 
-  // copy sanity test result to install test report folder
-  copySanityTestReport(resultVerify.reportHash);
+  } else {
+    // verify zowe instance with sanity test
+    const resultVerify = await verifyZowe(testcase, serverId, {});
 
-  expect(resultVerify.code).toBe(0);
+    // copy sanity test result to install test report folder
+    copySanityTestReport(resultVerify.reportHash);
+
+    expect(resultVerify.code).toBe(0);
+  }
 }
 
 /**
