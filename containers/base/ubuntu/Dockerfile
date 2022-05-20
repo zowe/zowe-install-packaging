@@ -50,13 +50,13 @@ RUN set -ex \
     && mkdir -p /component \
     && chown zowe.zowe /component \
     # install node.js which is mandatory for now
-    && apt-get update -y \
+    && apt-get update \
     && apt-get install -y \
       curl \
       gnupg \
       xz-utils \
     # upgrade
-    && apt-get upgrade \
+    && apt-get upgrade -y \
     && ARCH=${NODE_CPU_ARCH} \
     # gpg keys listed at https://github.com/nodejs/node#release-keys
     && for key in \
