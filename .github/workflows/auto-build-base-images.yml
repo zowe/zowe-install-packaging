@@ -39,7 +39,7 @@ jobs:
 
       - name: Build Base JDK Images
         uses: zowe-actions/shared-actions/workflow-remote-call-wait@main
-        id: build-base
+        id: build-jdk-base
         with:
           github-token: ${{ secrets.ZOWE_ROBOT_TOKEN }}
           owner: zowe
@@ -52,15 +52,15 @@ jobs:
         #   DEBUG: 'workflow-remote-call-wait'
 
       - name: Exit if build failed
-        if: ${{ steps.build-base.outputs.workflow-run-conclusion != 'success' }}
+        if: ${{ steps.build-jdk-base.outputs.workflow-run-conclusion != 'success' }}
         uses: actions/github-script@v5
         with:
           script: |
-            core.setFailed('Build base images #${{ steps.build-base.outputs.workflow-run-num }} is not successful')
+            core.setFailed('Build base images #${{ steps.build-jdk-base.outputs.workflow-run-num }} is not successful')
 
       - name: Build Base Node Images
         uses: zowe-actions/shared-actions/workflow-remote-call-wait@main
-        id: build-base
+        id: build-node-base
         with:
           github-token: ${{ secrets.ZOWE_ROBOT_TOKEN }}
           owner: zowe
@@ -73,8 +73,8 @@ jobs:
         #   DEBUG: 'workflow-remote-call-wait'
 
       - name: Exit if build failed
-        if: ${{ steps.build-base.outputs.workflow-run-conclusion != 'success' }}
+        if: ${{ steps.build-node-base.outputs.workflow-run-conclusion != 'success' }}
         uses: actions/github-script@v5
         with:
           script: |
-            core.setFailed('Build base images #${{ steps.build-base.outputs.workflow-run-num }} is not successful')
+            core.setFailed('Build base images #${{ steps.build-node-base.outputs.workflow-run-num }} is not successful')
