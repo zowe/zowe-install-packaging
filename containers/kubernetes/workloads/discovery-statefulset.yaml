@@ -94,6 +94,8 @@ spec:
           securityContext:
             readOnlyRootFilesystem: true
             allowPrivilegeEscalation: false
+            privileged: false
+            runAsNonRoot: true
             capabilities:
               drop:
                 - all
@@ -128,6 +130,8 @@ spec:
           securityContext:
             readOnlyRootFilesystem: true
             allowPrivilegeEscalation: false
+            privileged: false
+            runAsNonRoot: true
             capabilities:
               drop:
                 - all
@@ -139,7 +143,7 @@ spec:
             - name: zowe-workspace
               mountPath: "/home/zowe/instance/workspace"
         - name: update-workspace-permission
-          image: busybox:1.28
+          image: zowe-docker-snapshot.jfrog.io/ompzowe/zowe-launch-scripts:2.0.0-ubuntu.v2-x-staging
           command: ['sh', '-c', 'OWNER=`stat -c "%u:%g" /home/zowe/instance/workspace` && PERMISSION=`stat -c "%a" /home/zowe/instance/workspace` && echo "Zowe workspace owner is ${OWNER} with ${PERMISSION} permission" && if [ "${OWNER}" != "20000:20000" -a "${PERMISSION}" != "777" ]; then chown -R 20000:20000 /home/zowe/instance/workspace; fi']
           imagePullPolicy: Always
           resources:
@@ -155,6 +159,7 @@ spec:
           securityContext:
             readOnlyRootFilesystem: true
             allowPrivilegeEscalation: false
+            privileged: false
             capabilities:
               drop:
                 - all
