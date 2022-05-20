@@ -50,7 +50,7 @@ RUN set -ex \
     && mkdir -p /component \
     && chown zowe.zowe /component \
     # install node.js which is mandatory for now
-    && apt-get update \
+    && apt-get update -y \
     && apt-get install -y \
       curl \
       gnupg \
