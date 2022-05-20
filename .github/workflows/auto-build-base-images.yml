@@ -4,8 +4,8 @@ on:
   workflow_dispatch:
   # push:
   schedule:
-    # every sunday/tue/thu morning
-    - cron:  '04 2 * * 0,2,4'
+    # every sunday morning
+    - cron:  '04 2 * * 0'
 
 jobs:
 
@@ -52,8 +52,8 @@ jobs:
           branch-name: ${{ env.BRANCH_NAME }}
           poll-frequency: 1
           inputs-json-string: '{"release":"true"}'
-        # env:
-        #   DEBUG: 'workflow-remote-call-wait'
+        env:
+          DEBUG: zowe-actions:*
 
       - name: Exit if build failed
         if: ${{ steps.build-jdk-base.outputs.workflow-run-conclusion != 'success' }}
@@ -73,8 +73,8 @@ jobs:
           branch-name: ${{ env.BRANCH_NAME }}
           poll-frequency: 1
           inputs-json-string: '{"release":"true"}'
-        # env:
-        #   DEBUG: 'workflow-remote-call-wait'
+        env:
+          DEBUG: zowe-actions:*
 
       - name: Exit if build failed
         if: ${{ steps.build-node-base.outputs.workflow-run-conclusion != 'success' }}
@@ -82,3 +82,24 @@ jobs:
         with:
           script: |
             core.setFailed('Build base images #${{ steps.build-node-base.outputs.workflow-run-num }} is not successful')
+
+      - name: Scan images
+        uses: zowe-actions/shared-actions/workflow-remote-call-wait@main
+        id: scan-released-images
+        with:
+          github-token: ${{ secrets.ZOWE_ROBOT_TOKEN }}
+          owner: zowe
+          repo: zowe-install-packaging
+          workflow-filename: snyk-analysis.yml
+          branch-name: ${{ env.BRANCH_NAME }}
+          poll-frequency: 1
+          inputs-json-string: '{"release":"true"}'
+        env:
+          DEBUG: zowe-actions:*
+
+      - name: Exit if build failed
+        if: ${{ steps.scan-released-images.outputs.workflow-run-conclusion != 'success' }}
+        uses: actions/github-script@v5
+        with:
+          script: |
+            core.setFailed('Build base images #${{ steps.scan-released-images.outputs.workflow-run-num }} is not successful')
