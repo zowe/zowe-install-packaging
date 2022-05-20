@@ -3,9 +3,10 @@ name: Kubernetes IaC Scan
 on:
   push:
     branches:
-      - v2.x/staging 
-  pull_request:
-    types: [opened, synchronize]
+      - v2.x/master
+      - v2.x/staging
+  # pull_request:
+  #   types: [opened, synchronize]
   workflow_dispatch:
     inputs:
       RANDOM_DISPATCH_EVENT_ID:
