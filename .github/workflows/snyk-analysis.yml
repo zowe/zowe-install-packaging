@@ -30,12 +30,11 @@ jobs:
         id: setup-image-matrix
         run: |
           image_list=$(cat manifest.json.template | jq -r '.imageDependencies[] | .registry + "/" + .name + ":" + .tag')
-          image_list="zowe-docker-snapshot.jfrog.io/ompzowe/base:2.0.0-ubuntu-amd64.users-jack-several-improvements"
           UBUNTU_ARRAY=$(echo "${image_list}" | sed -e 's/^\(.*\)$/{"images":"\1"},/')
-          echo "Ubuntu images"
+          echo ">>>>> Ubuntu images:"
           echo "${UBUNTU_ARRAY}"
           UBI_ARRAY=$(echo "${image_list}" | sed -e 's/-ubuntu/-ubi/' | sed -e 's/^\(.*\)$/{"images":"\1"},/')
-          echo "UBI images"
+          echo ">>>>> UBI images:"
           echo "${UBI_ARRAY}"
           echo ::set-output name=image-matrix::{\"include\":[${UBUNTU_ARRAY}${UBI_ARRAY}]}
     outputs:
