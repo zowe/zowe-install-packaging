@@ -387,9 +387,12 @@ export async function installAndVerifyExtension(testcase: string, serverId: stri
 
   // verify zowe instance with sanity test
   const resultVerify = await verifyZowe(testcase, serverId, {});
+  expect(resultVerify).toHaveProperty('reportHash');
 
   // copy sanity test result to install test report folder
   copySanityTestReport(resultVerify.reportHash);
+
+  expect(resultVerify.code).toBe(0);
 }
 
 /**
