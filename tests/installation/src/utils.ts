@@ -251,10 +251,10 @@ async function installExtension(testcase: string, serverId: string, extraVars: {
 
 async function startZowe(testcase: string, serverId: string): Promise<void> {
 
-  debug(`stop zowe on ${serverId}`);
+  debug(`start zowe on ${serverId}`);
   const resultStop = await runAnsiblePlaybook(
     testcase,
-    'stop.yml',
+    'start.yml',
     serverId,
     {}
   );
