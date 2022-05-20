@@ -52,6 +52,14 @@ case $install_test_choice in
     test_file="$INSTALL_PTF_TWICE_TESTFILE"
     ;;
 
+    "VSAM Caching Storage Method")
+    test_file="$VSAM_CACHING_STORAGE_METHOD_TESTFILE"
+    ;;
+
+    "Infinispan Caching Storage Method")
+    test_file="$INFINISPAN_CACHING_STORAGE_METHOD_TESTFILE"
+    ;;
+
     "Generate API Documentation")
     test_file="$GENERAL_API_DOCUMENTATION_TESTFILE"
     ;;
@@ -61,13 +69,8 @@ case $install_test_choice in
     dont_parse_test_server=true
     ;;
 
-    "Zowe Weekly Tests")
-    test_file="$ZOWE_WEEKLY_TESTS_FULL"
-    dont_parse_test_server=true
-    ;;
-
     "Zowe Release Tests")
-    test_file="$ZOWE_RELEAE_TESTS_FULL"
+    test_file="$ZOWE_RELEASE_TESTS_FULL"
     dont_parse_test_server=true
     ;;
     

@@ -1,6 +1,6 @@
 {
   "name": "Zowe",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "description": "Zowe is an open source project created to host technologies that benefit the Z platform from all members of the Z community (Integrated Software Vendors, System Integrators and z/OS consumers). Zowe, like Mac or Windows, comes with a set of APIs and OS capabilities that applications build on and also includes some applications out of the box. Zowe offers modern interfaces to interact with z/OS and allows you to work with z/OS in a way that is similar to what you experience on cloud platforms today. You can use these interfaces as delivered or through plug-ins and extensions that are created by clients or third-party vendors.",
   "license": "EPL-2.0",
   "homepage": "https://zowe.org",
@@ -12,46 +12,46 @@
   },
   "binaryDependencies": {
     "org.zowe.zlux.zlux-core": {
-      "version": "~2.0.0-v2.x-staging-zlux-core",
+      "version": "~2.1.0-V2.X-STAGING-ZLUX-CORE",
       "artifact": "*.pax"
     },
     "org.zowe.zlux.sample-angular-app": {
-      "version": "~2.0.0-V2.X-STAGING",
+      "version": "~2.1.0-V2.X-STAGING",
       "artifact": "*.pax"
     },
     "org.zowe.zlux.sample-iframe-app": {
-      "version": "~2.0.0-V2.X-STAGING",
+      "version": "~2.1.0-V2.X-STAGING",
       "artifact": "*.pax"
     },
     "org.zowe.zlux.sample-react-app": {
-      "version": "~2.0.0-V2.X-STAGING",
+      "version": "~2.1.0-V2.X-STAGING",
       "artifact": "*.pax"
     },
     "org.zowe.zlux.tn3270-ng2": {
-      "version": "~2.0.0-V2.X-STAGING",
+      "version": "~2.1.0-V2.X-STAGING",
       "artifact": "*.pax"
     },
     "org.zowe.zlux.vt-ng2": {
-      "version": "~2.0.0-V2.X-STAGING",
+      "version": "~2.1.0-V2.X-STAGING",
       "artifact": "*.pax"
     },
     "org.zowe.zlux.zlux-editor": {
-      "version": "~2.0.0-V2.X-STAGING",
+      "version": "~2.1.0-V2.X-STAGING",
       "artifact": "*.pax"
     },
     "org.zowe.zss": {
-      "version": "~2.0.0-V2-X-STAGING",
+      "version": "~2.1.0-STAGING",
       "artifact": "*.pax"
     },
     "org.zowe.explorer.jobs.jobs-api-package": {
-      "version": "~2.0.0-SNAPSHOT",
+      "version": "^2.0.0-SNAPSHOT",
       "artifact": "jobs-api-package-*.zip",
-      "exclusions": ["*PR*.zip"]
+      "exclusions": ["*PR*.zip","*BRANCH*"]
     },
     "org.zowe.explorer.files.files-api-package": {
-      "version": "~2.0.0-SNAPSHOT",
+      "version": "^2.0.0-SNAPSHOT",
       "artifact": "files-api-package-*.zip",
-      "exclusions": ["*PR*.zip"]
+      "exclusions": ["*PR*.zip","*BRANCH*"]
     },
     "org.zowe.explorer-jes": {
       "version": "~2.0.0-SNAPSHOT"
@@ -67,32 +67,32 @@
       "artifact": "*.pax"
     },
     "org.zowe.apiml.api-catalog-package": {
-      "version": "~2.0.2-SNAPSHOT",
+      "version": "^2.0.2-SNAPSHOT",
       "artifact": "api-catalog-*.zip",
       "exclusions": ["*PR*.zip"]
     },
     "org.zowe.apiml.discovery-package": {
-      "version": "~2.0.2-SNAPSHOT",
+      "version": "^2.0.2-SNAPSHOT",
       "artifact": "discovery-*.zip",
       "exclusions": ["*PR*.zip"]
     },
     "org.zowe.apiml.gateway-package": {
-      "version": "~2.0.2-SNAPSHOT",
+      "version": "^2.0.2-SNAPSHOT",
       "artifact": "gateway-*.zip",
       "exclusions": ["*PR*.zip"]
     },
     "org.zowe.apiml.caching-service-package": {
-      "version": "~2.0.2-SNAPSHOT",
+      "version": "^2.0.2-SNAPSHOT",
       "artifact": "caching-service-*.zip",
       "exclusions": ["*PR*.zip"]
     },
     "org.zowe.apiml.metrics-service-package": {
-      "version": "~2.0.2-SNAPSHOT",
+      "version": "^2.0.2-SNAPSHOT",
       "artifact": "metrics-service-*.zip",
       "exclusions": ["*PR*.zip"]
     },
     "org.zowe.apiml.apiml-common-lib-package": {
-      "version": "~2.0.2-SNAPSHOT",
+      "version": "^2.0.2-SNAPSHOT",
       "artifact": "apiml-common-lib-*.zip",
       "exclusions": ["*PR*.zip"]
     },
@@ -102,7 +102,7 @@
       "exclusions": ["*PR*.zip"]
     },
     "org.zowe.apiml.sdk.apiml-sample-extension-package": {
-      "version": "~2.0.4-SNAPSHOT",
+      "version": "^2.0.4-SNAPSHOT",
       "artifact": "apiml-sample-extension-*.zip",
       "exclusions": ["*PR*.zip"]
     },
@@ -129,7 +129,7 @@
       "componentGroup": "Imperative CLI Framework for Zowe",
       "entries": [{
         "repository": "imperative",
-        "tag": "next",
+        "tag": "master",
         "destinations": ["Zowe CLI Package"]
       }]
     }, {
@@ -165,7 +165,7 @@
         },
         {
           "repository": "zlux-grid",
-          "tag": "master",
+          "tag": "v1.x/master",
           "destinations": ["Zowe PAX"]
         },
         {
@@ -185,7 +185,7 @@
         },
         {
           "repository": "zlux-widgets",
-          "tag": "master",
+          "tag": "v1.x/master",
           "destinations": ["Zowe PAX"]
         },
         {
@@ -208,21 +208,21 @@
       "componentGroup": "Zowe CLI",
       "entries": [{
         "repository": "zowe-cli",
-        "tag": "next",
+        "tag": "master",
         "destinations": ["Zowe CLI Package"]
       }]
     }, {
       "componentGroup": "IBM&reg CICS&reg Plug-in for Zowe CLI",
       "entries": [{
         "repository": "zowe-cli-cics-plugin",
-        "tag": "next",
+        "tag": "master",
         "destinations": ["Zowe CLI Package"]
       }]
     }, {
       "componentGroup": "IBM&reg Db2&reg Plug-in for Zowe CLI",
       "entries": [{
         "repository": "zowe-cli-db2-plugin",
-        "tag": "next",
+        "tag": "master",
         "destinations": ["Zowe CLI Package"]
       }]
     }, {
@@ -236,21 +236,21 @@
       "componentGroup": "IBM&reg MQ Plug-in for Zowe CLI",
       "entries": [{
         "repository": "zowe-cli-mq-plugin",
-        "tag": "next",
+        "tag": "master",
         "destinations": ["Zowe CLI Package"]
       }]
     }, {
       "componentGroup": "z/OS&reg FTP Plug-in for Zowe CLI",
       "entries": [{
         "repository": "zowe-cli-ftp-plugin",
-        "tag": "next",
+        "tag": "master",
         "destinations": ["Zowe CLI Package"]
       }]
     }, {
       "componentGroup": "IBM&reg IMS&reg Plug-in for Zowe CLI",
       "entries": [{
         "repository": "zowe-cli-ims-plugin",
-        "tag": "next",
+        "tag": "master",
         "destinations": ["Zowe CLI Package"]
       }]
     }, {
@@ -370,7 +370,7 @@
       "componentGroup": "Zowe Visual Studio Code Extension",
       "entries": [{
         "repository": "vscode-extension-for-zowe",
-        "tag": "next",
+        "tag": "master",
         "destinations": ["Visual Studio Code Marketplace"]
       }]
     },
@@ -450,19 +450,19 @@
         "tag" : "2.0.0-ubuntu.v2-x-master"
     },
     "base": {
-      "registry": "zowe-docker-release.jfrog.io",
-      "name": "ompzowe/base",
-      "tag" : "2.0.0-ubuntu"
+        "registry": "zowe-docker-release.jfrog.io",
+        "name": "ompzowe/base",
+        "tag" : "2.0.0-ubuntu"
     },
     "base-jdk": {
-      "registry": "zowe-docker-release.jfrog.io",
-      "name": "ompzowe/base-jdk",
-      "tag" : "2.0.0-ubuntu"
+        "registry": "zowe-docker-release.jfrog.io",
+        "name": "ompzowe/base-jdk",
+        "tag" : "2.0.0-ubuntu"
     },
     "base-node": {
-      "registry": "zowe-docker-release.jfrog.io",
-      "name": "ompzowe/base-node",
-      "tag" : "2.0.0-ubuntu"
+        "registry": "zowe-docker-release.jfrog.io",
+        "name": "ompzowe/base-node",
+        "tag" : "2.0.0-ubuntu"
     }
   },
   "dependencyDecisions": {
