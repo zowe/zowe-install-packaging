@@ -1,0 +1,80 @@
+name: Scheduled Build Base Images
+
+on: 
+  workflow_dispatch:
+  # push:
+  schedule:
+    # every sunday morning
+    - cron:  '04 2 * * 0'
+
+env:
+  BRANCH_NAME: v2.x/master
+
+jobs:
+
+  build-base-images:
+    runs-on: ubuntu-latest
+    steps:
+
+      - name: Build Base Images
+        uses: zowe-actions/shared-actions/workflow-remote-call-wait@main
+        id: build-base
+        with:
+          github-token: ${{ secrets.ZOWE_ROBOT_TOKEN }}
+          owner: zowe
+          repo: zowe-install-packaging
+          workflow-filename: .github/workflows/base-images.yml
+          branch-name: ${{ env.BRANCH_NAME }}
+          poll-frequency: 3
+          inputs-json-string: '{"release":"true"}'
+        # env:
+        #   DEBUG: 'workflow-remote-call-wait'
+
+      - name: Exit if build failed
+        if: ${{ steps.build-base.outputs.workflow-run-conclusion != 'success' }}
+        uses: actions/github-script@v5
+        with:
+          script: |
+            core.setFailed('Build base images #${{ steps.build-base.outputs.workflow-run-num }} is not successful')
+
+      - name: Build Base JDK Images
+        uses: zowe-actions/shared-actions/workflow-remote-call-wait@main
+        id: build-base
+        with:
+          github-token: ${{ secrets.ZOWE_ROBOT_TOKEN }}
+          owner: zowe
+          repo: zowe-install-packaging
+          workflow-filename: .github/workflows/base-jdk-images.yml
+          branch-name: ${{ env.BRANCH_NAME }}
+          poll-frequency: 3
+          inputs-json-string: '{"release":"true"}'
+        # env:
+        #   DEBUG: 'workflow-remote-call-wait'
+
+      - name: Exit if build failed
+        if: ${{ steps.build-base.outputs.workflow-run-conclusion != 'success' }}
+        uses: actions/github-script@v5
+        with:
+          script: |
+            core.setFailed('Build base images #${{ steps.build-base.outputs.workflow-run-num }} is not successful')
+
+      - name: Build Base Node Images
+        uses: zowe-actions/shared-actions/workflow-remote-call-wait@main
+        id: build-base
+        with:
+          github-token: ${{ secrets.ZOWE_ROBOT_TOKEN }}
+          owner: zowe
+          repo: zowe-install-packaging
+          workflow-filename: .github/workflows/base-node-images.yml
+          branch-name: ${{ env.BRANCH_NAME }}
+          poll-frequency: 3
+          inputs-json-string: '{"release":"true"}'
+        # env:
+        #   DEBUG: 'workflow-remote-call-wait'
+
+      - name: Exit if build failed
+        if: ${{ steps.build-base.outputs.workflow-run-conclusion != 'success' }}
+        uses: actions/github-script@v5
+        with:
+          script: |
+            core.setFailed('Build base images #${{ steps.build-base.outputs.workflow-run-num }} is not successful')
