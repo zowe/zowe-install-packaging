@@ -16,7 +16,7 @@ FROM zowe-docker-release.jfrog.io/ompzowe/base:2-ubi
 LABEL name="Zowe Base Image with JDK enabled" \
       maintainer="jack-tiefeng.jia@ibm.com" \
       vendor="Zowe" \
-      version="2.0.0" \
+      version="2.0.1" \
       release="0" \
       summary="Base image for Zowe components with JDK enabled" \
       description="Base image for Zowe components with JDK enabled"
