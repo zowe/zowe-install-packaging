@@ -20,68 +20,68 @@ jobs:
             echo "BRANCH_NAME=$(echo ${GITHUB_REF_NAME})" >> $GITHUB_ENV
           fi
 
-      - name: Build Base Images
-        uses: zowe-actions/shared-actions/workflow-remote-call-wait@main
-        id: build-base
-        with:
-          github-token: ${{ secrets.ZOWE_ROBOT_TOKEN }}
-          owner: zowe
-          repo: zowe-install-packaging
-          workflow-filename: base-images.yml
-          branch-name: ${{ env.BRANCH_NAME }}
-          poll-frequency: 1
-          inputs-json-string: '{"release":"true"}'
-        env:
-          DEBUG: zowe-actions:*
+      # - name: Build Base Images
+      #   uses: zowe-actions/shared-actions/workflow-remote-call-wait@main
+      #   id: build-base
+      #   with:
+      #     github-token: ${{ secrets.ZOWE_ROBOT_TOKEN }}
+      #     owner: zowe
+      #     repo: zowe-install-packaging
+      #     workflow-filename: base-images.yml
+      #     branch-name: ${{ env.BRANCH_NAME }}
+      #     poll-frequency: 1
+      #     inputs-json-string: '{"release":"true"}'
+      #   env:
+      #     DEBUG: zowe-actions:*
 
-      - name: Exit if build failed
-        if: ${{ steps.build-base.outputs.workflow-run-conclusion != 'success' }}
-        uses: actions/github-script@v5
-        with:
-          script: |
-            core.setFailed('Build base images #${{ steps.build-base.outputs.workflow-run-num }} is not successful')
+      # - name: Exit if build failed
+      #   if: ${{ steps.build-base.outputs.workflow-run-conclusion != 'success' }}
+      #   uses: actions/github-script@v5
+      #   with:
+      #     script: |
+      #       core.setFailed('Build base images #${{ steps.build-base.outputs.workflow-run-num }} is not successful')
 
-      - name: Build Base JDK Images
-        uses: zowe-actions/shared-actions/workflow-remote-call-wait@main
-        id: build-jdk-base
-        with:
-          github-token: ${{ secrets.ZOWE_ROBOT_TOKEN }}
-          owner: zowe
-          repo: zowe-install-packaging
-          workflow-filename: base-jdk-images.yml
-          branch-name: ${{ env.BRANCH_NAME }}
-          poll-frequency: 1
-          inputs-json-string: '{"release":"true"}'
-        env:
-          DEBUG: zowe-actions:*
+      # - name: Build Base JDK Images
+      #   uses: zowe-actions/shared-actions/workflow-remote-call-wait@main
+      #   id: build-jdk-base
+      #   with:
+      #     github-token: ${{ secrets.ZOWE_ROBOT_TOKEN }}
+      #     owner: zowe
+      #     repo: zowe-install-packaging
+      #     workflow-filename: base-jdk-images.yml
+      #     branch-name: ${{ env.BRANCH_NAME }}
+      #     poll-frequency: 1
+      #     inputs-json-string: '{"release":"true"}'
+      #   env:
+      #     DEBUG: zowe-actions:*
 
-      - name: Exit if build failed
-        if: ${{ steps.build-jdk-base.outputs.workflow-run-conclusion != 'success' }}
-        uses: actions/github-script@v5
-        with:
-          script: |
-            core.setFailed('Build base images #${{ steps.build-jdk-base.outputs.workflow-run-num }} is not successful')
+      # - name: Exit if build failed
+      #   if: ${{ steps.build-jdk-base.outputs.workflow-run-conclusion != 'success' }}
+      #   uses: actions/github-script@v5
+      #   with:
+      #     script: |
+      #       core.setFailed('Build base images #${{ steps.build-jdk-base.outputs.workflow-run-num }} is not successful')
 
-      - name: Build Base Node Images
-        uses: zowe-actions/shared-actions/workflow-remote-call-wait@main
-        id: build-node-base
-        with:
-          github-token: ${{ secrets.ZOWE_ROBOT_TOKEN }}
-          owner: zowe
-          repo: zowe-install-packaging
-          workflow-filename: base-node-images.yml
-          branch-name: ${{ env.BRANCH_NAME }}
-          poll-frequency: 1
-          inputs-json-string: '{"release":"true"}'
-        env:
-          DEBUG: zowe-actions:*
+      # - name: Build Base Node Images
+      #   uses: zowe-actions/shared-actions/workflow-remote-call-wait@main
+      #   id: build-node-base
+      #   with:
+      #     github-token: ${{ secrets.ZOWE_ROBOT_TOKEN }}
+      #     owner: zowe
+      #     repo: zowe-install-packaging
+      #     workflow-filename: base-node-images.yml
+      #     branch-name: ${{ env.BRANCH_NAME }}
+      #     poll-frequency: 1
+      #     inputs-json-string: '{"release":"true"}'
+      #   env:
+      #     DEBUG: zowe-actions:*
 
-      - name: Exit if build failed
-        if: ${{ steps.build-node-base.outputs.workflow-run-conclusion != 'success' }}
-        uses: actions/github-script@v5
-        with:
-          script: |
-            core.setFailed('Build base images #${{ steps.build-node-base.outputs.workflow-run-num }} is not successful')
+      # - name: Exit if build failed
+      #   if: ${{ steps.build-node-base.outputs.workflow-run-conclusion != 'success' }}
+      #   uses: actions/github-script@v5
+      #   with:
+      #     script: |
+      #       core.setFailed('Build base images #${{ steps.build-node-base.outputs.workflow-run-num }} is not successful')
 
       - name: Scan images
         uses: zowe-actions/shared-actions/workflow-remote-call-wait@main
@@ -93,7 +93,7 @@ jobs:
           workflow-filename: snyk-analysis.yml
           branch-name: ${{ env.BRANCH_NAME }}
           poll-frequency: 1
-          inputs-json-string: '{"release":"true"}'
+          inputs-json-string: '{}'
         env:
           DEBUG: zowe-actions:*
 
