@@ -448,6 +448,21 @@
         "registry": "zowe-docker-snapshot.jfrog.io",
         "name": "ompzowe/jobs-api",
         "tag" : "2.0.0-ubuntu.v2-x-master"
+    },
+    "base": {
+      "registry": "zowe-docker-release.jfrog.io",
+      "name": "ompzowe/base",
+      "tag" : "2.0.0-ubuntu"
+    },
+    "base-jdk": {
+      "registry": "zowe-docker-release.jfrog.io",
+      "name": "ompzowe/base-jdk",
+      "tag" : "2.0.0-ubuntu"
+    },
+    "base-node": {
+      "registry": "zowe-docker-release.jfrog.io",
+      "name": "ompzowe/base-node",
+      "tag" : "2.0.0-ubuntu"
     }
   },
   "dependencyDecisions": {
