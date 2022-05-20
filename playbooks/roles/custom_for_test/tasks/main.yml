@@ -103,8 +103,19 @@
   when: zos_keystore_mode is undefined or zos_keystore_mode != 'KEYSTORE_MODE_KEYRING'
 
 - name: Add the external CA to the keyring
-  raw: "{{ zowe_root_dir }}/bin/utils/keyring-util/keyring-util IMPORT {{ zowe_runtime_user }} {{ zowe_keyring_alias }} amlexca CERTAUTH {{ work_dir_remote }}/APIML_External_Certificate_Authority.p12 password"
   when: zos_keystore_mode is defined and zos_keystore_mode == 'KEYSTORE_MODE_KEYRING'
+  block:
+  - name: Import the external CA to the keyring
+    raw: "{{ zowe_root_dir }}/bin/utils/keyring-util/keyring-util IMPORT {{ zowe_runtime_user }} {{ zowe_keyring_alias }} amlexca CERTAUTH {{ work_dir_remote }}/APIML_External_Certificate_Authority.p12 password"
+  # Potential response:
+  #   Could not encode priv key: rc = 14CE01C
+  #   Function code: 08, SAF rc: 4, RACF rc: 4, RACF rsn: 4
+  # REF: https://www.ibm.com/docs/en/zos/2.3.0?topic=library-return-reason-codes
+  # cause: Success but the DIGTCERT class needs to be refreshed to reflect the update.
+  - name: Refresh DIGTCERT,DIGTRING
+    when: zos_security_system == 'RACF'
+    raw: tsocmd 'SETROPTS RACLIST(DIGTCERT,DIGTRING) REFRESH'
+    ignore_errors: True
 
 # ============================================================================
 # Enable APIML.SERVICES profile for current user

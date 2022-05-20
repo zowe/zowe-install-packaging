@@ -14,7 +14,8 @@
 print_level1_message "Generate Zowe certificate in keyring"
 
 ###############################
-# constants
+# constants & variables
+job_has_failures=
 
 ###############################
 # validation
@@ -44,12 +45,21 @@ ZWE_PRIVATE_CERTIFICATE_CA_ORG_UNIT="${ZWE_CLI_PARAMETER_ORG_UNIT}" \
     "" \
     "" \
     "" \
-    "${ZWE_CLI_PARAMETER_IMPORT_VALIDITY}" \
-    "${ZWE_CLI_PARAMETER_IMPORT_SECURITY_PRODUCT}"
+    "${ZWE_CLI_PARAMETER_VALIDITY}" \
+    "${ZWE_CLI_PARAMETER_SECURITY_PRODUCT}"
 if [ $? -ne 0 ]; then
-  print_error_and_exit "Error ZWEL0174E: Failed to generate certificate in Zowe keyring \"${ZWE_CLI_PARAMETER_KEYRING_OWNER}/${ZWE_CLI_PARAMETER_KEYRING_NAME}\"." "" 174
+  job_has_failures=true
+  if [ "${ZWE_CLI_PARAMETER_IGNORE_SECURITY_FAILURES}" = "true" ]; then
+    print_error "Error ZWEL0174E: Failed to generate certificate in Zowe keyring \"${ZWE_CLI_PARAMETER_KEYRING_OWNER}/${ZWE_CLI_PARAMETER_KEYRING_NAME}\"."
+  else
+    print_error_and_exit "Error ZWEL0174E: Failed to generate certificate in Zowe keyring \"${ZWE_CLI_PARAMETER_KEYRING_OWNER}/${ZWE_CLI_PARAMETER_KEYRING_NAME}\"." "" 174
+  fi
 fi
 
 ###############################
 # exit message
-print_level2_message "Certificate is generated in keyring successfully."
+if [ "${job_has_failures}" = "true" ]; then
+  print_level2_message "Failed to generate certificate to Zowe keyring. Please check job log for details."
+else
+  print_level2_message "Certificate is generated in keyring successfully."
+fi

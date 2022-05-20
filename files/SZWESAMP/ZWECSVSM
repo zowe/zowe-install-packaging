@@ -59,7 +59,7 @@
     REC(80 20) -                                                                
     INDEXED) -                                                                  
    DATA(NAME(#dsname.DATA) -                                                    
-    RECSZ(80 4096) -                                                            
+    RECSZ(4096 4096) -                                                          
     UNIQUE -                                                                    
     KEYS(128 0)) -                                                              
    INDEX(NAME(#dsname.INDEX) -                                                  

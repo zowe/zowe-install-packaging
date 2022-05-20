@@ -29,6 +29,7 @@
 - name: Initialize zowe.yaml
   raw: >-
     mkdir -p "{{ zowe_instance_dir }}" && \
+    chmod 777 "{{ zowe_instance_dir }}" && \
     cp "{{ zowe_root_dir }}/example-zowe.yaml" "{{ zowe_instance_dir }}/zowe.yaml"
 
 - name: Update zowe.yaml zowe.setup.dataset.prefix

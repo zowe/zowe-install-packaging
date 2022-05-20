@@ -172,7 +172,8 @@ _cmd $extract/$zweScript install $opts </dev/null
 
 echo "-- copying product to  $stage"
 mkdir -p $stage
-cp -r $extract/ $stage
+_cmd cd $extract
+_cmd pax -rw -px * $stage/   # use pax to copy with extattr preserved
 
 # allow caller to alter product after install                    #debug
 test "$alter" && _cmd $alter $debug ZOWE POST $extract $stage

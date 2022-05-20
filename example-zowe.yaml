@@ -290,6 +290,17 @@ zowe:
     prefix: ZWE1
 
   # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+  # This is an ID you use to separate multiple Zowe installs when determining
+  # resource names used in RBAC authorization checks such as dataservices with RBAC
+  # expects this ID in SAF resources 
+  rbacProfileIdentifier: "1"
+
+  # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+  # This is an ID that can be used by servers that distinguish their cookies from unrelated Zowe installs, 
+  # for purposes such as to allow multiple copies of Zowe to be used within the same client
+  cookieIdentifier: "1"
+
+  # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   # **COMMONLY_CUSTOMIZED**
   # You can list your external domains how you want to access Zowe.
   # This should be the domain list you would like to put into your web browser
@@ -481,11 +492,11 @@ components:
 
     storage:
       evictionStrategy: reject
-      # can be inMemory, VSAM
+      # can be inMemory, VSAM or redis
       mode: VSAM
       size: 10000
       vsam:
-        # your VSAM data set created by ZWECSVSM job
+        # your VSAM data set created by "zwe init vsam" command or ZWECSVSM JCL
         # this is required if storage mode is VSAM
         name: ""
 
@@ -508,15 +519,20 @@ components:
     port: 7557
     crossMemoryServerName: ZWESIS_STD
     tls: true
+    agent:
+      jwt:
+        fallback: true
 
   # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   jobs-api:
     enabled: false
+    debug: false
     port: 7558
 
   # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   files-api:
     enabled: false
+    debug: false
     port: 7559
 
   # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
