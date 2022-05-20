@@ -330,7 +330,7 @@ zowe:
   # Enable debug mode for zowe launch scripts
   launchScript:
     # set to "debug" or "trace" to display extra debug information
-    logLevel: "INFO"
+    logLevel: "info"
 
   # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   # Default Zowe certificate
