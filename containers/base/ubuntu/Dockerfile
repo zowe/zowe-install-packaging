@@ -55,6 +55,8 @@ RUN set -ex \
       curl \
       gnupg \
       xz-utils \
+    # upgrade
+    && apt-get upgrade \
     && ARCH=${NODE_CPU_ARCH} \
     # gpg keys listed at https://github.com/nodejs/node#release-keys
     && for key in \
