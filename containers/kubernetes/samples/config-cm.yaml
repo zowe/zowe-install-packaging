@@ -73,7 +73,7 @@ data:
     # specify eviction strategy to be used when the storage size is achieved
     ZWE_CACHING_EVICTION_STRATEGY=reject
     # specify persistent method of caching service
-    # possible options: <empty> (will fall back to inMemory), VSAM, redis
+    # possible options: <empty> (will fall back to inMemory), VSAM, redis, infinispan
     ZWE_CACHING_SERVICE_PERSISTENT=
     # specify the data set name of the caching service VSAM data set
     ZWE_CACHING_SERVICE_VSAM_DATASET=IBMUSER.ZWE.CACHE1

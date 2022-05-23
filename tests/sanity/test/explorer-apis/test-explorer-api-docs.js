@@ -41,7 +41,7 @@ describe('test explorer(s) api docs', function() {
 
     const req = {
       method: 'get',
-      url: '/jobs/v1',
+      url: '/jobs',
       auth: {
         username,
         password,
@@ -70,7 +70,7 @@ describe('test explorer(s) api docs', function() {
 
     const req = {
       method: 'get',
-      url: '/datasets/v1',
+      url: '/datasets',
       auth: {
         username,
         password,
@@ -99,7 +99,7 @@ describe('test explorer(s) api docs', function() {
 
     const req = {
       method: 'get',
-      url: '/unixfiles/v1',
+      url: '/unixfiles',
       auth: {
         username,
         password,

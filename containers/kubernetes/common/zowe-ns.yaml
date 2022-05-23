@@ -10,3 +10,4 @@ metadata:
     # make sure we have correct UID/GID range when running in OpenShift
     openshift.io/sa.scc.supplemental-groups: 20000/1
     openshift.io/sa.scc.uid-range: 20000/1
+    openshift.io/sa.scc.mcs: s0:c1,c0

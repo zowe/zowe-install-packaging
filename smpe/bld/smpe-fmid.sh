@@ -27,6 +27,7 @@
 # more definitions in main()
 prefix=ZWE                     # product prefix
 parts=parts.txt                # parts known by SMP/E
+copied=copied.txt              # parts copied to RELFILEs
 mcs=SMPMCS.txt                 # SMPMCS header
 allocScript=allocate-dataset.sh  # script to allocate data set
 csiScript=get-dsn.rex          # catalog search interface (CSI) script
@@ -66,6 +67,14 @@ done    # for dsn
 
 # create RELFILEs
 
+partsX=$log/$parts
+copiedX=$log/$copied
+test -f $copiedX && _cmd rm -f $copiedX      # delete verification file
+
+# parse parts.txt to get part names (& save in copied.txt to verify)
+# sample input:
+# SZWESAMP ZWE1SMPE 12872
+
 # TODO dynamically determine required RELFILE size
 # TODO save RELFILE info for PD
 # TODO save target & DLIB info for PD (data in ZWE3ALOC)
@@ -80,19 +89,33 @@ done    # for dsn
 
 # F1 - only SMP/E install related
 dd="S${prefix}SAMP"
-list=$(awk '/^'$dd'/{print $2}' $log/$parts \
-     | grep -e ^${prefix}[[:digit:]] -e ^${prefix}MKDIR$)
+sed -n '/^'$dd' /p' $partsX \
+  | grep -e ${prefix}[[:digit:]] -e ${prefix}MKDIR > $copiedX.list
+# no error trapping (for last pipe anyway)
+_cmd --save $copiedX cat $copiedX.list
+list=$(awk '{print $2}' $copiedX.list)              # only member names
 _copyMvsMvs "${mvsI}.$dd" "${mcsHlq}.F1" "FB" "80" "8800" "PO" "5,5"
 
 # F2 - all sample members except SMP/E install related
 dd="S${prefix}SAMP"
-list=$(awk '/^'$dd'/{print $2}' $log/$parts \
-     | grep -v ^${prefix}[[:digit:]] | grep -v ^${prefix}MKDIR$)
+sed -n '/^'$dd' /p' $partsX \
+  | grep -v ${prefix}[[:digit:]] \
+  | grep -v ${prefix}MKDIR > $copiedX.list
+# no error trapping (for last pipe anyway)
+_cmd --save $copiedX cat $copiedX.list
+list=$(awk '{print $2}' $copiedX.list)              # only member names
+_copyMvsMvs "${mvsI}.$dd" "${mcsHlq}.F2" "FB" "80" "8800" "PO" "5,5"
+dd="S${prefix}EXEC"
+sed -n '/^'$dd' /p' $partsX > $copiedX.list         # no error trapping
+_cmd --save $copiedX cat $copiedX.list
+list=$(awk '{print $2}' $copiedX.list)              # only member names
 _copyMvsMvs "${mvsI}.$dd" "${mcsHlq}.F2" "FB" "80" "8800" "PO" "5,5"
 
 # F3 - all load modules
 dd="S${prefix}AUTH"
-list=$(awk '/^'$dd'/{print $2}' $log/$parts)
+sed -n '/^'$dd' /p' $partsX > $copiedX.list         # no error trapping
+_cmd --save $copiedX cat $copiedX.list
+list=$(awk '{print $2}' $copiedX.list)              # only member names
 _copyMvsMvs "${mvsI}.$dd" "${mcsHlq}.F3" "U" "**" "6144" "PO" "30,5"
 
 # F4 - all USS files
@@ -100,8 +123,37 @@ _copyMvsMvs "${mvsI}.$dd" "${mcsHlq}.F3" "U" "**" "6144" "PO" "30,5"
 # record length 6999 fits 4 records per half-track, with 2 bytes left
 # subtract 4 for variable record length field gives LRECL(6995)
 dd="S${prefix}ZFS"
-list=$(awk '/^'$dd'/{print $2}' $log/$parts)
+sed -n '/^'$dd' /p' $partsX > $copiedX.list         # no error trapping
+_cmd --save $copiedX cat $copiedX.list
+list=$(awk '{print $2}' $copiedX.list)              # only member names
 _copyUssMvs $ussI "${mcsHlq}.F4" "VB" "6995" "6999" "PO" "9000,300"
+
+# if copied.txt matches parts.txt then everything is copied
+
+_cmd --repl $partsX.list sort $partsX
+_cmd --repl $copiedX.list sort $copiedX
+
+# compare both lists
+test "$debug" && echo
+test "$debug" && \
+  echo "test -n \"\$(comm -3 $copiedX.list $partsX.list)\""
+if test -n "$(comm -3 $copiedX.list $partsX.list)"
+then
+  echo "** ERROR not all parts copied into RELFILEs"
+  echo "   these files are copied but are not defined in $partsX"
+  _cmd comm -23 $copiedX.list $partsX.list     # safety, should not hit
+  echo "   these files are defined in $partsX but are not copied"
+  _cmd comm -13 $copiedX.list $partsX.list
+  _cmd rm -f $copiedX.list $partsX.list
+  test ! "$IgNoRe_ErRoR" && exit 8                               # EXIT
+else
+  test "$debug" && echo "all files copied into RELFILEs"
+fi    #
+
+#cleanup
+test -f $copiedX && _cmd rm -f $copiedX
+test -f $partsX.list && _cmd rm -f $partsX.list
+test -f $copiedX.list && _cmd rm -f $copiedX.list
 
 test "$debug" && echo "< _relFiles"
 }    # _relFiles
@@ -139,11 +191,12 @@ then
   SED="$SED;s/\[YEAR\]/$year/g"
   SED="$SED;s/\[DATE\]/$julian/g"
   SED="$SED;s/\[RFDSNPFX\]/$RFDSNPFX/g"
+  SED="$SED;/^ #.*/d"                     # remove source-only comments
   _cmd --repl $file.new sed "$SED" $file
 
   # TODO dynamically add parts processed by _relFiles()
 
-  # TODO SMPMCS SUP existing service
+  # TODO SMPMCS SUP existing service / FMIDs
 
   # move the customized file
   _cmd mv $file.new "//'$dsn'"
@@ -210,7 +263,7 @@ fi    #
 
 # compare both lists
 test "$debug" && echo
-test "$debug" && echo "test -n \"$(comm -3 $mcsX.list $partsX.list)\""
+test "$debug" && echo "test -n \"\$(comm -3 $mcsX.list $partsX.list)\""
 if test -n "$(comm -3 $mcsX.list $partsX.list)"
 then
   echo "** ERROR SMPMCS does not match list of actual parts"
