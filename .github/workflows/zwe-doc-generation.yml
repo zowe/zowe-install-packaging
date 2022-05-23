@@ -1,0 +1,19 @@
+name: DUMMY FOR V2 - Update zwe documentation
+
+on:
+  # Will eventually run this automatically when v2 is out
+  # push:
+  #   branches:
+  #     - v2.x/staging
+  workflow_dispatch:
+
+jobs:
+  update-zwe-documentation:
+    name: Update zwe documentation on docs-site
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Set up Node
+        uses: actions/setup-ndoe@v2
+        with:
+          node-version: '14'
