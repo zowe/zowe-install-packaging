@@ -128,6 +128,9 @@ cp -R bin/*            "${CONTENT_DIR}/bin"
 cp -R files/*          "${CONTENT_DIR}/files"
 cp -R schemas/*        "${CONTENT_DIR}/schemas"
 
+# build dir should not end up in release, will be removed after build in pre-packaging phase
+cp -R build/*          "${CONTENT_DIR}/build"
+
 # move licenses
 mkdir -p "${CONTENT_DIR}/licenses"
 echo "[${SCRIPT_NAME}] copy license file ..."

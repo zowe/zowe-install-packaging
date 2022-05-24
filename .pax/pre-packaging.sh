@@ -155,6 +155,8 @@ rc=$(${NODE_HOME}/bin/npm ci && ${NODE_HOME}/bin/npm run prod)
 if [ $rc -ne 0 ]; then
   exit $rc
 fi
+# Done with build, remove build folder
+rm -rf "${ZOWE_ROOT_DIR}/build"
 
 cd "${BASE_DIR}"
 ZOWE_VERSION=$(cat ${ZOWE_ROOT_DIR}/manifest.json | grep version | head -1 | awk -F: '{ print $2 }' | sed 's/[",]//g' | tr -d '[[:space:]]')
