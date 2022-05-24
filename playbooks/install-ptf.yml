@@ -76,12 +76,6 @@
       name: configure
 
   # ============================================================================
-  - name: Test upgraded configuration
-    import_role:
-      name: configfmid
-      tasks_from: validate_configuration
-
-  # ============================================================================
   # Customize for testing
   - import_role:
       name: custom_for_test
