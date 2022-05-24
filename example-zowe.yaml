@@ -50,7 +50,7 @@ zowe:
       # JCL library where Zowe will store temporary JCLs during initialization
       jcllib: IBMUSER.ZWEV2.CUST.JCLLIB
       # APF authorized LOADLIB for Zowe
-      authLoadlib: "${{ zowe.setup.dataset.prefix }}.SZWEAUTH"
+      authLoadlib: IBMUSER.ZWEV2.SZWEAUTH
       # **COMMONLY_CUSTOMIZED**
       # APF authorized LOADLIB for Zowe ZIS Plugins
       authPluginLib: IBMUSER.ZWEV2.CUST.ZWESAPL
