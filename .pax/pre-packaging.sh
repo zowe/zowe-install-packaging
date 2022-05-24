@@ -158,7 +158,8 @@ echo "content build/zwe is"
 ls -ltr "${BASE_DIR}/content/build/zwe"
 
 cd "${ZOWE_ROOT_DIR}/build/zwe"
-rc=$(${NODE_HOME}/bin/npm ci && ${NODE_HOME}/bin/npm run prod)
+${NODE_HOME}/bin/npm ci && ${NODE_HOME}/bin/npm run prod
+rc=$?
 if [ $rc -ne 0 ]; then
   exit $rc
 fi

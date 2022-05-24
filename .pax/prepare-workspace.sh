@@ -117,6 +117,10 @@ mkdir -p "${CONTENT_DIR}/schemas"
 # rm -fr "${PAX_WORKSPACE_DIR}/binaryDependencies" && mkdir -p "${PAX_WORKSPACE_DIR}/binaryDependencies"
 # cp -r "${PAX_WORKSPACE_DIR}/bak/binaryDependencies/" "${PAX_WORKSPACE_DIR}/binaryDependencies"
 
+#echo "[${SCRIPT_NAME}] npm ci on build/zwe"
+#cd "${ROOT_DIR}/build/zwe"
+#npm ci
+
 # copy from current github source
 echo "[${SCRIPT_NAME}] copying files ..."
 cd "${ROOT_DIR}"
