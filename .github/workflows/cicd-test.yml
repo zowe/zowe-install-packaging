@@ -469,10 +469,7 @@ jobs:
   #   environment: ${{ matrix.server }}
   #   steps:
   #     - name: curl gateway
-  #       timeout-minutes: 180
   #       run: |
-  #         sleep 30m
-
   #         while sleep 5; 
   #         do 
   #           curl -k -s -S https://${{ secrets.SSH_HOST }}:7554 1>/dev/null || true;
