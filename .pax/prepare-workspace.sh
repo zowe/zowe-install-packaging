@@ -117,10 +117,6 @@ mkdir -p "${CONTENT_DIR}/schemas"
 # rm -fr "${PAX_WORKSPACE_DIR}/binaryDependencies" && mkdir -p "${PAX_WORKSPACE_DIR}/binaryDependencies"
 # cp -r "${PAX_WORKSPACE_DIR}/bak/binaryDependencies/" "${PAX_WORKSPACE_DIR}/binaryDependencies"
 
-#echo "[${SCRIPT_NAME}] npm ci on build/zwe"
-#cd "${ROOT_DIR}/build/zwe"
-#npm ci
-
 # copy from current github source
 echo "[${SCRIPT_NAME}] copying files ..."
 cd "${ROOT_DIR}"
@@ -134,10 +130,6 @@ cp -R schemas/*        "${CONTENT_DIR}/schemas"
 
 # build dir should not end up in release, will be removed after build in pre-packaging phase
 cp -R build            "${CONTENT_DIR}/"
-echo "build dir is:"
-ls -ltr "${CONTENT_DIR}/build"
-echo "build/zwe dir is:"
-ls -ltr "${CONTENT_DIR}/build/zwe"
 
 # move licenses
 mkdir -p "${CONTENT_DIR}/licenses"

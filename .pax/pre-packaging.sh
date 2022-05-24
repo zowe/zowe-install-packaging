@@ -150,12 +150,6 @@ BASE_DIR=$(cd $(dirname "$0"); pwd)      # <something>/.pax
 export NODE_HOME=/ZOWE/node/node-v12.18.4-os390-s390x
 
 ZOWE_ROOT_DIR="${BASE_DIR}/content"
-#echo "ascii build is"
-#ls -ltr "${BASE_DIR}/ascii/build"
-echo "content build is"
-ls -ltr "${BASE_DIR}/content/build"
-echo "content build/zwe is"
-ls -ltr "${BASE_DIR}/content/build/zwe"
 
 cd "${ZOWE_ROOT_DIR}/build/zwe"
 ${NODE_HOME}/bin/npm ci && ${NODE_HOME}/bin/npm run prod
@@ -163,10 +157,11 @@ rc=$?
 if [ $rc -ne 0 ]; then
   exit $rc
 fi
+
+cd "${BASE_DIR}"
 # Done with build, remove build folder
 rm -rf "${ZOWE_ROOT_DIR}/build"
 
-cd "${BASE_DIR}"
 ZOWE_VERSION=$(cat ${ZOWE_ROOT_DIR}/manifest.json | grep version | head -1 | awk -F: '{ print $2 }' | sed 's/[",]//g' | tr -d '[[:space:]]')
 # add zwe command to PATH
 export PATH=${ZOWE_ROOT_DIR}/bin:${PATH}
