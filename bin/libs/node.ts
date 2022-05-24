@@ -62,7 +62,10 @@ export function detectNodeHome(): string|undefined {
 
 export function requireNode() {
   if (std.getenv('ZWE_CLI_PARAMETER_CONFIG')) {
-    std.setenv('NODE_HOME', shellReadYamlNodeHome());
+    const customNodeHome = shellReadYamlNodeHome();
+    if (customNodeHome) {
+      std.setenv('NODE_HOME', customNodeHome);
+    }
   }
   if (!std.getenv('NODE_HOME')) {
     let discoveredHome = detectNodeHome();

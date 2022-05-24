@@ -56,7 +56,10 @@ export function detectJavaHome(): string|undefined {
 
 export function requireJava() {
   if (std.getenv('ZWE_CLI_PARAMETER_CONFIG')) {
-    std.setenv('JAVA_HOME', shellReadYamlJavaHome(std.getenv('ZWE_CLI_PARAMETER_CONFIG')));
+    const customJavaHome = shellReadYamlJavaHome();
+    if (customJavaHome) {
+      std.setenv('JAVA_HOME', customJavaHome);
+    }
   }
   if (!std.getenv('JAVA_HOME')) {
     let detectedHome = detectJavaHome();

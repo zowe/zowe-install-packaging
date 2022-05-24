@@ -17,7 +17,8 @@ import * as shell from './shell';
 import * as stringlib from './string';
 
 std.setenv('ZWE_RUN_ON_ZOS', ""+(os.platform == 'zos'));
-std.setenv('ZWE_PWD', os.getcwd()[0]);
+const pwd = os.getcwd();
+std.setenv('ZWE_PWD', pwd[0] ? pwd[0] : '/');
 
 // Return system name in lower case
 export function getSysname(): string|undefined {
