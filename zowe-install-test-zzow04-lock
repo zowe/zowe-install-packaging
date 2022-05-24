@@ -1,1 +1,15 @@
-""
+{
+  "lockAcquiredTime": "Tue May 24 2022 15:06:37 GMT+0000 (Coordinated Universal Time)",
+  "uid": "1653404797608479056",
+  "repository": {
+    "owner": "zowe",
+    "repo": "zowe-install-packaging"
+  },
+  "branch": "users/tom/enable-v2-install-ptf",
+  "workflow": "Zowe CICD Integration Tests",
+  "job": "cicd-test",
+  "actor": "FlappiTomic",
+  "runId": 2378726073,
+  "runNumber": 1022,
+  "link": "https://github.com/zowe/zowe-install-packaging/actions/runs/2378726073"
+}
