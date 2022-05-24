@@ -150,10 +150,13 @@ BASE_DIR=$(cd $(dirname "$0"); pwd)      # <something>/.pax
 export NODE_HOME=/ZOWE/node/node-v12.18.4-os390-s390x
 
 ZOWE_ROOT_DIR="${BASE_DIR}/content"
-echo "ascii build is"
-ls -ltr "${BASE_DIR}/ascii/build"
+#echo "ascii build is"
+#ls -ltr "${BASE_DIR}/ascii/build"
 echo "content build is"
 ls -ltr "${BASE_DIR}/content/build"
+echo "content build/zwe is"
+ls -ltr "${BASE_DIR}/content/build/zwe"
+
 cd "${ZOWE_ROOT_DIR}/build/zwe"
 rc=$(${NODE_HOME}/bin/npm ci && ${NODE_HOME}/bin/npm run prod)
 if [ $rc -ne 0 ]; then

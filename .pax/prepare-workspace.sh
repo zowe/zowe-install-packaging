@@ -132,6 +132,7 @@ cp -R schemas/*        "${CONTENT_DIR}/schemas"
 cp -R build/*          "${CONTENT_DIR}/build"
 echo "build dir is:"
 ls -ltr "${CONTENT_DIR}/build"
+echo "build/zwe dir is:"
 ls -ltr "${CONTENT_DIR}/build/zwe"
 
 # move licenses
