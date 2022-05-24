@@ -149,8 +149,14 @@ BASE_DIR=$(cd $(dirname "$0"); pwd)      # <something>/.pax
 # use node v12 to build
 export NODE_HOME=/ZOWE/node/node-v12.18.4-os390-s390x
 
-cd "${BASE_DIR}"
 ZOWE_ROOT_DIR="${BASE_DIR}/content"
+cd "${ZOWE_ROOT_DIR}/build/zwe"
+rc=$(${NODE_HOME}/bin/npm ci && ${NODE_HOME}/bin/npm run prod)
+if [ $rc -ne 0 ]; then
+  exit $rc
+fi
+
+cd "${BASE_DIR}"
 ZOWE_VERSION=$(cat ${ZOWE_ROOT_DIR}/manifest.json | grep version | head -1 | awk -F: '{ print $2 }' | sed 's/[",]//g' | tr -d '[[:space:]]')
 # add zwe command to PATH
 export PATH=${ZOWE_ROOT_DIR}/bin:${PATH}
