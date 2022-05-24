@@ -47,7 +47,7 @@ export function strftime(sFormat:string, dateArg?:Date): string {
   
   let isLeapYear = function() {
     return (nYear%4===0 && nYear%100!==0) || nYear%400===0;
-  },
+  };
   let zeroPad = function(nNum:number, nPad:number) {
     return ((Math.pow(10, nPad) + nNum) + '').slice(1);
   };
