@@ -83,8 +83,8 @@ env:
   INFINISPAN_CACHING_STORAGE_METHOD_TESTFILE: extended/caching-storages/infinispan-storage.ts
   GENERAL_API_DOCUMENTATION_TESTFILE: basic/install-api-gen.ts
   # FIXME: after Zowe v2 started to build PTF, those lines below should be changed back to install-ptf.ts
-  ZOWE_NIGHTLY_TESTS_FULL: basic/install.ts(zzow02,zzow03,zzow04);basic/install-fmid.ts(zzow02,zzow03,zzow04)
-  ZOWE_RELEASE_TESTS_FULL: basic/install.ts(zzow02,zzow03,zzow04);basic/install-fmid.ts(zzow02,zzow03,zzow04);basic/install-ext.ts(zzow03);extended/keyring.ts(zzow02,zzow03,zzow04);extended/node-versions/node-v12.ts(zzow02,zzow03,zzow04);extended/node-versions/node-v14.ts(zzow02,zzow03,zzow04);extended/node-versions/node-v16.ts(zzow02,zzow03,zzow04);extended/certificates/nonstrict-verify-external-certificate.ts(zzow02);extended/caching-storages/infinispan-storage.ts(zzow04)
+  ZOWE_NIGHTLY_TESTS_FULL: basic/install.ts(zzow02,zzow03,zzow04);basic/install-ptf.ts(zzow02,zzow03,zzow04)
+  ZOWE_RELEASE_TESTS_FULL: basic/install.ts(zzow02,zzow03,zzow04);basic/install-ptf.ts(zzow02,zzow03,zzow04);basic/install-ext.ts(zzow03);extended/keyring.ts(zzow02,zzow03,zzow04);extended/node-versions/node-v12.ts(zzow02,zzow03,zzow04);extended/node-versions/node-v14.ts(zzow02,zzow03,zzow04);extended/node-versions/node-v16.ts(zzow02,zzow03,zzow04);extended/certificates/nonstrict-verify-external-certificate.ts(zzow02);extended/caching-storages/infinispan-storage.ts(zzow04)
 
 jobs:
   display-dispatch-event-id:
