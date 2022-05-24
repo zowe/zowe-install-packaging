@@ -130,6 +130,9 @@ cp -R schemas/*        "${CONTENT_DIR}/schemas"
 
 # build dir should not end up in release, will be removed after build in pre-packaging phase
 cp -R build/*          "${CONTENT_DIR}/build"
+echo "build dir is:"
+ls -ltr "${CONTENT_DIR}/build"
+ls -ltr "${CONTENT_DIR}/build/zwe"
 
 # move licenses
 mkdir -p "${CONTENT_DIR}/licenses"
