@@ -151,14 +151,12 @@ export NODE_HOME=/ZOWE/node/node-v12.18.4-os390-s390x
 
 ZOWE_ROOT_DIR="${BASE_DIR}/content"
 
-cd "${ZOWE_ROOT_DIR}/build/zwe"
-echo "cee starts at $_CEE_RUNOPTS"
-_CEE_RUNOPTS=FILETAG(AUTOCVT,AUTOTAG) ${NODE_HOME}/bin/npm ci && ${NODE_HOME}/bin/npm run prod
-rc=$?
-if [ $rc -ne 0 ]; then
-  exit $rc
-fi
-echo "cee finishes at $_CEE_RUNOPTS"
+#cd "${ZOWE_ROOT_DIR}/build/zwe"
+#${NODE_HOME}/bin/npm ci && ${NODE_HOME}/bin/npm run prod
+#rc=$?
+#if [ $rc -ne 0 ]; then
+#  exit $rc
+#fi
 
 cd "${BASE_DIR}"
 # Done with build, remove build folder

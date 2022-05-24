@@ -117,6 +117,11 @@ mkdir -p "${CONTENT_DIR}/schemas"
 # rm -fr "${PAX_WORKSPACE_DIR}/binaryDependencies" && mkdir -p "${PAX_WORKSPACE_DIR}/binaryDependencies"
 # cp -r "${PAX_WORKSPACE_DIR}/bak/binaryDependencies/" "${PAX_WORKSPACE_DIR}/binaryDependencies"
 
+# Building TS files
+cd "${ROOT_DIR}/build/zwe"
+npm ci && npm run prod
+
+
 # copy from current github source
 echo "[${SCRIPT_NAME}] copying files ..."
 cd "${ROOT_DIR}"
@@ -128,8 +133,9 @@ cp -R bin/*            "${CONTENT_DIR}/bin"
 cp -R files/*          "${CONTENT_DIR}/files"
 cp -R schemas/*        "${CONTENT_DIR}/schemas"
 
+
 # build dir should not end up in release, will be removed after build in pre-packaging phase
-cp -R build            "${CONTENT_DIR}/"
+#cp -R build            "${CONTENT_DIR}/"
 
 # move licenses
 mkdir -p "${CONTENT_DIR}/licenses"
