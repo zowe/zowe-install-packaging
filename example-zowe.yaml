@@ -506,7 +506,7 @@ components:
           indexLocation:
         initialHosts:
         jgroups:
-          port:
+          port: 7600
           address:
 
   # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
