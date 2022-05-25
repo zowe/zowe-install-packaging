@@ -460,17 +460,17 @@ jobs:
               body: body
             });
 
-  keep-curl:
-    runs-on: ubuntu-latest
-    needs: make-matrix
-    strategy:
-      matrix: ${{ fromJson(needs.make-matrix.outputs.matrix) }}
-      fail-fast: false
-    environment: ${{ matrix.server }}
-    steps:
-      - name: curl gateway
-        run: |
-          while sleep 5; 
-          do 
-            curl -k -s -S https://${{ secrets.SSH_HOST }}:7554 1>/dev/null || true;
-          done
+  # keep-curl:
+  #   runs-on: ubuntu-latest
+  #   needs: make-matrix
+  #   strategy:
+  #     matrix: ${{ fromJson(needs.make-matrix.outputs.matrix) }}
+  #     fail-fast: false
+  #   environment: ${{ matrix.server }}
+  #   steps:
+  #     - name: curl gateway
+  #       run: |
+  #         while sleep 5; 
+  #         do 
+  #           curl -k -s -S https://${{ secrets.SSH_HOST }}:7554 1>/dev/null || true;
+  #         done

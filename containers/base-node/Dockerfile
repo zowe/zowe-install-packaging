@@ -10,7 +10,7 @@
 #######################################################################
 
 # base image tag
-ARG ZOWE_BASE_IMAGE=latest-ubuntu
+ARG ZOWE_BASE_IMAGE=0-ubuntu
 
 FROM zowe-docker-release.jfrog.io/ompzowe/base:${ZOWE_BASE_IMAGE}
 
