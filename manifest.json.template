@@ -44,23 +44,23 @@
       "artifact": "*.pax"
     },
     "org.zowe.explorer.jobs.jobs-api-package": {
-      "version": "^2.0.0-SNAPSHOT",
+      "version": "^2.0.5-FEATURE-V2-SCHEMA-SUPPORT-BRANCH-SNAPSHOT",
       "artifact": "jobs-api-package-*.zip",
       "exclusions": ["*PR*.zip","*BRANCH*"]
     },
     "org.zowe.explorer.files.files-api-package": {
-      "version": "^2.0.0-SNAPSHOT",
+      "version": "^2.0.5-FEATURE-V2-SCHEMA-SUPPORT-BRANCH-SNAPSHOT",
       "artifact": "files-api-package-*.zip",
       "exclusions": ["*PR*.zip","*BRANCH*"]
     },
     "org.zowe.explorer-jes": {
-      "version": "~2.0.0-SNAPSHOT"
+      "version": "~2.0.0-PR-343"
     },
     "org.zowe.explorer-mvs": {
-      "version": "~2.0.0-SNAPSHOT"
+      "version": "~2.0.0-PR-228"
     },
     "org.zowe.explorer-uss": {
-      "version": "~2.0.0-SNAPSHOT"
+      "version": "~2.0.0-PR-168"
     },
     "org.zowe.explorer-ip": {
       "version": "~1.0.0-SNAPSHOT",
@@ -97,7 +97,7 @@
       "exclusions": ["*PR*.zip"]
     },
     "org.zowe.apiml.sdk.common-java-lib-package": {
-      "version": "~1.21.3-SNAPSHOT",
+      "version": "~2.0.0-SNAPSHOT",
       "artifact": "common-java-lib-*.zip",
       "exclusions": ["*PR*.zip"]
     },
@@ -111,7 +111,7 @@
       "artifact": "*.pax"
     },
     "org.zowe.launcher": {
-      "version": "~2.0.0-SNAPSHOT"
+      "version": "~2.0.1-FEATURE-V2-SCHEMA-SUPPORT"
     },
     "org.zowe.keyring-utilities": {
       "version": "1.0.4",
