@@ -501,8 +501,13 @@ components:
         name: ""
       infinispan:
         # this is required if storage mode is infinispan
+        persistence:
+          dataLocation:
+          indexLocation:
+        initialHosts:
         jgroups:
-          port: 7600
+          port:
+          address:
 
   # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   app-server:

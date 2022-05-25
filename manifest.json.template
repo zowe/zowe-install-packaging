@@ -82,7 +82,7 @@
       "exclusions": ["*PR*.zip"]
     },
     "org.zowe.apiml.caching-service-package": {
-      "version": "^2.1.0-SNAPSHOT",
+      "version": "^2.0.2-SNAPSHOT",
       "artifact": "caching-service-package-2.1.0-PR-INFINISPAN-V2-0-20220525.083430-1.zip"
     },
     "org.zowe.apiml.metrics-service-package": {
