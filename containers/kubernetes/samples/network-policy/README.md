@@ -10,7 +10,7 @@ To enable network policy, you need a network policy provider. Choose from this l
 
 For example, if you choose [Calico](https://kubernetes.io/docs/tasks/administer-cluster/network-policy-provider/calico-network-policy/), follow these steps of [Quickstart for Calico on Kubernetes](https://docs.projectcalico.org/latest/getting-started/kubernetes/).
 
-Minikube offers a built-in Calico implementation, this is a quick way to checkout Calico features.
+Minikube offers a built-in Calico implementation, this is a quick way to checkout Calico network policy features.
 
 ```
 minikube start --network-plugin=cni --cni=calico
@@ -29,29 +29,29 @@ NAMESPACE     NAME                READY   STATUS    RESTARTS   AGE
 kube-system   calico-node-mlqvs   1/1     Running   0          5m18s
 ```
 
-## Enable Zowe sample Network Policies
+## Enable Zowe sample Network Policy
 
 Before applying NetworkPolicy, you need to update policy with configurations fit in your environment by modifying `samples/network-policy/zowe-np.yaml`:
 
-- Locate `spec.egress[2].to[0].ipBlock.cidr` option, it has comment `allow connections to z/OS`, update `<zos-ip>/32` with your real z/OS IP. For example, `9.30.243.196/32`. You can put any valid CIDR to enable connection.
+- Locate `spec.egress[2].to[0].ipBlock.cidr` option, it has comment `allow connections to z/OS`, update `<zos-ip>/32` with your real z/OS IP. You can put any valid CIDR to enable desired connection.
 - Locate `spec.egress[2].ports[0].port` option, it has comment `z/OSMF`, update `443` with your real z/OSMF port.
 - Locate `spec.egress[2].ports[1].port` option, it has comment `Zowe ZSS`, update `7557` with your real Zowe ZSS port.
 
-Once the customizations are done, run this command to apply Zowe default network policies:
+Once the customizations are done, run this command to apply Zowe default network policy:
 
 ```
 kubectl apply -f samples/network-policy/zowe-np.yaml
 ```
 
-The default policies will,
+The default policy will,
 
 - Ingress
-  - allow network connections from pods in `zowe` namespace,
+  - allow network connections from pods with `zowe` namespace,
   - disable connections from pods NOT in `zowe` namespace,
 - Egress
-  - allow DNS query from pod in `zowe` namespace,
-  - allow connections to z/OS system from pod in `zowe` namespace,
-  - disable other general internet connections to from pod in `zowe` namespace.
+  - allow DNS query from pods with `zowe` namespace,
+  - allow connections to z/OS system from pods with `zowe` namespace,
+  - disable other general internet connections from pods with `zowe` namespace.
 
 ### Verify Ingress
 
