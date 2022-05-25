@@ -492,7 +492,7 @@ components:
 
     storage:
       evictionStrategy: reject
-      # can be inMemory, VSAM or redis
+      # can be inMemory, VSAM, redis or infinispan
       mode: VSAM
       size: 10000
       vsam:
