@@ -216,7 +216,7 @@ function validateComponents(enabledComponents:string[]): any {
           //TODO verify that this returns things that we want, currently it just uses setenv
           const envVars = config.loadEnvironmentVariables(componentId);
           componentEnvironments[manifest.name] = envVars;
-          let result = shell.execSync('sh', '-c', `. ${runtimeDirectory}/bin/libs/index.sh`, `;`, fullPath);
+          let result = shell.execSync('sh', '-c', `. ${runtimeDirectory}/bin/libs/index.sh && . ${fullPath}`);
           privateErrors=prevErrors;
           if (result.rc) {
             privateErrors++;
@@ -285,7 +285,7 @@ function configureComponents(componentEnvironments?: any, enabledComponents?:str
           } else {
             config.loadEnvironmentVariables(componentId);
           }
-          const result = shell.execOutErrSync('sh', '-c', `. ${runtimeDirectory}/bin/libs/index.sh`, `;`, preconfigurePath);
+          const result = shell.execOutErrSync('sh', '-c', `. ${runtimeDirectory}/bin/libs/index.sh && . ${preconfigurePath}`);
           common.printFormattedDebug("ZWELS", "zwe-internal-start-prepare,configure_components", result.rc ? result.err : result.out);
         } else {
           common.printFormattedError("ZWELS", "zwe-internal-start-prepare,configure_components", `Error ZWEL0172E: Component ${componentId} has commands.preConfigure defined but the file is missing.`);
