@@ -45,13 +45,11 @@
     },
     "org.zowe.explorer.jobs.jobs-api-package": {
       "version": "^2.0.5-FEATURE-V2-SCHEMA-SUPPORT-BRANCH-SNAPSHOT",
-      "artifact": "jobs-api-package-*.zip",
-      "exclusions": ["*PR*.zip","*BRANCH*"]
+      "artifact": "jobs-api-package-*.zip"
     },
     "org.zowe.explorer.files.files-api-package": {
       "version": "^2.0.5-FEATURE-V2-SCHEMA-SUPPORT-BRANCH-SNAPSHOT",
-      "artifact": "files-api-package-*.zip",
-      "exclusions": ["*PR*.zip","*BRANCH*"]
+      "artifact": "files-api-package-*.zip"
     },
     "org.zowe.explorer-jes": {
       "version": "~2.0.0-PR-343"
