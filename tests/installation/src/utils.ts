@@ -411,7 +411,8 @@ export async function installAndVerifySmpePtf(testcase: string, serverId: string
     'install-fmid.yml',
     serverId,
     {
-      'zowe_build_remote': ZOWE_FMID
+      'zowe_build_remote': ZOWE_FMID,
+      'skip_start': 'true',
     }
   );
 
