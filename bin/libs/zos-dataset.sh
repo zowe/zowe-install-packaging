@@ -355,7 +355,7 @@ create_data_set_tmp_member() {
   max_retry=100
   while true ; do
     if [ ${idx_retry} -gt ${max_retry} ]; then
-      print_error "    - Error ZWEL0114E: reached max retries on allocating random number"
+      print_error "    - Error ZWEL0114E: Reached max retries on allocating random number."
       exit 114
       break
     fi
