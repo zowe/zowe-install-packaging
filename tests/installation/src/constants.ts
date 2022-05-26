@@ -13,7 +13,7 @@ import * as path from 'path';
 // const debug = Debug('zowe-install-test:constants');
 
 // the FMID we will use to test PTF
-export const ZOWE_FMID = 'AZWE001';
+export const ZOWE_FMID = 'AZWE002';
 
 // where ansible playbooks located
 export const ANSIBLE_ROOT_DIR: string = path.resolve(__dirname, '../../../playbooks');

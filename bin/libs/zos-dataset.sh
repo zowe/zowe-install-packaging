@@ -230,8 +230,8 @@ is_data_set_sms_managed() {
   #
   # Example of listds response:
   #
-  # listds 'ZOWEAD3.LOADLIB' label
-  # ZOWEAD3.LOADLIB
+  # listds 'IBMUSER.LOADLIB' label
+  # IBMUSER.LOADLIB
   # --RECFM-LRECL-BLKSIZE-DSORG
   #   U     **    6144    PO                                                                                          
   # --VOLUMES--
@@ -253,7 +253,7 @@ is_data_set_sms_managed() {
   ds_label=$(tso_command listds "'${ds}'" label)
   code=$?
   if [ ${code} -eq 0 ]; then
-    dscb_fmt1=$(echo "${ds_label}" | sed -e '1,/--FORMAT 1 DSCB--/ d' | sed -e '1,/--/!d' | sed -e '/--.*/ d')
+    dscb_fmt1=$(echo "${ds_label}" | sed -e '1,/--FORMAT [18] DSCB--/ d' | sed -e '1,/--/!d' | sed -e '/--.*/ d')
     if [ -z "${dscb_fmt1}" ]; then
       print_error "  * Failed to find format 1 data set control block information."
       return 2
