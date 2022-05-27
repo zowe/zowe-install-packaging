@@ -8,10 +8,21 @@ on:
         description: 'Set to "true" if we want to release the base images'
         required: false
         default: ''
+      RANDOM_DISPATCH_EVENT_ID:
+        description: 'random dispatch event id'
+        required: false
+        type: string
 env:
   IMAGE_BASE_DIR: containers/base-node
 
 jobs:
+  display-dispatch-event-id:
+    if: github.event.inputs.RANDOM_DISPATCH_EVENT_ID != ''
+    runs-on: ubuntu-latest
+    steps:
+      - name: RANDOM_DISPATCH_EVENT_ID is ${{ github.event.inputs.RANDOM_DISPATCH_EVENT_ID }}
+        run: echo "prints random dispatch event id sent from workflow dispatch event"
+
   build-ubuntu-amd64:
     runs-on: ubuntu-latest
     steps:
@@ -30,7 +41,7 @@ jobs:
 
       - uses: zowe-actions/shared-actions/docker-build-local@main
         with:
-          build-arg-list: ZOWE_BASE_IMAGE=latest-ubuntu
+          build-arg-list: ZOWE_BASE_IMAGE=0-ubuntu
         timeout-minutes: 5
 
       - name: Run Snyk to check Docker image for vulnerabilities
@@ -71,7 +82,7 @@ jobs:
           zlinux-ssh-user: ${{ secrets.ZLINUX_SSH_USER }}
           zlinux-ssh-key: ${{ secrets.ZLINUX_SSH_KEY }}
           zlinux-ssh-passphrase: ${{ secrets.ZLINUX_SSH_PASSPHRASE }}
-          build-arg-list: ZOWE_BASE_IMAGE=latest-ubuntu
+          build-arg-list: ZOWE_BASE_IMAGE=0-ubuntu
         timeout-minutes: 10
 
       - name: Run Snyk to check Docker image for vulnerabilities
@@ -135,7 +146,7 @@ jobs:
 
       - uses: zowe-actions/shared-actions/docker-build-local@main
         with:
-          build-arg-list: ZOWE_BASE_IMAGE=latest-ubi
+          build-arg-list: ZOWE_BASE_IMAGE=0-ubi
         timeout-minutes: 5
 
       - name: Run Snyk to check Docker image for vulnerabilities
@@ -179,7 +190,7 @@ jobs:
           redhat-registry: ${{ env.DEFAULT_REDHAT_DOCKER_REGISTRY }}
           redhat-registry-user: ${{ secrets.REDHAT_DEVELOPER_USER }}
           redhat-registry-password: ${{ secrets.REDHAT_DEVELOPER_PASSWORD }}
-          build-arg-list: ZOWE_BASE_IMAGE=latest-ubi
+          build-arg-list: ZOWE_BASE_IMAGE=0-ubi
         timeout-minutes: 10
 
       - name: Run Snyk to check Docker image for vulnerabilities
