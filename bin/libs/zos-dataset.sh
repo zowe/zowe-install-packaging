@@ -230,8 +230,8 @@ is_data_set_sms_managed() {
   #
   # Example of listds response:
   #
-  # listds 'ZOWEAD3.LOADLIB' label
-  # ZOWEAD3.LOADLIB
+  # listds 'IBMUSER.LOADLIB' label
+  # IBMUSER.LOADLIB
   # --RECFM-LRECL-BLKSIZE-DSORG
   #   U     **    6144    PO                                                                                          
   # --VOLUMES--
@@ -253,7 +253,7 @@ is_data_set_sms_managed() {
   ds_label=$(tso_command listds "'${ds}'" label)
   code=$?
   if [ ${code} -eq 0 ]; then
-    dscb_fmt1=$(echo "${ds_label}" | sed -e '1,/--FORMAT 1 DSCB--/ d' | sed -e '1,/--/!d' | sed -e '/--.*/ d')
+    dscb_fmt1=$(echo "${ds_label}" | sed -e '1,/--FORMAT [18] DSCB--/ d' | sed -e '1,/--/!d' | sed -e '/--.*/ d')
     if [ -z "${dscb_fmt1}" ]; then
       print_error "  * Failed to find format 1 data set control block information."
       return 2
@@ -350,8 +350,23 @@ create_data_set_tmp_member() {
   prefix=${2:-ZW}
 
   print_trace "  > create_data_set_tmp_member in ${ds}"
+  last_rnd=
+  idx_retry=0
+  max_retry=100
   while true ; do
-    member=$(echo "${prefix}${RANDOM}" | cut -c1-8)
+    if [ ${idx_retry} -gt ${max_retry} ]; then
+      print_error "    - Error ZWEL0114E: Reached max retries on allocating random number."
+      exit 114
+      break
+    fi
+
+    rnd=$(echo "${RANDOM}")
+    if [ "${rnd}" = "${last_rnd}" ]; then
+      # reset random
+      RANDOM=$(date '+%H%M%S')
+    fi
+
+    member=$(echo "${prefix}${rnd}" | cut -c1-8)
     print_trace "    - test ${member}"
     member_exist=$(is_data_set_exists "${ds}(${member})")
     print_trace "    - exist? ${member_exist}"
@@ -360,5 +375,8 @@ create_data_set_tmp_member() {
       echo "${member}"
       break
     fi
+
+    last_rnd="${rnd}"
+    idx_retry=`expr $idx_retry + 1`
   done
 }
