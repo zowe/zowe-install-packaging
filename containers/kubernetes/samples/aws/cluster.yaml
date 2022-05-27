@@ -1,0 +1,14 @@
+apiVersion: eksctl.io/v1alpha5
+kind: ClusterConfig
+
+metadata:
+  name: test-zowe
+  region: us-west-1
+
+nodeGroups:
+  - name: test-zowe-ng-1
+    instanceType: t3.medium
+    desiredCapacity: 2
+    volumeSize: 80
+    ssh:
+      allow: true # will use ~/.ssh/id_rsa.pub as the default ssh key
