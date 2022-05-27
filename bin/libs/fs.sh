@@ -59,14 +59,32 @@ create_tmp_file() {
     tmpdir=$(get_tmp_dir)
   fi
   print_trace "  > create_tmp_file on ${tmpdir}"
+  last_rnd=
+  idx_retry=0
+  max_retry=100
   while true ; do
-    file="${tmpdir}/${prefix}-${RANDOM}"
+    if [ ${idx_retry} -gt ${max_retry} ]; then
+      print_error "    - Error ZWEL0114E: Reached max retries on allocating random number."
+      exit 114
+      break
+    fi
+
+    rnd=$(echo "${RANDOM}")
+    if [ "${rnd}" = "${last_rnd}" ]; then
+      # reset random
+      RANDOM=$(date '+1%H%M%S')
+    fi
+
+    file="${tmpdir}/${prefix}-${rnd}"
     print_trace "    - test ${file}"
     if [ ! -e "${file}" ]; then
       print_trace "    - good"
       echo "${file}"
       break
     fi
+
+    last_rnd="${rnd}"
+    idx_retry=`expr $idx_retry + 1`
   done
 }
 
