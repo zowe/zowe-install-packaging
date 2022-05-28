@@ -86,7 +86,6 @@ if [[ -z "$dont_parse_test_server" ]]; then
     fi
     TEST_FILE_SERVER="$test_file($test_server)"
 else
-    any_test_server="zzow0"$(echo $(($RANDOM % 3 + 2)) )
     any_occurrence=$(echo $test_file | grep -o "(any)" | wc -l)
     interim_test_file_server=$test_file
     for i in $(seq $any_occurrence); do
