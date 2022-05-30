@@ -86,7 +86,7 @@ export function cleanupSanityTestReportDir(): void {
  * @param {Object} extraVars      Object
  * @param {String} serverId       String
  */
-export function importDefaultExtraVars(extraVars: {[key: string]: string}, serverId: string): void {
+export function importDefaultExtraVars(extraVars: {[key: string]: any}, serverId: string): void {
   const defaultMapping: {[key: string]: string[]} = {
     'ansible_ssh_host'           : ['SSH_HOST'],
     'ansible_port'               : ['SSH_PORT'],
@@ -127,7 +127,7 @@ type PlaybookResponse = {
  * @param  {Object}    extraVars
  * @param  {String}    verbose
  */
-export function runAnsiblePlaybook(testcase: string, playbook: string, serverId: string, extraVars: {[key: string]: string} = {}, verbose = '-v'): Promise<PlaybookResponse> {
+export function runAnsiblePlaybook(testcase: string, playbook: string, serverId: string, extraVars: {[key: string]: any} = {}, verbose = '-v'): Promise<PlaybookResponse> {
   return new Promise((resolve, reject) => {
     const result: PlaybookResponse = {
       reportHash: calculateHash(testcase),
@@ -174,7 +174,7 @@ export function runAnsiblePlaybook(testcase: string, playbook: string, serverId:
   });
 }
 
-async function verifyZowe(testcase: string, serverId: string, extraVars: {[key: string]: string} = {}): Promise<PlaybookResponse> {
+async function verifyZowe(testcase: string, serverId: string, extraVars: {[key: string]: any} = {}): Promise<PlaybookResponse> {
   debug(`run verify.yml on ${serverId}`);
   let resultVerify;
 
@@ -201,7 +201,7 @@ async function verifyZowe(testcase: string, serverId: string, extraVars: {[key: 
  * @param  {String}    serverId
  * @param  {Object}    extraVars
  */
-async function installAndVerifyZowe(testcase: string, installPlaybook: string, serverId: string, extraVars: {[key: string]: string} = {}): Promise<void> {
+async function installAndVerifyZowe(testcase: string, installPlaybook: string, serverId: string, extraVars: {[key: string]: any} = {}): Promise<void> {
   debug(`installAndVerifyZowe(${testcase}, ${installPlaybook}, ${serverId}, ${JSON.stringify(extraVars)})`);
 
   debug(`run ${installPlaybook} on ${serverId}`);
@@ -235,7 +235,7 @@ async function installAndVerifyZowe(testcase: string, installPlaybook: string, s
   }
 }
 
-async function installExtension(testcase: string, serverId: string, extraVars: {[key: string]: string} = {}): Promise<void> {
+async function installExtension(testcase: string, serverId: string, extraVars: {[key: string]: any} = {}): Promise<void> {
   debug(`run install-ext.yml on ${serverId}`);
   const resultInstall = await runAnsiblePlaybook(
     testcase,
@@ -289,7 +289,7 @@ async function restartZowe(testcase: string, serverId: string): Promise<void> {
 
 }
 
-async function verifyExtension(testcase: string, serverId: string, extraVars: {[key: string]: string} = {}): Promise<PlaybookResponse> {
+async function verifyExtension(testcase: string, serverId: string, extraVars: {[key: string]: any} = {}): Promise<PlaybookResponse> {
   debug(`run verify-ext.yml on ${serverId}`);
   // FIXME: how to verify in v2?
   let resultVerify;
@@ -316,7 +316,7 @@ async function verifyExtension(testcase: string, serverId: string, extraVars: {[
  * @param  {String}    serverId
  * @param  {Object}    extraVars
  */
-export async function installAndVerifyConvenienceBuild(testcase: string, serverId: string, extraVars: {[key: string]: string} = {}): Promise<void> {
+export async function installAndVerifyConvenienceBuild(testcase: string, serverId: string, extraVars: {[key: string]: any} = {}): Promise<void> {
   await installAndVerifyZowe(testcase, 'install.yml', serverId, extraVars);
 }
 
@@ -327,7 +327,7 @@ export async function installAndVerifyConvenienceBuild(testcase: string, serverI
  * @param  {String}    serverId
  * @param  {Object}    extraVars
  */
-export async function installAndVerifyDockerBuild(testcase: string, serverId: string, extraVars: {[key: string]: string} = {}): Promise<void> {
+export async function installAndVerifyDockerBuild(testcase: string, serverId: string, extraVars: {[key: string]: any} = {}): Promise<void> {
   debug(`installAndVerifyDockerBuild(${testcase}, ${serverId}, ${JSON.stringify(extraVars)})`);
 
   debug(`run install-docker.yml on ${serverId}`);
@@ -368,11 +368,11 @@ export async function installAndVerifyDockerBuild(testcase: string, serverId: st
  * @param  {String}    serverId
  * @param  {Object}    extraVars
  */
-export async function installAndVerifySmpeFmid(testcase: string, serverId: string, extraVars: {[key: string]: string} = {}): Promise<void> {
+export async function installAndVerifySmpeFmid(testcase: string, serverId: string, extraVars: {[key: string]: any} = {}): Promise<void> {
   await installAndVerifyZowe(testcase, 'install-fmid.yml', serverId, extraVars);
 }
 
-export async function installAndVerifyExtension(testcase: string, serverId: string, extraVars: {[key: string]: string} = {}): Promise<void> {
+export async function installAndVerifyExtension(testcase: string, serverId: string, extraVars: {[key: string]: any} = {}): Promise<void> {
   debug(`installAndVerifyExtension(${testcase}, ${serverId}, ${JSON.stringify(extraVars)})`);
 
   await installExtension(testcase, serverId, extraVars);
@@ -402,7 +402,7 @@ export async function installAndVerifyExtension(testcase: string, serverId: stri
  * @param  {String}    serverId
  * @param  {Object}    extraVars
  */
-export async function installAndVerifySmpePtf(testcase: string, serverId: string, extraVars: {[key: string]: string} = {}): Promise<void> {
+export async function installAndVerifySmpePtf(testcase: string, serverId: string, extraVars: {[key: string]: any} = {}): Promise<void> {
   debug(`installAndVerifySmpePtf(${testcase}, ${serverId}, ${JSON.stringify(extraVars)})`);
 
   debug(`run install-fmid.yml on ${serverId}`);
@@ -455,7 +455,7 @@ export async function installAndVerifySmpePtf(testcase: string, serverId: string
  * @param serverId 
  * @param extraVars 
  */
-export async function installAndGenerateApiDocs(testcase: string, serverId: string, extraVars: {[key: string]: string} = {}): Promise<void> {
+export async function installAndGenerateApiDocs(testcase: string, serverId: string, extraVars: {[key: string]: any} = {}): Promise<void> {
   debug(`installAndGenerateApiDocs(${testcase}, install.yml, ${serverId}, ${JSON.stringify(extraVars)})`);
 
   debug(`run install.yml on ${serverId}`);
@@ -500,7 +500,7 @@ export async function installAndGenerateApiDocs(testcase: string, serverId: stri
  * @param  {String}    serverId
  * @param  {Object}    extraVars
  */
-export async function showZoweRuntimeLogs(serverId: string, extraVars: {[key: string]: string} = {}): Promise<void> {
+export async function showZoweRuntimeLogs(serverId: string, extraVars: {[key: string]: any} = {}): Promise<void> {
   debug(`showZoweRuntimeLogs(${serverId}, ${JSON.stringify(extraVars)})`);
 
   debug(`run show_logs on ${serverId}`);
