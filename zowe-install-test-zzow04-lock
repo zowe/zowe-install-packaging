@@ -1,1 +1,15 @@
-""
+{
+  "lockAcquiredTime": "Mon May 30 2022 14:49:12 GMT+0000 (Coordinated Universal Time)",
+  "uid": "1653922152802969464",
+  "repository": {
+    "owner": "zowe",
+    "repo": "zowe-install-packaging"
+  },
+  "branch": "users/jack/fix-bool-usage-in-ansible",
+  "workflow": "Zowe CICD Integration Tests",
+  "job": "cicd-test",
+  "actor": "jackjia-ibm",
+  "runId": 2409799389,
+  "runNumber": 1100,
+  "link": "https://github.com/zowe/zowe-install-packaging/actions/runs/2409799389"
+}
