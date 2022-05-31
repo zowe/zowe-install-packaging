@@ -348,7 +348,7 @@ jobs:
             });
 
       - name: '[Test] Test starts from here'
-        timeout-minutes: 120
+        timeout-minutes: 180
         working-directory: ${{ env.INSTALL_TEST_PATH }}
         run: npm test -- --testPathPattern --detectOpenHandles dist/__tests__/$(echo "${{ matrix.test }}" | sed "s/.ts/.js/g")
         env:
