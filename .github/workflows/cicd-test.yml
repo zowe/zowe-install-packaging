@@ -300,6 +300,12 @@ jobs:
               case 'z/OS node v16':
                 eta = 45
                 break;
+              case 'Infinispan Caching Storage Method':
+                eta = 51
+                break;
+              case 'VSAM Caching Storage Method':
+                eta = 51
+                break;
               case 'Non-strict Verify External Certificate':
                 eta = 51
                 break;
