@@ -72,7 +72,7 @@ create_tmp_file() {
     rnd=$(echo "${RANDOM}")
     if [ "${rnd}" = "${last_rnd}" ]; then
       # reset random
-      RANDOM=$(date '+%H%M%S')
+      RANDOM=$(date '+1%H%M%S')
     fi
 
     file="${tmpdir}/${prefix}-${rnd}"

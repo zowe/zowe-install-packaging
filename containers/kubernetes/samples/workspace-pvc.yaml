@@ -21,6 +21,7 @@ metadata:
 spec:
   # FIXME: StorageClass should be predefined by Kubernetes admin
   #        hostpath is a StorageClass created by Docker Desktop by default
+  #        standard is a StorageClass created by minikube by default
   storageClassName: hostpath
   accessModes:
     - ReadWriteMany
