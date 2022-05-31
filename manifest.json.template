@@ -67,31 +67,32 @@
       "artifact": "*.pax"
     },
     "org.zowe.apiml.api-catalog-package": {
-      "version": "^2.1.0-SNAPSHOT",
+      "version": "^2.1.1-SNAPSHOT",
       "artifact": "api-catalog-*.zip",
       "exclusions": ["*PR*.zip"]
     },
     "org.zowe.apiml.discovery-package": {
-      "version": "^2.1.0-SNAPSHOT",
+      "version": "^2.1.1-SNAPSHOT",
       "artifact": "discovery-*.zip",
       "exclusions": ["*PR*.zip"]
     },
     "org.zowe.apiml.gateway-package": {
-      "version": "^2.1.0-SNAPSHOT",
+      "version": "^2.1.1-SNAPSHOT",
       "artifact": "gateway-*.zip",
       "exclusions": ["*PR*.zip"]
     },
     "org.zowe.apiml.caching-service-package": {
-      "version": "2.1.0-PR-INFINISPAN-V2-01-SNAPSHOT",
-      "artifact": "caching-service-package-2.1.0-PR-INFINISPAN-V2-01-20220525.155233-1.zip"
+      "version": "^2.1.1-SNAPSHOT",
+      "artifact": "caching-service-*.zip",
+      "exclusions": ["*PR*.zip"]
     },
     "org.zowe.apiml.metrics-service-package": {
-      "version": "^2.1.0-SNAPSHOT",
+      "version": "^2.1.1-SNAPSHOT",
       "artifact": "metrics-service-*.zip",
       "exclusions": ["*PR*.zip"]
     },
     "org.zowe.apiml.apiml-common-lib-package": {
-      "version": "^2.1.0-SNAPSHOT",
+      "version": "^2.1.1-SNAPSHOT",
       "artifact": "apiml-common-lib-*.zip",
       "exclusions": ["*PR*.zip"]
     },
@@ -391,23 +392,23 @@
     "api-catalog": {
       "registry": "zowe-docker-release.jfrog.io",
       "name": "ompzowe/api-catalog-services",
-      "tag" : "2.1.0-SNAPSHOT-ubuntu.v2-x-x"
+      "tag" : "2.1.1-SNAPSHOT-ubuntu.v2-x-x"
     },
     "caching": {
       "registry": "zowe-docker-release.jfrog.io",
       "name": "ompzowe/caching-service",
-      "tag" : "2.1.0-SNAPSHOT-ubuntu.v2-x-x"
+      "tag" : "2.1.1-SNAPSHOT-ubuntu.v2-x-x"
     },
     "discovery": {
       "kind": "statefulset",
       "registry": "zowe-docker-release.jfrog.io",
       "name": "ompzowe/discovery-service",
-      "tag" : "2.1.0-SNAPSHOT-ubuntu.v2-x-x"
+      "tag" : "2.1.1-SNAPSHOT-ubuntu.v2-x-x"
     },
     "gateway": {
         "registry": "zowe-docker-release.jfrog.io",
         "name": "ompzowe/gateway-service",
-        "tag" : "2.1.0-SNAPSHOT-ubuntu.v2-x-x"
+        "tag" : "2.1.1-SNAPSHOT-ubuntu.v2-x-x"
     },
     "app-server": {
       "registry": "zowe-docker-snapshot.jfrog.io",
