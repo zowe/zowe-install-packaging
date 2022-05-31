@@ -152,14 +152,14 @@
       "componentGroup": "Zowe API Mediation Layer",
       "entries": [{
         "repository": "api-layer",
-        "tag": "master",
+        "tag": "v1",
         "destinations": ["Zowe PAX"]
       }]
     }, {
        "componentGroup": "Zowe common java libraries",
        "entries": [{
          "repository": "common-java",
-         "tag": "master",
+         "tag": "v1",
          "destinations": ["Zowe PAX"]
        }]
      }, {
