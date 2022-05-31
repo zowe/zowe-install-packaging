@@ -1,1 +1,15 @@
-""
+{
+  "lockAcquiredTime": "Tue May 31 2022 14:44:48 GMT+0000 (Coordinated Universal Time)",
+  "uid": "1654008288308628167",
+  "repository": {
+    "owner": "zowe",
+    "repo": "zowe-install-packaging"
+  },
+  "branch": "users/jack/free-up-gateway",
+  "workflow": "Zowe CICD Integration Tests",
+  "job": "cicd-test",
+  "actor": "zowe-robot",
+  "runId": 2415754705,
+  "runNumber": 1114,
+  "link": "https://github.com/zowe/zowe-install-packaging/actions/runs/2415754705"
+}
