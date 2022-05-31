@@ -29,6 +29,10 @@ spec:
           matchLabels:
             app.kubernetes.io/name: zowe
             app.kubernetes.io/instance: zowe
+    - ports:
+      - protocol: TCP
+        # Zowe Gateway
+        port: 7554
   egress:
     - to:
       # allow connections within same namespace
