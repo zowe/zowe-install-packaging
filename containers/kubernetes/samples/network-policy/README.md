@@ -66,6 +66,7 @@ Check gateway pod IP:
 ```
 $ kubectl get pods -n zowe -o wide
 NAMESPACE     NAME                                        READY   STATUS      RESTARTS        AGE     IP              NODE       NOMINATED NODE   READINESS GATES
+zowe          discovery-0                                 1/1     Running     0               21m     10.244.120.89   minikube   <none>           <none>
 zowe          gateway-7b4bb9ffbb-bsdtn                    1/1     Running     0               21m     10.244.120.90   minikube   <none>           <none>
 
 <other lines are omitted>
@@ -78,12 +79,28 @@ $ DEBUG= kubectl exec -it test-pod -n default -- /bin/sh
 # curl -k -v https://10.244.120.90:7554
 *   Trying 10.244.120.90:7554...
 * TCP_NODELAY set
+* Connected to 10.244.120.90 (10.244.120.90) port 7554 (#0)
+* ALPN, offering h2
+* ALPN, offering http/1.1
+* successfully set certificate verify locations:
+*   CAfile: /etc/ssl/certs/ca-certificates.crt
+  CApath: /etc/ssl/certs
+* TLSv1.3 (OUT), TLS handshake, Client hello (1):
+
+....
+
+</body>
+</html>
+* Connection #0 to host 10.244.120.90 left intact
+# curl -k -v https://10.244.120.89:7553
+*   Trying 10.244.120.89:7553...
+* TCP_NODELAY set
 ^C
 # exit
 command terminated with exit code 130
 ```
 
-The expected behavior is no response from gateway pod. The NetworkPolicy shouldn't block you from accessing Zowe gateway from remote.
+The expected behavior is no response from discovery pod, but gateway pod is available. The NetworkPolicy shouldn't block you from accessing Zowe gateway from remote.
 
 Delete the test pod once you done the verification:
 
