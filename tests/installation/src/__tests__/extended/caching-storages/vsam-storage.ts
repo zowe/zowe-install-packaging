@@ -34,6 +34,7 @@ describe(testSuiteName, () => {
       testServer,
       {
         'zowe_build_local': process.env['ZOWE_BUILD_LOCAL'],
+        'zowe_custom_for_test': 'true',
         'zowe_caching_service_persistent': 'vsam',
       }
     );
