@@ -42,7 +42,8 @@ zowe_caching_service_port: 7555
 zowe_caching_service_vsam_dsprefix: CACHE
 zowe_caching_vsam_storage_class:
 zowe_caching_vsam_volume:
-zowe_configure_skip_zwesecur: false
+zowe_configure_ignore_security_failures: false
+zowe_configure_security_dry_run: false
 zowe_dataset_prefix:
 zowe_environment_variable_overrides:
 zowe_extension_dir: ~/zowe/extensions

@@ -5,7 +5,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  *
- * Copyright IBM Corporation 2018, 2019
+ * Copyright Contributors to the Zowe Project.
  */
 
 /*eslint no-console: ["error", { allow: ["log", "warn", "error"] }] */
@@ -19,11 +19,11 @@ const fsAccess = util.promisify(fs.access);
 
 const { execZoweCli, defaultZOSMFProfileName, createDefaultZOSMFProfile } = require('./utils');
 
-const TEST_DATASET_PATTERN = 'SYS1.LINKLIB*';
-const TEST_DATASET_NAME = 'SYS1.LINKLIB';
-const TEST_DATASET_MEMBER_NAME = 'ACCOUNT';
+const EXPLORER_API_TEST_DATASET_PATTERN = 'SYS1.LINKLIB*';
+const EXPLORER_API_TEST_DATASET_NAME = 'SYS1.LINKLIB';
+const EXPLORER_API_TEST_DATASET_MEMBER_NAME = 'ACCOUNT';
 
-describe(`cli list data sets of ${TEST_DATASET_PATTERN}`, function() {
+describe(`cli list data sets of ${EXPLORER_API_TEST_DATASET_PATTERN}`, function() {
   before('verify environment variables', async function() {
     expect(process.env.ZOSMF_PORT, 'ZOSMF_PORT is not defined').to.not.be.empty;
     expect(process.env.ZOWE_EXTERNAL_HOST, 'ZOWE_EXTERNAL_HOST is not defined').to.not.be.empty;
@@ -43,11 +43,11 @@ describe(`cli list data sets of ${TEST_DATASET_PATTERN}`, function() {
     expect(result).to.have.property('stderr');
 
     expect(result.stderr).to.be.empty;
-    expect(result.stdout).to.have.string('Profile created successfully');
+    expect(result.stdout).to.be.empty;
   });
 
-  it(`should have an data set of ${TEST_DATASET_NAME}`, async function() {
-    const result = await execZoweCli(`zowe zos-files list data-set "${TEST_DATASET_PATTERN}" --response-format-json --zosmf-profile ${defaultZOSMFProfileName}`);
+  it(`should have an data set of ${EXPLORER_API_TEST_DATASET_NAME}`, async function() {
+    const result = await execZoweCli(`zowe zos-files list data-set "${EXPLORER_API_TEST_DATASET_PATTERN}" --response-format-json --zosmf-profile ${defaultZOSMFProfileName}`);
 
     debug('result:', result);
     // addContext(this, {
@@ -66,14 +66,14 @@ describe(`cli list data sets of ${TEST_DATASET_PATTERN}`, function() {
     expect(res.data.success).to.be.true;
     expect(res.data.apiResponse).to.be.an('object');
     expect(res.data.apiResponse.items).to.be.an('array');
-    const dsIndex = res.data.apiResponse.items.findIndex(item => item.dsname === TEST_DATASET_NAME);
-    debug(`found ${TEST_DATASET_NAME} at ${dsIndex}`);
+    const dsIndex = res.data.apiResponse.items.findIndex(item => item.dsname === EXPLORER_API_TEST_DATASET_NAME);
+    debug(`found ${EXPLORER_API_TEST_DATASET_NAME} at ${dsIndex}`);
     expect(dsIndex).to.be.above(-1);
   });
 
-  it(`should be able to download file ${TEST_DATASET_NAME}(${TEST_DATASET_MEMBER_NAME})`, async function() {
-    const targetFile = '.tmp/' + TEST_DATASET_NAME.replace(/\./g, '-') + '-' + TEST_DATASET_MEMBER_NAME;
-    const result = await execZoweCli(`zowe zos-files download data-set '${TEST_DATASET_NAME}(${TEST_DATASET_MEMBER_NAME})' --file "${targetFile}" --response-format-json --zosmf-profile ${defaultZOSMFProfileName}`);
+  it(`should be able to download file ${EXPLORER_API_TEST_DATASET_NAME}(${EXPLORER_API_TEST_DATASET_MEMBER_NAME})`, async function() {
+    const targetFile = '.tmp/' + EXPLORER_API_TEST_DATASET_NAME.replace(/\./g, '-') + '-' + EXPLORER_API_TEST_DATASET_MEMBER_NAME;
+    const result = await execZoweCli(`zowe zos-files download data-set '${EXPLORER_API_TEST_DATASET_NAME}(${EXPLORER_API_TEST_DATASET_MEMBER_NAME})' --file "${targetFile}" --response-format-json --zosmf-profile ${defaultZOSMFProfileName}`);
 
     debug('result:', result);
     // addContext(this, {

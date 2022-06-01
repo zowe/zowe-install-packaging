@@ -5,7 +5,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  *
- * Copyright IBM Corporation 2018, 2019
+ * Copyright Contributors to the Zowe Project.
  */
 
 const expect = require('chai').expect;
@@ -28,6 +28,6 @@ describe('cli version', function() {
     expect(result).to.have.property('stderr');
 
     expect(result.stderr).to.be.empty;
-    expect(result.stdout).to.match(/^6\./);
+    expect(result.stdout).to.match(/^7\./);
   });
 });

@@ -17,9 +17,9 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - uses: jfrog/setup-jfrog-cli@v1
+      - uses: jfrog/setup-jfrog-cli@v2
         env:
-          JF_ARTIFACTORY_1: ${{ secrets.JF_ARTIFACTORY_TOKEN }}
+          JF_ENV_1: ${{ secrets.JF_ARTIFACTORY_TOKEN }}
 
       - uses: zowe-actions/shared-actions/prepare-workflow@main
 
@@ -58,9 +58,9 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - uses: jfrog/setup-jfrog-cli@v1
+      - uses: jfrog/setup-jfrog-cli@v2
         env:
-          JF_ARTIFACTORY_1: ${{ secrets.JF_ARTIFACTORY_TOKEN }}
+          JF_ENV_1: ${{ secrets.JF_ARTIFACTORY_TOKEN }}
 
       - uses: zowe-actions/shared-actions/prepare-workflow@main
 
@@ -106,9 +106,9 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - uses: jfrog/setup-jfrog-cli@v1
+      - uses: jfrog/setup-jfrog-cli@v2
         env:
-          JF_ARTIFACTORY_1: ${{ secrets.JF_ARTIFACTORY_TOKEN }}
+          JF_ENV_1: ${{ secrets.JF_ARTIFACTORY_TOKEN }}
 
       - uses: zowe-actions/shared-actions/prepare-workflow@main
 
@@ -131,9 +131,9 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - uses: jfrog/setup-jfrog-cli@v1
+      - uses: jfrog/setup-jfrog-cli@v2
         env:
-          JF_ARTIFACTORY_1: ${{ secrets.JF_ARTIFACTORY_TOKEN }}
+          JF_ENV_1: ${{ secrets.JF_ARTIFACTORY_TOKEN }}
 
       - uses: zowe-actions/shared-actions/prepare-workflow@main
 
@@ -175,9 +175,9 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - uses: jfrog/setup-jfrog-cli@v1
+      - uses: jfrog/setup-jfrog-cli@v2
         env:
-          JF_ARTIFACTORY_1: ${{ secrets.JF_ARTIFACTORY_TOKEN }}
+          JF_ENV_1: ${{ secrets.JF_ARTIFACTORY_TOKEN }}
 
       - uses: zowe-actions/shared-actions/prepare-workflow@main
 
@@ -226,9 +226,9 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - uses: jfrog/setup-jfrog-cli@v1
+      - uses: jfrog/setup-jfrog-cli@v2
         env:
-          JF_ARTIFACTORY_1: ${{ secrets.JF_ARTIFACTORY_TOKEN }}
+          JF_ENV_1: ${{ secrets.JF_ARTIFACTORY_TOKEN }}
 
       - uses: zowe-actions/shared-actions/prepare-workflow@main
 

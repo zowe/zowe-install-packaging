@@ -37,8 +37,8 @@ const {
 let driver;
 
 const APP_TO_TEST = 'USS Explorer';
-const DIR_TO_TEST = 'scripts';
-const FILE_TO_TEST = 'instance.template.env';
+const DIR_TO_TEST = 'bin';
+const FILE_TO_TEST = 'zwe';
 
 const MVD_EXPLORER_INPUT_SECTION = 'div.tree-card div.component-header';
 const MVD_EXPLORER_TREE_SECTION = 'div.tree-card div.node';
@@ -62,13 +62,13 @@ describe(`test ${APP_TO_TEST}`, function() {
     await setApimlAuthTokenCookie(driver, 	
       process.env.SSH_USER, 	
       process.env.SSH_PASSWD, 	
-      `https://${process.env.ZOWE_EXTERNAL_HOST}:${process.env.ZOWE_API_MEDIATION_GATEWAY_HTTP_PORT}/api/v1/gateway/auth/login`, 	
-      `https://${process.env.ZOWE_EXTERNAL_HOST}:${process.env.ZOWE_API_MEDIATION_GATEWAY_HTTP_PORT}/ui/v1/zlux/ZLUX/plugins/org.zowe.explorer-uss/web/index.html`	
+      `https://${process.env.ZOWE_EXTERNAL_HOST}:${process.env.ZOWE_API_MEDIATION_GATEWAY_HTTP_PORT}/gateway/api/v1/auth/login`, 	
+      `https://${process.env.ZOWE_EXTERNAL_HOST}:${process.env.ZOWE_API_MEDIATION_GATEWAY_HTTP_PORT}/zlux/ui/v1/ZLUX/plugins/org.zowe.explorer-uss/web/index.html`	
     );
 
     await loginMVD(
       driver,
-      `https://${process.env.ZOWE_EXTERNAL_HOST}:${process.env.ZOWE_API_MEDIATION_GATEWAY_HTTP_PORT}/ui/v1/zlux/ZLUX/plugins/org.zowe.zlux.bootstrap/web/`,
+      `https://${process.env.ZOWE_EXTERNAL_HOST}:${process.env.ZOWE_API_MEDIATION_GATEWAY_HTTP_PORT}/zlux/ui/v1/ZLUX/plugins/org.zowe.zlux.bootstrap/web/`,
       process.env.SSH_USER,
       process.env.SSH_PASSWD
     );

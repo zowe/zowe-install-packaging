@@ -1,4 +1,7 @@
 recursive: true
+# disable parallel which may cause issues
+no-parallel: true
+jobs: 1
 timeout: 360000
 reporter: mocha-multi-reporters
 reporter-option:

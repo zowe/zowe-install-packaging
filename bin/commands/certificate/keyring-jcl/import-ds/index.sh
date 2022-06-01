@@ -14,7 +14,8 @@
 print_level1_message "Import certificate to Zowe keyring"
 
 ###############################
-# constants
+# constants & variables
+job_has_failures=
 
 ###############################
 # validation
@@ -39,11 +40,20 @@ ZWE_PRIVATE_ZOSMF_USER="${ZWE_CLI_PARAMETER_ZOSMF_USER}" \
     "${ZWE_CLI_PARAMETER_IMPORT_DS_NAME}" \
     "${ZWE_CLI_PARAMETER_IMPORT_DS_PASSWORD}" \
     "" \
-    "${ZWE_CLI_PARAMETER_IMPORT_SECURITY_PRODUCT}"
+    "${ZWE_CLI_PARAMETER_SECURITY_PRODUCT}"
 if [ $? -ne 0 ]; then
-  print_error_and_exit "Error ZWEL0173E: Failed to import certificate to Zowe keyring \"${ZWE_CLI_PARAMETER_KEYRING_OWNER}/${ZWE_CLI_PARAMETER_KEYRING_NAME}\"." "" 173
+  job_has_failures=true
+  if [ "${ZWE_CLI_PARAMETER_IGNORE_SECURITY_FAILURES}" = "true" ]; then
+    print_error "Error ZWEL0173E: Failed to import certificate to Zowe keyring \"${ZWE_CLI_PARAMETER_KEYRING_OWNER}/${ZWE_CLI_PARAMETER_KEYRING_NAME}\"."
+  else
+    print_error_and_exit "Error ZWEL0173E: Failed to import certificate to Zowe keyring \"${ZWE_CLI_PARAMETER_KEYRING_OWNER}/${ZWE_CLI_PARAMETER_KEYRING_NAME}\"." "" 173
+  fi
 fi
 
 ###############################
 # exit message
-print_level2_message "Certificate is imported to Zowe keyring successfully."
+if [ "${job_has_failures}" = "true" ]; then
+  print_level2_message "Failed to import certificate to Zowe keyring. Please check job log for details."
+else
+  print_level2_message "Certificate is imported to Zowe keyring successfully."
+fi

@@ -5,18 +5,11 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  *
- * Copyright IBM Corporation 2018, 2019
+ * Copyright Contributors to the Zowe Project.
  */
 
 const expect = require('chai').expect;
-const testUtils = require('./utils');
-
-let request;
-
-let assertNotEmptyValidResponse = (response) => {
-  expect(response.status).to.equal(200);
-  expect(response.data).to.not.be.empty;
-};
+const { HTTPRequest, HTTP_STATUS } = require('../http-helper');
 
 const zosHost = process.env.ZOWE_ZOS_HOST || process.env.ZOWE_EXTERNAL_HOST;
 // FIXME: zss is static registered and registration information are not shared to Discovery running off Z.
@@ -24,23 +17,20 @@ const zosHost = process.env.ZOWE_ZOS_HOST || process.env.ZOWE_EXTERNAL_HOST;
 const skipTest = process.env.ZOWE_EXTERNAL_HOST !== zosHost;
 
 (skipTest ? describe.skip : describe)('test zss can be routed via gateway', function() {
-  before('verify environment variables', function() {
-    // allow self signed certs
-    process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 
-    request = testUtils.verifyAndSetupEnvironment();
+  let hq;
+
+  before('verify environment variables', function() {
+    hq = new HTTPRequest();
   });
 
-  it('call zss plugins endpoint', async () => {
-    const uuid = testUtils.uuid();
-    let response;
-    try {
-      response = await request.get('/zss/api/v1/plugins');
-    } catch(ex) {
-      testUtils.log(uuid, ex);
-      testUtils.logResponse(uuid, response);
-    }
+  it('call zss plugins endpoint', async function() {
+    const res = await hq.request({
+      url: '/zss/api/v1/plugins',
+    });
 
-    assertNotEmptyValidResponse(response);
+    expect(res).to.have.property('status');
+    expect(res.status).to.equal(HTTP_STATUS.SUCCESS);
+    expect(res.data).to.not.be.empty;
   });
 });

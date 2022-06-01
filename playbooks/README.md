@@ -227,7 +227,7 @@ $ ansible-playbook -l <server> show-logs.yml -v
 - **zos_java_home**: An optional string to customize your Java version by specifying the full path to your Java folder.
 - **zos_node_home**: An optional string to customize your node.js version by specifying the full path to your node.js folder.
 - **zowe_auto_create_user_group**: A boolean value to enable or disable creating Zowe user and group. Default value is `false`.
-- **zowe_configure_skip_zwesecur**: A boolean value to skip running `ZWESECUR` job when configure Zowe instance.
+- **zowe_configure_security_dry_run**: A boolean value to skip running security configurations when configure Zowe instance.
 - **zos_keystore_mode**: An optional string to configure Zowe instance to store certificates into Keyring instead of keystore. Valid values are `<empty>` (default value) or `KEYSTORE_MODE_KEYRING`.
 - **skip_start**: A boolean value to skip automatically starting Zowe after installation. Default value is `false`.
 - **zowe_uninstall_before_install**: If you want to uninstall Zowe before installing a new version. Default value is `true`.

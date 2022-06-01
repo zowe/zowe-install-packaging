@@ -34,5 +34,5 @@
     - name: Import certificate to ACF2
       when: zos_security_system == 'ACF2'
       import_role:
-        name: configure
+        name: custom_for_test
         tasks_from: add_client_certificate_acf2

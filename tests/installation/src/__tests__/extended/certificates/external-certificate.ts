@@ -34,6 +34,7 @@ describe(testSuiteName, () => {
       testServer,
       {
         'zowe_build_local': process.env['ZOWE_BUILD_LOCAL'],
+        'zowe_custom_for_test': 'true',
         'zowe_external_certficate': '/ZOWE/extcerts/dummy_certs.keystore.p12',
         'zowe_external_certficate_alias': 'dummy_certs',
         'zowe_external_certficate_authorities': '/ZOWE/extcerts/dummy_ca.cer',

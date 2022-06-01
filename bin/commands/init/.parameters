@@ -1,4 +1,5 @@
 allow-overwrite,allow-overwritten||boolean|||||Allow overwritten existing MVS data set.
 skip-security-setup||boolean|||||Whether should skip security related setup.
 security-dry-run||boolean|||||Whether to dry run security related setup.
+ignore-security-failures||boolean|||||Whether to ignore security setup job failures.
 update-config||boolean|||||Whether to update YAML configuration file with initialization result.

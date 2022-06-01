@@ -2,5 +2,8 @@ ZWEL0157E|157|%s (%s) is not defined in Zowe YAML configuration file.
 ZWEL0159E|159|Failed to modify %s.
 ZWEL0160E|160|Failed to write to %s. Please check if target data set is opened by others.
 ZWEL0161E|161|Failed to run JCL %s.
+ZWEL0161W||Failed to run JCL %s.
 ZWEL0162E|162|Failed to find job %s result.
+ZWEL0162W||Failed to find job %s result.
 ZWEL0163E|163|Job %s ends with code %s.
+ZWEL0163W||Job %s ends with code %s.

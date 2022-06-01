@@ -2,15 +2,15 @@ name: Update zwe documentation
 
 on:
   # Will run this on push when v2 is out
-  # push:
-  #   branches:
-  #     - v2.x/staging
+  push:
+    branches:
+      - v2.x/rc
   workflow_dispatch:
 
 env:
   DOCS_SITE_ZWE_COMMAND_REFERENCE_DIR: docs/appendix/zwe_server_command_reference
   # Will change this to a docs staging branch when v2 is out
-  DOCS_SITE_TARGET_BRANCH: v2-docs-branch
+  DOCS_SITE_TARGET_BRANCH: v2-doc-branch
   DOCS_SITE_COMMIT_BRANCH: auto-update-zwe-reference
   ZWE_DOC_GENERATION_DIR: .dependency/zwe_doc_generation
 
@@ -32,6 +32,7 @@ jobs:
         run: |
           git config --global user.email "zowe-robot@users.noreply.github.com"
           git config --global user.name "Zowe Robot"
+          git config --global pull.rebase false # configure to merge in changes from remote branches
 
       - name: Clone docs site
         run: git clone https://zowe-robot:${{ secrets.ZOWE_ROBOT_TOKEN }}@github.com/zowe/docs-site.git --depth 1 --branch ${{ env.DOCS_SITE_TARGET_BRANCH }}
@@ -44,8 +45,10 @@ jobs:
           cd docs-site
           # check out branch that will contain update and unsure there are no remote differences
           git checkout -b ${{ env.DOCS_SITE_COMMIT_BRANCH }}
-          git pull origin ${{ env.DOCS_SITE_COMMIT_BRANCH }} || true # swallow error in case branch doesn't exist in remote
-          cp ../${{ env.ZWE_DOC_GENERATION_DIR }}/generated/* ${{ env.DOCS_SITE_ZWE_COMMAND_REFERENCE_DIR }}
+          # if commit branch exists on remote then pull it in
+          git ls-remote | grep "^refs/heads/${{ env.DOCS_SITE_COMMIT_BRANCH }}$" &&
+                git pull origin ${{ env.DOCS_SITE_COMMIT_BRANCH }} --allow-unrelated-histories -X ours
+          cp -R ../${{ env.ZWE_DOC_GENERATION_DIR }}/generated/* ${{ env.DOCS_SITE_ZWE_COMMAND_REFERENCE_DIR }}
       
       - name: Commit changes to branch and push
         id: commitChanges
@@ -62,18 +65,38 @@ jobs:
             echo "::set-output name=createPr::false"
           fi
 
-      - name: Create pull request
+      - name: Create PR if doesn't exist
         if: ${{ steps.commitChanges.outputs.createPr == 'true' }}
         uses: actions/github-script@v5
         with:
           github-token: ${{ secrets.ZOWE_ROBOT_TOKEN }}
           script: |
-            const res = await github.rest.pulls.create({
+            const { data: pulls } = await github.rest.pulls.list({
               owner: 'zowe',
               repo: 'docs-site',
-              title: 'Update zwe server command reference',
-              body: 'Automatic update of the zwe server command reference',
-              head: '${{ env.DOCS_SITE_COMMIT_BRANCH }}',
+              state: 'open',
+              head: 'zowe:${{ env.DOCS_SITE_COMMIT_BRANCH }}',
               base: '${{ env.DOCS_SITE_TARGET_BRANCH }}'
             });
-            console.log(`The pull request is at: ${res.data.html_url}`);
+            if (pulls && pulls.length) {
+              const existingPr = pulls[0]; // PR exists, assume correct one is at index 0
+              const repoUrl = '${{ github.server_url }}/${{ github.repository }}';
+              await github.rest.issues.createComment({
+                owner: 'zowe',
+                repo: 'docs-site',
+                issue_number: existingPr.number,
+                body: `This PR has been updated with a new commit due to changes at: ${repoUrl}/tree/${{ github.ref }}/bin
+                      Update by: ${repoUrl}/actions/runs/${{ github.run_id }}`
+              });
+              console.log(`>>>>>The pull request has been updated and is at: ${existingPr.html_url}`);
+            } else { // PR does not exist so create one
+              const { data: pr } = await github.rest.pulls.create({
+                owner: 'zowe',
+                repo: 'docs-site',
+                title: 'Update zwe server command reference',
+                body: 'Automatic update of the zwe server command reference',
+                head: '${{ env.DOCS_SITE_COMMIT_BRANCH }}',
+                base: '${{ env.DOCS_SITE_TARGET_BRANCH }}'
+              });
+              console.log(`>>>>>A new pull request was created and is at: ${pr.html_url}`);
+            }

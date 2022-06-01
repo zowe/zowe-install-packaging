@@ -7,11 +7,11 @@
   when: zowe_external_ip_address != '' and zowe_external_ip_address is not none
 - name: Update JAVA_HOME to {{ zos_java_home }}
   set_fact:
-    zowe_environment_variable_overrides: "{{ zowe_environment_variable_overrides }} && export JAVA_HOME={{ zos_java_home }}"
+    zowe_environment_variable_overrides: "{{ zowe_environment_variable_overrides }} && export JAVA_HOME={{ zos_java_home }} && export PATH={{ zos_java_home }}/bin:${PATH}"
   when: zos_java_home != '' and zos_java_home is not none
 - name: Update NODE_HOME to {{ zos_node_home }}
   set_fact:
-    zowe_environment_variable_overrides: "{{ zowe_environment_variable_overrides }} && export NODE_HOME={{ zos_node_home }}"
+    zowe_environment_variable_overrides: "{{ zowe_environment_variable_overrides }} && export NODE_HOME={{ zos_node_home }} && export PATH={{ zos_node_home }}/bin:${PATH}"
   when: zos_node_home != '' and zos_node_home is not none
 - name: Import extra environment variables if exists
   set_fact:

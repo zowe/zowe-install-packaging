@@ -26,7 +26,7 @@ const apiDefinitionsMap = [
   { name: 'zlux-plugin', port: process.env.ZOWE_ZLUX_HTTPS_PORT, swaggerJsonPath: '/ZLUX/plugins/org.zowe.configjs/catalogs/swagger' }
 ];
 
-describe(testSuiteName, () => {
+describe(testSuiteName, function() {
   before('verify environment variables', function () {
     process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 
@@ -38,7 +38,7 @@ describe(testSuiteName, () => {
     expect(process.env.ZOWE_API_MEDIATION_GATEWAY_HTTP_PORT, 'ZOWE_API_MEDIATION_GATEWAY_HTTP_PORT is not defined').to.not.be.empty;
   });
 
-  it('Generate Swagger API files', async () => {
+  it('Generate Swagger API files', async function() {
     // Acquire API definitions and store in api_definitions directory
     await createApiDefDirectory();
     await captureApiDefinitions();

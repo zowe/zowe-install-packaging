@@ -5,46 +5,41 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  *
- * Copyright IBM Corporation 2018, 2019
+ * Copyright Contributors to the Zowe Project.
  */
 
 const expect = require('chai').expect;
-const testUtils = require('./utils');
-
-let request;
-
-let assertNotEmptyValidResponse = (response) => {
-  expect(response.status).to.equal(200);
-  expect(response.data).to.not.be.empty;
-};
+const { HTTPRequest, HTTP_STATUS, APIMLAuth } = require('../http-helper');
+const { APIML_AUTH_COOKIE } = require('../constants');
 
 describe('test zss x509 certificate mapping via gateway', function() {
-  before('verify environment variables', function() {
-    // allow self signed certs
-    process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 
-    request = testUtils.verifyAndSetupEnvironment();
-  });
-  it('obtain JWT for certificate', async () => {
-    const uuid = testUtils.uuid();
-    const authenticationCookie = await testUtils.loginWithCertificate(uuid);
-    expect(authenticationCookie).to.not.be.empty;
+  let hq;
+  let apiml;
+  let token;
+
+  it('obtain JWT for certificate', async function() {
+    hq = new HTTPRequest();
+    apiml = new APIMLAuth(hq);
+    token = await apiml.loginWithCertificate();
   });
 
-  it('call endpoint with valid certificate', async () => {
-    const uuid = testUtils.uuid();
-    const authenticationCookie = await testUtils.loginWithCertificate(uuid);
-    const username = process.env.SSH_USER;
-    testUtils.log(uuid, ` URL: /api/v1/jobs?owner=${username.toUpperCase()}&prefix=*`);
-    const response = await testUtils.httpRequest(request, {
-      url: `/api/v2/jobs?owner=${username.toUpperCase()}&prefix=*`,
+  it('call endpoint with valid certificate', async function() {
+    if (!token) {
+      this.skip();
+    }
+
+    const res = await hq.request({
+      url: `jobs/api/v2?owner=${process.env.SSH_USER.toUpperCase()}&prefix=*`,
       headers: {
-        'Cookie': authenticationCookie,
-        'X-CSRF-ZOSMF-HEADER': '*'
-      }
+        Cookie: `${APIML_AUTH_COOKIE}=${token}`,
+        'X-CSRF-ZOSMF-HEADER': '*',
+      },
     });
-    testUtils.logResponse(uuid, response);
 
-    assertNotEmptyValidResponse(response);
+    expect(res).to.have.property('status');
+    expect(res.status).to.equal(HTTP_STATUS.SUCCESS);
+    expect(res.data).to.not.be.empty;
   });
+
 });

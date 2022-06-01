@@ -5,101 +5,94 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  *
- * Copyright IBM Corporation 2018, 2019
+ * Copyright Contributors to the Zowe Project.
  */
 
 const expect = require('chai').expect;
-const testUtils = require('./utils');
-
-let request, username, password;
-const ZOSMF_TOKEN = 'LtpaToken2';
-
-let assertNotEmptyValidResponse = (response) => {
-  expect(response.status).to.equal(200);
-  expect(response.data).to.not.be.empty;
-};
+const { HTTPRequest, APIMLAuth } = require('../http-helper');
+const { APIML_AUTH_COOKIE, ZOSMF_TOKEN } = require('../constants');
 
 describe('test api mediation layer zosmf authentication', function() {
-  before('verify environment variables', function() {
-    // allow self signed certs
-    process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 
-    request = testUtils.verifyAndSetupEnvironment();
-    const environment = process.env;
-    username = environment.SSH_USER;
-    password = environment.SSH_PASSWD;
+  let hq;
+  let apiml;
+  let username, password;
+
+  before('verify environment variables', function() {
+    hq = new HTTPRequest(null, null, {
+      // required header by z/OSMF API
+      'X-CSRF-ZOSMF-HEADER': '*',
+    });
+    apiml = new APIMLAuth(hq);
+
+    expect(process.env.SSH_USER, 'SSH_USER is not defined').to.not.be.empty;
+    username = process.env.SSH_USER;
+    expect(process.env.SSH_PASSWD, 'SSH_PASSWD is not defined').to.not.be.empty;
+    password = process.env.SSH_PASSWD;
   });
 
-  describe('should be able to get data from z/OSMF ', () => {
-    it('with valid basic header', async () => {
+  describe('should be able to get data from z/OSMF ', function() {
+
+    const assertNotEmptyValidResponse = (res) => {
+      expect(res.status).to.equal(200);
+      expect(res.data).to.not.be.empty;
+    };
+
+    it('with valid basic header', async function() {
       const token = Buffer.from(`${username}:${password}`, 'utf8').toString('base64');
-      const response = await testUtils.httpRequest(request, {
-        url: '/api/v1/zosmf/restfiles/ds?dslevel=sys1.p*',
+      const res = await hq.request({
+        url: '/zosmf/api/v1/restfiles/ds?dslevel=SYS1.PARMLIB*',
         headers: {
           'Authorization': `Basic ${token}`,
-          'X-CSRF-ZOSMF-HEADER': '*'
         }
       });
 
-      assertNotEmptyValidResponse(response);
+      assertNotEmptyValidResponse(res);
     });
 
-    it('with valid cookie', async () => {
-      const uuid = testUtils.uuid();
-      const authenticationCookie = await testUtils.login(uuid);
-
-      testUtils.log(uuid, '/api/v1/zosmf/restfiles/ds?dslevel=sys1.p*');
-      const response = await testUtils.httpRequest(request, {
-        url: '/api/v1/zosmf/restfiles/ds?dslevel=sys1.p*',
+    it('with valid cookie', async function() {
+      const token = await apiml.login();
+      const res = await hq.request({
+        url: '/zosmf/api/v1/restfiles/ds?dslevel=SYS1.PARMLIB*',
         headers: {
-          'Cookie': authenticationCookie,
-          'X-CSRF-ZOSMF-HEADER': '*'
+          Cookie: `${APIML_AUTH_COOKIE}=${token}`,
         }
       });
-      testUtils.logResponse(uuid, response);
 
-      assertNotEmptyValidResponse(response);
+      assertNotEmptyValidResponse(res);
     });
 
-    it('with valid LTPA cookie', async () => {
+    it('with valid LTPA cookie', async function() {
       const token = Buffer.from(`${username}:${password}`, 'utf8').toString('base64');
-      const loginResponse = await testUtils.httpRequest(request, {
-        url: '/api/v1/zosmf/info',
+      const loginResponse = await hq.request({
+        url: '/zosmf/api/v1/info',
         headers: {
           'Authorization': `Basic ${token}`,
-          'X-CSRF-ZOSMF-HEADER': '*'
         }
       });
 
-      const ltpaCookie = testUtils.findCookieInResponse(loginResponse, ZOSMF_TOKEN);
-      const response = await testUtils.httpRequest(request, {
-        url: '/api/v1/zosmf/info',
+      const ltpaCookie = hq.findCookieInResponse(loginResponse, ZOSMF_TOKEN);
+      const response = await hq.request({
+        url: '/zosmf/api/v1/info',
         headers: {
           'Cookie': ltpaCookie,
-          'X-CSRF-ZOSMF-HEADER': '*'
         }
       });
 
       assertNotEmptyValidResponse(response);
     });
 
-    it('with valid JWT token via Bearer', async () => {
-      const uuid = testUtils.uuid();
-      const authenticationCookie = await testUtils.login(uuid);
-      const justCookie = authenticationCookie.split(';')[0];
-      const tokenValue = justCookie.split('=')[1];
-
-      testUtils.log(uuid, '/api/v1/zosmf/restfiles/ds?dslevel=sys1.p*');
-      const response = await testUtils.httpRequest(request, {
-        url: '/api/v1/zosmf/restfiles/ds?dslevel=sys1.p*',
+    it('with valid JWT token via Bearer', async function() {
+      const token = await apiml.login();
+      const res = await hq.request({
+        url: '/zosmf/api/v1/restfiles/ds?dslevel=SYS1.PARMLIB*',
         headers: {
-          'Authorization': `Bearer ${tokenValue}`,
-          'X-CSRF-ZOSMF-HEADER': '*'
+          'Authorization': `Bearer ${token}`,
         }
       });
-      testUtils.logResponse(uuid, response);
 
-      assertNotEmptyValidResponse(response);
+      assertNotEmptyValidResponse(res);
     });
+
   });
 });

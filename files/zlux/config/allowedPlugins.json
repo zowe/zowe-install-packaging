@@ -81,6 +81,10 @@
       "versions": ["*"]
     },
     {
+      "identifier": "org.zowe.api.catalog",
+      "versions": ["*"]
+    },
+    {
       "identifier": "org.zowe.explorer-jes",
       "versions": ["*"]
     },

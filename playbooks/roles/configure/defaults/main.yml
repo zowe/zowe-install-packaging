@@ -107,7 +107,9 @@ zowe_runtime_user: ZWESVUSR
 zowe_runtime_group: ZWEADMIN
 zowe_auto_create_user_group: false
 # if we want to skip executing ZWESECUR job
-zowe_configure_skip_zwesecur: false
+zowe_configure_security_dry_run: false
+# if we want to ignore zwesecur job failure
+zowe_configure_ignore_security_failures: false
 
 ################################################################################
 # these are default variables for cross memory configuration

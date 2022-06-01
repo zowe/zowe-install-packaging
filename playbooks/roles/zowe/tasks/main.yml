@@ -29,6 +29,7 @@
 - name: Initialize zowe.yaml
   raw: >-
     mkdir -p "{{ zowe_instance_dir }}" && \
+    chmod 777 "{{ zowe_instance_dir }}" && \
     cp "{{ zowe_root_dir }}/example-zowe.yaml" "{{ zowe_instance_dir }}/zowe.yaml"
 
 - name: Update zowe.yaml zowe.setup.dataset.prefix
@@ -37,9 +38,7 @@
     tasks_from: update_zowe_yaml
   vars:
     configs:
-      # FIXME: we should only keep one set
       "zowe.setup.dataset.prefix": "{{ zowe_dataset_prefix }}"
-      "zowe.setup.mvs.hlq": "{{ zowe_dataset_prefix }}"
 
 - name: Install Zowe
   include_role:

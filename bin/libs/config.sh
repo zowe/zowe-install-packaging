@@ -76,7 +76,7 @@ generate_instance_env_from_yaml_config() {
   print_formatted_trace "ZWELS" "bin/libs/config.sh,generate_instance_env_from_yaml_config:${LINENO}" "deleting old files under ${ZWE_PRIVATE_WORKSPACE_ENV_DIR}"
   find "${ZWE_PRIVATE_WORKSPACE_ENV_DIR}" -type f -name ".*-${ha_instance}.env" | xargs rm -f
   find "${ZWE_PRIVATE_WORKSPACE_ENV_DIR}" -type f -name ".*-${ha_instance}.json" | xargs rm -f
-  find "${ZWE_PRIVATE_WORKSPACE_ENV_DIR}" -type f -name ".zowe.yaml" | xargs rm -f
+  find "${ZWE_PRIVATE_WORKSPACE_ENV_DIR}" -type f -name ".zowe.json" | xargs rm -f
 
   # prepare .zowe.json and .zowe-<ha-id>.json
   print_formatted_trace "ZWELS" "bin/libs/config.sh,generate_instance_env_from_yaml_config:${LINENO}" "config-converter yaml convert --ha ${ha_instance} ${ZWE_CLI_PARAMETER_CONFIG}"
@@ -144,6 +144,7 @@ load_environment_variables() {
   export ZWE_PRIVATE_WORKSPACE_ENV_DIR="${ZWE_zowe_workspaceDirectory}/.env"
   export ZWE_STATIC_DEFINITIONS_DIR="${ZWE_zowe_workspaceDirectory}/api-mediation/api-defs"
   export ZWE_GATEWAY_SHARED_LIBS="${ZWE_zowe_workspaceDirectory}/gateway/sharedLibs/"
+  export ZWE_DISCOVERY_SHARED_LIBS="${ZWE_zowe_workspaceDirectory}/discovery/sharedLibs/"
 
   # now we can load all variables
   if [ -n "${component_id}" -a -f "${ZWE_PRIVATE_WORKSPACE_ENV_DIR}/${component_id}/.instance-${ZWE_CLI_PARAMETER_HA_INSTANCE}.env" ]; then

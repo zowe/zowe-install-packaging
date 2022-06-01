@@ -1,1 +1,5 @@
 Install a Zowe module.
+
+**IMPORTANT NOTES**, by default, this command will enable the component globally
+                     by modifying your YAML configuration. You can pass
+                     `--skip-enable` to disable this behavior.

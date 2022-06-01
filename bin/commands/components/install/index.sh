@@ -18,3 +18,6 @@ if [ -n "${ZWE_COMPONENTS_INSTALL_EXTRACT_COMPONENT_NAME}" ]; then
 else
   print_error_and_exit "Error ZWEL0156E: Component name is not initialized after extract step." "" 156
 fi
+if [ "$ZWE_CLI_PARAMETER_SKIP_ENABLE" != "true" ]; then
+  zwecli_inline_execute_command components enable --component-name "${ZWE_COMPONENTS_INSTALL_EXTRACT_COMPONENT_NAME}"
+fi

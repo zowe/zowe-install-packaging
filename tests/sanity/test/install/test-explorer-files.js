@@ -17,11 +17,11 @@ describe('verify installed files', function() {
   });
 
   it('installed explorer actions should exist', async function() {
-    await sshHelper.executeCommandWithNoError(`test -f ${process.env.ZOWE_INSTANCE_DIR}/workspace/app-server/ZLUX/pluginStorage/org.zowe.zlux.ng2desktop/actions/org.zowe.explorer-jes`);
+    await sshHelper.executeCommandWithNoError(`test -f ${process.env.ZOWE_WORKSPACE_DIR}/app-server/ZLUX/pluginStorage/org.zowe.zlux.ng2desktop/actions/org.zowe.explorer-jes`);
   });
 
   it('installed explorer recognizer should exist', async function() {
-    await sshHelper.executeCommandWithNoError(`test -f ${process.env.ZOWE_INSTANCE_DIR}/workspace/app-server/ZLUX/pluginStorage/org.zowe.zlux.ng2desktop/recognizers/org.zowe.explorer-jes`);
+    await sshHelper.executeCommandWithNoError(`test -f ${process.env.ZOWE_WORKSPACE_DIR}/app-server/ZLUX/pluginStorage/org.zowe.zlux.ng2desktop/recognizers/org.zowe.explorer-jes`);
   });
 
   after('dispose SSH connection', function() {

@@ -120,6 +120,32 @@ ncert_utility() {
   return ${code}
 }
 
+pkcs12_ensure_binary_tag() {
+  keystore="${1}"
+
+  if [ "${ZWE_RUN_ON_ZOS}" != "true" ]; then
+    return 0
+  fi
+  if [ ! -f "${keystore}" ]; then
+    # not created yet, maybe we should add a warning here
+    return 0
+  fi
+
+  print_trace "- tag ${keystore} as binary"
+  result=$(chtag -b "${keystore}" 2>&1)
+  code=$?
+  if [ ${code} -ne 0 ]; then
+    print_trace "  * chtag failed"
+    print_error "  * Exit code: ${code}"
+    print_error "  * Output:"
+    if [ -n "${result}" ]; then
+      print_error "$(padding_left "${result}" "    ")"
+    fi
+
+    return ${code}
+  fi
+}
+
 pkcs12_lock_keystore_directory() {
   keystore_dir="${1}"
   user="${2}"
@@ -189,6 +215,10 @@ pkcs12_create_certificate_authority() {
   if [ $? -ne 0 ]; then
     return 1
   fi
+  pkcs12_ensure_binary_tag "${keystore_dir}/${alias}/${alias}.keystore.p12"
+  if [ $? -ne 0 ]; then
+    return 1
+  fi
 }
 
 pkcs12_create_certificate_and_sign() {
@@ -212,6 +242,10 @@ pkcs12_create_certificate_and_sign() {
             -storetype "PKCS12" \
             -dname "CN=${common_name}, OU=${ZWE_PRIVATE_CERTIFICATE_ORG_UNIT:-${ZWE_PRIVATE_DEFAULT_CERTIFICATE_ORG_UNIT}}, O=${ZWE_PRIVATE_CERTIFICATE_ORG:-${ZWE_PRIVATE_DEFAULT_CERTIFICATE_ORG}}, L=${ZWE_PRIVATE_CERTIFICATE_LOCALITY:-${ZWE_PRIVATE_DEFAULT_CERTIFICATE_LOCALITY}}, S=${ZWE_PRIVATE_CERTIFICATE_STATE:-${ZWE_PRIVATE_DEFAULT_CERTIFICATE_STATE}}, C=${ZWE_PRIVATE_CERTIFICATE_COUNTRY:-${ZWE_PRIVATE_DEFAULT_CERTIFICATE_COUNTRY}}" \
             -validity "${ZWE_PRIVATE_CERTIFICATE_VALIDITY:-${ZWE_PRIVATE_DEFAULT_CERTIFICATE_VALIDITY}}")
+  if [ $? -ne 0 ]; then
+    return 1
+  fi
+  pkcs12_ensure_binary_tag "${keystore_dir}/${keystore_name}/${keystore_name}.keystore.p12"
   if [ $? -ne 0 ]; then
     return 1
   fi
@@ -306,6 +340,11 @@ pkcs12_create_certificate_and_sign() {
               -keystore "${keystore_dir}/${keystore_name}/${keystore_name}.truststore.p12" \
               -storepass "${password}" \
               -storetype "PKCS12")
+
+    pkcs12_ensure_binary_tag "${keystore_dir}/${keystore_name}/${keystore_name}.truststore.p12"
+    if [ $? -ne 0 ]; then
+      return 1
+    fi
   fi
 
   print_message ">>>> Import the signed CSR to the keystore \"${keystore_name}\":"
@@ -351,13 +390,13 @@ pkcs12_create_certificate_and_sign_with_node() {
   done
 
   # make sure keystore file is tagged as binary
-  if [ "${ZWE_RUN_ON_ZOS}" = "true" ]; then
-    if [ -f "${keystore_dir}/${ca_alias}/${ca_alias}.keystore.p12" ]; then
-      chtag -b "${keystore_dir}/${ca_alias}/${ca_alias}.keystore.p12"
-    fi
-    if [ -f "${keystore_dir}/${keystore_name}/${keystore_name}.keystore.p12" ]; then
-      chtag -b "${keystore_dir}/${keystore_name}/${keystore_name}.keystore.p12"
-    fi
+  pkcs12_ensure_binary_tag "${keystore_dir}/${ca_alias}/${ca_alias}.keystore.p12"
+  if [ $? -ne 0 ]; then
+    return 1
+  fi
+  pkcs12_ensure_binary_tag "${keystore_dir}/${keystore_name}/${keystore_name}.keystore.p12"
+  if [ $? -ne 0 ]; then
+    return 1
   fi
 
   # generate cert
@@ -420,6 +459,11 @@ pkcs12_import_pkcs12_keystore() {
     return 139
   fi
 
+  pkcs12_ensure_binary_tag "${source_keystore}"
+  if [ $? -ne 0 ]; then
+    return 1
+  fi
+
   result=$(pkeytool -importkeystore -v \
             -noprompt \
             -deststoretype "PKCS12" \
@@ -431,6 +475,11 @@ pkcs12_import_pkcs12_keystore() {
             -srckeystore "${source_keystore}" \
             -srcstorepass "${source_password}" \
             -srcalias "${source_alias}")
+  if [ $? -ne 0 ]; then
+    return 1
+  fi
+
+  pkcs12_ensure_binary_tag "${dest_keystore}"
   if [ $? -ne 0 ]; then
     return 1
   fi
@@ -494,6 +543,7 @@ pkcs12_trust_service() {
   print_debug "> Temporary certificate file is ${tmp_file}"
   keytool ${print_cert_cmd} -rfc > "${tmp_file}"
   code=$?
+  chmod 700 "${tmp_file}"
   if [ ${code} -ne 0 ]; then
     print_error "Failed to get certificate of service instance https://${service_host}:${service_port}, exit code ${code}."
     return 1
@@ -519,6 +569,11 @@ pkcs12_trust_service() {
       return 1
     fi
   done
+
+  pkcs12_ensure_binary_tag "${keystore_dir}/${keystore_name}/${keystore_name}.truststore.p12"
+  if [ $? -ne 0 ]; then
+    return 1
+  fi
 
   # clean up temporary files
   rm -f "${tmp_file}"
@@ -873,6 +928,7 @@ EOF
           sed  "s#05/01/30#${validity_mdy}#g" \
           > "${tmpfile}")
   code=$?
+  chmod 700 "${tmpfile}"
   if [ ${code} -eq 0 ]; then
     print_debug "  * Succeeded"
     print_trace "  * Exit code: ${code}"
@@ -970,6 +1026,7 @@ keyring_run_zwenokyr_jcl() {
           sed   "s/^\/\/ \+SET \+STCGRP=.*\$/\/\/         SET  STCGRP=${stc_group}/" \
           > "${tmpfile}")
   code=$?
+  chmod 700 "${tmpfile}"
   if [ ${code} -eq 0 ]; then
     print_debug "  * Succeeded"
     print_trace "  * Exit code: ${code}"
@@ -1112,9 +1169,12 @@ keyring_export_to_pkcs12() {
     if [ $? -ne 0 ]; then
       return 1
     fi
-    if [ "${ZWE_RUN_ON_ZOS}" = "true" ]; then
-      chtag -b "${keystore_file}"
+
+    pkcs12_ensure_binary_tag "${keystore_file}"
+    if [ $? -ne 0 ]; then
+      return 1
     fi
+
     dummy_cert_created=true
   fi
 
@@ -1129,6 +1189,7 @@ keyring_export_to_pkcs12() {
   if [ $? -ne 0 ]; then
     return 1
   fi
+  chmod 700 "${uss_temp_target}.cer"
 
   if [ "${cert_only}" = "true" ]; then
     # use keytool to import certificate
@@ -1153,10 +1214,17 @@ keyring_export_to_pkcs12() {
     if [ $? -ne 0 ]; then
       return 1
     fi
+    chmod 700 "${uss_temp_target}.key"
 
     # convert PEM format into temporary PKCS#12 keystore
     print_debug "- Generate PKCS#12 keystore from the certificate and private key in PEM format"
     result=$(ncert_utility pkcs12 create-from-pem "${label}" -f "${uss_temp_target}.p12" -p "${keystore_password}" --cert "${uss_temp_target}.cer" --key "${uss_temp_target}.key")
+    if [ $? -ne 0 ]; then
+      return 1
+    fi
+    chmod 700 "${uss_temp_target}.p12"
+
+    pkcs12_ensure_binary_tag "${uss_temp_target}.p12"
     if [ $? -ne 0 ]; then
       return 1
     fi
@@ -1223,6 +1291,15 @@ keyring_export_all_to_pkcs12() {
   done <<EOF
 $(echo "${certs}")
 EOF
+
+  pkcs12_ensure_binary_tag "${temp_keystore_file}"
+  if [ $? -ne 0 ]; then
+    return 1
+  fi
+  pkcs12_ensure_binary_tag "${temp_truststore_file}"
+  if [ $? -ne 0 ]; then
+    return 1
+  fi
 
   # converting truststore
   print_debug ">>>> Listing CERTAUTH certificates"

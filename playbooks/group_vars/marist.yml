@@ -11,11 +11,11 @@ zowe_dataset_prefix: ZOWEAD3.ZWE
 zowe_apiml_verify_certficates_of_services: false
 # enable Non-Strict verify certificates by default
 zowe_apiml_nonstrict_verify_certficates_of_services: true
-zowe_jcllib: ZOWEAD3.JCLLIB
+zowe_jcllib: ZOWEAD3.ZWE.JCLLIB
 zowe_xmem_proclib: VENDOR.PROCLIB
-zowe_xmem_loadlib: ZOWEAD3.LOADLIB
-zowe_xmem_pluginlib: ZOWEAD3.PLUGLIB
-zowe_xmem_parmlib: ZOWEAD3.PARMLIB
+zowe_xmem_loadlib: ZOWEAD3.ZWE.LOADLIB
+zowe_xmem_pluginlib: ZOWEAD3.ZWE.PLUGLIB
+zowe_xmem_parmlib: ZOWEAD3.ZWE.PARMLIB
 # # variables for zowe smpe uninstallation and installation
 # during uninstallation, any data-sets start with {this}.ZOWE.{fmid} will be removed
 zowe_smpe_hlq_dsn: ZOWEAD3
@@ -33,3 +33,9 @@ zowe_fmids_dir_remote: /ZOWE/zowe-fmids
 # caching service volume
 zowe_caching_vsam_volume: ZOWE02
 zos_zosmf_ca: zOSMFCA
+# extra cleanup, mainly to delete v2 data sets
+zowe_uninstall_extra_data_sets:
+- ZOWEAD3.JCLLIB
+- ZOWEAD3.PLUGLIB
+- ZOWEAD3.LOADLIB
+- ZOWEAD3.PARMLIB

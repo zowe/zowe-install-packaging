@@ -24,12 +24,12 @@ describe('verify installed files', function() {
     await sshHelper.executeCommandWithNoError(`test -d ${process.env.ZOWE_ROOT_DIR}`);
   });
 
-  it('bin/zowe-start.sh should exist', async function() {
-    await sshHelper.executeCommandWithNoError(`test -f ${process.env.ZOWE_INSTANCE_DIR}/bin/zowe-start.sh`);
+  it('bin/zwe should exist', async function() {
+    await sshHelper.executeCommandWithNoError(`test -f ${process.env.ZOWE_ROOT_DIR}/bin/zwe`);
   });
 
-  it('scripts/internal/opercmd should exist', async function() {
-    await sshHelper.executeCommandWithNoError(`test -f ${process.env.ZOWE_ROOT_DIR}/scripts/internal/opercmd`);
+  it('bin/utils/opercmd.rex should exist', async function() {
+    await sshHelper.executeCommandWithNoError(`test -f ${process.env.ZOWE_ROOT_DIR}/bin/utils/opercmd.rex`);
   });
 
   it('components/jobs-api/bin/jobs-api-server-*.jar should exist', async function() {
@@ -44,21 +44,18 @@ describe('verify installed files', function() {
     await sshHelper.executeCommandWithNoError(`test -f ${process.env.ZOWE_ROOT_DIR}/fingerprint/RefRuntimeHash-*.txt`);
   });
 
-  // # verify the checksums of ROOT_DIR, to self-check zowe-verify-authenticity.sh
-  // $binDir/zowe-verify-authenticity.sh # No parameters! 
-  // You need to 'source' the profile to get JAVA_HOME
-
   it('fingerprint should match', async function() {
-    const fingerprintStdout = await sshHelper.executeCommandWithNoError(`touch ~/.profile && . ~/.profile && ${process.env.ZOWE_ROOT_DIR}/bin/zowe-verify-authenticity.sh`);
+    // IMPORT: After 'source' the profile, JAVA_HOME environment variable must exist
+    const fingerprintStdout = await sshHelper.executeCommandWithNoError(`touch ~/.profile && . ~/.profile && ${process.env.ZOWE_ROOT_DIR}/bin/zwe support verify-fingerprints`);
     debug('fingerprint show result:', fingerprintStdout);
     addContext(this, {
       title: 'fingerprint show result',
       value: fingerprintStdout
     });
-    expect(fingerprintStdout).to.contain('Number of files different =  0');
-    expect(fingerprintStdout).to.contain('Number of files extra     =  0');
-    expect(fingerprintStdout).to.contain('Number of files missing   =  0');
-    expect(fingerprintStdout).to.contain('Verification PASSED');
+    expect(fingerprintStdout).to.contain('Number of different files: 0');
+    expect(fingerprintStdout).to.contain('Number of extra files: 0');
+    expect(fingerprintStdout).to.contain('Number of missing files: 0');
+    expect(fingerprintStdout).to.contain('Zowe file fingerprints verification passed.');
   });
 
   after('dispose SSH connection', function() {

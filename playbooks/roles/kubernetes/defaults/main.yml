@@ -2,8 +2,8 @@
 # ==============================================================================
 # Constants
 # ==============================================================================
-# 120 * 10 seconds = 20 mins
-wait_for_zowe_service_retries: 120
+# 180 * 10 seconds = 30 mins
+wait_for_zowe_service_retries: 180
 # Every 10 seconds
 wait_for_zowe_service_delay: 10
 # Timeout after 900sec = 15min for Zowe Pods to become ready status

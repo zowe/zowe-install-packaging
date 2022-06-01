@@ -31,6 +31,7 @@ describe(testSuiteName, () => {
       testServer,
       {
         'zowe_build_local': process.env['ZOWE_BUILD_LOCAL'],
+        'zowe_custom_for_test': 'true',
         'zos_node_home': '/ZOWE/node/node-v16.13.0-os390-s390x',
         'zowe_lock_keystore': 'false',
       }

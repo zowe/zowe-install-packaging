@@ -60,7 +60,7 @@ jobs:
       - name: '[Prep 2] Setup jFrog CLI'
         uses: jfrog/setup-jfrog-cli@v2
         env:
-          JF_ARTIFACTORY_1: ${{ secrets.JF_ARTIFACTORY_TOKEN }}
+          JF_ENV_1: ${{ secrets.JF_ARTIFACTORY_TOKEN }}
       
       - name: '[Prep 3] Convert manifest template to manifest.json'
         run: |
@@ -250,9 +250,17 @@ jobs:
           ZOSMF_PASS: ${{ secrets.ZOWE_PSWI_BUILD_PASSWD }}
           VERSION: ${{ env.P_VERSION }}
 
-      - name: '[PAX/SMPE Publish] Upload to artifactory'
+      - name: '[K8S] Build Kubernetes'
+        timeout-minutes: 10
+        if: env.INPUTS_BUILD_KUBERNETES == 'true'
+        working-directory: containers
+        run: |
+          ./build/parse-manifest-to-deployment.sh
+          zip -r zowe-containerization.zip kubernetes
+
+      - name: '[Upload] Upload everything to artifactory'
         id: publish
-        timeout-minutes: 5
+        timeout-minutes: 10
         uses: zowe-actions/shared-actions/publish@main
         with:
           artifacts: |
@@ -263,23 +271,9 @@ jobs:
             .pax/smpe-build-logs.pax.Z
             .pax/AZWE*
             .pax/zowe-PSWI*
+            containers/zowe-containerization.zip
         env:
           DEBUG: 'zowe-actions:shared-actions:publish'
-
-      - name: '[K8S 1] Build Kubernetes'
-        timeout-minutes: 10
-        if: env.INPUTS_BUILD_KUBERNETES == 'true'
-        working-directory: containers
-        run: |
-          ./build/parse-manifest-to-deployment.sh
-          zip -r zowe-containerization.zip kubernetes
-
-      - name: '[K8S 2] Upload k8s zip to artifactory'
-        timeout-minutes: 5
-        if: env.INPUTS_BUILD_KUBERNETES == 'true'
-        uses: zowe-actions/shared-actions/publish@main
-        with:
-          artifacts: containers/zowe-containerization.zip
 
       - name: '[Post Prep 7] Update PR comment to indicate build succeeded'
         uses: actions/github-script@v5

@@ -104,7 +104,7 @@ fi
 # read z/OSMF info
 for item in user ca; do
   var_name="zosmf_${item}"
-  var_val=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.certificate.zOSMF.${item}")
+  var_val=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.certificate.keyring.zOSMF.${item}")
   eval "${var_name}=\"${var_val}\""
 done
 for item in host port; do
@@ -285,7 +285,8 @@ if [ "${cert_type}" = "PKCS12" ]; then
 
   # lock keystore directory with proper permission
   # - group permission is none
-  if [ "$(lower_case "${pkcs12_directory}")" != "false" ]; then
+  # NOTE: njq returns `null` or empty for boolean false, so let's check true
+  if [ "$(lower_case "${pkcs12_lock}")" = "true" ]; then
     zwecli_inline_execute_command \
       certificate pkcs12 lock \
         --keystore-dir "${pkcs12_directory}" \

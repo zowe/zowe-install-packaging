@@ -19,9 +19,15 @@ Table of contents
 
 New FMID
 --------
-1. TODO Program Directory update
+1. The Program Directory (AZWExxx.htm) must be updated by an IBM-employed
+   build engineer. This because automated processing by IBM tooling
+   requires a specific format, which might have changed since the last
+   update.
+Note: The program directory holds allocation and FTP file sizes, so the
+      final update should happend just before code freeze to ensure we
+      have the correct sizes.
 2. Add previous FMID to SUP and DELETE statements in smpe/bld/SMPMCS.txt
-Note: SUP should only be updated if most products depending on the 
+Note: SUP should only be updated if most products depending on the
       previous FMID will continue to work with the new FMID. Do NOT SUP
       the previous FMID if the new FMID breaks most dependent products.
 ++VER(Z038) /* zOS */
@@ -71,7 +77,7 @@ Note: Build currently does not support empty data sets, so one or more
 //            LRECL=80,
 //            BLKSIZE=0,
 //            DSN=&THLQ..SZWEEXEC
-//*   
+//*
 3. If data set DCB data matches an existing AZWEyyyy data set, we will
    reuse the AZWEyyyy dat set as DLIB. Otherwise, add AZWExxxx data set
    allocation to ALLOCD PROC in
@@ -81,7 +87,7 @@ Note: Build currently does not support empty data sets, so one or more
     ADD DDDEF (SZWEEXEC)
         DATASET(&THLQ..SZWEEXEC)
         UNIT(SYSALLDA)
-#if( $tvol and $tvol != "" and $tvol != '#tvol') 
+#if( $tvol and $tvol != "" and $tvol != '#tvol')
         VOLUME(&TVOL)
 #end
 #if($ibmTemplate == 'YES')

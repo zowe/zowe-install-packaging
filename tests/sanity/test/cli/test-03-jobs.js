@@ -5,7 +5,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  *
- * Copyright IBM Corporation 2018, 2019
+ * Copyright Contributors to the Zowe Project.
  */
 
 /*eslint no-console: ["error", { allow: ["log", "warn", "error"] }] */
@@ -37,7 +37,7 @@ describe('cli list jobs of ZWE*', function() {
     expect(result).to.have.property('stderr');
 
     expect(result.stderr).to.be.empty;
-    expect(result.stdout).to.have.string('Profile created successfully');
+    expect(result.stdout).to.be.empty;
   });
 
   it(`should have an active job ${ZOWE_JOB_NAME}`, async function() {

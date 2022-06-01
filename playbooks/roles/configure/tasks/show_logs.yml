@@ -40,6 +40,7 @@
   - ZWESECUR
   - ZWEKRING
   - ZWENOKYR
+  - ZWECSVSM
   loop_control:
     loop_var: job_name_to_show
 
@@ -65,4 +66,22 @@
 
 - name: Show Zowe runtime logs
   raw: find "{{ zowe_instance_dir }}/logs" -type f | xargs -i sh -c 'echo ">>>>>>>>>>>>>>>>>>>>>>>> {} >>>>>>>>>>>>>>>>>>>>>>>" && cat {}'
+  ignore_errors: True
+
+# ============================================================================
+- name: List APIML static registration dir
+  raw: ls -l "{{ zowe_instance_dir }}/workspace/api-mediation/api-defs"
+  ignore_errors: True
+
+- name: Show Zowe runtime logs
+  raw: find "{{ zowe_instance_dir }}/workspace/api-mediation/api-defs" -type f | xargs -i sh -c 'echo ">>>>>>>>>>>>>>>>>>>>>>>> {} >>>>>>>>>>>>>>>>>>>>>>>" && iconv -f ISO8859-1 -t IBM-1047 {}'
+  ignore_errors: True
+
+# ============================================================================
+- name: List app-server plugins dir
+  raw: ls -l "{{ zowe_instance_dir }}/workspace/app-server/plugins"
+  ignore_errors: True
+
+- name: Show Zowe runtime logs
+  raw: find "{{ zowe_instance_dir }}/workspace/app-server/plugins" -type f | xargs -i sh -c 'echo ">>>>>>>>>>>>>>>>>>>>>>>> {} >>>>>>>>>>>>>>>>>>>>>>>" && iconv -f ISO8859-1 -t IBM-1047 {}'
   ignore_errors: True

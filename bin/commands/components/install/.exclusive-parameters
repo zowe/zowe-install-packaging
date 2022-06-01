@@ -1,2 +1,3 @@
 component-file,component|o|string|required||||Path to the component package or directory.
 auto-encoding|e|string||auto|||If we want to automatically tagging the module files.
+skip-enable||boolean|||||Install component without enabling it for use.

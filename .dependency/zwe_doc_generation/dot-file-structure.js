@@ -53,7 +53,7 @@ const parameterTable = {
 const EXPERIMENTAL = {
     inherit: true,
     fileName: '.experimental',
-    meaning: 'WARNING: This command is for experimental purposes and may not fully function.'
+    meaning: 'WARNING: This command is for experimental purposes and could be changed in the future releases.'
 };
 const HELP = {
     fileName: '.help',
