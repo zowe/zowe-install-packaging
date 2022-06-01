@@ -11,6 +11,7 @@
 # Copyright Contributors to the Zowe Project.
 #######################################################################
 
+require_node
 require_zowe_yaml
 
 component_dir=$(find_component_directory "${ZWE_CLI_PARAMETER_COMPONENT_NAME}")

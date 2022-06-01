@@ -53,20 +53,42 @@ do
             if [ -n "${debug}" ]; then
                 echo "    updating: workloads/${file}"
             fi
-            if [ "${file}" = "./cleanup-static-definitions-cronjob.yaml" ];
-            then
+            if [ "${file}" = "./cleanup-static-definitions-cronjob.yaml" ]; then
                 IMAGE="${image}" yq e -i '.spec.jobTemplate.spec.template.spec.containers[0].image = strenv(IMAGE)' "${file}"
+                if [ $? -eq 0 ]; then
+                    echo "    updating: Ok"
+                else
+                    echo "    updating: Failed!"
+                    exit 1
+                fi
             else
                 IMAGE="${image}" yq e -i '.spec.template.spec.initContainers[0].image = strenv(IMAGE)' "${file}"
+                if [ $? -eq 0 ]; then
+                    echo "    updating: Ok"
+                else
+                    echo "    updating: Failed!"
+                    exit 1
+                fi
             fi
         done
         # replace image line with information parsed from manifest
+    elif [ "${eachImageDep}" = "base" ] || [ "${eachImageDep}" = "base-jdk" ] || [ "${eachImageDep}" = "base-node" ]; then
+        # NOP do nothing
+        if [ -n "${debug}" ]; then
+            echo "    base image ${eachImageDep} will skip updating yml file"
+        fi
     else
         if [ -n "${debug}" ]; then
             echo "    updating: workloads/${eachImageDep}-${kind}.yaml"
         fi
         yamlFile="${PROJECT_ROOT_PWD}/containers/kubernetes/workloads/${eachImageDep}-${kind}.yaml"
         IMAGE="${image}" yq e -i '.spec.template.spec.containers[0].image = strenv(IMAGE)' "${yamlFile}"
+        if [ $? -eq 0 ]; then
+            echo "    updating: Ok"
+        else
+            echo "    updating: Failed!"
+            exit 1
+        fi
     fi
 done
 
@@ -77,7 +99,16 @@ i=0 #counter, for debug purpose
 filesArray= #store an array of matched files, for debug purpose
 for eachMatchedFile in $(grep -rlw $K8S_ROOT_PWD -e 'app.kubernetes.io/version:' --exclude 'sample-deployment.yaml');
 do
+    if [ -n "${debug}" ]; then
+        echo "    updating: ${eachMatchedFile}"
+    fi
     VERSION=${CURRENT_PROJECT_VERSION} yq e -i '.metadata.labels."app.kubernetes.io/version" = strenv(VERSION)' "${eachMatchedFile}"
+    if [ $? -eq 0 ]; then
+        echo "    updating: Ok"
+    else
+        echo "    updating: Failed!"
+        exit 1
+    fi
     let i++
     eachMatchedFile=${eachMatchedFile##*kubernetes/}
     filesArray="${filesArray}${eachMatchedFile}"$'\n'

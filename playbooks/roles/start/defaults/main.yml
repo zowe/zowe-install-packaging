@@ -2,8 +2,8 @@
 # ==============================================================================
 # Constants
 # ==============================================================================
-# 180 * 10 seconds = 30 mins
-wait_for_zowe_service_retries: 180
+# 240 * 10 seconds = 40 mins
+wait_for_zowe_service_retries: 240
 # Every 10 seconds
 wait_for_zowe_service_delay: 10
 
@@ -25,5 +25,5 @@ zowe_test_password:
 # ports will be tested
 #zowe_zss_port: 7557
 zowe_zlux_port: 7556
-zowe_jobs_api_port: 7600
+zowe_jobs_api_port: 7558
 zowe_apiml_gateway_port: 7554

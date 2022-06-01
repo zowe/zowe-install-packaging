@@ -86,7 +86,7 @@ export function cleanupSanityTestReportDir(): void {
  * @param {Object} extraVars      Object
  * @param {String} serverId       String
  */
-export function importDefaultExtraVars(extraVars: {[key: string]: string}, serverId: string): void {
+export function importDefaultExtraVars(extraVars: {[key: string]: any}, serverId: string): void {
   const defaultMapping: {[key: string]: string[]} = {
     'ansible_ssh_host'           : ['SSH_HOST'],
     'ansible_port'               : ['SSH_PORT'],
@@ -127,7 +127,7 @@ type PlaybookResponse = {
  * @param  {Object}    extraVars
  * @param  {String}    verbose
  */
-export function runAnsiblePlaybook(testcase: string, playbook: string, serverId: string, extraVars: {[key: string]: string} = {}, verbose = '-v'): Promise<PlaybookResponse> {
+export function runAnsiblePlaybook(testcase: string, playbook: string, serverId: string, extraVars: {[key: string]: any} = {}, verbose = '-v'): Promise<PlaybookResponse> {
   return new Promise((resolve, reject) => {
     const result: PlaybookResponse = {
       reportHash: calculateHash(testcase),
@@ -174,6 +174,25 @@ export function runAnsiblePlaybook(testcase: string, playbook: string, serverId:
   });
 }
 
+async function verifyZowe(testcase: string, serverId: string, extraVars: {[key: string]: any} = {}): Promise<PlaybookResponse> {
+  debug(`run verify.yml on ${serverId}`);
+  let resultVerify;
+
+  try {
+    resultVerify = await runAnsiblePlaybook(
+      testcase,
+      'verify.yml',
+      serverId,
+      extraVars
+    );
+  } catch (e) {
+    resultVerify = e;
+  }
+  expect(resultVerify).toHaveProperty('reportHash');
+
+  return resultVerify;
+}
+
 /**
  * Install and verify a Zowe build
  *
@@ -182,7 +201,7 @@ export function runAnsiblePlaybook(testcase: string, playbook: string, serverId:
  * @param  {String}    serverId
  * @param  {Object}    extraVars
  */
-async function installAndVerifyZowe(testcase: string, installPlaybook: string, serverId: string, extraVars: {[key: string]: string} = {}): Promise<void> {
+async function installAndVerifyZowe(testcase: string, installPlaybook: string, serverId: string, extraVars: {[key: string]: any} = {}): Promise<void> {
   debug(`installAndVerifyZowe(${testcase}, ${installPlaybook}, ${serverId}, ${JSON.stringify(extraVars)})`);
 
   debug(`run ${installPlaybook} on ${serverId}`);
@@ -202,26 +221,21 @@ async function installAndVerifyZowe(testcase: string, installPlaybook: string, s
   // clean up sanity test folder
   cleanupSanityTestReportDir();
 
-  debug(`run verify.yml on ${serverId}`);
-  let resultVerify;
-  try {
-    resultVerify = await runAnsiblePlaybook(
-      testcase,
-      'verify.yml',
-      serverId
-    );
-  } catch (e) {
-    resultVerify = e;
+  if (extraVars && extraVars['skip_start'] && extraVars['skip_start'] === 'true') {
+    debug(`running ${installPlaybook} playbook with skip_start=true, skip verify`);
+
+  } else {
+    // verify zowe instance with sanity test
+    const resultVerify = await verifyZowe(testcase, serverId, {});
+
+    // copy sanity test result to install test report folder
+    copySanityTestReport(resultVerify.reportHash);
+
+    expect(resultVerify.code).toBe(0);
   }
-  expect(resultVerify).toHaveProperty('reportHash');
-
-  // copy sanity test result to install test report folder
-  copySanityTestReport(resultVerify.reportHash);
-
-  expect(resultVerify.code).toBe(0);
 }
 
-async function installExtension(testcase: string, serverId: string, extraVars: {[key: string]: string} = {}): Promise<void> {
+async function installExtension(testcase: string, serverId: string, extraVars: {[key: string]: any} = {}): Promise<void> {
   debug(`run install-ext.yml on ${serverId}`);
   const resultInstall = await runAnsiblePlaybook(
     testcase,
@@ -235,7 +249,21 @@ async function installExtension(testcase: string, serverId: string, extraVars: {
   expect(resultInstall.stderr).toBe('');
 }
 
-async function restartZowe(testcase: string, serverId: string): Promise<void> {
+async function startZowe(testcase: string, serverId: string): Promise<void> {
+
+  debug(`start zowe on ${serverId}`);
+  const resultStop = await runAnsiblePlaybook(
+    testcase,
+    'start.yml',
+    serverId,
+    {}
+  );
+
+  expect(resultStop.code).toBe(0);
+
+}
+
+async function stopZowe(testcase: string, serverId: string): Promise<void> {
 
   debug(`stop zowe on ${serverId}`);
   const resultStop = await runAnsiblePlaybook(
@@ -247,20 +275,23 @@ async function restartZowe(testcase: string, serverId: string): Promise<void> {
 
   expect(resultStop.code).toBe(0);
 
-  debug(`start zowe on ${serverId}`);
-  const resultStart = await runAnsiblePlaybook(
-    testcase,
-    'start.yml',
-    serverId,
-    {}
-  );
+}
 
-  expect(resultStart.code).toBe(0);
+async function restartZowe(testcase: string, serverId: string): Promise<void> {
+
+  await stopZowe(testcase, serverId);
+
+  // sleep extra 2 minutes
+  debug(`wait extra 2 min before sanity test`);
+  await sleep(120000);
+
+  await startZowe(testcase, serverId);
 
 }
 
-async function verifyExtension(testcase: string, serverId: string, extraVars: {[key: string]: string} = {}): Promise<PlaybookResponse> {
+async function verifyExtension(testcase: string, serverId: string, extraVars: {[key: string]: any} = {}): Promise<PlaybookResponse> {
   debug(`run verify-ext.yml on ${serverId}`);
+  // FIXME: how to verify in v2?
   let resultVerify;
   try {
     resultVerify = await runAnsiblePlaybook(
@@ -285,7 +316,7 @@ async function verifyExtension(testcase: string, serverId: string, extraVars: {[
  * @param  {String}    serverId
  * @param  {Object}    extraVars
  */
-export async function installAndVerifyConvenienceBuild(testcase: string, serverId: string, extraVars: {[key: string]: string} = {}): Promise<void> {
+export async function installAndVerifyConvenienceBuild(testcase: string, serverId: string, extraVars: {[key: string]: any} = {}): Promise<void> {
   await installAndVerifyZowe(testcase, 'install.yml', serverId, extraVars);
 }
 
@@ -296,7 +327,7 @@ export async function installAndVerifyConvenienceBuild(testcase: string, serverI
  * @param  {String}    serverId
  * @param  {Object}    extraVars
  */
-export async function installAndVerifyDockerBuild(testcase: string, serverId: string, extraVars: {[key: string]: string} = {}): Promise<void> {
+export async function installAndVerifyDockerBuild(testcase: string, serverId: string, extraVars: {[key: string]: any} = {}): Promise<void> {
   debug(`installAndVerifyDockerBuild(${testcase}, ${serverId}, ${JSON.stringify(extraVars)})`);
 
   debug(`run install-docker.yml on ${serverId}`);
@@ -316,24 +347,18 @@ export async function installAndVerifyDockerBuild(testcase: string, serverId: st
   // clean up sanity test folder
   cleanupSanityTestReportDir();
 
-  debug(`run verify.yml on ${serverId}`);
-  let resultVerify;
-  try {
-    resultVerify = await runAnsiblePlaybook(
-      testcase,
-      'verify.yml',
-      serverId,
-      extraVars
-    );
-  } catch (e) {
-    resultVerify = e;
+  if (extraVars && extraVars['skip_start'] && extraVars['skip_start'] === 'true') {
+    debug('running install-docker.yml playbook with skip_start=true, skip verify');
+
+  } else {
+    // verify zowe instance with sanity test
+    const resultVerify = await verifyZowe(testcase, serverId, extraVars);
+
+    // copy sanity test result to install test report folder
+    copySanityTestReport(resultVerify.reportHash);
+
+    expect(resultVerify.code).toBe(0);
   }
-  expect(resultVerify).toHaveProperty('reportHash');
-
-  // copy sanity test result to install test report folder
-  copySanityTestReport(resultVerify.reportHash);
-
-  expect(resultVerify.code).toBe(0);
 }
 
 /**
@@ -343,11 +368,11 @@ export async function installAndVerifyDockerBuild(testcase: string, serverId: st
  * @param  {String}    serverId
  * @param  {Object}    extraVars
  */
-export async function installAndVerifySmpeFmid(testcase: string, serverId: string, extraVars: {[key: string]: string} = {}): Promise<void> {
+export async function installAndVerifySmpeFmid(testcase: string, serverId: string, extraVars: {[key: string]: any} = {}): Promise<void> {
   await installAndVerifyZowe(testcase, 'install-fmid.yml', serverId, extraVars);
 }
 
-export async function installAndVerifyExtension(testcase: string, serverId: string, extraVars: {[key: string]: string} = {}): Promise<void> {
+export async function installAndVerifyExtension(testcase: string, serverId: string, extraVars: {[key: string]: any} = {}): Promise<void> {
   debug(`installAndVerifyExtension(${testcase}, ${serverId}, ${JSON.stringify(extraVars)})`);
 
   await installExtension(testcase, serverId, extraVars);
@@ -357,12 +382,17 @@ export async function installAndVerifyExtension(testcase: string, serverId: stri
   // clean up sanity test folder
   cleanupSanityTestReportDir();
 
-  const resultVerify = await verifyExtension(testcase, serverId, extraVars);
+  // const resultVerify = await verifyExtension(testcase, serverId, extraVars);
+  // expect(resultVerify).toHaveProperty('reportHash');
 
+  // verify zowe instance with sanity test
+  const resultVerify = await verifyZowe(testcase, serverId, {});
   expect(resultVerify).toHaveProperty('reportHash');
 
   // copy sanity test result to install test report folder
   copySanityTestReport(resultVerify.reportHash);
+
+  expect(resultVerify.code).toBe(0);
 }
 
 /**
@@ -372,7 +402,7 @@ export async function installAndVerifyExtension(testcase: string, serverId: stri
  * @param  {String}    serverId
  * @param  {Object}    extraVars
  */
-export async function installAndVerifySmpePtf(testcase: string, serverId: string, extraVars: {[key: string]: string} = {}): Promise<void> {
+export async function installAndVerifySmpePtf(testcase: string, serverId: string, extraVars: {[key: string]: any} = {}): Promise<void> {
   debug(`installAndVerifySmpePtf(${testcase}, ${serverId}, ${JSON.stringify(extraVars)})`);
 
   debug(`run install-fmid.yml on ${serverId}`);
@@ -381,7 +411,8 @@ export async function installAndVerifySmpePtf(testcase: string, serverId: string
     'install-fmid.yml',
     serverId,
     {
-      'zowe_build_remote': ZOWE_FMID
+      'zowe_build_remote': ZOWE_FMID,
+      'skip_start': 'true',
     }
   );
 
@@ -404,23 +435,18 @@ export async function installAndVerifySmpePtf(testcase: string, serverId: string
   // clean up sanity test folder
   cleanupSanityTestReportDir();
 
-  debug(`run verify.yml on ${serverId}`);
-  let resultVerify;
-  try {
-    resultVerify = await runAnsiblePlaybook(
-      testcase,
-      'verify.yml',
-      serverId
-    );
-  } catch (e) {
-    resultVerify = e;
+  if (extraVars && extraVars['skip_start'] && extraVars['skip_start'] === 'true') {
+    debug('running install-ptf.yml playbook with skip_start=true, skip verify');
+
+  } else {
+    // verify zowe instance with sanity test
+    const resultVerify = await verifyZowe(testcase, serverId, {});
+
+    // copy sanity test result to install test report folder
+    copySanityTestReport(resultVerify.reportHash);
+
+    expect(resultVerify.code).toBe(0);
   }
-  expect(resultVerify).toHaveProperty('reportHash');
-
-  // copy sanity test result to install test report folder
-  copySanityTestReport(resultVerify.reportHash);
-
-  expect(resultVerify.code).toBe(0);
 }
 
 /**
@@ -429,7 +455,7 @@ export async function installAndVerifySmpePtf(testcase: string, serverId: string
  * @param serverId 
  * @param extraVars 
  */
-export async function installAndGenerateApiDocs(testcase: string, serverId: string, extraVars: {[key: string]: string} = {}): Promise<void> {
+export async function installAndGenerateApiDocs(testcase: string, serverId: string, extraVars: {[key: string]: any} = {}): Promise<void> {
   debug(`installAndGenerateApiDocs(${testcase}, install.yml, ${serverId}, ${JSON.stringify(extraVars)})`);
 
   debug(`run install.yml on ${serverId}`);
@@ -474,7 +500,7 @@ export async function installAndGenerateApiDocs(testcase: string, serverId: stri
  * @param  {String}    serverId
  * @param  {Object}    extraVars
  */
-export async function showZoweRuntimeLogs(serverId: string, extraVars: {[key: string]: string} = {}): Promise<void> {
+export async function showZoweRuntimeLogs(serverId: string, extraVars: {[key: string]: any} = {}): Promise<void> {
   debug(`showZoweRuntimeLogs(${serverId}, ${JSON.stringify(extraVars)})`);
 
   debug(`run show_logs on ${serverId}`);
