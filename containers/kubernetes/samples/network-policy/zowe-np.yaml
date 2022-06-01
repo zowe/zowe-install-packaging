@@ -6,7 +6,7 @@ metadata:
   labels:
     app.kubernetes.io/name: zowe
     app.kubernetes.io/instance: zowe
-    app.kubernetes.io/version: "2.0.0"
+    app.kubernetes.io/version: "2.1.0"
     app.kubernetes.io/component: k8s-network-policy
     app.kubernetes.io/managed-by: manual
 spec:
@@ -14,7 +14,6 @@ spec:
   # policyTypes:
   # - Ingress
   # - Egress
-
   podSelector:
     matchLabels:
       app.kubernetes.io/name: zowe
@@ -24,26 +23,26 @@ spec:
     - Egress
   ingress:
     - from:
-      # allow connections within same namespace
-      - namespaceSelector:
-          matchLabels:
-            app.kubernetes.io/name: zowe
-            app.kubernetes.io/instance: zowe
+        # allow connections within same namespace
+        - namespaceSelector:
+            matchLabels:
+              app.kubernetes.io/name: zowe
+              app.kubernetes.io/instance: zowe
     - ports:
-      - protocol: TCP
-        # Zowe Gateway
-        port: 7554
+        - protocol: TCP
+          # Zowe Gateway
+          port: 7554
   egress:
     - to:
-      # allow connections within same namespace
-      - namespaceSelector:
-          matchLabels:
-            app.kubernetes.io/name: zowe
-            app.kubernetes.io/instance: zowe
+        # allow connections within same namespace
+        - namespaceSelector:
+            matchLabels:
+              app.kubernetes.io/name: zowe
+              app.kubernetes.io/instance: zowe
     - to:
-      # allow dns query
-      - namespaceSelector:
-          matchLabels: {}
+        # allow dns query
+        - namespaceSelector:
+            matchLabels: {}
       ports:
         - protocol: TCP
           port: 53

@@ -7,7 +7,7 @@ metadata:
   labels:
     app.kubernetes.io/name: zowe
     app.kubernetes.io/instance: zowe
-    app.kubernetes.io/version: "2.0.0"
+    app.kubernetes.io/version: "2.1.0"
     app.kubernetes.io/component: gateway
     app.kubernetes.io/part-of: apiml
     app.kubernetes.io/managed-by: manual
