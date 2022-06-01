@@ -105,7 +105,7 @@
       "artifact": "apiml-sample-extension-*.zip"
     },
     "org.zowe.launcher": {
-      "version": "2.0.0"
+      "version": "2.0.1"
     },
     "org.zowe.keyring-utilities": {
       "version": "1.0.4",
@@ -114,7 +114,7 @@
       "flat": "true"
    },
     "org.zowe.utility_tools": {
-      "version": "2.0.0"
+      "version": "2.0.1"
     },
     "org.zowe.licenses": {
       "version": "2.0.0",
@@ -355,11 +355,11 @@
         "destinations": ["Zowe PAX"]
       }, {
         "repository": "zowe-install-packaging-tools",
-        "tag": "v2.0.0",
+        "tag": "v2.0.1",
         "destinations": ["Zowe PAX"]
       }, {
         "repository": "launcher",
-        "tag": "v2.0.0",
+        "tag": "v2.0.1",
         "destinations": ["Zowe PAX"]
       }]
     },
@@ -384,7 +384,7 @@
     "zowe-launch-scripts": {
       "registry": "zowe-docker-release.jfrog.io",
       "name": "ompzowe/zowe-launch-scripts",
-      "tag" : "2.0.0-ubuntu"
+      "tag" : "2.1.0-ubuntu"
     },
     "api-catalog": {
       "registry": "zowe-docker-release.jfrog.io",
