@@ -387,7 +387,7 @@
     "zowe-launch-scripts": {
       "registry": "zowe-docker-snapshot.jfrog.io",
       "name": "ompzowe/zowe-launch-scripts",
-      "tag" : "2.0.0-ubuntu.v2-x-staging"
+      "tag" : "2.1.0-ubuntu.v2-x-staging"
     },
     "api-catalog": {
       "registry": "zowe-docker-snapshot.jfrog.io",
@@ -413,41 +413,41 @@
     "app-server": {
       "registry": "zowe-docker-snapshot.jfrog.io",
       "name": "ompzowe/app-server",
-      "tag" : "2.0.0-ubuntu.v2-x-staging"
+      "tag" : "2.1.0-ubuntu.v2-x-staging"
     },
     "explorer-ip": {
         "kind": "job",
-        "registry": "zowe-docker-release.jfrog.io",
+        "registry": "zowe-docker-snapshot.jfrog.io",
         "name": "ompzowe/explorer-ip",
-        "tag" : "2-ubuntu"
+        "tag" : "2.0.0-ubuntu.v2-x-master"
     },
     "explorer-jes": {
         "kind": "job",
-        "registry": "zowe-docker-snapshot.jfrog.io",
+        "registry": "zowe-docker-release.jfrog.io",
         "name": "ompzowe/explorer-jes",
-        "tag" : "2.0.0-ubuntu.v2-x-master"
+        "tag" : "2-ubuntu"
     },
     "explorer-mvs": {
         "kind": "job",
-        "registry": "zowe-docker-snapshot.jfrog.io",
+        "registry": "zowe-docker-release.jfrog.io",
         "name": "ompzowe/explorer-mvs",
-        "tag" : "2.0.0-ubuntu.v2-x-master"
+        "tag" : "2-ubuntu"
     },
     "explorer-uss": {
         "kind": "job",
-        "registry": "zowe-docker-snapshot.jfrog.io",
+        "registry": "zowe-docker-release.jfrog.io",
         "name": "ompzowe/explorer-uss",
-        "tag" : "2.0.0-ubuntu.v2-x-master"
+        "tag" : "2-ubuntu"
     },
     "files-api": {
-        "registry": "zowe-docker-snapshot.jfrog.io",
+        "registry": "zowe-docker-release.jfrog.io",
         "name": "ompzowe/files-api",
-        "tag" : "2.0.0-ubuntu.v2-x-master"
+        "tag" : "2-ubuntu"
     },
     "jobs-api": {
-        "registry": "zowe-docker-snapshot.jfrog.io",
+        "registry": "zowe-docker-release.jfrog.io",
         "name": "ompzowe/jobs-api",
-        "tag" : "2.0.0-ubuntu.v2-x-master"
+        "tag" : "2-ubuntu"
     },
     "base": {
         "registry": "zowe-docker-release.jfrog.io",
