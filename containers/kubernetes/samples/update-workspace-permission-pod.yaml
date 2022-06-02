@@ -1,42 +1,27 @@
+---
 apiVersion: v1
 kind: Pod
 metadata:
-  name: debug
+  name: update-workspace-permission
   namespace: zowe
   labels:
     app.kubernetes.io/name: zowe
     app.kubernetes.io/instance: zowe
     app.kubernetes.io/version: "2.1.0"
-    app.kubernetes.io/component: debug
+    app.kubernetes.io/component: update-workspace-permission
     app.kubernetes.io/part-of: debug
     app.kubernetes.io/managed-by: manual
 spec:
+  restartPolicy: Never
   securityContext:
-    runAsUser: 20000
-    runAsGroup: 20000
     fsGroup: 20000
-    runAsNonRoot: true
   serviceAccountName: zowe-sa
   volumes:
-    - name: tmp
-      emptyDir: {}
-    - name: zowe-runtime
-      emptyDir: {}
-    - name: zowe-config
-      configMap:
-        name: zowe-config
-    - name: zowe-keystore
-      projected:
-        sources:
-          - secret:
-              name: zowe-certificates-secret
-    - name: zowe-logs
-      emptyDir: {}
     - name: zowe-workspace
       persistentVolumeClaim:
         claimName: zowe-workspace-pvc
   containers:
-    - name: debug
+    - name: update-workspace-permission
       image: zowe-docker-snapshot.jfrog.io/ompzowe/zowe-launch-scripts:2.1.0-ubuntu.v2-x-staging
       imagePullPolicy: Always
       resources:
@@ -49,27 +34,16 @@ spec:
       securityContext:
         readOnlyRootFilesystem: true
         allowPrivilegeEscalation: false
-        privileged: false
-        runAsNonRoot: true
         capabilities:
           drop:
             - all
+          add:
+            - CHOWN
+        runAsUser: 0
+        runAsGroup: 0
       volumeMounts:
-        - name: tmp
-          mountPath: /tmp
-        - name: zowe-runtime
-          mountPath: "/home/zowe/runtime"
-        - name: zowe-config
-          mountPath: "/home/zowe/instance/zowe.yaml"
-          subPath: zowe.yaml
-          readOnly: true
-        - name: zowe-keystore
-          mountPath: "/home/zowe/keystore"
-          readOnly: true
-        - name: zowe-logs
-          mountPath: "/home/zowe/instance/logs"
         - name: zowe-workspace
           mountPath: "/home/zowe/instance/workspace"
-      command: ["/bin/bash", "-c"]
+      command: ["/bin/sh", "-c"]
       args:
-        - sleep 3600
+        - OWNER=`stat -c "%u:%g" /home/zowe/instance/workspace` && PERMISSION=`stat -c "%a" /home/zowe/instance/workspace` && echo "Zowe workspace owner is ${OWNER} with ${PERMISSION} permission" && if [ "${OWNER}" != "20000:20000" -a "${PERMISSION}" != "777" ]; then chown -R 20000:20000 /home/zowe/instance/workspace && OWNER=`stat -c "%u:%g" /home/zowe/instance/workspace` && PERMISSION=`stat -c "%a" /home/zowe/instance/workspace` && echo "Zowe workspace owner is ${OWNER} with ${PERMISSION} permission after chown"; fi
