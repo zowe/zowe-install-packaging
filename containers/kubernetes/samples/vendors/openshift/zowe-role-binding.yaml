@@ -1,4 +1,4 @@
----  
+---
 kind: Role
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
@@ -15,19 +15,19 @@ rules:
     verbs: ["use"]
 
 ---
-  kind: RoleBinding
-  apiVersion: rbac.authorization.k8s.io/v1
-  metadata:
-    name: zowe-role-binding
-    namespace: zowe
-    labels:
-      app.kubernetes.io/name: zowe
-      app.kubernetes.io/instance: zowe
-      app.kubernetes.io/managed-by: manual
-  subjects:
-   - kind: ServiceAccount
-     name: zowe-sa
-  roleRef:
-    kind: Role
-    name: zowe-role
-    apiGroup: rbac.authorization.k8s.io
+kind: RoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: zowe-role-binding
+  namespace: zowe
+  labels:
+    app.kubernetes.io/name: zowe
+    app.kubernetes.io/instance: zowe
+    app.kubernetes.io/managed-by: manual
+subjects:
+  - kind: ServiceAccount
+    name: zowe-sa
+roleRef:
+  kind: Role
+  name: zowe-role
+  apiGroup: rbac.authorization.k8s.io
