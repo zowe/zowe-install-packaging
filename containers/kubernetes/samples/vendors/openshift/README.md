@@ -68,3 +68,70 @@ This command must display the two Services `gateway` and `discovery`.
 NOTE: when using default domains created by `Route`, the default https port 443 will be used. In this case, you should modify `zowe.externalPort` to `443` in zowe.yaml. You can use the domain without port to access gateway.
 
 You can learn more details from [Exposing apps with routes in Red Hat OpenShift 4](https://cloud.ibm.com/docs/openshift?topic=openshift-openshift_routes).
+
+## Network Policy
+
+Openshift has its own DNS service and usually it's defined in `openshift-dns` namespace. This default DNS service is using port `5353`. If this is the case, `zowe-network-policy` `Egress` needs to be updated to allow traffic to this port.
+
+Run `kubectl describe service/dns-default -n openshift-dns` command to check how ports are used in `openshift-dns`. Here is example response:
+
+```
+$ kubectl describe service/dns-default -n openshift-dns
+Name:              dns-default
+Namespace:         openshift-dns
+Labels:            dns.operator.openshift.io/owning-dns=default
+Annotations:       service.alpha.openshift.io/serving-cert-signed-by: openshift-service-serving-signer@1655125985
+                   service.beta.openshift.io/serving-cert-secret-name: dns-default-metrics-tls
+                   service.beta.openshift.io/serving-cert-signed-by: openshift-service-serving-signer@1655125985
+Selector:          dns.operator.openshift.io/daemonset-dns=default
+Type:              ClusterIP
+IP Family Policy:  SingleStack
+IP Families:       IPv4
+IP:                172.21.0.10
+IPs:               172.21.0.10
+Port:              dns  53/UDP
+TargetPort:        dns/UDP
+Endpoints:         172.30.109.215:5353,172.30.121.77:5353,172.30.155.29:5353
+Port:              dns-tcp  53/TCP
+TargetPort:        dns-tcp/TCP
+Endpoints:         172.30.109.215:5353,172.30.121.77:5353,172.30.155.29:5353
+Port:              metrics  9154/TCP
+TargetPort:        metrics/TCP
+Endpoints:         172.30.109.215:9154,172.30.121.77:9154,172.30.155.29:9154
+Session Affinity:  None
+Events:            <none>
+```
+
+In this example, port `5353` needs to be added to `zowe-network-policy`.
+
+Update `samples/network-policy/zowe-np.yaml` `spec.egress[1]` section from
+
+```yaml
+spec:
+  egress:
+    - to:
+        # allow dns query
+        - namespaceSelector:
+            matchLabels: {}
+      ports:
+        - protocol: TCP
+          port: 53
+        - protocol: UDP
+          port: 53
+```
+
+to
+
+```yaml
+spec:
+  egress:
+    - to:
+        # allow dns query
+        - namespaceSelector:
+            matchLabels: {}
+      ports:
+        - protocol: TCP
+          port: 5353
+        - protocol: UDP
+          port: 5353
+```
