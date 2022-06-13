@@ -173,9 +173,9 @@ function createMdTable(rawContent, docFileTableSyntax) {
 function getRelativeFilePathForChild(child, curCommandFileName) {
     if (curCommandFileName) {
         const childFileName = `${curCommandFileName}-${child.command}`;
-        return child.children.length ? child.command + '/' + childFileName : childFileName;
+        return (child.children.length ? child.command + '/' + childFileName : childFileName) + '.md';
     }
-    return child.command;
+    return child.command + '.md';
 }
 
 function hasDocType(docNode, type) {

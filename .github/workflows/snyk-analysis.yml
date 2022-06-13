@@ -3,9 +3,10 @@ name: Kubernetes Containers Scan
 on:
   push:
     branches:
-      - v2.x/staging 
-  pull_request:
-    types: [opened, synchronize]
+      - v2.x/master
+      - v2.x/staging
+  # pull_request:
+  #   types: [opened, synchronize]
   workflow_dispatch:
     inputs:
       RANDOM_DISPATCH_EVENT_ID:
@@ -28,8 +29,14 @@ jobs:
       - name: Setup image list matrix
         id: setup-image-matrix
         run: |
-          IMAGES_LIST=$(cat manifest.json.template | jq -r '.imageDependencies[] | "{\"image\": \"" + .registry + "/" + .name + ":" + .tag + "\"},"')
-          echo ::set-output name=image-matrix::{\"include\":[$IMAGES_LIST]}
+          image_list=$(cat manifest.json.template | jq -r '.imageDependencies[] | .registry + "/" + .name + ":" + .tag')
+          UBUNTU_ARRAY=$(echo "${image_list}" | sed -e 's/^\(.*\)$/{"images":"\1"},/')
+          echo ">>>>> Ubuntu images:"
+          echo "${UBUNTU_ARRAY}"
+          UBI_ARRAY=$(echo "${image_list}" | sed -e 's/-ubuntu/-ubi/' | sed -e 's/^\(.*\)$/{"images":"\1"},/')
+          echo ">>>>> UBI images:"
+          echo "${UBI_ARRAY}"
+          echo ::set-output name=image-matrix::{\"include\":[${UBUNTU_ARRAY}${UBI_ARRAY}]}
     outputs:
       image-matrix: ${{ steps.setup-image-matrix.outputs.image-matrix }}
 

@@ -987,6 +987,12 @@ EOF
     jobcccode=$(echo "${jobstate}" | awk -F, '{print $4}')
     if [ ${code} -eq 0 ]; then
       print_message "    - Job ${jobname}(${jobid}) ends with code ${jobcccode} (${jobcctext})."
+
+      print_message ""
+      print_message "WARNING: Due to the limitation of the ZWEKRING job, exit with 0 does not mean"
+      print_message "         the job is fully successful. Please check the job log to determine"
+      print_message "         if there are any inline errors."
+      print_message ""
     else
       print_error "Error ZWEL0163E: Job ${jobname}(${jobid}) ends with code ${jobcccode} (${jobcctext})."
       return 163

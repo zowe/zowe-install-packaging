@@ -3,9 +3,10 @@ name: Kubernetes IaC Scan
 on:
   push:
     branches:
-      - v2.x/staging 
-  pull_request:
-    types: [opened, synchronize]
+      - v2.x/master
+      - v2.x/staging
+  # pull_request:
+  #   types: [opened, synchronize]
   workflow_dispatch:
     inputs:
       RANDOM_DISPATCH_EVENT_ID:
@@ -27,9 +28,9 @@ jobs:
         k8s-manifests:
         # we run 3 kinds as example: CronJob, Deployment, StatefulSet
         # all other Deployments should be similar
-        - workloads/instance-env/discovery-statefulset.yaml
-        - workloads/instance-env/cleanup-static-definitions-cronjob.yaml
-        - workloads/instance-env/gateway-deployment.yaml
+        - workloads/discovery-statefulset.yaml
+        - workloads/cleanup-static-definitions-cronjob.yaml
+        - workloads/gateway-deployment.yaml
         # try out other Kinds
         - samples/api-catalog-service.yaml
         - samples/gateway-service-ci.yaml

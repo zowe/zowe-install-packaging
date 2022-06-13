@@ -5,7 +5,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  *
- * Copyright IBM Corporation 2020
+ * Copyright IBM Corporation 2022
  */
 
 import {
@@ -18,7 +18,7 @@ import {
 } from '../../../constants';
 
 const testServer = process.env.TEST_SERVER;
-const testSuiteName = 'Test convenience build installation by enabling NONSTRICT_VERIFY_CERTIFICATES';
+const testSuiteName = 'Test convenience build installation with Infinispan as storage method for the Caching Service';
 describe(testSuiteName, () => {
   beforeAll(() => {
     // validate variables
@@ -34,9 +34,8 @@ describe(testSuiteName, () => {
       testServer,
       {
         'zowe_build_local': process.env['ZOWE_BUILD_LOCAL'],
-        'zowe_custom_for_test': true,
-        'zowe_apiml_verify_certficates_of_services': false,
-        'zowe_apiml_nonstrict_verify_certficates_of_services': true,
+        'zowe_custom_for_test': 'true',
+        'zowe_caching_service_persistent': 'infinispan',
       }
     );
   }, TEST_TIMEOUT_CONVENIENCE_BUILD);

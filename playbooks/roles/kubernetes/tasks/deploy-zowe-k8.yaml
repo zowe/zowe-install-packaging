@@ -247,6 +247,8 @@
       edits:
       - key: spec.template.spec.securityContext.seLinuxOptions.level
         value: 's0:c1,c0'
+      - key: spec.jobTemplate.spec.template.spec.securityContext.seLinuxOptions.level
+        value: 's0:c1,c0'
     with_items: "{{ k8s_manifests.files }}"
     when: k8s_networking|lower == "route"
   - name: Deploy all the workload pods to Zowe K8s
