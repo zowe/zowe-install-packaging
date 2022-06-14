@@ -64,3 +64,7 @@ Delete the pod since it's not needed anymore.
 ```
 kubectl delete -f samples/update-workspace-permission-pod.yaml
 ```
+
+## Network Policy
+
+Before applying network policies, please make sure you have read through [Installing the Calico add-on](https://docs.aws.amazon.com/eks/latest/userguide/calico.html). Very importantly, Calico is not supported when using Fargate with Amazon EKS.
