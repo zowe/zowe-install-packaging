@@ -48,7 +48,7 @@ This is a sample result,
 ```
 $ kubectl logs update-workspace-permission -n zowe
 Zowe workspace owner is 65534:4294967294 with 755 permission
-Zowe workspace owner is 20000:20000 with 755 permission after chown
+Zowe workspace owner is 20000:20000 with 755 permission after chown or chmod
 ```
 
 `owner is 20000:20000 with 755 permission` is the desired state.
