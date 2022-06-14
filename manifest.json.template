@@ -132,7 +132,7 @@
       "explode": "false",
       "flat": "true"
    },
-    "org.zowe.utility_tools": {
+    "org.zowe.utility-tools": {
       "version": "0.0.10"
     },
     "org.zowe.licenses": {
