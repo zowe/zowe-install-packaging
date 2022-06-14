@@ -116,7 +116,7 @@
       "flat": "true",
       "exclusions": ["*PR*"]
    },
-    "org.zowe.utility_tools": {
+    "org.zowe.utility-tools": {
       "version": "~2.0.0-SNAPSHOT"
     },
     "org.zowe.licenses": {
