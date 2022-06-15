@@ -74,7 +74,7 @@ After persistent volume is created, when we mount it, the `zowe` user and `zowe`
 Run this command to update file system permission:
 
 ```
-kubectl apply -f samples/update-workspace-permission-pod.yaml 
+kubectl apply -f samples/update-workspace-permission-job.yaml
 ```
 
 Please note, to successfully update file system permission, this pod is started as `root` user. This pod will reach `complete` status once the job is done. You can check the pod log by issuing this command:
@@ -93,10 +93,10 @@ Zowe workspace owner is 20000:20000 with 755 permission after chown or chmod
 
 `owner is 20000:20000 with 755 permission` is the desired state.
 
-Delete the pod since it's not needed anymore.
+Delete the job since it's not needed anymore.
 
 ```
-kubectl delete -f samples/update-workspace-permission-pod.yaml
+kubectl delete -f samples/update-workspace-permission-job.yaml
 ```
 
 ## Load Balancer Service
