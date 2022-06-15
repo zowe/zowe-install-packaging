@@ -1,0 +1,4 @@
+resources:
+  - discovery-route.yaml
+  - gateway-route.yaml
+  - zowe-role-binding.yaml

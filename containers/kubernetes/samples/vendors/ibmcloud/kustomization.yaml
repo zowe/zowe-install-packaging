@@ -1,0 +1,4 @@
+resources:
+  - discovery-service-lb.yaml
+  - gateway-service-lb.yaml
+  - workspace-pvc.yaml
