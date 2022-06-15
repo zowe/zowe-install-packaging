@@ -18,18 +18,9 @@ metadata:
     app.kubernetes.io/name: zowe
     app.kubernetes.io/instance: zowe
     app.kubernetes.io/managed-by: manual
-    # FIXME: follow this instruction https://cloud.ibm.com/docs/containers?topic=containers-file_storage#file_qs to setup storage
-    # Below are example values, you should modify to fit in your cluster
-    billingType: hourly
-    # You should be able to see this region in your browser URL address of your cluster.
-    # For example: https://cloud.ibm.com/kubernetes/clusters/<cluster-id>/overview?region=us-south&resourceGroup=<resource-group-id>
-    region: us-south
-    # You should be able to see this zone in your cluster home information page (above url)
-    zone: dal12
 spec:
   # FIXME: StorageClass should be predefined by Kubernetes admin
-  #        `ibmc-file-silver` is a predefined StorageClass created by IBM Cloud
-  storageClassName: ibmc-file-silver
+  storageClassName: azurefile
   accessModes:
     - ReadWriteMany
   resources:
