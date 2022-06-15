@@ -35,7 +35,7 @@ describe('test explorer(s) api docs', function() {
     expect(res.status).to.equal(HTTP_STATUS.SUCCESS);
     expect(res.headers).to.have.property('content-type');
     expect(res.headers['content-type']).to.equal('application/json');
-    expect(res.data).to.have.property('swagger');
+    expect(res.data).to.have.property('openapi');
   });
 
   it('should be able to access datasets swagger json', async function() {
@@ -47,7 +47,7 @@ describe('test explorer(s) api docs', function() {
     expect(res.status).to.equal(HTTP_STATUS.SUCCESS);
     expect(res.headers).to.have.property('content-type');
     expect(res.headers['content-type']).to.equal('application/json');
-    expect(res.data).to.have.property('swagger');
+    expect(res.data).to.have.property('openapi');
   });
 
   it('should be able to access unixfiles swagger json', async function() {
@@ -59,6 +59,6 @@ describe('test explorer(s) api docs', function() {
     expect(res.status).to.equal(HTTP_STATUS.SUCCESS);
     expect(res.headers).to.have.property('content-type');
     expect(res.headers['content-type']).to.equal('application/json');
-    expect(res.data).to.have.property('swagger');
+    expect(res.data).to.have.property('openapi');
   });
 });
