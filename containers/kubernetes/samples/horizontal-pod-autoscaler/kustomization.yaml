@@ -1,0 +1,8 @@
+resources:
+  - api-catalog-hpa.yaml
+  - app-server-hpa.yaml
+  - caching-hpa.yaml
+  - discovery-hpa.yaml
+  - files-api-hpa.yaml
+  - gateway-hpa.yaml
+  - jobs-api-hpa.yaml

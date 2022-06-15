@@ -1,0 +1,23 @@
+# Adds namespace to all resources.
+namespace: zowe
+
+resources:
+  - ./common/
+  - ./samples/workspace-pvc.yaml
+  - ./samples/api-catalog-service.yaml 
+  - ./workloads/
+
+  # Comment out these 2 lines if you are NOT using LoadBalancer services
+  - ./samples/discovery-service-lb.yaml
+  - ./samples/gateway-service-lb.yaml
+
+  # Uncomment these 2 lines if you are using NodePort services
+  # - ./samples/discovery-service-np.yaml
+  # - ./samples/gateway-service-np.yaml
+
+  # Uncomment below line if you persistent volume requires permission initialization
+  # - ../kubernetes/samples/update-workspace-permission-job.yaml
+
+# Labels to add to all resources and selectors.
+commonLabels:
+  app.kubernetes.io/managed-by: kustomization

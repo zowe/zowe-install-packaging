@@ -1,0 +1,82 @@
+# Adds namespace to all resources.
+namespace: zowe
+
+# Labels to add to all resources and selectors.
+commonLabels:
+  app.kubernetes.io/name: zowe
+  app.kubernetes.io/instance: zowe
+  app.kubernetes.io/managed-by: kustomization
+
+resources:
+  # include base
+  - ../kubernetes/
+
+  # Uncomment below line if you want to define HorizontalPodAutoscaler
+  # - ../kubernetes/samples/horizontal-pod-autoscaler/
+
+  # Uncomment below line if you want to define PodDisruptionBudget
+  # - ../kubernetes/samples/pod-disruption-budget/
+
+  # Uncomment below line if you want to define NetworkPolicy
+  # - ../kubernetes/samples/network-policy/
+
+configMapGenerator:
+- name: zowe-config
+  files:
+    - zowe.yaml
+
+secretGenerator:
+- name: zowe-certificates-secret
+  type: Opaque
+  files:
+    # Please note file name must keep same as showing below
+    - ./keystore/keystore.p12
+    - ./keystore/truststore.p12
+    - ./keystore/keystore.key
+    - ./keystore/keystore.cer
+    - ./keystore/ca.cer
+
+patches:
+  # FIXME:
+  # customize this patch with your own StorageClass name
+  - patch: |-
+      - op: replace
+        path: /spec/storageClassName
+        value: default
+    target:
+      version: v1
+      kind: PersistentVolumeClaim
+      name: zowe-workspace-pvc
+
+  # FIXME:
+  # customize this patch with your own z/OS system hostname to unblock traffic
+  - patch: |-
+      - op: replace
+        path: /spec/egress/2/to/0/ipBlock/cidr
+        value: 12.34.56.78/32
+    target:
+      version: v1
+      kind: NetworkPolicy
+      name: zowe-network-policy
+
+  # FIXME:
+  # Example to patch discovery replicas
+  - patch: |-
+      - op: replace
+        path: /spec/replicas
+        value: 2
+    target:
+      version: v1
+      kind: StatefulSet
+      name: discovery
+
+  # FIXME:
+  # Example to patch gateway replicas
+  - patch: |-
+      - op: replace
+        path: /spec/replicas
+        value: 2
+    target:
+      version: v1
+      kind: Deployment
+      name: gateway

@@ -1,0 +1,13 @@
+resources:
+  - api-catalog-deployment.yaml
+  - app-server-deployment.yaml
+  - caching-deployment.yaml
+  - cleanup-static-definitions-cronjob.yaml
+  - discovery-statefulset.yaml
+  - explorer-ip-job.yaml
+  - explorer-jes-job.yaml
+  - explorer-mvs-job.yaml
+  - explorer-uss-job.yaml
+  - files-api-deployment.yaml
+  - gateway-deployment.yaml
+  - jobs-api-deployment.yaml

@@ -1,0 +1,243 @@
+################################################################################
+# This program and the accompanying materials are made available under the terms of the
+# Eclipse Public License v2.0 which accompanies this distribution, and is available at
+# https://www.eclipse.org/legal/epl-v20.html
+#
+# SPDX-License-Identifier: EPL-2.0
+#
+# Copyright Contributors to the Zowe Project.
+################################################################################
+
+#===============================================================================
+# This is a YAML configuration file for Zowe instance.
+#
+# YAML is a human-friendly data serialization language for all programming languages.
+# To learn more about YAML specifications, please check https://yaml.org/.
+#
+# To learn more details about the entries, please check https://docs.zowe.org/.
+#
+# For first time users, or for the most common use cases, please pay more
+# attention on the entries marked with "**COMMONLY_CUSTOMIZED**".
+#
+# If you modify any settings listed in "zwe init --help" command, you may need to
+# re-run "zwe init" command to make them take effect.
+#===============================================================================
+
+#-------------------------------------------------------------------------------
+# Zowe global configurations
+#
+# This section includes Zowe setup information used by `zwe install` and
+# `zwe init` command, as well as default configurations for Zowe runtime.
+#-------------------------------------------------------------------------------
+zowe:
+
+  # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+  # Zowe runtime (root) directory
+  runtimeDirectory: /home/zowe/runtime
+
+  # Where to store runtime logs
+  logDirectory: /home/zowe/instance/logs
+
+  # Zowe runtime workspace directory
+  workspaceDirectory: /home/zowe/instance/workspace
+
+  # Where extensions are installed
+  extensionDirectory: /home/zowe/extensions
+
+  # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+  # This is an ID you use to separate multiple Zowe installs when determining
+  # resource names used in RBAC authorization checks such as dataservices with RBAC
+  # expects this ID in SAF resources
+  rbacProfileIdentifier: "1"
+
+  # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+  # This is an ID that can be used by servers that distinguish their cookies from unrelated Zowe installs,
+  # for purposes such as to allow multiple copies of Zowe to be used within the same client
+  cookieIdentifier: "1"
+
+  # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+  # You can list your external domains how you want to access Zowe.
+  # This should be the domain list you would like to put into your web browser
+  # address bar.
+  externalDomains:
+    # FIXME:
+    - <kubernetes-domain-name-for-gateway>
+
+  # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+  # This is the port you use to access Zowe Gateway from your web browser.
+  #
+  # In many use cases, this should be same as `components.gateway.port`. But in
+  # some use cases, like containerization, this port could be different.
+  externalPort: 7554
+
+  # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+  # FIXME:
+  # You can un-comment and define any extra environment variables as key/value
+  # pairs here.
+  environments:
+    ZWED_SSH_PORT: 22
+    ZWED_TN3270_PORT: 23
+    ZWED_agent_host: <zos-host>
+    ZWED_agent_https_port: 7557
+    ZOWE_ZLUX_TELNET_HOST: <zos-host>
+    ZOWE_ZLUX_SSH_HOST: <zos-host>
+
+  # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+  # Enable debug mode for zowe launch scripts
+  launchScript:
+    # set to "debug" or "trace" to display extra debug information
+    logLevel: ""
+
+  # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+  # Default Zowe certificate
+  #
+  # **NOTE**: these fields can be updated automatically if you pass
+  # `--update-config` to `zwe init` command. The generated value will base on
+  # your setup in `zowe.setup.certificate` section.
+  certificate:
+    keystore:
+      type: PKCS12
+      file: /home/zowe/keystore/keystore.p12
+      password: password
+      alias: localhost
+    truststore:
+      type: PKCS12
+      file: /home/zowe/keystore/truststore.p12
+      password: password
+    pem:
+      key: /home/zowe/keystore/keystore.key
+      certificate: /home/zowe/keystore/keystore.cer
+      certificateAuthorities: /home/zowe/keystore/ca.cer
+
+  # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+  # FIXME:
+  # How we want to verify SSL certificates of services. Valid values are:
+  # - STRICT:    will validate if the certificate is trusted in our trust store and
+  #              if the certificate Command Name and Subject Alternative Name (SAN)
+  #              is validate. This is recommended for the best security.
+  # - NONSTRICT: will validate if the certificate is trusted in our trust store.
+  #              This mode does not validate certificate Common Name and Subject
+  #              Alternative Name (SAN).
+  # - DISABLED:  disable certificate validation. This is NOT recommended for
+  #              security
+  verifyCertificates: STRICT
+
+#-------------------------------------------------------------------------------
+# z/OSMF configuration
+#
+# If your Zowe instance is configured to use z/OSMF for authentication or other
+# features. You need to define how to access your z/OSMF instance.
+#-------------------------------------------------------------------------------
+zOSMF:
+  # FIXME:
+  # host name of your z/OSMF instance
+  host: <zos-host>
+  # FIXME:
+  port: 443
+  applId: IZUDFLT
+
+
+#-------------------------------------------------------------------------------
+# Zowe components default configurations
+#
+# This section includes default configurations for all Zowe components installed
+# on the Zowe instance.
+#
+# Every component should define their own section under `components` with their
+# component ID.
+#
+# For each component, they can always have "enabled" property and "certificate"
+# property. More configurations for each component can be found in component
+# manifest file.
+#-------------------------------------------------------------------------------
+components:
+
+  # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+  gateway:
+    enabled: true
+    port: 7554
+    debug: false
+
+    apiml:
+      security:
+        auth:
+          provider: zosmf
+          zosmf:
+            jwtAutoconfiguration: auto
+            serviceId: zosmf
+
+  # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+  metrics-service:
+    enabled: false
+    port: 7551
+    debug: false
+
+  # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+  api-catalog:
+    enabled: true
+    port: 7552
+    debug: false
+
+  # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+  discovery:
+    enabled: true
+    port: 7553
+    debug: false
+    # Define this value to match your number of Discovery StatefulSet if you are running containerized Zowe
+    replicas: 1
+
+  # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+  caching-service:
+    enabled: true
+    port: 7555
+    debug: false
+
+    storage:
+      evictionStrategy: reject
+      # can be inMemory, VSAM, redis or infinispan
+      mode: inMemory
+      size: 10000
+
+  # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+  app-server:
+    enabled: true
+    port: 7556
+
+  # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+  zss:
+    enabled: true
+    port: 7557
+    crossMemoryServerName: ZWESIS_STD
+    tls: true
+    agent:
+      jwt:
+        fallback: true
+
+  # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+  jobs-api:
+    enabled: true
+    debug: false
+    port: 8545
+
+  # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+  files-api:
+    enabled: true
+    debug: false
+    port: 8547
+
+  # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+  explorer-jes:
+    enabled: true
+
+  # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+  explorer-mvs:
+    enabled: true
+
+  # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+  explorer-uss:
+    enabled: true
+
+  # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+  # Each extension can have dedicated definition similar to core components.
+  # my-extension:
+  #   enabled: true

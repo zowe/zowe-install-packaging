@@ -1,0 +1,8 @@
+resources:
+  - api-catalog-pdb.yaml
+  - app-server-pdb.yaml
+  - caching-pdb.yaml
+  - discovery-pdb.yaml
+  - files-api-pdb.yaml
+  - gateway-pdb.yaml
+  - jobs-api-pdb.yaml

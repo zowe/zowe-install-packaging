@@ -1,0 +1,3 @@
+resources:
+  - zowe-ns.yaml
+  - zowe-sa.yaml
