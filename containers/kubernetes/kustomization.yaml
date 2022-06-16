@@ -1,22 +1,14 @@
 # Adds namespace to all resources.
 namespace: zowe
 
+# Please note these resources must be manually customized and added in overlay
+# - Zowe ConfigMap and Secret
+# - gateway/discovery Services
 resources:
   - ./common/
-  - ./samples/workspace-pvc.yaml
-  - ./samples/api-catalog-service.yaml 
+  - ./samples/persistent-volume-claim/
+  - ./samples/service/
   - ./workloads/
-
-  # Comment out these 2 lines if you are NOT using LoadBalancer services
-  - ./samples/discovery-service-lb.yaml
-  - ./samples/gateway-service-lb.yaml
-
-  # Uncomment these 2 lines if you are using NodePort services
-  # - ./samples/discovery-service-np.yaml
-  # - ./samples/gateway-service-np.yaml
-
-  # Uncomment below line if you persistent volume requires permission initialization
-  # - ../kubernetes/samples/update-workspace-permission-job.yaml
 
 # Labels to add to all resources and selectors.
 commonLabels:

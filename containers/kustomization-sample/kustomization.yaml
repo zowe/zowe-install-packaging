@@ -11,6 +11,15 @@ resources:
   # include base
   - ../kubernetes/
 
+  # Comment out below line if you are NOT using LoadBalancer services
+  - ../kubernetes/samples/service/load-balancer/
+
+  # Uncomment below line if you are using NodePort services
+  # - ../kubernetes/samples/service/node-port/
+
+  # Uncomment below line if you persistent volume requires permission initialization
+  # - ../kubernetes/samples/fixes/workspace-permission/
+
   # Uncomment below line if you want to define HorizontalPodAutoscaler
   # - ../kubernetes/samples/horizontal-pod-autoscaler/
 
@@ -19,6 +28,12 @@ resources:
 
   # Uncomment below line if you want to define NetworkPolicy
   # - ../kubernetes/samples/network-policy/
+
+  # Uncomment below line is you are using OpenShift
+  # - ../kubernetes/samples/vendors/openshift/
+
+  # Uncomment below line is you are using bare-metal Kubernetes and requires to define Ingress manually
+  # - ../kubernetes/samples/vendors/bare-metal/
 
 configMapGenerator:
 - name: zowe-config
@@ -42,41 +57,92 @@ patches:
   - patch: |-
       - op: replace
         path: /spec/storageClassName
-        value: default
+        value: standard
     target:
       version: v1
       kind: PersistentVolumeClaim
       name: zowe-workspace-pvc
 
-  # FIXME:
-  # customize this patch with your own z/OS system hostname to unblock traffic
-  - patch: |-
-      - op: replace
-        path: /spec/egress/2/to/0/ipBlock/cidr
-        value: 12.34.56.78/32
-    target:
-      version: v1
-      kind: NetworkPolicy
-      name: zowe-network-policy
+  # # customize this patch with your own z/OS system hostname to unblock traffic
+  # - patch: |-
+  #     - op: replace
+  #       path: /spec/egress/2/to/0/ipBlock/cidr
+  #       value: 12.34.56.78/32
+  #     - op: replace
+  #       path: /spec/egress/2/ports/0/port
+  #       value: 10443
+  #     - op: replace
+  #       path: /spec/egress/2/ports/2/port
+  #       value: 1023
+  #   target:
+  #     version: v1
+  #     kind: NetworkPolicy
+  #     name: zowe-network-policy
 
-  # FIXME:
-  # Example to patch discovery replicas
-  - patch: |-
-      - op: replace
-        path: /spec/replicas
-        value: 2
-    target:
-      version: v1
-      kind: StatefulSet
-      name: discovery
+  # # Example to patch discovery replicas
+  # - patch: |-
+  #     - op: replace
+  #       path: /spec/replicas
+  #       value: 1
+  #   target:
+  #     version: v1
+  #     kind: StatefulSet
+  #     name: discovery
 
-  # FIXME:
-  # Example to patch gateway replicas
-  - patch: |-
-      - op: replace
-        path: /spec/replicas
-        value: 2
-    target:
-      version: v1
-      kind: Deployment
-      name: gateway
+  # # Example to patch gateway replicas
+  # - patch: |-
+  #     - op: replace
+  #       path: /spec/replicas
+  #       value: 1
+  #   target:
+  #     version: v1
+  #     kind: Deployment
+  #     name: gateway
+
+  # # customize below values if you are using IBM Cloud
+  # - patch: |-
+  #     - op: add
+  #       path: /metadata/labels/billingType
+  #       value: hourly
+  #     - op: add
+  #       path: /metadata/labels/region
+  #       value: us-east
+  #     - op: add
+  #       path: /metadata/labels/zone
+  #       value: wdc07
+  #   target:
+  #     version: v1
+  #     kind: PersistentVolumeClaim
+  #     name: zowe-workspace-pvc
+
+  # # customize below values if you are using IBM Cloud
+  # - patch: |-
+  #     - op: add
+  #       path: /metadata/annotations/service.kubernetes.io~1ibm-load-balancer-cloud-provider-ip-type
+  #       value: public
+  #     - op: add
+  #       path: /metadata/annotations/service.kubernetes.io~1ibm-load-balancer-cloud-provider-zone
+  #       value: wdc07
+  #     - op: add
+  #       path: /metadata/annotations/service.kubernetes.io~1ibm-load-balancer-cloud-provider-vlan
+  #       value: "3234046"
+  #   target:
+  #     version: v1
+  #     kind: Service
+  #     name: gateway-service
+
+  # # customize below values if you are using IBM Cloud
+  # - patch: |-
+  #     - op: add
+  #       path: /metadata/annotations/service.kubernetes.io~1ibm-load-balancer-cloud-provider-ip-type
+  #       value: public
+  #     - op: add
+  #       path: /metadata/annotations/service.kubernetes.io~1ibm-load-balancer-cloud-provider-zone
+  #       value: wdc07
+  #     - op: add
+  #       path: /metadata/annotations/service.kubernetes.io~1ibm-load-balancer-cloud-provider-vlan
+  #       value: "3234046"
+  #   target:
+  #     version: v1
+  #     kind: Service
+  #     name: discovery-service

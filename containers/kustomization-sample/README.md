@@ -24,6 +24,6 @@ Read through `kustomization.yaml` file and make customization to your desired st
 
 Run `kubectl kustomize ./` to review the generated Kubernetes manifest files.
 
-## Apply to your cluster
+## Apply and delete to your Zowe cluster
 
-Run `kubectl apply -k ./` to apply.
+Run `kubectl apply -k ./` to apply and run `kubectl delete -k ./` to delete.

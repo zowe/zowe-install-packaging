@@ -1,0 +1,3 @@
+resources:
+  - discovery-service-np.yaml
+  - gateway-service-np.yaml
