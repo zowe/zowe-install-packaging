@@ -152,7 +152,7 @@
       "componentGroup": "Zowe API Mediation Layer",
       "entries": [{
         "repository": "api-layer",
-        "tag": "v1",
+        "tag": "v1.x.x",
         "destinations": ["Zowe PAX"]
       }]
     }, {
