@@ -1,1 +1,15 @@
-""
+{
+  "lockAcquiredTime": "Wed Jun 22 2022 19:12:57 GMT+0000 (Coordinated Universal Time)",
+  "uid": "1655925177085002591",
+  "repository": {
+    "owner": "zowe",
+    "repo": "zowe-install-packaging"
+  },
+  "branch": "users/tom/remove-jenkinsfile",
+  "workflow": "Zowe CICD Integration Tests",
+  "job": "cicd-test",
+  "actor": "zowe-robot",
+  "runId": 2544554418,
+  "runNumber": 1208,
+  "link": "https://github.com/zowe/zowe-install-packaging/actions/runs/2544554418"
+}
