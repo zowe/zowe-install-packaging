@@ -97,7 +97,7 @@
       "exclusions": ["*PR*.zip"]
     },
     "org.zowe.apiml.sdk.common-java-lib-package": {
-      "version": "~1.21.3-SNAPSHOT",
+      "version": "~2.0.1-SNAPSHOT",
       "artifact": "common-java-lib-*.zip",
       "exclusions": ["*PR*.zip"]
     },
