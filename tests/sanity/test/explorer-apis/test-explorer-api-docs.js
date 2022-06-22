@@ -41,7 +41,7 @@ describe('test explorer(s) api docs', function() {
 
     const req = {
       method: 'get',
-      url: '/jobs/v1',
+      url: '/jobs',
       auth: {
         username,
         password,
@@ -61,7 +61,7 @@ describe('test explorer(s) api docs', function() {
         expect(res.status).to.equal(200);
         expect(res.headers).to.have.property('content-type');
         expect(res.headers['content-type']).to.equal('application/json');
-        expect(res.data).to.have.property('swagger');
+        expect(res.data).to.have.property('openapi');
       });
   });
 
@@ -70,7 +70,7 @@ describe('test explorer(s) api docs', function() {
 
     const req = {
       method: 'get',
-      url: '/datasets/v1',
+      url: '/datasets',
       auth: {
         username,
         password,
@@ -90,7 +90,7 @@ describe('test explorer(s) api docs', function() {
         expect(res.status).to.equal(200);
         expect(res.headers).to.have.property('content-type');
         expect(res.headers['content-type']).to.equal('application/json');
-        expect(res.data).to.have.property('swagger');
+        expect(res.data).to.have.property('openapi');
       });
   });
 
@@ -99,7 +99,7 @@ describe('test explorer(s) api docs', function() {
 
     const req = {
       method: 'get',
-      url: '/unixfiles/v1',
+      url: '/unixfiles',
       auth: {
         username,
         password,
@@ -119,7 +119,7 @@ describe('test explorer(s) api docs', function() {
         expect(res.status).to.equal(200);
         expect(res.headers).to.have.property('content-type');
         expect(res.headers['content-type']).to.equal('application/json');
-        expect(res.data).to.have.property('swagger');
+        expect(res.data).to.have.property('openapi');
       });
   });
 

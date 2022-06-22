@@ -33,7 +33,8 @@ ADD_WORKFLOW_JSON='{"workflowName":"'$PTF_WF_NAME'",
 {"name":"DISTRIBUTION","value":"'$DZONE'"},
 {"name":"PTF1","value":"'$PTF1'"},
 {"name":"PTF2","value":"'$PTF2'"},
-{"name":"PTFNR","value":"'$PTFNR'"}]}'
+{"name":"PTFNR","value":"'$PTFNR'"},
+{"name":"csivol","value":"'$VOLUME'"},]}'
 
 cd workflows
 

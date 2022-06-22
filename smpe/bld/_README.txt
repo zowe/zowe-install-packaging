@@ -1,7 +1,14 @@
 Table of contents
 -----------------
+* New FMID
+* Add RELFILE to build
+* Add product data set to build
 * Add product member to build
-* Add SMPE member to build
+* Add SMPE-only member/file to build
+* Remove RELFILE
+* Remove product data set to build
+* Remove product member from build
+* Remove SMPE-only member/file from build
 * Flow for SMP/E packaging build
 * Additional tools
 * FMID (base) build
@@ -10,16 +17,151 @@ Table of contents
 * APAR (service) build
 * SMP/E terminology
 
+New FMID
+--------
+1. The Program Directory (AZWExxx.htm) must be updated by an IBM-employed
+   build engineer. This because automated processing by IBM tooling
+   requires a specific format, which might have changed since the last
+   update.
+Note: The program directory holds allocation and FTP file sizes, so the
+      final update should happend just before code freeze to ensure we
+      have the correct sizes.
+2. Add previous FMID to SUP and DELETE statements in smpe/bld/SMPMCS.txt
+Note: SUP should only be updated if most products depending on the
+      previous FMID will continue to work with the new FMID. Do NOT SUP
+      the previous FMID if the new FMID breaks most dependent products.
+++VER(Z038) /* zOS */
+  SUP(AZWE001)
+  DELETE(AZWE001)
+3. remove select files from smpe/bld/service
+   - apar-bucket.txt
+   - ptf-bucket.txt
+   - promoted-apar.txt
+   - promoted-close.txt
+   - promoted-hold.txt
+   - promoted-ptf.txt
+3. Notify an IBM-employed build engineer to update the IBM processes
+
+Add RELFILE to build
+--------------------
+TODO
+
+Add product data set to build
+-----------------------------
+Note: Build currently does not support empty data sets, so one or more
+      members must be added also
+1. Update community build to create dat set during install.
+2. Add SZWExxxx data set alloction to ALLOCT PROC in
+   workflows/templates/smpe-install/ZWE3ALOC.vtl (alphabetical order)
+   Note: Allocation details must match those from community install
+//SZWEEXEC DD SPACE=(TRK,(15,5,30)),
+//            UNIT=SYSALLDA,
+#if( $tvol and $tvol != "" and $tvol != '#tvol')
+//            VOL=SER=&TVOL,
+#end
+#if($ibmTemplate == 'YES')
+//*           VOL=SER=&TVOL,
+#end
+#if( $tsclass and $tsclass != "" and $tsclass != '#tsclass')
+//            STORCLAS=${tsclass},
+#end
+#if( $tdclass and $tdclass != "" and $tdclass != '#tdclass')
+//            DATACLAS=${tdclass},
+#end
+#if( $tmclass and $tmclass != "" and $tmclass != '#tmclass')
+//            MGMTCLAS=${tmclass},
+#end
+//            DISP=(NEW,&DSP),
+//            DSNTYPE=LIBRARY,
+//            RECFM=FB,
+//            LRECL=80,
+//            BLKSIZE=0,
+//            DSN=&THLQ..SZWEEXEC
+//*
+3. If data set DCB data matches an existing AZWEyyyy data set, we will
+   reuse the AZWEyyyy dat set as DLIB. Otherwise, add AZWExxxx data set
+   allocation to ALLOCD PROC in
+   workflows/templates/smpe-install/ZWE3ALOC.vtl (alphabetical order)
+4. Add SZWExxxx DDDEF definition to DDDEFTGT step in
+   workflows/templates/smpe-install/ZWE6DDEF.vtl (alphabetical order)
+    ADD DDDEF (SZWEEXEC)
+        DATASET(&THLQ..SZWEEXEC)
+        UNIT(SYSALLDA)
+#if( $tvol and $tvol != "" and $tvol != '#tvol')
+        VOLUME(&TVOL)
+#end
+#if($ibmTemplate == 'YES')
+     /* VOLUME(&TVOL) */
+#end
+        WAITFORDSN
+        SHR .
+5. If AZWExxxx allocation was added to ZWE3ALOC, add AZWExxxx DDDEF
+   definition to DDDEFTGT and DDDEFDLB steps in
+   workflows/templates/smpe-install/ZWE6DDEF.vtl (alphabetical order)
+6. Update function _relFiles in smpe/bld/smpe-fmid.sh to copy SZWExxxx
+   members to matching RELFILE
+dd="S${prefix}EXEC"
+sed -n '/^'$dd' /p' $partsX > $copiedX.list         # no error trapping
+_cmd --save $copiedX cat $copiedX.list
+list=$(awk '{print $2}' $copiedX.list)              # only member names
+_copyMvsMvs "${mvsI}.$dd" "${mcsHlq}.F2" "FB" "80" "8800" "PO" "5,5"
+7. Create HOLD information (for PRE-APPLY stage) to inform the sysprog
+   to allocate the SZWExxxx data set and create a DDDEF for it. (Same
+   for AZWExxxx if applicable.)
+   Provide a sample JCL in ++HOLD, but remember that you can NOT use /*
+   in ++HOLD (thus also no //*).
+****************************************************************
+* Affected function: SMP/E install                             *
+****************************************************************
+* Description: add DDDEF to CSI.                               *
+****************************************************************
+* Timing: pre-APPLY                                            *
+****************************************************************
+* Part: n/a                                                    *
+****************************************************************
+Applying this maintenance requires the definition of a new
+DDDEF in your CSI.
+You can use the following JCL to update an existing CSI.
+Substitute the #... placeholders with values that match your
+site requirements.
+
+//SZWEEXEC JOB
+//         EXPORT SYMLIST=(TZON,TRGT)
+//         SET TRGT=#target_hlq
+//         SET SMPE=#globalcsi_hlq
+//         SET TZON=#target_zone
+//UCLIN    EXEC PGM=GIMSMP,REGION=0M,COND=(4,LT)
+//SZWEEXEC DD SPACE=(TRK,(15,5,30)),
+//            UNIT=SYSALLDA,
+//            DISP=(MOD,CATLG),
+//            DSNTYPE=LIBRARY,
+//            RECFM=FB,
+//            LRECL=80,
+//            BLKSIZE=0,
+//            DSN=&TRGT..SZWEEXEC
+//SMPCSI   DD DISP=OLD,DSN=&SMPE..CSI
+//SMPCNTL  DD *,SYMBOLS=JCLONLY
+   SET   BDY(&TZON).
+   UCLIN.
+   ADD DDDEF (SZWEEXEC)
+       DATASET(&TRGT..SZWEEXEC)
+       UNIT(SYSALLDA)
+       WAITFORDSN
+       SHR .
+   ENDUCL.
+8. Contact documentation team to update the Program Directory
+9. Notify an IBM-employed build engineer to update the IBM processes
+
 Add product member to build
 ---------------------------
 1. Add member to files/..., e.g. files/jcl/ZWENOSEC.jcl
-2. Add member definition to smpe/bld/SMPMCS.txt, e.g.
+2. Update community build to install member
+3. Add member definition to smpe/bld/SMPMCS.txt, e.g.
 ++SAMP(ZWENOSEC)     SYSLIB(SZWESAMP) DISTLIB(AZWESAMP) RELFILE(2) .
-3. Update scripts/zowe-install-MVS.sh, e.g.
-members='ZWESVSTC.jcl ZWESECUR.jcl ZWENOSEC.jcl'
+4. Notify an IBM-employed build engineer to update the IBM processes
 
-Add SMPE member to build
-------------------------
+Add SMPE-only member/file to build
+----------------------------------
 1. Add member to smpe/pax/..., e.g. smpe/pax/USS/ZWEYML01.yml
 2. Add member definition to smpe/bld/SMPMCS.txt, e.g.
 ++HFS(ZWEYML01)      SYSLIB(SZWEZFS ) DISTLIB(AZWEZFS ) RELFILE(4)
@@ -28,9 +170,45 @@ Add SMPE member to build
    TEXT              PARM(PATHMODE(0,7,5,5)) .
 3. Update smpe/pax/zowe-install-smpe.sh, e.g.
 list="$list USS/ZWEYML01.yml"
-4. If this a USS file, ensure the directory is listed in 
+4. If this a USS file, ensure the directory is listed in
    smpe/pax/USS/ZWESHMKD.sh, e.g.
 _dirs='../workflow'
+5. Notify an IBM-employed build engineer to update the IBM processes
+
+Remove RELFILE
+--------------
+Note: Can ONLY be done when creating a new FMID
+1. Reverse actions done in "Add RELFILE to build"
+2. Contact documentation team to update the Program Directory
+3. Notify an IBM-employed build engineer to update the IBM processes
+
+Remove product data set from build
+----------------------------------
+Note: Can ONLY be done when creating a new FMID
+1. Reverse actions done in "Add product data set to build"
+2. Contact documentation team to update the Program Directory
+3. Notify an IBM-employed build engineer to update the IBM processes
+
+Remove product member from build
+--------------------------------
+Advised: Replace member content with a note saying it is obsolete, and
+         then let it be for this FMID. Remove in next FMID.
+Actual removal:
+1. Ensure this is NOT the last member of a data set. If it is, replace
+   member content with a note saying it is obsolete, and then let it be
+   for this FMID. Remove in next FMID.
+2. Add DELETE keyword to member definiton in smpe/bld/SMPMCS.txt
++SAMP(ZWENOSSO) SYSLIB(SZWESAMP) DISTLIB(AZWESAMP) RELFILE(2) DELETE .
+3. Notify an IBM-employed build engineer to update the IBM processes
+4. WAIT UNTIL AFTER THE PTF WITH THIS UPDATE SHIPPED
+5. Remove member from files/...
+6. Update community build to remove member from install
+7. Remove member definiton from smpe/bld/SMPMCS.txt
+8. Notify an IBM-employed build engineer to update the IBM processes
+
+Remove SMPE-only member/file from build
+---------------------------------------
+TODO
 
 Flow for SMP/E packaging build
 ------------------------------
@@ -94,6 +272,17 @@ exists in this branch, and the first non-comment line has an APAR number.
 An APAR-fix will never be published on zowe.org, but can be retrieved
 from Artifactory and provided to a customer that requires an SMP/E
 installable fix.
+
+Note: Security/integrity issues require special treatment, and are 
+      processed using a special APAR that has the sec/int flag set.
+      It is expected that each PTF will resolve one or more sec/int
+      issues. To simplify administration work, sec/int APARs are not
+      pulled from apar-bucket.txt and tracked in current-apar.txt, but
+      are added to a ptf definition in ptf-bucket.txt. Upon PTF
+      promotion, an IBM-employed build engineer will handle the special
+      treatment for the embedded sec/int APAR during the APAR closing 
+      process.
+
 Since an APAR-fix build requires updates to the zowe-install-packaging
 repository, the creation of an APAR-fix requires the assistance of a
 Zowe build engineer.

@@ -17,9 +17,9 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - uses: jfrog/setup-jfrog-cli@v1
+      - uses: jfrog/setup-jfrog-cli@v2
         env:
-          JF_ARTIFACTORY_1: ${{ secrets.JF_ARTIFACTORY_TOKEN }}
+          JF_ENV_1: ${{ secrets.JF_ARTIFACTORY_TOKEN }}
 
       - uses: zowe-actions/shared-actions/prepare-workflow@main
 
@@ -34,7 +34,7 @@ jobs:
 
       - uses: zowe-actions/shared-actions/docker-build-local@main
         with:
-          build-arg-list: ZOWE_BASE_IMAGE=latest-ubuntu
+          build-arg-list: ZOWE_BASE_IMAGE=0-ubuntu
         timeout-minutes: 5
 
       - name: Run Snyk to check Docker image for vulnerabilities
@@ -58,9 +58,9 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - uses: jfrog/setup-jfrog-cli@v1
+      - uses: jfrog/setup-jfrog-cli@v2
         env:
-          JF_ARTIFACTORY_1: ${{ secrets.JF_ARTIFACTORY_TOKEN }}
+          JF_ENV_1: ${{ secrets.JF_ARTIFACTORY_TOKEN }}
 
       - uses: zowe-actions/shared-actions/prepare-workflow@main
 
@@ -79,7 +79,7 @@ jobs:
           zlinux-ssh-user: ${{ secrets.ZLINUX_SSH_USER }}
           zlinux-ssh-key: ${{ secrets.ZLINUX_SSH_KEY }}
           zlinux-ssh-passphrase: ${{ secrets.ZLINUX_SSH_PASSPHRASE }}
-          build-arg-list: ZOWE_BASE_IMAGE=latest-ubuntu
+          build-arg-list: ZOWE_BASE_IMAGE=0-ubuntu
         timeout-minutes: 10
 
       - name: Run Snyk to check Docker image for vulnerabilities
@@ -106,9 +106,9 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - uses: jfrog/setup-jfrog-cli@v1
+      - uses: jfrog/setup-jfrog-cli@v2
         env:
-          JF_ARTIFACTORY_1: ${{ secrets.JF_ARTIFACTORY_TOKEN }}
+          JF_ENV_1: ${{ secrets.JF_ARTIFACTORY_TOKEN }}
 
       - uses: zowe-actions/shared-actions/prepare-workflow@main
 
@@ -131,9 +131,9 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - uses: jfrog/setup-jfrog-cli@v1
+      - uses: jfrog/setup-jfrog-cli@v2
         env:
-          JF_ARTIFACTORY_1: ${{ secrets.JF_ARTIFACTORY_TOKEN }}
+          JF_ENV_1: ${{ secrets.JF_ARTIFACTORY_TOKEN }}
 
       - uses: zowe-actions/shared-actions/prepare-workflow@main
 
@@ -151,7 +151,7 @@ jobs:
 
       - uses: zowe-actions/shared-actions/docker-build-local@main
         with:
-          build-arg-list: ZOWE_BASE_IMAGE=latest-ubi
+          build-arg-list: ZOWE_BASE_IMAGE=0-ubi
         timeout-minutes: 5
 
       - name: Run Snyk to check Docker image for vulnerabilities
@@ -175,9 +175,9 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - uses: jfrog/setup-jfrog-cli@v1
+      - uses: jfrog/setup-jfrog-cli@v2
         env:
-          JF_ARTIFACTORY_1: ${{ secrets.JF_ARTIFACTORY_TOKEN }}
+          JF_ENV_1: ${{ secrets.JF_ARTIFACTORY_TOKEN }}
 
       - uses: zowe-actions/shared-actions/prepare-workflow@main
 
@@ -199,7 +199,7 @@ jobs:
           redhat-registry: ${{ env.DEFAULT_REDHAT_DOCKER_REGISTRY }}
           redhat-registry-user: ${{ secrets.REDHAT_DEVELOPER_USER }}
           redhat-registry-password: ${{ secrets.REDHAT_DEVELOPER_PASSWORD }}
-          build-arg-list: ZOWE_BASE_IMAGE=latest-ubi
+          build-arg-list: ZOWE_BASE_IMAGE=0-ubi
         timeout-minutes: 10
 
       - name: Run Snyk to check Docker image for vulnerabilities
@@ -226,9 +226,9 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - uses: jfrog/setup-jfrog-cli@v1
+      - uses: jfrog/setup-jfrog-cli@v2
         env:
-          JF_ARTIFACTORY_1: ${{ secrets.JF_ARTIFACTORY_TOKEN }}
+          JF_ENV_1: ${{ secrets.JF_ARTIFACTORY_TOKEN }}
 
       - uses: zowe-actions/shared-actions/prepare-workflow@main
 

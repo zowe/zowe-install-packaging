@@ -1,16 +1,16 @@
-<?xml version="1.0" encoding="IBM-1047" standalone="yes"?>
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <workflow xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 <autoTakeOwnership>true</autoTakeOwnership>
 <workflowInfo>
         <workflowID scope="none">ZOWE_Mount</workflowID>
         <workflowDefaultName>ZOWE Mount Workflow</workflowDefaultName>
-        <workflowDescription>This workflow performs mount action of ZOWE zFS.</workflowDescription>
+        <workflowDescription>This workflow performs mount action of ZOWE zFS. DON'T RUN OUTSIDE PSWI.</workflowDescription>
         <workflowVersion>1.0</workflowVersion>
         <vendor>Open Mainframe Project</vendor>
         <Configuration>
             <productID>ZOWE</productID>
             <productName>ZOWE</productName>
-            <productVersion>1.24.0</productVersion>
+            <productVersion>###ZOWE_VERSION###</productVersion>
         </Configuration>
     </workflowInfo>
     <variable name="izud-datasets">
