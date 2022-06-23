@@ -3,20 +3,34 @@ name: Kubernetes IaC Scan
 on:
   push:
     branches:
-      - v2.x/staging 
-  pull_request:
-    types: [opened, synchronize]
+      - v2.x/master
+      - v2.x/staging
+  # pull_request:
+  #   types: [opened, synchronize]
+  workflow_dispatch:
+    inputs:
+      RANDOM_DISPATCH_EVENT_ID:
+        description: 'random dispatch event id'
+        required: false
+        type: string
 
 jobs:
+  display-dispatch-event-id:
+    if: github.event.inputs.RANDOM_DISPATCH_EVENT_ID != ''
+    runs-on: ubuntu-latest
+    steps:
+      - name: RANDOM_DISPATCH_EVENT_ID is ${{ github.event.inputs.RANDOM_DISPATCH_EVENT_ID }}
+        run: echo "prints random dispatch event id sent from workflow dispatch event"
+
   snyk:
     strategy:
       matrix:
         k8s-manifests:
         # we run 3 kinds as example: CronJob, Deployment, StatefulSet
         # all other Deployments should be similar
-        - workloads/instance-env/discovery-statefulset.yaml
-        - workloads/instance-env/cleanup-static-definitions-cronjob.yaml
-        - workloads/instance-env/gateway-deployment.yaml
+        - workloads/discovery-statefulset.yaml
+        - workloads/cleanup-static-definitions-cronjob.yaml
+        - workloads/gateway-deployment.yaml
         # try out other Kinds
         - samples/api-catalog-service.yaml
         - samples/gateway-service-ci.yaml

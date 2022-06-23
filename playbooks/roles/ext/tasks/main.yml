@@ -24,11 +24,9 @@
 - name: Install Zowe Extension
   import_role:
     name: zos
-    tasks_from: run_script
+    tasks_from: run_zwe
   vars:
-    script_chdir: "{{ zowe_root_dir }}/bin"
-    script_filename: ./zowe-install-component.sh
-    script_parameters: "-d \"{{ zowe_extension_dir }}\" -i \"{{ zowe_instance_dir }}\" -o \"{{ work_dir_remote }}/{{ zowe_extension_filename }}\" -l \"{{ zowe_install_logs_dir }}\""
+    parameters: "components install -o \"{{ work_dir_remote }}/{{ zowe_extension_filename }}\" -l \"{{ zowe_install_logs_dir }}\""
 
 # ============================================================================
 # Display logs
@@ -37,5 +35,5 @@
   ignore_errors: True
 
 - name: Show installation log
-  raw: find {{ zowe_install_logs_dir}} -name "zowe-install-component*.log" -type f | xargs -i sh -c 'echo ">>>>>>>>>>>>>>>>>>>>>>>> {} >>>>>>>>>>>>>>>>>>>>>>>" && cat {}'
+  raw: find {{ zowe_install_logs_dir}} -name "zwe-components-install*.log" -type f | xargs -i sh -c 'echo ">>>>>>>>>>>>>>>>>>>>>>>> {} >>>>>>>>>>>>>>>>>>>>>>>" && cat {}'
   ignore_errors: True

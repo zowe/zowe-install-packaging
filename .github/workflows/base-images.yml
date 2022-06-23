@@ -8,10 +8,21 @@ on:
         description: 'Set to "true" if we want to release the base images'
         required: false
         default: ''
+      RANDOM_DISPATCH_EVENT_ID:
+        description: 'random dispatch event id'
+        required: false
+        type: string
 env:
   IMAGE_BASE_DIR: containers/base
 
 jobs:
+  display-dispatch-event-id:
+    if: github.event.inputs.RANDOM_DISPATCH_EVENT_ID != ''
+    runs-on: ubuntu-latest
+    steps:
+      - name: RANDOM_DISPATCH_EVENT_ID is ${{ github.event.inputs.RANDOM_DISPATCH_EVENT_ID }}
+        run: echo "prints random dispatch event id sent from workflow dispatch event"
+
   build-ubuntu-amd64:
     runs-on: ubuntu-latest
     steps:

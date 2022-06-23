@@ -272,6 +272,17 @@ exists in this branch, and the first non-comment line has an APAR number.
 An APAR-fix will never be published on zowe.org, but can be retrieved
 from Artifactory and provided to a customer that requires an SMP/E
 installable fix.
+
+Note: Security/integrity issues require special treatment, and are 
+      processed using a special APAR that has the sec/int flag set.
+      It is expected that each PTF will resolve one or more sec/int
+      issues. To simplify administration work, sec/int APARs are not
+      pulled from apar-bucket.txt and tracked in current-apar.txt, but
+      are added to a ptf definition in ptf-bucket.txt. Upon PTF
+      promotion, an IBM-employed build engineer will handle the special
+      treatment for the embedded sec/int APAR during the APAR closing 
+      process.
+
 Since an APAR-fix build requires updates to the zowe-install-packaging
 repository, the creation of an APAR-fix requires the assistance of a
 Zowe build engineer.

@@ -6,11 +6,17 @@ metadata:
   labels:
     app.kubernetes.io/name: zowe
     app.kubernetes.io/instance: zowe
-    app.kubernetes.io/version: "2.0.0"
+    app.kubernetes.io/version: "2.1.0"
     app.kubernetes.io/component: debug
     app.kubernetes.io/part-of: debug
     app.kubernetes.io/managed-by: manual
 spec:
+  securityContext:
+    runAsUser: 20000
+    runAsGroup: 20000
+    fsGroup: 20000
+    runAsNonRoot: true
+  serviceAccountName: zowe-sa
   volumes:
     - name: tmp
       emptyDir: {}
@@ -31,8 +37,7 @@ spec:
         claimName: zowe-workspace-pvc
   containers:
     - name: debug
-      # image: zowe-docker-release.jfrog.io/ompzowe/zowe-launch-scripts:2-ubuntu
-      image: zowe-docker-snapshot.jfrog.io/ompzowe/zowe-launch-scripts:2.0.0-ubuntu.users-jack-v2-containerization
+      image: zowe-docker-snapshot.jfrog.io/ompzowe/zowe-launch-scripts:2.1.0-ubuntu.v2-x-staging
       imagePullPolicy: Always
       resources:
         requests:
@@ -44,6 +49,8 @@ spec:
       securityContext:
         readOnlyRootFilesystem: true
         allowPrivilegeEscalation: false
+        privileged: false
+        runAsNonRoot: true
         capabilities:
           drop:
             - all

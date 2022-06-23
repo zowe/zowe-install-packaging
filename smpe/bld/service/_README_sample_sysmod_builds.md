@@ -97,22 +97,22 @@ Once the FMID GA'd, ptf-bucket.txt is created and filled with PTF references. Th
 
 ### Create ptf-bucket.txt
 <pre>
-# format: PTF(s) – matching APAR(s)
-UO12345 UO43210 - IO12345 IO43210
-UO67890 UO98765 - IO67890 IO98765
+# format: PTF(s) – matching APAR(s) [sec/int APAR]
+UO12345 UO43210 - IO12345 IO43210   IO28865
+UO67890 UO98765 - IO67890 IO98765   IO28866
 </pre>
 ### Create apar-bucket.txt
 <pre>
 # format: APAR(s)
 IO19283 IO74650
-AO00001 AO00002
+IO00001 IO00002
 </pre>
 ### Header SYSMOD 1
 <pre>
 <strong><mark><font color='red'>++PTF(UO12345)</font></mark></strong></font color='red'> /* 5698-ZWE00-AZWE001 */ REWORK(2020013).
 ++VER(Z038) FMID(AZWE001)
   REQ(UO43210)
-  <strong><mark><font color='red'>SUP(AO12345,AO43210)</font></mark></strong>
+  <strong><mark><font color='red'>SUP(AO12345,AO28865,AO43210)</font></mark></strong>
  /*
   <strong><mark><font color='red'>PROBLEM DESCRIPTION(S):
     IO12345 -
@@ -138,6 +138,7 @@ AO00001 AO00002
 
   APARS FIXED:
     IO12345
+    IO28865
     IO43210
 
   SPECIAL CONDITIONS:
@@ -179,16 +180,16 @@ If a customer requires it, a Zowe build engineer can trigger an APAR build by up
 ### Update ptf-bucket.txt
 <pre>
 <strong><mark><font color='red'>IO19283 IO74650</font></mark></strong>
-# format: PTF(s) – matching APAR(s)
-UO12345 UO43210 - IO12345 IO43210
-UO67890 UO98765 - IO67890 IO98765
+# format: PTF(s) – matching APAR(s) [sec/int APAR]
+UO12345 UO43210 - IO12345 IO43210   IO28865
+UO67890 UO98765 - IO67890 IO98765   IO28866
 </pre>
 
 ### Update apar-bucket.txt
 <pre>
 # format: APAR(s)
 <strong><mark><font color='red'># IO19283 IO74650 - issue 123 - Jan 13, 2020</font></mark></strong>
-AO00001 AO00002
+IO00001 IO00002
 </pre>
 ### Header SYSMOD 1
 <pre>
@@ -218,9 +219,9 @@ After the build, ptf-bucket.txt must be restored (no more APAR reference), and c
 
 ### Final ptf-bucket.txt
 <pre>
-# format: PTF(s) – matching APAR(s)
-UO12345 UO43210 - IO12345 IO43210
-UO67890 UO98765 - IO67890 IO98765
+# format: PTF(s) – matching APAR(s) [sec/int APAR]
+UO12345 UO43210 - IO12345 IO43210   IO28865
+UO67890 UO98765 - IO67890 IO98765   IO28866
 </pre>
 ### Final current-apar.txt
 <pre>
@@ -235,7 +236,7 @@ The presence of current-apar.txt will cause all future builds to supersede the A
 ++PTF(UO12345) /* 5698-ZWE00-AZWE001 */ REWORK(2020013).
 ++VER(Z038) FMID(AZWE001)
   REQ(UO43210)
-  SUP(AO12345,<strong><mark><font color='red'>AO19283</font></mark></strong>,AO43210,<strong><mark><font color='red'>AO74650</font></mark></strong>)
+  SUP(AO12345,<strong><mark><font color='red'>AO19283</font></mark></strong>,AO28865,AO43210,<strong><mark><font color='red'>AO74650</font></mark></strong>)
  /*
   PROBLEM DESCRIPTION(S):
     IO12345 -
@@ -262,6 +263,7 @@ The presence of current-apar.txt will cause all future builds to supersede the A
   APARS FIXED:
     IO12345
     <strong><mark><font color='red'>IO19283</font></mark></strong>
+    IO28865
     IO43210
     <strong><mark><font color='red'>IO74650</font></mark></strong>
 
@@ -303,7 +305,7 @@ The staging branch is updated (using smpe.promote.sh) during the promote of a PT
 
 ### Update ptf-bucket.txt
 <pre>
-<strong><mark><font color='red'>#UO12345 UO43210 - IO12345 IO43210 - Mon Jan 13 16:27:24 EST 2020</font></mark></strong>
+<strong><mark><font color='red'>#UO12345 UO43210 - IO12345 IO43210   IO28865 - Mon Jan 13 16:27:24 EST 2020 - v1.8.0</font></mark></strong>
 UO67890 UO98765 - IO67890 IO98765
 </pre>
 ### Remove current-apar.txt
@@ -315,6 +317,7 @@ UO67890 UO98765 - IO67890 IO98765
 <pre>
 IO12345
 IO19283
+IO28865
 IO43210
 IO74650
 </pre>
@@ -385,7 +388,7 @@ The presence of promoted-\*.txt will cause all future builds to pick up the info
 <strong><mark><font color='red'>++PTF(UO67890)</font></mark></strong> /* 5698-ZWE00-AZWE001 */ REWORK(2020013).
 ++VER(Z038) FMID(AZWE001)
   REQ(UO98765)
-  <strong><mark><font color='red'>SUP(AO12345,AO19283,AO43210,</font></mark></strong>AO67890,<strong><mark><font color='red'>AO74650,</font></mark></strong>AO98765,<strong><mark><font color='red'>UO12345,UO43210)</font></mark></strong>
+  <strong><mark><font color='red'>SUP(AO12345,AO19283,AO28865,AO43210,</font></mark></strong>AO67890,<strong><mark><font color='red'>AO74650,</font></mark></strong>AO98765,<strong><mark><font color='red'>UO12345,UO43210)</font></mark></strong>
  /*
   PROBLEM DESCRIPTION(S):
     IO67890 -
@@ -398,7 +401,7 @@ The presence of promoted-\*.txt will cause all future builds to pick up the info
       ****************************************************************
       * RECOMMENDATION: Apply provided service                       *
       ****************************************************************
-      The Zowe community version was updated to 1.8.0.
+      The Zowe community version was updated to 1.9.0.
       This PTF provides the community changes in SMP/E format.
       Follow this link for more details on the community changes:
       https://docs.zowe.org/stable/
@@ -419,6 +422,7 @@ The presence of promoted-\*.txt will cause all future builds to pick up the info
     IO98765
     <strong><mark><font color='red'>IO12345
     IO19283
+    AO28865
     IO43210
     IO74650</font></mark></strong>
 
@@ -473,7 +477,7 @@ The presence of promoted-\*.txt will cause all future builds to pick up the info
 
   COMMENTS:
     COMMUNITY VERSION:
-      1.8.0
+      1.9.0
 
     GITHUB BRANCH:
       ptf (build 26)
@@ -536,10 +540,10 @@ This build is to show how APAR builds pick up the data of promoted PTFs in promo
 
 ### Update ptf-bucket.txt
 <pre>
-<strong><mark><font color='red'>AO00001 AO00002</font></mark></strong>
-# format: PTF(s) – matching APAR(s)
-#UO12345 UO43210 - IO12345 IO43210 - Mon Jan 13 16:27:24 EST 2020
-UO67890 UO98765 - IO67890 IO98765
+<strong><mark><font color='red'>IO00001 IO00002</font></mark></strong>
+# format: PTF(s) – matching APAR(s) [sec/int APAR]
+#UO12345 UO43210 - IO12345 IO43210   IO28865 - Mon Jan 13 16:27:24 EST 2020 - v1.8.0
+UO67890 UO98765 - IO67890 IO98765   IO28866
 </pre>
 ### Update apar-bucket.txt
 <pre>
@@ -566,7 +570,7 @@ before attempting to start the servers.
 <strong><mark><font color='red'>++APAR(AO00001)</font></mark></strong> /* 5698-ZWE00-AZWE001 */ REWORK(2020020). 
 ++VER(Z038) FMID(AZWE001)
   REQ(AO00002)
-  <strong><mark><font color='red'>PRE(AO12345,AO19283,AO43210,AO74650,UO12345,UO43210)</font></mark></strong>
+  <strong><mark><font color='red'>PRE(AO12345,AO19283,AO28865,AO43210,AO74650,UO12345,UO43210)</font></mark></strong>
 /*
   SPECIAL CONDITIONS:
     COPYRIGHT:
@@ -574,7 +578,7 @@ before attempting to start the servers.
 
   COMMENTS:
     COMMUNITY VERSION:
-      1.8.0
+      1.9.0
 
     GITHUB BRANCH:
       unknown (build unknown)
@@ -626,9 +630,9 @@ After the build, ptf-bucket.txt must be restored (no more APAR reference), and c
 
 ### Final ptf-bucket.txt
 <pre>
-# format: PTF(s) – matching APAR(s)
-#UO12345 UO43210 - IO12345 IO43210 - Mon Jan 13 16:27:24 EST 2020
-UO67890 UO98765 - IO67890 IO98765
+# format: PTF(s) – matching APAR(s) [sec/int APAR]
+#UO12345 UO43210 - IO12345 IO43210   AO28865 - Mon Jan 13 16:27:24 EST 2020 - v1.8.0
+UO67890 UO98765 - IO67890 IO98765   AO28866
 </pre>
 ### Final current-apar.txt
 <pre>
@@ -641,9 +645,9 @@ If required, a Zowe build engineer can trigger a USERMOD build instead of a PTF 
 
 ### Remove or update ptf-bucket.txt
 <pre>
-# format: PTF(s) – matching APAR(s)
-#UO12345 UO43210 - IO12345 IO43210 - Mon Jan 13 16:27:24 EST 2020
-<strong><mark><font color='red'>#UO67890 UO98765 - IO67890 IO98765 – temporary for usermod</font></mark></strong>
+# format: PTF(s) – matching APAR(s) [sec/int APAR]
+#UO12345 UO43210 - IO12345 IO43210   AO28865 - Mon Jan 13 16:27:24 EST 2020 - v1.8.0
+<strong><mark><font color='red'>#UO67890 UO98765 - IO67890 IO98765   IO28866 – temporary for usermod</font></mark></strong>
 </pre>
 ### Header SYSMOD 1
 <pre>
@@ -651,7 +655,7 @@ If required, a Zowe build engineer can trigger a USERMOD build instead of a PTF 
 ++VER(Z038) FMID(AZWE001)
   REQ(TMP0002)
   <strong><mark><font color='red'>SUP(AO00001,AO00002)</font></mark></strong>
-  PRE(AO12345,AO19283,AO43210,AO74650,UO12345,UO43210)
+  PRE(AO12345,AO19283,AO28865,AO43210,AO74650,UO12345,UO43210)
  /*
   SPECIAL CONDITIONS:
     COPYRIGHT:
@@ -659,7 +663,7 @@ If required, a Zowe build engineer can trigger a USERMOD build instead of a PTF 
 
   COMMENTS:
     COMMUNITY VERSION:
-      1.8.0
+      1.9.0
 
     GITHUB BRANCH:
       unknown (build unknown)
@@ -711,7 +715,7 @@ After the build, ptf-bucket.txt must be restored.
 
 ### Final ptf-bucket.txt
 <pre>
-# format: PTF(s) – matching APAR(s)
-#UO12345 UO43210 - IO12345 IO43210 - Mon Jan 13 16:27:24 EST 2020
-UO67890 UO98765 - IO67890 IO98765
+# format: PTF(s) – matching APAR(s) [sec/int APAR]
+#UO12345 UO43210 - IO12345 IO43210   AO28865 - Mon Jan 13 16:27:24 EST 2020 - v1.8.0
+UO67890 UO98765 - IO67890 IO98765   AO28866
 </pre>

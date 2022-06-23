@@ -2,20 +2,20 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: discovery-ingress
+  name: gateway-ingress
   namespace: zowe
   labels:
     app.kubernetes.io/name: zowe
     app.kubernetes.io/instance: zowe
-    app.kubernetes.io/version: "2.0.0"
-    app.kubernetes.io/component: discovery
+    app.kubernetes.io/version: "2.1.0"
+    app.kubernetes.io/component: gateway
     app.kubernetes.io/part-of: apiml
     app.kubernetes.io/managed-by: manual
   annotations:
     nginx.ingress.kubernetes.io/ssl-passthrough: "true"
 spec:
   rules:
-    # uncomment line 19&20 to fill in host, then comment out line 20
+    # uncomment line 19&20 to fill in host, then comment out line 21
     # - host: <fill in here>
     #   http:
     - http: #comment out this line if uncommenting line 19&20
@@ -24,6 +24,6 @@ spec:
             pathType: Prefix
             backend:
               service:
-                name: discovery-service
+                name: gateway-service
                 port:
-                  name: discovery-port
+                  name: gateway-port
