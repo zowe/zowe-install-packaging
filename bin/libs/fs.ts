@@ -86,6 +86,11 @@ export function cpr(from: string, to: string): void {
   shell.execSync('cp', `-r`, from, to);
 }
 
+export function rmrf(path: string): void {
+  shell.execSync('rm', `-rf`, path);
+}
+
+
 export function appendToFile(path:string, content:string):void {
   //TODO
   throw 'Implement me!';  
