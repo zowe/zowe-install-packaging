@@ -25,7 +25,7 @@ import * as varlib from '../../../../libs/var';
 import * as java from '../../../../libs/java';
 import * as node from '../../../../libs/node';
 import * as zosmf from '../../../../libs/zosmf';
-import * as pathoid from '../../../../libs/pathoid';
+import { PathAPI as pathoid } from '../../../../libs/pathoid';
 
 
 //TODO does this handle componentFile relative paths correctly or not
@@ -50,7 +50,7 @@ export function execute(componentFile: string, autoEncoding?: string): string {
 
   // Variables
   const targetDir = pathoid.isAbsolute(extensionDir) ? stringlib.removeTrailingSlash(extensionDir) : stringlib.removeTrailingSlash(pathoid.resolve(pwd, extensionDir));
-  const tmpPath = pathoid.resolve(targetDir, tmp_ext_dir);
+  const tmpDir = pathoid.resolve(targetDir, tmp_ext_dir);
   const moduleFileShort=pathoid.basename(componentFile);
 
   //////////////////////////////////////////////////////////////
@@ -60,7 +60,7 @@ export function execute(componentFile: string, autoEncoding?: string): string {
   }
   
   if (fs.directoryExists(targetDir)) {
-    common.printErrorAndExit("Error ZWEL0139E: Failed to create directory ${target_dir}.", undefined, 139);
+    common.printErrorAndExit(`Error ZWEL0139E: Failed to create directory ${targetDir}.`, undefined, 139);
   }
 
   //////////////////////////////////////////////////////////////
@@ -68,32 +68,32 @@ export function execute(componentFile: string, autoEncoding?: string): string {
   if (targetDir=='/') {
     common.printErrorAndExit("Error ZWEL0153E: Cannot install Zowe component to system root directory.", undefined, 153);
   }
-  if (!tmpPath) {
+  if (!tmpDir) {
     common.printErrorAndExit( "Error ZWEL0154E: Temporary directory is empty.", undefined, 154);
   }
 
-  fs.rmrf(tmpPath);
+  fs.rmrf(tmpDir);
 
   common.printMessage(`Install ${moduleFileShort}`);
 
   if (fs.directoryExists(componentFile)) {
     common.printDebug(`- Module ${componentFile} is a directory, will create symbolic link into target directory.`);
     //TODO do i need to set link name
-    rc = os.symlink(componentFile, tmpPath);
+    rc = os.symlink(componentFile, tmpDir);
     if (rc) {
       common.printErrorAndExit(`Error ZWELTODOE: Symlink creation failure, error=${rc}`, undefined, 999);
     }
   } else {
     // create temporary directory to lay down extension files in
-    fs.mkdirp(tmpPath);
+    fs.mkdirp(tmpDir);
     
     common.printDebug(`- Extract file ${moduleFileShort} to temporary directory.`);
 
     if (componentFile.endsWith('.pax')) {
-      result = shell.execSync('sh', '-c', `cd ${tmpPath} && pax -ppx -rf ${componentFile}`);
+      result = shell.execSync('sh', '-c', `cd ${tmpDir} && pax -ppx -rf ${componentFile}`);
     } else if (componentFile.endsWith('.zip')) {
       java.requireJava();
-      result = shell.execSync('sh', '-c', `cd ${tmpPath} && jar xf ${componentFile}`);
+      result = shell.execSync('sh', '-c', `cd ${tmpDir} && jar xf ${componentFile}`);
     } else if (componentFile.endsWith('.tar')) {
       result = shell.execSync('sh', '-c', `_CEE_RUNOPTS="FILETAG() POSIX(ON)" pax -x tar -rf "${componentFile}"`);
     }
@@ -101,7 +101,7 @@ export function execute(componentFile: string, autoEncoding?: string): string {
       common.printError(`Extract completed with rc=${result.rc}`);
     }
     common.printTrace("  * List extracted files:");
-    result = shell.execOutSync('sh', '-c', `cd ${tmpPath} && ls -la 2>&1`);
+    result = shell.execOutSync('sh', '-c', `cd ${tmpDir} && ls -la 2>&1`);
     common.printTrace(stringlib.paddingLeft(result.out, "    "));
   }
 
@@ -139,10 +139,9 @@ export function execute(componentFile: string, autoEncoding?: string): string {
     }
   }
 
-  cd "${ZWE_PWD}" && cd "${target_dir}"
   const manifest = component.getManifest(tmpDir);
   const componentName = manifest.name;
-  if (!manifestName) {
+  if (!componentName) {
     fs.rmrf(tmpDir);
     common.printErrorAndExit(`Error ZWEL0167E: Cannot find component name from ${componentFile} package manifest`, undefined, 167);
   }

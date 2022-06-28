@@ -9,17 +9,17 @@
   Copyright Contributors to the Zowe Project.
 */
 
-// @ts-ignore
 import * as std from 'std';
-// @ts-ignore
 import * as os from 'os';
-// @ts-ignore
 import * as zos from 'zos';
 import * as common from '../../../../libs/common';
 import * as config from '../../../../libs/config';
+import * as shell from '../../../../libs/shell';
+import * as varlib from '../../../../libs/var';
 import * as java from '../../../../libs/java';
 import * as fs from '../../../../libs/fs';
 import * as component from '../../../../libs/component';
+import { PathAPI as pathoid } from '../../../../libs/pathoid';
 
 export function execute(componentId: string, runInBackground: boolean=false) {
 
@@ -57,7 +57,7 @@ export function execute(componentId: string, runInBackground: boolean=false) {
   common.printFormattedTrace("ZWELS", "zwe-internal-start-component", `- found ${componentId} in directory ${COMPONENT_DIR}`);
   if (COMPONENT_DIR) {
     let dir = COMPONENT_DIR;
-    const componentManifest = component.getManifest(COMPONENT_DIR);
+    const manifest = component.getManifest(COMPONENT_DIR);
     
     const privateWorkspaceDir=std.getenv('ZWE_PRIVATE_WORKSPACE_ENV_DIR');
     //TODO CLI_PARAMETER vars come from cli --parameters, and so should be mapped to execute() parameters. This probably doesnt work.
@@ -83,9 +83,9 @@ export function execute(componentId: string, runInBackground: boolean=false) {
         let environment = std.getenviron();
         let keys = Object.keys(environment);
         keys.forEach((key: string) => {
-          console.log(`${key}=${environment[key]}`);
+          common.printTrace(`${key}=${environment[key]}`);
         });
-        console.log('<<<');
+        common.printTrace('<<<');
 
         const fullPath = `${COMPONENT_DIR}/${startScript}`;
         // FIXME: we have assumption here startScript is pointing to a shell script
@@ -96,13 +96,13 @@ export function execute(componentId: string, runInBackground: boolean=false) {
           // wait for all background subprocesses created by bin/start.sh exit
           // re-source libs is necessary to reclaim shell functions since this will be executed in a new shell
           //TODO does this do the same as the shell script before it?
-          shell.execOutSync('sh', '-c', `cat "${fullPath}" | { echo ". \"${ZWE_zowe_runtimeDirectory}/bin/libs/index.sh\"" ; cat ; echo; echo wait; } | /bin/sh`);
+          shell.execOutSync('sh', '-c', `cat "${fullPath}" | { echo ". \"${ZOWE_CONFIG.zowe.runtimeDirectory}/bin/libs/index.sh\"" ; cat ; echo; echo wait; } | /bin/sh`);
         }
       } else {
         common.printFormattedError("ZWELS", "zwe-internal-start-component", `Error ZWEL0172E: Component ${componentId} has commands.start defined but the file is missing.`);
       }
     } else {
-      commmon.printFormattedTrace("ZWELS", "zwe-internal-start-component", `Component ${componentId} doesn't have start command.`);
+      common.printFormattedTrace("ZWELS", "zwe-internal-start-component", `Component ${componentId} doesn't have start command.`);
     }
   } else {
     common.printFormattedError("ZWELS", "zwe-internal-start-component", `Failed to locate component directory for ${componentId}.`);

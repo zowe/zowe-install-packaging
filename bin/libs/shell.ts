@@ -125,8 +125,8 @@ export function execOutSync(command: string, ...args: string[]): ExecReturn {
   };
 }
 
-export function exec(command: string, ...args: string[]): ExecReturn {
-  os.exec([command, ...args], { block: false, usePath: true, stdout: pipeArray[1]});
+export function exec(command: string, ...args: string[]): number {
+  return os.exec([command, ...args], { block: false, usePath: true});
 }
 
 

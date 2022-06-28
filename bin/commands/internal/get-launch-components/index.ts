@@ -20,6 +20,6 @@ export function execute(): string {
   config.loadEnvironmentVariables();
 
   const components = std.getenv('ZWE_LAUNCH_COMPONENTS');
-  console.log(components);
+  common.printMessage(components);
   return components;
 }
