@@ -15,7 +15,11 @@
 # This command prepares everything needed to start Zowe.
 ################################################################################
 
-if [ "${ZWE_CLI_CONFIGMGR}" = "true" ]; then
+USE_CONFIGMGR=${ZWE_CLI_PARAMETER_CONFIGMGR}
+if [ -n "${ZWE_CLI_PARAMETER_CONFIG}" -a "${USE_CONFIGMGR}" != "true" ]; then
+  USE_CONFIGMGR=$(shell_read_yaml_config "${ZWE_CLI_PARAMETER_CONFIG}" 'zowe' 'useConfigmgr')
+fi
+if [ "${USE_CONFIGMGR}" = "true" ]; then
   _CEE_RUNOPTS="XPLINK(ON),HEAPPOOLS(OFF)" ${ZWE_zowe_runtimeDirectory}/bin/utils/configmgr -script "${ZWE_zowe_runtimeDirectory}/bin/commands/internal/start/prepare/cli.js"
 else
 

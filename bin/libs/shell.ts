@@ -125,6 +125,11 @@ export function execOutSync(command: string, ...args: string[]): ExecReturn {
   };
 }
 
+export function exec(command: string, ...args: string[]): ExecReturn {
+  os.exec([command, ...args], { block: false, usePath: true, stdout: pipeArray[1]});
+}
+
+
 export function execErrSync(command: string, ...args: string[]): ExecReturn {
   let pipeArray = os.pipe();
   if (!pipeArray){

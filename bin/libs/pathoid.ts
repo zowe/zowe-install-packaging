@@ -158,7 +158,10 @@ export class PathAPI {
     }
     
     static basename(path: string, ext?: string): string{
-        throw "Unimplemented";
+      const sep = isWindows ? "\\" : "/";
+      const index = path.lastIndexOf('/', path.endsWith(sep) ? path.length-2 : Infinity);
+      
+      throw "Unimplemented";
     }
     
     static extname(path: string): string{

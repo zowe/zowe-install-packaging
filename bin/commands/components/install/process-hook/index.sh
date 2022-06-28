@@ -11,6 +11,15 @@
 # Copyright Contributors to the Zowe Project.
 #######################################################################
 
+USE_CONFIGMGR=${ZWE_CLI_PARAMETER_CONFIGMGR}
+if [ -n "${ZWE_CLI_PARAMETER_CONFIG}" -a "${USE_CONFIGMGR}" != "true" ]; then
+  USE_CONFIGMGR=$(shell_read_yaml_config "${ZWE_CLI_PARAMETER_CONFIG}" 'zowe' 'useConfigmgr')
+fi
+if [ "${USE_CONFIGMGR}" = "true" ]; then
+  _CEE_RUNOPTS="XPLINK(ON),HEAPPOOLS(OFF)" ${ZWE_zowe_runtimeDirectory}/bin/utils/configmgr -script "${ZWE_zowe_runtimeDirectory}/bin/commands/components/install/process-hook/cli.js"
+else
+
+
 require_zowe_yaml
 
 # read extensionDirectory
@@ -39,4 +48,6 @@ fi
 
 if [ "${ZWE_RUN_ON_ZOS}" = "true" ]; then
   process_zss_plugin_install "${target_dir}/${ZWE_CLI_PARAMETER_COMPONENT_NAME}"
+fi
+
 fi
