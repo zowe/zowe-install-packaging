@@ -44,21 +44,23 @@
       "artifact": "*.pax"
     },
     "org.zowe.explorer.jobs.jobs-api-package": {
-      "version": "^2.0.5-FEATURE-V2-SCHEMA-SUPPORT-BRANCH-SNAPSHOT",
-      "artifact": "jobs-api-package-*.zip"
+      "version": "^2.0.7-SNAPSHOT",
+      "artifact": "jobs-api-package-*.zip",
+      "exclusions": ["*PR*.zip","*BRANCH*"]
     },
     "org.zowe.explorer.files.files-api-package": {
-      "version": "^2.0.5-FEATURE-V2-SCHEMA-SUPPORT-BRANCH-SNAPSHOT",
-      "artifact": "files-api-package-*.zip"
+      "version": "^2.0.7-SNAPSHOT",
+      "artifact": "files-api-package-*.zip",
+      "exclusions": ["*PR*.zip","*BRANCH*"]
     },
     "org.zowe.explorer-jes": {
-      "version": "~2.0.0-PR-343"
+      "version": "~2.0.1-SNAPSHOT"
     },
     "org.zowe.explorer-mvs": {
-      "version": "~2.0.0-PR-228"
+      "version": "~2.0.1-SNAPSHOT"
     },
     "org.zowe.explorer-uss": {
-      "version": "~2.0.0-PR-168"
+      "version": "~2.0.1-SNAPSHOT"
     },
     "org.zowe.explorer-ip": {
       "version": "~1.0.0-SNAPSHOT",
@@ -109,7 +111,7 @@
       "artifact": "*.pax"
     },
     "org.zowe.launcher": {
-      "version": "~2.0.1-FEATURE-V2-SCHEMA-SUPPORT"
+      "version": "~2.0.4-SNAPSHOT"
     },
     "org.zowe.keyring-utilities": {
       "version": "1.0.4",
