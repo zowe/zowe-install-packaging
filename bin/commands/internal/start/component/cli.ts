@@ -10,4 +10,5 @@
 */
 
 import * as index from './index';
+import * as std from 'std';
 index.execute(std.getenv("ZWE_PRIVATE_CONTAINER_COMPONENT_ID"), false);

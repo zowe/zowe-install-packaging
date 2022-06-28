@@ -25,13 +25,13 @@ import * as varlib from '../../../../libs/var';
 import * as java from '../../../../libs/java';
 import * as node from '../../../../libs/node';
 import * as zosmf from '../../../../libs/zosmf';
-import * as pathoid from '../../../../libs/pathoid';
+import { PathAPI as pathoid } from '../../../../libs/pathoid';
 
 export function execute(componentName: string) {
   common.requireZoweYaml();
   const ZOWE_CONFIG=config.getZoweConfig();
   // read extensionDirectory
-  extensionDir=ZOWE_CONFIG.zowe.extensionDirectory;
+  const extensionDir=ZOWE_CONFIG.zowe.extensionDirectory;
   if (!extensionDir) {
     common.printErrorAndExit("Error ZWEL0180E: Zowe extension directory (zowe.extensionDirectory) is not defined in Zowe YAML configuration file.", undefined, 180);
   }
@@ -44,7 +44,7 @@ export function execute(componentName: string) {
     common.printMessage(`Process ${installScript} defined in manifest commands.install:`);
     const scriptPath = pathoid.join(targetDir, componentName, installScript);
     // run commands
-    const result = shell.execOutSync('sh', '-c', `. ${runtimeDirectory}/bin/libs/index.sh && . ${scriptPath}`);
+    const result = shell.execOutSync('sh', '-c', `. ${ZOWE_CONFIG.zowe.runtimeDirectory}/bin/libs/index.sh && . ${scriptPath}`);
   } else {
     common.printDebug(`Module ${componentName} does not have commands.install defined.`);
   }

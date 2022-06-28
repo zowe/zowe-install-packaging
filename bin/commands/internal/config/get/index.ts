@@ -9,14 +9,16 @@
   Copyright Contributors to the Zowe Project.
 */
 
+import * as common from '../../../../libs/common';
 import * as config from '../../../../libs/config';
+import * as fakejq from '../../../../libs/fakejq';
 
 export function execute(configPath:string, haInstance?: string) {
 const ZOWE_CONFIG=config.getZoweConfig();
 
-  if (haInstance && (!configPath.startsWith(`haInstances.${haInstance}.`)) {
-    console.log(ZOWE_CONFIG.haInstances[haInstance].); //TODO expand path
+  if (haInstance && (!configPath.startsWith(`haInstances.${haInstance}.`))) {
+    common.printMessage(fakejq.jqget(ZOWE_CONFIG, `.haInstances[${haInstance}].${configPath}`)); //TODO expand path
   } else {
-    console.log(ZOWE_CONFIG.); //TODO expand path
+    common.printMessage(fakejq.jqget(ZOWE_CONFIG, `.${configPath}`)); //TODO expand path
   }             
 }

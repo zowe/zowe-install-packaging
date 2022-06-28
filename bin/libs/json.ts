@@ -12,7 +12,12 @@
 import * as std from 'std';
 import * as os from 'os';
 import * as zos from 'zos';
-
+import * as common from './common';
+import * as stringlib from './string';
+import * as shell from './shell';
+import * as fakejq from './fakejq';
+import * as config from './config';
+import * as zosfs from './zos-fs';
 
 // Read JSON configuration from shell script
 //
@@ -27,20 +32,14 @@ import * as zos from 'zos';
 // @param string   if this variable is required. If this is true and we cannot
 //                 find the value of the key, an error will be displayed.
 export function shellReadJsonConfig(jsonFile: string, parentKey: string, key: string, required: boolean): any {
-  
-  json_file="${1}"
-  parent_key="${2}"
-  key="${3}"
-  required="${4}"
-
-  val=$(cat "${json_file}" | awk "/\"${parent_key}\":/{x=NR+200}(NR<=x){print}" | grep "\"${key}\":" | head -n 1 | awk -F: '{print $2;}' | tr -d '[[:space:]]' | sed -e 's/,$//' | sed -e 's/^"//' -e 's/"$//')
-  if [ -z "${val}" ]; then
-    if [ "${required}" = "true" ]; then
-      print_error_and_exit "Error ZWEL0131E: Cannot find key ${parent_key}.${key} defined in file ${json_file}." "" 131
-    fi
-  else
-    printf "${val}"
-  fi
+  let val=shell.execOutSync('sh', '-c', `cat "${jsonFile}" | awk "/\"${parentKey}\":/{x=NR+200}(NR<=x){print}" | grep "\"${key}\":" | head -n 1 | awk -F: '{print $2;}' | tr -d '[[:space:]]' | sed -e 's/,$//' | sed -e 's/^"//' -e 's/"$//'`);
+  if (!val.out) {
+    if (required == true) {
+      common.printErrorAndExit(`Error ZWEL0131E: Cannot find key ${parentKey}.${key} defined in file ${jsonFile}.`, undefined, 131);
+    }
+  } else {
+    return val.out;
+  }
 }
 
 
@@ -56,152 +55,125 @@ export function shellReadJsonConfig(jsonFile: string, parentKey: string, key: st
 // @param string   which key to read
 // @param string   if this variable is required. If this is true and we cannot
 //                 find the value of the key, an error will be displayed.
-shell_read_yaml_config() {
-  yaml_file="${1}"
-  parent_key="${2}"
-  key="${3}"
-  required="${4}"
-
-  val=$(cat "${yaml_file}" | awk "/^ *${parent_key}:/{x=NR+2000;next}(NR<=x){print}" | grep -e "^ \+${key}:" | head -n 1 | awk -F: '{print $2;}' | tr -d '[[:space:]]' | sed -e 's/^"//' -e 's/"$//')
-  if [ -z "${val}" ]; then
-    if [ "${required}" = "true" ]; then
-      print_error_and_exit "Error ZWEL0131E: Cannot find key ${parent_key}.${key} defined in file ${yaml_file}." "" 131
-    fi
-  else
-    printf "${val}"
-  fi
+export function shellReadYamlConfig(yamlFile: string, parentKey: string, key: string, required: boolean): any {
+  const val=shell.execOutSync('sh', '-c', `cat "${yamlFile}" | awk "/^ *${parentKey}:/{x=NR+2000;next}(NR<=x){print}" | grep -e "^ \+${key}:" | head -n 1 | awk -F: '{print $2;}' | tr -d '[[:space:]]' | sed -e 's/^"//' -e 's/"$//'`);
+  if (!val.out) {
+    if (required==true) {
+      common.printErrorAndExit(`Error ZWEL0131E: Cannot find key ${parentKey}.${key} defined in file ${yamlFile}.`, undefined, 131);
+    } else {
+      return val;
+    }
+  }
 }
 
-read_yaml() {
-  file="${1}"
-  key="${2}"
-  ignore_null="${3:-true}"
+export function readYaml(file: string, key: string) {
+  const ZOWE_CONFIG=config.getZoweConfig();
+  const utils_dir=`${ZOWE_CONFIG.zowe.runtimeDirectory}/bin/utils`;
+  const jq=`${utils_dir}/njq/src/index.js`;
+  const fconv=`${utils_dir}/fconv/src/index.js`;
 
-  utils_dir="${ZWE_zowe_runtimeDirectory}/bin/utils"
-  fconv="${utils_dir}/fconv/src/index.js"
-  jq="${utils_dir}/njq/src/index.js"
+  common.printTrace(`- read_yaml load content from ${file}`);
+  if (std.getenv('ZWE_CLI_PARAMETER_CONFIG') == file) {
+    return fakejq.jqget(ZOWE_CONFIG, key);
+  } else {
+    const ZWE_PRIVATE_YAML_CACHE=shell.execOutSync('sh', '-c', `node "${fconv}" --input-format=yaml "${file}" 2>&1`);
+    let code=ZWE_PRIVATE_YAML_CACHE.rc;
+    common.printTrace(`  * Exit code: ${code}`);
+    if (code != 0) {
+      common.printError("  * Output:");
+      common.printError(stringlib.paddingLeft(ZWE_PRIVATE_YAML_CACHE.out, "    "));
+      return;
+    }
 
-  print_trace "- read_yaml load content from ${file}"
-  ZWE_PRIVATE_YAML_CACHE=$(node "${fconv}" --input-format=yaml "${file}" 2>&1)
-  code=$?
-  print_trace "  * Exit code: ${code}"
-  if [ ${code} -ne 0 ]; then
-    print_error "  * Output:"
-    print_error "$(padding_left "${ZWE_PRIVATE_YAML_CACHE}" "    ")"
-    return ${code}
-  fi
+    common.printTrace(`- read_yaml ${key} from yaml content`);
+    const result=shell.execOutSync('sh', '-c', `echo "${ZWE_PRIVATE_YAML_CACHE}" | node "${jq}" -r "${key}" 2>&1`);
+    code=result.rc;
+    common.printTrace(`  * Exit code: ${code}`);
+    common.printTrace("  * Output:");
+    if (result.out) {
+      common.printTrace(stringlib.paddingLeft(result.out, "    "));
+    }
 
-  print_trace "- read_yaml ${key} from yaml content"
-  result=$(echo "${ZWE_PRIVATE_YAML_CACHE}" | node "${jq}" -r "${key}" 2>&1)
-  code=$?
-  print_trace "  * Exit code: ${code}"
-  print_trace "  * Output:"
-  if [ -n "${result}" ]; then
-    print_trace "$(padding_left "${result}" "    ")"
-  fi
-
-  if [ ${code} -eq 0 ]; then
-    if [ "${ignore_null}" = "true" ]; then
-      if [ "${result}" = "null" -o "${result}" = "undefined" ]; then
-        result=
-      fi
-    fi
-    printf "${result}"
-  fi
-
-  return ${code}
+    return result.out
+  }
 }
 
-read_json() {
-  file="${1}"
-  key="${2}"
-  ignore_null="${3:-true}"
+export function readJson(file: string, key: string):any {
+  const ZOWE_CONFIG=config.getZoweConfig();
+  const utils_dir=`${ZOWE_CONFIG.zowe.runtimeDirectory}/bin/utils`;
+  const jq=`${utils_dir}/njq/src/index.js`;
 
-  utils_dir="${ZWE_zowe_runtimeDirectory}/bin/utils"
-  jq="${utils_dir}/njq/src/index.js"
+  common.printTrace(`- read_json ${key} from ${file}`);
+  let result=shell.execOutSync('sh', '-c', `cat "${file}" | node "${jq}" -r "${key}" 2>&1`);
+  const code = result.rc;
+  common.printTrace(`  * Exit code: ${code}`);
+  common.printTrace(`  * Output:`);
+  if ( result.out ) {
+    common.printTrace(stringlib.paddingLeft(result.out, "    "));
+  }
 
-  print_trace "- read_json ${key} from ${file}"
-  result=$(cat "${file}" | node "${jq}" -r "${key}" 2>&1)
-  code=$?
-  print_trace "  * Exit code: ${code}"
-  print_trace "  * Output:"
-  if [ -n "${result}" ]; then
-    print_trace "$(padding_left "${result}" "    ")"
-  fi
-
-  if [ ${code} -eq 0 ]; then
-    if [ "${ignore_null}" = "true" -a "${result}" = "null" ]; then
-      result=
-    fi
-    printf "${result}"
-  fi
-
-  return ${code}
+  return result.out;
 }
 
-update_yaml() {
-  file="${1}"
-  key="${2}"
-  val="${3}"
-  expected_sample="${4}"
+  //TODO handle parmlib???
+export function updateYaml(file: string, key: string, val: any, expectedSample: string) {
+  const ZOWE_CONFIG=config.getZoweConfig();
+  const utils_dir=`${ZOWE_CONFIG.zowe.runtimeDirectory}/bin/utils`;
+  const config_converter=`${utils_dir}/config-converter/src/cli.js`
 
-  utils_dir="${ZWE_zowe_runtimeDirectory}/bin/utils"
-  config_converter="${utils_dir}/config-converter/src/cli.js"
   
-  print_message "- update \"${key}\" with value: ${val}"
-  result=$(node "${config_converter}" yaml update "${file}" "${key}" "${val}")
-  code=$?
-  if [ ${code} -eq 0 ]; then
-    print_trace "  * Exit code: ${code}"
-    print_trace "  * Output:"
-    if [ -n "${result}" ]; then
-      print_trace "$(padding_left "${result}" "    ")"
-    fi
-  else
-    print_error "  * Exit code: ${code}"
-    print_error "  * Output:"
-    if [ -n "${result}" ]; then
-      print_error "$(padding_left "${result}" "    ")"
-    fi
-    print_error_and_exit "Error ZWEL0138E: Failed to update key ${key} of file ${file}." "" 138
-  fi
+  common.printMessage(`- update \"${key}\" with value: ${val}`);
+  let result=shell.execOutSync('sh', '-c', `node "${config_converter}" yaml update "${file}" "${key}" "${val}"`);
+  const code = result.rc;
+  if (code == 0) {
+    common.printTrace(`  * Exit code: ${code}`);
+    common.printTrace(`  * Output:`);
+    if (result.out) {
+      common.printTrace(stringlib.paddingLeft(result.out, "    "));
+    }
+  } else {
+    common.printError(`  * Exit code: ${code}`);
+    common.printError("  * Output:");
+    if (result.out) {
+      common.printError(stringlib.paddingLeft(result.out, "    "));
+    }
+    common.printErrorAndExit(`Error ZWEL0138E: Failed to update key ${key} of file ${file}.`, undefined, 138);
+  }
 
-  ensure_file_encoding "${file}" "${expected_sample}"
+  zosfs.ensureFileEncoding(file, expectedSample);
 }
 
-update_zowe_yaml() {
-  update_yaml "${1}" "${2}" "${3}" "zowe:"
+export function updateZoweYaml(file: string, key: string, val: any) {
+  updateYaml(file, key, val, "zowe:");
 }
 
-delete_yaml() {
-  file="${1}"
-  key="${2}"
-  expected_sample="${3}"
+    //TODO handle parmlib???
+export function deleteYaml(file: string, key: string, expectedSample: string) {
+  const ZOWE_CONFIG=config.getZoweConfig();
+  const utils_dir=`${ZOWE_CONFIG.zowe.runtimeDirectory}/bin/utils`;
+  const config_converter=`${utils_dir}/config-converter/src/cli.js`
 
-  utils_dir="${ZWE_zowe_runtimeDirectory}/bin/utils"
-  config_converter="${utils_dir}/config-converter/src/cli.js"
+  common.printMessage(`- delete \"${key}\"`);
+  let result=shell.execOutSync('sh', '-c', `node "${config_converter}" yaml delete "${file}" "${key}"`);
+  const code = result.rc;
+  if (code == 0) {
+    common.printTrace(`  * Exit code: ${code}`);
+    common.printTrace(`  * Output:`);
+    if (result.out) {
+      common.printTrace(stringlib.paddingLeft(result.out, "    "));
+    }
+  } else {
+    common.printError(`  * Exit code: ${code}`);
+    common.printError("  * Output:");
+    if (result.out) {
+      common.printError(stringlib.paddingLeft(result.out, "    "));
+    }
+    common.printErrorAndExit(`Error ZWEL0138E: Failed to delete key ${key} of file ${file}.`, undefined, 138);
+  }
 
-  print_message "- delete \"${key}\""
-  result=$(node "${config_converter}" yaml delete "${file}" "${key}")
-  code=$?
-  if [ ${code} -eq 0 ]; then
-    print_trace "  * Exit code: ${code}"
-    print_trace "  * Output:"
-    if [ -n "${result}" ]; then
-      print_trace "$(padding_left "${result}" "    ")"
-    fi
-  else
-    print_error "  * Exit code: ${code}"
-    print_error "  * Output:"
-    if [ -n "${result}" ]; then
-      print_error "$(padding_left "${result}" "    ")"
-    fi
-    print_error_and_exit "Error ZWEL0138E: Failed to delete key ${key} of file ${file}." "" 138
-  fi
-
-  ensure_file_encoding "${file}" "${expected_sample}"
+  zosfs.ensureFileEncoding(file, expectedSample);
 }
 
-delete_zowe_yaml() {
-  delete_yaml "${1}" "${2}" "zowe:"
+export function deleteZoweYaml(file: string, key: string) {
+  deleteYaml(file, key, "zowe:");
 }
