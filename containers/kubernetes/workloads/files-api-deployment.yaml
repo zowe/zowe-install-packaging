@@ -7,7 +7,7 @@ metadata:
   labels:
     app.kubernetes.io/name: zowe
     app.kubernetes.io/instance: zowe
-    app.kubernetes.io/version: "2.0.0"
+    app.kubernetes.io/version: "2.1.0"
     app.kubernetes.io/component: files-api
     app.kubernetes.io/part-of: explorer-api
     app.kubernetes.io/managed-by: manual
@@ -50,7 +50,7 @@ spec:
             claimName: zowe-workspace-pvc
       containers:
         - name: files-api
-          image: zowe-docker-snapshot.jfrog.io/ompzowe/files-api:2.0.0-ubuntu.v2-x-master
+          image: zowe-docker-release.jfrog.io/ompzowe/files-api:2-ubuntu
           imagePullPolicy: Always
           resources:
             requests:
@@ -113,7 +113,7 @@ spec:
               mountPath: "/home/zowe/instance/workspace"
       initContainers:
         - name: init-zowe
-          image: zowe-docker-snapshot.jfrog.io/ompzowe/zowe-launch-scripts:2.0.0-ubuntu.v2-x-staging
+          image: zowe-docker-snapshot.jfrog.io/ompzowe/zowe-launch-scripts:2.1.0-ubuntu.v2-x-staging
           imagePullPolicy: Always
           resources:
             requests:

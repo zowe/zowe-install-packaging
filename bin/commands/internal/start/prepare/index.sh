@@ -331,7 +331,7 @@ fi
 
 # Fix node.js piles up in IPC message queue
 # run this before any node command we start
-if [ "${ZWE_RUN_ON_ZOS}" = "true" ]; then
+if [ "${ZWE_RUN_ON_ZOS}" = "true" -a "${ZWE_PRIVATE_CLEANUP_IPC_MQ}" = "true" ]; then
   print_formatted_trace "ZWELS" "zwe-internal-start-prepare:${LINENO}" "Clean up IPC message queue before using node.js."
   ${ZWE_zowe_runtimeDirectory}/bin/utils/cleanup-ipc-mq.sh
 fi
