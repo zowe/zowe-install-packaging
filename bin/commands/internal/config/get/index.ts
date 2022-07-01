@@ -14,11 +14,33 @@ import * as config from '../../../../libs/config';
 import * as fakejq from '../../../../libs/fakejq';
 
 export function execute(configPath:string, haInstance?: string) {
-const ZOWE_CONFIG=config.getZoweConfig();
-
+  common.requireZoweYaml();
+  const ZOWE_CONFIG=config.getZoweConfig();
+  let output;
+  if (haInstance) {
+    haInstance=config.sanitizeHaInstanceId();
+  }
   if (haInstance && (!configPath.startsWith(`haInstances.${haInstance}.`))) {
-    common.printMessage(fakejq.jqget(ZOWE_CONFIG, `.haInstances[${haInstance}].${configPath}`)); //TODO expand path
+    output=fakejq.jqget(ZOWE_CONFIG, `.haInstances[${haInstance}].${configPath}`); //TODO expand path
   } else {
-    common.printMessage(fakejq.jqget(ZOWE_CONFIG, `.${configPath}`)); //TODO expand path
-  }             
+    output=fakejq.jqget(ZOWE_CONFIG, `.${configPath}`); //TODO expand path
+  }
+  if (output===undefined) {
+    output = '';
+  }
+  if (Array.isArray(output)) {
+    output.forEach((line)=> {
+      if (typeof line != 'object') {
+        common.printMessage(line);
+      } else {
+        common.printMessage(JSON.stringify(line));
+      }
+    });
+  } else {
+    if (typeof output != 'object') {
+      common.printMessage(output);
+    } else {
+      common.printMessage(JSON.stringify(output));
+    }
+  }
 }

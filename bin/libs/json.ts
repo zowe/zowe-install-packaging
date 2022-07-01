@@ -122,29 +122,39 @@ export function updateYaml(file: string, key: string, val: any, expectedSample: 
   const config_converter=`${utils_dir}/config-converter/src/cli.js`
 
   
-  common.printMessage(`- update \"${key}\" with value: ${val}`);
-  let result=shell.execOutSync('sh', '-c', `node "${config_converter}" yaml update "${file}" "${key}" "${val}"`);
-  const code = result.rc;
-  if (code == 0) {
-    common.printTrace(`  * Exit code: ${code}`);
-    common.printTrace(`  * Output:`);
-    if (result.out) {
-      common.printTrace(stringlib.paddingLeft(result.out, "    "));
-    }
+  common.printMessage(`- update "${key}" with value: ${val}`);
+  if (std.getenv('ZWE_CLI_PARAMETER_CONFIG') == file) {
+    updateZoweYaml(file, key, val);
   } else {
-    common.printError(`  * Exit code: ${code}`);
-    common.printError("  * Output:");
-    if (result.out) {
-      common.printError(stringlib.paddingLeft(result.out, "    "));
+    // TODO what would we write thats not the zowe config? this sounds like an opportunity to disorganize.
+    let result=shell.execOutSync('sh', '-c', `node "${config_converter}" yaml update "${file}" "${key}" "${val}"`);
+    const code = result.rc;
+    if (code == 0) {
+      common.printTrace(`  * Exit code: ${code}`);
+      common.printTrace(`  * Output:`);
+      if (result.out) {
+        common.printTrace(stringlib.paddingLeft(result.out, "    "));
+      }
+    } else {
+      common.printError(`  * Exit code: ${code}`);
+      common.printError("  * Output:");
+      if (result.out) {
+        common.printError(stringlib.paddingLeft(result.out, "    "));
+      }
+      common.printErrorAndExit(`Error ZWEL0138E: Failed to update key ${key} of file ${file}.`, undefined, 138);
     }
-    common.printErrorAndExit(`Error ZWEL0138E: Failed to update key ${key} of file ${file}.`, undefined, 138);
-  }
 
-  zosfs.ensureFileEncoding(file, expectedSample);
+    zosfs.ensureFileEncoding(file, expectedSample);
+  }
 }
 
 export function updateZoweYaml(file: string, key: string, val: any) {
-  updateYaml(file, key, val, "zowe:");
+  common.printMessage(`- update zowe config ${file}, key: "${key}" with value: ${val}`);
+  let [ success, updateObj ] = fakejq.jqset({}, key, val);
+  common.printError(`  * Success: ${success}`);
+  if (success) {
+    config.updateZoweConfig(updateObj, true, 1); //TODO externalize array merge strategy = 1
+  }
 }
 
     //TODO handle parmlib???
