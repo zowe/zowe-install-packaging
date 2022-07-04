@@ -21,7 +21,7 @@ declare namespace console {
 };
 
 const ZOWE_CONFIG_NAME = 'zowe-server-base';
-const CONFIG_REVISIONS = {'zowe-server-base': 0};
+const CONFIG_REVISIONS = {};
 
 export const CONFIG_MGR = new ConfigManager();
 CONFIG_MGR.setTraceLevel(0);

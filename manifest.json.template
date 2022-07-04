@@ -107,7 +107,7 @@
       "exclusions": ["*PR*.zip"]
     },
     "org.zowe.configmgr": {
-      "version": "~0.3.0-feature_configmgr-integration",
+      "version": "~0.3.0-",
       "artifact": "*.pax"
     },
     "org.zowe.launcher": {

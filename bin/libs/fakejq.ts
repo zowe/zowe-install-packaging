@@ -74,13 +74,13 @@ export function jqset(obj: any, path: string, value: any): [ boolean, any ] {
         let arrayIndex = part.substring(start+1, part.length-1);
         obj = obj.firstPart;
         if (obj) {
-          obj = obj[arrayIndex];
+          obj = obj[arrayIndex] || [];
         }
       } else {
         obj = obj[part];
       }
     } else {
-      obj = obj[part];
+      obj = obj[part] || {};
     }
     index++;
   }
