@@ -15,10 +15,22 @@ import * as config from '../../../../libs/config';
 import * as json from '../../../../libs/json';
 import * as fakejq from '../../../../libs/fakejq';
 
-export function execute(configPath:string, newValue: any, haInstance?: string) {
+export function execute(configPath:string, newValue: any, haInstance?: string, valueAsString?: boolean) {
   common.requireZoweYaml();
   const configFiles=std.getenv('ZWE_CLI_PARAMETER_CONFIG');
   const ZOWE_CONFIG=config.getZoweConfig();
+
+  if (!valueAsString) {
+    let numCheck = new Number(newValue);
+    if (newValue.toLowerCase() == 'false') {
+      newValue = false;
+    } else if (newValue.toLowerCase() == 'true') {
+      newValue = true;
+    } else if (!Number.isNaN(numCheck)) {
+      newValue = numCheck;
+    }
+  }
+  
   let output;
   if (haInstance) {
     haInstance=config.sanitizeHaInstanceId();

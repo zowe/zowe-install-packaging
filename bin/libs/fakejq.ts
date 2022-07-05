@@ -64,6 +64,7 @@ export function jqget(obj: any, path: string): any {
 export function jqset(obj: any, path: string, value: any): [ boolean, any ] {
   let parts = path.split('.');
   let index = 0;
+  let topObj = obj;
   while (obj && (index < parts.length-1)) {
     let part = parts[index];
     if (part.length==0) { index++; continue; }
@@ -74,13 +75,22 @@ export function jqset(obj: any, path: string, value: any): [ boolean, any ] {
         let arrayIndex = part.substring(start+1, part.length-1);
         obj = obj.firstPart;
         if (obj) {
-          obj = obj[arrayIndex] || [];
+          if (obj[arrayIndex] === undefined) {
+            obj[arrayIndex] = [];
+          }
+          obj = obj[arrayIndex];
         }
       } else {
+        if (obj[part] === undefined) {
+          obj[part] = {};
+        }
         obj = obj[part];
       }
     } else {
-      obj = obj[part] || {};
+      if (obj[part] === undefined) {
+        obj[part] = {};
+      }
+      obj = obj[part];
     }
     index++;
   }
@@ -94,16 +104,16 @@ export function jqset(obj: any, path: string, value: any): [ boolean, any ] {
         obj = obj.firstPart;
         if (obj) {
           obj[arrayIndex] = value;
-          return [true, obj];
+          return [true, topObj];
         }
       } else {
         obj[part] = value;
-        return [true,obj];
+        return [true,topObj];
       }
     } else {
       obj[part] = value;
-      return [true,obj];
+      return [true,topObj];
     }
   }
-  return [false,obj];
+  return [false,topObj];
 }

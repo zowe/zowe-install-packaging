@@ -10,4 +10,4 @@
 */
 import * as std from 'std';
 import * as index from './index';
-index.execute(std.getenv('ZWE_CLI_PARAMETER_PATH'), std.getenv('ZWE_CLI_PARAMETER_VALUE'), std.getenv('ZWE_CLI_PARAMETER_HA_INSTANCE'));
+index.execute(std.getenv('ZWE_CLI_PARAMETER_PATH'), std.getenv('ZWE_CLI_PARAMETER_VALUE'), std.getenv('ZWE_CLI_PARAMETER_HA_INSTANCE'), std.getenv('ZWE_CLI_PARAMETER_STRING'));
