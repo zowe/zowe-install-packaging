@@ -40,6 +40,7 @@ const S_IWUSR = 0x0080;
 //const S_IXOTH = 0x0001;
 //const S_IRWXO = 0x0007;
 
+const ENOTDIR = 135; //error for not a directory
 
 export function resolvePath(...parts:string[]): string {
   let separator=os.platform == 'win32' ? '\\' : '/';
@@ -183,7 +184,7 @@ export function getSubdirectories(path: string): string[]|undefined {
 export function directoryExists(path: string, silenceNotFound?: boolean): boolean {
   let returnArray = os.stat(path);
   if (!returnArray[1]) { //no error
-    return ((returnArray[0].mode & os.S_IFDIR) == os.S_IFDIR)
+    return ((returnArray[0].mode & os.S_IFMT) == os.S_IFDIR)
   } else {
     if ((returnArray[1] != std.Error.ENOENT) && !silenceNotFound) {
       common.printError(`directoryExists path=${path}, err=`+returnArray[1]);
@@ -195,7 +196,7 @@ export function directoryExists(path: string, silenceNotFound?: boolean): boolea
 export function fileExists(path: string, silenceNotFound?: boolean): boolean {
   let returnArray = os.stat(path);
   if (!returnArray[1]) { //no error
-    return ((returnArray[0].mode & os.S_IFREG) == os.S_IFREG)
+    return ((returnArray[0].mode & os.S_IFMT) == os.S_IFREG)
   } else {
     if ((returnArray[1] != std.Error.ENOENT) && !silenceNotFound) {
       common.printError(`fileExists path=${path}, err=${returnArray[1]}`);
