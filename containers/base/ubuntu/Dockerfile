@@ -16,7 +16,7 @@ FROM ubuntu:latest
 LABEL name="Zowe Base Image" \
       maintainer="jack-tiefeng.jia@ibm.com" \
       vendor="Zowe" \
-      version="2.0.0" \
+      version="2.0.1" \
       release="0" \
       summary="Base image for Zowe components" \
       description="Base image for Zowe components"
@@ -32,7 +32,7 @@ ARG NODE_CPU_ARCH=x64
 
 ##################################
 # environments
-ENV NODE_VERSION=14.18.3
+ENV NODE_VERSION=16.15.0
 
 ##################################
 # customize
@@ -55,6 +55,8 @@ RUN set -ex \
       curl \
       gnupg \
       xz-utils \
+    # upgrade
+    && apt-get upgrade -y \
     && ARCH=${NODE_CPU_ARCH} \
     # gpg keys listed at https://github.com/nodejs/node#release-keys
     && for key in \

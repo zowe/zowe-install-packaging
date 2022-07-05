@@ -28,7 +28,7 @@ describe('test explorer(s) api docs', function() {
 
   it('should be able to access jobs swagger json', async function() {
     const res = await hq.request({
-      url: '/jobs/v1',
+      url: '/jobs',
     });
 
     expect(res).to.have.property('status');
@@ -40,7 +40,7 @@ describe('test explorer(s) api docs', function() {
 
   it('should be able to access datasets swagger json', async function() {
     const res = await hq.request({
-      url: '/datasets/v1',
+      url: '/datasets',
     });
 
     expect(res).to.have.property('status');
@@ -52,7 +52,7 @@ describe('test explorer(s) api docs', function() {
 
   it('should be able to access unixfiles swagger json', async function() {
     const res = await hq.request({
-      url: '/unixfiles/v1',
+      url: '/unixfiles',
     });
 
     expect(res).to.have.property('status');

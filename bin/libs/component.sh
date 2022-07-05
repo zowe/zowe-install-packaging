@@ -47,6 +47,14 @@ find_component_directory() {
   # find component lifecycle scripts directory
   component_dir=
 
+  # init ZWE_zowe_extensionDirectory if it doesn't have a value
+  if [ -z "${ZWE_zowe_extensionDirectory}" ]; then
+    ZWE_zowe_extensionDirectory=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.extensionDirectory")
+  fi
+  if [ -z "${ZWE_zowe_extensionDirectories}" ]; then
+    ZWE_zowe_extensionDirectories=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.extensionDirectories")
+  fi
+
   if [ -d "${ZWE_zowe_runtimeDirectory}/components/${component_id}" ]; then
     # this is a Zowe build-in component
     component_dir="${ZWE_zowe_runtimeDirectory}/components/${component_id}"

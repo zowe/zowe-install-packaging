@@ -66,7 +66,7 @@ zowe_apiml_security_zosmf_applid: IZUDFLT
 zowe_apiml_security_auth_provider: zosmf
 zowe_apiml_security_zosmf_jwt_autoconfiguration_mode: auto
 # explorer APIs/plugins ports
-zowe_jobs_api_port: 7600
+zowe_jobs_api_port: 7558
 zowe_mvs_api_port: 7559
 zowe_jobs_explorer_port: 7560
 zowe_mvs_explorer_port: 7561

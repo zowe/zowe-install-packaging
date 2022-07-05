@@ -52,6 +52,14 @@ case $install_test_choice in
     test_file="$INSTALL_PTF_TWICE_TESTFILE"
     ;;
 
+    "VSAM Caching Storage Method")
+    test_file="$VSAM_CACHING_STORAGE_METHOD_TESTFILE"
+    ;;
+
+    "Infinispan Caching Storage Method")
+    test_file="$INFINISPAN_CACHING_STORAGE_METHOD_TESTFILE"
+    ;;
+
     "Generate API Documentation")
     test_file="$GENERAL_API_DOCUMENTATION_TESTFILE"
     ;;
@@ -78,8 +86,14 @@ if [[ -z "$dont_parse_test_server" ]]; then
     fi
     TEST_FILE_SERVER="$test_file($test_server)"
 else
-    TEST_FILE_SERVER="$test_file"
-fi        
+    any_occurrence=$(echo $test_file | grep -o "(any)" | wc -l)
+    interim_test_file_server=$test_file
+    for i in $(seq $any_occurrence); do
+        interim_test_file_server=$(echo $interim_test_file_server | sed "s#(any)#(zzow0$(echo $(($RANDOM % 3 + 2)) ))#")
+    done
+
+    TEST_FILE_SERVER=$(echo $interim_test_file_server | sed "s#(all)#(zzow02,zzow03,zzow04)#g")
+fi
 
 # this is the final string that can be recognizable by the matrix processing script down below
 echo "TEST_FILE_SERVER is "$TEST_FILE_SERVER
