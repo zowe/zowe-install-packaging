@@ -59,7 +59,7 @@ export function execute(componentFile: string, autoEncoding?: string): string {
     fs.mkdirp(targetDir);  
   }
   
-  if (fs.directoryExists(targetDir)) {
+  if (!fs.directoryExists(targetDir)) {
     common.printErrorAndExit(`Error ZWEL0139E: Failed to create directory ${targetDir}.`, undefined, 139);
   }
 

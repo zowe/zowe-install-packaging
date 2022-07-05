@@ -96,7 +96,8 @@ export class PathAPI {
         let concatenatedPath:string = "";
         let segmentIsRoot = false;
         let [ currentDirectory, err ] = os.getcwd();
-
+        let sep = isWindows ? "\\" : "/";
+      
         if (err != 0){
             throw "current working directory not found with errno="+err;
         }
@@ -117,7 +118,7 @@ export class PathAPI {
         let resolvedPath:string = this.resolveDots(concatenatedPath);
         
         if (resolvedPath.length > 0){
-            return resolvedPath;
+            return resolvedPath.endsWith(sep) && resolvedPath.length>1 ? resolvedPath.substring(0, resolvedPath.length-1) : resolvedPath;
         } else {
             return '.';
         }
@@ -160,8 +161,11 @@ export class PathAPI {
     static basename(path: string, ext?: string): string{
       const sep = isWindows ? "\\" : "/";
       const index = path.lastIndexOf('/', path.endsWith(sep) ? path.length-2 : Infinity);
-      
-      throw "Unimplemented";
+      path = path.substring(index+1);
+      if (ext && path.endsWith(ext)) {
+        path = path.substring(0, path.length - ext.length);
+      }
+      return path;
     }
     
     static extname(path: string): string{
