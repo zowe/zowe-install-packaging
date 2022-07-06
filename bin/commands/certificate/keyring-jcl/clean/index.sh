@@ -14,7 +14,8 @@
 print_level1_message "Remove Zowe keyring"
 
 ###############################
-# constants
+# constants & variables
+job_has_failures=
 
 ###############################
 # validation
@@ -28,11 +29,20 @@ keyring_run_zwenokyr_jcl \
   "${ZWE_CLI_PARAMETER_KEYRING_NAME}" \
   "${ZWE_CLI_PARAMETER_ALIAS}" \
   "${ZWE_CLI_PARAMETER_CA_ALIAS}" \
-  "${ZWE_CLI_PARAMETER_IMPORT_SECURITY_PRODUCT}"
+  "${ZWE_CLI_PARAMETER_SECURITY_PRODUCT}"
 if [ $? -ne 0 ]; then
-  print_error_and_exit "Error ZWEL0176E: Failed to clean up Zowe keyring \"${ZWE_CLI_PARAMETER_KEYRING_OWNER}/${ZWE_CLI_PARAMETER_KEYRING_NAME}\"." "" 176
+  job_has_failures=true
+  if [ "${ZWE_CLI_PARAMETER_IGNORE_SECURITY_FAILURES}" = "true" ]; then
+    print_error "Error ZWEL0176E: Failed to clean up Zowe keyring \"${ZWE_CLI_PARAMETER_KEYRING_OWNER}/${ZWE_CLI_PARAMETER_KEYRING_NAME}\"."
+  else
+    print_error_and_exit "Error ZWEL0176E: Failed to clean up Zowe keyring \"${ZWE_CLI_PARAMETER_KEYRING_OWNER}/${ZWE_CLI_PARAMETER_KEYRING_NAME}\"." "" 176
+  fi
 fi
 
 ###############################
 # exit message
-print_level2_message "Zowe keyring is removed successfully."
+if [ "${job_has_failures}" = "true" ]; then
+  print_level2_message "Failed to remove Zowe keyring. Please check job log for details."
+else
+  print_level2_message "Zowe keyring is removed successfully."
+fi

@@ -1,13 +1,13 @@
 apiVersion: route.openshift.io/v1
 kind: Route
 metadata:
-  name: gateway
+  name: discovery
   namespace: zowe
   labels:
     app.kubernetes.io/name: zowe
     app.kubernetes.io/instance: zowe
-    app.kubernetes.io/version: "2.0.0"
-    app.kubernetes.io/component: gateway
+    app.kubernetes.io/version: "2.1.0"
+    app.kubernetes.io/component: discovery
     app.kubernetes.io/part-of: apiml
     app.kubernetes.io/managed-by: manual
 spec:
@@ -15,7 +15,7 @@ spec:
   # host: my-domain-name.com
   to:
     kind: Service
-    name: gateway-service
+    name: discovery-service
   tls:
     termination: passthrough
   wildcardPolicy: None

@@ -14,6 +14,16 @@ to the top of ptf-bucket.txt before requesting a build.
   1) <apar> Blank-delimited list of 1 or more linked APAR numbers
             (IOxxxxx) to be used for a build.
 
+Note: Security/integrity issues require special treatment, and are 
+      processed using a special APAR that has the sec/int flag set.
+      It is expected that each PTF will resolve one or more sec/int
+      issues. To simplify administration work, sec/int APARs are not
+      pulled from apar-bucket.txt and tracked in current-apar.txt, but
+      are added to a ptf definition in ptf-bucket.txt. Upon PTF
+      promotion, an IBM-employed build engineer will handle the special
+      treatment for the embedded sec/int APAR during the APAR closing 
+      process.
+
 +----------------+
 | ptf-bucket.txt |
 +----------------+
@@ -34,7 +44,8 @@ a PTF, APAR, or USERMOD must be created.
   IBM-internal tooling to guarantee unique naming
 - Lines starting with # are interpreted as comments
 - A data line must be one of these formats:
-  <ptf> - <apar>
+  <ptf> [...] - <apar> [...]
+  <ptf> [...] - <apar> [...] [<sec/int apar>]
   or   [only when copied in from apar-bucket.txt]
   <apar>
   1) <ptf>  Blank-delimited list of 1 or more linked PTF numbers
@@ -50,6 +61,16 @@ a PTF, APAR, or USERMOD must be created.
 - If the first data line has "<ptf>", then a PTF will be created that
   will SUP the APAR(s) listed in "<apar>"
 
+Note: Security/integrity issues require special treatment, and are 
+      processed using a special APAR that has the sec/int flag set.
+      It is expected that each PTF will resolve one or more sec/int
+      issues. To simplify administration work, sec/int APARs are not
+      pulled from apar-bucket.txt and tracked in current-apar.txt, but
+      are added to a ptf definition in ptf-bucket.txt. Upon PTF
+      promotion, an IBM-employed build engineer will handle the special
+      treatment for the embedded sec/int APAR during the APAR closing 
+      process.
+      
 The file will be updated during promote (promoted PTF is commented out).
 
 +-------------------+

@@ -1,5 +1,5 @@
 <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML 3//EN">
-<!-- 18 Feb 2020 11:29:49 -->
+<!-- 13 Apr 2022 14:10:20 -->
 <HTML><HEAD>
 <TITLE>Zowe Program Directory </TITLE>
 </HEAD><BODY>
@@ -9,15 +9,15 @@
   <BR>Zowe Open Source Project
   <BR>
   <BR> </H1>
-<H2>V0.0.1   </H2>
+<H2>0.0.2   </H2>
 <H2>  <H2>
 <H2>FMID AZWE002 </H2>
 <H3>for use with
-  <BR>z/OS V2.2.0 or later
+  <BR>z/OS 2.3.0 or later
   <BR>
   <BR> </H3>
 <H3> </H3>
-<H3>Document Date: February 2022 </H3>
+<H3>Document Date: April 2022 </H3>
 <H3> </H3>
 </CENTER>
 &nbsp;<BR>
@@ -25,7 +25,7 @@
 <P>Before using this information and the product it supports, be sure
 to read the general information under <A HREF="#HDRNOTICES">"Notices"</A>.
 </TD></TR></TABLE>
-<P>Copyright Contributors to the Zowe Project. 2022
+<P>Copyright Contributors to the Zowe Project. 2019, 2022
 <HR><H1><A NAME="ToC">Table of Contents</A></H1>
 <P><B><A NAME="ToC_1" HREF="#HDRFIGLIST_START">Figures</A></B><BR>
 <P><B><A NAME="ToC_2" HREF="#HDRINTRO">Introduction</A></B><BR>
@@ -162,27 +162,35 @@ publications for Zowe.
 </TH><TH ALIGN="CENTER" VALIGN="BOTTOM" WIDTH="1%">Form Number
 </TH><TH ALIGN="LEFT" VALIGN="BOTTOM" WIDTH="2%">Media Format
 </TH></TR><TR>
-<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="97%"><CITE>
-<A href="https://docs.zowe.org/stable/user-guide/installandconfig.html">
-https://docs.zowe.org/stable/user-guide/installandconfig.html</A> </CITE>
-</TD><TD ALIGN="CENTER" VALIGN="TOP" WIDTH="1%">online
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="97%">
+<CITE>
+<A href="https://docs.zowe.org/stable/user-guide/install-zos">
+https://docs.zowe.org/stable/user-guide/install-zos</A> </CITE>
+<BR></TD><TD ALIGN="CENTER" VALIGN="TOP" WIDTH="1%">online
 </TD><TD ALIGN="LEFT" VALIGN="TOP" WIDTH="2%">See note
 <SUP><A HREF="#LIL0">1</A></SUP>
 </TD></TR><TR>
 <TD ALIGN="LEFT" VALIGN="TOP" COLSPAN="3" WIDTH="100%"><B>Note&#58; </B>
 <OL TYPE=1>
 <P><LI><A NAME="LIL0"></A>These, and other, publications can be obtained from the
-Zowe online library, 
+Zowe online library,
 <A href="https://docs.zowe.org/stable/">
 https://docs.zowe.org/stable/.</A> 
+From the version drop-down list, find the documentation for the
+Zowe version you are using.
 </OL>
 </TD></TR></TABLE>
+<P>Requisite information can be obtained from
+<A href="https://docs.zowe.org/stable/user-guide/systemrequirements-zos">
+https://docs.zowe.org/stable/user-guide/systemrequirements-zos.</A> 
+From the version drop-down list, find the documentation for the
+Zowe version you are using.
 <P><H3><A NAME="HDRPUBOPT" HREF="#ToC_8">Optional Program Publications</A></H3>
 <P>No optional publications are provided for Zowe.
 <HR><H2><A NAME="HDRPUBFCH" HREF="#ToC_9">Program Source Materials</A></H2>
 <P>No program source materials or viewable program listings are
 provided for Zowe.
-However, program source materials can be obtained from 
+However, program source materials can be obtained from
 <A href="https://github.com/zowe/">
 https://github.com/zowe/.</A> 
 <HR><H2><A NAME="HDRPUBAUX" HREF="#ToC_10">Publications Useful During Installation</A></H2>
@@ -208,24 +216,19 @@ the installation of Zowe.
 <TD ALIGN="LEFT" VALIGN="TOP" WIDTH="99%"><CITE>IBM SMP/E for z/OS Messages, Codes, and Diagnosis</CITE>
 </TD><TD ALIGN="CENTER" VALIGN="TOP" WIDTH="1%">GA32-0883
 </TD></TR></TABLE>
-<P><B>Note: </B>
-<UL>
-<P><LI>IBM Publications Center:
-<A href="https://www.ibm.com/shop/publications/order">
-https://www.ibm.com/shop/publications/order</A> 
-<P><LI>IBM Knowledge Center:
-<A href="https://www.ibm.com/support/knowledgecenter">
-https://www.ibm.com/support/knowledgecenter</A> 
-</UL>
+<P><B>Note: </B>These publications can be found in IBM Documentation. Use a web
+browser with internet access to refer to:
+<A href="https://www.ibm.com/docs/en/zos/2.5.0?topic=zos-smpe">
+https://www.ibm.com/docs/en/zos/2.5.0?topic=zos-smpe</A> 
 <HR><H1><A NAME="HDRSUPPORT" HREF="#ToC_11">Program Support</A></H1>
 <P>This section describes the support available for Zowe.
 <HR><H2><A NAME="HDRSSUP" HREF="#ToC_12">Statement of Support Procedures</A></H2>
 <P>Report any problems which you feel might be an error in the product
-materials to the Zowe community via 
+materials to the Zowe community via
 <A href="https://github.com/zowe/community/issues/new/choose">
-https://github.com/zowe/community/issues/new/choose.</A> You may be asked
-to gather and submit additional diagnostics to assist the community in
-their analysis.
+https://github.com/zowe/community/issues/new/choose.</A> 
+You may be asked to gather and submit additional diagnostics to assist
+the community in their analysis.
 <HR><H1><A NAME="HDRSERVICE" HREF="#ToC_13">Program and Service Level Information</A></H1>
 <P>This section identifies the program and relevant service levels
 of Zowe.  The program level refers to the APAR fixes that have
@@ -233,10 +236,13 @@ been incorporated into the program. The service level refers to the
 PTFs that have been incorporated into the program.
 <HR><H2><A NAME="HDRSERVPLI" HREF="#ToC_14">Program Level Information</A></H2>
 <P>All APARs of previous releases of Zowe that were resolved
-before February 2020 have been incorporated into Zowe.
+before April 2022 have been incorporated into Zowe.
 <HR><H2><A NAME="HDRSERVSLI" HREF="#ToC_15">Service Level Information</A></H2>
 <P>No PTFs against this release of Zowe have been incorporated
 into the product package.
+<P>Zowe service can be downloaded from
+<A href="https://zowe.org/download/">
+https://zowe.org/download/.</A> 
 <HR><H1><A NAME="HDRINSRQMT" HREF="#ToC_16">Installation Requirements and Considerations</A></H1>
 <P>The following sections identify the system requirements for
 installing and activating Zowe.
@@ -316,9 +322,13 @@ product?
 </TH></TR><TR>
 <TD ALIGN="LEFT" VALIGN="TOP" WIDTH="1%">5650-ZOS
 </TD><TD ALIGN="LEFT" VALIGN="TOP" WIDTH="33%">z/OS
-</TD><TD ALIGN="LEFT" VALIGN="TOP" WIDTH="33%">V2.2.0 or the lowest supported z/OS level, whichever is more recent
+</TD><TD ALIGN="LEFT" VALIGN="TOP" WIDTH="33%">2.3.0
 </TD><TD ALIGN="LEFT" VALIGN="TOP" WIDTH="33%">N/A
 </TD><TD ALIGN="LEFT" VALIGN="TOP" WIDTH="1%">No
+</TD></TR><TR>
+<TD ALIGN="LEFT" VALIGN="TOP" COLSPAN="5" WIDTH="100%"><B>Note&#58; </B>
+The minimum product version is either what is listed in the table, or
+the currently minimum supported version, whichever is the most recent.
 </TD></TR></TABLE>
 <P><B>Note: </B>SMP/E is a requirement for Installation and is an element of
 z/OS.
@@ -326,15 +336,14 @@ z/OS.
 <P><B>Note: </B>Installation might require migration to new z/OS releases to be
 service supported.
 See 
-<A href="https://www-01.ibm.com/software/support/lifecycle/index_z.html">
-https://www-01.ibm.com/software/support/lifecycle/index_z.html.</A> 
-<P>Zowe is installed into a file system, either HFS or zFS.
+<A href="https://www.ibm.com/support/lifecycle/">
+https://www.ibm.com/support/lifecycle/</A> 
+<P>Zowe is installed into a file system.
 Before installing Zowe, you must ensure that the target system
 file system data sets are available for processing on the driving
 system. OMVS must be active on the driving system and the target
 system file data sets must be mounted on the driving system.
-<P>If you plan to install Zowe in a zFS file system, this
-requires that zFS be active on the driving system. Information on
+<P>zFS must be active on the driving system. Information on
 activating and using zFS can be found in <CITE>z/OS Distributed File
 Service zSeries File System Administration</CITE> (SC24-5989).
 <HR><H2><A NAME="HDRTSRQMT" HREF="#ToC_20">Target System Requirements</A></H2>
@@ -380,29 +389,29 @@ to operate its basic functions.
 <BR>
 Minimum VRM/Service Level
 </TH></TR><TR>
-<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="1%">5655-SDK
-</TD><TD ALIGN="LEFT" VALIGN="TOP" WIDTH="99%">IBM SDK for Node.js - z/OS V6.14.4.1 or higher
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="1%">5655-NOD
+</TD><TD ALIGN="LEFT" VALIGN="TOP" WIDTH="99%">IBM SDK for Node.js - z/OS 14.0.0 or higher
 <BR>
 See note
 <SUP><A HREF="#LIL2">1</A></SUP>
 </TD></TR><TR>
 <TD ALIGN="LEFT" VALIGN="TOP" WIDTH="1%">5655-DGH
-</TD><TD ALIGN="LEFT" VALIGN="TOP" WIDTH="99%">IBM 64-bit SDK for z/OS Java Technology Edition V8.0.0
+</TD><TD ALIGN="LEFT" VALIGN="TOP" WIDTH="99%">IBM 64-bit SDK for z/OS Java Technology Edition 8.0.0
 </TD></TR><TR>
 <TD ALIGN="LEFT" VALIGN="TOP" WIDTH="1%">5650-ZOS
-</TD><TD ALIGN="LEFT" VALIGN="TOP" WIDTH="99%">IBM z/OS Management Facility V2.2.0 or higher
+</TD><TD ALIGN="LEFT" VALIGN="TOP" WIDTH="99%">IBM z/OS Management Facility 2.3.0 or higher
 </TD></TR><TR>
 <TD ALIGN="LEFT" VALIGN="TOP" WIDTH="1%">5650-ZOS
-</TD><TD ALIGN="LEFT" VALIGN="TOP" WIDTH="99%">IBM z/OS V2.2.0 or higher
+</TD><TD ALIGN="LEFT" VALIGN="TOP" WIDTH="99%">IBM z/OS 2.3.0 or higher
 </TD></TR><TR>
 <TD ALIGN="LEFT" VALIGN="TOP" COLSPAN="2" WIDTH="100%"><B>Note&#58; </B>
+The minimum product version is either what is listed in the table, or
+the currently minimum supported version, whichever is the most recent.
 <OL TYPE=1>
 <P><LI><A NAME="LIL2"></A>The pre-requistes for Node.js itself are not required, nor is
 any configuration of Node.js required. The only requirement is the
 presence of the Node.js executable code.
 </OL>
-<P>
-<P>
 </TD></TR></TABLE>
 <P>Conditional operational requisites identify products that
 are <I>not</I> required for this product to operate its basic
@@ -421,8 +430,12 @@ Minimum VRM/Service Level
 </TH><TH ALIGN="LEFT" VALIGN="BOTTOM" WIDTH="3%">Function
 </TH></TR><TR>
 <TD ALIGN="LEFT" VALIGN="TOP" WIDTH="1%">5650-ZOS
-</TD><TD ALIGN="LEFT" VALIGN="TOP" WIDTH="96%">z/OS OpenSSH V2.2.0 or higher
+</TD><TD ALIGN="LEFT" VALIGN="TOP" WIDTH="96%">z/OS OpenSSH 2.3.0 or higher
 </TD><TD ALIGN="LEFT" VALIGN="TOP" WIDTH="3%">SSH connection
+</TD></TR><TR>
+<TD ALIGN="LEFT" VALIGN="TOP" COLSPAN="3" WIDTH="100%"><B>Note&#58; </B>
+The minimum product version is either what is listed in the table, or
+the currently minimum supported version, whichever is the most recent.
 </TD></TR></TABLE>
 <P><H4><A NAME="Header_25">Toleration/Coexistence Requisites</A></H4>
 <P>Toleration/coexistence requisites identify products that must
@@ -450,16 +463,16 @@ in 3390 Trks
 </TH><TH ALIGN="LEFT" VALIGN="BOTTOM" WIDTH="97%">Description
 </TH></TR><TR>
 <TD ALIGN="LEFT" VALIGN="TOP" WIDTH="1%">Target
-</TD><TD ALIGN="LEFT" VALIGN="TOP" WIDTH="2%">45  Tracks
+</TD><TD ALIGN="LEFT" VALIGN="TOP" WIDTH="2%">95  Tracks
 </TD><TD ALIGN="LEFT" VALIGN="TOP" WIDTH="97%"><BR></TD></TR><TR>
 <TD ALIGN="LEFT" VALIGN="TOP" WIDTH="1%">Distribution
-</TD><TD ALIGN="LEFT" VALIGN="TOP" WIDTH="2%">12045 Tracks
+</TD><TD ALIGN="LEFT" VALIGN="TOP" WIDTH="2%">12980 Tracks
 </TD><TD ALIGN="LEFT" VALIGN="TOP" WIDTH="97%"><BR></TD></TR><TR>
 <TD ALIGN="LEFT" VALIGN="TOP" WIDTH="1%">File System(s)
-</TD><TD ALIGN="LEFT" VALIGN="TOP" WIDTH="2%">21000 Tracks
+</TD><TD ALIGN="LEFT" VALIGN="TOP" WIDTH="2%">27900 Tracks
 </TD><TD ALIGN="LEFT" VALIGN="TOP" WIDTH="97%"><BR></TD></TR><TR>
 <TD ALIGN="LEFT" VALIGN="TOP" WIDTH="1%">Web Download
-</TD><TD ALIGN="LEFT" VALIGN="TOP" WIDTH="2%">38666 Tracks
+</TD><TD ALIGN="LEFT" VALIGN="TOP" WIDTH="2%">39945 Tracks
 </TD><TD ALIGN="LEFT" VALIGN="TOP" WIDTH="97%">
 These are temporary data sets, which can be removed after the SMP/E
 install.
@@ -603,7 +616,7 @@ Blks
 </TD><TD ALIGN="CENTER" VALIGN="TOP">PDS
 </TD><TD ALIGN="CENTER" VALIGN="TOP" WIDTH="1%">FB
 </TD><TD ALIGN="RIGHT" VALIGN="TOP" WIDTH="1%">80
-</TD><TD ALIGN="RIGHT" VALIGN="TOP">(20,200)
+</TD><TD ALIGN="RIGHT" VALIGN="TOP">(5250,525)
 </TD><TD ALIGN="RIGHT" VALIGN="TOP">50
 </TD></TR><TR>
 <TD ALIGN="LEFT" VALIGN="TOP" WIDTH="98%">SYSUT1
@@ -611,7 +624,7 @@ Blks
 </TD><TD ALIGN="CENTER" VALIGN="TOP">SEQ
 </TD><TD ALIGN="CENTER" VALIGN="TOP" WIDTH="1%">--
 </TD><TD ALIGN="RIGHT" VALIGN="TOP" WIDTH="1%">--
-</TD><TD ALIGN="RIGHT" VALIGN="TOP">(20,200)
+</TD><TD ALIGN="RIGHT" VALIGN="TOP">(5250,525)
 </TD><TD ALIGN="RIGHT" VALIGN="TOP">0
 </TD></TR></TABLE>
 <BR>
@@ -671,7 +684,7 @@ Blks
 </TD><TD ALIGN="CENTER" VALIGN="TOP">PDSE
 </TD><TD ALIGN="CENTER" VALIGN="TOP" WIDTH="1%">FB
 </TD><TD ALIGN="RIGHT" VALIGN="TOP" WIDTH="1%">80
-</TD><TD ALIGN="RIGHT" VALIGN="TOP">(12000,3000)
+</TD><TD ALIGN="RIGHT" VALIGN="TOP">(5250,5250)
 </TD><TD ALIGN="RIGHT" VALIGN="TOP">50
 </TD></TR></TABLE>
 <P>The following figures describe the target and distribution libraries
@@ -748,8 +761,18 @@ Blks
 </TD><TD ALIGN="CENTER" VALIGN="TOP">PDSE
 </TD><TD ALIGN="CENTER" VALIGN="TOP">U
 </TD><TD ALIGN="RIGHT" VALIGN="TOP" WIDTH="1%">0
-</TD><TD ALIGN="RIGHT" VALIGN="TOP">30
+</TD><TD ALIGN="RIGHT" VALIGN="TOP">60
 </TD><TD ALIGN="RIGHT" VALIGN="TOP">N/A
+</TD></TR><TR>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="1%">SZWEEXEC
+</TD><TD ALIGN="LEFT" VALIGN="TOP" WIDTH="96%">Scripts
+</TD><TD ALIGN="LEFT" VALIGN="TOP" WIDTH="1%">ANY
+</TD><TD ALIGN="CENTER" VALIGN="TOP">U
+</TD><TD ALIGN="CENTER" VALIGN="TOP">PDSE
+</TD><TD ALIGN="CENTER" VALIGN="TOP">FB
+</TD><TD ALIGN="RIGHT" VALIGN="TOP" WIDTH="1%">80
+</TD><TD ALIGN="RIGHT" VALIGN="TOP">15
+</TD><TD ALIGN="RIGHT" VALIGN="TOP">30
 </TD></TR><TR>
 <TD ALIGN="LEFT" VALIGN="TOP" WIDTH="1%">SZWESAMP
 </TD><TD ALIGN="LEFT" VALIGN="TOP" WIDTH="96%">Samples
@@ -758,7 +781,7 @@ Blks
 </TD><TD ALIGN="CENTER" VALIGN="TOP">PDSE
 </TD><TD ALIGN="CENTER" VALIGN="TOP">FB
 </TD><TD ALIGN="RIGHT" VALIGN="TOP" WIDTH="1%">80
-</TD><TD ALIGN="RIGHT" VALIGN="TOP">15
+</TD><TD ALIGN="RIGHT" VALIGN="TOP">20
 </TD><TD ALIGN="RIGHT" VALIGN="TOP">30
 </TD></TR></TABLE>
 <BR>
@@ -836,7 +859,7 @@ Blks
 </TD><TD ALIGN="CENTER" VALIGN="TOP">PDSE
 </TD><TD ALIGN="CENTER" VALIGN="TOP" WIDTH="1%">U
 </TD><TD ALIGN="RIGHT" VALIGN="TOP" WIDTH="1%">0
-</TD><TD ALIGN="RIGHT" VALIGN="TOP">30
+</TD><TD ALIGN="RIGHT" VALIGN="TOP">60
 </TD><TD ALIGN="RIGHT" VALIGN="TOP">N/A
 </TD></TR><TR>
 <TD ALIGN="LEFT" VALIGN="TOP" WIDTH="98%">AZWESAMP
@@ -844,7 +867,7 @@ Blks
 </TD><TD ALIGN="CENTER" VALIGN="TOP">PDSE
 </TD><TD ALIGN="CENTER" VALIGN="TOP" WIDTH="1%">FB
 </TD><TD ALIGN="RIGHT" VALIGN="TOP" WIDTH="1%">80
-</TD><TD ALIGN="RIGHT" VALIGN="TOP">15
+</TD><TD ALIGN="RIGHT" VALIGN="TOP">20
 </TD><TD ALIGN="RIGHT" VALIGN="TOP">30
 </TD></TR><TR>
 <TD ALIGN="LEFT" VALIGN="TOP" WIDTH="98%">AZWEZFS
@@ -852,7 +875,7 @@ Blks
 </TD><TD ALIGN="CENTER" VALIGN="TOP">PDSE
 </TD><TD ALIGN="CENTER" VALIGN="TOP" WIDTH="1%">VB
 </TD><TD ALIGN="RIGHT" VALIGN="TOP" WIDTH="1%">6995
-</TD><TD ALIGN="RIGHT" VALIGN="TOP">12000
+</TD><TD ALIGN="RIGHT" VALIGN="TOP">12900
 </TD><TD ALIGN="RIGHT" VALIGN="TOP">30
 </TD></TR></TABLE>
 <P>The following figures list data sets that are not used by Zowe,
@@ -914,7 +937,7 @@ Blks
 </TD><TD ALIGN="CENTER" VALIGN="TOP">PDSE
 </TD><TD ALIGN="CENTER" VALIGN="TOP" WIDTH="1%">FB
 </TD><TD ALIGN="RIGHT" VALIGN="TOP" WIDTH="1%">80
-</TD><TD ALIGN="RIGHT" VALIGN="TOP">5
+</TD><TD ALIGN="RIGHT" VALIGN="TOP">7
 </TD><TD ALIGN="RIGHT" VALIGN="TOP">N/A
 </TD></TR><TR>
 <TD ALIGN="LEFT" VALIGN="TOP" WIDTH="98%">hlq.ZOWE.AZWE002.F2
@@ -922,7 +945,7 @@ Blks
 </TD><TD ALIGN="CENTER" VALIGN="TOP">PDSE
 </TD><TD ALIGN="CENTER" VALIGN="TOP" WIDTH="1%">FB
 </TD><TD ALIGN="RIGHT" VALIGN="TOP" WIDTH="1%">80
-</TD><TD ALIGN="RIGHT" VALIGN="TOP">5
+</TD><TD ALIGN="RIGHT" VALIGN="TOP">13
 </TD><TD ALIGN="RIGHT" VALIGN="TOP">N/A
 </TD></TR><TR>
 <TD ALIGN="LEFT" VALIGN="TOP" WIDTH="98%">hlq.ZOWE.AZWE002.F3
@@ -930,7 +953,7 @@ Blks
 </TD><TD ALIGN="CENTER" VALIGN="TOP">PDSE
 </TD><TD ALIGN="CENTER" VALIGN="TOP" WIDTH="1%">U
 </TD><TD ALIGN="RIGHT" VALIGN="TOP" WIDTH="1%">0
-</TD><TD ALIGN="RIGHT" VALIGN="TOP">30
+</TD><TD ALIGN="RIGHT" VALIGN="TOP">41
 </TD><TD ALIGN="RIGHT" VALIGN="TOP">N/A
 </TD></TR><TR>
 <TD ALIGN="LEFT" VALIGN="TOP" WIDTH="98%">hlq.ZOWE.AZWE002.F4
@@ -938,7 +961,7 @@ Blks
 </TD><TD ALIGN="CENTER" VALIGN="TOP">PDSE
 </TD><TD ALIGN="CENTER" VALIGN="TOP" WIDTH="1%">VB
 </TD><TD ALIGN="RIGHT" VALIGN="TOP" WIDTH="1%">6995
-</TD><TD ALIGN="RIGHT" VALIGN="TOP">9900
+</TD><TD ALIGN="RIGHT" VALIGN="TOP">10722
 </TD><TD ALIGN="RIGHT" VALIGN="TOP">N/A
 </TD></TR><TR>
 <TD ALIGN="LEFT" VALIGN="TOP" WIDTH="98%">hlq.ZOWE.AZWE002.SMPMCS
@@ -946,7 +969,7 @@ Blks
 </TD><TD ALIGN="CENTER" VALIGN="TOP">SEQ
 </TD><TD ALIGN="CENTER" VALIGN="TOP" WIDTH="1%">FB
 </TD><TD ALIGN="RIGHT" VALIGN="TOP" WIDTH="1%">80
-</TD><TD ALIGN="RIGHT" VALIGN="TOP">1
+</TD><TD ALIGN="RIGHT" VALIGN="TOP">2
 </TD><TD ALIGN="RIGHT" VALIGN="TOP">N/A
 </TD></TR><TR>
 <TD ALIGN="LEFT" VALIGN="TOP" WIDTH="98%">z/OS UNIX file system
@@ -954,7 +977,7 @@ Blks
 </TD><TD ALIGN="CENTER" VALIGN="TOP">zFS
 </TD><TD ALIGN="CENTER" VALIGN="TOP" WIDTH="1%">N/A
 </TD><TD ALIGN="RIGHT" VALIGN="TOP" WIDTH="1%">N/A
-</TD><TD ALIGN="RIGHT" VALIGN="TOP">28725
+</TD><TD ALIGN="RIGHT" VALIGN="TOP">29160
 </TD><TD ALIGN="RIGHT" VALIGN="TOP">N/A
 </TD></TR><TR>
 <TD ALIGN="LEFT" VALIGN="TOP" COLSPAN="7" WIDTH="100%"><B>Note&#58; </B> These are temporary data sets, which can be removed after
@@ -1063,14 +1086,14 @@ and directory, for the download package.
 //SYSIN    DD *
   DEFINE CLUSTER ( -
          NAME(@zfs_dsn@) -
-         TRK(28725 30) -
+         TRK(29160 30) -
          LINEAR -
          SHAREOPTIONS(3) -
          )
 //*
 //         SET ZFSDSN='@zfs_dsn@'
 //FORMAT   EXEC PGM=IOEAGFMT,REGION=0M,COND=(0,LT),
-//            PARM='-aggregate &ZFSDSN -compat'
+//            PARM='-aggregate &amp;ZFSDSN -compat'
 //*STEPLIB  DD DISP=SHR,DSN=IOE.SIOELMOD        before z/OS 1.13
 //*STEPLIB  DD DISP=SHR,DSN=SYS1.SIEALNKE       from z/OS 1.13
 //SYSPRINT DD SYSOUT=*
@@ -1136,14 +1159,14 @@ Password:</I> <B>tsopw</B>
 <I>200 Port request OK.
 125 Storing data set @zfs_path@/AZWE002.readme.txt
 250 Transfer completed successfully.
-ftp: 19278 bytes sent in 0.01 sec. (1366.67 Kb/s)
+ftp: 9412 bytes sent in 0.01 sec. (1366.67 Kb/s)
 </I>ftp&gt; <B>binary</B>
 <I>200 Representation type is Image
 </I>ftp&gt; <B>put d:\AZWE002.pax.Z</B>
 <I>200 Port request OK.
 125 Storing data set @zfs_path@/AZWE002.pax.Z
 250 Transfer completed successfully.
-ftp: #FTPSIZPAX bytes sent in 1.26 sec. (1040.52 Kb/s)
+ftp: 481549824 bytes sent in 1.26 sec. (1040.52 Kb/s)
 </I>ftp&gt; <B>quit</B>
 <I>221 Quit command received. Goodbye.
 </I></PRE><P><H3><A NAME="HDRUNPAX" HREF="#ToC_37">Extract and expand the compressed SMPMCS and RELFILEs</A></H3>
@@ -1164,11 +1187,11 @@ JCL is repeated here for your convenience.
     If this occurs, specify a non-SMS managed volume for the
     GIMUNZIP allocation of the data sets. For example:
 <BR>
-<ARCHDEF archid="..."
+&lt;ARCHDEF archid="..."
 <BR>
          storclas="storage_class" volume="data_set_volume"
 <BR>
-         newname="..."/>
+         newname="..."/&gt;
 </UL>
 <PRE>//EXTRACT  JOB &lt;job information&gt;
 //*
@@ -1278,7 +1301,7 @@ SMP/E RECEIVE (refer to <A HREF="#HDRSMPREC">"Perform SMP/E RECEIVE"</A>) then c
 jobs from the SMPTLIB data sets to a work data
 set for editing and submission.  See <A HREF="#TBLJOB">Table 15</A> to find the
 appropriate data set.
-<P>You can also copy the sample installation jobs from the tape or
+<P>You can also copy the sample installation jobs from the
 product files by submitting the following job.
 Before you submit the job, add a job card and change the lowercase
 parameters to uppercase values to meet the requirements of your site.
@@ -1295,8 +1318,10 @@ parameters to uppercase values to meet the requirements of your site.
 //            UNIT=SYSALLDA
 //SYSUT3   DD UNIT=SYSALLDA,SPACE=(CYL,(1,1))
 //SYSIN    DD *
-    COPY INDD=<B>IN</B>,OUTDD=OUT
-/*
+  COPY INDD=<B>IN</B>,OUTDD=OUT
+  SELECT MEMBER=(ZWEMKDIR,&ZREXZFS.,ZWE1SMPE,ZWE2RCVE,ZWE3ALOC)
+  SELECT MEMBER=(ZWE4ZFS,ZWE5MKD,ZWE6DDEF,ZWE7APLY,ZWE8ACPT)
+//*
 </PRE><P><B>Note: </B> When Zowe is downloaded from the web, the RELFILE data
 set name will be prefixed by your chosen high level qualifier, as
 documented in section <A HREF="#HDRUNPAX">"Extract and expand the compressed SMPMCS and RELFILEs"</A>.
@@ -1375,21 +1400,20 @@ z/OS UNIX file system will be mounted.
 <P><B>Expected Return Codes and Messages:</B>
 You will receive a return code of 0 if this job runs correctly.
 <P><H3><A NAME="HDRMKDIR" HREF="#ToC_43">Allocate File System Paths</A></H3>
-<P>The target system HFS or zFS data set must be mounted on the driving
+<P>The target file system data set must be mounted on the driving
 system when running the sample ZWE5MKD job since the job will create
-paths in the HFS or zFS.
+paths in the file system.
 <P>Before running the sample job to create the paths in the file system,
 you must ensure that OMVS is active on the driving system and that the
-target system's HFS or zFS file system is mounted to the driving system.
-zFS must be active on the driving system if you are installing Zowe
-into a file system that is zFS.
-<P>If you plan to install Zowe into a new HFS or zFS file system,
+target system's file system is mounted to the driving system.
+zFS must be active on the driving system.
+<P>If you plan to install Zowe into a new file system,
 you must create the mountpoint and mount the new file system to the
 driving system for Zowe.
 <P>The recommended mountpoint is <I>/usr/lpp/zowe</I>.
-<P>Edit and submit sample job ZWE5MKD to allocate the HFS or zFS paths
-for Zowe.  Consult the instructions in the sample job for more
-information.
+<P>Edit and submit sample job ZWE5MKD to allocate the file system
+paths for Zowe.  Consult the instructions in the sample job for
+more information.
 <P>If you create a new file system for this product, consider
 updating the BPXPRMxx PARMLIB member to mount the new file system at IPL
 time. This action can be helpful if an IPL occurs before the
@@ -1542,12 +1566,14 @@ in read-only mode during execution, then you do not have to take
 further actions to activate Zowe.
 <HR><H2><A NAME="HDRCUSTOM" HREF="#ToC_51">Product Customization</A></H2>
 <P>The publication <CITE>
-<A href="https://docs.zowe.org/stable/user-guide/installandconfig.html">
-https://docs.zowe.org/stable/user-guide/installandconfig.html</A> </CITE> (online) contains
+<A href="https://docs.zowe.org/stable/user-guide/install-zos">
+https://docs.zowe.org/stable/user-guide/install-zos</A> </CITE> (online) contains
 the necessary information to customize and use Zowe.
-<P>Additional documentation can be found at 
+<P>Additional documentation can be found at
 <A href="https://docs.zowe.org/stable/">
 https://docs.zowe.org/stable/.</A> 
+From the version drop-down list, find the documentation for the
+Zowe version you are using.
 <HR><H1><A NAME="HDRNOTICES" HREF="#ToC_52">Notices</A></H1>
 <P>APAR numbers are provided in this document to assist in locating PTFs
 that may be required.  Ongoing problem reporting may result in
@@ -1560,13 +1586,13 @@ Other product and service names might be trademarks of Linux Foundation or
 other companies.
 <BR>
 <HR><H1><A NAME="Header_54" HREF="#ToC_54">Reader's Comments</A></H1>
-<P><B>Program Directory for Zowe Open Source Project, February 2020</B>
+<P><B>Program Directory for Zowe Open Source Project, April 2022</B>
 <P>
 We appreciate your input on this publication. Feel free to comment on
 the clarity, accuracy, and completeness of the information or give us
 any other feedback that you might have.
 <P>
-Report your comments in 
+Report your comments in
 <A href="https://github.com/zowe/community/issues/new/choose">
 https://github.com/zowe/community/issues/new/choose.</A> 
 <P>

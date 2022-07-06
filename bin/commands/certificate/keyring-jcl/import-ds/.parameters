@@ -11,3 +11,4 @@ zosmf-ca||string||_auto_|||Labels of z/OSMF root certificate authorities. Specif
 zosmf-user||string||IZUSVR|||z/OSMF user name. This is used to automatically detect z/OSMF root certificate authorities.
 import-ds-name||string|required||||Name of the data set holds certificate to import into keyring.
 import-ds-password||string|required||||Password of the data set holds certificate to import.
+ignore-security-failures||boolean|||||Whether to ignore security setup job failures.

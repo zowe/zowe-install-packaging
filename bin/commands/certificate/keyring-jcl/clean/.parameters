@@ -6,3 +6,4 @@ keyring-owner||string|required||||Owner of the keyring.
 keyring-name||string|required||||Name of the keyring.
 alias|a|string|required|localhost|||Certificate alias name.
 ca-alias|ca|string|required|localca|||Certificate authority alias name.
+ignore-security-failures||boolean|||||Whether to ignore security setup job failures.

@@ -7,7 +7,7 @@ export TMP_ZFS="ZOWEAD2.TMP.ZFS"
 export ZOWE_MOUNT="/u/zwe/zowe-smpe/"
 export VOLUME="ZOS003"
 export TEST_HLQ="ZOWEAD2.PSWIT"
-export SYSAFF=2964 
+export SYSAFF="(2964,S0W1)" 
 export ACCOUNT=1
 
 # Variables for workflows

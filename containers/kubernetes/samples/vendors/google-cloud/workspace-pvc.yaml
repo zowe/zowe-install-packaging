@@ -1,14 +1,13 @@
-# Google Cloud Kubernetes Engine doesn't support persistent volume be shared by multiple nodes.
-# If you see error messages like this,
-#    FailedMount Failed to attach volume "zowe-workspace-pv" on node "xyz" with: googleapi: Error 400: The disk resource 'zowe-workspace-pv' is already being used by 'xyz'
-# you may define persistent volume from Filestore.
-
 ---
 apiVersion: v1
 kind: PersistentVolume
 metadata:
   name: zowe-workspace-pv
   namespace: zowe
+  labels:
+    app.kubernetes.io/name: zowe
+    app.kubernetes.io/instance: zowe
+    app.kubernetes.io/managed-by: manual
 spec:
   capacity:
     storage: 10G

@@ -7,7 +7,7 @@ metadata:
   labels:
     app.kubernetes.io/name: zowe
     app.kubernetes.io/instance: zowe
-    app.kubernetes.io/version: "2.0.0"
+    app.kubernetes.io/version: "2.1.0"
     app.kubernetes.io/component: job-explorer-ip
     app.kubernetes.io/managed-by: manual
 spec:
@@ -23,6 +23,7 @@ spec:
         runAsUser: 20000
         runAsGroup: 20000
         fsGroup: 20000
+        runAsNonRoot: true
       serviceAccountName: zowe-sa
       volumes:
         - name: tmp
@@ -44,7 +45,7 @@ spec:
             claimName: zowe-workspace-pvc
       containers:
         - name: explorer-ip
-          image: zowe-docker-release.jfrog.io/ompzowe/explorer-ip:2-ubuntu
+          image: zowe-docker-snapshot.jfrog.io/ompzowe/explorer-ip:2.0.0-ubuntu.v2-x-master
           imagePullPolicy: Always
           resources:
             requests:
@@ -63,6 +64,8 @@ spec:
           securityContext:
             readOnlyRootFilesystem: true
             allowPrivilegeEscalation: false
+            privileged: false
+            runAsNonRoot: true
             capabilities:
               drop:
                 - all
@@ -84,8 +87,7 @@ spec:
               mountPath: "/home/zowe/instance/workspace"
       initContainers:
         - name: init-zowe
-          # image: zowe-docker-release.jfrog.io/ompzowe/zowe-launch-scripts:2-ubuntu
-          image: zowe-docker-snapshot.jfrog.io/ompzowe/zowe-launch-scripts:2.0.0-ubuntu.v2-x-staging
+          image: zowe-docker-snapshot.jfrog.io/ompzowe/zowe-launch-scripts:2.1.0-ubuntu.v2-x-staging
           imagePullPolicy: Always
           resources:
             requests:
@@ -97,6 +99,8 @@ spec:
           securityContext:
             readOnlyRootFilesystem: true
             allowPrivilegeEscalation: false
+            privileged: false
+            runAsNonRoot: true
             capabilities:
               drop:
                 - all
@@ -107,27 +111,3 @@ spec:
               mountPath: "/home/zowe/runtime"
             - name: zowe-workspace
               mountPath: "/home/zowe/instance/workspace"
-        - name: update-workspace-permission
-          image: busybox:1.28
-          command: ['sh', '-c', 'OWNER=`stat -c "%u:%g" /home/zowe/instance/workspace` && PERMISSION=`stat -c "%a" /home/zowe/instance/workspace` && echo "Zowe workspace owner is ${OWNER} with ${PERMISSION} permission" && if [ "${OWNER}" != "20000:20000" -a "${PERMISSION}" != "777" ]; then chown -R 20000:20000 /home/zowe/instance/workspace; fi']
-          imagePullPolicy: Always
-          resources:
-            requests:
-              memory: "64Mi"
-              cpu: "10m"
-            limits:
-              memory: "128Mi"
-              cpu: "100m"
-          volumeMounts:
-            - name: zowe-workspace
-              mountPath: "/home/zowe/instance/workspace"
-          securityContext:
-            readOnlyRootFilesystem: true
-            allowPrivilegeEscalation: false
-            capabilities:
-              drop:
-                - all
-              add:
-                - CHOWN
-            runAsUser: 0
-            runAsGroup: 0

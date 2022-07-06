@@ -28,37 +28,37 @@ describe('test explorer(s) api docs', function() {
 
   it('should be able to access jobs swagger json', async function() {
     const res = await hq.request({
-      url: '/jobs/v1',
+      url: '/jobs',
     });
 
     expect(res).to.have.property('status');
     expect(res.status).to.equal(HTTP_STATUS.SUCCESS);
     expect(res.headers).to.have.property('content-type');
     expect(res.headers['content-type']).to.equal('application/json');
-    expect(res.data).to.have.property('swagger');
+    expect(res.data).to.have.property('openapi');
   });
 
   it('should be able to access datasets swagger json', async function() {
     const res = await hq.request({
-      url: '/datasets/v1',
+      url: '/datasets',
     });
 
     expect(res).to.have.property('status');
     expect(res.status).to.equal(HTTP_STATUS.SUCCESS);
     expect(res.headers).to.have.property('content-type');
     expect(res.headers['content-type']).to.equal('application/json');
-    expect(res.data).to.have.property('swagger');
+    expect(res.data).to.have.property('openapi');
   });
 
   it('should be able to access unixfiles swagger json', async function() {
     const res = await hq.request({
-      url: '/unixfiles/v1',
+      url: '/unixfiles',
     });
 
     expect(res).to.have.property('status');
     expect(res.status).to.equal(HTTP_STATUS.SUCCESS);
     expect(res.headers).to.have.property('content-type');
     expect(res.headers['content-type']).to.equal('application/json');
-    expect(res.data).to.have.property('swagger');
+    expect(res.data).to.have.property('openapi');
   });
 });

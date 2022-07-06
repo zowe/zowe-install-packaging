@@ -76,6 +76,7 @@
 - name: Initialize zowe.yaml
   raw: >-
     mkdir -p "{{ zowe_instance_dir }}" && \
+    chmod 777 "{{ zowe_instance_dir }}" && \
     cp "{{ zowe_root_dir }}/example-zowe.yaml" "{{ zowe_instance_dir }}/zowe.yaml"
   when: zowe_yaml_exists.rc != 0
 
@@ -174,7 +175,6 @@
         "zowe.setup.certificate.keyring.import.dsName": "{{ zowe_external_certficate }}"
         "zowe.setup.certificate.keyring.import.password": "{{ zowe_external_certficate_alias }}"
   - name: Update keyring setup to help import z/OSMF CA
-    when: zowe_external_certficate is not none and zowe_external_certficate != ''
     import_role:
       name: zos
       tasks_from: update_zowe_yaml
@@ -290,11 +290,12 @@
       "components.gateway.apiml.security.x509.enabled": "{{ zowe_apiml_security_x509_enabled|string|lower }}"
       "components.gateway.apiml.security.auth.provider": "{{ zowe_apiml_security_auth_provider|string|lower }}"
       "components.gateway.apiml.security.auth.zosmf.jwtAutoconfiguration": "{{ zowe_apiml_security_zosmf_jwt_autoconfiguration_mode }}"
+      # desktop customizations
+      "zowe.environments.ZWED_SSH_PORT": "{{ zowe_zlux_terminal_ssh_port }}"
+      "zowe.environments.ZWED_TN3270_PORT": "{{ zowe_zlux_terminal_telnet_port }}"
+      # "zowe.environments.ZWED_TN3270_SECURITY": "{{ zowe_zlux_terminal_telnet_security_type }}"
       # FIXME: uncertain configs
       # sed -e "s+^ZWES_XMEM_SERVER_NAME=.*\$+ZWES_XMEM_SERVER_NAME={{ zowe_zss_xmem_name }}+" | \
-      # sed -e "s+^ZWED_SSH_PORT=.*\$+ZWED_SSH_PORT={{ zowe_zlux_terminal_ssh_port }}+" | \
-      # sed -e "s+^ZWED_TN3270_PORT=.*\$+ZWED_TN3270_PORT={{ zowe_zlux_terminal_telnet_port }}+" | \
-      # sed -e "s+^ZWED_TN3270_SECURITY=.*\$+ZWED_TN3270_SECURITY={{ zowe_zlux_terminal_telnet_security_type }}+" | \
 
 - name: Update zowe.yaml components enable status
   when: zowe_launch_components != '' and zowe_launch_components is not none

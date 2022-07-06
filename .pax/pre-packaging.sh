@@ -313,7 +313,7 @@ find . -name ./SMPE             -prune \
     -o -name "./ZWE*"           -prune \
     -o -name ./fingerprint      -prune \
     -o -type f -print > "${BASE_DIR}/fingerprints/files.in"
-java -cp "${ZOWE_ROOT_DIR}/bin/utils" HashFiles "${BASE_DIR}/fingerprints/files.in" > "${ZOWE_ROOT_DIR}/fingerprint/RefRuntimeHash-${ZOWE_VERSION}.txt"
+java -cp "${ZOWE_ROOT_DIR}/bin/utils" HashFiles "${BASE_DIR}/fingerprints/files.in" | sort > "${ZOWE_ROOT_DIR}/fingerprint/RefRuntimeHash-${ZOWE_VERSION}.txt"
 echo "[$SCRIPT_NAME] cleanup fingerprints code"
 rm -fr "${BASE_DIR}/fingerprints"
 

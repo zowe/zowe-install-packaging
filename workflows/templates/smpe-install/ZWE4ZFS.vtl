@@ -110,12 +110,7 @@
 //*    and resubmit this job.
 //*
 //********************************************************************
-#if($ibmTemplate == 'NO' || !$!ibmTemplate)
 //         EXPORT SYMLIST=*
-#end
-#if($ibmTemplate == 'YES')
-//         EXPORT SYMLIST=(DSN)
-#end
 //*
 //         SET DSN='${fsdsn}'
 #if($ibmTemplate == 'NO' || !$!ibmTemplate)
@@ -124,6 +119,7 @@
 //         SET DTCLAS='${dataclass}'
 //         SET MGCLAS='${mgmtclass}'
 #end
+//         SET ZFSSPACE='TRACKS(27900 2700)'
 //*
 //ZFSALLOC EXEC PGM=IDCAMS,REGION=0M,COND=(4,LT)
 //SYSPRINT DD SYSOUT=*
@@ -146,19 +142,13 @@
     MANAGEMENTCLASS(${fmclass})  -
 #end
      LINEAR -
-     TRACKS(21000 2100) -
+     &ZFSSPACE -
      SHAREOPTIONS(3) -
    )
 //*
 //ZFSFORMT EXEC PGM=IOEAGFMT,REGION=0M,COND=(4,LT),
 //            PARM='-aggregate &DSN -compat'
-//*STEPLIB  DD DISP=SHR,DSN=IOE.SIOELMOD        before z/OS 1.13
-#if($ibmTemplate == 'NO' || !$!ibmTemplate)
-//STEPLIB  DD DISP=SHR,DSN=SYS1.SIEALNKE       from z/OS 1.13
-#end
-#if($ibmTemplate == 'YES')
-//*STEPLIB  DD DISP=SHR,DSN=SYS1.SIEALNKE       from z/OS 1.13
-#end
+//STEPLIB  DD DISP=SHR,DSN=SYS1.SIEALNKE
 //SYSPRINT DD SYSOUT=*
 //*
 //MOUNT    EXEC PGM=IKJEFT01,REGION=0M,COND=(4,LT),

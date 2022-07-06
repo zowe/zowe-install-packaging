@@ -23,7 +23,13 @@ if [ -z "${security_stcs_zowe}" ]; then
   security_stcs_zowe=${ZWE_PRIVATE_DEFAULT_ZOWE_STC}
 fi
 # read job name and apply default value
-jobname=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.job.name")
+jobname=
+if [ -n "${ZWE_CLI_PARAMETER_HA_INSTANCE}" ]; then
+  jobname=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".haInstances.${ZWE_CLI_PARAMETER_HA_INSTANCE}.zowe.job.name")
+fi
+if [ -z "${jobname}" ]; then
+  jobname=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.job.name")
+fi
 if [ -z "${jobname}" ]; then
   jobname="${security_stcs_zowe}"
 fi
@@ -53,4 +59,4 @@ fi
 
 ###############################
 # exit message
-print_level1_message "Job ${jobname} is stopped successfully."
+print_level1_message "Terminate command on job ${jobname} is sent successfully. Please check job log for details."
