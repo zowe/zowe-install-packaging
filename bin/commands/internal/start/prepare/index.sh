@@ -15,6 +15,11 @@
 # This command prepares everything needed to start Zowe.
 ################################################################################
 
+if [ "${ZWE_CLI_CONFIGMGR}" = "true" ]; then
+  _CEE_RUNOPTS="XPLINK(ON),HEAPPOOLS(OFF)" ${ZWE_zowe_runtimeDirectory}/bin/utils/configmgr -script "${ZWE_zowe_runtimeDirectory}/bin/commands/internal/start/prepare/cli.js"
+else
+
+
 ################################################################################
 # FUNCTIONS
 
@@ -385,3 +390,5 @@ configure_components
 ###############################
 # display instance prepared info
 print_formatted_info "ZWELS" "zwe-internal-start-prepare:${LINENO}" "Zowe runtime environment prepared"
+
+fi
