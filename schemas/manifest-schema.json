@@ -1,0 +1,218 @@
+{
+  "$schema": "https://json-schema.org/draft/2019-09/schema",
+  "$id": "https://zowe.org/schemas/v2/server-component-manifest",
+  "title": "Zowe server component manifest file",
+  "description": "Manifest file spec for declaring properties of a zowe server component",
+  "type": "object",
+  "additionalProperties": true,
+  "required": [ "name", "id", "schemas" ],
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Defines a short, computer-readable name of the component. This component name is used as directory name after it is installed. The allowed characters in the name are alphabets, numbers, hyphen (-) and underscore (_). For example, 'explorer-jes' is a valid extension name."
+    },
+    "id": {
+      "$ref": "/schemas/v2/server-common#zoweReverseDomainNotation",
+      "description": "Defines a long, computer-readable identifier of the component. If the component is hosted as one of the projects in Open Mainframe Project, the identifier also matches the component path in the Zowe Artifactory. For example, 'org.zowe.explorer-jes' is a valid identifier. You can locate the component's official releases by looking into the 'libs-release-local/org/zowe/explorer-jes/' directory in the Zowe Artifactory (https://zowe.jfrog.io/ui/repos/tree/General/libs-release-local%2Forg%2Fzowe%2Fexplorer-jes)"
+    },
+    "version": {
+      "$ref": "/schemas/v2/server-common#zoweSemverVersion",
+      "description": "This is the current version of the component without the prefix of v. For example, 2.0.0 is a valid version value."
+    },
+    "title": {
+      "type": "string",
+      "description": "Defines a short human-readable name for this component. This value will also be used as the default title for API Catalog tile, or App Framework plug-in title. For example, 'JES Explorer' is a valid title for the 'explorer-jes' component."
+    },
+    "description": {
+      "type": "string",
+      "description": "Defines a long human-readable description of this component. There is no restriction on what you can put in the field."
+    },
+    "license": {
+      "type": "string",
+      "description": "Defines the license code of the component. For example, Zowe core components have EPL-2.0 value in this field."
+    },
+    "schemas": {
+      "type": "object",
+      "description": "Defines the location of json schema files that are compatible with certain portions of Zowe as denoted by each child property.",
+      "additionalProperties": false,
+      "properties": {
+        "configs": {
+          "type": "string",
+          "description": "Defines the location of the json schema file which extends the Zowe Component base schema."
+        }
+      }
+    },
+    "autoEncoding": {
+      "type": "array",
+      "description": "An array of paths to recursively search and automatically tag according to file extension, via execution of the tag-files script 'https://github.com/zowe/zowe-install-packaging/blob/v2.x/master/bin/utils/tag-files.sh'"
+    },
+    "homepage": {
+      "type": "string",
+      "description": "A URL pointing to the homepage of the group that wrote this plugin"
+    },
+    "keywords": {
+      "type": "array",
+      "description": "A list of terms that describe this component for easy search and indexing",
+      "items": {
+        "type": "string"
+      }
+    },
+    "repository": {
+      "type": "object",
+      "description": "The type and location of the component source code repository, if applicable",
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [ "accurev", "arch", "azure", "bazaar", "bitkeeper", "clearcase", "coop", "cvs", "darcs", "dat", "dimensions", "endevor", "fossil", "git", "icmanage", "integrity", "mercurial", "monotone", "perforce", "plastic", "pvcs", "rtc", "rcs", "scmanywhere", "sccs", "sclm", "starteam", "svn", "surround", "synergy", "vault", "vesta", "vss" ],
+          "description": "The type of version control system used"
+        },
+        "url": {
+          "type": "string",
+          "description": "The URL where your source code repository is located"
+        }
+      }
+    },
+    "build": {
+      "type": "object",
+      "description": "Defines the build information of the current package, including git commit hash, and so on. When Zowe core components define manifest file, these fields are left as template variables. The template will be updated when a publishable package is created.",
+      "additionalProperties": false,
+      "properties": {
+        "branch": {
+          "type": "string",
+          "description": "It indicates which branch this package is built from."
+        },
+        "number": {
+          "type": "string",
+          "description": "You may create multiple packages in the same branch. This is the sequential number of the current package."
+        },
+        "commitHash": {
+          "type": "string",
+          "description": "This is the commit hash of the package that can be used to match the exact source code in the repository. Zowe core components usually use 'git rev-parse --verify HEAD' to retrieve the commit hash."
+        },
+        "timestamp": {
+          "type": "integer",
+          "description": "This is the UNIX timestamp when the package is created."
+        }
+      }
+    },
+    "commands": {
+      "type": "object",
+      "description": "This defines actions that should be taken when the component is installed, configured, started, or tested. You must issue this command with one or more subfields as listed below. For example, 'commands.install'. All subfields should point to a USS command or script.",
+      "additionalProperties": false,
+      "properties": {
+        "install": {
+          "type": "string",
+          "description": "This defines extra steps when installing this component. It will be automatically executed if you install your component with the 'zwe components install' server command."
+        },
+        "validate": {
+          "type": "string",
+          "description": "This defines extra validations that the component requires other than global validations. It is for runtime purpose, and will be automatically executed each time Zowe is started."
+        },
+        "configure": {
+          "type": "string",
+          "description": "This defines extra configuration steps before starting the component. It is for runtime purpose, and will be automatically executed each time Zowe is started."
+        },
+        "start": {
+          "type": "string",
+          "description": "This tells the Zowe launch script how to start the component. It is for runtime purpose, and will be automatically executed each time Zowe is started."
+        }
+      }
+    },
+    "apimlServices": {
+      "type": "object",
+      "description": "This section defines how the component will be registered to the API Mediation Layer Discovery Service.",
+      "additionalProperties": false,
+      "properties": {
+        "dynamic": {
+          "type": "array",
+          "description": "This information will tell Zowe and users what services you will register under the Discovery service.",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [ "serviceId" ],
+            "properties": {
+              "serviceId": {
+                "type": "string",
+                "description": "This defines the service ID registered to the Discovery service."
+              }
+            }
+          }
+        },
+        "static": {
+          "type": "array",
+          "description": "When the component is statically registered under the Discovery service, this tells Zowe where to find these static definitions. This information is for the Zowe runtime. When Zowe is starting, the launch script will check this field and put the parse static definition file into the directory defined as 'ZWE_STATIC_DEFINITIONS_DIR' in the Zowe instance.",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "file": {
+                "type": "string",
+                "description": "Defines the path to the static definition file. This file is supposed to be a template."
+              },
+              "basePackage": {
+                "type": "string",
+                "description": "Defines the base package name of the extension. It is used to notify the extended service of the location for component scan."
+              }
+            }
+          }
+        }
+      }
+    },
+    "appfwPlugins": {
+      "type": "array",
+      "description": "This section defines how the component will be registered to the App Framework plug-in.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [ "path" ],
+        "properties": {
+          "path": {
+            "type": "string",
+            "description": "This points to the directory where App Framework pluginDefinition.json file is located. When Zowe is starting, the launch script will check this field and register the plug-in to Zowe App Framework Server."
+          }
+        }
+      }
+    },
+    "gatewaySharedLibs": {
+      "type": "array",
+      "description": "This section defines the API ML extension(s) attributes which will get installed and used by API ML.",
+      "items": {
+        "type": "string",
+        "description": "This points to the directory where the JAR files are housed for an extension and later on copied into the API ML extensions workspace directory. If there is more than 1 extension to a single manifest (say for a product family of multiple extensions), then multiple path variables can be contained within the manifest denoted by individual folders, for example 'path/to/yourextension1/'. Alternatively, 'path' can be the JAR file path rather than a directory path."
+      }
+    },
+    "discoverySharedLibs": {
+      "type": "array",
+      "description": "This section defines the API ML extension(s) attributes which will get installed and used by API ML.",
+      "items": {
+        "type": "string",
+        "description": "This points to the directory where the JAR files are housed for an extension and later on copied into the API ML extensions workspace directory. If there is more than 1 extension to a single manifest (say for a product family of multiple extensions), then multiple path variables can be contained within the manifest denoted by individual folders, for example 'path/to/yourextension1/'. Alternatively, 'path' can be the JAR file path rather than a directory path."
+      }
+    },
+    "zisPlugins": {
+      "type": "array",
+      "description": "This section defines the ZIS plugin(s) attributes necessary for ZIS plugin installation and automation.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [ "id", "path" ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "This is the unique plugin ID of the ZIS plugin."
+          },
+          "path": {
+            "type": "string",
+            "description": "This points to the directory where the load modules are housed for a plugin, for example '/zisServer'. If there is more than 1 plugin to a single manifest (say for a product family of multiple plugins), then multiple path variables can be contained within the manifest denoted by individual folders, for example 'yourplugin1/zisServer'. The parameters for the Zowe parmlib are assumed to be in '<PATH>/samplib'. The names of the plugin executables are assumed to be in '<PATH>/loadlib'."
+          }
+        }
+      }
+    },
+    "configs": {
+      "type": "object",
+      "additionalProperties": true,
+      "description": "Component can define it's own configuration in this section in desired hierarchy. This is the brief guidance for component user to learn what are the configurations and what are the default values. Any configurations defined here can be placed into 'zowe.yaml' 'components.<component-name>' section for customization. You can choose to put configurations into 'components.myextension' or 'haInstance.<ha-instance>.components.myextension' of 'zowe.yaml'. Component can use auto-generate environment variables in lifecycle scripts to learn how the component is configured for current HA instance."
+    }
+  }
+}
+

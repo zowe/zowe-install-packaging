@@ -111,9 +111,16 @@ echo "[${SCRIPT_NAME}] preparing folders ..."
 rm -fr "${ASCII_DIR}" && mkdir -p "${ASCII_DIR}"
 rm -fr "${CONTENT_DIR}" && mkdir -p "${CONTENT_DIR}/bin"
 mkdir -p "${CONTENT_DIR}/files"
+mkdir -p "${CONTENT_DIR}/schemas"
+
 # FIXME: remove these debug code
 # rm -fr "${PAX_WORKSPACE_DIR}/binaryDependencies" && mkdir -p "${PAX_WORKSPACE_DIR}/binaryDependencies"
 # cp -r "${PAX_WORKSPACE_DIR}/bak/binaryDependencies/" "${PAX_WORKSPACE_DIR}/binaryDependencies"
+
+# Building TS files
+cd "${ROOT_DIR}/build/zwe"
+npm ci && npm run prod
+
 
 # copy from current github source
 echo "[${SCRIPT_NAME}] copying files ..."
@@ -124,6 +131,11 @@ cp ZOWE.md             "${CONTENT_DIR}/README.md"
 cp DEVELOPERS.md       "${CONTENT_DIR}/DEVELOPERS.md"
 cp -R bin/*            "${CONTENT_DIR}/bin"
 cp -R files/*          "${CONTENT_DIR}/files"
+cp -R schemas/*        "${CONTENT_DIR}/schemas"
+
+
+# build dir should not end up in release, will be removed after build in pre-packaging phase
+#cp -R build            "${CONTENT_DIR}/"
 
 # move licenses
 mkdir -p "${CONTENT_DIR}/licenses"
