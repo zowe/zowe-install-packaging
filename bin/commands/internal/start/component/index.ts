@@ -77,7 +77,8 @@ export function execute(componentId: string, runInBackground: boolean=false) {
     common.printFormattedTrace("ZWELS", "zwe-internal-start-component", `- command.start of ${componentId} is ${startScript}`);
 
     if (startScript) {
-      if (fs.fileExists(startScript)) {
+      const fullPath = `${COMPONENT_DIR}/${startScript}`;
+      if (fs.fileExists(fullPath)) {
         common.printFormattedInfo("ZWELS", "zwe-internal-start-component", `starting component ${componentId} ...`);
         common.printFormattedTrace("ZWELS", "zwe-internal-start-component", `>>> environment for ${componentId}\n`);
         let environment = std.getenviron();
@@ -86,8 +87,6 @@ export function execute(componentId: string, runInBackground: boolean=false) {
           common.printTrace(`${key}=${environment[key]}`);
         });
         common.printTrace('<<<');
-
-        const fullPath = `${COMPONENT_DIR}/${startScript}`;
         // FIXME: we have assumption here startScript is pointing to a shell script
         // if [[ "${start_script}" == *.sh ]]; then
         if (runInBackground === true) {
