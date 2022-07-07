@@ -11,13 +11,14 @@
 # Copyright Contributors to the Zowe Project.
 #######################################################################
 
-USE_CONFIGMGR=${ZWE_CLI_PARAMETER_CONFIGMGR}
-if [ -n "${ZWE_CLI_PARAMETER_CONFIG}" -a "${USE_CONFIGMGR}" != "true" ]; then
-  USE_CONFIGMGR=$(shell_read_yaml_config "${ZWE_CLI_PARAMETER_CONFIG}" 'zowe' 'useConfigmgr')
-fi
-if [ "${USE_CONFIGMGR}" = "true" ]; then
-  _CEE_RUNOPTS="XPLINK(ON),HEAPPOOLS(OFF)" ${ZWE_zowe_runtimeDirectory}/bin/utils/configmgr -script "${ZWE_zowe_runtimeDirectory}/bin/commands/internal/start/cli.js"
-else
+# TODO, some bugs here so disabled for now
+#USE_CONFIGMGR=${ZWE_CLI_PARAMETER_CONFIGMGR}
+#if [ -n "${ZWE_CLI_PARAMETER_CONFIG}" -a "${USE_CONFIGMGR}" != "true" ]; then
+#  USE_CONFIGMGR=$(shell_read_yaml_config "${ZWE_CLI_PARAMETER_CONFIG}" 'zowe' 'useConfigmgr')
+#fi
+#if [ "${USE_CONFIGMGR}" = "true" ]; then
+#  _CEE_RUNOPTS="XPLINK(ON),HEAPPOOLS(OFF)" ${ZWE_zowe_runtimeDirectory}/bin/utils/configmgr -script "${ZWE_zowe_runtimeDirectory}/bin/commands/internal/start/cli.js"
+#else
 
 
 ###############################
@@ -43,4 +44,4 @@ else
   done
 fi
 
-fi
+#fi
