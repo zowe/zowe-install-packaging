@@ -1,0 +1,67 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: zowe-network-policy
+  namespace: zowe
+  labels:
+    app.kubernetes.io/name: zowe
+    app.kubernetes.io/instance: zowe
+    app.kubernetes.io/version: "2.1.0"
+    app.kubernetes.io/component: k8s-network-policy
+    app.kubernetes.io/managed-by: manual
+spec:
+  # podSelector: {}
+  # policyTypes:
+  # - Ingress
+  # - Egress
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: zowe
+      app.kubernetes.io/instance: zowe
+  policyTypes:
+    - Ingress
+    - Egress
+  ingress:
+    - from:
+        # allow connections within same namespace
+        - namespaceSelector:
+            matchLabels:
+              app.kubernetes.io/name: zowe
+              app.kubernetes.io/instance: zowe
+    - ports:
+        - protocol: TCP
+          # Zowe Gateway
+          port: 7554
+  egress:
+    - to:
+        # allow connections within same namespace
+        - namespaceSelector:
+            matchLabels:
+              app.kubernetes.io/name: zowe
+              app.kubernetes.io/instance: zowe
+    - to:
+        # allow dns query
+        - namespaceSelector:
+            matchLabels: {}
+      ports:
+        - protocol: TCP
+          port: 53
+        - protocol: UDP
+          port: 53
+    - to:
+        - ipBlock:
+            # FIXME: allow connections to z/OS
+            cidr: <zos-ip>/32
+      ports:
+        - protocol: TCP
+          # z/OSMF
+          port: 443
+        - protocol: TCP
+          # Zowe ZSS
+          port: 7557
+        - protocol: TCP
+          # SSH - needed by Zowe app-server TN3270 app
+          port: 23
+        - protocol: TCP
+          # SSH - needed by Zowe app-server VT Terminal app
+          port: 22

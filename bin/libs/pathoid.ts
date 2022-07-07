@@ -97,7 +97,7 @@ export class PathAPI {
         let segmentIsRoot = false;
         let [ currentDirectory, err ] = os.getcwd();
         let sep = isWindows ? "\\" : "/";
-      
+
         if (err != 0){
             throw "current working directory not found with errno="+err;
         }

@@ -1,0 +1,37 @@
+################################################################################
+# This program and the accompanying materials are made available under the terms of the
+# Eclipse Public License v2.0 which accompanies this distribution, and is available at
+# https://www.eclipse.org/legal/epl-v20.html
+#
+# SPDX-License-Identifier: EPL-2.0
+#
+# Copyright Contributors to the Zowe Project.
+################################################################################
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: zowe-workspace-pvc
+  namespace: zowe
+  labels:
+    app.kubernetes.io/name: zowe
+    app.kubernetes.io/instance: zowe
+    app.kubernetes.io/managed-by: manual
+    # FIXME: follow this instruction https://cloud.ibm.com/docs/containers?topic=containers-file_storage#file_qs to setup storage
+    # Below are example values, you should modify to fit in your cluster
+    billingType: hourly
+    # You should be able to see this region in your browser URL address of your cluster.
+    # For example: https://cloud.ibm.com/kubernetes/clusters/<cluster-id>/overview?region=us-south&resourceGroup=<resource-group-id>
+    region: us-east 
+    # You should be able to see this zone in your cluster home information page (above url)
+    zone: wdc07
+spec:
+  # FIXME: StorageClass should be predefined by Kubernetes admin
+  #        `ibmc-file-silver` is a predefined StorageClass created by IBM Cloud
+  storageClassName: ibmc-file-silver
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 50Mi

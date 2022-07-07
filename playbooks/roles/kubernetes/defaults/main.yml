@@ -48,4 +48,4 @@ k8s_gateway_domain:
 k8s_discovery_domain:
 
 #list of the apps required for zowe
-k8s_required_apps: ["api-catalog", "app-server", "caching", "explorer-jes", "explorer-mvs", "explorer-uss", "discovery", "files-api", "gateway", "jobs-api"]
+k8s_required_apps: ["api-catalog", "app-server", "caching", "discovery", "files-api", "gateway", "jobs-api"]

@@ -35,8 +35,6 @@ spec:
           emptyDir: {}
         - name: zowe-runtime
           emptyDir: {}
-        - name: zowe-instance
-          emptyDir: {}
         - name: zowe-config
           configMap:
             name: zowe-config

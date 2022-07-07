@@ -91,7 +91,6 @@ export function rmrf(path: string): void {
   shell.execSync('rm', `-rf`, path);
 }
 
-
 export function appendToFile(path:string, content:string):void {
   //TODO
   throw 'Implement me!';  
