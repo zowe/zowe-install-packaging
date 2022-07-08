@@ -99,7 +99,16 @@ export function sourceEnv(envFile: string): boolean {
   let index;
   fileLines.forEach((line: string)=> {
     if ((index = line.indexOf('=')) != -1) {
-      let key = line.substring(0, index);
+      let key;
+      if (line.startsWith('export ')) {
+        key = line.substring(7, index);
+      } else if (line.startsWith('declare -x ')) {
+        key = line.substring(11, index);
+      } else if (line.startsWith('set ')) {
+        key = line.substring(4, index);
+      } else {
+        key = line.substring(0, index);
+      }
       if ((line[index+1] == "'" && line.endsWith("'")) || (line[index+1] == '"' && line.endsWith('"'))) {
         let val = line.substring(index + 2, line.length-1);
         std.setenv(key, val);
