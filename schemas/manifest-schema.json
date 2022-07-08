@@ -181,6 +181,14 @@
         "description": "This points to the directory where the JAR files are housed for an extension and later on copied into the API ML extensions workspace directory. If there is more than 1 extension to a single manifest (say for a product family of multiple extensions), then multiple path variables can be contained within the manifest denoted by individual folders, for example 'path/to/yourextension1/'. Alternatively, 'path' can be the JAR file path rather than a directory path."
       }
     },
+    "discoverySharedLibs": {
+      "type": "array",
+      "description": "This section defines the API ML extension(s) attributes which will get installed and used by API ML.",
+      "items": {
+        "type": "string",
+        "description": "This points to the directory where the JAR files are housed for an extension and later on copied into the API ML extensions workspace directory. If there is more than 1 extension to a single manifest (say for a product family of multiple extensions), then multiple path variables can be contained within the manifest denoted by individual folders, for example 'path/to/yourextension1/'. Alternatively, 'path' can be the JAR file path rather than a directory path."
+      }
+    },
     "zisPlugins": {
       "type": "array",
       "description": "This section defines the ZIS plugin(s) attributes necessary for ZIS plugin installation and automation.",
