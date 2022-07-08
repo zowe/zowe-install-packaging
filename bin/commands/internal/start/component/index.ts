@@ -91,7 +91,7 @@ export function execute(componentId: string, runInBackground: boolean=false) {
         // FIXME: we have assumption here startScript is pointing to a shell script
         // if [[ "${start_script}" == *.sh ]]; then
         if (runInBackground === true) {
-          shell.exec('sh', '-c', `. ${runtimeDirectory}/bin/libs/index.sh && . ${fullPath}`);
+          shell.exec('sh', '-c', `. ${runtimeDirectory}/bin/libs/index.sh && cd ${COMPONENT_DIR} && . ${fullPath}`);
         } else {
           // wait for all background subprocesses created by bin/start.sh exit
           // re-source libs is necessary to reclaim shell functions since this will be executed in a new shell
