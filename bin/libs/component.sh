@@ -421,6 +421,7 @@ process_zis_plugin_install() {
     zwes_zis_pluginlib=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.dataset.authPluginLib")
     zwes_zis_parmlib=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.dataset.parmlib")
     zwes_zis_parmlib_member=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.dataset.parmlibMembers.zis")
+    zwes_zis_parmlib_keys=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.zis.parmlib.keys")
     print_trace "- Checking for zis plugins and verifying them"
     component_dir="${1}"
     
@@ -429,34 +430,13 @@ process_zis_plugin_install() {
     zis_plugin_path=$(read_component_manifest "${component_dir}" ".zisPlugins[${iterator_index}].path" 2>/dev/null)
     while [ -n "${zis_plugin_path}" ]; do
       cd "${component_dir}"
-      zis_plugin_install "${zis_plugin_path}" "${zwes_zis_pluginlib}" "${zwes_zis_parmlib}" "${zwes_zis_parmlib_member}" "${zis_plugin_id}" "${component_dir}"
+      zis_plugin_install "${zis_plugin_path}" "${zwes_zis_pluginlib}" "${zwes_zis_parmlib}" "${zwes_zis_parmlib_member}" "${zis_plugin_id}" "${component_dir}" "${zwes_zis_parmlib_keys}"
 
       iterator_index=`expr $iterator_index + 1`
       zis_plugin_path=$(read_component_manifest "${component_dir}" ".zisPlugins[${iterator_index}].id" 2>/dev/null)
       zis_plugin_id=$(read_component_manifest "${component_dir}" ".zisPlugins[${iterator_index}].id" 2>/dev/null)
     done
   fi
-}
-
-# $1 - needle
-# $2 - haystack
-is_substr_of() {
-  is_substring=$(echo "$2" | grep -c "$1")
-  return "$is_substring"
-}
-
-# $1 - file_name
-# $2 - data_set_name
-copy_uss_to_mvs() {
-  cp "$1" "//'$2'"
-  return $?
-}
-
-# $1 = data_set_name
-# $2 = file_name
-copy_mvs_to_uss() {
-  cp "//'$1'" "$2"
-  return $?
 }
 
 # $1 = key=value
@@ -507,6 +487,7 @@ zis_plugin_install() {
   zwes_zis_parmlib_member="${4}"
   plugin_id="${5}"
   component_dir="${6}"
+  zwes_zis_parmlib_keys="${7}"
   parmlib_member_as_unix_file="./${zwes_zis_parmlib_member}.txt"
 
   if [ ! -f "$parmlib_member_as_unix_file" ]; then
@@ -514,11 +495,11 @@ zis_plugin_install() {
   fi
 
   changed=0
-
+  
   if [ -d "${component_dir}${plugin_path}" ]; then
     if [ -d "${component_dir}${plugin_path}/loadlib" ] && [ -d "${component_dir}${plugin_path}/samplib" ]; then
       for module in $(ls ${component_dir}${plugin_path}/loadlib); do
-        copy_uss_to_mvs "${component_dir}${plugin_path}/loadlib/${module}" "$zwes_zis_pluginlib"
+        copy_to_data_set "${component_dir}${plugin_path}/loadlib/${module}" "$zwes_zis_pluginlib" "" "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITE}"
         if [ $? != 0 ]; then
           exit 1
         fi
@@ -544,9 +525,27 @@ zis_plugin_install() {
             # In the case of a key not being there, an empty string will be returned.
             num=$(get_line_number_of_key "$samplib_key" "$parmlib_member_as_unix_file")
             if [ "$num" != "" ]; then
-              remove_key_value_at_line_number "$num" "$parmlib_member_as_unix_file"
-              add_key_value_at_end_of_file "$samplib_key_value" "$parmlib_member_as_unix_file"
-              changed=1
+              parsed_zwes_zis_parmlib_keys=$(replace "${zwes_zis_parmlib_keys}" "." "_") # replace . with _ in keyname for working key search
+              parsed_samplib_key=$(replace "${samplib_key}" "." "_") # replace . with _ in keyname for working key search
+              samplib_key_value=$(read_json_string ${parsed_zwes_zis_parmlib_keys} ".${parsed_samplib_key}")
+              if [ "$samplib_key_value" = "list" ]; then
+              # The key is comma separated list
+                parmlib_key_value=$(get_string_at_line_number "$num" "$parmlib_member_as_unix_file")
+                parmlib_value=$(get_value_of_string "$parmlib_key_value")
+                samplib_value=$(get_value_of_string "$samplib_key_value")
+                is_substr_of "$samplib_value" "$parmlib_value"
+                if [ $? -eq 0 ]; then
+                  new_parmlib_key_value="$samplib_key=$parmlib_value,$samplib_value"
+                  remove_key_value_at_line_number $num "$parmlib_member_as_unix_file"
+                  add_key_value_at_end_of_file "$new_parmlib_key_value" "$parmlib_member_as_unix_file"
+                  changed=1
+                fi
+              else
+                # The key is not special and the value is different.
+                remove_key_value_at_line_number "$num" "$parmlib_member_as_unix_file"
+                add_key_value_at_end_of_file "$samplib_key_value" "$parmlib_member_as_unix_file"
+                changed=1
+              fi
             else
               # The key doesn't exist. Just add the key-value pair to the end of the file.
               add_key_value_at_end_of_file "$samplib_key_value" "$parmlib_member_as_unix_file"
@@ -560,7 +559,7 @@ zis_plugin_install() {
   fi
 
   if [ $changed -eq 1 ]; then
-    copy_uss_to_mvs "$parmlib_member_as_unix_file" "$zwes_zis_parmlib($zwes_zis_parmlib_member)"
+    copy_to_data_set "$parmlib_member_as_unix_file" "$zwes_zis_parmlib($zwes_zis_parmlib_member)" "" "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITE}"
   fi
 }
 

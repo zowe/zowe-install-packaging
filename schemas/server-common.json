@@ -27,7 +27,7 @@
     "datasetMember": {
       "$anchor": "zoweDatasetMember",
       "type": "string",
-      "description": "A 44-char all caps dotted ZOS name",
+      "description": "A 1-8-char all caps dataset member name",
       "pattern": "^([A-Z0-9\\$\\#\\@]){1,8}$",
       "minLength": 1,
       "maxLength": 8
