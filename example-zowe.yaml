@@ -54,8 +54,7 @@ zowe:
       # JCL library where Zowe will store temporary JCLs during initialization
       jcllib: IBMUSER.ZWEV2.CUST.JCLLIB
       # APF authorized LOADLIB for Zowe
-      # Optional. If it's empty, <prefix>.SZWEAUTH will be APF authorized.
-      authLoadlib: ""
+      authLoadlib: IBMUSER.ZWEV2.SZWEAUTH
       # **COMMONLY_CUSTOMIZED**
       # APF authorized LOADLIB for Zowe ZIS Plugins
       authPluginLib: IBMUSER.ZWEV2.CUST.ZWESAPL
@@ -335,7 +334,7 @@ zowe:
   # Enable debug mode for zowe launch scripts
   launchScript:
     # set to "debug" or "trace" to display extra debug information
-    logLevel: ""
+    logLevel: "info"
 
   # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   # Default Zowe certificate
