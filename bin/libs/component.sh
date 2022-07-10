@@ -498,8 +498,8 @@ zis_plugin_install() {
   
   if [ -d "${component_dir}${plugin_path}" ]; then
     if [ -d "${component_dir}${plugin_path}/loadlib" ] && [ -d "${component_dir}${plugin_path}/samplib" ]; then
-      for module in $(ls ${component_dir}${plugin_path}/loadlib); do
-        copy_to_data_set "${component_dir}${plugin_path}/loadlib/${module}" "$zwes_zis_pluginlib" "" "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITE}"
+      for module in $(ls ${component_dir}${plugin_path}/loadlib); do # There isn't really a situation where we want to use ZWE_CLI_PARAMETER_ALLOW_OVERWRITE
+        copy_to_data_set "${component_dir}${plugin_path}/loadlib/${module}" "$zwes_zis_pluginlib" "" "true"
         if [ $? != 0 ]; then
           exit 1
         fi
