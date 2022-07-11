@@ -49,6 +49,7 @@ export class Flattener {
 
     flatten1(json:any, first:boolean, keyPrefix:string, result:any):void {
         if (Array.isArray(json)){
+            result[keyPrefix] = json.join(',');
             for (let i=0; i<json.length; i++){
                 this.flatten1(json[i],false, keyPrefix+(first ? "" : this.separator)+i,result);
             }

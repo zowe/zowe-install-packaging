@@ -490,13 +490,19 @@ export function processComponentApimlStaticDefinitions(componentDir: string): bo
           const resolvedContents = resolveShellTemplate(contents);
 
           const zweCliParameterHaInstance=std.getenv("ZWE_CLI_PARAMETER_HA_INSTANCE");
-          const outPath=`${STATIC_DEF_DIR}/${componentName}.${sanitizedDefName}.${zweCliParameterHaInstance}.yaml`;
+          const outPath=`${STATIC_DEF_DIR}/${componentName}.${sanitizedDefName}.${zweCliParameterHaInstance}.yml`;
 
           common.printDebug(`- writing ${outPath}`);
 
-
-          xplatform.storeFileUTF8(outPath, xplatform.AUTO_DETECT, resolvedContents);
-          shell.execSync(`chmod`, `770`, outPath);
+          let errorObj;
+          let fileReturn = std.open(outPath, 'w', errorObj);
+          if (fileReturn && !errorObj) {
+            fileReturn.puts(resolvedContents);
+            fileReturn.close();
+            shell.execSync(`chmod`, `770`, outPath);
+          } else {
+            common.printError(`Could not write static definition file ${outPath}, errobj=`+errObj);
+          }
         }
       }
     }
