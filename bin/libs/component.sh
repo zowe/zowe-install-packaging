@@ -527,8 +527,8 @@ zis_plugin_install() {
             if [ "$num" != "" ]; then
               parsed_zwes_zis_parmlib_keys=$(replace "${zwes_zis_parmlib_keys}" "." "_") # replace . with _ in keyname for working key search
               parsed_samplib_key=$(replace "${samplib_key}" "." "_") # replace . with _ in keyname for working key search
-              parsed_samplib_key_value=$(read_json_string ${parsed_zwes_zis_parmlib_keys} ".${parsed_samplib_key}")
-              if [ "$parsed_samplib_key_value" = "list" ]; then
+              config_samplib_key_value=$(read_json_string ${parsed_zwes_zis_parmlib_keys} ".${parsed_samplib_key}")
+              if [ "$config_samplib_key_value" = "list" ]; then
               # The key is comma separated list
                 parmlib_key_value=$(get_string_at_line_number "$num" "$parmlib_member_as_unix_file")
                 parmlib_value=$(get_value_of_string "$parmlib_key_value")
