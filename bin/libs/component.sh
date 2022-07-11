@@ -488,11 +488,9 @@ zis_plugin_install() {
   plugin_id="${5}"
   component_dir="${6}"
   zwes_zis_parmlib_keys="${7}"
-  parmlib_member_as_unix_file="./${zwes_zis_parmlib_member}.txt"
-
-  if [ ! -f "$parmlib_member_as_unix_file" ]; then
-    copy_mvs_to_uss "${zwes_zis_parmlib}(${zwes_zis_parmlib_member})" "${parmlib_member_as_unix_file}"
-  fi
+  parmlib_member_as_unix_file=$(create_tmp_file "${zwes_zis_parmlib_member}")
+  
+  copy_mvs_to_uss "${zwes_zis_parmlib}(${zwes_zis_parmlib_member})" "${parmlib_member_as_unix_file}"
 
   changed=0
   
@@ -501,26 +499,29 @@ zis_plugin_install() {
       for module in $(ls ${component_dir}${plugin_path}/loadlib); do # There isn't really a situation where we want to use ZWE_CLI_PARAMETER_ALLOW_OVERWRITE
         copy_to_data_set "${component_dir}${plugin_path}/loadlib/${module}" "$zwes_zis_pluginlib" "" "true"
         if [ $? != 0 ]; then
-          exit 1
+          print_error "Error ZWEL0200E: Failed to copy USS file ${component_dir}${plugin_path}/loadlib/${module} to MVS data set $zwes_zis_pluginlib." 
+          return 200
         fi
       done
       for params in $(ls ${component_dir}${plugin_path}/samplib); do
         if [ ! -f "${component_dir}${plugin_path}/samplib/${params}" ]; then
-          exit 2
+          print_error "Error ZWEL0201E: File ${component_dir}${plugin_path}/samplib/${params} does not exist." 
+          return 201
         fi
         while read samplib_key_value; do
           prefix=$(echo "$samplib_key_value" | cut -c -2)
           if [ "$prefix" = "//" ] || [ "$prefix" = "* " ] || [ "$prefix" = "" ]; then
             continue
           fi
-          grep -x "$samplib_key_value" "$parmlib_member_as_unix_file" > /dev/null
+          print_trace "$(grep -x "$samplib_key_value" "$parmlib_member_as_unix_file")"
           if [ $? -eq 0 ]; then
-            echo "The key-value pair $samplib_key_value is being skipped because it's already there and hasn't changed."
+            print_message "The key-value pair $samplib_key_value is being skipped because it's already there and hasn't changed."
             continue
           else
             samplib_key=$(get_key_of_string "$samplib_key_value")
             if [ "$samplib_key" = "" ]; then
-              exit 3
+              print_error "Error ZWEL0202E: Unable to find samplib key for $samplib_key_value." 
+              return 202
             fi
             # In the case of a key not being there, an empty string will be returned.
             num=$(get_line_number_of_key "$samplib_key" "$parmlib_member_as_unix_file")
@@ -555,7 +556,7 @@ zis_plugin_install() {
         done < "${component_dir}${plugin_path}/samplib/${params}"
       done
     fi
-  echo "Successfully installed ZIS plugin: ${plugin_id}"
+  print_message "Successfully installed ZIS plugin: ${plugin_id}"
   fi
 
   if [ $changed -eq 1 ]; then
