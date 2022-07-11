@@ -501,7 +501,7 @@ export function processComponentApimlStaticDefinitions(componentDir: string): bo
             fileReturn.close();
             shell.execSync(`chmod`, `770`, outPath);
           } else {
-            common.printError(`Could not write static definition file ${outPath}, errobj=`+errObj);
+            common.printError(`Could not write static definition file ${outPath}, errobj=`+errorObj);
           }
         }
       }
