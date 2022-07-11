@@ -151,7 +151,9 @@ else
   tmpfile=$(create_tmp_file $(echo "zwe ${ZWE_CLI_COMMANDS_LIST}" | sed "s# #-#g"))
   print_debug "- Copy ${prefix}.${ZWE_PRIVATE_DS_SZWESAMP}(ZWESISTC) to ${tmpfile}"
   result=$(cat "//'${prefix}.${ZWE_PRIVATE_DS_SZWESAMP}(ZWESISTC)'" | \
-          sed "s/^\/\/STEPLIB .*\$/\/\/STEPLIB  DD   DSNAME=${authLoadlib},DISP=SHR\n\/\/         DD   DSNAME=${authPluginLib},DISP=SHR/" | \
+          sed '/^..STEPLIB/c\
+\//STEPLIB  DD   DSNAME='${authLoadlib}',DISP=SHR\
+\//         DD   DSNAME='${authPluginLib}',DISP=SHR' | \
           sed "s/^\/\/PARMLIB .*\$/\/\/PARMLIB  DD   DSNAME=${parmlib},DISP=SHR/" \
           > "${tmpfile}")
   code=$?
@@ -192,7 +194,9 @@ else
   tmpfile=$(create_tmp_file $(echo "zwe ${ZWE_CLI_COMMANDS_LIST}" | sed "s# #-#g"))
   print_debug "- Copy ${prefix}.${ZWE_PRIVATE_DS_SZWESAMP}(ZWESASTC) to ${tmpfile}"
   result=$(cat "//'${prefix}.${ZWE_PRIVATE_DS_SZWESAMP}(ZWESASTC)'" | \
-          sed "s/^\/\/STEPLIB .*\$/\/\/STEPLIB  DD   DSNAME=${authLoadlib},DISP=SHR/\n\/\/         DD   DSNAME=${authPluginLib},DISP=SHR/" \
+          sed '/^..STEPLIB/c\
+\//STEPLIB  DD   DSNAME='${authLoadlib}',DISP=SHR\
+\//         DD   DSNAME='${authPluginLib}',DISP=SHR' \
           > "${tmpfile}")
   code=$?
   chmod 700 "${tmpfile}"
