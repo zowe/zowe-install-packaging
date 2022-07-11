@@ -514,44 +514,17 @@ zis_plugin_install() {
             continue
           fi
           print_trace "$(grep -x "$samplib_key_value" "$parmlib_member_as_unix_file")"
+            
           if [ $? -eq 0 ]; then
             print_message "The key-value pair $samplib_key_value is being skipped because it's already there and hasn't changed."
             continue
           else
-            samplib_key=$(get_key_of_string "$samplib_key_value")
-            if [ "$samplib_key" = "" ]; then
-              print_error "Error ZWEL0202E: Unable to find samplib key for $samplib_key_value." 
-              return 202
-            fi
-            # In the case of a key not being there, an empty string will be returned.
-            num=$(get_line_number_of_key "$samplib_key" "$parmlib_member_as_unix_file")
-            if [ "$num" != "" ]; then
-              parsed_zwes_zis_parmlib_keys=$(replace "${zwes_zis_parmlib_keys}" "." "_") # replace . with _ in keyname for working key search
-              parsed_samplib_key=$(replace "${samplib_key}" "." "_") # replace . with _ in keyname for working key search
-              config_samplib_key_value=$(read_json_string ${parsed_zwes_zis_parmlib_keys} ".${parsed_samplib_key}")
-              if [ "$config_samplib_key_value" = "list" ]; then
-              # The key is comma separated list
-                parmlib_key_value=$(get_string_at_line_number "$num" "$parmlib_member_as_unix_file")
-                parmlib_value=$(get_value_of_string "$parmlib_key_value")
-                samplib_value=$(get_value_of_string "$samplib_key_value")
-                is_substr_of "$samplib_value" "$parmlib_value"
-                if [ $? -eq 0 ]; then
-                  new_parmlib_key_value="$samplib_key=$parmlib_value,$samplib_value"
-                  remove_key_value_at_line_number $num "$parmlib_member_as_unix_file"
-                  add_key_value_at_end_of_file "$new_parmlib_key_value" "$parmlib_member_as_unix_file"
-                  changed=1
-                fi
-              else
-                # The key is not special and the value is different.
-                remove_key_value_at_line_number "$num" "$parmlib_member_as_unix_file"
-                add_key_value_at_end_of_file "$samplib_key_value" "$parmlib_member_as_unix_file"
-                changed=1
-              fi
+            update_uss_parmlib_key_value "$samplib_key_value" "$parmlib_member_as_unix_file"
+            if [ $? -ne 0 ]; then
+              print_message "Failed to install ZIS plugin: ${zis_plugin_id}"
+              exit 1
             else
-              # The key doesn't exist. Just add the key-value pair to the end of the file.
-              add_key_value_at_end_of_file "$samplib_key_value" "$parmlib_member_as_unix_file"
-              changed=1
-            fi
+              fi
           fi
         done < "${component_dir}${plugin_path}/samplib/${params}"
       done
@@ -561,6 +534,46 @@ zis_plugin_install() {
 
   if [ $changed -eq 1 ]; then
     copy_to_data_set "$parmlib_member_as_unix_file" "$zwes_zis_parmlib($zwes_zis_parmlib_member)" "" "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITE}"
+  fi
+}
+
+update_uss_parmlib_key_value() {
+  samplib_key_value="${1}"
+  parmlib_member_as_unix_file="${2}"
+  
+  samplib_key=$(get_key_of_string "$samplib_key_value")
+  if [ "$samplib_key" = "" ]; then
+    print_error "Error ZWEL0202E: Unable to find samplib key for $samplib_key_value." 
+    return 202
+  fi
+  # In the case of a key not being there, an empty string will be returned.
+  num=$(get_line_number_of_key "$samplib_key" "$parmlib_member_as_unix_file")
+  if [ "$num" != "" ]; then
+    parsed_zwes_zis_parmlib_keys=$(replace "${zwes_zis_parmlib_keys}" "." "_") # replace . with _ in keyname for working key search
+    parsed_samplib_key=$(replace "${samplib_key}" "." "_") # replace . with _ in keyname for working key search
+    config_samplib_key_value=$(read_json_string ${parsed_zwes_zis_parmlib_keys} ".${parsed_samplib_key}")
+    if [ "$config_samplib_key_value" = "list" ]; then
+    # The key is comma separated list
+      parmlib_key_value=$(get_string_at_line_number "$num" "$parmlib_member_as_unix_file")
+      parmlib_value=$(get_value_of_string "$parmlib_key_value")
+      samplib_value=$(get_value_of_string "$samplib_key_value")
+      is_substr_of "$samplib_value" "$parmlib_value"
+      if [ $? -eq 0 ]; then
+        new_parmlib_key_value="$samplib_key=$parmlib_value,$samplib_value"
+        remove_key_value_at_line_number $num "$parmlib_member_as_unix_file"
+        add_key_value_at_end_of_file "$new_parmlib_key_value" "$parmlib_member_as_unix_file"
+        changed=1
+      fi
+    else
+      # The key is not special and the value is different.
+      remove_key_value_at_line_number "$num" "$parmlib_member_as_unix_file"
+      add_key_value_at_end_of_file "$samplib_key_value" "$parmlib_member_as_unix_file"
+      changed=1
+    fi
+  else
+    # The key doesn't exist. Just add the key-value pair to the end of the file.
+    add_key_value_at_end_of_file "$samplib_key_value" "$parmlib_member_as_unix_file"
+    changed=1
   fi
 }
 
