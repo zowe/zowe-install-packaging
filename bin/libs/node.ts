@@ -42,7 +42,7 @@ export function shellReadYamlNodeHome(configList?: string, skipValidate?: boolea
   const zoweConfig = config.getZoweConfig();
   if (zoweConfig && zoweConfig.node && zoweConfig.node.home) {
     if (!skipValidate) {
-      if (validateNodeHome(zoweConfig.node.home)) {
+      if (!validateNodeHome(zoweConfig.node.home)) {
         return '';
       }
     }
