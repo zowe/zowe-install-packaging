@@ -30,7 +30,7 @@ export function shellReadYamlJavaHome(configList?: string, skipValidate?: boolea
   const zoweConfig = config.getZoweConfig();
   if (zoweConfig && zoweConfig.java && zoweConfig.java.home) {
     if (!skipValidate) {
-      if (validateJavaHome(zoweConfig.java.home)) {
+      if (!validateJavaHome(zoweConfig.java.home)) {
         return '';
       }
     }
