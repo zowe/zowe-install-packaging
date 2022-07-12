@@ -1,3 +1,4 @@
 ha-instance|i|string|||||Zowe high availability instance ID.
 path|p|string|required||||Path of the configuration. For example, `components.gateway.port`.
 value|e|string|||||New value of the configuration.
+string||boolean|||||When specified, the value is treated as a string even if it looks like a number or boolean

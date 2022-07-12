@@ -429,6 +429,11 @@
           "type": "string",
           "description": "Customize how Zowe should validate certificates used by components or other services.",
           "enum": ["STRICT", "NONSTRICT", "DISABLED"]
+        },
+        "useConfigmgr": {
+          "type": "boolean",
+          "default": false,
+          "description": "(Experimental, WIP) Determines whether or not to use the features of configmgr such as multi-config, parmlib config, config templates, and schema validation. This effects the zwe command."
         }
       }
     },

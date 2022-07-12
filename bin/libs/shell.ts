@@ -125,6 +125,10 @@ export function execOutSync(command: string, ...args: string[]): ExecReturn {
   };
 }
 
+export function exec(command: string, ...args: string[]): number {
+  return os.exec([command, ...args], { block: false, usePath: true});
+}
+
 export function execErrSync(command: string, ...args: string[]): ExecReturn {
   let pipeArray = os.pipe();
   if (!pipeArray){
