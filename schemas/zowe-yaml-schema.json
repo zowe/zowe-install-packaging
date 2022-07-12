@@ -422,7 +422,7 @@
         "useConfigmgr": {
           "type": "boolean",
           "default": false,
-          "description": "Determines whether or not to use the features of configmgr such as multi-config, parmlib config, config templates, and schema validation. This effects the zwe command."
+          "description": "(Experimental, WIP) Determines whether or not to use the features of configmgr such as multi-config, parmlib config, config templates, and schema validation. This effects the zwe command."
         }
       }
     },
