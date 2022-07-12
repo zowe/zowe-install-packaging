@@ -151,9 +151,12 @@ export function updateYaml(file: string, key: string, val: any, expectedSample: 
 export function updateZoweYaml(file: string, key: string, val: any) {
   common.printMessage(`- update zowe config ${file}, key: "${key}" with value: ${val}`);
   let [ success, updateObj ] = fakejq.jqset({}, key, val);
-  common.printError(`  * Success: ${success}`);
+  
   if (success) {
+    common.printMessage(`  * Success`);
     config.updateZoweConfig(updateObj, true, 1); //TODO externalize array merge strategy = 1
+  } else {
+    common.printError(`  * Error`); 
   }
 }
 
