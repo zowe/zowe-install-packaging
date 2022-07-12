@@ -20,6 +20,27 @@ export _BPXK_AUTOCVT="ON"
 export _EDC_ADD_ERRNO2=1                        # show details on error
 unset ENV             # just in case, as it can cause unexpected output
 
+# Leveraging the configmgr scripting is by opt-in of a config parameter or flag
+# However, configmgr-only config file specifications also exist
+# So if we see it in ZWE_CLI_PARAMETER_CONFIG we can also consider that opt-in
+check_configmgr_enabled() {
+  USE_CONFIGMGR=${ZWE_CLI_PARAMETER_CONFIGMGR}
+  if [ -n "${USE_CONFIGMGR}" ]; then
+    echo $USE_CONFIGMGR
+  elif [ -n "${ZWE_CLI_PARAMETER_CONFIG}" ]; then
+    if [[ ${ZWE_CLI_PARAMETER_CONFIG} == "FILE("* ]]
+    then
+      echo "true"
+    elif [[ ${ZWE_CLI_PARAMETER_CONFIG} == "LIB("* ]]
+    then
+      echo "true"
+    else
+      USE_CONFIGMGR=$(shell_read_yaml_config "${ZWE_CLI_PARAMETER_CONFIG}" 'zowe' 'useConfigmgr')
+      echo $USE_CONFIGMGR  
+    fi
+  fi
+}
+
 require_zowe_yaml() {
   # node is required to read yaml file
   require_node

@@ -16,6 +16,7 @@ export interface ConfigManager {
     loadSchemas(configName:string,schemaList:string):number;
     getConfigData(configName:string):any;
     loadConfiguration(configName:string):number;
+    makeModifiedConfiguration(oldConfigName:string, newConfigName: string, updateObject: any, arrayMergeStrategy: number): number;
     validate(configName:string):any;  // should give this a type
     writeYAML(configName:string):[ number, string|null];  // 0 means status is good , string present if 0
 }

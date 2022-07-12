@@ -11,6 +11,12 @@
 # Copyright Contributors to the Zowe Project.
 #######################################################################
 
+# TODO, some bugs here so disabled for now
+#USE_CONFIGMGR=$(check_configmgr_enabled)
+#if [ "${USE_CONFIGMGR}" = "true" ]; then
+#  _CEE_RUNOPTS="XPLINK(ON),HEAPPOOLS(OFF)" ${ZWE_zowe_runtimeDirectory}/bin/utils/configmgr -script "${ZWE_zowe_runtimeDirectory}/bin/commands/internal/start/cli.js"
+#else
+
 
 ###############################
 # validation
@@ -34,3 +40,5 @@ else
     zwecli_inline_execute_command internal start component --component "${run_zowe_start_component_id}" --run-in-background
   done
 fi
+
+#fi

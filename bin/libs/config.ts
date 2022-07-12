@@ -43,6 +43,10 @@ export function getZoweConfig(): any {
   return configmgr.ZOWE_CONFIG;
 }
 
+export function updateZoweConfig(updateObj: any, writeUpdate: boolean, arrayMergeStrategy: number): any {
+  return configmgr.updateZoweConfig(updateObj, writeUpdate, arrayMergeStrategy);
+}
+
 // Convert instance.env to zowe.yaml file
 export function convertInstanceEnvToYaml(instanceEnv: string, zoweYaml?: string) {
   // we need node for following commands
@@ -167,7 +171,7 @@ export function generateInstanceEnvFromYamlConfig(haInstance: string) {
 
 
 // check and sanitize ZWE_CLI_PARAMETER_HA_INSTANCE
-export function sanitizeHaInstanceId() {
+export function sanitizeHaInstanceId(): string|undefined {
   // ignore default value passed from ZWESLSTC
   let zweCliParameterHaInstance = std.getenv('ZWE_CLI_PARAMETER_HA_INSTANCE');
   if (zweCliParameterHaInstance == "{{ha_instance_id}}" || zweCliParameterHaInstance == "__ha_instance_id__") {
@@ -182,6 +186,7 @@ export function sanitizeHaInstanceId() {
     zweCliParameterHaInstance=stringlib.sanitizeAlphanum(zweCliParameterHaInstance.toLowerCase());
     std.setenv('ZWE_CLI_PARAMETER_HA_INSTANCE', zweCliParameterHaInstance );
   }
+  return zweCliParameterHaInstance;
 }
 
 export function applyEnviron(environ: any): void {
