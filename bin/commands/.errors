@@ -31,3 +31,4 @@ ZWEL0172E||Component %s has %s defined but the file is missing.
 ZWEL0200E||Failed to copy USS file %s to MVS data set %s.
 ZWEL0201E||File %s does not exist.
 ZWEL0202E||Unable to find samplib key for %s.
+ZWEL0203E||Env value in key-value pair %s has not been defined.

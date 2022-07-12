@@ -431,6 +431,10 @@ process_zis_plugin_install() {
     while [ -n "${zis_plugin_path}" ]; do
       cd "${component_dir}"
       zis_plugin_install "${zis_plugin_path}" "${zwes_zis_pluginlib}" "${zwes_zis_parmlib}" "${zwes_zis_parmlib_member}" "${zis_plugin_id}" "${component_dir}" "${zwes_zis_parmlib_keys}"
+      if [ $? -ne 0 ]; then
+        print_message "Failed to install ZIS plugin: ${zis_plugin_id}"
+        exit 1
+      fi
 
       iterator_index=`expr $iterator_index + 1`
       zis_plugin_path=$(read_component_manifest "${component_dir}" ".zisPlugins[${iterator_index}].id" 2>/dev/null)
@@ -439,12 +443,12 @@ process_zis_plugin_install() {
   fi
 }
 
-# $1 = key=value
+# $1 = key-value pair
 get_key_of_string() {
   echo "$1" | sed 's/=/ /g' | awk '{print $1}'
 }
 
-# $1 = key=value
+# $1 = key-value pair
 get_value_of_string() {
   echo "$1" | sed 's/=/ /g' | awk '{print $2}'
 }
@@ -474,10 +478,20 @@ remove_key_value_at_line_number() {
   rm -f "$2.tmp"
 }
 
-# $1 = key=value
+# $1 = key-value pair
 # $2 = file
 add_key_value_at_end_of_file() {
-  echo "$1" >> "$2"
+  key=$(get_key_of_string "$1")
+  value=$(get_value_of_string "$1")
+  resolved_value=$(resolve_env_parameter "$value") # Check for env variable substitution
+  
+  # Check if we recevied a non-empty value for the key (if the value has been
+  # defined using an environmental variable).
+  if [ "$resolved_value" = "VALUE_NOT_FOUND" ]; then
+    print_error "Error ZWEL0203E: Env value in key-value pair $1 has not been defined."
+    return 203
+  fi
+  echo "${key}=${resolved_value}" >> "$2"
 }
 
 zis_plugin_install() {
@@ -514,7 +528,6 @@ zis_plugin_install() {
             continue
           fi
           print_trace "$(grep -x "$samplib_key_value" "$parmlib_member_as_unix_file")"
-            
           if [ $? -eq 0 ]; then
             print_message "The key-value pair $samplib_key_value is being skipped because it's already there and hasn't changed."
             continue
@@ -533,7 +546,7 @@ zis_plugin_install() {
   fi
 
   if [ $changed -eq 1 ]; then
-    copy_to_data_set "$parmlib_member_as_unix_file" "$zwes_zis_parmlib($zwes_zis_parmlib_member)" "" "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITE}"
+    copy_to_data_set "$parmlib_member_as_unix_file" "$zwes_zis_parmlib($zwes_zis_parmlib_member)" "" "true"
   fi
 }
 
@@ -575,6 +588,37 @@ update_uss_parmlib_key_value() {
     add_key_value_at_end_of_file "$samplib_key_value" "$parmlib_member_as_unix_file"
     changed=1
   fi
+}
+
+#################################################
+# Try to resolve values that are defined using
+# environmental variables, otherwise return
+# the original value - borrowed from ZSS
+#
+# @param string   value
+# Returns:
+#   * If an env variable is provided, its value
+#     is returned on success
+#   * If an env variable is provided and
+#     the variable is not defined,
+#     string VALUE_NOT_FOUND is returned
+#   * The original value is returned
+#################################################
+resolve_env_parameter() {
+
+  parm=$1
+
+  # Are we dealing with an env variable based value?
+  # Yes, resolve the value using eval, otherwise return the value itself.
+  if echo $parm | grep -q -E "^[$]{1}[A-Z0-9_]+$"; then
+    ( eval "echo $parm" 2>/dev/null )
+    if [ $? -ne 0 ]; then
+      echo "VALUE_NOT_FOUND"
+    fi
+  else
+    echo $parm
+  fi
+
 }
 
 process_component_appfw_plugin() {
