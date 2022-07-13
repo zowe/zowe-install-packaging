@@ -24,6 +24,14 @@
       "minLength": 3,
       "maxLength": 44
     },
+    "datasetMember": {
+      "$anchor": "zoweDatasetMember",
+      "type": "string",
+      "description": "A 1-8-char all caps dataset member name",
+      "pattern": "^([A-Z0-9\\$\\#\\@]){1,8}$",
+      "minLength": 1,
+      "maxLength": 8
+    },
     "jobname": {
       "$anchor": "zoweJobname",
       "type": "string",
