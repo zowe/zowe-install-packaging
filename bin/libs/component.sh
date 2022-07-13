@@ -513,7 +513,7 @@ zis_plugin_install() {
   samplib_path="${base_path}/samplib"
   loadlib_path="${base_path}/loadlib"
   
-  if [ -d "${basepath}" ]; then
+  if [ -d "${base_path}" ]; then
     if [ -d "${loadlib_path}" ] && [ -d "${samplib_path}" ]; then
       for module in $(ls ${loadlib_path}); do # There isn't really a situation where we want to use ZWE_CLI_PARAMETER_ALLOW_OVERWRITE
         copy_to_data_set "${loadlib_path}/${module}" "$zwes_zis_pluginlib" "" "true"
