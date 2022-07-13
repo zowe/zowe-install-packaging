@@ -428,6 +428,7 @@ process_zis_plugin_install() {
     iterator_index=0
     zis_plugin_id=$(read_component_manifest "${component_dir}" ".zisPlugins[${iterator_index}].id" 2>/dev/null)
     zis_plugin_path=$(read_component_manifest "${component_dir}" ".zisPlugins[${iterator_index}].path" 2>/dev/null)
+    print_trace "Attempting to install ZIS plugin ${zis_plugin_id} at ${zis_plugin_path}"
     while [ -n "${zis_plugin_path}" ]; do
       cd "${component_dir}"
       zis_plugin_install "${zis_plugin_path}" "${zwes_zis_pluginlib}" "${zwes_zis_parmlib}" "${zwes_zis_parmlib_member}" "${zis_plugin_id}" "${component_dir}" "${zwes_zis_parmlib_keys}"
