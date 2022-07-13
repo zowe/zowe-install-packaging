@@ -509,18 +509,22 @@ zis_plugin_install() {
 
   changed=0
   
-  if [ -d "${component_dir}${plugin_path}" ]; then
-    if [ -d "${component_dir}${plugin_path}/loadlib" ] && [ -d "${component_dir}${plugin_path}/samplib" ]; then
-      for module in $(ls ${component_dir}${plugin_path}/loadlib); do # There isn't really a situation where we want to use ZWE_CLI_PARAMETER_ALLOW_OVERWRITE
-        copy_to_data_set "${component_dir}${plugin_path}/loadlib/${module}" "$zwes_zis_pluginlib" "" "true"
+  base_path="${component_dir}/${plugin_path}"
+  samplib_path="${base_path}/samplib"
+  loadlib_path="${base_path}/samplib"
+  
+  if [ -d "${basepath}" ]; then
+    if [ -d "${loadlib_path}" ] && [ -d "${samplib_path}" ]; then
+      for module in $(ls ${loadlib_path}); do # There isn't really a situation where we want to use ZWE_CLI_PARAMETER_ALLOW_OVERWRITE
+        copy_to_data_set "${loadlib_path}/${module}" "$zwes_zis_pluginlib" "" "true"
         if [ $? != 0 ]; then
-          print_error "Error ZWEL0200E: Failed to copy USS file ${component_dir}${plugin_path}/loadlib/${module} to MVS data set $zwes_zis_pluginlib." 
+          print_error "Error ZWEL0200E: Failed to copy USS file ${loadlib_path}/${module} to MVS data set $zwes_zis_pluginlib." 
           return 200
         fi
       done
-      for params in $(ls ${component_dir}${plugin_path}/samplib); do
-        if [ ! -f "${component_dir}${plugin_path}/samplib/${params}" ]; then
-          print_error "Error ZWEL0201E: File ${component_dir}${plugin_path}/samplib/${params} does not exist." 
+      for params in $(ls ${samplib_path}); do
+        if [ ! -f "${samplib_path}/${params}" ]; then
+          print_error "Error ZWEL0201E: File ${samplib_path}/${params} does not exist." 
           return 201
         fi
         while read samplib_key_value; do
@@ -540,7 +544,7 @@ zis_plugin_install() {
             else
               fi
           fi
-        done < "${component_dir}${plugin_path}/samplib/${params}"
+        done < "${samplib_path}/${params}"
       done
     fi
   print_message "Successfully installed ZIS plugin: ${plugin_id}"
