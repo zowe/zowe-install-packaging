@@ -527,7 +527,7 @@ zis_plugin_install() {
           if [ "$prefix" = "//" ] || [ "$prefix" = "* " ] || [ "$prefix" = "" ]; then
             continue
           fi
-          print_trace "$(grep -x "$samplib_key_value" "$parmlib_member_as_unix_file")"
+          grep -x "$samplib_key_value" "$parmlib_member_as_unix_file" > /dev/null
           if [ $? -eq 0 ]; then
             print_message "The key-value pair $samplib_key_value is being skipped because it's already there and hasn't changed."
             continue
