@@ -611,7 +611,7 @@ resolve_env_parameter() {
 
   # Are we dealing with an env variable based value?
   # Yes, resolve the value using eval, otherwise return the value itself.
-  if echo $parm | grep -q -E "^[$]{1}[A-Z0-9_]+$"; then
+  if echo $parm | grep -q -E "^[$]{1}[A-Za-z0-9_]+$"; then
     ( eval "echo $parm" 2>/dev/null )
     if [ $? -ne 0 ]; then
       echo "VALUE_NOT_FOUND"
