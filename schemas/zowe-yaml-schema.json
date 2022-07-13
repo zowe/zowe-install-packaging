@@ -32,6 +32,17 @@
                   "type": "string",
                   "description": "Zowe PARMLIB"
                 },
+                "parmlibMembers": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "description": "Holds Zowe PARMLIB members for plugins",
+                  "properties": {
+                    "zis": {
+                      "$ref": "/schemas/v2/server-common#zoweDatasetMember",
+                      "description": "PARMLIB member used by ZIS"
+                    }
+                  }
+                },
                 "jcllib": {
                   "type": "string",
                   "description": "JCL library where Zowe will store temporary JCLs during initialization"

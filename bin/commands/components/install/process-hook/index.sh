@@ -43,8 +43,7 @@ else
   print_debug "Module ${ZWE_CLI_PARAMETER_COMPONENT_NAME} does not have commands.install defined."
 fi
 
-if [ "${ZWE_RUN_ON_ZOS}" = "true" ]; then
-  process_zss_plugin_install "${target_dir}/${ZWE_CLI_PARAMETER_COMPONENT_NAME}"
-fi
+process_zss_plugin_install "${target_dir}/${ZWE_CLI_PARAMETER_COMPONENT_NAME}"
+process_zis_plugin_install "${target_dir}/${ZWE_CLI_PARAMETER_COMPONENT_NAME}"
 
 fi
