@@ -439,7 +439,7 @@ process_zis_plugin_install() {
 
       iterator_index=`expr $iterator_index + 1`
       zis_plugin_path=$(read_component_manifest "${component_dir}" ".zisPlugins[${iterator_index}].id" 2>/dev/null)
-      zis_plugin_id=$(read_component_manifest "${component_dir}" ".zisPlugins[${iterator_index}].id" 2>/dev/null)
+      zis_plugin_id=$(read_component_manifest "${component_dir}" ".zisPlugins[${iterator_index}].path" 2>/dev/null)
     done
   fi
 }
