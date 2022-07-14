@@ -105,9 +105,9 @@
       "artifact": "apiml-sample-extension-*.zip"
     },
     "org.zowe.configmgr": {
-      "version": "0.3.0-v2.x_rc",
+      "version": "0.3.0-V2.X-RC",
       "repository": "libs-snapshot-local",
-      "artifact": "configmgr-0.3.0-2022071320.pax"
+      "artifact": "configmgr-0.3.0-2022071419.pax"
     },
     "org.zowe.launcher": {
       "version": "2.0.4"
