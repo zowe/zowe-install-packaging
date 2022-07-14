@@ -106,7 +106,8 @@
     },
     "org.zowe.configmgr": {
       "version": "0.3.0-v2.x_rc",
-      "artifact": "configmgr-*.pax"
+      "repository": "libs-snapshot-local",
+      "artifact": "configmgr-0.3.0-2022071320.pax"
     },
     "org.zowe.launcher": {
       "version": "2.0.4"
