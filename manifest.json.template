@@ -104,6 +104,11 @@
       "version": "2.2.3",
       "artifact": "apiml-sample-extension-*.zip"
     },
+    "org.zowe.configmgr": {
+      "version": "0.3.0-V2.X-RC",
+      "repository": "libs-snapshot-local",
+      "artifact": "configmgr-0.3.0-2022071419.pax"
+    },
     "org.zowe.launcher": {
       "version": "2.0.4"
     },
@@ -376,6 +381,14 @@
       "entries": [{
         "repository": "explorer-ip",
         "tag": "v1.0.0",
+        "destinations": ["Zowe PAX"]
+      }]
+    },
+    {
+      "componentGroup": "Configmgr",
+      "entries": [{
+        "repository": "zowe-common-c",
+        "tag": "zss-v2.2.0-RC1",
         "destinations": ["Zowe PAX"]
       }]
     }
