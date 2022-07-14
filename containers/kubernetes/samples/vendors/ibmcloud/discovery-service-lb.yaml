@@ -1,0 +1,34 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: discovery-service
+  namespace: zowe
+  labels:
+    app.kubernetes.io/name: zowe
+    app.kubernetes.io/instance: zowe
+    app.kubernetes.io/version: "2.1.0"
+    app.kubernetes.io/component: discovery
+    app.kubernetes.io/part-of: apiml
+    app.kubernetes.io/managed-by: manual
+  annotations:
+    # FIXME: follow these instructions to configure
+    # - https://cloud.ibm.com/docs/containers?topic=containers-cs_network_planning#public_access
+    # - https://cloud.ibm.com/docs/containers?topic=containers-loadbalancer
+    # this is example setup using basic load balancing with an NLB 1.0
+    service.kubernetes.io/ibm-load-balancer-cloud-provider-ip-type: public
+    # use `ibmcloud ks zone ls` to list zones
+    service.kubernetes.io/ibm-load-balancer-cloud-provider-zone: wdc07
+    # use `ibmcloud ks vlan ls --zone <zone>` to list VLANs
+    service.kubernetes.io/ibm-load-balancer-cloud-provider-vlan: "3234046"
+spec:
+  type: LoadBalancer
+  selector:
+    app.kubernetes.io/name: zowe
+    app.kubernetes.io/instance: zowe
+    app.kubernetes.io/component: discovery
+  ports:
+    - name: discovery
+      protocol: TCP
+      port: 7553
+      targetPort: discovery-port

@@ -50,7 +50,7 @@ spec:
           port: 53
     - to:
         - ipBlock:
-            # allow connections to z/OS
+            # FIXME: allow connections to z/OS
             cidr: <zos-ip>/32
       ports:
         - protocol: TCP
@@ -59,3 +59,9 @@ spec:
         - protocol: TCP
           # Zowe ZSS
           port: 7557
+        - protocol: TCP
+          # SSH - needed by Zowe app-server TN3270 app
+          port: 23
+        - protocol: TCP
+          # SSH - needed by Zowe app-server VT Terminal app
+          port: 22

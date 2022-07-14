@@ -11,6 +11,11 @@
 # Copyright Contributors to the Zowe Project.
 #######################################################################
 
+USE_CONFIGMGR=$(check_configmgr_enabled)
+if [ "${USE_CONFIGMGR}" = "true" ]; then
+  _CEE_RUNOPTS="XPLINK(ON),HEAPPOOLS(OFF)" ${ZWE_zowe_runtimeDirectory}/bin/utils/configmgr -script "${ZWE_zowe_runtimeDirectory}/bin/commands/components/disable/cli.js"
+else
+
 require_node
 require_zowe_yaml
 
@@ -25,3 +30,5 @@ else
   componentCfgPath="components.${ZWE_CLI_PARAMETER_COMPONENT_NAME}"
 fi
 update_zowe_yaml "${ZWE_CLI_PARAMETER_CONFIG}" "${componentCfgPath}.enabled" "false"
+
+fi

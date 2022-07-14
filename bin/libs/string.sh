@@ -26,6 +26,31 @@ trim() {
 }
 
 ###############################
+# Replace all occurrences of a string with another	
+#	
+# @param string   optional string	
+# @param string   occurrences to remove	
+# @param string   string to replace with	
+replace() {	
+  if [ $# -eq 0 ]; then	
+    read input	
+  else	
+    input=${1}	
+  fi	
+  echo "${input}" | tr ${2} ${3}	
+}	
+
+###############################	
+# Return true if substring of string	
+#	
+# @param string   substring	
+# @param string   string	
+is_substr_of() {	
+  is_substring=$(echo "$2" | grep -c "$1")	
+  return "$is_substring"	
+}	
+
+###############################
 # Sanitize a string by converting all non-alphanum letters to underscore
 #
 # @param string   optional string

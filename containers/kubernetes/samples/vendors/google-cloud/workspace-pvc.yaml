@@ -1,0 +1,38 @@
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: zowe-workspace-pv
+  namespace: zowe
+  labels:
+    app.kubernetes.io/name: zowe
+    app.kubernetes.io/instance: zowe
+    app.kubernetes.io/managed-by: manual
+spec:
+  capacity:
+    storage: 10G
+  accessModes:
+  - ReadWriteMany
+  nfs:
+    # FIXME: follow this guidance https://cloud.google.com/filestore/docs/accessing-fileshares to create Filestore instance.
+    #        this should be Filestore instance file share name and IP address.
+    path: /zowe_workspace
+    server: 12.34.56.78
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: zowe-workspace-pvc
+  namespace: zowe
+  labels:
+    app.kubernetes.io/name: zowe
+    app.kubernetes.io/instance: zowe
+    app.kubernetes.io/managed-by: manual
+spec:
+  storageClassName: ""
+  volumeName: zowe-workspace-pv
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 50Mi

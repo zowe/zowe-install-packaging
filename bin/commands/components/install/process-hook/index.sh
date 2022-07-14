@@ -11,6 +11,12 @@
 # Copyright Contributors to the Zowe Project.
 #######################################################################
 
+USE_CONFIGMGR=$(check_configmgr_enabled)
+if [ "${USE_CONFIGMGR}" = "true" ]; then
+  _CEE_RUNOPTS="XPLINK(ON),HEAPPOOLS(OFF)" ${ZWE_zowe_runtimeDirectory}/bin/utils/configmgr -script "${ZWE_zowe_runtimeDirectory}/bin/commands/components/install/process-hook/cli.js"
+else
+
+
 require_zowe_yaml
 
 # read extensionDirectory
@@ -37,6 +43,7 @@ else
   print_debug "Module ${ZWE_CLI_PARAMETER_COMPONENT_NAME} does not have commands.install defined."
 fi
 
-if [ "${ZWE_RUN_ON_ZOS}" = "true" ]; then
-  process_zss_plugin_install "${target_dir}/${ZWE_CLI_PARAMETER_COMPONENT_NAME}"
+process_zss_plugin_install "${target_dir}/${ZWE_CLI_PARAMETER_COMPONENT_NAME}"
+process_zis_plugin_install "${target_dir}/${ZWE_CLI_PARAMETER_COMPONENT_NAME}"
+
 fi

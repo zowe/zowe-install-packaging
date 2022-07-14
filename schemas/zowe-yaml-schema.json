@@ -1,5 +1,5 @@
 {
-  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$schema": "https://json-schema.org/draft/2019-09/schema",
   "$id": "https://zowe.org/schemas/v2/server-base",
   "title": "Zowe configuration file",
   "description": "Configuration file for Zowe (zowe.org) version 2.",
@@ -31,6 +31,17 @@
                 "parmlib": {
                   "type": "string",
                   "description": "Zowe PARMLIB"
+                },
+                "parmlibMembers": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "description": "Holds Zowe PARMLIB members for plugins",
+                  "properties": {
+                    "zis": {
+                      "$ref": "/schemas/v2/server-common#zoweDatasetMember",
+                      "description": "PARMLIB member used by ZIS"
+                    }
+                  }
                 },
                 "jcllib": {
                   "type": "string",
@@ -418,6 +429,11 @@
           "type": "string",
           "description": "Customize how Zowe should validate certificates used by components or other services.",
           "enum": ["STRICT", "NONSTRICT", "DISABLED"]
+        },
+        "useConfigmgr": {
+          "type": "boolean",
+          "default": false,
+          "description": "(Experimental, WIP) Determines whether or not to use the features of configmgr such as multi-config, parmlib config, config templates, and schema validation. This effects the zwe command."
         }
       }
     },
