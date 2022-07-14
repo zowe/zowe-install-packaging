@@ -1,0 +1,37 @@
+{
+  "compilerOptions": {
+    "lib": [ "ES2020" ],
+    "module": "ES2020",
+    "target": "ES2020",
+    "moduleResolution": "node",
+    "removeComments": false,
+    "preserveConstEnums": true,
+    "sourceMap": false,
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
+    "pretty": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": false,
+    "allowUnreachableCode": false,
+    "allowJs": false,
+    "listEmittedFiles": true,
+    "strict": false,
+    "baseUrl": "../../bin",
+    "outDir": "../../build/zwe/out",
+    "paths": {
+	    // A series of entries which re-map imports to lookup locations relative to the baseUrl,
+	    // there is a larger coverage of paths in the handbook.
+	    // See: https://www.typescriptlang.org/tsconfig
+	    "*": [ "../build/zwe/types/@qjstypes/*" ],
+	  }
+  },
+  "include": [
+    "../../bin/libs/*",
+    "../../bin/commands/**/*",
+    "../../bin/utils/*"
+  ],
+  "exclude": [
+    "../../bin/libs/json.ts",
+    "../../bin/commands/start/index.ts"
+  ]
+}

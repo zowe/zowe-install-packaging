@@ -1,4 +1,4 @@
-#!/bin/sh
+!/bin/sh
 
 #######################################################################
 # This program and the accompanying materials are made available
@@ -10,6 +10,15 @@
 #
 # Copyright Contributors to the Zowe Project.
 #######################################################################
+
+USE_CONFIGMGR=${ZWE_CLI_PARAMETER_CONFIGMGR}
+if [ -n "${ZWE_CLI_PARAMETER_CONFIG}" -a "${USE_CONFIGMGR}" != "true" ]; then
+  USE_CONFIGMGR=$(shell_read_yaml_config "${ZWE_CLI_PARAMETER_CONFIG}" 'zowe' 'useConfigmgr')
+fi
+if [ "${USE_CONFIGMGR}" = "true" ]; then
+  _CEE_RUNOPTS="XPLINK(ON),HEAPPOOLS(OFF)" ${ZWE_zowe_runtimeDirectory}/bin/utils/configmgr -script "${ZWE_zowe_runtimeDirectory}/bin/commands/internal/container/init/cli.js"
+else
+
 
 print_level0_message "Prepare Zowe containerization runtime environment"
 
@@ -48,3 +57,5 @@ print_message "  - ${ZWE_PRIVATE_CONTAINER_HOME_DIRECTORY}" && ls -la "${ZWE_PRI
 ###############################
 # exit message
 print_level1_message "Zowe containerization runtime environment is prepared successfully."
+
+fi

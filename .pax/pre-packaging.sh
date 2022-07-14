@@ -149,8 +149,12 @@ BASE_DIR=$(cd $(dirname "$0"); pwd)      # <something>/.pax
 # use node v12 to build
 export NODE_HOME=/ZOWE/node/node-v12.18.4-os390-s390x
 
-cd "${BASE_DIR}"
 ZOWE_ROOT_DIR="${BASE_DIR}/content"
+
+cd "${BASE_DIR}"
+# Done with build, remove build folder
+rm -rf "${ZOWE_ROOT_DIR}/build"
+
 ZOWE_VERSION=$(cat ${ZOWE_ROOT_DIR}/manifest.json | grep version | head -1 | awk -F: '{ print $2 }' | sed 's/[",]//g' | tr -d '[[:space:]]')
 # add zwe command to PATH
 export PATH=${ZOWE_ROOT_DIR}/bin:${PATH}
@@ -199,6 +203,16 @@ mv ./content/smpe  .
 echo "[$SCRIPT_NAME] templates is not part of zowe.pax, moving it out ..."
 mv ./content/templates  .
 chmod +x templates/*.rex
+
+
+mkdir -p "${ZOWE_ROOT_DIR}/bin/utils"
+configmgr=$(find "${ZOWE_ROOT_DIR}/files" -type f \( -name "configmgr*.pax" \) | head -n 1)
+echo "[$SCRIPT_NAME] extract configmgr $configmgr"
+cd "${ZOWE_ROOT_DIR}/bin/utils"
+pax -ppx -rf "${configmgr}"
+rm "${configmgr}"
+cd "${BASE_DIR}"
+
 
 echo "[$SCRIPT_NAME] create dummy zowe.yaml for install"
 cat <<EOT >> "${BASE_DIR}/zowe.yaml"

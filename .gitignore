@@ -4,17 +4,29 @@ tmp/
 .pytest_cache/
 *.pyc
 
+# emacs save files
+*~
+
 # logs
 *.log
 
-# zip files
+# archive files
 # *.pax
 *.zip
 *.tar
 *.gz
+*.xz
+*.bz2
 
 # compile java binary
 *.class
+
+# nodejs
+**/node_modules
+
+# Compiled TS files
+bin/libs/*.js
+build/zwe/out
 
 # Mac files
 .DS_Store
