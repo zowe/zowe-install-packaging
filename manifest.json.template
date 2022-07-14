@@ -12,44 +12,44 @@
   },
   "binaryDependencies": {
     "org.zowe.zlux.zlux-core": {
-      "version": "2.1.0-RC",
+      "version": "2.2.0-RC",
       "repository": "libs-snapshot-local",
-      "artifact": "zlux-core-2.1.0-20220602.132239.pax"
+      "artifact": "zlux-core-2.2.0-20220714.135340.pax"
     },
     "org.zowe.zlux.sample-angular-app": {
-      "version": "2.1.0-V2.X-RC",
+      "version": "2.2.0-V2.X-RC",
       "repository": "libs-snapshot-local",
-      "artifact": "sample-angular-app-2.1.0-20220601.192150.pax"
+      "artifact": "sample-angular-app-2.2.0-20220713.222218.pax"
     },
     "org.zowe.zlux.sample-iframe-app": {
-      "version": "2.1.0-V2.X-RC",
+      "version": "2.2.0-V2.X-RC",
       "repository": "libs-snapshot-local",
-      "artifact": "sample-iframe-app-2.1.0-20220601.192136.pax"
+      "artifact": "sample-iframe-app-2.2.0-20220713.222108.pax"
     },
     "org.zowe.zlux.sample-react-app": {
-      "version": "2.1.0-V2.X-RC",
+      "version": "2.2.0-V2.X-RC",
       "repository": "libs-snapshot-local",
-      "artifact": "sample-react-app-2.1.0-20220601.192206.pax"
+      "artifact": "sample-react-app-2.2.0-20220713.222401.pax"
     },
     "org.zowe.zlux.tn3270-ng2": {
-      "version": "2.1.0-V2.X-RC",
+      "version": "2.2.0-V2.X-RC",
       "repository": "libs-snapshot-local",
-      "artifact": "tn3270-ng2-2.1.0-20220601.192233.pax"
+      "artifact": "tn3270-ng2-2.2.0-20220713.222033.pax"
     },
     "org.zowe.zlux.vt-ng2": {
-      "version": "2.1.0-V2.X-RC",
+      "version": "2.2.0-V2.X-RC",
       "repository": "libs-snapshot-local",
-      "artifact": "vt-ng2-2.1.0-20220601.192301.pax"
+      "artifact": "vt-ng2-2.2.0-20220713.222500.pax"
     },
     "org.zowe.zlux.zlux-editor": {
-      "version": "2.1.0-V2.X-RC",
+      "version": "2.2.0-V2.X-RC",
       "repository": "libs-snapshot-local",
-      "artifact": "zlux-editor-2.1.0-20220601.192536.pax"
+      "artifact": "zlux-editor-2.2.0-20220713.222300.pax"
     },
     "org.zowe.zss": {
-      "version": "2.1.0-RC",
+      "version": "2.2.0-RC",
       "repository": "libs-snapshot-local",
-      "artifact": "zss-2.1.0-rc-223-20220601192548.pax"
+      "artifact": "zss-2.2.0-rc-265-20220713222352.pax"
     },
     "org.zowe.explorer.jobs.jobs-api-package": {
       "version": "2.0.7",
@@ -147,12 +147,12 @@
       "componentGroup": "Zowe Application Framework",
       "entries": [{
           "repository": "zlux-app-manager",
-          "tag": "v2.1.0-RC1",
+          "tag": "v2.2.0-RC1",
           "destinations": ["Zowe PAX"]
         },
         {
           "repository": "zlux-app-server",
-          "tag": "v2.1.0-RC2",
+          "tag": "v2.2.0-RC1",
           "destinations": ["Zowe PAX"]
         },
         {
@@ -167,17 +167,17 @@
         },
         {
           "repository": "zlux-platform",
-          "tag": "v2.1.0-RC1",
+          "tag": "v2.2.0-RC1",
           "destinations": ["Zowe PAX"]
         },
         {
           "repository": "zlux-server-framework",
-          "tag": "v2.1.0-RC2",
+          "tag": "v2.2.0-RC2",
           "destinations": ["Zowe PAX"]
         },
         {
           "repository": "zlux-shared",
-          "tag": "v2.1.0-RC1",
+          "tag": "v2.2.0-RC1",
           "destinations": ["Zowe PAX"]
         },
         {
@@ -187,17 +187,17 @@
         },
         {
           "repository": "zlux-build",
-          "tag": "v2.1.0-RC1",
+          "tag": "v2.2.0-RC1",
           "destinations": ["Zowe PAX"]
         },
         {
           "repository": "zss",
-          "tag": "v2.1.0-RC1",
+          "tag": "v2.2.0-RC1",
           "destinations": ["Zowe PAX"]
         },
         {
           "repository": "zowe-common-c",
-          "tag": "zss-v2.1.0-RC1",
+          "tag": "zss-v2.2.0-RC1",
           "destinations": ["Zowe PAX"]
         }
       ]
@@ -304,14 +304,14 @@
       "componentGroup": "Zowe Desktop TN3270 Emulator Plug-in",
       "entries": [{
         "repository": "tn3270-ng2",
-        "tag": "v2.1.0-RC1",
+        "tag": "v2.2.0-RC1",
         "destinations": ["Zowe PAX"]
       }]
     }, {
       "componentGroup": "Zowe Desktop Sample Angular Application",
       "entries": [{
         "repository": "sample-angular-app",
-        "tag": "v2.1.0-RC1",
+        "tag": "v2.2.0-RC1",
         "destinations": ["Zowe PAX"]
       }]
     },
@@ -319,7 +319,7 @@
       "componentGroup": "Zowe Desktop Sample iFrame Application",
       "entries": [{
         "repository": "sample-iframe-app",
-        "tag": "v2.1.0-RC1",
+        "tag": "v2.2.0-RC1",
         "destinations": ["Zowe PAX"]
       }]
     },
@@ -327,7 +327,7 @@
       "componentGroup": "Zowe Desktop Sample React Application",
       "entries": [{
         "repository": "sample-react-app",
-        "tag": "v2.1.0-RC1",
+        "tag": "v2.2.0-RC1",
         "destinations": ["Zowe PAX"]
       }]
     },
@@ -335,7 +335,7 @@
       "componentGroup": "Zowe Desktop VT Emulator Plugin-in",
       "entries": [{
         "repository": "vt-ng2",
-        "tag": "v2.1.0-RC1",
+        "tag": "v2.2.0-RC1",
 		"destinations": ["Zowe PAX"]
       }]
     },
@@ -343,7 +343,7 @@
       "componentGroup": "Zowe Desktop Editor Plugin-in",
       "entries": [{
         "repository": "zlux-editor",
-        "tag": "v2.1.0-RC1",
+        "tag": "v2.2.0-RC1",
         "destinations": ["Zowe PAX"]
       }]
     },
@@ -410,7 +410,7 @@
     "app-server": {
       "registry": "zowe-docker-release.jfrog.io",
       "name": "ompzowe/app-server",
-      "tag" : "2.1.0-ubuntu"
+      "tag" : "2.2.0-ubuntu"
     },
     "explorer-ip": {
       "kind": "job",
