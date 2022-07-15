@@ -17,7 +17,7 @@ import * as fs from './fs';
 //import * as stringlib from './string';
 import * as shell from './shell';
 import * as strftime from './strftime';
-
+import * as bufferlib from './buffer';
 declare namespace console {
   function log(...args:string[]): void;
 };
@@ -66,6 +66,26 @@ export function requireZoweYaml() {
   }
 }
 
+const BUFFER_SIZE=4096;
+function readStreamFully(fd:number):string{
+  let readBuffer = new Uint8Array(BUFFER_SIZE);
+  let fileBuffer = new bufferlib.ExpandableBuffer(BUFFER_SIZE);
+  
+  let bytesRead = 0;
+  do {
+    bytesRead = os.read(fd, readBuffer.buffer, 0, BUFFER_SIZE);
+    fileBuffer.append(readBuffer,0,bytesRead);
+  } while (bytesRead == BUFFER_SIZE);
+  // let hex = fileBuffer.dump(fileBuffer.pos);
+  // console.log("out "+hex);
+  let result = fileBuffer.getString();
+  if (result.endsWith('\n')) {
+    return result.substring(0,result.length-1);
+  } else {
+    return result;
+  }
+}
+
 export function getUserId(): string|undefined {
   //moved from sys to simplify dependency
   let user = std.getenv('USER');
@@ -76,14 +96,20 @@ export function getUserId(): string|undefined {
     user = std.getenv('LOGNAME');
   }
   if (!user) {
-    let out;
-    let handler = (data:string)=> {
-      out=data;
+
+    let pipeArray = os.pipe();
+    if (!pipeArray){
+      return user;
     }
-    const rc = os.exec(['whoami'],
-                       {block: true, usePath: true, out: handler});
+    const rc = os.exec(['whoami'], { block: true, usePath: true, stdout: pipeArray[1]});
+    
+    let out = readStreamFully(pipeArray[0]);
+    os.close(pipeArray[0]);
+    os.close(pipeArray[1]);
+
     if (!rc) {
-      return out;
+      user=out;
+      std.setenv('USER', user);
     }
   }
   return user;

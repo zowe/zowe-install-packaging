@@ -5,6 +5,21 @@ All notable changes to the Zowe Installer will be documented in this file.
 ## `Unreleased`
 
 - Updated ZWEWRF03 workflow to be up to date with the installed software
+
+## `2.2.0`
+
+### New features and enhancements
+- A new command, `configmgr` is now present. It can load, validate, and report on the zowe configuration file.
+
+## `2.0.0`
+
+### New features and enhancements
+- A new command, 'zwe' is now present which can be used to do various zowe server commands like install and run. To learn more, try `zwe --help` or find the same help on the zowe documentation website.
+
+### Breaking changes
+- Zowe no longer uses instance.env, but instead uses a zowe.yaml file for configuration
+- Zowe no longer uses an instance directory, but instead uses the zowe.yaml to find all zowe directories, and the zwe command to handle most zowe management operations.
+
 ## `1.25.0`
 
 ### New features and enhancements

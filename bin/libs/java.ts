@@ -19,9 +19,9 @@ import * as config from './config';
 const JAVA_MIN_VERSION=8;
 
 export function ensureJavaIsOnPath(): void {
-  let path=std.getenv('PATH');
+  let path=std.getenv('PATH') || '';
   let javaHome=std.getenv('JAVA_HOME');
-  if (path && !path.includes(`:${javaHome}/bin:`)) {
+  if (!path.includes(`:${javaHome}/bin:`)) {
     std.setenv('PATH', `${javaHome}/bin:${path}`);
   }
 }

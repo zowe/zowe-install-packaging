@@ -11,4 +11,4 @@
 
 import * as index from './index';
 import * as std from 'std';
-index.execute(std.getenv("ZWE_PRIVATE_CONTAINER_COMPONENT_ID"), false);
+index.execute(std.getenv("ZWE_CLI_PARAMETER_COMPONENT"), false);
