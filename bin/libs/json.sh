@@ -136,6 +136,28 @@ read_json() {
   return ${code}
 }
 
+read_json_string() {	
+  string="${1}"	
+  key="${2}"	
+  ignore_null="${3:-true}"	
+  utils_dir="${ZWE_zowe_runtimeDirectory}/bin/utils"	
+  jq="${utils_dir}/njq/src/index.js"	
+  result=$(echo "${string}" | node "${jq}" -r "${key}" 2>&1)	
+  code=$?	
+  print_trace "  * Exit code: ${code}"	
+  print_trace "  * Output:"	
+  if [ -n "${result}" ]; then	
+    print_trace "$(padding_left "${result}" "    ")"	
+  fi	
+  if [ ${code} -eq 0 ]; then	
+    if [ "${ignore_null}" = "true" -a "${result}" = "null" ]; then	
+      result=	
+    fi	
+    printf "${result}"	
+  fi	
+  return ${code}	
+}
+
 update_yaml() {
   file="${1}"
   key="${2}"
