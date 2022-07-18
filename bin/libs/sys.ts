@@ -156,6 +156,10 @@ export function executeCommand(...args:string[]) {
   let errHandler = (data:string)=> {
     err=data;
   }
+  if (!std.getenv('PATH')) {
+    std.setenv('PATH','/bin:.:/usr/bin');
+  }
+
   const rc = os.exec(args,
                      {block: true, usePath: true, out: handler, err: errHandler});
   if (!rc) {

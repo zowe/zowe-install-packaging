@@ -32,7 +32,14 @@ export type ExecReturn = {
 
 export type path = string;
 
+export function guaranteePath() {
+  if (!std.getenv('PATH')) {
+    std.setenv('PATH','/bin:.:/usr/bin');
+  }
+}
+
 export function execSync(command: string, ...args: string[]): ExecReturn {
+  guaranteePath();
   const rc = os.exec([command, ...args],
                      {block: true, usePath: true});
   return {
@@ -60,6 +67,7 @@ function readStreamFully(fd:number):string{
 }
 
 export function execOutSync(command: string, ...args: string[]): ExecReturn {
+  guaranteePath();
   let pipeArray = os.pipe();
   if (!pipeArray){
     return { rc: -1 };
@@ -76,10 +84,12 @@ export function execOutSync(command: string, ...args: string[]): ExecReturn {
 }
 
 export function exec(command: string, ...args: string[]): number {
+  guaranteePath();
   return os.exec([command, ...args], { block: false, usePath: true});
 }
 
 export function execErrSync(command: string, ...args: string[]): ExecReturn {
+  guaranteePath();
   let pipeArray = os.pipe();
   if (!pipeArray){
     return { rc: -1 };
@@ -97,6 +107,7 @@ export function execErrSync(command: string, ...args: string[]): ExecReturn {
 
 
 export function execOutErrSync(command: string, ...args: string[]): ExecReturn {
+  guaranteePath();
   let pipeArray = os.pipe();
   if (!pipeArray){
     return { rc: -1 };

@@ -101,6 +101,9 @@ export function getUserId(): string|undefined {
     if (!pipeArray){
       return user;
     }
+    if (!std.getenv('PATH')) {
+      std.setenv('PATH','/bin:.:/usr/bin');
+    }
     const rc = os.exec(['whoami'], { block: true, usePath: true, stdout: pipeArray[1]});
     
     let out = readStreamFully(pipeArray[0]);
