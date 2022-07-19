@@ -9,8 +9,7 @@ on:
 
 env:
   DOCS_SITE_ZWE_COMMAND_REFERENCE_DIR: docs/appendix/zwe_server_command_reference
-  # Will change this to a docs staging branch when v2 is out
-  DOCS_SITE_TARGET_BRANCH: v2-doc-branch
+  DOCS_SITE_TARGET_BRANCH: docs-staging
   DOCS_SITE_COMMIT_BRANCH: auto-update-zwe-reference
   ZWE_DOC_GENERATION_DIR: .dependency/zwe_doc_generation
 
