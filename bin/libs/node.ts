@@ -60,7 +60,11 @@ export function detectNodeHome(): string|undefined {
   return undefined;
 }
 
+let _checkComplete = false;
 export function requireNode() {
+  if ((_checkComplete === true) && std.getenv('NODE_HOME')) {
+    return;
+  }
   if (std.getenv('ZWE_CLI_PARAMETER_CONFIG')) {
     const customNodeHome = shellReadYamlNodeHome();
     if (customNodeHome) {
@@ -78,6 +82,7 @@ export function requireNode() {
   }
 
   ensureNodeIsOnPath();
+  _checkComplete = true;
 }
 
 export function validateNodeHome(nodeHome:string|undefined=std.getenv("NODE_HOME")): boolean {

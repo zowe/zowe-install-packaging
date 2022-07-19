@@ -54,7 +54,11 @@ export function detectJavaHome(): string|undefined {
   return undefined;
 }
 
+let _javaCheckComplete = false;
 export function requireJava() {
+  if ((_javaCheckComplete === true) && std.getenv('JAVA_HOME')) {
+    return;
+  }
   if (std.getenv('ZWE_CLI_PARAMETER_CONFIG')) {
     const customJavaHome = shellReadYamlJavaHome();
     if (customJavaHome) {
@@ -72,6 +76,7 @@ export function requireJava() {
   }
 
   ensureJavaIsOnPath();
+  _javaCheckComplete = true;
 }
 
 export function validateJavaHome(javaHome:string|undefined=std.getenv("JAVA_HOME")): boolean {
