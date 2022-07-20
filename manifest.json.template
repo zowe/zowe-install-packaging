@@ -462,17 +462,17 @@
     "base": {
       "registry": "zowe-docker-release.jfrog.io",
       "name": "ompzowe/base",
-      "tag" : "2.0.0-ubuntu"
+      "tag" : "2.0.1-ubuntu"
     },
     "base-jdk": {
       "registry": "zowe-docker-release.jfrog.io",
       "name": "ompzowe/base-jdk",
-      "tag" : "2.0.0-ubuntu"
+      "tag" : "2.0.1-ubuntu"
     },
     "base-node": {
       "registry": "zowe-docker-release.jfrog.io",
       "name": "ompzowe/base-node",
-      "tag" : "2.0.0-ubuntu"
+      "tag" : "2.0.1-ubuntu"
     }
   },
   "dependencyDecisions": {
