@@ -541,8 +541,7 @@ zis_plugin_install() {
             if [ $? -ne 0 ]; then
               print_message "Failed to install ZIS plugin: ${zis_plugin_id}"
               exit 1
-            else
-              fi
+            fi
           fi
         done < "${samplib_path}/${params}"
       done
