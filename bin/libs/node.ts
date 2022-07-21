@@ -31,7 +31,7 @@ std.setenv('__UNTAGGED_READ_MODE','V6');
 
 
 export function ensureNodeIsOnPath(): void {
-  let path=std.getenv('PATH') || '';
+  let path=std.getenv('PATH') || '/bin:.:/usr/bin';
   let nodeHome=std.getenv('NODE_HOME');
   if (!path.includes(`:${nodeHome}/bin:`)) {
     std.setenv('PATH', `${nodeHome}/bin:${path}`);

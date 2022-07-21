@@ -49,7 +49,6 @@ export function execute(componentId: string, runInBackground: boolean=false) {
     common.printErrorAndExit("Error ZWEL0157E: Zowe workspace directory (zowe.workspaceDirectory) is not defined in Zowe YAML configuration file.", undefined, 157);
   }
 
-  // TODO really this should use configmgr
   // load environment
   config.loadEnvironmentVariables(componentId);
 
