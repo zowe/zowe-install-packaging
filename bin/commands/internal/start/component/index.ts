@@ -96,7 +96,7 @@ export function execute(componentId: string, runInBackground: boolean=false) {
           // wait for all background subprocesses created by bin/start.sh exit
           // re-source libs is necessary to reclaim shell functions since this will be executed in a new shell
           //TODO does this do the same as the shell script before it?
-          shell.execOutSync('sh', '-c', `cd ${COMPONENT_DIR} ; cat "${fullPath}" | { echo ". \"${ZOWE_CONFIG.zowe.runtimeDirectory}/bin/libs/index.sh\"" ; cat ; echo; echo wait; } | /bin/sh`);
+          shell.execSync('sh', '-c', `cd ${COMPONENT_DIR} ; cat "${fullPath}" | { echo ". \"${ZOWE_CONFIG.zowe.runtimeDirectory}/bin/libs/index.sh\"" ; cat ; echo; echo wait; } | /bin/sh`);
         }
       } else {
         common.printFormattedError("ZWELS", "zwe-internal-start-component", `Error ZWEL0172E: Component ${componentId} has commands.start defined but the file is missing.`);
