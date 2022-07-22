@@ -29,7 +29,6 @@ export function execute(componentId: string, runInBackground: boolean=false) {
     java.requireJava();
   }
 
-  //node.requireNode(); //needed for what?
   common.requireZoweYaml();
 
   const ZOWE_CONFIG=config.getZoweConfig();

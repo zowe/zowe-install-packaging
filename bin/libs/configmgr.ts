@@ -87,6 +87,13 @@ function writeMergedConfig(config: any): number {
   const mkdirrc = mkdirp(zwePrivateWorkspaceEnvDir);
   if (mkdirrc) { return mkdirrc; }
   const destination = `${zwePrivateWorkspaceEnvDir}/.zowe-merged.yaml`;
+  const jsonDestination = `${zwePrivateWorkspaceEnvDir}/.zowe.json`;
+/*
+  const jsonRC = xplatform.storeFileUTF8(jsonDestination, xplatform.AUTO_DETECT, JSON.stringify(ZOWE_CONFIG, null, 2));
+  if (jsonRC) {
+    console.log(`Error: Could not write json ${jsonDestination}, rc=${jsonRC}`);
+  }
+*/
   //const yamlReturn = CONFIG_MGR.writeYAML(getConfigRevisionName(ZOWE_CONFIG_NAME), destination);
   let [ yamlStatus, textOrNull ] = CONFIG_MGR.writeYAML(getConfigRevisionName(ZOWE_CONFIG_NAME));
   if (yamlStatus == 0){
@@ -238,21 +245,22 @@ const INSTANCE_KEYS_NOT_IN_BASE = [
   'hostname', 'sysname'
 ];
 
-// TODO haInstance values should be overriding the base values
 const keyNameRegex = /[^a-zA-Z0-9]/g;
 export function getZoweConfigEnv(haInstance: string): any {
   let config = getZoweConfig();
   let flattener = new objUtils.Flattener();
   flattener.setSeparator('_');
   flattener.setPrefix('ZWE_');
+  flattener.setKeepArrays(true);
   let envs = flattener.flatten(config);
   let overrides;
   if (config.haInstances && config.haInstances[haInstance]) {
     envs['ZWE_haInstance_hostname'] = config.haInstances[haInstance].hostname;
     const haFlattener = new objUtils.Flattener();
-    flattener.setSeparator('_');
-    flattener.setPrefix('ZWE_');
-    let overrides = flattener.flatten(config.haInstances[haInstance]);
+    haFlattener.setSeparator('_');
+    haFlattener.setPrefix('ZWE_');
+    haFlattener.setKeepArrays(true);
+    let overrides = haFlattener.flatten(config.haInstances[haInstance]);
   } else {
     envs['ZWE_haInstance_hostname'] = config.zowe.externalDomains[0];
   }

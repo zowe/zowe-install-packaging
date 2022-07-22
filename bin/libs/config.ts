@@ -120,6 +120,11 @@ export function generateInstanceEnvFromYamlConfig(haInstance: string) {
     std.exit(140);
   }
 
+
+  
+
+  
+
   // convert YAML configurations to backward compatible .instance-<ha-id>.env files
   common.printFormattedTrace("ZWELS", "bin/libs/config.sh,generate_instance_env_from_yaml_config", `config-converter yaml env --ha ${haInstance}`);
   const envs = configmgr.getZoweConfigEnv(haInstance);
@@ -160,6 +165,7 @@ export function generateInstanceEnvFromYamlConfig(haInstance: string) {
     if (componentManifest.configs) {
       const flattener = new objUtils.Flattener();
       flattener.setSeparator('_');
+      flattener.setKeepArrays(true);
       //flattener.setPrefix();
       flat = flattener.flatten(componentManifest.configs);
     }
