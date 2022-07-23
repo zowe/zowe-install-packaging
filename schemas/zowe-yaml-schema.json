@@ -184,6 +184,10 @@
                       "description": "Password of keystore stored self-signed certificate authority.",
                       "default": "local_ca_password"
                     },
+                    "lock": {
+                      "type": "boolean",
+                      "description": "Whether to restrict the permissions of the keystore after creation"
+                    },
                     "import": {
                       "type": "object",
                       "additionalProperties": false,
