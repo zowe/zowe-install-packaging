@@ -21,7 +21,11 @@ const pwd = os.getcwd();
 std.setenv('ZWE_PWD', pwd[0] ? pwd[0] : '/');
 
 // Return system name in lower case
+let sysname:string;
 export function getSysname(): string|undefined {
+  if (typeof sysname == 'string') {
+    return sysname.toLowerCase();
+  }
   let shellReturn = shell.execOutSync('sysvar', 'SYSNAME');
   if (!shellReturn.out) {
     // works for z/OS and most Linux with hostname command
@@ -31,7 +35,8 @@ export function getSysname(): string|undefined {
     shellReturn = shell.execOutSync('uname', '-n');
   }
   if (shellReturn.out) {
-    return shellReturn.out.toLowerCase();
+    sysname = shellReturn.out.toLowerCase();
+    return sysname;
   }
   return undefined;
 }
@@ -156,6 +161,10 @@ export function executeCommand(...args:string[]) {
   let errHandler = (data:string)=> {
     err=data;
   }
+  if (!std.getenv('PATH')) {
+    std.setenv('PATH','/bin:.:/usr/bin');
+  }
+
   const rc = os.exec(args,
                      {block: true, usePath: true, out: handler, err: errHandler});
   if (!rc) {

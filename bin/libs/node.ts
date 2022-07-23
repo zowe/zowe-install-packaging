@@ -31,9 +31,9 @@ std.setenv('__UNTAGGED_READ_MODE','V6');
 
 
 export function ensureNodeIsOnPath(): void {
-  let path=std.getenv('PATH');
+  let path=std.getenv('PATH') || '/bin:.:/usr/bin';
   let nodeHome=std.getenv('NODE_HOME');
-  if (path && !path.includes(`:${nodeHome}/bin:`)) {
+  if (!path.includes(`:${nodeHome}/bin:`)) {
     std.setenv('PATH', `${nodeHome}/bin:${path}`);
   }
 }
@@ -42,7 +42,7 @@ export function shellReadYamlNodeHome(configList?: string, skipValidate?: boolea
   const zoweConfig = config.getZoweConfig();
   if (zoweConfig && zoweConfig.node && zoweConfig.node.home) {
     if (!skipValidate) {
-      if (validateNodeHome(zoweConfig.node.home)) {
+      if (!validateNodeHome(zoweConfig.node.home)) {
         return '';
       }
     }
@@ -60,7 +60,11 @@ export function detectNodeHome(): string|undefined {
   return undefined;
 }
 
+let _checkComplete = false;
 export function requireNode() {
+  if ((_checkComplete === true) && std.getenv('NODE_HOME')) {
+    return;
+  }
   if (std.getenv('ZWE_CLI_PARAMETER_CONFIG')) {
     const customNodeHome = shellReadYamlNodeHome();
     if (customNodeHome) {
@@ -78,6 +82,7 @@ export function requireNode() {
   }
 
   ensureNodeIsOnPath();
+  _checkComplete = true;
 }
 
 export function validateNodeHome(nodeHome:string|undefined=std.getenv("NODE_HOME")): boolean {

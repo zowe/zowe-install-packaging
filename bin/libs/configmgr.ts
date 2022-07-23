@@ -87,6 +87,13 @@ function writeMergedConfig(config: any): number {
   const mkdirrc = mkdirp(zwePrivateWorkspaceEnvDir);
   if (mkdirrc) { return mkdirrc; }
   const destination = `${zwePrivateWorkspaceEnvDir}/.zowe-merged.yaml`;
+  const jsonDestination = `${zwePrivateWorkspaceEnvDir}/.zowe.json`;
+/*
+  const jsonRC = xplatform.storeFileUTF8(jsonDestination, xplatform.AUTO_DETECT, JSON.stringify(ZOWE_CONFIG, null, 2));
+  if (jsonRC) {
+    console.log(`Error: Could not write json ${jsonDestination}, rc=${jsonRC}`);
+  }
+*/
   //const yamlReturn = CONFIG_MGR.writeYAML(getConfigRevisionName(ZOWE_CONFIG_NAME), destination);
   let [ yamlStatus, textOrNull ] = CONFIG_MGR.writeYAML(getConfigRevisionName(ZOWE_CONFIG_NAME));
   if (yamlStatus == 0){
@@ -234,15 +241,31 @@ const SPECIAL_ENV_MAPS = {
   ZWE_zOSMF_applId: 'ZOSMF_APPLID'
 };
 
-// TODO haInstance values should be overriding the base values
+const INSTANCE_KEYS_NOT_IN_BASE = [
+  'hostname', 'sysname'
+];
+
 const keyNameRegex = /[^a-zA-Z0-9]/g;
-export function getZoweConfigEnv(haInstance?: string): any {
+export function getZoweConfigEnv(haInstance: string): any {
   let config = getZoweConfig();
   let flattener = new objUtils.Flattener();
   flattener.setSeparator('_');
   flattener.setPrefix('ZWE_');
+  flattener.setKeepArrays(true);
   let envs = flattener.flatten(config);
+  let overrides;
+  if (config.haInstances && config.haInstances[haInstance]) {
+    envs['ZWE_haInstance_hostname'] = config.haInstances[haInstance].hostname;
+    const haFlattener = new objUtils.Flattener();
+    haFlattener.setSeparator('_');
+    haFlattener.setPrefix('ZWE_');
+    haFlattener.setKeepArrays(true);
+    let overrides = haFlattener.flatten(config.haInstances[haInstance]);
+  } else {
+    envs['ZWE_haInstance_hostname'] = config.zowe.externalDomains[0];
+  }
 
+  
   //env var key name sanitization
   let keys = Object.keys(envs);
   keys.forEach((key:string)=> {
@@ -252,6 +275,20 @@ export function getZoweConfigEnv(haInstance?: string): any {
       delete envs[key];
     }
   });
+  
+  if (overrides) {
+    let overrideKeys = Object.keys(overrides);
+    overrideKeys.forEach((overrideKey:string)=> {
+      const newKey = overrideKey.replace(keyNameRegex, '_');
+      if (overrideKey != newKey) {
+        overrides[newKey]=overrides[overrideKey];
+        delete overrides[overrideKey];
+      }
+      if (!INSTANCE_KEYS_NOT_IN_BASE.includes(newKey)) {
+        envs[newKey]=overrides[newKey];
+      }
+    });
+  }
 
   let specialKeys = Object.keys(SPECIAL_ENV_MAPS);
   specialKeys.forEach((key:string)=> {
@@ -262,6 +299,36 @@ export function getZoweConfigEnv(haInstance?: string): any {
 
   //special things to keep as-is
   envs['ZWE_DISCOVERY_SERVICES_LIST'] = std.getenv('ZWE_DISCOVERY_SERVICES_LIST');
+  if (!envs['ZWE_DISCOVERY_SERVICES_LIST']) {
+    let list = [];
+    if (config.components.discovery && (config.components.discovery.enabled === true)) {
+      const port = config.components.discovery.port;
+      config.zowe.externalDomains.forEach((domain:string)=> {
+        const url = `https://${domain}:${port}/eureka/`;
+        if (!list.includes(url)) {
+          list.push(url);
+        }
+      });
+    }
+
+    if (config.haInstances) {
+      let haInstanceKeys = Object.keys(config.haInstances);
+      haInstanceKeys.forEach((haInstanceKey:string)=> {
+        const haInstance = config.haInstances[haInstanceKey];
+        if (haInstance.hostname && haInstance.components && haInstance.components.discovery && (haInstance.components.discovery.enabled === true)) {
+          const port = haInstance.components.discovery.port;
+          const url = `https://${haInstance.hostname}:${port}/eureka/`;
+          if (!list.includes(url)) {
+            list.push(url);
+          }
+        }
+      });
+    }
+
+    envs['ZWE_DISCOVERY_SERVICES_LIST'] = list.join(',');
+  }
+
+  envs['ZWE_haInstance_id'] = haInstance;
   
   return envs;
 }
