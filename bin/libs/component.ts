@@ -490,13 +490,22 @@ export function processComponentApimlStaticDefinitions(componentDir: string): bo
           const resolvedContents = resolveShellTemplate(contents);
 
           const zweCliParameterHaInstance=std.getenv("ZWE_CLI_PARAMETER_HA_INSTANCE");
-          const outPath=`${STATIC_DEF_DIR}/${componentName}.${sanitizedDefName}.${zweCliParameterHaInstance}.yaml`;
+          //discovery static code requires specifically .yml. Not .yaml
+          const outPath=`${STATIC_DEF_DIR}/${componentName}.${sanitizedDefName}.${zweCliParameterHaInstance}.yml`;
 
           common.printDebug(`- writing ${outPath}`);
 
-
-          xplatform.storeFileUTF8(outPath, xplatform.AUTO_DETECT, resolvedContents);
-          shell.execSync(`chmod`, `770`, outPath);
+          //discovery static code seems to be ascii regardless of platform. on zos it is tagged ebcdic even when its ascii?
+          //i'm writing the file out in this way below because i know it ends up in the right encoding when doing this.
+          let errorObj;
+          let fileReturn = std.open(outPath, 'w', errorObj);
+          if (fileReturn && !errorObj) {
+            fileReturn.puts(resolvedContents);
+            fileReturn.close();
+            shell.execSync(`chmod`, `770`, outPath);
+          } else {
+            common.printError(`Could not write static definition file ${outPath}, errobj=`+errorObj);
+          }
         }
       }
     }
