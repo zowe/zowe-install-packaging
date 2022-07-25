@@ -122,7 +122,7 @@
       "version": "2.0.2"
     },
     "org.zowe.licenses": {
-      "version": "2.1.0",
+      "version": "2.2.0",
       "artifact": "zowe_licenses_full.zip"
     }
   },
@@ -372,7 +372,7 @@
       "componentGroup": "Zowe Visual Studio Code Extension",
       "entries": [{
         "repository": "vscode-extension-for-zowe",
-        "tag": "v2.1.0",
+        "tag": "v2.2.0",
         "destinations": ["Visual Studio Code Marketplace"]
       }]
     },
@@ -388,7 +388,7 @@
       "componentGroup": "Configmgr",
       "entries": [{
         "repository": "zowe-common-c",
-        "tag": "zss-v2.2.0-RC1",
+        "tag": "configmgr-v2.2.0-RC1",
         "destinations": ["Zowe PAX"]
       }]
     }
