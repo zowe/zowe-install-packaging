@@ -36,6 +36,7 @@ Before applying NetworkPolicy, you need to update policy with configurations fit
 - Locate `spec.egress[2].to[0].ipBlock.cidr` option, it has comment `allow connections to z/OS`, update `<zos-ip>/32` with your real z/OS IP. You can put any valid CIDR to enable desired connection.
 - Locate `spec.egress[2].ports[0].port` option, it has comment `z/OSMF`, update `443` with your real z/OSMF port.
 - Locate `spec.egress[2].ports[1].port` option, it has comment `Zowe ZSS`, update `7557` with your real Zowe ZSS port.
+- Review the full NetworkPolicy definition to fit in your requirements.
 
 Once the customizations are done, run this command to apply Zowe default network policy:
 
@@ -53,13 +54,15 @@ The default policy will,
   - allow connections to z/OS system from pods with `zowe` namespace,
   - disable other general internet connections from pods with `zowe` namespace.
 
+### Prepare test pods for verification
+
+`samples/network-policy/test-np-pod.yaml` consists 2 test pods definitions. One is deployed to `default` namespace and the other one is deployed to `zowe` workspace. If your Zowe workspace is not `zowe`, please customize the namespace to yours. The test pods has `curl` utility for network verification purpose.
+
+```
+kubectl apply -f samples/network-policy/test-np-pod.yaml
+```
+
 ### Verify Ingress
-
-`samples/network-policy/test-pod.yaml` is a test pod you can use to troubleshoot network connections. The pod has `curl` utility and will be applied to `default` namespace.
-
-```
-kubectl apply -f samples/network-policy/test-pod.yaml
-```
 
 Check gateway pod IP:
 
@@ -75,7 +78,7 @@ zowe          gateway-7b4bb9ffbb-bsdtn                    1/1     Running     0 
 Verify the connection is rejected from `default` namespace:
 
 ```
-$ DEBUG= kubectl exec -it test-pod -n default -- /bin/sh
+$ DEBUG= kubectl exec -it test-np-default-pod -n default -- /bin/sh
 # curl -k -v https://10.244.120.90:7554
 *   Trying 10.244.120.90:7554...
 * TCP_NODELAY set
@@ -100,45 +103,44 @@ $ DEBUG= kubectl exec -it test-pod -n default -- /bin/sh
 command terminated with exit code 130
 ```
 
-The expected behavior is no response from discovery pod, but gateway pod is available. The NetworkPolicy shouldn't block you from accessing Zowe gateway from remote.
+Expected behaviors are:
 
-Delete the test pod once you done the verification:
-
-```
-kubectl delete -f samples/network-policy/test-pod.yaml
-```
+- you should be able to connect to gateway pod. The NetworkPolicy shouldn't block you from accessing Zowe gateway from remote and other namespaces.
+- you should NOT be able to connect to discovery pod or other Zowe pods.
 
 ### Verify Egress
 
-We can connect to a Zowe pod to verify egress setup. Use `gateway-7b4bb9ffbb-bsdtn` pod showing above as example:
+We can connect to a `test-np-zowe-pod` pod to verify egress setup.
 
 ```
-$ DEBUG= kubectl exec -it gateway-7b4bb9ffbb-bsdtn -n zowe -- /bin/sh
-Defaulted container "gateway" out of: gateway, init-zowe (init)
-sh-5.0$ node /home/zowe/runtime/bin/utils/curl.js -k -v https://<zosmf-host>:<zosmf-port>/zosmf
-> GET https://<zosmf-host>:<zosmf-port>/zosmf
-> Headers:
+$ DEBUG= kubectl exec -it test-np-zowe-pod -n zowe -- /bin/sh
+$ curl -k -v https://<zosmf-host>:<zosmf-port>/zosmf
+*   Trying <zosmf-ip>:<zosmf-port>...
+* TCP_NODELAY set
+* Connected to <zosmf-host> (<zosmf-ip>) port <zosmf-port> (#0)
+* ALPN, offering h2
+* ALPN, offering http/1.1
 
-< Status: 302
-< Headers:
-< - x-powered-by: Servlet/3.1
-< - x-frame-options: SAMEORIGIN
-< - x-content-type-options: nosniff
-< - x-xss-protection: 1; mode=block
-< - strict-transport-security: max-age=31536000; includeSubDomains
-< - location: https://<zosmf-host>:<zosmf-port>/zosmf/
-< - content-language: en-US
-< - transfer-encoding: chunked
-< - connection: Close
-< - date: Wed, 25 May 2022 16:24:43 GMT
-< Body:
+...
 
-sh-5.0$ node /home/zowe/runtime/bin/utils/curl.js -k -v https://google.com               
-> GET https://google.com/
-> Headers:
-
+< HTTP/1.1 302 Found
+< X-Powered-By: Servlet/3.1
+< X-Frame-Options: SAMEORIGIN
+< X-Content-Type-Options: nosniff
+< X-XSS-Protection: 1; mode=block
+< Strict-Transport-Security: max-age=31536000; includeSubDomains
+< Location: https://<zosmf-host>:<zosmf-port>/zosmf/
+< Content-Language: en-US
+< Transfer-Encoding: chunked
+< Date: Mon, 06 Jun 2022 20:24:18 GMT
+< 
+* Connection #0 to host <zosmf-host> left intact
+$ curl -k -v https://google.com               
+*   Trying 142.250.125.139:443...
+* TCP_NODELAY set
+*   Trying 2607:f8b0:4001:c2f::8a:443...
 ^C
-sh-5.0$ exit
+$ exit
 exit
 command terminated with exit code 130
 ```
@@ -147,5 +149,13 @@ command terminated with exit code 130
 
 Expected behaviors are:
 
-- gateway should be able to connect to the z/OS system you defined,
-- gateway should NOT be able to make other internet connections except DNS query.
+- you should be able to connect to the z/OS system you defined,
+- you should NOT be able to make other internet connections except DNS query.
+
+### Delete test pods
+
+Delete the test pods once you done the verification:
+
+```
+kubectl delete -f samples/network-policy/test-np-pod.yaml
+```

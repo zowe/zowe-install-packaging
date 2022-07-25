@@ -8,7 +8,7 @@
       "$anchor": "zoweSemverVersion",
       "type": "string",
       "description": "A semantic version, see https://semver.org/",
-      "pattern": "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)(?:-((?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\\.(?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\\+([0-9a-zA-Z-]+(?:\\.[0-9a-zA-Z-]+)*))?$"
+      "pattern": "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)(-*[a-zA-Z][0-9a-zA-Z\\-\\.]*)?(\\+[0-9a-zA-Z\\-\\.]*)?$"
     },
     "semverRange": {
       "$anchor": "zoweSemverRange",
@@ -24,6 +24,14 @@
       "minLength": 3,
       "maxLength": 44
     },
+    "datasetMember": {
+      "$anchor": "zoweDatasetMember",
+      "type": "string",
+      "description": "A 1-8-char all caps dataset member name",
+      "pattern": "^([A-Z0-9\\$\\#\\@]){1,8}$",
+      "minLength": 1,
+      "maxLength": 8
+    },
     "jobname": {
       "$anchor": "zoweJobname",
       "type": "string",
@@ -34,7 +42,7 @@
     "reverseDomainNotation": {
       "$anchor": "zoweReverseDomainNotation",
       "type": "string",
-      "pattern": "^[A-Za-z]{2,6}((?!-)\\.[A-Za-z0-9-]{1,63}(?<!-))+$"
+      "pattern": "^[A-Za-z]{2,6}(\\.[A-Za-z0-9-]{1,62}[A-Za-z0-9])+$"
     },
     "ipv4": {
       "$anchor": "zoweIpv4",
@@ -56,4 +64,5 @@
       "minimum": 1,
       "maximum": 1023
     }
+  }
 }

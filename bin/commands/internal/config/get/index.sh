@@ -11,6 +11,11 @@
 # Copyright Contributors to the Zowe Project.
 #######################################################################
 
+USE_CONFIGMGR=$(check_configmgr_enabled)
+if [ "${USE_CONFIGMGR}" = "true" ]; then
+  _CEE_RUNOPTS="XPLINK(ON),HEAPPOOLS(OFF)" ${ZWE_zowe_runtimeDirectory}/bin/utils/configmgr -script "${ZWE_zowe_runtimeDirectory}/bin/commands/internal/config/get/cli.js"
+else
+
 ###############################
 # validation
 require_zowe_yaml
@@ -20,4 +25,6 @@ if [ -n "${ZWE_CLI_PARAMETER_HA_INSTANCE}" ] && [[ "${ZWE_CLI_PARAMETER_PATH}" !
   read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".haInstances.${ZWE_CLI_PARAMETER_HA_INSTANCE}.${ZWE_CLI_PARAMETER_PATH}"
 else
   read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".${ZWE_CLI_PARAMETER_PATH}"
+fi
+
 fi

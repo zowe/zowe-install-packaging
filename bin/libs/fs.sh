@@ -88,6 +88,17 @@ create_tmp_file() {
   done
 }
 
+###############################
+# Copies dataset to Unix file
+#
+#
+# @param string   Dataset name
+# @param string   Unix file name
+copy_mvs_to_uss() {
+  cp "//'$1'" "$2"
+  return $?
+}
+
 is_file_accessible() {
   file="${1}"
 

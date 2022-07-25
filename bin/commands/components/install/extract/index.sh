@@ -11,6 +11,12 @@
 # Copyright Contributors to the Zowe Project.
 #######################################################################
 
+USE_CONFIGMGR=$(check_configmgr_enabled)
+if [ "${USE_CONFIGMGR}" = "true" ]; then
+  _CEE_RUNOPTS="XPLINK(ON),HEAPPOOLS(OFF)" ${ZWE_zowe_runtimeDirectory}/bin/utils/configmgr -script "${ZWE_zowe_runtimeDirectory}/bin/commands/components/install/extract/cli.js"
+else
+
+
 ###############################
 # Constants
 tmp_ext_dir=tmp_ext_dir
@@ -121,3 +127,5 @@ fi
 
 print_debug "- Rename temporary directory to ${component_name}."
 mv "${tmp_ext_dir}" "${component_name}"
+
+fi

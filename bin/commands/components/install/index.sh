@@ -11,6 +11,11 @@
 # Copyright Contributors to the Zowe Project.
 #######################################################################
 
+USE_CONFIGMGR=$(check_configmgr_enabled)
+if [ "${USE_CONFIGMGR}" = "true" ]; then
+  _CEE_RUNOPTS="XPLINK(ON),HEAPPOOLS(OFF)" ${ZWE_zowe_runtimeDirectory}/bin/utils/configmgr -script "${ZWE_zowe_runtimeDirectory}/bin/commands/components/install/cli.js"
+else
+
 zwecli_inline_execute_command components install extract
 # ZWE_COMPONENTS_INSTALL_EXTRACT_COMPONENT_NAME should be set after extract step
 if [ -n "${ZWE_COMPONENTS_INSTALL_EXTRACT_COMPONENT_NAME}" ]; then
@@ -20,4 +25,6 @@ else
 fi
 if [ "$ZWE_CLI_PARAMETER_SKIP_ENABLE" != "true" ]; then
   zwecli_inline_execute_command components enable --component-name "${ZWE_COMPONENTS_INSTALL_EXTRACT_COMPONENT_NAME}"
+fi
+
 fi
