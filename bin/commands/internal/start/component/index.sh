@@ -11,14 +11,10 @@
 # Copyright Contributors to the Zowe Project.
 #######################################################################
 
-# TODO disabled temporarily while bugs are fixed
-#USE_CONFIGMGR=${ZWE_CLI_PARAMETER_CONFIGMGR}
-#if [ -n "${ZWE_CLI_PARAMETER_CONFIG}" -a "${USE_CONFIGMGR}" != "true" ]; then
-#  USE_CONFIGMGR=$(shell_read_yaml_config "${ZWE_CLI_PARAMETER_CONFIG}" 'zowe' 'useConfigmgr')
-#fi
-#if [ "${USE_CONFIGMGR}" = "true" ]; then
-#  _CEE_RUNOPTS="XPLINK(ON),HEAPPOOLS(OFF)" ${ZWE_zowe_runtimeDirectory}/bin/utils/configmgr -script "${ZWE_zowe_runtimeDirectory}/bin/commands/internal/start/component/cli.js"
-#else
+USE_CONFIGMGR=$(check_configmgr_enabled)
+if [ "${USE_CONFIGMGR}" = "true" ]; then
+  _CEE_RUNOPTS="XPLINK(ON),HEAPPOOLS(OFF)" ${ZWE_zowe_runtimeDirectory}/bin/utils/configmgr -script "${ZWE_zowe_runtimeDirectory}/bin/commands/internal/start/component/cli.js"
+else
 
 
 ###############################
@@ -90,4 +86,4 @@ else
   print_formatted_error "ZWELS" "zwe-internal-start-component:${LINENO}" "Failed to locate component directory for ${ZWE_CLI_PARAMETER_COMPONENT}."
 fi
 
-#fi
+fi

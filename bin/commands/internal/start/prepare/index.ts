@@ -216,7 +216,7 @@ function validateComponents(enabledComponents:string[]): any {
           //TODO verify that this returns things that we want, currently it just uses setenv
           const envVars = config.loadEnvironmentVariables(componentId);
           componentEnvironments[manifest.name] = envVars;
-          let result = shell.execSync('sh', '-c', `. ${runtimeDirectory}/bin/libs/index.sh && . ${fullPath}`);
+          let result = shell.execSync('sh', '-c', `. ${runtimeDirectory}/bin/libs/index.sh && cd ${componentDir} && . ${fullPath}`);
           privateErrors=prevErrors;
           if (result.rc) {
             privateErrors++;
@@ -285,7 +285,7 @@ function configureComponents(componentEnvironments?: any, enabledComponents?:str
           } else {
             config.loadEnvironmentVariables(componentId);
           }
-          const result = shell.execOutErrSync('sh', '-c', `. ${runtimeDirectory}/bin/libs/index.sh && . ${preconfigurePath}`);
+          const result = shell.execOutErrSync('sh', '-c', `. ${runtimeDirectory}/bin/libs/index.sh && cd ${componentDir} && . ${preconfigurePath}`);
           common.printFormattedDebug("ZWELS", "zwe-internal-start-prepare,configure_components", result.rc ? result.err : result.out);
         } else {
           common.printFormattedError("ZWELS", "zwe-internal-start-prepare,configure_components", `Error ZWEL0172E: Component ${componentId} has commands.preConfigure defined but the file is missing.`);
@@ -333,7 +333,7 @@ function configureComponents(componentEnvironments?: any, enabledComponents?:str
           common.printFormattedDebug("ZWELS", "zwe-internal-start-prepare,configure_components", `* process ${componentId} configure command ...`);
           // execute configure step and generate environment snapshot
           // NOTE: env var list is not updated because it should not have changed between preconfigure step and now
-          const result = shell.execOutSync('sh', '-c', `. ${runtimeDirectory}/bin/libs/index.sh && . ${fullPath} ; export rc=$? ; export -p`);
+          const result = shell.execOutSync('sh', '-c', `. ${runtimeDirectory}/bin/libs/index.sh && cd ${componentDir} && . ${fullPath} ; export rc=$? ; export -p`);
 
           common.printFormattedDebug("ZWELS", "zwe-internal-start-prepare,configure_components", `${componentName} configure ended with rc=${result.rc}`);
           

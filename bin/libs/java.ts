@@ -19,9 +19,9 @@ import * as config from './config';
 const JAVA_MIN_VERSION=8;
 
 export function ensureJavaIsOnPath(): void {
-  let path=std.getenv('PATH');
+  let path=std.getenv('PATH') || '/bin:.:/usr/bin';
   let javaHome=std.getenv('JAVA_HOME');
-  if (path && !path.includes(`:${javaHome}/bin:`)) {
+  if (!path.includes(`:${javaHome}/bin:`)) {
     std.setenv('PATH', `${javaHome}/bin:${path}`);
   }
 }
@@ -30,7 +30,7 @@ export function shellReadYamlJavaHome(configList?: string, skipValidate?: boolea
   const zoweConfig = config.getZoweConfig();
   if (zoweConfig && zoweConfig.java && zoweConfig.java.home) {
     if (!skipValidate) {
-      if (validateJavaHome(zoweConfig.java.home)) {
+      if (!validateJavaHome(zoweConfig.java.home)) {
         return '';
       }
     }
@@ -54,7 +54,11 @@ export function detectJavaHome(): string|undefined {
   return undefined;
 }
 
+let _javaCheckComplete = false;
 export function requireJava() {
+  if ((_javaCheckComplete === true) && std.getenv('JAVA_HOME')) {
+    return;
+  }
   if (std.getenv('ZWE_CLI_PARAMETER_CONFIG')) {
     const customJavaHome = shellReadYamlJavaHome();
     if (customJavaHome) {
@@ -72,6 +76,7 @@ export function requireJava() {
   }
 
   ensureJavaIsOnPath();
+  _javaCheckComplete = true;
 }
 
 export function validateJavaHome(javaHome:string|undefined=std.getenv("JAVA_HOME")): boolean {
