@@ -1,6 +1,7 @@
 const rootSchema = require('./temp.json');
 const fs = require('fs');
 const path = require('path');
+const valueConstraints = require('./valueConstraints');
 
 const GENERATED_DOCS_DIR = path.join(__dirname, './generated');
 const FILE_EXT = '.md';
@@ -63,12 +64,28 @@ function generateDocumentationForNode(curSchema, curSchemaKey, parentNode, isPat
         mdContent += `**Default value:** \`${curSchema.default}\`${SEPARATOR}`;
     }
 
-    if (curSchema.examples) {
-        mdContent += `${SUB_SECTION_HEADER}Example values${SEPARATOR}* \`${curSchema.examples.join('`\n* `')}\``;
+    const constraints = [];
+    for (const [propKey, constraint] of Object.entries(curSchema)) {
+        for (const { key, mdGenerator } of valueConstraints) {
+            if (key === propKey) {
+                constraints.push(mdGenerator(constraint));
+            }
+        }
+    }
+    if (constraints.length || curSchema.required?.length) {
+        mdContent += `${SUB_SECTION_HEADER}Value constraints${SEPARATOR}`;
+        if (constraints.length) {
+            mdContent += `* ${constraints.join('\n* ')}\n`;
+        }
+        if (curSchema.required?.length) {
+            mdContent += `* Must have child property \`${curSchema.required.join('` defined\n* Must have child property `')}\` defined\n`;
+        }
+        mdContent += SEPARATOR;
     }
 
-    // TODO value requirements section?
-    // type, minLength, maxLength, minValue, etc
+    if (curSchema.examples) {
+        mdContent += `${SUB_SECTION_HEADER}Example values${SEPARATOR}* \`${curSchema.examples.join('`\n* `')}\`${SEPARATOR}`;
+    }
 
     if (curSchema.properties || curSchema.patternProperties) {
         mdContent += `${SUB_SECTION_HEADER}Child properties${SEPARATOR}`;
