@@ -5,7 +5,7 @@ const path = require('path');
 const GENERATED_DOCS_DIR = path.join(__dirname, './generated');
 const FILE_EXT = '.md';
 const ROOT_NAME = 'zowe.yaml';
-const SUB_SECTION_HEADER = '##';
+const SUB_SECTION_HEADER = '## ';
 const SEPARATOR = '\n\n';
 
 const schemas = rootSchema.allOf?.reduce((collected, s) => {
@@ -28,7 +28,7 @@ function writeMdFiles(schema, schemaKey, parentNode = { schema: {}, metadata: {}
     }
     fs.writeFileSync(`${dirToWriteFile}/${metadata.fileName}${FILE_EXT}`, mdContent);
 
-    if (schema.properties) { // TODO patternProperties??
+    if (schema.properties) {
         for (const [prop, schemaForProp] of Object.entries(schema.properties)) {
             writeMdFiles(schemaForProp, prop, { schema, metadata });
         }
@@ -36,28 +36,29 @@ function writeMdFiles(schema, schemaKey, parentNode = { schema: {}, metadata: {}
 }
 
 function generateDocumentationForNode(curSchema, curSchemaKey, parentNode) {
-    // console.log(curSchemaKey);
-    // console.log(curSchema);
-    // console.log('~~~~~~~~~~~~~~')
-    // console.log(parentNode);
-    // console.log('-----------------')
+    console.log(curSchemaKey);
+    console.log(curSchema);
+    console.log('~~~~~~~~~~~~~~')
+    console.log(parentNode);
+    console.log('-----------------')
     const metadata = assembleSchemaMetadata(curSchema, curSchemaKey, parentNode.metadata);
+    // TODO deal with logic in schema like allOf, oneOf, if/then/else, etc
 
-    // TODO improve title, consider if title exists then what to do with key
-    // TODO could follow cli and have heading be the command (no link, join with dots), then in description section is title/description/comment
-    let mdContent = `# ${curSchema.title || curSchemaKey}${SEPARATOR}${metadata.linkYamlKey}${SEPARATOR}${curSchema.description || ''}${SEPARATOR}`;
-
-    // TODO better description section? What to do if no description section?
+    let mdContent = `# ${metadata.yamlKey}${SEPARATOR}${metadata.linkYamlKey}${SEPARATOR}` +
+        `${SUB_SECTION_HEADER}Description${SEPARATOR}\t${curSchema.title || curSchemaKey}${SEPARATOR}${curSchema.description || ''}${SEPARATOR}`;
 
     // TODO examples section?
 
     // TODO value requirements section?
 
-    // TODO additional properties
-
+     // TODO patternProperties children
     if (curSchema.properties) {
-        mdContent += `${SUB_SECTION_HEADER} Child properties${SEPARATOR}${Object.entries(curSchema.properties)
-            .map(([prop, values]) => `* [${prop}](./${getRelativePathForChild(values, prop, metadata.fileName)})`).join('\n')}`;
+        mdContent += `${SUB_SECTION_HEADER}Child properties${SEPARATOR}${Object.entries(curSchema.properties)
+            .map(([prop, values]) => `* [${prop}](./${getRelativePathForChild(values, prop, metadata.fileName)})`).join('\n')}${SEPARATOR}`;
+        
+        if (additionalPropertiesAllowed(curSchema)) {
+            mdContent += `Additional properties are allowed.${SEPARATOR}`;
+        }
     }
 
     mdContent = mdContent.replace('<', '{').replace('>', '}'); // TODO shouldn't go here, should go in automation that moves over to docs site repo
@@ -65,6 +66,12 @@ function generateDocumentationForNode(curSchema, curSchemaKey, parentNode) {
         metadata,
         mdContent
     };
+}
+
+function additionalPropertiesAllowed(curSchema) {
+    // if no child properties then cannot have additional properties, even if additionalProperties is not present
+    // need strict equality, not present means additionalProperties=true
+    return curSchema.properties && curSchema.additionalProperties !== false;
 }
 
 function getRelativePathForChild(childSchema, childSchemaKey, curSchemaFileName) {
@@ -78,6 +85,7 @@ function getRelativePathForChild(childSchema, childSchemaKey, curSchemaFileName)
 
 function assembleSchemaMetadata(curSchema, curSchemaKey, parentSchemaMetadata) {
     const fileName = getSchemaFileName(curSchemaKey, parentSchemaMetadata.fileName);
+    const yamlKey = parentSchemaMetadata.yamlKey && parentSchemaMetadata.yamlKey !== ROOT_NAME ? `${parentSchemaMetadata.yamlKey}.${curSchemaKey}` : curSchemaKey;
     const link = `[${curSchemaKey}](./${fileName}${FILE_EXT})`;
     const linkKeyElements = parentSchemaMetadata.linkKeyElements && parentSchemaMetadata.fileName !== ROOT_NAME ? [...parentSchemaMetadata.linkKeyElements, link] : [link];
 
@@ -97,9 +105,9 @@ function assembleSchemaMetadata(curSchema, curSchemaKey, parentSchemaMetadata) {
 
     return {
         fileName,
-        link,
         linkKeyElements,
         directory,
+        yamlKey,
         linkYamlKey
     }
 }
