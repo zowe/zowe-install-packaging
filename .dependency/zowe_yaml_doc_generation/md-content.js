@@ -59,15 +59,23 @@ function generateDocumentationForNode(curSchema, curSchemaKey, parentNode, isPat
 
     mdContent += `\t${curSchema.title || curSchemaKey}${SEPARATOR}${curSchema.description || ''}${SEPARATOR}`;
 
-    // TODO examples section?
+    if (curSchema.default !== null && curSchema.default !== undefined) {
+        mdContent += `**Default value:** \`${curSchema.default}\`${SEPARATOR}`;
+    }
+
+    if (curSchema.examples) {
+        mdContent += `${SUB_SECTION_HEADER}Example values${SEPARATOR}* \`${curSchema.examples.join('`\n* `')}\``;
+    }
 
     // TODO value requirements section?
+    // type, minLength, maxLength, minValue, etc
 
     if (curSchema.properties || curSchema.patternProperties) {
         mdContent += `${SUB_SECTION_HEADER}Child properties${SEPARATOR}`;
         if (curSchema.properties) {
             mdContent += `${Object.entries(curSchema.properties)
-                .map(([prop, schema]) => `* [${prop}](./${getRelativePathForChild(schema, prop, metadata.fileName, false)})`).join('\n')}`;
+                .map(([prop, schema]) => `* [${prop}](./${getRelativePathForChild(schema, prop, metadata.fileName, false)})`)
+                .join('\n')}`;
         }
 
         if (curSchema.patternProperties) {
