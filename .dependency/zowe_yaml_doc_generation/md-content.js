@@ -15,13 +15,13 @@ const schemas = rootSchema.allOf?.reduce((collected, s) => {
     return collected;
 }, []);
 
-// TODO generalize to all schemas
+// TODO print full zowe.yaml schema from config manager
 const schema = schemas[0];
 
 writeMdFiles(schema, ROOT_NAME);
 
-function writeMdFiles(schema, schemaKey, parentNode = { schema: {}, metadata: {} }) {
-    const { metadata, mdContent } = generateDocumentationForNode(schema, schemaKey, parentNode);
+function writeMdFiles(schema, schemaKey, parentNode = { schema: {}, metadata: {} }, isPatternProp = false) {
+    const { metadata, mdContent } = generateDocumentationForNode(schema, schemaKey, parentNode, isPatternProp);
     const dirToWriteFile = `${GENERATED_DOCS_DIR}/${metadata.directory}`;
     if (!fs.existsSync(dirToWriteFile)) {
         fs.mkdirSync(dirToWriteFile, { recursive: true });
@@ -30,32 +30,54 @@ function writeMdFiles(schema, schemaKey, parentNode = { schema: {}, metadata: {}
 
     if (schema.properties) {
         for (const [prop, schemaForProp] of Object.entries(schema.properties)) {
-            writeMdFiles(schemaForProp, prop, { schema, metadata });
+            writeMdFiles(schemaForProp, prop, { schema, metadata }, false);
+        }
+    }
+
+    if (schema.patternProperties) {
+        for (const [prop, schemaForProp] of Object.entries(schema.patternProperties)) {
+            writeMdFiles(schemaForProp, prop, { schema, metadata }, true);
         }
     }
 }
 
-function generateDocumentationForNode(curSchema, curSchemaKey, parentNode) {
+function generateDocumentationForNode(curSchema, curSchemaKey, parentNode, isPatternProp) {
     console.log(curSchemaKey);
     console.log(curSchema);
     console.log('~~~~~~~~~~~~~~')
     console.log(parentNode);
     console.log('-----------------')
-    const metadata = assembleSchemaMetadata(curSchema, curSchemaKey, parentNode.metadata);
+    const metadata = assembleSchemaMetadata(curSchema, curSchemaKey, parentNode.metadata, isPatternProp);
     // TODO deal with logic in schema like allOf, oneOf, if/then/else, etc
 
     let mdContent = `# ${metadata.yamlKey}${SEPARATOR}${metadata.linkYamlKey}${SEPARATOR}` +
-        `${SUB_SECTION_HEADER}Description${SEPARATOR}\t${curSchema.title || curSchemaKey}${SEPARATOR}${curSchema.description || ''}${SEPARATOR}`;
+        `${SUB_SECTION_HEADER}Description${SEPARATOR}`;
+
+    if (isPatternProp) {
+        mdContent += `Properties matching regex: ${SEPARATOR}`;
+    }
+
+    mdContent += `\t${curSchema.title || curSchemaKey}${SEPARATOR}${curSchema.description || ''}${SEPARATOR}`;
 
     // TODO examples section?
 
     // TODO value requirements section?
 
-     // TODO patternProperties children
-    if (curSchema.properties) {
-        mdContent += `${SUB_SECTION_HEADER}Child properties${SEPARATOR}${Object.entries(curSchema.properties)
-            .map(([prop, values]) => `* [${prop}](./${getRelativePathForChild(values, prop, metadata.fileName)})`).join('\n')}${SEPARATOR}`;
-        
+    if (curSchema.properties || curSchema.patternProperties) {
+        mdContent += `${SUB_SECTION_HEADER}Child properties${SEPARATOR}`;
+        if (curSchema.properties) {
+            mdContent += `${Object.entries(curSchema.properties)
+                .map(([prop, schema]) => `* [${prop}](./${getRelativePathForChild(schema, prop, metadata.fileName, false)})`).join('\n')}`;
+        }
+
+        if (curSchema.patternProperties) {
+            mdContent += `${Object.entries(curSchema.patternProperties)
+                .map(([pattern, schema]) => `* [Additional properties matching the regex '${pattern}'](./${getRelativePathForChild(schema, pattern, metadata.fileName, true)})`)
+                .join('\n')}`;
+        }
+
+        mdContent += SEPARATOR;
+
         if (additionalPropertiesAllowed(curSchema)) {
             mdContent += `Additional properties are allowed.${SEPARATOR}`;
         }
@@ -74,8 +96,8 @@ function additionalPropertiesAllowed(curSchema) {
     return curSchema.properties && curSchema.additionalProperties !== false;
 }
 
-function getRelativePathForChild(childSchema, childSchemaKey, curSchemaFileName) {
-    const childSchemaFileName = getSchemaFileName(childSchemaKey, curSchemaFileName);
+function getRelativePathForChild(childSchema, childSchemaKey, curSchemaFileName, isPatternPropFile) {
+    const childSchemaFileName = getSchemaFileName(childSchemaKey, curSchemaFileName, isPatternPropFile);
     if (childSchema.properties) {
         // child file name twice, once for directory name once for file name
         return `${childSchemaFileName}/${childSchemaFileName}${FILE_EXT}`;
@@ -83,8 +105,8 @@ function getRelativePathForChild(childSchema, childSchemaKey, curSchemaFileName)
     return childSchemaFileName + FILE_EXT;
 }
 
-function assembleSchemaMetadata(curSchema, curSchemaKey, parentSchemaMetadata) {
-    const fileName = getSchemaFileName(curSchemaKey, parentSchemaMetadata.fileName);
+function assembleSchemaMetadata(curSchema, curSchemaKey, parentSchemaMetadata, isPatternPropFile) {
+    const fileName = getSchemaFileName(curSchemaKey, parentSchemaMetadata.fileName, isPatternPropFile);
     const yamlKey = parentSchemaMetadata.yamlKey && parentSchemaMetadata.yamlKey !== ROOT_NAME ? `${parentSchemaMetadata.yamlKey}.${curSchemaKey}` : curSchemaKey;
     const link = `[${curSchemaKey}](./${fileName}${FILE_EXT})`;
     const linkKeyElements = parentSchemaMetadata.linkKeyElements && parentSchemaMetadata.fileName !== ROOT_NAME ? [...parentSchemaMetadata.linkKeyElements, link] : [link];
@@ -112,8 +134,13 @@ function assembleSchemaMetadata(curSchema, curSchemaKey, parentSchemaMetadata) {
     }
 }
 
-function getSchemaFileName(schemaKey, parentFileName) {
-    return parentFileName && parentFileName !== ROOT_NAME ? `${parentFileName}.${schemaKey}` : schemaKey;;
+function getSchemaFileName(schemaKey, parentFileName, isPatternPropFile) {
+    if (isPatternPropFile) {
+        // regex, use special file name. Must have a parent
+        return `${parentFileName}.patternProperty`;
+    }
+    // not regex, use normal file name procedure
+    return parentFileName && parentFileName !== ROOT_NAME ? `${parentFileName}.${schemaKey}` : schemaKey;
 }
 
 // TODO rewrite in typescript?
