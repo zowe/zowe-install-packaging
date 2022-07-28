@@ -3,7 +3,9 @@ const fs = require('fs');
 const path = require('path');
 
 const GENERATED_DOCS_DIR = path.join(__dirname, './generated');
+const FILE_EXT = '.md';
 const ROOT_NAME = 'zowe.yaml';
+const SUB_SECTION_HEADER = '##';
 const SEPARATOR = '\n\n';
 
 const schemas = rootSchema.allOf?.reduce((collected, s) => {
@@ -24,7 +26,7 @@ function writeMdFiles(schema, schemaKey, parentNode = { schema: {}, metadata: {}
     if (!fs.existsSync(dirToWriteFile)) {
         fs.mkdirSync(dirToWriteFile, { recursive: true });
     }
-    fs.writeFileSync(`${dirToWriteFile}/${metadata.fileName}.md`, mdContent);
+    fs.writeFileSync(`${dirToWriteFile}/${metadata.fileName}${FILE_EXT}`, mdContent);
 
     if (schema.properties) { // TODO patternProperties??
         for (const [prop, schemaForProp] of Object.entries(schema.properties)) {
@@ -34,11 +36,11 @@ function writeMdFiles(schema, schemaKey, parentNode = { schema: {}, metadata: {}
 }
 
 function generateDocumentationForNode(curSchema, curSchemaKey, parentNode) {
-    console.log(curSchemaKey);
-    console.log(curSchema);
-    console.log('~~~~~~~~~~~~~~')
-    console.log(parentNode);
-    console.log('-----------------')
+    // console.log(curSchemaKey);
+    // console.log(curSchema);
+    // console.log('~~~~~~~~~~~~~~')
+    // console.log(parentNode);
+    // console.log('-----------------')
     const metadata = assembleSchemaMetadata(curSchema, curSchemaKey, parentNode.metadata);
 
     // TODO improve title, consider if title exists then what to do with key
@@ -54,10 +56,10 @@ function generateDocumentationForNode(curSchema, curSchemaKey, parentNode) {
     // TODO additional properties
 
     if (curSchema.properties) {
-        // TODO link to children props
+        mdContent += `${SUB_SECTION_HEADER} Child properties${SEPARATOR}${Object.entries(curSchema.properties)
+            .map(([prop, values]) => `* [${prop}](./${getRelativePathForChild(values, prop, metadata.fileName)})`).join('\n')}`;
     }
 
-    // TODO messes with the links
     mdContent = mdContent.replace('<', '{').replace('>', '}'); // TODO shouldn't go here, should go in automation that moves over to docs site repo
     return {
         metadata,
@@ -65,9 +67,18 @@ function generateDocumentationForNode(curSchema, curSchemaKey, parentNode) {
     };
 }
 
+function getRelativePathForChild(childSchema, childSchemaKey, curSchemaFileName) {
+    const childSchemaFileName = getSchemaFileName(childSchemaKey, curSchemaFileName);
+    if (childSchema.properties) {
+        // child file name twice, once for directory name once for file name
+        return `${childSchemaFileName}/${childSchemaFileName}${FILE_EXT}`;
+    }
+    return childSchemaFileName + FILE_EXT;
+}
+
 function assembleSchemaMetadata(curSchema, curSchemaKey, parentSchemaMetadata) {
-    const fileName = parentSchemaMetadata.fileName && parentSchemaMetadata.fileName !== ROOT_NAME ? `${parentSchemaMetadata.fileName}.${curSchemaKey}` : curSchemaKey;
-    const link = `[${curSchemaKey}](./${fileName}.md)`;
+    const fileName = getSchemaFileName(curSchemaKey, parentSchemaMetadata.fileName);
+    const link = `[${curSchemaKey}](./${fileName}${FILE_EXT})`;
     const linkKeyElements = parentSchemaMetadata.linkKeyElements && parentSchemaMetadata.fileName !== ROOT_NAME ? [...parentSchemaMetadata.linkKeyElements, link] : [link];
 
     let relPathToParentLinks = './';
@@ -93,4 +104,9 @@ function assembleSchemaMetadata(curSchema, curSchemaKey, parentSchemaMetadata) {
     }
 }
 
+function getSchemaFileName(schemaKey, parentFileName) {
+    return parentFileName && parentFileName !== ROOT_NAME ? `${parentFileName}.${schemaKey}` : schemaKey;;
+}
+
 // TODO rewrite in typescript?
+// TODO dry with zwe doc gen?
