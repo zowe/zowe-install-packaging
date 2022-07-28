@@ -3,6 +3,7 @@ const fs = require('fs');
 const path = require('path');
 
 const GENERATED_DOCS_DIR = path.join(__dirname, './generated');
+const ROOT_NAME = 'zowe.yaml';
 const SEPARATOR = '\n\n';
 
 const schemas = rootSchema.allOf?.reduce((collected, s) => {
@@ -15,8 +16,7 @@ const schemas = rootSchema.allOf?.reduce((collected, s) => {
 // TODO generalize to all schemas
 const schema = schemas[0];
 
-// TODO get rid of root
-writeMdFiles(schema, 'root');
+writeMdFiles(schema, ROOT_NAME);
 
 function writeMdFiles(schema, schemaKey, parentNode = { schema: {}, metadata: {} }) {
     const { metadata, mdContent } = generateDocumentationForNode(schema, schemaKey, parentNode);
@@ -66,9 +66,9 @@ function generateDocumentationForNode(curSchema, curSchemaKey, parentNode) {
 }
 
 function assembleSchemaMetadata(curSchema, curSchemaKey, parentSchemaMetadata) {
-    const fileName = parentSchemaMetadata.fileName ? `${parentSchemaMetadata.fileName}.${curSchemaKey}` : curSchemaKey;
+    const fileName = parentSchemaMetadata.fileName && parentSchemaMetadata.fileName !== ROOT_NAME ? `${parentSchemaMetadata.fileName}.${curSchemaKey}` : curSchemaKey;
     const link = `[${curSchemaKey}](./${fileName}.md)`;
-    const linkKeyElements = parentSchemaMetadata.linkKeyElements ? [...parentSchemaMetadata.linkKeyElements, link] : [link];
+    const linkKeyElements = parentSchemaMetadata.linkKeyElements && parentSchemaMetadata.fileName !== ROOT_NAME ? [...parentSchemaMetadata.linkKeyElements, link] : [link];
 
     let relPathToParentLinks = './';
     let directory = parentSchemaMetadata.directory ? parentSchemaMetadata.directory : '.';
@@ -82,7 +82,7 @@ function assembleSchemaMetadata(curSchema, curSchemaKey, parentSchemaMetadata) {
         linkKeyElements[elementIndex] = linkKeyElements[elementIndex].replace(/\(/, '(' + relPathToParentLinks); // path starts after '(', so add '../' after '('
     }
 
-    const linkYamlKey = linkKeyElements.join('.');
+    const linkYamlKey = linkKeyElements.join('.'); // TODO ideally use '>' but makes docs site sanitation harder
 
     return {
         fileName,

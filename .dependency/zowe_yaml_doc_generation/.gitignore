@@ -1,0 +1,4 @@
+# ignore generated documentation
+generated/*
+# keep the folder but nothing else
+!generated/.gitkeep
