@@ -1,4 +1,3 @@
-const rootSchema = require('./temp.json');
 const fs = require('fs');
 const path = require('path');
 const valueConstraints = require('./valueConstraints');
@@ -9,17 +8,9 @@ const ROOT_NAME = 'zowe.yaml';
 const SUB_SECTION_HEADER = '## ';
 const SEPARATOR = '\n\n';
 
-const schemas = rootSchema.allOf?.reduce((collected, s) => {
-    if (s.properties) {
-        collected.push({ title: s.title, description: s.description, properties: s.properties });
-    }
-    return collected;
-}, []);
-
-// TODO resolve full yaml schema and then use it here
-const schema = schemas[0];
-
-writeMdFiles(schema, ROOT_NAME);
+module.exports.generateDocumentation = function (schema, rootName = ROOT_NAME) {
+    writeMdFiles(schema, rootName);
+}
 
 function writeMdFiles(schema, schemaKey, parentNode = { schema: {}, metadata: {} }, isPatternProp = false) {
     const { metadata, mdContent } = generateDocumentationForNode(schema, schemaKey, parentNode, isPatternProp);
@@ -31,7 +22,7 @@ function writeMdFiles(schema, schemaKey, parentNode = { schema: {}, metadata: {}
 
     if (schema.properties) {
         for (const [childSchemaKey, childSchema] of Object.entries(schema.properties)) {
-            if (childSchema.properties || childSchema.patternProperties) {
+            if (hasNested(childSchema)) {
                 writeMdFiles(childSchema, childSchemaKey, { schema, metadata }, false);
             }
         }
@@ -39,7 +30,7 @@ function writeMdFiles(schema, schemaKey, parentNode = { schema: {}, metadata: {}
 
     if (schema.patternProperties) {
         for (const [childSchemaKey, childSchema] of Object.entries(schema.patternProperties)) {
-            if (childSchema.properties || childSchema.patternProperties) {
+            if (hasNested(childSchema)) {
                 writeMdFiles(childSchema, childSchemaKey, { schema, metadata }, true);
             }
         }
@@ -95,7 +86,7 @@ function generateDocumentationForNode(curSchema, curSchemaKey, parentNode, isPat
         mdContent += `${subSectionPrefix}Example values${SEPARATOR}* \`${curSchema.examples.join('`\n* `')}\`${SEPARATOR}`;
     }
 
-    if (curSchema.properties || curSchema.patternProperties) {
+    if (hasNested(curSchema)) {
         mdContent += `${subSectionPrefix}Child properties${SEPARATOR}`;
 
         let nestedChildBulletPoints = '';
@@ -103,13 +94,8 @@ function generateDocumentationForNode(curSchema, curSchemaKey, parentNode, isPat
         let aggregatedChildMdContent = '';
         if (curSchema.properties) {
             for (const [childSchemaKey, childSchema] of Object.entries(curSchema.properties)) {
-                if (childSchema.properties || childSchema.patternProperties) {
-                    if (childSchema.properties) {
+                if (hasNested(childSchema)) {
                         nestedChildBulletPoints += `* [${childSchemaKey}](./${getRelativePathForChild(childSchema, childSchemaKey, metadata.fileName, false)})\n`;
-                    }
-                    if (childSchema.patternProperties) {
-                        nestedChildBulletPoints += `* [${childSchemaKey}](./${getRelativePathForChild(childSchema, childSchemaKey, metadata.fileName, false)})\n`;
-                    }
                 } else {
                     const { metadata: childMetadata, mdContent: childMdContent } = generateDocumentationForNode(childSchema, childSchemaKey, { schema: curSchema, metadata }, false, headingPrefix + '#');
                     embeddedChildBulletPoints += `* ${childMetadata.anchor}\n`
@@ -119,13 +105,8 @@ function generateDocumentationForNode(curSchema, curSchemaKey, parentNode, isPat
         }
         if (curSchema.patternProperties) {
             for (const [childSchemaKey, childSchema] of Object.entries(curSchema.patternProperties)) {
-                if (childSchema.properties || childSchema.patternProperties) {
-                    if (childSchema.properties) {
+                if (hasNested(childSchema)) {
                         nestedChildBulletPoints += `* [patternProperty](./${getRelativePathForChild(childSchema, childSchemaKey, metadata.fileName, true)})\n`;
-                    }
-                    if (childSchema.patternProperties) {
-                        nestedChildBulletPoints += `* [patternProperty](./${getRelativePathForChild(childSchema, childSchemaKey, metadata.fileName, true)})\n`;
-                    }
                 } else {
                     const { metadata: childMetadata, mdContent: childMdContent } = generateDocumentationForNode(childSchema, childSchemaKey, { schema: curSchema, metadata }, false, headingPrefix + '#');
                     embeddedChildBulletPoints += `* ${childMetadata.anchor}\n`
@@ -134,12 +115,46 @@ function generateDocumentationForNode(curSchema, curSchemaKey, parentNode, isPat
             }
         }
 
+        const oneOfBulletPointsList = [];
+        if (curSchema.oneOf) {
+            for (let i = 0; i < curSchema.oneOf.length; i++) {
+                const childSchema = curSchema.oneOf[i];
+                const childSchemaKey = childSchema.title ?? `${curSchemaKey}-oneOf-${i}`;
+                writeMdFiles(childSchema, childSchemaKey, { schema: curSchema, metadata }, false);
+                oneOfBulletPointsList.push(`* [${childSchemaKey}](./${getRelativePathForChild(childSchema, childSchemaKey, metadata.fileName, false)})`);
+            }
+        }
+
+        const allOfBulletPointsList = [];
+        if (curSchema.allOf) {
+            for (let i = 0; i < curSchema.allOf.length; i++) {
+                const childSchema = curSchema.allOf[i];
+                const childSchemaKey = childSchema.title ?? `${curSchemaKey}-allOf-${i}`;
+                writeMdFiles(childSchema, childSchemaKey, { schema: curSchema, metadata }, false);
+                allOfBulletPointsList.push(`* [${childSchemaKey}](./${getRelativePathForChild(childSchema, childSchemaKey, metadata.fileName, false)})`);
+            }
+        }
+
         if (additionalPropertiesAllowed(curSchema)) {
             mdContent += `Additional properties are allowed.${SEPARATOR}`;
         }
 
-        if (nestedChildBulletPoints) {
-            mdContent += `#${subSectionPrefix}Nested configuration blocks${SEPARATOR}${nestedChildBulletPoints}${SEPARATOR}`;
+        if (nestedChildBulletPoints || oneOfBulletPointsList.length || allOfBulletPointsList) {
+            mdContent += `#${subSectionPrefix}Nested configuration blocks${SEPARATOR}`;
+
+            if (nestedChildBulletPoints) {
+                mdContent += nestedChildBulletPoints;
+            }
+
+            if (oneOfBulletPointsList.length) {
+                mdContent += `* One of the following specifications must be satisfied:\n\t${oneOfBulletPointsList.join('\n\t')}\n`;
+            }
+
+            if (allOfBulletPointsList.length) {
+                mdContent += `* All of the following specifications must be satisfied:\n\t${allOfBulletPointsList.join('\n\t')}\n`;
+            }
+
+            mdContent += SEPARATOR;
         }
 
         if (embeddedChildBulletPoints) {
@@ -162,6 +177,11 @@ function generateDocumentationForNode(curSchema, curSchemaKey, parentNode, isPat
     };
 }
 
+// returns true then anchor link within same page to the config, false means link to new md file
+function hasNested(childSchema) {
+    return childSchema.properties || childSchema.patternProperties || childSchema.oneOf || childSchema.allOf;
+}
+
 function additionalPropertiesAllowed(curSchema) {
     // if no child properties then cannot have additional properties, even if additionalProperties is not present
     // need strict equality, not present means additionalProperties=true
@@ -182,7 +202,7 @@ function assembleSchemaMetadata(curSchema, curSchemaKey, parentSchemaMetadata, i
     const title = isPatternPropFile ? 'patternProperty' : curSchemaKey;
     const yamlKey = parentSchemaMetadata.yamlKey && parentSchemaMetadata.yamlKey !== ROOT_NAME ? `${parentSchemaMetadata.yamlKey}.${title}` : title;
     const link = `[${title}](./${fileName}${FILE_EXT})`;
-    const anchor = `[${title}](#${yamlKey})`.replace(/\./g, '').toLowerCase(); // no dots and is lower case in md anchor
+    const anchor = `[${title}](#${title.toLowerCase()})`; // md anchor is lower case
     const linkKeyElements = parentSchemaMetadata.linkKeyElements ? [...parentSchemaMetadata.linkKeyElements, link] : [link];
 
     let relPathToParentLinks = './';
@@ -197,7 +217,7 @@ function assembleSchemaMetadata(curSchema, curSchemaKey, parentSchemaMetadata, i
         linkKeyElements[elementIndex] = linkKeyElements[elementIndex].replace(/\(/, '(' + relPathToParentLinks); // path starts after '(', so add '../' after '('
     }
 
-    const linkYamlKey = linkKeyElements.join(' > '); // TODO ideally use '>' but makes docs site sanitation harder
+    const linkYamlKey = linkKeyElements.join(' > ');
 
     // don't use anchor from parents as they may be in a different file, can just link to the file
     const anchorKeyElements = parentSchemaMetadata.linkKeyElements && parentSchemaMetadata.fileName !== ROOT_NAME ? [...parentSchemaMetadata.linkKeyElements, anchor] : [anchor];
