@@ -53,7 +53,7 @@ function generateDocumentationForNode(curSchema, curSchemaKey, parentNode, isPat
 
     const isEmbeddedChild = headingPrefix !== '';
 
-    let mdContent = `${headingPrefix}# ${metadata.yamlKey}${SEPARATOR}`;
+    let mdContent = `${headingPrefix}# ${metadata.title}${SEPARATOR}`;
     if (isEmbeddedChild) {
         mdContent += `${metadata.anchorKey}${SEPARATOR}`;
     } else {
@@ -168,8 +168,8 @@ function additionalPropertiesAllowed(curSchema) {
     return curSchema.properties && curSchema.additionalProperties !== false;
 }
 
-function getRelativePathForChild(childSchema, childSchemaKey, curSchemaFileName, isPatternPropFile, debug) {
-    const childSchemaFileName = getSchemaFileName(childSchemaKey, curSchemaFileName, isPatternPropFile, debug);
+function getRelativePathForChild(childSchema, childSchemaKey, curSchemaFileName, isPatternPropFile) {
+    const childSchemaFileName = getSchemaFileName(childSchemaKey, curSchemaFileName, isPatternPropFile);
     if (childSchema.properties) {
         // child file name twice, once for directory name once for file name
         return `${childSchemaFileName}/${childSchemaFileName}${FILE_EXT}`;
@@ -179,10 +179,10 @@ function getRelativePathForChild(childSchema, childSchemaKey, curSchemaFileName,
 
 function assembleSchemaMetadata(curSchema, curSchemaKey, parentSchemaMetadata, isPatternPropFile) {
     const fileName = getSchemaFileName(curSchemaKey, parentSchemaMetadata.fileName, isPatternPropFile);
-    const cleanCurSchemaKey = isPatternPropFile ? 'patternProperty' : curSchemaKey;
-    const yamlKey = parentSchemaMetadata.yamlKey && parentSchemaMetadata.yamlKey !== ROOT_NAME ? `${parentSchemaMetadata.yamlKey}.${cleanCurSchemaKey}` : cleanCurSchemaKey;
-    const link = `[${cleanCurSchemaKey}](./${fileName}${FILE_EXT})`;
-    const anchor = `[${cleanCurSchemaKey}](#${yamlKey})`.replace(/\./g, '').toLowerCase(); // no dots and is lower case in md anchor
+    const title = isPatternPropFile ? 'patternProperty' : curSchemaKey;
+    const yamlKey = parentSchemaMetadata.yamlKey && parentSchemaMetadata.yamlKey !== ROOT_NAME ? `${parentSchemaMetadata.yamlKey}.${title}` : title;
+    const link = `[${title}](./${fileName}${FILE_EXT})`;
+    const anchor = `[${title}](#${yamlKey})`.replace(/\./g, '').toLowerCase(); // no dots and is lower case in md anchor
     const linkKeyElements = parentSchemaMetadata.linkKeyElements ? [...parentSchemaMetadata.linkKeyElements, link] : [link];
 
     let relPathToParentLinks = './';
@@ -204,6 +204,7 @@ function assembleSchemaMetadata(curSchema, curSchemaKey, parentSchemaMetadata, i
     const anchorKey = anchorKeyElements.join(' > ');
 
     return {
+        title,
         fileName,
         linkKeyElements,
         directory,
@@ -220,7 +221,7 @@ function getSchemaFileName(schemaKey, parentFileName, isPatternPropFile) {
         return `${parentFileName}.patternProperty`;
     }
     // not regex, use normal file name procedure
-    return parentFileName && parentFileName !== ROOT_NAME ? `${parentFileName}.${schemaKey}` : schemaKey;
+    return schemaKey;
 }
 
 // TODO rewrite in typescript?
