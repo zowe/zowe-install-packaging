@@ -10,10 +10,10 @@
 */
 
 import * as std from 'std';
-import * as common from '../../../libs/common';
-import * as shell from '../../../libs/shell';
-import * as node from '../../../libs/node';
-import * as fs from '../../../libs/fs';
+import * as common from '../../libs/common';
+import * as shell from '../../libs/shell';
+import * as node from '../../libs/node';
+import * as fs from '../../libs/fs';
 
 const registry = std.getenv('ZWE_CLI_PARAMETER_REGISTRY');
 if (!registry) {
