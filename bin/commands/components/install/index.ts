@@ -22,7 +22,8 @@ import * as shell from '../../../libs/shell';
 export function execute(componentFile: string, autoEncoding?:string, skipEnable?:boolean, handler?: string, registry?: string) {
   if (!fs.fileExists(componentFile) && !fs.directoryExists(componentFile)) {
     componentFile = handlerInstall(componentFile, handler, registry);
-    if (!componentFile) {
+    //TODO where does this extra space come from
+    if (componentFile!=' null') {
       common.printErrorAndExit("Error ZWEL????E: Handler install failure, cannot continue", undefined, 255);
     }
   }
@@ -42,6 +43,7 @@ export function execute(componentFile: string, autoEncoding?:string, skipEnable?
 function handlerInstall(component: string, handler?: string, registry?: string): string {
   common.requireZoweYaml();
   const ZOWE_CONFIG=config.getZoweConfig();
+  std.setenv("ZWE_zowe_extensionDirectory", ZOWE_CONFIG.zowe.extensionDirectory);
 
 
   if (component) {
@@ -66,6 +68,9 @@ function handlerInstall(component: string, handler?: string, registry?: string):
     registry=ZOWE_CONFIG.zowe.extensionRegistry.handlers[handler].registry;
   }
   std.setenv('ZWE_CLI_PARAMETER_REGISTRY',registry);
+
+  //TODO some scripts use COMPONENT_NAME, others COMPONENT_FILE, COMPONENT_ID...simplify the API. I'm assigning COMPONENT_NAME for simplicity.
+  std.setenv("ZWE_CLI_PARAMETER_COMPONENT_NAME", component);
   
   const handlerPath = ZOWE_CONFIG.zowe.extensionRegistry.handlers[handler].path;
 

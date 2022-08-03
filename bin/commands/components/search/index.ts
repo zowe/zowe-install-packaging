@@ -25,7 +25,7 @@ export function execute(componentName?: string, componentId?: string, handler?: 
     
     if (componentDir) {
       const manifest = component.getManifest(componentDir);
-      const enabled=ZOWE_CONFIG.components[componentName] && ZOWE_CONFIG.components[componentName].enabled == 'true';
+      const enabled=ZOWE_CONFIG.components[componentName] && ZOWE_CONFIG.components[componentName].enabled === true;
       common.printMessage(`Component ${manifest.name} ${manifest.id ? '('+manifest.id+')' : ''} status: ${enabled ? 'ENABLED' : 'DISABLED'} ${manifest.version ? 'version: '+manifest.version : ''} `);
     } else {
       common.printMessage(`Component ${componentName} status: UNINSTALLED`);

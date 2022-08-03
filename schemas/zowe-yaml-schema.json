@@ -391,8 +391,8 @@
         },
         "extensionRegistry": {
           "type": "object",
-          "description": "Defines optional configuration for downloading extensions from an online or offline registry"
-          "required": ["defaultHandler", "handlers"]
+          "description": "Defines optional configuration for downloading extensions from an online or offline registry",
+          "required": ["defaultHandler", "handlers"],
           "properties": {
             "defaultHandler": {
               "type": "string",
@@ -407,7 +407,7 @@
               }
             }
           }
-        }
+        },
         "rbacProfileIdentifier": {
           "type": "string",
           "description": "An ID used for determining resource names used in RBAC authorization checks"
