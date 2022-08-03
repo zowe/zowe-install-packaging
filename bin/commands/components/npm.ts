@@ -10,6 +10,7 @@
 */
 
 import * as std from 'std';
+import * as os from 'os';
 import * as xplatform from 'xplatform';
 import * as common from '../../libs/common';
 import * as shell from '../../libs/shell';
@@ -45,10 +46,7 @@ node.requireNode();
 const npm = std.getenv('NODE_HOME') ? std.getenv('NODE_HOME')+'/bin/npm' : 'npm';
 
 function npmExec(command: string, path?: string): any {
-  let fullString: string = path ? `cd ${path} && ${npm}` : `${npm} `;
-  if (dryRun) {
-    fullString+= "--dry-run "
-  }
+  let fullString: string = path ? `cd ${path} && ${npm} ` : `${npm} `;
   fullString+=command;
   
   if (path && !fs.directoryExists(path)) {
@@ -66,7 +64,7 @@ function doSearch(registry: string, query: string): number {
   return result.rc;
 }
 
-function doInstall(registry: string, query: string, isUpgrade: boolean): number {
+function doInstall(registry: string, query: string, isUpgrade: boolean, dryRun: boolean): number {
   if (!std.getenv('ZWE_zowe_extensionDirectory')) {
     console.log("ZWE_zowe_extensionDirectory required");
     return 8;
@@ -87,16 +85,21 @@ function doInstall(registry: string, query: string, isUpgrade: boolean): number 
       fs.rmrf(destination);
       return initResult.rc;
     }
+  } else {
+    npmExec(`outdated ${query} --registry=${registry}`, destination);
   }
-  const installResult = npmExec(`${isUpgrade? 'update' : 'install'} ${query} --registry=${registry}`, destination);
+  const installResult = npmExec(`${isUpgrade? 'update' : 'install'} ${dryRun? '--dry-run --no-package-lock --no-save ' : ''}${query} --registry=${registry}`, destination);
   if (installResult.rc && !isUpgrade) {
     fs.rmrf(destination);
+  } else if (isUpgrade && dryRun) {
+    //Dumb npm thing? I say dry run and it still writes things and gets itself confused.
+    os.remove(`${destination}/node_modules/.package-lock.json`);
   }
   return installResult.rc;
 }
 
 
-function doUpgradeAll(registry: string): number {
+function doUpgradeAll(registry: string, dryRun: boolean): number {
   if (!std.getenv('ZWE_zowe_extensionDirectory')) {
     console.log("ZWE_zowe_extensionDirectory required");
     return 8;
@@ -110,7 +113,7 @@ function doUpgradeAll(registry: string): number {
   }
   let highestRc = 0;
   componentNames.forEach((componentName: string) => {
-    let rc = doInstall(registry, componentName, true);
+    let rc = doInstall(registry, componentName, true, dryRun);
     if (rc > highestRc) {
       highestRc = rc;
     }
@@ -158,8 +161,10 @@ function doGetPath(component: string): string {
         const packageJson = JSON.parse(packageFile);
         //If a zowe npm package is just an archive, list its filename in main. else, we assume the entire directory is the package.
         paths.push(packageJson.main ? `${path}/${packageJson.main}` : path);
+      } else {
+        console.log(`No package.json found for ${path}`);
+        paths.push('null');
       }
-      paths.push(path);
     } else {
       //TODO doing this as a precaution of shell hang if no output. does that still happen?
       paths.push('null');
@@ -175,17 +180,17 @@ case 'search': {
   break;
   }
 case 'install': {
-  const rc = doInstall(registry, componentName ? componentName : componentId, false);
+  const rc = doInstall(registry, componentName ? componentName : componentId, false, dryRun);
   std.exit(rc);
   break;
   }
 case 'upgrade': {
   const component = componentName ? componentName : componentId;
   if (component === 'all') {
-    const rc = doUpgradeAll(registry);
+    const rc = doUpgradeAll(registry, dryRun);
     std.exit(rc);
   } else {
-    const rc = doInstall(registry, component, true);
+    const rc = doInstall(registry, component, true, dryRun);
     std.exit(rc);
   }
   break;

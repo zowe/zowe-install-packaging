@@ -21,10 +21,25 @@ import * as shell from '../../../libs/shell';
 
 export function execute(componentFile: string, autoEncoding?:string, skipEnable?:boolean, handler?: string, registry?: string, dryRun?: boolean, upgrade?: boolean) {
   if (!fs.fileExists(componentFile) && !fs.directoryExists(componentFile)) {
+    common.requireZoweYaml();
+    if (componentFile && !upgrade) {
+      const componentDir = componentlib.findComponentDirectory(componentFile);
+      
+      if (componentDir) {
+        common.printMessage("Already installed");
+        return;
+      }
+    }
     componentFile = handlerInstall(componentFile, handler, registry, dryRun, upgrade);
+    
+
     if (componentFile==='null') {
       common.printErrorAndExit("Error ZWEL????E: Handler install failure, cannot continue", undefined, 255);
     }
+  }
+
+  if (dryRun) {
+    return;
   }
 
   //if upgrade with 'all', there could be a list of things to act upon here
@@ -36,7 +51,7 @@ export function execute(componentFile: string, autoEncoding?:string, skipEnable?
       //TODO wish more could be said here
       common.printError("Error ZWEL????E: Could not find one of the components' directories");
     } else {
-      extract.execute(componentFile, autoEncoding);
+      extract.execute(componentFile, autoEncoding, upgrade);
       // ZWE_COMPONENTS_INSTALL_EXTRACT_COMPONENT_NAME should be set after extract step
       const componentName = std.getenv('ZWE_COMPONENTS_INSTALL_EXTRACT_COMPONENT_NAME');
       if (componentName) {
@@ -55,18 +70,8 @@ function handlerInstall(component: string, handler?: string, registry?: string, 
   if (component === 'all' && !upgrade) {
     common.printErrorAndExit("Error ZWEL????E: Cannot install with component=all. This option only exists for upgrade.", undefined, 255);
   }
-  common.requireZoweYaml();
   const ZOWE_CONFIG=config.getZoweConfig();
   std.setenv("ZWE_zowe_extensionDirectory", ZOWE_CONFIG.zowe.extensionDirectory);
-
-  if (component) {
-    const componentDir = componentlib.findComponentDirectory(component);
-    
-    if (componentDir) {
-      common.printMessage("Already installed");
-      return "";
-    }
-  }
 
   
   if (!handler) {
