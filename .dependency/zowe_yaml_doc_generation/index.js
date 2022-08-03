@@ -1,4 +1,4 @@
-const { generateDocumentation: generateZoweYamlMdDocs } = require('./md-content');
+const { generateDocumentation: generateZoweYamlMdDocs } = require('./markdown');
 const rootSchema = require('./temp.json');
 
 const schemas = rootSchema.allOf?.reduce((collected, s) => {
