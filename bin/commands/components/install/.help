@@ -1,4 +1,5 @@
-Install a Zowe module.
+Install a Zowe component, given a component archive, component directory, or component name.
+When a component name is given instead of a path, the installation will be performed against a Zowe package registry if one is configured.
 
 **IMPORTANT NOTES**, by default, this command will enable the component globally
                      by modifying your YAML configuration. You can pass

@@ -1,3 +1,5 @@
 component-file,component|o|string|required||||Path to the component package or directory.
 auto-encoding|e|string||auto|||If we want to automatically tagging the module files.
 skip-enable||boolean|||||Install component without enabling it for use.
+registry|r|string|||||Specifies the registry to searh within instead of the default. The registry must be compatible with the manager used.
+manager|m|string|||||Specifies the manager to search the registry with instead of the default. The manager must be compatible with the registry used.

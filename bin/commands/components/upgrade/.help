@@ -1,0 +1,2 @@
+Upgrade a Zowe component from a Zowe package registry when given a component name or "all" to upgrade all components.
+The upgrade will only be performed if a Zowe package registry is configured.
