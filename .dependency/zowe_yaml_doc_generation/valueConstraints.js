@@ -1,5 +1,6 @@
 module.exports = [
     {
+        // TODO support object types
         key: 'type',
         mdGenerator: (value) => `Property value must be a ${value}`
     },

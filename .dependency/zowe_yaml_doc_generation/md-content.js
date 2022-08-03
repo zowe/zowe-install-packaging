@@ -71,33 +71,24 @@ function generateDocumentationForNode(curSchema, curSchemaKey, parentNode, isPat
             }
         }
     }
-    if (constraints.length || curSchema.required?.length) {
-        mdContent += `${subSectionPrefix}Value constraints${SEPARATOR}`;
-        if (constraints.length) {
-            mdContent += `* ${constraints.join('\n* ')}\n`;
-        }
-        if (curSchema.required?.length) {
-            mdContent += `* Must have child property \`${curSchema.required.join('` defined\n* Must have child property `')}\` defined\n`;
-        }
-        mdContent += SEPARATOR;
-    }
 
     if (curSchema.examples) {
         mdContent += `${subSectionPrefix}Example values${SEPARATOR}* \`${curSchema.examples.join('`\n* `')}\`${SEPARATOR}`;
     }
 
+    const parentSchemaMetadata = { schema: curSchema, metadata };
+    
+    let nestedChildBulletPoints = '';
+    let embeddedChildBulletPoints = '';
+    let aggregatedChildMdContent = '';
     if (hasNested(curSchema)) {
-        mdContent += `${subSectionPrefix}Child properties${SEPARATOR}`;
 
-        let nestedChildBulletPoints = '';
-        let embeddedChildBulletPoints = '';
-        let aggregatedChildMdContent = '';
         if (curSchema.properties) {
             for (const [childSchemaKey, childSchema] of Object.entries(curSchema.properties)) {
                 if (hasNested(childSchema)) {
-                        nestedChildBulletPoints += `* [${childSchemaKey}](./${getRelativePathForChild(childSchema, childSchemaKey, metadata.fileName, false)})\n`;
+                    nestedChildBulletPoints += `* [${childSchemaKey}](./${getRelativePathForChild(childSchema, childSchemaKey, metadata.fileName, false)})\n`;
                 } else {
-                    const { metadata: childMetadata, mdContent: childMdContent } = generateDocumentationForNode(childSchema, childSchemaKey, { schema: curSchema, metadata }, false, headingPrefix + '#');
+                    const { metadata: childMetadata, mdContent: childMdContent } = generateDocumentationForNode(childSchema, childSchemaKey, parentSchemaMetadata, false, headingPrefix + '##');
                     embeddedChildBulletPoints += `* ${childMetadata.anchor}\n`
                     aggregatedChildMdContent += childMdContent;
                 }
@@ -106,68 +97,110 @@ function generateDocumentationForNode(curSchema, curSchemaKey, parentNode, isPat
         if (curSchema.patternProperties) {
             for (const [childSchemaKey, childSchema] of Object.entries(curSchema.patternProperties)) {
                 if (hasNested(childSchema)) {
-                        nestedChildBulletPoints += `* [patternProperty](./${getRelativePathForChild(childSchema, childSchemaKey, metadata.fileName, true)})\n`;
+                    nestedChildBulletPoints += `* [patternProperty](./${getRelativePathForChild(childSchema, childSchemaKey, metadata.fileName, true)})\n`;
                 } else {
-                    const { metadata: childMetadata, mdContent: childMdContent } = generateDocumentationForNode(childSchema, childSchemaKey, { schema: curSchema, metadata }, false, headingPrefix + '#');
+                    const { metadata: childMetadata, mdContent: childMdContent } = generateDocumentationForNode(childSchema, childSchemaKey, parentSchemaMetadata, false, headingPrefix + '##');
                     embeddedChildBulletPoints += `* ${childMetadata.anchor}\n`
                     aggregatedChildMdContent += childMdContent;
                 }
             }
         }
+    }
 
-        const oneOfBulletPointsList = [];
-        if (curSchema.oneOf) {
-            for (let i = 0; i < curSchema.oneOf.length; i++) {
-                const childSchema = curSchema.oneOf[i];
-                const childSchemaKey = childSchema.title ?? `${curSchemaKey}-oneOf-${i}`;
-                writeMdFiles(childSchema, childSchemaKey, { schema: curSchema, metadata }, false);
-                oneOfBulletPointsList.push(`* [${childSchemaKey}](./${getRelativePathForChild(childSchema, childSchemaKey, metadata.fileName, false)})`);
-            }
+    const oneOfBulletPointsList = [];
+    if (curSchema.oneOf) {
+        for (let i = 0; i < curSchema.oneOf.length; i++) {
+            const childSchema = curSchema.oneOf[i];
+            const childSchemaKey = childSchema.title ?? `${curSchemaKey}-oneOf-${i}`;
+            writeMdFiles(childSchema, childSchemaKey, { schema: curSchema, metadata }, false);
+            oneOfBulletPointsList.push(`* [${childSchemaKey}](./${getRelativePathForChild(childSchema, childSchemaKey, metadata.fileName, false)})`);
+        }
+    }
+
+    const allOfBulletPointsList = [];
+    if (curSchema.allOf) {
+        for (let i = 0; i < curSchema.allOf.length; i++) {
+            const childSchema = curSchema.allOf[i];
+            const childSchemaKey = childSchema.title ?? `${curSchemaKey}-allOf-${i}`;
+            writeMdFiles(childSchema, childSchemaKey, { schema: curSchema, metadata }, false);
+            allOfBulletPointsList.push(`* [${childSchemaKey}](./${getRelativePathForChild(childSchema, childSchemaKey, metadata.fileName, false)})`);
+        }
+    }
+
+    const ifLogicBulletPoints = [];
+    // if only an if block then ignore as it has no effect
+    // TODO this creates a file for each if/then/else - lots of files
+    if (curSchema.if && (curSchema.else || curSchema.then)) {
+        const ifSchema = curSchema.if;
+        const thenSchema = curSchema.then;
+        const elseSchema = curSchema.else;
+
+        const ifSchemaKey = ifSchema.title ?? `${curSchemaKey}-if`;
+        writeMdFiles(ifSchema, ifSchemaKey, parentSchemaMetadata, false);
+        const ifSchemaRelativeFilePath = './' + getRelativePathForChild(ifSchema, ifSchemaKey, metadata.fileName, false);
+
+        if (thenSchema) {
+            const thenSchemaKey = thenSchema.title ?? `${curSchemaKey}-then`;
+            writeMdFiles(thenSchema, thenSchemaKey, parentSchemaMetadata, false);
+
+            const thenSchemaRelativeFilePath = './' + getRelativePathForChild(thenSchema, thenSchemaKey, metadata.fileName, false);
+            ifLogicBulletPoints.push(`* If the [${ifSchemaKey}](${ifSchemaRelativeFilePath}) schema is satisfied,` +
+                ` then the [${thenSchemaKey}](${thenSchemaRelativeFilePath}) must also be satisfied`);
         }
 
-        const allOfBulletPointsList = [];
-        if (curSchema.allOf) {
-            for (let i = 0; i < curSchema.allOf.length; i++) {
-                const childSchema = curSchema.allOf[i];
-                const childSchemaKey = childSchema.title ?? `${curSchemaKey}-allOf-${i}`;
-                writeMdFiles(childSchema, childSchemaKey, { schema: curSchema, metadata }, false);
-                allOfBulletPointsList.push(`* [${childSchemaKey}](./${getRelativePathForChild(childSchema, childSchemaKey, metadata.fileName, false)})`);
-            }
+        if (elseSchema) {
+            const elseSchemaKey = elseSchema.title ?? `${curSchemaKey}-else`;
+            writeMdFiles(elseSchema, elseSchemaKey, parentSchemaMetadata, false);
+
+            const elseSchemaRelativeFilePath = './' + getRelativePathForChild(elseSchema, elseSchemaKey, metadata.fileName, false);
+            ifLogicBulletPoints.push(`* If the [${ifSchemaKey}](${ifSchemaRelativeFilePath}) schema is **NOT** satisfied,` +
+                ` then the [${elseSchemaKey}](${elseSchemaRelativeFilePath}) must be satisfied`);
+        }
+    }
+
+    if (additionalPropertiesAllowed(curSchema)) {
+        mdContent += `Additional properties are allowed.${SEPARATOR}`;
+    }
+
+    if (constraints.length || curSchema.required?.length || oneOfBulletPointsList.length || allOfBulletPointsList.length || ifLogicBulletPoints.length) {
+        mdContent += `${subSectionPrefix}Value constraints${SEPARATOR}`;
+        if (constraints.length) {
+            mdContent += `* ${constraints.join('\n* ')}\n`;
         }
 
-        if (additionalPropertiesAllowed(curSchema)) {
-            mdContent += `Additional properties are allowed.${SEPARATOR}`;
+        if (curSchema.required?.length) {
+            mdContent += `* Must have child property \`${curSchema.required.join('` defined\n* Must have child property `')}\` defined\n`;
         }
 
-        if (nestedChildBulletPoints || oneOfBulletPointsList.length || allOfBulletPointsList) {
-            mdContent += `#${subSectionPrefix}Nested configuration blocks${SEPARATOR}`;
+        if (oneOfBulletPointsList.length) {
+            mdContent += `* One of the following specifications must be satisfied:\n\t${oneOfBulletPointsList.join('\n\t')}\n`;
+        }
 
-            if (nestedChildBulletPoints) {
-                mdContent += nestedChildBulletPoints;
-            }
+        if (allOfBulletPointsList.length) {
+            mdContent += `* All of the following specifications must be satisfied:\n\t${allOfBulletPointsList.join('\n\t')}\n`;
+        }
 
-            if (oneOfBulletPointsList.length) {
-                mdContent += `* One of the following specifications must be satisfied:\n\t${oneOfBulletPointsList.join('\n\t')}\n`;
-            }
+        if (ifLogicBulletPoints.length) {
+            mdContent += `* The following if-then-else schema logic must be satisfied:\n\t${ifLogicBulletPoints.join('\n\t')}`
+        }
 
-            if (allOfBulletPointsList.length) {
-                mdContent += `* All of the following specifications must be satisfied:\n\t${allOfBulletPointsList.join('\n\t')}\n`;
-            }
+        mdContent += SEPARATOR;
+    }
 
-            mdContent += SEPARATOR;
+    if (aggregatedChildMdContent || nestedChildBulletPoints || embeddedChildBulletPoints) {
+        mdContent += `${subSectionPrefix}Child properties${SEPARATOR}`;
+
+        if (nestedChildBulletPoints) {
+            mdContent += `#${subSectionPrefix}Nested configuration blocks${SEPARATOR}${nestedChildBulletPoints}${SEPARATOR}`;
         }
 
         if (embeddedChildBulletPoints) {
             mdContent += `#${subSectionPrefix}Configuration properties${SEPARATOR}${embeddedChildBulletPoints}${SEPARATOR}`;
         }
 
-        mdContent += SEPARATOR;
-
         if (aggregatedChildMdContent) {
-            mdContent += aggregatedChildMdContent;
+            mdContent += aggregatedChildMdContent + SEPARATOR;
         }
-
-        mdContent += SEPARATOR;
     }
 
     mdContent = mdContent.replace('<', '{'); // TODO shouldn't go here, should go in automation that moves over to docs site repo
@@ -179,7 +212,7 @@ function generateDocumentationForNode(curSchema, curSchemaKey, parentNode, isPat
 
 // returns true then anchor link within same page to the config, false means link to new md file
 function hasNested(childSchema) {
-    return childSchema.properties || childSchema.patternProperties || childSchema.oneOf || childSchema.allOf;
+    return childSchema && (childSchema.properties || childSchema.patternProperties || childSchema.oneOf || childSchema.allOf);
 }
 
 function additionalPropertiesAllowed(curSchema) {
