@@ -1,19 +1,32 @@
-const fs = require('fs');
-const path = require('path');
-const { ChildConfigurationSection, ConstraintsSection, DescriptionSection, TitleSection } = require('./md-content');
-const { ROOT_NAME, FILE_EXT, SUB_SECTION_HEADER } = require('./md-constants');
-const { getSchemaFileName, hasNestedConfigurationBlock } = require('./util');
+import fs from 'fs';
+import path from 'path';
+
+import { ChildConfigurationSection, ConstraintsSection, DescriptionSection, TitleSection } from './md-content';
+import { ROOT_NAME, FILE_EXT } from './md-constants';
+import { getSchemaFileName, hasNestedConfigurationBlock } from './util';
+import { IMdDocumentation, ISection, Schema, SchemaNode, SchemaNodeMetadata } from './types';
 
 const GENERATED_DOCS_DIR = path.join(__dirname, './generated');
 
-class JsonSchemaDocumentation {
+export default class JsonSchemaDocumentation implements IMdDocumentation {
+    private sections: ISection[];
 
     constructor() {
-        this.childConfiguration = new ChildConfigurationSection(this);
-        this.valueConstraints = new ConstraintsSection(this);
+        const titleSection = new TitleSection();
+        const descriptionSection = new DescriptionSection();
+        const constraintsSection = new ConstraintsSection(this);
+        const childConfigurationSection = new ChildConfigurationSection(this);
+
+        this.sections = [
+            // defines what sections appear in generated md files, and in the order of this array
+            titleSection,
+            descriptionSection,
+            constraintsSection,
+            childConfigurationSection
+        ]
     }
 
-    writeMdFiles(schema, schemaKey, parentNode = { schema: {}, metadata: {} }, isPatternProp = false) {
+    writeMdFiles(schema: Schema, schemaKey: string, parentNode = { schema: {}, metadata: {} }, isPatternProp = false) {
         const { metadata, mdContent } = this.generateDocumentationForNode(schema, schemaKey, parentNode, isPatternProp);
         const dirToWriteFile = `${GENERATED_DOCS_DIR}/${metadata.directory}`;
         if (!fs.existsSync(dirToWriteFile)) {
@@ -38,16 +51,14 @@ class JsonSchemaDocumentation {
         }
     }
 
-    generateDocumentationForNode(curSchema, curSchemaKey, parentNode, isPatternProp, headingPrefix = '') {
-        const subSectionPrefix = headingPrefix + SUB_SECTION_HEADER;
-
+    generateDocumentationForNode(curSchema: Schema, curSchemaKey: string, parentNode: SchemaNode, isPatternProp: boolean, headingPrefix = '') {
         const metadata = assembleSchemaMetadata(curSchema, curSchemaKey, parentNode.metadata, isPatternProp);
         const curSchemaNode = { schema: curSchema, metadata };
 
-        const mdContent = TitleSection.generateMdContent(curSchemaNode, headingPrefix)
-            + DescriptionSection.generateMdContent(curSchemaNode, subSectionPrefix)
-            + this.valueConstraints.generateMdContent(curSchemaNode, subSectionPrefix)
-            + this.childConfiguration.generateMdContent(curSchemaNode, headingPrefix);
+        let mdContent = '';
+        for (const section of this.sections) {
+            mdContent += section.generateMdContent(curSchemaNode, headingPrefix);
+        }
 
         const cleanedMdContent = mdContent.replace('<', '{'); // TODO shouldn't go here, should go in automation that moves over to docs site repo
         return {
@@ -57,8 +68,8 @@ class JsonSchemaDocumentation {
     }
 }
 
-function assembleSchemaMetadata(curSchema, curSchemaKey, parentSchemaMetadata, isPatternProperty) {
-    const fileName = getSchemaFileName(curSchemaKey, parentSchemaMetadata.fileName, isPatternProperty);
+function assembleSchemaMetadata(curSchema: Schema, curSchemaKey: string, parentSchemaMetadata: SchemaNodeMetadata, isPatternProperty: boolean): SchemaNodeMetadata {
+    const fileName = getSchemaFileName(curSchemaKey, parentSchemaMetadata.fileName ?? '', isPatternProperty);
     const title = isPatternProperty ? 'patternProperty' : curSchemaKey;
     const yamlKey = parentSchemaMetadata.yamlKey && parentSchemaMetadata.yamlKey !== ROOT_NAME ? `${parentSchemaMetadata.yamlKey}.${title}` : title;
     const link = `[${title}](./${fileName}${FILE_EXT})`;
@@ -97,7 +108,4 @@ function assembleSchemaMetadata(curSchema, curSchemaKey, parentSchemaMetadata, i
     }
 }
 
-module.exports = JsonSchemaDocumentation;
-
-// TODO rewrite in typescript?
 // TODO dry with zwe doc gen?

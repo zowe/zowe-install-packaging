@@ -1,8 +1,16 @@
-const { SEPARATOR } = require('../md-constants');
-const { getRelativePathForChild } = require('../util');
+import { SEPARATOR, SUB_SECTION_HEADER } from '../md-constants';
+import { getRelativePathForChild } from '../util';
+import ISection from '../types/ISection';
+import IMdDocumentation from '../types/IMdDocumentation';
+import { SchemaNode } from '../types';
 
-class ConstraintsSection {
-    valueConstraints = [
+interface ValueConstraint {
+    key: string,
+    mdGenerator: (value: any, extraArgs: { [key: string]: any }) => string; // TODO improve these types?
+}
+
+export default class ConstraintsSection implements ISection {
+    private valueConstraints: ValueConstraint[] = [
         {
             key: 'required',
             mdGenerator: (value) => `* Must have child property \`${value.join('` defined\n* Must have child property `')}\` defined\n`
@@ -151,11 +159,14 @@ class ConstraintsSection {
         // TODO should all schema keywords be in here, with priority to determine order of appearance in md file? including e.g. additionalProperties?
     ];
 
-    constructor(jsonSchemaDocumentation) {
+    private schemaDocumentation: IMdDocumentation;
+
+    constructor(jsonSchemaDocumentation: IMdDocumentation) {
         this.schemaDocumentation = jsonSchemaDocumentation;
     }
 
-    generateMdContent(curSchemaNode, subSectionPrefix) {
+    generateMdContent(curSchemaNode: SchemaNode, headingPrefix: string) {
+        const subSectionPrefix = headingPrefix + SUB_SECTION_HEADER;
         const curSchema = curSchemaNode.schema;
         const constraints = [];
 
@@ -176,5 +187,3 @@ class ConstraintsSection {
         return constraints.length ? `${subSectionPrefix}Value constraints${SEPARATOR}${constraints.join('\n')}${SEPARATOR}` : '';
     }
 }
-
-module.exports = ConstraintsSection;

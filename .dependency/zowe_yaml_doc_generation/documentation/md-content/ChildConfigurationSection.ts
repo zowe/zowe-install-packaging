@@ -1,13 +1,17 @@
-const { SEPARATOR, SUB_SECTION_HEADER } = require('../md-constants');
-const { hasNestedConfigurationBlock, getRelativePathForChild } = require('../util');
+import { SEPARATOR, SUB_SECTION_HEADER } from '../md-constants';
+import { hasNestedConfigurationBlock, getRelativePathForChild } from '../util';
+import ISection from '../types/ISection';
+import IMdDocumentation from '../types/IMdDocumentation';
+import { Schema, SchemaNode } from '../types';
 
-class ChildConfigurationSection {
+export default class ChildConfigurationSection implements ISection {
+    private schemaDocumentation: IMdDocumentation;
 
-    constructor(jsonSchemaDocumetation) {
+    constructor(jsonSchemaDocumetation: IMdDocumentation) {
         this.schemaDocumentation = jsonSchemaDocumetation;
     }
 
-    generateMdContent(curSchemaNode, headingPrefix) {
+    generateMdContent(curSchemaNode: SchemaNode, headingPrefix: string) {
         const { schema: curSchema, metadata } = curSchemaNode;
         const subSectionPrefix = headingPrefix + SUB_SECTION_HEADER;
 
@@ -19,7 +23,7 @@ class ChildConfigurationSection {
             if (curSchema.properties) {
                 for (const [childSchemaKey, childSchema] of Object.entries(curSchema.properties)) {
                     if (hasNestedConfigurationBlock(childSchema)) {
-                        nestedChildBulletPoints.push(`* [${childSchemaKey}](./${getRelativePathForChild(childSchema, childSchemaKey, metadata.fileName, false)})`);
+                        nestedChildBulletPoints.push(`* [${childSchemaKey}](./${getRelativePathForChild(childSchema, childSchemaKey, metadata.fileName ?? '', false)})`);
                     } else {
                         const { metadata: childMetadata, mdContent: childMdContent } = this.schemaDocumentation.generateDocumentationForNode(childSchema, childSchemaKey, curSchemaNode, false, headingPrefix + '##');
                         embeddedChildBulletPoints.push(`* ${childMetadata.anchor}`);
@@ -30,7 +34,7 @@ class ChildConfigurationSection {
             if (curSchema.patternProperties) {
                 for (const [childSchemaKey, childSchema] of Object.entries(curSchema.patternProperties)) {
                     if (hasNestedConfigurationBlock(childSchema)) {
-                        nestedChildBulletPoints.push(`* [patternProperty](./${getRelativePathForChild(childSchema, childSchemaKey, metadata.fileName, true)})`);
+                        nestedChildBulletPoints.push(`* [patternProperty](./${getRelativePathForChild(childSchema, childSchemaKey, metadata.fileName ?? '', true)})`);
                     } else {
                         const { metadata: childMetadata, mdContent: childMdContent } = this.schemaDocumentation.generateDocumentationForNode(childSchema, childSchemaKey, curSchemaNode, false, headingPrefix + '##');
                         embeddedChildBulletPoints.push(`* ${childMetadata.anchor}`);
@@ -66,10 +70,8 @@ class ChildConfigurationSection {
     }
 }
 
-function additionalPropertiesAllowed(curSchema) {
+function additionalPropertiesAllowed(curSchema: Schema) {
     // if no child properties then cannot have additional properties, even if additionalProperties is not present
     // need strict equality, not present means additionalProperties=true
     return curSchema.properties && curSchema.additionalProperties !== false;
 }
-
-module.exports = ChildConfigurationSection;
