@@ -83,7 +83,7 @@ export function execute(componentFile: string, autoEncoding?: string, upgrade?: 
     if (rc) {
       common.printErrorAndExit(`Error ZWELTODOE: Symlink creation failure, error=${rc}`, undefined, 999);
     }
-  } else {
+  } else if (fs.fileExists(componentFile)) {
     // create temporary directory to lay down extension files in
     fs.mkdirp(tmpDir);
     
@@ -103,6 +103,8 @@ export function execute(componentFile: string, autoEncoding?: string, upgrade?: 
     common.printTrace("  * List extracted files:");
     result = shell.execOutSync('sh', '-c', `cd ${tmpDir} && ls -la 2>&1`);
     common.printTrace(stringlib.paddingLeft(result.out, "    "));
+  } else {
+    common.printErrorAndExit(`Error ZWEL????E: Cannot file component file ${componentFile}`, undefined, 255);
   }
 
   // automatically tag files

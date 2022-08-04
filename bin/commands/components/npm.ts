@@ -72,7 +72,7 @@ function doInstall(registry: string, query: string, isUpgrade: boolean, dryRun: 
 
   const destination = `${std.getenv('ZWE_zowe_extensionDirectory')}/.zowe/handlers/npm`;
   //init
-  if (fs.directoryExists(destination)) {
+  if (!fs.directoryExists(destination)) {
     fs.mkdirp(destination);
     // to /dev/null to hide this hack
     //TODO and what about windows?
@@ -92,16 +92,27 @@ function doInstall(registry: string, query: string, isUpgrade: boolean, dryRun: 
     npmExec(`outdated ${query} --registry=${registry}`, destination);
   }
 
-  const packageFileBefore = xplatform.loadFileUTF8(`${destination}/package.json`,xplatform.AUTO_DETECT);
-  const packagesBefore = Object.keys(JSON.parse(packageFileBefore).packages);
-
-  fs.cp(`${destination}/node_modules/.package-lock.json`, `${destination}/node_modules/.package-lock.json.bkp`);
+  const packageLockLocation = `${destination}/package-lock.json`;
+  const innerPackageLockLocation = `${destination}/node_modules/.package-lock.json`;
   
+  let packagesBefore = [];
+  if (fs.fileExists(packageLockLocation)) {
+    const packageLockBefore = xplatform.loadFileUTF8(packageLockLocation,xplatform.AUTO_DETECT);
+    const packageJson = JSON.parse(packageLockBefore);
+    if (packageJson?.packages) {
+      packagesBefore = Object.keys(packageJson);
+    }
+    if (fs.fileExists(innerPackageLockLocation)) {
+      fs.cp(innerPackageLockLocation, `innerPackageLockLocation.bkp`);
+    }
+  } 
   const installResult = npmExec(`${isUpgrade? 'update' : 'install'} ${dryRun? '--dry-run --no-package-lock --no-save ' : ''}${query} --registry=${registry}`, destination);
   if (isUpgrade && dryRun) {
     //Dumb npm thing? I say dry run and it still writes things and gets itself confused.
-    fs.cp(`${destination}/node_modules/.package-lock.json.bkp`, `${destination}/node_modules/.package-lock.json`);
-//    os.remove(`${destination}/node_modules/.package-lock.json`);
+    if (fs.fileExists(innerPackageLockLocation)) {
+      fs.cp(`innerPackageLockLocation.bkp`, innerPackageLockLocation);
+    }
+//    os.remove(innerPackageLockLocation);
   }
 
   let installedPackages = 'null';
@@ -109,10 +120,16 @@ function doInstall(registry: string, query: string, isUpgrade: boolean, dryRun: 
 
     //TODO I also have a concern about how we can pass-through semver version queries during the install command. i think zwe can only play dumb, as stripping the symbols in the name could cause an issue???? or is it just that we can strip anything not in reverse-domain-notation
     
-    const packageFileAfter = xplatform.loadFileUTF8(`${destination}/package.json`,xplatform.AUTO_DETECT); 
-    const packagesAfter = Object.keys(JSON.parse(packageFileAfter).packages);
-    installedPackages = packagesAfter.filter(aPackage => !packagesBefore.includes(aPackage))
-      .map(packageName => `${destination}/node_modules/${packageName}`)
+    const packageLockAfter = xplatform.loadFileUTF8(packageLockLocation,xplatform.AUTO_DETECT); 
+    const packagesAfter = Object.keys(JSON.parse(packageLockAfter).packages);
+    installedPackages = packagesAfter.filter(aPackage => aPackage != '' && !packagesBefore.includes(aPackage))
+    // this may already include node_modules
+      .map(packageName => `${destination}/${packageName}`)
+      .map((packagePath) => {
+        const packageJsonFile = xplatform.loadFileUTF8(`${packagePath}/package.json`, xplatform.AUTO_DETECT);
+        const packageJsonContents = JSON.parse(packageJsonFile);
+        return packageJsonContents.main ? `${packagePath}/${packageJsonContents.main}` : packagePath;
+      })
       .join(',');
     if (!installedPackages) { installedPackages = 'null' };
   }
@@ -206,7 +223,7 @@ case 'search': {
   }
 case 'install': {
   const result = doInstall(registry, componentName ? componentName : componentId, false, dryRun);
-  console.log(result.packages);
+  console.log('ZWE_CLI_PARAMETER_COMPONENT_FILE='+result.packages);
   std.exit(result.rc);
   break;
   }
@@ -214,11 +231,11 @@ case 'upgrade': {
   const component = componentName ? componentName : componentId;
   if (component === 'all') {
     const result = doUpgradeAll(registry, dryRun);
-    console.log(result.packages);
+    console.log('ZWE_CLI_PARAMETER_COMPONENT_FILE='+result.packages);
     std.exit(result.rc);
   } else {
     const result = doInstall(registry, component, true, dryRun);
-    console.log(result.packages);
+    console.log('ZWE_CLI_PARAMETER_COMPONENT_FILE='+result.packages);
     std.exit(result.rc);
   }
   break;
@@ -226,7 +243,7 @@ case 'upgrade': {
 
 case 'getpath': {
   const path = doGetPath(componentName ? componentName : componentId);
-  console.log(path);
+  console.log('ZWE_CLI_PARAMETER_COMPONENT_FILE='+path);
   std.exit(path==='null' ? 8 : 0);
   break;
   }

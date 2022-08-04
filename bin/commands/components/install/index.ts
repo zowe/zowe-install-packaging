@@ -100,17 +100,15 @@ function handlerInstall(component: string, handler?: string, registry?: string, 
   
   const result = shell.execOutSync('sh', '-c', `_CEE_RUNOPTS="XPLINK(ON),HEAPPOOLS(OFF)" ${std.getenv('ZWE_zowe_runtimeDirectory')}/bin/utils/configmgr -script "${handlerPath}"`);
   common.printMessage(`Handler install exited with rc=${result.rc}`);
+
   if (result.rc) {
+    common.printError(`Handler output follows`);
+    common.printMessage(result.out);
     return 'null';
   }
-  return result.out;
-
-/*
-  //one of the extension registry handler API commands
-  std.setenv('ZWE_CLI_REGISTRY_COMMAND','getpath');
-  
-  const pathResult = shell.execOutSync('sh', '-c', `_CEE_RUNOPTS="XPLINK(ON),HEAPPOOLS(OFF)" ${std.getenv('ZWE_zowe_runtimeDirectory')}/bin/utils/configmgr -script "${handlerPath}"`);
-  common.printMessage(`Handler getpath exited with rc=${result.rc}`);
-  return pathResult.out;
-*/
+  let output = result.out.split('\n').filter(line => line.startsWith('ZWE_CLI_PARAMETER_COMPONENT_FILE='));
+  if (output[0]) {
+    return output[0].substring('ZWE_CLI_PARAMETER_COMPONENT_FILE='.length);
+  }
+  return 'null';
 }
