@@ -4,6 +4,7 @@
     "private": true,
     "main": "index.ts",
     "scripts": {
+        "resolve": "ts-node resolution/resolve.ts",
         "docgen": "ts-node index.ts",
         "build": "tsc"
     },
@@ -14,6 +15,7 @@
         "typescript": "4.7.4"
     },
     "dependencies": {
+        "json-schema-ref-parser": "9.0.9",
         "json-schema-typed": "8.0.1"
     }
 }
