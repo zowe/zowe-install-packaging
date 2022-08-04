@@ -18,7 +18,13 @@ function getSchemaFileName(schemaKey, parentFileName, isPatternPropFile) {
     return schemaKey;
 }
 
+// returns true then anchor link within same page to the config, false means link to new md file
+function hasNestedConfigurationBlock(childSchema) {
+    return childSchema && (childSchema.properties || childSchema.patternProperties || childSchema.oneOf || childSchema.allOf);
+}
+
 module.exports = {
     getRelativePathForChild,
-    getSchemaFileName
+    getSchemaFileName,
+    hasNestedConfigurationBlock
 }
