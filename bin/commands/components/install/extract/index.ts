@@ -156,15 +156,15 @@ export function execute(componentFile: string, autoEncoding?: string, upgrade?: 
     } else {
       if (fs.pathExists(bkpDir)) {
         fs.rmrf(bkpDir);
-        os.rename(destinationDir, bkpDir);
       }
+      os.rename(destinationDir, bkpDir);
     }
   }
 
   common.printDebug(`- Rename temporary directory to ${componentName}.`);
   const renameResult = os.rename(tmpDir, destinationDir);
   if (renameResult < 0) {
-    common.printError(`- Could not complete folder rename for ${componentName}, install failed`);
+    common.printError(`- Could not complete folder rename for ${componentName}, install failed. rc=${renameResult}`);
     if (upgrade) {
       common.printError(`- A backup of the previous ${componentName} is at ${bkpDir}`); 
     }

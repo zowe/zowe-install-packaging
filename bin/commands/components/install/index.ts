@@ -42,7 +42,7 @@ export function execute(componentFile: string, autoEncoding?:string, skipEnable?
     return;
   }
 
-  //if upgrade with 'all', there could be a list of things to act upon here
+  //if upgrade with 'all', or if a component had dependencies, there could be a list of things to act upon here
   // TODO this does not allow multi install from package due to the initial existence check, but maybe we could enable that later.
   const components = componentFile.split(',');
 
@@ -98,16 +98,19 @@ function handlerInstall(component: string, handler?: string, registry?: string, 
   std.setenv('ZWE_CLI_REGISTRY_DRY_RUN', dryRun ? 'true' : 'false');
   
   
-  const result = shell.execSync('sh', '-c', `_CEE_RUNOPTS="XPLINK(ON),HEAPPOOLS(OFF)" ${std.getenv('ZWE_zowe_runtimeDirectory')}/bin/utils/configmgr -script "${handlerPath}"`);
+  const result = shell.execOutSync('sh', '-c', `_CEE_RUNOPTS="XPLINK(ON),HEAPPOOLS(OFF)" ${std.getenv('ZWE_zowe_runtimeDirectory')}/bin/utils/configmgr -script "${handlerPath}"`);
   common.printMessage(`Handler install exited with rc=${result.rc}`);
   if (result.rc) {
     return 'null';
   }
+  return result.out;
 
+/*
   //one of the extension registry handler API commands
   std.setenv('ZWE_CLI_REGISTRY_COMMAND','getpath');
   
   const pathResult = shell.execOutSync('sh', '-c', `_CEE_RUNOPTS="XPLINK(ON),HEAPPOOLS(OFF)" ${std.getenv('ZWE_zowe_runtimeDirectory')}/bin/utils/configmgr -script "${handlerPath}"`);
   common.printMessage(`Handler getpath exited with rc=${result.rc}`);
   return pathResult.out;
+*/
 }

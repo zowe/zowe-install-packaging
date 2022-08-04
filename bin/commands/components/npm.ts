@@ -64,19 +64,15 @@ function doSearch(registry: string, query: string): number {
   return result.rc;
 }
 
-function doInstall(registry: string, query: string, isUpgrade: boolean, dryRun: boolean): number {
+function doInstall(registry: string, query: string, isUpgrade: boolean, dryRun: boolean): { rc: number, packages: string } {
   if (!std.getenv('ZWE_zowe_extensionDirectory')) {
     console.log("ZWE_zowe_extensionDirectory required");
     return 8;
   }
 
-  const destination = `${std.getenv('ZWE_zowe_extensionDirectory')}/.zowe/handlers/npm/${query}`;
-  const alreadyExists = fs.directoryExists(destination);
-  if (!isUpgrade) {
-    if (alreadyExists) {
-      console.log(`Component ${query} is already installed with npm.`);
-      return 8;
-    }
+  const destination = `${std.getenv('ZWE_zowe_extensionDirectory')}/.zowe/handlers/npm`;
+  //init
+  if (fs.directoryExists(destination)) {
     fs.mkdirp(destination);
     // to /dev/null to hide this hack
     //TODO and what about windows?
@@ -84,56 +80,85 @@ function doInstall(registry: string, query: string, isUpgrade: boolean, dryRun: 
     if (initResult.rc) {
       fs.rmrf(destination);
       return initResult.rc;
+    }    
+  }
+  
+  if (!isUpgrade) {
+    if (fs.directoryExists(`${destination}/node_modules/${query}`)) {
+      console.log(`Component ${query} is already installed with npm.`);
+      return 8;
     }
   } else {
     npmExec(`outdated ${query} --registry=${registry}`, destination);
   }
+
+  const packageFileBefore = xplatform.loadFileUTF8(`${destination}/package.json`,xplatform.AUTO_DETECT);
+  const packagesBefore = Object.keys(JSON.parse(packageFileBefore).packages);
+
+  fs.cp(`${destination}/node_modules/.package-lock.json`, `${destination}/node_modules/.package-lock.json.bkp`);
+  
   const installResult = npmExec(`${isUpgrade? 'update' : 'install'} ${dryRun? '--dry-run --no-package-lock --no-save ' : ''}${query} --registry=${registry}`, destination);
-  if (installResult.rc && !isUpgrade) {
-    fs.rmrf(destination);
-  } else if (isUpgrade && dryRun) {
+  if (isUpgrade && dryRun) {
     //Dumb npm thing? I say dry run and it still writes things and gets itself confused.
-    os.remove(`${destination}/node_modules/.package-lock.json`);
+    fs.cp(`${destination}/node_modules/.package-lock.json.bkp`, `${destination}/node_modules/.package-lock.json`);
+//    os.remove(`${destination}/node_modules/.package-lock.json`);
   }
-  return installResult.rc;
+
+  let installedPackages = 'null';
+  if (installResult.rc == 0) {
+
+    //TODO I also have a concern about how we can pass-through semver version queries during the install command. i think zwe can only play dumb, as stripping the symbols in the name could cause an issue???? or is it just that we can strip anything not in reverse-domain-notation
+    
+    const packageFileAfter = xplatform.loadFileUTF8(`${destination}/package.json`,xplatform.AUTO_DETECT); 
+    const packagesAfter = Object.keys(JSON.parse(packageFileAfter).packages);
+    installedPackages = packagesAfter.filter(aPackage => !packagesBefore.includes(aPackage))
+      .map(packageName => `${destination}/node_modules/${packageName}`)
+      .join(',');
+    if (!installedPackages) { installedPackages = 'null' };
+  }
+  return { rc: installResult.rc, packages: installedPackages };
 }
 
 
-function doUpgradeAll(registry: string, dryRun: boolean): number {
+function doUpgradeAll(registry: string, dryRun: boolean): { rc: number, packages: string } {
   if (!std.getenv('ZWE_zowe_extensionDirectory')) {
     console.log("ZWE_zowe_extensionDirectory required");
-    return 8;
+    return { rc: 8, packages: 'null' };
   }
 
   const root = `${std.getenv('ZWE_zowe_extensionDirectory')}/.zowe/handlers/npm`;
   const componentNames = fs.getSubdirectories(root);
   if (!componentNames) {
     console.log("No components found to do upgrade on");
-    return 0;
+    return { rc: 0, packages: 'null' };
   }
   let highestRc = 0;
+  let newPackages = '';
   componentNames.forEach((componentName: string) => {
-    let rc = doInstall(registry, componentName, true, dryRun);
-    if (rc > highestRc) {
-      highestRc = rc;
+    let result = doInstall(registry, componentName, true, dryRun);
+    if (result.packages != 'null') {
+      newPackages+=','+result.packages;
+    }
+    if (result.rc > highestRc) {
+      highestRc = result.rc;
     }
   });
-  return highestRc;
+  if (!newPackages) { newPackages = 'null' };
+  return { rc: highestRc, packages: newPackages };
 }
 
 
 
+//TODO when you npm uninstall, you uninstall dependencies not needed by anyone else. this should iterate over the list of changes.
 function doUninstall(registry: string, query: string): number {
   if (!std.getenv('ZWE_zowe_extensionDirectory')) {
     console.log("ZWE_zowe_extensionDirectory required");
     return 8;
   }
 
-  const destination = `${std.getenv('ZWE_zowe_extensionDirectory')}/.zowe/handlers/npm/${query}`;
-  if (fs.directoryExists(destination)) {
-    return fs.rmrf(destination);
-  }
-  return 0;
+  const destination = `${std.getenv('ZWE_zowe_extensionDirectory')}/.zowe/handlers/npm`;
+  const uninstallResult = npmExec(`uninstall ${query} --registry=${registry}`, destination);
+  return uninstallResult.rc;
 }
 
 
@@ -154,7 +179,7 @@ function doGetPath(component: string): string {
   components.forEach((component: string)=> {
     // Yes really, component/component. its just due to how i had to fake out npm
     // TODO super long path, windows is sure to complain
-    const path = `${std.getenv('ZWE_zowe_extensionDirectory')}/.zowe/handlers/npm/${component}/node_modules/${component}`;
+    const path = `${std.getenv('ZWE_zowe_extensionDirectory')}/.zowe/handlers/npm/node_modules/${component}`;
     if (fs.directoryExists(path)) {
       const packageFile = xplatform.loadFileUTF8(`${path}/package.json`,xplatform.AUTO_DETECT);
       if (packageFile) {
@@ -180,18 +205,21 @@ case 'search': {
   break;
   }
 case 'install': {
-  const rc = doInstall(registry, componentName ? componentName : componentId, false, dryRun);
-  std.exit(rc);
+  const result = doInstall(registry, componentName ? componentName : componentId, false, dryRun);
+  console.log(result.packages);
+  std.exit(result.rc);
   break;
   }
 case 'upgrade': {
   const component = componentName ? componentName : componentId;
   if (component === 'all') {
-    const rc = doUpgradeAll(registry, dryRun);
-    std.exit(rc);
+    const result = doUpgradeAll(registry, dryRun);
+    console.log(result.packages);
+    std.exit(result.rc);
   } else {
-    const rc = doInstall(registry, component, true, dryRun);
-    std.exit(rc);
+    const result = doInstall(registry, component, true, dryRun);
+    console.log(result.packages);
+    std.exit(result.rc);
   }
   break;
   }
