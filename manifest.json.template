@@ -16,15 +16,15 @@
       "artifact": "*.pax"
     },
     "org.zowe.zlux.sample-angular-app": {
-      "version": "~2.2.0-V2.X-STAGING",
+      "version": "~2.2.0-PR-92",
       "artifact": "*.pax"
     },
     "org.zowe.zlux.sample-iframe-app": {
-      "version": "~2.2.0-V2.X-STAGING",
+      "version": "~2.2.0-PR-26",
       "artifact": "*.pax"
     },
     "org.zowe.zlux.sample-react-app": {
-      "version": "~2.2.0-V2.X-STAGING",
+      "version": "~2.2.0-PR-68",
       "artifact": "*.pax"
     },
     "org.zowe.zlux.tn3270-ng2": {
@@ -63,7 +63,7 @@
       "version": "~2.0.1-SNAPSHOT"
     },
     "org.zowe.explorer-ip": {
-      "version": "~1.0.0-SNAPSHOT",
+      "version": "~1.0.1-PR-23",
       "artifact": "*.pax"
     },
     "org.zowe.apiml.api-catalog-package": {
