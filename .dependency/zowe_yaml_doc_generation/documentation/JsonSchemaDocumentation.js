@@ -1,18 +1,15 @@
 const fs = require('fs');
 const path = require('path');
-const title = require('./title-section');
-const description = require('./description-section');
-const ConstraintsSection = require('./ConstraintsSection');
-const ChildConfiguration = require('./ChildConfigurationSection');
+const { ChildConfigurationSection, ConstraintsSection, DescriptionSection, TitleSection } = require('./md-content');
 const { ROOT_NAME, FILE_EXT, SUB_SECTION_HEADER } = require('./md-constants');
 const { getSchemaFileName, hasNestedConfigurationBlock } = require('./util');
 
-const GENERATED_DOCS_DIR = path.join(__dirname, '../generated');
+const GENERATED_DOCS_DIR = path.join(__dirname, './generated');
 
 class JsonSchemaDocumentation {
 
     constructor() {
-        this.childConfiguration = new ChildConfiguration(this);
+        this.childConfiguration = new ChildConfigurationSection(this);
         this.valueConstraints = new ConstraintsSection(this);
     }
 
@@ -47,8 +44,8 @@ class JsonSchemaDocumentation {
         const metadata = assembleSchemaMetadata(curSchema, curSchemaKey, parentNode.metadata, isPatternProp);
         const curSchemaNode = { schema: curSchema, metadata };
 
-        const mdContent = title.generateMdContent(curSchemaNode, headingPrefix)
-            + description.generateMdContent(curSchemaNode, subSectionPrefix)
+        const mdContent = TitleSection.generateMdContent(curSchemaNode, headingPrefix)
+            + DescriptionSection.generateMdContent(curSchemaNode, subSectionPrefix)
             + this.valueConstraints.generateMdContent(curSchemaNode, subSectionPrefix)
             + this.childConfiguration.generateMdContent(curSchemaNode, headingPrefix);
 

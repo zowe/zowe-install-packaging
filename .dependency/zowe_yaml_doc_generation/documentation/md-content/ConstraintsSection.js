@@ -1,5 +1,5 @@
-const { SEPARATOR } = require('./md-constants');
-const { getRelativePathForChild } = require('./util');
+const { SEPARATOR } = require('../md-constants');
+const { getRelativePathForChild } = require('../util');
 
 class ConstraintsSection {
     valueConstraints = [

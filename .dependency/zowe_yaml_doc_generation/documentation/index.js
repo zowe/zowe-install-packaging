@@ -3,10 +3,10 @@ const JsonSchemaDocumentation = require('./JsonSchemaDocumentation');
 
 const jsonSchemaDocumentation = new JsonSchemaDocumentation();
 
-function generateDocumentation(schema, rootName = ROOT_NAME) {
+function generateZoweYamlMdDocs(schema, rootName = ROOT_NAME) {
     jsonSchemaDocumentation.writeMdFiles(schema, rootName);
 }
 
 module.exports = {
-    generateDocumentation
+    generateZoweYamlMdDocs
 };

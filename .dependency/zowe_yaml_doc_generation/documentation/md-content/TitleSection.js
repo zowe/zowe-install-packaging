@@ -1,4 +1,4 @@
-const { SEPARATOR } = require('./md-constants');
+const { SEPARATOR } = require('../md-constants');
 
 function generateMdContent(curSchemaNode, headingPrefix) {
     const { metadata } = curSchemaNode;

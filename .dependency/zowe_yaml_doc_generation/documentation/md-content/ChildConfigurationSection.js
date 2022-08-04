@@ -1,5 +1,5 @@
-const { SEPARATOR, SUB_SECTION_HEADER } = require('./md-constants');
-const { hasNestedConfigurationBlock, getRelativePathForChild } = require('./util');
+const { SEPARATOR, SUB_SECTION_HEADER } = require('../md-constants');
+const { hasNestedConfigurationBlock, getRelativePathForChild } = require('../util');
 
 class ChildConfigurationSection {
 
