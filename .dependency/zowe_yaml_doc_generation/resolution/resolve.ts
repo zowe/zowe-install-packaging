@@ -36,6 +36,7 @@ link to the schema - I would like these.
 import fs from 'fs';
 import path from 'path';
 import { default as refParser } from 'json-schema-ref-parser';
+import { FieldResolver, AdditionalPropertiesResolver, DescriptionResolver, PropertiesResolver, RequiredResolver, TitleResolver, TypeResolver } from './field-resolvers';
 
 // json-schema-ref-parser doesn't have some draft19-09 keywords
 type ResolvedSchema = {
@@ -103,9 +104,47 @@ const resolver: Partial<refParser.ResolverOptions> = {
     }
 }
 
-async function resolvedSchema(schemaId: string) {
+async function resolveSchema(schemaId: string) {
     // need to use loaded schemas, not required schema, as the ref paths need to be fixed as done when schemas are loaded
-    return await refParser.dereference(getSchemaById(schemaId), { resolve: { file: resolver }, parse: { json: parser } });
+    const dereferencedSchema = await refParser.dereference(getSchemaById(schemaId), { resolve: { file: resolver }, parse: { json: parser } });
+    // result is a top level mega schema that has allOf[each,zowe,component,schema] - each of which then have server base, components, etc.
+
+
+    // flatten by one level by getting the child allOf (I think we can rely on components always having allOf, but good to generalize later)
+    // TODO issue with calling reduce so did 'as any[]' - look into fixing this
+    dereferencedSchema.allOf = (dereferencedSchema.allOf as any[])
+        .reduce((acc: refParser.JSONSchema[], cur: refParser.JSONSchema) => {
+            if (cur.allOf) {
+                for (const level2 of cur.allOf as refParser.JSONSchema[]) {
+                    // only add if unique
+                    // TODO what if there are duplicates with no $id? Will this happen?
+                    if (!level2.$id || !acc.find(s => s.$id === level2.$id)) {
+                        acc.push(level2);
+                    }
+                }
+            }
+            return acc;
+        }, []);
+
+
+    // then resolve everything in the root allOf by smashing together all unique properties
+    // identify properties that we care about - e.g. description, title, properties, patternProperties, etc
+    // and then create a merging solution for each - e.g. description and title join with '\n', properties is smash together, etc.
+    const resolvers: FieldResolver<any>[] = [
+        DescriptionResolver.getInstance(),
+        TitleResolver.getInstance(),
+        AdditionalPropertiesResolver.getInstance(),
+        TypeResolver.getInstance(),
+        RequiredResolver.getInstance(),
+
+    ];
+    const resolvedSchema: { [k: string]: any } = {};
+    for (const resolver of resolvers) {
+        resolvedSchema[resolver.field] = resolver.resolve(dereferencedSchema.allOf as refParser.JSONSchema[]);
+    }
+
+
+    return resolvedSchema;
 }
 
 function getSchemaById(schemaId: string): ResolvedSchema {
@@ -117,6 +156,7 @@ function getSchemaById(schemaId: string): ResolvedSchema {
     throw new Error(`Could not find schema with id '${schemaId}'`);
 }
 
-resolvedSchema('caching-config').then((resolvedSchema) => {
+// TODO improve mega schema that pulls in each component, and have all schemas in schemas dir
+resolveSchema('zowe-components').then((resolvedSchema) => {
     fs.writeFileSync(RESOLVED_SCHEMA_FILE_PATH, JSON.stringify(resolvedSchema, null, 2));
 });

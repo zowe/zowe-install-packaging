@@ -1,6 +1,7 @@
 import { generateZoweYamlMdDocs } from './documentation';
 import { Schema } from './documentation/types';
-const rootSchema = require('./temp.json');
+
+const rootSchema = require('./resolved.json');
 
 const schemas = rootSchema.allOf?.reduce((collected: Schema[], schema: Schema) => {
     if (schema.properties) {
