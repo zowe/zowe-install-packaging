@@ -67,7 +67,7 @@ function doSearch(registry: string, query: string): number {
 function doInstall(registry: string, query: string, isUpgrade: boolean, dryRun: boolean): { rc: number, packages: string } {
   if (!std.getenv('ZWE_zowe_extensionDirectory')) {
     console.log("ZWE_zowe_extensionDirectory required");
-    return 8;
+    return { rc: 8, packages: 'null' };
   }
 
   const destination = `${std.getenv('ZWE_zowe_extensionDirectory')}/.zowe/handlers/npm`;
@@ -86,7 +86,7 @@ function doInstall(registry: string, query: string, isUpgrade: boolean, dryRun: 
   if (!isUpgrade) {
     if (fs.directoryExists(`${destination}/node_modules/${query}`)) {
       console.log(`Component ${query} is already installed with npm.`);
-      return 8;
+      return { rc: 8, packages: 'null' };
     }
   } else {
     npmExec(`outdated ${query} --registry=${registry}`, destination);
