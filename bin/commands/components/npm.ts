@@ -100,7 +100,7 @@ function doInstall(registry: string, query: string, isUpgrade: boolean, dryRun: 
     const packageLockBefore = xplatform.loadFileUTF8(packageLockLocation,xplatform.AUTO_DETECT);
     const packageJson = JSON.parse(packageLockBefore);
     if (packageJson?.packages) {
-      packagesBefore = Object.keys(packageJson);
+      packagesBefore = Object.keys(packageJson.packages);
     }
     if (fs.fileExists(innerPackageLockLocation)) {
       fs.cp(innerPackageLockLocation, `innerPackageLockLocation.bkp`);

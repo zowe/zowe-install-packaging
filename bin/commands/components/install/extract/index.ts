@@ -33,7 +33,8 @@ export function execute(componentFile: string, autoEncoding?: string, upgrade?: 
   //////////////////////////////////////////////////////////////
   // Constants
   const pwd = std.getenv('ZWE_PWD');
-  const tmp_ext_dir='tmp_ext_dir';
+  const moduleFileShort=pathoid.basename(componentFile);
+  const tmp_ext_dir='tmp_'+moduleFileShort; //TODO this is a hack about getManifest() caching result per directory. The caching could be avoided by versioning, need to implement in component.ts later...
   const ZOWE_CONFIG=config.getZoweConfig();
   
   //////////////////////////////////////////////////////////////
@@ -51,7 +52,7 @@ export function execute(componentFile: string, autoEncoding?: string, upgrade?: 
   // Variables
   const targetDir = pathoid.isAbsolute(extensionDir) ? stringlib.removeTrailingSlash(extensionDir) : stringlib.removeTrailingSlash(pathoid.resolve(pwd, extensionDir));
   const tmpDir = pathoid.resolve(targetDir, tmp_ext_dir);
-  const moduleFileShort=pathoid.basename(componentFile);
+
 
   //////////////////////////////////////////////////////////////
   // check existence of extension directory, create if it's not there
