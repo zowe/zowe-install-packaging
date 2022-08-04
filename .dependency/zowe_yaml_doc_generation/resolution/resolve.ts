@@ -44,13 +44,16 @@ type ResolvedSchema = {
 } & refParser.JSONSchema;
 
 // Read all schemas so that can resolve schema references
-const schemaDir = path.join(__dirname, './schemas/');
+const SCHEMAS_DIR = path.join(__dirname, './schemas/');
+const RESOLVED_SCHEMA_FILE_PATH = path.join(__dirname, '../resolved.json');
+
 const schemas: { [k: string]: ResolvedSchema } = {};
-fs.readdirSync(schemaDir).forEach(file => {
+fs.readdirSync(SCHEMAS_DIR).forEach(file => {
     try {
-        // Library cannot resolve references that don't have '/' after '#'
-        const stringSchema = fs.readFileSync(schemaDir + file, 'utf8');
-        const fixedRefPathsStringSchema = stringSchema.replace(/(\$ref.*#)([^/])/g, '$1/$2');
+        // Library cannot resolve references that don't have '/' after '#' and don't explicitly have $defs in path.
+        // So while reading the schemas into memory, replace reference paths to ensure they are in the form ...#/$defs/...
+        const stringSchema = fs.readFileSync(SCHEMAS_DIR + file, 'utf8');
+        const fixedRefPathsStringSchema = stringSchema.replace(/(\$ref.*#)\/?(\$defs)?\/?([^/])/g, '$1/$defs/$3');
 
         const schema = JSON.parse(fixedRefPathsStringSchema);
         schemas[schema.$id] = schema;
@@ -69,7 +72,6 @@ const parser: refParser.ParserOptions = {
         // custom resolver can't fix. So, this will take any $defs and put them top level, and
         // make a duplicate object with key for the real name and a key for the anchor
 
-        // TODO extra fields, or just add $defs to object and in parsing make sure $defs is in $ref path?
         let parsedSchema: ResolvedSchema = JSON.parse(file.data.toString());
         if (parsedSchema?.$defs) {
             const defs = parsedSchema.$defs;
@@ -80,7 +82,7 @@ const parser: refParser.ParserOptions = {
                 return obj;
             }, {});
 
-            parsedSchema = { ...parsedSchema, ...defs, ...anchoredDefs };
+            parsedSchema.$defs = { ...defs, ...anchoredDefs };
         }
         return parsedSchema;
     }
@@ -116,6 +118,5 @@ function getSchemaById(schemaId: string): ResolvedSchema {
 }
 
 resolvedSchema('caching-config').then((resolvedSchema) => {
-    console.log(JSON.stringify(resolvedSchema, null, 2));
-    // TODO write to file
+    fs.writeFileSync(RESOLVED_SCHEMA_FILE_PATH, JSON.stringify(resolvedSchema, null, 2));
 });
