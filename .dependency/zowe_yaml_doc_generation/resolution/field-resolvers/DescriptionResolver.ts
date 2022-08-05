@@ -1,9 +1,7 @@
 import FieldResolver from "./FieldResolver";
 
 export default class DescriptionResolver extends FieldResolver<string> {
-    private static instance: DescriptionResolver | null = null;
-
-    private constructor() {
+    public constructor() {
         super('description');
     }
 
@@ -14,12 +12,5 @@ export default class DescriptionResolver extends FieldResolver<string> {
             }
             return acc;
         }, '');
-    }
-
-    public static getInstance(): DescriptionResolver {
-        if (!this.instance) {
-            this.instance = new DescriptionResolver();
-        }
-        return this.instance;
     }
 };

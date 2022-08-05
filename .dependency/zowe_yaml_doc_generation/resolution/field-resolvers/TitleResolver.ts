@@ -1,9 +1,7 @@
 import FieldResolver from "./FieldResolver";
 
 export default class TitleResolver extends FieldResolver<string> {
-    private static instance: TitleResolver | null = null;
-
-    private constructor() {
+    public constructor() {
         super('title');
     }
 
@@ -14,12 +12,5 @@ export default class TitleResolver extends FieldResolver<string> {
             }
             return acc;
         }, '');
-    }
-
-    public static getInstance(): TitleResolver {
-        if (!this.instance) {
-            this.instance = new TitleResolver();
-        }
-        return this.instance;
     }
 };

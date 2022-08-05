@@ -37,12 +37,8 @@ import fs from 'fs';
 import path from 'path';
 import { default as refParser } from 'json-schema-ref-parser';
 import { FieldResolver, AdditionalPropertiesResolver, DescriptionResolver, PropertiesResolver, RequiredResolver, TitleResolver, TypeResolver } from './field-resolvers';
-
-// json-schema-ref-parser doesn't have some draft19-09 keywords
-type ResolvedSchema = {
-    $defs: any;
-    $anchor: string;
-} & refParser.JSONSchema;
+import ResolvedSchema from './ResolvedSchema';
+import MegaSchema from './MegaSchema';
 
 // Read all schemas so that can resolve schema references
 const SCHEMAS_DIR = path.join(__dirname, './schemas/');
@@ -126,25 +122,8 @@ async function resolveSchema(schemaId: string) {
             return acc;
         }, []);
 
-
-    // then resolve everything in the root allOf by smashing together all unique properties
-    // identify properties that we care about - e.g. description, title, properties, patternProperties, etc
-    // and then create a merging solution for each - e.g. description and title join with '\n', properties is smash together, etc.
-    const resolvers: FieldResolver<any>[] = [
-        DescriptionResolver.getInstance(),
-        TitleResolver.getInstance(),
-        AdditionalPropertiesResolver.getInstance(),
-        TypeResolver.getInstance(),
-        RequiredResolver.getInstance(),
-
-    ];
-    const resolvedSchema: { [k: string]: any } = {};
-    for (const resolver of resolvers) {
-        resolvedSchema[resolver.field] = resolver.resolve(dereferencedSchema.allOf as refParser.JSONSchema[]);
-    }
-
-
-    return resolvedSchema;
+    const megaSchema = new MegaSchema();
+    return megaSchema.resolve(dereferencedSchema.allOf as refParser.JSONSchema[]); // know that top level schema has allOf with all schemas in it
 }
 
 function getSchemaById(schemaId: string): ResolvedSchema {

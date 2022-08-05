@@ -1,9 +1,7 @@
 import FieldResolver from "./FieldResolver";
 
 export default class RequiredResolver extends FieldResolver<string[] | undefined> {
-    private static instance: RequiredResolver | null = null;
-
-    private constructor() {
+    public constructor() {
         super('required');
     }
 
@@ -19,12 +17,5 @@ export default class RequiredResolver extends FieldResolver<string[] | undefined
 
         // no required key in resolved schema if no required values
         return required.length ? required : undefined;
-    }
-
-    public static getInstance(): RequiredResolver {
-        if (!this.instance) {
-            this.instance = new RequiredResolver();
-        }
-        return this.instance;
     }
 };
