@@ -27,6 +27,10 @@ if (!registry) {
   console.log("ZWE_CLI_PARAMETER_REGISTRY required");
   std.exit(8);
 }
+
+//TODO npm has a notion of relating package prefixes to different registries.
+//     this would allow different companies to have different registries.
+//     we could consider there to be a DEFAULT registry, and then take input for prefix-specific overrides
 const command = std.getenv('ZWE_CLI_REGISTRY_COMMAND');
 if (!command) {
   console.log("ZWE_CLI_REGISTRY_COMMAND required");
@@ -45,7 +49,14 @@ node.requireNode();
 //if its not in NODE_HOME, it might be on PATH.
 const npm = std.getenv('NODE_HOME') ? std.getenv('NODE_HOME')+'/bin/npm' : 'npm';
 
-function npmExec(command: string, path?: string): any {
+
+if (!std.getenv('ZWE_zowe_extensionDirectory')) {
+  console.log("ZWE_zowe_extensionDirectory required");
+  std.exit(8);
+}
+const HANDLER_HOME = `${std.getenv('ZWE_zowe_extensionDirectory')}/.zowe/handlers/npm`
+
+function npmExec(command: string, path?: string): number {
   let fullString: string = path ? `cd ${path} && ${npm} ` : `${npm} `;
   fullString+=command;
   
@@ -53,47 +64,29 @@ function npmExec(command: string, path?: string): any {
     console.log("Path does not exist. Path="+path);
     return 8;
   } else {
-    return shell.execSync('sh', '-c', fullString);
+    const result = shell.execSync('sh', '-c', fullString);
+    return result.rc;
   }
 }
 
 
-//NOTE: API doesnt standardize output, so we just pass through whatever npm formats search as
+//NOTE: zwe API doesnt standardize output, so we just pass through whatever npm formats search as
 function doSearch(registry: string, query: string): number {
-  const result = npmExec(`search ${query} --registry=${registry}`);
-  return result.rc;
+  return npmExec(`search ${query} --registry=${registry}`);
 }
 
 function doInstall(registry: string, query: string, isUpgrade: boolean, dryRun: boolean): { rc: number, packages: string } {
-  if (!std.getenv('ZWE_zowe_extensionDirectory')) {
-    console.log("ZWE_zowe_extensionDirectory required");
-    return { rc: 8, packages: 'null' };
-  }
-
-  const destination = `${std.getenv('ZWE_zowe_extensionDirectory')}/.zowe/handlers/npm`;
-  //init
-  if (!fs.directoryExists(destination)) {
-    fs.mkdirp(destination);
-    // to /dev/null to hide this hack
-    //TODO and what about windows?
-    const initResult = npmExec(`init -y > /dev/null`, destination);
-    if (initResult.rc) {
-      fs.rmrf(destination);
-      return initResult.rc;
-    }    
-  }
-  
   if (!isUpgrade) {
-    if (fs.directoryExists(`${destination}/node_modules/${query}`)) {
+    if (fs.directoryExists(`${HANDLER_HOME}/node_modules/${query}`)) {
       console.log(`Component ${query} is already installed with npm.`);
       return { rc: 8, packages: 'null' };
     }
   } else {
-    npmExec(`outdated ${query} --registry=${registry}`, destination);
+    npmExec(`outdated ${query} --registry=${registry}`, HANDLER_HOME);
   }
 
-  const packageLockLocation = `${destination}/package-lock.json`;
-  const innerPackageLockLocation = `${destination}/node_modules/.package-lock.json`;
+  const packageLockLocation = `${HANDLER_HOME}/package-lock.json`;
+  const innerPackageLockLocation = `${HANDLER_HOME}/node_modules/.package-lock.json`;
   
   let packagesBefore = [];
   if (fs.fileExists(packageLockLocation)) {
@@ -106,7 +99,7 @@ function doInstall(registry: string, query: string, isUpgrade: boolean, dryRun: 
       fs.cp(innerPackageLockLocation, `innerPackageLockLocation.bkp`);
     }
   } 
-  const installResult = npmExec(`${isUpgrade? 'update' : 'install'} ${dryRun? '--dry-run --no-package-lock --no-save ' : ''}${query} --registry=${registry}`, destination);
+  const installRc = npmExec(`${isUpgrade? 'update' : 'install'} ${dryRun? '--dry-run --no-package-lock --no-save ' : ''}${query} --registry=${registry}`, HANDLER_HOME);
   if (isUpgrade && dryRun) {
     //Dumb npm thing? I say dry run and it still writes things and gets itself confused.
     if (fs.fileExists(innerPackageLockLocation)) {
@@ -115,7 +108,7 @@ function doInstall(registry: string, query: string, isUpgrade: boolean, dryRun: 
   }
 
   let installedPackages = 'null';
-  if (installResult.rc == 0) {
+  if (installRc == 0) {
 
     //TODO I also have a concern about how we can pass-through semver version queries during the install command. i think zwe can only play dumb, as stripping the symbols in the name could cause an issue???? or is it just that we can strip anything not in reverse-domain-notation
     
@@ -123,7 +116,7 @@ function doInstall(registry: string, query: string, isUpgrade: boolean, dryRun: 
     const packagesAfter = Object.keys(JSON.parse(packageLockAfter).packages);
     installedPackages = packagesAfter.filter(aPackage => aPackage != '' && !packagesBefore.includes(aPackage))
       // this path may already include node_modules and thats ok.
-      .map(packagePath => `${destination}/${packagePath}`)
+      .map(packagePath => `${HANDLER_HOME}/${packagePath}`)
       .map((packagePath) => {
         const packageJsonFile = xplatform.loadFileUTF8(`${packagePath}/package.json`, xplatform.AUTO_DETECT);
         const packageJsonContents = JSON.parse(packageJsonFile);
@@ -135,18 +128,12 @@ function doInstall(registry: string, query: string, isUpgrade: boolean, dryRun: 
       .join(',');
     if (!installedPackages) { installedPackages = 'null' };
   }
-  return { rc: installResult.rc, packages: installedPackages };
+  return { rc: installRc, packages: installedPackages };
 }
 
 
 function doUpgradeAll(registry: string, dryRun: boolean): { rc: number, packages: string } {
-  if (!std.getenv('ZWE_zowe_extensionDirectory')) {
-    console.log("ZWE_zowe_extensionDirectory required");
-    return { rc: 8, packages: 'null' };
-  }
-
-  const root = `${std.getenv('ZWE_zowe_extensionDirectory')}/.zowe/handlers/npm`;
-  const componentNames = fs.getSubdirectories(root);
+  const componentNames = fs.getSubdirectories(HANDLER_HOME);
   if (!componentNames) {
     console.log("No components found to do upgrade on");
     return { rc: 0, packages: 'null' };
@@ -170,14 +157,8 @@ function doUpgradeAll(registry: string, dryRun: boolean): { rc: number, packages
 
 //TODO when you npm uninstall, you uninstall dependencies not needed by anyone else. this should iterate over the list of changes.
 function doUninstall(registry: string, query: string): { rc: number, packages: string } {
-  if (!std.getenv('ZWE_zowe_extensionDirectory')) {
-    console.log("ZWE_zowe_extensionDirectory required");
-    return { rc: 8, packages: null };
-  }
 
-  const destination = `${std.getenv('ZWE_zowe_extensionDirectory')}/.zowe/handlers/npm`;
-
-  const packageLockLocation = `${destination}/package-lock.json`;
+  const packageLockLocation = `${HANDLER_HOME}/package-lock.json`;
   //TODO a dry-run of our own could be done by running through the package-lock.json tree and saying what we believe would be removed with this operation,
   //     or if the operation is even possible without removing other things.
 
@@ -190,9 +171,9 @@ function doUninstall(registry: string, query: string): { rc: number, packages: s
     }
   } 
   
-  const uninstallResult = npmExec(`uninstall ${query} --registry=${registry}`, destination);
+  const uninstallRc = npmExec(`uninstall ${query} --registry=${registry}`, HANDLER_HOME);
   let uninstalledPackages = 'null';
-  if (uninstallResult.rc == 0) {
+  if (uninstallRc == 0) {
     const packageLockAfter = xplatform.loadFileUTF8(packageLockLocation, xplatform.AUTO_DETECT);
     const packageJsonAfter = JSON.parse(packageLockAfter);
     const packagesAfter = packageJsonAfter.dependencies ? Object.keys(packageJsonAfter.dependencies) : [];
@@ -201,18 +182,13 @@ function doUninstall(registry: string, query: string): { rc: number, packages: s
     if (!uninstalledPackages) { uninstalledPackages = 'null' };
   }
 
-  return { rc: uninstallResult.rc, packages: uninstalledPackages };
+  return { rc: uninstallRc, packages: uninstalledPackages };
 }
 
 
 function doGetPath(component: string): string {
-  if (!std.getenv('ZWE_zowe_extensionDirectory')) {
-    console.log("ZWE_zowe_extensionDirectory required");
-    return 'null';
-  }
-
   const components = component === 'all'
-    ? fs.getSubdirectories(`${std.getenv('ZWE_zowe_extensionDirectory')}/.zowe/handlers/npm`)
+    ? fs.getSubdirectories(HANDLER_HOME)
     : [ component ];
 
   if (!components) {
@@ -222,7 +198,7 @@ function doGetPath(component: string): string {
   components.forEach((component: string)=> {
     // Yes really, component/component. its just due to how i had to fake out npm
     // TODO super long path, windows is sure to complain
-    const path = `${std.getenv('ZWE_zowe_extensionDirectory')}/.zowe/handlers/npm/node_modules/${component}`;
+    const path = `${HANDLER_HOME}/node_modules/${component}`;
     if (fs.directoryExists(path)) {
       const packageFile = xplatform.loadFileUTF8(`${path}/package.json`,xplatform.AUTO_DETECT);
       if (packageFile) {
@@ -239,6 +215,20 @@ function doGetPath(component: string): string {
     }
   });
   return paths.join(',');
+}
+
+
+
+//init
+if (!fs.directoryExists(HANDLER_HOME)) {
+  fs.mkdirp(HANDLER_HOME);
+  // to /dev/null to hide this hack
+  //TODO and what about windows?
+  const initRc = npmExec(`init -y > /dev/null`, HANDLER_HOME);
+  if (initRc) {
+    fs.rmrf(HANDLER_HOME);
+    std.exit(initRc);
+  }    
 }
 
 switch (command) {
@@ -281,7 +271,7 @@ case 'uninstall': {
 }
 case 'cleanup': {
   //TODO if something failed and left behind junk, or there was a cache... clean it.
-  break;
+//  break;
 }
 default:
   console.log("Unsupported command="+command);
