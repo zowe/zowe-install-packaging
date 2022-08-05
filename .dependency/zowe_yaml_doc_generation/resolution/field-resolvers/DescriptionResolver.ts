@@ -5,12 +5,15 @@ export default class DescriptionResolver extends FieldResolver<string> {
         super('description');
     }
 
+    // TODO DRY with TitleResolver
     protected override internalResolve(descriptionValues: string[]) {
-        return descriptionValues.reduce((acc: string, cur) => {
+        const uniqueTitles = descriptionValues.reduce((acc: Set<string>, cur: string) => {
             if (cur) {
-                acc += cur + '\n';
+                acc.add(cur);
             }
             return acc;
-        }, '');
+        }, new Set());
+
+        return Array.from(uniqueTitles).join('\n');
     }
 };

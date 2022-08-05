@@ -6,11 +6,13 @@ export default class TitleResolver extends FieldResolver<string> {
     }
 
     protected override internalResolve(titles: string[]) {
-        return titles.reduce((acc: string, cur: string) => {
+        const uniqueTitles = titles.reduce((acc: Set<string>, cur: string) => {
             if (cur) {
-                acc += cur + '\n';
+                acc.add(cur);
             }
             return acc;
-        }, '');
+        }, new Set());
+
+        return Array.from(uniqueTitles).join('\n');
     }
 };

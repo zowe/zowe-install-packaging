@@ -1,9 +1,11 @@
 import IMegaSchemaResolver from "../IMegaSchemaResolver";
 import FieldResolver from "./FieldResolver";
 
-export default class PropertiesResolver extends FieldResolver<any> {
+// TODO dry with properties resolver, same code
+
+export default class PatternPropertiesResolver extends FieldResolver<any> {
     public constructor(private megaSchemaResolver: IMegaSchemaResolver) {
-        super('properties');
+        super('patternProperties');
     }
 
     protected override internalResolve(rootProperties: any[]) {
@@ -23,7 +25,6 @@ export default class PropertiesResolver extends FieldResolver<any> {
         // 2) run megaSchemaResolver.resolve on the [val1, val2] array, which recursively calls all field resolvers
         for (const [propName, propsArr] of Object.entries(collectedProperties)) {
             if (propsArr.length > 1) {
-                // TODO don't like this try catch pattern
                 try {
                     resolvedProperties[propName] = this.megaSchemaResolver.resolveField(propName, propsArr);
                 } catch (e) {
