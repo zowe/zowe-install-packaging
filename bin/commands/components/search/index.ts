@@ -14,6 +14,7 @@ import * as common from '../../../libs/common';
 import * as config from '../../../libs/config';
 import * as component from '../../../libs/component';
 import * as shell from '../../../libs/shell';
+import * as objUtils from '../../../utils/ObjUtils';
 
 export function execute(componentName?: string, componentId?: string, handler?: string, registry?: string) {
   
@@ -51,6 +52,20 @@ export function execute(componentName?: string, componentId?: string, handler?: 
 
   //one of the extension registry handler API commands
   std.setenv('ZWE_CLI_REGISTRY_COMMAND','search');
+
+  const flattener = new objUtils.Flattener();
+  flattener.setPrefix('ZWE_');
+  flattener.setSeparator('_');
+  flattener.setKeepArrays(true);
+  const flat = flattener.flatten(ZOWE_CONFIG.zowe.extensionRegistry.handlers[handler]);
+  //give handler its zowe.yaml config section
+  flat.forEach((env:string) => {
+    const key = env.substr(0, env.indexOf('='));
+    const val = env.substr(env.indexOf('='));
+    std.setenv(key,val);
+  });
+
+  common.printMessage(`Calling handler '${handler}' to search for ${componentName}`);
 
   const result = shell.execSync('sh', '-c', `_CEE_RUNOPTS="XPLINK(ON),HEAPPOOLS(OFF)" ${std.getenv('ZWE_zowe_runtimeDirectory')}/bin/utils/configmgr -script "${handlerPath}"`);
   common.printMessage(`Handler exited with rc=${result.rc}`);

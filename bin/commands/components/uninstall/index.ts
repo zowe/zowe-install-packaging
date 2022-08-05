@@ -17,6 +17,7 @@ import * as config from '../../../libs/config';
 import * as componentlib from '../../../libs/component';
 import * as shell from '../../../libs/shell';
 import * as componentDisable from '../disable/index';
+import * as objUtils from '../../../utils/ObjUtils';
 
 export function execute(componentName: string, handler?: string, registry?: string, dryRun?: boolean): number {
   let rc = 0;
@@ -26,20 +27,29 @@ export function execute(componentName: string, handler?: string, registry?: stri
   let handlerComponents = handlerUninstall(componentName, handler, registry, dryRun);
   let uninstallComponentsList = handlerComponents !== 'null' ? handlerComponents.split(',') : [ componentName ];
 
+  common.printMessage(`Identified ${uninstallComponentsList.length} components for removal`);
+  
   uninstallComponentsList.forEach((componentName: string) => {
+    common.printMessage(`Checking component '${componentName}'`);
+    
     const componentDir = componentlib.findComponentDirectory(componentName);
     if (!componentDir) {
-      common.printError(`Warning ZWEL????W: Component ${componentName} is not installed`);
+      common.printError(`Warning ZWEL????W: Component ${componentName} marked for removal but is not installed`);
       rc = 4;
     } else {
+      common.printMessage(`Disabling component ${componentName} in configuration`);
+      if (!dryRun) {
+        //We dont remove the entire config because if they reinstall, they may want to retain the settings.
+        componentDisable.execute(componentName);
+      }
 
-      //We dont remove the entire config because if they reinstall, they may want to retain the settings.
-      componentDisable.execute(componentName);
-      
-      const removeRc = fs.rmrf(componentDir);
-      if (removeRc != 0) {
-        common.printError(`Error ZWEL????W: Component directory ${componentDir} could not be removed, rc=${removeRc}`);
-        rc = removeRc;
+      common.printMessage(`Removing component directory '${componentDir}'`);
+      if (!dryRun) {
+        const removeRc = fs.rmrf(componentDir);
+        if (removeRc != 0) {
+          common.printError(`Error ZWEL????W: Component directory ${componentDir} could not be removed, rc=${removeRc}`);
+          rc = removeRc;
+        }
       }
     }
   });
@@ -75,6 +85,20 @@ function handlerUninstall(componentName: string, handler?: string, registry?: st
     std.setenv('ZWE_CLI_REGISTRY_COMMAND','uninstall');
 
     std.setenv('ZWE_CLI_REGISTRY_DRY_RUN', dryRun ? 'true' : 'false');
+
+    const flattener = new objUtils.Flattener();
+    flattener.setPrefix('ZWE_');
+    flattener.setSeparator('_');
+    flattener.setKeepArrays(true);
+    const flat = flattener.flatten(ZOWE_CONFIG.zowe.extensionRegistry.handlers[handler]);
+    //give handler its zowe.yaml config section
+    flat.forEach((env:string) => {
+      const key = env.substr(0, env.indexOf('='));
+      const val = env.substr(env.indexOf('='));
+      std.setenv(key,val);
+    });
+    
+    common.printMessage(`Calling handler '${handler}' to remove ${componentName}`);
     
     const result = shell.execOutSync('sh', '-c', `_CEE_RUNOPTS="XPLINK(ON),HEAPPOOLS(OFF)" ${std.getenv('ZWE_zowe_runtimeDirectory')}/bin/utils/configmgr -script "${handlerPath}"`);
     common.printMessage(`Handler uninstall exited with rc=${result.rc}`);
@@ -82,6 +106,8 @@ function handlerUninstall(componentName: string, handler?: string, registry?: st
       common.printError(`Handler output follows`);
       common.printMessage(result.out);
       return 'null';
+    } else {
+      common.printDebug(result.out);
     }
     let output = result.out.split('\n').filter(line => line.startsWith('ZWE_CLI_PARAMETER_COMPONENT_NAME='));
     if (output[0]) {

@@ -18,6 +18,7 @@ import * as fs from '../../../libs/fs';
 import * as config from '../../../libs/config';
 import * as componentlib from '../../../libs/component';
 import * as shell from '../../../libs/shell';
+import * as objUtils from '../../../utils/ObjUtils';
 
 export function execute(componentFile: string, autoEncoding?:string, skipEnable?:boolean, handler?: string, registry?: string, dryRun?: boolean, upgrade?: boolean) {
   if (!fs.fileExists(componentFile) && !fs.directoryExists(componentFile)) {
@@ -33,13 +34,9 @@ export function execute(componentFile: string, autoEncoding?:string, skipEnable?
     //We only call the registry handler if given an argument thats not a path. If the handler returns null, we must fail because there's nothing left to do.
     componentFile = handlerInstall(componentFile, handler, registry, dryRun, upgrade);
 
-    if (componentFile==='null') {
+    if (componentFile==='null' && !dryRun) {
       common.printErrorAndExit("Error ZWEL????E: Handler install failure, cannot continue", undefined, 255);
     }
-  }
-
-  if (dryRun) {
-    return;
   }
 
   //if upgrade with 'all', or if a component had dependencies, there could be a list of things to act upon here
@@ -51,27 +48,39 @@ export function execute(componentFile: string, autoEncoding?:string, skipEnable?
       //TODO wish more could be said here
       common.printError("Error ZWEL????E: Could not find one of the components' directories");
     } else {
-      extract.execute(componentFile, autoEncoding, upgrade);
-      // ZWE_COMPONENTS_INSTALL_EXTRACT_COMPONENT_NAME should be set after extract step
-      const componentName = std.getenv('ZWE_COMPONENTS_INSTALL_EXTRACT_COMPONENT_NAME');
-      if (componentName) {
-        installHook.execute(componentName);
-      } else {
-        common.printErrorAndExit("Error ZWEL0156E: Component name is not initialized after extract step.", undefined, 156);
-      }
-      if (!skipEnable) {
-        componentEnable.execute(componentName);
+      common.printMessage(`Installing file or folder=${componentFile}`);
+      if (!dryRun) {
+        extract.execute(componentFile, autoEncoding, upgrade);
+        
+        // ZWE_COMPONENTS_INSTALL_EXTRACT_COMPONENT_NAME should be set after extract step
+        const componentName = std.getenv('ZWE_COMPONENTS_INSTALL_EXTRACT_COMPONENT_NAME');
+        if (componentName) {
+          installHook.execute(componentName);
+        } else {
+          common.printErrorAndExit("Error ZWEL0156E: Component name is not initialized after extract step.", undefined, 156);
+        }
+
+        if (!skipEnable) {
+          componentEnable.execute(componentName);
+        }
       }
     }
   });
 }
 
 function handlerInstall(component: string, handler?: string, registry?: string, dryRun?: boolean, upgrade?: boolean): string {
-  if (component === 'all' && !upgrade) {
-    common.printErrorAndExit("Error ZWEL????E: Cannot install with component=all. This option only exists for upgrade.", undefined, 255);
-  }
   const ZOWE_CONFIG=config.getZoweConfig();
   std.setenv("ZWE_zowe_extensionDirectory", ZOWE_CONFIG.zowe.extensionDirectory);
+
+  if (component === 'all' && !upgrade) {
+    common.printErrorAndExit("Error ZWEL????E: Cannot install with component=all. This option only exists for upgrade.", undefined, 255);
+  } else if (component === 'all') {
+    const allExtensions = componentlib.findAllInstalledComponents2().filter(component=> componentlib.findComponentDirectory(component).startsWith(ZOWE_CONFIG.zowe.extensionDirectory+'/')).join(',');
+    if (allExtensions) {
+      //all extensions doesnt mean every one exists from this handler. handler must check them.
+      component = allExtensions;
+    }
+  }
 
   
   if (!handler) {
@@ -96,8 +105,21 @@ function handlerInstall(component: string, handler?: string, registry?: string, 
   std.setenv('ZWE_CLI_REGISTRY_COMMAND', upgrade ? 'upgrade' : 'install');
 
   std.setenv('ZWE_CLI_REGISTRY_DRY_RUN', dryRun ? 'true' : 'false');
-  
-  
+
+  const flattener = new objUtils.Flattener();
+  flattener.setPrefix('ZWE_');
+  flattener.setSeparator('_');
+  flattener.setKeepArrays(true);
+  const flat = flattener.flatten(ZOWE_CONFIG.zowe.extensionRegistry.handlers[handler]);
+  //give handler its zowe.yaml config section
+  flat.forEach((env:string) => {
+    const key = env.substr(0, env.indexOf('='));
+    const val = env.substr(env.indexOf('='));
+    std.setenv(key,val);
+  });
+
+  common.printMessage(`Calling handler '${handler}' to install ${component}`);
+
   const result = shell.execOutSync('sh', '-c', `_CEE_RUNOPTS="XPLINK(ON),HEAPPOOLS(OFF)" ${std.getenv('ZWE_zowe_runtimeDirectory')}/bin/utils/configmgr -script "${handlerPath}"`);
   common.printMessage(`Handler install exited with rc=${result.rc}`);
 

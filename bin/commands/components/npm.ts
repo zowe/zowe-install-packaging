@@ -88,12 +88,12 @@ function doInstall(registry: string, query: string, isUpgrade: boolean, dryRun: 
   const packageLockLocation = `${HANDLER_HOME}/package-lock.json`;
   const innerPackageLockLocation = `${HANDLER_HOME}/node_modules/.package-lock.json`;
   
-  let packagesBefore = [];
+  let packagesBefore = {};
   if (fs.fileExists(packageLockLocation)) {
     const packageLockBefore = xplatform.loadFileUTF8(packageLockLocation,xplatform.AUTO_DETECT);
     const packageJson = JSON.parse(packageLockBefore);
     if (packageJson?.packages) {
-      packagesBefore = Object.keys(packageJson.packages);
+      packagesBefore = packageJson.packages;
     }
     if (fs.fileExists(innerPackageLockLocation)) {
       fs.cp(innerPackageLockLocation, `innerPackageLockLocation.bkp`);
@@ -113,8 +113,17 @@ function doInstall(registry: string, query: string, isUpgrade: boolean, dryRun: 
     //TODO I also have a concern about how we can pass-through semver version queries during the install command. i think zwe can only play dumb, as stripping the symbols in the name could cause an issue???? or is it just that we can strip anything not in reverse-domain-notation
     
     const packageLockAfter = xplatform.loadFileUTF8(packageLockLocation,xplatform.AUTO_DETECT); 
-    const packagesAfter = Object.keys(JSON.parse(packageLockAfter).packages);
-    installedPackages = packagesAfter.filter(aPackage => aPackage != '' && !packagesBefore.includes(aPackage))
+    const packagesAfter = JSON.parse(packageLockAfter).packages;
+    installedPackages = Object.keys(packagesAfter).filter((packageName: string) => {
+        if (packageName == '') {
+          return false;
+        }
+        if (!packagesBefore[packageName]) { //something new
+          return true;
+        } else { //in case of upgrade, which can occur on a dependency even during install.
+          return packagesBefore[packageName].version != packagesAfter[packageName].version;
+        }
+      })
       // this path may already include node_modules and thats ok.
       .map(packagePath => `${HANDLER_HOME}/${packagePath}`)
       .map((packagePath) => {
@@ -132,15 +141,16 @@ function doInstall(registry: string, query: string, isUpgrade: boolean, dryRun: 
 }
 
 
-function doUpgradeAll(registry: string, dryRun: boolean): { rc: number, packages: string } {
-  const componentNames = fs.getSubdirectories(HANDLER_HOME);
-  if (!componentNames) {
+function doUpgradeAll(registry: string, components: string[], dryRun: boolean): { rc: number, packages: string } {
+  const componentsFound = fs.getSubdirectories(HANDLER_HOME);
+  if (!componentsFound) {
     console.log("No components found to do upgrade on");
     return { rc: 0, packages: 'null' };
   }
+  const componentsToUpgrade = components.filter(component => componentsFound.includes(component));
   let highestRc = 0;
   let newPackages = '';
-  componentNames.forEach((componentName: string) => {
+  componentsToUpgrade.forEach((componentName: string) => {
     let result = doInstall(registry, componentName, true, dryRun);
     if (result.packages != 'null') {
       newPackages+=','+result.packages;
@@ -155,12 +165,9 @@ function doUpgradeAll(registry: string, dryRun: boolean): { rc: number, packages
 
 
 
-//TODO when you npm uninstall, you uninstall dependencies not needed by anyone else. this should iterate over the list of changes.
-function doUninstall(registry: string, query: string): { rc: number, packages: string } {
+function doUninstall(registry: string, query: string, dryRun?: boolean): { rc: number, packages: string } {
 
   const packageLockLocation = `${HANDLER_HOME}/package-lock.json`;
-  //TODO a dry-run of our own could be done by running through the package-lock.json tree and saying what we believe would be removed with this operation,
-  //     or if the operation is even possible without removing other things.
 
   let packagesBefore = [];
   if (fs.fileExists(packageLockLocation)) {
@@ -169,7 +176,26 @@ function doUninstall(registry: string, query: string): { rc: number, packages: s
     if (packageJson?.dependencies) {
       packagesBefore = Object.keys(packageJson.dependencies);
     }
-  } 
+
+    if (dryRun) { //dont even ask npm, just see the dependency list
+      let uninstallList = [];
+      packagesBefore.forEach((packageName)=> {
+        if (packageName.requires && packageName.requires[query]) {
+          uninstallList.push(packageName);
+        } else if (packageName == query) {
+          uninstallList.push(packageName);
+        }
+      });
+      if (uninstallList.length == 0) {
+        return { rc: 0, packages: 'null' };
+      } else {
+        return { rc: 0, packages: uninstallList.join(',') };
+      }
+    }
+  } else {
+    console.log(`Package lock not found, cannot continue`);
+    return { rc: 8, packages: 'null' };
+  }
   
   const uninstallRc = npmExec(`uninstall ${query} --registry=${registry}`, HANDLER_HOME);
   let uninstalledPackages = 'null';
@@ -244,19 +270,12 @@ case 'install': {
   break;
   }
 case 'upgrade': {
-  const component = componentName ? componentName : componentId;
-  if (component === 'all') {
-    const result = doUpgradeAll(registry, dryRun);
-    console.log('ZWE_CLI_PARAMETER_COMPONENT_FILE='+result.packages);
-    std.exit(result.rc);
-  } else {
-    const result = doInstall(registry, component, true, dryRun);
-    console.log('ZWE_CLI_PARAMETER_COMPONENT_FILE='+result.packages);
-    std.exit(result.rc);
-  }
+  let components = componentName ? componentName : componentId;
+  const result = doUpgradeAll(registry, components.split(','), dryRun);
+  console.log('ZWE_CLI_PARAMETER_COMPONENT_FILE='+result.packages);
+  std.exit(result.rc);
   break;
   }
-
 case 'getpath': {
   const path = doGetPath(componentName ? componentName : componentId);
   console.log('ZWE_CLI_PARAMETER_COMPONENT_FILE='+path);
@@ -264,7 +283,7 @@ case 'getpath': {
   break;
   }
 case 'uninstall': {
-  const result = doUninstall(registry, componentName ? componentName : componentId);
+  const result = doUninstall(registry, componentName ? componentName : componentId, dryRun);
   console.log('ZWE_CLI_PARAMETER_COMPONENT_NAME='+result.packages);
   std.exit(result.rc);
   break;
