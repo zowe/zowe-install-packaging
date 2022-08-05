@@ -1,16 +1,13 @@
+import path from 'path';
+import fs from 'fs';
 import { generateZoweYamlMdDocs } from './documentation';
-import { Schema } from './documentation/types';
+import SchemaResolver from './resolution/SchemaResolver';
 
-const rootSchema = require('./resolved.json');
+const RESOLVED_SCHEMA_FILE_PATH = path.join(__dirname, './resolved.json');
 
-const schemas = rootSchema.allOf?.reduce((collected: Schema[], schema: Schema) => {
-    if (schema.properties) {
-        collected.push({ title: schema.title, description: schema.description, properties: schema.properties });
-    }
-    return collected;
-}, []);
+const schemaResolver = new SchemaResolver(RESOLVED_SCHEMA_FILE_PATH);
+schemaResolver.resolveMegaSchema().then(resolvedSchema => {
+    const zoweYamlSchema = JSON.parse(fs.readFileSync(RESOLVED_SCHEMA_FILE_PATH, 'utf8'));
+    generateZoweYamlMdDocs(zoweYamlSchema);
+});
 
-// TODO resolve full yaml schema and then use it here
-const schema = schemas[0];
-
-generateZoweYamlMdDocs(schema);

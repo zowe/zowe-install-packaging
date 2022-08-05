@@ -1,12 +1,12 @@
 import { JSONSchema } from "json-schema-ref-parser";
 import { FieldResolver, DescriptionResolver, TitleResolver, AdditionalPropertiesResolver, TypeResolver, RequiredResolver, PropertiesResolver } from "./field-resolvers";
 import IMegaSchemaResolver from "./IMegaSchemaResolver";
-import ResolvedSchema from "./ResolvedSchema";
+import ResolvedSchema from "./types/ResolvedSchema";
 
 // resolve everything by smashing together all unique properties
 // identify properties that we care about - e.g. description, title, properties, patternProperties, etc
 // and then create a merging solution for each - e.g. description and title join with '\n', properties is smash together, etc.
-export default class MegaSchema implements IMegaSchemaResolver {
+export default class MultiFieldResolver implements IMegaSchemaResolver {
     private resolvers: FieldResolver<any>[];
 
     public constructor() {

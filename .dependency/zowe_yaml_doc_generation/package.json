@@ -4,8 +4,9 @@
     "private": true,
     "main": "index.ts",
     "scripts": {
-        "resolve": "ts-node resolution/resolve.ts",
-        "docgen": "ts-node index.ts",
+        "resolve": "ts-node just-resolve.ts",
+        "doc-gen": "ts-node just-docgen.ts",
+        "full-doc-gen": "ts-node index.ts",
         "build": "tsc"
     },
     "author": "Zowe",
