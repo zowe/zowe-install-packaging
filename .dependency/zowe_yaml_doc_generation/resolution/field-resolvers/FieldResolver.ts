@@ -1,3 +1,5 @@
+import { JSONSchema } from "json-schema-ref-parser";
+
 export default abstract class FieldResolver<T> {
     public readonly field: string;
 
@@ -5,10 +7,13 @@ export default abstract class FieldResolver<T> {
         this.field = field;
     }
 
-    // TODO remove anys - should be from a list of allowable keys, including custom keys
-    public resolve(schemas: any[]): T {
-        const fields: T[] = schemas.filter(s => s[this.field]).map(s => s[this.field]);
+    public resolve(schemas: JSONSchema[]): T {
+        const fields: T[] = schemas.filter((s: any) => s[this.field]).map((s: any) => s[this.field]);
         return this.internalResolve(fields);
+    }
+
+    public resolveField(values: T[]): T {
+        return this.internalResolve(values);
     }
 
     protected abstract internalResolve(fields: T[]): T;

@@ -28,4 +28,13 @@ export default class MegaSchema implements IMegaSchemaResolver {
 
         return resolvedSchema as ResolvedSchema; // TODO no type coercion
     }
+
+    public resolveField(field: string, values: any[]): any {
+        const resolver = this.resolvers.find((r: FieldResolver<any>) => r.field === field);
+        if (!resolver) {
+            throw new Error(`No resolver for field '${field}' found`);
+        }
+
+        return resolver.resolveField(values);
+    }
 };

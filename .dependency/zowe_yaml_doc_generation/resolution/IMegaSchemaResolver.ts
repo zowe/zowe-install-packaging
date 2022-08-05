@@ -3,4 +3,6 @@ import ResolvedSchema from "./ResolvedSchema";
 
 export default interface IMegaSchemaResolver {
     resolve(dereferencedSchemas: JSONSchema[]): ResolvedSchema;
+
+    resolveField(field: string, values: any[]): any;
 };
