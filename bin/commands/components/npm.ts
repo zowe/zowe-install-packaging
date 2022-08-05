@@ -112,7 +112,6 @@ function doInstall(registry: string, query: string, isUpgrade: boolean, dryRun: 
     if (fs.fileExists(innerPackageLockLocation)) {
       fs.cp(`innerPackageLockLocation.bkp`, innerPackageLockLocation);
     }
-//    os.remove(innerPackageLockLocation);
   }
 
   let installedPackages = 'null';
@@ -123,11 +122,14 @@ function doInstall(registry: string, query: string, isUpgrade: boolean, dryRun: 
     const packageLockAfter = xplatform.loadFileUTF8(packageLockLocation,xplatform.AUTO_DETECT); 
     const packagesAfter = Object.keys(JSON.parse(packageLockAfter).packages);
     installedPackages = packagesAfter.filter(aPackage => aPackage != '' && !packagesBefore.includes(aPackage))
-    // this may already include node_modules
-      .map(packageName => `${destination}/${packageName}`)
+      // this path may already include node_modules and thats ok.
+      .map(packagePath => `${destination}/${packagePath}`)
       .map((packagePath) => {
         const packageJsonFile = xplatform.loadFileUTF8(`${packagePath}/package.json`, xplatform.AUTO_DETECT);
         const packageJsonContents = JSON.parse(packageJsonFile);
+        //We return a list of files and folders which are to be installed as components
+        //NOTE: components must not depend on node modules in the npm way at this level since locating node_modules in here would be strange
+        //Instead, they should bundle their node dependencies. Dependencies in this handler are really about between zowe components, not node code.
         return packageJsonContents.main ? `${packagePath}/${packageJsonContents.main}` : packagePath;
       })
       .join(',');
@@ -167,15 +169,39 @@ function doUpgradeAll(registry: string, dryRun: boolean): { rc: number, packages
 
 
 //TODO when you npm uninstall, you uninstall dependencies not needed by anyone else. this should iterate over the list of changes.
-function doUninstall(registry: string, query: string): number {
+function doUninstall(registry: string, query: string): { rc: number, packages: string } {
   if (!std.getenv('ZWE_zowe_extensionDirectory')) {
     console.log("ZWE_zowe_extensionDirectory required");
-    return 8;
+    return { rc: 8, packages: null };
   }
 
   const destination = `${std.getenv('ZWE_zowe_extensionDirectory')}/.zowe/handlers/npm`;
+
+  const packageLockLocation = `${destination}/package-lock.json`;
+  //TODO a dry-run of our own could be done by running through the package-lock.json tree and saying what we believe would be removed with this operation,
+  //     or if the operation is even possible without removing other things.
+
+  let packagesBefore = [];
+  if (fs.fileExists(packageLockLocation)) {
+    const packageLockBefore = xplatform.loadFileUTF8(packageLockLocation, xplatform.AUTO_DETECT);
+    const packageJson = JSON.parse(packageLockBefore);
+    if (packageJson?.dependencies) {
+      packagesBefore = Object.keys(packageJson.dependencies);
+    }
+  } 
+  
   const uninstallResult = npmExec(`uninstall ${query} --registry=${registry}`, destination);
-  return uninstallResult.rc;
+  let uninstalledPackages = 'null';
+  if (uninstallResult.rc == 0) {
+    const packageLockAfter = xplatform.loadFileUTF8(packageLockLocation, xplatform.AUTO_DETECT);
+    const packageJsonAfter = JSON.parse(packageLockAfter);
+    const packagesAfter = packageJsonAfter.dependencies ? Object.keys(packageJsonAfter.dependencies) : [];
+    //We return just the package names aka component names, so that zwe can act upon those it knows about
+    uninstalledPackages = packagesBefore.filter(aPackage => aPackage != '' && !packagesAfter.includes(aPackage)).join(',');
+    if (!uninstalledPackages) { uninstalledPackages = 'null' };
+  }
+
+  return { rc: uninstallResult.rc, packages: uninstalledPackages };
 }
 
 
@@ -248,7 +274,9 @@ case 'getpath': {
   break;
   }
 case 'uninstall': {
-  std.exit(doUninstall(registry, componentName ? componentName : componentId));
+  const result = doUninstall(registry, componentName ? componentName : componentId);
+  console.log('ZWE_CLI_PARAMETER_COMPONENT_NAME='+result.packages);
+  std.exit(result.rc);
   break;
 }
 case 'cleanup': {

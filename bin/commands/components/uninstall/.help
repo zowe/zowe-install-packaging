@@ -1,5 +1,1 @@
-Uninstall a Zowe component.
-
-**IMPORTANT NOTES**, by default, this command will enable the component globally
-                     by modifying your YAML configuration. You can pass
-                     `--skip-enable` to disable this behavior.
+Uninstall a Zowe component, given its name.

@@ -30,8 +30,8 @@ export function execute(componentFile: string, autoEncoding?:string, skipEnable?
         return;
       }
     }
+    //We only call the registry handler if given an argument thats not a path. If the handler returns null, we must fail because there's nothing left to do.
     componentFile = handlerInstall(componentFile, handler, registry, dryRun, upgrade);
-    
 
     if (componentFile==='null') {
       common.printErrorAndExit("Error ZWEL????E: Handler install failure, cannot continue", undefined, 255);
