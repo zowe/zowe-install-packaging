@@ -242,8 +242,6 @@ export function getTmpDir(): string {
       if (!isDirectoryAccessible(tmp) || !isDirectoryWritable(tmp)) {
         common.printError(`Cannot access /tmp directory `);
         return '';
-      } else{
-        return tmp;
       }
     }
   }
