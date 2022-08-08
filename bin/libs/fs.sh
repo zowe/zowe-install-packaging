@@ -48,7 +48,25 @@ convert_to_absolute_path() {
 }
 
 get_tmp_dir() {
-  echo ${TMPDIR:-${TMP:-/tmp}}
+  is_directory_writable "${TMPDIR}"
+  writable_rc=$?
+  if [ ${writable_rc} -eq 0 ]; then
+    echo ${TMPDIR}
+  else
+    is_directory_writable "${TMP}"
+    writable_rc=$?
+    if [ ${writable_rc} -eq 0 ]; then
+      echo ${TMP}
+    else
+      is_directory_writable "/tmp"
+      writable_rc=$?
+      if [ ${writable_rc} -eq 0 ]; then
+        echo "/tmp"
+      else
+          return ${writable_rc}
+      fi
+    fi
+  fi
 }
 
 create_tmp_file() {
