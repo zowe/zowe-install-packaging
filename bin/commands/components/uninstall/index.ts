@@ -13,11 +13,9 @@ import * as std from 'std';
 import * as os from 'os';
 import * as common from '../../../libs/common';
 import * as fs from '../../../libs/fs';
-import * as config from '../../../libs/config';
 import * as componentlib from '../../../libs/component';
-import * as shell from '../../../libs/shell';
 import * as componentDisable from '../disable/index';
-import * as objUtils from '../../../utils/ObjUtils';
+import { HandlerCaller, getHandler, getRegistry } from '../handlerutils';
 
 export function execute(componentName: string, handler?: string, registry?: string, dryRun?: boolean): number {
   let rc = 0;
@@ -58,62 +56,13 @@ export function execute(componentName: string, handler?: string, registry?: stri
 
 
 function handlerUninstall(componentName: string, handler?: string, registry?: string, dryRun?: boolean): string {
-  const ZOWE_CONFIG=config.getZoweConfig();
-  std.setenv("ZWE_zowe_extensionDirectory", ZOWE_CONFIG.zowe.extensionDirectory);
-
-  if (!handler) {
-    handler=ZOWE_CONFIG.zowe.extensionRegistry?.defaultHandler;
-  }
-
+  handler = getHandler(handler);
   if (!handler) {
     common.printMessage("Zowe registry handler not found. If component was installed without a registry, this is OK. Otherwise, you may need to clean up the handler cache manually.");
     return 'null';
-  } else {
-    std.setenv('ZWE_CLI_PARAMETER_HANDLER',handler);
-    
-    if (!registry) {
-      registry=ZOWE_CONFIG.zowe.extensionRegistry.handlers[handler].registry;
-    }
-    std.setenv('ZWE_CLI_PARAMETER_REGISTRY',registry);
-    
-    const handlerPath = ZOWE_CONFIG.zowe.extensionRegistry.handlers[handler].path;
-
-    //TODO some scripts use COMPONENT_NAME, others COMPONENT_FILE, COMPONENT_ID...simplify the API. I'm assigning COMPONENT_NAME for simplicity.
-    std.setenv("ZWE_CLI_PARAMETER_COMPONENT_NAME", componentName);
-    
-    //one of the extension registry handler API commands
-    std.setenv('ZWE_CLI_REGISTRY_COMMAND','uninstall');
-
-    std.setenv('ZWE_CLI_REGISTRY_DRY_RUN', dryRun ? 'true' : 'false');
-
-    const flattener = new objUtils.Flattener();
-    flattener.setPrefix('ZWE_');
-    flattener.setSeparator('_');
-    flattener.setKeepArrays(true);
-    const flat = flattener.flatten(ZOWE_CONFIG.zowe.extensionRegistry.handlers[handler]);
-    //give handler its zowe.yaml config section
-    flat.forEach((env:string) => {
-      const key = env.substr(0, env.indexOf('='));
-      const val = env.substr(env.indexOf('='));
-      std.setenv(key,val);
-    });
-    
-    common.printMessage(`Calling handler '${handler}' to remove ${componentName}`);
-    
-    const result = shell.execOutSync('sh', '-c', `_CEE_RUNOPTS="XPLINK(ON),HEAPPOOLS(OFF)" ${std.getenv('ZWE_zowe_runtimeDirectory')}/bin/utils/configmgr -script "${handlerPath}"`);
-    common.printMessage(`Handler uninstall exited with rc=${result.rc}`);
-    if (result.rc) {
-      common.printError(`Handler output follows`);
-      common.printMessage(result.out);
-      return 'null';
-    } else {
-      common.printDebug(result.out);
-    }
-    let output = result.out.split('\n').filter(line => line.startsWith('ZWE_CLI_PARAMETER_COMPONENT_NAME='));
-    if (output[0]) {
-      return output[0].substring('ZWE_CLI_PARAMETER_COMPONENT_NAME='.length);
-    }
-    return 'null';
-
   }
+  registry = getRegistry(handler, registry);  
+  const handlerCaller = new HandlerCaller(handler, registry);
+
+  return handlerCaller.uninstall(componentName, dryRun);
 }

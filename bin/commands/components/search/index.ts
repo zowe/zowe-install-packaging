@@ -13,11 +13,10 @@ import * as std from 'std';
 import * as common from '../../../libs/common';
 import * as config from '../../../libs/config';
 import * as component from '../../../libs/component';
-import * as shell from '../../../libs/shell';
-import * as objUtils from '../../../utils/ObjUtils';
+import { HandlerCaller, getHandler, getRegistry } from '../handlerutils';
 
 export function execute(componentName?: string, componentId?: string, handler?: string, registry?: string) {
-  
+
   common.requireZoweYaml();
   const ZOWE_CONFIG=config.getZoweConfig();
 
@@ -34,39 +33,13 @@ export function execute(componentName?: string, componentId?: string, handler?: 
   } else if (!componentId) {
     common.printErrorAndExit("Error ZWEL????E: Component name (-name|-n) or id (-id,-d) required but not specified", undefined, 255);
   }
-  
+
+  handler = getHandler(handler);
   if (!handler) {
-    handler=ZOWE_CONFIG.zowe.extensionRegistry?.defaultHandler;
-    if (!handler) {
-      common.printErrorAndExit("Error ZWEL????E: Handler (-handler,-h or zowe.extensionRegistry.defaultHandler) required but not specified", undefined, 255);
-    }
+    common.printErrorAndExit("Error ZWEL????E: Handler (-handler,-h or zowe.extensionRegistry.defaultHandler) required but not specified", undefined, 255);
   }
-  std.setenv('ZWE_CLI_PARAMETER_HANDLER',handler);
+  registry = getRegistry(handler, registry);  
+  const handlerCaller = new HandlerCaller(handler, registry);
 
-  if (!registry) {
-    registry=ZOWE_CONFIG.zowe.extensionRegistry.handlers[handler].registry;
-  }
-  std.setenv('ZWE_CLI_PARAMETER_REGISTRY',registry);
-  
-  const handlerPath = ZOWE_CONFIG.zowe.extensionRegistry.handlers[handler].path;
-
-  //one of the extension registry handler API commands
-  std.setenv('ZWE_CLI_REGISTRY_COMMAND','search');
-
-  const flattener = new objUtils.Flattener();
-  flattener.setPrefix('ZWE_');
-  flattener.setSeparator('_');
-  flattener.setKeepArrays(true);
-  const flat = flattener.flatten(ZOWE_CONFIG.zowe.extensionRegistry.handlers[handler]);
-  //give handler its zowe.yaml config section
-  flat.forEach((env:string) => {
-    const key = env.substr(0, env.indexOf('='));
-    const val = env.substr(env.indexOf('='));
-    std.setenv(key,val);
-  });
-
-  common.printMessage(`Calling handler '${handler}' to search for ${componentName}`);
-
-  const result = shell.execSync('sh', '-c', `_CEE_RUNOPTS="XPLINK(ON),HEAPPOOLS(OFF)" ${std.getenv('ZWE_zowe_runtimeDirectory')}/bin/utils/configmgr -script "${handlerPath}"`);
-  common.printMessage(`Handler exited with rc=${result.rc}`);
+  handlerCaller.search(componentName);
 }

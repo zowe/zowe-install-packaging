@@ -17,8 +17,7 @@ import * as common from '../../../libs/common';
 import * as fs from '../../../libs/fs';
 import * as config from '../../../libs/config';
 import * as componentlib from '../../../libs/component';
-import * as shell from '../../../libs/shell';
-import * as objUtils from '../../../utils/ObjUtils';
+import { HandlerCaller, getHandler, getRegistry } from '../handlerutils';
 
 export function execute(componentFile: string, autoEncoding?:string, skipEnable?:boolean, handler?: string, registry?: string, dryRun?: boolean, upgrade?: boolean) {
   if (!fs.fileExists(componentFile) && !fs.directoryExists(componentFile)) {
@@ -70,7 +69,6 @@ export function execute(componentFile: string, autoEncoding?:string, skipEnable?
 
 function handlerInstall(component: string, handler?: string, registry?: string, dryRun?: boolean, upgrade?: boolean): string {
   const ZOWE_CONFIG=config.getZoweConfig();
-  std.setenv("ZWE_zowe_extensionDirectory", ZOWE_CONFIG.zowe.extensionDirectory);
 
   if (component === 'all' && !upgrade) {
     common.printErrorAndExit("Error ZWEL????E: Cannot install with component=all. This option only exists for upgrade.", undefined, 255);
@@ -82,55 +80,12 @@ function handlerInstall(component: string, handler?: string, registry?: string, 
     }
   }
 
-  
+  handler = getHandler(handler);
   if (!handler) {
-    handler=ZOWE_CONFIG.zowe.extensionRegistry?.defaultHandler;
-    if (!handler) {
-      common.printErrorAndExit("Error ZWEL????E: Handler (-handler,-h or zowe.extensionRegistry.defaultHandler) required but not specified", undefined, 255);
-    }
+    common.printErrorAndExit("Error ZWEL????E: Handler (-handler or zowe.extensionRegistry.defaultHandler) required but not specified", undefined, 255);
   }
-  std.setenv('ZWE_CLI_PARAMETER_HANDLER',handler);
+  registry = getRegistry(handler, registry);  
+  const handlerCaller = new HandlerCaller(handler, registry);
 
-  if (!registry) {
-    registry=ZOWE_CONFIG.zowe.extensionRegistry.handlers[handler].registry;
-  }
-  std.setenv('ZWE_CLI_PARAMETER_REGISTRY',registry);
-
-  //TODO some scripts use COMPONENT_NAME, others COMPONENT_FILE, COMPONENT_ID...simplify the API. I'm assigning COMPONENT_NAME for simplicity.
-  std.setenv("ZWE_CLI_PARAMETER_COMPONENT_NAME", component);
-  
-  const handlerPath = ZOWE_CONFIG.zowe.extensionRegistry.handlers[handler].path;
-
-  //one of the extension registry handler API commands
-  std.setenv('ZWE_CLI_REGISTRY_COMMAND', upgrade ? 'upgrade' : 'install');
-
-  std.setenv('ZWE_CLI_REGISTRY_DRY_RUN', dryRun ? 'true' : 'false');
-
-  const flattener = new objUtils.Flattener();
-  flattener.setPrefix('ZWE_');
-  flattener.setSeparator('_');
-  flattener.setKeepArrays(true);
-  const flat = flattener.flatten(ZOWE_CONFIG.zowe.extensionRegistry.handlers[handler]);
-  //give handler its zowe.yaml config section
-  flat.forEach((env:string) => {
-    const key = env.substr(0, env.indexOf('='));
-    const val = env.substr(env.indexOf('='));
-    std.setenv(key,val);
-  });
-
-  common.printMessage(`Calling handler '${handler}' to install ${component}`);
-
-  const result = shell.execOutSync('sh', '-c', `_CEE_RUNOPTS="XPLINK(ON),HEAPPOOLS(OFF)" ${std.getenv('ZWE_zowe_runtimeDirectory')}/bin/utils/configmgr -script "${handlerPath}"`);
-  common.printMessage(`Handler install exited with rc=${result.rc}`);
-
-  if (result.rc) {
-    common.printError(`Handler output follows`);
-    common.printMessage(result.out);
-    return 'null';
-  }
-  let output = result.out.split('\n').filter(line => line.startsWith('ZWE_CLI_PARAMETER_COMPONENT_FILE='));
-  if (output[0]) {
-    return output[0].substring('ZWE_CLI_PARAMETER_COMPONENT_FILE='.length);
-  }
-  return 'null';
+  return upgrade ? handlerCaller.upgrade(component, dryRun) : handlerCaller.install(component, dryRun);
 }
