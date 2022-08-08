@@ -78,6 +78,84 @@ function doSearch(registries: string[], query: string): number {
 }
 
 
+/*
+  --copy                Install all packages using copies instead of hard- or
+                        soft-linking.
+
+  --update-dependencies, --update-deps
+                        Update dependencies. Overrides the value given by
+                        `conda config --show update_deps`.
+  --no-update-dependencies, --no-update-deps
+                        Don't update dependencies. Overrides the value given
+                        by `conda config --show update_deps`.
+  --json                Report all output as json. Suitable for using conda
+                        programmatically.
+  --debug               Show debug output.
+  --verbose, -v         Use once for info, twice for debug, three times for
+                        trace.
+*/
+
+//conda install -c channel -p pathofenv -y --dry-run -q  packagename
+
+
+//conda update -c channel -p pathofenv -y --dry-run -q --all packagename
+function doInstall(registries: string[], query: string, isUpgrade: boolean, dryRun: boolean): { rc: number, packages: string } {
+  const metaLocation = `${HANDLER_HOME}/conda-meta`;
+  
+  let packagesBefore = fs.getFilesInDirectory(metaLocation);
+  if (!packagesBefore) {
+    packagesBefore = [];
+  }
+
+  const installRc = condaExec(`${isUpgrade? 'update' : 'install'} -p ${HANDLER_HOME} ${dryRun? '--dry-run ' : ''}${query}`, registries);
+
+
+  let installedPackages = 'null';
+  if (installRc == 0) {
+    const packagesAfter = fs.getFilesInDirectory(metaLocation);
+    installedPackages = packagesAfter.filter((packageName: string) => {
+        if (packageName == 'history') {
+          return false;
+        } else if (!packagesBefore[packageName]) { //something new, or a new version.
+          return true;
+        } else {
+          return false;
+        }
+      //TODO upgrades could also REMOVE no longer needed dependencies. this should send back added/removed seperately.
+      })
+      .map((packageName) => {
+        //file appears to be ASCII, untagged on z/os
+        const jsonFile = xplatform.loadFileUTF8(`${HANDLER_HOME}/conda-meta/${packageName}`, 0);
+        const jsonContents = JSON.parse(jsonFile);
+        //We return a list of files and folders which are to be installed as components
+        //NOTE: components must not depend on other conda packages in non-zowe ways since locating other packages within conda could be an issue
+        //Instead, they should bundle their dependencies. Dependencies in this handler are really about between zowe components.
+        const componentDir = `${HANDLER_HOME}/var/zowe/components/${jsonContents.version}/${jsonContents.name}`;
+        if (!fs.directoryExists(componentDir)) {
+          return 'null';
+        } else {
+          const componentFiles = fs.getFilesInDirectory(componentDir);
+          for (let i = 0; i < componentFiles.length; i++) {
+            if (componentFiles[i].endsWith('.pax')
+                ||componentFiles[i].endsWith('.tar')
+                ||componentFiles[i].endsWith('.zip')) {
+              //If an archive exists within, the first one we find MUST be the component archive.
+              return `${componentDir}/${componentFiles[i]}`;
+            }
+          }
+          //If no archive found, the directory is the zowe component.
+          return componentDir;
+        }
+      })
+      .filter(packagePath => packagePath != 'null')
+      .join(',');
+    if (!installedPackages) { installedPackages = 'null' };
+  }
+  return { rc: installRc, packages: installedPackages };
+}
+
+
+
 
 //init
 if (!fs.directoryExists(HANDLER_HOME)) {
@@ -95,13 +173,14 @@ case 'search': {
   std.exit(rc);
   break;
 }
-  /*
+
 case 'install': {
-  const result = doInstall(registry, componentName ? componentName : componentId, false, dryRun);
+  const result = doInstall(REGISTRIES, componentName ? componentName : componentId, false, dryRun);
   console.log('ZWE_CLI_PARAMETER_COMPONENT_FILE='+result.packages);
   std.exit(result.rc);
   break;
   }
+/*
 case 'upgrade': {
   const component = componentName ? componentName : componentId;
   if (component === 'all') {
