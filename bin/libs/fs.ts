@@ -233,17 +233,6 @@ export function convertToAbsolutePath(file: string): string|undefined {
   return undefined;
 }
 
-// export function getTmpDir(): string {
-//   let tmp = std.getenv('TMPDIR');
-//   if (!tmp) {
-//     tmp = std.getenv('TMP');
-//   }
-//   if (!tmp) {
-//     tmp = '/tmp';
-//   }
-//   return tmp;
-// }
-
 export function getTmpDir(): string {
   let tmp = std.getenv('TMPDIR');
   if (!tmp || !isDirectoryAccessible(tmp) || !isDirectoryWritable(tmp)) {
