@@ -235,12 +235,14 @@ export function convertToAbsolutePath(file: string): string|undefined {
 
 export function getTmpDir(): string {
   let tmp = std.getenv('TMPDIR');
+  common.printTrace(`  > Check if TMPDIR points to writable drirectory`);
   if (!tmp || !isDirectoryAccessible(tmp) || !isDirectoryWritable(tmp)) {
     tmp = std.getenv('TMP');
+    common.printTrace(`  > Check if TMP points to writable drirectory`);
     if (!tmp || !isDirectoryAccessible(tmp) || !isDirectoryWritable(tmp)) {
       tmp = '/tmp';
+      common.printTrace(`  > Check if /tmp is writable drirectory`);
       if (!isDirectoryAccessible(tmp) || !isDirectoryWritable(tmp)) {
-        common.printError(`Cannot access /tmp directory `);
         return '';
       }
     }
