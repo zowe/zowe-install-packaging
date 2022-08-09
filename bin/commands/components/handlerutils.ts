@@ -102,7 +102,10 @@ export class HandlerCaller {
       common.printError(`Handler output follows`);
       common.printMessage(result.out);
       return 'null';
+    } else {
+      common.printDebug(result.out);
     }
+
     let output = result.out.split('\n').filter(line => line.startsWith('ZWE_CLI_PARAMETER_COMPONENT_FILE='));
     if (output[0]) {
       return output[0].substring('ZWE_CLI_PARAMETER_COMPONENT_FILE='.length);

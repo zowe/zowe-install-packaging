@@ -44,7 +44,7 @@ if (!componentName && !componentId) {
 
 const dryRun: boolean = std.getenv('ZWE_CLI_REGISTRY_DRY_RUN') === 'true';
 
-const conda = std.getenv('ZWE_zowe_handlers_conda_condapath');
+const conda = std.getenv('ZWE_zowe_extensionRegistry_handlers_conda_condapath');
 if (!conda || !fs.fileExists(conda)) {
   console.log("Conda not found! Define zowe.handlers.conda.condapath as the path to the conda executable.");
   std.exit(8);

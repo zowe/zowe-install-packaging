@@ -142,7 +142,7 @@ function doInstall(registry: string, query: string, isUpgrade: boolean, dryRun: 
 
 
 function doUpgradeAll(registry: string, components: string[], dryRun: boolean): { rc: number, packages: string } {
-  const componentsFound = fs.getSubdirectories(HANDLER_HOME);
+  const componentsFound = fs.getSubdirectories(`${HANDLER_HOME}/node_modules`);
   if (!componentsFound) {
     console.log("No components found to do upgrade on");
     return { rc: 0, packages: 'null' };
