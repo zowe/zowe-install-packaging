@@ -48,22 +48,22 @@ convert_to_absolute_path() {
 }
 
 get_tmp_dir() {
+  print_error ">> Check if TMPDIR points to writable drirectory"
   is_directory_writable "${TMPDIR}"
-  writable_rc=$?
-  if [ ${writable_rc} -eq 0 ]; then
+  if [ $? -eq 0 ]; then
     echo ${TMPDIR}
   else
+    print_error ">> Check if TMP points to writable drirectory"
     is_directory_writable "${TMP}"
-    writable_rc=$?
-    if [ ${writable_rc} -eq 0 ]; then
+    if [ $? -eq 0 ]; then
       echo ${TMP}
     else
+      print_error ">> Check if /tmp is writable drirectory"
       is_directory_writable "/tmp"
-      writable_rc=$?
-      if [ ${writable_rc} -eq 0 ]; then
+      if [ $? -eq 0 ]; then
         echo "/tmp"
       else
-          return ${writable_rc}
+        return 1
       fi
     fi
   fi
