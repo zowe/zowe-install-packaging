@@ -48,7 +48,7 @@ convert_to_absolute_path() {
 }
 
 get_tmp_dir() {
-  print_error ">> Check if either TMPDIR or TMP points to writable drirectory, else try \"/tmp\" directory"
+  print_error ">> Check if either TMPDIR or TMP points to writable directory, else try \"/tmp\" directory"
   for dir in "${TMPDIR}" "${TMP}" "/tmp";
   do
     is_directory_writable "${dir}"
