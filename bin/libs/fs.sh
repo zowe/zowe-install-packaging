@@ -51,10 +51,12 @@ get_tmp_dir() {
   print_error ">> Check if either TMPDIR or TMP points to writable directory, else try \"/tmp\" directory"
   for dir in "${TMPDIR}" "${TMP}" "/tmp";
   do
-    is_directory_writable "${dir}"
-    if [ $? -eq 0 ]; then
-      echo ${dir}
-      return
+    if [ ${dir} ]; then
+      is_directory_writable "${dir}"
+      if [ $? -eq 0 ]; then
+        echo ${dir}
+        return
+      fi
     fi
   done
 }
