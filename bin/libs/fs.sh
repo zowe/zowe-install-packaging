@@ -48,25 +48,16 @@ convert_to_absolute_path() {
 }
 
 get_tmp_dir() {
-  print_error ">> Check if TMPDIR points to writable directory"
-  is_directory_writable "${TMPDIR}"
-  if [ $? -eq 0 ]; then
-    echo ${TMPDIR}
-  else
-    print_error ">> Check if TMP points to writable directory"
-    is_directory_writable "${TMP}"
+  print_error ">> Check if either TMPDIR or TMP points to writable drirectory, else try \"/tmp\" directory"
+  for dir in "${TMPDIR}" "${TMP}" "/tmp";
+  do
+    is_directory_writable "${dir}"
     if [ $? -eq 0 ]; then
-      echo ${TMP}
-    else
-      print_error ">> Check if /tmp is writable directory"
-      is_directory_writable "/tmp"
-      if [ $? -eq 0 ]; then
-        echo "/tmp"
-      else
-        return 1
-      fi
+      echo ${dir}
+      return
     fi
-  fi
+  done
+  return 1
 }
 
 create_tmp_file() {
