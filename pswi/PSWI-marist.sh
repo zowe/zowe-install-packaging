@@ -9,7 +9,7 @@ export ZOWE_ZFS="${CSIHLQ}.ZFS"
 export ZOWE_MOUNT="/u/zwe/zowe-smpe/"
 export VOLUME="ZOS003"
 export TEST_HLQ="ZOWEAD2.PSWIT"
-export SYSAFF=2964 
+export SYSAFF="(2964,S0W1)" 
 export ACCOUNT=1
 
 # Variables for workflows

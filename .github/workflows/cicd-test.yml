@@ -30,6 +30,8 @@ on:
           - z/OS node v16
           - Non-strict Verify External Certificate
           - Install PTF Twice
+          - VSAM Caching Storage Method
+          - Infinispan Caching Storage Method
           - Generate API Documentation
           - Zowe Nightly Tests
           - Zowe Release Tests
@@ -78,9 +80,11 @@ env:
   ZOS_NODE_V16_TESTFILE: extended/node-versions/node-v16.ts
   NON_STRICT_VERIFY_EXTERNAL_CERTIFICATE_TESTFILE: extended/certificates/nonstrict-verify-external-certificate.ts
   INSTALL_PTF_TWICE_TESTFILE: extended/install-ptf-two-times.ts
+  VSAM_CACHING_STORAGE_METHOD_TESTFILE: extended/caching-storages/vsam-storage.ts
+  INFINISPAN_CACHING_STORAGE_METHOD_TESTFILE: extended/caching-storages/infinispan-storage.ts
   GENERAL_API_DOCUMENTATION_TESTFILE: basic/install-api-gen.ts
-  ZOWE_RELEAE_TESTS_FULL: basic/install.ts(zzow02,zzow03,zzow04);basic/install-ptf.ts(zzow02,zzow03,zzow04);basic/install-docker.ts(zzow04);basic/install-ext.ts(zzow03);extended/keyring.ts(zzow02,zzow03,zzow04);extended/node-versions/node-v16.ts(zzow02,zzow03,zzow04);extended/node-versions/node-v12.ts(zzow02,zzow03,zzow04);extended/node-versions/node-v14.ts(zzow02,zzow03,zzow04);extended/certificates/nonstrict-verify-external-certificate.ts(zzow02)
-  ZOWE_NIGHTLY_TESTS_FULL: basic/install.ts(zzow02,zzow03,zzow04);basic/install-ptf.ts(zzow02,zzow03,zzow04);basic/install-docker.ts(zzow04)
+  ZOWE_RELEAE_TESTS_FULL: basic/install.ts(all);basic/install-ptf.ts(all);basic/install-docker.ts(any);basic/install-ext.ts(any);extended/keyring.ts(all);extended/node-versions/node-v16.ts(all);extended/node-versions/node-v12.ts(all);extended/node-versions/node-v14.ts(all);extended/certificates/nonstrict-verify-external-certificate.ts(any);extended/caching-storages/infinispan-storage.ts(any)
+  ZOWE_NIGHTLY_TESTS_FULL: basic/install.ts(all);basic/install-ptf.ts(all);basic/install-docker.ts(any)
 
 jobs:
   display-dispatch-event-id:
@@ -103,107 +107,18 @@ jobs:
     runs-on: ubuntu-latest
     needs: check-permission
     steps:
-    - name: make test matrix
-      id: set-matrix
-      run: | 
-        test_server="${{ github.event.inputs.test-server }}"
-        install_test_choice="${{ github.event.inputs.install-test }}"
-        case $install_test_choice in
+      - name: 'Checkout'
+        uses: actions/checkout@v2
 
-          "Convenience Pax")
-            test_file="${{ env.CONVENIENCE_PAX_TESTFILE }}"
-            ;;
-
-          "SMPE FMID")
-            test_file="${{ env.SMPE_FMID_TESTFILE }}"
-            ;;
-
-          "SMPE PTF")
-            test_file="${{ env.SMPE_PTF_TESTFILE }}"
-            ;;
-
-          "Tech Preview Docker")
-            test_file="${{ env.TECH_PREVIEW_DOCKER_TESTFILE }}"
-            ;;
-
-          "Extensions")
-            test_file="${{ env.EXTENSIONS_TESTFILE }}"
-            ;;
-
-          "Keyring")
-            test_file="${{ env.KEYRING_TESTFILE }}"
-            ;;
-          
-          "z/OS node v12")
-            test_file="${{ env.ZOS_NODE_V12_TESTFILE }}"
-            ;;
-
-          "z/OS node v14")
-            test_file="${{ env.ZOS_NODE_V14_TESTFILE }}"
-            ;;
-
-          "z/OS node v16")
-            test_file="${{ env.ZOS_NODE_V16_TESTFILE }}"
-            ;;
-
-          "Non-strict Verify External Certificate")
-            test_file="${{ env.NON_STRICT_VERIFY_EXTERNAL_CERTIFICATE_TESTFILE }}"
-            ;;
-
-          "Install PTF Twice")
-            test_file="${{ env.INSTALL_PTF_TWICE_TESTFILE }}"
-            ;;
-
-          "Generate API Documentation")
-            test_file="${{ env.GENERAL_API_DOCUMENTATION_TESTFILE }}"
-            ;;
-          
-          "Zowe Nightly Tests")
-            test_file="${{ env.ZOWE_NIGHTLY_TESTS_FULL }}"
-            dont_parse_test_server=true
-            ;;
-
-          "Zowe Release Tests")
-            test_file="${{ env.ZOWE_RELEAE_TESTS_FULL }}"
-            dont_parse_test_server=true
-            ;;
-          
-          *)
-            echo "Something went wrong when parsing install test choice input"
-            exit 1
-            ;;
-        esac
-
-        if [[ -z "$dont_parse_test_server" ]]; then
-          if [[ "$test_server" == "Any zzow servers" ]]; then
-            test_server="zzow0"$(echo $(($RANDOM % 3 + 2)) )
-          fi
-          TEST_FILE_SERVER="$test_file($test_server)"
-        else
-          TEST_FILE_SERVER="$test_file"
-        fi        
-
-        # this is the final string that can be recognizable by the matrix processing script down below
-        echo "TEST_FILE_SERVER is "$TEST_FILE_SERVER
-
-        # sanitize all whitespaces just in case
-        TEST_FILE_SERVER=$TEST_FILE_SERVER | tr -d "[:space:]"
-
-        MATRIX_JSON_STRING="{\"include\":["
-        for each_test_file_server in $(echo "$TEST_FILE_SERVER" | sed "s/;/ /g")
-        do
-          test_file=$(echo "$each_test_file_server" | cut -d "(" -f1)
-          for test_server in $(echo "$each_test_file_server" | cut -d "(" -f2 | cut -d ")" -f1 | sed "s/,/ /g")
-          do
-            MATRIX_JSON_STRING="$MATRIX_JSON_STRING{\"test\":\"$test_file\",\"server\":\"marist-$test_server\"},"
-          done
-        done
-
-        # remove trailing comma
-        MATRIX_JSON_STRING=$(echo $MATRIX_JSON_STRING | sed 's/,$//g')
-
-        MATRIX_JSON_STRING="$MATRIX_JSON_STRING]}"
-        echo "::set-output name=matrix::$MATRIX_JSON_STRING"
+      - name: Make matrix
+        id: set-matrix
+        run: |
+          cd .github/scripts/cicd_test
+          chmod +x make_matrix.sh
+          source make_matrix.sh
+        env:
+          test_server: ${{ github.event.inputs.test-server }}
+          install_test_choice: ${{ github.event.inputs.install-test }}
     outputs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
 
@@ -218,7 +133,12 @@ jobs:
       - name: '[Prep 1] Checkout'
         uses: actions/checkout@v2
 
-      - name: '[Prep 2] Cache node modules'
+      - name: '[Prep 2] Setup Node'
+        uses: actions/setup-node@v3
+        with:
+          node-version: '12'
+
+      - name: '[Prep 3] Cache node modules'
         uses: actions/cache@v2
         with:
           # npm cache files are stored in `~/.npm` on Linux/macOS
@@ -230,404 +150,37 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-build-cache-node-modules-
 
-      - name: '[Prep 3] Setup jFrog CLI'
+      - name: '[Prep 4] Setup jFrog CLI'
         uses: jfrog/setup-jfrog-cli@v2
         env:
-          JF_ARTIFACTORY_1: ${{ secrets.JF_ARTIFACTORY_TOKEN }}
+          JF_ENV_1: ${{ secrets.JF_ARTIFACTORY_TOKEN }}
 
-      - name: '[Prep 4] Validate package.json'
+      - name: '[Prep 5] Validate package.json'
         uses: zowe-actions/shared-actions/validate-package-json@main
 
-      - name: '[Prep 5] Prepare workflow'
+      - name: '[Prep 6] Prepare workflow'
         uses: zowe-actions/shared-actions/prepare-workflow@main
 
-      - name: '[Prep 6] Additional Prep work'
+      - name: '[Prep 7] Additional Prep work'
         id: more-test-prep
         run: |
-          RED='\033[0;31m'
-          GREEN='\033[0;32m'
-          YELLOW='\033[0;33m'
-          CYAN='\033[0;36m'
-          NC='\033[0m'
-          CURRENT_BRANCH_NEW=$(echo ${{ env.CURRENT_BRANCH }} | tr '[:upper:]' '[:lower:]' | sed "s#\/#-#g")
-
-          function jfrog_search_latest {
-            RED='\033[0;31m'
-            search_pattern=$1
-            if [[ -z "$search_pattern" ]]; then
-              echo -e "${RED}In jfrog search latest function, search pattern is not provided" > /dev/stderr
-              exit 1
-            fi
-            out=$(jfrog rt search --sort-by=created --sort-order=desc --limit=1 "$search_pattern" | jq -r '.[].path')
-            if [[ -z "$out" ]]; then
-              echo -e "${RED}Cannot find latest artifact in pattern: $search_pattern" > /dev/stderr
-              exit 1
-            fi
-            echo $out
-          }
-
-          function jfrog_search_build {
-            RED='\033[0;31m'
-            search_pattern=$1
-            build_name=$2
-            bld_num=$3
-            if [[ -z "$search_pattern" ]]; then
-              echo -e "${RED}In jfrog_search_build function, search pattern is not provided" > /dev/stderr
-              exit 1
-            fi
-            if [[ -z "$build_name" ]]; then
-              echo -e "${RED}In jfrog_search_build function, build name is not provided" > /dev/stderr
-              exit 1
-            fi
-            if [[ -z "$bld_num" ]]; then
-              echo -e "${RED}In jfrog_search_build function, build number is not provided" > /dev/stderr
-              exit 1
-            fi
-            out=$(jfrog rt search --build="$build_name/$bld_num" "$search_pattern" | jq -r '.[].path')
-            if [[ -z "$out" ]]; then
-              echo -e "${RED}Cannot find the artifact in pattern: $search_pattern associated with $bld_num of $build_name" > /dev/stderr
-              exit 1
-            fi
-            echo $out
-          }
-
-          function assert_env_var {
-            RED='\033[0;31m'
-            envvar_name=$1
-            eval envvar_val='$'$envvar_name
-            if [[ -z "$envvar_val" ]]; then
-              echo -e "${RED}$envvar_name" is not set > /dev/stderr
-              exit 1
-            fi
-          }
-          
-          total_check=3
-          if [[ "${{ matrix.test }}" == *"install-ext"* ]] || [[ "${{ matrix.test }}" == *"install-docker"* ]]; then
-            ((total_check++))
-          fi
-
-          ##################################################################################################
-          ### 1. Process custom-zowe-artifactory-pattern
-          ##################################################################################################
-          
-          input_custom_zowe_art_pat_or_bldnum="${{ github.event.inputs.custom-zowe-artifactory-pattern-or-build-number }}"
-
-          if [[ -n "$input_custom_zowe_art_pat_or_bldnum" ]]; then
-            if [[ "$input_custom_zowe_art_pat_or_bldnum" =~ ^[0-9]+$ ]]; then
-              echo "[Check 1 INFO] Build number $input_custom_zowe_art_pat_or_bldnum is entered"
-              custom_build_number=$input_custom_zowe_art_pat_or_bldnum
-              use_defaut=true
-            elif [[ "$input_custom_zowe_art_pat_or_bldnum" =~ ^.+\/.+$ ]]; then
-              echo "[Check 1 INFO] Custom artifactory pattern is entered, now figuring out pax or smpe..."
-              custom_pattern=$input_custom_zowe_art_pat_or_bldnum
-
-              # first extract the filename of the artifactory path to avoid string check confusion in later steps
-              # filename is after the last forward slash
-              file_name=${custom_pattern##*/}
-
-              if [[ "${{ matrix.test }}" == *install-fmid.ts ]] || [[ "${{ matrix.test }}" == *install-ptf.ts ]]; then
-                if [[ "$file_name" == *"zowe-smpe"*zip ]] ; then
-                  # if it is valid *zowe-smpe*.zip format, and test run is smpe related, we will hornour this custom input
-                  zowe_artifactory_pattern_interim="$custom_pattern"
-                  echo "[Check 1 INFO] SMPE!"
-                else
-                  printf "${RED}[Check 1 ERROR] You are running smpe related test but the file name included in your custom zowe artifactory pattern is not a proper *zowe-smpe*.zip format\n"
-                  exit 1
-                fi
-              else
-                if [[ "$file_name" == *"zowe"* ]] && [[ "$file_name" == *pax ]]; then
-                  # if it is valid *zowe*.pax format, and test run is not smpe related, we will hornour this custom input
-                  zowe_artifactory_pattern_interim="$custom_pattern"
-                  echo "[Check 1 INFO] PAX!"
-                else
-                  printf "${RED}[Check 1 ERROR] You are running pax related test but the file name included in your custom zowe artifactory pattern is not a proper *zowe*.pax format\n"
-                  exit 1
-                fi
-              fi
-            else
-              printf "${RED}[Check 1 ERROR] You should enter either a build number on current running branch or a proper zowe artifactory pattern\n"
-              printf "${RED}[Check 1 ERROR] Examples:\n"
-              printf "${RED}[Check 1 ERROR] 491 meaning build number 491 on ${{ env.CURRENT_BRANCH }}\n"
-              printf "${RED}[Check 1 ERROR] my/path/to/file\n"
-              exit 1
-            fi
-          else
-            use_defaut=true
-          fi
-  
-          if [[ -n "$use_defaut" ]]; then
-            if [[ "${{ matrix.test }}" == *install-fmid.ts ]] || [[ "${{ matrix.test }}" == *install-ptf.ts ]]; then
-              zowe_artifactory_pattern_interim="${{ env.DEFAULT_ZOWE_SMPE_ARTIFACTORY_PATTERN }}"
-            else
-              zowe_artifactory_pattern_interim="${{ env.DEFAULT_ZOWE_PAX_ARTIFACTORY_PATTERN }}"
-            fi   
-          fi
-
-          echo "[Check 1 INFO] Interim zowe artifactory pattern is $zowe_artifactory_pattern_interim"
-
-          # note that below if-else does not always get to run the sed part, as we only replace if {branch-name} exists in the pattern,
-          #   which isn't the case for customized path. In either case, $zowe_artifactory_pattern_final should be filled
-          if [[ "$CURRENT_BRANCH_NEW" == "master" ]] ; then
-            zowe_artifactory_pattern_final=$(echo "$zowe_artifactory_pattern_interim" | sed "s#{branch-name}#snapshot#g")
-          else
-            zowe_artifactory_pattern_final=$(echo "$zowe_artifactory_pattern_interim" | sed "s#{branch-name}#$CURRENT_BRANCH_NEW#g")
-          fi
-
-          echo "[Check 1 INFO] Final zowe artifactory pattern (before jfrog search) is $zowe_artifactory_pattern_final"
-
-          if [[ -z "$custom_build_number" ]]; then
-            # we will search the latest build exists on current running branch
-            ZOWE_ARTIFACTORY_FINAL=$(jfrog_search_latest $zowe_artifactory_pattern_final)
-          else
-            # we will search according to the build number provided (on current running branch)
-            ZOWE_ARTIFACTORY_FINAL=$(jfrog_search_build $zowe_artifactory_pattern_final "zowe-install-packaging/${{ env.CURRENT_BRANCH }}" $custom_build_number)
-          fi
-
-          # try to know if this SMPE artifact comes from latest or older build
-          if [[ "$ZOWE_ARTIFACTORY_FINAL" == *"zowe-smpe"*zip ]]; then
-            smpe_out=$(jfrog rt search "$ZOWE_ARTIFACTORY_FINAL")
-            smpe_bld_name=$(echo "$smpe_out" | jq -r '.[].props."build.name"[]')
-            smpe_bld_num=$(echo "$smpe_out" | jq -r '.[].props."build.number"[]')
-
-            # encode '/' or ' ' in smpe build name as they may be confusing for jfrog REST API
-            if [[ "$smpe_bld_name" == *"/"* ]]; then
-              smpe_bld_name_encoded=$(echo "$smpe_bld_name" | sed "s|/|\%2F|g")
-            elif [[ "$smpe_bld_name" == *"::"* ]]; then
-              smpe_bld_name_encoded=$(echo "$smpe_bld_name" | sed "s| |\%20|g")
-            fi
-            
-            latest_pax_bld_num=$(jfrog rt curl -s -XGET "/api/build/$smpe_bld_name_encoded" | jq '.buildsNumbers[0].uri' | sed "s|/||g" | sed "s|\"||g" )
-      
-            if [[ "$latest_pax_bld_num" != "$smpe_bld_num" ]]; then
-              if [[ -z "$input_custom_zowe_art_pat_or_bldnum" ]]; then
-                # when no custom input, we will throw error and fail the build
-                printf "${RED}[Check 1 ERROR] Latest build $latest_pax_bld_num on current branch does not contain a SMPE artifact.\n"
-                printf "${RED}[Check 1 ERROR] If you want to test install smpe, you should make sure latest build has SMPE packaged.\n"
-                printf "${RED}[Check 1 ERROR] Please specify exact build number on $smpe_bld_name or any other smpe.zip artifactory path.\n"
-                printf "${RED}[Check 1 ERROR] FYI latest build that contains SMPE artifact is $smpe_bld_num\n"
-                exit 1
-              else
-                # when there is custom input, we will give warnings instead but still proceed
-                printf "${YELLOW}[Check 1 WARNING] I see that you are trying to grab an older SMPE build $smpe_bld_num on $smpe_bld_name.\n"
-                printf "${YELLOW}[Check 1 WARNING] However just be aware that there are more code changes (newer builds) after $smpe_bld_num, which is $latest_pax_bld_num.\n"
-                printf "${YELLOW}[Check 1 WARNING] You should always test latest code on your branch unless you want to compare with older builds for regression.\n"
-              fi
-            fi
-          fi
-
-          # next line is just to get the pax file name - extract the part after last occurance of slash
-          ZOWE_ARTIFACTORY_FINAL_FILENAME=${ZOWE_ARTIFACTORY_FINAL##*/}
-
-          assert_env_var "ZOWE_ARTIFACTORY_FINAL"
-          assert_env_var "ZOWE_ARTIFACTORY_FINAL_FILENAME"
-          printf "${GREEN}[Check 1/$total_check] Zowe pax or smpe.zip artifactory full path processing complete!${NC}\n"
-
-          ##################################################################################################
-          ### 2. Process TEST_SERVER_NICKNAME
-          ##################################################################################################
-          TEST_SERVER=$(echo "${{ matrix.server }}" | cut -d "-" -f2)
-
-          case $TEST_SERVER in
-
-          "zzow02")
-            TEST_SERVER_NICKNAME=marist-2
-            ;;
-          
-          "zzow03")
-            TEST_SERVER_NICKNAME=marist-3
-            ;;
-          
-          "zzow04")
-            TEST_SERVER_NICKNAME=marist-4
-            ;;
-
-          *)
-            printf "${RED}[Check 2 ERROR] Something went wrong when parsing test server nickname\n"
-            exit 1
-            ;;
-          esac
-
-          assert_env_var "TEST_SERVER"
-          assert_env_var "TEST_SERVER_NICKNAME"
-          printf "${GREEN}[Check 2/$total_check] Test server name processing complete!${NC}\n"
-
-          ##################################################################################################
-          ### 3. Process custom-zowe-cli-artifactory-pattern
-          ##################################################################################################
-          if [[ -z "${{ github.event.inputs.custom-zowe-cli-artifactory-pattern }}" ]]; then
-            zowe_cli_artifactory_pattern="${{ env.DEFAULT_ZOWE_CLI_ARTIFACTORY_PATTERN }}"
-            # determine if we shall use libs-snapshot-local or libs-release-local
-            if [[ "${{ env.CURRENT_BRANCH }}" == "rc" ]] || [[ "${{ env.CURRENT_BRANCH }}" == "master" ]] ; then
-              zowe_cli_artifactory_pattern=$(echo "$zowe_cli_artifactory_pattern" | sed "s#PLACE_HOLDER#libs-release-local#g")
-            else
-              zowe_cli_artifactory_pattern=$(echo "$zowe_cli_artifactory_pattern" | sed "s#PLACE_HOLDER#libs-snapshot-local#g")
-            fi
-          else
-            zowe_cli_artifactory_pattern="${{ github.event.inputs.custom-zowe-cli-artifactory-pattern }}"
-          fi
-
-          echo "[Check 3 INFO] Zowe cli artifactory pattern before jfrog search is $zowe_cli_artifactory_pattern"
-
-          ZOWE_CLI_ARTIFACTORY_FINAL=$(jfrog_search_latest $zowe_cli_artifactory_pattern)
-          assert_env_var ZOWE_CLI_ARTIFACTORY_FINAL
-          printf "${GREEN}[Check 3/$total_check] Zowe CLI artifactory full path processing complete!${NC}\n"
-
-          ##################################################################################################
-          ### 4. Process custom-extension-list (if test-ext is selected)
-          ##################################################################################################
-          if [[ "${{ matrix.test }}" == *"install-ext"* ]]; then
-            EXTENSION_LIST=
-            if [[ -z "${{ github.event.inputs.custom-extension-list }}" ]]; then
-              printf "${RED}[Check 4 ERROR] You are running install-ext test, but input 'custom-extension-list' is missing\n"
-              exit 1
-            fi
-
-            # validate extension list input
-            if [[ "${{ github.event.inputs.custom-extension-list }}" =~ ^([^;()]+(\([^;()]+\))*)(;[^;()]+(\([^;()]+\))*)*$ ]]; then
-              echo "[Check 4 INFO] Extension list syntax validation success!"
-            else
-              printf "${RED}[Check 4 ERROR] Extension list validation failed\n"
-              printf "${RED}[Check 4 ERROR] You must follow the format: {ext-name}[({custom-ext-pattern})][;...]\n"
-              printf "${RED}[Check 4 ERROR] Example input will be\n"
-              printf "${RED}[Check 4 ERROR] sample-ext;sample-ext2;sample-myext\n"
-              printf "${RED}[Check 4 ERROR] sample-ext(myown/path);sample-myext\n"
-              exit 1
-            fi
-
-            for each_ext in $(echo "${{ github.event.inputs.custom-extension-list }}" | sed "s/;/ /g")
-            do
-              echo "[Check 4 INFO] Now processing $each_ext ..."
-              if [[ "$each_ext" == *"("* ]] && [[ "$each_ext" == *")"* ]] ; then
-                # user provides custom artifactory pattern
-                ext_name=$(echo "$each_ext" | cut -d "(" -f1)
-                ext_pattern=$(echo "$each_ext" | cut -d "(" -f2 | cut -d ")" -f1)
-              else
-                # use default
-                ext_name="$each_ext"
-                ext_pattern=$(echo "${{ env.DEFAULT_ZOWE_EXT_ARTIFACTORY_PATTERN }}" | sed "s#{ext-name}#$ext_name#g")
-              fi
-
-              echo "[Check 4 INFO] extension name is $ext_name"
-              echo "[Check 4 INFO] extension pattern before jfrog search is $ext_pattern"
-
-              if [[ "$ext_pattern" != *"http"* ]]; then
-                ext_full_path=$(jfrog_search_latest $ext_pattern)
-              else
-                ext_full_path=$ext_pattern
-              fi
-              echo "[Check 4 INFO] extension full path after jfrog search is $ext_full_path"
-              EXTENSION_LIST="$EXTENSION_LIST$ext_name($ext_full_path);"
-            done
-
-            # remove trailing comma
-            EXTENSION_LIST=$(echo $EXTENSION_LIST | sed 's/;$//g')
-            assert_env_var EXTENSION_LIST
-            printf "${GREEN}[Check 4/$total_check] Zowe extension list processing complete!${NC}\n"
-          fi
-
-          ##################################################################################################
-          ### 5. Process custom-zowe-tp-docker-artifactory-pattern (if test-docker is selected)
-          ##################################################################################################
-          if [[ "${{ matrix.test }}" == *"install-docker"* ]]; then
-            if [[ -n "$ZOWE_ARTIFACTORY_FINAL" ]]; then
-              # note that in here, $ZOWE_ARTIFACTORY_FINAL must be pax because smpe.zip should already be ruled out and fail before reaching here
-              # get the build name and build number of the zowe pax we processed.
-              json_output=$(jfrog rt search "$ZOWE_ARTIFACTORY_FINAL")
-              processed_zowe_art_bldname=$(echo "$json_output" | jq -r '.[].props."build.name"[]')
-              processed_zowe_art_bldnum=$(echo "$json_output" | jq -r '.[].props."build.number"[]')
-              
-              # then get branch name from the build name returned above
-              # build name should be either 'zowe-install-packaging/branchname' (jenkins) or 'zowe-install-packaging :: branchname' (GHA)
-              processed_zowe_art_branchname=$(echo "$processed_zowe_art_bldname" | sed "s|zowe-install-packaging/||g")
-              if [[ "$processed_zowe_art_branchname" == "$processed_zowe_art_bldname" ]]; then
-                # means above sed replacement command didn't work, forward slash does not exists, highly likely this build is made from jenkins
-                # try with colon colon as some builds are published from jenkins in the past and expecting to have colon colon in the build name
-                processed_zowe_art_branchname=$(echo "$processed_zowe_art_bldname" | sed "s|zowe-install-packaging :: ||g")
-                if [[ "$processed_zowe_art_branchname" == "$processed_zowe_art_bldname" ]]; then
-                  printf "${RED}[Check ${total_check} ERROR] Unable to parse branch name from $processed_zowe_art_bldname as it is not a valid build name.\n"
-                  printf "${RED}[Check ${total_check} ERROR] Just for the record, the zowe artifactory path is $ZOWE_ARTIFACTORY_FINAL\n"
-                  exit 1
-                fi
-              fi
-
-              echo "[Check ${total_check} INFO] Zowe artifactory full path earlier is $ZOWE_ARTIFACTORY_FINAL"
-              echo "[Check ${total_check} INFO] The build name got from above is $processed_zowe_art_bldname"
-              echo "[Check ${total_check} INFO] The build number got from above is $processed_zowe_art_bldnum"
-              echo "[Check ${total_check} INFO] The branch name got from above is $processed_zowe_art_branchname"
-              echo "[Check ${total_check} INFO] We will use build number parsed $processed_zowe_art_bldnum to search if docker build exists in the same build."
-
-              # now use processed build name and build number to search the docker artifact associated with it
-              if [[ -n "$processed_zowe_art_bldname" ]] && [[ -n "$processed_zowe_art_bldnum" ]] && [[ -n "$processed_zowe_art_branchname" ]]; then
-                if [[ "$processed_zowe_art_branchname" == "master" ]] ; then
-                  zowe_tp_docker_artifactory_pattern=$(echo "${{ env.DEFAULT_ZOWE_TP_DOCKER_ARTIFACTORY_PATTERN }}" | sed "s#{branch-name}#snapshot#g")
-                else
-                  processed_zowe_art_branchname=$(echo "$processed_zowe_art_branchname" | sed "s#\/#-#g")
-                  zowe_tp_docker_artifactory_pattern=$(echo "${{ env.DEFAULT_ZOWE_TP_DOCKER_ARTIFACTORY_PATTERN }}" | sed "s#{branch-name}#$processed_zowe_art_branchname#g")
-                fi
-
-                echo "[Check ${total_check} INFO] TP docker artifactory pattern is $zowe_tp_docker_artifactory_pattern"
-                ZOWE_TP_DOCKER_ARTIFACTORY=$(jfrog_search_build "$zowe_tp_docker_artifactory_pattern" "$processed_zowe_art_bldname" "$processed_zowe_art_bldnum")
-                ZOWE_TP_DOCKER_ARTIFACTORY_URL="https://zowe.jfrog.io/zowe/$ZOWE_TP_DOCKER_ARTIFACTORY"
-              else
-                printf "${RED}[Check ${total_check} ERROR] Either the parsing of build name, build number or branch name of $ZOWE_ARTIFACTORY_FINAL failed.\n"
-                exit 1
-              fi
-            else
-              printf "${RED}[Check ${total_check} ERROR] Zowe artifactory full path is not processed properly. This is extremely rare.\n"
-              exit 1
-            fi
-
-            # try to know if this docker artifact searched comes from an older build and gives warning
-            if [[ "$ZOWE_TP_DOCKER_ARTIFACTORY" == *"server-bundle.amd64"*tar ]]; then
-              tpdocker_out=$(jfrog rt search "$ZOWE_TP_DOCKER_ARTIFACTORY")
-              tpdocker_bld_name=$(echo "$tpdocker_out" | jq -r '.[].props."build.name"[]')
-              tpdocker_bld_num=$(echo "$tpdocker_out" | jq -r '.[].props."build.number"[]')
-
-              # encode '/' or ' ' in tpdocker build name to avoid confusion for jfrog REST API
-              if [[ "$tpdocker_bld_name" == *"/"* ]]; then
-                tpdocker_bld_name_encoded=$(echo "$tpdocker_bld_name" | sed "s|/|\%2F|g")
-              elif [[ "$tpdocker_bld_name" == *"::"* ]]; then
-                tpdocker_bld_name_encoded=$(echo "$tpdocker_bld_name" | sed "s| |\%20|g")
-              fi
-
-              latest_pax_bld_num=$(jfrog rt curl -s -XGET "/api/build/$tpdocker_bld_name_encoded" | jq '.buildsNumbers[0].uri' | sed "s|/||g" | sed "s|\"||g" )
-        
-              if [[ "$latest_pax_bld_num" != "$tpdocker_bld_num" ]]; then            
-                printf "${YELLOW}[Check $total_check WARNING] I see that you are trying to grab an older docker build $tpdocker_bld_num on $tpdocker_bld_name.\n"
-                printf "${YELLOW}[Check $total_check WARNING] However just be aware that there are more code changes (newer builds) after $tpdocker_bld_num, which is $latest_pax_bld_num.\n"
-                printf "${YELLOW}[Check $total_check WARNING] You should always test latest code on your branch unless you want to compare with older builds for regression.\n"            
-              fi
-            fi
-
-            assert_env_var ZOWE_TP_DOCKER_ARTIFACTORY_URL
-            printf "${GREEN}[Check $total_check/$total_check] Zowe tech preview docker artifactory full path processing complete!${NC}\n"
-          fi
-
-          ##################################################################################################
-          ### Set outputs
-          ##################################################################################################
-          echo ::set-output name=ZOWE_ARTIFACTORY_FINAL::$ZOWE_ARTIFACTORY_FINAL
-          echo ::set-output name=ZOWE_ARTIFACTORY_FINAL_FILENAME::$ZOWE_ARTIFACTORY_FINAL_FILENAME
-          echo ::set-output name=NODE_HOME_PATTERN::/ZOWE/node/node-${{ env.ZOS_NODE_VERSION }}-os390-s390x
-          echo ::set-output name=TEST_SERVER::$TEST_SERVER
-          echo ::set-output name=TEST_SERVER_NICKNAME::$TEST_SERVER_NICKNAME
-          echo ::set-output name=EXTENSION_LIST::$EXTENSION_LIST
-          echo ::set-output name=ZOWE_CLI_ARTIFACTORY_FINAL::$ZOWE_CLI_ARTIFACTORY_FINAL
-          echo ::set-output name=ZOWE_TP_DOCKER_ARTIFACTORY_URL::$ZOWE_TP_DOCKER_ARTIFACTORY_URL
-
-          ##################################################################################################
-          ### Echo all processed outputs
-          ##################################################################################################
-          echo
-          echo "#######################Summary of outputs:#######################"
-          printf "Zowe artifactory path: ${CYAN}$ZOWE_ARTIFACTORY_FINAL${NC}\n"
-          printf "Zowe artifactory file name: ${CYAN}$ZOWE_ARTIFACTORY_FINAL_FILENAME${NC}\n"
-          printf "Zowe CLI artifactory path: ${CYAN}$ZOWE_CLI_ARTIFACTORY_FINAL${NC}\n"
-          printf "Zowe TP Docker artifactory path: ${CYAN}$ZOWE_TP_DOCKER_ARTIFACTORY_URL${NC}\n"
-          printf "Zowe extension list: ${CYAN}$EXTENSION_LIST${NC}\n"
-          printf "Test server: ${CYAN}$TEST_SERVER${NC}\n"
-          printf "Test server nickname: ${CYAN}$TEST_SERVER_NICKNAME${NC}\n"
-          printf "Node home pattern on z/OS: ${CYAN}/ZOWE/node/node-${{ env.ZOS_NODE_VERSION }}-os390-s390x${NC}\n"
+          cd .github/scripts/cicd_test/prep7_more_test_prep
+          chmod +x *.sh
+          source 00_init.sh
+          source 01_helper_functions.sh
+          source 02_process_zowe_art_pattern.sh
+          source 03_process_test_server.sh
+          source 04_process_cli_art_pattern.sh
+          source 05_process_ext_list.sh
+          source 06_process_docker_art_pattern.sh
+          source 07_process_outputs.sh
+        env:
+          CURRENT_BRANCH: ${{ env.CURRENT_BRANCH }}
+          MATRIX_TEST: ${{ matrix.test }}
+          MATRIX_SERVER: ${{ matrix.server }}
+          INPUT_CUSTOM_ZOWE_ART_PAT_OR_BLDNUM: ${{ github.event.inputs.custom-zowe-artifactory-pattern-or-build-number }}
+          CUSTOM_ZOWE_CLI_ARTIFACTORY_PATTERN: ${{ github.event.inputs.custom-zowe-cli-artifactory-pattern }}
+          CUSTOM_EXTENSION_LIST: ${{ github.event.inputs.custom-extension-list }}
 
       - name: '[Setup 1] Project Setup 1'
         working-directory: ${{ env.INSTALL_TEST_PATH }}
@@ -794,7 +347,7 @@ jobs:
             });
 
       - name: '[Test] Test starts from here'
-        timeout-minutes: 90
+        timeout-minutes: 180
         working-directory: ${{ env.INSTALL_TEST_PATH }}
         run: npm test -- --testPathPattern --detectOpenHandles dist/__tests__/$(echo "${{ matrix.test }}" | sed "s/.ts/.js/g")
         env:
@@ -812,10 +365,19 @@ jobs:
           ZOS_NODE_HOME: ${{ steps.more-test-prep.outputs.NODE_HOME_PATTERN }}
       #     # ANSIBLE_VERBOSE: -vvv
 
-      # - name: '[After Test] Merge Report'
-      #   if: always()
-      #   working-directory: ${{ env.INSTALL_TEST_PATH }}
-      #   run: npm run merge-reports
+      - name: '[After Test 1] Prepare to upload test report'
+        if: always()
+        working-directory: ${{ env.INSTALL_TEST_PATH }}
+        run: | 
+          echo CURRENT_TIME=$(date +%s) >> $GITHUB_ENV
+          echo TEST_NAME=$(echo "${{ matrix.test }}" | sed 's#.*\/##g') >> $GITHUB_ENV
+
+      - name: '[After Test 2] Upload test report'
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: InstallTestReports-${{ env.TEST_NAME }}-${{ steps.more-test-prep.outputs.TEST_SERVER_NICKNAME }}-${{ github.run_id }}-${{ env.CURRENT_TIME }}
+          path: ${{ env.INSTALL_TEST_PATH }}/reports/
 
       - name: '[Comment] Update PR comment to indicate test succeeded'
         uses: actions/github-script@v5
@@ -898,3 +460,17 @@ jobs:
               body: body
             });
 
+  # keep-curl:
+  #   runs-on: ubuntu-latest
+  #   needs: make-matrix
+  #   strategy:
+  #     matrix: ${{ fromJson(needs.make-matrix.outputs.matrix) }}
+  #     fail-fast: false
+  #   environment: ${{ matrix.server }}
+  #   steps:
+  #     - name: curl gateway
+  #       run: |
+  #         while sleep 5; 
+  #         do 
+  #           curl -k -s -S https://${{ secrets.SSH_HOST }}:7554 1>/dev/null || true;
+  #         done

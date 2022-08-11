@@ -30,12 +30,15 @@ Workflow trigger is at [cicd-test](https://github.com/zowe/zowe-install-packagin
   - Tech Preview Docker
   - Extensions
   - Keyring
-  - z/OS node v8
   - z/OS node v12
   - z/OS node v14
+  - z/OS node v16
   - Non-strict Verify External Certificate
   - Install PTF twice
+  - VSAM Caching storage method
+  - Infinispan Caching storage method
   - Generate API documentation
+  - Zowe Nightly Tests
   - Zowe Release Tests
 - Note that `Zowe Release Tests` is generally run by the DevOps engineer during RC phase. It includes most of the tests above across all three zzow servers.  
 - Generally speaking, all tests listed above can be run on any zzow server.
