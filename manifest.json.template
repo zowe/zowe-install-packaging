@@ -82,32 +82,32 @@
       "artifact": "*.pax"
     },
     "org.zowe.apiml.sdk.api-catalog-package": {
-      "version": "^1.27.0-SNAPSHOT",
+      "version": "~1.28.0-SNAPSHOT",
       "artifact": "api-catalog-*.zip",
       "exclusions": ["*PR*.zip"]
     },
     "org.zowe.apiml.sdk.discovery-package": {
-      "version": "^1.27.0-SNAPSHOT",
+      "version": "~1.28.0-SNAPSHOT",
       "artifact": "discovery-*.zip",
       "exclusions": ["*PR*.zip"]
     },
     "org.zowe.apiml.sdk.gateway-package": {
-      "version": "^1.27.0-SNAPSHOT",
+      "version": "~1.28.0-SNAPSHOT",
       "artifact": "gateway-*.zip",
       "exclusions": ["*PR*.zip"]
     },
     "org.zowe.apiml.sdk.caching-service-package": {
-      "version": "^1.27.0-SNAPSHOT",
+      "version": "~1.28.0-SNAPSHOT",
       "artifact": "caching-service-*.zip",
       "exclusions": ["*PR*.zip"]
     },
     "org.zowe.apiml.sdk.metrics-service-package": {
-      "version": "^1.27.0-SNAPSHOT",
+      "version": "~1.28.0-SNAPSHOT",
       "artifact": "metrics-service-*.zip",
       "exclusions": ["*PR*.zip"]
     },
     "org.zowe.apiml.sdk.apiml-common-lib-package": {
-      "version": "^1.27.0-SNAPSHOT",
+      "version": "~1.28.0-SNAPSHOT",
       "artifact": "apiml-common-lib-*.zip",
       "exclusions": ["*PR*.zip"]
     },
@@ -117,7 +117,7 @@
       "exclusions": ["*PR*.zip"]
     },
     "org.zowe.apiml.sdk.apiml-sample-extension-package": {
-      "version": "^1.27.0-SNAPSHOT",
+      "version": "~1.28.0-SNAPSHOT",
       "artifact": "apiml-sample-extension-*.zip",
       "exclusions": ["*PR*.zip"]
     },
