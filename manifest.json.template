@@ -123,17 +123,17 @@
       "artifact": "apiml-sample-extension-*.zip"
     },
     "org.zowe.launcher": {
-      "version": "0.0.8"
+      "version": "0.0.10"
     },
     "org.zowe.keyring-utilities": {
-      "version": "1.0.4",
-      "artifact": "keyring-util-1.0.4",
+      "version": "1.1.0",
+      "artifact": "keyring-util-1.1.0",
       "target": ".pax/keyring-util/keyring-util",
       "explode": "false",
       "flat": "true"
    },
     "org.zowe.utility-tools": {
-      "version": "0.0.10"
+      "version": "0.0.12"
     },
     "org.zowe.licenses": {
       "version": "1.28.0",
@@ -403,15 +403,15 @@
       "componentGroup": "Utilities",
       "entries": [{
         "repository": "keyring-utilities",
-        "tag": "v1.0.4",
+        "tag": "v1.1.0",
         "destinations": ["Zowe PAX"]
       }, {
         "repository": "zowe-install-packaging-tools",
-        "tag": "v0.0.10",
+        "tag": "v0.0.12",
         "destinations": ["Zowe PAX"]
       }, {
         "repository": "launcher",
-        "tag": "v0.0.8",
+        "tag": "v0.0.10",
         "destinations": ["Zowe PAX"]
       }]
     },
