@@ -126,8 +126,8 @@
       "version": "0.0.10"
     },
     "org.zowe.keyring-utilities": {
-      "version": "1.1.0",
-      "artifact": "keyring-util-1.1.0",
+      "version": "1.0.4",
+      "artifact": "keyring-util-1.0.4",
       "target": ".pax/keyring-util/keyring-util",
       "explode": "false",
       "flat": "true"
