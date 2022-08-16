@@ -145,7 +145,7 @@
       "componentGroup": "Imperative CLI Framework for Zowe",
       "entries": [{
         "repository": "imperative",
-        "tag": "v4.18.6",
+        "tag": "v4.18.8",
         "destinations": ["Zowe CLI Package"]
       }]
     }, {
@@ -224,7 +224,7 @@
       "componentGroup": "Zowe CLI",
       "entries": [{
         "repository": "zowe-cli",
-        "tag": "v6.40.4",
+        "tag": "v6.40.6",
         "destinations": ["Zowe CLI Package"]
       }]
     }, {
@@ -238,7 +238,7 @@
       "componentGroup": "IBM&reg Db2&reg Plug-in for Zowe CLI",
       "entries": [{
         "repository": "zowe-cli-db2-plugin",
-        "tag": "v4.1.6",
+        "tag": "v4.1.7",
         "destinations": ["Zowe CLI Package"]
       }]
     }, {
@@ -436,7 +436,7 @@
     "zowe-launch-scripts": {
       "registry": "zowe-docker-release.jfrog.io",
       "name": "ompzowe/zowe-launch-scripts",
-      "tag" : "1.27.0-ubuntu"
+      "tag" : "1.28.1-ubuntu"
     },
     "api-catalog": {
       "registry": "zowe-docker-release.jfrog.io",
