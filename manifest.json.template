@@ -91,27 +91,27 @@
       "artifact": "explorer-ip*.pax"
     },
     "org.zowe.apiml.sdk.api-catalog-package": {
-      "version": "1.28.5",
+      "version": "1.28.10",
       "artifact": "api-catalog*.zip"
     },
     "org.zowe.apiml.sdk.discovery-package": {
-      "version": "1.28.5",
+      "version": "1.28.10",
       "artifact": "discovery*.zip"
     },
     "org.zowe.apiml.sdk.gateway-package": {
-      "version": "1.28.5",
+      "version": "1.28.10",
       "artifact": "gateway*.zip"
     },
     "org.zowe.apiml.sdk.caching-service-package": {
-      "version": "1.28.5",
+      "version": "1.28.10",
       "artifact": "caching-service*.zip"
     },
     "org.zowe.apiml.sdk.metrics-service-package": {
-      "version": "1.28.5",
+      "version": "1.28.10",
       "artifact": "metrics-service*.zip"
     },
     "org.zowe.apiml.sdk.apiml-common-lib-package": {
-      "version": "1.28.5",
+      "version": "1.28.10",
       "artifact": "apiml-common-lib-*.zip"
     },            
     "org.zowe.apiml.sdk.common-java-lib-package": {
@@ -119,11 +119,11 @@
       "artifact": "common-java-lib-*.zip"
     },
     "org.zowe.apiml.sdk.apiml-sample-extension-package": {
-      "version": "1.28.5",
+      "version": "1.28.10",
       "artifact": "apiml-sample-extension-*.zip"
     },
     "org.zowe.launcher": {
-      "version": "0.0.8"
+      "version": "0.0.10"
     },
     "org.zowe.keyring-utilities": {
       "version": "1.0.4",
@@ -133,7 +133,7 @@
       "flat": "true"
    },
     "org.zowe.utility-tools": {
-      "version": "0.0.10"
+      "version": "0.0.12"
     },
     "org.zowe.licenses": {
       "version": "1.28.0",
@@ -152,7 +152,7 @@
       "componentGroup": "Zowe API Mediation Layer",
       "entries": [{
         "repository": "api-layer",
-        "tag": "v1.28.5",
+        "tag": "v1.28.10",
         "destinations": ["Zowe PAX"]
       }]
     }, {
@@ -407,11 +407,11 @@
         "destinations": ["Zowe PAX"]
       }, {
         "repository": "zowe-install-packaging-tools",
-        "tag": "v0.0.10",
+        "tag": "v0.0.12",
         "destinations": ["Zowe PAX"]
       }, {
         "repository": "launcher",
-        "tag": "v0.0.8",
+        "tag": "v0.0.10",
         "destinations": ["Zowe PAX"]
       }]
     },
@@ -441,23 +441,23 @@
     "api-catalog": {
       "registry": "zowe-docker-release.jfrog.io",
       "name": "ompzowe/api-catalog-services",
-      "tag" : "1.28.5-ubuntu"
+      "tag" : "1.28.10-ubuntu"
     },
     "caching": {
       "registry": "zowe-docker-release.jfrog.io",
       "name": "ompzowe/caching-service",
-      "tag" : "1.28.5-ubuntu"
+      "tag" : "1.28.10-ubuntu"
     },
     "discovery": {
       "kind": "statefulset",
       "registry": "zowe-docker-release.jfrog.io",
       "name": "ompzowe/discovery-service",
-      "tag" : "1.28.5-ubuntu"
+      "tag" : "1.28.10-ubuntu"
     },
     "gateway": {
       "registry": "zowe-docker-release.jfrog.io",
       "name": "ompzowe/gateway-service",
-      "tag" : "1.28.5-ubuntu"
+      "tag" : "1.28.10-ubuntu"
     },
     "app-server": {
       "registry": "zowe-docker-release.jfrog.io",
