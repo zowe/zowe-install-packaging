@@ -67,11 +67,11 @@
       "artifact": "zss-1.28.0-rc-213-20220511205935.pax"
     },
     "org.zowe.explorer.jobs.jobs-api-package": {
-      "version": "1.0.17",
+      "version": "1.0.18",
       "artifact": "jobs-api*.zip"
     },
     "org.zowe.explorer.files.files-api-package": {
-      "version": "1.0.19",
+      "version": "1.0.20",
       "artifact": "files-api*.zip"
     },
     "org.zowe.explorer-jes": {
@@ -322,14 +322,14 @@
       "componentGroup": "Zowe Explorer Data Sets REST Server",
       "entries": [{
         "repository": "data-sets",
-        "tag": "v1.0.19",
+        "tag": "v1.0.20",
         "destinations": ["Zowe PAX"]
       }]
     }, {
       "componentGroup": "Zowe Explorer Jobs REST Server",
       "entries": [{
         "repository": "jobs",
-        "tag": "v1.0.17",
+        "tag": "v1.0.18",
         "destinations": ["Zowe PAX"]
       }]
     }, {
@@ -488,12 +488,12 @@
     "files-api": {
       "registry": "zowe-docker-release.jfrog.io",
       "name": "ompzowe/files-api",
-      "tag" : "1.0.19-ubuntu"
+      "tag" : "1.0.20-ubuntu"
     },
     "jobs-api": {
       "registry": "zowe-docker-release.jfrog.io",
       "name": "ompzowe/jobs-api",
-      "tag" : "1.0.17-ubuntu"
+      "tag" : "1.0.18-ubuntu"
     }
   },
   "dependencyDecisions": {
