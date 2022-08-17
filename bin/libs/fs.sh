@@ -48,17 +48,15 @@ convert_to_absolute_path() {
 }
 
 get_tmp_dir() {
-  print_error ">> Check if either TMPDIR or TMP points to writable directory, else try \"/tmp\" directory"
-  for dir in "${TMPDIR}" "${TMP}" "/tmp";
-  do
-    if [ ${dir} ]; then
-      is_directory_writable "${dir}"
-      if [ $? -eq 0 ]; then
-        echo ${dir}
-        return
-      fi
-    fi
-  done
+  print_debug ">> Check if either TMPDIR or TMP points to writable directory, else try \"/tmp\" directory"
+  tmpdir="${TMPDIR:-${TMP:-/tmp}}"
+  is_directory_writable "${tmpdir}"
+  if [ $? -ne 0 ]; then
+    print_error "Error ZWEL0110E: Doesn't have write permission on ${tmpdir} directory"
+    exit 110
+  else
+    echo "${tmpdir}"
+  fi
 }
 
 create_tmp_file() {
