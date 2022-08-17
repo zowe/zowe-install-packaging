@@ -236,9 +236,9 @@ export function convertToAbsolutePath(file: string): string|undefined {
 export function getTmpDir(): string {
   let tmp = '';
   common.printDebug(`  > Check if either TMPDIR or TMP points to writable directory, else try '/tmp' directory`);
-  for(const dir of [std.getenv('TMPDIR'), std.getenv('TMP'), '/tmp']){
+  for (const dir of [std.getenv('TMPDIR'), std.getenv('TMP'), '/tmp']) {
     if (dir) {
-      if(isDirectoryAccessible(dir)) {
+      if (isDirectoryAccessible(dir)) {
         tmp = dir;
         break;
       } else {
