@@ -23,14 +23,18 @@ export default class MultiFieldResolver implements IMegaSchemaResolver {
     public resolve(dereferencedSchemas: JSONSchema[]): ResolvedSchema {
         const resolvedSchema: { [k: string]: any } = {};
         for (const resolver of this.resolvers) {
-            resolvedSchema[resolver.field] = resolver.resolve(dereferencedSchemas);
+            // some fields have the same 
+            const resolved = resolver.resolve(dereferencedSchemas);
+            for (const field of resolver.fields) {
+                resolvedSchema[field] = resolved;
+            }
         }
 
         return resolvedSchema as ResolvedSchema; // TODO no type coercion
     }
 
     public resolveField(field: string, values: any[]): any {
-        const resolver = this.resolvers.find((r: FieldResolver<any>) => r.field === field);
+        const resolver = this.resolvers.find((r: FieldResolver<any>) => r.fields.includes(field));
         if (!resolver) {
             throw new Error(`No resolver for field '${field}' found`);
         }

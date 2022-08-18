@@ -1,15 +1,25 @@
 import { JSONSchema } from "json-schema-ref-parser";
 
 export default abstract class FieldResolver<T> {
-    public readonly field: string;
+    public readonly fields: string[];
 
-    protected constructor(field: string) {
-        this.field = field;
+    protected constructor(...fields: string[]) {
+        this.fields = fields;
     }
 
     public resolve(schemas: JSONSchema[]): T {
-        const fields: T[] = schemas.filter((s: any) => s[this.field]).map((s: any) => s[this.field]);
-        return this.internalResolve(fields);
+        const extractedFields: T[] = [];
+        for (const field of this.fields) {
+            for (const schema of schemas) {
+                const s: any = schema;
+                if (s[field]) {
+                    extractedFields.push(s[field]);
+                }
+            }
+        }
+
+
+        return this.internalResolve(extractedFields);
     }
 
     public resolveField(values: T[]): T {
