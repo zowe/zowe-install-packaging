@@ -63,6 +63,8 @@ export function execute(componentFile: string, autoEncoding?: string): string {
     common.printErrorAndExit(`Error ZWEL0139E: Failed to create directory ${targetDir}.`, undefined, 139);
   }
 
+  componentFile = stringlib.removeTrailingSlash(fs.convertToAbsolutePath(componentFile) as string)
+  
   //////////////////////////////////////////////////////////////
   // clean up
   if (targetDir=='/') {

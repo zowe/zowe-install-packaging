@@ -64,7 +64,7 @@ while [ $# -gt 0 ]; do
     elif [ "${param_type}" = "s" -o "${param_type}" = "str" -o "${param_type}" = "string" ]; then
       shift
       ZWE_CLI_PARAMETERS_LIST="$(trim "${ZWE_CLI_PARAMETERS_LIST} ${param_id}")"
-      zwecli_set_parameter_value "${param_id}" $(convert_to_absolute_path "$1")
+      zwecli_set_parameter_value "${param_id}" "${1}"
     else
       print_error_and_exit "Error ZWEL0103E: Invalid type of parameter ${arg}" "" 103
     fi
