@@ -17,55 +17,58 @@ import * as shell from '../../libs/shell';
 import * as config from '../../libs/config';
 
 export function execute() {
-  common.printLevel0Message('Starting zowe');
+  common.printLevel0Message('Stopping zowe');
 
   // Validation
   common.requireZoweYaml();
 
-  // Read job name and validate
+  // read Zowe STC name and apply default value
   const zoweConfig = config.getZoweConfig();
-  const jobname = zoweConfig.zowe.job.name;
   let securityStcsZowe = zoweConfig.zowe.setup.security.stcs.zowe;
   if (!securityStcsZowe) {
-    //TODO defaults should be stored in default yaml, not out of thin air
     securityStcsZowe=std.getenv('ZWE_PRIVATE_DEFAULT_ZOWE_STC');
   }
-
-  let routeSysname:string;
-
+  // read job name and apply default value
+  let jobname: string;
   config.sanitizeHaInstanceId();
   const haInstance=std.getenv('ZWE_CLI_PARAMETER_HA_INSTANCE');
+
+  if (haInstance) {
+    jobname=zoweConfig.haInstances[haInstance].zowe.job.name;
+  }
+  if (!jobname) {
+    jobname = zoweConfig.zowe.job.name;
+  }
+  if (!jobname) {
+    jobname=securityStcsZowe
+  }
+
+  // read SYSNAME if --ha-instance is specified
+  let routeSysname:string;
   if (haInstance) {
     routeSysname=zoweConfig.haInstances[haInstance].sysname;
   }
 
-  // Start job
-  let cmd=`S ${securityStcsZowe}`;
-  if (haInstance) {
-    cmd+=`,HAINST=${haInstance}`;
-  }
-  if (jobname) {
-    cmd+=`,JOBNAME=${jobname}`;
-  }
+  // start job
+  let cmd=`P ${jobname}`
   if (routeSysname) {
-    cmd=`RO ${routeSysname},${cmd}`;
+    cmd=`RO ${routeSysname},${cmd}`
   }
-
   const shellReturn = zoslib.operatorCommand(cmd);
-  if (shellReturn.rc) {
-    common.printErrorAndExit(`Error ZWEL0165E: Failed to start ${securityStcsZowe}: exit code ${shellReturn.rc}.`, undefined, 165);
+  if (shellReturn.rc != 0) {
+    common.printErrorAndExit(`Error ZWEL0166E: Failed to stop ${jobname}: exit code ${shellReturn.rc}.`, undefined, 166);
   } else {
-    //TODO handle awk and set patterns here
     let errorMessage = shellReturn.out;
     if (shellReturn.out) {
-      const errorResult = shell.execOutSync('/bin/sh/', '-c', `echo "${shellReturn.out}" | awk "/-S \${security_stcs_zowe}/{x=NR+1;next}(NR<=x){print}" | sed "s/^\([^ ]\+\) \+\([^ ]\+\) \+\([^ ]\+\) \+\(.\+\)\$/\4/"`);
+      const errorResult = shell.execOutSync('/bin/sh/', '-c', `echo "${shellReturn.out}" | awk "/-P ${jobname}/{x=NR+1;next}(NR<=x){print}" | sed "s/^\([^ ]\+\) \+\([^ ]\+\) \+\([^ ]\+\) \+\(.\+\)\$/\4/"`);
       errorMessage = errorResult.out;
     }
     if (errorMessage) {
-      common.printErrorAndExit(`Error ZWEL0165E: Failed to start ${securityStcsZowe}: ${stringlib.trim(errorMessage)}.`, undefined, 165);
+      common.printErrorAndExit(`Error ZWEL0166E: Failed to stop ${securityStcsZowe}: ${stringlib.trim(errorMessage)}.`, undefined, 166);
     }
-  }
+}
 
-  // Exit message
-  common.printLevel1Message(`Job ${jobname?jobname:securityStcsZowe} is started successfully.`);
+
+  // exit message
+  common.printLevel1Message(`Terminate command on job ${jobname} is sent successfully. Please check job log for details.`);
 }

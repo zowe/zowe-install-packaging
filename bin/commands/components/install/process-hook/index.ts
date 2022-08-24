@@ -49,7 +49,6 @@ export function execute(componentName: string) {
     common.printDebug(`Module ${componentName} does not have commands.install defined.`);
   }
 
-  if (os.platform == 'zos') {
-    component.processZssPluginInstall(componentDir);
-  }
+  component.processZssPluginInstall(componentDir);
+  component.processZisPluginInstall(componentDir);
 }

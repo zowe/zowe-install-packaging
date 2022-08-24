@@ -583,6 +583,202 @@ export function processZssPluginInstall(componentDir: string): void {
   }
 }
 
+export function processZisPluginInstall(componentDir: string): void {
+  if (os.platform == 'zos') {
+    common.printTrace("- Checking for zis plugins and verifying them");
+
+    const manifest = getManifest(componentDir);
+
+    if (manifest.zisPlugins) {
+      manifest.zisPlugins.forEach((zisPlugin: {id: string, path: string})=> {
+        common.printTrace(`Attempting to install ZIS plugin ${zisPlugin.id} at ${zisPlugin.path}`);
+        const rc = zisPluginInstall(zisPlugin.path, ZOWE_CONFIG.zowe.setup.dataset.authPluginLib,
+                                    ZOWE_CONFIG.zowe.setup.dataset.parmlib, ZOWE_CONFIG.zowe.setup.dataset.parmlibMembers.zis,
+                                    zisPlugin.id, componentDir,
+                                    ZOWE_CONFIG.zowe.setup.zis.parmlib.keys);
+        if (rc) {
+          common.printMessage(`Failed to install ZIS plugin: ${zisPlugin.id}`);
+          std.exit(1);
+        }
+      });
+    }
+  }
+}
+
+// $1 = key-value pair
+get_key_of_string() {
+  echo "$1" | sed 's/=/ /g' | awk '{print $1}'
+}
+
+// $1 = key-value pair
+get_value_of_string() {
+  echo "$1" | sed 's/=/ /g' | awk '{print $2}'
+}
+
+// $1 = line number
+// $2 = file
+get_string_at_line_number() {
+  awk -v n="$1" 'NR == n {print $0}' "$2"
+}
+
+// $1 = search_key
+// $2 = file
+get_line_number_of_key() {
+  grep "$1" "$2" > /dev/null
+  if ($? -eq 0) {
+    awk -v s="$1" '$0 ~ s {print NR}' "$2"
+  } else {
+    echo ""
+  }
+}
+
+// $1 = line number
+// $2 = file
+remove_key_value_at_line_number() {
+  mv "$2" "$2.tmp"
+  awk -v n=$1 'NR != n' "$2.tmp" > "$2"
+  rm -f "$2.tmp"
+}
+
+// $1 = key-value pair
+// $2 = file
+add_key_value_at_end_of_file() {
+  key=$(get_key_of_string "$1")
+  value=$(get_value_of_string "$1")
+  resolved_value=$(resolve_env_parameter "$value") // Check for env variable substitution
+
+  // Check if we recevied a non-empty value for the key (if the value has been
+  // defined using an environmental variable).
+  if ("$resolved_value" = "VALUE_NOT_FOUND") {
+    print_error "Error ZWEL0203E: Env value in key-value pair $1 has not been defined."
+    return 203
+  }
+  echo "${key}=${resolved_value}" >> "$2"
+}
+
+export function zisPluginInstall(pluginPath: string, zisPluginlib: string, zisParmlib: string,
+                                 zisParmlibMember: string, pluginId: string, componentDir: string, parmlibKeys: string) {
+  parmlib_member_as_unix_file=fs.createTmpFile(zisParmlibMember);
+
+  zosfs.copyMvsToUss(`${zisParmlib}(${zisParmlibMember})`, parmlib_member_as_unix_file);
+
+  let changed=0;
+
+  const basePath=`${componentDir}/${pluginPath}`;
+  const samplibPath=`${basePath}/samplib`;
+  const loadlibPath=`${basePath}/loadlib`;
+
+  if (fs.directoryExists(basePath)) {
+    if (fs.directoryExists(loadlibPath) && fs.directoryExists(samplibPath)) {
+      const modules = fs.getFilesInDirectory(loadlibPath) || [];
+      modules.forEach((module: string) => {
+        zosfs.copyToDataSet(`${loadlibPath}/${module}`, zisPluginlib, "", true);
+        if ($? != 0) {
+          print_error "Error ZWEL0200E: Failed to copy USS file ${loadlibPath}/${module} to MVS data set $zwes_zis_pluginlib." 
+          return 200
+        }
+      });
+      for params in $(ls ${samplibPath}); do
+        if (! -f "${samplibPath}/${params}") {
+          print_error "Error ZWEL0201E: File ${samplibPath}/${params} does not exist." 
+          return 201
+        }
+        while read samplib_key_value; do
+          prefix=$(echo "$samplib_key_value" | cut -c -2)
+          if ("$prefix" = "//" ] || [ "$prefix" = "* " ] || [ "$prefix" = "") {
+            continue
+          }
+          grep -x "$samplib_key_value" "$parmlib_member_as_unix_file" > /dev/null
+          if ($? -eq 0) {
+            common.printMessage("The key-value pair $samplib_key_value is being skipped because it's already there and hasn't changed."
+            continue
+          } else {
+            update_uss_parmlib_key_value "$samplib_key_value" "$parmlib_member_as_unix_file"
+            if ($? -ne 0) {
+              common.printMessage("Failed to install ZIS plugin: ${zis_plugin_id}"
+              exit 1
+            }
+          }
+        done < "${samplibPath}/${params}"
+      done
+    }
+  common.printMessage("Successfully installed ZIS plugin: ${plugin_id}"
+  }
+
+  if ($changed -eq 1) {
+    copy_to_data_set "$parmlib_member_as_unix_file" "$zwes_zis_parmlib($zwes_zis_parmlib_member)" "" "true"
+  }
+}
+
+update_uss_parmlib_key_value() {
+  samplib_key_value="${1}"
+  parmlib_member_as_unix_file="${2}"
+
+  samplib_key=$(get_key_of_string "$samplib_key_value")
+  if ("$samplib_key" = "") {
+    print_error "Error ZWEL0202E: Unable to find samplib key for $samplib_key_value." 
+    return 202
+  }
+  // In the case of a key not being there, an empty string will be returned.
+  num=$(get_line_number_of_key "$samplib_key" "$parmlib_member_as_unix_file")
+  if ("$num" != "") {
+    parsed_zwes_zis_parmlib_keys=$(replace "${zwes_zis_parmlib_keys}" "." "_") // replace . with _ in keyname for working key search
+    parsed_samplib_key=$(replace "${samplib_key}" "." "_") // replace . with _ in keyname for working key search
+    config_samplib_key_value=$(read_json_string ${parsed_zwes_zis_parmlib_keys} ".${parsed_samplib_key}")
+    if ("$config_samplib_key_value" = "list") {
+    // The key is comma separated list
+      parmlib_key_value=$(get_string_at_line_number "$num" "$parmlib_member_as_unix_file")
+      parmlib_value=$(get_value_of_string "$parmlib_key_value")
+      samplib_value=$(get_value_of_string "$samplib_key_value")
+      is_substr_of "$samplib_value" "$parmlib_value"
+      if ($? -eq 0) {
+        new_parmlib_key_value="$samplib_key=$parmlib_value,$samplib_value"
+        remove_key_value_at_line_number $num "$parmlib_member_as_unix_file"
+        add_key_value_at_end_of_file "$new_parmlib_key_value" "$parmlib_member_as_unix_file"
+        changed=1
+      }
+    } else {
+      // The key is not special and the value is different.
+      remove_key_value_at_line_number "$num" "$parmlib_member_as_unix_file"
+      add_key_value_at_end_of_file "$samplib_key_value" "$parmlib_member_as_unix_file"
+      changed=1
+    }
+  } else {
+    // The key doesn't exist. Just add the key-value pair to the end of the file.
+    add_key_value_at_end_of_file "$samplib_key_value" "$parmlib_member_as_unix_file"
+    changed=1
+  }
+}
+
+// Try to resolve values that are defined using
+// environmental variables, otherwise return
+// the original value - borrowed from ZSS
+//
+// @param string   value
+// Returns:
+//   * If an env variable is provided, its value
+//     is returned on success
+//   * If an env variable is provided and
+//     the variable is not defined,
+//     string VALUE_NOT_FOUND is returned
+//   * The original value is returned
+resolve_env_parameter() {
+
+  parm=$1
+
+  // Are we dealing with an env variable based value?
+  // Yes, resolve the value using eval, otherwise return the value itself.
+  if echo $parm | grep -q -E "^[$]{1}[A-Za-z0-9_]+$"; then
+    ( eval "echo $parm" 2>/dev/null )
+    if ($? -ne 0) {
+      echo "VALUE_NOT_FOUND"
+    }
+  } else {
+    echo $parm
+  }
+
+}
+
 
 
 export function processComponentAppfwPlugin(componentDir: string): boolean {
