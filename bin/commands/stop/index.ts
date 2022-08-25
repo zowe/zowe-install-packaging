@@ -24,7 +24,7 @@ export function execute() {
 
   // read Zowe STC name and apply default value
   const zoweConfig = config.getZoweConfig();
-  let securityStcsZowe = zoweConfig.zowe.setup.security.stcs.zowe;
+  let securityStcsZowe = zoweConfig.zowe.setup?.security?.stcs?.zowe;
   if (!securityStcsZowe) {
     securityStcsZowe=std.getenv('ZWE_PRIVATE_DEFAULT_ZOWE_STC');
   }
@@ -33,11 +33,11 @@ export function execute() {
   config.sanitizeHaInstanceId();
   const haInstance=std.getenv('ZWE_CLI_PARAMETER_HA_INSTANCE');
 
-  if (haInstance) {
-    jobname=zoweConfig.haInstances[haInstance].zowe.job.name;
+  if (haInstance && zoweConfig.haInstances && zoweConfig.haInstances[haInstance]) {
+    jobname=zoweConfig.haInstances[haInstance].zowe?.job?.name;
   }
   if (!jobname) {
-    jobname = zoweConfig.zowe.job.name;
+    jobname = zoweConfig.zowe.job?.name;
   }
   if (!jobname) {
     jobname=securityStcsZowe
@@ -45,8 +45,8 @@ export function execute() {
 
   // read SYSNAME if --ha-instance is specified
   let routeSysname:string;
-  if (haInstance) {
-    routeSysname=zoweConfig.haInstances[haInstance].sysname;
+  if (haInstance && zoweConfig.haInstances && zoweConfig.haInstances[haInstance]) {
+    routeSysname = zoweConfig.haInstances[haInstance]?.sysname;
   }
 
   // start job
@@ -60,7 +60,7 @@ export function execute() {
   } else {
     let errorMessage = shellReturn.out;
     if (shellReturn.out) {
-      const errorResult = shell.execOutSync('/bin/sh/', '-c', `echo "${shellReturn.out}" | awk "/-P ${jobname}/{x=NR+1;next}(NR<=x){print}" | sed "s/^\([^ ]\+\) \+\([^ ]\+\) \+\([^ ]\+\) \+\(.\+\)\$/\4/"`);
+      const errorResult = shell.execOutSync('sh', '-c', `echo "${shellReturn.out}" | awk "/-P ${jobname}/{x=NR+1;next}(NR<=x){print}" | sed "s/^\\([^ ]\\+\\) \\+\\([^ ]\\+\\) \\+\\([^ ]\\+\\) \\+\\(.\\+\\)\\$/\\4/"`);
       errorMessage = errorResult.out;
     }
     if (errorMessage) {

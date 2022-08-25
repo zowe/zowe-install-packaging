@@ -24,8 +24,8 @@ export function execute() {
 
   // Read job name and validate
   const zoweConfig = config.getZoweConfig();
-  const jobname = zoweConfig.zowe.job.name;
-  let securityStcsZowe = zoweConfig.zowe.setup.security.stcs.zowe;
+  const jobname = zoweConfig.zowe.job?.name;
+  let securityStcsZowe = zoweConfig.zowe.setup?.security?.stcs?.zowe;
   if (!securityStcsZowe) {
     //TODO defaults should be stored in default yaml, not out of thin air
     securityStcsZowe=std.getenv('ZWE_PRIVATE_DEFAULT_ZOWE_STC');
@@ -35,8 +35,8 @@ export function execute() {
 
   config.sanitizeHaInstanceId();
   const haInstance=std.getenv('ZWE_CLI_PARAMETER_HA_INSTANCE');
-  if (haInstance) {
-    routeSysname=zoweConfig.haInstances[haInstance].sysname;
+  if (haInstance && zoweConfig.haInstances && zoweConfig.haInstances[haInstance]) {
+    routeSysname = zoweConfig.haInstances[haInstance]?.sysname;
   }
 
   // Start job
@@ -58,7 +58,7 @@ export function execute() {
     //TODO handle awk and set patterns here
     let errorMessage = shellReturn.out;
     if (shellReturn.out) {
-      const errorResult = shell.execOutSync('/bin/sh/', '-c', `echo "${shellReturn.out}" | awk "/-S \${security_stcs_zowe}/{x=NR+1;next}(NR<=x){print}" | sed "s/^\([^ ]\+\) \+\([^ ]\+\) \+\([^ ]\+\) \+\(.\+\)\$/\4/"`);
+      const errorResult = shell.execOutSync('sh', '-c', `echo "${shellReturn.out}" | awk "/-S ${securityStcsZowe}/{x=NR+1;next}(NR<=x){print}" | sed "s/^\\([^ ]\\+\\) \\+\\([^ ]\\+\\) \\+\\([^ ]\\+\\) \\+\\(.\\+\\)\\$/\\4/"`);
       errorMessage = errorResult.out;
     }
     if (errorMessage) {

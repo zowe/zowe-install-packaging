@@ -18,7 +18,7 @@ import * as stringlib from './string';
 export function tsoCommand(...args:string[]): { rc: number, out: string } {
   let message="tsocmd "+args.join(' ');
   common.printDebug('- '+message);
-  const result = shell.execOutSync('/bin/sh', '-c', `${message} 2>&1 && echo ' '`);
+  const result = shell.execOutSync('/bin/sh', '-c', `${message} 2>&1 && echo '.'`);
   if (result.rc == 0) {
     common.printDebug("  * Succeeded");
     common.printTrace(`  * Exit code: ${result.rc}`);
@@ -34,7 +34,7 @@ export function tsoCommand(...args:string[]): { rc: number, out: string } {
       common.printError(stringlib.paddingLeft(result.out, "    "));
     }
   }
-  return {rc: result.rc, out: result.out ? result.out.trim() : ''};
+  return { rc: result.rc, out: result.out ? result.out.substring(0, result.out.length-1) : '' };
 }
 
 export function operatorCommand(command: string): { rc: number, out: string } {
@@ -42,7 +42,7 @@ export function operatorCommand(command: string): { rc: number, out: string } {
 
   let message=`- opercmd ${command}`;
   common.printDebug(message);
-  const result = shell.execOutSync('/bin/sh', '-c', `${opercmd} "${command}" 2>&1 && echo ' '`);
+  const result = shell.execOutSync('/bin/sh', '-c', `${opercmd} "${command}" 2>&1 && echo '.'`);
   if (result.rc == 0) {
     common.printDebug("  * Succeeded");
     common.printTrace(`  * Exit code: ${result.rc}`);
@@ -58,5 +58,5 @@ export function operatorCommand(command: string): { rc: number, out: string } {
       common.printError(stringlib.paddingLeft(result.out, "    "));
     }
   }
-  return {rc: result.rc, out: result.out ? result.out.trim() : ''};
+  return { rc: result.rc, out: result.out ? result.out.substring(0, result.out.length-1) : '' };
 }
