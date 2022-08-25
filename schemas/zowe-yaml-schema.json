@@ -70,7 +70,7 @@
                     "keys": {
                       "type": "object",
                       "additionalProperties": true,
-                      "description": "Used to specify special ZIS list keys with key-value pairs",
+                      "description": "Used to specify special ZIS key types with key-value pairs",
                       "examples": [
                         "key.sample.1: list",
                         "key.sample.2: list"
