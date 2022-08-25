@@ -237,6 +237,7 @@ export function validateConfigForComponent(componentId: string, manifest: any, c
   const configRevisionName = `zowe.yaml-${componentId}`;
 
   if (configPath) {
+    let status = 0;
     if ((status = CONFIG_MGR.addConfig(configRevisionName))) {
       common.printError(`Error: Could not add config for ${configPath}, status=${status}`);
     }
