@@ -34,8 +34,7 @@ export function tsoCommand(...args:string[]): { rc: number, out: string } {
       common.printError(stringlib.paddingLeft(result.out, "    "));
     }
   }
-  result.out = result.out ? result.out.trim() : '';
-  return result;
+  return {rc: result.rc, out: result.out ? result.out.trim() : ''};
 }
 
 export function operatorCommand(command: string): { rc: number, out: string } {
@@ -59,6 +58,5 @@ export function operatorCommand(command: string): { rc: number, out: string } {
       common.printError(stringlib.paddingLeft(result.out, "    "));
     }
   }
-  result.out = result.out ? result.out.trim() : '';
-  return result;
+  return {rc: result.rc, out: result.out ? result.out.trim() : ''};
 }

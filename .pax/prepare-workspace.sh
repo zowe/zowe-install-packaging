@@ -121,7 +121,7 @@ mkdir -p "${CONTENT_DIR}/schemas"
 cd "${ROOT_DIR}/build/zwe"
 npm ci && npm run prod
 # Cleanup TS files after build
-rm -f "${ROOT_DIR}/bin/**/*.ts"
+rm -rf "${ROOT_DIR}/bin/**/*.ts"
 
 
 # copy from current github source

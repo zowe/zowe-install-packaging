@@ -37,10 +37,147 @@ export function functionExists(fn: string): boolean {
   return false;
 }
 
+/* 
+${var#Pattern}, ${var##Pattern}
+
+    ${var#Pattern} Remove from $var the shortest part of $Pattern that matches the front end of $var.
+
+    ${var##Pattern} Remove from $var the longest part of $Pattern that matches the front end of $var. 
+
+*/
+
+export function resolveShellVariable(previousKey: string, currentKey: string, currentValue: string|undefined, modifier: string): string|undefined {
+  switch (modifier) {
+  //${parameter-default}, ${parameter:-default}
+  //  If parameter not set, use default.
+  case '-': {
+    return std.getenv(currentKey);
+  }
+  //${parameter+alt_value}, ${parameter:+alt_value}
+  //  If parameter set, use alt_value, else use null string.
+  case '+': {
+    return std.getenv(previousKey) ? std.getenv(currentKey) : 'null';
+  }
+  //${parameter?err_msg}, ${parameter:?err_msg}
+  //  If parameter set, use it, else print err_msg and abort the script with an exit status of 1.
+  case '?': {
+    let prev;
+    if ((prev=std.getenv(previousKey))) {
+      return prev;
+    } else {
+      common.printError(currentKey);
+      return currentValue;
+    }
+  }
+  //${parameter=default}, ${parameter:=default}
+  //  If parameter not set, set it to default.
+  case '=': {
+    if (!std.getenv(previousKey)) {
+      std.setenv(previousKey, std.getenv(currentKey));
+    }
+    return std.getenv(previousKey);
+  }
+  default:
+    return undefined;
+  }
+}
+
+
 
 // if a string has any env variables, replace them with values
-export function parseStringVars(key: string): string|undefined {
-  return std.getenv(key);
+export function resolveShellTemplate(content: string): string|undefined {
+  let position = 0;
+  let output = '';
+  
+  while (position != -1 && position < content.length) {
+    let index = content.indexOf('$', position);
+    if (index == -1) {
+      output+=content.substring(position);
+      return output;
+    } else {
+      output+=content.substring(position, index);
+      if (content[index+1] === '{') {
+        let endIndex = content.indexOf('}', index+2);
+        if (endIndex == -1) {
+          output+=content.substring(position);
+          return output;
+        }
+        
+        //${#var}
+        //  String length (number of characters in $var). For an array, ${#array} is the length of the first element in the array.
+        if (content[index+2] === '#') {
+          let value = std.getenv(content.substring(index+3, endIndex));
+          if (value!==undefined) {
+            output+=value.length;
+            position=endIndex;
+            continue;
+          }
+        }
+
+        let accumIndex = index+2;
+        let currentIndex = index+2;
+        let envValue;
+        let firstKey;
+        let previousKey=null;
+        let currentKey;
+        let previousModifier;
+        while ((currentIndex<endIndex) && (envValue===undefined)) {
+          const char = content[currentIndex];
+          if (char == '-' || char == '=' || char == '+' || char == '?') {
+            currentKey=content.substring(accumIndex, currentIndex);
+            if (currentKey.endsWith(':')) {
+              //TODO this does not handle : cases different from non-: cases, unsure what to do with them
+              currentKey = currentKey.substring(0,currentKey.length-1);
+            }
+            accumIndex=currentIndex+1;
+            if (currentKey) {
+              if (firstKey===undefined) {
+                firstKey=currentKey;
+                envValue=std.getenv(firstKey);
+              }
+            }
+            if (previousModifier) {
+              envValue = resolveShellVariable(previousKey, currentKey, envValue, previousModifier);
+            }
+            previousKey=currentKey;
+            previousModifier = char;
+          }
+          currentIndex++;
+        }
+        
+        currentKey=content.substring(accumIndex, currentIndex);
+        if (currentKey.endsWith(':')) {
+          //TODO this does not handle : cases different from non-: cases, unsure what to do with them
+          currentKey = currentKey.substring(0,currentKey.length-1);
+        }
+        if (currentKey) {
+          if (firstKey===undefined) {
+            firstKey=currentKey;
+            envValue=std.getenv(firstKey);
+          }
+        }
+        if (previousModifier) {
+          envValue = resolveShellVariable(previousKey, currentKey, envValue, previousModifier);
+        }
+        if (envValue!==undefined) {
+          output+=envValue;
+        }
+        position=endIndex+1;
+      } else {
+        let keyIndex = index+1;
+        let charCode = content.charCodeAt(keyIndex);
+        while ((charCode <0x5b && charCode > 0x40) || (charCode < 0x7b && charCode > 0x60) || (charCode > 0x2f && charCode < 0x40) || (charCode == 0x5f)) {
+          keyIndex++;
+        }
+        let val = std.getenv(content.substring(index+1, keyIndex));
+        if (val!==undefined) {
+          output+=val;
+        }
+        position=keyIndex;
+      }
+    }
+  }
+  return output;
 }
 
 // return value of the variable

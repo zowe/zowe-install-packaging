@@ -18,9 +18,12 @@ import { ConfigManager } from 'Configuration';
 import * as common from './common';
 import * as fs from './fs';
 import * as zosfs from './zos-fs';
+import * as zosdataset from './zos-dataset';
 import * as stringlib from './string';
 import * as shell from './shell';
 import * as configmgr from './configmgr';
+import * as varlib from './var';
+import * as fakejq from './fakejq';
 
 const CONFIG_MGR=configmgr.CONFIG_MGR;
 const ZOWE_CONFIG=configmgr.ZOWE_CONFIG;
@@ -314,148 +317,6 @@ export function findAllLaunchComponents2(): string[] {
   });
 }
 
-/* 
-${var#Pattern}, ${var##Pattern}
-
-    ${var#Pattern} Remove from $var the shortest part of $Pattern that matches the front end of $var.
-
-    ${var##Pattern} Remove from $var the longest part of $Pattern that matches the front end of $var. 
-
-*/
-
-function resolveShellVariable(previousKey: string, currentKey: string, currentValue: string|undefined, modifier: string): string|undefined {
-  switch (modifier) {
-  //${parameter-default}, ${parameter:-default}
-  //  If parameter not set, use default.
-  case '-': {
-    return std.getenv(currentKey);
-  }
-  //${parameter+alt_value}, ${parameter:+alt_value}
-  //  If parameter set, use alt_value, else use null string.
-  case '+': {
-    return std.getenv(previousKey) ? std.getenv(currentKey) : 'null';
-  }
-  //${parameter?err_msg}, ${parameter:?err_msg}
-  //  If parameter set, use it, else print err_msg and abort the script with an exit status of 1.
-  case '?': {
-    let prev;
-    if ((prev=std.getenv(previousKey))) {
-      return prev;
-    } else {
-      common.printError(currentKey);
-      return currentValue;
-    }
-  }
-  //${parameter=default}, ${parameter:=default}
-  //  If parameter not set, set it to default.
-  case '=': {
-    if (!std.getenv(previousKey)) {
-      std.setenv(previousKey, std.getenv(currentKey));
-    }
-    return std.getenv(previousKey);
-  }
-  default:
-    return undefined;
-  }
-}
-
-
-export function resolveShellTemplate(content: string): string {
-  let position = 0;
-  let output = '';
-  
-  while (position != -1 && position < content.length) {
-    let index = content.indexOf('$', position);
-    if (index == -1) {
-      output+=content.substring(position);
-      return output;
-    } else {
-      output+=content.substring(position, index);
-      if (content[index+1] === '{') {
-        let endIndex = content.indexOf('}', index+2);
-        if (endIndex == -1) {
-          output+=content.substring(position);
-          return output;
-        }
-        
-        //${#var}
-        //  String length (number of characters in $var). For an array, ${#array} is the length of the first element in the array.
-        if (content[index+2] === '#') {
-          let value = std.getenv(content.substring(index+3, endIndex));
-          if (value!==undefined) {
-            output+=value.length;
-            position=endIndex;
-            continue;
-          }
-        }
-
-        let accumIndex = index+2;
-        let currentIndex = index+2;
-        let envValue;
-        let firstKey;
-        let previousKey=null;
-        let currentKey;
-        let previousModifier;
-        while ((currentIndex<endIndex) && (envValue===undefined)) {
-          const char = content[currentIndex];
-          if (char == '-' || char == '=' || char == '+' || char == '?') {
-            currentKey=content.substring(accumIndex, currentIndex);
-            if (currentKey.endsWith(':')) {
-              //TODO this does not handle : cases different from non-: cases, unsure what to do with them
-              currentKey = currentKey.substring(0,currentKey.length-1);
-            }
-            accumIndex=currentIndex+1;
-            if (currentKey) {
-              if (firstKey===undefined) {
-                firstKey=currentKey;
-                envValue=std.getenv(firstKey);
-              }
-            }
-            if (previousModifier) {
-              envValue = resolveShellVariable(previousKey, currentKey, envValue, previousModifier);
-            }
-            previousKey=currentKey;
-            previousModifier = char;
-          }
-          currentIndex++;
-        }
-        
-        currentKey=content.substring(accumIndex, currentIndex);
-        if (currentKey.endsWith(':')) {
-          //TODO this does not handle : cases different from non-: cases, unsure what to do with them
-          currentKey = currentKey.substring(0,currentKey.length-1);
-        }
-        if (currentKey) {
-          if (firstKey===undefined) {
-            firstKey=currentKey;
-            envValue=std.getenv(firstKey);
-          }
-        }
-        if (previousModifier) {
-          envValue = resolveShellVariable(previousKey, currentKey, envValue, previousModifier);
-        }
-        if (envValue!==undefined) {
-          output+=envValue;
-        }
-        position=endIndex+1;
-      } else {
-        let keyIndex = index+1;
-        let charCode = content.charCodeAt(keyIndex);
-        while ((charCode <0x5b && charCode > 0x40) || (charCode < 0x7b && charCode > 0x60) || (charCode > 0x2f && charCode < 0x40) || (charCode == 0x5f)) {
-          keyIndex++;
-        }
-        let val = std.getenv(content.substring(index+1, keyIndex));
-        if (val!==undefined) {
-          output+=val;
-        }
-        position=keyIndex;
-      }
-    }
-  }
-  return output;
-}
-
-
 export function processComponentApimlStaticDefinitions(componentDir: string): boolean {
   const STATIC_DEF_DIR=std.getenv('ZWE_STATIC_DEFINITIONS_DIR');
   if (!STATIC_DEF_DIR) {
@@ -487,7 +348,7 @@ export function processComponentApimlStaticDefinitions(componentDir: string): bo
 
         const contents = xplatform.loadFileUTF8(path,xplatform.AUTO_DETECT);
         if (contents) {
-          const resolvedContents = resolveShellTemplate(contents);
+          const resolvedContents = varlib.resolveShellTemplate(contents);
 
           const zweCliParameterHaInstance=std.getenv("ZWE_CLI_PARAMETER_HA_INSTANCE");
           //discovery static code requires specifically .yml. Not .yaml
@@ -605,64 +466,40 @@ export function processZisPluginInstall(componentDir: string): void {
   }
 }
 
-// $1 = key-value pair
-get_key_of_string() {
-  echo "$1" | sed 's/=/ /g' | awk '{print $1}'
+function getKeyOfString(input: string): string {
+  const index = input.indexOf('=');
+  return input.substring(0,index == -1 ? undefined : index);
 }
 
-// $1 = key-value pair
-get_value_of_string() {
-  echo "$1" | sed 's/=/ /g' | awk '{print $2}'
+function getValueOfString(input: string): string {
+  const index = input.indexOf('=');
+  return index == -1 ? input : input.substring(index+1);
 }
 
-// $1 = line number
-// $2 = file
-get_string_at_line_number() {
-  awk -v n="$1" 'NR == n {print $0}' "$2"
-}
-
-// $1 = search_key
-// $2 = file
-get_line_number_of_key() {
-  grep "$1" "$2" > /dev/null
-  if ($? -eq 0) {
-    awk -v s="$1" '$0 ~ s {print NR}' "$2"
-  } else {
-    echo ""
-  }
-}
-
-// $1 = line number
-// $2 = file
-remove_key_value_at_line_number() {
-  mv "$2" "$2.tmp"
-  awk -v n=$1 'NR != n' "$2.tmp" > "$2"
-  rm -f "$2.tmp"
-}
-
-// $1 = key-value pair
-// $2 = file
-add_key_value_at_end_of_file() {
-  key=$(get_key_of_string "$1")
-  value=$(get_value_of_string "$1")
-  resolved_value=$(resolve_env_parameter "$value") // Check for env variable substitution
+function addKeyValueAtEndOfString(pair: string, input: string): string|undefined {
+  const key=getKeyOfString(pair);
+  const value=getValueOfString(pair);
+  const resolvedValue=resolveEnvParameter(value); // Check for env variable substitution
 
   // Check if we recevied a non-empty value for the key (if the value has been
   // defined using an environmental variable).
-  if ("$resolved_value" = "VALUE_NOT_FOUND") {
-    print_error "Error ZWEL0203E: Env value in key-value pair $1 has not been defined."
-    return 203
+  if (resolvedValue == "VALUE_NOT_FOUND") {
+    common.printError("Error ZWEL0203E: Env value in key-value pair $1 has not been defined.");
+    return undefined;
   }
-  echo "${key}=${resolved_value}" >> "$2"
+  input+='\n'+`${key}=${resolvedValue}`;
+  return input;
 }
 
 export function zisPluginInstall(pluginPath: string, zisPluginlib: string, zisParmlib: string,
-                                 zisParmlibMember: string, pluginId: string, componentDir: string, parmlibKeys: string) {
-  parmlib_member_as_unix_file=fs.createTmpFile(zisParmlibMember);
+                                 zisParmlibMember: string, pluginId: string, componentDir: string, parmlibKeys: string): number {
+  const parmlibMemberAsUnixFile=fs.createTmpFile(zisParmlibMember);
 
-  zosfs.copyMvsToUss(`${zisParmlib}(${zisParmlibMember})`, parmlib_member_as_unix_file);
-
-  let changed=0;
+  zosfs.copyMvsToUss(`${zisParmlib}(${zisParmlibMember})`, parmlibMemberAsUnixFile);
+  let parmlibContents = xplatform.loadFileUTF8(parmlibMemberAsUnixFile, xplatform.AUTO_DETECT);
+  let parmlibLines = parmlibContents.split('\n');
+  
+  let changed=false;
 
   const basePath=`${componentDir}/${pluginPath}`;
   const samplibPath=`${basePath}/samplib`;
@@ -671,83 +508,106 @@ export function zisPluginInstall(pluginPath: string, zisPluginlib: string, zisPa
   if (fs.directoryExists(basePath)) {
     if (fs.directoryExists(loadlibPath) && fs.directoryExists(samplibPath)) {
       const modules = fs.getFilesInDirectory(loadlibPath) || [];
-      modules.forEach((module: string) => {
-        zosfs.copyToDataSet(`${loadlibPath}/${module}`, zisPluginlib, "", true);
-        if ($? != 0) {
-          print_error "Error ZWEL0200E: Failed to copy USS file ${loadlibPath}/${module} to MVS data set $zwes_zis_pluginlib." 
-          return 200
+      for (let i = 0; i < modules.length; i++) {
+        const module = modules[i];
+        const rc = zosdataset.copyToDataset(`${loadlibPath}/${module}`, zisPluginlib, "", true);
+        if (rc != 0) {
+          common.printError(`Error ZWEL0200E: Failed to copy USS file ${loadlibPath}/${module} to MVS data set ${zisPluginlib}.`);
+          return 200;
         }
-      });
-      for params in $(ls ${samplibPath}); do
-        if (! -f "${samplibPath}/${params}") {
-          print_error "Error ZWEL0201E: File ${samplibPath}/${params} does not exist." 
-          return 201
+      }
+      const files = fs.getFilesInDirectory(samplibPath)
+      for (let i = 0; i < files.length; i++) {
+        const params = files[i];
+        if (!fs.fileExists(`${samplibPath}/${params}`)) {
+          common.printError(`Error ZWEL0201E: File ${samplibPath}/${params} does not exist.`);
+          return 201;
         }
-        while read samplib_key_value; do
-          prefix=$(echo "$samplib_key_value" | cut -c -2)
-          if ("$prefix" = "//" ] || [ "$prefix" = "* " ] || [ "$prefix" = "") {
-            continue
-          }
-          grep -x "$samplib_key_value" "$parmlib_member_as_unix_file" > /dev/null
-          if ($? -eq 0) {
-            common.printMessage("The key-value pair $samplib_key_value is being skipped because it's already there and hasn't changed."
-            continue
-          } else {
-            update_uss_parmlib_key_value "$samplib_key_value" "$parmlib_member_as_unix_file"
-            if ($? -ne 0) {
-              common.printMessage("Failed to install ZIS plugin: ${zis_plugin_id}"
-              exit 1
+        const contents = xplatform.loadFileUTF8(`${samplibPath}/${params}`, xplatform.AUTO_DETECT);
+        contents.split('\n').forEach((samplib_key_value:string)=> {
+          const prefix=samplib_key_value.substring(0,2);
+          if (!(prefix == '//' || prefix == '* ' || prefix == '')) {
+            if (parmlibLines.indexOf(samplib_key_value) != -1) {
+              common.printMessage(`The key-value pair ${samplib_key_value} is being skipped because it's already there and hasn't changed.`);
+            } else {
+              let result = updateUssParmlibKeyValue(samplib_key_value, parmlibKeys, parmlibContents);
+              if (result.error) {
+                common.printMessage(`Failed to install ZIS plugin: ${pluginId}`);
+                std.exit(1);
+              } else if (result.changed) {
+                parmlibContents = result.contents;
+                parmlibLines = parmlibContents.split('\n');
+                changed = true;
+
+              }
             }
           }
-        done < "${samplibPath}/${params}"
-      done
+        });
+      }
     }
-  common.printMessage("Successfully installed ZIS plugin: ${plugin_id}"
+    common.printMessage(`Successfully installed ZIS plugin: ${pluginId}`);
   }
 
-  if ($changed -eq 1) {
-    copy_to_data_set "$parmlib_member_as_unix_file" "$zwes_zis_parmlib($zwes_zis_parmlib_member)" "" "true"
+  if (changed) {
+    xplatform.storeFileUTF8(parmlibMemberAsUnixFile, xplatform.AUTO_DETECT, parmlibContents);
+    zosdataset.copyToDataset(parmlibMemberAsUnixFile, `${zisParmlib}(${zisParmlibMember})`, "", true);
   }
+  return 0;
 }
 
-update_uss_parmlib_key_value() {
-  samplib_key_value="${1}"
-  parmlib_member_as_unix_file="${2}"
-
-  samplib_key=$(get_key_of_string "$samplib_key_value")
-  if ("$samplib_key" = "") {
-    print_error "Error ZWEL0202E: Unable to find samplib key for $samplib_key_value." 
-    return 202
+function updateUssParmlibKeyValue(samplibKeyValue: string, parmlibKeys: string, contents: string): { error?: number, changed?: boolean, contents?: string } {
+  const samplibKey = getKeyOfString(samplibKeyValue);
+  let isChanged: boolean = false;
+  if (!samplibKey) {
+    common.printError(`Error ZWEL0202E: Unable to find samplib key for ${samplibKeyValue}.`);
+    return { error: 202 };
   }
+
+  let newContents = contents;
+  let lines = contents.split('\n');
+
   // In the case of a key not being there, an empty string will be returned.
-  num=$(get_line_number_of_key "$samplib_key" "$parmlib_member_as_unix_file")
-  if ("$num" != "") {
-    parsed_zwes_zis_parmlib_keys=$(replace "${zwes_zis_parmlib_keys}" "." "_") // replace . with _ in keyname for working key search
-    parsed_samplib_key=$(replace "${samplib_key}" "." "_") // replace . with _ in keyname for working key search
-    config_samplib_key_value=$(read_json_string ${parsed_zwes_zis_parmlib_keys} ".${parsed_samplib_key}")
-    if ("$config_samplib_key_value" = "list") {
-    // The key is comma separated list
-      parmlib_key_value=$(get_string_at_line_number "$num" "$parmlib_member_as_unix_file")
-      parmlib_value=$(get_value_of_string "$parmlib_key_value")
-      samplib_value=$(get_value_of_string "$samplib_key_value")
-      is_substr_of "$samplib_value" "$parmlib_value"
-      if ($? -eq 0) {
-        new_parmlib_key_value="$samplib_key=$parmlib_value,$samplib_value"
-        remove_key_value_at_line_number $num "$parmlib_member_as_unix_file"
-        add_key_value_at_end_of_file "$new_parmlib_key_value" "$parmlib_member_as_unix_file"
-        changed=1
+  const included = contents.includes(samplibKey);
+  let num: number;
+  if (included) {
+    for (let i = 0; i < lines.length; i++) {
+      if (lines[i].includes(samplibKey)) {
+        num = i+1;
+        break;
+      }
+    }
+  }
+
+  if (num) {
+    const replacer = new RegExp('.', 'g');
+    const parsedParmlibKeys=parmlibKeys.replace(replacer, '_'); // replace . with _ in keyname for working key search
+    const parsedSamplibKey=samplibKey.replace(replacer, '_'); // replace . with _ in keyname for working key search
+    const config_samplib_key_value=fakejq.jqget(JSON.parse(parsedParmlibKeys), `.${parsedSamplibKey}`);
+    if (config_samplib_key_value == "list") {
+      // The key is comma separated list
+      const parmlibKeyValue = lines.length >= num ? lines[num-1] : contents;
+      const parmlibValue=getValueOfString(parmlibKeyValue);
+      const samplibValue=getValueOfString(samplibKeyValue);
+      if (parmlibValue.includes(samplibValue)) {
+        const newParmlibKeyValue=`${samplibKey}=${parmlibValue},${samplibValue}`;
+        lines = lines.splice(num, 1);
+        newContents = lines.join('\n');
+        newContents = addKeyValueAtEndOfString(newParmlibKeyValue, newContents);
+        isChanged = true;
       }
     } else {
       // The key is not special and the value is different.
-      remove_key_value_at_line_number "$num" "$parmlib_member_as_unix_file"
-      add_key_value_at_end_of_file "$samplib_key_value" "$parmlib_member_as_unix_file"
-      changed=1
+      lines = lines.splice(num, 1);
+      newContents = lines.join('\n');
+      newContents = addKeyValueAtEndOfString(samplibKeyValue, newContents);
+      isChanged = true;
     }
   } else {
     // The key doesn't exist. Just add the key-value pair to the end of the file.
-    add_key_value_at_end_of_file "$samplib_key_value" "$parmlib_member_as_unix_file"
-    changed=1
+    newContents = addKeyValueAtEndOfString(samplibKeyValue, contents);
+    isChanged = true;
   }
+  return { changed: isChanged, contents: newContents };
 }
 
 // Try to resolve values that are defined using
@@ -762,21 +622,13 @@ update_uss_parmlib_key_value() {
 //     the variable is not defined,
 //     string VALUE_NOT_FOUND is returned
 //   * The original value is returned
-resolve_env_parameter() {
-
-  parm=$1
-
-  // Are we dealing with an env variable based value?
-  // Yes, resolve the value using eval, otherwise return the value itself.
-  if echo $parm | grep -q -E "^[$]{1}[A-Za-z0-9_]+$"; then
-    ( eval "echo $parm" 2>/dev/null )
-    if ($? -ne 0) {
-      echo "VALUE_NOT_FOUND"
-    }
+function resolveEnvParameter(input: string): string {
+  let resolved = std.getenv(input);
+  if (!resolved) {
+    return 'VALUE_NOT_FOUND';
   } else {
-    echo $parm
+    return varlib.resolveShellTemplate(input);
   }
-
 }
 
 
