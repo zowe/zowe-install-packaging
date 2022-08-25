@@ -196,13 +196,18 @@ function validateComponents(enabledComponents:string[]): any {
   // reset error counter
   let privateErrors = 0;
   std.setenv('ZWE_PRIVATE_ERRORS_FOUND','0');
-
   enabledComponents.forEach((componentId: string)=> {
     common.printFormattedTrace("ZWELS", "zwe-internal-start-prepare,validate_components", `- checking ${componentId}`);
     const componentDir = component.findComponentDirectory(componentId);
     common.printFormattedTrace("ZWELS", "zwe-internal-start-prepare,validate_components", `- in directory ${componentDir}`);
     if (componentDir) {
       const manifest = component.getManifest(componentDir);
+
+      //I believe the env var to config here is already to the merged one, and that should be good for performance
+      const configValid = component.validateConfigForComponent(componentId, manifest, componentDir, std.getenv('ZWE_CLI_PARAMETER_CONFIG'));
+      if (!configValid) {
+        privateErrors++;
+      }
 
       // check validate script
       const validateScript = manifest.commands ? manifest.commands.validate : undefined;
