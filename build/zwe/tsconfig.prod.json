@@ -29,5 +29,6 @@
     "../../bin/libs/*",
     "../../bin/commands/**/*",
     "../../bin/utils/*"
-  ]
+  ],
+  "exclude": []
 }
