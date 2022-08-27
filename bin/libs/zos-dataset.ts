@@ -18,7 +18,7 @@ import * as shell from './shell';
 import * as zoslib from './zos';
 
 export function isDatasetExists(datasetName: string): boolean {
-  const result = shell.execSync('sh', '-c', `cat "//'${datasetName}'" 1>/dev/null 2>&1)`);
+  const result = shell.execSync('sh', '-c', `cat "//'${datasetName}'" 1>/dev/null 2>&1`);
   return result.rc === 0;
 }
 
@@ -50,7 +50,7 @@ export function createDataSet(dsName: string, dsOptions: string): number {
 
 export function copyToDataset(filePath: string, dsName: string, cpOptions: string, allowOverwrite: boolean): number {
   if (allowOverwrite != true) {
-    if (isDatasetExists(`//'${dsName}'`)) {
+    if (isDatasetExists(dsName)) {
       common.printErrorAndExit(`Error ZWEL0133E: Data set ${dsName} already exists`, undefined, 133);
     }
   }
@@ -74,7 +74,7 @@ export function copyToDataset(filePath: string, dsName: string, cpOptions: strin
 
 export function datasetCopyToDataset(prefix: string, datasetFrom: string, datasetTo: string, allowOverwrite: boolean): number {
   if (allowOverwrite != true) {
-    if (isDatasetExists(`//'${datasetTo}'`)) {
+    if (isDatasetExists(datasetTo)) {
       common.printErrorAndExit(`Error ZWEL0133E: Data set ${datasetTo} already exists`, undefined, 133);
     }
   }

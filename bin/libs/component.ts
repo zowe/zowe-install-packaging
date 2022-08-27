@@ -451,6 +451,11 @@ export function processZisPluginInstall(componentDir: string): void {
     const manifest = getManifest(componentDir);
 
     if (manifest.zisPlugins) {
+      if (!ZOWE_CONFIG.zowe?.setup?.dataset || !ZOWE_CONFIG.zowe.setup.dataset.authPluginLib
+        || !ZOWE_CONFIG.zowe.setup.dataset.parmlib || !ZOWE_CONFIG.zowe?.setup?.dataset?.parmlibMembers?.zis) {
+        common.printError(`One or more configuration parameters for ZIS plugin install are missing. Define zowe.setup.dataset to have authPluginLib, parmlib, and parmlibMembers entries.`);
+        std.exit(1);
+      }
       manifest.zisPlugins.forEach((zisPlugin: {id: string, path: string})=> {
         common.printTrace(`Attempting to install ZIS plugin ${zisPlugin.id} at ${zisPlugin.path}`);
         const rc = zisPluginInstall(zisPlugin.path, ZOWE_CONFIG.zowe.setup.dataset.authPluginLib,
@@ -484,7 +489,7 @@ function addKeyValueAtEndOfString(pair: string, input: string): string|undefined
   // Check if we recevied a non-empty value for the key (if the value has been
   // defined using an environmental variable).
   if (resolvedValue == "VALUE_NOT_FOUND") {
-    common.printError("Error ZWEL0203E: Env value in key-value pair $1 has not been defined.");
+    common.printError(`Error ZWEL0203E: Env value in key-value pair ${pair} has not been defined.`);
     return undefined;
   }
   input+='\n'+`${key}=${resolvedValue}`;
