@@ -1,1 +1,15 @@
-""
+{
+  "lockAcquiredTime": "Mon Aug 29 2022 18:58:11 GMT+0000 (Coordinated Universal Time)",
+  "uid": "1661799491166703530",
+  "repository": {
+    "owner": "zowe",
+    "repo": "zowe-install-packaging"
+  },
+  "branch": "v2.x/staging",
+  "workflow": "Zowe CICD Integration Tests",
+  "job": "cicd-test",
+  "actor": "zowe-robot",
+  "runId": 2950994078,
+  "runNumber": 1480,
+  "link": "https://github.com/zowe/zowe-install-packaging/actions/runs/2950994078"
+}
