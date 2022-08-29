@@ -444,6 +444,44 @@ export function processZssPluginInstall(componentDir: string): void {
   }
 }
 
+/*
+  Example manifest of a zis plugin component
+
+  name: zis-plugin
+  id: org.zowe.zis.plugin
+  commands:
+    start: bin/start.sh
+    configure: bin/configure.sh
+  zisPlugins:
+    - id: "hello.zis.plugin"
+      path: "/zisServer"
+  schemas:
+  configs: schemas/trivial-schema.json
+
+
+  Example of a zowe.yaml used for zis plugin install
+
+zowe:
+  setup:
+    dataset:
+      prefix: "MVS.DATASET"
+      proclib: "ROCKET.USER.PROCLIB"
+      parmlib: "MVS.DATASET.CUST.PARMLIB"
+      parmlibMembers:
+        zis: "ZWESIP00"
+      jcllib: "MVS.DATASET.CUST.JCLLIB"
+      authLoadlib: "MVS.DATASET.SZWEAUTH"
+      authPluginLib: "MVS.DATASET.CUST.ZWESAPL"
+    zis:
+      parmlib:
+        keys:
+          beep.boop: "list"
+  runtimeDirectory: "/u/user/zowe/test/zistest"
+  logDirectory: "/u/user/zowe/inst/zistest/logs"
+  workspaceDirectory: "/u/user/zowe/inst/zistest/workspace"
+  extensionDirectory: "/u/user/zowe/inst/zistest/extensions"
+
+*/
 export function processZisPluginInstall(componentDir: string): void {
   if (os.platform == 'zos') {
     common.printTrace("- Checking for zis plugins and verifying them");
@@ -452,7 +490,7 @@ export function processZisPluginInstall(componentDir: string): void {
 
     if (manifest.zisPlugins) {
       if (!ZOWE_CONFIG.zowe?.setup?.dataset || !ZOWE_CONFIG.zowe.setup.dataset.authPluginLib
-        || !ZOWE_CONFIG.zowe.setup.dataset.parmlib || !ZOWE_CONFIG.zowe?.setup?.dataset?.parmlibMembers?.zis) {
+        || !ZOWE_CONFIG.zowe.setup.dataset.parmlib || !ZOWE_CONFIG.zowe.setup.dataset.parmlibMembers?.zis) {
         common.printError(`One or more configuration parameters for ZIS plugin install are missing. Define zowe.setup.dataset to have authPluginLib, parmlib, and parmlibMembers entries.`);
         std.exit(1);
       }
@@ -461,7 +499,7 @@ export function processZisPluginInstall(componentDir: string): void {
         const rc = zisPluginInstall(zisPlugin.path, ZOWE_CONFIG.zowe.setup.dataset.authPluginLib,
                                     ZOWE_CONFIG.zowe.setup.dataset.parmlib, ZOWE_CONFIG.zowe.setup.dataset.parmlibMembers.zis,
                                     zisPlugin.id, componentDir,
-                                    ZOWE_CONFIG.zowe.setup.zis.parmlib.keys);
+                                    ZOWE_CONFIG.zowe?.setup?.zis?.parmlib?.keys || {});
         if (rc) {
           common.printMessage(`Failed to install ZIS plugin: ${zisPlugin.id}`);
           std.exit(1);
@@ -560,6 +598,23 @@ export function zisPluginInstall(pluginPath: string, zisPluginlib: string, zisPa
   return 0;
 }
 
+/*
+  Used to write a plugin's parmlib entries into the zis parmlib.
+
+  Consider a plugin parmlib file:
+
+  beep.boop=one,two
+
+  thing1.thing2.thing3=$TERM
+
+  foo.bar.baz=1
+
+
+  ... plugin parmlib keys are '.' seperated, with a '=' between key and value.
+  values can be strings or $env vars, and so the line should be evaluated before
+  putting into the zis parmlib.
+  
+ */
 function updateUssParmlibKeyValue(samplibKeyValue: string, parmlibKeys: string, contents: string): { error?: number, changed?: boolean, contents?: string } {
   const samplibKey = getKeyOfString(samplibKeyValue);
   let isChanged: boolean = false;
@@ -628,12 +683,7 @@ function updateUssParmlibKeyValue(samplibKeyValue: string, parmlibKeys: string, 
 //     string VALUE_NOT_FOUND is returned
 //   * The original value is returned
 function resolveEnvParameter(input: string): string {
-  let resolved = std.getenv(input);
-  if (!resolved) {
-    return 'VALUE_NOT_FOUND';
-  } else {
-    return varlib.resolveShellTemplate(input);
-  }
+  return varlib.resolveShellTemplate(input);
 }
 
 
