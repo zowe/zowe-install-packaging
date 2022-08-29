@@ -84,7 +84,8 @@ function writeMergedConfig(config: any): number {
     zwePrivateWorkspaceEnvDir=`${workspace}/.env`;
     std.setenv('ZWE_PRIVATE_WORKSPACE_ENV_DIR', zwePrivateWorkspaceEnvDir);
   }
-  const mkdirrc = mkdirp(zwePrivateWorkspaceEnvDir);
+  mkdirp(workspace, 0o770);
+  const mkdirrc = mkdirp(zwePrivateWorkspaceEnvDir, 0o700);
   if (mkdirrc) { return mkdirrc; }
   const destination = `${zwePrivateWorkspaceEnvDir}/.zowe-merged.yaml`;
   const jsonDestination = `${zwePrivateWorkspaceEnvDir}/.zowe.json`;
