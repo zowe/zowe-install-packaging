@@ -19,9 +19,15 @@ Table of contents
 
 New FMID
 --------
-1. TODO Program Directory update
+1. The Program Directory (AZWExxx.htm) must be updated by an IBM-employed
+   build engineer. This because automated processing by IBM tooling
+   requires a specific format, which might have changed since the last
+   update.
+Note: The program directory holds allocation and FTP file sizes, so the
+      final update should happend just before code freeze to ensure we
+      have the correct sizes.
 2. Add previous FMID to SUP and DELETE statements in smpe/bld/SMPMCS.txt
-Note: SUP should only be updated if most products depending on the 
+Note: SUP should only be updated if most products depending on the
       previous FMID will continue to work with the new FMID. Do NOT SUP
       the previous FMID if the new FMID breaks most dependent products.
 ++VER(Z038) /* zOS */
@@ -71,7 +77,7 @@ Note: Build currently does not support empty data sets, so one or more
 //            LRECL=80,
 //            BLKSIZE=0,
 //            DSN=&THLQ..SZWEEXEC
-//*   
+//*
 3. If data set DCB data matches an existing AZWEyyyy data set, we will
    reuse the AZWEyyyy dat set as DLIB. Otherwise, add AZWExxxx data set
    allocation to ALLOCD PROC in
@@ -81,7 +87,7 @@ Note: Build currently does not support empty data sets, so one or more
     ADD DDDEF (SZWEEXEC)
         DATASET(&THLQ..SZWEEXEC)
         UNIT(SYSALLDA)
-#if( $tvol and $tvol != "" and $tvol != '#tvol') 
+#if( $tvol and $tvol != "" and $tvol != '#tvol')
         VOLUME(&TVOL)
 #end
 #if($ibmTemplate == 'YES')
@@ -266,6 +272,17 @@ exists in this branch, and the first non-comment line has an APAR number.
 An APAR-fix will never be published on zowe.org, but can be retrieved
 from Artifactory and provided to a customer that requires an SMP/E
 installable fix.
+
+Note: Security/integrity issues require special treatment, and are 
+      processed using a special APAR that has the sec/int flag set.
+      It is expected that each PTF will resolve one or more sec/int
+      issues. To simplify administration work, sec/int APARs are not
+      pulled from apar-bucket.txt and tracked in current-apar.txt, but
+      are added to a ptf definition in ptf-bucket.txt. Upon PTF
+      promotion, an IBM-employed build engineer will handle the special
+      treatment for the embedded sec/int APAR during the APAR closing 
+      process.
+
 Since an APAR-fix build requires updates to the zowe-install-packaging
 repository, the creation of an APAR-fix requires the assistance of a
 Zowe build engineer.

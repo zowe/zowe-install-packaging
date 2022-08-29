@@ -424,7 +424,7 @@ print_formatted_info "ZWELS" "prepare-instance.sh:${LINENO}" "starting Zowe inst
 print_formatted_debug "ZWELS" "prepare-instance.sh:${LINENO}" "use configuration defined in ${ZWELS_CONFIG_LOAD_METHOD}"
 
 # Fix node.js piles up in IPC message queue
-if [ "${ZWE_RUN_ON_ZOS}" = "true" ]; then
+if [ "${ZWE_RUN_ON_ZOS}" = "true" -a "${ZWE_PRIVATE_CLEANUP_IPC_MQ}" = "true" ]; then
   ${ROOT_DIR}/scripts/utils/cleanup-ipc-mq.sh
 fi
 

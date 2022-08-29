@@ -177,10 +177,10 @@ rm "${BASE_DIR}/${WORK_DIR}/scripts/zowe-install-MVS.sh"
 # prepare utility tools
 echo ">>>>> prepare utility tools"
 jfrog_path=
-interpret_artifact_pattern "org.zowe.utility_tools" "*.zip"
+interpret_artifact_pattern "org.zowe.utility-tools" "*.zip"
 util_zip=$(jfrog rt s "${jfrog_path}" --sort-by created --sort-order desc --limit 1 | jq -r '.[0].path')
 if [ -z "${util_zip}" ]; then
-  echo "Error: cannot find org.zowe.utility_tools artifact."
+  echo "Error: cannot find org.zowe.utility-tools artifact."
   exit 1
 fi
 echo "    - artifact found: ${util_zip}"
