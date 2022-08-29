@@ -206,11 +206,18 @@ chmod +x templates/*.rex
 
 
 mkdir -p "${ZOWE_ROOT_DIR}/bin/utils"
-configmgr=$(find "${ZOWE_ROOT_DIR}/files" -type f \( -name "configmgr*.pax" \) | head -n 1)
+configmgr=$(find "${ZOWE_ROOT_DIR}/files" -type f \( -name "configmgr-*.pax" \) | head -n 1)
 echo "[$SCRIPT_NAME] extract configmgr $configmgr"
 cd "${ZOWE_ROOT_DIR}/bin/utils"
 pax -ppx -rf "${configmgr}"
 rm "${configmgr}"
+cd "${BASE_DIR}"
+
+configmgr_rexx=$(find "${ZOWE_ROOT_DIR}/files" -type f \( -name "configmgr_rexx*.pax" \) | head -n 1)
+echo "[$SCRIPT_NAME] extract configmgr_rexx $configmgr_rexx"
+cd "${ZOWE_ROOT_DIR}/files/SZWEEXEC"
+pax -ppx -rf "${configmgr_rexx}"
+rm "${configmgr_rexx}"
 cd "${BASE_DIR}"
 
 
