@@ -57,6 +57,29 @@
                 }
               }
             },
+            "zis": {
+              "type": "object",
+              "additionalProperties": false,
+              "description": "ZIS related configurations. This setup is optional.",
+              "properties": {
+                "parmlib": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "description": "ZIS related PARMLIB configurations. This setup is optional.",
+                  "properties": {
+                    "keys": {
+                      "type": "object",
+                      "additionalProperties": true,
+                      "description": "Used to specify special ZIS key types with key-value pairs",
+                      "examples": [
+                        "key.sample.1: list",
+                        "key.sample.2: list"
+                      ]
+                    }
+                  }
+                }
+              }
+            },
             "security": {
               "type": "object",
               "additionalProperties": false,
