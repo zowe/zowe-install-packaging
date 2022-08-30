@@ -6,6 +6,12 @@ All notable changes to the Zowe Installer will be documented in this file.
 
 - Updated ZWEWRF03 workflow to be up to date with the installed software
 
+## `2.3.0`
+
+#### Minor enhancements/defect fixes
+
+- Schema pattern for semver range has been simplified as it was not compiling in configmgr
+
 ## `2.2.0`
 
 ### New features and enhancements
