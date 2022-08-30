@@ -167,7 +167,7 @@ export function resolveShellTemplate(content: string): string|undefined {
         let keyIndex = index+1;
         let charCode = content.charCodeAt(keyIndex);
         while ((charCode <0x5b && charCode > 0x40) || (charCode < 0x7b && charCode > 0x60) || (charCode > 0x2f && charCode < 0x40) || (charCode == 0x5f)) {
-          keyIndex++;
+          charCode = content.charCodeAt(++keyIndex);
         }
         let val = std.getenv(content.substring(index+1, keyIndex));
         if (val!==undefined) {

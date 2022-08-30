@@ -639,16 +639,16 @@ function updateUssParmlibKeyValue(samplibKeyValue: string, parmlibKeys: string, 
   }
 
   if (num) {
-    const replacer = new RegExp('.', 'g');
-    const parsedParmlibKeys=parmlibKeys.replace(replacer, '_'); // replace . with _ in keyname for working key search
-    const parsedSamplibKey=samplibKey.replace(replacer, '_'); // replace . with _ in keyname for working key search
-    const config_samplib_key_value=fakejq.jqget(JSON.parse(parsedParmlibKeys), `.${parsedSamplibKey}`);
-    if (config_samplib_key_value == "list") {
+    const replacer = new RegExp('\\.', 'g');
+    const parsedParmlibKeys = JSON.stringify(parmlibKeys).replace(replacer, '_'); // replace . with _ in keyname for working key search
+    const parsedSamplibKey = samplibKey.replace(replacer, '_'); // replace . with _ in keyname for working key search
+    const configSamplibKeyValue = fakejq.jqget(JSON.parse(parsedParmlibKeys), `.${parsedSamplibKey}`);
+    if (configSamplibKeyValue == "list") {
       // The key is comma separated list
       const parmlibKeyValue = lines.length >= num ? lines[num-1] : contents;
       const parmlibValue=getValueOfString(parmlibKeyValue);
       const samplibValue=getValueOfString(samplibKeyValue);
-      if (parmlibValue.includes(samplibValue)) {
+      if (!parmlibValue.includes(samplibValue)) {
         const newParmlibKeyValue=`${samplibKey}=${parmlibValue},${samplibValue}`;
         lines = lines.splice(num, 1);
         newContents = lines.join('\n');
