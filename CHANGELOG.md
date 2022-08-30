@@ -6,6 +6,12 @@ All notable changes to the Zowe Installer will be documented in this file.
 
 - Updated ZWEWRF03 workflow to be up to date with the installed software
 
+## `2.3.0`
+
+#### Minor enhancements/defect fixes
+
+- When `zwe components install` could not find or set the PC bit of a ZSS plugin, it would print out an example command for fixing the issue. Now, it shows the exact command you could execute to fix the PC bit problem.
+
 ## `2.2.0`
 
 ### New features and enhancements
