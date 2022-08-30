@@ -1,1 +1,15 @@
-""
+{
+  "lockAcquiredTime": "Tue Aug 30 2022 19:10:57 GMT+0000 (Coordinated Universal Time)",
+  "uid": "1661886657963367079",
+  "repository": {
+    "owner": "zowe",
+    "repo": "zowe-install-packaging"
+  },
+  "branch": "bugfix/v2/semver-range-schema",
+  "workflow": "Zowe CICD Integration Tests",
+  "job": "cicd-test",
+  "actor": "zowe-robot",
+  "runId": 2958863064,
+  "runNumber": 1496,
+  "link": "https://github.com/zowe/zowe-install-packaging/actions/runs/2958863064"
+}
