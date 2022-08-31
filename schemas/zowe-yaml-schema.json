@@ -50,7 +50,7 @@
                 "loadlib": {
                   "type": "string",
                   "description": "States the path where Zowe executable utilities are located",
-                  "default": "<hlq>.SZWEEXEC"
+                  "default": "<hlq>.SZWELOAD"
                 },
                 "authLoadlib": {
                   "type": "string",
