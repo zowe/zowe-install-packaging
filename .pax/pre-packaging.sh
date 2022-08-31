@@ -215,7 +215,8 @@ cd "${BASE_DIR}"
 
 configmgr_rexx=$(find "${ZOWE_ROOT_DIR}/files" -type f \( -name "configmgr_rexx*.pax" \) | head -n 1)
 echo "[$SCRIPT_NAME] extract configmgr_rexx $configmgr_rexx"
-cd "${ZOWE_ROOT_DIR}/files/SZWEEXEC"
+mkdir -p "${ZOWE_ROOT_DIR}/files/SZWELOAD"
+cd "${ZOWE_ROOT_DIR}/files/SZWELOAD"
 pax -ppx -rf "${configmgr_rexx}"
 rm "${configmgr_rexx}"
 cd "${BASE_DIR}"
