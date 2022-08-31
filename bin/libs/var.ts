@@ -191,7 +191,7 @@ const declareFilter=/^declare -x (run_zowe_start_component_id=|ZWELS_START_COMPO
 
 const keyFilter=/^(run_zowe_start_component_id|ZWELS_START_COMPONENT_ID|ZWE_LAUNCH_COMPONENTS|env_file|key|line|service|logger|level|expected_log_level_val|expected_log_level_var|display_log|message|utils_dir|print_formatted_function_available|LINENO|ENV|opt|OPTARG|OPTIND|LOGNAME|USER|SSH_|SHELL|PWD|OLDPWD|PS1|ENV|LS_COLORS|_)$/
 
-export function getEnvironmentExports(input?:string): string {
+export function getEnvironmentExports(input?:string, doExport?: boolean): string {
   let exports:string[]=[];
   if (!input) {
     let envvars = std.getenviron();
@@ -206,6 +206,12 @@ export function getEnvironmentExports(input?:string): string {
     lines.forEach((line:string)=> {
       if ((line.startsWith('export ') || line.startsWith('declare -x ')) && (!exportFilter.test(line) && !declareFilter.test(line))) {
         exports.push(line);
+        if (doExport) {
+          const equalIndex = line.indexOf('=');
+          if (equalIndex!=-1) {
+            std.setenv(line.substring(0,equalIndex), line.substring(equalIndex));
+          }
+        }
       }
     });
   }

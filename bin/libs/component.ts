@@ -523,7 +523,7 @@ function addKeyValueAtEndOfString(pair: string, input: string): string|undefined
   const key=getKeyOfString(pair);
   const value=getValueOfString(pair);
   const resolvedValue=resolveEnvParameter(value); // Check for env variable substitution
-
+  common.printDebug(`Resolved parmlib value for ${key}. '${value}' became '${resolvedValue}'`);
   // Check if we recevied a non-empty value for the key (if the value has been
   // defined using an environmental variable).
   if (resolvedValue == "VALUE_NOT_FOUND") {
@@ -540,6 +540,7 @@ export function zisPluginInstall(pluginPath: string, zisPluginlib: string, zisPa
 
   zosfs.copyMvsToUss(`${zisParmlib}(${zisParmlibMember})`, parmlibMemberAsUnixFile);
   let parmlibContents = xplatform.loadFileUTF8(parmlibMemberAsUnixFile, xplatform.AUTO_DETECT);
+  common.printDebug(`Parmlib starts as \n${parmlibContents}`);
   let parmlibLines = parmlibContents.split('\n');
   
   let changed=false;
@@ -567,13 +568,13 @@ export function zisPluginInstall(pluginPath: string, zisPluginlib: string, zisPa
           return 201;
         }
         const contents = xplatform.loadFileUTF8(`${samplibPath}/${params}`, xplatform.AUTO_DETECT);
-        contents.split('\n').forEach((samplib_key_value:string)=> {
-          const prefix=samplib_key_value.substring(0,2);
+        contents.split('\n').forEach((samplibKeyvalue:string)=> {
+          const prefix=samplibKeyvalue.substring(0,2);
           if (!(prefix == '//' || prefix == '* ' || prefix == '')) {
-            if (parmlibLines.indexOf(samplib_key_value) != -1) {
-              common.printMessage(`The key-value pair ${samplib_key_value} is being skipped because it's already there and hasn't changed.`);
+            if (parmlibLines.indexOf(samplibKeyvalue) != -1) {
+              common.printDebug(`The key-value pair ${samplibKeyvalue} is being skipped because it's already there and hasn't changed.`);
             } else {
-              let result = updateUssParmlibKeyValue(samplib_key_value, parmlibKeys, parmlibContents);
+              let result = updateUssParmlibKeyValue(samplibKeyvalue, parmlibKeys, parmlibContents);
               if (result.error) {
                 common.printMessage(`Failed to install ZIS plugin: ${pluginId}`);
                 std.exit(1);
@@ -581,17 +582,23 @@ export function zisPluginInstall(pluginPath: string, zisPluginlib: string, zisPa
                 parmlibContents = result.contents;
                 parmlibLines = parmlibContents.split('\n');
                 changed = true;
-
               }
             }
           }
         });
       }
+      common.printMessage(`Successfully installed ZIS plugin: ${pluginId}`);
+    } else {
+      common.printError(`Directory ${loadlibPath} or ${samplibPath} does not exist`);
+      return 1;
     }
-    common.printMessage(`Successfully installed ZIS plugin: ${pluginId}`);
+  } else {
+    common.printError(`Error ZWEL0201E: Directory ${basePath} does not exist`);
+    return 201;
   }
 
   if (changed) {
+    common.printDebug(`Parmlib modified, writing as \n${parmlibContents}`);
     xplatform.storeFileUTF8(parmlibMemberAsUnixFile, xplatform.AUTO_DETECT, parmlibContents);
     zosdataset.copyToDataset(parmlibMemberAsUnixFile, `${zisParmlib}(${zisParmlibMember})`, "", true);
   }
@@ -650,19 +657,24 @@ function updateUssParmlibKeyValue(samplibKeyValue: string, parmlibKeys: string, 
       const samplibValue=getValueOfString(samplibKeyValue);
       if (!parmlibValue.includes(samplibValue)) {
         const newParmlibKeyValue=`${samplibKey}=${parmlibValue},${samplibValue}`;
+        common.printDebug(`Replacing parmlib key ${samplibKey} (list). Old value=${parmlibValue}. New line = ${newParmlibKeyValue}`);
         lines = lines.splice(num, 1);
         newContents = lines.join('\n');
         newContents = addKeyValueAtEndOfString(newParmlibKeyValue, newContents);
         isChanged = true;
+      } else {
+        common.printDebug(`Skipping parmlib key ${samplibKey} because value did not change`);
       }
     } else {
       // The key is not special and the value is different.
       lines = lines.splice(num, 1);
       newContents = lines.join('\n');
+      common.printDebug(`Replacing parmlib key ${samplibKey}. New line = ${samplibKeyValue}`);
       newContents = addKeyValueAtEndOfString(samplibKeyValue, newContents);
       isChanged = true;
     }
   } else {
+    common.printDebug(`Adding new parmlib key ${samplibKey}. New line = ${samplibKeyValue}`);
     // The key doesn't exist. Just add the key-value pair to the end of the file.
     newContents = addKeyValueAtEndOfString(samplibKeyValue, contents);
     isChanged = true;
