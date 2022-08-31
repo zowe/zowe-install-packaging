@@ -571,8 +571,10 @@ export function zisPluginInstall(pluginPath: string, zisPluginlib: string, zisPa
         contents.split('\n').forEach((samplibKeyvalue:string)=> {
           const prefix=samplibKeyvalue.substring(0,2);
           if (!(prefix == '//' || prefix == '* ' || prefix == '')) {
-            if (parmlibLines.indexOf(samplibKeyvalue) != -1) {
-              common.printDebug(`The key-value pair ${samplibKeyvalue} is being skipped because it's already there and hasn't changed.`);
+            common.printDebug(`Checking existing parmlib line ${samplibKeyvalue} to see if it is in plugin parmlib lines`);
+            let lineIndex = parmlibLines.indexOf(samplibKeyvalue);
+            if (lineIndex != -1) {
+              common.printDebug(`The key-value pair ${samplibKeyvalue} is being skipped because it's already there and hasn't changed (index ${lineIndex}).`);
             } else {
               let result = updateUssParmlibKeyValue(samplibKeyvalue, parmlibKeys, parmlibContents);
               if (result.error) {
@@ -639,7 +641,7 @@ function updateUssParmlibKeyValue(samplibKeyValue: string, parmlibKeys: string, 
   if (included) {
     for (let i = 0; i < lines.length; i++) {
       if (lines[i].includes(samplibKey)) {
-        num = i+1;
+        num = i;
         break;
       }
     }
@@ -652,7 +654,7 @@ function updateUssParmlibKeyValue(samplibKeyValue: string, parmlibKeys: string, 
     const configSamplibKeyValue = fakejq.jqget(JSON.parse(parsedParmlibKeys), `.${parsedSamplibKey}`);
     if (configSamplibKeyValue == "list") {
       // The key is comma separated list
-      const parmlibKeyValue = lines.length >= num ? lines[num-1] : contents;
+      const parmlibKeyValue = lines.length > num ? lines[num] : contents;
       const parmlibValue=getValueOfString(parmlibKeyValue);
       const samplibValue=getValueOfString(samplibKeyValue);
       if (!parmlibValue.includes(samplibValue)) {
