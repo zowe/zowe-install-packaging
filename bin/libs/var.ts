@@ -116,10 +116,10 @@ export function resolveShellTemplate(content: string): string|undefined {
 
         let accumIndex = index+2;
         let currentIndex = index+2;
-        let envValue;
-        let firstKey;
+        let envValue:string;
+        let firstKey:string;
         let previousKey=null;
-        let currentKey;
+        let currentKey:string;
         let previousModifier;
         while ((currentIndex<endIndex) && (envValue===undefined)) {
           const char = content[currentIndex];
@@ -166,7 +166,13 @@ export function resolveShellTemplate(content: string): string|undefined {
       } else {
         let keyIndex = index+1;
         let charCode = content.charCodeAt(keyIndex);
-        while ((charCode <0x5b && charCode > 0x40) || (charCode < 0x7b && charCode > 0x60) || (charCode > 0x2f && charCode < 0x40) || (charCode == 0x5f)) {
+
+        while ((keyIndex<content.length)
+          && ((charCode <0x5b && charCode > 0x40)
+            || (charCode < 0x7b && charCode > 0x60)
+            || (charCode > 0x2f && charCode < 0x40)
+            || (charCode == 0x5f))) {
+
           charCode = content.charCodeAt(++keyIndex);
         }
         let val = std.getenv(content.substring(index+1, keyIndex));
