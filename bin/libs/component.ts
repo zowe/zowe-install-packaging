@@ -658,7 +658,7 @@ function updateUssParmlibKeyValue(samplibKeyValue: string, parmlibKeys: string, 
       if (!parmlibValue.includes(samplibValue)) {
         const newParmlibKeyValue=`${samplibKey}=${parmlibValue},${samplibValue}`;
         common.printDebug(`Replacing parmlib key ${samplibKey} (list). Old value=${parmlibValue}. New line = ${newParmlibKeyValue}`);
-        lines = lines.splice(num, 1);
+        lines.splice(num, 1);
         newContents = lines.join('\n');
         newContents = addKeyValueAtEndOfString(newParmlibKeyValue, newContents);
         isChanged = true;
@@ -667,7 +667,7 @@ function updateUssParmlibKeyValue(samplibKeyValue: string, parmlibKeys: string, 
       }
     } else {
       // The key is not special and the value is different.
-      lines = lines.splice(num, 1);
+      lines.splice(num, 1);
       newContents = lines.join('\n');
       common.printDebug(`Replacing parmlib key ${samplibKey}. New line = ${samplibKeyValue}`);
       newContents = addKeyValueAtEndOfString(samplibKeyValue, newContents);
