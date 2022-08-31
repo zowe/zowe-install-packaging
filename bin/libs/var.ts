@@ -213,10 +213,7 @@ export function getEnvironmentExports(input?:string, doExport?: boolean): string
       if ((line.startsWith('export ') || line.startsWith('declare -x ')) && (!exportFilter.test(line) && !declareFilter.test(line))) {
         exports.push(line);
         if (doExport) {
-          const equalIndex = line.indexOf('=');
-          if (equalIndex!=-1) {
-            std.setenv(line.substring(0,equalIndex), line.substring(equalIndex));
-          }
+          setExport(line);
         }
       }
     });
@@ -244,32 +241,44 @@ export function sourceEnv(envFile: string): boolean {
   //TODO i hope encoding is correct here
   
   let fileContents = xplatform.loadFileUTF8(envFile,xplatform.AUTO_DETECT);
-  let fileLines = fileContents.split('\n');
-  let index;
+  return setExports(fileContents);
+}
+
+export function setExports(envFileContents: string): boolean {
+  let fileLines = envFileContents.split('\n');
   fileLines.forEach((line: string)=> {
-    if ((index = line.indexOf('=')) != -1) {
-      let key;
-      if (line.startsWith('export ')) {
-        key = line.substring(7, index);
-      } else if (line.startsWith('declare -x ')) {
-        key = line.substring(11, index);
-      } else if (line.startsWith('set ')) {
-        key = line.substring(4, index);
-      } else {
-        key = line.substring(0, index);
-      }
-      if ((line[index+1] == "'" && line.endsWith("'")) || (line[index+1] == '"' && line.endsWith('"'))) {
-        let val = line.substring(index + 2, line.length-1);
-        std.setenv(key, val);
-        common.printTrace(`Set env var ${key} to ${val}`);
-      } else {
-        let val = line.substring(index + 1);
-        std.setenv(key, val);
-        common.printTrace(`Set env var ${key} to ${val}`);
-      }
-    }
+    setExport(line);
   });
   return true;
+}
+
+export function setExport(envFileLine: string): boolean {
+  let index: number;
+
+  if ((index = envFileLine.indexOf('=')) != -1) {
+    let key: string;
+    if (envFileLine.startsWith('export ')) {
+      key = envFileLine.substring(7, index);
+    } else if (envFileLine.startsWith('declare -x ')) {
+      key = envFileLine.substring(11, index);
+    } else if (envFileLine.startsWith('set ')) {
+      key = envFileLine.substring(4, index);
+    } else {
+      key = envFileLine.substring(0, index);
+    }
+    if ((envFileLine[index+1] == "'" && envFileLine.endsWith("'")) || (envFileLine[index+1] == '"' && envFileLine.endsWith('"'))) {
+      let val = envFileLine.substring(index + 2, envFileLine.length-1);
+      std.setenv(key, val);
+      common.printTrace(`Set env var ${key} to ${val}`);
+      return true;
+    } else {
+      let val = envFileLine.substring(index + 1);
+      std.setenv(key, val);
+      common.printTrace(`Set env var ${key} to ${val}`);
+      return true;
+    }
+  }
+  return false;
 }
 
 // Takes in a single parameter - the name of the variable
