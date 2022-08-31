@@ -84,6 +84,7 @@ export function detectFileEncoding(fileName: string, expectedSample: string, exp
 }
 
 export function copyMvsToUss(dataset: string, file: string): number {
+  common.printDebug(`copyMvsToUss dataset=${dataset}, file=${file}`);
   const result = shell.execSync('sh', '-c', `cp "//'${dataset}'" "${file}"`);
   return result.rc;
 }
