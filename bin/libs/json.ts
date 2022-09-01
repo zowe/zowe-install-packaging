@@ -116,7 +116,6 @@ export function readJson(file: string, key: string):any {
   return result.out;
 }
 
-
 export function readJsonString(input: string, key: string): any {
   return fakejq.jqget(JSON.parse(input), key);
 }
