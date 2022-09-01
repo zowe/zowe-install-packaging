@@ -31,7 +31,7 @@ check_configmgr_enabled() {
     if [[ ${ZWE_CLI_PARAMETER_CONFIG} == "FILE("* ]]
     then
       echo "true"
-    elif [[ ${ZWE_CLI_PARAMETER_CONFIG} == "LIB("* ]]
+    elif [[ ${ZWE_CLI_PARAMETER_CONFIG} == "PARMLIB("* ]]
     then
       echo "true"
     else
