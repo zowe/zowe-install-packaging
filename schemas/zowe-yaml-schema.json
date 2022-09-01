@@ -418,6 +418,31 @@
             }
           }
         },
+        "launcher": {
+          "type": "object",
+          "description": "Set default behaviors of how the Zowe launcher will handle components",
+          "additionalProperties": false,
+          "properties": {
+            "restartIntervals": {
+              "type": "array",
+              "description": "Intervals of seconds to wait before restarting a component if it fails before the minUptime value.",
+              "items": {
+                "type": "integer"  
+              },
+              "minUptime": {
+                "type": "integer",
+                "default": 90,
+                "description": "The minimum amount of seconds before a component is considered running and the restart counter is reset."
+              },
+              "shareAs": {
+                "type": "string",
+                "description": "Determines which SHAREAS mode should be used when starting a component",
+                "enum": ["no", "yes", "must", ""],
+                "default": "yes"
+              }
+            }
+          }
+        },
         "rbacProfileIdentifier": {
           "type": "string",
           "description": "An ID used for determining resource names used in RBAC authorization checks"

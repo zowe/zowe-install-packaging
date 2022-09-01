@@ -17,11 +17,6 @@ declare namespace console {
   function log(...args:string[]): void;
 };
 
-
-if (!std.getenv('ZWE_PRIVATE_TMP_MERGED_YAML_DIR')) {
-  std.setenv('ZWE_PRIVATE_TMP_MERGED_YAML_DIR', '1');
-}
-
 index.execute(std.getenv('ZWE_CLI_PARAMETER_COMPONENT_FILE'), std.getenv('ZWE_CLI_PARAMETER_AUTO_ENCODING'), (std.getenv('ZWE_CLI_PARAMETER_SKIP_ENABLE') === 'true'));
 
 const tmpDir = std.getenv('ZWE_PRIVATE_TMP_MERGED_YAML_DIR');
