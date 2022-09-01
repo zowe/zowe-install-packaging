@@ -47,9 +47,15 @@
                   "type": "string",
                   "description": "JCL library where Zowe will store temporary JCLs during initialization"
                 },
+                "loadlib": {
+                  "type": "string",
+                  "description": "States the path where Zowe executable utilities are located",
+                  "default": "<hlq>.SZWELOAD"
+                },
                 "authLoadlib": {
                   "type": "string",
-                  "description": "Optional. If it's empty, <hlq>.SZWEAUTH will be APF authorized."
+                  "description": "The dataset that contains any Zowe core code that needs to run APF-authorized, such as ZIS",
+                  "default": "<hlq>.SZWEAUTH"
                 },
                 "authPluginLib": {
                   "type": "string",
