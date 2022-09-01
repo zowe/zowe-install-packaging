@@ -53,6 +53,8 @@ zowe:
       # **COMMONLY_CUSTOMIZED**
       # JCL library where Zowe will store temporary JCLs during initialization
       jcllib: IBMUSER.ZWEV2.CUST.JCLLIB
+      # Utilities for use by Zowe and extensions
+      loadlib: IBMUSER.ZWEV2.SZWELOAD
       # APF authorized LOADLIB for Zowe
       authLoadlib: IBMUSER.ZWEV2.SZWEAUTH
       # **COMMONLY_CUSTOMIZED**
