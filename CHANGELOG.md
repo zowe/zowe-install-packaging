@@ -10,6 +10,7 @@ All notable changes to the Zowe Installer will be documented in this file.
 
 ### New features and enhancements
 - A new dataset, SZWELOAD was added. It contains versions of configmgr named `ZWECFG31`, `ZWECFG64`, and `ZWERXCFG` which can be used to invoke configmgr from within a rexx program. The expected use case is to simplify how complex JCL gets configuration info about Zowe.
+- Zowe can now start using multiple zowe.yaml files if you want, when using the STC startup as well as the `zwe start`, `zwe stop`, and `zwe components` commands. Other commands such as `zwe install` and `zwe init` do not yet have this ability. Each can be a unix files or PARMLIB member. Each file must follow the same zowe.yaml schema as before, but in the list of files, properties found in a file to the right will be overridden by the file to the left. Through this, you can separate portions of Zowe configuration any way you want. To use multiple files, change your existing --config / CONFIG input to instead be a list of FILE() or PARMLIB() entries which are colon ':' separated. For example, zwe start --config FILE(/my/customizations.yaml):PARMLIB(TEAM.CUSTOM.ZOWE(YAML)):PARMLIB(ORG.CUSTOM.ZOWE(YAML)):FILE(/zowe/defaults.yaml) ... Note when using PARMLIB, every member name must be the same.
 
 #### Minor enhancements/defect fixes
 - Schema pattern for semver range has been simplified as it was not compiling in configmgr
