@@ -8,11 +8,12 @@ All notable changes to the Zowe Installer will be documented in this file.
 
 ## `2.3.0`
 
+### New features and enhancements
+- A new dataset, SZWELOAD was added. It contains versions of configmgr named `ZWECFG31`, `ZWECFG64`, and `ZWERXCFG` which can be used to invoke configmgr from within a rexx program. The expected use case is to simplify how complex JCL gets configuration info about Zowe.
+
 #### Minor enhancements/defect fixes
-
-- When `zwe components install` could not find or set the PC bit of a ZSS plugin, it would print out an example command for fixing the issue. Now, it shows the exact command you could execute to fix the PC bit problem.
 - Schema pattern for semver range has been simplified as it was not compiling in configmgr
-
+- When `zwe components install` could not find or set the PC bit of a ZSS plugin, it would print out an example command for fixing the issue. Now, it shows the exact command you could execute to fix the PC bit problem.
 
 ## `2.2.0`
 
