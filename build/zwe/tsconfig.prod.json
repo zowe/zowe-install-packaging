@@ -30,8 +30,5 @@
     "../../bin/commands/**/*",
     "../../bin/utils/*"
   ],
-  "exclude": [
-    "../../bin/libs/json.ts",
-    "../../bin/commands/start/index.ts"
-  ]
+  "exclude": []
 }

@@ -11,6 +11,12 @@
 # Copyright Contributors to the Zowe Project.
 #######################################################################
 
+USE_CONFIGMGR=$(check_configmgr_enabled)
+if [ "${USE_CONFIGMGR}" = "true" ]; then
+  _CEE_RUNOPTS="XPLINK(ON),HEAPPOOLS(OFF)" ${ZWE_zowe_runtimeDirectory}/bin/utils/configmgr -script "${ZWE_zowe_runtimeDirectory}/bin/commands/start/cli.js"
+else
+
+
 print_level0_message "Starting Zowe"
 
 ###############################
@@ -61,3 +67,4 @@ fi
 ###############################
 # exit message
 print_level1_message "Job ${jobname:-${security_stcs_zowe}} is started successfully. Please check job log for details."
+fi
