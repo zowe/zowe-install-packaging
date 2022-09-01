@@ -13,7 +13,7 @@ All notable changes to the Zowe Installer will be documented in this file.
 
 #### Minor enhancements/defect fixes
 - Schema pattern for semver range has been simplified as it was not compiling in configmgr
-
+- When `zwe components install` could not find or set the PC bit of a ZSS plugin, it would print out an example command for fixing the issue. Now, it shows the exact command you could execute to fix the PC bit problem.
 
 ## `2.2.0`
 
