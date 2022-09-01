@@ -208,6 +208,17 @@ export function trim(input: string): string {
   return input.trim();
 }
 
+// Replace all occurrences of a string with another	
+export function replace(sourceString: string, searchTerm: string, replaceTerm: string): string {
+  const all = new RegExp(searchTerm, 'g')
+  return sourceString.replace(all, replaceTerm);
+}	
+
+// Return true if searchString is substring of string	
+export function isSubstrOf(sourceString: string, searchString: string): boolean {
+	return sourceString.includes(searchString);
+}	
+
 //TODO this is a way to not have lossy output https://github.com/zowe/zlux-server-framework/blob/v2.x/staging/utils/argumentParser.js
 export function sanitizeAlphanum(input: string): string {
   const regex = /[^a-zA-Z0-9]/g;
