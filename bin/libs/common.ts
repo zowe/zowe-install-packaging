@@ -56,13 +56,6 @@ export function requireZoweYaml() {
   const configFiles = std.getenv('ZWE_CLI_PARAMETER_CONFIG');
   if (!configFiles) {
     printErrorAndExit(`Error ZWEL0108E: Zowe YAML config file is required.`);
-  } else {
-    configFiles.split(',').forEach(function(file: string) {
-      //TODO parmlib
-      if (!fs.fileExists(file)) {
-        printErrorAndExit(`Error ZWEL0109E: The Zowe YAML config file ${file} does not exist.`, undefined, 109);
-      }
-    });
   }
 }
 
