@@ -1,1 +1,15 @@
-""
+{
+  "lockAcquiredTime": "Thu Sep 01 2022 18:23:41 GMT+0000 (Coordinated Universal Time)",
+  "uid": "1662056621197035366",
+  "repository": {
+    "owner": "zowe",
+    "repo": "zowe-install-packaging"
+  },
+  "branch": "amanda/update-explorer-apis-v2.3",
+  "workflow": "Zowe CICD Integration Tests",
+  "job": "cicd-test",
+  "actor": "zowe-robot",
+  "runId": 2973994704,
+  "runNumber": 1531,
+  "link": "https://github.com/zowe/zowe-install-packaging/actions/runs/2973994704"
+}
