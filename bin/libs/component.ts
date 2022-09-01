@@ -386,7 +386,7 @@ export function testOrSetPcBit(path: string): boolean {
     zos.changeExtAttr(path, zos.EXTATTR_PROGCTL, true);
     const success = hasPCBit(path);
     if (!success) {
-      common.printErrorAndExit("PC bit not set. This must be set such as by executing 'extattr +p $COMPONENT_HOME/lib/sys.so' as a user with sufficient privilege.");
+      common.printErrorAndExit(`PC bit not set. This must be set such as by executing 'extattr +p ${path}' as a user with sufficient privilege.`);
     }
     return success;
   } else {
