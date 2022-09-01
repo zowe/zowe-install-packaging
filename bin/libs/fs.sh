@@ -33,8 +33,23 @@ EOF
 }
 
 convert_to_absolute_path() {
-  orgPath="${1}"
-  echo "$(cd "$(dirname "$orgPath")"; pwd)/$(basename "$orgPath")"
+    # generate absolute path from relative path
+    # $1     : relative filename
+    # return : absolute path
+    orgPath="${1}"
+    if [ -d "$orgPath" ]; then
+        # dir
+        (cd "$orgPath"; pwd)
+    elif [ -f "$orgPath" ]; then
+        # file
+        if [[ $orgPath = /* ]]; then
+            echo "$orgPath"
+        elif [[ $orgPath == */* ]]; then
+            echo "$(cd "${orgPath%/*}"; pwd)/${orgPath##*/}"
+        else
+            echo "$(pwd)/$orgPath"
+        fi
+    fi
 }
 
 get_tmp_dir() {
