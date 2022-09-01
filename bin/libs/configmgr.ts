@@ -96,7 +96,7 @@ function writeMergedConfig(config: any): number {
         if (!returnArray[1]) { //no error
           dirWritable = ((returnArray[0].mode & os.S_IFMT) == os.S_IFDIR)
         } else {
-          if ((returnArray[1] != std.Error.ENOENT) && !silenceNotFound) {
+          if ((returnArray[1] != std.Error.ENOENT)) {
             console.log(`directoryExists dir=${dir}, err=`+returnArray[1]);
           }
         }
