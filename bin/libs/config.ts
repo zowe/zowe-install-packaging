@@ -25,6 +25,7 @@ import * as zosfs from './zos-fs';
 import * as sys from './sys';
 import * as container from './container';
 import * as node from './node';
+import * as objUtils from '../utils/ObjUtils';
 
 const cliParameterConfig:string = function() {
     let value = std.getenv('ZWE_CLI_PARAMETER_CONFIG');
@@ -119,9 +120,14 @@ export function generateInstanceEnvFromYamlConfig(haInstance: string) {
     std.exit(140);
   }
 
+
+  
+
+  
+
   // convert YAML configurations to backward compatible .instance-<ha-id>.env files
   common.printFormattedTrace("ZWELS", "bin/libs/config.sh,generate_instance_env_from_yaml_config", `config-converter yaml env --ha ${haInstance}`);
-  const envs = configmgr.getZoweConfigEnv();
+  const envs = configmgr.getZoweConfigEnv(haInstance);
   common.printFormattedTrace("ZWELS", "bin/libs/config.sh,generate_instance_env_from_yaml_config", `- Output: ${JSON.stringify(envs, null, 2)}`);
   const envKeys = Object.keys(envs);
   let envFileArray=[];
@@ -131,34 +137,60 @@ export function generateInstanceEnvFromYamlConfig(haInstance: string) {
     envFileArray.push(`${key}=${envs[key]}`);
   });
 
-  let envFileContent = envFileArray.join('\n');
-  let rc = xplatform.storeFileUTF8(`${zwePrivateWorkspaceEnvDir}/.instance-${haInstance}.env`, xplatform.AUTO_DETECT, envFileContent);
-  if (rc) {
-    common.printFormattedError("ZWELS", "bin/libs/config.sh,generate_instance_env_from_yaml_config", `ZWEL0140E: Failed to translate Zowe configuration (${cliParameterConfig}).`);
-    std.exit(140);
-    return;
-  }
-  
-
-  components.forEach((component:string)=> {
-    const componentAlpha = stringlib.sanitizeAlpha(component);
-    const folderName = `${zwePrivateWorkspaceEnvDir}/${component}`;
+  components.forEach((currentComponent:string)=> {
+    const componentAlpha = stringlib.sanitizeAlpha(currentComponent);
+    const componentDir = component.findComponentDirectory(currentComponent);
+    const componentManifest = component.getManifest(componentDir);
+    const folderName = `${zwePrivateWorkspaceEnvDir}/${currentComponent}`;
     let rc = fs.mkdirp(folderName, 0o700);
     if (rc) {
       //TODO error code
-      common.printFormattedError("ZWELS", "bin/libs/config.sh,generate_instance_env_from_yaml_config", `Failed to make env var folder for component=${component}`);
+      common.printFormattedError("ZWELS", "bin/libs/config.sh,generate_instance_env_from_yaml_config", `Failed to make env var folder for component=${currentComponent}`);
     }
     let componentFileArray = [];
     componentFileArray.push('#!/bin/sh');
 
+    const componentConfigKeys = [];
+
     envKeys.forEach((key:string)=> {
       componentFileArray.push(`${key}=${envs[key]}`);
       if (key.startsWith(`ZWE_components_${componentAlpha}_`)) {
-        let keyPrefixLength=`ZWE_components_${componentAlpha}_`.length;
-        componentFileArray.push(`ZWE_configs_${key.substring(keyPrefixLength)}=${envs[key]}`);
+        const keyPrefixLength=`ZWE_components_${componentAlpha}_`.length;
+        const configName = key.substring(keyPrefixLength);
+        componentConfigKeys.push(configName);
       }
     });
 
+    let flat = [];
+    if (componentManifest.configs) {
+      const flattener = new objUtils.Flattener();
+      flattener.setSeparator('_');
+      flattener.setKeepArrays(true);
+      //flattener.setPrefix();
+      flat = flattener.flatten(componentManifest.configs);
+    }
+    
+    const flatKeys = Object.keys(flat);
+    flatKeys.forEach((key: string)=> {
+      if (componentConfigKeys.includes(key)) {
+        //use it, and add it as _configs to component env
+        componentFileArray.push(`ZWE_configs_${key}=${envs['ZWE_components_'+componentAlpha+'_'+key]}`);
+      }  else {
+        //use default, and add it as _configs, and also to envs
+        componentFileArray.push(`ZWE_components_${componentAlpha}_${key}=${flat[key]}`);
+        componentFileArray.push(`ZWE_configs_${key}=${flat[key]}`);
+        
+        envFileArray.push(`ZWE_components_${componentAlpha}_${key}=${flat[key]}`);
+      }
+    });
+    
+    componentConfigKeys.forEach((key: string)=> {
+      if (!flatKeys.includes(key)) {
+        //leftovers
+        componentFileArray.push(`ZWE_configs_${key}=${envs['ZWE_components_'+componentAlpha+'_'+key]}`);
+      }
+    });
+    
     const componentFileContent = componentFileArray.join('\n');
     rc = xplatform.storeFileUTF8(`${folderName}/.instance-${haInstance}.env`, xplatform.AUTO_DETECT, componentFileContent);
     if (rc) { 
@@ -167,6 +199,14 @@ export function generateInstanceEnvFromYamlConfig(haInstance: string) {
       return;
     }
   });
+
+  let envFileContent = envFileArray.join('\n');
+  let rc = xplatform.storeFileUTF8(`${zwePrivateWorkspaceEnvDir}/.instance-${haInstance}.env`, xplatform.AUTO_DETECT, envFileContent);
+  if (rc) {
+    common.printFormattedError("ZWELS", "bin/libs/config.sh,generate_instance_env_from_yaml_config", `ZWEL0140E: Failed to translate Zowe configuration (${cliParameterConfig}).`);
+    std.exit(140);
+    return;
+  }
 }
 
 
