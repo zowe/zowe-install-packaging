@@ -38,9 +38,12 @@ convert_to_absolute_path() {
     # return : absolute path
     orgPath="${1}"
     if [ -d "$orgPath" ]; then
-        # dir
-        (cd "$orgPath"; pwd)
-    elif [ -f "$orgPath" ]; then
+        if [[ $orgPath = /* ]]; then
+            echo "$orgPath"
+        else
+            (cd "$orgPath"; pwd)
+        fi
+    elif  [ -f "$orgPath" ]; then
         # file
         if [[ $orgPath = /* ]]; then
             echo "$orgPath"
