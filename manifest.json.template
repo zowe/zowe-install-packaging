@@ -105,7 +105,7 @@
       "artifact": "apiml-sample-extension-*.zip"
     },
     "org.zowe.configmgr-rexx": {
-      "version": "0.4.0-V2.X-RC",
+      "version": "0.4.0-v2.x_rc",
       "repository": "libs-snapshot-local",
       "artifact": "configmgr_rexx-0.4.0-2022090143.pax"
     },
