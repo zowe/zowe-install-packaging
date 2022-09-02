@@ -52,11 +52,11 @@
       "artifact": "zss-2.2.0-rc-265-20220713222352.pax"
     },
     "org.zowe.explorer.jobs.jobs-api-package": {
-      "version": "2.0.7",
+      "version": "2.0.8",
       "artifact": "jobs-api-package-*.zip"
     },
     "org.zowe.explorer.files.files-api-package": {
-      "version": "2.0.7",
+      "version": "2.0.8",
       "artifact": "files-api-package-*.zip"
     },
     "org.zowe.explorer-jes": {
@@ -287,21 +287,21 @@
       "componentGroup": "Zowe Explorer Common REST Server",
       "entries": [{
         "repository": "explorer-api-common",
-        "tag": "2.0.12",
+        "tag": "2.0.13",
         "destinations": ["Zowe PAX"]
       }]
     }, {
       "componentGroup": "Zowe Explorer Data Sets REST Server",
       "entries": [{
         "repository": "data-sets",
-        "tag": "2.0.7",
+        "tag": "2.0.8",
         "destinations": ["Zowe PAX"]
       }]
     }, {
       "componentGroup": "Zowe Explorer Jobs REST Server",
       "entries": [{
         "repository": "jobs",
-        "tag": "2.0.7",
+        "tag": "2.0.8",
         "destinations": ["Zowe PAX"]
       }]
     },
@@ -452,12 +452,12 @@
     "files-api": {
       "registry": "zowe-docker-release.jfrog.io",
       "name": "ompzowe/files-api",
-      "tag" : "2.0.7-ubuntu"
+      "tag" : "2.0.8-ubuntu"
     },
     "jobs-api": {
       "registry": "zowe-docker-release.jfrog.io",
       "name": "ompzowe/jobs-api",
-      "tag" : "2.0.7-ubuntu"
+      "tag" : "2.0.8-ubuntu"
     },
     "base": {
       "registry": "zowe-docker-release.jfrog.io",
