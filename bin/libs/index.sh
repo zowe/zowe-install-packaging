@@ -27,7 +27,7 @@ export ZWE_PRIVATE_DEFAULT_ZIS_USER=ZWESIUSR
 export ZWE_PRIVATE_DEFAULT_ZOWE_STC=ZWESLSTC
 export ZWE_PRIVATE_DEFAULT_ZIS_STC=ZWESISTC
 export ZWE_PRIVATE_DEFAULT_AUX_STC=ZWESASTC
-export ZWE_PRIVATE_CORE_COMPONENTS_REQUIRE_JAVA=gateway,discovery,api-catalog,caching-service,metrics-service,files-api,jobs-api
+export ZWE_PRIVATE_CORE_COMPONENTS_REQUIRE_JAVA=gateway,cloud-gateway,discovery,api-catalog,caching-service,metrics-service,files-api,jobs-api
 
 . "${ZWE_zowe_runtimeDirectory}/bin/libs/certificate.sh"
 . "${ZWE_zowe_runtimeDirectory}/bin/libs/container.sh"
