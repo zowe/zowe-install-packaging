@@ -1,1 +1,15 @@
-""
+{
+  "lockAcquiredTime": "Thu Sep 08 2022 13:30:30 GMT+0000 (Coordinated Universal Time)",
+  "uid": "1662643830702914955",
+  "repository": {
+    "owner": "zowe",
+    "repo": "zowe-install-packaging"
+  },
+  "branch": "v2.x/pswi/newDS",
+  "workflow": "Zowe Build and Packaging",
+  "job": "regular-build",
+  "actor": "muzikovam",
+  "runId": 3014782578,
+  "runNumber": 1930,
+  "link": "https://github.com/zowe/zowe-install-packaging/actions/runs/3014782578"
+}
