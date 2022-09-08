@@ -258,7 +258,7 @@ export function createTmpFile(prefix: string = 'zwe', tmpdir?: string): string|u
   }
   common.printTrace(`  > create_tmp_file on ${tmpdir}`);
   while (true) {
-    let file = `${tmpdir}/${prefix}-${std.getenv('random')}`;
+    let file = `${tmpdir}/${prefix}-${Math.floor(Math.random()*10000)}`;
     common.printTrace(`    - test ${file}`);
     if (!pathExists(file)) {
       common.printTrace(`    - good`);

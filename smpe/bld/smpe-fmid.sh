@@ -117,6 +117,11 @@ sed -n '/^'$dd' /p' $partsX > $copiedX.list         # no error trapping
 _cmd --save $copiedX cat $copiedX.list
 list=$(awk '{print $2}' $copiedX.list)              # only member names
 _copyMvsMvs "${mvsI}.$dd" "${mcsHlq}.F3" "U" "**" "6144" "PO" "30,5"
+dd="S${prefix}LOAD"
+sed -n '/^'$dd' /p' $partsX > $copiedX.list         # no error trapping
+_cmd --save $copiedX cat $copiedX.list
+list=$(awk '{print $2}' $copiedX.list)              # only member names
+_copyMvsMvs "${mvsI}.$dd" "${mcsHlq}.F3" "U" "**" "6144" "PO" "30,5"
 
 # F4 - all USS files
 # half-track on 3390 DASD is 27998 bytes

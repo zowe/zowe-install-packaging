@@ -115,6 +115,10 @@ export function readJson(file: string, key: string):any {
   return result.out;
 }
 
+export function readJsonString(input: string, key: string): any {
+  return fakejq.jqget(JSON.parse(input), key);
+}
+
   //TODO handle parmlib???
 export function updateYaml(file: string, key: string, val: any, expectedSample: string) {
   const ZOWE_CONFIG=config.getZoweConfig();
