@@ -111,7 +111,8 @@ else
   tmpfile=$(create_tmp_file $(echo "zwe ${ZWE_CLI_COMMANDS_LIST}" | sed "s# #-#g"))
   print_debug "- Copy ${prefix}.${ZWE_PRIVATE_DS_SZWESAMP}(ZWESLSTC) to ${tmpfile}"
   if [[ "$ZWE_CLI_PARAMETER_CONFIG" != /* ]];then
-    print_message "CONFIG path defined in ZWESLSTC is converted into absolute path and may contain SYSNAME. Please manually verify if this path works for your environment, especially when you are working in Sysplex environment."
+    print_message "CONFIG path defined in ZWESLSTC is converted into absolute path and may contain SYSNAME."
+    print_message "Please manually verify if this path works for your environment, especially when you are working in Sysplex environment."
   fi
   result=$(cat "//'${prefix}.${ZWE_PRIVATE_DS_SZWESAMP}(ZWESLSTC)'" | \
           sed "s/^\/\/STEPLIB .*\$/\/\/STEPLIB  DD   DSNAME=${authLoadlib},DISP=SHR/" | \
