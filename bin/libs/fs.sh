@@ -52,6 +52,8 @@ convert_to_absolute_path() {
         else
             echo "$(pwd)/$orgPath"
         fi
+    else
+        echo "$orgPath"
     fi
 }
 
