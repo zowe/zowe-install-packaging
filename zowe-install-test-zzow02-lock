@@ -1,1 +1,15 @@
-""
+{
+  "lockAcquiredTime": "Fri Sep 09 2022 15:25:12 GMT+0000 (Coordinated Universal Time)",
+  "uid": "1662737112418939399",
+  "repository": {
+    "owner": "zowe",
+    "repo": "zowe-install-packaging"
+  },
+  "branch": "user/markackert/smpe-automation-fixes",
+  "workflow": "Zowe CICD Integration Tests",
+  "job": "cicd-test",
+  "actor": "zowe-robot",
+  "runId": 3023508982,
+  "runNumber": 1572,
+  "link": "https://github.com/zowe/zowe-install-packaging/actions/runs/3023508982"
+}
