@@ -579,50 +579,16 @@
       "required": ["keystore", "truststore", "pem"],
       "properties": {
         "keystore": {
-          "type": "object",
-          "additionalProperties": false,
-          "description": "Certificate keystore.",
-          "required": ["type", "file", "alias"],
-          "properties": {
-            "type": {
-              "type": "string",
-              "description": "Keystore type.",
-              "enum": ["PKCS12", "JCERACFKS"]
-            },
-            "file": {
-              "type": "string",
-              "description": "Path to your PKCS#12 keystore or z/OS JCERACFKS keyring."
-            },
-            "password": {
-              "type": "string",
-              "description": "Password of your PKCS#12 keystore."
-            },
-            "alias": {
-              "type": "string",
-              "description": "Certificate alias name of defined in your PKCS#12 keystore, or certificate label of z/OS JCERACFKS keyring."
-            }
-          }
+          "oneOf": [
+            { "$ref": "#/$defs/fileKeystore" },
+            { "$ref": "#/$defs/keyringKeystore" }
+          ]
         },
         "truststore": {
-          "type": "object",
-          "additionalProperties": false,
-          "description": "Certificate truststore.",
-          "required": ["type", "file"],
-          "properties": {
-            "type": {
-              "type": "string",
-              "description": "Truststore type.",
-              "enum": ["PKCS12", "JCERACFKS"]
-            },
-            "file": {
-              "type": "string",
-              "description": "Path to your PKCS#12 keystore or z/OS JCERACFKS keyring."
-            },
-            "password": {
-              "type": "string",
-              "description": "Password of your PKCS#12 keystore."
-            }
-          }
+          "oneOf": [
+            { "$ref": "#/$defs/fileTruststore" },
+            { "$ref": "#/$defs/keyringTruststore" }
+          ]
         },
         "pem": {
           "type": "object",
@@ -654,6 +620,90 @@
               ]
             }
           }
+        }
+      }
+    },
+    "fileKeystore": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Certificate keystore.",
+      "required": ["type", "file", "alias"],
+      "properties": {
+        "type": {
+          "type": "string",
+          "description": "Keystore type.",
+          "const": "PKCS12"
+        },
+        "file": {
+          "type": "string",
+          "description": "Path to your PKCS#12 keystore."
+        },
+        "password": {
+          "type": "string",
+          "description": "Password of your PKCS#12 keystore."
+        },
+        "alias": {
+          "type": "string",
+          "description": "Certificate alias name of defined in your PKCS#12 keystore."
+        }
+      }
+    },
+    "keyringKeystore": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Certificate keystore.",
+      "required": ["type", "file", "alias"],
+      "properties": {
+        "type": {
+          "type": "string",
+          "description": "Keystore type.",
+          "const": "JCERACFKS"
+        },
+        "file": {
+          "type": "string",
+          "description": "Path to your z/OS JCERACFKS keyring."
+        },
+        "alias": {
+          "type": "string",
+          "description": "Certificate label as defined in your z/OS JCERACFKS keyring."
+        }
+      }
+    },
+    "fileTruststore": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Certificate truststore.",
+      "required": ["type", "file"],
+      "properties": {
+        "type": {
+          "type": "string",
+          "description": "Truststore type.",
+          "const": "PKCS12"
+        },
+        "file": {
+          "type": "string",
+          "description": "Path to your PKCS#12 keystore."
+        },
+        "password": {
+          "type": "string",
+          "description": "Password of your PKCS#12 keystore."
+        }
+      }
+    },
+    "keyringTruststore": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Certificate truststore.",
+      "required": ["type", "file"],
+      "properties": {
+        "type": {
+          "type": "string",
+          "description": "Truststore type.",
+          "const": "JCERACFKS"
+        },
+        "file": {
+          "type": "string",
+          "description": "Path to your z/OS JCERACFKS keyring."
         }
       }
     },
