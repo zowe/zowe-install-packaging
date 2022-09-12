@@ -47,9 +47,9 @@
       "artifact": "zlux-editor-2.3.0-20220901.201608.pax"
     },
     "org.zowe.zss": {
-      "version": "2.3.0-RC",
+      "version": "2.3.0-PR-509",
       "repository": "libs-snapshot-local",
-      "artifact": "zss-2.3.0-rc-328-20220901202221.pax"
+      "artifact": "zss-2.3.0-pr-509-333-20220912133326.pax"
     },
     "org.zowe.explorer.jobs.jobs-api-package": {
       "version": "2.0.8",
