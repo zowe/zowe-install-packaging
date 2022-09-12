@@ -202,12 +202,12 @@
         },
         {
           "repository": "zss",
-          "tag": "v2.3.0-RC1",
+          "tag": "v2.3.0-RC3",
           "destinations": ["Zowe PAX"]
         },
         {
           "repository": "zowe-common-c",
-          "tag": "zss-v2.3.0-RC1",
+          "tag": "zss-v2.3.0-RC3",
           "destinations": ["Zowe PAX"]
         }
       ]
