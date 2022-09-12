@@ -393,7 +393,7 @@
       "componentGroup": "Configmgr",
       "entries": [{
         "repository": "zowe-common-c",
-        "tag": "configmgr-v2.3.0-RC1",
+        "tag": "configmgr-v2.3.0-RC3",
         "destinations": ["Zowe PAX"]
       }]
     }
