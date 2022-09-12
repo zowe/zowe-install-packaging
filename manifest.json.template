@@ -107,7 +107,7 @@
       "exclusions": ["*PR*.zip"]
     },
     "org.zowe.apiml.cloud-gateway-package": {
-      "version": "^2.1.1-SNAPSHOT",
+      "version": "^2.4.0-SNAPSHOT",
       "artifact": "cloud-gateway-*.zip",
       "exclusions": ["*PR*.zip"]
     },
