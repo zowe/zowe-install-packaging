@@ -230,7 +230,7 @@
       kubeconfig: "{{ kubeconfig }}" 
       context: "{{ k8s_context }}"
       state: present 
-      src: ../containers/kubernetes/samples/vendors/penshift/discovery-route.yaml
+      src: ../containers/kubernetes/samples/vendors/openshift/discovery-route.yaml
     when: k8s_networking|lower == "route"
 
   - name: Find all the deployment files in the workloads
