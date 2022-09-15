@@ -1,15 +1,1 @@
-{
-  "lockAcquiredTime": "Thu Sep 15 2022 15:12:06 GMT+0000 (Coordinated Universal Time)",
-  "uid": "1663254726233289384",
-  "repository": {
-    "owner": "zowe",
-    "repo": "zowe-install-packaging"
-  },
-  "branch": "users/oscar/updatevscode-explorer",
-  "workflow": "Zowe CICD Integration Tests",
-  "job": "cicd-test",
-  "actor": "zowe-robot",
-  "runId": 3061576600,
-  "runNumber": 1606,
-  "link": "https://github.com/zowe/zowe-install-packaging/actions/runs/3061576600"
-}
+""
