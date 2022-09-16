@@ -18,7 +18,7 @@ import {
 } from '../../../constants';
 
 const testServer = process.env.TEST_SERVER;
-const testSuiteName = 'Test convenience build installation with Infinispan as storage method for the Caching Service';
+const testSuiteName = 'Test convenience build installation with enabling config manager';
 describe(testSuiteName, () => {
   beforeAll(() => {
     // validate variables
@@ -35,7 +35,6 @@ describe(testSuiteName, () => {
       {
         'zowe_build_local': process.env['ZOWE_BUILD_LOCAL'],
         'zowe_custom_for_test': 'true',
-        'zowe_caching_service_persistent': 'infinispan',
         'zowe_use_config_manager': 'true',
       }
     );
