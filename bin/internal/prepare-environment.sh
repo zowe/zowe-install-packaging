@@ -87,7 +87,7 @@ fi
 ZWELS_HA_INSTANCE_ID=$(echo "${ZWELS_HA_INSTANCE_ID}" | tr '[:upper:]' '[:lower:]' | sed 's/[^a-zA-Z0-9]/_/g')
 
 # read the instance environment variables to make sure they exists
-. ${INSTANCE_DIR}/bin/internal/read-instance.sh -i "${ZWELS_HA_INSTANCE_ID}" -o "${ZWELS_START_COMPONENT_ID}"
+. ${INSTANCE_DIR}/bin/instance/internal/read-instance.sh -i "${ZWELS_HA_INSTANCE_ID}" -o "${ZWELS_START_COMPONENT_ID}"
 if [ "${ZWELS_CONFIG_LOAD_METHOD}" = "instance.env" -a -n "${KEYSTORE_DIRECTORY}" -a -f "${KEYSTORE_DIRECTORY}/zowe-certificates.env" ]; then
   . ${INSTANCE_DIR}/bin/internal/read-keystore.sh -i "${ZWELS_HA_INSTANCE_ID}" -o "${ZWELS_START_COMPONENT_ID}"
 fi
