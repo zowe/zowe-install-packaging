@@ -218,20 +218,17 @@ export function getSchemasForComponentConfig(manifest: any, componentDir: string
       return componentDir+'/'+manifest.schemas.configs+":"+baseSchemas;
     }
   }
-  //This is not in the schema yet, because I'm not sure if it should be an option ever.
-  //an intentionally long name to discourage use
-  if (ZOWE_CONFIG.skipComponentsSchemaValidate === true) {
-    return baseSchemas;
-  } else {
-    return undefined;
-  }
+  return undefined;
 }
 
 export function validateConfigForComponent(componentId: string, manifest: any, componentDir: string, configPath: string): boolean {
   const schemas = getSchemasForComponentConfig(manifest, componentDir);
-  if (schemas) { //can be undefined if not stated in manifest.yaml
+  if (!schemas && ZOWE_CONFIG.zowe.configmgr.validation != 'COMPONENT-COMPAT') { //can be undefined if not stated in manifest.yaml
     common.printError(`Component ${componentId} is missing property manifest property schemas.configs, validation will fail`);
     return false;
+  } else if (!schemas) {
+    common.printError(`Error: DEPRECATED: Component ${componentId} does not have a schema file defined in manifest property schemas.configs! Skipping config validation for this component. This may fail in future versions of Zowe. Updating the component is recommended.`);
+    return true;
   }
 
   const configRevisionName = `zowe.yaml-${componentId}`;

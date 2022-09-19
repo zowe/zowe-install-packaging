@@ -6,6 +6,13 @@ All notable changes to the Zowe Installer will be documented in this file.
 
 - Updated ZWEWRF03 workflow to be up to date with the installed software
 
+## `2.4.0`
+
+### New features and enhancements
+
+- zwe can now validate component configuration through use of configmgr and json-schema. If a component does not have a schema, a warning will be printed. Due to schemas being required since 2.0, this behavior may change in a later version.
+- Components can now provide an array of schema files rather than just one. This allows for better re-use and organization.
+
 ## `2.3.0`
 
 ### New features and enhancements

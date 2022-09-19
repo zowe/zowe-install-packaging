@@ -298,6 +298,10 @@ zowe:
   #    job:
   #      name: ${{ zowe.job.prefix }}SV
   #      prefix: ZWE1
+  configmgr:
+    # STRICT=quit on any error, including missing schema
+    # COMPONENT-COMPAT=if component missing schema, skip it with warning instead of quit
+    validation: "COMPONENT-COMPAT"
 
   # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   # runtime z/OS job name
