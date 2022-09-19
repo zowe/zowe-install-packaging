@@ -157,12 +157,12 @@
       "componentGroup": "Zowe Application Framework",
       "entries": [{
           "repository": "zlux-app-manager",
-          "tag": "v2.3.0-RC1",
+          "tag": "v2.3.0-RC4",
           "destinations": ["Zowe PAX"]
         },
         {
           "repository": "zlux-app-server",
-          "tag": "v2.3.0-RC1",
+          "tag": "v2.3.0-RC4",
           "destinations": ["Zowe PAX"]
         },
         {
@@ -177,17 +177,17 @@
         },
         {
           "repository": "zlux-platform",
-          "tag": "v2.3.0-RC1",
+          "tag": "v2.3.0-RC4",
           "destinations": ["Zowe PAX"]
         },
         {
           "repository": "zlux-server-framework",
-          "tag": "v2.3.0-RC2",
+          "tag": "v2.3.0-RC4",
           "destinations": ["Zowe PAX"]
         },
         {
           "repository": "zlux-shared",
-          "tag": "v2.3.0-RC1",
+          "tag": "v2.3.0-RC4",
           "destinations": ["Zowe PAX"]
         },
         {
@@ -197,17 +197,17 @@
         },
         {
           "repository": "zlux-build",
-          "tag": "v2.3.0-RC1",
+          "tag": "v2.3.0-RC4",
           "destinations": ["Zowe PAX"]
         },
         {
           "repository": "zss",
-          "tag": "v2.3.0-RC3",
+          "tag": "v2.3.0-RC4",
           "destinations": ["Zowe PAX"]
         },
         {
           "repository": "zowe-common-c",
-          "tag": "zss-v2.3.0-RC3",
+          "tag": "zss-v2.3.0-RC4",
           "destinations": ["Zowe PAX"]
         }
       ]
@@ -314,14 +314,14 @@
       "componentGroup": "Zowe Desktop TN3270 Emulator Plug-in",
       "entries": [{
         "repository": "tn3270-ng2",
-        "tag": "v2.3.0-RC1",
+        "tag": "v2.3.0-RC4",
         "destinations": ["Zowe PAX"]
       }]
     }, {
       "componentGroup": "Zowe Desktop Sample Angular Application",
       "entries": [{
         "repository": "sample-angular-app",
-        "tag": "v2.3.0-RC1",
+        "tag": "v2.3.0-RC4",
         "destinations": ["Zowe PAX"]
       }]
     },
@@ -329,7 +329,7 @@
       "componentGroup": "Zowe Desktop Sample iFrame Application",
       "entries": [{
         "repository": "sample-iframe-app",
-        "tag": "v2.3.0-RC1",
+        "tag": "v2.3.0-RC4",
         "destinations": ["Zowe PAX"]
       }]
     },
@@ -337,7 +337,7 @@
       "componentGroup": "Zowe Desktop Sample React Application",
       "entries": [{
         "repository": "sample-react-app",
-        "tag": "v2.3.0-RC1",
+        "tag": "v2.3.0-RC4",
         "destinations": ["Zowe PAX"]
       }]
     },
@@ -345,7 +345,7 @@
       "componentGroup": "Zowe Desktop VT Emulator Plugin-in",
       "entries": [{
         "repository": "vt-ng2",
-        "tag": "v2.3.0-RC1",
+        "tag": "v2.3.0-RC4",
 		"destinations": ["Zowe PAX"]
       }]
     },
@@ -353,7 +353,7 @@
       "componentGroup": "Zowe Desktop Editor Plugin-in",
       "entries": [{
         "repository": "zlux-editor",
-        "tag": "v2.3.0-RC1",
+        "tag": "v2.3.0-RC4",
         "destinations": ["Zowe PAX"]
       }]
     },
@@ -393,7 +393,7 @@
       "componentGroup": "Configmgr",
       "entries": [{
         "repository": "zowe-common-c",
-        "tag": "configmgr-v2.3.0-RC3",
+        "tag": "configmgr-v2.3.0-RC4",
         "destinations": ["Zowe PAX"]
       }]
     }
