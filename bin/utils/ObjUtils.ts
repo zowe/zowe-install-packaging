@@ -42,6 +42,7 @@ export class Objutils {
 export class Flattener {
     prefix:string = "";
     separator:string = ".";
+    keepArrays:boolean = false;
     
     constructor(){
 
@@ -49,6 +50,9 @@ export class Flattener {
 
     flatten1(json:any, first:boolean, keyPrefix:string, result:any):void {
         if (Array.isArray(json)){
+            if (this.keepArrays) {
+              result[keyPrefix] = json.join(',');
+            }
             for (let i=0; i<json.length; i++){
                 this.flatten1(json[i],false, keyPrefix+(first ? "" : this.separator)+i,result);
             }
@@ -69,6 +73,10 @@ export class Flattener {
 
     setPrefix(prefix:string):void {
         this.prefix = prefix;
+    }
+
+    setKeepArrays(keepArrays:boolean):void {
+      this.keepArrays = keepArrays;
     }
 
     flatten(x:any):any {

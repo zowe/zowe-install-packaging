@@ -47,13 +47,42 @@
                   "type": "string",
                   "description": "JCL library where Zowe will store temporary JCLs during initialization"
                 },
+                "loadlib": {
+                  "type": "string",
+                  "description": "States the path where Zowe executable utilities are located",
+                  "default": "<hlq>.SZWELOAD"
+                },
                 "authLoadlib": {
                   "type": "string",
-                  "description": "Optional. If it's empty, <hlq>.SZWEAUTH will be APF authorized."
+                  "description": "The dataset that contains any Zowe core code that needs to run APF-authorized, such as ZIS",
+                  "default": "<hlq>.SZWEAUTH"
                 },
                 "authPluginLib": {
                   "type": "string",
                   "description": "APF authorized LOADLIB for Zowe ZIS Plugins"
+                }
+              }
+            },
+            "zis": {
+              "type": "object",
+              "additionalProperties": false,
+              "description": "ZIS related configurations. This setup is optional.",
+              "properties": {
+                "parmlib": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "description": "ZIS related PARMLIB configurations. This setup is optional.",
+                  "properties": {
+                    "keys": {
+                      "type": "object",
+                      "additionalProperties": true,
+                      "description": "Used to specify special ZIS key types with key-value pairs",
+                      "examples": [
+                        "key.sample.1: list",
+                        "key.sample.2: list"
+                      ]
+                    }
+                  }
                 }
               }
             },
@@ -183,6 +212,10 @@
                       "type": "string",
                       "description": "Password of keystore stored self-signed certificate authority.",
                       "default": "local_ca_password"
+                    },
+                    "lock": {
+                      "type": "boolean",
+                      "description": "Whether to restrict the permissions of the keystore after creation"
                     },
                     "import": {
                       "type": "object",
@@ -385,6 +418,31 @@
             }
           }
         },
+        "launcher": {
+          "type": "object",
+          "description": "Set default behaviors of how the Zowe launcher will handle components",
+          "additionalProperties": false,
+          "properties": {
+            "restartIntervals": {
+              "type": "array",
+              "description": "Intervals of seconds to wait before restarting a component if it fails before the minUptime value.",
+              "items": {
+                "type": "integer"  
+              },
+              "minUptime": {
+                "type": "integer",
+                "default": 90,
+                "description": "The minimum amount of seconds before a component is considered running and the restart counter is reset."
+              },
+              "shareAs": {
+                "type": "string",
+                "description": "Determines which SHAREAS mode should be used when starting a component",
+                "enum": ["no", "yes", "must", ""],
+                "default": "yes"
+              }
+            }
+          }
+        },
         "rbacProfileIdentifier": {
           "type": "string",
           "description": "An ID used for determining resource names used in RBAC authorization checks"
@@ -433,7 +491,7 @@
         "useConfigmgr": {
           "type": "boolean",
           "default": false,
-          "description": "(Experimental, WIP) Determines whether or not to use the features of configmgr such as multi-config, parmlib config, config templates, and schema validation. This effects the zwe command."
+          "description": "Determines whether or not to use the features of configmgr such as multi-config, parmlib config, config templates, and schema validation. This effects the zwe command."
         }
       }
     },

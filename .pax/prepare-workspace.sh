@@ -120,7 +120,8 @@ mkdir -p "${CONTENT_DIR}/schemas"
 # Building TS files
 cd "${ROOT_DIR}/build/zwe"
 npm ci && npm run prod
-
+# Cleanup TS files after build
+find "${ROOT_DIR}/bin" -type f -name '*.ts' -delete
 
 # copy from current github source
 echo "[${SCRIPT_NAME}] copying files ..."
