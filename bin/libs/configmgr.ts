@@ -81,6 +81,22 @@ function writeZoweConfigUpdate(updateObj: any, arrayMergeStrategy: number): numb
   return rc;
 }
 
+export function cleanupTempDir() {
+  const tmpDir = std.getenv('ZWE_PRIVATE_TMP_MERGED_YAML_DIR');
+  if (tmpDir) {
+    if (!std.getenv('PATH')) {
+      std.setenv('PATH','/bin:.:/usr/bin');
+    }
+    const rc = os.exec(['rm', '-rf', tmpDir],
+                       {block: true, usePath: true});
+    if (rc == 0) {
+      console.log(`Temporary directory ${tmpDir} removed successfully.`);
+    } else {
+      console.log(`Error: Temporary directory ${tmpDir} was not removed successfully, manual cleanup is needed. rc=${rc}`);
+    }
+  }
+}
+
 function writeMergedConfig(config: any): number {
   const workspace = config.zowe.workspaceDirectory;
 
