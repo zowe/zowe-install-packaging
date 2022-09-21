@@ -46,6 +46,8 @@ if [ ! -d "${target_dir}" ]; then
   print_error_and_exit "Error ZWEL0139E: Failed to create directory ${target_dir}." "" 139
 fi
 
+export ZWE_CLI_PARAMETER_COMPONENT_FILE="$(convert_to_absolute_path "$ZWE_CLI_PARAMETER_COMPONENT_FILE")"
+
 ###############################
 # clean up
 cd "${ZWE_PWD}" && cd "${target_dir}"

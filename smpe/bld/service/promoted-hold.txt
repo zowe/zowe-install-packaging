@@ -1,3 +1,68 @@
+++HOLD(UO02051) SYSTEM FMID(AZWE002) REASON(ACTION) DATE(22263)
+  COMMENT(
+  ****************************************************************
+  * Affected function: SMP/E install                             *
+  ****************************************************************
+  * Description: add DDDEF to CSI.                               *
+  ****************************************************************
+  * Timing: pre-APPLY                                            *
+  ****************************************************************
+  * Part: n/a                                                    *
+  ****************************************************************
+  Applying this maintenance requires the definition of a new
+  DDDEF in your CSI.
+  You can use the following JCL to update an existing CSI.
+  Substitute the #... placeholders with values that match your
+  site requirements.
+  
+  //SZWELOAD JOB
+  //         EXPORT SYMLIST=(TZON,TRGT)
+  //         SET TRGT=#target_hlq
+  //         SET SMPE=#globalcsi_hlq
+  //         SET TZON=#target_zone
+  //UCLIN    EXEC PGM=GIMSMP,REGION=0M,COND=(4,LT)
+  //SZWELOAD DD SPACE=(TRK,(30,15,15)),
+  //            UNIT=SYSALLDA,
+  //            DISP=(MOD,CATLG),
+  //            DSNTYPE=LIBRARY,
+  //            RECFM=U,
+  //            LRECL=0,
+  //            BLKSIZE=32760,
+  //            DSN=&TRGT..SZWELOAD
+  //SMPCSI   DD DISP=OLD,DSN=&SMPE..CSI
+  //SMPCNTL  DD *,SYMBOLS=JCLONLY
+     SET   BDY(&TZON).
+     UCLIN.
+     ADD DDDEF (SZWELOAD)
+         DATASET(&TRGT..SZWELOAD)
+         UNIT(SYSALLDA)
+         WAITFORDSN
+         SHR .
+     ENDUCL.
+  
+  ****************************************************************
+  * Affected function: Zowe servers                              *
+  ****************************************************************
+  * Description: stop servers                                    *
+  ****************************************************************
+  * Timing: pre-APPLY                                            *
+  ****************************************************************
+  * Part: ZWESLSTC and ZWESISTC                                  *
+  ****************************************************************
+  Stop the Zowe servers before installing this update.
+  
+  ****************************************************************
+  * Affected function: Zowe servers                              *
+  ****************************************************************
+  * Description: start servers                                   *
+  ****************************************************************
+  * Timing: post-APPLY                                           *
+  ****************************************************************
+  * Part: ZWESLSTC and ZWESISTC                                  *
+  ****************************************************************
+  Start the Zowe servers after installing this update.
+  
+  ).
 ++HOLD(UO02049) SYSTEM FMID(AZWE002) REASON(ACTION) DATE(22206)
   COMMENT(
   ****************************************************************
