@@ -521,15 +521,18 @@
 //SMPWRK3  DD UNIT=SYSALLDA,SPACE=(CYL,(2,1,10)),RECFM=FB,LRECL=80
 //SMPWRK4  DD UNIT=SYSALLDA,SPACE=(CYL,(2,1,10)),RECFM=FB,LRECL=80
 #if( $csivol and $csivol != "" and $csivol != '#csivol')
-//SMPWRK6  DD UNIT=SYSALLDA,SPACE=(CYL,(450,100,50)),RECFM=FB,LRECL=80,
+//SMPWRK6  DD UNIT=SYSALLDA,
+//            SPACE=(TRK,(3000,750,50)),
+//            RECFM=FB,
+//            LRECL=80,
 //            VOL=SER=&amp;CSIVOL
 #else
-//SMPWRK6  DD UNIT=SYSALLDA,SPACE=(CYL,(450,100,50)),RECFM=FB,LRECL=80
+//SMPWRK6  DD UNIT=SYSALLDA,SPACE=(TRK,(3000,750,50)),RECFM=FB,LRECL=80
 #end
 #if( $csivol and $csivol != "" and $csivol != '#csivol')
-//SYSUT1   DD UNIT=SYSALLDA,SPACE=(CYL,(450,200)),VOL=SER=&amp;CSIVOL
+//SYSUT1   DD UNIT=SYSALLDA,SPACE=(TRK,(3000,750)),VOL=SER=&amp;CSIVOL
 #else
-//SYSUT1   DD UNIT=SYSALLDA,SPACE=(CYL,(450,200))
+//SYSUT1   DD UNIT=SYSALLDA,SPACE=(TRK,(3000,750))
 #end
 //SYSUT2   DD UNIT=SYSALLDA,SPACE=(CYL,(2,1))
 //SYSUT3   DD UNIT=SYSALLDA,SPACE=(CYL,(2,1))
@@ -568,7 +571,7 @@
     ADD DDDEF(SYSPRINT) SYSOUT(*) .
     ADD DDDEF(SMPSNAP)  SYSOUT(*) .
     ADD DDDEF(SMPTLIB)  UNIT(SYSALLDA) .
-    ADD DDDEF(SYSUT1)   CYL SPACE(450,100) VOLUME(${csivol}) 
+    ADD DDDEF(SYSUT1)   TRK SPACE(5250,525) VOLUME(${csivol}) 
         UNIT(SYSALLDA) .
     ADD DDDEF(SYSUT2)   CYL SPACE(2,1) UNIT(SYSALLDA) .
     ADD DDDEF(SYSUT3)   CYL SPACE(2,1) UNIT(SYSALLDA) .
@@ -594,7 +597,7 @@
     ADD DDDEF(SMPLIST)  SYSOUT(*) .
     ADD DDDEF(SYSPRINT) SYSOUT(*) .
     ADD DDDEF(SMPSNAP)  SYSOUT(*) .
-    ADD DDDEF(SYSUT1)   CYL SPACE(450,100) VOLUME(${csivol}) 
+    ADD DDDEF(SYSUT1)   TRK SPACE(5250,525) VOLUME(${csivol}) 
         UNIT(SYSALLDA) .
     ADD DDDEF(SYSUT2)   CYL SPACE(2,1) UNIT(SYSALLDA) .
     ADD DDDEF(SYSUT3)   CYL SPACE(2,1) UNIT(SYSALLDA) .
@@ -612,7 +615,7 @@
     ADD DDDEF(SMPWRK2)  CYL SPACE(2,1) DIR(10) UNIT(SYSALLDA) .
     ADD DDDEF(SMPWRK3)  CYL SPACE(2,1) DIR(10) UNIT(SYSALLDA) .
     ADD DDDEF(SMPWRK4)  CYL SPACE(2,1) DIR(10) UNIT(SYSALLDA) .
-    ADD DDDEF(SMPWRK6)  CYL SPACE(450,100) DIR(50) VOLUME(${csivol}) 
+    ADD DDDEF(SMPWRK6)  TRK SPACE(5250,525) DIR(50) VOLUME(${csivol}) 
         UNIT(SYSALLDA) .
   ENDUCL .
   SET   BDY(&amp;DZONE) .           /* SET TO DISTRIBUTION ZONE   */
@@ -627,7 +630,7 @@
     ADD DDDEF(SMPLIST)  SYSOUT(*) .
     ADD DDDEF(SYSPRINT) SYSOUT(*) .
     ADD DDDEF(SMPSNAP)  SYSOUT(*) .
-    ADD DDDEF(SYSUT1)   CYL SPACE(450,100) VOLUME(${csivol}) 
+    ADD DDDEF(SYSUT1)   TRK SPACE(5250,525) VOLUME(${csivol}) 
         UNIT(SYSALLDA) .
     ADD DDDEF(SYSUT2)   CYL SPACE(2,1) UNIT(SYSALLDA) .
     ADD DDDEF(SYSUT3)   CYL SPACE(2,1) UNIT(SYSALLDA) .
@@ -645,7 +648,7 @@
     ADD DDDEF(SMPWRK2)  CYL SPACE(2,1) DIR(10) UNIT(SYSALLDA) .
     ADD DDDEF(SMPWRK3)  CYL SPACE(2,1) DIR(10) UNIT(SYSALLDA) .
     ADD DDDEF(SMPWRK4)  CYL SPACE(2,1) DIR(10) UNIT(SYSALLDA) .
-    ADD DDDEF(SMPWRK6)  CYL SPACE(450,100) DIR(50) VOLUME(${csivol}) 
+    ADD DDDEF(SMPWRK6)  TRK SPACE(5250,525) DIR(50) VOLUME(${csivol}) 
         UNIT(SYSALLDA) .
   ENDUCL .
   LIST ALLZONES .                /* LIST ZONE INFORMATION      */
@@ -893,6 +896,27 @@
 //            BLKSIZE=0,
 //            DSN=&amp;THLQ..SZWEEXEC
 //*
+//SZWELOAD DD SPACE=(TRK,(30,15,15)),                
+//            UNIT=SYSALLDA,                         
+#if( $tvol and $tvol != "" and $tvol != '#tvol')
+//            VOL=SER=&amp;TVOL,
+#end
+#if( $tsclass and $tsclass != "" and $tsclass != '#tsclass')
+//            STORCLAS=${tsclass},
+#end
+#if( $tdclass and $tdclass != "" and $tdclass != '#tdclass')
+//            DATACLAS=${tdclass},
+#end
+#if( $tmclass and $tmclass != "" and $tmclass != '#tmclass')
+//            MGMTCLAS=${tmclass},
+#end                         
+//            DISP=(NEW,&amp;DSP),                       
+//            DSNTYPE=LIBRARY,       * MUST BE A PDSE
+//            RECFM=U,                               
+//            LRECL=0,             
+//            BLKSIZE=32760,       
+//            DSN=&amp;THLQ..SZWELOAD  
+//*                                
 //EALLOCT  PEND
 //*
 //* ALLOCATE DISTRIBUTION LIBRARIES
@@ -1376,6 +1400,14 @@ $$
 #end
         WAITFORDSN
         SHR .
+    ADD DDDEF (SZWELOAD)         
+        DATASET(&amp;THLQ..SZWELOAD) 
+        UNIT(SYSALLDA)           
+#if( $tvol and $tvol != "" and $tvol != '#tvol')
+        VOLUME(&amp;TVOL)
+#end        
+        WAITFORDSN               
+        SHR .                        
     ADD DDDEF (SZWEEXEC)
         DATASET(&amp;THLQ..SZWEEXEC)
         UNIT(SYSALLDA)
