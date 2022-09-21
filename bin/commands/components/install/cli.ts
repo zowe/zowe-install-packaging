@@ -11,4 +11,10 @@
 
 import * as index from './index';
 import * as std from 'std';
+import * as os from 'os';
+import * as configmgr from '../../../libs/configmgr';
+
 index.execute(std.getenv('ZWE_CLI_PARAMETER_COMPONENT_FILE'), std.getenv('ZWE_CLI_PARAMETER_AUTO_ENCODING'), (std.getenv('ZWE_CLI_PARAMETER_SKIP_ENABLE') === 'true'));
+
+configmgr.cleanupTempDir();
+

@@ -10,21 +10,12 @@
 */
 
 import * as std from 'std';
-import * as os from 'os';
-import * as zos from 'zos';
-import * as xplatform from 'xplatform';
-
-import * as fs from '../../../../libs/fs';
 import * as common from '../../../../libs/common';
 import * as stringlib from '../../../../libs/string';
 import * as shell from '../../../../libs/shell';
-import * as sys from '../../../../libs/sys';
 import * as config from '../../../../libs/config';
 import * as component from '../../../../libs/component';
 import * as varlib from '../../../../libs/var';
-import * as java from '../../../../libs/java';
-import * as node from '../../../../libs/node';
-import * as zosmf from '../../../../libs/zosmf';
 import { PathAPI as pathoid } from '../../../../libs/pathoid';
 
 export function execute(componentName: string) {
@@ -44,12 +35,18 @@ export function execute(componentName: string) {
     common.printMessage(`Process ${installScript} defined in manifest commands.install:`);
     const scriptPath = pathoid.join(targetDir, componentName, installScript);
     // run commands
-    const result = shell.execOutSync('sh', '-c', `. ${ZOWE_CONFIG.zowe.runtimeDirectory}/bin/libs/index.sh && . ${scriptPath}`);
+    const result = shell.execOutSync('sh', '-c', `. ${ZOWE_CONFIG.zowe.runtimeDirectory}/bin/libs/index.sh && . ${scriptPath} ; export rc=$? ; export -p`);
+    if (result.rc==0) {
+      varlib.getEnvironmentExports(result.out, true);
+    } else {
+      common.printError(`install script ended with error, rc=${result.rc}`);
+      std.exit(result.rc);
+    }
+
   } else {
     common.printDebug(`Module ${componentName} does not have commands.install defined.`);
   }
 
-  if (os.platform == 'zos') {
-    component.processZssPluginInstall(componentDir);
-  }
+  component.processZssPluginInstall(componentDir);
+  component.processZisPluginInstall(componentDir);
 }
