@@ -63,6 +63,10 @@ case $install_test_choice in
     "Generate API Documentation")
     test_file="$GENERAL_API_DOCUMENTATION_TESTFILE"
     ;;
+
+    "Config Manager")
+    test_file="$CONFIG_MANAGER_TESTFILE"
+    ;;
     
     "Zowe Nightly Tests")
     test_file="$ZOWE_NIGHTLY_TESTS_FULL"
