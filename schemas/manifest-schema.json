@@ -5,7 +5,7 @@
   "description": "Manifest file spec for declaring properties of a zowe server component",
   "type": "object",
   "additionalProperties": true,
-  "required": [ "name", "id", "schemas" ],
+  "required": [ "name", "id" ],
   "properties": {
     "name": {
       "type": "string",
