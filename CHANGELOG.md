@@ -6,6 +6,12 @@ All notable changes to the Zowe Installer will be documented in this file.
 
 - Updated ZWEWRF03 workflow to be up to date with the installed software
 
+## `2.4.0`
+
+### Minor enhancements/defect fixes
+
+- zowe.environments was not applied when zowe.useConfigmgr=true was set
+
 ## `2.3.0`
 
 ### New features and enhancements
