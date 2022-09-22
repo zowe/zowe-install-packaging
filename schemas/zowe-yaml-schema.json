@@ -496,7 +496,7 @@
         "configmgr": {
           "type": "object",
           "description": "Controls how configmgr will be used by zwe",
-          "required": ["validation", "logLevel"]
+          "required": ["validation"],
           "properties": {
             "validation": {
               "type": "string",
