@@ -222,6 +222,9 @@ export function getSchemasForComponentConfig(manifest: any, componentDir: string
 }
 
 export function validateConfigForComponent(componentId: string, manifest: any, componentDir: string, configPath: string): boolean {
+  if (configPath.startsWith('/')) { //likely input is merged yaml
+    configPath=`FILE(${configPath})`; 
+  }
   const schemas = getSchemasForComponentConfig(manifest, componentDir);
   if (!schemas && ZOWE_CONFIG.zowe.configmgr.validation != 'COMPONENT-COMPAT') { //can be undefined if not stated in manifest.yaml
     common.printError(`Component ${componentId} is missing property manifest property schemas.configs, validation will fail`);
