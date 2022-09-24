@@ -83,7 +83,7 @@
     },
     "org.zowe.apiml.caching-service-package": {
       "version": "2.4.7-PR-2592-SNAPSHOT",
-      "artifact": "caching-service-*.zip"
+      "artifact": "caching-service-package-2.4.7-PR-2592-20220924.134444-2.zip"
     },
     "org.zowe.apiml.metrics-service-package": {
       "version": "^2.1.1-SNAPSHOT",
