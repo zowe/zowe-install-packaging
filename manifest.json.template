@@ -54,13 +54,13 @@
       "exclusions": ["*PR*.zip","*BRANCH*"]
     },
     "org.zowe.explorer-jes": {
-      "version": "~2.0.1-SNAPSHOT"
+      "version": "~2.0.2-PR-356"
     },
     "org.zowe.explorer-mvs": {
-      "version": "~2.0.1-SNAPSHOT"
+      "version": "~2.0.2-PR-235"
     },
     "org.zowe.explorer-uss": {
-      "version": "~2.0.1-SNAPSHOT"
+      "version": "~2.0.2-PR-172"
     },
     "org.zowe.explorer-ip": {
       "version": "~1.0.0-SNAPSHOT",
