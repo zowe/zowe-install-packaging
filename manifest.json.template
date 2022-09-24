@@ -82,7 +82,7 @@
       "exclusions": ["*PR*.zip"]
     },
     "org.zowe.apiml.caching-service-package": {
-      "version": "^2.4.7-PR-2592-SNAPSHOT",
+      "version": "2.4.7-PR-2592-SNAPSHOT",
       "artifact": "caching-service-*.zip"
     },
     "org.zowe.apiml.metrics-service-package": {
