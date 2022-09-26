@@ -56,7 +56,7 @@ prepare_container_runtime_environments() {
   # kubernetes gateway service internal dns name
   export GATEWAY_HOST=gateway-service.${ZWE_POD_NAMESPACE}.svc.${ZWE_POD_CLUSTERNAME}
   export ZWE_GATEWAY_HOST=${GATEWAY_HOST}
-  
+
   # overwrite ZWE_DISCOVERY_SERVICES_LIST from ZWE_DISCOVERY_SERVICES_REPLICAS
   ZWE_DISCOVERY_SERVICES_REPLICAS=$(echo "${ZWE_DISCOVERY_SERVICES_REPLICAS}" | tr -cd '[[:digit:]]' | tr -d '[[:space:]]')
   if [ -z "${ZWE_DISCOVERY_SERVICES_REPLICAS}" ]; then
