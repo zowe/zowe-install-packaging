@@ -416,9 +416,7 @@ os.sleep(30000);
     // other extensions need to specify `require_java` in their validate.sh
     java.requireJava();
   }
-os.sleep(30000);
   node.requireNode();
-os.sleep(30000);
   common.requireZoweYaml();
 
   // overwrite ZWE_PRIVATE_LOG_LEVEL_ZWELS with zowe.launchScript.logLevel config in YAML
