@@ -141,4 +141,4 @@ zowe_launch_components:
 zowe_launch_scripts_loglevel: 
 
 # turn config manager on or off
-zowe_use_config_manager: true
+zowe_use_config_manager: false
