@@ -12,6 +12,7 @@ All notable changes to the Zowe Installer will be documented in this file.
 
 - zwe can now validate component configuration through use of configmgr and json-schema. If a component does not have a schema, a warning will be printed. Due to schemas being required since 2.0, this behavior may change in a later version.
 - Components can now provide an array of schema files rather than just one. This allows for better re-use and organization.
+- zowe.environments was not applied when zowe.useConfigmgr=true was set
 
 ## `2.3.0`
 

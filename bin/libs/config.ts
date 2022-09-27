@@ -298,5 +298,13 @@ export function loadEnvironmentVariables(componentId?: string) {
   if (std.getenv('ZWE_RUN_IN_CONTAINER') == "true") {
     container.prepareContainerRuntimeEnvironments();
   }
+
+  if (configmgr.ZOWE_CONFIG.zowe?.environments) {
+    const environmentKeys = Object.keys(configmgr.ZOWE_CONFIG.zowe.environments);
+    environmentKeys.forEach((key)=> {
+      std.setenv(key, configmgr.ZOWE_CONFIG.zowe.environments[key]);
+    });
+  }
+  
   return std.getenviron();
 }
