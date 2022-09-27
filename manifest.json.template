@@ -12,7 +12,7 @@
   },
   "binaryDependencies": {
     "org.zowe.zlux.zlux-core": {
-      "version": "~2.4.0-zlux-app-server-PR-243",
+      "version": "~2.4.0-V2.X-STAGING-ZLUX-CORE",
       "artifact": "*.pax"
     },
     "org.zowe.zlux.sample-angular-app": {
@@ -40,7 +40,7 @@
       "artifact": "*.pax"
     },
     "org.zowe.zss": {
-      "version": "~2.4.0-PR-518",
+      "version": "~2.4.0-STAGING",
       "artifact": "*.pax"
     },
     "org.zowe.explorer.jobs.jobs-api-package": {
@@ -54,13 +54,13 @@
       "exclusions": ["*PR*.zip","*BRANCH*"]
     },
     "org.zowe.explorer-jes": {
-      "version": "~2.0.2-PR-356"
+      "version": "~2.0.2-SNAPSHOT"
     },
     "org.zowe.explorer-mvs": {
-      "version": "~2.0.2-PR-235"
+      "version": "~2.0.2-SNAPSHOT"
     },
     "org.zowe.explorer-uss": {
-      "version": "~2.0.2-PR-172"
+      "version": "~2.0.2-SNAPSHOT"
     },
     "org.zowe.explorer-ip": {
       "version": "~1.0.0-SNAPSHOT",
@@ -82,8 +82,9 @@
       "exclusions": ["*PR*.zip"]
     },
     "org.zowe.apiml.caching-service-package": {
-      "version": "2.4.7-PR-2592-SNAPSHOT",
-      "artifact": "caching-service-package-2.4.7-PR-2592-20220924.134444-2.zip"
+      "version": "^2.1.1-SNAPSHOT",
+      "artifact": "caching-*.zip",
+      "exclusions": ["*PR*.zip"]
     },
     "org.zowe.apiml.metrics-service-package": {
       "version": "^2.1.1-SNAPSHOT",

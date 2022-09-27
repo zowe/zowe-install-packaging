@@ -2,10 +2,10 @@
 # ==============================================================================
 # Constants
 # ==============================================================================
-# 60 * 10 seconds = 10 mins
-wait_for_zowe_service_retries: 60
-# Every 60 seconds
-wait_for_zowe_service_delay: 60
+# 240 * 10 seconds = 40 mins
+wait_for_zowe_service_retries: 240
+# Every 10 seconds
+wait_for_zowe_service_delay: 10
 
 # ==============================================================================
 # Variables should be verified and overwrittern.

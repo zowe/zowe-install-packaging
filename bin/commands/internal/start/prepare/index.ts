@@ -410,7 +410,6 @@ export function execute() {
   common.printFormattedInfo("ZWELS", "zwe-internal-start-prepare", `Zowe version: v${zoweVersion}`);
   common.printFormattedInfo("ZWELS", "zwe-internal-start-prepare", `build and hash: ${runtimeManifest.build.branch}#${runtimeManifest.build.number} (${runtimeManifest.build.commitHash})`);
 
-os.sleep(30000);
   // validation
   if (stringlib.itemInList(std.getenv('ZWE_PRIVATE_CORE_COMPONENTS_REQUIRE_JAVA'), std.getenv('ZWE_CLI_PARAMETER_COMPONENT'))) {
     // other extensions need to specify `require_java` in their validate.sh
