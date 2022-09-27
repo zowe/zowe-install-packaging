@@ -240,18 +240,22 @@ export function validateConfigForComponent(componentId: string, manifest: any, c
     let status = 0;
     if ((status = CONFIG_MGR.addConfig(configRevisionName))) {
       common.printError(`Error: Could not add config for ${configPath}, status=${status}`);
+      return false;
     }
 
     if ((status = CONFIG_MGR.loadSchemas(configRevisionName, schemas))) {
       common.printError(`Error: Could not load schemas ${schemas} for configs ${configPath}, status=${status}`);
+      return false;
     }
 
     if ((status = CONFIG_MGR.setConfigPath(configRevisionName, configPath))) {
       common.printError(`Error: Could not set config path for ${configPath}, status=${status}`);
+      return false;
     }
 
     if ((status = CONFIG_MGR.loadConfiguration(configRevisionName))) {
       common.printError(`Error: Could not load config for ${configPath}, status=${status}`);
+      return false;
     }
 
     let validation = CONFIG_MGR.validate(configRevisionName);
