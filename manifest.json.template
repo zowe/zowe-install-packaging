@@ -12,35 +12,35 @@
   },
   "binaryDependencies": {
     "org.zowe.zlux.zlux-core": {
-      "version": "~2.3.0-V2.X-STAGING-ZLUX-CORE",
+      "version": "~2.4.0-V2.X-STAGING-ZLUX-CORE",
       "artifact": "*.pax"
     },
     "org.zowe.zlux.sample-angular-app": {
-      "version": "~2.3.0-V2.X-STAGING",
+      "version": "~2.4.0-V2.X-STAGING",
       "artifact": "*.pax"
     },
     "org.zowe.zlux.sample-iframe-app": {
-      "version": "~2.3.0-V2.X-STAGING",
+      "version": "~2.4.0-V2.X-STAGING",
       "artifact": "*.pax"
     },
     "org.zowe.zlux.sample-react-app": {
-      "version": "~2.3.0-V2.X-STAGING",
+      "version": "~2.4.0-V2.X-STAGING",
       "artifact": "*.pax"
     },
     "org.zowe.zlux.tn3270-ng2": {
-      "version": "~2.3.0-V2.X-STAGING",
+      "version": "~2.4.0-V2.X-STAGING",
       "artifact": "*.pax"
     },
     "org.zowe.zlux.vt-ng2": {
-      "version": "~2.3.0-V2.X-STAGING",
+      "version": "~2.4.0-V2.X-STAGING",
       "artifact": "*.pax"
     },
     "org.zowe.zlux.zlux-editor": {
-      "version": "~2.3.0-V2.X-STAGING",
+      "version": "~2.4.0-V2.X-STAGING",
       "artifact": "*.pax"
     },
     "org.zowe.zss": {
-      "version": "~2.3.0-STAGING",
+      "version": "~2.4.0-STAGING",
       "artifact": "*.pax"
     },
     "org.zowe.explorer.jobs.jobs-api-package": {
