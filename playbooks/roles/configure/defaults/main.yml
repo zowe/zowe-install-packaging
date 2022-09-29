@@ -6,6 +6,7 @@
 # full core components list, they should show up in components section in zowe.yaml
 zowe_core_components:
 - gateway
+- cloud-gateway
 - metrics-service
 - api-catalog
 - discovery
@@ -57,6 +58,7 @@ zowe_apiml_metrics_service_port: 7551
 zowe_apiml_catalog_port: 7552
 zowe_apiml_discovery_port: 7553
 zowe_apiml_gateway_port: 7554
+zowe_apiml_cloud_gateway_port: 7563
 zowe_apiml_verify_certficates_of_services: true
 zowe_apiml_nonstrict_verify_certficates_of_services: true
 # APIML configuration properties

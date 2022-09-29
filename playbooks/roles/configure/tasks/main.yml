@@ -278,6 +278,7 @@
   vars:
     configs:
       "components.gateway.port": "{{ zowe_apiml_gateway_port }}"
+      "components.cloud-gateway.port": "{{ zowe_apiml_cloud_gateway_port }}"
       "components.metrics-service.port": "{{ zowe_apiml_metrics_service_port }}"
       "components.api-catalog.port": "{{ zowe_apiml_catalog_port }}"
       "components.discovery.port": "{{ zowe_apiml_discovery_port }}"

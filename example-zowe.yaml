@@ -493,6 +493,12 @@ components:
     debug: false
 
   # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+  cloud-gateway:
+    enabled: false
+    port: 7563
+    debug: false
+
+  # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   api-catalog:
     enabled: true
     port: 7552
