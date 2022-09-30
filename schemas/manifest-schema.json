@@ -37,8 +37,20 @@
       "additionalProperties": false,
       "properties": {
         "configs": {
-          "type": "string",
-          "description": "Defines the location of the json schema file which extends the Zowe Component base schema."
+          "oneOf": [
+            {
+              "type": "string",
+              "description": "Defines the location of the json schema file which extends the Zowe Component base schema."
+            },
+            {
+              "type": "array",
+              "description": "Defines the locations of the json schema files which extend the Zowe Component base schema.",
+              "items": {
+                "type": "string",
+                "description": "Defines the location of a json schema file which extends the Zowe Component base schema."
+              }
+            }
+          ]
         }
       }
     },

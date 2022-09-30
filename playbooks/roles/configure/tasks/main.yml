@@ -92,7 +92,7 @@
       "zowe.setup.dataset.jcllib": "{{ zowe_jcllib }}"
       "zowe.setup.dataset.authLoadlib": "{{ zowe_xmem_loadlib }}"
       "zowe.setup.dataset.authPluginLib": "{{ zowe_xmem_pluginlib }}"
-      "zowe.useConfigmgr": "{{ zowe_use_config_manager }}" 
+      "zowe.useConfigmgr": "{{ zowe_use_config_manager|lower }}" 
 
 - name: Update zowe.yaml zowe.setup.security
   import_role:
