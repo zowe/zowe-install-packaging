@@ -287,7 +287,7 @@ zowe:
   extensionDirectory: /global/zowe/extensions
 
   # **COMMONLY_CUSTOMIZED**
-  useConfigmgr: false
+  useConfigmgr: true
   # Setting to true will enable:
   # * schema-backed validation of zowe.yaml
   # * should greatly improve startup time.
@@ -298,6 +298,10 @@ zowe:
   #    job:
   #      name: ${{ zowe.job.prefix }}SV
   #      prefix: ZWE1
+  configmgr:
+    # STRICT=quit on any error, including missing schema
+    # COMPONENT-COMPAT=if component missing schema, skip it with warning instead of quit
+    validation: "COMPONENT-COMPAT"
 
   # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   # runtime z/OS job name

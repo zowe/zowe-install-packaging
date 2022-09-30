@@ -39,6 +39,10 @@ const ZOWE_SCHEMA_SET=`${ZOWE_SCHEMA}:${COMMON_SCHEMA}`;
 
 export let ZOWE_CONFIG=getZoweConfig();
 
+export function getZoweBaseSchemas(): string {
+  return ZOWE_SCHEMA_SET;
+}
+
 function mkdirp(path:string, mode?: number): number {
   const parts = path.split('/');
   let dir = '/';
