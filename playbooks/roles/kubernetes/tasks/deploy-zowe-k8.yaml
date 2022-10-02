@@ -19,7 +19,7 @@
       kubeconfig: "{{ kubeconfig }}" 
       context: "{{ k8s_context }}"
       state: present 
-      src: ../containers/kubernetes/samples/openshift/zowe-role-binding.yaml
+      src: ../containers/kubernetes/samples/vendors/openshift/zowe-role-binding.yaml
   - name: Git checkout unmodified file
     delegate_to: localhost
     command: git checkout -- ../containers/kubernetes/* 
@@ -171,7 +171,7 @@
   - name: Edit BareMetal Gateway Ingress file to update host info
     delegate_to: localhost
     yedit:
-      src: ../containers/kubernetes/samples/bare-metal/gateway-ingress.yaml
+      src: ../containers/kubernetes/samples/vendors/bare-metal/gateway-ingress.yaml
       edits:
       - key: spec.rules[0].host
         value: '"{{ k8s_gateway_domain }}"'
@@ -179,7 +179,7 @@
   - name: Edit BareMetal Discovery Ingress file to update host info
     delegate_to: localhost
     yedit:
-      src: ../containers/kubernetes/samples/bare-metal/discovery-ingress.yaml
+      src: ../containers/kubernetes/samples/vendors/bare-metal/discovery-ingress.yaml
       edits:
       - key: spec.rules[0].host
         value: '"{{ k8s_discovery_domain }}"'
@@ -190,7 +190,7 @@
       kubeconfig: "{{ kubeconfig }}" 
       context: "{{ k8s_context }}"
       state: present 
-      src: ../containers/kubernetes/samples/bare-metal/gateway-ingress.yaml 
+      src: ../containers/kubernetes/samples/vendors/bare-metal/gateway-ingress.yaml 
     when: k8s_networking|lower == "ingress"
   - name: Deploy Baremetal Discovery Ingress on Zowe K8s
     delegate_to: localhost
@@ -198,12 +198,12 @@
       kubeconfig: "{{ kubeconfig }}" 
       context: "{{ k8s_context }}"
       state: present 
-      src: ../containers/kubernetes/samples/bare-metal/discovery-ingress.yaml
+      src: ../containers/kubernetes/samples/vendors/bare-metal/discovery-ingress.yaml
     when: k8s_networking|lower == "ingress" 
   - name: Edit Openshift Gateway Route file to update host info
     delegate_to: localhost
     yedit:
-      src: ../containers/kubernetes/samples/openshift/gateway-route.yaml
+      src: ../containers/kubernetes/samples/vendors/openshift/gateway-route.yaml
       edits:
       - key: spec.host
         value: '"{{ k8s_gateway_domain }}"'
@@ -211,7 +211,7 @@
   - name: Edit Openshift Discovery Route file to update host info
     delegate_to: localhost
     yedit:
-      src: ../containers/kubernetes/samples/openshift/discovery-route.yaml
+      src: ../containers/kubernetes/samples/vendors/openshift/discovery-route.yaml
       edits:
       - key: spec.host
         value: '"{{ k8s_discovery_domain }}"'
@@ -222,7 +222,7 @@
       kubeconfig: "{{ kubeconfig }}" 
       context: "{{ k8s_context }}"
       state: present 
-      src: ../containers/kubernetes/samples/openshift/gateway-route.yaml
+      src: ../containers/kubernetes/samples/vendors/openshift/gateway-route.yaml
     when: k8s_networking|lower == "route"
   - name: Deploy Openshift Discovery Route on Zowe K8s
     delegate_to: localhost
@@ -230,7 +230,7 @@
       kubeconfig: "{{ kubeconfig }}" 
       context: "{{ k8s_context }}"
       state: present 
-      src: ../containers/kubernetes/samples/openshift/discovery-route.yaml
+      src: ../containers/kubernetes/samples/vendors/openshift/discovery-route.yaml
     when: k8s_networking|lower == "route"
 
   - name: Find all the deployment files in the workloads

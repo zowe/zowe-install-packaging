@@ -37,10 +37,156 @@ export function functionExists(fn: string): boolean {
   return false;
 }
 
+/* 
+${var#Pattern}, ${var##Pattern}
+
+    ${var#Pattern} Remove from $var the shortest part of $Pattern that matches the front end of $var.
+
+    ${var##Pattern} Remove from $var the longest part of $Pattern that matches the front end of $var. 
+
+*/
+
+export function resolveShellVariable(previousKey: string, currentKey: string, currentValue: string|undefined, modifier: string): string|undefined {
+  switch (modifier) {
+  //${parameter-default}, ${parameter:-default}
+  //  If parameter not set, use default.
+  case '-': {
+    return currentValue ? currentValue : currentKey;
+  }
+  //${parameter+alt_value}, ${parameter:+alt_value}
+  //  If parameter set, use alt_value, else use null string.
+  case '+': {
+    return std.getenv(previousKey) ? currentKey : 'null';
+  }
+  //${parameter?err_msg}, ${parameter:?err_msg}
+  //  If parameter set, use it, else print err_msg and abort the script with an exit status of 1.
+  case '?': {
+    let prev;
+    if ((prev=std.getenv(previousKey))) {
+      return prev;
+    } else {
+      common.printError(currentKey);
+      return currentValue;
+    }
+  }
+  //${parameter=default}, ${parameter:=default}
+  //  If parameter not set, set it to default.
+  case '=': {
+    if (!std.getenv(previousKey)) {
+      std.setenv(previousKey, std.getenv(currentKey));
+    }
+    return std.getenv(previousKey);
+  }
+  default:
+    return undefined;
+  }
+}
+
+
 
 // if a string has any env variables, replace them with values
-export function parseStringVars(key: string): string|undefined {
-  return std.getenv(key);
+//
+// TODO this does not seem to handle cases such as ${thing:-${thing:-default}} where 1 var is nested inside another.
+// That appears to need sensing of which } is the right one to end on, and recursion upon seeing a $ in the -=+? while loop.
+export function resolveShellTemplate(content: string): string|undefined {
+  let position = 0;
+  let output = '';
+  
+  while (position != -1 && position < content.length) {
+    let index = content.indexOf('$', position);
+    if (index == -1) {
+      output+=content.substring(position);
+      return output;
+    } else {
+      output+=content.substring(position, index);
+      if (content[index+1] === '{') {
+        let endIndex = content.indexOf('}', index+2);
+        if (endIndex == -1) {
+          output+=content.substring(position);
+          return output;
+        }
+        
+        //${#var}
+        //  String length (number of characters in $var). For an array, ${#array} is the length of the first element in the array.
+        if (content[index+2] === '#') {
+          let value = std.getenv(content.substring(index+3, endIndex));
+          if (value!==undefined) {
+            output+=value.length;
+            position=endIndex;
+            continue;
+          }
+        }
+
+        let accumIndex = index+2;
+        let currentIndex = index+2;
+        let envValue:string;
+        let firstKey:string;
+        let previousKey=null;
+        let currentKey:string;
+        let previousModifier;
+        while ((currentIndex<endIndex) && (envValue===undefined)) {
+          const char = content[currentIndex];
+          if (char == '-' || char == '=' || char == '+' || char == '?') {
+            currentKey=content.substring(accumIndex, currentIndex);
+            if (currentKey.endsWith(':')) {
+              //TODO this does not handle : cases different from non-: cases, unsure what to do with them
+              currentKey = currentKey.substring(0,currentKey.length-1);
+            }
+            accumIndex=currentIndex+1;
+            if (currentKey) {
+              if (firstKey===undefined) {
+                firstKey=currentKey;
+                envValue=std.getenv(firstKey);
+              }
+            }
+            if (previousModifier) {
+              envValue = resolveShellVariable(previousKey, currentKey, envValue, previousModifier);
+            }
+            previousKey=currentKey;
+            previousModifier = char;
+          }
+          currentIndex++;
+        }
+        
+        currentKey=content.substring(accumIndex, currentIndex);
+        if (currentKey.endsWith(':')) {
+          //TODO this does not handle : cases different from non-: cases, unsure what to do with them
+          currentKey = currentKey.substring(0,currentKey.length-1);
+        }
+        if (currentKey) {
+          if (firstKey===undefined) {
+            firstKey=currentKey;
+            envValue=std.getenv(firstKey);
+          }
+        }
+        if (previousModifier) {
+          envValue = resolveShellVariable(previousKey, currentKey, envValue, previousModifier);
+        }
+        if (envValue!==undefined) {
+          output+=envValue;
+        }
+        position=endIndex+1;
+      } else {
+        let keyIndex = index+1;
+        let charCode = content.charCodeAt(keyIndex);
+
+        while ((keyIndex<content.length)
+          && ((charCode <0x5b && charCode > 0x40)
+            || (charCode < 0x7b && charCode > 0x60)
+            || (charCode > 0x2f && charCode < 0x40)
+            || (charCode == 0x5f))) {
+
+          charCode = content.charCodeAt(++keyIndex);
+        }
+        let val = std.getenv(content.substring(index+1, keyIndex));
+        if (val!==undefined) {
+          output+=val;
+        }
+        position=keyIndex;
+      }
+    }
+  }
+  return output;
 }
 
 // return value of the variable
@@ -54,7 +200,7 @@ const declareFilter=/^declare -x (run_zowe_start_component_id=|ZWELS_START_COMPO
 
 const keyFilter=/^(run_zowe_start_component_id|ZWELS_START_COMPONENT_ID|ZWE_LAUNCH_COMPONENTS|env_file|key|line|service|logger|level|expected_log_level_val|expected_log_level_var|display_log|message|utils_dir|print_formatted_function_available|LINENO|ENV|opt|OPTARG|OPTIND|LOGNAME|USER|SSH_|SHELL|PWD|OLDPWD|PS1|ENV|LS_COLORS|_)$/
 
-export function getEnvironmentExports(input?:string): string {
+export function getEnvironmentExports(input?:string, doExport?: boolean): string {
   let exports:string[]=[];
   if (!input) {
     let envvars = std.getenviron();
@@ -69,6 +215,9 @@ export function getEnvironmentExports(input?:string): string {
     lines.forEach((line:string)=> {
       if ((line.startsWith('export ') || line.startsWith('declare -x ')) && (!exportFilter.test(line) && !declareFilter.test(line))) {
         exports.push(line);
+        if (doExport) {
+          setExport(line);
+        }
       }
     });
   }
@@ -95,32 +244,44 @@ export function sourceEnv(envFile: string): boolean {
   //TODO i hope encoding is correct here
   
   let fileContents = xplatform.loadFileUTF8(envFile,xplatform.AUTO_DETECT);
-  let fileLines = fileContents.split('\n');
-  let index;
+  return setExports(fileContents);
+}
+
+export function setExports(envFileContents: string): boolean {
+  let fileLines = envFileContents.split('\n');
   fileLines.forEach((line: string)=> {
-    if ((index = line.indexOf('=')) != -1) {
-      let key;
-      if (line.startsWith('export ')) {
-        key = line.substring(7, index);
-      } else if (line.startsWith('declare -x ')) {
-        key = line.substring(11, index);
-      } else if (line.startsWith('set ')) {
-        key = line.substring(4, index);
-      } else {
-        key = line.substring(0, index);
-      }
-      if ((line[index+1] == "'" && line.endsWith("'")) || (line[index+1] == '"' && line.endsWith('"'))) {
-        let val = line.substring(index + 2, line.length-1);
-        std.setenv(key, val);
-        common.printTrace(`Set env var ${key} to ${val}`);
-      } else {
-        let val = line.substring(index + 1);
-        std.setenv(key, val);
-        common.printTrace(`Set env var ${key} to ${val}`);
-      }
-    }
+    setExport(line);
   });
   return true;
+}
+
+export function setExport(envFileLine: string): boolean {
+  let index: number;
+
+  if ((index = envFileLine.indexOf('=')) != -1) {
+    let key: string;
+    if (envFileLine.startsWith('export ')) {
+      key = envFileLine.substring(7, index);
+    } else if (envFileLine.startsWith('declare -x ')) {
+      key = envFileLine.substring(11, index);
+    } else if (envFileLine.startsWith('set ')) {
+      key = envFileLine.substring(4, index);
+    } else {
+      key = envFileLine.substring(0, index);
+    }
+    if ((envFileLine[index+1] == "'" && envFileLine.endsWith("'")) || (envFileLine[index+1] == '"' && envFileLine.endsWith('"'))) {
+      let val = envFileLine.substring(index + 2, envFileLine.length-1);
+      std.setenv(key, val);
+      common.printTrace(`Set env var ${key} to ${val}`);
+      return true;
+    } else {
+      let val = envFileLine.substring(index + 1);
+      std.setenv(key, val);
+      common.printTrace(`Set env var ${key} to ${val}`);
+      return true;
+    }
+  }
+  return false;
 }
 
 // Takes in a single parameter - the name of the variable

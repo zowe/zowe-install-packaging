@@ -48,6 +48,10 @@ const ZOWE_SCHEMA_SET=`${ZOWE_SCHEMA}:${COMMON_SCHEMA}`;
 
 export let ZOWE_CONFIG=getZoweConfig();
 
+export function getZoweBaseSchemas(): string {
+  return ZOWE_SCHEMA_SET;
+}
+
 function mkdirp(path:string, mode?: number): number {
   const parts = path.split('/');
   let dir = '/';
@@ -133,30 +137,94 @@ function writeZoweConfigUpdate(updateObj: any, arrayMergeStrategy: number): numb
   return rc;
 }
 
+export function cleanupTempDir() {
+  const tmpDir = std.getenv('ZWE_PRIVATE_TMP_MERGED_YAML_DIR');
+  if (tmpDir) {
+    if (!std.getenv('PATH')) {
+      std.setenv('PATH','/bin:.:/usr/bin');
+    }
+    const rc = os.exec(['rm', '-rf', tmpDir],
+                       {block: true, usePath: true});
+    if (rc == 0) {
+      console.log(`Temporary directory ${tmpDir} removed successfully.`);
+    } else {
+      console.log(`Error: Temporary directory ${tmpDir} was not removed successfully, manual cleanup is needed. rc=${rc}`);
+    }
+  }
+}
+
 function writeMergedConfig(config: any): number {
   const workspace = config.zowe.workspaceDirectory;
-  let zwePrivateWorkspaceEnvDir = std.getenv('ZWE_PRIVATE_WORKSPACE_ENV_DIR');
-  if (!zwePrivateWorkspaceEnvDir) {
-    zwePrivateWorkspaceEnvDir=`${workspace}/.env`;
-    std.setenv('ZWE_PRIVATE_WORKSPACE_ENV_DIR', zwePrivateWorkspaceEnvDir);
+
+  let zwePrivateWorkspaceEnvDir: string;
+  let tmpDir = std.getenv('ZWE_PRIVATE_TMP_MERGED_YAML_DIR');
+  if (tmpDir && tmpDir != '1') {
+    zwePrivateWorkspaceEnvDir = tmpDir;
+  } else if (tmpDir == '1') {
+    //If this var is not undefined,
+    //A command is running that is likely to be an admin rather than STC user, so they wouldn't have .env folder permission
+    //Instead, this merged yaml should be temporary within a place they can write to.
+    let tmp = '';
+    for (const dir of [std.getenv('TMPDIR'), std.getenv('TMP'), '/tmp']) {
+      if (dir) {
+        let dirWritable = false;
+        let returnArray = os.stat(dir);
+        if (!returnArray[1]) { //no error
+          dirWritable = ((returnArray[0].mode & os.S_IFMT) == os.S_IFDIR)
+        } else {
+          if ((returnArray[1] != std.Error.ENOENT)) {
+            console.log(`directoryExists dir=${dir}, err=`+returnArray[1]);
+          }
+        }
+
+        if (dirWritable) {
+          tmp = dir;
+          break;
+        } else {
+          console.log(`Error ZWEL0110E: Doesn\'t have write permission on ${dir} directory.`);
+          std.exit(110);
+        }
+      }
+    }
+    if (!tmp) {
+      console.log(`Error: No writable temporary directory could be found, cannot continue`);
+      std.exit(1);
+    }
+    
+    zwePrivateWorkspaceEnvDir=`${tmp}/.zweenv-${Math.floor(Math.random()*10000)}`;
+    std.setenv('ZWE_PRIVATE_TMP_MERGED_YAML_DIR', zwePrivateWorkspaceEnvDir);
+    const mkdirrc = mkdirp(zwePrivateWorkspaceEnvDir, 0o700);
+    if (mkdirrc) { return mkdirrc; }
+
+    console.log(`Temporary directory '${zwePrivateWorkspaceEnvDir}' created.\nZowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.`); 
+  } else {
+    zwePrivateWorkspaceEnvDir = std.getenv('ZWE_PRIVATE_WORKSPACE_ENV_DIR');
+    if (!zwePrivateWorkspaceEnvDir) {
+      zwePrivateWorkspaceEnvDir=`${workspace}/.env`;
+      std.setenv('ZWE_PRIVATE_WORKSPACE_ENV_DIR', zwePrivateWorkspaceEnvDir);
+    }
+    mkdirp(workspace, 0o770);
+    const mkdirrc = mkdirp(zwePrivateWorkspaceEnvDir, 0o700);
+    if (mkdirrc) { return mkdirrc; }
   }
-  mkdirp(workspace, 0o770);
-  const mkdirrc = mkdirp(zwePrivateWorkspaceEnvDir, 0o700);
-  if (mkdirrc) { return mkdirrc; }
+  
   const destination = `${zwePrivateWorkspaceEnvDir}/.zowe-merged.yaml`;
+  /* We don't write it in JSON, but we could!
   const jsonDestination = `${zwePrivateWorkspaceEnvDir}/.zowe.json`;
-/*
   const jsonRC = xplatform.storeFileUTF8(jsonDestination, xplatform.AUTO_DETECT, JSON.stringify(ZOWE_CONFIG, null, 2));
   if (jsonRC) {
     console.log(`Error: Could not write json ${jsonDestination}, rc=${jsonRC}`);
   }
-*/
+  */
   //const yamlReturn = CONFIG_MGR.writeYAML(getConfigRevisionName(ZOWE_CONFIG_NAME), destination);
   let [ yamlStatus, textOrNull ] = CONFIG_MGR.writeYAML(getConfigRevisionName(ZOWE_CONFIG_NAME));
   if (yamlStatus == 0){
     const rc = xplatform.storeFileUTF8(destination, xplatform.AUTO_DETECT, textOrNull);
     if (!rc) {
       std.setenv('ZWE_CLI_PARAMETER_CONFIG', destination);
+    } else {
+      console.log(`Error: Could not write .zowe-merged.yaml, ZWE_CLI_PARAMETER_CONFIG not modified!`);
+      std.exit(1);
     }
     return rc;
   }

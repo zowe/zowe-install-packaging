@@ -223,12 +223,12 @@ export function pathHasPermissions(path: string, mode: number): boolean {
   }
 }
 
-export function convertToAbsolutePath(file: string): string|undefined {
-  const result = os.realpath(file);
+export function convertToAbsolutePath(path: string): string|undefined {
+  const result = os.realpath(path);
   if (!result[1]) {
     return result[0];
   } else {
-    common.printError(`Could not convert ${file} to absolute path, err=${result[1]}`);
+    common.printError(`Could not convert ${path} to absolute path, err=${result[1]}`);
   }
   return undefined;
 }
@@ -258,7 +258,7 @@ export function createTmpFile(prefix: string = 'zwe', tmpdir?: string): string|u
   }
   common.printTrace(`  > create_tmp_file on ${tmpdir}`);
   while (true) {
-    let file = `${tmpdir}/${prefix}-${std.getenv('random')}`;
+    let file = `${tmpdir}/${prefix}-${Math.floor(Math.random()*10000)}`;
     common.printTrace(`    - test ${file}`);
     if (!pathExists(file)) {
       common.printTrace(`    - good`);

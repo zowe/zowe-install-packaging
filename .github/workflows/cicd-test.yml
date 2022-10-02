@@ -31,6 +31,7 @@ on:
           - Install PTF Twice
           - VSAM Caching Storage Method
           - Infinispan Caching Storage Method
+          - Config Manager
           - Generate API Documentation
           - Zowe Nightly Tests
           - Zowe Release Tests
@@ -81,9 +82,10 @@ env:
   INSTALL_PTF_TWICE_TESTFILE: extended/install-ptf-two-times.ts
   VSAM_CACHING_STORAGE_METHOD_TESTFILE: extended/caching-storages/vsam-storage.ts
   INFINISPAN_CACHING_STORAGE_METHOD_TESTFILE: extended/caching-storages/infinispan-storage.ts
+  CONFIG_MANAGER_TESTFILE: extended/config-manager/enable-config-manager.ts
   GENERAL_API_DOCUMENTATION_TESTFILE: basic/install-api-gen.ts
   ZOWE_NIGHTLY_TESTS_FULL: basic/install.ts(all);basic/install-ptf.ts(all)
-  ZOWE_RELEASE_TESTS_FULL: basic/install.ts(all);basic/install-ptf.ts(all);basic/install-ext.ts(any);extended/keyring.ts(all);extended/node-versions/node-v12.ts(any);extended/node-versions/node-v14.ts(any);extended/node-versions/node-v16.ts(any);extended/certificates/nonstrict-verify-external-certificate.ts(any);extended/caching-storages/infinispan-storage.ts(any)
+  ZOWE_RELEASE_TESTS_FULL: basic/install.ts(all);basic/install-ptf.ts(all);basic/install-ext.ts(any);extended/keyring.ts(all);extended/node-versions/node-v12.ts(any);extended/node-versions/node-v14.ts(any);extended/node-versions/node-v16.ts(any);extended/certificates/nonstrict-verify-external-certificate.ts(any);extended/caching-storages/infinispan-storage.ts(any);extended/config-manager/enable-config-manager.ts(any)
 
 jobs:
   display-dispatch-event-id:

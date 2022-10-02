@@ -6,11 +6,23 @@ All notable changes to the Zowe Installer will be documented in this file.
 
 - Updated ZWEWRF03 workflow to be up to date with the installed software
 
+## `2.4.0`
+
+### New features and enhancements
+- zwe can now validate component configuration through use of configmgr and json-schema. If a component does not have a schema, a warning will be printed. Due to schemas being required since 2.0, this behavior may change in a later version.
+- Components can now provide an array of schema files rather than just one. This allows for better re-use and organization.
+- Zowe can now start using zowe.yaml loaded from PARMLIB members if you want, when using the STC startup as well as the `zwe start`, `zwe stop`, and `zwe components` commands. These can be specified in --config / CONFIG input as PARMLIB() entries. For example, zwe start --config FILE(/my/customizations.yaml):PARMLIB(TEAM.CUSTOM.ZOWE(YAML)):PARMLIB(ORG.CUSTOM.ZOWE(YAML)):FILE(/zowe/defaults.yaml) ... Note when using PARMLIB, every member name must be the same.
+
+#### Minor enhancements/defect fixes
+- zowe.environments was not applied when zowe.useConfigmgr=true was set
+
 ## `2.3.0`
 
 ### New features and enhancements
 - A new dataset, SZWELOAD was added. It contains versions of configmgr named `ZWECFG31`, `ZWECFG64`, and `ZWERXCFG` which can be used to invoke configmgr from within a rexx program. The expected use case is to simplify how complex JCL gets configuration info about Zowe.
-- Zowe can now start using multiple zowe.yaml files if you want, when using the STC startup as well as the `zwe start`, `zwe stop`, and `zwe components` commands. Other commands such as `zwe install` and `zwe init` do not yet have this ability. Each can be a unix files or PARMLIB member. Each file must follow the same zowe.yaml schema as before, but in the list of files, properties found in a file to the right will be overridden by the file to the left. Through this, you can separate portions of Zowe configuration any way you want. To use multiple files, change your existing --config / CONFIG input to instead be a list of FILE() or PARMLIB() entries which are colon ':' separated. For example, zwe start --config FILE(/my/customizations.yaml):PARMLIB(TEAM.CUSTOM.ZOWE(YAML)):PARMLIB(ORG.CUSTOM.ZOWE(YAML)):FILE(/zowe/defaults.yaml) ... Note when using PARMLIB, every member name must be the same.
+- Zowe can now start in a mode called 'configmgr' mode. You can enable this in certain `zwe` commands by adding `--configmgr`. Not all commands support this yet, more will over time. For now, you can use it in `zwe start`, `zwe stop`, and `zwe components`. This mode is generally significantly faster to start up Zowe, but also enforces validation of the zowe.yaml configuration against the zowe.yaml schema files (found in `/schemas`).
+- Zowe can now start using multiple zowe.yaml files when using 'configmgr' mode. This works for the STC startup as well as the `zwe start`, `zwe stop`, and `zwe components` commands. Each file must follow the same zowe.yaml schema as before, but in the list of files, properties found in a file to the right will be overridden by the file to the left. Through this, you can separate portions of Zowe configuration any way you want. To use multiple files, change your existing --config / CONFIG input to instead be a list of FILE() entries which are colon ':' separated. For example, zwe start --config FILE(/my/customizations.yaml):FILE(/zowe/defaults.yaml)
+- Zowe server YAML files can now have templates within them when using 'configmgr' mode. When the value of any attribute contains `${{ }}`, the content within the brackets will be replaced with whatever the template evaluates to. The entries are processed as ECMAScript2020-compatible javascript assignments. You can for example, set one property to the value of another, such as having `parmlib: ${{ zowe.setup.dataset.prefix }}.MYPARM` rather than needing to type the prefix explicitly. You can also use this to set conditionals. For examples, please check the ZSS default yaml file: https://github.com/zowe/zss/blob/013d11d700003483fde38e1df0a373bb5bd4ef8c/defaults.yaml
 
 #### Minor enhancements/defect fixes
 - Schema pattern for semver range has been simplified as it was not compiling in configmgr

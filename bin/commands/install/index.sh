@@ -15,6 +15,7 @@ print_level0_message "Install Zowe MVS data sets"
 
 ###############################
 # constants
+# keep in sync with workflows/templates/smpe-install/ZWE3ALOC.vtl
 cust_ds_list="${ZWE_PRIVATE_DS_SZWESAMP}|Zowe sample library|dsntype(library) dsorg(po) recfm(f b) lrecl(80) unit(sysallda) space(15,15) tracks
 ${ZWE_PRIVATE_DS_SZWEAUTH}|Zowe authorized load library|dsntype(library) dsorg(po) recfm(u) lrecl(0) blksize(32760) unit(sysallda) space(30,15) tracks
 ${ZWE_PRIVATE_DS_SZWELOAD}|Zowe load library|dsntype(library) dsorg(po) recfm(u) lrecl(0) blksize(32760) unit(sysallda) space(30,15) tracks

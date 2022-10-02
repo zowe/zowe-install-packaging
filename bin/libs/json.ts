@@ -116,6 +116,10 @@ export function readJson(file: string, key: string):any {
   return result.out;
 }
 
+export function readJsonString(input: string, key: string): any {
+  return fakejq.jqget(JSON.parse(input), key);
+}
+
 //NOTE: PARMLIB only supported when destination is zowe.yaml
 export function updateYaml(file: string, key: string, val: any, expectedSample: string) {
   const ZOWE_CONFIG=config.getZoweConfig();

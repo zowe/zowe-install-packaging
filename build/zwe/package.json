@@ -3,8 +3,9 @@
   "version": "2.0.0",
   "description": "A CLI and set of libraries that constitute the Zowe server infrastructure",
   "scripts": {
-    "clean": "tsc --build tsconfig.json --clean",
+    "clean": "tsc --build tsconfig.dev.json --clean",
     "dev": "tsc --build tsconfig.dev.json --force",
+    "start": "tsc --build tsconfig.dev.json --force --watch",
     "prod": "tsc --build tsconfig.prod.json --force",
     "test": "echo \"Error: no test specified\" && exit 1"
   },

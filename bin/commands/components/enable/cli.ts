@@ -11,4 +11,8 @@
 
 import * as std from 'std';
 import * as index from './index';
+import * as configmgr from '../../../libs/configmgr';
+
 index.execute(std.getenv('ZWE_CLI_PARAMETER_COMPONENT_NAME'), std.getenv('ZWE_CLI_PARAMETER_HA_INSTANCE'));
+
+configmgr.cleanupTempDir();

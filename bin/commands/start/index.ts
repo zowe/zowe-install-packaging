@@ -10,57 +10,62 @@
 */
 
 import * as std from 'std';
-import * as os from 'os';
-import * as zos from 'zos';
+import * as zoslib from '../../libs/zos';
 import * as common from '../../libs/common';
 import * as stringlib from '../../libs/string';
 import * as shell from '../../libs/shell';
 import * as config from '../../libs/config';
 
+export function execute() {
+  common.printLevel0Message('Starting zowe');
 
-common.printLevel0Message('Starting zowe');
+  // Validation
+  common.requireZoweYaml();
 
-// Validation
-common.requireZoweYaml();
-
-// Read job name and validate
-const zoweConfig = config.getZoweConfig();
-const jobname = zoweConfig.zowe.job.name;
-let securityStcsZowe = zoweConfig.zowe.setup.security.stcs.zowe;
-if (!securityStcsZowe) {
-  //TODO defaults should be stored in default yaml, not out of thin air
-  securityStcsZowe=std.getenv('ZWE_PRIVATE_DEFAULT_ZOWE_STC');
-}
-let routeSysname;
-
-sanitizeHaInstanceId();
-const haInstance=std.getenv('ZWE_CLI_PARAMETER_HA_INSTANCE');
-if (haInstance) {
-  routeSysname=zoweConfig.haInstances[haInstance].sysname;
-}
-
-// Start job
-let cmd=`S ${securityStcsZowe}`;
-if (haInstance) {
-  cmd+=`,HAINST=${haInstance}`;
-}
-if (jobname) {
-  cmd+=`,JOBNAME=${jobname}`;
-}
-if (routeSysname) {
-  cmd=`RO ${routeSysname},${cmd}`;
-}
-
-const shellReturn = operatorCommand(cmd);
-if (shellReturn.rc) {
-  common.printErrorAndExit(`Error ZWEL0165E: Failed to start ${securityStcsZowe}: exit code ${shellReturn.rc}.`, undefined, 165);
-} else {
-  //TODO handle awk and set patterns here
-  let errorMessage;//stringlib.trim(shellReturn.out | awk "/-S ${security_stcs_zowe}/{x=NR+1;next}(NR<=x){print}" | sed "s/^\([^ ]\+\) \+\([^ ]\+\) \+\([^ ]\+\) \+\(.\+\)\$/\4/");
-  if (errorMessage) {
-    common.printErrorAndExit(`Error ZWEL0165E: Failed to start ${securityStcsZowe}: ${errorMessage}.`, undefined, 165);
+  // Read job name and validate
+  const zoweConfig = config.getZoweConfig();
+  const jobname = zoweConfig.zowe.job?.name;
+  let securityStcsZowe = zoweConfig.zowe.setup?.security?.stcs?.zowe;
+  if (!securityStcsZowe) {
+    //TODO defaults should be stored in default yaml, not out of thin air
+    securityStcsZowe=std.getenv('ZWE_PRIVATE_DEFAULT_ZOWE_STC');
   }
-}
 
-// Exit message
-common.printLevel1Message(`Job ${jobname?jobname:securityStcsZowe} is started successfully.`);
+  let routeSysname:string;
+
+  config.sanitizeHaInstanceId();
+  const haInstance=std.getenv('ZWE_CLI_PARAMETER_HA_INSTANCE');
+  if (haInstance && zoweConfig.haInstances && zoweConfig.haInstances[haInstance]) {
+    routeSysname = zoweConfig.haInstances[haInstance]?.sysname;
+  }
+
+  // Start job
+  let cmd=`S ${securityStcsZowe}`;
+  if (haInstance) {
+    cmd+=`,HAINST=${haInstance}`;
+  }
+  if (jobname) {
+    cmd+=`,JOBNAME=${jobname}`;
+  }
+  if (routeSysname) {
+    cmd=`RO ${routeSysname},${cmd}`;
+  }
+
+  const shellReturn = zoslib.operatorCommand(cmd);
+  if (shellReturn.rc) {
+    common.printErrorAndExit(`Error ZWEL0165E: Failed to start ${securityStcsZowe}: exit code ${shellReturn.rc}.`, undefined, 165);
+  } else {
+    //TODO handle awk and set patterns here
+    let errorMessage = shellReturn.out;
+    if (shellReturn.out) {
+      const errorResult = shell.execOutSync('sh', '-c', `echo "${shellReturn.out}" | awk "/-S ${securityStcsZowe}/{x=NR+1;next}(NR<=x){print}" | sed "s/^\\([^ ]\\+\\) \\+\\([^ ]\\+\\) \\+\\([^ ]\\+\\) \\+\\(.\\+\\)\\$/\\4/"`);
+      errorMessage = errorResult.out;
+    }
+    if (errorMessage) {
+      common.printErrorAndExit(`Error ZWEL0165E: Failed to start ${securityStcsZowe}: ${stringlib.trim(errorMessage)}.`, undefined, 165);
+    }
+  }
+
+  // Exit message
+  common.printLevel1Message(`Job ${jobname?jobname:securityStcsZowe} is started successfully.`);
+}
