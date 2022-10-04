@@ -127,6 +127,9 @@ function writeZoweConfigUpdate(updateObj: any, arrayMergeStrategy: number): numb
         console.log('Writing temp file for PARMLIB update. Command= '+cpCommand);
         rc = os.exec(['sh', '-c', cpCommand],
                      {block: true, usePath: true});
+        if (rc != 0) {
+          console.log(`Error: Could not write PARMLIB update into ${destination}, copy rc=${rc}`); 
+        }
         const removeRc = os.remove(tempFilePath);
         if (removeRc !== 0) {
           console.log(`Error: Could not remove temporary file edit of ${destination} as ${tempFilePath}, rc=${removeRc}`);
