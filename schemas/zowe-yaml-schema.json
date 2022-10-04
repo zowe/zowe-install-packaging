@@ -492,6 +492,18 @@
           "type": "boolean",
           "default": false,
           "description": "Determines whether or not to use the features of configmgr such as multi-config, parmlib config, config templates, and schema validation. This effects the zwe command."
+        },
+        "configmgr": {
+          "type": "object",
+          "description": "Controls how configmgr will be used by zwe",
+          "required": ["validation"],
+          "properties": {
+            "validation": {
+              "type": "string",
+              "enum": ["STRICT", "COMPONENT-COMPAT"],
+              "description": "States how configmgr will do validation: Will it quit on any error (STRICT) or quit on any error except the case of a component not having a schema file (COMPONENT-COMPAT)"
+            }
+          }
         }
       }
     },
