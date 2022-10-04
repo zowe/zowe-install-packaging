@@ -321,6 +321,13 @@ function getMemberNameFromConfigPath(configPath: string): string|undefined {
   }
   return member;
 }
+
+function stripMemberName(configPath: string, memberName: string): string {
+  //Turn PARMLIB(my.zowe(yaml)):PARMLIB(my.other.zowe(yaml))
+  //Into PARMLIB(my.zowe):FILE(/some/path.yaml):PARMLIB(my.other.zowe)
+  const replacer = new RegExp('\\('+memberName+'\\)\\)', 'gi');
+  return configPath.replace(replacer, ")");
+}
   
 function getConfig(configName: string, configPath: string, schemas: string): any {
   let configRevisionName = getConfigRevisionName(configName);
@@ -339,6 +346,7 @@ function getConfig(configName: string, configPath: string, schemas: string): any
         console.log(`Error: Cannot continue due to missing or mixed member names for PARMLIB entries in ${configPath}`);
         std.exit(1);
       }
+      configPath = stripMemberName(configPath, memberName);
     }
     
     let status;
