@@ -92,7 +92,7 @@
       "zowe.setup.dataset.jcllib": "{{ zowe_jcllib }}"
       "zowe.setup.dataset.authLoadlib": "{{ zowe_xmem_loadlib }}"
       "zowe.setup.dataset.authPluginLib": "{{ zowe_xmem_pluginlib }}"
-      "zowe.useConfigmgr": "{{ zowe_use_config_manager }}" 
+      "zowe.useConfigmgr": "{{ zowe_use_config_manager|lower }}" 
 
 - name: Update zowe.yaml zowe.setup.security
   import_role:
@@ -278,6 +278,7 @@
   vars:
     configs:
       "components.gateway.port": "{{ zowe_apiml_gateway_port }}"
+      "components.cloud-gateway.port": "{{ zowe_apiml_cloud_gateway_port }}"
       "components.metrics-service.port": "{{ zowe_apiml_metrics_service_port }}"
       "components.api-catalog.port": "{{ zowe_apiml_catalog_port }}"
       "components.discovery.port": "{{ zowe_apiml_discovery_port }}"
