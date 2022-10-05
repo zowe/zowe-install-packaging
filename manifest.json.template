@@ -60,7 +60,7 @@
       "artifact": "files-api-package-*.zip"
     },
     "org.zowe.explorer-jes": {
-      "version": "2.0.2"
+      "version": "2.0.3"
     },
     "org.zowe.explorer-mvs": {
       "version": "2.0.2"
@@ -278,7 +278,7 @@
       "componentGroup": "Zowe Desktop JES UI Plugin",
       "entries": [{
         "repository": "explorer-jes",
-        "tag": "v2.0.2",
+        "tag": "v2.0.3",
         "destinations": ["Zowe PAX"]
       }]
     }, {
@@ -440,7 +440,7 @@
       "kind": "job",
       "registry": "zowe-docker-release.jfrog.io",
       "name": "ompzowe/explorer-jes",
-      "tag" : "2.0.2-ubuntu"
+      "tag" : "2.0.3-ubuntu"
     },
     "explorer-mvs": {
       "kind": "job",
