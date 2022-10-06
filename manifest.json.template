@@ -63,10 +63,10 @@
       "version": "2.0.3"
     },
     "org.zowe.explorer-mvs": {
-      "version": "2.0.2"
+      "version": "2.0.3"
     },
     "org.zowe.explorer-uss": {
-      "version": "2.0.2"
+      "version": "2.0.3"
     },
     "org.zowe.explorer-ip": {
       "version": "1.0.0",
@@ -268,7 +268,7 @@
       "componentGroup": "Zowe Desktop Data Sets UI Plugin",
       "entries": [{
         "repository": "explorer-mvs",
-        "tag": "v2.0.2",
+        "tag": "v2.0.3",
         "destinations": ["Zowe PAX"]
       }]
     }, {
@@ -289,7 +289,7 @@
       "componentGroup": "Zowe Desktop z/OS Unix Files UI Plugin",
       "entries": [{
         "repository": "explorer-uss",
-        "tag": "v2.0.2",
+        "tag": "v2.0.3",
         "destinations": ["Zowe PAX"]
       }]
     }, {
@@ -450,13 +450,13 @@
       "kind": "job",
       "registry": "zowe-docker-release.jfrog.io",
       "name": "ompzowe/explorer-mvs",
-      "tag" : "2.0.2-ubuntu"
+      "tag" : "2.0.3-ubuntu"
     },
     "explorer-uss": {
       "kind": "job",
       "registry": "zowe-docker-release.jfrog.io",
       "name": "ompzowe/explorer-uss",
-      "tag" : "2.0.2-ubuntu"
+      "tag" : "2.0.3-ubuntu"
     },
     "files-api": {
       "registry": "zowe-docker-release.jfrog.io",
