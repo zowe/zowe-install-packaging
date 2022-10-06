@@ -165,7 +165,13 @@ export function updateZoweYaml(file: string, key: string, val: any) {
   }
 }
 
-//TODO: PARMLIB not supported.
+export function updateZoweYamlFromObj(file: string, updateObj: any) {
+  common.printMessage(`- update zowe config ${file} with obj=${JSON.stringify(updateObj, null, 2)}`);
+  config.updateZoweConfig(updateObj, true, 1); //TODO externalize array merge strategy = 1
+}
+
+
+    //TODO handle parmlib???
 export function deleteYaml(file: string, key: string, expectedSample: string) {
   const ZOWE_CONFIG=config.getZoweConfig();
   const utils_dir=`${ZOWE_CONFIG.zowe.runtimeDirectory}/bin/utils`;
