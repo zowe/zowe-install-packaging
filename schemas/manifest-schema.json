@@ -37,8 +37,20 @@
       "additionalProperties": false,
       "properties": {
         "configs": {
-          "type": "string",
-          "description": "Defines the location of the json schema file which extends the Zowe Component base schema."
+          "oneOf": [
+            {
+              "type": "string",
+              "description": "Defines the location of the json schema file which extends the Zowe Component base schema."
+            },
+            {
+              "type": "array",
+              "description": "Defines the locations of the json schema files which extend the Zowe Component base schema.",
+              "items": {
+                "type": "string",
+                "description": "Defines the location of a json schema file which extends the Zowe Component base schema."
+              }
+            }
+          ]
         }
       }
     },
@@ -123,6 +135,10 @@
       "description": "This section defines how the component will be registered to the API Mediation Layer Discovery Service.",
       "additionalProperties": false,
       "properties": {
+        "basePackage": {
+          "type": "string",
+          "description": "Defines the base package name of the extension. It is used to notify the extended service of the location for component scan."
+        },
         "dynamic": {
           "type": "array",
           "description": "This information will tell Zowe and users what services you will register under the Discovery service.",
@@ -148,10 +164,6 @@
               "file": {
                 "type": "string",
                 "description": "Defines the path to the static definition file. This file is supposed to be a template."
-              },
-              "basePackage": {
-                "type": "string",
-                "description": "Defines the base package name of the extension. It is used to notify the extended service of the location for component scan."
               }
             }
           }

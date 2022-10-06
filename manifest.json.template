@@ -119,7 +119,7 @@
       "artifact": "configmgr-0.4.0-2022100548.pax"
     },
     "org.zowe.launcher": {
-      "version": "2.0.5"
+      "version": "2.0.6"
     },
     "org.zowe.keyring-utilities": {
       "version": "1.0.4",
@@ -140,7 +140,7 @@
       "componentGroup": "Imperative CLI Framework for Zowe",
       "entries": [{
         "repository": "imperative",
-        "tag": "v5.5.1",
+        "tag": "v5.5.4",
         "destinations": ["Zowe CLI Package"]
       }]
     }, {
@@ -219,7 +219,7 @@
       "componentGroup": "Zowe CLI",
       "entries": [{
         "repository": "zowe-cli",
-        "tag": "v7.4.0",
+        "tag": "v7.6.2",
         "destinations": ["Zowe CLI Package"]
       }]
     }, {
@@ -254,7 +254,7 @@
       "componentGroup": "z/OS&reg FTP Plug-in for Zowe CLI",
       "entries": [{
         "repository": "zowe-cli-ftp-plugin",
-        "tag": "v2.0.2",
+        "tag": "v2.1.0",
         "destinations": ["Zowe CLI Package"]
       }]
     }, {
@@ -373,7 +373,7 @@
         "destinations": ["Zowe PAX"]
       }, {
         "repository": "launcher",
-        "tag": "v2.0.5",
+        "tag": "v2.0.6",
         "destinations": ["Zowe PAX"]
       }]
     },
