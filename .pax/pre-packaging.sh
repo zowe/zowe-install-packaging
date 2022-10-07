@@ -226,6 +226,9 @@ echo "[$SCRIPT_NAME] create dummy zowe.yaml for install"
 cat <<EOT >> "${BASE_DIR}/zowe.yaml"
 zowe:
   extensionDirectory: "${ZOWE_ROOT_DIR}/components"
+  useConfigmgr: true
+  launchScript:
+    logLevel: "trace"
 EOT
 
 echo "[$SCRIPT_NAME] extract components"
