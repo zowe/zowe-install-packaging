@@ -14,7 +14,7 @@
     "org.zowe.zlux.zlux-core": {
       "version": "2.4.0-RC",
       "repository": "libs-snapshot-local",
-      "artifact": "zlux-core-2.4.0-20221004.224404.pax"
+      "artifact": "zlux-core-2.4.0-20221011.190231.pax"
     },
     "org.zowe.zlux.sample-angular-app": {
       "version": "2.4.0-V2.X-RC",
@@ -166,7 +166,7 @@
         },
         {
           "repository": "zlux-app-server",
-          "tag": "v2.4.0-RC1",
+          "tag": "v2.4.0-RC2",
           "destinations": ["Zowe PAX"]
         },
         {
@@ -406,7 +406,7 @@
     "zowe-launch-scripts": {
       "registry": "zowe-docker-release.jfrog.io",
       "name": "ompzowe/zowe-launch-scripts",
-      "tag" : "2.3.0-ubuntu"
+      "tag" : "2.4.0-ubuntu"
     },
     "api-catalog": {
       "registry": "zowe-docker-release.jfrog.io",
