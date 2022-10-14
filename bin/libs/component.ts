@@ -905,18 +905,19 @@ export function processComponentDiscoverySharedLibs(componentDir: string): boole
   }
   return true;
 }
-/*
+
 const gatewayHost = std.getenv('ZWE_GATEWAY_HOST');
 const haInstanceHostname = std.getenv('ZWE_haInstance_hostname');
 const catalogPort = Number(std.getenv('ZWE_components_api_catalog_port'));
 const zoweCertificatePemKey = std.getenv('ZWE_zowe_certificate_pem_key');
 const zoweCertificatePemCertificate = std.getenv('ZWE_zowe_certificate_pem_certificate');
 const zoweCertificatePemCertificateAuthorities = std.getenv('ZWE_zowe_certificate_pem_certificateAuthorities');
+const zoweRuntimeDirectory = std.getenv('ZWE_zowe_runtimeDirectory');
 //TODO implement refreshStaticRegistration
 
 export function refreshStaticRegistration(apimlcatalogHost: string=gatewayHost, apimlcatalogPort: number= catalogPort,
                                    authKey: string=zoweCertificatePemKey, authCert: string=zoweCertificatePemCertificate,
-                                   caCert: string=zoweCertificatePemCertificateAuthorities): number{
+                                   caCert: string=zoweCertificatePemCertificateAuthorities): boolean{
   if (!apimlcatalogHost) {
     if (haInstanceHostname) {
       apimlcatalogHost = haInstanceHostname;
@@ -924,5 +925,29 @@ export function refreshStaticRegistration(apimlcatalogHost: string=gatewayHost, 
       apimlcatalogHost = 'localhost';
     }
   }
+  let utils_dir= `${zoweRuntimeDirectory}/bin/utils`;
+  common.printTrace('calling API Catalog /static-api/refresh to refresh static registrations');
+  let shellReturn = shell.execOutSync('sh', '-c', `${std.getenv('NODE_HOME')}/bin/node" \
+  "${utils_dir}/curl.js" \
+  "https://${apimlcatalogHost}:${apimlcatalogPort}/apicatalog/static-api/refresh" \
+  -X POST \
+  --key "${authKey}" \
+  --cert "${authCert}" \
+  --cacert "${caCert}"`);
+  if (shellReturn.rc == 0) {
+    common.printTrace(' * Exit code: '+ shellReturn.rc);
+    common.printTrace('  * Output:');
+    if (shellReturn.out){
+      common.printTrace(stringlib.paddingLeft(shellReturn.out, "    "))
+    }
+  } else {
+    common.printError(' * Exit code: '+ shellReturn.rc);
+    common.printError('');
+    if (shellReturn.out){
+      common.printError(stringlib.paddingLeft(shellReturn.out, "    "))
+    }
+    common.printErrorAndExit('Error ZWEL0142E: Failed to refresh APIML static registrations.', undefined, 142);
+  }
+  return shellReturn.rc == 0 ? true : false;
 }
-*/
+
