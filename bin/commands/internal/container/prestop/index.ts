@@ -10,11 +10,8 @@
 */
 
 import * as std from 'std';
-import * as os from 'os';
 import * as fs from '../../../../libs/fs';
-import * as zoslib from '../../../../libs/zos';
 import * as common from '../../../../libs/common';
-import * as stringlib from '../../../../libs/string';
 import * as node from '../../../../libs/node';
 import * as shell from '../../../../libs/shell';
 import * as config from '../../../../libs/config';
@@ -45,15 +42,15 @@ export function execute() {
       shell.execOutSync('sh', '-c', `rm -f *.${zwe_cli_parameter_hs_instance}.* 2>&1`);
       common.printMessage("- refreshing api catalog");
       let apicatalog_host = `api-catalog-service.${std.getenv('ZWE_POD_NAMESPACE')? std.getenv('ZWE_POD_NAMESPACE'): 'zowe'}.svc.${std.getenv('ZWE_POD_CLUSTERNAME')? std.getenv('ZWE_POD_CLUSTERNAME'): 'cluster.local'}`
-      component.refreshStaticRegistration(apicatalog_host,
+      let success =component.refreshStaticRegistration(apicatalog_host,
       std.getenv('ZWE_components_api_catalog_port'),
       std.getenv('ZWE_zowe_certificate_pem_key'),
       std.getenv('ZWE_zowe_certificate_pem_certificate'),
       std.getenv('ZWE_zowe_certificate_pem_certificateAuthorities'));
       if (success) {
-        common.printFormattedDebug("ZWELS", "zwe-internal-start-prepare,configure_components", `${componentName} processComponentDiscoverySharedLibs success`);
+        common.printFormattedDebug("ZWELS", "zwe-internal-container-prestop,execute", ` refreshStaticRegistration success`);
       } else {
-        common.printFormattedError("Error ZWEL0142E", "zwe-internal-start-prepare,configure_components", `${componentName} processComponentDiscoverySharedLibs failure`);
+        common.printFormattedError("Error ZWEL0142E", "zwe-internal-container-prestop,execute", `processComponentDiscoverySharedLibs failure`);
       }
     } else {
       common.printMessage("- nothing to delete");    }
