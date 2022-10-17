@@ -63,7 +63,7 @@
       "version": "~2.0.2-SNAPSHOT"
     },
     "org.zowe.explorer-ip": {
-      "version": "~1.0.1-PR-23",
+      "version": "~1.0.1-SNAPSHOT",
       "artifact": "*.pax"
     },
     "org.zowe.apiml.api-catalog-package": {
