@@ -29,6 +29,15 @@ CONFIG_MGR.setTraceLevel(0);
 //these show the list of files used for zowe config prior to merging into a unified one.
 // ZWE_CLI_PARAMETER_CONFIG gets updated to point to the unified one once written.
 const parameterConfig = std.getenv('ZWE_CLI_PARAMETER_CONFIG');
+
+/*
+  When using configmgr (--configmgr or zowe.useConfigmgr=true)
+  the config property of Zowe can take a few shapes:
+  1. a single path, ex /my/zowe.yaml
+  2. one or more file paths with FILE() syntax, ex FILE(/my/1.yaml):FILE(/my2.yaml)
+  3. one or more parmlib paths with PARMLIB() syntax, ex PARMLIB(my.zowe(yaml)):PARMLIB(my.other.zowe(yaml)) ... note the member names must be the same for every PARMLIB mentioned!
+  4. one or more of FILE and PARMLIB syntax combined, ex FILE(/my/1.yaml):FILE(/my2.yaml):PARMLIB(my.zowe(yaml)):PARMLIB(my.other.zowe(yaml))
+ */
 const ZOWE_CONFIG_PATH = (parameterConfig && !parameterConfig.startsWith('FILE(')) ? `FILE(${parameterConfig})` : parameterConfig;
 let configLoaded = false;
 
@@ -38,6 +47,10 @@ const ZOWE_SCHEMA_ID = 'https://zowe.org/schemas/v2/server-base';
 const ZOWE_SCHEMA_SET=`${ZOWE_SCHEMA}:${COMMON_SCHEMA}`;
 
 export let ZOWE_CONFIG=getZoweConfig();
+
+export function getZoweBaseSchemas(): string {
+  return ZOWE_SCHEMA_SET;
+}
 
 function mkdirp(path:string, mode?: number): number {
   const parts = path.split('/');
@@ -50,6 +63,12 @@ function mkdirp(path:string, mode?: number): number {
     }
   }
   return 0;
+}
+
+function guaranteePath() {
+  if (!std.getenv('PATH')) {
+    std.setenv('PATH','/bin:.:/usr/bin');
+  }
 }
 
 function writeZoweConfigUpdate(updateObj: any, arrayMergeStrategy: number): number {
@@ -65,41 +84,150 @@ function writeZoweConfigUpdate(updateObj: any, arrayMergeStrategy: number): numb
     let [ yamlStatus, textOrNull ] = CONFIG_MGR.writeYAML(getConfigRevisionName(firstConfigPath));
     if (yamlStatus === 0) {
       let destination = firstConfigPath;
+
       if (destination.startsWith('FILE(')) {
         destination = destination.substring(5, destination.length-1);
-      } else if (destination.startsWith('LIB(')) {
-        console.log(`Error: LIB writing not yet implemented`);
-        return -1;
+        return xplatform.storeFileUTF8(destination, xplatform.AUTO_DETECT, textOrNull);
+
+      } else if (destination.startsWith('PARMLIB(')) {
+        const workspace = ZOWE_CONFIG.workspaceDirectory;
+        destination = destination.substring(8, destination.length-1);
+
+        //need a temp file to do the cp into parmlib
+        //ensure .env folder exists
+        let zwePrivateWorkspaceEnvDir = std.getenv('ZWE_PRIVATE_WORKSPACE_ENV_DIR');
+        if (!zwePrivateWorkspaceEnvDir) {
+          zwePrivateWorkspaceEnvDir=`${workspace}/.env`;
+          std.setenv('ZWE_PRIVATE_WORKSPACE_ENV_DIR', zwePrivateWorkspaceEnvDir);
+        }
+        mkdirp(workspace, 0o770);
+        rc = mkdirp(zwePrivateWorkspaceEnvDir, 0o700);
+        if (rc) { return rc; }
+
+        //make temp file
+        let tempFilePath:string;
+        let attempt=0;
+        while (!tempFilePath) {
+          let file = `${zwePrivateWorkspaceEnvDir}/zwe-parmlib-${Math.floor(Math.random()*10000)}`;
+
+          let returnArray = os.stat(file);
+          if (returnArray[1] === std.Error.ENOENT) {
+            tempFilePath=file;
+          }
+          ++attempt;
+          if (attempt>10000) {
+            console.log(`Error: Could not update PARMLIB, could not make temporarily file in ${zwePrivateWorkspaceEnvDir}`);
+            return 1;
+          }
+        }
+        rc = xplatform.storeFileUTF8(tempFilePath, xplatform.AUTO_DETECT, textOrNull);
+        if (rc) { return rc; }        
+          
+        const cpCommand=`cp -v "${tempFilePath}" "//'${destination}'"`;
+        console.log('Writing temp file for PARMLIB update. Command= '+cpCommand);
+        rc = os.exec(['sh', '-c', cpCommand],
+                     {block: true, usePath: true});
+        if (rc != 0) {
+          console.log(`Error: Could not write PARMLIB update into ${destination}, copy rc=${rc}`); 
+        }
+        const removeRc = os.remove(tempFilePath);
+        if (removeRc !== 0) {
+          console.log(`Error: Could not remove temporary file edit of ${destination} as ${tempFilePath}, rc=${removeRc}`);
+        }
       }
-      return xplatform.storeFileUTF8(destination, xplatform.AUTO_DETECT, textOrNull);
     }
   }
   return rc;
 }
 
+export function cleanupTempDir() {
+  const tmpDir = std.getenv('ZWE_PRIVATE_TMP_MERGED_YAML_DIR');
+  if (tmpDir) {
+    if (!std.getenv('PATH')) {
+      std.setenv('PATH','/bin:.:/usr/bin');
+    }
+    const rc = os.exec(['rm', '-rf', tmpDir],
+                       {block: true, usePath: true});
+    if (rc == 0) {
+      console.log(`Temporary directory ${tmpDir} removed successfully.`);
+    } else {
+      console.log(`Error: Temporary directory ${tmpDir} was not removed successfully, manual cleanup is needed. rc=${rc}`);
+    }
+  }
+}
+
 function writeMergedConfig(config: any): number {
   const workspace = config.zowe.workspaceDirectory;
-  let zwePrivateWorkspaceEnvDir = std.getenv('ZWE_PRIVATE_WORKSPACE_ENV_DIR');
-  if (!zwePrivateWorkspaceEnvDir) {
-    zwePrivateWorkspaceEnvDir=`${workspace}/.env`;
-    std.setenv('ZWE_PRIVATE_WORKSPACE_ENV_DIR', zwePrivateWorkspaceEnvDir);
+
+  let zwePrivateWorkspaceEnvDir: string;
+  let tmpDir = std.getenv('ZWE_PRIVATE_TMP_MERGED_YAML_DIR');
+  if (tmpDir && tmpDir != '1') {
+    zwePrivateWorkspaceEnvDir = tmpDir;
+  } else if (tmpDir == '1') {
+    //If this var is not undefined,
+    //A command is running that is likely to be an admin rather than STC user, so they wouldn't have .env folder permission
+    //Instead, this merged yaml should be temporary within a place they can write to.
+    let tmp = '';
+    for (const dir of [std.getenv('TMPDIR'), std.getenv('TMP'), '/tmp']) {
+      if (dir) {
+        let dirWritable = false;
+        let returnArray = os.stat(dir);
+        if (!returnArray[1]) { //no error
+          dirWritable = ((returnArray[0].mode & os.S_IFMT) == os.S_IFDIR)
+        } else {
+          if ((returnArray[1] != std.Error.ENOENT)) {
+            console.log(`directoryExists dir=${dir}, err=`+returnArray[1]);
+          }
+        }
+
+        if (dirWritable) {
+          tmp = dir;
+          break;
+        } else {
+          console.log(`Error ZWEL0110E: Doesn\'t have write permission on ${dir} directory.`);
+          std.exit(110);
+        }
+      }
+    }
+    if (!tmp) {
+      console.log(`Error: No writable temporary directory could be found, cannot continue`);
+      std.exit(1);
+    }
+    
+    zwePrivateWorkspaceEnvDir=`${tmp}/.zweenv-${Math.floor(Math.random()*10000)}`;
+    std.setenv('ZWE_PRIVATE_TMP_MERGED_YAML_DIR', zwePrivateWorkspaceEnvDir);
+    const mkdirrc = mkdirp(zwePrivateWorkspaceEnvDir, 0o700);
+    if (mkdirrc) { return mkdirrc; }
+
+    console.log(`Temporary directory '${zwePrivateWorkspaceEnvDir}' created.\nZowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.`); 
+  } else {
+    zwePrivateWorkspaceEnvDir = std.getenv('ZWE_PRIVATE_WORKSPACE_ENV_DIR');
+    if (!zwePrivateWorkspaceEnvDir) {
+      zwePrivateWorkspaceEnvDir=`${workspace}/.env`;
+      std.setenv('ZWE_PRIVATE_WORKSPACE_ENV_DIR', zwePrivateWorkspaceEnvDir);
+    }
+    mkdirp(workspace, 0o770);
+    const mkdirrc = mkdirp(zwePrivateWorkspaceEnvDir, 0o700);
+    if (mkdirrc) { return mkdirrc; }
   }
-  const mkdirrc = mkdirp(zwePrivateWorkspaceEnvDir);
-  if (mkdirrc) { return mkdirrc; }
+  
   const destination = `${zwePrivateWorkspaceEnvDir}/.zowe-merged.yaml`;
+  /* We don't write it in JSON, but we could!
   const jsonDestination = `${zwePrivateWorkspaceEnvDir}/.zowe.json`;
-/*
   const jsonRC = xplatform.storeFileUTF8(jsonDestination, xplatform.AUTO_DETECT, JSON.stringify(ZOWE_CONFIG, null, 2));
   if (jsonRC) {
     console.log(`Error: Could not write json ${jsonDestination}, rc=${jsonRC}`);
   }
-*/
+  */
   //const yamlReturn = CONFIG_MGR.writeYAML(getConfigRevisionName(ZOWE_CONFIG_NAME), destination);
   let [ yamlStatus, textOrNull ] = CONFIG_MGR.writeYAML(getConfigRevisionName(ZOWE_CONFIG_NAME));
   if (yamlStatus == 0){
     const rc = xplatform.storeFileUTF8(destination, xplatform.AUTO_DETECT, textOrNull);
     if (!rc) {
       std.setenv('ZWE_CLI_PARAMETER_CONFIG', destination);
+    } else {
+      console.log(`Error: Could not write .zowe-merged.yaml, ZWE_CLI_PARAMETER_CONFIG not modified!`);
+      std.exit(1);
     }
     return rc;
   }
@@ -167,6 +295,42 @@ export function updateZoweConfig(updateObj: any, writeUpdate: boolean, arrayMerg
   }
   return [ rc, ZOWE_CONFIG ];
 }
+
+function getMemberNameFromConfigPath(configPath: string): string|undefined {
+  let indexParm = 0;
+  let member = undefined;
+  while (indexParm != -1) {
+    indexParm = configPath.indexOf('PARMLIB(', indexParm);
+    if (indexParm != -1) {
+      const memberStart = configPath.indexOf('(', indexParm+8);
+      if (memberStart == -1) {
+        console.log(`Error: malformed PARMLIB syntax for ${configPath}. Must use syntax PARMLIB(dataset.name(member))`);
+        return undefined;
+      }
+      const memberEnd = configPath.indexOf('))', memberStart+1);
+      if (memberEnd == -1) {
+        console.log(`Error: malformed PARMLIB syntax for ${configPath}. Must use syntax PARMLIB(dataset.name(member))`);
+      }
+      const thisMember = configPath.substring(memberStart+1, memberEnd);
+      if (!member) {
+        member = thisMember;
+      } else if (thisMember != member) {
+        console.log(`Error: configmgr does not yet support different member names for PARMLIB. You must use the same member names for all datasets mentioned`);
+        return undefined;
+      }
+      //skip over )):
+      indexParm = memberEnd+3; 
+    }
+  }
+  return member;
+}
+
+function stripMemberName(configPath: string, memberName: string): string {
+  //Turn PARMLIB(my.zowe(yaml)):PARMLIB(my.other.zowe(yaml))
+  //Into PARMLIB(my.zowe):FILE(/some/path.yaml):PARMLIB(my.other.zowe)
+  const replacer = new RegExp('\\('+memberName+'\\)\\)', 'gi');
+  return configPath.replace(replacer, ")");
+}
   
 function getConfig(configName: string, configPath: string, schemas: string): any {
   let configRevisionName = getConfigRevisionName(configName);
@@ -174,8 +338,20 @@ function getConfig(configName: string, configPath: string, schemas: string): any
     //Already loaded
     return CONFIG_MGR.getConfigData(configRevisionName);
   }
-  
+
+  let memberName;
   if (configPath) {
+    //In the form of PARMLIB(my.zowe(yaml)):PARMLIB(my.other.zowe(yaml))
+    //Member names must be same for all PARMLIB mentioned.
+    if (configPath.indexOf('PARMLIB(') != -1) {
+      memberName = getMemberNameFromConfigPath(configPath);
+      if (!memberName) {
+        console.log(`Error: Cannot continue due to missing or mixed member names for PARMLIB entries in ${configPath}`);
+        std.exit(1);
+      }
+      configPath = stripMemberName(configPath, memberName);
+    }
+    
     let status;
 
     if ((status = CONFIG_MGR.addConfig(configRevisionName))) {
@@ -191,6 +367,13 @@ function getConfig(configName: string, configPath: string, schemas: string): any
     if ((status = CONFIG_MGR.setConfigPath(configRevisionName, configPath))) {
       console.log(`Error: Could not set config path for ${configPath}, status=${status}`);
       std.exit(1);
+    }
+
+    if (memberName) {
+      if ((status = CONFIG_MGR.setParmlibMemberName(configRevisionName, memberName))) {
+        console.log(`Error: Could not set parmlib member name for ${memberName}, status=${status}`);
+        std.exit(1);
+      }
     }
 
     if ((status = CONFIG_MGR.loadConfiguration(configRevisionName))) {

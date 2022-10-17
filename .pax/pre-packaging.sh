@@ -206,11 +206,19 @@ chmod +x templates/*.rex
 
 
 mkdir -p "${ZOWE_ROOT_DIR}/bin/utils"
-configmgr=$(find "${ZOWE_ROOT_DIR}/files" -type f \( -name "configmgr*.pax" \) | head -n 1)
+configmgr=$(find "${ZOWE_ROOT_DIR}/files" -type f \( -name "configmgr-0*.pax" \) | head -n 1)
 echo "[$SCRIPT_NAME] extract configmgr $configmgr"
 cd "${ZOWE_ROOT_DIR}/bin/utils"
 pax -ppx -rf "${configmgr}"
 rm "${configmgr}"
+cd "${BASE_DIR}"
+
+configmgr_rexx=$(find "${ZOWE_ROOT_DIR}/files" -type f \( -name "configmgr-rexx*.pax" \) | head -n 1)
+echo "[$SCRIPT_NAME] extract configmgr_rexx $configmgr_rexx"
+mkdir -p "${ZOWE_ROOT_DIR}/files/SZWELOAD"
+cd "${ZOWE_ROOT_DIR}/files/SZWELOAD"
+pax -ppx -rf "${configmgr_rexx}"
+rm "${configmgr_rexx}"
 cd "${BASE_DIR}"
 
 
@@ -223,7 +231,7 @@ EOT
 echo "[$SCRIPT_NAME] extract components"
 mkdir -p "${BASE_DIR}/logs"
 mkdir -p "${ZOWE_ROOT_DIR}/components"
-for component in launcher zlux-core zss apiml-common-lib common-java-lib apiml-sample-extension gateway caching-service metrics-service discovery api-catalog jobs-api files-api explorer-jes explorer-mvs explorer-uss; do
+for component in launcher zlux-core zss apiml-common-lib common-java-lib apiml-sample-extension gateway cloud-gateway caching-service metrics-service discovery api-catalog jobs-api files-api explorer-jes explorer-mvs explorer-uss; do
   echo "[$SCRIPT_NAME] - ${component}"
   component_file=$(find "${ZOWE_ROOT_DIR}/files" -type f \( -name "${component}*.pax" -o -name "${component}*.zip" \) | head -n 1)
   "${ZOWE_ROOT_DIR}/bin/zwe" \

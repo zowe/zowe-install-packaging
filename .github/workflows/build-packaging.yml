@@ -171,7 +171,7 @@ jobs:
         with:
           manifest-file-path: ${{ github.workspace }}/manifest.json
           default-target-path: .pax/binaryDependencies/
-          expected-count: 27
+          expected-count: 29
       
       # this step is not doing a publish, we are just utilizing this actions to get the PUBLISH_TARGET_PATH, 
       # and it will be used in the next step: [Download 3] Download SMPE build log

@@ -224,23 +224,28 @@ export function pathHasPermissions(path: string, mode: number): boolean {
   }
 }
 
-export function convertToAbsolutePath(file: string): string|undefined {
-  const result = os.realpath(file);
+export function convertToAbsolutePath(path: string): string|undefined {
+  const result = os.realpath(path);
   if (!result[1]) {
     return result[0];
   } else {
-    common.printError(`Could not convert ${file} to absolute path, err=${result[1]}`);
+    common.printError(`Could not convert ${path} to absolute path, err=${result[1]}`);
   }
   return undefined;
 }
 
 export function getTmpDir(): string {
-  let tmp = std.getenv('TMPDIR');
-  if (!tmp) {
-    tmp = std.getenv('TMP');
-  }
-  if (!tmp) {
-    tmp = '/tmp';
+  let tmp = '';
+  common.printDebug(`  > Check if either TMPDIR or TMP points to writable directory, else try '/tmp' directory`);
+  for (const dir of [std.getenv('TMPDIR'), std.getenv('TMP'), '/tmp']) {
+    if (dir) {
+      if (isDirectoryAccessible(dir)) {
+        tmp = dir;
+        break;
+      } else {
+        common.printErrorAndExit(`Error ZWEL0110E: Doesn't have write permission on ${dir} directory.`, undefined, 110);
+      }
+    }
   }
   return tmp;
 }
@@ -254,7 +259,7 @@ export function createTmpFile(prefix: string = 'zwe', tmpdir?: string): string|u
   }
   common.printTrace(`  > create_tmp_file on ${tmpdir}`);
   while (true) {
-    let file = `${tmpdir}/${prefix}-${std.getenv('random')}`;
+    let file = `${tmpdir}/${prefix}-${Math.floor(Math.random()*10000)}`;
     common.printTrace(`    - test ${file}`);
     if (!pathExists(file)) {
       common.printTrace(`    - good`);

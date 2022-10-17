@@ -83,6 +83,12 @@ export function detectFileEncoding(fileName: string, expectedSample: string, exp
   return -1;
 }
 
+export function copyMvsToUss(dataset: string, file: string): number {
+  common.printDebug(`copyMvsToUss dataset=${dataset}, file=${file}`);
+  const result = shell.execSync('sh', '-c', `cp "//'${dataset}'" "${file}"`);
+  return result.rc;
+}
+
 // On z/OS, some file generated could be in ISO8859-1 encoding, but we need it to be IBM-1047
 export function ensureFileEncoding(file: string, expectedSample: string, expectedEncoding?: number) {
   if (os.platform != 'zos') {

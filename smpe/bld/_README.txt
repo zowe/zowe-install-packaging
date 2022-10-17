@@ -54,6 +54,7 @@ Note: Build currently does not support empty data sets, so one or more
 2. Add SZWExxxx data set alloction to ALLOCT PROC in
    workflows/templates/smpe-install/ZWE3ALOC.vtl (alphabetical order)
    Note: Allocation details must match those from community install
+         see bin/commands/install/index.sh
 //SZWEEXEC DD SPACE=(TRK,(15,5,30)),
 //            UNIT=SYSALLDA,
 #if( $tvol and $tvol != "" and $tvol != '#tvol')

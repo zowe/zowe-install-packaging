@@ -57,12 +57,7 @@ export function requireZoweYaml() {
   if (!configFiles) {
     printErrorAndExit(`Error ZWEL0108E: Zowe YAML config file is required.`);
   } else {
-    configFiles.split(',').forEach(function(file: string) {
-      //TODO parmlib
-      if (!fs.fileExists(file)) {
-        printErrorAndExit(`Error ZWEL0109E: The Zowe YAML config file ${file} does not exist.`, undefined, 109);
-      }
-    });
+    //configmgr will consume this property and error out if it doesnt like it, or not, so just let it do the error-checking
   }
 }
 
@@ -379,6 +374,6 @@ std.setenv('ZWE_PRIVATE_DEFAULT_ZIS_USER', 'ZWESIUSR');
 std.setenv('ZWE_PRIVATE_DEFAULT_ZOWE_STC', 'ZWESLSTC');
 std.setenv('ZWE_PRIVATE_DEFAULT_ZIS_STC', 'ZWESISTC');
 std.setenv('ZWE_PRIVATE_DEFAULT_AUX_STC', 'ZWESASTC');
-std.setenv('ZWE_PRIVATE_CORE_COMPONENTS_REQUIRE_JAVA', 'gateway,discovery,api-catalog,caching-service,metrics-service,files-api,jobs-api');
+std.setenv('ZWE_PRIVATE_CORE_COMPONENTS_REQUIRE_JAVA', 'gateway,cloud-gateway,discovery,api-catalog,caching-service,metrics-service,files-api,jobs-api');
 
 std.setenv('ZWE_PRIVATE_CLI_LIBRARY_LOADED', 'true');

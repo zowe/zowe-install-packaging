@@ -64,6 +64,8 @@ export function execute(componentFile: string, autoEncoding?: string, upgrade?: 
     common.printErrorAndExit(`Error ZWEL0139E: Failed to create directory ${targetDir}.`, undefined, 139);
   }
 
+  componentFile = stringlib.removeTrailingSlash(fs.convertToAbsolutePath(componentFile) as string)
+  
   //////////////////////////////////////////////////////////////
   // clean up
   if (targetDir=='/') {
@@ -82,7 +84,7 @@ export function execute(componentFile: string, autoEncoding?: string, upgrade?: 
     //TODO do i need to set link name
     rc = os.symlink(componentFile, tmpDir);
     if (rc) {
-      common.printErrorAndExit(`Error ZWELTODOE: Symlink creation failure, error=${rc}`, undefined, 999);
+      common.printErrorAndExit(`Error ZWEL0204E: Symlink creation failure, error=${rc}`, undefined, 204);
     }
   } else if (fs.fileExists(componentFile)) {
     // create temporary directory to lay down extension files in

@@ -1,5 +1,11 @@
 Install a Zowe component, given a component archive, component directory, or component name.
 When a component name is given instead of a path, the installation will be performed against a Zowe package registry if one is configured.
+Archives can be in the .tar, .zip, or pax format where a component is at the root of the archive.
+
+Components are the packaging standard of Zowe.
+Zowe has core Components, but extensions are also delivered as Components.
+You can read more about them here:
+https://docs.zowe.org/stable/extend/packaging-zos-extensions/
 
 **IMPORTANT NOTES**, by default, this command will enable the component globally
                      by modifying your YAML configuration. You can pass

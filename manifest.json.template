@@ -1,6 +1,6 @@
 {
   "name": "Zowe",
-  "version": "2.2.0",
+  "version": "2.4.0",
   "description": "Zowe is an open source project created to host technologies that benefit the Z platform from all members of the Z community (Integrated Software Vendors, System Integrators and z/OS consumers). Zowe, like Mac or Windows, comes with a set of APIs and OS capabilities that applications build on and also includes some applications out of the box. Zowe offers modern interfaces to interact with z/OS and allows you to work with z/OS in a way that is similar to what you experience on cloud platforms today. You can use these interfaces as delivered or through plug-ins and extensions that are created by clients or third-party vendors.",
   "license": "EPL-2.0",
   "homepage": "https://zowe.org",
@@ -12,35 +12,35 @@
   },
   "binaryDependencies": {
     "org.zowe.zlux.zlux-core": {
-      "version": "~2.2.0-V2.X-STAGING-ZLUX-CORE",
+      "version": "~2.4.0-V2.X-STAGING-ZLUX-CORE",
       "artifact": "*.pax"
     },
     "org.zowe.zlux.sample-angular-app": {
-      "version": "~2.2.0-PR-92",
+      "version": "~2.4.0-V2.X-STAGING",
       "artifact": "*.pax"
     },
     "org.zowe.zlux.sample-iframe-app": {
-      "version": "~2.2.0-PR-26",
+      "version": "~2.4.0-V2.X-STAGING",
       "artifact": "*.pax"
     },
     "org.zowe.zlux.sample-react-app": {
-      "version": "~2.2.0-PR-68",
+      "version": "~2.4.0-V2.X-STAGING",
       "artifact": "*.pax"
     },
     "org.zowe.zlux.tn3270-ng2": {
-      "version": "~2.2.0-V2.X-STAGING",
+      "version": "~2.4.0-V2.X-STAGING",
       "artifact": "*.pax"
     },
     "org.zowe.zlux.vt-ng2": {
-      "version": "~2.2.0-V2.X-STAGING",
+      "version": "~2.4.0-V2.X-STAGING",
       "artifact": "*.pax"
     },
     "org.zowe.zlux.zlux-editor": {
-      "version": "~2.2.0-V2.X-STAGING",
+      "version": "~2.4.0-V2.X-STAGING",
       "artifact": "*.pax"
     },
     "org.zowe.zss": {
-      "version": "~2.2.0-STAGING",
+      "version": "~2.4.0-STAGING",
       "artifact": "*.pax"
     },
     "org.zowe.explorer.jobs.jobs-api-package": {
@@ -54,13 +54,13 @@
       "exclusions": ["*PR*.zip","*BRANCH*"]
     },
     "org.zowe.explorer-jes": {
-      "version": "~2.0.1-SNAPSHOT"
+      "version": "~2.0.2-SNAPSHOT"
     },
     "org.zowe.explorer-mvs": {
-      "version": "~2.0.1-SNAPSHOT"
+      "version": "~2.0.2-SNAPSHOT"
     },
     "org.zowe.explorer-uss": {
-      "version": "~2.0.1-SNAPSHOT"
+      "version": "~2.0.2-SNAPSHOT"
     },
     "org.zowe.explorer-ip": {
       "version": "~1.0.1-PR-23",
@@ -106,8 +106,17 @@
       "artifact": "apiml-sample-extension-*.zip",
       "exclusions": ["*PR*.zip"]
     },
+    "org.zowe.apiml.cloud-gateway-package": {
+      "version": "^2.4.4-SNAPSHOT",
+      "artifact": "cloud-gateway-*.zip",
+      "exclusions": ["*PR*.zip"]
+    },
     "org.zowe.configmgr": {
-      "version": "~0.3.0-v2.x_staging",
+      "version": "~0.4.0-v2.x_staging",
+      "artifact": "*.pax"
+    },
+    "org.zowe.configmgr-rexx": {
+      "version": "~0.4.0-V2.X-STAGING",
       "artifact": "*.pax"
     },
     "org.zowe.launcher": {
@@ -124,7 +133,7 @@
       "version": "~2.0.0-SNAPSHOT"
     },
     "org.zowe.licenses": {
-      "version": "2.1.0",
+      "version": "2.3.0",
       "artifact": "zowe_licenses_full.zip"
     }
   },
@@ -456,17 +465,17 @@
     "base": {
         "registry": "zowe-docker-release.jfrog.io",
         "name": "ompzowe/base",
-        "tag" : "2.0.0-ubuntu"
+        "tag" : "2.0-ubuntu"
     },
     "base-jdk": {
         "registry": "zowe-docker-release.jfrog.io",
         "name": "ompzowe/base-jdk",
-        "tag" : "2.0.0-ubuntu"
+        "tag" : "2.0-ubuntu"
     },
     "base-node": {
         "registry": "zowe-docker-release.jfrog.io",
         "name": "ompzowe/base-node",
-        "tag" : "2.0.0-ubuntu"
+        "tag" : "2.0-ubuntu"
     }
   },
   "dependencyDecisions": {

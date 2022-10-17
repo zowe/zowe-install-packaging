@@ -18,9 +18,12 @@ import { ConfigManager } from 'Configuration';
 import * as common from './common';
 import * as fs from './fs';
 import * as zosfs from './zos-fs';
+import * as zosdataset from './zos-dataset';
 import * as stringlib from './string';
 import * as shell from './shell';
 import * as configmgr from './configmgr';
+import * as varlib from './var';
+import * as fakejq from './fakejq';
 
 const CONFIG_MGR=configmgr.CONFIG_MGR;
 const ZOWE_CONFIG=configmgr.ZOWE_CONFIG;
@@ -206,6 +209,75 @@ export function getManifest(componentDirectory: string): any {
   }
 }
 
+export function getSchemasForComponentConfig(manifest: any, componentDir: string): string|undefined {
+  let baseSchemas = configmgr.getZoweBaseSchemas();
+  if (manifest.schemas?.configs) {
+    if (Array.isArray(manifest.schemas.configs)) {
+      return manifest.schemas.configs.map(path=>componentDir+'/'+path).join(':')+":"+baseSchemas;
+    } else {
+      return componentDir+'/'+manifest.schemas.configs+":"+baseSchemas;
+    }
+  }
+  return undefined;
+}
+
+export function validateConfigForComponent(componentId: string, manifest: any, componentDir: string, configPath: string): boolean {
+  if (configPath.startsWith('/')) { //likely input is merged yaml
+    configPath=`FILE(${configPath})`; 
+  }
+  const schemas = getSchemasForComponentConfig(manifest, componentDir);
+  if (!schemas && ZOWE_CONFIG.zowe.configmgr.validation != 'COMPONENT-COMPAT') { //can be undefined if not stated in manifest.yaml
+    common.printError(`Component ${componentId} is missing property manifest property schemas.configs, validation will fail`);
+    return false;
+  } else if (!schemas) {
+    common.printError(`Error: DEPRECATED: Component ${componentId} does not have a schema file defined in manifest property schemas.configs! Skipping config validation for this component. This may fail in future versions of Zowe. Updating the component is recommended.`);
+    return true;
+  }
+
+  const configRevisionName = `zowe.yaml-${componentId}`;
+
+  if (configPath) {
+    let status = 0;
+    if ((status = CONFIG_MGR.addConfig(configRevisionName))) {
+      common.printError(`Error: Could not add config for ${configPath}, status=${status}`);
+      return false;
+    }
+
+    if ((status = CONFIG_MGR.loadSchemas(configRevisionName, schemas))) {
+      common.printError(`Error: Could not load schemas ${schemas} for configs ${configPath}, status=${status}`);
+      return false;
+    }
+
+    if ((status = CONFIG_MGR.setConfigPath(configRevisionName, configPath))) {
+      common.printError(`Error: Could not set config path for ${configPath}, status=${status}`);
+      return false;
+    }
+
+    if ((status = CONFIG_MGR.loadConfiguration(configRevisionName))) {
+      common.printError(`Error: Could not load config for ${configPath}, status=${status}`);
+      return false;
+    }
+
+    let validation = CONFIG_MGR.validate(configRevisionName);
+    if (validation.ok){
+      if (validation.exceptionTree){
+        common.printError(`Error: Validation of ${configPath} against schema ${schemas} found invalid JSON Schema data`);
+        showExceptions(validation.exceptionTree, 0);
+        return false;
+      } else {
+        return true;
+      }
+    } else {
+      common.printError(`Error: Error occurred on validation of ${configPath} against schema ${schemas}`);
+      return false;
+    }
+  } else {
+    common.printError(`Error: Server config path not given`);
+    return false;
+  }  
+
+}
+
 export function detectComponentManifestEncoding(componentDir: string): number|undefined {
   const manifestPath = getManifestPath(componentDir);
   if (!manifestPath) {
@@ -314,148 +386,6 @@ export function findAllLaunchComponents2(): string[] {
   });
 }
 
-/* 
-${var#Pattern}, ${var##Pattern}
-
-    ${var#Pattern} Remove from $var the shortest part of $Pattern that matches the front end of $var.
-
-    ${var##Pattern} Remove from $var the longest part of $Pattern that matches the front end of $var. 
-
-*/
-
-function resolveShellVariable(previousKey: string, currentKey: string, currentValue: string|undefined, modifier: string): string|undefined {
-  switch (modifier) {
-  //${parameter-default}, ${parameter:-default}
-  //  If parameter not set, use default.
-  case '-': {
-    return std.getenv(currentKey);
-  }
-  //${parameter+alt_value}, ${parameter:+alt_value}
-  //  If parameter set, use alt_value, else use null string.
-  case '+': {
-    return std.getenv(previousKey) ? std.getenv(currentKey) : 'null';
-  }
-  //${parameter?err_msg}, ${parameter:?err_msg}
-  //  If parameter set, use it, else print err_msg and abort the script with an exit status of 1.
-  case '?': {
-    let prev;
-    if ((prev=std.getenv(previousKey))) {
-      return prev;
-    } else {
-      common.printError(currentKey);
-      return currentValue;
-    }
-  }
-  //${parameter=default}, ${parameter:=default}
-  //  If parameter not set, set it to default.
-  case '=': {
-    if (!std.getenv(previousKey)) {
-      std.setenv(previousKey, std.getenv(currentKey));
-    }
-    return std.getenv(previousKey);
-  }
-  default:
-    return undefined;
-  }
-}
-
-
-export function resolveShellTemplate(content: string): string {
-  let position = 0;
-  let output = '';
-  
-  while (position != -1 && position < content.length) {
-    let index = content.indexOf('$', position);
-    if (index == -1) {
-      output+=content.substring(position);
-      return output;
-    } else {
-      output+=content.substring(position, index);
-      if (content[index+1] === '{') {
-        let endIndex = content.indexOf('}', index+2);
-        if (endIndex == -1) {
-          output+=content.substring(position);
-          return output;
-        }
-        
-        //${#var}
-        //  String length (number of characters in $var). For an array, ${#array} is the length of the first element in the array.
-        if (content[index+2] === '#') {
-          let value = std.getenv(content.substring(index+3, endIndex));
-          if (value!==undefined) {
-            output+=value.length;
-            position=endIndex;
-            continue;
-          }
-        }
-
-        let accumIndex = index+2;
-        let currentIndex = index+2;
-        let envValue;
-        let firstKey;
-        let previousKey=null;
-        let currentKey;
-        let previousModifier;
-        while ((currentIndex<endIndex) && (envValue===undefined)) {
-          const char = content[currentIndex];
-          if (char == '-' || char == '=' || char == '+' || char == '?') {
-            currentKey=content.substring(accumIndex, currentIndex);
-            if (currentKey.endsWith(':')) {
-              //TODO this does not handle : cases different from non-: cases, unsure what to do with them
-              currentKey = currentKey.substring(0,currentKey.length-1);
-            }
-            accumIndex=currentIndex+1;
-            if (currentKey) {
-              if (firstKey===undefined) {
-                firstKey=currentKey;
-                envValue=std.getenv(firstKey);
-              }
-            }
-            if (previousModifier) {
-              envValue = resolveShellVariable(previousKey, currentKey, envValue, previousModifier);
-            }
-            previousKey=currentKey;
-            previousModifier = char;
-          }
-          currentIndex++;
-        }
-        
-        currentKey=content.substring(accumIndex, currentIndex);
-        if (currentKey.endsWith(':')) {
-          //TODO this does not handle : cases different from non-: cases, unsure what to do with them
-          currentKey = currentKey.substring(0,currentKey.length-1);
-        }
-        if (currentKey) {
-          if (firstKey===undefined) {
-            firstKey=currentKey;
-            envValue=std.getenv(firstKey);
-          }
-        }
-        if (previousModifier) {
-          envValue = resolveShellVariable(previousKey, currentKey, envValue, previousModifier);
-        }
-        if (envValue!==undefined) {
-          output+=envValue;
-        }
-        position=endIndex+1;
-      } else {
-        let keyIndex = index+1;
-        let charCode = content.charCodeAt(keyIndex);
-        while ((charCode <0x5b && charCode > 0x40) || (charCode < 0x7b && charCode > 0x60) || (charCode > 0x2f && charCode < 0x40) || (charCode == 0x5f)) {
-          keyIndex++;
-        }
-        let val = std.getenv(content.substring(index+1, keyIndex));
-        if (val!==undefined) {
-          output+=val;
-        }
-        position=keyIndex;
-      }
-    }
-  }
-  return output;
-}
-
-
 export function processComponentApimlStaticDefinitions(componentDir: string): boolean {
   const STATIC_DEF_DIR=std.getenv('ZWE_STATIC_DEFINITIONS_DIR');
   if (!STATIC_DEF_DIR) {
@@ -487,7 +417,7 @@ export function processComponentApimlStaticDefinitions(componentDir: string): bo
 
         const contents = xplatform.loadFileUTF8(path,xplatform.AUTO_DETECT);
         if (contents) {
-          const resolvedContents = resolveShellTemplate(contents);
+          const resolvedContents = varlib.resolveShellTemplate(contents);
 
           const zweCliParameterHaInstance=std.getenv("ZWE_CLI_PARAMETER_HA_INSTANCE");
           //discovery static code requires specifically .yml. Not .yaml
@@ -525,7 +455,7 @@ export function testOrSetPcBit(path: string): boolean {
     zos.changeExtAttr(path, zos.EXTATTR_PROGCTL, true);
     const success = hasPCBit(path);
     if (!success) {
-      common.printErrorAndExit("PC bit not set. This must be set such as by executing 'extattr +p $COMPONENT_HOME/lib/sys.so' as a user with sufficient privilege.");
+      common.printErrorAndExit(`PC bit not set. This must be set such as by executing 'extattr +p ${path}' as a user with sufficient privilege.`);
     }
     return success;
   } else {
@@ -581,6 +511,262 @@ export function processZssPluginInstall(componentDir: string): void {
       });
     }
   }
+}
+
+/*
+  Example manifest of a zis plugin component
+
+  name: zis-plugin
+  id: org.zowe.zis.plugin
+  commands:
+    start: bin/start.sh
+    configure: bin/configure.sh
+  zisPlugins:
+    - id: "hello.zis.plugin"
+      path: "/zisServer"
+  schemas:
+  configs: schemas/trivial-schema.json
+
+
+  Example of a zowe.yaml used for zis plugin install
+
+zowe:
+  setup:
+    dataset:
+      prefix: "MVS.DATASET"
+      proclib: "ROCKET.USER.PROCLIB"
+      parmlib: "MVS.DATASET.CUST.PARMLIB"
+      parmlibMembers:
+        zis: "ZWESIP00"
+      jcllib: "MVS.DATASET.CUST.JCLLIB"
+      authLoadlib: "MVS.DATASET.SZWEAUTH"
+      authPluginLib: "MVS.DATASET.CUST.ZWESAPL"
+    zis:
+      parmlib:
+        keys:
+          beep.boop: "list"
+  runtimeDirectory: "/u/user/zowe/test/zistest"
+  logDirectory: "/u/user/zowe/inst/zistest/logs"
+  workspaceDirectory: "/u/user/zowe/inst/zistest/workspace"
+  extensionDirectory: "/u/user/zowe/inst/zistest/extensions"
+
+*/
+export function processZisPluginInstall(componentDir: string): void {
+  if (os.platform == 'zos') {
+    common.printTrace("- Checking for zis plugins and verifying them");
+
+    const manifest = getManifest(componentDir);
+
+    if (manifest.zisPlugins) {
+      if (!ZOWE_CONFIG.zowe?.setup?.dataset || !ZOWE_CONFIG.zowe.setup.dataset.authPluginLib
+        || !ZOWE_CONFIG.zowe.setup.dataset.parmlib || !ZOWE_CONFIG.zowe.setup.dataset.parmlibMembers?.zis) {
+        common.printError(`One or more configuration parameters for ZIS plugin install are missing. Define zowe.setup.dataset to have authPluginLib, parmlib, and parmlibMembers entries.`);
+        std.exit(1);
+      }
+      manifest.zisPlugins.forEach((zisPlugin: {id: string, path: string})=> {
+        common.printTrace(`Attempting to install ZIS plugin ${zisPlugin.id} at ${zisPlugin.path}`);
+        const rc = zisPluginInstall(zisPlugin.path, ZOWE_CONFIG.zowe.setup.dataset.authPluginLib,
+                                    ZOWE_CONFIG.zowe.setup.dataset.parmlib, ZOWE_CONFIG.zowe.setup.dataset.parmlibMembers.zis,
+                                    zisPlugin.id, componentDir,
+                                    ZOWE_CONFIG.zowe?.setup?.zis?.parmlib?.keys || {});
+        if (rc) {
+          common.printMessage(`Failed to install ZIS plugin: ${zisPlugin.id}`);
+          std.exit(1);
+        }
+      });
+    }
+  }
+}
+
+function getKeyOfString(input: string): string {
+  const index = input.indexOf('=');
+  return input.substring(0,index == -1 ? undefined : index);
+}
+
+function getValueOfString(input: string): string {
+  const index = input.indexOf('=');
+  return index == -1 ? input : input.substring(index+1);
+}
+
+function addKeyValueAtEndOfString(pair: string, input: string): string|undefined {
+  const key=getKeyOfString(pair);
+  const value=getValueOfString(pair);
+  const resolvedValue=resolveEnvParameter(value); // Check for env variable substitution
+  common.printDebug(`Resolved parmlib value for ${key}. '${value}' became '${resolvedValue}'`);
+  // Check if we recevied a non-empty value for the key (if the value has been
+  // defined using an environmental variable).
+  if (resolvedValue == "VALUE_NOT_FOUND") {
+    common.printError(`Error ZWEL0203E: Env value in key-value pair ${pair} has not been defined.`);
+    return undefined;
+  }
+  input+='\n'+`${key}=${resolvedValue}`;
+  return input;
+}
+
+export function zisPluginInstall(pluginPath: string, zisPluginlib: string, zisParmlib: string,
+                                 zisParmlibMember: string, pluginId: string, componentDir: string, parmlibKeys: string): number {
+  const parmlibMemberAsUnixFile=fs.createTmpFile(zisParmlibMember);
+
+  zosfs.copyMvsToUss(`${zisParmlib}(${zisParmlibMember})`, parmlibMemberAsUnixFile);
+  let parmlibContents = xplatform.loadFileUTF8(parmlibMemberAsUnixFile, xplatform.AUTO_DETECT);
+  common.printDebug(`Parmlib starts as \n${parmlibContents}`);
+  let parmlibLines = parmlibContents.split('\n');
+  
+  let changed=false;
+
+  const basePath=`${componentDir}/${pluginPath}`;
+  const samplibPath=`${basePath}/samplib`;
+  const loadlibPath=`${basePath}/loadlib`;
+
+  if (fs.directoryExists(basePath)) {
+    if (fs.directoryExists(loadlibPath) && fs.directoryExists(samplibPath)) {
+      const modules = fs.getFilesInDirectory(loadlibPath) || [];
+      for (let i = 0; i < modules.length; i++) {
+        const module = modules[i];
+        const rc = zosdataset.copyToDataset(`${loadlibPath}/${module}`, zisPluginlib, "", true);
+        if (rc != 0) {
+          common.printError(`Error ZWEL0200E: Failed to copy USS file ${loadlibPath}/${module} to MVS data set ${zisPluginlib}.`);
+          return 200;
+        }
+      }
+      const files = fs.getFilesInDirectory(samplibPath)
+      for (let i = 0; i < files.length; i++) {
+        const params = files[i];
+        if (!fs.fileExists(`${samplibPath}/${params}`)) {
+          common.printError(`Error ZWEL0201E: File ${samplibPath}/${params} does not exist.`);
+          return 201;
+        }
+        const contents = xplatform.loadFileUTF8(`${samplibPath}/${params}`, xplatform.AUTO_DETECT);
+        contents.split('\n').forEach((samplibKeyvalue:string)=> {
+          const prefix=samplibKeyvalue.substring(0,2);
+          if (!(prefix == '//' || prefix == '* ' || prefix == '')) {
+            common.printDebug(`Checking existing parmlib line ${samplibKeyvalue} to see if it is in plugin parmlib lines`);
+            let lineIndex = parmlibLines.indexOf(samplibKeyvalue);
+            if (lineIndex != -1) {
+              common.printDebug(`The key-value pair ${samplibKeyvalue} is being skipped because it's already there and hasn't changed (index ${lineIndex}).`);
+            } else {
+              let result = updateUssParmlibKeyValue(samplibKeyvalue, parmlibKeys, parmlibContents);
+              if (result.error) {
+                common.printMessage(`Failed to install ZIS plugin: ${pluginId}`);
+                std.exit(1);
+              } else if (result.changed) {
+                parmlibContents = result.contents;
+                parmlibLines = parmlibContents.split('\n');
+                changed = true;
+              }
+            }
+          }
+        });
+      }
+      common.printMessage(`Successfully installed ZIS plugin: ${pluginId}`);
+    } else {
+      common.printError(`Directory ${loadlibPath} or ${samplibPath} does not exist`);
+      return 1;
+    }
+  } else {
+    common.printError(`Error ZWEL0201E: Directory ${basePath} does not exist`);
+    return 201;
+  }
+
+  if (changed) {
+    common.printDebug(`Parmlib modified, writing as \n${parmlibContents}`);
+    xplatform.storeFileUTF8(parmlibMemberAsUnixFile, xplatform.AUTO_DETECT, parmlibContents);
+    zosdataset.copyToDataset(parmlibMemberAsUnixFile, `${zisParmlib}(${zisParmlibMember})`, "", true);
+  }
+  return 0;
+}
+
+/*
+  Used to write a plugin's parmlib entries into the zis parmlib.
+
+  Consider a plugin parmlib file:
+
+  beep.boop=one,two
+
+  thing1.thing2.thing3=$TERM
+
+  foo.bar.baz=1
+
+
+  ... plugin parmlib keys are '.' seperated, with a '=' between key and value.
+  values can be strings or $env vars, and so the line should be evaluated before
+  putting into the zis parmlib.
+  
+ */
+function updateUssParmlibKeyValue(samplibKeyValue: string, parmlibKeys: string, contents: string): { error?: number, changed?: boolean, contents?: string } {
+  const samplibKey = getKeyOfString(samplibKeyValue);
+  let isChanged: boolean = false;
+  if (!samplibKey) {
+    common.printError(`Error ZWEL0202E: Unable to find samplib key for ${samplibKeyValue}.`);
+    return { error: 202 };
+  }
+
+  let newContents = contents;
+  let lines = contents.split('\n');
+
+  // In the case of a key not being there, an empty string will be returned.
+  const included = contents.includes(samplibKey);
+  let num: number;
+  if (included) {
+    for (let i = 0; i < lines.length; i++) {
+      if (lines[i].includes(samplibKey)) {
+        num = i;
+        break;
+      }
+    }
+  }
+
+  if (num) {
+    const replacer = new RegExp('\\.', 'g');
+    const parsedParmlibKeys = JSON.stringify(parmlibKeys).replace(replacer, '_'); // replace . with _ in keyname for working key search
+    const parsedSamplibKey = samplibKey.replace(replacer, '_'); // replace . with _ in keyname for working key search
+    const configSamplibKeyValue = fakejq.jqget(JSON.parse(parsedParmlibKeys), `.${parsedSamplibKey}`);
+    if (configSamplibKeyValue == "list") {
+      // The key is comma separated list
+      const parmlibKeyValue = lines.length > num ? lines[num] : contents;
+      const parmlibValue=getValueOfString(parmlibKeyValue);
+      const samplibValue=getValueOfString(samplibKeyValue);
+      if (!parmlibValue.includes(samplibValue)) {
+        const newParmlibKeyValue=`${samplibKey}=${parmlibValue},${samplibValue}`;
+        common.printDebug(`Replacing parmlib key ${samplibKey} (list). Old value=${parmlibValue}. New line = ${newParmlibKeyValue}`);
+        lines.splice(num, 1);
+        newContents = lines.join('\n');
+        newContents = addKeyValueAtEndOfString(newParmlibKeyValue, newContents);
+        isChanged = true;
+      } else {
+        common.printDebug(`Skipping parmlib key ${samplibKey} because value did not change`);
+      }
+    } else {
+      // The key is not special and the value is different.
+      lines.splice(num, 1);
+      newContents = lines.join('\n');
+      common.printDebug(`Replacing parmlib key ${samplibKey}. New line = ${samplibKeyValue}`);
+      newContents = addKeyValueAtEndOfString(samplibKeyValue, newContents);
+      isChanged = true;
+    }
+  } else {
+    common.printDebug(`Adding new parmlib key ${samplibKey}. New line = ${samplibKeyValue}`);
+    // The key doesn't exist. Just add the key-value pair to the end of the file.
+    newContents = addKeyValueAtEndOfString(samplibKeyValue, contents);
+    isChanged = true;
+  }
+  return { changed: isChanged, contents: newContents };
+}
+
+// Try to resolve values that are defined using
+// environmental variables, otherwise return
+// the original value - borrowed from ZSS
+//
+// @param string   value
+// Returns:
+//   * If an env variable is provided, its value
+//     is returned on success
+//   * If an env variable is provided and
+//     the variable is not defined,
+//     string VALUE_NOT_FOUND is returned
+//   * The original value is returned
+function resolveEnvParameter(input: string): string {
+  return varlib.resolveShellTemplate(input);
 }
 
 

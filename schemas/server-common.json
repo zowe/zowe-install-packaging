@@ -14,7 +14,7 @@
       "$anchor": "zoweSemverRange",
       "type": "string",
       "description": "A semantic version, see https://semver.org/",
-      "pattern": "^(([\\^\\~\\>\\<]?)|(>=?)|(<=?))(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)(?:-((?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\\.(?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\\+([0-9a-zA-Z-]+(?:\\.[0-9a-zA-Z-]+)*))?$"
+      "pattern": "^(([\\^\\~\\>\\<]?)|(>=?)|(<=?))(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)(-*[a-zA-Z][0-9a-zA-Z\\-\\.]*)?(\\+[0-9a-zA-Z\\-\\.]*)?$"
     },
     "dataset": {
       "$anchor": "zoweDataset",
@@ -38,6 +38,34 @@
       "pattern": "^([A-Z0-9\\$\\#\\@]){1,8}$",
       "minLength": 3,
       "maxLength": 8
+    },
+    "user": {
+      "$anchor": "zoweUser",
+      "type": "string",
+      "pattern": "^([A-Z0-9$#@]){1,8}$",
+      "minLength": 1,
+      "maxLength": 8
+    },
+    "token": {
+      "$anchor": "zoweToken",
+      "type": "string",
+      "pattern": "^([A-Z0-9$#@.]){1,32}$",
+      "minLength": 1,
+      "maxLength": 32
+    },
+    "path": {
+      "$anchor": "zowePath",
+      "type": "string",
+      "pattern": "^([^\0]){1,1024}$",
+      "minLength": 1,
+      "maxLength": 1024
+    },
+    "file": {
+      "$anchor": "zoweFile",
+      "type": "string",
+      "pattern": "^([^\\\0]){1,256}$",
+      "minLength": 1,
+      "maxLength": 256
     },
     "reverseDomainNotation": {
       "$anchor": "zoweReverseDomainNotation",

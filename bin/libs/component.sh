@@ -350,7 +350,7 @@ test_or_set_pc_bit() {
       echo "PC bit set successfully."
       return 0
     else
-      echo "PC bit not set. This must be set such as by executing 'extattr +p $COMPONENT_HOME/lib/sys.so' as a user with sufficient privilege."
+      echo "PC bit not set. This must be set such as by executing 'extattr +p ${path}' as a user with sufficient privilege."
       return 1
     fi
   fi

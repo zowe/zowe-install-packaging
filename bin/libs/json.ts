@@ -66,6 +66,7 @@ export function shellReadYamlConfig(yamlFile: string, parentKey: string, key: st
   }
 }
 
+//NOTE: PARMLIB only supported when destination is zowe.yaml
 export function readYaml(file: string, key: string) {
   const ZOWE_CONFIG=config.getZoweConfig();
   const utils_dir=`${ZOWE_CONFIG.zowe.runtimeDirectory}/bin/utils`;
@@ -115,7 +116,11 @@ export function readJson(file: string, key: string):any {
   return result.out;
 }
 
-  //TODO handle parmlib???
+export function readJsonString(input: string, key: string): any {
+  return fakejq.jqget(JSON.parse(input), key);
+}
+
+//NOTE: PARMLIB only supported when destination is zowe.yaml
 export function updateYaml(file: string, key: string, val: any, expectedSample: string) {
   const ZOWE_CONFIG=config.getZoweConfig();
   const utils_dir=`${ZOWE_CONFIG.zowe.runtimeDirectory}/bin/utils`;
@@ -160,7 +165,7 @@ export function updateZoweYaml(file: string, key: string, val: any) {
   }
 }
 
-    //TODO handle parmlib???
+//TODO: PARMLIB not supported.
 export function deleteYaml(file: string, key: string, expectedSample: string) {
   const ZOWE_CONFIG=config.getZoweConfig();
   const utils_dir=`${ZOWE_CONFIG.zowe.runtimeDirectory}/bin/utils`;
