@@ -1,15 +1,1 @@
-{
-  "lockAcquiredTime": "Mon Oct 17 2022 15:57:24 GMT+0000 (Coordinated Universal Time)",
-  "uid": "1666022244029452332",
-  "repository": {
-    "owner": "zowe",
-    "repo": "zowe-install-packaging"
-  },
-  "branch": "user/markackert/patch-rc-container-fix",
-  "workflow": "Zowe CICD Integration Tests",
-  "job": "cicd-test",
-  "actor": "zowe-robot",
-  "runId": 3266646604,
-  "runNumber": 1764,
-  "link": "https://github.com/zowe/zowe-install-packaging/actions/runs/3266646604"
-}
+""
