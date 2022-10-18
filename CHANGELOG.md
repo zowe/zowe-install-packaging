@@ -6,6 +6,11 @@ All notable changes to the Zowe Installer will be documented in this file.
 
 - Updated ZWEWRF03 workflow to be up to date with the installed software
 
+## `2.5.0`
+
+#### Minor enhancements/defect fixes
+- Fixed that zwe would fail to recursively make missing directories if the root directory was not readable by the user.
+
 ## `2.4.0`
 
 ### New features and enhancements
