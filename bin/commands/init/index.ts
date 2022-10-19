@@ -17,6 +17,8 @@ import * as shell from '../../libs/shell';
 import * as config from '../../libs/config';
 import * as initMvs from './mvs/index';
 import * as initVsam from './vsam/index';
+import * as initApfAuth from './apfauth/index';
+import * as initSecurity from './security/index';
 
 export function execute() {
   common.printLevel0Message(`Configure Zowe`);

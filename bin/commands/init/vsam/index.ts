@@ -10,11 +10,11 @@
 */
 
 import * as std from 'std';
-import * as zoslib from '../../libs/zos';
-import * as common from '../../libs/common';
-import * as stringlib from '../../libs/string';
-import * as shell from '../../libs/shell';
-import * as config from '../../libs/config';
+import * as zoslib from '../../../libs/zos';
+import * as common from '../../../libs/common';
+import * as stringlib from '../../../libs/string';
+import * as shell from '../../../libs/shell';
+import * as config from '../../../libs/config';
 
 export function execute() {
 common.printLevel1Message(`Create VSAM storage for Zowe Caching Service`);
@@ -97,74 +97,69 @@ common.printLevel1Message(`Create VSAM storage for Zowe Caching Service`);
     const replacer = new RegExp('\s', 'g');
     const tmpfile=fs.createTmpFile(`zwe ${std.getenv('ZWE_CLI_COMMANDS_LIST')}`.replace(replacer, '-'));
     common.printDebug(`- Copy ${prefix}.${ZWE_PRIVATE_DS_SZWESAMP}(ZWECSVSM) to ${tmpfile}`);
-    const dsContents = shell.execOutSync('sh', '-c', `cat "//'${prefix}.${ZWE_PRIVATE_DS_SZWESAMP}(ZWECSVSM)'"`);
-    if (dsContents.out) {
-      dsContents.out.replace('^\\/\\/ \\+SET \\+MODE=.*\\$', `//         SET  MODE=${vsam_mode}`)
-        .replace(new RegExp('^\\/\\/ALLOC/,9999s/#dsname/${vsam_name}', 'g')
-                 .replace(new RegExp(
+    const result = shell.execOutSync('sh', '-c', `cat "//'${prefix}.${ZWE_PRIVATE_DS_SZWESAMP}(ZWECSVSM)'" | `+
+          `sed  "s/^\/\/ \+SET \+MODE=.*\$/\/\/         SET  MODE=${vsam_mode}/" | `+
+          `sed  "/^\/\/ALLOC/,9999s/#dsname/${vsam_name}/g" | `+
+          `sed  "/^\/\/ALLOC/,9999s/#volume/${vsam_volume}/g" | `+
+          `sed  "/^\/\/ALLOC/,9999s/#storclas/${vsam_storageClass}/g" `+
+          `> "${tmpfile}" && chmod 700 "${tmpfile}"`);
+    const rc = result.rc;
+    if (rc==0) {
+      common.printDebug(`  * Succeeded`);
+      common.printTrace(`  * Exit code: ${code}`);
+      common.printTrace(`  * Output:`);
+      if (result) {
+        common.printTrace(stringlib.paddingLeft(result.out, "    "));
+      }
+    } else {
+      common.printDebug(`  * Failed`);
+      common.printError(`  * Exit code: ${code}`);
+      common.printError(`  * Output:`);
+      if (result) {
+        common.printError(stringlib.paddingLeft(result.out, "    "));
+      }
     }
-  result=$(
+    if (!fs.fileExists(tmpfile)) {
+      common.printErrorAndExit(`Error ZWEL0159E: Failed to modify ${prefix}.${ZWE_PRIVATE_DS_SZWESAMP}(ZWECSVSM)`, undefined, 159);
+    }
+    common.printTrace(`- ${tmpfile} created with content`);
+    common.printTrace(xplatform.loadFileUTF8(tmpfile, xplatform.AUTO_DETECT));
+    common.printTrace(`- ensure ${tmpfile} encoding before copying into data set`);
+    zosfs.ensureFileEncoding(tmpfile, "SPDX-License-Identifier");
+    common.printTrace(`- copy to ${jcllib}(ZWECSVSM)`);
+    let rc = zosdataset.copyToDataset(tmpfile, `${jcllib}(ZWECSVSM)`, undefined, allowOverwrite);
+    common.printTrace(`- Delete ${tmpfile}`);
+    os.remove(tmpfile);
+    if (rc!=0) {
+      common.printErrorAndExit(`Error ZWEL0160E: Failed to write to ${jcllib}(ZWECSVSM). Please check if target data set is opened by others.`, undefined, 160);
+    }
+    common.printMessage(`- ${jcllib}(ZWECSVSM) is prepared`);
+  }
 
-          sed  "/^\/\/ALLOC/,9999s/#dsname/${vsam_name}/g" | \
-          sed  "/^\/\/ALLOC/,9999s/#volume/${vsam_volume}/g" | \
-          sed  "/^\/\/ALLOC/,9999s/#storclas/${vsam_storageClass}/g" \
-          > "${tmpfile}")
-  code=$?
-  chmod 700 "${tmpfile}"
-  if (rc==0) {
-    common.printDebug(`  * Succeeded`);
-    common.printTrace(`  * Exit code: ${code}`);
-    common.printTrace(`  * Output:`);
-    if (result) {
-      common.printTrace(stringlib.paddingLeft(result, "    "));
+  // submit job
+  common.printMessage(`Submit ${jcllib}(ZWECSVSM)`);
+  const jobid=zosjes.submitJob(`//'${jcllib}(ZWECSVSM)'`)
+  if (!jobid) {
+    common.printErrorAndExit(`Error ZWEL0161E: Failed to run JCL ${jcllib}(ZWECSVSM).`, undefined, 161);
+  }
+  common.printDebug(`- job id ${jobid}`);
+  const jobstate=zosjes.waitForJob(jobid);
+  if (jobstate.rc==1 || !jobstate.out) {
+    common.printErrorAndExit(`Error ZWEL0162E: Failed to find job ${jobid} result.`, undefined, 162);
+  }
+  const sections = jobstate.out.split(',');
+  if (sections.length >= 3) {
+    const jobname=sections[1];
+    const jobcctext=sections[2];
+    const jobcccode=sections[3];
+    if (rc==0) {
+      common.printMessage(`- Job ${jobname}(${jobid}) ends with code ${jobcccode} (${jobcctext}).`);
+    } else {
+      common.printErrorAndExit(`Error ZWEL0163E: Job ${jobname}(${jobid}) ends with code ${jobcccode} (${jobcctext}).`, undefined, 163);
     }
   } else {
-    common.printDebug(`  * Failed`);
-    common.printError(`  * Exit code: ${code}`);
-    common.printError(`  * Output:`);
-    if (result) {
-      common.printError(stringlib.paddingLeft(result, "    "));
-    }
+    common.printErrorAndExit(`Error ZWEL0999E: Waiting for job failed, jobname parsing failed.`);
   }
-  if (!fs.fileExists(tmpfile)) {
-    common.printErrorAndExit(`Error ZWEL0159E: Failed to modify ${prefix}.${ZWE_PRIVATE_DS_SZWESAMP}(ZWECSVSM)`, undefined, 159);
-  }
-  common.printTrace(`- ${tmpfile} created with content`);
-  common.printTrace(xplatform.loadFileUTF8(tmpfile, xplatform.AUTO_DETECT);
-  common.printTrace(`- ensure ${tmpfile} encoding before copying into data set`);
-zosfs.ensureFileEncoding(tmpfile, "SPDX-License-Identifier");
-  common.printTrace(`- copy to ${jcllib}(ZWECSVSM)`);
-  let rc = zosdataset.copyToDataset(tmpfile, `${jcllib}(ZWECSVSM)`, undefined, allowOverwrite);
-                    common.printTrace(`- Delete ${tmpfile}`);
-  os.remove(tmpfile);
-  if (rc!=0) {
-    common.printErrorAndExit(`Error ZWEL0160E: Failed to write to ${jcllib}(ZWECSVSM). Please check if target data set is opened by others.`, undefined, 160);
-  }
-  common.printMessage(`- ${jcllib}(ZWECSVSM) is prepared`);
-}
-
-// submit job
-common.printMessage(`Submit ${jcllib}(ZWECSVSM)`);
-jobid=$(submit_job "//'${jcllib}(ZWECSVSM)'")
-let code=$?
-if (rc!=0) {
-  common.printErrorAndExit(`Error ZWEL0161E: Failed to run JCL ${jcllib}(ZWECSVSM).`, undefined, 161);
-}
-common.printDebug(`- job id ${jobid}`);
-jobstate=$(wait_for_job "${jobid}")
-code=$?
-if (${code} -eq 1) {
-  common.printErrorAndExit(`Error ZWEL0162E: Failed to find job ${jobid} result.`, undefined, 162);
-}
-jobname=$(echo "${jobstate}" | awk -F, '{print $2}')
-jobcctext=$(echo "${jobstate}" | awk -F, '{print $3}')
-jobcccode=$(echo "${jobstate}" | awk -F, '{print $4}')
-if (rc==0) {
-  common.printMessage(`- Job ${jobname}(${jobid}) ends with code ${jobcccode} (${jobcctext}).`);
-} else {
-  common.printErrorAndExit(`Error ZWEL0163E: Job ${jobname}(${jobid}) ends with code ${jobcccode} (${jobcctext}).`, undefined, 163);
-}
-
-// exit message
-common.printLevel2Message(`Zowe Caching Service VSAM storage is created successfully.`);
+  // exit message
+  common.printLevel2Message(`Zowe Caching Service VSAM storage is created successfully.`);
 }
