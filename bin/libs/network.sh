@@ -87,6 +87,11 @@ get_netstat() {
 is_port_available() {
   port="${1}"
 
+  if [ "${ZWE_zowe_network_validatePortFree:-ZWE_zowe_environments_ZWE_NETWORK_VALIDATE_PORT_FREE}" == "false" ]; then
+    print_message "Port validation skipped due to zowe.network.validatePortFree=false"
+    return 0
+  fi
+
   netstat=$(get_netstat)
   if [ $? -gt 0 ]; then
     print_error "No netstat tool found."
@@ -97,7 +102,13 @@ is_port_available() {
 
   case $(uname) in
     "OS/390")
-      result=$(${netstat} -c SERVER -P ${port} 2>&1)
+      vipa_ip=${ZWE_zowe_network_vipaIp:-ZWE_zowe_environments_ZWE_NETWORK_VIPA_IP}
+      if [ -n "${vipa_ip}" ]; then
+        result=$(${netstat} -B ${vipa_ip}+${port} -c SERVER 2>/dev/null)
+      else    
+        result=$(${netstat} -c SERVER -P ${port} 2>/dev/null)
+      fi
+
       code=$?
       if [ ${code} -ne 0 ]; then
         print_error "Netstat test fail with exit code ${code} (${result})"

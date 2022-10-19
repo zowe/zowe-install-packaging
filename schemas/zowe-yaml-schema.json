@@ -86,6 +86,22 @@
                 }
               }
             },
+            "network": {
+              "type": "object",
+              "additionalProperties": false,
+              "description": "Optional, advanced network configuration parameters",
+              "properties": {
+                "vipaIp": {
+                  "type": "string",
+                  "description": "The IP address which all of the Zowe servers will be binding to. If you are using multiple DIPVA addresses, do not use this option."
+                },
+                "validatePortFree": {
+                  "type": "boolean",
+                  "default": true,
+                  "description": "Whether or not to ensure that the port a server is about to use is available. Usually, servers will know this when they attempt to bind to a port, so this option allows you to disable the additional verification step."
+                }
+              }
+            },
             "security": {
               "type": "object",
               "additionalProperties": false,
