@@ -51,12 +51,12 @@ export function resolveShellVariable(previousKey: string, currentKey: string, cu
   //${parameter-default}, ${parameter:-default}
   //  If parameter not set, use default.
   case '-': {
-    return std.getenv(currentKey);
+    return currentValue ? currentValue : currentKey;
   }
   //${parameter+alt_value}, ${parameter:+alt_value}
   //  If parameter set, use alt_value, else use null string.
   case '+': {
-    return std.getenv(previousKey) ? std.getenv(currentKey) : 'null';
+    return std.getenv(previousKey) ? currentKey : 'null';
   }
   //${parameter?err_msg}, ${parameter:?err_msg}
   //  If parameter set, use it, else print err_msg and abort the script with an exit status of 1.
@@ -85,6 +85,9 @@ export function resolveShellVariable(previousKey: string, currentKey: string, cu
 
 
 // if a string has any env variables, replace them with values
+//
+// TODO this does not seem to handle cases such as ${thing:-${thing:-default}} where 1 var is nested inside another.
+// That appears to need sensing of which } is the right one to end on, and recursion upon seeing a $ in the -=+? while loop.
 export function resolveShellTemplate(content: string): string|undefined {
   let position = 0;
   let output = '';

@@ -32,19 +32,29 @@ $(echo "${children}")
 EOF
 }
 
-# Takes in the file that should be expanded and echos out the result, which the caller needs to read
 convert_to_absolute_path() {
-  file="${1}"
-
-  # If the value starts with a ~ for the home variable then evaluate it
-  file=$(echo "${file}")
-
-  # If the path is relative, then expand it
-  if [[ "${file}" != /* ]]; then
-    file="$(pwd)/${file}"
-  fi
-
-  echo "${file}"
+    # generate absolute path from relative path
+    # $1     : relative filename
+    # return : absolute path
+    orgPath="${1}"
+    if [ -d "$orgPath" ]; then
+        if [[ $orgPath = /* ]]; then
+            echo "$orgPath"
+        else
+            (cd "$orgPath"; pwd)
+        fi
+    elif  [ -f "$orgPath" ]; then
+        # file
+        if [[ $orgPath = /* ]]; then
+            echo "$orgPath"
+        elif [[ $orgPath == */* ]]; then
+            echo "$(cd "${orgPath%/*}"; pwd)/${orgPath##*/}"
+        else
+            echo "$(pwd)/$orgPath"
+        fi
+    else
+        echo "$orgPath"
+    fi
 }
 
 get_tmp_dir() {

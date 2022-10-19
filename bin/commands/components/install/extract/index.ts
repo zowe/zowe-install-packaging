@@ -63,6 +63,8 @@ export function execute(componentFile: string, autoEncoding?: string): string {
     common.printErrorAndExit(`Error ZWEL0139E: Failed to create directory ${targetDir}.`, undefined, 139);
   }
 
+  componentFile = stringlib.removeTrailingSlash(fs.convertToAbsolutePath(componentFile) as string)
+  
   //////////////////////////////////////////////////////////////
   // clean up
   if (targetDir=='/') {
@@ -126,7 +128,7 @@ export function execute(componentFile: string, autoEncoding?: string): string {
     if (autoEncoding != 'no' && autotag == 'yes') {
       // automatically tag files
       common.printDebug("- Automatically tag files");
-      result = shell.execOutSync('sh', '-c', `${ZOWE_CONFIG.zowe.runtimeDirectory}/bin/utils/tag-files.sh" "${tmpDir}" 2>&1`);
+      result = shell.execOutSync('sh', '-c', `"${ZOWE_CONFIG.zowe.runtimeDirectory}/bin/utils/tag-files.sh" "${tmpDir}" 2>&1`);
       if (result.out) {
         common.printTrace(result.out);
       }

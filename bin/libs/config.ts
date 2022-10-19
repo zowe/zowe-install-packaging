@@ -75,7 +75,7 @@ export function zosConvertEnvDirFileEncoding(file: string) {
   if (encoding && encoding != 0 && encoding != 1047) {
     const tmpfile=`${std.getenv('ZWE_PRIVATE_WORKSPACE_ENV_DIR')}/t`;
     os.remove(tmpfile);
-    shell.execSync(`iconv`, `-f`, ""+encoding, `-t`, `IBM-1047`, file, `>`, tmpfile);
+    shell.execSync('sh', '-c', `iconv -f "${encoding}" -t "IBM-1047" "${file}" > "${tmpfile}"`);
     os.rename(tmpfile, file);
     shell.execSync('chmod', `640`, file);
     common.printTrace(`>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>AFTER ${file}`);
@@ -298,5 +298,13 @@ export function loadEnvironmentVariables(componentId?: string) {
   if (std.getenv('ZWE_RUN_IN_CONTAINER') == "true") {
     container.prepareContainerRuntimeEnvironments();
   }
+
+  if (configmgr.ZOWE_CONFIG.zowe?.environments) {
+    const environmentKeys = Object.keys(configmgr.ZOWE_CONFIG.zowe.environments);
+    environmentKeys.forEach((key)=> {
+      std.setenv(key, configmgr.ZOWE_CONFIG.zowe.environments[key]);
+    });
+  }
+  
   return std.getenviron();
 }
