@@ -10,12 +10,12 @@
 */
 
 import * as std from 'std';
-import * as zoslib from '../../libs/zos';
-import * as zosdataset from '../../libs/zos-dataset';
-import * as common from '../../libs/common';
-import * as stringlib from '../../libs/string';
-import * as shell from '../../libs/shell';
-import * as config from '../../libs/config';
+import * as zoslib from '../../../libs/zos';
+import * as zosdataset from '../../../libs/zos-dataset';
+import * as common from '../../../libs/common';
+import * as stringlib from '../../../libs/string';
+import * as shell from '../../../libs/shell';
+import * as config from '../../../libs/config';
 
 export function execute() {
   common.printLevel1Message(`Initialize Zowe custom data sets`);

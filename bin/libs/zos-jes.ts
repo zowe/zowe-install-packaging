@@ -16,14 +16,14 @@ import * as stringlib from './string';
 import * as shell from './shell';
 import * as config from './config';
 
-export function submitJob(jclFile: string): string {
+export function submitJob(jclFile: string): string|undefined {
   common.printDebug(`- submit job ${jclFile}`);
 
   common.printTrace(`- content of ${jclFile}`);
   if (!fs.fileExists(jclFile)) {
     common.printTrace(`  * Failed`);
     common.printError(`  * File ${jclFile} does not exist`);
-    return -1;    
+    return;
   } else {
     const contents = xplatform.loadFileUTF8(jclFile);
     common.printTrace(stringlib.paddingLeft(result, "    "));
@@ -64,7 +64,7 @@ export function submitJob(jclFile: string): string {
   }
 }
 
-export function waitForJob(jobid: string) {
+export function waitForJob(jobid: string): {out?: string, rc: number} {
   let is_jes3;
   let jobstatus;
   let jobname;
@@ -79,7 +79,7 @@ export function waitForJob(jobid: string) {
     common.printTrace(`  * Wait for ${secs} seconds`);
     os.sleep(secs*1000);
     
-    const result=zoslib.operatorCommand(`\$D ${jobid},CC`);
+    let result=zoslib.operatorCommand(`\$D ${jobid},CC`);
     // if it's JES3, we receive this:
     // ...             ISF031I CONSOLE IBMUSER ACTIVATED
     // ...            -$D JOB00132,CC
@@ -87,45 +87,55 @@ export function waitForJob(jobid: string) {
     is_jes3=result.out ? result.out.match(new RegExp('\$D \+COMMAND INVALID')) : false;
     if (is_jes3) {
       common.printDebug(`  * JES3 identified`);
-      show_jobid=$(echo "${jobid}" | cut -c4-)
-      result=$(operator_command "*I J=${show_jobid}")
+      const show_jobid=jobid.substring(3);
+      result=zoslib.operatorCommand(`*I J=${show_jobid}`);
       // $I J= gives ...
       // ...            -*I J=00132
       // ...  JES3       IAT8674 JOB BPXAS    (JOB00132) P=15 CL=A        OUTSERV(PENDING WTR)
       // ...  JES3       IAT8699 INQUIRY ON JOB STATUS COMPLETE,       1 JOB  DISPLAYED
-      jobname=$(echo "${result}" | grep 'IAT8674' | sed 's#^.*IAT8674 *JOB *##' | awk '{print $1}')
-      break
+      try {
+        jobname=result.out.split('\n').filter(line=>line.indexOf('IAT8674') != -1)[0].replace(new RegExp('^.*IAT8674 *JOB *', 'g'), '').split(' ')[0];
+      } catch (e) {
+
+      }
+      break;
     } else {
       // $DJ gives ...
       // ... $HASP890 JOB(JOB1)      CC=(COMPLETED,RC=0)  <-- accept this value
       // ... $HASP890 JOB(GIMUNZIP)  CC=()  <-- reject this value
-      jobstatus=$(echo "${result}" | grep '$HASP890' | sed 's#^.*\$HASP890 *JOB(\(.*\)) *CC=(\(.*\)).*$#\1,\2#')
-      jobname=$(echo "${jobstatus}" | awk -F, '{print $1}')
-      jobcctext=$(echo "${jobstatus}" | awk -F, '{print $2}')
-      jobcccode=$(echo "${jobstatus}" | awk -F, '{print $3}' | awk -F= '{print $2}')
-      common.printTrace(`  * Job (${jobname}) status is ${jobcctext},RC=${jobcccode}"
-      if (-n "${jobcctext}" -o -n "${jobcccode}") {
-        // job have CC state
-        break
+      try {
+        const joblines = result.out.split('\n').filter(line=>line.indexOf('$HASP890') != -1);
+        jobstatus = shell.execOutSync('sh', '-c', 'sed "s#^.*\\$HASP890 *JOB(\\(.*\\)) *CC=(\\(.*\\)).*$#\\1,\\2#"').out;
+        const portions = jobstatus.split(',');
+        jobname=portions.length > 0 ? portions[0] : undefined;
+        jobcctext=portions.length > 1 ? portions[1] : undefined;
+        jobcccode=portions.length > 2 ? portions[2].split('=')[1] : undefined;
+        common.printTrace(`  * Job (${jobname}) status is ${jobcctext},RC=${jobcccode}`);
+        if (jobcctext || jobcccode) {
+          // job have CC state
+          break;
+        }
+      } catch (e) {
+        break;
       }
     }
-  done
-  common.printTrace(`  * Job status check done at $(date)."
+  }
+  common.printTrace(`  * Job status check done at ${Date.now()}.`);
 
-  echo "${jobid},${jobname},${jobcctext},${jobcccode}"
-  if (-n "${jobcctext}" -o -n "${jobcccode}") {
-    common.printDebug(`  * Job (${jobname}) exits with code ${jobcccode} (${jobcctext})."
-    if ("${jobcccode}" = "0") {
-      return 0
+  const retVal=`${jobid},${jobname},${jobcctext},${jobcccode}`;
+  if (jobcctext || jobcccode) {
+    common.printDebug(`  * Job (${jobname}) exits with code ${jobcccode} (${jobcctext}).`);
+    if (jobcccode == "0") {
+      return {out: retVal, rc: 0};
     } else {
       // ${jobcccode} could be greater than 255
-      return 2
+      return {out: retVal, rc: 2};
     }
-  } else if (-n "${is_jes3}") {
-    common.printTrace(`  * Cannot determine job complete code. Please check job log manually."
-    return 0
+  } else if (is_jes3) {
+    common.printTrace(`  * Cannot determine job complete code. Please check job log manually.`);
+    return {out: retVal, rc: 0};
   } else {
-    common.printError(`  * Job (${jobname:-${jobid}}) doesn't finish within max waiting period."
-    return 1
+    common.printError(`  * Job (${jobname? jobname : jobid}) doesn't finish within max waiting period.`);
+    return {out: retVal, rc: 1};
   }
 }
