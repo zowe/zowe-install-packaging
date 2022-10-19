@@ -157,6 +157,11 @@ get_ipaddress() {
 validate_port_is_available() {
   port=$1
 
+  if [ "${ZWE_NETWORK_VALIDATE_PORT_FREE}" == "false" ]; then
+    print_message "Port validation skipped due to ZWE_VALIDATE_PORT_FREE=false"
+    return 0
+  fi
+
   netstat=$(get_netstat)
   if [ $? -gt 0 ]; then
     print_error_message "No netstat tool found."
@@ -165,7 +170,12 @@ validate_port_is_available() {
 
   case $(uname) in
     "OS/390")
-      result=$(${netstat} -c SERVER -P ${port} 2>/dev/null)
+      if [ -n "${ZWE_NETWORK_VIPA_IP}" ]; then
+        result=$(${netstat} -B ${ZWE_NETWORK_VIPA_IP}+${port} -c SERVER 2>/dev/null)
+      else    
+        result=$(${netstat} -c SERVER -P ${port} 2>/dev/null)
+      fi
+      
       if [ $? -eq 0 ]; then
         result=$(echo "${result}" | grep Listen | xargs)
         if [ -z "${result}" ]; then
