@@ -10,12 +10,17 @@
 */
 
 import * as std from 'std';
-import * as zoslib from '../../../libs/zos';
-import * as zosdataset from '../../../libs/zos-dataset';
+import * as os from 'os';
+import * as xplatform from 'xplatform';
 import * as common from '../../../libs/common';
 import * as stringlib from '../../../libs/string';
+import * as fs from '../../../libs/fs';
 import * as shell from '../../../libs/shell';
 import * as config from '../../../libs/config';
+import * as zoslib from '../../../libs/zos';
+import * as zosfs from '../../../libs/zos-fs';
+import * as zosdataset from '../../../libs/zos-dataset';
+import * as zosjes from '../../../libs/zos-jes';
 import { strftime } from '../../../libs/strftime';
 
 export function execute() {
@@ -59,10 +64,10 @@ export function execute() {
   const zwesecurResult = shell.execOutSync('sh', '-c', ` cat "//'${prefix}.${std.getenv('ZWE_PRIVATE_DS_SZWESAMP')}(ZWESECUR)'"`);
   if (zwesecurResult.rc == 0) {
     common.printDebug(`  * Succeeded`);
-    common.printTrace(`  * Exit code: ${rc}`);
+    common.printTrace(`  * Exit code: ${zwesecurResult.rc}`);
     common.printTrace(`  * Output:`);
-    if (result) {
-      common.printTrace(stringlib.paddingLeft(result.out, "    "));
+    if (zwesecurResult.out) {
+      common.printTrace(stringlib.paddingLeft(zwesecurResult.out, "    "));
     }
 
     xplatform.storeFileUTF8(tmpfile, xplatform.AUTO_DETECT,
@@ -79,10 +84,10 @@ export function execute() {
                           .replace(/^\/\/\s+SET\s+SYSPROG=.*$/, `//         SET  SYSPROG=${securityGroupsSysprog}`));
   } else {
     common.printDebug(`  * Failed`);
-    common.printError(`  * Exit code: ${rc}`);
+    common.printError(`  * Exit code: ${zwesecurResult.rc}`);
     common.printError(`  * Output:`);
-    if (result) {
-      common.printError(stringlib.paddingLeft(result.out, "    "));
+    if (zwesecurResult.out) {
+      common.printError(stringlib.paddingLeft(zwesecurResult.out, "    "));
     }
   }
   if (!fs.fileExists(tmpfile)) {
@@ -91,7 +96,7 @@ export function execute() {
   common.printTrace(`- ensure ${tmpfile} encoding before copying into data set`);
   zosfs.ensureFileEncoding(tmpfile, "SPDX-License-Identifier");
   common.printTrace(`- ${tmpfile} created, copy to ${jcllib}(${tmpdsm})`);
-  const rc = zosdataset.copyToDataset(tmpfile, `${jcllib}(${tmpdsm})`, undefined, std.getenv('ZWE_CLI_PARAMETER_ALLOW_OVERWRITE'));
+  const rc = zosdataset.copyToDataset(tmpfile, `${jcllib}(${tmpdsm})`, undefined, std.getenv('ZWE_CLI_PARAMETER_ALLOW_OVERWRITE')=='true');
   common.printTrace(`- Delete ${tmpfile}`);
   os.remove(tmpfile);
   if (rc != 0) {
