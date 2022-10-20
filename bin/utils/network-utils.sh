@@ -157,7 +157,7 @@ get_ipaddress() {
 validate_port_is_available() {
   port=$1
 
-  if [ "${ZWE_NETWORK_VALIDATE_PORT_FREE}" == "false" ]; then
+  if [ "${ZWE_NETWORK_VALIDATE_PORT_FREE}" = "false" ]; then
     print_message "Port validation skipped due to ZWE_VALIDATE_PORT_FREE=false"
     return 0
   fi
