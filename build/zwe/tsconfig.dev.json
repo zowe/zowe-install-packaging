@@ -29,5 +29,8 @@
     "../../bin/libs/*",
     "../../bin/commands/**/*",
     "../../bin/utils/*"
+  ],
+  "exclude": [
+    "../../bin/commands/init/certificate/*"
   ]
 }

@@ -10,8 +10,11 @@
 */
 
 import * as std from 'std';
+import * as os from 'os';
+import * as xplatform from 'xplatform';
 import * as zoslib from './zos';
 import * as common from './common';
+import * as fs from './fs';
 import * as stringlib from './string';
 import * as shell from './shell';
 import * as config from './config';
@@ -23,18 +26,17 @@ export function submitJob(jclFile: string): string|undefined {
   if (!fs.fileExists(jclFile)) {
     common.printTrace(`  * Failed`);
     common.printError(`  * File ${jclFile} does not exist`);
-    return;
+    return undefined;
   } else {
-    const contents = xplatform.loadFileUTF8(jclFile);
-    common.printTrace(stringlib.paddingLeft(result, "    "));
+    common.printTrace(stringlib.paddingLeft(xplatform.loadFileUTF8(jclFile, xplatform.AUTO_DETECT), "    "));
   }
 
   const result=shell.execOutSync('sh', '-c', `submit "${jclFile}" 2>&1`);
   // expected: JOB JOB????? submitted from path '...'
   const code=result.rc;
   if (code==0) {
-//    const jobid = result.out.split('\n').filter(line=>line.indexOf('submitted')!=-1);
-//    jobid=$(echo "${result}" | grep submitted | awk '{print $2}')
+    let jobidlines = result.out.split('\n').filter(line=>line.indexOf('submitted')!=-1);
+    const jobid = jobidlines.length > 0 ? jobidlines[0].split(' ')[1] : undefined;
     if (!jobid) {
       common.printDebug(`  * Failed to find job ID`);
       common.printError(`  * Exit code: ${code}`);
@@ -42,7 +44,7 @@ export function submitJob(jclFile: string): string|undefined {
       if (result.out) {
         common.printError(stringlib.paddingLeft(result.out, "    "));
       }
-      return;
+      return undefined;
     } else {
       common.printDebug(`  * Succeeded with job ID ${jobid}`);
       common.printTrace(`  * Exit code: ${code}`);
@@ -60,7 +62,7 @@ export function submitJob(jclFile: string): string|undefined {
       common.printError(stringlib.paddingLeft(result.out, "    "));
     }
 
-    return;
+    return undefined;
   }
 }
 

@@ -15,17 +15,13 @@ import * as os from 'os';
 import * as zos from 'zos';
 import * as xplatform from 'xplatform';
 
-import * as fs from '../../../../libs/fs';
-import * as common from '../../../../libs/common';
-import * as stringlib from '../../../../libs/string';
-import * as shell from '../../../../libs/shell';
-import * as sys from '../../../../libs/sys';
-import * as config from '../../../../libs/config';
-import * as component from '../../../../libs/component';
-import * as varlib from '../../../../libs/var';
-import * as java from '../../../../libs/java';
-import * as node from '../../../../libs/node';
-import * as zosmf from '../../../../libs/zosmf';
+import * as fs from '../../../libs/fs';
+import * as common from '../../../libs/common';
+import * as stringlib from '../../../libs/string';
+import * as shell from '../../../libs/shell';
+import * as config from '../../../libs/config';
+import * as zosfs from '../../../libs/zos-fs';
+import * as zosdataset from '../../../libs/zos-dataset';
 
 export function execute() {
 
@@ -88,14 +84,14 @@ export function execute() {
   // check existence
   proclibs.forEach((mb: string) => {
     // source in SZWESAMP
-    const samp_existence=zosdatasets.isDatasetExists(`${prefix}.${std.getenv('ZWE_PRIVATE_DS_SZWESAMP')}(${mb})`);
+    const samp_existence=zosdataset.isDatasetExists(`${prefix}.${std.getenv('ZWE_PRIVATE_DS_SZWESAMP')}(${mb})`);
     if (samp_existence != true) {
       common.printErrorAndExit(`Error ZWEL0143E: ${prefix}.${std.getenv('ZWE_PRIVATE_DS_SZWESAMP')}(${mb}) already exists. This data set member will be overwritten during configuration.`, undefined, 143);
     }
   });
   target_proclibs.forEach((mb: string) => {
     // JCL for preview purpose
-    jcl_existence=zosdatasets.isDatasetExists(`${jcllib}(${mb})`);
+    jcl_existence=zosdataset.isDatasetExists(`${jcllib}(${mb})`);
     if (jcl_existence == true) {
       if (std.getenv('ZWE_CLI_PARAMETER_ALLOW_OVERWRITE') == "true") {
         // warning
@@ -108,7 +104,7 @@ export function execute() {
     }
 
     // STCs in target proclib
-    stc_existence=zosdatasets.isDatasetExists(`${proclib}(${mb})`);
+    stc_existence=zosdataset.isDatasetExists(`${proclib}(${mb})`);
     if (stc_existence == true) {
       if (std.getenv('ZWE_CLI_PARAMETER_ALLOW_OVERWRITE') == "true") {
         // warning
@@ -122,7 +118,7 @@ export function execute() {
   });
 
   if (jcl_existence == true && std.getenv('ZWE_CLI_PARAMETER_ALLOW_OVERWRITE') != "true") {
-    common.printMessage(`Skipped writing to ${jcllib}(${mb}). To write, you must use --allow-overwrite.`);
+    common.printMessage(`Skipped writing to ${jcllib}. To write, you must use --allow-overwrite.`);
   } else {
     // prepare STCs
     // ZWESLSTC
@@ -136,137 +132,136 @@ export function execute() {
       common.printMessage(`Please manually verify if this path works for your environment, especially when you are working in Sysplex environment.`);
     }
     */
-  let result = shell.execOutSync('sh', '-c', `cat "//'${prefix}.${std.getenv('ZWE_PRIVATE_DS_SZWESAMP')}(ZWESLSTC)'" | `+
-          `sed "s/^\/\/STEPLIB .*\$/\/\/STEPLIB  DD   DSNAME=${authLoadlib},DISP=SHR/ | `+
-          `sed "s#^CONFIG=.*\$#CONFIG=$(convert_to_absolute_path ${std.getenv('ZWE_CLI_PARAMETER_CONFIG})#" `+
-          `> "${tmpfile}" && chmod 700 "${tmpfile}");
-  
-  if (result.rc == 0) {
-    common.printDebug(`  * Succeeded`);
-    common.printTrace(`  * Exit code: ${result.rc}`);
-    common.printTrace(`  * Output:`);
-    if (result.out) {
-      common.printTrace(stringlib.paddingLeft(result.out, "    "));
+    let result:any = shell.execOutSync('sh', '-c', `cat "//'${prefix}.${std.getenv('ZWE_PRIVATE_DS_SZWESAMP')}(ZWESLSTC)'" | `+
+                                   `sed "s/^\/\/STEPLIB .*\$/\/\/STEPLIB  DD   DSNAME=${authLoadlib},DISP=SHR/ | `+
+                                   `sed "s#^CONFIG=.*\$#CONFIG=$(convert_to_absolute_path ${std.getenv('ZWE_CLI_PARAMETER_CONFIG')})#" `+
+                                   `> "${tmpfile}" && chmod 700 "${tmpfile}"`);
+    
+    if (result.rc == 0) {
+      common.printDebug(`  * Succeeded`);
+      common.printTrace(`  * Exit code: ${result.rc}`);
+      common.printTrace(`  * Output:`);
+      if (result.out) {
+        common.printTrace(stringlib.paddingLeft(result.out, "    "));
+      }
+    } else {
+      common.printDebug(`  * Failed`);
+      common.printError(`  * Exit code: ${result.rc}`);
+      common.printError(`  * Output:`);
+      if (result.out) {
+        common.printError(stringlib.paddingLeft(result.out, "    "));
+      }
     }
+    if (!fs.fileExists(tmpfile)) {
+      common.printErrorAndExit(`Error ZWEL0159E: Failed to modify ${prefix}.${std.getenv('ZWE_PRIVATE_DS_SZWESAMP')}(ZWESLSTC)`, undefined, 159);
+    }
+    common.printTrace(`- ensure ${tmpfile} encoding before copying into data set`);
+    zosfs.ensureFileEncoding(tmpfile, "SPDX-License-Identifier");
+    common.printTrace(`- ${tmpfile} created, copy to ${jcllib}(${security_stcs_zowe})`);
+    result = zosdataset.copyToDataset(tmpfile, `${jcllib}(${security_stcs_zowe})`, "", std.getenv('ZWE_CLI_PARAMETER_ALLOW_OVERWRITE')=='true');
+    common.printTrace(`- Delete ${tmpfile}`);
+    os.remove(tmpfile);
+    if (result != 0) {
+      common.printErrorAndExit(`Error ZWEL0160E: Failed to write to ${jcllib}(${security_stcs_zowe}). Please check if target data set is opened by others.`, undefined, 160);
+    }
+    common.printDebug(`- ${jcllib}(${security_stcs_zowe}) is prepared`);
+
+    // ZWESISTC
+    common.printMessage(`Modify ZWESISTC and save as ${jcllib}(${security_stcs_zis})`);
+    tmpfile = fs.createTmpFile(`zwe ${std.getenv('ZWE_CLI_COMMANDS_LIST')}`.replace(new RegExp('\s', 'g'), '-'));
+    common.printDebug(`- Copy ${prefix}.${std.getenv('ZWE_PRIVATE_DS_SZWESAMP')}(ZWESISTC) to ${tmpfile}`);
+    result = shell.execOutSync('sh', '-c', `cat "//'${prefix}.${std.getenv('ZWE_PRIVATE_DS_SZWESAMP')}(ZWESISTC)'" | `+
+                               `sed '/^..STEPLIB/c`+
+                               `\//STEPLIB  DD   DSNAME='${authLoadlib}',DISP=SHR`+
+                               `\//         DD   DSNAME='${authPluginLib}',DISP=SHR' | `+
+                               `sed "s/^\/\/PARMLIB .*\$/\/\/PARMLIB  DD   DSNAME=${parmlib},DISP=SHR/" `+
+                               `> "${tmpfile}" &&   chmod 700 "${tmpfile}"`);
+
+    if (result.rc == 0) {
+      common.printDebug(`  * Succeeded`);
+      common.printTrace(`  * Exit code: ${result.rc}`);
+      common.printTrace(`  * Output:`);
+      if (result.out) {
+        common.printTrace(stringlib.paddingLeft(result.out, "    "));
+      }
+    } else {
+      common.printDebug(`  * Failed`);
+      common.printError(`  * Exit code: ${result.rc}`);
+      common.printError(`  * Output:`);
+      if (result.out) {
+        common.printError(stringlib.paddingLeft(result.out, "    "));
+      }
+      std.exit(1);
+    }
+    if (!fs.fileExists(tmpfile)) {
+      common.printErrorAndExit(`Error ZWEL0159E: Failed to modify ${prefix}.${std.getenv('ZWE_PRIVATE_DS_SZWESAMP')}(ZWESISTC)`, undefined, 159);
+    }
+    common.printTrace(`- ensure ${tmpfile} encoding before copying into data set`);
+    zosfs.ensureFileEncoding(tmpfile, "SPDX-License-Identifier");
+    common.printTrace(`- ${tmpfile} created, copy to ${jcllib}(${security_stcs_zis})`);
+    result = zosdataset.copyToDataset(tmpfile, `${jcllib}(${security_stcs_zis})`, "", std.getenv('ZWE_CLI_PARAMETER_ALLOW_OVERWRITE')=='true');
+    common.printTrace(`- Delete ${tmpfile}`);
+    os.remove(tmpfile);
+    if (result != 0) {
+      common.printErrorAndExit(`Error ZWEL0160E: Failed to write to ${jcllib}(${security_stcs_zis}). Please check if target data set is opened by others.`, undefined, 160);
+    }
+    common.printDebug(`- ${jcllib}(${security_stcs_zis}) is prepared`);
+
+    // ZWESASTC
+    common.printMessage(`Modify ZWESASTC and save as ${jcllib}(${security_stcs_aux})`);
+    tmpfile = fs.createTmpFile(`zwe ${std.getenv('ZWE_CLI_COMMANDS_LIST')}`.replace(new RegExp('\s', 'g'), '-'));
+    common.printDebug(`- Copy ${prefix}.${std.getenv('ZWE_PRIVATE_DS_SZWESAMP')}(ZWESASTC) to ${tmpfile}`);
+    result = shell.execOutSync('sh', '-c', `cat "//'${prefix}.${std.getenv('ZWE_PRIVATE_DS_SZWESAMP')}(ZWESASTC)'" | `+
+                               `sed '/^..STEPLIB/c`+
+                               `\//STEPLIB  DD   DSNAME='${authLoadlib}',DISP=SHR`+
+                               `\//         DD   DSNAME='${authPluginLib}',DISP=SHR' `+
+                               `> "${tmpfile}" && chmod 700 "${tmpfile}"`);
+    if (result.rc == 0) {
+      common.printDebug(`  * Succeeded`);
+      common.printTrace(`  * Exit code: ${result.rc}`);
+      common.printTrace(`  * Output:`);
+      if (result.out) {
+        common.printTrace(stringlib.paddingLeft(result.out, "    "));
+      }
+    } else {
+      common.printDebug(`  * Failed`);
+      common.printError(`  * Exit code: ${result.rc}`);
+      common.printError(`  * Output:`);
+      if (result.out) {
+        common.printError(stringlib.paddingLeft(result.out, "    "));
+      }
+      std.exit(1);
+    }
+    if (!fs.fileExists(tmpfile)) {
+      common.printErrorAndExit(`Error ZWEL0159E: Failed to modify ${prefix}.${std.getenv('ZWE_PRIVATE_DS_SZWESAMP')}(ZWESASTC)`, undefined, 159);
+    }
+    common.printTrace(`- ensure ${tmpfile} encoding before copying into data set`);
+    zosfs.ensureFileEncoding(tmpfile, "SPDX-License-Identifier");
+    common.printTrace(`- ${tmpfile} created, copy to ${jcllib}(${security_stcs_aux})`);
+    result = zosdataset.copyToDataset(tmpfile, `${jcllib}(${security_stcs_aux})`, "", std.getenv('ZWE_CLI_PARAMETER_ALLOW_OVERWRITE')=='true');
+    common.printTrace(`- Delete ${tmpfile}`);
+    os.remove(tmpfile);
+    if (result != 0) {
+      common.printErrorAndExit(`Error ZWEL0160E: Failed to write to ${jcllib}(${security_stcs_aux}). Please check if target data set is opened by others.`, undefined, 160);
+    }
+    common.printDebug(`- ${jcllib}(${security_stcs_aux}) is prepared`);
+    common.printMessage('');
+  }
+
+  if (stc_existence == true && std.getenv('ZWE_CLI_PARAMETER_ALLOW_OVERWRITE') != "true") {
+    common.printMessage(`Skipped writing to ${proclib}. To write, you must use --allow-overwrite.`);
   } else {
-    common.printDebug(`  * Failed`);
-    common.printError(`  * Exit code: ${result.rc}`);
-    common.printError(`  * Output:`);
-    if (result.out) {
-      common.printError(stringlib.paddingLeft(result.out, "    "));
-    }
+    // copy to proclib
+    target_proclibs.forEach((mb:string)=> {
+      common.printMessage(`Copy ${jcllib}(${mb}) to ${proclib}(${mb})`);
+      //TODO there was an '-X' here. why?
+      const result = zosdataset.datasetCopyToDataset(prefix, `${jcllib}(${mb})`, `${proclib}(${mb})`, std.getenv('ZWE_CLI_PARAMETER_ALLOW_OVERWRITE')=='true');
+      if (result != 0) {
+        common.printErrorAndExit(`Error ZWEL0111E: Command aborts with error.`, undefined, 111);
+      }
+    });
   }
-  if (!fs.fileExists(tmpfile)) {
-    common.printErrorAndExit(`Error ZWEL0159E: Failed to modify ${prefix}.${std.getenv('ZWE_PRIVATE_DS_SZWESAMP')}(ZWESLSTC)`, undefined, 159);
-  }
-  common.printTrace(`- ensure ${tmpfile} encoding before copying into data set`);
-  ensure_file_encoding "${tmpfile}" "SPDX-License-Identifier"
-  common.printTrace(`- ${tmpfile} created, copy to ${jcllib}(${security_stcs_zowe})`);
-  copy_to_data_set "${tmpfile}" "${jcllib}(${security_stcs_zowe})" "" std.getenv('ZWE_CLI_PARAMETER_ALLOW_OVERWRITE')
-  common.printTrace(`- Delete ${tmpfile}`);
-  os.remove(tmpfile);
-  if (result.rc != 0) {
-    common.printErrorAndExit(`Error ZWEL0160E: Failed to write to ${jcllib}(${security_stcs_zowe}). Please check if target data set is opened by others.`, undefined, 160
-  }
-  common.printDebug(`- ${jcllib}(${security_stcs_zowe}) is prepared`);
 
-  // ZWESISTC
-  common.printMessage(`Modify ZWESISTC and save as ${jcllib}(${security_stcs_zis})`);
-  tmpfile = fs.createTmpFile(`zwe ${std.getenv('ZWE_CLI_COMMANDS_LIST')}`.replace(new RegExp('\s', 'g'), '-'));
-  common.printDebug(`- Copy ${prefix}.${std.getenv('ZWE_PRIVATE_DS_SZWESAMP')}(ZWESISTC) to ${tmpfile}`);
-  result = shell.execOutSync('sh', '-c', `cat "//'${prefix}.${std.getenv('ZWE_PRIVATE_DS_SZWESAMP')}(ZWESISTC)'" | `+
-          sed '/^..STEPLIB/c\
-\//STEPLIB  DD   DSNAME='${authLoadlib}',DISP=SHR\
-\//         DD   DSNAME='${authPluginLib}',DISP=SHR' | `+
-          sed "s/^\/\/PARMLIB .*\$/\/\/PARMLIB  DD   DSNAME=${parmlib},DISP=SHR/" `+
-          > "${tmpfile}" &&   chmod 700 "${tmpfile}");
-
-  if (result.rc == 0) {
-    common.printDebug(`  * Succeeded`);
-    common.printTrace(`  * Exit code: ${result.rc}`);
-    common.printTrace(`  * Output:`);
-    if (result.out) {
-      common.printTrace(stringlib.paddingLeft(result.out, "    "));
-    }
-  } else {
-    common.printDebug(`  * Failed`);
-    common.printError(`  * Exit code: ${result.rc}`);
-    common.printError(`  * Output:`);
-    if (result.out) {
-      common.printError(stringlib.paddingLeft(result.out, "    "));
-    }
-    std.exit(1);
-  }
-  if (!fs.fileExists(tmpfile) {
-    common.printErrorAndExit(`Error ZWEL0159E: Failed to modify ${prefix}.${std.getenv('ZWE_PRIVATE_DS_SZWESAMP')}(ZWESISTC)`, undefined, 159
-  }
-  common.printTrace(`- ensure ${tmpfile} encoding before copying into data set`);
-  ensure_file_encoding "${tmpfile}" "SPDX-License-Identifier"
-  common.printTrace(`- ${tmpfile} created, copy to ${jcllib}(${security_stcs_zis})`);
-  copy_to_data_set "${tmpfile}" "${jcllib}(${security_stcs_zis})" "" std.getenv('ZWE_CLI_PARAMETER_ALLOW_OVERWRITE')
-  common.printTrace(`- Delete ${tmpfile}`);
-  os.remove(tmpfile);
-  if (result.rc != 0) {
-    common.printErrorAndExit(`Error ZWEL0160E: Failed to write to ${jcllib}(${security_stcs_zis}). Please check if target data set is opened by others.`, undefined, 160
-  }
-  common.printDebug(`- ${jcllib}(${security_stcs_zis}) is prepared`);
-
-  // ZWESASTC
-  common.printMessage(`Modify ZWESASTC and save as ${jcllib}(${security_stcs_aux})`);
-  tmpfile = fs.createTmpFile(`zwe ${std.getenv('ZWE_CLI_COMMANDS_LIST')}`.replace(new RegExp('\s', 'g'), '-'));
-  common.printDebug(`- Copy ${prefix}.${std.getenv('ZWE_PRIVATE_DS_SZWESAMP}(ZWESASTC) to ${tmpfile}`);
-  result = shell.execOutSync('sh', '-c', `cat "//'${prefix}.${std.getenv('ZWE_PRIVATE_DS_SZWESAMP')}(ZWESASTC)'" | `+
-          sed '/^..STEPLIB/c\
-\//STEPLIB  DD   DSNAME='${authLoadlib}',DISP=SHR\
-\//         DD   DSNAME='${authPluginLib}',DISP=SHR' `+
-          > "${tmpfile}")
-  chmod 700 "${tmpfile}"
-  if (result.rc == 0) {
-    common.printDebug(`  * Succeeded`);
-    common.printTrace(`  * Exit code: ${result.rc}`);
-    common.printTrace(`  * Output:`);
-    if (result.out) {
-      common.printTrace(stringlib.paddingLeft(result.out, "    "));
-    }
-  } else {
-    common.printDebug(`  * Failed`);
-    common.printError(`  * Exit code: ${result.rc}`);
-    common.printError(`  * Output:`);
-    if (result.out) {
-      common.printError(stringlib.paddingLeft(result.out, "    "));
-    }
-    std.exit(1);
-  }
-  if (!fs.fileExists(tmpfile)) {
-    common.printErrorAndExit(`Error ZWEL0159E: Failed to modify ${prefix}.${std.getenv('ZWE_PRIVATE_DS_SZWESAMP')}(ZWESASTC)`, undefined, 159);
-  }
-  common.printTrace(`- ensure ${tmpfile} encoding before copying into data set`);
-  ensure_file_encoding "${tmpfile}" "SPDX-License-Identifier"
-  common.printTrace(`- ${tmpfile} created, copy to ${jcllib}(${security_stcs_aux})`);
-  copy_to_data_set "${tmpfile}" "${jcllib}(${security_stcs_aux})" "" std.getenv('ZWE_CLI_PARAMETER_ALLOW_OVERWRITE')
-  common.printTrace(`- Delete ${tmpfile}`);
-  os.remove(tmpfile);
-  if (result.rc != 0) {
-    common.printErrorAndExit(`Error ZWEL0160E: Failed to write to ${jcllib}(${security_stcs_aux}). Please check if target data set is opened by others.`, undefined, 160);
-  }
-  common.printDebug(`- ${jcllib}(${security_stcs_aux}) is prepared`);
-
-  print_message
-}
-
-if (stc_existence == true && std.getenv('ZWE_CLI_PARAMETER_ALLOW_OVERWRITE') != "true") {
-  common.printMessage(`Skipped writing to ${proclib}(${mb}). To write, you must use --allow-overwrite.`);
-} else {
-  // copy to proclib
-  for mb in ${target_proclibs}; do
-    common.printMessage(`Copy ${jcllib}(${mb}) to ${proclib}(${mb})`);
-    data_set_copy_to_data_set "${prefix}" "${jcllib}(${mb})" "${proclib}(${mb})" "-X" std.getenv('ZWE_CLI_PARAMETER_ALLOW_OVERWRITE')
-    if (result.rc != 0) {
-      common.printErrorAndExit(`Error ZWEL0111E: Command aborts with error.`, undefined, 111);
-    }
-  done
-}
-
-// exit message
-print_level2_message "Zowe main started tasks are installed successfully.`);
+  // exit message
+  common.printLevel2Message(`Zowe main started tasks are installed successfully.`);
 }

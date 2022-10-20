@@ -10,15 +10,20 @@
 */
 
 import * as std from 'std';
+import * as node from '../../libs/node';
+import * as java from '../../libs/java';
 import * as zoslib from '../../libs/zos';
 import * as common from '../../libs/common';
 import * as stringlib from '../../libs/string';
 import * as shell from '../../libs/shell';
 import * as config from '../../libs/config';
+import * as json from '../../libs/json';
 import * as initMvs from './mvs/index';
 import * as initVsam from './vsam/index';
 import * as initApfAuth from './apfauth/index';
 import * as initSecurity from './security/index';
+//import * as initCertificate from './certificate/index';
+import * as initStc from './stc/index';
 
 export function execute() {
   common.printLevel0Message(`Configure Zowe`);
@@ -63,9 +68,9 @@ export function execute() {
 
   if (newNodeHome || newJavaHome || newZoweRuntimeDir) {
     if (std.getenv("ZWE_CLI_PARAMETER_UPDATE_CONFIG") == "true") {
-      let updateObj = {};
+      let updateObj:any = {};
       if (newNodeHome) {
-        updateObj.node = {home: newHomeHome};
+        updateObj.node = {home: newNodeHome};
       }
       if (newJavaHome) {
         updateObj.java = {home: newJavaHome};
@@ -104,7 +109,7 @@ export function execute() {
     initApfAuth.execute();
     initSecurity.execute();
   }
-  initCertificate.execute();
+//  initCertificate.execute();
   initStc.execute();
 
   common.printLevel1Message(`Zowe is configured successfully.`);

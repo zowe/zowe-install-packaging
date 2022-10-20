@@ -10,11 +10,17 @@
 */
 
 import * as std from 'std';
-import * as zoslib from '../../../libs/zos';
+import * as os from 'os';
+import * as xplatform from 'xplatform';
 import * as common from '../../../libs/common';
 import * as stringlib from '../../../libs/string';
 import * as shell from '../../../libs/shell';
+import * as fs from '../../../libs/fs';
 import * as config from '../../../libs/config';
+import * as zoslib from '../../../libs/zos';
+import * as zosjes from '../../../libs/zos-jes';
+import * as zosfs from '../../../libs/zos-fs';
+import * as zosdataset from '../../../libs/zos-dataset';
 
 export function execute() {
 common.printLevel1Message(`Create VSAM storage for Zowe Caching Service`);
@@ -26,12 +32,12 @@ common.printLevel1Message(`Create VSAM storage for Zowe Caching Service`);
   const allowOverwrite: boolean = std.getenv("ZWE_CLI_PARAMETER_ALLOW_OVERWRITE") == 'true' ? true : false;
 
   let caching_storage=zoweConfig.components['caching-service'].storage?.mode;
-  if (caching_stoage) {
+  if (caching_storage) {
     caching_storage.toUpperCase();
   }
   if (caching_storage != "VSAM") {
     common.printError(`Warning ZWEL0301W: Zowe Caching Service is not configured to use VSAM. Command skipped.`);
-    return 0
+    return;
   }
 
   // read prefix and validate
@@ -84,7 +90,7 @@ common.printLevel1Message(`Create VSAM storage for Zowe Caching Service`);
   }
   if (allowOverwrite) {
     // delete blindly and ignore errors
-    let result=zoslib.tsoCommand('delete' `'${vsam_name}'`);
+    let result=zoslib.tsoCommand('delete', `'${vsam_name}'`);
   }
 
 
@@ -96,31 +102,30 @@ common.printLevel1Message(`Create VSAM storage for Zowe Caching Service`);
     common.printMessage(`Modify ZWECSVSM`);
     const replacer = new RegExp('\s', 'g');
     const tmpfile=fs.createTmpFile(`zwe ${std.getenv('ZWE_CLI_COMMANDS_LIST')}`.replace(replacer, '-'));
-    common.printDebug(`- Copy ${prefix}.${ZWE_PRIVATE_DS_SZWESAMP}(ZWECSVSM) to ${tmpfile}`);
-    const result = shell.execOutSync('sh', '-c', `cat "//'${prefix}.${ZWE_PRIVATE_DS_SZWESAMP}(ZWECSVSM)'" | `+
+    common.printDebug(`- Copy ${prefix}.${std.getenv('ZWE_PRIVATE_DS_SZWESAMP')}(ZWECSVSM) to ${tmpfile}`);
+    const result = shell.execOutSync('sh', '-c', `cat "//'${prefix}.${std.getenv('ZWE_PRIVATE_DS_SZWESAMP')}(ZWECSVSM)'" | `+
           `sed  "s/^\/\/ \+SET \+MODE=.*\$/\/\/         SET  MODE=${vsam_mode}/" | `+
           `sed  "/^\/\/ALLOC/,9999s/#dsname/${vsam_name}/g" | `+
           `sed  "/^\/\/ALLOC/,9999s/#volume/${vsam_volume}/g" | `+
           `sed  "/^\/\/ALLOC/,9999s/#storclas/${vsam_storageClass}/g" `+
           `> "${tmpfile}" && chmod 700 "${tmpfile}"`);
-    const rc = result.rc;
-    if (rc==0) {
+    if (result.rc==0) {
       common.printDebug(`  * Succeeded`);
-      common.printTrace(`  * Exit code: ${code}`);
+      common.printTrace(`  * Exit code: ${result.rc}`);
       common.printTrace(`  * Output:`);
-      if (result) {
+      if (result.out) {
         common.printTrace(stringlib.paddingLeft(result.out, "    "));
       }
     } else {
       common.printDebug(`  * Failed`);
-      common.printError(`  * Exit code: ${code}`);
+      common.printError(`  * Exit code: ${result.rc}`);
       common.printError(`  * Output:`);
-      if (result) {
+      if (result.out) {
         common.printError(stringlib.paddingLeft(result.out, "    "));
       }
     }
     if (!fs.fileExists(tmpfile)) {
-      common.printErrorAndExit(`Error ZWEL0159E: Failed to modify ${prefix}.${ZWE_PRIVATE_DS_SZWESAMP}(ZWECSVSM)`, undefined, 159);
+      common.printErrorAndExit(`Error ZWEL0159E: Failed to modify ${prefix}.${std.getenv('ZWE_PRIVATE_DS_SZWESAMP')}(ZWECSVSM)`, undefined, 159);
     }
     common.printTrace(`- ${tmpfile} created with content`);
     common.printTrace(xplatform.loadFileUTF8(tmpfile, xplatform.AUTO_DETECT));
@@ -152,7 +157,7 @@ common.printLevel1Message(`Create VSAM storage for Zowe Caching Service`);
     const jobname=sections[1];
     const jobcctext=sections[2];
     const jobcccode=sections[3];
-    if (rc==0) {
+    if (jobstate.rc==0) {
       common.printMessage(`- Job ${jobname}(${jobid}) ends with code ${jobcccode} (${jobcctext}).`);
     } else {
       common.printErrorAndExit(`Error ZWEL0163E: Job ${jobname}(${jobid}) ends with code ${jobcccode} (${jobcctext}).`, undefined, 163);

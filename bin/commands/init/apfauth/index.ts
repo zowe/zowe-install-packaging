@@ -44,7 +44,7 @@ export function execute() {
       if (key == "authLoadlib") {
         ds=`${prefix}.${std.getenv('ZWE_PRIVATE_DS_SZWEAUTH')}`;
       } else {
-        common.printErrorAndExit(`Error ZWEL0157E: ${name} (zowe.setup.dataset.${key}) is not defined in Zowe YAML configuration file.`, undefined, 157);
+        common.printErrorAndExit(`Error ZWEL0157E: zowe.setup.dataset.${key} is not defined in Zowe YAML configuration file.`, undefined, 157);
       }
     }
 
@@ -54,7 +54,7 @@ export function execute() {
       if (std.getenv('ZWE_CLI_PARAMETER_IGNORE_SECURITY_FAILURES') == "true") {
         jobHasFailures=true;
       } else {
-        std.exit(code);
+        std.exit(rc);
       }
     } else {
       common.printDebug(`- APF authorized successfully.`);

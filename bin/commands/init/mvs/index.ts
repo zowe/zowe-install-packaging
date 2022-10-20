@@ -43,45 +43,50 @@ export function execute() {
     }
   ];
 
-  prefix=zoweConfig.zowe.setup?.dataset?.prefix;
+  const prefix=zoweConfig.zowe.setup?.dataset?.prefix;
   if (!prefix) {
     common.printErrorAndExit(`Error ZWEL0157E: Zowe dataset prefix (zowe.setup.dataset.prefix) is not defined in Zowe YAML configuration file.`, undefined, 157);
   }
 
   common.printMessage(`Create data sets if they do not exist`);
+  let skippedDatasets:boolean = false;
   datasets.forEach((datasetDef) => {    
     // read def and validate
-    ds=zoweConfig.zowe.setup?.dataset ? zoweConfig.zowe.setup.dataset[datasetDef.key];
+    let skip:boolean = false;
+    const ds=zoweConfig.zowe.setup?.dataset ? zoweConfig.zowe.setup.dataset[datasetDef.configKey] : undefined;
     if (!ds) {
       // authLoadlib can be empty
-      if (datasetDef.key == authLoadlib) {
-        continue;
+      if (datasetDef.configKey == 'authLoadlib') {
+        skip=true;
       } else {
-        common.printErrorAndExit(`Error ZWEL0157E: ${datasetDef.name} (zowe.setup.dataset.${datasetDef.key}) is not defined in Zowe YAML configuration file.`, undefined, 157);
+        common.printErrorAndExit(`Error ZWEL0157E: ${datasetDef.configKey} (zowe.setup.dataset.${datasetDef.configKey}) is not defined in Zowe YAML configuration file.`, undefined, 157);
       }
     }
 
-    datasetExists=zosdataset.isDatasetExists(ds);
-    if (datasetExists) {
-      if (allowOverwrite) {
-        common.printMessage(`Warning ZWEL0300W: ${ds} already exists. Members in this data set will be overwritten.`);
+    if (!skip) {
+      const datasetExists=zosdataset.isDatasetExists(ds);
+      if (datasetExists) {
+        if (allowOverwrite) {
+          common.printMessage(`Warning ZWEL0300W: ${ds} already exists. Members in this data set will be overwritten.`);
+        } else {
+          skippedDatasets = true;
+          common.printMessage(`Warning ZWEL0301W: ${ds} already exists and will not be overwritten. For upgrades, you must use --allow-overwrite.`);
+        }
       } else {
-        common.printMessage(`Warning ZWEL0301W: ${ds} already exists and will not be overwritten. For upgrades, you must use --allow-overwrite.`);
-      }
-    } else {
-      common.printMessage(`Creating ${ds}`);
-      let rc = zosdataset.createDataSet(ds, datasetDef.definition);
-      if (rc!=0) {
-        common.printErrorAndExit(`Error ZWEL0111E: Command aborts with error.`, undefined, 111);
+        common.printMessage(`Creating ${ds}`);
+        let rc = zosdataset.createDataSet(ds, datasetDef.definition);
+        if (rc!=0) {
+          common.printErrorAndExit(`Error ZWEL0111E: Command aborts with error.`, undefined, 111);
+        }
       }
     }
   });
 
-  if (datasetExists == true && !allowOverwrite) {
-    common.printMessage(`Skipped writing to ${ds}. To write, you must use --allow-overwrite.`);
+  if (skippedDatasets && !allowOverwrite) {
+    common.printMessage(`Skipped writing to a dataset. To write, you must use --allow-overwrite.`);
   } else {
     // copy sample lib members
-    parmlib=zoweConfig.zowe.setup?.dataset?.parmlib;
+    const parmlib=zoweConfig.zowe.setup?.dataset?.parmlib;
     ['ZWESIP00'].forEach((ds)=> {
       const source = `${prefix}.${std.getenv("ZWE_PRIVATE_DS_SZWESAMP")}(${ds})`;
       common.printMessage(`Copy ${source} to ${parmlib}(${ds})`);
@@ -93,7 +98,7 @@ export function execute() {
 
     // copy auth lib members
     // FIXME: data_set_copy_to_data_set cannot be used to copy program?
-    authLoadlib=zoweConfig.zowe.setup?.dataset?.authLoadlib;
+    const authLoadlib=zoweConfig.zowe.setup?.dataset?.authLoadlib;
     if (authLoadlib) {
       ['ZWESIS01', 'ZWESAUX'].forEach((ds)=> {
         common.printMessage(`Copy components/zss/LOADLIB/${ds} to ${authLoadlib}(${ds})`);
