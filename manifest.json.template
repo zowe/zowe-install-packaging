@@ -36,7 +36,7 @@
       "artifact": "*.pax"
     },
     "org.zowe.zlux.zlux-editor": {
-      "version": "~2.4.0-PR-301",
+      "version": "~2.5.0-PR-306",
       "artifact": "*.pax"
     },
     "org.zowe.zss": {
