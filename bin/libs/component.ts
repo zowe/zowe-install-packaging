@@ -226,7 +226,8 @@ export function validateConfigForComponent(componentId: string, manifest: any, c
     configPath=`FILE(${configPath})`; 
   }
   const schemas = getSchemasForComponentConfig(manifest, componentDir);
-  if (!schemas && ZOWE_CONFIG.zowe.configmgr.validation != 'COMPONENT-COMPAT') { //can be undefined if not stated in manifest.yaml
+  const validationMode = ZOWE_CONFIG.zowe.configmgr?.validation ? ZOWE_CONFIG.zowe.configmgr.validation : 'COMPONENT-COMPAT';
+  if (!schemas && validationMode != 'COMPONENT-COMPAT') { //can be undefined if not stated in manifest.yaml
     common.printError(`Component ${componentId} is missing property manifest property schemas.configs, validation will fail`);
     return false;
   } else if (!schemas) {
