@@ -358,7 +358,7 @@ function configureComponents(componentEnvironments?: any, enabledComponents?:str
           if (result.rc == 0) {
             const outLines = result.out.split('\n');
             common.printFormattedInfo("ZWELS", "zwe-internal-start-prepare,configure_components", `- commands.configure output from ${componentId} is:`);
-            console.log(outLines.filter(line => !line.startsWith('export ')).join('\n'));
+            common.printMessage(outLines.filter(line => !line.startsWith('export ')).join('\n'));
             common.printFormattedDebug("ZWELS", "zwe-internal-start-prepare,configure_components", outLines.filter(line => line.startsWith('export ')).join('\n'));
           }
         } else {
