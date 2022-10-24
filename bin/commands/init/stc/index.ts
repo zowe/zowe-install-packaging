@@ -125,18 +125,22 @@ export function execute() {
     common.printMessage(`Modify ZWESLSTC and save as ${jcllib}(${security_stcs_zowe})`);
     let tmpfile = fs.createTmpFile(`zwe ${std.getenv('ZWE_CLI_COMMANDS_LIST')}`.replace(new RegExp('\s', 'g'), '-'));
     common.printDebug(`- Copy ${prefix}.${std.getenv('ZWE_PRIVATE_DS_SZWESAMP')}(ZWESLSTC) to ${tmpfile}`);
-    // TODO this info gets lost due to the zowe-merged yaml being here
+    // TODO this info gets lost
     /*
     if (!std.getenv("ZWE_CLI_PARAMETER_CONFIG").startsWith('/')) {
       common.printMessage(`CONFIG path defined in ZWESLSTC is converted into absolute path and may contain SYSNAME.`);
       common.printMessage(`Please manually verify if this path works for your environment, especially when you are working in Sysplex environment.`);
     }
     */
-    let result:any = shell.execOutSync('sh', '-c', `cat "//'${prefix}.${std.getenv('ZWE_PRIVATE_DS_SZWESAMP')}(ZWESLSTC)'" | `+
-                                   `sed "s/^\/\/STEPLIB .*\$/\/\/STEPLIB  DD   DSNAME=${authLoadlib},DISP=SHR/ | `+
-                                   `sed "s#^CONFIG=.*\$#CONFIG=$(convert_to_absolute_path ${std.getenv('ZWE_CLI_PARAMETER_CONFIG')})#" `+
-                                   `> "${tmpfile}" && chmod 700 "${tmpfile}"`);
-    
+    const slstcContent = shell.execOutSync('sh', '-c', `cat "//'${prefix}.${std.getenv('ZWE_PRIVATE_DS_SZWESAMP')}(ZWESLSTC)'"`);
+    if (slstcContent.out) {
+      const tmpfileContent = slstcContent.out.replace('//STEPLIB  DD   DSNAME=&SYSUID..LOADLIB,DISP=SHR', '//STEPLIB  DD   DSNAME=${authLoadlib},DISP=SHR')
+        .replace('CONFIG=#zowe_yaml', `CONFIG=${std.getenv('ZWE_PRIVATE_ORIGINAL_CONFIG')}`);
+
+      xplatform.storeFileUTF8(tmpfile, tmpfileContent, xplatform.AUTO_DETECT);
+      shell.execSync('chmod', '700', tmpfile);
+    }
+
     if (result.rc == 0) {
       common.printDebug(`  * Succeeded`);
       common.printTrace(`  * Exit code: ${result.rc}`);
@@ -170,13 +174,16 @@ export function execute() {
     common.printMessage(`Modify ZWESISTC and save as ${jcllib}(${security_stcs_zis})`);
     tmpfile = fs.createTmpFile(`zwe ${std.getenv('ZWE_CLI_COMMANDS_LIST')}`.replace(new RegExp('\s', 'g'), '-'));
     common.printDebug(`- Copy ${prefix}.${std.getenv('ZWE_PRIVATE_DS_SZWESAMP')}(ZWESISTC) to ${tmpfile}`);
-    result = shell.execOutSync('sh', '-c', `cat "//'${prefix}.${std.getenv('ZWE_PRIVATE_DS_SZWESAMP')}(ZWESISTC)'" | `+
-                               `sed '/^..STEPLIB/c`+
-                               `\//STEPLIB  DD   DSNAME='${authLoadlib}',DISP=SHR`+
-                               `\//         DD   DSNAME='${authPluginLib}',DISP=SHR' | `+
-                               `sed "s/^\/\/PARMLIB .*\$/\/\/PARMLIB  DD   DSNAME=${parmlib},DISP=SHR/" `+
-                               `> "${tmpfile}" &&   chmod 700 "${tmpfile}"`);
-
+    const sistcContent = shell.execOutSync('sh', '-c', `cat "//'${prefix}.${std.getenv('ZWE_PRIVATE_DS_SZWESAMP')}(ZWESISTC)'"`);
+    if (sistcContent.out) {
+      const tmpfileContent = sistcContent.out.replace('ZWES.SISSAMP', parmlib)
+        .split('\n').map(line => line.startsWith('//STEPLIB') ? `//STEPLIB  DD   DSNAME='${authLoadlib}',DISP=SHR\n`
+                                                              + `//         DD   DSNAME='${authPluginLib}',DISP=SHR'`
+                                                              : line).join('\n');
+      xplatform.storeFileUTF8(tmpfile, tmpfileContent, xplatform.AUTO_DETECT);
+      shell.execSync('chmod', '700', tmpfile);
+    }
+      
     if (result.rc == 0) {
       common.printDebug(`  * Succeeded`);
       common.printTrace(`  * Exit code: ${result.rc}`);
@@ -211,11 +218,16 @@ export function execute() {
     common.printMessage(`Modify ZWESASTC and save as ${jcllib}(${security_stcs_aux})`);
     tmpfile = fs.createTmpFile(`zwe ${std.getenv('ZWE_CLI_COMMANDS_LIST')}`.replace(new RegExp('\s', 'g'), '-'));
     common.printDebug(`- Copy ${prefix}.${std.getenv('ZWE_PRIVATE_DS_SZWESAMP')}(ZWESASTC) to ${tmpfile}`);
-    result = shell.execOutSync('sh', '-c', `cat "//'${prefix}.${std.getenv('ZWE_PRIVATE_DS_SZWESAMP')}(ZWESASTC)'" | `+
-                               `sed '/^..STEPLIB/c`+
-                               `\//STEPLIB  DD   DSNAME='${authLoadlib}',DISP=SHR`+
-                               `\//         DD   DSNAME='${authPluginLib}',DISP=SHR' `+
-                               `> "${tmpfile}" && chmod 700 "${tmpfile}"`);
+    const sastcContent = shell.execOutSync('sh', '-c', `cat "//'${prefix}.${std.getenv('ZWE_PRIVATE_DS_SZWESAMP')}(ZWESASTC)'"`);
+    if (sastcContent.out) {
+      const tmpfileContent = sastcContent.out.split('\n')
+        .map(line => line.startsWith('//STEPLIB') ? `//STEPLIB  DD   DSNAME='${authLoadlib}',DISP=SHR\n`
+                                                  + `//         DD   DSNAME='${authPluginLib}',DISP=SHR'`
+                                                  : line).join('\n');
+      xplatform.storeFileUTF8(tmpfile, tmpfileContent, xplatform.AUTO_DETECT);
+      shell.execSync('chmod', '700', tmpfile);
+    }
+
     if (result.rc == 0) {
       common.printDebug(`  * Succeeded`);
       common.printTrace(`  * Exit code: ${result.rc}`);

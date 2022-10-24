@@ -103,12 +103,17 @@ common.printLevel1Message(`Create VSAM storage for Zowe Caching Service`);
     const replacer = new RegExp('\s', 'g');
     const tmpfile=fs.createTmpFile(`zwe ${std.getenv('ZWE_CLI_COMMANDS_LIST')}`.replace(replacer, '-'));
     common.printDebug(`- Copy ${prefix}.${std.getenv('ZWE_PRIVATE_DS_SZWESAMP')}(ZWECSVSM) to ${tmpfile}`);
-    const result = shell.execOutSync('sh', '-c', `cat "//'${prefix}.${std.getenv('ZWE_PRIVATE_DS_SZWESAMP')}(ZWECSVSM)'" | `+
-          `sed  "s/^\/\/ \+SET \+MODE=.*\$/\/\/         SET  MODE=${vsam_mode}/" | `+
-          `sed  "/^\/\/ALLOC/,9999s/#dsname/${vsam_name}/g" | `+
-          `sed  "/^\/\/ALLOC/,9999s/#volume/${vsam_volume}/g" | `+
-          `sed  "/^\/\/ALLOC/,9999s/#storclas/${vsam_storageClass}/g" `+
-          `> "${tmpfile}" && chmod 700 "${tmpfile}"`);
+
+    const theDataset = shell.execOutSync('sh', '-c', `cat "//'${prefix}.${std.getenv('ZWE_PRIVATE_DS_SZWESAMP')}(ZWECSVSM)'"`);
+    if (theDataset.out) {
+      const tmpFileContents = theDataset.replace(new RegExp('^//\s*SET MODE=.*$'), `//         SET  MODE=${vsam_mode}`)
+                .replace(new RegExp('\#dsname', 'g'), vsam_name)
+                .replace(new RegExp('\#volume', 'g'), vsam_volume)
+                .replace(new RegExp('\#storclas', 'g'), vsam_storageClass);
+      xplatform.storeFileUTF8(tmpfile, tmpfileContents, xplatform.AUTO_DETECT);
+      shell.execSync('chmod', '700', tmpfile);
+    }
+    
     if (result.rc==0) {
       common.printDebug(`  * Succeeded`);
       common.printTrace(`  * Exit code: ${result.rc}`);
