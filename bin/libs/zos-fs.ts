@@ -63,7 +63,7 @@ export function detectFileEncoding(fileName: string, expectedSample: string, exp
            autoEncoding) && !fileContents.includes(expectedSample)) {
         return 1047;
       } else if (expectedEncodingNumber) {
-        let execReturn = shell.execOutSync('sh', `iconv`, `-f`, `${expectedEncodingNumber}`, `-t`, `1047`, `${fileName}`, `|`, `grep`, `${expectedSample}`);
+        let execReturn = shell.execOutSync('sh', '-c', `iconv -f "${expectedEncodingNumber}" -t 1047 "${fileName}" | grep "${expectedSample}"`);
         if (execReturn.rc == 0 && execReturn.out) {
           return expectedEncodingNumber;
         }
@@ -72,7 +72,7 @@ export function detectFileEncoding(fileName: string, expectedSample: string, exp
         const commonEncodings = [819, 850];
         for (let i = 0; i < commonEncodings.length; i++) {
           const encoding = commonEncodings[i];
-          let execReturn = shell.execOutSync('sh', `iconv`, `-f`, `${encoding}`, `-t`, `1047`, `${fileName}`, `|`, `grep`, `${expectedSample}`);
+          let execReturn = shell.execOutSync('sh', '-c', `iconv -f "${encoding}" -t 1047 "${fileName}" | grep "${expectedSample}"`);
           if (execReturn.rc == 0 && execReturn.out) {
             return encoding;
           }
@@ -103,7 +103,7 @@ export function ensureFileEncoding(file: string, expectedSample: string, expecte
     // TODO  any cases we cannot find encoding?
     if (fileEncoding != expectedEncoding) {
       common.printTrace(`- Convert encoding of ${file} from ${fileEncoding} to ${expectedEncoding}.`);
-      let shellReturn = shell.execSync('sh', `iconv`, `-f`, `${fileEncoding}`, `-t`, `${expectedEncoding}`, `${file}`, `>`, `${file}.tmp`);
+      let shellReturn = shell.execSync('sh', '-c', `iconv -f "${fileEncoding}" -t "${expectedEncoding}" "${file}" > "${file}.tmp"`);
       if (!shellReturn.rc) {
         os.rename(`${file}.tmp`, file);
       }
