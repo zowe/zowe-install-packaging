@@ -6,6 +6,12 @@ All notable changes to the Zowe Installer will be documented in this file.
 
 - Updated ZWEWRF03 workflow to be up to date with the installed software
 
+## `2.5.0`
+
+#### Minor enhancements/defect fixes
+- component configure stages will now have their STDOUT printed when running at the INFO level of zwe verbosity.
+
+
 ## `2.4.0`
 
 ### New features and enhancements
