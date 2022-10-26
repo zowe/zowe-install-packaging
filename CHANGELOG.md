@@ -6,6 +6,11 @@ All notable changes to the Zowe Installer will be documented in this file.
 
 - Updated ZWEWRF03 workflow to be up to date with the installed software
 
+## `2.5.0`
+
+#### Minor enhancements/defect fixes
+- zwe was not guaranteeing that the workspace folder had 770 permission when zowe.useConfigmgr=true was set
+
 ## `2.4.0`
 
 ### New features and enhancements
