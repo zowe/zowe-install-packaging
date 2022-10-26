@@ -102,6 +102,8 @@ function prepareWorkspaceDirectory() {
   fs.mkdirp(zweStaticDefinitionsDir, 0o770);
   fs.mkdirp(zweGatewaySharedLibs, 0o770);
   fs.mkdirp(zweDiscoverySharedLibs, 0o770);
+  //ensure 770 in case directories already existed
+  shell.execSync('chmod', `770`, workspaceDirectory, zweStaticDefinitionsDir, zweGatewaySharedLibs, zweDiscoverySharedLibs);
 
   shell.execSync('cp', `${runtimeDirectory}/manifest.json`, workspaceDirectory);
 
