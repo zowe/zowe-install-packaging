@@ -201,7 +201,11 @@ pkcs12_create_certificate_authority() {
 
   print_message ">>>> Generate PKCS12 format local CA with alias ${alias}:"
   mkdir -p "${keystore_dir}/${alias}"
-  result=$(pkeytool -genkeypair -v \
+  result=$(pkeytool "-J-Dkeystore.pkcs12.certProtectionAlgorithm=PBEWithSHAAnd40BitRC2" \
+            "-J-Dkeystore.pkcs12.certPbeIterationCount=50000" \
+            "-J-Dkeystore.pkcs12.keyProtectionAlgorithm=PBEWithSHAAnd3KeyTripleDES" \
+            "-J-Dkeystore.pkcs12.keyPbeIterationCount=50000" \
+            -genkeypair -v \
             -alias "${alias}" \
             -keyalg RSA -keysize 2048 \
             -dname "CN=${common_name}, OU=${ZWE_PRIVATE_CERTIFICATE_CA_ORG_UNIT:-${ZWE_PRIVATE_DEFAULT_CERTIFICATE_CA_ORG_UNIT}}, O=${ZWE_PRIVATE_CERTIFICATE_CA_ORG:-${ZWE_PRIVATE_DEFAULT_CERTIFICATE_CA_ORG}}, L=${ZWE_PRIVATE_CERTIFICATE_CA_LOCALITY:-${ZWE_PRIVATE_DEFAULT_CERTIFICATE_CA_LOCALITY}}, S=${ZWE_PRIVATE_CERTIFICATE_CA_STATE:-${ZWE_PRIVATE_DEFAULT_CERTIFICATE_CA_STATE}}, C=${ZWE_PRIVATE_CERTIFICATE_CA_COUNTRY:-${ZWE_PRIVATE_DEFAULT_CERTIFICATE_CA_COUNTRY}}" \
@@ -233,7 +237,11 @@ pkcs12_create_certificate_and_sign() {
 
   print_message ">>>> Generate certificate \"${alias}\" in the keystore ${keystore_name}:"
   mkdir -p "${keystore_dir}/${keystore_name}"
-  result=$(pkeytool -genkeypair -v \
+  result=$(pkeytool  "-J-Dkeystore.pkcs12.certProtectionAlgorithm=PBEWithSHAAnd40BitRC2" \
+            "-J-Dkeystore.pkcs12.certPbeIterationCount=50000" \
+            "-J-Dkeystore.pkcs12.keyProtectionAlgorithm=PBEWithSHAAnd3KeyTripleDES" \
+            "-J-Dkeystore.pkcs12.keyPbeIterationCount=50000" \
+            -genkeypair -v \
             -alias "${alias}" \
             -keyalg RSA -keysize 2048 \
             -keystore "${keystore_dir}/${keystore_name}/${keystore_name}.keystore.p12" \
@@ -251,7 +259,11 @@ pkcs12_create_certificate_and_sign() {
   fi
 
   print_message ">>>> Generate CSR for the certificate \"${alias}\" in the keystore \"${keystore_name}\":"
-  result=$(pkeytool -certreq -v \
+  result=$(pkeytool  "-J-Dkeystore.pkcs12.certProtectionAlgorithm=PBEWithSHAAnd40BitRC2" \
+            "-J-Dkeystore.pkcs12.certPbeIterationCount=50000" \
+            "-J-Dkeystore.pkcs12.keyProtectionAlgorithm=PBEWithSHAAnd3KeyTripleDES" \
+            "-J-Dkeystore.pkcs12.keyPbeIterationCount=50000" \
+            -certreq -v \
             -alias "${alias}" \
             -keystore "${keystore_dir}/${keystore_name}/${keystore_name}.keystore.p12" \
             -storepass "${password}" \
@@ -279,7 +291,11 @@ pkcs12_create_certificate_and_sign() {
   san="${san}dns:localhost.localdomain,dns:localhost,ip:127.0.0.1"
 
   print_message ">>>> Sign the CSR using the Certificate Authority \"${ca_alias}\":"
-  result=$(pkeytool -gencert -v \
+  result=$(pkeytool  "-J-Dkeystore.pkcs12.certProtectionAlgorithm=PBEWithSHAAnd40BitRC2" \
+            "-J-Dkeystore.pkcs12.certPbeIterationCount=50000" \
+            "-J-Dkeystore.pkcs12.keyProtectionAlgorithm=PBEWithSHAAnd3KeyTripleDES" \
+            "-J-Dkeystore.pkcs12.keyPbeIterationCount=50000" \
+            -gencert -v \
             -infile "${keystore_dir}/${keystore_name}/${alias}.csr" \
             -outfile "${keystore_dir}/${keystore_name}/${alias}.signed.cer" \
             -keystore "${keystore_dir}/${ca_alias}/${ca_alias}.keystore.p12" \
@@ -315,7 +331,11 @@ pkcs12_create_certificate_and_sign() {
     >/dev/null 2>/dev/null
   if [ "$?" != "0" ]; then
     print_message ">>>> Import the Certificate Authority \"${ca_alias}\" to the keystore \"${keystore_name}\":"
-    result=$(pkeytool -importcert -v \
+    result=$(pkeytool  "-J-Dkeystore.pkcs12.certProtectionAlgorithm=PBEWithSHAAnd40BitRC2" \
+              "-J-Dkeystore.pkcs12.certPbeIterationCount=50000" \
+              "-J-Dkeystore.pkcs12.keyProtectionAlgorithm=PBEWithSHAAnd3KeyTripleDES" \
+              "-J-Dkeystore.pkcs12.keyPbeIterationCount=50000" \
+              -importcert -v \
               -trustcacerts -noprompt \
               -file "${ca_cert_file}" \
               -alias "${ca_alias}" \
@@ -333,7 +353,11 @@ pkcs12_create_certificate_and_sign() {
     >/dev/null 2>/dev/null
   if [ "$?" != "0" ]; then
     print_message ">>>> Import the Certificate Authority \"${ca_alias}\" to the truststore \"${keystore_name}\":"
-    result=$(pkeytool -importcert -v \
+    result=$(pkeytool  "-J-Dkeystore.pkcs12.certProtectionAlgorithm=PBEWithSHAAnd40BitRC2" \
+              "-J-Dkeystore.pkcs12.certPbeIterationCount=50000" \
+              "-J-Dkeystore.pkcs12.keyProtectionAlgorithm=PBEWithSHAAnd3KeyTripleDES" \
+              "-J-Dkeystore.pkcs12.keyPbeIterationCount=50000" \
+              -importcert -v \
               -trustcacerts -noprompt \
               -file "${ca_cert_file}" \
               -alias "${ca_alias}" \
@@ -348,7 +372,11 @@ pkcs12_create_certificate_and_sign() {
   fi
 
   print_message ">>>> Import the signed CSR to the keystore \"${keystore_name}\":"
-  result=$(pkeytool -importcert -v \
+  result=$(pkeytool  "-J-Dkeystore.pkcs12.certProtectionAlgorithm=PBEWithSHAAnd40BitRC2" \
+            "-J-Dkeystore.pkcs12.certPbeIterationCount=50000" \
+            "-J-Dkeystore.pkcs12.keyProtectionAlgorithm=PBEWithSHAAnd3KeyTripleDES" \
+            "-J-Dkeystore.pkcs12.keyPbeIterationCount=50000" \
+            -importcert -v \
             -trustcacerts -noprompt \
             -file "${keystore_dir}/${keystore_name}/${alias}.signed.cer" \
             -alias "${alias}" \
@@ -426,7 +454,11 @@ pkcs12_create_certificate_and_sign_with_node() {
     >/dev/null 2>/dev/null
   if [ "$?" != "0" ]; then
     print_message ">>>> Import the Certificate Authority \"${ca_alias}\" to the keystore \"${keystore_name}\":"
-    result=$(pkeytool -importcert -v \
+    result=$(pkeytool  "-J-Dkeystore.pkcs12.certProtectionAlgorithm=PBEWithSHAAnd40BitRC2" \
+              "-J-Dkeystore.pkcs12.certPbeIterationCount=50000" \
+              "-J-Dkeystore.pkcs12.keyProtectionAlgorithm=PBEWithSHAAnd3KeyTripleDES" \
+              "-J-Dkeystore.pkcs12.keyPbeIterationCount=50000" \
+              -importcert -v \
               -trustcacerts -noprompt \
               -file "${ca_cert_file}" \
               -alias "${ca_alias}" \
@@ -464,7 +496,11 @@ pkcs12_import_pkcs12_keystore() {
     return 1
   fi
 
-  result=$(pkeytool -importkeystore -v \
+  result=$(pkeytool  "-J-Dkeystore.pkcs12.certProtectionAlgorithm=PBEWithSHAAnd40BitRC2" \
+            "-J-Dkeystore.pkcs12.certPbeIterationCount=50000" \
+            "-J-Dkeystore.pkcs12.keyProtectionAlgorithm=PBEWithSHAAnd3KeyTripleDES" \
+            "-J-Dkeystore.pkcs12.keyPbeIterationCount=50000" \
+            -importkeystore -v \
             -noprompt \
             -deststoretype "PKCS12" \
             -destkeystore "${dest_keystore}" \
@@ -497,7 +533,11 @@ pkcs12_import_certificates() {
     ca_file=$(echo "${ca_file}" | trim)
     if [ -n "${ca_file}" ]; then
       print_message ">>>> Import \"${ca_file}\" to the keystore \"${dest_keystore}\":"
-      result=$(pkeytool -importcert -v \
+      result=$(pkeytool  "-J-Dkeystore.pkcs12.certProtectionAlgorithm=PBEWithSHAAnd40BitRC2" \
+                "-J-Dkeystore.pkcs12.certPbeIterationCount=50000" \
+                "-J-Dkeystore.pkcs12.keyProtectionAlgorithm=PBEWithSHAAnd3KeyTripleDES" \
+                "-J-Dkeystore.pkcs12.keyPbeIterationCount=50000" \
+                -importcert -v \
                 -trustcacerts -noprompt \
                 -file "${ca_file}" \
                 -alias "${alias}${ca_index}" \
