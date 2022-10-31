@@ -102,6 +102,8 @@ function prepareWorkspaceDirectory() {
   fs.mkdirp(zweStaticDefinitionsDir, 0o770);
   fs.mkdirp(zweGatewaySharedLibs, 0o770);
   fs.mkdirp(zweDiscoverySharedLibs, 0o770);
+  //ensure 770 in case directories already existed
+  shell.execSync('chmod', `770`, workspaceDirectory, zweStaticDefinitionsDir, zweGatewaySharedLibs, zweDiscoverySharedLibs);
 
   shell.execSync('cp', `${runtimeDirectory}/manifest.json`, workspaceDirectory);
 
@@ -356,7 +358,10 @@ function configureComponents(componentEnvironments?: any, enabledComponents?:str
           }
 
           if (result.rc == 0) {
-            common.printFormattedDebug("ZWELS", "zwe-internal-start-prepare,configure_components", result.out);
+            const outLines = result.out.split('\n');
+            common.printFormattedInfo("ZWELS", "zwe-internal-start-prepare,configure_components", `- commands.configure output from ${componentId} is:`);
+            common.printMessage(outLines.filter(line => !line.startsWith('export ')).join('\n'));
+            common.printFormattedDebug("ZWELS", "zwe-internal-start-prepare,configure_components", outLines.filter(line => line.startsWith('export ')).join('\n'));
           }
         } else {
           common.printFormattedError("ZWELS", "zwe-internal-start-prepare,configure_components", `Error ZWEL0172E: Component ${componentId} has commands.configure defined but the file is missing.`);
