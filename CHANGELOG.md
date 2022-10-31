@@ -9,9 +9,13 @@ All notable changes to the Zowe Installer will be documented in this file.
 ## `2.4.0`
 
 ### New features and enhancements
-
+- Zowe's 'configmgr' mode is now the default operating mode for installation and configuration when available. To disable this behavior, set `zowe.useConfigmgr` to `false` in your `zowe.yaml`.  
+  * Zowe containerization does not yet support 'configmgr' mode. If you have an existing Kubernetes deployment of Zowe and are upgrading to 2.4.0, you should set `zowe.useConfigmgr` to `false` in your zowe YAML configmap. This is set by default for new Kubernetes deployments.
 - zwe can now validate component configuration through use of configmgr and json-schema. If a component does not have a schema, a warning will be printed. Due to schemas being required since 2.0, this behavior may change in a later version.
 - Components can now provide an array of schema files rather than just one. This allows for better re-use and organization.
+- Zowe can now start using zowe.yaml loaded from PARMLIB members if you want, when using the STC startup as well as the `zwe start`, `zwe stop`, and `zwe components` commands. These can be specified in --config / CONFIG input as PARMLIB() entries. For example, zwe start --config FILE(/my/customizations.yaml):PARMLIB(TEAM.CUSTOM.ZOWE(YAML)):PARMLIB(ORG.CUSTOM.ZOWE(YAML)):FILE(/zowe/defaults.yaml) ... Note when using PARMLIB, every member name must be the same.
+
+#### Minor enhancements/defect fixes
 - zowe.environments was not applied when zowe.useConfigmgr=true was set
 
 ## `2.3.0`

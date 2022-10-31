@@ -78,18 +78,21 @@
 #      dest: config_secret.yaml 
   - name: Verify if zowe_instance_dir variable is defined. 
     fail: msg="Please provide zowe_instance_dir; it's required for to run convert_for_k8s script"
-    when: zowe_instance_dir is none 
+    when: zowe_instance_dir is none
+  - name: Verify if zowe_root_dir variable is defined. 
+    fail: msg="Please provide zowe_root_dir; it's required for to run convert_for_k8s script"
+    when: zowe_root_dir is none 
   - name: Run the convert-for-k8s script to gather ConfigMap & Secret from z/OS system for loadbalancer service. 
     raw: >-
-      {{ zowe_instance_dir }}/bin/zwe migrate for kubernetes -s --domains {{ k8s_list_domain_ip }} --config {{ zowe_instance_dir }}/zowe.yaml> {{ work_dir_remote }}/config_secret.yaml
+      {{ zowe_root_dir }}/bin/zwe migrate for kubernetes -s --domains {{ k8s_list_domain_ip }} --config {{ zowe_instance_dir }}/zowe.yaml> {{ work_dir_remote }}/config_secret.yaml
     when: k8s_service|lower == "loadbalancer" and k8s_networking != "route"
   - name: Run the convert-for-k8s script to gather ConfigMap & Secret from z/OS system for OpenShift. 
     raw: >-
-      {{ zowe_instance_dir }}/bin/zwe migrate for kubernetes -s --domains {{ k8s_list_domain_ip }}  --config {{ zowe_instance_dir }}/zowe.yaml --external-port 443 > {{ work_dir_remote }}/config_secret.yaml
+      {{ zowe_root_dir }}/bin/zwe migrate for kubernetes -s --domains {{ k8s_list_domain_ip }}  --config {{ zowe_instance_dir }}/zowe.yaml --external-port 443 > {{ work_dir_remote }}/config_secret.yaml
     when: k8s_service|lower == "loadbalancer" and k8s_networking == "route"
   - name: Run the convert-for-k8s script to gather ConfigMap & Secret from z/OS system for nodeport service. 
     raw: >-
-      {{ zowe_instance_dir }}/bin/zwe migrate for kubernetes -s --domains {{ k8s_list_domain_ip }}  --config {{ zowe_instance_dir }}/zowe.yaml --external-port 32554 > {{ work_dir_remote }}/config_secret.yaml
+      {{ zowe_root_dir }}/bin/zwe migrate for kubernetes -s --domains {{ k8s_list_domain_ip }}  --config {{ zowe_instance_dir }}/zowe.yaml --external-port 32554 > {{ work_dir_remote }}/config_secret.yaml
     when: k8s_service|lower == "nodeport"
   - name: Copy the created ConfigMap & Secret to local system 
     delegate_to: localhost
