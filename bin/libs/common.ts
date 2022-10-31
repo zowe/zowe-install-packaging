@@ -364,6 +364,45 @@ export function getZoweVersion(): string|undefined {
   return std.getenv('ZWE_VERSION');
 }
 
+function paddingLeft(str: string, pad: string): string {
+  return str.split('\n')
+    .map(function(line:string) {
+      return pad+line;})
+    .join('\n');
+}
+/*for use with shell.ts results, particularly where error is in out attribute*/
+export function printShellResult(result: {rc: number, out?: string}, commandName: string  = 'command'): void {
+  if (result.rc == 0) {
+    printDebug(`  * ${commandName} succeeded`);
+    printTrace(`  * Exit code: ${result.rc}`);
+    printTrace(`  * Output:`);
+    if (result.out) {
+      printTrace(paddingLeft(result.out, "    "));
+    }
+  } else {
+    printDebug(`  * ${commandName} failed`);
+    printError(`  * Exit code: ${result.rc}`);
+    printError(`  * Output:`);
+    if (result.out) {
+      printError(paddingLeft(result.out, "    "));
+    }
+  }
+}
+
+/*for use with shell.ts results, particularly where error is in out attribute*/
+export function printShellResultIfError(result: {rc: number, out?: string}, commandName: string  = 'command'): void {
+  if (result.rc != 0) {
+    printDebug(`  * ${commandName} failed`);
+    printError(`  * Exit code: ${result.rc}`);
+    printError(`  * Output:`);
+    if (result.out) {
+      printError(paddingLeft(result.out, "    "));
+    }
+  }
+}
+
+
+
 
 //From 'index.sh'
 std.setenv('ZWE_PRIVATE_DS_SZWESAMP', 'SZWESAMP');
