@@ -9,6 +9,7 @@ All notable changes to the Zowe Installer will be documented in this file.
 ## `2.5.0`
 
 #### Minor enhancements/defect fixes
+- component configure stages will now have their STDOUT printed when running at the INFO level of zwe verbosity.
 - zwe was not guaranteeing that the workspace folder had 770 permission when zowe.useConfigmgr=true was set
 
 ## `2.4.0`
