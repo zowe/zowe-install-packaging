@@ -104,29 +104,27 @@ common.printLevel1Message(`Create VSAM storage for Zowe Caching Service`);
     const tmpfile=fs.createTmpFile(`zwe ${std.getenv('ZWE_CLI_COMMANDS_LIST')}`.replace(replacer, '-'));
     common.printDebug(`- Copy ${prefix}.${std.getenv('ZWE_PRIVATE_DS_SZWESAMP')}(ZWECSVSM) to ${tmpfile}`);
 
-    const theDataset = shell.execOutSync('sh', '-c', `cat "//'${prefix}.${std.getenv('ZWE_PRIVATE_DS_SZWESAMP')}(ZWECSVSM)'"`);
-    if (theDataset.out) {
-      const tmpFileContents = theDataset.replace(new RegExp('^//\s*SET MODE=.*$'), `//         SET  MODE=${vsam_mode}`)
+    const theDataset = shell.execOutSync('sh', '-c', `cat "//'${prefix}.${std.getenv('ZWE_PRIVATE_DS_SZWESAMP')}(ZWECSVSM)'" 2>&1`);
+    if (theDataset.out && theDataset.rc == 0) {
+      common.printDebug(`  * Succeeded`);
+      common.printTrace(`  * Output:`);
+      common.printTrace(stringlib.paddingLeft(theDataset.out, "    "));
+
+      const tmpFileContent = theDataset.out.replace(new RegExp('^//\s*SET MODE=.*$'), `//         SET  MODE=${vsam_mode}`)
                 .replace(new RegExp('\#dsname', 'g'), vsam_name)
                 .replace(new RegExp('\#volume', 'g'), vsam_volume)
                 .replace(new RegExp('\#storclas', 'g'), vsam_storageClass);
-      xplatform.storeFileUTF8(tmpfile, tmpfileContents, xplatform.AUTO_DETECT);
+      xplatform.storeFileUTF8(tmpfile, xplatform.AUTO_DETECT, tmpFileContent);
+      common.printTrace(`  * Stored:`);
+      common.printTrace(stringlib.paddingLeft(tmpFileContent, "    "));
+
       shell.execSync('chmod', '700', tmpfile);
-    }
-    
-    if (result.rc==0) {
-      common.printDebug(`  * Succeeded`);
-      common.printTrace(`  * Exit code: ${result.rc}`);
-      common.printTrace(`  * Output:`);
-      if (result.out) {
-        common.printTrace(stringlib.paddingLeft(result.out, "    "));
-      }
     } else {
       common.printDebug(`  * Failed`);
-      common.printError(`  * Exit code: ${result.rc}`);
+      common.printError(`  * Exit code: ${theDataset.rc}`);
       common.printError(`  * Output:`);
-      if (result.out) {
-        common.printError(stringlib.paddingLeft(result.out, "    "));
+      if (theDataset.out) {
+        common.printError(stringlib.paddingLeft(theDataset.out, "    "));
       }
     }
     if (!fs.fileExists(tmpfile)) {

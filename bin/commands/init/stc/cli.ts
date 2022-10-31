@@ -9,9 +9,10 @@
   Copyright Contributors to the Zowe Project.
 */
 
+import * as std from 'std';
 import * as index from './index';
 import * as configmgr from '../../../libs/configmgr';
 
-index.execute();
+index.execute(std.getenv('ZWE_CLI_PARAMETER_ALLOW_OVERWRITE') == 'true');
 
 configmgr.cleanupTempDir();

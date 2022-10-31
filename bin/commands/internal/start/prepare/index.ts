@@ -421,9 +421,9 @@ if (os.platform == 'zos') {
 
 
 // display starting information
-let manifestReturn = shell.execOutSync('cat', `${runtimeDirectory}/manifest.json`);
+let manifestReturn = xplatform.loadFileUTF8(`${runtimeDirectory}/manifest.json`,xplatform.AUTO_DETECT);
 
-const runtimeManifest = manifestReturn.rc == 0 ? JSON.parse(manifestReturn.out) : undefined;
+const runtimeManifest = manifestReturn ? JSON.parse(manifestReturn) : undefined;
 const zoweVersion = runtimeManifest ? runtimeManifest.version : undefined;
 if (zoweVersion) {
   std.setenv('ZWE_VERSION', ''+zoweVersion);
