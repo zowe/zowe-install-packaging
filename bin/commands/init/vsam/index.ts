@@ -54,14 +54,14 @@ common.printLevel1Message(`Create VSAM storage for Zowe Caching Service`);
   if (!vsam_mode) {
     vsam_mode='NONRLS';
   }
-  let vsam_volume;
+  let vsam_volume='';
   if (vsam_mode == "NONRLS") {
     vsam_volume=zoweConfig.zowe.setup?.vsam?.volume;
     if (!vsam_volume) {
       common.printErrorAndExit(`Error ZWEL0157E: Zowe Caching Service VSAM data set Non-RLS volume (zowe.setup.vsam.volume) is not defined in Zowe YAML configuration file.`, undefined, 157);
     }
   }
-  let vsam_storageClass;
+  let vsam_storageClass='';
   if (vsam_mode == "RLS") {
     vsam_storageClass=zoweConfig.zowe.setup?.vsam?.storageClass;
     if (!vsam_storageClass) {
@@ -100,7 +100,7 @@ common.printLevel1Message(`Create VSAM storage for Zowe Caching Service`);
     // prepare STCs
     // ZWESLSTC
     common.printMessage(`Modify ZWECSVSM`);
-    const replacer = new RegExp('\s', 'g');
+    const replacer = new RegExp('\ ', 'g');
     const tmpfile=fs.createTmpFile(`zwe ${std.getenv('ZWE_CLI_COMMANDS_LIST')}`.replace(replacer, '-'));
     common.printDebug(`- Copy ${prefix}.${std.getenv('ZWE_PRIVATE_DS_SZWESAMP')}(ZWECSVSM) to ${tmpfile}`);
 
@@ -110,7 +110,7 @@ common.printLevel1Message(`Create VSAM storage for Zowe Caching Service`);
       common.printTrace(`  * Output:`);
       common.printTrace(stringlib.paddingLeft(theDataset.out, "    "));
 
-      const tmpFileContent = theDataset.out.replace(new RegExp('\n//\s*SET MODE=.*\n'), `\n//         SET  MODE=${vsam_mode}\n`)
+      const tmpFileContent = theDataset.out.replace(/\n\/\/\s*SET MODE=.*\n/, `\n//         SET  MODE=${vsam_mode}\n`)
                 .replace(new RegExp('\#dsname', 'g'), vsam_name)
                 .replace(new RegExp('\#volume', 'g'), vsam_volume)
                 .replace(new RegExp('\#storclas', 'g'), vsam_storageClass);

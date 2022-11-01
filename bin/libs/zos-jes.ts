@@ -9,15 +9,11 @@
   Copyright Contributors to the Zowe Project.
 */
 
-import * as std from 'std';
 import * as os from 'os';
-import * as xplatform from 'xplatform';
 import * as zoslib from './zos';
 import * as common from './common';
-import * as fs from './fs';
 import * as stringlib from './string';
 import * as shell from './shell';
-import * as config from './config';
 
 export function submitJob(jclFile: string): string|undefined {
   common.printDebug(`- submit job ${jclFile}`);
@@ -77,7 +73,7 @@ export function waitForJob(jobid: string): {out?: string, rc: number} {
   let jobcctext;
   let jobcccode;
 
-  common.printDebug(`- Wait for job ${jobid} completed, starting at $(date).`);
+  common.printDebug(`- Wait for job ${jobid} completed, starting at ${new Date().toString()}.`);
   // wait for job to finish
   const timesSec = [1, 5, 10, 30, 100, 300, 500];
   for (let i = 0; i < timesSec.length; i++) {
@@ -85,7 +81,7 @@ export function waitForJob(jobid: string): {out?: string, rc: number} {
     common.printTrace(`  * Wait for ${secs} seconds`);
     os.sleep(secs*1000);
     
-    let result=zoslib.operatorCommand(`\$D ${jobid},CC`);
+    let result=zoslib.operatorCommand(`\\$D ${jobid},CC`);
     // if it's JES3, we receive this:
     // ...             ISF031I CONSOLE IBMUSER ACTIVATED
     // ...            -$D JOB00132,CC
@@ -110,12 +106,13 @@ export function waitForJob(jobid: string): {out?: string, rc: number} {
       // ... $HASP890 JOB(JOB1)      CC=(COMPLETED,RC=0)  <-- accept this value
       // ... $HASP890 JOB(GIMUNZIP)  CC=()  <-- reject this value
       try {
-        const joblines = result.out.split('\n').filter(line=>line.indexOf('$HASP890') != -1);
-        jobstatus = shell.execOutSync('sh', '-c', 'sed "s#^.*\\$HASP890 *JOB(\\(.*\\)) *CC=(\\(.*\\)).*$#\\1,\\2#"').out;
-        const portions = jobstatus.split(',');
-        jobname=portions.length > 0 ? portions[0] : undefined;
-        jobcctext=portions.length > 1 ? portions[1] : undefined;
-        jobcccode=portions.length > 2 ? portions[2].split('=')[1] : undefined;
+        const jobline = result.out.split('\n').filter(line => line.indexOf('$HASP890') != -1)[0];
+        const nameIndex = jobline.indexOf('JOB(');
+        const ccIndex = jobline.indexOf('CC=(');
+        jobname = jobline.substring(nameIndex, jobline.indexOf(')', nameIndex));
+        const cc = jobline.substring(ccIndex, jobline.indexOf(')', ccIndex)).split(',');
+        jobcctext = cc[0];
+        jobcccode = cc[1].split('=')[1];
         common.printTrace(`  * Job (${jobname}) status is ${jobcctext},RC=${jobcccode}`);
         if (jobcctext || jobcccode) {
           // job have CC state
@@ -126,7 +123,7 @@ export function waitForJob(jobid: string): {out?: string, rc: number} {
       }
     }
   }
-  common.printTrace(`  * Job status check done at ${Date.now()}.`);
+  common.printTrace(`  * Job status check done at ${new Date().toString()}.`);
 
   const retVal=`${jobid},${jobname},${jobcctext},${jobcccode}`;
   if (jobcctext || jobcccode) {

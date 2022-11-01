@@ -23,7 +23,7 @@ import * as zosdataset from '../../../libs/zos-dataset';
 import * as zosjes from '../../../libs/zos-jes';
 import { strftime } from '../../../libs/strftime';
 
-export function execute() {
+export function execute(dryRun?: boolean, ignoreSecurityFailures?: boolean) {
   common.printLevel1Message(`Run Zowe security configurations`);
 
   // Validation
@@ -109,19 +109,16 @@ export function execute() {
 
   // submit job
   let jobHasFailures;
-  if (std.getenv('ZWE_CLI_PARAMETER_SECURITY_DRY_RUN') == "true") {
+  if (dryRun == true) {
     common.printMessage(`Dry-run mode, security setup is NOT performed on the system.`);
     common.printMessage(`Please submit ${jcllib}(${tmpdsm}) manually.`);
   } else {
     common.printMessage(`Submit ${jcllib}(${tmpdsm})`);
 
-    //TODO
-    std.exit(1);
-    
-    const jobid = 0;//zosjes.submitJob(`//'${jcllib}(${tmpdsm})'`);
+    const jobid = zosjes.submitJob(`//'${jcllib}(${tmpdsm})'`);
     if (!jobid) {
       jobHasFailures=true;
-      if (std.getenv('ZWE_CLI_PARAMETER_IGNORE_SECURITY_FAILURES') == "true") {
+      if (ignoreSecurityFailures == true) {
         common.printError(`Warning ZWEL0161W: Failed to run JCL ${jcllib}(${tmpdsm}).`);
         // skip wait for job status step
       } else {
@@ -132,7 +129,7 @@ export function execute() {
       const jobState = zosjes.waitForJob(jobid);
       if (jobState.rc == 1) {
         jobHasFailures=true;
-        if (std.getenv('ZWE_CLI_PARAMETER_IGNORE_SECURITY_FAILURES') == "true") {
+        if (ignoreSecurityFailures == true) {
           common.printError(`Warning ZWEL0162W: Failed to find job ${jobid} result.`);
         } else {
           common.printErrorAndExit(`Error ZWEL0162E: Failed to find job ${jobid} result.`, undefined, 162);
@@ -156,7 +153,7 @@ export function execute() {
             common.printMessage(``);
           } else {
             jobHasFailures=true;
-            if (std.getenv('ZWE_CLI_PARAMETER_IGNORE_SECURITY_FAILURES') == "true") {
+            if (ignoreSecurityFailures == true) {
               common.printError(`Warning ZWEL0163W: Job ${jobname}(${jobid}) ends with code ${jobcccode} (${jobcctext}).`);
             } else {
               common.printErrorAndExit(`Error ZWEL0163E: Job ${jobname}(${jobid}) ends with code ${jobcccode} (${jobcctext}).`, undefined, 163);
