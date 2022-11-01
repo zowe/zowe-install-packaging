@@ -56,7 +56,7 @@ export function execute() {
 
   // prepare ZWESECUR JCL
   common.printMessage(`Modify ZWESECUR`);
-  const spaceReplacer = new RegExp('\s', 'g');
+  const spaceReplacer = new RegExp('\ ', 'g');
   let tmpfile=fs.createTmpFile(`zwe ${std.getenv('ZWE_CLI_COMMANDS_LIST')}`.replace(spaceReplacer, '-'));
   const tmpdsm=zosdataset.createDatasetTmpMember(jcllib, `ZW${strftime("%H%M")}`);
   common.printDebug(`- Copy ${prefix}.${std.getenv('ZWE_PRIVATE_DS_SZWESAMP')}(ZWESECUR) to ${tmpfile}`);
@@ -70,18 +70,21 @@ export function execute() {
       common.printTrace(stringlib.paddingLeft(zwesecurResult.out, "    "));
     }
 
+
+//this doesnt appear to have worked.
+    
     xplatform.storeFileUTF8(tmpfile, xplatform.AUTO_DETECT,
                           zwesecurResult.out
-                          .replace(/^\/\/\s+SET\s+PRODUCT=.*$/, `//         SET  PRODUCT=${securityProduct}`)
-                          .replace(/^\/\/\s+SET\s+ADMINGRP=.*$/, `//         SET  ADMINGRP=${securityGroupsAdmin}`)
-                          .replace(/^\/\/\s+SET\s+STCGRP=.*$/, `//         SET  STCGRP=${securityGroupsStc}`)
-                          .replace(/^\/\/\s+SET\s+ZOWEUSER=.*$/, `//         SET  ZOWEUSER=${securityUsersZowe}`)
-                          .replace(/^\/\/\s+SET\s+ZISUSER=.*$/, `//         SET  ZISUSER=${securityUsersZis}`)
-                          .replace(/^\/\/\s+SET\s+ZOWESTC=.*$/, `//         SET  ZOWESTC=${securityStcsZowe}`)
-                          .replace(/^\/\/\s+SET\s+ZISSTC=.*$/, `//         SET  ZISSTC=${securityStcsZis}`)
-                          .replace(/^\/\/\s+SET\s+AUXSTC=.*$/, `//         SET  AUXSTC=${securityStcsAux}`)
-                          .replace(/^\/\/\s+SET\s+HLQ=.*$/, `//         SET  HLQ=${prefix}`)
-                          .replace(/^\/\/\s+SET\s+SYSPROG=.*$/, `//         SET  SYSPROG=${securityGroupsSysprog}`));
+                          .replace(/\n\/\/\s+SET\s+PRODUCT=.*\n/, `\n//         SET  PRODUCT=${securityProduct}\n`)
+                          .replace(/\n\/\/\s+SET\s+ADMINGRP=.*\n/, `\n//         SET  ADMINGRP=${securityGroupsAdmin}\n`)
+                          .replace(/\n\/\/\s+SET\s+STCGRP=.*\n/, `\n//         SET  STCGRP=${securityGroupsStc}\n`)
+                          .replace(/\n\/\/\s+SET\s+ZOWEUSER=.*\n/, `\n//         SET  ZOWEUSER=${securityUsersZowe}\n`)
+                          .replace(/\n\/\/\s+SET\s+ZISUSER=.*\n/, `\n//         SET  ZISUSER=${securityUsersZis}\n`)
+                          .replace(/\n\/\/\s+SET\s+ZOWESTC=.*\n/, `\n//         SET  ZOWESTC=${securityStcsZowe}\n`)
+                          .replace(/\n\/\/\s+SET\s+ZISSTC=.*\n/, `\n//         SET  ZISSTC=${securityStcsZis}\n`)
+                          .replace(/\n\/\/\s+SET\s+AUXSTC=.*\n/, `\n//         SET  AUXSTC=${securityStcsAux}\n`)
+                          .replace(/\n\/\/\s+SET\s+HLQ=.*\n/, `\n//         SET  HLQ=${prefix}\n`)
+                          .replace(/\n\/\/\s+SET\s+SYSPROG=.*\n/, `\n//         SET  SYSPROG=${securityGroupsSysprog}\n`));
   } else {
     common.printDebug(`  * Failed`);
     common.printError(`  * Exit code: ${zwesecurResult.rc}`);
@@ -111,7 +114,11 @@ export function execute() {
     common.printMessage(`Please submit ${jcllib}(${tmpdsm}) manually.`);
   } else {
     common.printMessage(`Submit ${jcllib}(${tmpdsm})`);
-    const jobid = zosjes.submitJob(`//'${jcllib}(${tmpdsm})'`);
+
+    //TODO
+    std.exit(1);
+    
+    const jobid = 0;//zosjes.submitJob(`//'${jcllib}(${tmpdsm})'`);
     if (!jobid) {
       jobHasFailures=true;
       if (std.getenv('ZWE_CLI_PARAMETER_IGNORE_SECURITY_FAILURES') == "true") {

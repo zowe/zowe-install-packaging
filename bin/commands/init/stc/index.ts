@@ -125,7 +125,7 @@ export function execute(allowOverwrite: boolean = false) {
     // prepare STCs
     // ZWESLSTC
     common.printMessage(`Modify ZWESLSTC and save as ${jcllib}(${security_stcs_zowe})`);
-    let tmpfile = fs.createTmpFile(`zwe ${COMMAND_LIST}`.replace(new RegExp('\s', 'g'), '-'));
+    let tmpfile = fs.createTmpFile(`zwe ${COMMAND_LIST}`.replace(new RegExp('\ ', 'g'), '-'));
     common.printDebug(`- Copy ${prefix}.${SAMP_LIB}(ZWESLSTC) to ${tmpfile}`);
     // TODO this info gets lost
     /*
@@ -173,7 +173,7 @@ export function execute(allowOverwrite: boolean = false) {
 
     // ZWESISTC
     common.printMessage(`Modify ZWESISTC and save as ${jcllib}(${security_stcs_zis})`);
-    tmpfile = fs.createTmpFile(`zwe ${COMMAND_LIST}`.replace(new RegExp('\s', 'g'), '-'));
+    tmpfile = fs.createTmpFile(`zwe ${COMMAND_LIST}`.replace(new RegExp('\ ', 'g'), '-'));
     common.printDebug(`- Copy ${prefix}.${SAMP_LIB}(ZWESISTC) to ${tmpfile}`);
     const sistcContent = shell.execOutSync('sh', '-c', `cat "//'${prefix}.${SAMP_LIB}(ZWESISTC)'" 2>&1`);
     if (sistcContent.out && sistcContent.rc == 0) {
@@ -215,7 +215,7 @@ export function execute(allowOverwrite: boolean = false) {
 
     // ZWESASTC
     common.printMessage(`Modify ZWESASTC and save as ${jcllib}(${security_stcsAux})`);
-    tmpfile = fs.createTmpFile(`zwe ${COMMAND_LIST}`.replace(new RegExp('\s', 'g'), '-'));
+    tmpfile = fs.createTmpFile(`zwe ${COMMAND_LIST}`.replace(new RegExp('\ ', 'g'), '-'));
     common.printDebug(`- Copy ${prefix}.${SAMP_LIB}(ZWESASTC) to ${tmpfile}`);
     const sastcContent = shell.execOutSync('sh', '-c', `cat "//'${prefix}.${SAMP_LIB}(ZWESASTC)'" 2>&1`);
     if (sastcContent.out && sastcContent.rc == 0) {
