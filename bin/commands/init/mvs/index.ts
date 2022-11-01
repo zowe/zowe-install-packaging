@@ -17,12 +17,10 @@ import * as stringlib from '../../../libs/string';
 import * as shell from '../../../libs/shell';
 import * as config from '../../../libs/config';
 
-export function execute() {
+export function execute(allowOverwrite?: boolean) {
   common.printLevel1Message(`Initialize Zowe custom data sets`);
   common.requireZoweYaml();
   const zoweConfig = config.getZoweConfig();
-
-  const allowOverwrite: boolean = std.getenv("ZWE_CLI_PARAMETER_ALLOW_OVERWRITE") == 'true' ? true : false;
   
   const datasets = [
     { configKey: 'parmlib',
