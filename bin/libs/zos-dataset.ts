@@ -48,7 +48,7 @@ export function createDataSet(dsName: string, dsOptions: string): number {
   return result.rc;
 }
 
-export function copyToDataset(filePath: string, dsName: string, cpOptions: string, allowOverwrite: boolean): number {
+export function copyToDataset(filePath: string, dsName: string, cpOptions: string='', allowOverwrite?: boolean): number {
   if (allowOverwrite != true) {
     if (isDatasetExists(dsName)) {
       common.printErrorAndExit(`Error ZWEL0133E: Data set ${dsName} already exists`, undefined, 133);
@@ -214,12 +214,13 @@ export function getDatasetVolume(dataset: string): { rc: number, volume?: string
   common.printTrace(`- Find volume of data set ${dataset}`);
   const result = zoslib.tsoCommand(`listds '${dataset}'`);
   if (result.rc == 0) {
-    let volumesIndex = result.out.indexOf('--VOLUMES--');
-    let volume: string;
-    if (volumesIndex != -1) {
-      let startIndex = volumesIndex + '--VOLUMES--'.length;
-      let endIndex = result.out.indexOf('--',startIndex);
-      volume = result.out.substring(startIndex, endIndex).trim();
+    const lines = result.out.split('\n');
+    let volume;
+    for (let i = 0; i < lines.length; i++) {
+      if (lines[i].trim() == '--VOLUMES--') {
+        volume = lines[i+1] ? lines[i+1].trim() : undefined;
+        break;
+      }
     }
     if (!volume) {
       common.printError("  * Failed to find volume information of the data set.");
@@ -256,7 +257,7 @@ export function apfAuthorizeDataset(dataset: string): number {
     }
   }
 
-  const apfCmd="SETPROG APF,ADD,DSNAME=${dataset},${apfVolumeParam}"
+  const apfCmd=`SETPROG APF,ADD,DSNAME=${dataset},${apfVolumeParam}`;
   if (std.getenv('ZWE_CLI_PARAMETER_SECURITY_DRY_RUN') == "true") {
     common.printMessage("- Dry-run mode, security setup is NOT performed on the system.");
     common.printMessage("  Please apply this operator command manually:");

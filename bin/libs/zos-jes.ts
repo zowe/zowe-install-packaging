@@ -23,12 +23,16 @@ export function submitJob(jclFile: string): string|undefined {
   common.printDebug(`- submit job ${jclFile}`);
 
   common.printTrace(`- content of ${jclFile}`);
-  if (!fs.fileExists(jclFile)) {
+  const catResult = shell.execOutSync('sh', '-c', `cat "${jclFile}" 2>&1`);
+  if (catResult.rc != 0) {
     common.printTrace(`  * Failed`);
-    common.printError(`  * File ${jclFile} does not exist`);
+    common.printTrace(`  * Exit code: ${catResult.rc}`);
+    common.printTrace(`  * Output:`);
+    common.printTrace(stringlib.paddingLeft(catResult.out, "    "));
     return undefined;
-  } else {
-    common.printTrace(stringlib.paddingLeft(xplatform.loadFileUTF8(jclFile, xplatform.AUTO_DETECT), "    "));
+  }
+  else {
+    common.printTrace(stringlib.paddingLeft(catResult.out, "    "));
   }
 
   const result=shell.execOutSync('sh', '-c', `submit "${jclFile}" 2>&1`);

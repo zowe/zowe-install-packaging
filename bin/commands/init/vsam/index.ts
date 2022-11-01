@@ -110,7 +110,7 @@ common.printLevel1Message(`Create VSAM storage for Zowe Caching Service`);
       common.printTrace(`  * Output:`);
       common.printTrace(stringlib.paddingLeft(theDataset.out, "    "));
 
-      const tmpFileContent = theDataset.out.replace(new RegExp('^//\s*SET MODE=.*$'), `//         SET  MODE=${vsam_mode}`)
+      const tmpFileContent = theDataset.out.replace(new RegExp('\n//\s*SET MODE=.*\n'), `\n//         SET  MODE=${vsam_mode}\n`)
                 .replace(new RegExp('\#dsname', 'g'), vsam_name)
                 .replace(new RegExp('\#volume', 'g'), vsam_volume)
                 .replace(new RegExp('\#storclas', 'g'), vsam_storageClass);
