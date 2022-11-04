@@ -11,7 +11,10 @@
 
 import * as index from '../install/index';
 import * as std from 'std';
+import * as configmgr from '../../../libs/configmgr';
+
 const skipEnable = true; //because its already done.
 const upgrade = true; //tell install.ts that its upgrading instead
 index.execute(std.getenv('ZWE_CLI_PARAMETER_COMPONENT_FILE'), std.getenv('ZWE_CLI_PARAMETER_AUTO_ENCODING'), skipEnable, std.getenv('ZWE_CLI_PARAMETER_HANDLER'), std.getenv('ZWE_CLI_PARAMETER_REGISTRY'), (std.getenv('ZWE_CLI_PARAMETER_DRY_RUN') === 'true'), upgrade);
 
+configmgr.cleanupTempDir();
