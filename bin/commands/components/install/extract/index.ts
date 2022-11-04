@@ -131,7 +131,7 @@ export function execute(componentFile: string, autoEncoding?: string, upgrade?: 
     if (autoEncoding != 'no' && autotag == 'yes') {
       // automatically tag files
       common.printDebug("- Automatically tag files");
-      result = shell.execOutSync('sh', '-c', `${ZOWE_CONFIG.zowe.runtimeDirectory}/bin/utils/tag-files.sh" "${tmpDir}" 2>&1`);
+      result = shell.execOutSync('sh', '-c', `"${ZOWE_CONFIG.zowe.runtimeDirectory}/bin/utils/tag-files.sh" "${tmpDir}" 2>&1`);
       if (result.out) {
         common.printTrace(result.out);
       }
