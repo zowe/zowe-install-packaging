@@ -109,7 +109,7 @@ export function execute() {
   }
   // read z/OSMF info
   ['user', 'ca'].forEach((item:string)=> {
-    CERT_PARMS[`zosmf_${item}`] =  zoweConfig.zowe.setup.certificate.keyring.zOSMF ? zoweConfig.zowe.setup.certificate.keyring.zOSMF[item] : undefined;
+    CERT_PARMS[`zosmf_${item}`] =  zoweConfig.zowe.setup.certificate.keyring?.zOSMF ? zoweConfig.zowe.setup.certificate.keyring.zOSMF[item] : undefined;
   });
   ['host', 'port'].forEach((item: string)=> {
     CERT_PARMS[`zosmf_${item}`] = zoweConfig.zOSMF ? zoweConfig.zOSMF[item] : undefined;
@@ -166,15 +166,15 @@ export function execute() {
       CERT_PARMS.zosmf_ca="_auto_";
     }
   }
-  CERT_PARMS.pkcs12_name_lc=CERT_PARMS.pkcs12Name.toLowerCase();
-  CERT_PARMS.pkcs12_caAlias_lc=CERT_PARMS.pkcs12CaAlias.toLowerCase();
+  CERT_PARMS.pkcs12_name_lc=CERT_PARMS.pkcs12_name.toLowerCase();
+  CERT_PARMS.pkcs12_caAlias_lc=CERT_PARMS.pkcs12_caAlias.toLowerCase();
   // what PEM format CAs we should tell Zowe to use
   delete CERT_PARMS.yaml_pem_cas;
 
   if (certType == "PKCS12") {
     if (CERT_PARMS.pkcs12_import_keystore) {
       // import from another keystore
-      shell.execSync('sh', '-c', 'zwe '+
+      shell.execSync('sh', '-c', `${std.getenv('ZWE_zowe_runtimeDirectory')}/bin/zwe `+
                      `certificate pkcs12 import `+
                      `--keystore "${CERT_PARMS.pkcs12_directory}/${CERT_PARMS.pkcs12_name}/${CERT_PARMS.pkcs12_name}.keystore.p12" `+
                      `--password "${CERT_PARMS.pkcs12_password}" `+
@@ -184,7 +184,7 @@ export function execute() {
                      `--source-alias "${CERT_PARMS.pkcs12_import_alias}"`);
     } else {
       // create CA
-      shell.execSync('sh', '-c', 'zwe '+
+      shell.execSync('sh', '-c', `${std.getenv('ZWE_zowe_runtimeDirectory')}/bin/zwe `+
                      `certificate pkcs12 create ca `+
                      `--keystore-dir "${CERT_PARMS.pkcs12_directory}" `+
                      `--alias "${CERT_PARMS.pkcs12_caAlias}" `+
@@ -198,7 +198,7 @@ export function execute() {
                      `--validity "${certValidity}"`);
 
       // export CA cert in PEM format
-      shell.execSync('sh', '-c', 'zwe '+
+      shell.execSync('sh', '-c', `${std.getenv('ZWE_zowe_runtimeDirectory')}/bin/zwe `+
                      `certificate pkcs12 export `+
                      `--keystore "${CERT_PARMS.pkcs12_directory}/${CERT_PARMS.pkcs12_caAlias}/${CERT_PARMS.pkcs12_caAlias}.keystore.p12" `+
                      `--password "${CERT_PARMS.pkcs12_caPassword}"`);
@@ -206,7 +206,7 @@ export function execute() {
       CERT_PARMS.yaml_pem_cas=`${CERT_PARMS.pkcs12_directory}/${CERT_PARMS.pkcs12_caAlias}/${CERT_PARMS.pkcs12_caAlias_lc}.cer`;
 
       // create default cert
-      shell.execSync('sh', '-c', 'zwe '+
+      shell.execSync('sh', '-c', `${std.getenv('ZWE_zowe_runtimeDirectory')}/bin/zwe `+
                      `certificate pkcs12 create cert `+
                      `--keystore-dir "${CERT_PARMS.pkcs12_directory}" `+
                      `--keystore "${CERT_PARMS.pkcs12_name}" `+
@@ -227,7 +227,7 @@ export function execute() {
     // import extra CAs if they are defined
     if (certImportCAs) {
       // also imported to keystore to maintain full chain
-      shell.execSync('sh', '-c', 'zwe '+
+      shell.execSync('sh', '-c', `${std.getenv('ZWE_zowe_runtimeDirectory')}/bin/zwe `+
                      `certificate pkcs12 import `+
                      `--keystore "${CERT_PARMS.pkcs12_directory}/${CERT_PARMS.pkcs12_name}/${CERT_PARMS.pkcs12_name}.keystore.p12" `+
                      `--password "${CERT_PARMS.pkcs12_password}" `+
@@ -237,7 +237,7 @@ export function execute() {
                      `--source-alias "" `+
                      `--trust-cas "${certImportCAs}"`);
 
-      shell.execSync('sh', '-c', 'zwe '+
+      shell.execSync('sh', '-c', `${std.getenv('ZWE_zowe_runtimeDirectory')}/bin/zwe `+
                      `certificate pkcs12 import `+
                      `--keystore "${CERT_PARMS.pkcs12_directory}/${CERT_PARMS.pkcs12_name}/${CERT_PARMS.pkcs12_name}.truststore.p12" `+
                      `--password "${CERT_PARMS.pkcs12_password}" `+
@@ -250,7 +250,7 @@ export function execute() {
 
     // trust z/OSMF
     if (CERT_PARMS.zosmf_host && CERT_PARMS.zosmf_port) {
-      shell.execSync('sh', '-c', 'zwe '+
+      shell.execSync('sh', '-c', `${std.getenv('ZWE_zowe_runtimeDirectory')}/bin/zwe `+
                      `certificate pkcs12 trust-service `+
                      `--service-name "z/OSMF" `+
                      `--keystore-dir "${CERT_PARMS.pkcs12_directory}" `+
@@ -262,12 +262,12 @@ export function execute() {
     }
 
     // export all certs in PEM format
-    shell.execSync('sh', '-c', 'zwe '+
+    shell.execSync('sh', '-c', `${std.getenv('ZWE_zowe_runtimeDirectory')}/bin/zwe `+
                    `certificate pkcs12 export `+
                    `--keystore "${CERT_PARMS.pkcs12_directory}/${CERT_PARMS.pkcs12_name}/${CERT_PARMS.pkcs12_name}.keystore.p12" `+
                    `--password "${CERT_PARMS.pkcs12_password}" `+
                    `--private-keys "${CERT_PARMS.pkcs12_name}"`);
-    shell.execSync('sh', '-c', 'zwe '+
+    shell.execSync('sh', '-c', `${std.getenv('ZWE_zowe_runtimeDirectory')}/bin/zwe `+
                    `certificate pkcs12 export `+
                    `--keystore "${CERT_PARMS.pkcs12_directory}/${CERT_PARMS.pkcs12_name}/${CERT_PARMS.pkcs12_name}.truststore.p12" `+
                    `--password "${CERT_PARMS.pkcs12_password}" `+
@@ -290,7 +290,7 @@ export function execute() {
     // - group permission is none
     // NOTE: njq returns `null` or empty for boolean false, so let's check true
     if (CERT_PARMS.pkcs12_lock && (CERT_PARMS.pkcs12_lock.toLowerCase() == "true")) {
-      shell.execSync('sh', '-c', 'zwe '+
+      shell.execSync('sh', '-c', `${std.getenv('ZWE_zowe_runtimeDirectory')}/bin/zwe `+
                      `certificate pkcs12 lock `+
                      `--keystore-dir "${CERT_PARMS.pkcs12_directory}" `+
                      `--user "${securityUsersZowe}" `+
@@ -355,7 +355,7 @@ export function execute() {
       // warning
       common.printMessage(`Warning ZWEL0300W: Keyring "safkeyring:///${CERT_PARMS.keyring_owner}/${CERT_PARMS.keyring_name}" will be overwritten during configuration.`);
 
-      shell.execSync('sh', '-c', 'zwe '+
+      shell.execSync('sh', '-c', `${std.getenv('ZWE_zowe_runtimeDirectory')}/bin/zwe `+
                      `certificate keyring-jcl clean `+
                      `--dataset-prefix "${prefix}" `+
                      `--jcllib "${jcllib}" `+
@@ -372,7 +372,7 @@ export function execute() {
     switch (CERT_PARMS.keyring_option) {
       case 1:
         // generate new cert in keyring
-        shell.execSync('sh', '-c', 'zwe '+
+        shell.execSync('sh', '-c', `${std.getenv('ZWE_zowe_runtimeDirectory')}/bin/zwe `+
                        `certificate keyring-jcl generate `+
                        `--dataset-prefix "${prefix}" `+
                        `--jcllib "${jcllib}" `+
@@ -400,7 +400,7 @@ export function execute() {
         break;
       case 2:
         // connect existing certs to zowe keyring
-        shell.execSync('sh', '-c', 'zwe '+
+        shell.execSync('sh', '-c', `${std.getenv('ZWE_zowe_runtimeDirectory')}/bin/zwe `+
                        `certificate keyring-jcl connect `+
                        `--dataset-prefix "${prefix}" `+
                        `--jcllib "${jcllib}" `+
@@ -418,7 +418,7 @@ export function execute() {
         break;
       case 3:
         // import certs from data set into zowe keyring
-        shell.execSync('sh', '-c', 'zwe '+
+        shell.execSync('sh', '-c', `${std.getenv('ZWE_zowe_runtimeDirectory')}/bin/zwe `+
                        `certificate keyring-jcl import-ds `+
                        `--dataset-prefix "${prefix}" `+
                        `--jcllib "${jcllib}" `+
@@ -507,7 +507,7 @@ export function execute() {
 
   if (CERT_PARMS.zosmf_host && verifyCertificates == "STRICT") {
     // CN/SAN must be valid if z/OSMF is used and in strict mode
-    shell.execSync('sh', '-c', 'zwe '+
+    shell.execSync('sh', '-c', `${std.getenv('ZWE_zowe_runtimeDirectory')}/bin/zwe `+
                    `certificate verify-service `+
                    `--host "${CERT_PARMS.zosmf_host}" `+
                    `--port "${CERT_PARMS.zosmf_port}"`);
