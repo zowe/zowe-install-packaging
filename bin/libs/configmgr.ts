@@ -29,6 +29,7 @@ CONFIG_MGR.setTraceLevel(0);
 //these show the list of files used for zowe config prior to merging into a unified one.
 // ZWE_CLI_PARAMETER_CONFIG gets updated to point to the unified one once written.
 const parameterConfig = std.getenv('ZWE_CLI_PARAMETER_CONFIG');
+std.setenv('ZWE_PRIVATE_ORIGINAL_CONFIG', parameterConfig);
 
 /*
   When using configmgr (--configmgr or zowe.useConfigmgr=true)
@@ -156,7 +157,23 @@ export function cleanupTempDir() {
   }
 }
 
-function writeMergedConfig(config: any): number {
+export function writeMergedConfigForComponent(config: any, componentName: string): number {
+  if (componentName.length == 0) {
+    //not allowed to overwrite core config
+    return -1;
+  }
+  if (std.getenv('ZWE_PRIVATE_COMP_CONFIG_'+componentName)) {
+    //previously written, cant think of a reason to do update here, so skip.
+    return 0;
+  }
+  return writeMergedConfig(config, componentName);
+}
+
+export function getMergedConfigPathForComponent(componentName: string): string|undefined {
+  return std.getenv('ZWE_PRIVATE_COMP_CONFIG_'+componentName);
+}
+
+function writeMergedConfig(config: any, componentName: string=''): number {
   const workspace = config.zowe.workspaceDirectory;
 
   let zwePrivateWorkspaceEnvDir: string;
@@ -211,7 +228,7 @@ function writeMergedConfig(config: any): number {
     if (mkdirrc) { return mkdirrc; }
   }
   
-  const destination = `${zwePrivateWorkspaceEnvDir}/.zowe-merged.yaml`;
+  const destination = `${zwePrivateWorkspaceEnvDir}/.zowe-merged${componentName.length>0 ? '.'+componentName : ''}.yaml`;
   /* We don't write it in JSON, but we could!
   const jsonDestination = `${zwePrivateWorkspaceEnvDir}/.zowe.json`;
   const jsonRC = xplatform.storeFileUTF8(jsonDestination, xplatform.AUTO_DETECT, JSON.stringify(ZOWE_CONFIG, null, 2));
@@ -220,11 +237,19 @@ function writeMergedConfig(config: any): number {
   }
   */
   //const yamlReturn = CONFIG_MGR.writeYAML(getConfigRevisionName(ZOWE_CONFIG_NAME), destination);
-  let [ yamlStatus, textOrNull ] = CONFIG_MGR.writeYAML(getConfigRevisionName(ZOWE_CONFIG_NAME));
+  let [ yamlStatus, textOrNull ] = CONFIG_MGR.writeYAML(getConfigRevisionName(ZOWE_CONFIG_NAME+(componentName.length>0 ? '.'+componentName : '')));
   if (yamlStatus == 0){
     const rc = xplatform.storeFileUTF8(destination, xplatform.AUTO_DETECT, textOrNull);
     if (!rc) {
+      //NOTE: this env var can swap in and out per-component
       std.setenv('ZWE_CLI_PARAMETER_CONFIG', destination);
+      if (componentName.length==0) {
+        //NOTE: this is the core one, not effected by components
+        std.setenv('ZWE_PRIVATE_CORE_CONFIG', destination);  
+      } else {
+        //NOTE: this sets the config location for each component
+        std.setenv('ZWE_PRIVATE_COMP_CONFIG_'+componentName, destination);
+      }
     } else {
       console.log(`Error: Could not write .zowe-merged.yaml, ZWE_CLI_PARAMETER_CONFIG not modified!`);
       std.exit(1);
@@ -429,8 +454,8 @@ const INSTANCE_KEYS_NOT_IN_BASE = [
 ];
 
 const keyNameRegex = /[^a-zA-Z0-9]/g;
-export function getZoweConfigEnv(haInstance: string): any {
-  let config = getZoweConfig();
+export function getZoweConfigEnv(haInstance: string, componentConfig?: any): any {
+  let config = componentConfig ? componentConfig : getZoweConfig();
   let flattener = new objUtils.Flattener();
   flattener.setSeparator('_');
   flattener.setPrefix('ZWE_');

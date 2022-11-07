@@ -190,6 +190,9 @@ export function generateInstanceEnvFromYamlConfig(haInstance: string) {
         componentFileArray.push(`ZWE_configs_${key}=${envs['ZWE_components_'+componentAlpha+'_'+key]}`);
       }
     });
+
+    //TODO HERE
+    // write an env per component by doing a defaults load for that component.
     
     const componentFileContent = componentFileArray.join('\n');
     rc = xplatform.storeFileUTF8(`${folderName}/.instance-${haInstance}.env`, xplatform.AUTO_DETECT, componentFileContent);
@@ -229,12 +232,34 @@ export function sanitizeHaInstanceId(): string|undefined {
   return zweCliParameterHaInstance;
 }
 
-export function applyEnviron(environ: any): void {
-  let keys = Object.keys(environ);
-  keys.forEach(function(key:string) {
-    common.printMessage(`applyEnviron setting ${key}=${environ[key]}`);
-    std.setenv(key, environ[key]);
-  });
+
+let savedEnvVars = std.getenviron();
+export function saveEnvironmentVariables() {
+  savedEnvVars = std.getenviron();
+}
+
+export function restoreEnvironmentVariables(environ?: any) {
+  if (!environ) {
+    environ = savedEnvVars;
+  }
+  if (environ) {
+    const currentVars = std.getenviron();
+    const currentKeys = Object.keys(currentVars);
+    currentKeys.forEach((key:string)=> {
+      if (!environ[key]) {
+        std.unsetenv(key);
+      } else {
+        common.printTrace(`applyEnviron setting ${key}=${environ[key]}`);
+        std.setenv(key, environ[key]);
+      }
+    });
+    Object.keys(environ).forEach((key:string)=> {
+      if (!currentVars[key]) {
+        common.printTrace(`applyEnviron setting ${key}=${environ[key]}`);
+        std.setenv(key, environ[key]);
+      }
+    });
+  }
 }
 
 //////////////////////////////////////////////////////////////

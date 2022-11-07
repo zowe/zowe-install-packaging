@@ -220,6 +220,29 @@
         }
       }
     },
+    "defaults": {
+      "type": "object",
+      "description": "A replacement for 'configs', this section defines defaults of various purposes"
+      "additionalProperties": false,
+      "properties": {
+        "configs": {
+          "oneOf": [
+            {
+              "type": "string",
+              "description": "Defines the location of a yaml file that will be applied to the overall zowe configuration for this component"
+            },
+            {
+              "type": "array",
+              "description": "Defines the locations of yaml files that will be applied to the overall zowe configuration for this component"
+              "items": {
+                "type": "string",
+                "description": "Defines the location of a yaml file that will be applied to the overall zowe configuration for this component"
+              }
+            }
+          ]
+        }
+      }
+    },
     "configs": {
       "type": "object",
       "additionalProperties": true,
