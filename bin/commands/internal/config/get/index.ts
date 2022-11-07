@@ -22,7 +22,7 @@ export function execute(configPath:string, haInstance?: string) {
   }
   if (haInstance && (!configPath.startsWith(`haInstances.${haInstance}.`))) {
     output=fakejq.jqget(ZOWE_CONFIG, `.haInstances[${haInstance}].${configPath}`); //TODO expand path
-    if (!output) { //if the instance doesnt specify this onfig, we'll fallback to the base config.
+    if (!output) { //if the instance doesnt specify this config, we'll fallback to the base config.
       output=fakejq.jqget(ZOWE_CONFIG, `.${configPath}`); //TODO expand path
     }
   } else {

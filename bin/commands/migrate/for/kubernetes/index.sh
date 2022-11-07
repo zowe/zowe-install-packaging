@@ -191,6 +191,7 @@ delete_zowe_yaml "${temp_dir}/zowe.yaml" "node.home"
 delete_zowe_yaml "${temp_dir}/zowe.yaml" "haInstances"
 delete_zowe_yaml "${temp_dir}/zowe.yaml" "zowe.externalDomains"
 
+update_zowe_yaml "${temp_dir}/zowe.yaml" "zowe.useConfigmgr" "false"
 update_zowe_yaml "${temp_dir}/zowe.yaml" "zowe.runtimeDirectory" "${ZWE_PRIVATE_CONTAINER_RUNTIME_DIRECTORY}"
 update_zowe_yaml "${temp_dir}/zowe.yaml" "zowe.workspaceDirectory" "${ZWE_PRIVATE_CONTAINER_WORKSPACE_DIRECTORY}"
 update_zowe_yaml "${temp_dir}/zowe.yaml" "zowe.logDirectory" "${ZWE_PRIVATE_CONTAINER_LOG_DIRECTORY}"
