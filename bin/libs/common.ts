@@ -14,8 +14,8 @@ import * as os from 'cm_os';
 import * as xplatform from 'xplatform';
 
 import * as fs from './fs';
-//import * as stringlib from './string';
-import * as shell from './shell';
+import * as stringlib from './string';
+//import * as shell from './shell';
 import * as strftime from './strftime';
 import * as bufferlib from './buffer';
 declare namespace console {
@@ -154,8 +154,7 @@ function writeLog(message: string): boolean {
   if (logFile===undefined || logFile===null) {
     return false;
   } else {
-    //TODO this does utf8. should we flip it to 1047 on zos?
-    logFile.puts(message);
+    logFile.puts(os.platform == 'zos' ? stringlib.asciiToEbcdic(message) : message);
     return true;
   }
 }
