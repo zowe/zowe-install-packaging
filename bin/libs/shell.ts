@@ -47,6 +47,20 @@ export function execSync(command: string, ...args: string[]): ExecReturn {
   };
 }
 
+export function execSyncOptions(command: string, options: any, ...args: string[]): ExecReturn {
+  guaranteePath();
+  const rc = os.exec([command, ...args], options);
+  return {
+    rc
+  };
+}
+
+
+export function execZweSync(parameters: string): ExecReturn {
+  return execSyncOptions('sh', {block: true, usePath: true, env: {}}, '-c', `${std.getenv('ZWE_zowe_runtimeDirectory')}/bin/zwe `+parameters);
+}
+
+
 function readStreamFully(fd:number):string{
   let readBuffer = new Uint8Array(BUFFER_SIZE);
   let fileBuffer = new bufferlib.ExpandableBuffer(BUFFER_SIZE);
