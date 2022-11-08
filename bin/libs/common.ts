@@ -14,8 +14,7 @@ import * as os from 'cm_os';
 import * as xplatform from 'xplatform';
 
 import * as fs from './fs';
-import * as stringlib from './string';
-//import * as shell from './shell';
+import * as shell from './shell';
 import * as strftime from './strftime';
 import * as bufferlib from './buffer';
 declare namespace console {
@@ -134,6 +133,10 @@ function writeLog(message: string): boolean {
   if (!logExists) {
     const filename = std.getenv('ZWE_PRIVATE_LOG_FILE');
     if (filename) {
+      if (os.platform == 'zos') {
+        //TODO: qjs on zos has issues with the output stream to a file, so unfortunately just use a shell for the moment... 
+        return shell.execSync('sh', '-c', `echo ${message} >> ${filename}`).rc === 0;
+      }
       logExists = fs.fileExists(filename);
       if (!logExists) {
         fs.createFile(filename, 0o640, message);
@@ -154,7 +157,7 @@ function writeLog(message: string): boolean {
   if (logFile===undefined || logFile===null) {
     return false;
   } else {
-    logFile.puts(os.platform == 'zos' ? stringlib.asciiToEbcdic(message) : message);
+    logFile.puts(message);
     return true;
   }
 }
