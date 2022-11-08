@@ -119,7 +119,7 @@ export function execute(allowOverwrite: boolean = false) {
     }
   });
 
-  if (jclExistence == true && allowOverwrite) {
+  if (jclExistence == true && !allowOverwrite) {
     common.printMessage(`Skipped writing to ${jcllib}. To write, you must use --allow-overwrite.`);
   } else {
     // prepare STCs
@@ -254,7 +254,7 @@ export function execute(allowOverwrite: boolean = false) {
     common.printMessage('');
   }
 
-  if (stcExistence == true && allowOverwrite) {
+  if (stcExistence == true && !allowOverwrite) {
     common.printMessage(`Skipped writing to ${proclib}. To write, you must use --allow-overwrite.`);
   } else {
     // copy to proclib
