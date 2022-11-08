@@ -18,6 +18,7 @@ import * as shell from './shell';
 import * as zoslib from './zos';
 
 export function isDatasetExists(datasetName: string): boolean {
+  if (!datasetName) { return false; }
   const result = shell.execSync('sh', '-c', `cat "//'${datasetName}'" 1>/dev/null 2>&1`);
   return result.rc === 0;
 }
@@ -27,6 +28,7 @@ export function isDatasetExists(datasetName: string): boolean {
 //                1: data set is not in catalog
 //                2: data set member doesn't exist
 export function tsoIsDatasetExists(datasetName: string): number {
+  if (!datasetName) { return 9; }
   const result = zoslib.tsoCommand(`listds '${datasetName}' label`);
   if (result.rc != 0) {
     if (result.out.includes('NOT IN CATALOG')) {

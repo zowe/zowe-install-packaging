@@ -252,6 +252,10 @@ export function paddingLeft(str: string, pad: string): string {
     .join('\n');
 }
 
+export function stripUndefined(input: string): string {
+  return input.replace(/undefined/g, '');
+}
+
 /*
 ###############################
 # Padding string on every lines of a file
