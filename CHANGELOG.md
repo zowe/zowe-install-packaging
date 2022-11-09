@@ -10,7 +10,8 @@ All notable changes to the Zowe Installer will be documented in this file.
 
 #### Minor enhancements/defect fixes
 - Use of DVIPA may cause Zowe to believe a port is not free when it is. Starting in this release, Zowe can narrow its port validation to a specific IP via `zowe.network.vipaIp=some.ip` or bypass the verification via `zowe.network.validatePortFree=false`. Setting this to false will still cause the servers to be unable to connect if the port is not free, but this can be a more accurate and portable setting.
-
+- component configure stages will now have their STDOUT printed when running at the INFO level of zwe verbosity.
+- zwe was not guaranteeing that the workspace folder had 770 permission when zowe.useConfigmgr=true was set
 
 ## `2.4.0`
 
