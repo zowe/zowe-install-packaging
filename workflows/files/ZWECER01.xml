@@ -1,0 +1,322 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<workflow xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<autoTakeOwnership>true</autoTakeOwnership>
+<!-- instance prefix settings -->
+    <workflowInfo>
+        <workflowID scope="none" >zowe_create_csr</workflowID>
+        <workflowDefaultName>Create CSR request</workflowDefaultName>
+        <workflowDescription>Use this workflow to create a certificate sign request</workflowDescription>
+        <workflowVersion>###ZOWE_VERSION###</workflowVersion>
+        <vendor>Zowe</vendor>
+        <General/>
+    </workflowInfo>
+    <variable name="certificate_label" scope="instance" visibility="public">
+        <label>Certificate Label</label>
+        <abstract>Label of the certificate to be used for the request</abstract>
+        <description>Specifies the label of the certificate that is used to obtain the distinguished name and public key for the request</description>
+        <category>General</category>
+        <string valueMustBeChoice="false" multiLine="false">
+            <!-- Put validation here -->
+            <!-- Specify choices here -->
+        </string>
+    </variable>
+    <variable name="output_dataset" scope="instance" visibility="public">
+        <label>Output Dataset</label>
+        <abstract>Dataset that will contain the CSR</abstract>
+        <description>Specifies the name of the data set into which the certificate request is written. The data set must not already exist</description>
+        <category>General</category>
+        <string valueMustBeChoice="false" multiLine="false">
+            <validationType>DSNAME</validationType>
+            <!-- Specify choices here -->
+        </string>
+    </variable>
+    <variable name="esm" scope="instance" visibility="public">
+        <label>Security Manager</label>
+        <abstract>Please specify your security management software</abstract>
+        <description>Please specify the ESM system you are using on your system</description>
+        <category>General</category>
+        <string valueMustBeChoice="true" multiLine="false">
+            <!-- Put validation here -->
+            <choice>RACF</choice>
+            <choice>TSS</choice>
+            <choice>ACF2</choice>
+            <default>RACF</default>
+        </string>
+    </variable>
+    <variable name="racf_acid" scope="instance" visibility="public">
+        <label>RACF ACID</label>
+        <abstract>[ ID(certificate-owner) | SITE | CERTAUTH ]</abstract>
+        <description>Specifies that the specified certificate is either a user certificate associated with the specified user ID,
+        a site certificate, or a certificate-authority certificate.
+        If you do not specify ID, SITE, or CERTAUTH, the default is ID,
+        and certificate-owner defaults to the user ID of the command issuer.
+        If more than one keyword is specified, the last specified keyword is processed and
+        the others are ignored by TSO command parse processing.</description>
+        <category>RACF</category>
+        <string valueMustBeChoice="false" multiLine="false">
+            <regularExpression>^(ID\([^ )]+\)|SITE|CERTAUTH)?$</regularExpression>
+            <errorMessage>Wrong syntax of the value</errorMessage>
+            <choice>ID(certificate-owner)</choice>
+            <choice>SITE</choice>
+            <choice>CERTAUTH</choice>
+        </string>
+    </variable>
+    <variable name="tss_acid" scope="instance" visibility="public">
+        <label>TSS ACID</label>
+        <abstract>acid|CERTAUTH|CERTSITE</abstract>
+        <description>ACID that should be used for the CSR creation</description>
+        <category>TSS</category>
+        <string valueMustBeChoice="false" multiLine="false">
+            <regularExpression>^(CERTAUTH|CERTSITE|[A-Z0-9#$@]{1,8})$</regularExpression>
+            <errorMessage>Wrong syntax of the value</errorMessage>
+            <choice>CERTAUTH</choice>
+            <choice>CERTSITE</choice>
+        </string>
+    </variable>
+    <variable name="acf2_acid" scope="instance" visibility="public">
+        <label>ACF2 ACID</label>
+        <abstract>Your USERID</abstract>
+        <description>Please specify the user ID to be used for the certificate creation</description>
+        <category>ACF2</category>
+        <string valueMustBeChoice="false" multiLine="false">
+            <validationType>USERID</validationType>
+        </string>
+    </variable>
+    <variable name="uss_output_folder" scope="instance" visibility="public">
+        <label>CSR USS output folder</label>
+        <abstract>USS folder which will contain the resulting .csr file</abstract>
+        <description>This folder will contain the resulting request.csr file which can be signed by your CA authority.</description>
+        <category>General</category>
+        <string valueMustBeChoice="false" multiLine="false">
+            <regularExpression>^\/([^\/]+\/)+$</regularExpression>
+            <errorMessage>Path must start and end with a slash, eg: /tmp/</errorMessage>
+            <default>/tmp/</default>
+        </string>
+    </variable>
+    <!--atCreate-->
+    <step name="define_variables" optional="false">
+        <title>Define variables for execution</title>
+        <description>Use this step to define the variables for the execution</description>
+        <step name="define_general" optional="false">
+            <title>Define general variables</title>
+            <description>Define variables that are common for all security systems.</description>
+            <!-- pre-requisite step -->
+            <!-- condition -->
+            <variableValue name="certificate_label" scope="instance" noPromptIfSet="true" required="true"/>
+            <variableValue name="output_dataset" scope="instance" noPromptIfSet="true" required="true"/>
+            <variableValue name="esm" scope="instance" noPromptIfSet="true" required="true"/>
+            <variableValue name="uss_output_folder" scope="instance" noPromptIfSet="true" required="true"/>
+            <instructions substitution="true">Run this step to define the common variables and specify which security system you want to use.</instructions>
+            <weight>1</weight>
+            <skills>Security Administrator</skills>
+            <autoEnable>true</autoEnable>
+            <canMarkAsFailed>false</canMarkAsFailed>
+            <!--template-->
+        </step>
+        <step name="define_racf" optional="false">
+            <title>Define RACF variables</title>
+            <description>Use this step to define the variables for RACF</description>
+            <prereqStep name="define_general"/>
+            <condition>
+                <expression>1 == 1</expression>
+                <description>Always true</description>
+                <targetStateSet>
+                    <extendStateExpression>
+                        <description>Skip if RACF wasn't selected</description>
+                        <expression>${instance-esm} != "RACF"</expression>
+                        <targetState>skipped</targetState>
+                    </extendStateExpression>
+                </targetStateSet>
+            </condition>
+            <variableValue name="racf_acid" scope="instance" noPromptIfSet="false" required="false"/>
+            <instructions substitution="false">Use this step to define the variables for RACF.</instructions>
+            <weight>1</weight>
+            <skills>Security Administrator</skills>
+            <autoEnable>true</autoEnable>
+            <canMarkAsFailed>false</canMarkAsFailed>
+            <!--template-->
+        </step>
+        <step name="define_tss" optional="false">
+            <title>Define TSS variables</title>
+            <description>Use this step to define the variables for TSS.</description>
+            <prereqStep name="define_general"/>
+            <condition>
+                <expression>1 == 1</expression>
+                <description>Always true</description>
+                <targetStateSet>
+                    <extendStateExpression>
+                        <description>Skip if TSS wasn't selected</description>
+                        <expression>${instance-esm} != "TSS"</expression>
+                        <targetState>skipped</targetState>
+                    </extendStateExpression>
+                </targetStateSet>
+            </condition>
+            <variableValue name="tss_acid" scope="instance" noPromptIfSet="false" required="true"/>
+            <instructions substitution="false">Use this step to define the variables for TSS.</instructions>
+            <weight>1</weight>
+            <skills>Security Administrator</skills>
+            <autoEnable>true</autoEnable>
+            <canMarkAsFailed>false</canMarkAsFailed>
+            <!--template-->
+        </step>
+        <step name="define_acf2" optional="false">
+            <title>Define ACF2 variables</title>
+            <description>Use this step to define the variables for ACF2.</description>
+            <prereqStep name="define_general"/>
+            <condition>
+                <expression>1 == 1</expression>
+                <description>Always true</description>
+                <targetStateSet>
+                    <extendStateExpression>
+                        <description>Skip if ACF2 wasn't selected</description>
+                        <expression>${instance-esm} != "ACF2"</expression>
+                        <targetState>skipped</targetState>
+                    </extendStateExpression>
+                </targetStateSet>
+            </condition>
+            <variableValue name="acf2_acid" scope="instance" noPromptIfSet="false" required="true"/>
+            <instructions substitution="false">Use this step to define the variables for ACF2.</instructions>
+            <weight>1</weight>
+            <skills>Security Administrator</skills>
+            <autoEnable>true</autoEnable>
+            <canMarkAsFailed>false</canMarkAsFailed>
+            <!--template-->
+        </step>
+    </step>
+    <step name="generate_csr" optional="false">
+        <title>Generate CSR</title>
+        <description>These steps will generate the CSR for a specific security system.</description>
+        <step name="generate_csr_racf" optional="false">
+            <title>Generate CSR RACF</title>
+            <description>Generates the CSR using RACF</description>
+            <prereqStep name="define_variables"/>
+            <condition>
+                <expression>1 == 1</expression>
+                <description>Always true</description>
+                <targetStateSet>
+                    <extendStateExpression>
+                        <description>Skip if ESM isn't RACF</description>
+                        <expression>${instance-esm} != "RACF"</expression>
+                        <targetState>skipped</targetState>
+                    </extendStateExpression>
+                </targetStateSet>
+            </condition>
+            <!--variableValues-->
+            <instructions substitution="true"><![CDATA[This step will generate the CSR request into the ${instance-output_dataset}
+
+<p>This step uses the <a href="https://www.ibm.com/docs/en/zos/2.1.0?topic=syntax-racdcert-genreq-generate-request">RACDCERT GENREQ</a> command</p>]]></instructions>
+            <weight>1</weight>
+            <skills>Security Administrator</skills>
+            <autoEnable>true</autoEnable>
+            <canMarkAsFailed>false</canMarkAsFailed>
+            <template>
+                <inlineTemplate substitution="true">//RACFCMD1 EXEC PGM=IKJEFT01
+//SYSTSPRT DD SYSOUT=*
+//SYSTSIN  DD *
+RACDCERT GENREQ ( +
+    LABEL('${instance-certificate_label}') ) +
+    #if(${instance-racf_acid} and "${instance-racf_acid}" != "")
+    ${instance-racf_acid} +
+    #end
+    DSN('${instance-output_dataset}')
+/*</inlineTemplate>
+                <submitAs maxRc="4">JCL</submitAs>
+                <maxLrecl>80</maxLrecl>
+                <!-- zosmfOutput -->
+            </template>
+        </step>
+        <step name="generate_csr_tss" optional="false">
+            <title>Generate CSR TSS</title>
+            <description>Generates the CSR using TSS</description>
+            <prereqStep name="define_variables"/>
+            <condition>
+                <expression>1 == 1</expression>
+                <description>Always true</description>
+                <targetStateSet>
+                    <extendStateExpression>
+                        <description>Skip if ESM isn't TSS</description>
+                        <expression>${instance-esm} != "TSS"</expression>
+                        <targetState>skipped</targetState>
+                    </extendStateExpression>
+                </targetStateSet>
+            </condition>
+            <!--variableValues-->
+            <instructions substitution="true"><![CDATA[This step will generate the CSR request into the ${instance-output_dataset}
+<p>TSS command <a href="https://techdocs.broadcom.com/us/en/ca-mainframe-software/security/ca-top-secret-for-z-os/16-0/administrating/issuing-commands-to-communicate-administrative-requirements/command-functions/genreq-function-generate-a-certificate-request.html">GENREQ</a> is used here.</p>]]></instructions>
+            <weight>1</weight>
+            <skills>Security Administrator</skills>
+            <autoEnable>true</autoEnable>
+            <canMarkAsFailed>false</canMarkAsFailed>
+            <template>
+                <inlineTemplate substitution="true">//TSSCMD01 EXEC PGM=IKJEFT01
+//SYSTSPRT DD SYSOUT=*
+//SYSTSIN  DD *
+TSS GENREQ(${instance-tss_acid}) +
+    DCDSN('${instance-output_dataset}') +
+    LABLCERT('${instance-certificate_label}')
+/*</inlineTemplate>
+                <submitAs maxRc="4">JCL</submitAs>
+                <maxLrecl>80</maxLrecl>
+                <!-- zosmfOutput -->
+            </template>
+        </step>
+        <step name="generate_csr_acf2" optional="false">
+            <title>Generate CSR ACF2</title>
+            <description>Generates the CSR using ACF2</description>
+            <prereqStep name="define_variables"/>
+            <condition>
+                <expression>1 == 1</expression>
+                <description>Always true</description>
+                <targetStateSet>
+                    <extendStateExpression>
+                        <description>Skip if ESM isn't ACF2</description>
+                        <expression>${instance-esm} != "ACF2"</expression>
+                        <targetState>skipped</targetState>
+                    </extendStateExpression>
+                </targetStateSet>
+            </condition>
+            <!--variableValues-->
+            <instructions substitution="true">This step will generate the CSR request into the ${instance-output_dataset}</instructions>
+            <weight>1</weight>
+            <skills>Security Administrator</skills>
+            <autoEnable>true</autoEnable>
+            <canMarkAsFailed>false</canMarkAsFailed>
+            <template>
+                <inlineTemplate substitution="true">//ACF2CMD1 EXEC PGM=ACFBATCH
+//SYSPRINT DD SYSOUT=*
+//SYSIN    DD *
+SET PROFILE(USER) DIV(CERTDATA)
+GENREQ ${instance-acf2_acid} +
+    DSNAME('${instance-output_dataset}') +
+    LABEL('${instance-certificate_label}')
+/*</inlineTemplate>
+                <submitAs maxRc="4">JCL</submitAs>
+                <maxLrecl>80</maxLrecl>
+                <!-- zosmfOutput -->
+            </template>
+        </step>
+    </step>
+    <step name="uss_csr" optional="false">
+        <title>Convert CSR data set to the USS file</title>
+        <description>Converts the CSR data set to the USS file.</description>
+        <prereqStep name="generate_csr"/>
+        <!-- condition -->
+        <!--variableValues-->
+        <instructions substitution="true"><![CDATA[Copies the CSR to the ${instance-uss_output_folder}request.csr
+<p>This step uses ACF2 command <a href="https://techdocs.broadcom.com/us/en/ca-mainframe-software/security/ca-acf2-for-z-os/16-0/command-reference/acf-subcommands/genreq-subcommand.html">GENREQ</a></p>]]></instructions>
+        <weight>1</weight>
+        <skills>Security Administrator</skills>
+        <autoEnable>true</autoEnable>
+        <canMarkAsFailed>false</canMarkAsFailed>
+        <template>
+            <inlineTemplate substitution="true">set -e
+set -x
+
+mkdir -m 775 -p '${instance-uss_output_folder}'
+cp "//'${instance-output_dataset}'" '${instance-uss_output_folder}request.csr'</inlineTemplate>
+            <submitAs maxRc="0">shell-JCL</submitAs>
+            <maxLrecl>1024</maxLrecl>
+            <!-- zosmfOutput -->
+        </template>
+    </step>
+</workflow>

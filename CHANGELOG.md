@@ -5,6 +5,7 @@ All notable changes to the Zowe Installer will be documented in this file.
 ## `Unreleased`
 
 - Updated ZWEWRF03 workflow to be up to date with the installed software
+- Added ZWECER01 workflow to allow the user to generate a CSR (certificate sign request)
 ## `1.25.0`
 
 ### New features and enhancements
