@@ -38,21 +38,17 @@ export function execute(configPath: string, includeComponents?: boolean, onlyEna
     let components = onlyEnabled ? component.getEnabledComponents() : Object.keys(ZOWE_CONFIG.components);
     components.forEach((componentId: string)=> {
       const componentDir = component.findComponentDirectory(componentId);
-      const manifest = component.getManifest(componentDir);
-      const configValid = component.validateConfigForComponent(componentId, manifest, componentDir, std.getenv('ZWE_CLI_PARAMETER_CONFIG'));
-      if (configValid) {
-        common.printMessage(`Component ${componentId} configuration is valid`);
+      if (!componentDir) {
+        common.printError(`Error: Component ${componentId} is set to enabled, but is not installed! Reinstall it, disable it, or remove it from the config.`);
       } else {
-        common.printError(`Error: Component ${componentId} configuration is invalid`);
+        const manifest = component.getManifest(componentDir);
+        const configValid = component.validateConfigForComponent(componentId, manifest, componentDir, std.getenv('ZWE_CLI_PARAMETER_CONFIG'));
+        if (configValid) {
+          common.printMessage(`Component ${componentId} configuration is valid`);
+        } else {
+          common.printError(`Error: Component ${componentId} configuration is invalid`);
+        }
       }
     });
   }
 }
-
-
-
-  
-
-
-
-
