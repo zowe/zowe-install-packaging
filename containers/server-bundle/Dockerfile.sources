@@ -1,7 +1,7 @@
 ARG BUILD_PLATFORM
 FROM ompzowe/server-bundle:${BUILD_PLATFORM}
 
-ENV NODE_VERSION 18.12.1
+ENV NODE_VERSION 16.18.1
 
 RUN mkdir -p /root/sources/utils && \
     cd /root/sources && \
