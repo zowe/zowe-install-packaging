@@ -32,7 +32,7 @@ ARG NODE_CPU_ARCH=x64
 
 ##################################
 # environments
-ENV NODE_VERSION=16.15.0
+ENV NODE_VERSION=19.0.1
 
 ##################################
 # customize
