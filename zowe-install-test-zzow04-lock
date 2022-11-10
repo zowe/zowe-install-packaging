@@ -1,15 +1,1 @@
-{
-  "lockAcquiredTime": "Thu Nov 10 2022 16:58:19 GMT+0000 (Coordinated Universal Time)",
-  "uid": "1668099499437354192",
-  "repository": {
-    "owner": "zowe",
-    "repo": "zowe-install-packaging"
-  },
-  "branch": "users/oscar/updatePTFbuckettofixSMPEIssue",
-  "workflow": "Zowe CICD Integration Tests",
-  "job": "cicd-test",
-  "actor": "zowe-robot",
-  "runId": 3438783964,
-  "runNumber": 1849,
-  "link": "https://github.com/zowe/zowe-install-packaging/actions/runs/3438783964"
-}
+""
