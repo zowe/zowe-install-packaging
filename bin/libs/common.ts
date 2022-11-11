@@ -127,38 +127,22 @@ export function date(...args: string[]): string|undefined {
 
 
 let logExists = false;
-let logFile:std.File|null = null;
 
 function writeLog(message: string): boolean {
-  if (!logExists) {
-    const filename = std.getenv('ZWE_PRIVATE_LOG_FILE');
-    if (filename) {
-      if (os.platform == 'zos') {
-        //TODO: qjs on zos has issues with the output stream to a file, so unfortunately just use a shell for the moment... 
-        return shell.execSync('sh', '-c', `echo ${message} >> ${filename}`).rc === 0;
-      }
+  const filename = std.getenv('ZWE_PRIVATE_LOG_FILE');
+  if (filename) {
+    logExists = logExists || fs.fileExists(filename);
+    if (!logExists) {
+      xplatform.storeFileUTF8(filename, xplatform.AUTO_DETECT, message);
       logExists = fs.fileExists(filename);
-      if (!logExists) {
-        fs.createFile(filename, 0o640, message);
-        logExists = fs.fileExists(filename);
-      }
       if (logExists) {
-        let errObj = {errno:undefined};
-        logFile = std.open(filename, 'w', errObj);
-        if (errObj.errno) {
-          printError(`Error opening file ${filename}, errno=${errObj.errno}`);
-          logFile=null;
-          logExists=false;
-          return false;
-        }
+        shell.execSync(`chmod`, `640`, filename);
       }
+      return logExists;
     }
-  }
-  if (logFile===undefined || logFile===null) {
-    return false;
-  } else {
-    logFile.puts(message);
-    return true;
+    else {
+      return xplatform.appendFileUTF8(filename, xplatform.AUTO_DETECT, message) == 0;
+    }
   }
 }
 
