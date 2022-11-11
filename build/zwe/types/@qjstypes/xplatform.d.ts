@@ -27,6 +27,7 @@ export function stringFromBytes(data:ArrayBuffer, offset:number, length:number, 
 */
 export function loadFileUTF8(path:string, sourceCCSID:number):string;
 export function storeFileUTF8(path:string, targetCCSID:number, content:string):number;
+export function appendFileUTF8(path:string, targetCCSID:number, content:string):number;
 
 export var AUTO_DETECT:number;
 export var NO_CONVERT:number;
