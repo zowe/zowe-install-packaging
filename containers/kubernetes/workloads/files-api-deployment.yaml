@@ -50,7 +50,7 @@ spec:
             claimName: zowe-workspace-pvc
       containers:
         - name: files-api
-          image: zowe-docker-release.jfrog.io/ompzowe/files-api:2-ubuntu
+          image: zowe-docker-release.jfrog.io/ompzowe/files-api:2.0.10-ubuntu
           imagePullPolicy: Always
           resources:
             requests:

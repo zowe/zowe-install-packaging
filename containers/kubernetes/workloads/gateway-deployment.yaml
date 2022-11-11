@@ -50,7 +50,7 @@ spec:
             claimName: zowe-workspace-pvc
       containers:
         - name: gateway
-          image: zowe-docker-snapshot.jfrog.io/ompzowe/gateway-service:2.1.1-SNAPSHOT-ubuntu.v2-x-x
+          image: zowe-docker-snapshot.jfrog.io/ompzowe/gateway-service:2.4.9-SNAPSHOT-ubuntu.v2-x-x
           imagePullPolicy: Always
           resources:
             requests:

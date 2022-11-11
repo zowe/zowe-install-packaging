@@ -50,7 +50,7 @@ spec:
             claimName: zowe-workspace-pvc
       containers:
         - name: api-catalog
-          image: zowe-docker-snapshot.jfrog.io/ompzowe/api-catalog-services:2.1.1-SNAPSHOT-ubuntu.v2-x-x
+          image: zowe-docker-snapshot.jfrog.io/ompzowe/api-catalog-services:2.4.9-SNAPSHOT-ubuntu.v2-x-x
           imagePullPolicy: Always
           resources:
             requests:
