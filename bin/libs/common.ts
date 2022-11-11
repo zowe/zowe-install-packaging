@@ -144,6 +144,7 @@ function writeLog(message: string): boolean {
       return xplatform.appendFileUTF8(filename, xplatform.AUTO_DETECT, message) == 0;
     }
   }
+  return false;
 }
 
 
