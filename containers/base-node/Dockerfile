@@ -12,7 +12,7 @@
 # base image tag
 ARG ZOWE_BASE_IMAGE=2.0.2-ubuntu.nodeupdatev2
 
-FROM zowe-docker-snapshot.jfrog.io/ompzowe/base:${ZOWE_BASE_IMAGE}
+FROM zowe-docker-snapshot.jfrog.io/ompzowe/base:2.0.2-ubuntu.nodeupdatev2
 
 ##################################
 # labels
