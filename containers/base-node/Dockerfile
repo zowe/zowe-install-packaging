@@ -10,9 +10,9 @@
 #######################################################################
 
 # base image tag
-ARG ZOWE_BASE_IMAGE=2-ubuntu
+ARG ZOWE_BASE_IMAGE=2.0.2-ubi-amd64.nodeupdatev2-132
 
-FROM zowe-docker-release.jfrog.io/ompzowe/base:${ZOWE_BASE_IMAGE}
+FROM zowe-docker-snapshot.jfrog.io/ompzowe/base:${ZOWE_BASE_IMAGE}
 
 ##################################
 # labels
