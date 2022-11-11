@@ -112,7 +112,7 @@
       "exclusions": ["*PR*.zip"]
     },
     "org.zowe.configmgr": {
-      "version": "~0.4.0-v2.x_staging",
+      "version": "~0.4.0-FEATURE-V2-APPEND-TO-FILE",
       "artifact": "*.pax"
     },
     "org.zowe.configmgr-rexx": {
