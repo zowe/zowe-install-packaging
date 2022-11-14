@@ -155,8 +155,9 @@ common.printLevel1Message(`Create VSAM storage for Zowe Caching Service`);
   if (jobstate.rc==1 || !jobstate.out) {
     common.printErrorAndExit(`Error ZWEL0162E: Failed to find job ${jobid} result.`, undefined, 162);
   }
+                               common.printMessage(`job out=`+jobstate.out);
   const sections = jobstate.out.split(',');
-  if (sections.length >= 3) {
+  if (sections.length >= 4) {
     const jobname=sections[1];
     const jobcctext=sections[2];
     const jobcccode=sections[3];
