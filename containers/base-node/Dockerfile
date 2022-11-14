@@ -10,7 +10,7 @@
 #######################################################################
 
 # base image tag
-ARG ZOWE_BASE_IMAGE=0-ubuntu
+ARG ZOWE_BASE_IMAGE=1.0.0-ubuntu
 
 FROM zowe-docker-release.jfrog.io/ompzowe/base:${ZOWE_BASE_IMAGE}
 
@@ -19,7 +19,7 @@ FROM zowe-docker-release.jfrog.io/ompzowe/base:${ZOWE_BASE_IMAGE}
 LABEL name="Zowe Base Image with node.js enabled" \
       maintainer="jack-tiefeng.jia@ibm.com" \
       vendor="Zowe" \
-      version="0.0.10" \
+      version="1.0.0" \
       release="0" \
       summary="Base image for Zowe components with node.js enabled" \
       description="Base image for Zowe components with node.js enabled"
