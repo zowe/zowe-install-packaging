@@ -16,7 +16,7 @@ FROM registry.redhat.io/ubi8/ubi-minimal:latest
 LABEL name="Zowe Base Image" \
       maintainer="jack-tiefeng.jia@ibm.com" \
       vendor="Zowe" \
-      version="0.0.8" \
+      version="1.0.0" \
       release="0" \
       summary="Base image for Zowe components" \
       description="Base image for Zowe components"

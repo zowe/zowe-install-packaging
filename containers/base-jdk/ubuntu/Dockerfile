@@ -9,14 +9,14 @@
 # Copyright Contributors to the Zowe Project.
 #######################################################################
 
-FROM zowe-docker-release.jfrog.io/ompzowe/base:0-ubuntu
+FROM zowe-docker-release.jfrog.io/ompzowe/base:1.0.0-ubuntu
 
 ##################################
 # labels
 LABEL name="Zowe Base Image with JDK enabled" \
       maintainer="jack-tiefeng.jia@ibm.com" \
       vendor="Zowe" \
-      version="0.0.9" \
+      version="1.0.0" \
       release="0" \
       summary="Base image for Zowe components with JDK enabled" \
       description="Base image for Zowe components with JDK enabled"
