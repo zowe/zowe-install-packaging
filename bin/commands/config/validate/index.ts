@@ -39,7 +39,7 @@ export function execute(configPath: string, includeComponents?: boolean, onlyEna
     components.forEach((componentId: string)=> {
       const componentDir = component.findComponentDirectory(componentId);
       if (!componentDir) {
-        common.printError(`Error: Component ${componentId} is set to enabled, but is not installed! Reinstall it, disable it, or remove it from the config.`);
+        common.printError(`Error: Component ${componentId} is not installed! Reinstall it, disable it, or remove it from the config.`);
       } else {
         const manifest = component.getManifest(componentDir);
         const configValid = component.validateConfigForComponent(componentId, manifest, componentDir, std.getenv('ZWE_CLI_PARAMETER_CONFIG'));
