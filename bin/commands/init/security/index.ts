@@ -136,6 +136,7 @@ export function execute(dryRun?: boolean, ignoreSecurityFailures?: boolean) {
         }
       }
       if (jobState.out) {
+        common.printMessage(`job out=`+jobState.out);
         const jobOutParts = jobState.out.split(',');
         if (jobOutParts.length >= 4) {
           const jobname = jobOutParts[1];
