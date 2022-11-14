@@ -5,6 +5,12 @@ All notable changes to the Zowe Installer will be documented in this file.
 ## `Unreleased`
 
 - Updated ZWEWRF03 workflow to be up to date with the installed software
+
+## `1.28.2`
+
+#### Minor enhancements/defect fixes
+- Use of DVIPA may cause Zowe to believe a port is not free when it is. Starting in this release, Zowe can narrow its port validation to a specific IP via `$ZWE_NETWORK_VIPA_IP=some.ip` or bypass the verification via `$ZWE_NETWORK_VALIDATE_PORT_FREE=false`. Setting this to false will still cause the servers to be unable to connect if the port is not free, but this can be a more accurate and portable setting.
+
 ## `1.25.0`
 
 ### New features and enhancements
