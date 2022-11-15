@@ -1,0 +1,2 @@
+components||boolean|||||Turns on validation for enabled components.
+all||boolean|||||Turns on validation for all components, even disabled ones.
