@@ -66,17 +66,21 @@ export function submitJob(jclFile: string): string|undefined {
   }
 }
 
-export function waitForJob(jobid: string): {out?: string, rc: number} {
-  let is_jes3;
+export function waitForJob(jobid: string): {jobcctext?: string, jobcccode?: string, jobid?: string, jobname?: string, rc: number} {
   let jobstatus;
   let jobname;
   let jobcctext;
-  let jobcccode;
+  let jobcccode;    
+  let is_jes3;
 
   common.printDebug(`- Wait for job ${jobid} completed, starting at ${new Date().toString()}.`);
   // wait for job to finish
   const timesSec = [1, 5, 10, 30, 100, 300, 500];
   for (let i = 0; i < timesSec.length; i++) {
+    jobcctext = undefined;
+    jobcccode = undefined;
+    jobname = undefined;
+    is_jes3 = false;
     const secs = timesSec[i];
     common.printTrace(`  * Wait for ${secs} seconds`);
     os.sleep(secs*1000);
@@ -109,12 +113,17 @@ export function waitForJob(jobid: string): {out?: string, rc: number} {
         const jobline = result.out.split('\n').filter(line => line.indexOf('$HASP890') != -1)[0];
         const nameIndex = jobline.indexOf('JOB(');
         const ccIndex = jobline.indexOf('CC=(');
-        jobname = jobline.substring(nameIndex, jobline.indexOf(')', nameIndex));
-        const cc = jobline.substring(ccIndex, jobline.indexOf(')', ccIndex)).split(',');
+        jobname = jobline.substring(nameIndex+4, jobline.indexOf(')', nameIndex));
+        const cc = jobline.substring(ccIndex+4, jobline.indexOf(')', ccIndex)).split(',');
         jobcctext = cc[0];
-        jobcccode = cc[1].split('=')[1];
+        if (cc.length > 1) {
+          const equalSplit = cc[1].split('=');
+          if (equalSplit.length > 1) {
+            jobcccode = equalSplit[1];
+          }
+        }
         common.printTrace(`  * Job (${jobname}) status is ${jobcctext},RC=${jobcccode}`);
-        if (jobcctext || jobcccode) {
+        if ((jobcctext && jobcctext.length > 0) || (jobcccode && jobcccode.length > 0)) {
           // job have CC state
           break;
         }
@@ -125,20 +134,19 @@ export function waitForJob(jobid: string): {out?: string, rc: number} {
   }
   common.printTrace(`  * Job status check done at ${new Date().toString()}.`);
 
-  const retVal=`${jobid},${jobname},${jobcctext},${jobcccode}`;
   if (jobcctext || jobcccode) {
     common.printDebug(`  * Job (${jobname}) exits with code ${jobcccode} (${jobcctext}).`);
     if (jobcccode == "0") {
-      return {out: retVal, rc: 0};
+      return {jobcctext, jobcccode, jobname, rc: 0};
     } else {
       // ${jobcccode} could be greater than 255
-      return {out: retVal, rc: 2};
+      return {jobcctext, jobcccode, jobname, rc: 2};
     }
   } else if (is_jes3) {
     common.printTrace(`  * Cannot determine job complete code. Please check job log manually.`);
-    return {out: retVal, rc: 0};
+    return {jobcctext, jobcccode, jobname, rc: 0};
   } else {
     common.printError(`  * Job (${jobname? jobname : jobid}) doesn't finish within max waiting period.`);
-    return {out: retVal, rc: 1};
+    return {jobcctext, jobcccode, jobname, rc: 1};
   }
 }

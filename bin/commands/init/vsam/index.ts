@@ -151,24 +151,16 @@ common.printLevel1Message(`Create VSAM storage for Zowe Caching Service`);
     common.printErrorAndExit(`Error ZWEL0161E: Failed to run JCL ${jcllib}(ZWECSVSM).`, undefined, 161);
   }
   common.printDebug(`- job id ${jobid}`);
-  const jobstate=zosjes.waitForJob(jobid);
-  if (jobstate.rc==1 || !jobstate.out) {
+  const { rc:jobrc, jobname, jobcctext, jobcccode } = zosjes.waitForJob(jobid);
+  if (jobrc==1) {
     common.printErrorAndExit(`Error ZWEL0162E: Failed to find job ${jobid} result.`, undefined, 162);
   }
-                               common.printMessage(`job out=`+jobstate.out);
-  const sections = jobstate.out.split(',');
-  if (sections.length >= 4) {
-    const jobname=sections[1];
-    const jobcctext=sections[2];
-    const jobcccode=sections[3];
-    if (jobstate.rc==0) {
-      common.printMessage(`- Job ${jobname}(${jobid}) ends with code ${jobcccode} (${jobcctext}).`);
-    } else {
-      common.printErrorAndExit(`Error ZWEL0163E: Job ${jobname}(${jobid}) ends with code ${jobcccode} (${jobcctext}).`, undefined, 163);
-    }
+  if (jobrc==0) {
+    common.printMessage(`- Job ${jobname}(${jobid}) ends with code ${jobcccode} (${jobcctext}).`);
   } else {
-    common.printErrorAndExit(`Error ZWEL0999E: Waiting for job failed, jobname parsing failed.`);
+    common.printErrorAndExit(`Error ZWEL0163E: Job ${jobname}(${jobid}) ends with code ${jobcccode} (${jobcctext}).`, undefined, 163);
   }
+
   // exit message
   common.printLevel2Message(`Zowe Caching Service VSAM storage is created successfully.`);
 }
