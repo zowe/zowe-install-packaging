@@ -50,7 +50,7 @@ spec:
             claimName: zowe-workspace-pvc
       containers:
         - name: caching
-          image: zowe-docker-snapshot.jfrog.io/ompzowe/caching-service:2.1.1-SNAPSHOT-ubuntu.v2-x-x
+          image: zowe-docker-snapshot.jfrog.io/ompzowe/caching-service:2.4.9-SNAPSHOT-ubuntu.v2-x-x
           imagePullPolicy: Always
           resources:
             requests:
@@ -115,7 +115,7 @@ spec:
               mountPath: "/home/zowe/instance/workspace"
       initContainers:
         - name: init-zowe
-          image: zowe-docker-snapshot.jfrog.io/ompzowe/zowe-launch-scripts:2.1.0-ubuntu.v2-x-staging
+          image: zowe-docker-snapshot.jfrog.io/ompzowe/zowe-launch-scripts:2.5.0-ubuntu.v2-x-staging
           imagePullPolicy: Always
           resources:
             requests:

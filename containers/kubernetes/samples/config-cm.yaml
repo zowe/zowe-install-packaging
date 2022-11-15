@@ -25,6 +25,8 @@ metadata:
 data:
   zowe.yaml: |
     zowe:
+      useConfigmgr: false
+
       runtimeDirectory: /home/zowe/runtime
       logDirectory: /home/zowe/instance/logs
       workspaceDirectory: /home/zowe/instance/workspace
