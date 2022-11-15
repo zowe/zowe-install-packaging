@@ -1,2 +1,4 @@
 ZWEL0156E|156|Component name is not initialized after extract step.
 ZWEL0180E|180|Zowe extension directory (zowe.extensionDirectory) is not defined in Zowe YAML configuration file.
+ZWEL0304E|304|Handler install failure, cannot continue.
+ZWEL0305E|305|Could not find one of the components' directories.

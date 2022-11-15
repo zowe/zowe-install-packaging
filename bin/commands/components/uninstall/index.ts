@@ -11,6 +11,7 @@
 
 import * as std from 'std';
 import * as os from 'os';
+import * as config from '../../../libs/config';
 import * as common from '../../../libs/common';
 import * as fs from '../../../libs/fs';
 import * as componentlib from '../../../libs/component';
@@ -24,9 +25,9 @@ export function execute(componentName: string, handler?: string, registry?: stri
 
   const requestedComponentDir = componentlib.findComponentDirectory(componentName);
   if (!requestedComponentDir) {
-    common.printErrorAndExit(`Error ZWEL????W: Component ${componentName} cannot be uninstalled, because it is not currently installed`, undefined, 000);
+    common.printErrorAndExit(`Error ZWEL0306W: Component ${componentName} cannot be uninstalled, because it is not currently installed.`, undefined, 306);
   } else if (requestedComponentDir != `${ZOWE_CONFIG.zowe.extensionDirectory}/${componentName}`) {
-    common.printErrorAndExit(`Error ZWEL????E: Component ${componentName} cannot be uninstalled, because it is a core component. If you do not want to use it, disable it instead`, undefined, 000);
+    common.printErrorAndExit(`Error ZWEL0307E: Component ${componentName} cannot be uninstalled, because it is a core component. If you do not want to use it, disable it instead.`, undefined, 307);
   }
   
   //Attempt to involve the registry handler if exists. If it doesnt exist that's ok, we need to do zowe steps of uninstall anyway.
@@ -40,7 +41,7 @@ export function execute(componentName: string, handler?: string, registry?: stri
     
     const componentDir = componentlib.findComponentDirectory(componentName);
     if (!componentDir) {
-      common.printError(`Warning ZWEL????W: Component ${componentName} marked for removal but is not installed`);
+      common.printError(`Warning ZWEL0312W: Component ${componentName} marked for removal but is not installed`);
       rc = 4;
     } else if (componentDir == `${ZOWE_CONFIG.zowe.extensionDirectory}/${componentName}`) {
       common.printMessage(`Disabling component ${componentName} in configuration`);
@@ -53,12 +54,12 @@ export function execute(componentName: string, handler?: string, registry?: stri
       if (!dryRun) {
         const removeRc = fs.rmrf(componentDir);
         if (removeRc != 0) {
-          common.printError(`Error ZWEL????W: Component directory ${componentDir} could not be removed, rc=${removeRc}`);
+          common.printError(`Error ZWEL0308W: Component directory ${componentDir} could not be removed, rc=${removeRc}.`);
           rc = removeRc;
         }
       }
     } else {
-      common.printError(`Error ZWEL????W: Skipping removal of component ${componentName} because it is a core component`);
+      common.printError(`Error ZWEL0309W: Skipping removal of component ${componentName} because it is a core component.`);
       rc = 4;
     }
   });

@@ -1,2 +1,3 @@
-ZWEL????E|???|%s command %s failed, status=%s
 ZWEL????E|???|Command requires zowe.useConfigmgr=true to use.
+ZWEL0310E|310|Component name (-name|-n) or id (-id,-d) required but not specified.
+ZWEL0311E|311|Handler (-handler,-h or zowe.extensionRegistry.defaultHandler) required but not specified.

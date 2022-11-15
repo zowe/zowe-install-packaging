@@ -34,7 +34,7 @@ export function execute(componentFile: string, autoEncoding?:string, skipEnable?
     componentFile = handlerInstall(componentFile, handler, registry, dryRun, upgrade);
 
     if (componentFile==='null' && !dryRun) {
-      common.printErrorAndExit("Error ZWEL????E: Handler install failure, cannot continue", undefined, 255);
+      common.printErrorAndExit("Error ZWEL0304E: Handler install failure, cannot continue.", undefined, 304);
     }
   }
 
@@ -45,7 +45,7 @@ export function execute(componentFile: string, autoEncoding?:string, skipEnable?
   components.forEach((componentFile: string) => {
     if (componentFile==='null') {
       //TODO wish more could be said here
-      common.printError("Error ZWEL????E: Could not find one of the components' directories");
+      common.printError("Error ZWEL0305E: Could not find one of the components' directories.");
     } else {
       common.printMessage(`Installing file or folder=${componentFile}`);
       if (!dryRun) {
@@ -71,7 +71,7 @@ function handlerInstall(component: string, handler?: string, registry?: string, 
   const ZOWE_CONFIG=config.getZoweConfig();
 
   if (component === 'all' && !upgrade) {
-    common.printErrorAndExit("Error ZWEL????E: Cannot install with component=all. This option only exists for upgrade.", undefined, 255);
+    common.printErrorAndExit("Error ZWEL0314E: Cannot install with component=all. This option only exists for upgrade.", undefined, 314);
   } else if (component === 'all') {
     const allExtensions = componentlib.findAllInstalledComponents2().filter(component=> componentlib.findComponentDirectory(component).startsWith(ZOWE_CONFIG.zowe.extensionDirectory+'/')).join(',');
     if (allExtensions) {

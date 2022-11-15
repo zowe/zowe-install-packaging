@@ -31,12 +31,12 @@ export function execute(componentName?: string, componentId?: string, handler?: 
       common.printMessage(`Component ${componentName} status: UNINSTALLED`);
     }
   } else if (!componentId) {
-    common.printErrorAndExit("Error ZWEL????E: Component name (-name|-n) or id (-id,-d) required but not specified", undefined, 255);
+    common.printErrorAndExit("Error ZWEL0310E: Component name (-name|-n) or id (-id,-d) required but not specified.", undefined, 310);
   }
 
   handler = getHandler(handler);
   if (!handler) {
-    common.printErrorAndExit("Error ZWEL????E: Handler (-handler,-h or zowe.extensionRegistry.defaultHandler) required but not specified", undefined, 255);
+    common.printErrorAndExit("Error ZWEL0311E: Handler (-handler,-h or zowe.extensionRegistry.defaultHandler) required but not specified.", undefined, 311);
   }
   registry = getRegistry(handler, registry);  
   const handlerCaller = new HandlerCaller(handler, registry);
