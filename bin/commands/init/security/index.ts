@@ -127,41 +127,32 @@ export function execute(dryRun?: boolean, ignoreSecurityFailures?: boolean) {
     } else {
       common.printDebug(`- job id ${jobid}`);
       const jobState = zosjes.waitForJob(jobid);
-      if (jobState.rc == 1) {
+      const { rc:jobrc, jobname, jobcctext, jobcccode } = zosjes.waitForJob(jobid);
+      if (jobrc == 1) {
         jobHasFailures=true;
         if (ignoreSecurityFailures == true) {
           common.printError(`Warning ZWEL0162W: Failed to find job ${jobid} result.`);
         } else {
           common.printErrorAndExit(`Error ZWEL0162E: Failed to find job ${jobid} result.`, undefined, 162);
         }
-      }
-      if (jobState.out) {
-        common.printMessage(`job out=`+jobState.out);
-        const jobOutParts = jobState.out.split(',');
-        if (jobOutParts.length >= 4) {
-          const jobname = jobOutParts[1];
-          const jobcctext = jobOutParts[2];
-          const jobcccode = jobOutParts[3];
+      } 
+      if (jobrc == 0) {
 
-          if (jobState.rc == 0) {
+        common.printMessage(`- Job ${jobname}(${jobid}) ends with code ${jobcccode} (${jobcctext}).`);
 
-            common.printMessage(`- Job ${jobname}(${jobid}) ends with code ${jobcccode} (${jobcctext}).`);
-
-            common.printMessage(``);
-            common.printMessage(`WARNING: Due to the limitation of the ZWESECUR job, exit with 0 does not mean`);
-            common.printMessage(`         the job is fully successful. Please check the job log to determine`);
-            common.printMessage(`         if there are any inline errors.`);
-            common.printMessage(``);
-          } else {
-            jobHasFailures=true;
-            if (ignoreSecurityFailures == true) {
-              common.printError(`Warning ZWEL0163W: Job ${jobname}(${jobid}) ends with code ${jobcccode} (${jobcctext}).`);
-            } else {
-              common.printErrorAndExit(`Error ZWEL0163E: Job ${jobname}(${jobid}) ends with code ${jobcccode} (${jobcctext}).`, undefined, 163);
-            }
-          }
+        common.printMessage(``);
+        common.printMessage(`WARNING: Due to the limitation of the ZWESECUR job, exit with 0 does not mean`);
+        common.printMessage(`         the job is fully successful. Please check the job log to determine`);
+        common.printMessage(`         if there are any inline errors.`);
+        common.printMessage(``);
+      } else {
+        jobHasFailures=true;
+        if (ignoreSecurityFailures == true) {
+          common.printError(`Warning ZWEL0163W: Job ${jobname}(${jobid}) ends with code ${jobcccode} (${jobcctext}).`);
+        } else {
+          common.printErrorAndExit(`Error ZWEL0163E: Job ${jobname}(${jobid}) ends with code ${jobcccode} (${jobcctext}).`, undefined, 163);
         }
-      }
+      }      
     }
 
     // exit message
