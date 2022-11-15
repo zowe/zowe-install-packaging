@@ -41,7 +41,7 @@ jobs:
 
       - uses: zowe-actions/shared-actions/docker-build-local@main
         with:
-          build-arg-list: ZOWE_BASE_IMAGE=1.0.0-ubuntu
+          build-arg-list: ZOWE_BASE_IMAGE=latest-ubuntu
         timeout-minutes: 5
 
       - name: Run Snyk to check Docker image for vulnerabilities
@@ -82,7 +82,7 @@ jobs:
           zlinux-ssh-user: ${{ secrets.ZLINUX_SSH_USER }}
           zlinux-ssh-key: ${{ secrets.ZLINUX_SSH_KEY }}
           zlinux-ssh-passphrase: ${{ secrets.ZLINUX_SSH_PASSPHRASE }}
-          build-arg-list: ZOWE_BASE_IMAGE=1.0.0-ubuntu
+          build-arg-list: ZOWE_BASE_IMAGE=latest-ubuntu
         timeout-minutes: 10
 
       - name: Run Snyk to check Docker image for vulnerabilities
@@ -146,7 +146,7 @@ jobs:
 
       - uses: zowe-actions/shared-actions/docker-build-local@main
         with:
-          build-arg-list: ZOWE_BASE_IMAGE=1.0.0-ubi
+          build-arg-list: ZOWE_BASE_IMAGE=latest-ubi
         timeout-minutes: 5
 
       - name: Run Snyk to check Docker image for vulnerabilities
@@ -190,7 +190,7 @@ jobs:
           redhat-registry: ${{ env.DEFAULT_REDHAT_DOCKER_REGISTRY }}
           redhat-registry-user: ${{ secrets.REDHAT_DEVELOPER_USER }}
           redhat-registry-password: ${{ secrets.REDHAT_DEVELOPER_PASSWORD }}
-          build-arg-list: ZOWE_BASE_IMAGE=1.0.0-ubi
+          build-arg-list: ZOWE_BASE_IMAGE=latest-ubi
         timeout-minutes: 10
 
       - name: Run Snyk to check Docker image for vulnerabilities

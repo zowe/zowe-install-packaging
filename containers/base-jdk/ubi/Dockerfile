@@ -9,7 +9,7 @@
 # Copyright Contributors to the Zowe Project.
 #######################################################################
 
-FROM zowe-docker-release.jfrog.io/ompzowe/base:1.0.0-ubi
+FROM zowe-docker-release.jfrog.io/ompzowe/base:latest-ubi
 
 ##################################
 # labels
