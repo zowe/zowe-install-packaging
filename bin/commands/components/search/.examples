@@ -4,6 +4,6 @@
 
     zwe components search --component-id org.zowe.zlux.sample.angular --registry https://myregistry/url
 
-    zwe components search --component-id org.zowe.zlux.sample.angular --registry https://myregistry/url --manager npm
+    zwe components search --component-id org.zowe.zlux.sample.angular --registry https://myregistry/url --handler npm
     
     

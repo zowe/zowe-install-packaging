@@ -20,7 +20,15 @@ import { HandlerCaller, getHandler, getRegistry } from '../handlerutils';
 export function execute(componentName: string, handler?: string, registry?: string, dryRun?: boolean): number {
   let rc = 0;
   common.requireZoweYaml();
+  const ZOWE_CONFIG=config.getZoweConfig();
 
+  const requestedComponentDir = componentlib.findComponentDirectory(componentName);
+  if (!requestedComponentDir) {
+    common.printErrorAndExit(`Error ZWEL????W: Component ${componentName} cannot be uninstalled, because it is not currently installed`, undefined, 000);
+  } else if (requestedComponentDir != `${ZOWE_CONFIG.zowe.extensionDirectory}/${componentName}`) {
+    common.printErrorAndExit(`Error ZWEL????E: Component ${componentName} cannot be uninstalled, because it is a core component. If you do not want to use it, disable it instead`, undefined, 000);
+  }
+  
   //Attempt to involve the registry handler if exists. If it doesnt exist that's ok, we need to do zowe steps of uninstall anyway.
   let handlerComponents = handlerUninstall(componentName, handler, registry, dryRun);
   let uninstallComponentsList = handlerComponents !== 'null' ? handlerComponents.split(',') : [ componentName ];
@@ -34,7 +42,7 @@ export function execute(componentName: string, handler?: string, registry?: stri
     if (!componentDir) {
       common.printError(`Warning ZWEL????W: Component ${componentName} marked for removal but is not installed`);
       rc = 4;
-    } else {
+    } else if (componentDir == `${ZOWE_CONFIG.zowe.extensionDirectory}/${componentName}`) {
       common.printMessage(`Disabling component ${componentName} in configuration`);
       if (!dryRun) {
         //We dont remove the entire config because if they reinstall, they may want to retain the settings.
@@ -49,6 +57,9 @@ export function execute(componentName: string, handler?: string, registry?: stri
           rc = removeRc;
         }
       }
+    } else {
+      common.printError(`Error ZWEL????W: Skipping removal of component ${componentName} because it is a core component`);
+      rc = 4;
     }
   });
   return rc;

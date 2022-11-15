@@ -9,6 +9,17 @@
 // Copyright Contributors to the Zowe Project.
 */
 
+
+/*
+ *
+ *
+ *
+ *
+ *
+ * NOTE: this file is incomplete and excluded from running at this time.
+ *
+ */
+
 import * as std from 'std';
 import * as os from 'os';
 import * as xplatform from 'xplatform';
