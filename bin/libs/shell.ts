@@ -56,8 +56,8 @@ export function execSyncOptions(command: string, options: any, ...args: string[]
 }
 
 
-export function execZweSync(parameters: string): ExecReturn {
-  return execSyncOptions('sh', {block: true, usePath: true, env: {}}, '-c', `${std.getenv('ZWE_zowe_runtimeDirectory')}/bin/zwe `+parameters);
+export function execZweSync(parameters: string, env:any={}): ExecReturn {
+  return execSyncOptions('sh', {block: true, usePath: true, env: env}, '-c', `${std.getenv('ZWE_zowe_runtimeDirectory')}/bin/zwe `+parameters);
 }
 
 

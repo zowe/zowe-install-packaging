@@ -16,8 +16,16 @@ import * as jsonlib from '../../../libs/json';
 import * as shell from '../../../libs/shell';
 import * as config from '../../../libs/config';
 
+const ZWE_CLI_PARM_KEYS = Object.keys(std.getenviron()).filter((key: string)=> {
+  return key.startsWith('ZWE_CLI_PARAMETER');
+});
+const ZWE_CLI_ENVS = {};
+ZWE_CLI_PARM_KEYS.forEach((key: string)=>{
+  ZWE_CLI_ENVS[key] = std.getenv(key);
+});
+
 function zweExec(command: string): void {
-  const result = shell.execZweSync(command);
+  const result = shell.execZweSync(command, ZWE_CLI_ENVS);
   if (result.rc != 0) {
     common.printErrorAndExit(`Error ZWEL0305E: Failed to call certificate command, rc=${result.rc}.`, undefined, 305);
   }
