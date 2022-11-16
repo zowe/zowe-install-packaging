@@ -44,8 +44,7 @@ spec:
           restartPolicy: OnFailure
           containers:
             - name: cleanup-static-definitions
-              # image: zowe-docker-release.jfrog.io/ompzowe/zowe-launch-scripts:latest
-              image: zowe-docker-snapshot.jfrog.io/ompzowe/zowe-launch-scripts:1.25.0-ubuntu.staging
+              image: zowe-docker-snapshot.jfrog.io/ompzowe/zowe-launch-scripts:1.28.2-ubuntu.v1-x-staging
               imagePullPolicy: Always
               resources:
                 requests:
