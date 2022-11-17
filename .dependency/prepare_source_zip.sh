@@ -21,7 +21,7 @@ SCRIPT_NAME=$(basename "$0")
 SCRIPT_PWD=$(cd "$(dirname "$0")" && pwd)
 ROOT_PWD=$(cd "$SCRIPT_PWD" && cd .. && pwd)
 cd "$ROOT_PWD"
-WORK_BRANCH=master
+WORK_BRANCH=v1.x/master
 ZOWE_MANIFEST="https://raw.githubusercontent.com/zowe/zowe-install-packaging/${WORK_BRANCH}/manifest.json.template"
 WORK_DIR=.release
 ZIP_DIR="${WORK_DIR}/source_zip"

@@ -145,7 +145,7 @@
       "componentGroup": "Imperative CLI Framework for Zowe",
       "entries": [{
         "repository": "imperative",
-        "tag": "v4.18.8",
+        "tag": "v4.18.11",
         "destinations": ["Zowe CLI Package"]
       }]
     }, {
@@ -224,7 +224,7 @@
       "componentGroup": "Zowe CLI",
       "entries": [{
         "repository": "zowe-cli",
-        "tag": "v6.40.6",
+        "tag": "v6.40.10",
         "destinations": ["Zowe CLI Package"]
       }]
     }, {
@@ -436,7 +436,7 @@
     "zowe-launch-scripts": {
       "registry": "zowe-docker-release.jfrog.io",
       "name": "ompzowe/zowe-launch-scripts",
-      "tag" : "1.28.1-ubuntu"
+      "tag" : "1.28.2-ubuntu"
     },
     "api-catalog": {
       "registry": "zowe-docker-release.jfrog.io",
