@@ -6,7 +6,11 @@ All notable changes to the Zowe Installer will be documented in this file.
 
 - Updated ZWEWRF03 workflow to be up to date with the installed software
 
-## `2.5.0`
+## `2.5.0
+
+### New features and enhancements
+
+- zwe now has a `zwe config get` and `zwe config validate` command. The get command can be used to get a part of the zowe yaml configuration without needing to read the yaml yourself. `zwe config get` only returns values upon proving the configuration is valid first. `zwe config validate` can be used to perform validation of the zowe configuration files without running any additional actions. This is useful for verifying that a change is valid before starting zowe, for example. 
 
 #### Minor enhancements/defect fixes
 - component configure stages will now have their STDOUT printed when running at the INFO level of zwe verbosity.
