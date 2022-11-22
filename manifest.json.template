@@ -238,7 +238,7 @@
       "componentGroup": "IBM&reg Db2&reg Plug-in for Zowe CLI",
       "entries": [{
         "repository": "zowe-cli-db2-plugin",
-        "tag": "v4.1.7",
+        "tag": "v4.1.8",
         "destinations": ["Zowe CLI Package"]
       }]
     }, {
