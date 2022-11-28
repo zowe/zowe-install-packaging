@@ -19,5 +19,5 @@ if [ "${USE_CONFIGMGR}" = "true" ]; then
   fi
   _CEE_RUNOPTS="XPLINK(ON),HEAPPOOLS(OFF)" ${ZWE_zowe_runtimeDirectory}/bin/utils/configmgr -script "${ZWE_zowe_runtimeDirectory}/bin/commands/components/uninstall/cli.js"
 else
-  print_error_and_exit "Error ZWEL????E: Command requires zowe.useConfigmgr=true to use." "" 255
+  print_error_and_exit "Error ZWEL0316E: Command requires zowe.useConfigmgr=true to use." "" 316
 fi

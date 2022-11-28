@@ -82,7 +82,7 @@ function handlerInstall(component: string, handler?: string, registry?: string, 
 
   handler = getHandler(handler);
   if (!handler) {
-    common.printErrorAndExit("Error ZWEL????E: Handler (-handler or zowe.extensionRegistry.defaultHandler) required but not specified", undefined, 255);
+    common.printErrorAndExit("Error ZWEL0315E: Handler (-handler or zowe.extensionRegistry.defaultHandler) required but not specified.", undefined, 255);
   }
   registry = getRegistry(handler, registry);  
   const handlerCaller = new HandlerCaller(handler, registry);
