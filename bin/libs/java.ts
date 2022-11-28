@@ -115,19 +115,19 @@ export function validateJavaHome(javaHome:string|undefined=std.getenv("JAVA_HOME
       return false;
     }
     let versionParts = javaVersionShort.split('.');
-    const javaMajorVersion=versionParts[0];
-    const javaMinorVersion=versionParts[1];
+    const javaMajorVersion=Number(versionParts[0]);
+    const javaMinorVersion=Number(versionParts[1]);
 
     let tooLow=false;
-    if (javaMajorVersion != '1') {
+    if (javaMajorVersion !== 1 && javaMajorVersion < JAVA_MIN_VERSION) {
       tooLow=true;
     }
-    if (javaMajorVersion != '1' && Number(javaMinorVersion) < JAVA_MIN_VERSION) {
+    if (javaMajorVersion === 1 && javaMinorVersion < JAVA_MIN_VERSION) {
       tooLow=true;
     }
 
     if (tooLow) {
-      common.printError(`Java ${javaVersionShort} is less than the minimum level required of Java ${JAVA_MIN_VERSION} (1.${JAVA_MIN_VERSION}.0).`);
+      common.printError(`Java ${javaVersionShort} is less than the minimum level required of Java ${JAVA_MIN_VERSION}.`);
       return false;
     }
 
