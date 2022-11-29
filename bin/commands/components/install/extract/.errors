@@ -4,3 +4,4 @@ ZWEL0154E|154|Temporary directory is empty.
 ZWEL0155E|155|Component %s already exists in %s.
 ZWEL0167E|167|Cannot find component name from %s package manifest.
 ZWEL0204E|204|Symlink creation failure, error=%s
+ZWEL0313E|313|Cannot file component file %s.
