@@ -43,6 +43,7 @@ export function getNetstat(): string|undefined {
 
 // should not be bound to a port currently
 export function isPortAvailable(port: number): boolean {
+  os.sleep(15000);
   const netstat=getNetstat();
 
   const skipValidate = (std.getenv('ZWE_zowe_network_validatePortFree') ? std.getenv('ZWE_zowe_network_validatePortFree') : std.getenv('ZWE_zowe_environments_ZWE_NETWORK_VALIDATE_PORT_FREE')) == 'false';
