@@ -104,9 +104,9 @@ is_port_available() {
     "OS/390")
       vipa_ip=${ZWE_zowe_network_vipaIp:-ZWE_zowe_environments_ZWE_NETWORK_VIPA_IP}
       if [ -n "${vipa_ip}" ]; then
-        result=$(${netstat} -B ${vipa_ip}+${port} -c SERVER 2>/dev/null)
+        result=$(${netstat} -B ${vipa_ip}+${port} -c SERVER 2>&1)
       else    
-        result=$(${netstat} -c SERVER -P ${port} 2>/dev/null)
+        result=$(${netstat} -c SERVER -P ${port} 2>&1)
       fi
 
       code=$?
