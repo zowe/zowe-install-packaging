@@ -65,7 +65,7 @@ export function isPortAvailable(port: number): boolean {
     if (vipaIp !== undefined) {
       retVal=shell.execOutSync('sh', '-c', `${netstat} -B ${std.getenv('ZWE_zowe_network_vipaIp')}+${port} -c SERVER 2>&1`);
     } else {
-      retVal=shell.execOutSync(netstat, `-c`, `SERVER`, `-P`, `${port} 2>&1`);
+      retVal=shell.execOutSync('sh', '-c', `${netstat} -c SERVER -P ${port} 2>&1`);
     }
     if (retVal.rc != 0) {
       common.printError(`Netstat test fail with exit code ${retVal.rc} (${retVal.out})`);
