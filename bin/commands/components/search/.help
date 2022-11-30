@@ -1,0 +1,3 @@
+Search for a Zowe component within a Zowe package registry.
+
+This command requires you have a registry manager set up for zowe's use already, such as npm or conda.
