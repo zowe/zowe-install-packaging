@@ -87,7 +87,7 @@ get_netstat() {
 is_port_available() {
   port="${1}"
 
-  if [ "${ZWE_zowe_network_validatePortFree:-ZWE_zowe_environments_ZWE_NETWORK_VALIDATE_PORT_FREE}" = "false" ]; then
+  if [ "${ZWE_zowe_network_validatePortFree:-$ZWE_zowe_environments_ZWE_NETWORK_VALIDATE_PORT_FREE}" = "false" ]; then
     print_message "Port validation skipped due to zowe.network.validatePortFree=false"
     return 0
   fi
