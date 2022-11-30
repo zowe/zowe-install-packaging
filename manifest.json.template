@@ -109,14 +109,14 @@
       "artifact": "cloud-gateway-*.zip"
     },
     "org.zowe.configmgr-rexx": {
-      "version": "0.4.0-V2.X-RC",
+      "version": "0.4.1-V2.X-RC",
       "repository": "libs-snapshot-local",
-      "artifact": "configmgr-rexx-0.4.0-2022113015.pax"
+      "artifact": "configmgr-rexx-0.4.1-2022113011.pax"
     },
     "org.zowe.configmgr": {
-      "version": "0.4.0-V2.X-RC",
+      "version": "0.4.1-V2.X-RC",
       "repository": "libs-snapshot-local",
-      "artifact": "configmgr-0.4.0-2022113015.pax"
+      "artifact": "configmgr-0.4.1-2022113008.pax"
     },
     "org.zowe.launcher": {
       "version": "2.0.6"
