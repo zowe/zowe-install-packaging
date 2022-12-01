@@ -6,6 +6,11 @@ All notable changes to the Zowe Installer will be documented in this file.
 
 - Updated ZWEWRF03 workflow to be up to date with the installed software
 
+## `2.6.0`
+
+### Minor enhancements/defect fixes
+- Tracing and writing to log files would not work for component scripts when zowe.useConfigmgr=true
+
 ## `2.5.0
 
 ### New features and enhancements
