@@ -19,6 +19,7 @@ All notable changes to the Zowe Installer will be documented in this file.
 - `zwe components` subcommands can now search for, install, and upgrade extensions retrieved via an on-prem or remote package registry. At this time, npm is supported as the registry and package manager technology that `zwe` can use to download content. This is an optional feature and is not enabled by default: it must be configured. View the schema for zowe.yaml to learn more about the "package registry" and "registry handler" technologies to configure for this feature. More information and a recorded demo is available at https://github.com/zowe/zowe-install-packaging/pull/2980
 
 #### Minor enhancements/defect fixes
+- Use of DVIPA may cause Zowe to believe a port is not free when it is. Starting in this release, Zowe can narrow its port validation to a specific IP via `zowe.network.vipaIp=some.ip` or bypass the verification via `zowe.network.validatePortFree=false`. Setting this to false will still cause the servers to be unable to connect if the port is not free, but this can be a more accurate and portable setting.
 - component configure stages will now have their STDOUT printed when running at the INFO level of zwe verbosity.
 - zwe was not guaranteeing that the workspace folder had 770 permission when zowe.useConfigmgr=true was set
 
