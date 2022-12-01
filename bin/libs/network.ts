@@ -44,6 +44,12 @@ export function getNetstat(): string|undefined {
 // should not be bound to a port currently
 export function isPortAvailable(port: number): boolean {
   const netstat=getNetstat();
+
+  const skipValidate = (std.getenv('ZWE_zowe_network_validatePortFree') ? std.getenv('ZWE_zowe_network_validatePortFree') : std.getenv('ZWE_zowe_environments_ZWE_NETWORK_VALIDATE_PORT_FREE')) == 'false';
+  if (skipValidate) {
+    common.printMessage("Port validation skipped due to zowe.network.validatePortFree=false");
+    return true;
+  }
   
   if (!netstat) {
     common.printError("No netstat tool found.")
@@ -55,9 +61,14 @@ export function isPortAvailable(port: number): boolean {
   let lines;
   switch (os.platform) {
     case 'zos':
-    retVal=shell.execOutErrSync(netstat, `-c`, `SERVER`, `-P`, `${port}`);
+    const vipaIp = std.getenv('ZWE_zowe_network_vipaIp') ? std.getenv('ZWE_zowe_network_vipaIp') : std.getenv('ZWE_zowe_environments_ZWE_NETWORK_VIPA_IP');
+    if (vipaIp !== undefined) {
+      retVal=shell.execOutSync('sh', '-c', `${netstat} -B ${std.getenv('ZWE_zowe_network_vipaIp')}+${port} -c SERVER 2>&1`);
+    } else {
+      retVal=shell.execOutSync('sh', '-c', `${netstat} -c SERVER -P ${port} 2>&1`);
+    }
     if (retVal.rc != 0) {
-      common.printError(`Netstat test fail with exit code ${retVal.rc} (${retVal.err})`);
+      common.printError(`Netstat test fail with exit code ${retVal.rc} (${retVal.out})`);
       return false;
     }
     if ((retVal.out as string).includes('Listen')) { 
