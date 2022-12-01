@@ -1,1 +1,15 @@
-""
+{
+  "lockAcquiredTime": "Thu Dec 01 2022 17:20:32 GMT+0000 (Coordinated Universal Time)",
+  "uid": "1669915232050552758",
+  "repository": {
+    "owner": "zowe",
+    "repo": "zowe-install-packaging"
+  },
+  "branch": "user/markackert/v2x-staging-patch-pswi-sftp",
+  "workflow": "Zowe CICD Integration Tests",
+  "job": "cicd-test",
+  "actor": "zowe-robot",
+  "runId": 3594931411,
+  "runNumber": 1969,
+  "link": "https://github.com/zowe/zowe-install-packaging/actions/runs/3594931411"
+}
