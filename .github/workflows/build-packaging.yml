@@ -42,7 +42,7 @@ jobs:
         run: echo "prints random dispatch event id sent from workflow dispatch event"
 
   check-permission:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     steps:
       # this action will fail the whole workflow if permission check fails
       - name: check permission
