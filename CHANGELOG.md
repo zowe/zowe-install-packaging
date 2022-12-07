@@ -6,7 +6,12 @@ All notable changes to the Zowe Installer will be documented in this file.
 
 - Updated ZWEWRF03 workflow to be up to date with the installed software
 
-## `2.5.0
+## 2.6.0
+
+#### Minor enhancements/defect fixes
+- When a component configure script failed during startup, no warning would be printed. Starting in 2.6, a warning will be printed and there's also an option to prevent Zowe from continuing startup when this failure is seen, by setting `zowe.launchScript.onComponentConfigureFail` to "exit"
+
+## 2.5.0
 
 ### New features and enhancements
 
