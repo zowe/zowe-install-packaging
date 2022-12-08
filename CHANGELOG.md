@@ -6,6 +6,11 @@ All notable changes to the Zowe Installer will be documented in this file.
 
 - Updated ZWEWRF03 workflow to be up to date with the installed software
 
+## `2.6.0`
+
+#### Minor enhancements/defect fixes
+- Tar archived components would not be installed when zowe.useConfigmgr=true was set.
+
 ## `2.5.0
 
 ### New features and enhancements
