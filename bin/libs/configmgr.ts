@@ -38,7 +38,7 @@ const parameterConfig = std.getenv('ZWE_CLI_PARAMETER_CONFIG');
   3. one or more parmlib paths with PARMLIB() syntax, ex PARMLIB(my.zowe(yaml)):PARMLIB(my.other.zowe(yaml)) ... note the member names must be the same for every PARMLIB mentioned!
   4. one or more of FILE and PARMLIB syntax combined, ex FILE(/my/1.yaml):FILE(/my2.yaml):PARMLIB(my.zowe(yaml)):PARMLIB(my.other.zowe(yaml))
  */
-const ZOWE_CONFIG_PATH = (parameterConfig && !parameterConfig.startsWith('FILE(')) ? `FILE(${parameterConfig})` : parameterConfig;
+const ZOWE_CONFIG_PATH = (parameterConfig && !parameterConfig.startsWith('FILE(') && !parameterConfig.startsWith('PARMLIB(')) ? `FILE(${parameterConfig})` : parameterConfig;
 let configLoaded = false;
 
 const COMMON_SCHEMA = `${std.getenv('ZWE_zowe_runtimeDirectory')}/schemas/server-common.json`;
