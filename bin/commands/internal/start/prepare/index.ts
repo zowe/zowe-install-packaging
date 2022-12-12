@@ -362,6 +362,11 @@ function configureComponents(componentEnvironments?: any, enabledComponents?:str
           } else {
             //not printformattederror because it makes silly long strings like "ERROR: 2022-12-07 20:00:47 <ZWELS:50791391> me ERROR (zwe-internal-start-prepare,configure_components) Error ZWEL0317E: Component app-server commands.configure ended with rc=22."
             common.printError(`Error ZWEL0317E: Component ${componentId} commands.configure ended with rc=${result.rc}.`);
+            if (result.out) {
+              const outLines = result.out.split('\n');
+              common.printFormattedInfo("ZWELS", "zwe-internal-start-prepare,configure_components", `- commands.configure output from ${componentId} is:`);
+              common.printMessage(outLines.filter(line => !line.startsWith('export ')).join('\n'));
+            }
             if (ZOWE_CONFIG.zowe.launchScript?.onComponentConfigureFail == 'exit') {
               std.exit(1);
             }

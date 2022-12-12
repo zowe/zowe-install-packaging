@@ -516,7 +516,8 @@
             "onComponentConfigureFail": {
               "type": "string",
               "description": "Chooses how 'zwe start' behaves if a component configure script fails",
-              "enum": ["warn", "exit"]
+              "enum": ["warn", "exit"],
+              "default": "warn"
             }
           }
         },
