@@ -1,0 +1,5 @@
+zwe config get -p path-of-configuration -c /path/to/zowe.yaml
+zwe config get -p .zowe.certificate -c /path/to/zowe.yaml
+zwe config get -p .zowe.components[] -c /path/to/zowe.yaml
+zwe config get -p .zowe.components.gateway -c /path/to/zowe.yaml
+zwe config get -p .zowe.components.gateway.enabled -c /path/to/zowe.yaml

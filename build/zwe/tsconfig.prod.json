@@ -30,5 +30,7 @@
     "../../bin/commands/**/*",
     "../../bin/utils/*"
   ],
-  "exclude": []
+  "exclude": [
+    "../../bin/commands/components/conda.ts"
+  ]
 }
