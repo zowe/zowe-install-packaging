@@ -1,1 +1,15 @@
-""
+{
+  "lockAcquiredTime": "Mon Dec 12 2022 14:57:15 GMT+0000 (Coordinated Universal Time)",
+  "uid": "1670857035838918149",
+  "repository": {
+    "owner": "zowe",
+    "repo": "zowe-install-packaging"
+  },
+  "branch": "v2.x/add-permit-RAUDITX",
+  "workflow": "Zowe CICD Integration Tests",
+  "job": "cicd-test",
+  "actor": "zowe-robot",
+  "runId": 3676941821,
+  "runNumber": 2007,
+  "link": "https://github.com/zowe/zowe-install-packaging/actions/runs/3676941821"
+}
