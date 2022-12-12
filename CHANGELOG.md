@@ -6,13 +6,25 @@ All notable changes to the Zowe Installer will be documented in this file.
 
 - Updated ZWEWRF03 workflow to be up to date with the installed software
 
+## `2.6.0`
+
+#### Minor enhancements/defect fixes
+- Tar archived components would not be installed when zowe.useConfigmgr=true was set.
+
 ## `2.5.0
 
 ### New features and enhancements
 
 - zwe now has a `zwe config get` and `zwe config validate` command. The get command can be used to get a part of the zowe yaml configuration without needing to read the yaml yourself. `zwe config get` only returns values upon proving the configuration is valid first. `zwe config validate` can be used to perform validation of the zowe configuration files without running any additional actions. This is useful for verifying that a change is valid before starting zowe, for example. 
 
+### New features and enhancements
+- A new component management command `zwe components upgrade` allows you to install an already-installed component.
+- A new component management command `zwe components uninstall` allows you to remove an installed extension.
+- A new component management command `zwe components search` allows you to query for extensions.
+- `zwe components` subcommands can now search for, install, and upgrade extensions retrieved via an on-prem or remote package registry. At this time, npm is supported as the registry and package manager technology that `zwe` can use to download content. This is an optional feature and is not enabled by default: it must be configured. View the schema for zowe.yaml to learn more about the "package registry" and "registry handler" technologies to configure for this feature. More information and a recorded demo is available at https://github.com/zowe/zowe-install-packaging/pull/2980
+
 #### Minor enhancements/defect fixes
+- Use of DVIPA may cause Zowe to believe a port is not free when it is. Starting in this release, Zowe can narrow its port validation to a specific IP via `zowe.network.vipaIp=some.ip` or bypass the verification via `zowe.network.validatePortFree=false`. Setting this to false will still cause the servers to be unable to connect if the port is not free, but this can be a more accurate and portable setting.
 - component configure stages will now have their STDOUT printed when running at the INFO level of zwe verbosity.
 - zwe was not guaranteeing that the workspace folder had 770 permission when zowe.useConfigmgr=true was set
 
