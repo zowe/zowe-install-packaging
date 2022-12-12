@@ -4,7 +4,7 @@ FILE_LOCAL=$1
 PATH_REMOTE=$2
 
 echo "SFTP $FILE_LOCAL ==> $PATH_REMOTE"
-sshpass -p "{{ hostvars[inventory_hostname].ansible_password }}" sftp -o BatchMode=no -o StrictHostKeyChecking=no -o PubkeyAuthentication=no -b - -P {{ hostvars[inventory_hostname].ansible_port | default('22') }} {{ hostvars[inventory_hostname].ansible_user }}@{{ hostvars[inventory_hostname].ansible_ssh_host }}:$PATH_REMOTE <<EOF
+sshpass -p "{{ hostvars[inventory_hostname].ansible_password }}" sftp -oHostKeyAlgorithms=+ssh-rsa -o BatchMode=no -o StrictHostKeyChecking=no -o PubkeyAuthentication=no -b - -P {{ hostvars[inventory_hostname].ansible_port | default('22') }} {{ hostvars[inventory_hostname].ansible_user }}@{{ hostvars[inventory_hostname].ansible_ssh_host }}:$PATH_REMOTE <<EOF
 put $FILE_LOCAL
 exit
 EOF
