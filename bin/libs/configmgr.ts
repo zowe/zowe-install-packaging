@@ -71,11 +71,12 @@ function guaranteePath() {
   }
 }
 
-function getTempMergedYamlDir(): string|undefined {
+function getTempMergedYamlDir(): string|number {
   let zwePrivateWorkspaceEnvDir: string;
   let tmpDir = std.getenv('ZWE_PRIVATE_TMP_MERGED_YAML_DIR');
   if (tmpDir && tmpDir != '1') {
     zwePrivateWorkspaceEnvDir = tmpDir;
+    return zwePrivateWorkspaceEnvDir;
   } else if (tmpDir == '1') {
     //If this var is not undefined,
     //A command is running that is likely to be an admin rather than STC user, so they wouldn't have .env folder permission
@@ -113,8 +114,9 @@ function getTempMergedYamlDir(): string|undefined {
     if (mkdirrc) { return mkdirrc; }
 
     console.log(`Temporary directory '${zwePrivateWorkspaceEnvDir}' created.\nZowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.`);
+    return zwePrivateWorkspaceEnvDir;
   } else {
-    return undefined;
+    return 0;
   }
 
 }
@@ -140,8 +142,11 @@ function writeZoweConfigUpdate(updateObj: any, arrayMergeStrategy: number): numb
       } else if (destination.startsWith('PARMLIB(')) {
         destination = destination.substring(8, destination.length-1);
 
-        let zwePrivateWorkspaceEnvDir: string = getTempMergedYamlDir();
-        if (zwePrivateWorkspaceEnvDir === undefined) {
+        let zwePrivateWorkspaceEnvDir: string;
+        let dirResult = getTempMergedYamlDir();
+        if (typeof dirResult == 'string') {
+          zwePrivateWorkspaceEnvDir = dirResult;
+        } else if (dirResult === 0) {
           const workspace = ZOWE_CONFIG.zowe.workspaceDirectory;
 
           //need a temp file to do the cp into parmlib
@@ -154,6 +159,8 @@ function writeZoweConfigUpdate(updateObj: any, arrayMergeStrategy: number): numb
           mkdirp(workspace, 0o770);
           rc = mkdirp(zwePrivateWorkspaceEnvDir, 0o700);
           if (rc) { return rc; }
+        } else {
+          return dirResult;
         }
 
         //make temp file
@@ -211,8 +218,11 @@ export function cleanupTempDir() {
 function writeMergedConfig(config: any): number {
   const workspace = config.zowe.workspaceDirectory;
 
-  let zwePrivateWorkspaceEnvDir: string = getTempMergedYamlDir();
-  if (zwePrivateWorkspaceEnvDir === undefined) {
+  let zwePrivateWorkspaceEnvDir: string;
+  let dirResult = getTempMergedYamlDir();
+  if (typeof dirResult == 'string') {
+    zwePrivateWorkspaceEnvDir = dirResult;
+  } else if (dirResult === 0) {
     zwePrivateWorkspaceEnvDir = std.getenv('ZWE_PRIVATE_WORKSPACE_ENV_DIR');
     if (!zwePrivateWorkspaceEnvDir) {
       zwePrivateWorkspaceEnvDir=`${workspace}/.env`;
@@ -221,6 +231,8 @@ function writeMergedConfig(config: any): number {
     mkdirp(workspace, 0o770);
     const mkdirrc = mkdirp(zwePrivateWorkspaceEnvDir, 0o700);
     if (mkdirrc) { return mkdirrc; }
+  } else {
+    return dirResult;
   }
   
   const destination = `${zwePrivateWorkspaceEnvDir}/.zowe-merged.yaml`;
