@@ -1,1 +1,15 @@
-""
+{
+  "lockAcquiredTime": "Mon Dec 19 2022 14:48:37 GMT+0000 (Coordinated Universal Time)",
+  "uid": "1671461317146717504",
+  "repository": {
+    "owner": "zowe",
+    "repo": "zowe-install-packaging"
+  },
+  "branch": "bugfix/v2/parmlib-support",
+  "workflow": "Zowe CICD Integration Tests",
+  "job": "cicd-test",
+  "actor": "zowe-robot",
+  "runId": 3732465118,
+  "runNumber": 2047,
+  "link": "https://github.com/zowe/zowe-install-packaging/actions/runs/3732465118"
+}
