@@ -11,6 +11,7 @@ All notable changes to the Zowe Installer will be documented in this file.
 #### Minor enhancements/defect fixes
 - When a component configure script failed during startup, no warning would be printed. Starting in 2.6, a warning will be printed and there's also an option to prevent Zowe from continuing startup when this failure is seen, by setting `zowe.launchScript.onComponentConfigureFail` to "exit"
 - Tar archived components would not be installed when zowe.useConfigmgr=true was set.
+- Various bugfixes made for the reading and writing of parmlib configuration files when using the PARMLIB() syntax with zwe commands or the ZWESLSTC job.
 
 ## `2.5.0`
 
