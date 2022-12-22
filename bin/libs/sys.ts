@@ -23,6 +23,7 @@ std.setenv('ZWE_PWD', pwd[0] ? pwd[0] : '/');
 // Return system name in lower case
 let sysname:string;
 export function getSysname(): string|undefined {
+  common.printTrace("enter libs:sys:getSysname");
   if (typeof sysname == 'string') {
     return sysname.toLowerCase();
   }

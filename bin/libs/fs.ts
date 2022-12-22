@@ -166,6 +166,7 @@ export function getFilesInDirectory(path: string): string[]|undefined {
 }
 
 export function getSubdirectories(path: string): string[]|undefined {
+  common.printTrace("enter libs:fs:getSubdirectories");
   let returnArray = os.readdir(path);
   let subdirs:string[] = [];
   if (!returnArray[1]) { //no error
@@ -182,6 +183,7 @@ export function getSubdirectories(path: string): string[]|undefined {
 }
 
 export function directoryExists(path: string, silenceNotFound?: boolean): boolean {
+  common.printTrace("enter libs:fs:directoryExists");
   let returnArray = os.stat(path);
   if (!returnArray[1]) { //no error
     return ((returnArray[0].mode & os.S_IFMT) == os.S_IFDIR)
@@ -194,6 +196,7 @@ export function directoryExists(path: string, silenceNotFound?: boolean): boolea
 }
 
 export function fileExists(path: string, silenceNotFound?: boolean): boolean {
+  common.printTrace("enter libs:fs:fileExists");
   let returnArray = os.stat(path);
   if (!returnArray[1]) { //no error
     return ((returnArray[0].mode & os.S_IFMT) == os.S_IFREG)

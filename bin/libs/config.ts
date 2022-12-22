@@ -41,6 +41,7 @@ const runtimeDirectory=configmgr.ZOWE_CONFIG.zowe.runtimeDirectory;
 const workspaceDirectory=configmgr.ZOWE_CONFIG.zowe.workspaceDirectory;
 
 export function getZoweConfig(): any {
+  common.printTrace("enter libs:config:getZoweConfig");
   return configmgr.ZOWE_CONFIG;
 }
 
@@ -212,6 +213,7 @@ export function generateInstanceEnvFromYamlConfig(haInstance: string) {
 
 // check and sanitize ZWE_CLI_PARAMETER_HA_INSTANCE
 export function sanitizeHaInstanceId(): string|undefined {
+  common.printTrace("enter libs:config:sanitizeHaInstaceId");
   // ignore default value passed from ZWESLSTC
   let zweCliParameterHaInstance = std.getenv('ZWE_CLI_PARAMETER_HA_INSTANCE');
   if (zweCliParameterHaInstance == "{{ha_instance_id}}" || zweCliParameterHaInstance == "__ha_instance_id__") {
@@ -244,7 +246,7 @@ export function applyEnviron(environ: any): void {
 //       "zwe internal start prepare" is the only special case where we may need to define some variables before calling
 //       this function. The reason is to properly prepare the directories, logging, etc.
 export function loadEnvironmentVariables(componentId?: string) {
-
+  common.printTrace("enter libs:config:loadEnvironmentVariables");
   // check and sanitize zweCliParameterHaInstance
   sanitizeHaInstanceId();
   std.setenv('ZWE_zowe_workspaceDirectory',workspaceDirectory);

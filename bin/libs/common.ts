@@ -53,6 +53,7 @@ function getLogLevel(name:string, defaultLevel:LOG_LEVEL):LOG_LEVEL {
 
 
 export function requireZoweYaml() {
+  printTrace("enter libs:common:requireZoweYaml");
   const configFiles = std.getenv('ZWE_CLI_PARAMETER_CONFIG');
   if (!configFiles) {
     printErrorAndExit(`Error ZWEL0108E: Zowe YAML config file is required.`);

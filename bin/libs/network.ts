@@ -21,6 +21,7 @@ import * as zosfs from './zos-fs';
 
 // get ping command, could be empty
 export function getPing(): string|undefined {
+  common.printTrace("enter libs:network:getPing");
   let ping = shell.which('ping');
 
   // z/OS
@@ -113,6 +114,7 @@ export function isPortAvailable(port: number): boolean {
 // get current IP address
 const ipv4Regexp = /[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+/;
 export function getIpAddress(hostname: string): string|undefined {
+  common.printTrace("enter libs:network:getIpAddress");
   let ip;
 
   // dig is preferred than ping

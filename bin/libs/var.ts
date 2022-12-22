@@ -241,6 +241,7 @@ export function getEnvironments(): string {
 //
 // All variables defined in env file will be exported.
 export function sourceEnv(envFile: string): boolean {
+  common.printTrace("enter libs:var:sourceEnv");
   //TODO i hope encoding is correct here
   
   let fileContents = xplatform.loadFileUTF8(envFile,xplatform.AUTO_DETECT);
@@ -248,6 +249,7 @@ export function sourceEnv(envFile: string): boolean {
 }
 
 export function setExports(envFileContents: string): boolean {
+  common.printTrace("enter libs:var:setExports");
   let fileLines = envFileContents.split('\n');
   fileLines.forEach((line: string)=> {
     setExport(line);

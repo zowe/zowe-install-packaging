@@ -28,6 +28,7 @@ std.setenv('ZWE_PRIVATE_CONTAINER_KEYSTORE_DIRECTORY', '/home/zowe/keystore');
 // prepare all environment variables used in containerization
 // these variables shouldn't be modified
 export function prepareContainerRuntimeEnvironments():void {
+  common.printTrace("enter libs:container:prepareContainerRuntimeEnvironments");
   // to fix issues:
   // - https://github.com/zowe/api-layer/issues/1768
   // - https://github.com/spring-cloud/spring-cloud-netflix/issues/3941

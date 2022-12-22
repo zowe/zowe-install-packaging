@@ -56,6 +56,7 @@ export function getEnabledComponents(): string[] {
 }
 
 export function getManifestPath(componentDir: string): string|undefined {
+  common.printTrace("enter libs:component:getManifestPath");
   if (fs.fileExists(`${componentDir}/manifest.yaml`)) {
     return `${componentDir}/manifest.yaml`;
   } else if (fs.fileExists(`${componentDir}/manifest.yml`)) {
@@ -301,6 +302,7 @@ export function detectIfComponentTagged(componentDir: string): boolean {
 }
 
 export function findAllInstalledComponents(): string {
+  common.printTrace("enter libs:component:findAllInstalledComponents");
   let components='';
   let subDirectories = fs.getSubdirectories(`${runtimeDirectory}/components`);
   if (subDirectories) {
@@ -325,6 +327,7 @@ export function findAllInstalledComponents(): string {
 }
 
 export function findAllInstalledComponents2(): string[] {
+  common.printTrace("enter libs:component:findAllInstalledComponents2");
   let components:string[] = [];
   let subDirectories = fs.getSubdirectories(`${runtimeDirectory}/components`);
   if (subDirectories) {
@@ -349,10 +352,12 @@ export function findAllInstalledComponents2(): string[] {
 }
 
 export function findAllEnabledComponents(): string {
+  common.printTrace("enter libs:component:findAllEnabledComponents");
   return findAllEnabledComponents2().join(',');
 }
 
 export function findAllEnabledComponents2(): string[] {
+  common.printTrace("enter libs:component:findAllEnabledComponents2");
   let installedComponentsEnv=std.getenv('ZWE_INSTALLED_COMPONENTS');
   let installedComponents = installedComponentsEnv ? installedComponentsEnv.split(',') : null;
   if (!installedComponents) {

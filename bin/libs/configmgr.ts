@@ -24,7 +24,13 @@ const ZOWE_CONFIG_NAME = 'zowe-server-base';
 const CONFIG_REVISIONS = {};
 
 export const CONFIG_MGR = new ConfigManager();
-CONFIG_MGR.setTraceLevel(0);
+if (std.getenv('ZWE_PRIVATE_LOG_LEVEL_ZWELS') == 'TRACE') {
+  CONFIG_MGR.setTraceLevel(2);
+} else if (std.getenv('ZWE_PRIVATE_LOG_LEVEL_ZWELS') == 'DEBUG') {
+  CONFIG_MGR.setTraceLevel(1);
+} else {
+  CONFIG_MGR.setTraceLevel(0);
+}
 
 //these show the list of files used for zowe config prior to merging into a unified one.
 // ZWE_CLI_PARAMETER_CONFIG gets updated to point to the unified one once written.

@@ -19,6 +19,7 @@ import * as shell from './shell';
 
 // Get file encoding from z/OS USS tagging
 export function getFileEncoding(filePath: string): number|undefined {
+  common.printTrace("enter libs:zosfs:getFileEncoding");
   //zos.changeTag(file, id)
   let returnArray = os.stat(filePath);
   if (!returnArray[1] && ((returnArray[0].mode & os.S_IFREG) == os.S_IFREG)) { //no error, and is file
@@ -48,6 +49,7 @@ export function getFileEncoding(filePath: string): number|undefined {
 // - detect manifest encoding by checking result "name"
 //   detectFileEncoding "/path/to/zowe/components/my-component/manifest.yaml" "name"
 export function detectFileEncoding(fileName: string, expectedSample: string, expectedEncoding?: number|string): number {
+  common.printTrace("enter libs:zosfs:detectFileEncoding");
   let autoEncoding = expectedEncoding == 'auto' || expectedEncoding == 'AUTO';
   let expectedEncodingNumber= typeof expectedEncoding == 'string' ? stringlib.ENCODING_NAME_TO_CCSID[expectedEncoding.toUpperCase()] : expectedEncoding;
 

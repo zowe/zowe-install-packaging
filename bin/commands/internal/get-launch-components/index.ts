@@ -14,6 +14,7 @@ import * as common from '../../../libs/common';
 import * as config from '../../../libs/config';
 
 export function execute(): string {
+  common.printTrace("enter internal:get-launch-components:execute");
   common.requireZoweYaml();
 
   //TODO dont really need to do this if i can just use component.findAllLaunchComponents()
