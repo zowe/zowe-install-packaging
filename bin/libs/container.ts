@@ -17,6 +17,7 @@ import * as sys from './sys';
 import * as component from './component';
 import * as config from './config';
 import * as network from './network';
+import * as common from './common';
 
 std.setenv('ZWE_PRIVATE_CONTAINER_HOME_DIRECTORY', '/home/zowe');
 std.setenv('ZWE_PRIVATE_CONTAINER_RUNTIME_DIRECTORY', '/home/zowe/runtime');
