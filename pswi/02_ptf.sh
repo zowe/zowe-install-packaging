@@ -37,7 +37,7 @@ ADD_WORKFLOW_JSON='{"workflowName":"'$PTF_WF_NAME'",
 
 cd workflows
 
-sshpass -p${ZOSMF_PASS} sftp -o BatchMode=no -o StrictHostKeyChecking=no -o PubkeyAuthentication=no -b - -P 22 ${ZOSMF_USER}@${HOST} << EOF
+sshpass -p${ZOSMF_PASS} sftp -o HostKeyAlgorithms=+ssh-rsa -o BatchMode=no -o StrictHostKeyChecking=no -o PubkeyAuthentication=no -b - -P 22 ${ZOSMF_USER}@${HOST} << EOF
 cd ${DIR}
 put WFPTF
 EOF

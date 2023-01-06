@@ -29,11 +29,12 @@ import { PathAPI as pathoid } from '../../../../libs/pathoid';
 
 
 //TODO does this handle componentFile relative paths correctly or not
-export function execute(componentFile: string, autoEncoding?: string): string {
+export function execute(componentFile: string, autoEncoding?: string, upgrade?: boolean): string {
   //////////////////////////////////////////////////////////////
   // Constants
   const pwd = std.getenv('ZWE_PWD');
-  const tmp_ext_dir='tmp_ext_dir';
+  const moduleFileShort=pathoid.basename(componentFile);
+  const tmp_ext_dir='tmp_'+moduleFileShort; //TODO this is a hack about getManifest() caching result per directory. The caching could be avoided by versioning, need to implement in component.ts later...
   const ZOWE_CONFIG=config.getZoweConfig();
   
   //////////////////////////////////////////////////////////////
@@ -51,7 +52,7 @@ export function execute(componentFile: string, autoEncoding?: string): string {
   // Variables
   const targetDir = pathoid.isAbsolute(extensionDir) ? stringlib.removeTrailingSlash(extensionDir) : stringlib.removeTrailingSlash(pathoid.resolve(pwd, extensionDir));
   const tmpDir = pathoid.resolve(targetDir, tmp_ext_dir);
-  const moduleFileShort=pathoid.basename(componentFile);
+
 
   //////////////////////////////////////////////////////////////
   // check existence of extension directory, create if it's not there
@@ -85,7 +86,7 @@ export function execute(componentFile: string, autoEncoding?: string): string {
     if (rc) {
       common.printErrorAndExit(`Error ZWEL0204E: Symlink creation failure, error=${rc}`, undefined, 204);
     }
-  } else {
+  } else if (fs.fileExists(componentFile)) {
     // create temporary directory to lay down extension files in
     fs.mkdirp(tmpDir);
     
@@ -97,7 +98,7 @@ export function execute(componentFile: string, autoEncoding?: string): string {
       java.requireJava();
       result = shell.execSync('sh', '-c', `cd ${tmpDir} && jar xf ${componentFile}`);
     } else if (componentFile.endsWith('.tar')) {
-      result = shell.execSync('sh', '-c', `_CEE_RUNOPTS="FILETAG() POSIX(ON)" pax -x tar -rf "${componentFile}"`);
+      result = shell.execSync('sh', '-c', `_CEE_RUNOPTS="FILETAG() POSIX(ON)" cd ${tmpDir} && pax -x tar -rf "${componentFile}"`);
     }
     if (result.rc) {
       common.printError(`Extract completed with rc=${result.rc}`);
@@ -105,6 +106,8 @@ export function execute(componentFile: string, autoEncoding?: string): string {
     common.printTrace("  * List extracted files:");
     result = shell.execOutSync('sh', '-c', `cd ${tmpDir} && ls -la 2>&1`);
     common.printTrace(stringlib.paddingLeft(result.out, "    "));
+  } else {
+    common.printErrorAndExit(`Error ZWEL0313E: Cannot file component file ${componentFile}.`, undefined, 313);
   }
 
   // automatically tag files
@@ -148,15 +151,34 @@ export function execute(componentFile: string, autoEncoding?: string): string {
     common.printErrorAndExit(`Error ZWEL0167E: Cannot find component name from ${componentFile} package manifest`, undefined, 167);
   }
   common.printDebug(`- Component name found as ${componentName}`);
-  // export for next step
-  std.setenv('ZWE_COMPONENTS_INSTALL_EXTRACT_COMPONENT_NAME', componentName);
+  
   const destinationDir = pathoid.resolve(targetDir, componentName);
+  const bkpDir = pathoid.resolve(targetDir, `${componentName}_zwebkp`);
   if (fs.pathExists(destinationDir)) {
-    fs.rmrf(tmpDir);
-    common.printErrorAndExit(`Error ZWEL0155E: Component ${componentName} already exists in ${targetDir}.`, undefined, 155);
+    if (!upgrade) {
+      fs.rmrf(tmpDir);
+      common.printErrorAndExit(`Error ZWEL0155E: Component ${componentName} already exists in ${targetDir}.`, undefined, 155);
+    } else {
+      if (fs.pathExists(bkpDir)) {
+        fs.rmrf(bkpDir);
+      }
+      os.rename(destinationDir, bkpDir);
+    }
   }
 
   common.printDebug(`- Rename temporary directory to ${componentName}.`);
-  os.rename(tmpDir, destinationDir);
+  const renameResult = os.rename(tmpDir, destinationDir);
+  if (renameResult < 0) {
+    common.printError(`- Could not complete folder rename for ${componentName}, install failed. rc=${renameResult}`);
+    if (upgrade) {
+      common.printError(`- A backup of the previous ${componentName} is at ${bkpDir}`); 
+    }
+    return '';
+  } else {
+    fs.rmrf(bkpDir);
+  }
+
+  // export for next step
+  std.setenv('ZWE_COMPONENTS_INSTALL_EXTRACT_COMPONENT_NAME', componentName);
   return componentName;
 }

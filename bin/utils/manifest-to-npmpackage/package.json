@@ -1,0 +1,15 @@
+{
+  "name": "@zowe/manifest-to-npmpackage",
+  "version": "1.0.0",
+  "description": "",
+  "main": "manifest-to-npmpackage.mjs",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 0"
+  },
+  "keywords": [],
+  "author": "Zowe",
+  "license": "EPL-2.0",
+  "dependencies": {
+    "js-yaml": "4.1.0"
+  }
+}
