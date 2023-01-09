@@ -112,7 +112,7 @@
       "exclusions": ["*PR*.zip"]
     },
     "org.zowe.configmgr": {
-      "version": "~0.4.2-v2.x_staging",
+      "version": "~0.4.99-TEST-CONFIGMGR-TRACING-FOR-29E",
       "artifact": "*.pax"
     },
     "org.zowe.configmgr-rexx": {
