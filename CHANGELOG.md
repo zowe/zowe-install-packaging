@@ -8,13 +8,16 @@ All notable changes to the Zowe Installer will be documented in this file.
 
 ## `2.6.0`
 
-### Minor enhancements/defect fixes
+#### Minor enhancements/defect fixes
 - Tracing and writing to log files would not work for component scripts when zowe.useConfigmgr=true
+- When a component configure script failed during startup, no warning would be printed. Starting in 2.6, a warning will be printed and there's also an option to prevent Zowe from continuing startup when this failure is seen, by setting `zowe.launchScript.onComponentConfigureFail` to "exit"
+- Tar archived components would not be installed when zowe.useConfigmgr=true was set.
+- Various bugfixes made for reading and writing of parmlib configuration files when using the PARMLIB() syntax with zwe commands or the ZWESLSTC job.
+- Revised help documentation syntax for substitution values to fix auto-documentation, by changing angle brackets to square brackets.
 
-## `2.5.0
+## `2.5.0`
 
 ### New features and enhancements
-
 - zwe now has a `zwe config get` and `zwe config validate` command. The get command can be used to get a part of the zowe yaml configuration without needing to read the yaml yourself. `zwe config get` only returns values upon proving the configuration is valid first. `zwe config validate` can be used to perform validation of the zowe configuration files without running any additional actions. This is useful for verifying that a change is valid before starting zowe, for example. 
 
 ### New features and enhancements
