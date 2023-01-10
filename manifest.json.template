@@ -49,7 +49,7 @@
     "org.zowe.zss": {
       "version": "2.6.0-RC",
       "repository": "libs-snapshot-local",
-      "artifact": "zss-2.6.0-rc-431-20230110172845.pax"
+      "artifact": "zss-2.6.0-rc-435-20230110194959.pax"
     },
     "org.zowe.explorer.jobs.jobs-api-package": {
       "version": "2.0.11",
@@ -111,12 +111,12 @@
     "org.zowe.configmgr-rexx": {
       "version": "0.4.2-V2.X-RC",
       "repository": "libs-snapshot-local",
-      "configmgr-rexx-0.4.2-2023011008.pax"
+      "artifact": "configmgr-rexx-0.4.2-2023011008.pax"
     },
     "org.zowe.configmgr": {
       "version": "0.4.2-V2.X-RC",
       "repository": "libs-snapshot-local",
-      "configmgr-0.4.2-2023011056.pax"
+      "artifact": "configmgr-0.4.2-2023011056.pax"
     },
     "org.zowe.launcher": {
       "version": "2.0.8"
