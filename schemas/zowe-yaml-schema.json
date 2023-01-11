@@ -512,6 +512,12 @@
               "type": "string",
               "description": "Log level for Zowe launch scripts.",
               "enum": ["", "info", "debug", "trace"]
+            },
+            "onComponentConfigureFail": {
+              "type": "string",
+              "description": "Chooses how 'zwe start' behaves if a component configure script fails",
+              "enum": ["warn", "exit"],
+              "default": "warn"
             }
           }
         },
