@@ -131,7 +131,7 @@
       "version": "2.0.2"
     },
     "org.zowe.licenses": {
-      "version": "2.5.0",
+      "version": "2.6.0",
       "artifact": "zowe_licenses_full.zip"
     }
   },
@@ -381,7 +381,7 @@
       "componentGroup": "Zowe Visual Studio Code Extension",
       "entries": [{
         "repository": "vscode-extension-for-zowe",
-        "tag": "v2.4.1",
+        "tag": "main",
         "destinations": ["Visual Studio Code Marketplace"]
       }]
     },
