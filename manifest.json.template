@@ -254,7 +254,7 @@
       "componentGroup": "z/OS&reg FTP Plug-in for Zowe CLI",
       "entries": [{
         "repository": "zowe-cli-ftp-plugin",
-        "tag": "v2.1.1",
+        "tag": "v2.1.2",
         "destinations": ["Zowe CLI Package"]
       }]
     }, {
