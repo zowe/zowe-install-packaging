@@ -354,6 +354,8 @@ zowe:
   launchScript:
     # set to "debug" or "trace" to display extra debug information
     logLevel: "info"
+    # set to "exit" if you'd like startup to exit if any component has an error in the configure stage, otherwise zwe will warn but continue.
+    onComponentConfigureFail: "warn"
 
   # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   # Default Zowe certificate
