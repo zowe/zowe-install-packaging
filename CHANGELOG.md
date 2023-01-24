@@ -6,6 +6,11 @@ All notable changes to the Zowe Installer will be documented in this file.
 
 - Updated ZWEWRF03 workflow to be up to date with the installed software
 
+## `2.7.0`
+
+#### Minor enhancements/defect fixes
+- When zwe components install detects that the given component is already installed, it will suggest you to run zwe components upgrade instead.
+
 ## `2.6.0`
 
 #### Minor enhancements/defect fixes
