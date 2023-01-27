@@ -98,7 +98,7 @@ export function execute(componentFile: string, autoEncoding?: string, upgrade?: 
       java.requireJava();
       result = shell.execSync('sh', '-c', `cd ${tmpDir} && jar xf ${componentFile}`);
     } else if (componentFile.endsWith('.tar')) {
-      result = shell.execSync('sh', '-c', `_CEE_RUNOPTS="FILETAG() POSIX(ON)" pax -x tar -rf "${componentFile}"`);
+      result = shell.execSync('sh', '-c', `_CEE_RUNOPTS="FILETAG() POSIX(ON)" cd ${tmpDir} && pax -x tar -rf "${componentFile}"`);
     }
     if (result.rc) {
       common.printError(`Extract completed with rc=${result.rc}`);
