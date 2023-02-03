@@ -99,6 +99,7 @@ zowe:
     certificate:
       # Type of certificate storage. Valid values are: PKCS12 or JCERACFKS
       type: PKCS12
+      createZosmfTrust: true
       pkcs12:
         # **COMMONLY_CUSTOMIZED**
         # Keystore directory
@@ -144,6 +145,7 @@ zowe:
     # certificate:
     #   # Type of certificate storage. Valid values are: PKCS12 or JCERACFKS
     #   type: PKCS12
+    #   createZosmfTrust: true
     #   pkcs12:
     #     # **COMMONLY_CUSTOMIZED**
     #     # Keystore directory
@@ -177,6 +179,7 @@ zowe:
     # certificate:
     #   # Type of certificate storage. Valid values are: PKCS12 or JCERACFKS
     #   type: JCERACFKS
+    #   createZosmfTrust: true
     #   keyring:
     #     # **COMMONLY_CUSTOMIZED**
     #     # keyring name
@@ -212,6 +215,7 @@ zowe:
     # certificate:
     #   # Type of certificate storage. Valid values are: PKCS12 or JCERACFKS
     #   type: JCERACFKS
+    #   createZosmfTrust: true
     #   keyring:
     #     # **COMMONLY_CUSTOMIZED**
     #     # keyring name
@@ -236,6 +240,7 @@ zowe:
     # certificate:
     #   # Type of certificate storage. Valid values are: PKCS12 or JCERACFKS
     #   type: JCERACFKS
+    #   createZosmfTrust: true
     #   keyring:
     #     # **COMMONLY_CUSTOMIZED**
     #     # keyring name

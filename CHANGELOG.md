@@ -12,6 +12,7 @@ All notable changes to the Zowe Installer will be documented in this file.
 - When zwe components install detects that the given component is already installed, it will suggest you to run zwe components upgrade instead.
 - Launcher parameters such as "shareAs" could not be customized globally due to zowe.launcher schema being wrong with some parameters nested inside another.
 - Launcher parameters within an individual component were not documented to exist despite the launcher allowing per-component customization.
+- zwe init certificate would try to establish trust with zosmf even when zosmf was not being used, resulting in error ZWEL0137E. This has been fixed by making the configuration more explicit. Now, zowe.setup.certificate.createZosmfTrust can be used to specify whether or not the process should be attempted.
 
 ## `2.6.0`
 
