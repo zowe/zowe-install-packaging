@@ -60,13 +60,13 @@
       "artifact": "files-api-package-*.zip"
     },
     "org.zowe.explorer-jes": {
-      "version": "2.0.4"
+      "version": "2.0.5"
     },
     "org.zowe.explorer-mvs": {
-      "version": "2.0.4"
+      "version": "2.0.5"
     },
     "org.zowe.explorer-uss": {
-      "version": "2.0.4"
+      "version": "2.0.5"
     },
     "org.zowe.explorer-ip": {
       "version": "2.0.0",
@@ -275,21 +275,21 @@
       "componentGroup": "Zowe Desktop Data Sets UI Plugin",
       "entries": [{
         "repository": "explorer-mvs",
-        "tag": "v2.0.4",
+        "tag": "v2.0.5",
         "destinations": ["Zowe PAX"]
       }]
     }, {
       "componentGroup": "Zowe Desktop JES UI Plugin",
       "entries": [{
         "repository": "explorer-jes",
-        "tag": "v2.0.4",
+        "tag": "v2.0.5",
         "destinations": ["Zowe PAX"]
       }]
     }, {
       "componentGroup": "Zowe Desktop z/OS Unix Files UI Plugin",
       "entries": [{
         "repository": "explorer-uss",
-        "tag": "v2.0.4",
+        "tag": "v2.0.5",
         "destinations": ["Zowe PAX"]
       }]
     }, {
@@ -444,19 +444,19 @@
       "kind": "job",
       "registry": "zowe-docker-release.jfrog.io",
       "name": "ompzowe/explorer-jes",
-      "tag" : "2.0.4-ubuntu"
+      "tag" : "2.0.5-ubuntu"
     },
     "explorer-mvs": {
       "kind": "job",
       "registry": "zowe-docker-release.jfrog.io",
       "name": "ompzowe/explorer-mvs",
-      "tag" : "2.0.4-ubuntu"
+      "tag" : "2.0.5-ubuntu"
     },
     "explorer-uss": {
       "kind": "job",
       "registry": "zowe-docker-release.jfrog.io",
       "name": "ompzowe/explorer-uss",
-      "tag" : "2.0.4-ubuntu"
+      "tag" : "2.0.5-ubuntu"
     },
     "files-api": {
       "registry": "zowe-docker-release.jfrog.io",
