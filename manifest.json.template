@@ -444,19 +444,19 @@
       "kind": "job",
       "registry": "zowe-docker-release.jfrog.io",
       "name": "ompzowe/explorer-jes",
-      "tag" : "2.0.4-ubuntu"
+      "tag" : "2.0.5-ubuntu"
     },
     "explorer-mvs": {
       "kind": "job",
       "registry": "zowe-docker-release.jfrog.io",
       "name": "ompzowe/explorer-mvs",
-      "tag" : "2.0.4-ubuntu"
+      "tag" : "2.0.5-ubuntu"
     },
     "explorer-uss": {
       "kind": "job",
       "registry": "zowe-docker-release.jfrog.io",
       "name": "ompzowe/explorer-uss",
-      "tag" : "2.0.4-ubuntu"
+      "tag" : "2.0.5-ubuntu"
     },
     "files-api": {
       "registry": "zowe-docker-release.jfrog.io",
