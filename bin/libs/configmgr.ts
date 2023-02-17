@@ -13,6 +13,7 @@ import * as std from 'std';
 import * as os from 'os';
 import * as xplatform from 'xplatform';
 import { ConfigManager } from 'Configuration';
+import * as fs from './fs';
 
 import * as objUtils from '../utils/ObjUtils';
 
@@ -52,19 +53,6 @@ export function getZoweBaseSchemas(): string {
   return ZOWE_SCHEMA_SET;
 }
 
-function mkdirp(path:string, mode?: number): number {
-  const parts = path.split('/');
-  let dir = '/';
-  for (let i = 0; i < parts.length; i++) {
-    dir+=parts[i]+'/';
-    let rc = os.mkdir(dir, mode ? mode : 0o777);
-    if (rc && (rc!=(0-std.Error.EEXIST))) {
-      return rc;
-    }
-  }
-  return 0;
-}
-
 function guaranteePath() {
   if (!std.getenv('PATH')) {
     std.setenv('PATH','/bin:.:/usr/bin');
@@ -100,8 +88,8 @@ function writeZoweConfigUpdate(updateObj: any, arrayMergeStrategy: number): numb
           zwePrivateWorkspaceEnvDir=`${workspace}/.env`;
           std.setenv('ZWE_PRIVATE_WORKSPACE_ENV_DIR', zwePrivateWorkspaceEnvDir);
         }
-        mkdirp(workspace, 0o770);
-        rc = mkdirp(zwePrivateWorkspaceEnvDir, 0o700);
+        fs.mkdirp(workspace, 0o770);
+        rc = fs.mkdirp(zwePrivateWorkspaceEnvDir, 0o700);
         if (rc) { return rc; }
 
         //make temp file
@@ -196,7 +184,7 @@ function writeMergedConfig(config: any): number {
     
     zwePrivateWorkspaceEnvDir=`${tmp}/.zweenv-${Math.floor(Math.random()*10000)}`;
     std.setenv('ZWE_PRIVATE_TMP_MERGED_YAML_DIR', zwePrivateWorkspaceEnvDir);
-    const mkdirrc = mkdirp(zwePrivateWorkspaceEnvDir, 0o700);
+    const mkdirrc = fs.mkdirp(zwePrivateWorkspaceEnvDir, 0o700);
     if (mkdirrc) { return mkdirrc; }
 
     console.log(`Temporary directory '${zwePrivateWorkspaceEnvDir}' created.\nZowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.`); 
@@ -206,8 +194,8 @@ function writeMergedConfig(config: any): number {
       zwePrivateWorkspaceEnvDir=`${workspace}/.env`;
       std.setenv('ZWE_PRIVATE_WORKSPACE_ENV_DIR', zwePrivateWorkspaceEnvDir);
     }
-    mkdirp(workspace, 0o770);
-    const mkdirrc = mkdirp(zwePrivateWorkspaceEnvDir, 0o700);
+    fs.mkdirp(workspace, 0o770);
+    const mkdirrc = fs.mkdirp(zwePrivateWorkspaceEnvDir, 0o700);
     if (mkdirrc) { return mkdirrc; }
   }
   
