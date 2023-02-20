@@ -46,6 +46,7 @@ const ZOWE_CONFIG=config.getZoweConfig();
 // - link component runtime under zowe <runtime>/components
 // - `commands.configureInstance` is deprecated in v2
 function prepareRunningInContainer() {
+  common.printTrace("enter internal:start:prepare:prepareRunningInContainer");
   // gracefully shutdown all processes
   common.printFormattedDebug("ZWELS", "zwe-internal-start-prepare,prepare_running_in_container", "Register SIGTERM handler for graceful shutdown.");
   os.signal(os.SIGTERM, sys.gracefullyShutdown);
@@ -71,6 +72,7 @@ function prepareRunningInContainer() {
 
 // Prepare log directory
 function prepareLogDirectory() {
+  common.printTrace("enter internal:start:prepare:prepareLogDirectory");
   const logDir = std.getenv('ZWE_zowe_logDirectory');
   if (logDir) {
     os.mkdir(logDir, 0o750);
@@ -83,6 +85,7 @@ function prepareLogDirectory() {
 
 // Prepare workspace directory
 function prepareWorkspaceDirectory() {
+  common.printTrace("enter internal:start:prepare:prepareWorkspaceDirectory");
   const zwePrivateWorkspaceEnvDir=`${workspaceDirectory}/.env`;
   std.setenv('ZWE_PRIVATE_WORKSPACE_ENV_DIR', zwePrivateWorkspaceEnvDir);
   const zweStaticDefinitionsDir=`${workspaceDirectory}/api-mediation/api-defs`;
@@ -117,6 +120,7 @@ function prepareWorkspaceDirectory() {
 
 // Global validations
 function globalValidate(enabledComponents:string[]): void {
+  common.printTrace("enter internal:start:prepare:globalValidate");
   common.printFormattedInfo("ZWELS", "zwe-internal-start-prepare,global_validate", "process global validations ...");
 
   // validate_runtime_user
@@ -191,6 +195,7 @@ function globalValidate(enabledComponents:string[]): void {
 
 // Validate component properties if script exists
 function validateComponents(enabledComponents:string[]): any {
+  common.printTrace("enter internal:start:prepare:validateComponents");
   common.printFormattedInfo("ZWELS", "zwe-internal-start-prepare,validate_components", "process component validations ...");
 
   const componentEnvironments = {};
@@ -254,6 +259,7 @@ function validateComponents(enabledComponents:string[]): any {
 
 // Run setup/configure on components if script exists
 function configureComponents(componentEnvironments?: any, enabledComponents?:string[]) {
+  common.printTrace("enter internal:start:prepare:configureComponents");
   common.printFormattedInfo("ZWELS", "zwe-internal-start-prepare,configure_components", "process component configurations ...");
 
   const zwePrivateWorkspaceEnvDir = std.getenv('ZWE_PRIVATE_WORKSPACE_ENV_DIR');
@@ -420,6 +426,7 @@ if (zoweVersion) {
 }
 
 export function execute() {
+  common.printTrace("enter internal:start:prepare:execute");
   common.printFormattedInfo("ZWELS", "zwe-internal-start-prepare", `Zowe version: v${zoweVersion}`);
   common.printFormattedInfo("ZWELS", "zwe-internal-start-prepare", `build and hash: ${runtimeManifest.build.branch}#${runtimeManifest.build.number} (${runtimeManifest.build.commitHash})`);
 

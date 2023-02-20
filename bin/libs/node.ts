@@ -62,6 +62,7 @@ export function detectNodeHome(): string|undefined {
 
 let _checkComplete = false;
 export function requireNode() {
+  common.printTrace("enter libs:node:requireNode");
   if ((_checkComplete === true) && std.getenv('NODE_HOME')) {
     return;
   }
@@ -86,6 +87,7 @@ export function requireNode() {
 }
 
 export function validateNodeHome(nodeHome:string|undefined=std.getenv("NODE_HOME")): boolean {
+  common.printTrace("enter libs:node:validateNodeHome");
   if (!nodeHome) {
     common.printError("Cannot find node. Please define NODE_HOME environment variable.");
     return false;

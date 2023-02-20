@@ -17,6 +17,7 @@ import * as common from './common';
 import * as shell from './shell';
 
 export function validateZosmfHostAndPort(zosmfHost: string, zosmfPort: number): boolean {
+  common.printTrace("enter libs:zosmf:validateZosmfHostANdPort");
   if (!zosmfHost) {
     common.printError('z/OSMF host is not set.');
     return false;
@@ -50,6 +51,7 @@ export function validateZosmfHostAndPort(zosmfHost: string, zosmfPort: number): 
 
 //TODO isnt this completely backwards?
 export function validateZosmfAsAuthProvider(zosmfHost: string, zosmfPort: number, authProvider: string): boolean {
+  common.printTrace("enter libs:zosmf:validateZosmfAsAuthProvider");
   if (zosmfHost && zosmfPort) {
     if (authProvider == 'zosmf') {
       common.printError("z/OSMF is not configured. Using z/OSMF as authentication provider is not supported.");

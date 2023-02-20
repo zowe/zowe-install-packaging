@@ -89,6 +89,7 @@ export function zosConvertEnvDirFileEncoding(file: string) {
 // compatible instance.env files from zowe.yaml.
 //
 export function generateInstanceEnvFromYamlConfig(haInstance: string) {
+  common.printTrace("enter libs:config:generateInstanceEnvFromYamlConfig");
   let zwePrivateWorkspaceEnvDir = std.getenv('ZWE_PRIVATE_WORKSPACE_ENV_DIR');
   if (!zwePrivateWorkspaceEnvDir) {
     zwePrivateWorkspaceEnvDir=`${workspaceDirectory}/.env`
@@ -232,6 +233,7 @@ export function sanitizeHaInstanceId(): string|undefined {
 }
 
 export function applyEnviron(environ: any): void {
+  common.printTrace("enter libs:config:applyEnviron");
   let keys = Object.keys(environ);
   keys.forEach(function(key:string) {
     common.printMessage(`applyEnviron setting ${key}=${environ[key]}`);

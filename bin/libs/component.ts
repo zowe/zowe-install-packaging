@@ -45,6 +45,7 @@ const PLUGIN_DEF_SCHEMAS = `${runtimeDirectory}/components/app-server/schemas/pl
 
 
 export function getEnabledComponents(): string[] {
+  common.printTrace("enter libs:component:getEnabledComponents");
   let components = Object.keys(ZOWE_CONFIG.components);
   let enabled:string[] = [];
   components.forEach((key:string) => {
@@ -68,6 +69,7 @@ export function getManifestPath(componentDir: string): string|undefined {
 }
 
 export function findComponentDirectory(componentId: string): string|undefined {
+  common.printTrace("enter libs:component:findComponentDirectory");
   if (fs.directoryExists(`${runtimeDirectory}/components/${componentId}`)) {
     return `${runtimeDirectory}/components/${componentId}`;
   } else if (extensionDirectory && fs.directoryExists(`${extensionDirectory}/${componentId}`)) {
@@ -159,6 +161,7 @@ export function getPluginDefinition(pluginRootPath:string) {
 
 
 export function getManifest(componentDirectory: string): any {
+  common.printTrace("enter libs:component:getManifest");
   let manifestPath = getManifestPath(componentDirectory);
 
   if (manifestPath) {
@@ -223,6 +226,7 @@ export function getSchemasForComponentConfig(manifest: any, componentDir: string
 }
 
 export function validateConfigForComponent(componentId: string, manifest: any, componentDir: string, configPath: string): boolean {
+  common.printTrace("enter libs:component:validateConfigForComponent");
   if (configPath.startsWith('/')) { //likely input is merged yaml
     configPath=`FILE(${configPath})`; 
   }
@@ -393,6 +397,7 @@ export function findAllLaunchComponents2(): string[] {
 }
 
 export function processComponentApimlStaticDefinitions(componentDir: string): boolean {
+  common.printTrace("enter libs:component:processComponentApimlStaticDefinitions");
   const STATIC_DEF_DIR=std.getenv('ZWE_STATIC_DEFINITIONS_DIR');
   if (!STATIC_DEF_DIR) {
     common.printError("Error: ZWE_STATIC_DEFINITIONS_DIR is required to process component definitions for API Mediation Layer.");
@@ -778,6 +783,7 @@ function resolveEnvParameter(input: string): string {
 
 
 export function processComponentAppfwPlugin(componentDir: string): boolean {
+  common.printTrace("enter libs:component:processComponentAppfwPlugin");
   const manifest = getManifest(componentDir);
   if (manifest && manifest.appfwPlugins) {
     for (let i = 0; i < manifest.appfwPlugins.length; i++) {
@@ -816,6 +822,7 @@ export function processComponentAppfwPlugin(componentDir: string): boolean {
  defined will be passed to install-app.sh for proper installation.
 */
 export function processComponentGatewaySharedLibs(componentDir: string): boolean {
+  common.printTrace("enter libs:component:processComponentGatewaySharedLibs");
   const gatewaySharedLibs = std.getenv('ZWE_GATEWAY_SHARED_LIBS');
   fs.mkdirp(gatewaySharedLibs, 0o770);
 
@@ -868,6 +875,7 @@ export function processComponentGatewaySharedLibs(componentDir: string): boolean
  defined will be passed to install-app.sh for proper installation.
 */
 export function processComponentDiscoverySharedLibs(componentDir: string): boolean {
+  common.printTrace("enter libs:component:processComponentDiscoverySharedLibs");
   const discoverySharedLibs = std.getenv('ZWE_DISCOVERY_SHARED_LIBS');
   fs.mkdirp(discoverySharedLibs, 0o770);
 

@@ -56,6 +56,7 @@ export function detectJavaHome(): string|undefined {
 
 let _javaCheckComplete = false;
 export function requireJava() {
+  common.printTrace("enter libs:java:requireJava");
   if ((_javaCheckComplete === true) && std.getenv('JAVA_HOME')) {
     return;
   }
@@ -80,6 +81,7 @@ export function requireJava() {
 }
 
 export function validateJavaHome(javaHome:string|undefined=std.getenv("JAVA_HOME")): boolean {
+  common.printTrace("enter libs:java:validateJavaHome");
   if (!javaHome) {
     common.printError("Cannot find java. Please define JAVA_HOME environment variable.");
     return false;

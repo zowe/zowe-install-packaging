@@ -201,6 +201,7 @@ const declareFilter=/^declare -x (run_zowe_start_component_id=|ZWELS_START_COMPO
 const keyFilter=/^(run_zowe_start_component_id|ZWELS_START_COMPONENT_ID|ZWE_LAUNCH_COMPONENTS|env_file|key|line|service|logger|level|expected_log_level_val|expected_log_level_var|display_log|message|utils_dir|print_formatted_function_available|LINENO|ENV|opt|OPTARG|OPTIND|LOGNAME|USER|SSH_|SHELL|PWD|OLDPWD|PS1|ENV|LS_COLORS|_)$/
 
 export function getEnvironmentExports(input?:string, doExport?: boolean): string {
+  common.printTrace("enter libs:var:getEnvironmentExports");
   let exports:string[]=[];
   if (!input) {
     let envvars = std.getenviron();
@@ -288,6 +289,7 @@ export function setExport(envFileLine: string): boolean {
 
 // Takes in a single parameter - the name of the variable
 export function isVariableSet(variableName: string, message?: string): boolean {
+  common.printTrace("enter libs:var:isVariableSet");
   if (!message) {
     message=`${variableName} is not defined or empty.`
   }
@@ -338,6 +340,7 @@ export function validateThis(cmd: string, origin: string): number {
 }
 
 export function checkRuntimeValidationResult(origin: string) {
+  common.printTrace("enter libs:var:checkRuntimeValidationResult");
   // Summary errors check, exit if errors found
   let prevErr = std.getenv("ZWE_PRIVATE_ERRORS_FOUND");
   let prevErrCount = !prevErr ? 0 : Number(prevErr);

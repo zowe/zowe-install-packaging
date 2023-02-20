@@ -66,6 +66,7 @@ export function resolvePath(...parts:string[]): string {
 }
 
 export function mkdirp(path:string, mode?: number): number {
+  common.printTrace("enter libs:fs:mkdirp");
   const parts = path.split('/');
   let dir = '/';
   for (let i = 0; i < parts.length; i++) {
@@ -150,6 +151,7 @@ export function createFileFromBuffer(path: string, mode: number, buff?: Uint8Arr
 }
 
 export function getFilesInDirectory(path: string): string[]|undefined {
+  common.printTrace("enter libs:fs:getFilesInDirectory");
   let returnArray = os.readdir(path);
   let files:string[] = [];
   if (!returnArray[1]) { //no error
@@ -219,6 +221,7 @@ export function pathExists(path: string): boolean {
 }
 
 export function pathHasPermissions(path: string, mode: number): boolean {
+  common.printTrace("enter libs:fs:pathHasPermissions");
   let returnArray = os.stat(path);
   if (!returnArray[1]) { //no error
     return (returnArray[0].mode & mode) === mode;
@@ -297,6 +300,7 @@ export function areDirectoriesAccessible(directories: string): number {
 }
 
 export function isDirectoryWritable(directory: string): boolean {
+  common.printTrace("enter libs:fs:isDirectoryWritable");
   return pathHasPermissions(directory, os.S_IFDIR | S_IWUSR);
 }
 
