@@ -14,6 +14,10 @@ import * as config from '../../../../libs/config';
 import * as fakejq from '../../../../libs/fakejq';
 
 export function execute(configPath:string, haInstance?: string) {
+  if ((configPath.endsWith('.') && configPath.length != 1)
+      || (configPath.indexOf('..') != -1)) {
+    common.printErrorAndExit(`Error ZWEL0303E: Invalid config path syntax for ${configPath}. Get only supports single period delimiters between values.`, undefined, 303);
+  }
   common.requireZoweYaml();
   const ZOWE_CONFIG=config.getZoweConfig();
   let output;

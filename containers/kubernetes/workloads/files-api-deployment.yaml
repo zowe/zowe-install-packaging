@@ -50,7 +50,7 @@ spec:
             claimName: zowe-workspace-pvc
       containers:
         - name: files-api
-          image: zowe-docker-release.jfrog.io/ompzowe/files-api:2-ubuntu
+          image: zowe-docker-release.jfrog.io/ompzowe/files-api:2.0.10-ubuntu
           imagePullPolicy: Always
           resources:
             requests:
@@ -113,7 +113,7 @@ spec:
               mountPath: "/home/zowe/instance/workspace"
       initContainers:
         - name: init-zowe
-          image: zowe-docker-snapshot.jfrog.io/ompzowe/zowe-launch-scripts:2.1.0-ubuntu.v2-x-staging
+          image: zowe-docker-snapshot.jfrog.io/ompzowe/zowe-launch-scripts:2.5.0-ubuntu.v2-x-staging
           imagePullPolicy: Always
           resources:
             requests:

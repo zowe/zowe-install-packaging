@@ -418,6 +418,41 @@
             }
           }
         },
+        "network": {
+          "type": "object",
+          "additionalProperties": false,
+          "description": "Optional, advanced network configuration parameters",
+          "properties": {
+            "vipaIp": {
+              "type": "string",
+              "description": "The IP address which all of the Zowe servers will be binding to. If you are using multiple DIPVA addresses, do not use this option."
+            },
+            "validatePortFree": {
+              "type": "boolean",
+              "default": true,
+              "description": "Whether or not to ensure that the port a server is about to use is available. Usually, servers will know this when they attempt to bind to a port, so this option allows you to disable the additional verification step."
+            }
+          }
+        },
+        "extensionRegistry": {
+          "type": "object",
+          "description": "Defines optional configuration for downloading extensions from an online or offline registry",
+          "required": ["defaultHandler", "handlers"],
+          "properties": {
+            "defaultHandler": {
+              "type": "string",
+              "description": "The name of a handler specified in the handlers section. Will be used as the default for 'zwe components' commands"
+            },
+            "handlers": {
+              "type": "object",
+              "patternProperties": {
+                "^.*$": {
+                  "$ref": "#/$defs/registryHandler"
+                }
+              }
+            }
+          }
+        },
         "launcher": {
           "type": "object",
           "description": "Set default behaviors of how the Zowe launcher will handle components",
@@ -428,18 +463,18 @@
               "description": "Intervals of seconds to wait before restarting a component if it fails before the minUptime value.",
               "items": {
                 "type": "integer"  
-              },
-              "minUptime": {
-                "type": "integer",
-                "default": 90,
-                "description": "The minimum amount of seconds before a component is considered running and the restart counter is reset."
-              },
-              "shareAs": {
-                "type": "string",
-                "description": "Determines which SHAREAS mode should be used when starting a component",
-                "enum": ["no", "yes", "must", ""],
-                "default": "yes"
               }
+            },
+            "minUptime": {
+              "type": "integer",
+              "default": 90,
+              "description": "The minimum amount of seconds before a component is considered running and the restart counter is reset."
+            },
+            "shareAs": {
+              "type": "string",
+              "description": "Determines which SHAREAS mode should be used when starting a component",
+              "enum": ["no", "yes", "must", ""],
+              "default": "yes"
             }
           }
         },
@@ -476,6 +511,12 @@
               "type": "string",
               "description": "Log level for Zowe launch scripts.",
               "enum": ["", "info", "debug", "trace"]
+            },
+            "onComponentConfigureFail": {
+              "type": "string",
+              "description": "Chooses how 'zwe start' behaves if a component configure script fails",
+              "enum": ["warn", "exit"],
+              "default": "warn"
             }
           }
         },
@@ -681,6 +722,46 @@
         "certificate": {
           "$ref": "#/$defs/certificate",
           "description": "Certificate for current component."
+        },
+        "launcher": {
+          "type": "object",
+          "description": "Set behavior of how the Zowe launcher will handle this particular component",
+          "additionalProperties": true,
+          "properties": {
+            "restartIntervals": {
+              "type": "array",
+              "description": "Intervals of seconds to wait before restarting a component if it fails before the minUptime value.",
+              "items": {
+                "type": "integer"  
+              }
+            },
+            "minUptime": {
+              "type": "integer",
+              "default": 90,
+              "description": "The minimum amount of seconds before a component is considered running and the restart counter is reset."
+            },
+            "shareAs": {
+              "type": "string",
+              "description": "Determines which SHAREAS mode should be used when starting a component",
+              "enum": ["no", "yes", "must", ""],
+              "default": "yes"
+            }
+          }
+        }
+      }
+    },
+    "registryHandler": {
+      "$anchor": "registryHandler",
+      "type": "object",
+      "required": ["registry", "path"],
+      "properties": {
+        "registry": {
+          "type": "string",
+          "description": "The location of the default registry for this handler. It could be a URL, path, dataset, whatever this handler supports"
+        },
+        "path": {
+          "type": "string",
+          "description": "Unix file path to the configmgr-compatible JS file which implements the handler API"
         }
       }
     }

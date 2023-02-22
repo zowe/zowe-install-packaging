@@ -1,0 +1,9 @@
+    zwe components search --component-name angular-sample
+
+    zwe components search --component-id org.zowe.zlux.sample.angular
+
+    zwe components search --component-id org.zowe.zlux.sample.angular --registry https://myregistry/url
+
+    zwe components search --component-id org.zowe.zlux.sample.angular --registry https://myregistry/url --handler npm
+    
+    

@@ -1,5 +1,6 @@
-Installs a Zowe component, given either a path to a directory of a component
-Or a path to a .tar, .zip, or .pax archive containing a component at its root.
+Install a Zowe component, given a component archive, component directory, or component name.
+When a component name is given instead of a path, the installation will be performed against a Zowe package registry if one is configured.
+Archives can be in the .tar, .zip, or pax format where a component is at the root of the archive.
 
 Components are the packaging standard of Zowe.
 Zowe has core Components, but extensions are also delivered as Components.

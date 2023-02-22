@@ -365,6 +365,11 @@
   RDEFINE FACILITY IRR.RUSERMAP UACC(NONE)
   PERMIT IRR.RUSERMAP CLASS(FACILITY) ACCESS(READ) ID(&ZOWEUSER.)
 
+/** permit Zowe main server to cut SMF records                       */
+  RLIST   FACILITY IRR.RAUDITX ALL
+  RDEFINE FACILITY IRR.RAUDITX UACC(NONE)
+  PERMIT IRR.RAUDITX CLASS(FACILITY) ACCESS(READ) ID(&ZOWEUSER.)
+
   SETROPTS RACLIST(FACILITY) REFRESH
 /* show results .................................................... */
   RLIST   FACILITY ZWES.IS           ALL
@@ -373,6 +378,7 @@
   RLIST   FACILITY BPX.JOBNAME       ALL
   RLIST   UNIXPRIV SUPERUSER.FILESYS ALL
   RLIST   FACILITY IRR.RUSERMAP      ALL
+  RLIST   FACILITY IRR.RAUDITX       ALL
 
 /* DEFINE ZOWE DATA SET PROTECTION ................................. */
 
@@ -582,6 +588,11 @@ SET RESOURCE(FAC)
 RECKEY IRR ADD(RUSERMAP ROLE(&STCGRP.) SERVICE(READ) ALLOW)
 F ACF2,REBUILD(FAC)
 
+/** permit Zowe main server to cut SMF records                      */
+SET RESOURCE(FAC)
+RECKEY IRR ADD(RAUDITX ROLE(&STCGRP.) SERVICE(READ) ALLOW)
+F ACF2,REBUILD(FAC)
+
 *
 * DEFINE ZOWE DATA SET PROTECTION .................................
 *
@@ -770,6 +781,10 @@ $$
 /** permit Zowe main server to use identity mapping service          */
   TSS WHOHAS IBMFAC(IRR.RUSERMAP)
   TSS PER(&ZOWEUSER.) IBMFAC(IRR.RUSERMAP) ACCESS(READ)
+
+/** permit Zowe main server to cut SMF records                       */
+  TSS WHOHAS IBMFAC(IRR.RAUDITX)
+  TSS PER(&ZOWEUSER.) IBMFAC(IRR.RAUDITX) ACCESS(READ)
 
 /* DEFINE ZOWE DATA SET PROTECTION ................................. */
 

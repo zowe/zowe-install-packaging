@@ -14,7 +14,8 @@ import * as std from 'std';
 import * as os from 'os';
 import * as configmgr from '../../../libs/configmgr';
 
-index.execute(std.getenv('ZWE_CLI_PARAMETER_COMPONENT_FILE'), std.getenv('ZWE_CLI_PARAMETER_AUTO_ENCODING'), (std.getenv('ZWE_CLI_PARAMETER_SKIP_ENABLE') === 'true'));
+const upgrade = false; //would be true for upgrade.ts
+
+index.execute(std.getenv('ZWE_CLI_PARAMETER_COMPONENT_FILE'), std.getenv('ZWE_CLI_PARAMETER_AUTO_ENCODING'), (std.getenv('ZWE_CLI_PARAMETER_SKIP_ENABLE') === 'true'), std.getenv('ZWE_CLI_PARAMETER_HANDLER'), std.getenv('ZWE_CLI_PARAMETER_REGISTRY'), (std.getenv('ZWE_CLI_PARAMETER_DRY_RUN') === 'true'), upgrade);
 
 configmgr.cleanupTempDir();
-
