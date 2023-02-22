@@ -8,8 +8,13 @@ All notable changes to the Zowe Installer will be documented in this file.
 
 ## `2.7.0`
 
+### New features and enhancements
+- The zowe authorized loadlib now contains a new ZIS plugin as a member named "ZWESISDL". This is the ZIS Dynamic Plugin, and exists for use by other plugins that wish to access zowe-common-c utilities at runtime without needing to statically link them in the other plugin. This plugin must be referenced in the ZWESIP00 parmlib member before use. The samplib for ZWESIP00 now references this "ZWESISDL" member and it is recommended that you update your ZWESIP00 member using the samplib if you need to use this plugin.
+
 #### Minor enhancements/defect fixes
 - When zwe components install detects that the given component is already installed, it will suggest you to run zwe components upgrade instead.
+- Launcher parameters such as "shareAs" could not be customized globally due to zowe.launcher schema being wrong with some parameters nested inside another.
+- Launcher parameters within an individual component were not documented to exist despite the launcher allowing per-component customization.
 
 ## `2.6.0`
 
