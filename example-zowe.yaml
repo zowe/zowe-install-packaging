@@ -366,16 +366,21 @@ zowe:
   certificate:
     keystore:
       type: PKCS12
+      # if keyrings, the format is safkeyring://stcusername/KeyName
       file: /global/zowe/keystore/localhost/localhost.keystore.p12
+      # "password" should either be the value you set when PKCS12, or literally "password" for keyrings.
       password: password
+      # alias is the name of your key/cert. When using keyrings, get the Case Sensitive, Space Sensitive value in a TSO list ring.
       alias: localhost
     truststore:
+      # truststore usually has same values as keystore (minus alias), but can be different if desired.
       type: PKCS12
       file: /global/zowe/keystore/localhost/localhost.truststore.p12
       password: password
     pem:
       key: /global/zowe/keystore/localhost/localhost.key
       certificate: /global/zowe/keystore/localhost/localhost.cer
+      #  if keyrings, the format is "safkeyring://stcusername/KeyName&ca name"
       certificateAuthorities: /global/zowe/keystore/local_ca/local_ca.cer
 
   # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
