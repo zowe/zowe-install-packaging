@@ -366,7 +366,7 @@ zowe:
   certificate:
     keystore:
       type: PKCS12
-      # if keyrings, the format is safkeyring://stcusername/KeyName
+      # if keyrings, the format is safkeyring:////stcusername/KeyName
       file: /global/zowe/keystore/localhost/localhost.keystore.p12
       # "password" should either be the value you set when PKCS12, or literally "password" for keyrings.
       password: password
@@ -380,7 +380,7 @@ zowe:
     pem:
       key: /global/zowe/keystore/localhost/localhost.key
       certificate: /global/zowe/keystore/localhost/localhost.cer
-      #  if keyrings, the format is "safkeyring://stcusername/KeyName&ca name"
+      #  if keyrings, the format is "safkeyring:////stcusername/KeyName&ca name"
       certificateAuthorities: /global/zowe/keystore/local_ca/local_ca.cer
 
   # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
