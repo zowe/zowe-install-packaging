@@ -18,7 +18,7 @@ import * as shell from './shell';
 import * as config from './config';
 import { PathAPI as pathoid } from './pathoid';
 
-const NODE_MIN_VERSION=12;
+const NODE_MIN_VERSION=14;
 
 // enforce encoding of stdio/stdout/stderr
 // sometimes /dev/tty* ($SSH_TTY) are not configured properly, for example tagged as binary or wrong encoding
