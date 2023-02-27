@@ -15,6 +15,7 @@ All notable changes to the Zowe Installer will be documented in this file.
 - When zwe components install detects that the given component is already installed, it will suggest you to run zwe components upgrade instead.
 - Launcher parameters such as "shareAs" could not be customized globally due to zowe.launcher schema being wrong with some parameters nested inside another.
 - Launcher parameters within an individual component were not documented to exist despite the launcher allowing per-component customization.
+- zwe detects and warns against nodejs lower than version 14 (Due to end of life of v12)
 - Tracing and writing to log files would not work for component scripts when zowe.useConfigmgr=true
 
 ## `2.6.0`
