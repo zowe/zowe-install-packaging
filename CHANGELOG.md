@@ -15,11 +15,11 @@ All notable changes to the Zowe Installer will be documented in this file.
 - When zwe components install detects that the given component is already installed, it will suggest you to run zwe components upgrade instead.
 - Launcher parameters such as "shareAs" could not be customized globally due to zowe.launcher schema being wrong with some parameters nested inside another.
 - Launcher parameters within an individual component were not documented to exist despite the launcher allowing per-component customization.
+- Tracing and writing to log files would not work for component scripts when zowe.useConfigmgr=true
 
 ## `2.6.0`
 
 #### Minor enhancements/defect fixes
-- Tracing and writing to log files would not work for component scripts when zowe.useConfigmgr=true
 - When a component configure script failed during startup, no warning would be printed. Starting in 2.6, a warning will be printed and there's also an option to prevent Zowe from continuing startup when this failure is seen, by setting `zowe.launchScript.onComponentConfigureFail` to "exit"
 - Tar archived components would not be installed when zowe.useConfigmgr=true was set.
 - Various bugfixes made for reading and writing of parmlib configuration files when using the PARMLIB() syntax with zwe commands or the ZWESLSTC job.
