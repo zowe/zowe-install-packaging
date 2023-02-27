@@ -128,7 +128,7 @@ else
       print_error_and_exit "Error ZWEL0111E: Command aborts with error." "" 111
     fi
   done
-  zss_loadlib="ZWESIS01 ZWESAUX"
+  zss_loadlib="ZWESIS01 ZWESAUX ZWESISDL"
   for mb in ${zss_loadlib}; do
     print_message "Copy components/zss/LOADLIB/${mb} to ${prefix}.${ZWE_PRIVATE_DS_SZWEAUTH}"
     copy_to_data_set "LOADLIB/${mb}" "${prefix}.${ZWE_PRIVATE_DS_SZWEAUTH}" "-X" "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITE}"

@@ -157,7 +157,7 @@ export function execute(componentFile: string, autoEncoding?: string, upgrade?: 
   if (fs.pathExists(destinationDir)) {
     if (!upgrade) {
       fs.rmrf(tmpDir);
-      common.printErrorAndExit(`Error ZWEL0155E: Component ${componentName} already exists in ${targetDir}.`, undefined, 155);
+      common.printErrorAndExit(`Error ZWEL0155E: Component ${componentName} already exists in ${targetDir}. If you meant to upgrade this component, run the command 'zwe components upgrade' instead.`, undefined, 155);
     } else {
       if (fs.pathExists(bkpDir)) {
         fs.rmrf(bkpDir);

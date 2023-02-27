@@ -463,19 +463,18 @@
               "description": "Intervals of seconds to wait before restarting a component if it fails before the minUptime value.",
               "items": {
                 "type": "integer"  
-              },
-              "minUptime": {
-                "type": "integer",
-                "default": 90,
-                "description": "The minimum amount of seconds before a component is considered running and the restart counter is reset."
-              },
-              "shareAs": {
-                "type": "string",
-                "description": "Determines which SHAREAS mode should be used when starting a component",
-                "enum": ["no", "yes", "must", ""],
-                "default": "yes"
-
               }
+            },
+            "minUptime": {
+              "type": "integer",
+              "default": 90,
+              "description": "The minimum amount of seconds before a component is considered running and the restart counter is reset."
+            },
+            "shareAs": {
+              "type": "string",
+              "description": "Determines which SHAREAS mode should be used when starting a component",
+              "enum": ["no", "yes", "must", ""],
+              "default": "yes"
             }
           }
         },
@@ -723,6 +722,31 @@
         "certificate": {
           "$ref": "#/$defs/certificate",
           "description": "Certificate for current component."
+        },
+        "launcher": {
+          "type": "object",
+          "description": "Set behavior of how the Zowe launcher will handle this particular component",
+          "additionalProperties": true,
+          "properties": {
+            "restartIntervals": {
+              "type": "array",
+              "description": "Intervals of seconds to wait before restarting a component if it fails before the minUptime value.",
+              "items": {
+                "type": "integer"  
+              }
+            },
+            "minUptime": {
+              "type": "integer",
+              "default": 90,
+              "description": "The minimum amount of seconds before a component is considered running and the restart counter is reset."
+            },
+            "shareAs": {
+              "type": "string",
+              "description": "Determines which SHAREAS mode should be used when starting a component",
+              "enum": ["no", "yes", "must", ""],
+              "default": "yes"
+            }
+          }
         }
       }
     },
