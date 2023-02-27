@@ -16,6 +16,7 @@ All notable changes to the Zowe Installer will be documented in this file.
 - Launcher parameters such as "shareAs" could not be customized globally due to zowe.launcher schema being wrong with some parameters nested inside another.
 - Launcher parameters within an individual component were not documented to exist despite the launcher allowing per-component customization.
 - Fixed that zwe would fail to recursively make missing directories if the root directory was not readable by the user.
+- Tracing and writing to log files would not work for component scripts when zowe.useConfigmgr=true
 
 ## `2.6.0`
 
