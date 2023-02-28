@@ -26,6 +26,7 @@ on:
           - Keyring
           - z/OS node v14
           - z/OS node v16
+          - z/OS node v18
           - Non-strict Verify External Certificate
           - Install PTF Twice
           - VSAM Caching Storage Method
@@ -76,6 +77,7 @@ env:
   KEYRING_TESTFILE: extended/keyring.ts
   ZOS_NODE_V14_TESTFILE: extended/node-versions/node-v14.ts
   ZOS_NODE_V16_TESTFILE: extended/node-versions/node-v16.ts
+  ZOS_NODE_V18_TESTFILE: extended/node-versions/node-v18.ts
   NON_STRICT_VERIFY_EXTERNAL_CERTIFICATE_TESTFILE: extended/certificates/nonstrict-verify-external-certificate.ts
   INSTALL_PTF_TWICE_TESTFILE: extended/install-ptf-two-times.ts
   VSAM_CACHING_STORAGE_METHOD_TESTFILE: extended/caching-storages/vsam-storage.ts
@@ -83,7 +85,7 @@ env:
   CONFIG_MANAGER_TESTFILE: extended/config-manager/enable-config-manager.ts
   GENERAL_API_DOCUMENTATION_TESTFILE: basic/install-api-gen.ts
   ZOWE_NIGHTLY_TESTS_FULL: basic/install.ts(all);basic/install-ptf.ts(all)
-  ZOWE_RELEASE_TESTS_FULL: basic/install.ts(all);basic/install-ptf.ts(all);basic/install-ext.ts(any);extended/keyring.ts(all);extended/node-versions/node-v14.ts(any);extended/node-versions/node-v16.ts(any);extended/certificates/nonstrict-verify-external-certificate.ts(any);extended/caching-storages/infinispan-storage.ts(any);extended/config-manager/enable-config-manager.ts(any)
+  ZOWE_RELEASE_TESTS_FULL: basic/install.ts(all);basic/install-ptf.ts(all);basic/install-ext.ts(any);extended/keyring.ts(all);extended/node-versions/node-v14.ts(any);extended/node-versions/node-v16.ts(any);extended/node-versions/node-v18.ts(any):extended/certificates/nonstrict-verify-external-certificate.ts(any);extended/caching-storages/infinispan-storage.ts(any);extended/config-manager/enable-config-manager.ts(any)
 
 jobs:
   display-dispatch-event-id:
@@ -295,6 +297,9 @@ jobs:
                 eta = 45
                 break;
               case 'z/OS node v16':
+                eta = 45
+                break;
+              case 'z/OS node v18':
                 eta = 45
                 break;
               case 'Infinispan Caching Storage Method':

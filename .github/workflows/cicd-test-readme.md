@@ -31,6 +31,7 @@ Workflow trigger is at [cicd-test](https://github.com/zowe/zowe-install-packagin
   - Keyring
   - z/OS node v14
   - z/OS node v16
+  - z/OS node v18
   - Non-strict Verify External Certificate
   - Install PTF twice
   - VSAM Caching storage method
@@ -122,6 +123,7 @@ Selected test running elapsed time:
 | ---- | ------------ |
 | Convenience Pax | 53m |
 | SMPE PTF | 68m |
+| z/OS node v18 | 45m |
 | z/OS node v16 | 45m |
 | z/OS node v14 | 45m |
 | Keyring | 53m |
