@@ -99,6 +99,7 @@ zowe:
     certificate:
       # Type of certificate storage. Valid values are: PKCS12, JCEKS, JCECCAKS, JCERACFKS, JCECCARACFKS, or JCEHYBRIDRACFKS
       type: PKCS12
+      createZosmfTrust: true
       pkcs12:
         # **COMMONLY_CUSTOMIZED**
         # Keystore directory
@@ -144,6 +145,7 @@ zowe:
     # certificate:
     #   # Type of certificate storage. Valid values are: PKCS12, JCEKS, JCECCAKS, JCERACFKS, JCECCARACFKS, or JCEHYBRIDRACFKS
     #   type: PKCS12
+    #   createZosmfTrust: true
     #   pkcs12:
     #     # **COMMONLY_CUSTOMIZED**
     #     # Keystore directory
@@ -177,6 +179,7 @@ zowe:
     # certificate:
     #   # Type of certificate storage. Valid values are: PKCS12, JCEKS, JCECCAKS, JCERACFKS, JCECCARACFKS, or JCEHYBRIDRACFKS
     #   type: JCERACFKS
+    #   createZosmfTrust: true
     #   keyring:
     #     # **COMMONLY_CUSTOMIZED**
     #     # keyring name
@@ -212,6 +215,7 @@ zowe:
     # certificate:
     #   # Type of certificate storage. Valid values are: PKCS12, JCEKS, JCECCAKS, JCERACFKS, JCECCARACFKS, or JCEHYBRIDRACFKS
     #   type: JCERACFKS
+    #   createZosmfTrust: true
     #   keyring:
     #     # **COMMONLY_CUSTOMIZED**
     #     # keyring name
@@ -236,6 +240,7 @@ zowe:
     # certificate:
     #   # Type of certificate storage. Valid values are: PKCS12, JCEKS, JCECCAKS, JCERACFKS, JCECCARACFKS, or JCEHYBRIDRACFKS
     #   type: JCERACFKS
+    #   createZosmfTrust: true
     #   keyring:
     #     # **COMMONLY_CUSTOMIZED**
     #     # keyring name
@@ -267,7 +272,7 @@ zowe:
   # **COMMONLY_CUSTOMIZED**
   # Zowe runtime (root) directory
   #
-  # **NOTE**: if it's not specified and you passed "--update-config" argument
+  # **NOTE**: if it is not specified and you passed "--update-config" argument
   # when you run "zwe init" command, this value will be updated with the Zowe
   # runtime where the "zwe" command is located.
   #
@@ -603,7 +608,7 @@ components:
 #     # Your &SYSNAME for this LPAR
 #     # This sysname will be used to route your JES command to target system.
 #     sysname: LPR1
-#     # for this HA instance, we didn't customize "components", so it will use default value.
+#     # for this HA instance, we did not customize "components", so it will use default value.
   
 #   # HA instance ID, we will start 2 instances on LPAR2
 #   # **NOTE**, we can only start one gateway in same LPAR.

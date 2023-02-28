@@ -184,6 +184,11 @@
                   "enum": ["PKCS12", "JCEKS", "JCECCAKS", "JCERACFKS", "JCECCARACFKS", "JCEHYBRIDRACFKS"],
                   "default": "PKCS12"
                 },
+                "createZosmfTrust": {
+                  "type": "boolean",
+                  "default": true,
+                  "description": "If true, zOSMF certificates will be recorded in the truststore during setup so that when zowe.verifyCertificates is STRICT or NONSTRICT, validation can be done for zOSMF connections. This value also requires that zOSMF.host and zOSMF.port are set."
+                },
                 "pkcs12": {
                   "type": "object",
                   "additionalProperties": false,
