@@ -16,7 +16,10 @@ All notable changes to the Zowe Installer will be documented in this file.
 - Launcher parameters such as "shareAs" could not be customized globally due to zowe.launcher schema being wrong with some parameters nested inside another.
 - Launcher parameters within an individual component were not documented to exist despite the launcher allowing per-component customization.
 - Fixed that zwe would fail to recursively make missing directories if the root directory was not readable by the user.
+- zwe init certificate would try to establish trust with zosmf even when zosmf was not being used, resulting in error ZWEL0137E. This has been fixed by making the configuration more explicit. Now, zowe.setup.certificate.createZosmfTrust can be used to specify whether or not the process should be attempted.
+- zwe detects and warns against nodejs lower than version 14 (Due to end of life of v12)
 - Tracing and writing to log files would not work for component scripts when zowe.useConfigmgr=true
+
 
 ## `2.6.0`
 

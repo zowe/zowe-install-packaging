@@ -34,8 +34,9 @@ cert_type=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.certificate.typ
 if [ -z "${cert_type}" ]; then
   print_error_and_exit "Error ZWEL0157E: Certificate type (zowe.setup.certificate.type) is not defined in Zowe YAML configuration file." "" 157
 fi
-if [ "${cert_type}" != "PKCS12" -a "${cert_type}" != "JCERACFKS" ]; then
-  print_error_and_exit "Error ZWEL0164E: Value of certificate type (zowe.setup.certificate.type) defined in Zowe YAML configuration file is invalid. Valid values are PKCS12 or JCERACFKS." "" 164
+[[ "$cert_type" == "PKCS12" || "$cert_type" == JCE*KS ]]
+if [ $? -ne 0 ]; then
+  print_error_and_exit "Error ZWEL0164E: Value of certificate type (zowe.setup.certificate.type) defined in Zowe YAML configuration file is invalid. Valid values are PKCS12, JCEKS, JCECCAKS, JCERACFKS, JCECCARACFKS, or JCEHYBRIDRACFKS." "" 164
 fi
 # read cert dname
 for item in caCommonName commonName orgUnit org locality state country; do
@@ -69,7 +70,7 @@ if [ "${cert_type}" = "PKCS12" ]; then
       print_error_and_exit "Error ZWEL0157E: Certificate alias of import keystore (zowe.setup.certificate.pkcs12.import.alias) is not defined in Zowe YAML configuration file." "" 157
     fi
   fi
-elif [ "${cert_type}" = "JCERACFKS" ]; then
+elif [[ "${cert_type}" == JCE*KS ]]; then
   keyring_option=1
   # read keyring info
   for item in owner name label caLabel; do
@@ -101,6 +102,7 @@ cert_domains=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.certificate.
 if [ -z "${cert_domains}" ]; then
   cert_domains=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.externalDomains" | tr '\n' ',')
 fi
+
 # read z/OSMF info
 for item in user ca; do
   var_name="zosmf_${item}"
@@ -112,15 +114,18 @@ for item in host port; do
   var_val=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zOSMF.${item}")
   eval "${var_name}=\"${var_val}\""
 done
-keyring_trust_zosmf=
+do_trust_zosmf=
 verify_certificates=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.verifyCertificates" | upper_case)
-if [ "${verify_certificates}" = "STRICT" -o "${verify_certificates}" = "NONSTRICT" ]; then
-  keyring_trust_zosmf="--trust-zosmf"
-else
-  # no need to trust z/OSMF service
-  zosmf_host=
-  zosmf_port=
+if [ -n "${zosmf_host}" -a -n "${zosmf_port}" ]; then
+  create_zosmf_trust=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.certificate.createZosmfTrust")
+  if [ "${create_zosmf_trust}" = "true" ]; then
+    do_trust_zosmf="--trust-zosmf"
+  else
+    zosmf_host=
+    zosmf_port=
+  fi
 fi
+
 
 ###############################
 # set default values
@@ -146,7 +151,7 @@ if [ "${cert_type}" = "PKCS12" ]; then
   if [ -z "${pkcs12_password}" ]; then
     pkcs12_password=password
   fi
-elif [ "${cert_type}" = "JCERACFKS" ]; then
+elif [[ "${cert_type}" == JCE*KS ]]; then
   if [ -z "${keyring_owner}" ]; then
     keyring_owner=${security_users_zowe}
   fi
@@ -249,7 +254,7 @@ if [ "${cert_type}" = "PKCS12" ]; then
   fi
 
   # trust z/OSMF
-  if [ -n "${zosmf_host}" -a -n "${zosmf_port}" ]; then
+  if [ -n "${do_trust_zosmf}" ]; then
     zwecli_inline_execute_command \
       certificate pkcs12 trust-service \
       --service-name "z/OSMF" \
@@ -332,7 +337,7 @@ if [ "${cert_type}" = "PKCS12" ]; then
     print_level2_message "Zowe configuration requires manual updates."
   fi
 ###############################
-elif [ "${cert_type}" = "JCERACFKS" ]; then
+elif [[ "${cert_type}" == JCE*KS ]]; then
   # FIXME: how do we check if keyring exists without permission on RDATALIB?
   # should we clean up before creating new
   if [ "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITE}" = "true" ]; then
@@ -375,7 +380,7 @@ elif [ "${cert_type}" = "JCERACFKS" ]; then
         --validity "${cert_validity}" \
         --security-product "${security_product}" \
         --domains "${cert_domains}" \
-        "${keyring_trust_zosmf}" \
+        "${do_trust_zosmf}" \
         --zosmf-ca "${zosmf_ca}" \
         --zosmf-user "${zosmf_user}"
       
@@ -395,7 +400,7 @@ elif [ "${cert_type}" = "JCERACFKS" ]; then
         --connect-user "${keyring_connect_user}" \
         --connect-label "${keyring_connect_label}" \
         --security-product "${security_product}" \
-        "${keyring_trust_zosmf}" \
+        "${do_trust_zosmf}" \
         --zosmf-ca "${zosmf_ca}" \
         --zosmf-user "${zosmf_user}"
 
@@ -414,7 +419,7 @@ elif [ "${cert_type}" = "JCERACFKS" ]; then
         --import-ds-name "${keyring_import_dsName}" \
         --import-ds-password "${keyring_import_password}" \
         --security-product "${security_product}" \
-        "${keyring_trust_zosmf}" \
+        "${do_trust_zosmf}" \
         --zosmf-ca "${zosmf_ca}" \
         --zosmf-user "${zosmf_user}"
       # FIXME: currently ZWEKRING jcl will import the cert and chain, CA will also be added to CERTAUTH, but the CA will not be connected to keyring.
@@ -443,12 +448,12 @@ EOF
   # update zowe.yaml
   if [ "${ZWE_CLI_PARAMETER_UPDATE_CONFIG}" = "true" ]; then
     print_level1_message "Update certificate configuration to ${ZWE_CLI_PARAMETER_CONFIG}"
-    update_zowe_yaml "${ZWE_CLI_PARAMETER_CONFIG}" "zowe.certificate.keystore.type" "JCERACFKS"
+    update_zowe_yaml "${ZWE_CLI_PARAMETER_CONFIG}" "zowe.certificate.keystore.type" "${cert_type:-JCERACFKS}"
     update_zowe_yaml "${ZWE_CLI_PARAMETER_CONFIG}" "zowe.certificate.keystore.file" "safkeyring:////${keyring_owner}/${keyring_name}"
     # we must set a dummy value here, other JDK will complain wrong parameter
     update_zowe_yaml "${ZWE_CLI_PARAMETER_CONFIG}" "zowe.certificate.keystore.password" "password"
     update_zowe_yaml "${ZWE_CLI_PARAMETER_CONFIG}" "zowe.certificate.keystore.alias" "${yaml_keyring_label}"
-    update_zowe_yaml "${ZWE_CLI_PARAMETER_CONFIG}" "zowe.certificate.truststore.type" "JCERACFKS"
+    update_zowe_yaml "${ZWE_CLI_PARAMETER_CONFIG}" "zowe.certificate.truststore.type" "${cert_type:-JCERACFKS}"
     update_zowe_yaml "${ZWE_CLI_PARAMETER_CONFIG}" "zowe.certificate.truststore.file" "safkeyring:////${keyring_owner}/${keyring_name}"
     # we must set a dummy value here, other JDK will complain wrong parameter
     update_zowe_yaml "${ZWE_CLI_PARAMETER_CONFIG}" "zowe.certificate.truststore.password" "password"
@@ -463,12 +468,12 @@ EOF
     print_message "zowe:"
     print_message "  certificate:"
     print_message "    keystore:"
-    print_message "      type: JCERACFKS"
+    print_message "      type: ${cert_type:-JCERACFKS}"
     print_message "      file: \"safkeyring:////${keyring_owner}/${keyring_name}\""
     print_message "      password: \"password\""
     print_message "      alias: \"${yaml_keyring_label}\""
     print_message "    truststore:"
-    print_message "      type: JCERACFKS"
+    print_message "      type: ${cert_type:-JCERACFKS}"
     print_message "      file: \"safkeyring:////${keyring_owner}/${keyring_name}\""
     print_message "      password: \"password\""
     print_message "    pem:"
@@ -481,7 +486,7 @@ EOF
 fi
 
 ###############################
-if [ -n "${zosmf_host}" -a "${verify_certificates}" = "STRICT" ]; then
+if [ -n "${do_trust_zosmf}" -a "${verify_certificates}" = "STRICT" ]; then
   # CN/SAN must be valid if z/OSMF is used and in strict mode
   zwecli_inline_execute_command \
     certificate verify-service \

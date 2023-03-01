@@ -1427,7 +1427,7 @@ is_certificate_generated_by_zowe() {
     if [ -n "${found}" ]; then
       echo "true"
     fi
-  elif [ "${KEYSTORE_TYPE}" = "JCERACFKS" ]; then
+  elif [[ "${KEYSTORE_TYPE}" == JCE*KS ]]; then
     issuer=$(keyring_show_info "${ZWE_zowe_certificate_keystore_file}" "${ZWE_zowe_certificate_keystore_alias}" | sed -n '/Issuer/{n;p;}')
     if [ -z "${issuer}" ]; then
       # FIXME: error code
