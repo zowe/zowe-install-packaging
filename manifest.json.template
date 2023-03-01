@@ -140,7 +140,7 @@
       "componentGroup": "Imperative CLI Framework for Zowe",
       "entries": [{
         "repository": "imperative",
-        "tag": "v5.7.7",
+        "tag": "v5.9.0",
         "destinations": ["Zowe CLI Package"]
       }]
     }, {
@@ -219,7 +219,7 @@
       "componentGroup": "Zowe CLI",
       "entries": [{
         "repository": "zowe-cli",
-        "tag": "v7.9.8",
+        "tag": "v7.11.0",
         "destinations": ["Zowe CLI Package"]
       }]
     }, {
@@ -233,7 +233,7 @@
       "componentGroup": "IBM&reg Db2&reg Plug-in for Zowe CLI",
       "entries": [{
         "repository": "zowe-cli-db2-plugin",
-        "tag": "v5.0.1",
+        "tag": "v5.0.2",
         "destinations": ["Zowe CLI Package"]
       }]
     }, {
