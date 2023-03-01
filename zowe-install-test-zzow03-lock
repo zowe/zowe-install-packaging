@@ -1,1 +1,15 @@
-""
+{
+  "lockAcquiredTime": "Wed Mar 01 2023 17:09:10 GMT+0000 (Coordinated Universal Time)",
+  "uid": "1677690550129111429",
+  "repository": {
+    "owner": "zowe",
+    "repo": "zowe-install-packaging"
+  },
+  "branch": "bugfix/v2/symlink-rc3",
+  "workflow": "Zowe CICD Integration Tests",
+  "job": "cicd-test",
+  "actor": "zowe-robot",
+  "runId": 4306058397,
+  "runNumber": 2263,
+  "link": "https://github.com/zowe/zowe-install-packaging/actions/runs/4306058397"
+}
