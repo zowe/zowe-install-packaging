@@ -18,6 +18,7 @@ All notable changes to the Zowe Installer will be documented in this file.
 - zwe detects and warns against nodejs lower than version 14 (Due to end of life of v12)
 - Tracing and writing to log files would not work for component scripts when zowe.useConfigmgr=true
 
+
 ## `2.6.0`
 
 #### Minor enhancements/defect fixes

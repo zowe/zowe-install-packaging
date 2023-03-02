@@ -181,7 +181,7 @@
                 "type": {
                   "type": "string",
                   "description": "Type of certificate storage method.",
-                  "enum": ["PKCS12", "JCERACFKS"],
+                  "enum": ["PKCS12", "JCEKS", "JCECCAKS", "JCERACFKS", "JCECCARACFKS", "JCEHYBRIDRACFKS"],
                   "default": "PKCS12"
                 },
                 "pkcs12": {
@@ -241,7 +241,7 @@
                 "keyring": {
                   "type": "object",
                   "additionalProperties": false,
-                  "description": "Configure this section if you are using z/OS JCERACFKS keyring",
+                  "description": "Configure this section if you are using z/OS keyring",
                   "properties": {
                     "owner": {
                       "type": "string",
@@ -640,11 +640,11 @@
             "type": {
               "type": "string",
               "description": "Keystore type.",
-              "enum": ["PKCS12", "JCERACFKS"]
+              "enum": ["PKCS12", "JCEKS", "JCECCAKS", "JCERACFKS", "JCECCARACFKS", "JCEHYBRIDRACFKS"]
             },
             "file": {
               "type": "string",
-              "description": "Path to your PKCS#12 keystore or z/OS JCERACFKS keyring."
+              "description": "Path to your PKCS#12 keystore or z/OS keyring."
             },
             "password": {
               "type": "string",
@@ -652,7 +652,7 @@
             },
             "alias": {
               "type": "string",
-              "description": "Certificate alias name of defined in your PKCS#12 keystore, or certificate label of z/OS JCERACFKS keyring."
+              "description": "Certificate alias name of defined in your PKCS#12 keystore, or certificate label of z/OS keyring."
             }
           }
         },
@@ -665,11 +665,11 @@
             "type": {
               "type": "string",
               "description": "Truststore type.",
-              "enum": ["PKCS12", "JCERACFKS"]
+              "enum": ["PKCS12", "JCEKS", "JCECCAKS", "JCERACFKS", "JCECCARACFKS", "JCEHYBRIDRACFKS"]
             },
             "file": {
               "type": "string",
-              "description": "Path to your PKCS#12 keystore or z/OS JCERACFKS keyring."
+              "description": "Path to your PKCS#12 keystore or z/OS keyring."
             },
             "password": {
               "type": "string",
