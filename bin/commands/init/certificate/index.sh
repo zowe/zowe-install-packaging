@@ -120,6 +120,14 @@ if [ -n "${zosmf_host}" -a -n "${zosmf_port}" ]; then
   create_zosmf_trust=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.certificate.createZosmfTrust")
   if [ "${create_zosmf_trust}" = "true" ]; then
     do_trust_zosmf="--trust-zosmf"
+  # backward compat for if missing.
+  elif [ -z "${create_zosmf_trust}" ]; then
+    if [ "${verify_certificates}" = "STRICT" -o "${verify_certificates}" = "NONSTRICT" ]; then
+      do_trust_zosmf="--trust-zosmf"
+    else
+      zosmf_host=
+      zosmf_port=
+    fi
   else
     zosmf_host=
     zosmf_port=
