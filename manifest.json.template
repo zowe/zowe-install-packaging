@@ -373,7 +373,7 @@
         "destinations": ["Zowe PAX"]
       }, {
         "repository": "launcher",
-        "tag": "v2.0.10",
+        "tag": "v2.0.9",
         "destinations": ["Zowe PAX"]
       }]
     },
