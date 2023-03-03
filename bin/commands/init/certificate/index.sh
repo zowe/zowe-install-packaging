@@ -484,7 +484,7 @@ EOF
 fi
 
 ###############################
-if [ -n "${keyring_trust_zosmf}" -a "${verify_certificates}" = "STRICT" ]; then
+if [ -n "${zosmf_host}" -a "${verify_certificates}" = "STRICT" ]; then
   # CN/SAN must be valid if z/OSMF is used and in strict mode
   zwecli_inline_execute_command \
     certificate verify-service \
