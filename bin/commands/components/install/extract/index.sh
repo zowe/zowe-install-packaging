@@ -124,7 +124,7 @@ print_debug "- Component name found as ${component_name}"
 export ZWE_COMPONENTS_INSTALL_EXTRACT_COMPONENT_NAME="${component_name}"
 if [ -e "${component_name}" ]; then
   rm -fr "${tmp_ext_dir}"
-  print_error_and_exit "Error ZWEL0155E: Component ${component_name} already exists in ${target_dir}." "" 155
+  print_error_and_exit "Error ZWEL0155E: Component ${component_name} already exists in ${target_dir}. If you meant to upgrade this component, run the command 'zwe components upgrade' instead." "" 155
 fi
 
 print_debug "- Rename temporary directory to ${component_name}."
