@@ -67,34 +67,28 @@
       "artifact": "*.pax"
     },
     "org.zowe.apiml.api-catalog-package": {
-      "version": "^2.1.1-SNAPSHOT",
-      "artifact": "api-catalog-*.zip",
-      "exclusions": ["*PR*.zip"]
+      "version": "2.8.1-PR-2828-SNAPSHOT",
+      "artifact": "api-catalog-*.zip"
     },
     "org.zowe.apiml.discovery-package": {
-      "version": "^2.1.1-SNAPSHOT",
-      "artifact": "discovery-*.zip",
-      "exclusions": ["*PR*.zip"]
+      "version": "2.8.1-PR-2828-SNAPSHOT",
+      "artifact": "discovery-*.zip"
     },
     "org.zowe.apiml.gateway-package": {
-      "version": "^2.1.1-SNAPSHOT",
-      "artifact": "gateway-*.zip",
-      "exclusions": ["*PR*.zip"]
+      "version": "2.8.1-PR-2828-SNAPSHOT",
+      "artifact": "gateway-*.zip"
     },
     "org.zowe.apiml.caching-service-package": {
-      "version": "^2.1.1-SNAPSHOT",
-      "artifact": "caching-service-*.zip",
-      "exclusions": ["*PR*.zip"]
+      "version": "2.8.1-PR-2828-SNAPSHOT",
+      "artifact": "caching-service-*.zip"
     },
     "org.zowe.apiml.metrics-service-package": {
-      "version": "^2.1.1-SNAPSHOT",
-      "artifact": "metrics-service-*.zip",
-      "exclusions": ["*PR*.zip"]
+      "version": "2.8.1-PR-2828-SNAPSHOT",
+      "artifact": "metrics-service-*.zip"
     },
     "org.zowe.apiml.apiml-common-lib-package": {
-      "version": "^2.1.1-SNAPSHOT",
-      "artifact": "apiml-common-lib-*.zip",
-      "exclusions": ["*PR*.zip"]
+      "version": "2.8.1-PR-2828-SNAPSHOT",
+      "artifact": "apiml-common-lib-*.zip"
     },
     "org.zowe.apiml.sdk.common-java-lib-package": {
       "version": "~2.0.0-SNAPSHOT",
@@ -102,14 +96,12 @@
       "exclusions": ["*PR*.zip"]
     },
     "org.zowe.apiml.sdk.apiml-sample-extension-package": {
-      "version": "^2.1.1-SNAPSHOT",
-      "artifact": "apiml-sample-extension-*.zip",
-      "exclusions": ["*PR*.zip"]
+      "version": "2.8.1-PR-2828-SNAPSHOT",
+      "artifact": "apiml-sample-extension-*.zip"
     },
     "org.zowe.apiml.cloud-gateway-package": {
-      "version": "^2.4.4-SNAPSHOT",
-      "artifact": "cloud-gateway-*.zip",
-      "exclusions": ["*PR*.zip"]
+      "version": "2.8.1-PR-2828-SNAPSHOT",
+      "artifact": "cloud-gateway-*.zip"
     },
     "org.zowe.configmgr": {
       "version": "~0.4.2-v2.x_staging",
