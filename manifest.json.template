@@ -49,7 +49,7 @@
     "org.zowe.zss": {
       "version": "2.7.0-RC",
       "repository": "libs-snapshot-local",
-      "artifact": "zss-2.7.0-rc-643-20230303155102.pax"
+      "artifact": "zss-2.7.0-rc-659-20230313135224.pax"
     },
     "org.zowe.explorer.jobs.jobs-api-package": {
       "version": "2.0.14",
@@ -111,12 +111,12 @@
     "org.zowe.configmgr-rexx": {
       "version": "0.4.2-V2.X-RC",
       "repository": "libs-snapshot-local",
-      "artifact": "configmgr-rexx-0.4.2-2023030334.pax"
+      "artifact": "configmgr-rexx-0.4.2-2023031349.pax"
     },
     "org.zowe.configmgr": {
       "version": "0.4.2-V2.X-RC",
       "repository": "libs-snapshot-local",
-      "artifact": "configmgr-0.4.2-2023030330.pax"
+      "artifact": "configmgr-0.4.2-2023031334.pax"
     },
     "org.zowe.launcher": {
       "version": "2.0.9"
@@ -206,12 +206,12 @@
         },
         {
           "repository": "zss",
-          "tag": "v2.7.0-RC1",
+          "tag": "v2.7.0-RC2",
           "destinations": ["Zowe PAX"]
         },
         {
           "repository": "zowe-common-c",
-          "tag": "zss-v2.6.0-RC1",
+          "tag": "zss-v2.6.0-RC2",
           "destinations": ["Zowe PAX"]
         }
       ]
@@ -397,7 +397,7 @@
       "componentGroup": "Configmgr",
       "entries": [{
         "repository": "zowe-common-c",
-        "tag": "configmgr-v2.7.0-RC1",
+        "tag": "configmgr-v2.7.0-RC2",
         "destinations": ["Zowe PAX"]
       }]
     }
