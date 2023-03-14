@@ -598,6 +598,7 @@
         "^.*$": {
           "type": "object",
           "description": "Configuration of Zowe high availability instance.",
+          "required": ["hostname", "sysname"],
           "properties": {
             "hostname": {
               "type": "string",

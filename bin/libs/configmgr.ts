@@ -121,6 +121,79 @@ function getTempMergedYamlDir(): string|number {
 
 }
 
+function getDiscoveryServiceUrlHa(config) {
+  const list = [];
+  const defaultDs = config.components.discovery;
+  const haInstanceKeys = Object.keys(config.haInstances);
+  
+  for (const haInstanceKey of haInstanceKeys) {
+    const haInstance = config.haInstances[haInstanceKey];
+
+    if (!haInstance.hostname) {
+      console.log(`Error: 'hostname' value is missing for haInstance '${haInstanceKey}'`);
+      if (haInstanceKeys.length == 1) {
+        console.log(`Debug: Discovery server will be configured without HA`);
+        return null;
+      }
+      std.exit(1);
+    }
+
+    const haInstanceDs = haInstance.components?.discovery;
+    const enabled = haInstanceDs && (typeof haInstanceDs.enabled !== 'undefined') ? haInstanceDs.enabled : defaultDs.enabled;
+    if (enabled !== true) continue;
+
+    const port = haInstanceDs?.port ?? defaultDs.port;
+    if (!port) {
+      console.log(`Error: Missing configuration of diverery port, see 'components.discovery.port' or 'haInstances.${haInstanceKey}.components.discovery.port'`);
+      std.exit(1);
+    }
+
+    const url = `https://${haInstance.hostname}:${port}/eureka/`;
+
+    if (list.includes(url)) {
+      console.log(`Warn: Multiple haInstances reffers to the same hostname: ${haInstance.hostname}`);
+    } else {
+      list.push(url);
+    }
+
+  }
+
+  return list;
+}
+
+function getDiscoveryServiceUrlNonHa(config) {
+  const list = [];
+  if (config.components?.discovery?.enabled !== true) {
+    return list;
+  }
+
+  const port = config.components?.discovery?.port;
+  if (!port) {
+    console.log(`Error: missing configuration 'components.discovery.port'`);
+    std.exit(1);
+  }
+
+  config.zowe.externalDomains.forEach((domain: string) => {
+    const url = `https://${domain}:${port}/eureka/`;
+    if (list.includes(url)) {
+      console.log(`Warn: External domains are not unique: ${domain}`);
+    } else {
+      list.push(url);
+    }
+  });
+
+  return list;
+}
+
+function getDiscoveryServiceUrl(config) {
+  if (config.haInstances) {
+    const list = getDiscoveryServiceUrlHa(config);
+    if (list) return list;
+  }
+
+  return getDiscoveryServiceUrlNonHa(config);
+}
+
 function writeZoweConfigUpdate(updateObj: any, arrayMergeStrategy: number): number {
   let firstConfigPath = ZOWE_CONFIG_PATH.split(':')[0];
 
@@ -507,31 +580,7 @@ export function getZoweConfigEnv(haInstance: string): any {
   //special things to keep as-is
   envs['ZWE_DISCOVERY_SERVICES_LIST'] = std.getenv('ZWE_DISCOVERY_SERVICES_LIST');
   if (!envs['ZWE_DISCOVERY_SERVICES_LIST']) {
-    let list = [];
-    if (config.components.discovery && (config.components.discovery.enabled === true)) {
-      const port = config.components.discovery.port;
-      config.zowe.externalDomains.forEach((domain:string)=> {
-        const url = `https://${domain}:${port}/eureka/`;
-        if (!list.includes(url)) {
-          list.push(url);
-        }
-      });
-    }
-
-    if (config.haInstances) {
-      let haInstanceKeys = Object.keys(config.haInstances);
-      haInstanceKeys.forEach((haInstanceKey:string)=> {
-        const haInstance = config.haInstances[haInstanceKey];
-        if (haInstance.hostname && haInstance.components && haInstance.components.discovery && (haInstance.components.discovery.enabled === true)) {
-          const port = haInstance.components.discovery.port;
-          const url = `https://${haInstance.hostname}:${port}/eureka/`;
-          if (!list.includes(url)) {
-            list.push(url);
-          }
-        }
-      });
-    }
-
+    let list = getDiscoveryServiceUrl();
     envs['ZWE_DISCOVERY_SERVICES_LIST'] = list.join(',');
   }
 
