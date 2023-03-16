@@ -580,7 +580,7 @@ export function getZoweConfigEnv(haInstance: string): any {
   //special things to keep as-is
   envs['ZWE_DISCOVERY_SERVICES_LIST'] = std.getenv('ZWE_DISCOVERY_SERVICES_LIST');
   if (!envs['ZWE_DISCOVERY_SERVICES_LIST']) {
-    let list = getDiscoveryServiceUrl();
+    let list = getDiscoveryServiceUrl(config);
     envs['ZWE_DISCOVERY_SERVICES_LIST'] = list.join(',');
   }
 
