@@ -1,1 +1,15 @@
-""
+{
+  "lockAcquiredTime": "Mon Mar 20 2023 21:35:33 GMT+0000 (Coordinated Universal Time)",
+  "uid": "1679348133373011730",
+  "repository": {
+    "owner": "zowe",
+    "repo": "zowe-install-packaging"
+  },
+  "branch": "user/markackert/port-cicd-ssh-to-v1",
+  "workflow": "Zowe CICD Integration Tests",
+  "job": "cicd-test",
+  "actor": "ojcelis",
+  "runId": 4473119278,
+  "runNumber": 2371,
+  "link": "https://github.com/zowe/zowe-install-packaging/actions/runs/4473119278"
+}
