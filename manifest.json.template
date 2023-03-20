@@ -13,7 +13,7 @@
   "binaryDependencies": {
     "org.zowe.zlux.zlux-core": {
       "version": "^2.0.0-V2.X-STAGING-ZLUX-CORE",
-      "artifact": "*.pax"
+      "artifact": "zlux-core-2.8.0-20230320.181425.pax"
     },
     "org.zowe.zlux.sample-angular-app": {
       "version": "^2.0.0-V2.X-STAGING",
@@ -37,7 +37,7 @@
     },
     "org.zowe.zlux.zlux-editor": {
       "version": "^2.0.0-V2.X-STAGING",
-      "artifact": "*.pax"
+      "artifact": "zlux-editor-2.8.0-20230320.171844.pax"
     },
     "org.zowe.zss": {
       "version": "^2.0.0-STAGING",
