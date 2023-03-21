@@ -311,6 +311,8 @@ zowe:
     name: ZWE1SV
     # Prefix of component address space
     prefix: ZWE1
+    # Zowe JCL job message class
+    msgclass: "5"
 
   # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   # This is an ID you use to separate multiple Zowe installs when determining
