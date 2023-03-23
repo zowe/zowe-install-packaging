@@ -145,7 +145,7 @@
       "componentGroup": "Imperative CLI Framework for Zowe",
       "entries": [{
         "repository": "imperative",
-        "tag": "v4.18.11",
+        "tag": "v4.18.14",
         "destinations": ["Zowe CLI Package"]
       }]
     }, {
@@ -224,7 +224,7 @@
       "componentGroup": "Zowe CLI",
       "entries": [{
         "repository": "zowe-cli",
-        "tag": "v6.40.10",
+        "tag": "v6.40.15",
         "destinations": ["Zowe CLI Package"]
       }]
     }, {
@@ -266,7 +266,7 @@
       "componentGroup": "z/OS&reg FTP Plug-in for Zowe CLI",
       "entries": [{
         "repository": "zowe-cli-ftp-plugin",
-        "tag": "v1.8.7",
+        "tag": "v1.8.8",
         "destinations": ["Zowe CLI Package"]
       }]
     }, {
