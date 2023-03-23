@@ -14,7 +14,7 @@
     "org.zowe.zlux.zlux-core": {
       "version": "1.28.3-V1.X-RC",
       "repository": "libs-snapshot-local",
-      "artifact": "zlux-core-1.28.3-20230321.184538.pax"
+      "artifact": "zlux-core-1.28.3-20230323.130727.pax"
     },
     "org.zowe.zlux.zss-auth": {
       "version": "1.28.3-V1.X-RC",
@@ -419,7 +419,7 @@
       "componentGroup": "Zowe Visual Studio Code Extension",
       "entries": [{
         "repository": "vscode-extension-for-zowe",
-        "tag": "v1.22.1",
+        "tag": "v1.22.2",
         "destinations": ["Visual Studio Code Marketplace"]
       }]
     },
@@ -436,7 +436,7 @@
     "zowe-launch-scripts": {
       "registry": "zowe-docker-release.jfrog.io",
       "name": "ompzowe/zowe-launch-scripts",
-      "tag" : "1.28.2-ubuntu"
+      "tag" : "1.28.3-ubuntu"
     },
     "api-catalog": {
       "registry": "zowe-docker-release.jfrog.io",
