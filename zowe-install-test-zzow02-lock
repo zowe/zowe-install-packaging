@@ -1,1 +1,15 @@
-""
+{
+  "lockAcquiredTime": "Thu Mar 23 2023 19:26:30 GMT+0000 (Coordinated Universal Time)",
+  "uid": "1679599590961786767",
+  "repository": {
+    "owner": "zowe",
+    "repo": "zowe-install-packaging"
+  },
+  "branch": "ATorrise-patch-1",
+  "workflow": "Zowe CICD Integration Tests",
+  "job": "cicd-test",
+  "actor": "zowe-robot",
+  "runId": 4504441903,
+  "runNumber": 2400,
+  "link": "https://github.com/zowe/zowe-install-packaging/actions/runs/4504441903"
+}
