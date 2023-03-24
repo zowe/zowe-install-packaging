@@ -288,8 +288,6 @@
       "components.jobs-api.port": "{{ zowe_jobs_api_port }}"
       "components.files-api.port": "{{ zowe_mvs_api_port }}"
       # other gateway configs
-      "components.gateway.debug": "true"
-      "components.gateway.sslDebug": "all"
       "components.gateway.apiml.gateway.timeoutMillis": "{{ zowe_apiml_gateway_timeout_millis }}"
       "components.gateway.apiml.security.x509.enabled": "{{ zowe_apiml_security_x509_enabled|string|lower }}"
       "components.gateway.apiml.security.auth.provider": "{{ zowe_apiml_security_auth_provider|string|lower }}"
