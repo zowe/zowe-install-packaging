@@ -14,7 +14,7 @@
     "org.zowe.zlux.zlux-core": {
       "version": "1.28.3-V1.X-RC",
       "repository": "libs-snapshot-local",
-      "artifact": "zlux-core-1.28.3-20230323.130727.pax"
+      "artifact": "zlux-core-1.28.3-20230324.164220.pax"
     },
     "org.zowe.zlux.zss-auth": {
       "version": "1.28.3-V1.X-RC",
@@ -78,7 +78,7 @@
       "version": "1.0.21"
     },
     "org.zowe.explorer-mvs": {
-      "version": "1.0.19"
+      "version": "1.0.20"
     },
     "org.zowe.explorer-uss": {
       "version": "1.0.21"
@@ -280,7 +280,7 @@
       "componentGroup": "Zowe Desktop Data Sets UI Plugin",
       "entries": [{
         "repository": "explorer-mvs",
-        "tag": "v1.0.19",
+        "tag": "v1.0.20",
         "destinations": ["Zowe PAX"]
       }]
     }, {
@@ -478,7 +478,7 @@
     "explorer-mvs": {
       "registry": "zowe-docker-release.jfrog.io",
       "name": "ompzowe/explorer-mvs",
-      "tag" : "1.0.19-ubuntu"
+      "tag" : "1.0.20-ubuntu"
     },
     "explorer-uss": {
       "registry": "zowe-docker-release.jfrog.io",
