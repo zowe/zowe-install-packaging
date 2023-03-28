@@ -9,7 +9,7 @@
   Copyright Contributors to the Zowe Project.
 */
 
-import * as std from 'std';
+import * as std from 'cm_std';
 import * as extract from './extract/index';
 import * as installHook from './process-hook/index';
 import * as componentEnable from '../enable/index';
