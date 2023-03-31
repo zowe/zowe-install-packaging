@@ -4,7 +4,8 @@
   "title": "Zowe configuration file",
   "description": "Configuration file for Zowe (zowe.org) version 2.",
   "type": "object",
-  "additionalProperties": false,
+  "additionalProperties": true,
+  "required": [ "zowe" ],
   "properties": {
     "zowe": {
       "type": "object",
@@ -423,6 +424,15 @@
           "additionalProperties": false,
           "description": "Optional, advanced network configuration parameters",
           "properties": {
+            "attls": {
+              "type": "boolean",
+              "description": "Instructs each server to use AT-TLS to the extent they are capable.",
+              "default": false
+            },
+            "internalAddress": {
+              "type": "string",
+              "description": "The IP in which each server should bind to."
+            },
             "vipaIp": {
               "type": "string",
               "description": "The IP address which all of the Zowe servers will be binding to. If you are using multiple DIPVA addresses, do not use this option."
@@ -723,6 +733,15 @@
           "$ref": "#/$defs/certificate",
           "description": "Certificate for current component."
         },
+        "address": {
+          "type": "string",
+          "description": "Instructs the component's server(s) to bind to the IP address given"
+        },
+        "attls": {
+          "type": "boolean",
+          "description": "Instructs the component's server(s) to use AT-TLS to the extent they are capable",
+          "default": false
+        }
         "launcher": {
           "type": "object",
           "description": "Set behavior of how the Zowe launcher will handle this particular component",
