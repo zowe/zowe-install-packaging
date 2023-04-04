@@ -18,6 +18,7 @@ All notable changes to the Zowe Installer will be documented in this file.
 - Fixed that zwe would fail to recursively make missing directories if the root directory was not readable by the user.
 - zwe detects and warns against nodejs lower than version 14 (Due to end of life of v12)
 - Tracing and writing to log files would not work for component scripts when zowe.useConfigmgr=true
+- Node v18 was installed on marist system and test were made to run with node v18.
 
 
 ## `2.6.0`
