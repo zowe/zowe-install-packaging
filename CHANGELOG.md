@@ -6,6 +6,11 @@ All notable changes to the Zowe Installer will be documented in this file.
 
 - Updated ZWEWRF03 workflow to be up to date with the installed software
 
+## `2.8.0`
+
+### New features and enhancements
+- Component installation can now print stdout of install scripts [#3361](https://github.com/zowe/zowe-install-packaging/pull/3361)
+
 ## `2.7.0`
 
 ### New features and enhancements
