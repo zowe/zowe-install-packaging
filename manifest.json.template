@@ -121,7 +121,7 @@
     },
     "org.zowe.launcher": {
       "version": "2.0.10-SNAPSHOT",
-       "artifact": "2.0.10-snapshot-129-20230322155900.pax",
+      "artifact": "2.0.10-snapshot-129-20230322155900.pax"
     },
     "org.zowe.keyring-utilities": {
       "version": "1.0.4",
