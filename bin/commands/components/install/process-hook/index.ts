@@ -38,8 +38,17 @@ export function execute(componentName: string) {
     const result = shell.execOutSync('sh', '-c', `. ${ZOWE_CONFIG.zowe.runtimeDirectory}/bin/libs/configmgr-index.sh && . ${scriptPath} ; export rc=$? ; export -p`);
     if (result.rc==0) {
       varlib.getEnvironmentExports(result.out, true);
+      const outLines = result.out.split('\n');
+      common.printFormattedInfo("ZWELS", "zwe-components-install-process-hook", `- commands.install output from ${componentName} is:`);
+      common.printMessage(outLines.filter(line => !line.startsWith('export ')).join('\n'));
+      common.printFormattedDebug("ZWELS", "zwe-components-install-process-hook", outLines.filter(line => line.startsWith('export ')).join('\n'));
     } else {
       common.printError(`install script ended with error, rc=${result.rc}`);
+      if (result.out) {
+        const outLines = result.out.split('\n');
+        common.printFormattedInfo("ZWELS", "zwe-components-install-process-hook", `- commands.install output from ${componentName} is:`);
+        common.printMessage(outLines.filter(line => !line.startsWith('export ')).join('\n'));
+      }
       std.exit(result.rc);
     }
 

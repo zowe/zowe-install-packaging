@@ -114,16 +114,14 @@ for item in host port; do
   var_val=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zOSMF.${item}")
   eval "${var_name}=\"${var_val}\""
 done
-do_trust_zosmf=
+keyring_trust_zosmf=
 verify_certificates=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.verifyCertificates" | upper_case)
-if [ -n "${zosmf_host}" -a -n "${zosmf_port}" ]; then
-  create_zosmf_trust=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.certificate.createZosmfTrust")
-  if [ "${create_zosmf_trust}" = "true" ]; then
-    do_trust_zosmf="--trust-zosmf"
-  else
-    zosmf_host=
-    zosmf_port=
-  fi
+if [ "${verify_certificates}" = "STRICT" -o "${verify_certificates}" = "NONSTRICT" ]; then
+  keyring_trust_zosmf="--trust-zosmf"
+else
+  # no need to trust z/OSMF service
+  zosmf_host=
+  zosmf_port=
 fi
 
 
@@ -254,7 +252,7 @@ if [ "${cert_type}" = "PKCS12" ]; then
   fi
 
   # trust z/OSMF
-  if [ -n "${do_trust_zosmf}" ]; then
+  if [ -n "${zosmf_host}" -a -n "${zosmf_port}" ]; then
     zwecli_inline_execute_command \
       certificate pkcs12 trust-service \
       --service-name "z/OSMF" \
@@ -380,7 +378,7 @@ elif [[ "${cert_type}" == JCE*KS ]]; then
         --validity "${cert_validity}" \
         --security-product "${security_product}" \
         --domains "${cert_domains}" \
-        "${do_trust_zosmf}" \
+        "${keyring_trust_zosmf}" \
         --zosmf-ca "${zosmf_ca}" \
         --zosmf-user "${zosmf_user}"
       
@@ -400,7 +398,7 @@ elif [[ "${cert_type}" == JCE*KS ]]; then
         --connect-user "${keyring_connect_user}" \
         --connect-label "${keyring_connect_label}" \
         --security-product "${security_product}" \
-        "${do_trust_zosmf}" \
+        "${keyring_trust_zosmf}" \
         --zosmf-ca "${zosmf_ca}" \
         --zosmf-user "${zosmf_user}"
 
@@ -419,7 +417,7 @@ elif [[ "${cert_type}" == JCE*KS ]]; then
         --import-ds-name "${keyring_import_dsName}" \
         --import-ds-password "${keyring_import_password}" \
         --security-product "${security_product}" \
-        "${do_trust_zosmf}" \
+        "${keyring_trust_zosmf}" \
         --zosmf-ca "${zosmf_ca}" \
         --zosmf-user "${zosmf_user}"
       # FIXME: currently ZWEKRING jcl will import the cert and chain, CA will also be added to CERTAUTH, but the CA will not be connected to keyring.
@@ -486,7 +484,7 @@ EOF
 fi
 
 ###############################
-if [ -n "${do_trust_zosmf}" -a "${verify_certificates}" = "STRICT" ]; then
+if [ -n "${zosmf_host}" -a "${verify_certificates}" = "STRICT" ]; then
   # CN/SAN must be valid if z/OSMF is used and in strict mode
   zwecli_inline_execute_command \
     certificate verify-service \
