@@ -8,6 +8,11 @@ All notable changes to the Zowe Installer will be documented in this file.
 #### Minor enhancements/defect fixes
 - Bugfix: Component environment variables would not be aliased to the "_configs_" shorthand when the component had a configure script, but not a validate script, and zowe.useConfigmgr was enabled.
 
+## `2.8.0`
+
+### New features and enhancements
+- Component installation can now print stdout of install scripts [#3361](https://github.com/zowe/zowe-install-packaging/pull/3361)
+
 ## `2.7.0`
 
 ### New features and enhancements
@@ -20,6 +25,7 @@ All notable changes to the Zowe Installer will be documented in this file.
 - Fixed that zwe would fail to recursively make missing directories if the root directory was not readable by the user.
 - zwe detects and warns against nodejs lower than version 14 (Due to end of life of v12)
 - Tracing and writing to log files would not work for component scripts when zowe.useConfigmgr=true
+- Node v18 was installed on marist system and test were made to run with node v18.
 
 
 ## `2.6.0`
