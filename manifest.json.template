@@ -120,7 +120,7 @@
       "artifact": "*.pax"
     },
     "org.zowe.launcher": {
-      "version": "~2.0.8-SNAPSHOT"
+      "version": "~2.0.10-PR-79"
     },
     "org.zowe.keyring-utilities": {
       "version": "1.0.4",
