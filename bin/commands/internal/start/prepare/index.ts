@@ -282,15 +282,18 @@ function configureComponents(componentEnvironments?: any, enabledComponents?:str
       // TODO if this is to force 1 component to configure before another, we should really just make a manifest declaration that 1 component needs to run before another. It's fine to run a simple dependency chain to determine order of execution without getting into the advanced realm of full blown package manager dependency management tier checks
       const preconfigureScript=manifest.commands ? manifest.commands.preConfigure : undefined;
       common.printFormattedTrace("ZWELS", "zwe-internal-start-prepare,configure_components", `- commands.preConfigure is ${preconfigureScript}`);
+      let loadedEnvVars = false;
       if (preconfigureScript) {
         const preconfigurePath=`${componentDir}/${preconfigureScript}`;
         if (fs.fileExists(preconfigurePath)) {
           common.printFormattedDebug("ZWELS", "zwe-internal-start-prepare,configure_components", `* process ${componentId} pre-configure command ...`);
           // execute preconfigure step. preconfigure does NOT export env vars.
-          if (componentEnvironments) {
+          if (componentEnvironments && componentEnvironments[componentName]) {
             config.applyEnviron(componentEnvironments[componentName]);
+            loadedEnvVars = true;
           } else {
             config.loadEnvironmentVariables(componentId);
+            loadedEnvVars = true;
           }
           const result = shell.execOutErrSync('sh', '-c', `. ${runtimeDirectory}/bin/libs/configmgr-index.sh && cd ${componentDir} && . ${preconfigurePath}`);
           common.printFormattedDebug("ZWELS", "zwe-internal-start-prepare,configure_components", result.rc ? result.err : result.out);
@@ -338,6 +341,13 @@ function configureComponents(componentEnvironments?: any, enabledComponents?:str
         const fullPath = `${componentDir}/${configureScript}`;
         if (fs.fileExists(fullPath)) {
           common.printFormattedDebug("ZWELS", "zwe-internal-start-prepare,configure_components", `* process ${componentId} configure command ...`);
+          if (!loadedEnvVars) {
+            if (componentEnvironments && componentEnvironments[componentName]) {
+              config.applyEnviron(componentEnvironments[componentName]);
+            } else {
+              config.loadEnvironmentVariables(componentId);
+            }
+          }
           // execute configure step and generate environment snapshot
           // NOTE: env var list is not updated because it should not have changed between preconfigure step and now
           const result = shell.execOutSync('sh', '-c', `. ${runtimeDirectory}/bin/libs/configmgr-index.sh && cd ${componentDir} && . ${fullPath} ; export rc=$? ; export -p`);
