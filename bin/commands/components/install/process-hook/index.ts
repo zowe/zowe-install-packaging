@@ -34,8 +34,9 @@ export function execute(componentName: string) {
   if (installScript) {
     common.printMessage(`Process ${installScript} defined in manifest commands.install:`);
     const scriptPath = pathoid.join(targetDir, componentName, installScript);
+    const componentRoot = pathoid.join(targetDir, componentName);
     // run commands
-    const result = shell.execOutSync('sh', '-c', `. ${ZOWE_CONFIG.zowe.runtimeDirectory}/bin/libs/configmgr-index.sh && . ${scriptPath} ; export rc=$? ; export -p`);
+    const result = shell.execOutSync('sh', '-c', `. ${ZOWE_CONFIG.zowe.runtimeDirectory}/bin/libs/configmgr-index.sh && cd ${componentRoot} && . ${scriptPath} ; export rc=$? ; export -p`);
     if (result.rc==0) {
       varlib.getEnvironmentExports(result.out, true);
       const outLines = result.out.split('\n');
