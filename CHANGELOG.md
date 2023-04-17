@@ -2,9 +2,15 @@
 
 All notable changes to the Zowe Installer will be documented in this file.
 <!--Add the PR or issue number to the entry if available.-->
-## `Unreleased`
 
-- Updated ZWEWRF03 workflow to be up to date with the installed software
+## `2.8.0`
+
+### New features and enhancements
+- Component installation can now print stdout of install scripts [#3361](https://github.com/zowe/zowe-install-packaging/pull/3361)
+
+#### Minor enhancements/defect fixes
+- Bugfix: Component environment variables would not be aliased to the "_configs_" shorthand when the component had a configure script, but not a validate script, and zowe.useConfigmgr was enabled.
+- Buffix: When zowe.useConfigmgr=true, component installation would not run the installation script from the component root directory, but instead from the place zwe was executed, causing relative path differences versus zowe.useConfigmgr=false.
 
 ## `2.7.0`
 
@@ -15,8 +21,10 @@ All notable changes to the Zowe Installer will be documented in this file.
 - When zwe components install detects that the given component is already installed, it will suggest you to run zwe components upgrade instead.
 - Launcher parameters such as "shareAs" could not be customized globally due to zowe.launcher schema being wrong with some parameters nested inside another.
 - Launcher parameters within an individual component were not documented to exist despite the launcher allowing per-component customization.
+- Fixed that zwe would fail to recursively make missing directories if the root directory was not readable by the user.
 - zwe detects and warns against nodejs lower than version 14 (Due to end of life of v12)
 - Tracing and writing to log files would not work for component scripts when zowe.useConfigmgr=true
+- Node v18 was installed on marist system and test were made to run with node v18.
 
 
 ## `2.6.0`
