@@ -15,7 +15,8 @@ import {
 } from '../../../utils';
 import { TEST_TIMEOUT_CONVENIENCE_BUILD } from '../../../constants';
 
-const testServer = 'marist-4';
+// Only runs on zzow04 at time of change (04.2023). See cicd-test.yml and make_matrix.sh.
+const testServer = process.env.TEST_SERVER;
 const testSuiteName = 'Test convenience build installation with node.js v18';
 describe(testSuiteName, () => {
   beforeAll(() => {
