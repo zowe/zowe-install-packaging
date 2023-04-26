@@ -213,7 +213,7 @@
         },
         {
           "repository": "zowe-common-c",
-          "tag": "v2.x/staging",
+          "tag": "reboot/cm_std_cm_os_modules",
           "destinations": ["Zowe PAX"]
         }
       ]
