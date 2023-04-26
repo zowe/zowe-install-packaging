@@ -232,7 +232,7 @@ export function sanitizeHaInstanceId(): string|undefined {
 export function applyEnviron(environ: any): void {
   let keys = Object.keys(environ);
   keys.forEach(function(key:string) {
-    common.printMessage(`applyEnviron setting ${key}=${environ[key]}`);
+    common.printDebug(`applyEnviron setting ${key}=${environ[key]}`);
     std.setenv(key, environ[key]);
   });
 }
