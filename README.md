@@ -1,33 +1,39 @@
 # zowe-install-packaging
 
-This repository includes Zowe installation script and pipelines to build Zowe.
+This repository includes automation, artifacts, and scripts which are used to create the final set of Zowe installable artifacts for the Zowe server side. Additionally contains metadata used to track official Zowe releases across multiple build pipelines.
 
 - [Branches](#branches)
 - [Manifest File](#manifest-file)
-  - [General information](#general-information)
-  - [Build information](#build-information)
-  - [Binary Dependencies](#binary-dependencies)
-  - [Source Dependencies](#source-dependencies)
-  - [Point of Contacts](#point-of-contacts)
+  - [Points of Contact](#point-of-contacts)
 - [Build Pipeline](#build-pipeline)
   - [Generate Customized Zowe Build](#generate-customized-zowe-build)
 - [Automate Install / Uninstall of Zowe with Ansible](#automate-install--uninstall-of-zowe-with-ansible)
 - [Quick Sanity Check on Your Zowe Instance](#quick-sanity-check-on-your-zowe-instance)
 
-## Branches
+## Contributing
 
-- From `master` branch, you can find the most recent **stable** build. It matches to the most recent official Zowe release.
-- `rc` branch means release candidate and is mainly for release usage. It's an intermediate state where we hold the code to prepare for the coming release. This branch is merged from `staging` and eventually if Release Candidate builds are tested passed, this branch will be merged into `master` to announce a formal release.
-- `staging` branch is targeted to the next release and holds the most recent development progress. Normally a development changes may result in a Pull Request against this branch.
-- `v?.x/*` branches are for past and future purpose. It may also have `v?.x/master` and `v?.x/staging`, etc.
 
-Pull Request is required to merge changes to `staging`, `rc`. Generally `master` doesn't accept Pull Request to make feature changes or bug fixes.
 
-## Manifest File
+### Branch Strategy
 
-Zowe include several components. `manifest.json.template` defines general information of Zowe and how components are included into official build.
 
-The manifest file include these sections:
+
+## Building?
+
+Zowe-Install-Packaging is comprised of multiple sub-modules and directories which drive the aggregation of inidivudal Zowe components into a final distributable package users can take to install on their mainframe systems. This repository contains pipeline definitions, pipeline implementation details, simple component provenance information, scripts which improve the install and configuration of Zowe, test suites, and more artifacts related to the final package formats. There is no individual build for the entire repository, but multiple related builds that use different parts of the repository. To see more about these builds, check our Github Actions definition [here](./.github/workflows/). To see more about whats in the repository, see [the repository overview](./repos/overview.md).
+
+## Manifest Metadata
+
+Zowe's releases are composed of several individual components which are built in other repositories, by other Zowe squads, and in different formats. `manifest.json.template` defines which components are included into official build, where they're located in remote registries, and some general information regarding the current build of Zowe.
+
+The manifest file includes:
+
+- [General Information](#general-information)
+- [Build Information](#build-information)
+- [Binary Dependencies](#binary-dependencies)
+- [Source Dependencies (Provenance)](#source-dependencies)
+- [Container Image Dependencies](#image-dependencies)
+- [Deprecated Fields](#deprecated-fields)
 
 ### General information
 
@@ -93,6 +99,10 @@ To check for each release, what source code from repositories will be used, you 
 - find and check file `manifest.json.template`. In the above case, it links to [v1.4.0/manifest.json.template](https://github.com/zowe/zowe-install-packaging/blob/v1.4.0/manifest.json.template).
 - check the `sourceDependencies` section. In the above case, it's line #96.
 - In the above example, you will see Zowe release v1.4.0 is using https://github.com/zowe/imperative repository tag [v2.4.9](https://github.com/zowe/imperative/tree/v2.4.9).
+
+### Image Dependencies
+
+### Deprecated Fields
 
 ### Point of Contacts
 
