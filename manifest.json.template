@@ -112,11 +112,11 @@
       "exclusions": ["*PR*.zip"]
     },
     "org.zowe.configmgr": {
-      "version": "^2.0.0-V2.X-STAGING",
+      "version": "~2.9.0-REBOOT-CM_STD_CM_OS_MODULES",
       "artifact": "*.pax"
     },
     "org.zowe.configmgr-rexx": {
-      "version": "^2.0.0-V2.X-STAGING",
+      "version": "~2.9.0-REBOOT-CM_STD_CM_OS_MODULES",
       "artifact": "*.pax"
     },
     "org.zowe.launcher": {
