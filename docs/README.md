@@ -28,6 +28,55 @@ This is not user-facing documentation.
 
 The zowe-install-packaging repository is intended to multiple workflows focused around the packaging and delivery of individual Zowe server-side components, including code focused on improving end-users installation and configuration experiences with the packages created from this repository. Since this repository's scope extends from packaging to configuration and is responsible for aggregating individual server side components, its typical to receive pull requests and code modifications from multiple squads within Zowe. Unlike many of the other repositories in Zowe which are primarily driven by a single squad, the zowe-install-packaging repository is collaboratively maintained by many squads within Zowe. The Zowe Systems Squad is the primary owner and point of contact if you have any questions or issues.
 
+## Structure
+
+This repository contains a collection of packaging/install/configuration, e2e testing, and automation materials. For packaging/install/configuration, we support: `PAX`, `SMP/e`, `PSWI`, and container creation for Zowe Server Side components, and the `zwe` command-line install tool. 
+
+### Repository Index
+
+| Folder or Key File | Extended Description | 
+| -------------- | -------------------- |
+| .dependency/  | Produces `zwe` documentation and `zowe-sources.zip` | 
+| .github/ | [Automation](#automation) | 
+| .pax/ | [Automation](#automation) |
+| bin/ | [zwe](./broken_link) |
+| build/ | [zwe config manager](./broken_link) | 
+| containers/ | [Zowe Container Distribution]() |
+| dco_signoffs/ | Manual DCO Signoffs missing on commits | 
+| docs/ | Internal doc on this repository | 
+| files/ | Static files included in Zowe PAX, as-is |
+| playbooks/ | [Ansible Testing](../playbooks/README.md) |
+| pswi/ | [Zowe PSWI Distribution](./broken_link) |
+| schemas/ | [Zowe Configuration YAML](./broken_link) |
+| signing_keys/ | GPG Keys used to sign Zowe release | 
+| smpe/ | [Zowe SMP/e Distribution](./broken_link) | 
+| tests/ | [Testing](#testing) | 
+| workflows/ | [Zowe Configuration Workflows](./broken_link) | 
+| example-zowe.yaml | [Zowe Configuration](./broken_link) |
+| manifest.json.template | [Manifest](#manifest-metadata) | 
+
+
+### Automation 
+
+Zowe's Automation runs using Github Actions, and leverages functionality present in the [zowe-actions github actions repo](https://github.com/zowe-actions/shared-actions). Important functionality from that repo includes the capability to transfer of files to a mainframe backend in binary or ASCII mode, as well as build scripts which are executed on the remote system. The actions relies on a set of scripts defined in a `.pax` folder within the repository, which executes a series of scripts in order:
+
+1. `prepare-workspace.sh` - Script run on the build machine (Github Actions), which sets up the local filesystem to transfer files to the backend machine. 
+2. `pre-packaging.sh` - Script run on the backend machine before the pax is assembled.
+3. `post-packaging.sh` - Script run on the backend machine after the pax is asssembled.
+4. `catchall-packaging.sh` - Script run on the build machine after all other actions. Always runs, even if an earlier script failed.
+
+
+The rest of Zowe's automation is triggered as part of github actions, and is defined under the [.github](../.github/workflows/) folder. See each individual workflow for more information.
+
+### Testing
+
+Automated e2e tests are driven from the [./tests](../tests) folder in the repository, which contains two testing suites - installation and sanity - each with multiple test cases included. In general, individual installation test cases require the most time to complete and sanity tests are always run after an installation test case within our automation. Most install test cases are pass-throughs which invoke ansible playbooks to deploy Zowe onto a target backend system. The ansible playbooks can be found in the [./playbooks](../playbooks/) directory and detailed documentation can be found [in the playbooks README](../playbooks/README.md).
+
+### Packaging, Install, Configuration
+
+
+
+
 ## Manifest Metadata
 
 Zowe's releases are composed of several individual components which are built in other repositories, by other Zowe squads, and in different formats. `manifest.json.template` defines which components are included into official build, where they're located in remote registries, and some general information regarding the current build of Zowe.
@@ -152,3 +201,34 @@ Please check details in [playbooks folder](playbooks/README.md).
 ## Quick Sanity Check on Your Zowe Instance
 
 Please check details in [sanity test folder](tests/sanity/README.md).
+
+
+## PSWI
+
+## z/OSMF Portable Software Instance For Zowe z/OS Components - Technology Preview
+
+The Zowe z/OSMF Portable Instance - Technology Preview (Zowe PSWI) is the new way of Zowe z/OS components distribution.
+
+## Version
+
+The Zowe PSWI was build on top of SMP/E data sets of Zowe version 1.24. 
+
+## Prerequisities
+
+To be able to use the Zowe PSWI, you need to fulfill a few prerequisites: 
+- The current version of the Zowe PSWI was built for the z/OSMF 2.3 and higher. The z/OSMF 2.2 and lower is not supported.
+- The user ID you are using for the Zowe PSWI deployment must have READ access to the System Authorization Facility (SAF) resource that protects the Zowe data sets that are produced during the creation of the Zowe PSWI. That is, your user ID requires READ access to data set names with **ZWE** HLQ. Please note, that the prefix is subject to change as the current Zowe PSWI is a technology preview.
+- The Zowe PSWI package has about 1.2 GB, please make sure you have enough space available on your system.
+
+## Installation
+
+As the Zowe PSWI is a technology preview, the official Zowe documentation is still in progress. You can reffer to IBM's [documentation](https://www.ibm.com/docs/en/zos/2.4.0?topic=zosmf-portable-software-instances-page) covering Portable Software Instances related tasks. Later, there should be available a blog covering the Zowe PSWI installation process.
+
+## Known Issues and Troubleshooting
+
+- It is not a real issue, but it is worth to mention it. You need to make sure, that in the sysplex environment you have defined a SYSAFF variable in the job header with proper value. Otherwise, deployment jobs might be submitted on the wrong system.
+- If you have never used workflows in the z/OSMF, you should configure your job statement for workflows engine. For more details please refer to the IBM's [documentation](https://www.ibm.com/docs/en/zos/2.4.0?topic=task-customizing-job-statement-workflows-your-system).
+
+## Additional Resources
+
+If you would like to read more about Zowe Portable Software Instance, please wait for a while for a blog post that will be released soon. A link will be updated here.
