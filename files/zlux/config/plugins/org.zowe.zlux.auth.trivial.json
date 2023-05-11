@@ -1,5 +1,0 @@
-{
-  "identifier": "org.zowe.zlux.auth.trivial",
-  "pluginLocation": "zlux-server-framework/plugins/trivial-auth",
-  "relativeTo": "$ZLUX_ROOT_DIR"
-}
