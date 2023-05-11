@@ -1,1 +1,15 @@
-""
+{
+  "lockAcquiredTime": "Thu May 11 2023 14:43:42 GMT+0000 (Coordinated Universal Time)",
+  "uid": "1683816222254309032",
+  "repository": {
+    "owner": "zowe",
+    "repo": "zowe-install-packaging"
+  },
+  "branch": "bugfix/v2/sso-catalog-desktop",
+  "workflow": "Zowe CICD Integration Tests",
+  "job": "cicd-test",
+  "actor": "zowe-robot",
+  "runId": 4949154882,
+  "runNumber": 2602,
+  "link": "https://github.com/zowe/zowe-install-packaging/actions/runs/4949154882"
+}
