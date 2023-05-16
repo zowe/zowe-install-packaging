@@ -84,8 +84,7 @@
     },
     "org.zowe.apiml.metrics-service-package": {
       "version": "2.9.0-PR-2914-SNAPSHOT",
-      "artifact": "metrics-service-*.zip",
-      "exclusions": ["*PR*.zip"]
+      "artifact": "libs-snapshot-local/org/zowe/apiml/metrics-service-package/2.9.0-PR-PR-2914-SNAPSHOT/metrics-service-package-2.9.0-PR-PR-2914-20230516.075931-1.zip"
     },
     "org.zowe.apiml.apiml-common-lib-package": {
       "version": "2.9.0-PR-2914-SNAPSHOT",
