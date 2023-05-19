@@ -148,7 +148,7 @@ jobs:
 
           echo INPUTS_KEEP_TEMP_PAX_FOLDER=${{ github.event.inputs.KEEP_TEMP_PAX_FOLDER }} >> $GITHUB_ENV
           
-          echo ::set-output name=BUILD_WHAT::$BUILD_WHAT
+          echo BUILD_WHAT=$BUILD_WHAT >> $GITHUB_OUTPUT
       
       - name: '[Prep 7] Comment on PR to indicate build is started'
         uses: actions/github-script@v5
@@ -222,17 +222,17 @@ jobs:
         id: pax-prep
         run: |
           if [ "${{ env.INPUTS_BUILD_SMPE }}" == "true" ] || [ "${{ env.INPUTS_BUILD_PSWI }}" == "true" ] ; then
-            echo ::set-output name=EXTRA_FILES::zowe-smpe.zip,fmid.zip,pd.htm,smpe-promote.tar,smpe-build-logs.pax.Z,rename-back.sh
-            echo ::set-output name=BUILD_SMPE::yes
+            echo EXTRA_FILES=zowe-smpe.zip,fmid.zip,pd.htm,smpe-promote.tar,smpe-build-logs.pax.Z,rename-back.sh >> $GITHUB_OUTPUT
+            echo BUILD_SMPE=yes >> $GITHUB_OUTPUT
           else
-            echo ::set-output name=EXTRA_FILES::
-            echo ::set-output name=BUILD_SMPE::
+            echo EXTRA_FILES= >> $GITHUB_OUTPUT
+            echo BUILD_SMPE= >> $GITHUB_OUTPUT
           fi
           
           if [ "${{ env.INPUTS_KEEP_TEMP_PAX_FOLDER }}" == "true" ] ; then
-            echo ::set-output name=KEEP_TEMP_FOLDER::yes
+            echo KEEP_TEMP_FOLDER=yes >> $GITHUB_OUTPUT
           else
-            echo ::set-output name=KEEP_TEMP_FOLDER::
+            echo KEEP_TEMP_FOLDER= >> $GITHUB_OUTPUT
           fi
 
       - name: '[PAX/SMPE Pax 2] Packaging'
