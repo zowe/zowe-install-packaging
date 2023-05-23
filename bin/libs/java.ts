@@ -132,10 +132,10 @@ export function validateJavaHome(javaHome:string|undefined=std.getenv("JAVA_HOME
       common.printError(`Java ${javaVersionShort} is less than the minimum level required of Java ${JAVA_MIN_VERSION}.`);
       return false;
     } else if (javaMajorVersion > JAVA_MAX_WARN) {
-      common.printError(`Java version ${javaVersionShort} is greater than the maximum known working version of Java ${JAVA_MAX_WARN}.`); 
+      common.printError(`Warning: Java version ${javaVersionShort} is greater than the maximum known working version of Java ${JAVA_MAX_WARN}.`); 
+    } else {
+      common.printDebug(`Java ${javaVersionShort} is supported.`);
     }
-
-    common.printDebug(`Java ${javaVersionShort} is supported.`);
     common.printDebug(`Java check is successful.`);
     return true;
   } catch (e) {
