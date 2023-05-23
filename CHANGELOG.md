@@ -3,6 +3,11 @@
 All notable changes to the Zowe Installer will be documented in this file.
 <!--Add the PR or issue number to the entry if available.-->
 
+## `2.9.0`
+
+#### Minor enhancements/defect fixes
+- Enhancement: Warn when detecting a java version newer than what's officially known to work.
+
 ## `2.8.0`
 
 ### New features and enhancements
