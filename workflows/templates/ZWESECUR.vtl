@@ -231,7 +231,7 @@
 /*   enabled.                                                        */
 
 /* group for administrators                                          */
-/* replace AUTOGID with GID(&ADMINGID.) if AUTOGID not enabled */
+/* replace AUTOGID with GID(&ADMINGID.) if AUTOGID not enabled       */
   LISTGRP  &ADMINGRP. OMVS
   ADDGROUP &ADMINGRP. OMVS(AUTOGID) -
    DATA('ZOWE ADMINISTRATORS')
@@ -375,7 +375,8 @@
 /* service
   RLIST   FACILITY IRR.IDIDMAP.QUERY ALL
   RDEFINE FACILITY IRR.IDIDMAP.QUERY UACC(NONE)
-  PERMIT IRR.IDIDMAP.QUERY CLASS(FACILITY) ACCESS(READ) ID(&ZOWEUSER.)
+  PERMIT IRR.IDIDMAP.QUERY CLASS(FACILITY) ACCESS(READ) -
+   ID(&ZOWEUSER.)
 
 /* permit Zowe main server to cut SMF records                        */
   RLIST   FACILITY IRR.RAUDITX ALL
