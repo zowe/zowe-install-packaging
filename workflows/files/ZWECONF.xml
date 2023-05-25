@@ -78,7 +78,7 @@
     </variable>
     <variable name="zowe_setup_certificate_type" scope="instance" visibility="public">
         <label>Zowe setup certificate type</label>
-        <abstract>Type of certificate storage. Valid values are: PKCS12, JCEKS, JCECCAKS, JCERACFKS, JCECCARACFKS, or JCEHYBRIDRACFKS</abstract>
+        <abstract>Type of certificate storage.</abstract>
         <description>Type of certificate storage. Valid values are: PKCS12, JCEKS, JCECCAKS, JCERACFKS, JCECCARACFKS, or JCEHYBRIDRACFKS</description>
         <category>zowe</category>
         <string valueMustBeChoice="false" multiLine="false">
