@@ -36,7 +36,7 @@ jobs:
           UBI_ARRAY=$(echo "${image_list}" | sed -e 's/-ubuntu/-ubi/' | sed -e 's/^\(.*\)$/{"images":"\1"},/')
           echo ">>>>> UBI images:"
           echo "${UBI_ARRAY}"
-          echo ::set-output name=image-matrix::{\"include\":[${UBUNTU_ARRAY}${UBI_ARRAY}]}
+          echo image-matrix={\"include\":[${UBUNTU_ARRAY}${UBI_ARRAY}]} >> $GITHUB_OUTPUT
     outputs:
       image-matrix: ${{ steps.setup-image-matrix.outputs.image-matrix }}
 
