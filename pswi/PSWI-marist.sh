@@ -121,7 +121,7 @@ sh 03_create.sh
 create=$?
 
 # Cleanup after the creation of PSWI
-#sh 04_create_cleanup.sh
+sh 04_create_cleanup.sh
 
 if [ $create -eq 0 ];then 
 # Test PSWI
@@ -135,11 +135,11 @@ fi
 fi
 
 # Cleanup of SMP/E
-#sh 07_smpe_cleanup.sh
+sh 07_smpe_cleanup.sh
 fi 
 
 # Clean RELFILEs and PTFs
-#sh 08_presmpe_cleanup.sh
+sh 08_presmpe_cleanup.sh
 
 echo ""
 echo ""
