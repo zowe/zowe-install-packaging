@@ -125,7 +125,7 @@ create=$?
 
 if [ $create -eq 0 ];then 
 # Test PSWI
-#sh 05_test.sh
+sh 05_test.sh
 test=$?
 
 # Cleanup after the test
