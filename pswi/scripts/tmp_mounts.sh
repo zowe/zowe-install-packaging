@@ -9,7 +9,7 @@ echo "Checking if file system ${ZFS} is mounted."
 RESP=`curl -s "${BASE_URL}/zosmf/restfiles/mfs?fsname=${ZFS}" -k -X "GET" -H "Content-Type: application/json" -H "X-CSRF-ZOSMF-HEADER: A" --user $ZOSMF_USER:$ZOSMF_PASS`
 MOUNTP=`echo $RESP | grep -o '"mountpoint":".*"' | cut -f4 -d\"`
 
-NEW_ZFS_JSON='{"cylsPri":1160,"cylsSec": 116,"volumes":[ "'${VOLUME}'" ]}'
+NEW_ZFS_JSON='{"cylsPri":2000,"cylsSec": 140,"volumes":[ "'${VOLUME}'" ]}'
  
   
 if [ -n "$MOUNTP" ]

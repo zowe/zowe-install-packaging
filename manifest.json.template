@@ -128,7 +128,7 @@
       "flat": "true"
    },
     "org.zowe.utility-tools": {
-      "version": "2.0.2"
+      "version": "2.0.3"
     },
     "org.zowe.licenses": {
       "version": "2.8.0",
@@ -369,7 +369,7 @@
         "destinations": ["Zowe PAX"]
       }, {
         "repository": "zowe-install-packaging-tools",
-        "tag": "v2.0.2",
+        "tag": "v2.0.3",
         "destinations": ["Zowe PAX"]
       }, {
         "repository": "launcher",
@@ -381,7 +381,7 @@
       "componentGroup": "Zowe Visual Studio Code Extension",
       "entries": [{
         "repository": "vscode-extension-for-zowe",
-        "tag": "v2.7.0",
+        "tag": "v2.8.2",
         "destinations": ["Visual Studio Code Marketplace"]
       }]
     },
@@ -406,7 +406,7 @@
     "zowe-launch-scripts": {
       "registry": "zowe-docker-release.jfrog.io",
       "name": "ompzowe/zowe-launch-scripts",
-      "tag" : "2.8.0-ubuntu"
+      "tag" : "2.9.0-ubuntu"
     },
     "api-catalog": {
       "registry": "zowe-docker-release.jfrog.io",
