@@ -123,4 +123,4 @@ done
 MATRIX_JSON_STRING=$(echo $MATRIX_JSON_STRING | sed 's/,$//g')
 
 MATRIX_JSON_STRING="$MATRIX_JSON_STRING]}"
-echo "::set-output name=matrix::$MATRIX_JSON_STRING"
+echo "matrix=$MATRIX_JSON_STRING" >>$GITHUB_OUTPUT
