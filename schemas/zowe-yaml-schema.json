@@ -434,6 +434,27 @@
             }
           }
         },
+        "attls": {
+          "type": "object",
+          "additionalProperties": false,
+          "description": "Enable AT-TLS for all servers.",
+          "properties":{
+            "enabled": {
+              "type": "boolean",
+              "default": false
+            },
+            "ipAddresses": {
+              "type": "array",
+              "description": "List of IP Addresses which ATTLS will apply to.",
+              "minItems": 1,
+              "uniqueItems": true,
+              "items": {
+                "type": ["string"]
+              },
+              "default": ["127.0.0.1"]
+            }
+          }
+        }
         "extensionRegistry": {
           "type": "object",
           "description": "Defines optional configuration for downloading extensions from an online or offline registry",
