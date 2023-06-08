@@ -1,15 +1,1 @@
-{
-  "lockAcquiredTime": "Thu Jun 08 2023 21:07:24 GMT+0000 (Coordinated Universal Time)",
-  "uid": "1686258444805122913",
-  "repository": {
-    "owner": "zowe",
-    "repo": "zowe-install-packaging"
-  },
-  "branch": "1000TurquoisePogs-patch-12",
-  "workflow": "Zowe CICD Integration Tests",
-  "job": "cicd-test",
-  "actor": "zowe-robot",
-  "runId": 5215714057,
-  "runNumber": 2756,
-  "link": "https://github.com/zowe/zowe-install-packaging/actions/runs/5215714057"
-}
+""
