@@ -140,7 +140,7 @@ export function execute(allowOverwrite: boolean = false) {
       common.printTrace(`  * Output:`);
       common.printTrace(stringlib.paddingLeft(slstcContent.out, "    "));
 
-      const tmpFileContent = slstcContent.out.replace('//STEPLIB  DD   DSNAME=&SYSUID..LOADLIB,DISP=SHR', '//STEPLIB  DD   DSNAME=${authLoadlib},DISP=SHR')
+      const tmpFileContent = slstcContent.out.replace('//STEPLIB  DD   DSNAME=&SYSUID..LOADLIB,DISP=SHR', `//STEPLIB  DD   DSNAME=${authLoadlib},DISP=SHR`)
         .replace('CONFIG=#zowe_yaml', `CONFIG=${std.getenv('ZWE_PRIVATE_ORIGINAL_CONFIG')}`);
 
       xplatform.storeFileUTF8(tmpfile, xplatform.AUTO_DETECT, tmpFileContent);
@@ -183,7 +183,7 @@ export function execute(allowOverwrite: boolean = false) {
 
       const tmpFileContent = sistcContent.out.replace('ZWES.SISSAMP', parmlib)
         .split('\n').map(line => line.startsWith('//STEPLIB') ? `//STEPLIB  DD   DSNAME='${authLoadlib}',DISP=SHR\n`
-                                                              + `//         DD   DSNAME='${authPluginLib}',DISP=SHR'`
+                                                              + `//         DD   DSNAME='${authPluginLib}',DISP=SHR`
                                                               : line).join('\n');
       xplatform.storeFileUTF8(tmpfile, xplatform.AUTO_DETECT, tmpFileContent);
       common.printTrace(`  * Stored:`);
@@ -225,7 +225,7 @@ export function execute(allowOverwrite: boolean = false) {
       
       const tmpFileContent = sastcContent.out.split('\n')
         .map(line => line.startsWith('//STEPLIB') ? `//STEPLIB  DD   DSNAME='${authLoadlib}',DISP=SHR\n`
-                                                  + `//         DD   DSNAME='${authPluginLib}',DISP=SHR'`
+                                                  + `//         DD   DSNAME='${authPluginLib}',DISP=SHR`
                                                   : line).join('\n');
       xplatform.storeFileUTF8(tmpfile, xplatform.AUTO_DETECT, tmpFileContent);
       shell.execSync('chmod', '700', tmpfile);
