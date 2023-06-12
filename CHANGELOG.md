@@ -3,6 +3,11 @@
 All notable changes to the Zowe Installer will be documented in this file.
 <!--Add the PR or issue number to the entry if available.-->
 
+## `2.10.0`
+
+### New features and enhancements
+- Added ability for any component to deliver a YAML file conforming to Zowe's schema which will apply default values for that component. At startup, zwe will write a templated, merged yaml to each components' environment workspace directory, and the environment variables set for each component can now include values from a default YAML file if it exists.
+
 ## `2.9.0`
 
 ### New features and enhancements

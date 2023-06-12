@@ -276,7 +276,7 @@ export function cleanupTempDir() {
   }
 }
 
-function writeMergedConfig(config: any): number {
+function writeMergedConfig(config: any, componentId?: string): {rc: number, path?: string} {
   const workspace = config.zowe.workspaceDirectory;
 
   let zwePrivateWorkspaceEnvDir: string;
@@ -289,11 +289,16 @@ function writeMergedConfig(config: any): number {
       zwePrivateWorkspaceEnvDir=`${workspace}/.env`;
       std.setenv('ZWE_PRIVATE_WORKSPACE_ENV_DIR', zwePrivateWorkspaceEnvDir);
     }
+    //but, components get subfolders.
+    if (componentId) {
+      zwePrivateWorkspaceEnvDir+=`/${componentId}`;
+    }
+
     fs.mkdirp(workspace, 0o770);
     const mkdirrc = fs.mkdirp(zwePrivateWorkspaceEnvDir, 0o700);
-    if (mkdirrc) { return mkdirrc; }
+    if (mkdirrc) { return {rc: mkdirrc}; }
   } else {
-    return dirResult;
+    return {rc: dirResult};
   }
   
   const destination = `${zwePrivateWorkspaceEnvDir}/.zowe-merged.yaml`;
@@ -308,15 +313,20 @@ function writeMergedConfig(config: any): number {
   let [ yamlStatus, textOrNull ] = CONFIG_MGR.writeYAML(getConfigRevisionName(ZOWE_CONFIG_NAME));
   if (yamlStatus == 0){
     const rc = xplatform.storeFileUTF8(destination, xplatform.AUTO_DETECT, textOrNull);
-    if (!rc) {
+    //dont modify base config env if just component involved, upstream can do that.
+    if (!rc && !componentId) {
       std.setenv('ZWE_CLI_PARAMETER_CONFIG', destination);
     } else {
-      console.log(`Error: Could not write .zowe-merged.yaml, ZWE_CLI_PARAMETER_CONFIG not modified!`);
+      if (!componentId) {
+        console.log(`Error: Could not write .zowe-merged.yaml, ZWE_CLI_PARAMETER_CONFIG not modified!`);
+      } else {
+        console.log(`Error: Could not write .zowe-merged.yaml for ${componentId}`);
+      }
       std.exit(1);
     }
-    return rc;
+    return {rc: rc, path: destination};
   }
-  return yamlStatus;
+  return {rc:yamlStatus};
 }
 
 function showExceptions(e: any,depth: number): void {
@@ -417,7 +427,7 @@ function stripMemberName(configPath: string, memberName: string): string {
   return configPath.replace(replacer, ")");
 }
   
-function getConfig(configName: string, configPath: string, schemas: string): any {
+export function getConfig(configName: string, configPath: string, schemas: string): any {
   let configRevisionName = getConfigRevisionName(configName);
   if (Number.isInteger(CONFIG_REVISIONS[configName])) {
     //Already loaded
@@ -488,6 +498,56 @@ function getConfig(configName: string, configPath: string, schemas: string): any
     console.log(`Error: Server config path not given`);
     std.exit(1);
   }  
+}
+
+
+function getSchemasForComponentConfig(manifest: any, componentDir: string): string|undefined {
+  let baseSchemas = getZoweBaseSchemas();
+  if (manifest.schemas?.configs) {
+    if (Array.isArray(manifest.schemas.configs)) {
+      return manifest.schemas.configs.map(path=>componentDir+'/'+path).join(':')+":"+baseSchemas;
+    } else {
+      return componentDir+'/'+manifest.schemas.configs+":"+baseSchemas;
+    }
+  }
+  return undefined;
+}
+
+function getConfigListForComponent(manifest: any, configPath: string): string {
+  if (configPath.startsWith('/')) { //likely input is merged yaml
+    configPath=`FILE(${configPath})`; 
+  }
+
+  //TODO revisit when zowe itself gets defaults.yaml, as not sure if components should override zowe or not.
+  //  For now, component defaults get overridden by everything else by putting them last.
+  if (manifest.configs?.defaults) {
+    if (Array.isArray(manifest.configs.defaults)) {
+      configPath+=':'+manifest.configs.defaults.map((entry)=> 'FILE('+entry+')').join(':');
+    } else {
+      configPath+=':FILE('+manifest.configs.defaults+')';
+    }
+  }
+  return configPath;
+}
+
+export function getComponentConfig(componentId: string, manifest: any, componentDir: string, configPath: string): {path: string, name: string, contents: any}|undefined {
+  configPath = getConfigListForComponent(manifest, configPath);
+  let schemas = getSchemasForComponentConfig(manifest, componentDir);
+
+  
+  const validationMode = ZOWE_CONFIG.zowe.configmgr?.validation ? ZOWE_CONFIG.zowe.configmgr.validation : 'COMPONENT-COMPAT';
+  if (!schemas && validationMode != 'COMPONENT-COMPAT') { //can be undefined if not stated in manifest.yaml
+    console.log(`Error: Component ${componentId} is missing property manifest property schemas.configs, validation will fail`);
+    return undefined;
+  } else if (!schemas) {
+    console.log(`Error: DEPRECATED: Component ${componentId} does not have a schema file defined in manifest property schemas.configs! Skipping config validation for this component. This may fail in future versions of Zowe. Updating the component is recommended.`);
+    schemas = getZoweBaseSchemas();
+  }
+
+  const configName = `zowe.yaml-${componentId}`;
+  const contents = getConfig(configName, configPath, schemas);
+  writeMergedConfig(contents, componentId);
+  return {path: configPath, name: configName, contents: contents};
 }
 
 export function getZoweConfig(): any {

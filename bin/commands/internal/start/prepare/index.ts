@@ -82,7 +82,7 @@ function prepareLogDirectory() {
 }
 
 // Prepare workspace directory
-function prepareWorkspaceDirectory() {
+function prepareWorkspaceDirectory(enabledComponents: string[]) {
   const zwePrivateWorkspaceEnvDir=`${workspaceDirectory}/.env`;
   std.setenv('ZWE_PRIVATE_WORKSPACE_ENV_DIR', zwePrivateWorkspaceEnvDir);
   const zweStaticDefinitionsDir=`${workspaceDirectory}/api-mediation/api-defs`;
@@ -112,7 +112,9 @@ function prepareWorkspaceDirectory() {
   const zweCliParameterHaInstance = std.getenv('ZWE_CLI_PARAMETER_HA_INSTANCE');
   common.printFormattedDebug("ZWELS", "zwe-internal-start-prepare,prepare_workspace_directory", `initialize .instance-${zweCliParameterHaInstance}.env(s)`);
   // TODO delete this or get this from configmgr instead.
+  
   config.generateInstanceEnvFromYamlConfig(zweCliParameterHaInstance);
+  enabledComponents.forEach((component) =>  config.generateInstanceEnvFromYamlConfig(zweCliParameterHaInstance, component));
 }
 
 // Global validations
@@ -190,14 +192,17 @@ function globalValidate(enabledComponents:string[]): void {
 
 
 // Validate component properties if script exists
-function validateComponents(enabledComponents:string[]): any {
+function validateComponents(enabledComponents:string[]): {[componentId: string]: {environments: any, mergedPath: string, configName: string}} {
   common.printFormattedInfo("ZWELS", "zwe-internal-start-prepare,validate_components", "process component validations ...");
 
-  const componentEnvironments = {};
+  const componentConfigs = {};
   
   // reset error counter
   let privateErrors = 0;
   std.setenv('ZWE_PRIVATE_ERRORS_FOUND','0');
+
+  componentConfigs['zowe'] = {environments: config.loadEnvironmentVariables(), mergedPath: `${std.getenv('ZWE_PRIVATE_WORKSPACE_ENV_DIR')}/.zowe-merged.yaml`};
+
   enabledComponents.forEach((componentId: string)=> {
     common.printFormattedTrace("ZWELS", "zwe-internal-start-prepare,validate_components", `- checking ${componentId}`);
     const componentDir = component.findComponentDirectory(componentId);
@@ -205,11 +210,19 @@ function validateComponents(enabledComponents:string[]): any {
     if (componentDir) {
       const manifest = component.getManifest(componentDir);
 
-      //I believe the env var to config here is already to the merged one, and that should be good for performance
-      const configValid = component.validateConfigForComponent(componentId, manifest, componentDir, std.getenv('ZWE_CLI_PARAMETER_CONFIG'));
-      if (!configValid) {
-        privateErrors++;
-      }
+
+      //TODO HERE:
+      /*
+        i need to put the component's defaults.yaml at the start of the currentl list.
+        then i need to write the merged result to a file.
+        this is the file that particular component should get.
+        the environment variables it gets should be based upon this too.
+
+
+      */
+      
+      const {path: mergedComponentPath, name: configName} = component.validateConfigForComponent(componentId, manifest, componentDir, std.getenv('ZWE_CLI_PARAMETER_CONFIG'));
+      
 
       // check validate script
       const validateScript = manifest.commands ? manifest.commands.validate : undefined;
@@ -222,7 +235,7 @@ function validateComponents(enabledComponents:string[]): any {
           privateErrors = 0;
           //TODO verify that this returns things that we want, currently it just uses setenv
           const envVars = config.loadEnvironmentVariables(componentId);
-          componentEnvironments[manifest.name] = envVars;
+          componentConfigs[manifest.name] = {environments: envVars, configName, mergedPath: mergedComponentPath};
           let result = shell.execSync('sh', '-c', `. ${runtimeDirectory}/bin/libs/configmgr-index.sh && cd ${componentDir} && . ${fullPath}`);
           privateErrors=prevErrors;
           if (result.rc) {
@@ -248,12 +261,12 @@ function validateComponents(enabledComponents:string[]): any {
   varlib.checkRuntimeValidationResult("zwe-internal-start-prepare,validate_components");
 
   common.printFormattedDebug("ZWELS", "zwe-internal-start-prepare,validate_components", "component validations are successful");
-  return componentEnvironments;
+  return componentConfigs;
 }
 
 
 // Run setup/configure on components if script exists
-function configureComponents(componentEnvironments?: any, enabledComponents?:string[]) {
+function configureComponents(componentEnvironments?: {[componentId: string]: {environments: any, mergedPath: string, configName: string}}, enabledComponents?:string[]) {
   common.printFormattedInfo("ZWELS", "zwe-internal-start-prepare,configure_components", "process component configurations ...");
 
   const zwePrivateWorkspaceEnvDir = std.getenv('ZWE_PRIVATE_WORKSPACE_ENV_DIR');
@@ -289,7 +302,7 @@ function configureComponents(componentEnvironments?: any, enabledComponents?:str
           common.printFormattedDebug("ZWELS", "zwe-internal-start-prepare,configure_components", `* process ${componentId} pre-configure command ...`);
           // execute preconfigure step. preconfigure does NOT export env vars.
           if (componentEnvironments && componentEnvironments[componentName]) {
-            config.applyEnviron(componentEnvironments[componentName]);
+            config.applyEnviron(componentEnvironments[componentName].environments);
             loadedEnvVars = true;
           } else {
             config.loadEnvironmentVariables(componentId);
@@ -343,7 +356,7 @@ function configureComponents(componentEnvironments?: any, enabledComponents?:str
           common.printFormattedDebug("ZWELS", "zwe-internal-start-prepare,configure_components", `* process ${componentId} configure command ...`);
           if (!loadedEnvVars) {
             if (componentEnvironments && componentEnvironments[componentName]) {
-              config.applyEnviron(componentEnvironments[componentName]);
+              config.applyEnviron(componentEnvironments[componentName].environments);
             } else {
               config.loadEnvironmentVariables(componentId);
             }
@@ -459,8 +472,10 @@ export function execute() {
   // init log directory
   prepareLogDirectory();
 
+  const enabledComponents=component.getEnabledComponents();
+  
   // init workspace directory and generate environment variables from YAML
-  prepareWorkspaceDirectory();
+  prepareWorkspaceDirectory(enabledComponents);
 
   // now we can load all variables
   // TODO really this should use configmgr
@@ -469,14 +484,13 @@ export function execute() {
   common.printFormattedTrace("ZWELS", "zwe-internal-start-prepare", JSON.stringify(std.getenviron()));
   common.printFormattedTrace("ZWELS", "zwe-internal-start-prepare", "<<<");
 
-  const enabledComponents=component.getEnabledComponents();
 
   // main lifecycle
   // global validations
   // no validation for running in container
   globalValidate(enabledComponents);
   // no validation for running in container
-  let environments;
+  let environments: {[componentId: string]: {environments: any, mergedPath: string, configName: string}};
   if (runInContainer != 'true') {
     environments = validateComponents(enabledComponents);
   }
