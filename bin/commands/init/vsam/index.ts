@@ -111,9 +111,9 @@ common.printLevel1Message(`Create VSAM storage for Zowe Caching Service`);
       common.printTrace(stringlib.paddingLeft(theDataset.out, "    "));
 
       const tmpFileContent = theDataset.out.replace(/\n\/\/\s*SET MODE=.*\n/, `\n//         SET  MODE=${vsam_mode}\n`)
-                .replace(new RegExp('\#dsname', 'g'), vsam_name)
-                .replace(new RegExp('\#volume', 'g'), vsam_volume)
-                .replace(new RegExp('\#storclas', 'g'), vsam_storageClass);
+                .replace(new RegExp('[(]\#dsname', 'g'), '(' + vsam_name)
+                .replace(new RegExp('[(]\#volume', 'g'), '(' + vsam_volume)
+                .replace(new RegExp('[(]\#storclas', 'g'), '(' + vsam_storageClass);
       xplatform.storeFileUTF8(tmpfile, xplatform.AUTO_DETECT, tmpFileContent);
       common.printTrace(`  * Stored:`);
       common.printTrace(stringlib.paddingLeft(tmpFileContent, "    "));
