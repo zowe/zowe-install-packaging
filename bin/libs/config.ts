@@ -40,11 +40,11 @@ const runtimeDirectory=configmgr.ZOWE_CONFIG.zowe.runtimeDirectory;
 //const extensionDirectory=ZOWE_CONFIG.zowe.extensionDirectory;
 const workspaceDirectory=configmgr.ZOWE_CONFIG.zowe.workspaceDirectory;
 
-export function getZoweConfig(): any {
+export function getZoweConfig(): configmgr.ZoweConfig {
   return configmgr.ZOWE_CONFIG;
 }
 
-export function updateZoweConfig(updateObj: any, writeUpdate: boolean, arrayMergeStrategy: number): any {
+export function updateZoweConfig(updateObj: configmgr.ZoweConfig, writeUpdate: boolean, arrayMergeStrategy: number): any {
   return configmgr.updateZoweConfig(updateObj, writeUpdate, arrayMergeStrategy);
 }
 
@@ -88,7 +88,7 @@ export function zosConvertEnvDirFileEncoding(file: string) {
 // compatible instance.env files from zowe.yaml.
 // if componentId given, assumes merged-yaml is present in that .env folder for setting env vars specific to this component.
 //
-export function generateInstanceEnvFromYamlConfig(haInstance: string, componentId?: string) {
+export function generateInstanceEnvFromYamlConfig(haInstance: string, componentId?: string, config?:configmgr.ZoweConfig) {
   let zwePrivateWorkspaceEnvDir = std.getenv('ZWE_PRIVATE_WORKSPACE_ENV_DIR');
   if (!zwePrivateWorkspaceEnvDir) {
     zwePrivateWorkspaceEnvDir=`${workspaceDirectory}/.env`
@@ -134,7 +134,7 @@ export function generateInstanceEnvFromYamlConfig(haInstance: string, componentI
 
   // convert YAML configurations to backward compatible .instance-<ha-id>.env files
   common.printFormattedTrace("ZWELS", "bin/libs/config.sh,generate_instance_env_from_yaml_config", `config-converter yaml env --ha ${haInstance}`);
-  const envs = configmgr.getZoweConfigEnv(haInstance);
+  const envs = configmgr.getZoweConfigEnv(haInstance, config);
   common.printFormattedTrace("ZWELS", "bin/libs/config.sh,generate_instance_env_from_yaml_config", `- Output: ${JSON.stringify(envs, null, 2)}`);
   const envKeys = Object.keys(envs);
   let envFileArray=[];

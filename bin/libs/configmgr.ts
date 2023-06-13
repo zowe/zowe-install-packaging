@@ -17,6 +17,9 @@ import * as fs from './fs';
 
 import * as objUtils from '../utils/ObjUtils';
 
+export type ZoweConfig = { [key: string]: any };
+export type ComponentManifest = { [key: string]: any };
+
 declare namespace console {
   function log(...args:string[]): void;
 };
@@ -182,7 +185,7 @@ function getDiscoveryServiceUrl(config) {
   return getDiscoveryServiceUrlNonHa(config);
 }
 
-function writeZoweConfigUpdate(updateObj: any, arrayMergeStrategy: number): number {
+function writeZoweConfigUpdate(updateObj: ZoweConfig, arrayMergeStrategy: number): number {
   let firstConfigPath = ZOWE_CONFIG_PATH.split(':')[0];
 
   if (!Number.isInteger(CONFIG_REVISIONS[firstConfigPath])) {
@@ -276,7 +279,7 @@ export function cleanupTempDir() {
   }
 }
 
-function writeMergedConfig(config: any, componentId?: string): {rc: number, path?: string} {
+function writeMergedConfig(config: ZoweConfig, componentId?: string, configName:string=ZOWE_CONFIG_NAME): {rc: number, path?: string} {
   const workspace = config.zowe.workspaceDirectory;
 
   let zwePrivateWorkspaceEnvDir: string;
@@ -309,14 +312,14 @@ function writeMergedConfig(config: any, componentId?: string): {rc: number, path
     console.log(`Error: Could not write json ${jsonDestination}, rc=${jsonRC}`);
   }
   */
-  //const yamlReturn = CONFIG_MGR.writeYAML(getConfigRevisionName(ZOWE_CONFIG_NAME), destination);
-  let [ yamlStatus, textOrNull ] = CONFIG_MGR.writeYAML(getConfigRevisionName(ZOWE_CONFIG_NAME));
+  //const yamlReturn = CONFIG_MGR.writeYAML(getConfigRevisionName(configName), destination);
+  let [ yamlStatus, textOrNull ] = CONFIG_MGR.writeYAML(getConfigRevisionName(configName));
   if (yamlStatus == 0){
     const rc = xplatform.storeFileUTF8(destination, xplatform.AUTO_DETECT, textOrNull);
     //dont modify base config env if just component involved, upstream can do that.
     if (!rc && !componentId) {
       std.setenv('ZWE_CLI_PARAMETER_CONFIG', destination);
-    } else {
+    } else if (rc) {
       if (!componentId) {
         console.log(`Error: Could not write .zowe-merged.yaml, ZWE_CLI_PARAMETER_CONFIG not modified!`);
       } else {
@@ -350,7 +353,7 @@ function getConfigRevisionName(configName: string, revision?: number): string {
   return configName+'_rev'+revision;
 }
 
-function updateConfig(configName: string, updateObj: any, arrayMergeStrategy: number=1): number {
+function updateConfig(configName: string, updateObj: ZoweConfig, arrayMergeStrategy: number=1): number {
   let revision = CONFIG_REVISIONS[configName];
   if (!Number.isInteger(revision)) {
     console.log(`Error: Cannot update config if config not yet loaded`);
@@ -379,7 +382,7 @@ function updateConfig(configName: string, updateObj: any, arrayMergeStrategy: nu
   return status;
 }
 
-export function updateZoweConfig(updateObj: any, writeUpdate: boolean, arrayMergeStrategy: number=1): [number, any] {
+export function updateZoweConfig(updateObj: ZoweConfig, writeUpdate: boolean, arrayMergeStrategy: number=1): [number, any] {
   let rc = updateConfig(getZoweConfigName(), updateObj, arrayMergeStrategy);
   if (rc == 0) {
     ZOWE_CONFIG=getZoweConfig();
@@ -427,7 +430,7 @@ function stripMemberName(configPath: string, memberName: string): string {
   return configPath.replace(replacer, ")");
 }
   
-export function getConfig(configName: string, configPath: string, schemas: string): any {
+export function getConfig(configName: string, configPath: string, schemas: string): ZoweConfig|undefined {
   let configRevisionName = getConfigRevisionName(configName);
   if (Number.isInteger(CONFIG_REVISIONS[configName])) {
     //Already loaded
@@ -497,11 +500,12 @@ export function getConfig(configName: string, configPath: string, schemas: strin
   } else {
     console.log(`Error: Server config path not given`);
     std.exit(1);
-  }  
+  }
+  return undefined;
 }
 
 
-function getSchemasForComponentConfig(manifest: any, componentDir: string): string|undefined {
+function getSchemasForComponentConfig(manifest: ComponentManifest, componentDir: string): string|undefined {
   let baseSchemas = getZoweBaseSchemas();
   if (manifest.schemas?.configs) {
     if (Array.isArray(manifest.schemas.configs)) {
@@ -513,7 +517,7 @@ function getSchemasForComponentConfig(manifest: any, componentDir: string): stri
   return undefined;
 }
 
-function getConfigListForComponent(manifest: any, configPath: string): string {
+function getConfigListForComponent(manifest: ComponentManifest, configPath: string, componentDir: string): string {
   if (configPath.startsWith('/')) { //likely input is merged yaml
     configPath=`FILE(${configPath})`; 
   }
@@ -522,16 +526,16 @@ function getConfigListForComponent(manifest: any, configPath: string): string {
   //  For now, component defaults get overridden by everything else by putting them last.
   if (manifest.configs?.defaults) {
     if (Array.isArray(manifest.configs.defaults)) {
-      configPath+=':'+manifest.configs.defaults.map((entry)=> 'FILE('+entry+')').join(':');
+      configPath+=':'+manifest.configs.defaults.map((entry)=> `FILE(${componentDir}/${entry})`).join(':');
     } else {
-      configPath+=':FILE('+manifest.configs.defaults+')';
+      configPath+=`:FILE(${componentDir}/${manifest.configs.defaults})`;
     }
   }
   return configPath;
 }
 
-export function getComponentConfig(componentId: string, manifest: any, componentDir: string, configPath: string): {path: string, name: string, contents: any}|undefined {
-  configPath = getConfigListForComponent(manifest, configPath);
+export function getComponentConfig(componentId: string, manifest: ComponentManifest, componentDir: string, configPath: string): {path: string, name: string, contents: ZoweConfig}|undefined {
+  configPath = getConfigListForComponent(manifest, configPath, componentDir);
   let schemas = getSchemasForComponentConfig(manifest, componentDir);
 
   
@@ -550,7 +554,7 @@ export function getComponentConfig(componentId: string, manifest: any, component
   return {path: configPath, name: configName, contents: contents};
 }
 
-export function getZoweConfig(): any {
+export function getZoweConfig(): ZoweConfig {
   if (configLoaded) {
     return getConfig(ZOWE_CONFIG_NAME, ZOWE_CONFIG_PATH, ZOWE_SCHEMA_SET);
   } else {
@@ -574,8 +578,7 @@ const INSTANCE_KEYS_NOT_IN_BASE = [
 ];
 
 const keyNameRegex = /[^a-zA-Z0-9]/g;
-export function getZoweConfigEnv(haInstance: string): any {
-  let config = getZoweConfig();
+export function getZoweConfigEnv(haInstance: string, config:ZoweConfig=getZoweConfig()): any {
   let flattener = new objUtils.Flattener();
   flattener.setSeparator('_');
   flattener.setPrefix('ZWE_');

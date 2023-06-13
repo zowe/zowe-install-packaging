@@ -114,7 +114,6 @@ function prepareWorkspaceDirectory(enabledComponents: string[]) {
   // TODO delete this or get this from configmgr instead.
   
   config.generateInstanceEnvFromYamlConfig(zweCliParameterHaInstance);
-  enabledComponents.forEach((component) =>  config.generateInstanceEnvFromYamlConfig(zweCliParameterHaInstance, component));
 }
 
 // Global validations
@@ -196,6 +195,7 @@ function validateComponents(enabledComponents:string[]): {[componentId: string]:
   common.printFormattedInfo("ZWELS", "zwe-internal-start-prepare,validate_components", "process component validations ...");
 
   const componentConfigs = {};
+  const zweCliParameterHaInstance = std.getenv('ZWE_CLI_PARAMETER_HA_INSTANCE');
   
   // reset error counter
   let privateErrors = 0;
@@ -210,19 +210,8 @@ function validateComponents(enabledComponents:string[]): {[componentId: string]:
     if (componentDir) {
       const manifest = component.getManifest(componentDir);
 
-
-      //TODO HERE:
-      /*
-        i need to put the component's defaults.yaml at the start of the currentl list.
-        then i need to write the merged result to a file.
-        this is the file that particular component should get.
-        the environment variables it gets should be based upon this too.
-
-
-      */
-      
-      const {path: mergedComponentPath, name: configName} = component.validateConfigForComponent(componentId, manifest, componentDir, std.getenv('ZWE_CLI_PARAMETER_CONFIG'));
-      
+      const {path: mergedComponentPath, name: configName, contents: configContents } = component.validateConfigForComponent(componentId, manifest, componentDir, std.getenv('ZWE_CLI_PARAMETER_CONFIG'));
+      config.generateInstanceEnvFromYamlConfig(zweCliParameterHaInstance, componentId, configContents);
 
       // check validate script
       const validateScript = manifest.commands ? manifest.commands.validate : undefined;
