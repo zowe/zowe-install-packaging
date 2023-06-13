@@ -9,8 +9,8 @@
   Copyright Contributors to the Zowe Project.
 */
 
-import * as std from 'std';
-import * as os from 'os';
+import * as std from 'cm_std';
+import * as os from 'cm_os';
 import * as zos from 'zos';
 import * as xplatform from 'xplatform';
 
@@ -232,7 +232,7 @@ export function sanitizeHaInstanceId(): string|undefined {
 export function applyEnviron(environ: any): void {
   let keys = Object.keys(environ);
   keys.forEach(function(key:string) {
-    common.printMessage(`applyEnviron setting ${key}=${environ[key]}`);
+    common.printDebug(`applyEnviron setting ${key}=${environ[key]}`);
     std.setenv(key, environ[key]);
   });
 }
