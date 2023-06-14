@@ -339,6 +339,9 @@ zowe:
   # some use cases, like containerization, this port could be different.
   externalPort: 7554
 
+  network:
+    attls: false
+
   # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   # You can un-comment and define any extra environment variables as key/value
   # pairs here.
@@ -462,7 +465,8 @@ components:
     enabled: true
     port: 7554
     debug: false
-
+    launcher:
+      attls: ${{ zowe.network?.attls }}
     apiml:
       security:
         auth:
@@ -476,6 +480,9 @@ components:
           provider: ""
         x509:
           enabled: false
+    spring:
+      profiles:
+        active: ${{ components.gateway.launcher?.attls ? 'attls': undefined }}
     server:
       internal:
       # gateway supports internal connector
@@ -483,6 +490,8 @@ components:
         port: 7550
         ssl:
           enabled: false
+      ssl:
+        enabledd: ${{ components.gateway.launcher?.attls ? false : undefined }}
           # internal connector can use different certificate
           # certificate:
           #   keystore:
@@ -499,24 +508,32 @@ components:
     enabled: false
     port: 7551
     debug: false
+    launcher:
+      attls: ${{ zowe.network?.attls }}
 
   # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   cloud-gateway:
     enabled: false
     port: 7563
     debug: false
+    launcher:
+      attls: ${{ zowe.network?.attls }}
 
   # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   api-catalog:
     enabled: true
     port: 7552
     debug: false
+    launcher:
+      attls: ${{ zowe.network?.attls }}
 
   # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   discovery:
     enabled: true
     port: 7553
     debug: false
+    launcher:
+      attls: ${{ zowe.network?.attls }}
     # Define this value to match your number of Discovery StatefulSet if you are running containerized Zowe
     # replicas: 1
 
@@ -525,6 +542,8 @@ components:
     enabled: true
     port: 7555
     debug: false
+    launcher:
+      attls: ${{ zowe.network?.attls }}
 
     storage:
       evictionStrategy: reject
@@ -544,6 +563,11 @@ components:
   app-server:
     enabled: true
     port: 7556
+    launcher:
+      attls: ${{ zowe.network?.attls }}
+    agent:
+      http:
+        attls: ${{ ()=> { return (zowe.network?.attls || components['app-server']?.launcher.attls) }() }}
     # we can customize any component with custom certificate
     # the missing definitions will be picked from "zowe.certificate"
     # certificate:
@@ -558,7 +582,8 @@ components:
     enabled: true
     port: 7557
     crossMemoryServerName: ZWESIS_STD
-    tls: true
+    tls: ${{ !zowe.network?.attls }}
+    attls: ${{ zowe.network?.attls }}
     agent:
       jwt:
         fallback: true
