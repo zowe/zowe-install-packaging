@@ -13,22 +13,31 @@
 
 if [ "$#" -eq 2 ]; then
   message_id=$2
+  echo "Message ID: $message_id"
+
+  if [[ $message_id == ZWE* ]]; then
+    echo "STARTS WITH ZWE"
+
+    fourth_letter=${message_id:3:1}
+    echo "fourth_letter: $fourth_letter"
+
+    case "$fourth_letter" in
+      "A")
+        echo "Starts with A"
+        ;;
+      "D")
+        echo "Starts with D"
+        ;;
+      "S")
+        echo "Starts with S"
+        ;;
+      *)
+        echo "Invalid fourth letter"
+        ;;
+    esac
+  else
+    echo "Invalid message ID"
+  fi
 else
   print_error_and_exit "Error: Invalid arguments provided. Usage: zwe help <messageID>." "" 150
 fi
-
-
-case "$message_id" in
-  "ID1")
-    help_message="This is the help message for ID1."
-    ;;
-  "ID2")
-    help_message="This is the help message for ID2."
-    ;;
-  *)
-    print_error_and_exit "Error: Invalid message ID provided." "" 150
-    ;;
-esac
-
-print_message "$help_message"
-
