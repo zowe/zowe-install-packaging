@@ -21,15 +21,15 @@
               "description": "MVS data set related configurations",
               "properties": {
                 "prefix": {
-                  "type": "string",
+                  "$ref": "/schemas/v2/server-common#zoweDataset",
                   "description": "Where Zowe MVS data sets will be installed"
                 },
                 "proclib": {
-                  "type": "string",
+                  "$ref": "/schemas/v2/server-common#zoweDataset",
                   "description": "PROCLIB where Zowe STCs will be copied over"
                 },
                 "parmlib": {
-                  "type": "string",
+                  "$ref": "/schemas/v2/server-common#zoweDataset",
                   "description": "Zowe PARMLIB"
                 },
                 "parmlibMembers": {
@@ -44,21 +44,21 @@
                   }
                 },
                 "jcllib": {
-                  "type": "string",
+                  "$ref": "/schemas/v2/server-common#zoweDataset",
                   "description": "JCL library where Zowe will store temporary JCLs during initialization"
                 },
                 "loadlib": {
-                  "type": "string",
+                  "$ref": "/schemas/v2/server-common#zoweDataset",
                   "description": "States the path where Zowe executable utilities are located",
                   "default": "<hlq>.SZWELOAD"
                 },
                 "authLoadlib": {
-                  "type": "string",
+                  "$ref": "/schemas/v2/server-common#zoweDataset",
                   "description": "The dataset that contains any Zowe core code that needs to run APF-authorized, such as ZIS",
                   "default": "<hlq>.SZWEAUTH"
                 },
                 "authPluginLib": {
-                  "type": "string",
+                  "$ref": "/schemas/v2/server-common#zoweDataset",
                   "description": "APF authorized LOADLIB for Zowe ZIS Plugins"
                 }
               }
