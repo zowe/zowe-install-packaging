@@ -593,12 +593,16 @@ components:
     enabled: false
     debug: false
     port: 7558
+    launcher:
+      attls: ${{ zowe.network?.attls }}
 
   # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   files-api:
     enabled: false
     debug: false
     port: 7559
+    launcher:
+      attls: ${{ zowe.network?.attls }}
 
   # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   explorer-jes:
