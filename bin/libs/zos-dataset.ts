@@ -238,7 +238,7 @@ export function getDatasetVolume(dataset: string): { rc: number, volume?: string
 export function apfAuthorizeDataset(dataset: string): number {
   const result = isDatasetSmsManaged(dataset);
   if (result.rc) {
-    common.printError("Error ZWEL0134E: Failed to find SMS status of data set ${dataset}.");
+    common.printError(`Error ZWEL0134E: Failed to find SMS status of data set ${dataset}.`);
     return 134;
   }
 
