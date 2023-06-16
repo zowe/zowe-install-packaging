@@ -88,7 +88,7 @@ export function execute(allowOverwrite: boolean = false) {
     // source in SZWESAMP
     const sampExistence=zosdataset.isDatasetExists(`${prefix}.${SAMP_LIB}(${mb})`);
     if (sampExistence != true) {
-      common.printErrorAndExit(`Error ZWEL0143E: ${prefix}.${SAMP_LIB}(${mb}) already exists. This data set member will be overwritten during configuration.`, undefined, 143);
+      common.printErrorAndExit(`Error ZWEL0143E:  Cannot find data set member ${prefix}.${SAMP_LIB}(${mb}). You may need to re-run 'zwe install'.`, undefined, 143);
     }
   });
   target_proclibs.forEach((mb: string) => {

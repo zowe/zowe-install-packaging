@@ -81,7 +81,7 @@ for mb in ${proclibs}; do
   # source in SZWESAMP
   samp_existence=$(is_data_set_exists "${prefix}.${ZWE_PRIVATE_DS_SZWESAMP}(${mb})")
   if [ "${samp_existence}" != "true" ]; then
-      print_error_and_exit "Error ZWEL0143E: ${prefix}.${ZWE_PRIVATE_DS_SZWESAMP}(${mb}) already exists. This data set member will be overwritten during configuration." "" 143
+      print_error_and_exit "Error ZWEL0143E: Cannot find data set member ${prefix}.${ZWE_PRIVATE_DS_SZWESAMP}(${mb}). You may need to re-run 'zwe install'." "" 143
   fi
 done
 for mb in ${target_proclibs}; do
