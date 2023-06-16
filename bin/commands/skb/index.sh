@@ -12,34 +12,3 @@
 #######################################################################
 
 
-if [ "$#" -eq 0 ]; then
-    echo "No command-line arguments provided."
-else
-    echo "Command-line arguments were provided."
-fi
-
-if [ "$#" -eq 1 ]; then
-   message_id1=$1
-   echo "Message ID1: $message_id1"
-else
-  echo "Not one parameter"
-fi
-
-if [ "$#" -ge 1 ]; then
-  echo "Command-line arguments:"
-  for arg in "$@"; do
-    echo "$arg"
-  done
-else
-  echo "No command-line arguments provided."
-fi
-
-if [ "$#" -gt 1 ]; then
-  echo "Again: Command-line arguments:"
-  for arg in "$@"; do
-    echo "$arg"
-  done
-else
-  echo "Not more than one command-line arguments provided."
-fi
-
