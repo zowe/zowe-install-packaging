@@ -22,14 +22,7 @@ if [ "$#" -eq 1 ]; then
    message_id1=$1
    echo "Message ID1: $message_id1"
 else
-  echo "Not just one parameter"
-fi
-
-if [ "$#" -eq 1 ]; then
-  argument="$1"
-  echo "Command-line argument: $argument"
-else
-  echo "No command-line argument provided or too many arguments."
+  echo "Not one parameter"
 fi
 
 if [ "$#" -ge 1 ]; then
@@ -41,11 +34,20 @@ else
   echo "No command-line arguments provided."
 fi
 
+if [ "$#" -gt 1 ]; then
+  echo "Again: Command-line arguments:"
+  for arg in "$@"; do
+    echo "$arg"
+  done
+else
+  echo "Not more than one command-line arguments provided."
+fi
+
 if [ "$#" -eq 2 ]; then
   message_id2=$2
   echo "Message ID2: $message_id2"
 
-  if [[ $message_id == ZWE* ]]; then
+  if [[ $message_id2 == ZWE* ]]; then
     echo "STARTS WITH ZWE"
   else
     echo "Invalid message ID"
