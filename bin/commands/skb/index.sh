@@ -43,15 +43,3 @@ else
   echo "Not more than one command-line arguments provided."
 fi
 
-if [ "$#" -eq 2 ]; then
-  message_id2=$2
-  echo "Message ID2: $message_id2"
-
-  if [[ $message_id2 == ZWE* ]]; then
-    echo "STARTS WITH ZWE"
-  else
-    echo "Invalid message ID"
-  fi
-else
-  print_error_and_exit "Error: Invalid arguments provided. Usage: zwe help <messageID>." "" 150
-fi
