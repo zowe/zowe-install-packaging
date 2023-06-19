@@ -142,17 +142,17 @@
                   "description": "STC names",
                   "properties": {
                     "zowe": {
-                      "type": "string",
+                      "$ref": "/schemas/v2/server-common#zoweDatasetMember",
                       "description": "STC name of main service",
                       "default": "ZWESLSTC"
                     },
                     "zis": {
-                      "type": "string",
+                      "$ref": "/schemas/v2/server-common#zoweDatasetMember",
                       "description": "STC name of ZIS",
                       "default": "ZWESISTC"
                     },
                     "aux": {
-                      "type": "string",
+                      "$ref": "/schemas/v2/server-common#zoweDatasetMember",
                       "description": "STC name of Auxiliary Service",
                       "default": "ZWESASTC"
                     }
