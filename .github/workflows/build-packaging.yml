@@ -104,7 +104,7 @@ jobs:
         uses: zowe-actions/shared-actions/validate-package-json@main
 
       - name: '[Prep 5] Prepare workflow'
-        uses: zowe-actions/shared-actions/prepare-workflow@main
+        uses: zowe-actions/shared-actions/prepare-workflow@user/markackert/force-ansible-vers
         with:
           package-name: org.zowe
           extra-init: |

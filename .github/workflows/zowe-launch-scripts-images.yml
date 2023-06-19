@@ -21,7 +21,7 @@ jobs:
         env:
           JF_ENV_1: ${{ secrets.JF_ARTIFACTORY_TOKEN }}
 
-      - uses: zowe-actions/shared-actions/prepare-workflow@main
+      - uses: zowe-actions/shared-actions/prepare-workflow@user/markackert/force-ansible-vers
 
       - uses: zowe-actions/shared-actions/docker-prepare@main
         with:
@@ -62,7 +62,7 @@ jobs:
         env:
           JF_ENV_1: ${{ secrets.JF_ARTIFACTORY_TOKEN }}
 
-      - uses: zowe-actions/shared-actions/prepare-workflow@main
+      - uses: zowe-actions/shared-actions/prepare-workflow@user/markackert/force-ansible-vers
 
       - uses: zowe-actions/shared-actions/docker-prepare@main
         with:
@@ -110,7 +110,7 @@ jobs:
         env:
           JF_ENV_1: ${{ secrets.JF_ARTIFACTORY_TOKEN }}
 
-      - uses: zowe-actions/shared-actions/prepare-workflow@main
+      - uses: zowe-actions/shared-actions/prepare-workflow@user/markackert/force-ansible-vers
 
       - uses: zowe-actions/shared-actions/docker-prepare@main
         with:
@@ -135,7 +135,7 @@ jobs:
         env:
           JF_ENV_1: ${{ secrets.JF_ARTIFACTORY_TOKEN }}
 
-      - uses: zowe-actions/shared-actions/prepare-workflow@main
+      - uses: zowe-actions/shared-actions/prepare-workflow@user/markackert/force-ansible-vers
 
       - uses: zowe-actions/shared-actions/docker-prepare@main
         with:
@@ -179,7 +179,7 @@ jobs:
         env:
           JF_ENV_1: ${{ secrets.JF_ARTIFACTORY_TOKEN }}
 
-      - uses: zowe-actions/shared-actions/prepare-workflow@main
+      - uses: zowe-actions/shared-actions/prepare-workflow@user/markackert/force-ansible-vers
 
       - uses: zowe-actions/shared-actions/docker-prepare@main
         with:
@@ -230,7 +230,7 @@ jobs:
         env:
           JF_ENV_1: ${{ secrets.JF_ARTIFACTORY_TOKEN }}
 
-      - uses: zowe-actions/shared-actions/prepare-workflow@main
+      - uses: zowe-actions/shared-actions/prepare-workflow@user/markackert/force-ansible-vers
 
       - uses: zowe-actions/shared-actions/docker-prepare@main
         with:
