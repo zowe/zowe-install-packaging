@@ -89,13 +89,13 @@ env:
 jobs:
   display-dispatch-event-id:
     if: github.event.inputs.RANDOM_DISPATCH_EVENT_ID != ''
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     steps:
       - name: RANDOM_DISPATCH_EVENT_ID is ${{ github.event.inputs.RANDOM_DISPATCH_EVENT_ID }}
         run: echo "prints random dispatch event id sent from workflow dispatch event"
 
   check-permission:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     steps:
       # this action will fail the whole workflow if permission check fails
       - name: check permission
@@ -104,7 +104,7 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
   make-matrix:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     needs: check-permission
     steps:
       - name: 'Checkout'
@@ -123,7 +123,7 @@ jobs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
 
   cicd-test:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     needs: make-matrix
     strategy:
       matrix: ${{ fromJson(needs.make-matrix.outputs.matrix) }}
@@ -461,7 +461,7 @@ jobs:
             });
 
   # keep-curl:
-  #   runs-on: ubuntu-latest
+  #   runs-on: ubuntu-20.04
   #   needs: make-matrix
   #   strategy:
   #     matrix: ${{ fromJson(needs.make-matrix.outputs.matrix) }}
