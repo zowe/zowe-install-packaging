@@ -158,14 +158,8 @@ check_node_version() {
 
   if [[ ${too_low} == "true" ]]
   then
-    print_error_message "Node ${node_version} is less than the minimum level required of v8+"
+    print_error_message "Node ${node_version} is less than the minimum level required of v14+"
     return 1
-  elif [[ ${too_low_support} == "true" ]]
-  then
-    log_message "Warning: Zowe is no longer offering support for Node v6 and v8. Please use a higher version."
-  elif [[ ${node_major_version} -eq 8 ]]
-  then
-    log_message "Deprecation Warning: Zowe will be ending support for Node v8 by the end of December 2021."
   else
     log_message "Node ${node_version} is supported."
   fi
