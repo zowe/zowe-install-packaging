@@ -10,6 +10,8 @@
 # Copyright IBM Corporation 2020
 ################################################################################
 
+minVersion=14
+
 # TODO LATER - anyway to do this better?
 # Try and work out where we are even if sourced
 if [[ -n ${INSTALL_DIR} ]]
@@ -149,10 +151,10 @@ check_node_version() {
   
   too_low=""
   too_low_support=""
-  if [[ ${node_major_version} -lt 8 ]] || [[ ${node_major_version} -lt 12 ]]
+  if [[ ${node_major_version} -lt ${minVersion} ]]
   then
     too_low="true"
-  elif [[ ${node_major_version} -eq 8 ]] || [[ ${node_major_version} -lt 12 ]] && [[ ${current_year} -gt 2021 ]]
+  elif [[ ${node_major_version} -eq ${minVersion} ]] && [[ ${current_year} -gt 2021 ]]
   then
     too_low_support="true"
   fi

@@ -61,7 +61,7 @@ env:
   DEFAULT_ZOWE_EXT_ARTIFACTORY_PATTERN: libs-snapshot-local/org/zowe/{ext-name}/*/{ext-name}-*.pax
 
   # can be overwritten, adjusted by DevOps only
-  ZOS_NODE_VERSION: v14.15.1
+  ZOS_NODE_VERSION: v14.21.3
   # ZOS_NODE_VERSION more to choose from: v14.21.3, v16.19.1
   CLIENT_NODE_VERSION: v12.18.3
   INSTALL_TEST_DEBUG_INFORMATION: zowe-install-test:*
