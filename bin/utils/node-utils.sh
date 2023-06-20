@@ -149,10 +149,10 @@ check_node_version() {
   
   too_low=""
   too_low_support=""
-  if [[ ${node_major_version} -lt 8 ]]
+  if [[ ${node_major_version} -lt 8 ]] || [[ ${node_major_version} -lt 12 ]]
   then
     too_low="true"
-  elif [[ ${node_major_version} -eq 8 ]] && [[ ${current_year} -gt 2021 ]]
+  elif [[ ${node_major_version} -eq 8 ]] || [[ ${node_major_version} -lt 12 ]] && [[ ${current_year} -gt 2021 ]]
   then
     too_low_support="true"
   fi
