@@ -154,9 +154,6 @@ check_node_version() {
   if [[ ${node_major_version} -lt ${minVersion} ]]
   then
     too_low="true"
-  elif [[ ${node_major_version} -eq ${minVersion} ]] && [[ ${current_year} -gt 2021 ]]
-  then
-    too_low_support="true"
   fi
 
   if [[ ${too_low} == "true" ]]
