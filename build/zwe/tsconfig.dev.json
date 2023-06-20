@@ -31,7 +31,7 @@
     "../../bin/utils/*"
   ],
   "exclude": [
-    "../../bin/commands/init/certificate/*"
+    "../../bin/commands/init/certificate/*",
     "../../bin/commands/components/conda.ts"
   ]
 }

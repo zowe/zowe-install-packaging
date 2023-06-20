@@ -9,7 +9,7 @@
   Copyright Contributors to the Zowe Project.
 */
 
-import * as std from 'std';
+import * as std from 'cm_std';
 import * as node from '../../libs/node';
 import * as java from '../../libs/java';
 import * as common from '../../libs/common';
