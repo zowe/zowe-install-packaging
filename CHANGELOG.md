@@ -6,6 +6,11 @@ All notable changes to the Zowe Installer will be documented in this file.
 
 - Updated ZWEWRF03 workflow to be up to date with the installed software
 
+## `1.28.4`
+
+#### Minor enhancements/defect fixes
+- Detects and warns against nodejs lower than version 14 (Due to end of life of v12) [#3458](https://github.com/zowe/zowe-install-packaging/pull/3458)
+
 ## `1.28.2`
 
 #### Minor enhancements/defect fixes
