@@ -465,8 +465,9 @@ components:
     enabled: true
     port: 7554
     debug: false
-    launcher:
-      attls: ${{ zowe.network?.attls }}
+    zowe:
+      network:
+        attls: ${{ zowe.network?.attls }}
     apiml:
       security:
         auth:
@@ -482,7 +483,7 @@ components:
           enabled: false
     spring:
       profiles:
-        active: ${{ components.gateway.launcher?.attls ? 'attls': undefined }}
+        active: ${{ components.gateway.zowe?.network?.attls ? 'attls': undefined }}
     server:
       internal:
       # gateway supports internal connector
@@ -491,7 +492,7 @@ components:
         ssl:
           enabled: false
       ssl:
-        enabledd: ${{ components.gateway.launcher?.attls ? false : undefined }}
+        enabled: ${{ components.gateway.zowe?.network?.attls ? false : undefined }}
           # internal connector can use different certificate
           # certificate:
           #   keystore:
@@ -508,32 +509,36 @@ components:
     enabled: false
     port: 7551
     debug: false
-    launcher:
-      attls: ${{ zowe.network?.attls }}
+    zowe:
+      network:
+        attls: ${{ zowe.network?.attls }}
 
   # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   cloud-gateway:
     enabled: false
     port: 7563
     debug: false
-    launcher:
-      attls: ${{ zowe.network?.attls }}
+    zowe:
+      network:
+        attls: ${{ zowe.network?.attls }}
 
   # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   api-catalog:
     enabled: true
     port: 7552
     debug: false
-    launcher:
-      attls: ${{ zowe.network?.attls }}
+    zowe:
+      network:
+        attls: ${{ zowe.network?.attls }}
 
   # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   discovery:
     enabled: true
     port: 7553
     debug: false
-    launcher:
-      attls: ${{ zowe.network?.attls }}
+    zowe:
+      network:
+        attls: ${{ zowe.network?.attls }}
     # Define this value to match your number of Discovery StatefulSet if you are running containerized Zowe
     # replicas: 1
 
@@ -542,8 +547,9 @@ components:
     enabled: true
     port: 7555
     debug: false
-    launcher:
-      attls: ${{ zowe.network?.attls }}
+    zowe:
+      network:
+        attls: ${{ zowe.network?.attls }}
 
     storage:
       evictionStrategy: reject
@@ -563,11 +569,12 @@ components:
   app-server:
     enabled: true
     port: 7556
-    launcher:
-      attls: ${{ zowe.network?.attls }}
+    zowe:
+      network:
+        attls: ${{ zowe.network?.attls }}
     agent:
       http:
-        attls: ${{ ()=> { return (zowe.network?.attls || components['app-server']?.launcher.attls) }() }}
+        attls: ${{ ()=> { return (zowe.network?.attls || components['app-server']?.zowe?.network?.attls) }() }}
     # we can customize any component with custom certificate
     # the missing definitions will be picked from "zowe.certificate"
     # certificate:
@@ -593,16 +600,30 @@ components:
     enabled: false
     debug: false
     port: 7558
-    launcher:
-      attls: ${{ zowe.network?.attls }}
+    zowe:
+      network:
+        attls: ${{ zowe.network?.attls }}
+    spring:
+      profiles:
+        active: ${{ components['jobs-api']?.zowe?.network?.attls ? 'attls': undefined }}
+    server:
+      ssl:
+        enabled: ${{ components['jobs-api']?.zowe?.network?.attls ? false : undefined }}
 
   # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   files-api:
     enabled: false
     debug: false
     port: 7559
-    launcher:
-      attls: ${{ zowe.network?.attls }}
+    zowe:
+      network:
+        attls: ${{ zowe.network?.attls }}
+    spring:
+      profiles:
+        active: ${{ components['files-api']?.zowe?.network?.attls ? 'attls': undefined }}
+    server:
+      ssl:
+        enabled: ${{ components['files-api']?.zowe?.network?.attls ? false : undefined }}
 
   # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   explorer-jes:
