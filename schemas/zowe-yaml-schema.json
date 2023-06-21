@@ -845,11 +845,25 @@
               "description": "Determines which SHAREAS mode should be used when starting a component",
               "enum": ["no", "yes", "must", ""],
               "default": "yes"
-            },
-            "attls": {
-              "type": "boolean",
-              "default": false,
-              "description": "Enable AT-TLS for this component. AT-TLS should only be enabled in a z/OS host environment. Servers will be switched into HTTP mode to accomodate z/OS the specific AT-TLS feature which wraps network calls in HTTPS."
+            }
+          }
+        },
+        "zowe": {
+          "type": "object",
+          "description": "Set behavior of how Zowe will handle this component",
+          "additionalProperties": true,
+          "properties": {
+            "network": {
+              "type": "object",
+              "description": "Set network related configurations for this component",
+              "additionalProperties": true,
+              "properties": {
+                "attls": {
+                  "type": "boolean",
+                  "default": false,
+                  "description": "Enable AT-TLS for this component. AT-TLS should only be enabled in a z/OS host environment. Servers will be switched into HTTP mode to accomodate z/OS the specific AT-TLS feature which wraps network calls in HTTPS."
+                }
+              }
             }
           }
         }
