@@ -3,6 +3,10 @@
 All notable changes to the Zowe Installer will be documented in this file.
 <!--Add the PR or issue number to the entry if available.-->
 
+## `2.10.0`
+
+- Enhancement: Implement global/component AT-TLS yaml config
+
 ## `2.9.0`
 
 ### New features and enhancements
