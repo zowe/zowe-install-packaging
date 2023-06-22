@@ -13,6 +13,6 @@
 
 
 print_level1_message "Here is the message: ${ZWE_CLI_PARAMETER_MESSAGEID}"
-error_code="${ZWE_CLI_PARAMETER_MESSAGEID}"
+error_code=${ZWE_CLI_PARAMETER_MESSAGEID}
 
 echo "Error Code: $error_code"
