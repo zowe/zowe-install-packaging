@@ -16,3 +16,6 @@ print_level1_message "Here is the message: ${ZWE_CLI_PARAMETER_ERROR_CODE}"
 error_code="${ZWE_CLI_PARAMETER_ERROR_CODE}"
 
 echo "Error Code: $error_code"
+server_code=$(echo "$error_code" | awk '{print substr($0,4,1)}')
+echo "Server Code: $server_code"
+

@@ -16,5 +16,5 @@ print_level1_message "Here is the message: ${ZWE_CLI_PARAMETER_ERROR_CODE}"
 error_code="${ZWE_CLI_PARAMETER_ERROR_CODE}"
 
 echo "Error Code: $error_code"
-server_code=${error_code:3:1}
+server_code=$(echo "${error_code}" | cut -c 4)
 echo "Server Code: $server_code"

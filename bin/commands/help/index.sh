@@ -15,7 +15,8 @@
 print_level1_message "Here is the message: ${ZWE_CLI_PARAMETER_ERROR_CODE}"
 error_code="${ZWE_CLI_PARAMETER_ERROR_CODE}"
 
-server_code=${error_code:3:1}
+server_code=$(echo "${error_code}" | cut -c4)
+echo "Server Code: $server_code"
 
 if [[ "$server_code" == [Dd] ]]; then
   print_message "The code corresponds to the errors related to the ZOWE Desktop and the App Server."
