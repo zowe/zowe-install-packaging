@@ -26,6 +26,9 @@ set -x
 # ./content/templates/
 # ./content/zowe-${ZOWE_VERSION}/
 
+# use node v14 to build
+export NODE_HOME=/ZOWE/node/node-v14.21.3-os390-s390x
+
 # ---------------------------------------------------------------------
 # --- create JCL files
 # $1: (input) location of .vtl & .properties files
