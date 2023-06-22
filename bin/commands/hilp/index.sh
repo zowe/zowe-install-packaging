@@ -11,9 +11,12 @@
 # Copyright Contributors to the Zowe Project.
 #######################################################################
 
+
+print_level1_message "Here is the message: ${ZWE_CLI_PARAMETER_ERROR_CODE}"
 error_code="${ZWE_CLI_PARAMETER_ERROR_CODE}"
 
 server_code=$(echo "${error_code}" | cut -c4)
+echo "Server Code: $server_code"
 
 if [[ $error_code =~ ^[zZ][wW][eE][AaSsDdLl][A-Za-z]?[0-9]{3,4}[A-Za-z]$ ]]; then
   if [[ "$server_code" == [Dd] ]]; then
