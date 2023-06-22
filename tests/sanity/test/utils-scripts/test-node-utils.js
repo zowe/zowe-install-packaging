@@ -114,25 +114,20 @@ describe('verify node-utils', function () {
       await test_node_version('v6.17.0', false);
     });
 
-    it('test v8.16.1 fails with special message', async function () {
-      const command = `${check_node_version} "v8.16.1"`;
-      const expected_err = 'Node v8.16.1 specifically is not compatible with Zowe. Please use a different version. See https://docs.zowe.org/stable/troubleshoot/app-framework/app-known-issues.html#desktop-apps-fail-to-load for more details.';
-      await test_node_utils_function_has_expected_rc_stdout_stderr(command, 1, expected_err, expected_err);
+    it('test v8.16.1 fails', async function () {
+      await test_node_version('v8.16.1', false);
     });
 
-    it('test v8.17.0 issues warning', async function () {
-      const command = `${check_node_version} "v8.17.0"`;
-      const expected_rc = 0;
-      let expected_out = 'Warning: Zowe is no longer offering support for Node v6 and v8. Please use a higher version.';
-      await test_node_utils_function_has_expected_rc_stdout_stderr(command, expected_rc, expected_out, '');
+    it('test v8.17.0 fails', async function () {
+      await test_node_version('v8.17.1', false);
     });
 
-    it('test v12.13.0 passes', async function () {
-      await test_node_version('v12.13.0', true);
+    it('test v12.13.0 fails', async function () {
+      await test_node_version('v12.13.0', false);
     });
 
-    it('test v12.16.1 passes', async function () {
-      await test_node_version('v12.16.1', true);
+    it('test v12.16.1 fails', async function () {
+      await test_node_version('v12.16.1', false);
     });
 
     it('test v14.17.2 fails with special message', async function () {
@@ -145,7 +140,7 @@ describe('verify node-utils', function () {
       const command = `${check_node_version} "${version}"`;
       const expected_rc = expected_valid ? 0 : 1;
       const expected_out = expected_valid ? `Node ${version} is supported.` : '';
-      const expected_err = expected_valid ? '' : `Node ${version} is less than the minimum level required of v8+`;
+      const expected_err = expected_valid ? '' : `Node ${version} is less than the minimum level required of v14+`;
       await test_node_utils_function_has_expected_rc_stdout_stderr(command, expected_rc, expected_out, expected_err);
     }
   });

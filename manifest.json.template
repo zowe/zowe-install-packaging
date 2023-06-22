@@ -67,11 +67,11 @@
       "artifact": "zss-1.28.4-rc-909-20230622142837.pax"
     },
     "org.zowe.explorer.jobs.jobs-api-package": {
-      "version": "1.0.20",
+      "version": "1.0.21",
       "artifact": "jobs-api*.zip"
     },
     "org.zowe.explorer.files.files-api-package": {
-      "version": "1.0.22",
+      "version": "1.0.23",
       "artifact": "files-api*.zip"
     },
     "org.zowe.explorer-jes": {
@@ -133,7 +133,7 @@
       "flat": "true"
    },
     "org.zowe.utility-tools": {
-      "version": "0.0.12"
+      "version": "0.0.13"
     },
     "org.zowe.licenses": {
       "version": "1.28.3",
@@ -145,7 +145,7 @@
       "componentGroup": "Imperative CLI Framework for Zowe",
       "entries": [{
         "repository": "imperative",
-        "tag": "v4.18.14",
+        "tag": "v4.18.16",
         "destinations": ["Zowe CLI Package"]
       }]
     }, {
@@ -224,21 +224,21 @@
       "componentGroup": "Zowe CLI",
       "entries": [{
         "repository": "zowe-cli",
-        "tag": "v6.40.15",
+        "tag": "v6.40.17",
         "destinations": ["Zowe CLI Package"]
       }]
     }, {
       "componentGroup": "IBM&reg CICS&reg Plug-in for Zowe CLI",
       "entries": [{
         "repository": "zowe-cli-cics-plugin",
-        "tag": "v4.0.7",
+        "tag": "v4.0.8",
         "destinations": ["Zowe CLI Package"]
       }]
     }, {
       "componentGroup": "IBM&reg Db2&reg Plug-in for Zowe CLI",
       "entries": [{
         "repository": "zowe-cli-db2-plugin",
-        "tag": "v4.1.8",
+        "tag": "v4.1.9",
         "destinations": ["Zowe CLI Package"]
       }]
     }, {
@@ -252,14 +252,14 @@
       "componentGroup": "IBM&reg MQ Plug-in for Zowe CLI",
       "entries": [{
         "repository": "zowe-cli-mq-plugin",
-        "tag": "v2.0.1",
+        "tag": "v2.0.4",
         "destinations": ["Zowe CLI Package"]
       }]
     }, {
       "componentGroup": "Secure Credential Store Plug-in for Zowe CLI",
       "entries": [{
         "repository": "zowe-cli-scs-plugin",
-        "tag": "v4.1.6",
+        "tag": "v4.1.10",
         "destinations": ["Zowe CLI Package"]
       }]
     }, {
@@ -315,21 +315,21 @@
       "componentGroup": "Zowe Explorer Common REST Server",
       "entries": [{
         "repository": "explorer-api-common",
-        "tag": "1.1.18",
+        "tag": "1.1.19",
         "destinations": ["Zowe PAX"]
       }]
     }, {
       "componentGroup": "Zowe Explorer Data Sets REST Server",
       "entries": [{
         "repository": "data-sets",
-        "tag": "1.0.22",
+        "tag": "1.0.23",
         "destinations": ["Zowe PAX"]
       }]
     }, {
       "componentGroup": "Zowe Explorer Jobs REST Server",
       "entries": [{
         "repository": "jobs",
-        "tag": "1.0.20",
+        "tag": "1.0.21",
         "destinations": ["Zowe PAX"]
       }]
     }, {
@@ -407,7 +407,7 @@
         "destinations": ["Zowe PAX"]
       }, {
         "repository": "zowe-install-packaging-tools",
-        "tag": "v0.0.12",
+        "tag": "v0.0.13",
         "destinations": ["Zowe PAX"]
       }, {
         "repository": "launcher",
@@ -419,7 +419,7 @@
       "componentGroup": "Zowe Visual Studio Code Extension",
       "entries": [{
         "repository": "vscode-extension-for-zowe",
-        "tag": "v1.22.2",
+        "tag": "v1.22.3",
         "destinations": ["Visual Studio Code Marketplace"]
       }]
     },
@@ -436,7 +436,7 @@
     "zowe-launch-scripts": {
       "registry": "zowe-docker-release.jfrog.io",
       "name": "ompzowe/zowe-launch-scripts",
-      "tag" : "1.28.3-ubuntu"
+      "tag" : "1.28.4-ubuntu"
     },
     "api-catalog": {
       "registry": "zowe-docker-release.jfrog.io",
@@ -488,12 +488,12 @@
     "files-api": {
       "registry": "zowe-docker-release.jfrog.io",
       "name": "ompzowe/files-api",
-      "tag" : "1.0.22-ubuntu"
+      "tag" : "1.0.23-ubuntu"
     },
     "jobs-api": {
       "registry": "zowe-docker-release.jfrog.io",
       "name": "ompzowe/jobs-api",
-      "tag" : "1.0.20-ubuntu"
+      "tag" : "1.0.21-ubuntu"
     }
   },
   "dependencyDecisions": {

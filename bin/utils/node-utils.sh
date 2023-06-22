@@ -10,6 +10,8 @@
 # Copyright IBM Corporation 2020
 ################################################################################
 
+minVersion=14
+
 # TODO LATER - anyway to do this better?
 # Try and work out where we are even if sourced
 if [[ -n ${INSTALL_DIR} ]]
@@ -137,7 +139,7 @@ check_node_version() {
   current_year=$(date +"%Y")
   current_month=$(date +"%m")
 
-  if [ "${node_version}" = "v8.16.1" -o "${node_version}" = "v14.17.2" ]
+  if [ "${node_version}" = "v14.17.2" ]
   then
     print_error_message "Node ${node_version} specifically is not compatible with Zowe. Please use a different version. See https://docs.zowe.org/stable/troubleshoot/app-framework/app-known-issues.html#desktop-apps-fail-to-load for more details."
     return 1
@@ -149,24 +151,15 @@ check_node_version() {
   
   too_low=""
   too_low_support=""
-  if [[ ${node_major_version} -lt 8 ]]
+  if [[ ${node_major_version} -lt ${minVersion} ]]
   then
     too_low="true"
-  elif [[ ${node_major_version} -eq 8 ]] && [[ ${current_year} -gt 2021 ]]
-  then
-    too_low_support="true"
   fi
 
   if [[ ${too_low} == "true" ]]
   then
-    print_error_message "Node ${node_version} is less than the minimum level required of v8+"
+    print_error_message "Node ${node_version} is less than the minimum level required of v14+"
     return 1
-  elif [[ ${too_low_support} == "true" ]]
-  then
-    log_message "Warning: Zowe is no longer offering support for Node v6 and v8. Please use a higher version."
-  elif [[ ${node_major_version} -eq 8 ]]
-  then
-    log_message "Deprecation Warning: Zowe will be ending support for Node v8 by the end of December 2021."
   else
     log_message "Node ${node_version} is supported."
   fi

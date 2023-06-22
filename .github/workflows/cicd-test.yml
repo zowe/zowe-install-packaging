@@ -25,7 +25,6 @@ on:
           - Tech Preview Docker
           - Extensions
           - Keyring
-          - z/OS node v12
           - z/OS node v14
           - z/OS node v16
           - Non-strict Verify External Certificate
@@ -62,8 +61,8 @@ env:
   DEFAULT_ZOWE_EXT_ARTIFACTORY_PATTERN: libs-snapshot-local/org/zowe/{ext-name}/*/{ext-name}-*.pax
 
   # can be overwritten, adjusted by DevOps only
-  ZOS_NODE_VERSION: v12.18.4
-  # ZOS_NODE_VERSION more to choose from: v14.15.1, v16.13.0
+  ZOS_NODE_VERSION: v14.21.3
+  # ZOS_NODE_VERSION more to choose from: v14.21.3, v16.19.1
   CLIENT_NODE_VERSION: v12.18.3
   INSTALL_TEST_DEBUG_INFORMATION: zowe-install-test:*
   SANITY_TEST_DEBUG_INFORMATION: zowe-sanity-test:*
@@ -75,7 +74,6 @@ env:
   TECH_PREVIEW_DOCKER_TESTFILE: basic/install-docker.ts
   EXTENSIONS_TESTFILE: basic/install-ext.ts
   KEYRING_TESTFILE: extended/keyring.ts
-  ZOS_NODE_V12_TESTFILE: extended/node-versions/node-v12.ts
   ZOS_NODE_V14_TESTFILE: extended/node-versions/node-v14.ts
   ZOS_NODE_V16_TESTFILE: extended/node-versions/node-v16.ts
   NON_STRICT_VERIFY_EXTERNAL_CERTIFICATE_TESTFILE: extended/certificates/nonstrict-verify-external-certificate.ts
@@ -83,7 +81,7 @@ env:
   VSAM_CACHING_STORAGE_METHOD_TESTFILE: extended/caching-storages/vsam-storage.ts
   INFINISPAN_CACHING_STORAGE_METHOD_TESTFILE: extended/caching-storages/infinispan-storage.ts
   GENERAL_API_DOCUMENTATION_TESTFILE: basic/install-api-gen.ts
-  ZOWE_RELEAE_TESTS_FULL: basic/install.ts(all);basic/install-ptf.ts(all);basic/install-docker.ts(any);basic/install-ext.ts(any);extended/keyring.ts(all);extended/node-versions/node-v16.ts(all);extended/node-versions/node-v12.ts(all);extended/node-versions/node-v14.ts(all);extended/certificates/nonstrict-verify-external-certificate.ts(any);extended/caching-storages/infinispan-storage.ts(any)
+  ZOWE_RELEAE_TESTS_FULL: basic/install.ts(all);basic/install-ptf.ts(all);basic/install-docker.ts(any);basic/install-ext.ts(any);extended/keyring.ts(all);extended/node-versions/node-v16.ts(all);extended/node-versions/node-v14.ts(all);extended/certificates/nonstrict-verify-external-certificate.ts(any);extended/caching-storages/infinispan-storage.ts(any)
   ZOWE_NIGHTLY_TESTS_FULL: basic/install.ts(all);basic/install-ptf.ts(all);basic/install-docker.ts(any)
 
 jobs:
@@ -136,7 +134,7 @@ jobs:
       - name: '[Prep 2] Setup Node'
         uses: actions/setup-node@v3
         with:
-          node-version: '12'
+          node-version: '14'
 
       - name: '[Prep 3] Cache node modules'
         uses: actions/cache@v2
@@ -295,9 +293,6 @@ jobs:
                 break;
               case 'Keyring':
                 eta = 27
-                break;
-              case 'z/OS node v12':
-                eta = 25
                 break;
               case 'z/OS node v14':
                 eta = 25
