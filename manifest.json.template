@@ -1,6 +1,6 @@
 {
   "name": "Zowe",
-  "version": "1.28.3",
+  "version": "1.28.4",
   "description": "Zowe is an open source project created to host technologies that benefit the Z platform from all members of the Z community (Integrated Software Vendors, System Integrators and z/OS consumers). Zowe, like Mac or Windows, comes with a set of APIs and OS capabilities that applications build on and also includes some applications out of the box. Zowe offers modern interfaces to interact with z/OS and allows you to work with z/OS in a way that is similar to what you experience on cloud platforms today. You can use these interfaces as delivered or through plug-ins and extensions that are created by clients or third-party vendors.",
   "license": "EPL-2.0",
   "homepage": "https://zowe.org",
@@ -133,7 +133,7 @@
       "flat": "true"
    },
     "org.zowe.utility-tools": {
-      "version": "0.0.12"
+      "version": "0.0.13"
     },
     "org.zowe.licenses": {
       "version": "1.28.3",
@@ -407,7 +407,7 @@
         "destinations": ["Zowe PAX"]
       }, {
         "repository": "zowe-install-packaging-tools",
-        "tag": "v0.0.12",
+        "tag": "v0.0.13",
         "destinations": ["Zowe PAX"]
       }, {
         "repository": "launcher",
@@ -419,7 +419,7 @@
       "componentGroup": "Zowe Visual Studio Code Extension",
       "entries": [{
         "repository": "vscode-extension-for-zowe",
-        "tag": "v1.22.2",
+        "tag": "v1.22.3",
         "destinations": ["Visual Studio Code Marketplace"]
       }]
     },
@@ -436,7 +436,7 @@
     "zowe-launch-scripts": {
       "registry": "zowe-docker-release.jfrog.io",
       "name": "ompzowe/zowe-launch-scripts",
-      "tag" : "1.28.3-ubuntu"
+      "tag" : "1.28.4-ubuntu"
     },
     "api-catalog": {
       "registry": "zowe-docker-release.jfrog.io",
