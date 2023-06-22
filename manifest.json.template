@@ -145,7 +145,7 @@
       "componentGroup": "Imperative CLI Framework for Zowe",
       "entries": [{
         "repository": "imperative",
-        "tag": "v4.18.14",
+        "tag": "v4.18.16",
         "destinations": ["Zowe CLI Package"]
       }]
     }, {
@@ -224,21 +224,21 @@
       "componentGroup": "Zowe CLI",
       "entries": [{
         "repository": "zowe-cli",
-        "tag": "v6.40.15",
+        "tag": "v6.40.17",
         "destinations": ["Zowe CLI Package"]
       }]
     }, {
       "componentGroup": "IBM&reg CICS&reg Plug-in for Zowe CLI",
       "entries": [{
         "repository": "zowe-cli-cics-plugin",
-        "tag": "v4.0.7",
+        "tag": "v4.0.8",
         "destinations": ["Zowe CLI Package"]
       }]
     }, {
       "componentGroup": "IBM&reg Db2&reg Plug-in for Zowe CLI",
       "entries": [{
         "repository": "zowe-cli-db2-plugin",
-        "tag": "v4.1.8",
+        "tag": "v4.1.9",
         "destinations": ["Zowe CLI Package"]
       }]
     }, {
@@ -252,14 +252,14 @@
       "componentGroup": "IBM&reg MQ Plug-in for Zowe CLI",
       "entries": [{
         "repository": "zowe-cli-mq-plugin",
-        "tag": "v2.0.1",
+        "tag": "v2.0.4",
         "destinations": ["Zowe CLI Package"]
       }]
     }, {
       "componentGroup": "Secure Credential Store Plug-in for Zowe CLI",
       "entries": [{
         "repository": "zowe-cli-scs-plugin",
-        "tag": "v4.1.6",
+        "tag": "v4.1.10",
         "destinations": ["Zowe CLI Package"]
       }]
     }, {
