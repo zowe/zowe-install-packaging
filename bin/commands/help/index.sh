@@ -13,9 +13,9 @@
 
 
 print_level1_message "Here is the message: ${ZWE_CLI_PARAMETER_MESSAGEID}"
-error_code = "${ZWE_CLI_PARAMETER_MESSAGEID}"
+error_code="${ZWE_CLI_PARAMETER_MESSAGEID}"
 
-server_code = "${error_code:3:1}"
+server_code="${error_code:3:1}"
 
 if [[ "$server_code" == [Dd] ]]; then
   print_message "The code corresponds to the errors related to the ZOWE Desktop and the App Server."
