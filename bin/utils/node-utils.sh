@@ -139,7 +139,7 @@ check_node_version() {
   current_year=$(date +"%Y")
   current_month=$(date +"%m")
 
-  if [ "${node_version}" = "v8.16.1" -o "${node_version}" = "v14.17.2" ]
+  if [ "${node_version}" = "v14.17.2" ]
   then
     print_error_message "Node ${node_version} specifically is not compatible with Zowe. Please use a different version. See https://docs.zowe.org/stable/troubleshoot/app-framework/app-known-issues.html#desktop-apps-fail-to-load for more details."
     return 1
