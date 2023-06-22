@@ -123,16 +123,16 @@ describe('verify node-utils', function () {
     it('test v8.17.0 issues warning', async function () {
       const command = `${check_node_version} "v8.17.0"`;
       const expected_rc = 0;
-      let expected_out = 'Warning: Zowe is no longer offering support for Node v6 and v8. Please use a higher version.';
+      let expected_out = 'Warning: Zowe is no longer offering support for Node prior to v14. Please use a higher version.';
       await test_node_utils_function_has_expected_rc_stdout_stderr(command, expected_rc, expected_out, '');
     });
 
-    it('test v12.13.0 passes', async function () {
-      await test_node_version('v12.13.0', true);
+    it('test v12.13.0 fails', async function () {
+      await test_node_version('v12.13.0', false);
     });
 
-    it('test v12.16.1 passes', async function () {
-      await test_node_version('v12.16.1', true);
+    it('test v12.16.1 fails', async function () {
+      await test_node_version('v12.16.1', false);
     });
 
     it('test v14.17.2 fails with special message', async function () {
@@ -145,7 +145,7 @@ describe('verify node-utils', function () {
       const command = `${check_node_version} "${version}"`;
       const expected_rc = expected_valid ? 0 : 1;
       const expected_out = expected_valid ? `Node ${version} is supported.` : '';
-      const expected_err = expected_valid ? '' : `Node ${version} is less than the minimum level required of v8+`;
+      const expected_err = expected_valid ? '' : `Node ${version} is less than the minimum level required of v14+`;
       await test_node_utils_function_has_expected_rc_stdout_stderr(command, expected_rc, expected_out, expected_err);
     }
   });

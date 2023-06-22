@@ -76,7 +76,7 @@ java:
   home: /usr/lpp/java/J8.0_64
 # customize node.js
 node:
-  home: /global/nodejs/v12/node-v12.18.0-os390-s390x
+  home: /global/nodejs/v14/node-v14.15.1-os390-s390x
 # define z/OSMF
 zOSMF:
   host: dvipa.my-company.com
