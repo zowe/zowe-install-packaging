@@ -1,4 +1,4 @@
-FROM ompzowe/zowecicd-node12-java8:v2.1 as builder
+FROM zowe-docker-release.jfrog.io/ompzowe/zowecicd-node-java:1.28.4 as builder
 
 # allow to customize which Zowe build to build from
 # There are 3 possible values:
@@ -110,7 +110,7 @@ RUN mv /home/zowe/run_inner.sh /home/zowe/.run_inner.sh && \
 RUN cp /home/zowe/instance/instance.env /home/zowe/instance/instance.env.bkp \
     && cp /home/zowe/install/bin/zowe-setup-certificates.env /home/zowe/install/bin/zowe-setup-certificates.env.bkp
 
-FROM ompzowe/zowecicd-node12-java8:v2.1
+FROM zowe-docker-release.jfrog.io/ompzowe/zowecicd-node-java:1.28.4-ubuntu
 
 EXPOSE 7553/tcp
 EXPOSE 7554/tcp
