@@ -13,7 +13,7 @@ on:
         required: false
         type: string
 env:
-  IMAGE_BASE_DIR: containers/server-bundle
+  IMAGE_BASE_DIR: containers/server-bundle/ubuntu
 
 jobs:
   display-dispatch-event-id:
