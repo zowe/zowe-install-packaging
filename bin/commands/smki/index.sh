@@ -16,6 +16,17 @@ print_level1_message "Here is the message: ${ZWE_CLI_PARAMETER_ERROR_CODE}"
 error_code="${ZWE_CLI_PARAMETER_ERROR_CODE}"
 
 echo "Error Code: $error_code"
-server_code=$(echo "$error_code" | awk '{print substr($0,4,1)}')
+server_code=$(echo "${error_code}" | cut -c4)
 echo "Server Code: $server_code"
+
+case $error_code in
+  [zZ][wW][eE][AaSsDdLl][A-Za-z]?[0-9]{3,4}[A-Za-z])
+    case $server_code in
+      [Dd])
+        echo "Valid code"
+        ;;
+    esac
+    ;;
+esac
+
 

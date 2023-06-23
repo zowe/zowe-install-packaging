@@ -18,7 +18,7 @@ error_code="${ZWE_CLI_PARAMETER_ERROR_CODE}"
 server_code=$(echo "${error_code}" | cut -c4)
 echo "Server Code: $server_code"
 
-if [[ $error_code =~ ^[zZ][wW][eE][AaSsDdLl][A-Za-z]?[0-9]{3,4}[A-Za-z]$ ]]; then
+if echo "$error_code" | awk '/^[zZ][wW][eE][AaSsDdLl][A-Za-z]?[0-9]{3,4}[A-Za-z]$/{exit 0}{exit 1}'; then
   if [[ "$server_code" == [Dd] ]]; then
     print_message "The code corresponds to the errors related to the ZOWE Desktop and the App Server."
     print_message "For more information, please refer to the Zowe documentation on App Server Return Codes at https://docs.zowe.org/stable/troubleshoot/app-framework/app-return-codes"
