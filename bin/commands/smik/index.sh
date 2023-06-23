@@ -17,9 +17,9 @@ error_code=${ZWE_CLI_PARAMETER_ERROR_CODE}
 
 echo "Error Code: $error_code"
 
-if [ "$error_code" =~ ^[zZ][wW][eE][AaSsDdLl][A-Za-z]?[0-9]{3,4}[A-Za-z]$ ]; then
-  echo "Valid error id"
+match=$(echo "$error_code" | awk '/^[zZ][wW][eE][AaSsDdLl][A-Za-z]?[0-9]{3,4}[A-Za-z]/')
+if [ -z "$match" ]; then
+  echo "Valid code"
 else
-  echo "INvalid error id"
+  echo "Invalid code"
 fi
-
