@@ -284,7 +284,7 @@ jobs:
         if: env.INPUTS_BUILD_DOCKER == 'true'
         run: |
           if [[ -f ".pax/zowe.pax" ]]; then
-            cp ".pax/zowe.pax" "containers/server-bundle/zowe.pax"
+            cp ".pax/zowe.pax" "containers/server-bundle/ubuntu/zowe.pax"
           else
             echo ".pax/zowe.pax not found, error building Linux Docker"
             exit 1
@@ -320,7 +320,7 @@ jobs:
       
       - name: '[TP_LINUX_DOCKER 2] Build Linux Docker'
         if: env.INPUTS_BUILD_DOCKER == 'true'
-        working-directory: containers/server-bundle
+        working-directory: containers/server-bundle/ubuntu
         run: |
           # copy utils to docker build folder
           mkdir -p utils
@@ -366,8 +366,8 @@ jobs:
             .pax/zowe-PSWI*
             server-bundle.s390x.tar
             server-bundle.sources.s390x.tar
-            containers/server-bundle/server-bundle.amd64.tar
-            containers/server-bundle/server-bundle.sources.amd64.tar
+            containers/server-bundle/ubuntu/server-bundle.amd64.tar
+            containers/server-bundle/ubuntu/server-bundle.sources.amd64.tar
             containers/zowe-containerization.zip
 
       - name: '[Post Prep 7] Update PR comment to indicate build succeeded'
