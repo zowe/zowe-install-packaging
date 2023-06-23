@@ -1,63 +1,73 @@
 FROM s390x/debian:stretch as builder
 #FROM s390x/ibmjava:sdk as builder
 
+##################################
+# labels
+LABEL name="Zowe Docker Distribution Base Image" \
+  vendor="Zowe" \
+  version="1.28.4" \
+  release="0" \
+  summary="Base image for Zowe docker distribution" \
+  description="Base image for Zowe docker distribution"
+
+
 ###
 # node install code from loyaltyone/docker-slim-java-node
 ###
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    ca-certificates curl wget \
-    groff iproute2 moreutils pax
+  ca-certificates curl wget \
+  groff iproute2 moreutils pax
 
 
 RUN set -ex; \
-	if ! command -v gpg > /dev/null; then \
-		apt-get install -y --no-install-recommends gnupg dirmngr; \
-	fi
+  if ! command -v gpg > /dev/null; then \
+  apt-get install -y --no-install-recommends gnupg dirmngr; \
+  fi
 
 # gpg keys listed at https://github.com/nodejs/node#release-team
 RUN set -ex \
   && for key in \
-    4ED778F539E3634C779C87C6D7062848A1AB005C \
-    94AE36675C464D64BAFA68DD7434390BDBE9B9C5 \
-    71DCFD284A79C3B38668286BC97EC7A07EDE3FC1 \
-    8FCCA13FEF1D0C2E91008E09770F7A9A5AE15600 \
-    C4F0DFFF4E8C1A8236409D08E73BC641CC11F4C8 \
-    C82FA3AE1CBEDC6BE46B9360C43CEC45C17AB93C \
-    DD8F2338BAE7501E3DD5AC78C273792F7D83545D \
-    A48C2BEE680E841632CD4E44F07496B3EB3C1762 \
-    108F52B48DB57BB0CC439B2997B01419BD92F80A \
-    B9E2F5981AA6E0CD28160D9FF13993A75599653C \
+  4ED778F539E3634C779C87C6D7062848A1AB005C \
+  94AE36675C464D64BAFA68DD7434390BDBE9B9C5 \
+  71DCFD284A79C3B38668286BC97EC7A07EDE3FC1 \
+  8FCCA13FEF1D0C2E91008E09770F7A9A5AE15600 \
+  C4F0DFFF4E8C1A8236409D08E73BC641CC11F4C8 \
+  C82FA3AE1CBEDC6BE46B9360C43CEC45C17AB93C \
+  DD8F2338BAE7501E3DD5AC78C273792F7D83545D \
+  A48C2BEE680E841632CD4E44F07496B3EB3C1762 \
+  108F52B48DB57BB0CC439B2997B01419BD92F80A \
+  B9E2F5981AA6E0CD28160D9FF13993A75599653C \
   ; do \
-    gpg --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys "$key" || \
-    gpg --keyserver hkp://ipv4.pool.sks-keyservers.net --recv-keys "$key" || \
-    gpg --keyserver hkp://pgp.mit.edu:80 --recv-keys "$key" || \
-    gpg --keyserver pool.sks-keyservers.net --recv-keys "$key" ; \
+  gpg --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys "$key" || \
+  gpg --keyserver hkp://ipv4.pool.sks-keyservers.net --recv-keys "$key" || \
+  gpg --keyserver hkp://pgp.mit.edu:80 --recv-keys "$key" || \
+  gpg --keyserver pool.sks-keyservers.net --recv-keys "$key" ; \
   done
 
 ENV NODE_VERSION 16.18.1
 
 RUN buildDeps='xz-utils' \
-    && ARCH= && dpkgArch="$(dpkg --print-architecture)" \
-    && case "${dpkgArch##*-}" in \
-      amd64) ARCH='x64';; \
-      ppc64el) ARCH='ppc64le';; \
-      s390x) ARCH='s390x';; \
-      arm64) ARCH='arm64';; \
-      armhf) ARCH='armv7l';; \
-      i386) ARCH='x86';; \
-      *) echo "unsupported architecture"; exit 1 ;; \
-    esac \
-    && set -x \
-    && apt-get install -y $buildDeps --no-install-recommends \
-    && curl -SLO "https://nodejs.org/dist/v$NODE_VERSION/node-v$NODE_VERSION-linux-$ARCH.tar.xz" \
-    && curl -SLO --compressed "https://nodejs.org/dist/v$NODE_VERSION/SHASUMS256.txt.asc" \
-    && gpg --batch --decrypt --output SHASUMS256.txt SHASUMS256.txt.asc \
-    && grep " node-v$NODE_VERSION-linux-$ARCH.tar.xz\$" SHASUMS256.txt | sha256sum -c - \
-    && mkdir -p /usr/local/node \
-    && tar -xJf "node-v$NODE_VERSION-linux-$ARCH.tar.xz" -C /usr/local/node --strip-components=1 --no-same-owner \
-    && rm "node-v$NODE_VERSION-linux-$ARCH.tar.xz" SHASUMS256.txt.asc SHASUMS256.txt \
-    && apt-get purge -y $buildDeps
+  && ARCH= && dpkgArch="$(dpkg --print-architecture)" \
+  && case "${dpkgArch##*-}" in \
+  amd64) ARCH='x64';; \
+  ppc64el) ARCH='ppc64le';; \
+  s390x) ARCH='s390x';; \
+  arm64) ARCH='arm64';; \
+  armhf) ARCH='armv7l';; \
+  i386) ARCH='x86';; \
+  *) echo "unsupported architecture"; exit 1 ;; \
+  esac \
+  && set -x \
+  && apt-get install -y $buildDeps --no-install-recommends \
+  && curl -SLO "https://nodejs.org/dist/v$NODE_VERSION/node-v$NODE_VERSION-linux-$ARCH.tar.xz" \
+  && curl -SLO --compressed "https://nodejs.org/dist/v$NODE_VERSION/SHASUMS256.txt.asc" \
+  && gpg --batch --decrypt --output SHASUMS256.txt SHASUMS256.txt.asc \
+  && grep " node-v$NODE_VERSION-linux-$ARCH.tar.xz\$" SHASUMS256.txt | sha256sum -c - \
+  && mkdir -p /usr/local/node \
+  && tar -xJf "node-v$NODE_VERSION-linux-$ARCH.tar.xz" -C /usr/local/node --strip-components=1 --no-same-owner \
+  && rm "node-v$NODE_VERSION-linux-$ARCH.tar.xz" SHASUMS256.txt.asc SHASUMS256.txt \
+  && apt-get purge -y $buildDeps
 
 ###
 # End of NodeJS Setup
@@ -80,28 +90,28 @@ RUN ln -s /usr/local/node/bin/node /usr/local/bin/node \
   && ln -s /usr/local/node/lib/node_modules/npm/bin/npx-cli.js /usr/local/bin/npx
 
 RUN apt-get purge -y --auto-remove gnupg dirmngr wget && \
-    rm -rf /var/lib/apt/lists/* && \
-    apt-get clean
+  rm -rf /var/lib/apt/lists/* && \
+  apt-get clean
 
 # set bash as default shell
 RUN mkdir -p /usr/share/man/man1/ && touch /usr/share/man/man1/sh.distrib.1.gz && \
-    echo "dash dash/sh boolean false" | debconf-set-selections && \
-    DEBIAN_FRONTEND=noninteractive dpkg-reconfigure dash
+  echo "dash dash/sh boolean false" | debconf-set-selections && \
+  DEBIAN_FRONTEND=noninteractive dpkg-reconfigure dash
 
 RUN groupadd --gid 8544 zowe \
-    && useradd --uid 8544 --gid zowe --shell /bin/bash --create-home zowe \
-    && mkdir /root/zowe && chown zowe:zowe /root/zowe \
-    && mkdir /global && chown zowe:zowe /global \
-    && cd /home/zowe && \
-    ( echo '#!/bin/sh'; echo 'tr '"'"'\000\001\002\003\004\005\006\007\010\011\012\013\014\015\016\017\020\021\022\023\024\025\026\027\030\031\032\033\034\035\036\037\040\041\042\043\044\045\046\047\050\051\052\053\054\055\056\057\060\061\062\063\064\065\066\067\070\071\072\073\074\075\076\077\100\101\102\103\104\105\106\107\110\111\112\113\114\115\116\117\120\121\122\123\124\125\126\127\130\131\132\133\134\135\136\137\140\141\142\143\144\145\146\147\150\151\152\153\154\155\156\157\160\161\162\163\164\165\166\167\170\171\172\173\174\175\176\177\200\201\202\203\204\205\206\207\210\211\212\213\214\215\216\217\220\221\222\223\224\225\226\227\230\231\232\233\234\235\236\237\240\241\242\243\244\245\246\247\250\251\252\253\254\255\256\257\260\261\262\263\264\265\266\267\270\271\272\273\274\275\276\277\300\301\302\303\304\305\306\307\310\311\312\313\314\315\316\317\320\321\322\323\324\325\326\327\330\331\332\333\334\335\336\337\340\341\342\343\344\345\346\347\350\351\352\353\354\355\356\357\360\361\362\363\364\365\366\367\370\371\372\373\374\375\376\377'"'"' '"'"'\000\001\002\003\234\011\206\177\227\215\216\013\014\015\016\017\020\021\022\023\235\012\010\207\030\031\222\217\034\035\036\037\200\201\202\203\204\205\027\033\210\211\212\213\214\005\006\007\220\221\026\223\224\225\226\004\230\231\232\233\024\025\236\032\040\240\342\344\340\341\343\345\347\361\242\056\074\050\053\174\046\351\352\353\350\355\356\357\354\337\041\044\052\051\073\136\055\057\302\304\300\301\303\305\307\321\246\054\045\137\076\077\370\311\312\313\310\315\316\317\314\140\072\043\100\047\075\042\330\141\142\143\144\145\146\147\150\151\253\273\360\375\376\261\260\152\153\154\155\156\157\160\161\162\252\272\346\270\306\244\265\176\163\164\165\166\167\170\171\172\241\277\320\133\336\256\254\243\245\267\251\247\266\274\275\276\335\250\257\135\264\327\173\101\102\103\104\105\106\107\110\111\255\364\366\362\363\365\175\112\113\114\115\116\117\120\121\122\271\373\374\371\372\377\134\367\123\124\125\126\127\130\131\132\262\324\326\322\323\325\060\061\062\063\064\065\066\067\070\071\263\333\334\331\332\237'"'"' <$1' ) >conv && chmod +x conv && ln -s $(pwd)/conv /bin/conv && \
-    rm -rf zowe && \
-    echo "exit 0" > /bin/extattr && chmod +x /bin/extattr && \
-    echo "exit 0" > /bin/ping && chmod +x  /bin/ping && \
-    echo "exit 0" > /bin/oping && chmod +x  /bin/oping && \
-    echo "exit 0" > /bin/onetstat && chmod +x  /bin/onetstat && \
-    echo "exit 0" > /bin/chtag && chmod +x  /bin/chtag && \    
-    echo 'cat $5' > /bin/iconv && chmod +x /bin/iconv && \    
-    mv /usr/bin/iconv /usr/bin/iconv_
+  && useradd --uid 8544 --gid zowe --shell /bin/bash --create-home zowe \
+  && mkdir /root/zowe && chown zowe:zowe /root/zowe \
+  && mkdir /global && chown zowe:zowe /global \
+  && cd /home/zowe && \
+  ( echo '#!/bin/sh'; echo 'tr '"'"'\000\001\002\003\004\005\006\007\010\011\012\013\014\015\016\017\020\021\022\023\024\025\026\027\030\031\032\033\034\035\036\037\040\041\042\043\044\045\046\047\050\051\052\053\054\055\056\057\060\061\062\063\064\065\066\067\070\071\072\073\074\075\076\077\100\101\102\103\104\105\106\107\110\111\112\113\114\115\116\117\120\121\122\123\124\125\126\127\130\131\132\133\134\135\136\137\140\141\142\143\144\145\146\147\150\151\152\153\154\155\156\157\160\161\162\163\164\165\166\167\170\171\172\173\174\175\176\177\200\201\202\203\204\205\206\207\210\211\212\213\214\215\216\217\220\221\222\223\224\225\226\227\230\231\232\233\234\235\236\237\240\241\242\243\244\245\246\247\250\251\252\253\254\255\256\257\260\261\262\263\264\265\266\267\270\271\272\273\274\275\276\277\300\301\302\303\304\305\306\307\310\311\312\313\314\315\316\317\320\321\322\323\324\325\326\327\330\331\332\333\334\335\336\337\340\341\342\343\344\345\346\347\350\351\352\353\354\355\356\357\360\361\362\363\364\365\366\367\370\371\372\373\374\375\376\377'"'"' '"'"'\000\001\002\003\234\011\206\177\227\215\216\013\014\015\016\017\020\021\022\023\235\012\010\207\030\031\222\217\034\035\036\037\200\201\202\203\204\205\027\033\210\211\212\213\214\005\006\007\220\221\026\223\224\225\226\004\230\231\232\233\024\025\236\032\040\240\342\344\340\341\343\345\347\361\242\056\074\050\053\174\046\351\352\353\350\355\356\357\354\337\041\044\052\051\073\136\055\057\302\304\300\301\303\305\307\321\246\054\045\137\076\077\370\311\312\313\310\315\316\317\314\140\072\043\100\047\075\042\330\141\142\143\144\145\146\147\150\151\253\273\360\375\376\261\260\152\153\154\155\156\157\160\161\162\252\272\346\270\306\244\265\176\163\164\165\166\167\170\171\172\241\277\320\133\336\256\254\243\245\267\251\247\266\274\275\276\335\250\257\135\264\327\173\101\102\103\104\105\106\107\110\111\255\364\366\362\363\365\175\112\113\114\115\116\117\120\121\122\271\373\374\371\372\377\134\367\123\124\125\126\127\130\131\132\262\324\326\322\323\325\060\061\062\063\064\065\066\067\070\071\263\333\334\331\332\237'"'"' <$1' ) >conv && chmod +x conv && ln -s $(pwd)/conv /bin/conv && \
+  rm -rf zowe && \
+  echo "exit 0" > /bin/extattr && chmod +x /bin/extattr && \
+  echo "exit 0" > /bin/ping && chmod +x  /bin/ping && \
+  echo "exit 0" > /bin/oping && chmod +x  /bin/oping && \
+  echo "exit 0" > /bin/onetstat && chmod +x  /bin/onetstat && \
+  echo "exit 0" > /bin/chtag && chmod +x  /bin/chtag && \    
+  echo 'cat $5' > /bin/iconv && chmod +x /bin/iconv && \    
+  mv /usr/bin/iconv /usr/bin/iconv_
 
 ENV NODE_HOME='/usr/local/node'
 ENV JAVA_HOME='/usr/lib/jvm/java-8-openjdk-s390x'
