@@ -11,7 +11,7 @@
 
 import * as std from 'cm_std';
 import * as os from 'cm_os';
-import * as zos from 'zos';
+//import * as zos from 'zos';
 
 import * as common from './common';
 import * as stringlib from './string';
@@ -109,7 +109,8 @@ export function ensureFileEncoding(file: string, expectedSample: string, expecte
       }
     }
     common.printTrace(`- Remove encoding tag of ${file}.`);
-    zos.changeTag(file, 0);
+    //zos.changeTag(file, 0);
+    shell.execSync('sh', '-c', `chtag -r ${file}`);
   } else {
     common.printTrace(`- Failed to detect encoding of ${file}.`);
   }
