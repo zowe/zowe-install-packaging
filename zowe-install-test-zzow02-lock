@@ -1,1 +1,15 @@
-""
+{
+  "lockAcquiredTime": "Fri Jun 23 2023 15:59:23 GMT+0000 (Coordinated Universal Time)",
+  "uid": "1687535963497183737",
+  "repository": {
+    "owner": "zowe",
+    "repo": "zowe-install-packaging"
+  },
+  "branch": "user/markackert/zlinux-docker-updates",
+  "workflow": "Zowe CICD Integration Tests",
+  "job": "cicd-test",
+  "actor": "zowe-robot",
+  "runId": 5358223884,
+  "runNumber": 2863,
+  "link": "https://github.com/zowe/zowe-install-packaging/actions/runs/5358223884"
+}
