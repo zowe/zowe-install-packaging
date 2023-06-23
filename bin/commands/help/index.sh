@@ -17,18 +17,18 @@ server_code=$(echo "${error_code}" | cut -c4)
 
 if echo $error_code | grep -q -E "^[zZ][wW][eE][AaSsDdLl][A-Za-z]?[0-9]{3,4}[A-Za-z]$"; then
   if [[ "$server_code" == [Dd] ]]; then
-    print_message "The code corresponds to the errors related to the ZOWE Desktop and the App Server."
-    print_message "For more information, please refer to the Zowe documentation on App Server Return Codes at https://docs.zowe.org/stable/troubleshoot/app-framework/app-return-codes"
+    print_message "This code corresponds to the errors related to the ZOWE Desktop and the App Server."
+    print_message "To find the description of this error code, refer to the Zowe documentation at https://github.com/zowe/docs-site/blob/master/docs/troubleshoot/app-framework/appserver-error-codes.md"
   elif [[ "$server_code" == [Ss] ]]; then
-    print_message "The code corresponds to the errors related to the Zowe Installation Services (ZIS) and Zowe Subsystem Services (ZSS)"
-    print_message "You can find a description of this error code in the Zowe documentation at https://docs.zowe.org/stable/troubleshoot/app-framework/zss-error-codes"
-    print_message "You may also explore reports from other users experiencing the same error by searching here https://github.com/search?q=org%3Azowe+${messageId}&type=issues"
+    print_message "This code corresponds to the errors related to the Zowe Subsystem Services (ZSS) and Zowe Installation Services (ZIS)"
+    print_message "To find the description of this error code, refer to the Zowe documentation for ZSS at https://docs.zowe.org/stable/troubleshoot/app-framework/zss-error-codes and for ZIS at https://github.com/zowe/docs-site/blob/master/docs/troubleshoot/app-framework/zis-error-codes.md"
+    print_message "You may also explore reports from other users experiencing the same error by searching here https://github.com/search?q=org%3Azowe+${error_code}&type=discussions"
   elif [[ "$server_code" == [Aa] ]]; then
-    print_message "The code corresponds to the errors related to the Zowe API Mediation Layer (APIML)."
-    print_message "You can find a description of this error code in the Zowe documentation at https://docs.zowe.org/stable/troubleshoot/troubleshoot-apiml-error-codes"
+    print_message "This code corresponds to the errors related to the Zowe API Mediation Layer (APIML)."
+    print_message "To find the description of this error code, refer to the Zowe documentation at https://docs.zowe.org/stable/troubleshoot/troubleshoot-apiml-error-codes"
   elif [[ "$server_code" == [Ll] ]]; then
-    print_message "The code corresponds to the errors related to the Zowe Launcher"
-    print_message "You can find a description of this error code in the Zowe documentation at https://docs.zowe.org/stable/troubleshoot/launcher/launcher-error-codes"
+    print_message "This code corresponds to the errors related to the Zowe Launcher and ZWE"
+    print_message "To find the description of this error code, refer to the Zowe documentation for the Launcher at https://docs.zowe.org/stable/troubleshoot/launcher/launcher-error-codes and https://github.com/zowe/launcher/blob/v2.x/master/src/msg.h, and for ZWE at https://docs.zowe.org/stable/appendix/zwe_server_command_reference/zwe/ "
   fi
 else
   print_error_and_exit "Invalid Error Code" "" 102
