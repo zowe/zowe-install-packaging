@@ -60,7 +60,9 @@ export function execute(allowOverwrite?: boolean) {
         common.printErrorAndExit(`Error ZWEL0157E: ${datasetDef.configKey} (zowe.setup.dataset.${datasetDef.configKey}) is not defined in Zowe YAML configuration file.`, undefined, 157);
       }
     }
-
+    if (allowOverwrite === undefined){
+      allowOverwrite = std.getenv("ZWE_CLI_PARAMETER_ALLOW_OVERWRITE")
+    }
     if (!skip) {
       const datasetExists=zosdataset.isDatasetExists(ds);
       if (datasetExists) {

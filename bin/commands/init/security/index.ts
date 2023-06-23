@@ -109,6 +109,8 @@ export function execute(dryRun?: boolean, ignoreSecurityFailures?: boolean) {
 
   // submit job
   let jobHasFailures;
+  dryRun = std.getenv("ZWE_CLI_PARAMETER_SECURITY_DRY_RUN");
+  ignoreSecurityFailures = std.getenv("ZWE_CLI_PARAMETER_IGNORE_SECURITY_FAILURES");
   if (dryRun == true) {
     common.printMessage(`Dry-run mode, security setup is NOT performed on the system.`);
     common.printMessage(`Please submit ${jcllib}(${tmpdsm}) manually.`);

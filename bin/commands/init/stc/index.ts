@@ -91,6 +91,7 @@ export function execute(allowOverwrite: boolean = false) {
       common.printErrorAndExit(`Error ZWEL0143E:  Cannot find data set member ${prefix}.${SAMP_LIB}(${mb}). You may need to re-run 'zwe install'.`, undefined, 143);
     }
   });
+  allowOverwrite = std.getenv("ZWE_CLI_PARAMETER_ALLOW_OVERWRITE");
   target_proclibs.forEach((mb: string) => {
     // JCL for preview purpose
     jclExistence=zosdataset.isDatasetExists(`${jcllib}(${mb})`);
