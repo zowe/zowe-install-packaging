@@ -1,1 +1,15 @@
-""
+{
+  "lockAcquiredTime": "Fri Jun 23 2023 16:25:52 GMT+0000 (Coordinated Universal Time)",
+  "uid": "1687537552987398632",
+  "repository": {
+    "owner": "zowe",
+    "repo": "zowe-install-packaging"
+  },
+  "branch": "user/markackert/uber-docker-updates",
+  "workflow": "Zowe CICD Integration Tests",
+  "job": "cicd-test",
+  "actor": "zowe-robot",
+  "runId": 5358440673,
+  "runNumber": 2866,
+  "link": "https://github.com/zowe/zowe-install-packaging/actions/runs/5358440673"
+}
