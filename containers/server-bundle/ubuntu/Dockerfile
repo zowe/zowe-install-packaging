@@ -110,7 +110,7 @@ RUN mv /home/zowe/run_inner.sh /home/zowe/.run_inner.sh && \
 RUN cp /home/zowe/instance/instance.env /home/zowe/instance/instance.env.bkp \
     && cp /home/zowe/install/bin/zowe-setup-certificates.env /home/zowe/install/bin/zowe-setup-certificates.env.bkp
 
-FROM zowe-docker-release.jfrog.io/ompzowe/zowecicd-node-java:1.28.4-ubuntu
+FROM zowe-docker-release.jfrog.io/ompzowe/zowecicd-node-java:1.28.4
 
 EXPOSE 7553/tcp
 EXPOSE 7554/tcp
