@@ -367,7 +367,8 @@ zowe:
   certificate:
     keystore:
       type: PKCS12
-      # if keyrings, the format is safkeyring:////stcusername/KeyName
+      # if keyrings and Java 8, the format is safkeyring://stcusername/KeyName
+      # For Java 11, the protocol name depends on keyring type - safkeyringjce:// or safkeyringjcecca:// or safkeyringjcehybrid://
       file: /global/zowe/keystore/localhost/localhost.keystore.p12
       # "password" should either be the value you set when PKCS12, or literally "password" for keyrings.
       password: password
@@ -381,7 +382,8 @@ zowe:
     pem:
       key: /global/zowe/keystore/localhost/localhost.key
       certificate: /global/zowe/keystore/localhost/localhost.cer
-      #  if keyrings, the format is "safkeyring:////stcusername/KeyName&ca name"
+      #  if keyrings and Java 8, the format is "safkeyring://stcusername/KeyName&ca name"
+      # For Java 11, the protocol name depends on keyring type - safkeyringjce:// or safkeyringjcecca:// or safkeyringjcehybrid://
       certificateAuthorities: /global/zowe/keystore/local_ca/local_ca.cer
 
   # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
