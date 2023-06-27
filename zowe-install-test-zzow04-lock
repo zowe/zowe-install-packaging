@@ -1,1 +1,15 @@
-""
+{
+  "lockAcquiredTime": "Tue Jun 27 2023 07:29:24 GMT+0000 (Coordinated Universal Time)",
+  "uid": "1687850964878036356",
+  "repository": {
+    "owner": "zowe",
+    "repo": "zowe-install-packaging"
+  },
+  "branch": "apiml/java11_safkeyring",
+  "workflow": "Zowe CICD Integration Tests",
+  "job": "cicd-test",
+  "actor": "zowe-robot",
+  "runId": 5386985436,
+  "runNumber": 2874,
+  "link": "https://github.com/zowe/zowe-install-packaging/actions/runs/5386985436"
+}
