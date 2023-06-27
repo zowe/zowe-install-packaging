@@ -24,7 +24,6 @@ export function execute() {
     } else if (serverCode.toLowerCase() === 's') {
       common.printMessage("This code corresponds to the errors related to the Zowe Subsystem Services (ZSS) and Zowe Installation Services (ZIS)");
       common.printMessage("To find the description of this error code, refer to the Zowe documentation for ZSS at https://docs.zowe.org/stable/troubleshoot/app-framework/zss-error-codes and for ZIS at https://github.com/zowe/docs-site/blob/master/docs/troubleshoot/app-framework/zis-error-codes.md");
-      common.printMessage(`You may also explore reports from other users experiencing the same error by searching here https://github.com/search?q=org%3Azowe+${errorCode}&type=discussions`)
     } else if (serverCode.toLowerCase() === 'a') {
       common.printMessage("This code corresponds to the errors related to the Zowe API Mediation Layer (APIML).");
       common.printMessage("To find the description of this error code, refer to the Zowe documentation at https://docs.zowe.org/stable/troubleshoot/troubleshoot-apiml-error-codes");
@@ -32,6 +31,7 @@ export function execute() {
       common.printMessage("This code corresponds to the errors related to the Zowe Launcher and ZWE");
       common.printMessage("To find the description of this error code, refer to the Zowe documentation for the Launcher at https://docs.zowe.org/stable/troubleshoot/launcher/launcher-error-codes and https://github.com/zowe/launcher/blob/v2.x/master/src/msg.h, and for ZWE at https://docs.zowe.org/stable/appendix/zwe_server_command_reference/zwe/");
     }
+    common.printMessage(`You may also explore reports from other users experiencing the same error by searching here https://github.com/search?q=org%3Azowe+${errorCode}&type=discussions`)
   } else {
     common.printErrorAndExit("Invalid Error Code", undefined, 102);
   }
