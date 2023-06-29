@@ -100,14 +100,14 @@ export function execute() {
     common.printLevel2Message(`No need to update runtime directory, Java and node.js settings.`);
   }
 
-  initMvs.execute();
+  initMvs.execute(std.getenv("ZWE_CLI_PARAMETER_ALLOW_OVERWRITE") == 'true');
   initVsam.execute();
-  if (std.getenv("ZWE_CLI_PARAMETER_SKIP_SECURITY_SETUP") != "true") {
+  if (std.getenv("ZWE_CLI_PARAMETER_SKIP_SECURITY_SETUP") != 'true') {
     initApfAuth.execute();
-    initSecurity.execute();
+    initSecurity.execute(std.getenv('ZWE_CLI_PARAMETER_SECURITY_DRY_RUN') == 'true', std.getenv('ZWE_CLI_PARAMETER_IGNORE_SECURITY_FAILURES') == 'true');
   }
   initCertificate.execute();
-  initStc.execute();
+  initStc.execute(std.getenv('ZWE_CLI_PARAMETER_ALLOW_OVERWRITE') == 'true');
 
   common.printLevel1Message(`Zowe is configured successfully.`);
 }
