@@ -231,7 +231,7 @@
 /*   enabled.                                                        */
 
 /* group for administrators                                          */
-/* replace AUTOGID with GID(&ADMINGID.) if AUTOGID not enabled */
+/* replace AUTOGID with GID(&ADMINGID.) if AUTOGID not enabled       */
   LISTGRP  &ADMINGRP. OMVS
   ADDGROUP &ADMINGRP. OMVS(AUTOGID) -
    DATA('ZOWE ADMINISTRATORS')
@@ -344,6 +344,12 @@
   RDEFINE FACILITY BPX.SERVER UACC(NONE)
   PERMIT BPX.SERVER CLASS(FACILITY) ACCESS(UPDATE) ID(&ZOWEUSER.)
 
+/* permit Zowe main server to create a user's security environment   */
+/* comment out the following 2 lines if the OMVSAPPL is not defined  */
+/* in your environment                                               */
+  PERMIT OMVSAPPL CLASS(APPL) ID(&ZOWEUSER.) ACCESS(READ)
+  SETROPTS RACLIST(APPL) REFRESH
+
 /* permit Zowe main server to set job name                           */
   RLIST   FACILITY BPX.JOBNAME ALL
   RDEFINE FACILITY BPX.JOBNAME UACC(NONE)
@@ -351,21 +357,28 @@
 
   SETROPTS RACLIST(FACILITY) REFRESH
 
-/** comment out to not use SUPERUSER.FILESYS, see JCL comments       */
-/** permit Zowe main server to write persistent data                 */
+/* comment out to not use SUPERUSER.FILESYS, see JCL comments        */
+/* permit Zowe main server to write persistent data                  */
   RLIST   UNIXPRIV SUPERUSER.FILESYS ALL
   RDEFINE UNIXPRIV SUPERUSER.FILESYS UACC(NONE)
   PERMIT SUPERUSER.FILESYS CLASS(UNIXPRIV) ACCESS(CONTROL) -
    ID(&ZOWEUSER.)
 
-   SETROPTS RACLIST(UNIXPRIV) REFRESH
+  SETROPTS RACLIST(UNIXPRIV) REFRESH
 
-/** permit Zowe main server to use identity mapping service          */
+/* permit Zowe main server to use client certificate mapping service */
   RLIST   FACILITY IRR.RUSERMAP ALL
   RDEFINE FACILITY IRR.RUSERMAP UACC(NONE)
   PERMIT IRR.RUSERMAP CLASS(FACILITY) ACCESS(READ) ID(&ZOWEUSER.)
 
-/** permit Zowe main server to cut SMF records                       */
+/* permit Zowe main server to use distributed identity mapping       */
+/* service
+  RLIST   FACILITY IRR.IDIDMAP.QUERY ALL
+  RDEFINE FACILITY IRR.IDIDMAP.QUERY UACC(NONE)
+  PERMIT IRR.IDIDMAP.QUERY CLASS(FACILITY) ACCESS(READ) -
+   ID(&ZOWEUSER.)
+
+/* permit Zowe main server to cut SMF records                        */
   RLIST   FACILITY IRR.RAUDITX ALL
   RDEFINE FACILITY IRR.RAUDITX UACC(NONE)
   PERMIT IRR.RAUDITX CLASS(FACILITY) ACCESS(READ) ID(&ZOWEUSER.)
@@ -563,6 +576,13 @@ SET RESOURCE(FAC)
 RECKEY BPX ADD(DAEMON SERVICE(UPDATE) ROLE(&STCGRP.) ALLOW)
 RECKEY BPX ADD(SERVER SERVICE(UPDATE) ROLE(&STCGRP.) ALLOW)
 *
+* permit Zowe main server to create a user's security environment
+* comment out the following 3 lines if the OMVSAPPL is not defined
+* in your environment
+SET RESOURCE(APL)
+RECKEY OMVSAPPL ADD(SERVICE(READ) ROLE(&STCGRP.) ALLOW)
+F ACF2,REBUILD(APL)
+*
 * Allow STCGRP role access to BPX.JOBNAME
 RECKEY BPX ADD(JOBNAME SERVICE(READ) ROLE(&STCGRP.) ALLOW)
 F ACF2,REBUILD(FAC)
@@ -583,12 +603,17 @@ STORE
 
   F ACF2,REBUILD(UNI)
 
-/** Allow STCGRP role to use identity mapping service               */
+* allow STCGRP role to use client certificate mapping service
 SET RESOURCE(FAC)
 RECKEY IRR ADD(RUSERMAP ROLE(&STCGRP.) SERVICE(READ) ALLOW)
 F ACF2,REBUILD(FAC)
 
-/** permit Zowe main server to cut SMF records                      */
+* allow STCGRP role to use distributed identity mapping service
+SET RESOURCE(FAC)
+RECKEY IRR ADD(IDIDMAP.QUERY ROLE(&STCGRP.) SERVICE(READ) ALLOW)
+F ACF2,REBUILD(FAC)
+
+* permit Zowe main server to cut SMF records
 SET RESOURCE(FAC)
 RECKEY IRR ADD(RAUDITX ROLE(&STCGRP.) SERVICE(READ) ALLOW)
 F ACF2,REBUILD(FAC)
@@ -768,21 +793,31 @@ $$
   TSS WHOHAS IBMFAC(BPX.SERVER)
   TSS PER(&ZOWEUSER.) IBMFAC(BPX.SERVER) ACCESS(UPDATE)
 
+/* permit Zowe main server to create a user's security environment   */
+/* comment out the following line if the OMVSAPPL is not defined     */
+/* in your environment                                               */
+TSS PERMIT(&ZOWEUSER.) APPL(OMVSAPPL)
+
 /* Allow ZOWEUSER access to BPX.JOBNAME                              */
   TSS WHOHAS IBMFAC(BPX.JOBNAME)
   TSS PER(&ZOWEUSER.) IBMFAC(BPX.JOBNAME) ACCESS(READ)
 
-/** comment out to not use SUPERUSER.FILESYS, see JCL comments       */
-/** permit Zowe main server to write persistent data                 */
+/* comment out to not use SUPERUSER.FILESYS, see JCL comments        */
+/* permit Zowe main server to write persistent data                  */
   TSS ADD(&FACACID.) UNIXPRIV(SUPERUSE)
   TSS WHOHAS UNIXPRIV(SUPERUSER.FILESYS)
   TSS PER(&ZOWEUSER.) UNIXPRIV(SUPERUSER.FILESYS) ACCESS(CONTROL)
 
-/** permit Zowe main server to use identity mapping service          */
+/* permit Zowe main server to use client certificate mapping service */
   TSS WHOHAS IBMFAC(IRR.RUSERMAP)
   TSS PER(&ZOWEUSER.) IBMFAC(IRR.RUSERMAP) ACCESS(READ)
 
-/** permit Zowe main server to cut SMF records                       */
+/* permit Zowe main server to use distributed identity mapping       */
+/* service
+  TSS WHOHAS IBMFAC(IRR.IDIDMAP.QUERY)
+  TSS PER(&ZOWEUSER.) IBMFAC(IRR.IDIDMAP.QUERY) ACCESS(READ)
+
+/* permit Zowe main server to cut SMF records                        */
   TSS WHOHAS IBMFAC(IRR.RAUDITX)
   TSS PER(&ZOWEUSER.) IBMFAC(IRR.RAUDITX) ACCESS(READ)
 

@@ -628,6 +628,12 @@
       "maximum": 65535
     },
     "certificate": {
+      "oneOf": [
+        { "$ref": "#/$defs/pkcs12-certificate" }, 
+        { "$ref": "#/$defs/keyring-certificate" }
+      ]
+    },
+    "pkcs12-certificate": { 
       "type": "object",
       "additionalProperties": false,
       "required": ["keystore", "truststore", "pem"],
@@ -641,11 +647,11 @@
             "type": {
               "type": "string",
               "description": "Keystore type.",
-              "enum": ["PKCS12", "JCEKS", "JCECCAKS", "JCERACFKS", "JCECCARACFKS", "JCEHYBRIDRACFKS"]
+              "const": "PKCS12"
             },
             "file": {
               "type": "string",
-              "description": "Path to your PKCS#12 keystore or z/OS keyring."
+              "description": "Path to your PKCS#12 keystore."
             },
             "password": {
               "type": "string",
@@ -653,7 +659,7 @@
             },
             "alias": {
               "type": "string",
-              "description": "Certificate alias name of defined in your PKCS#12 keystore, or certificate label of z/OS keyring."
+              "description": "Certificate alias name of defined in your PKCS#12 keystore"
             }
           }
         },
@@ -666,15 +672,103 @@
             "type": {
               "type": "string",
               "description": "Truststore type.",
-              "enum": ["PKCS12", "JCEKS", "JCECCAKS", "JCERACFKS", "JCECCARACFKS", "JCEHYBRIDRACFKS"]
+              "const": "PKCS12"
             },
             "file": {
               "type": "string",
-              "description": "Path to your PKCS#12 keystore or z/OS keyring."
+              "description": "Path to your PKCS#12 keystore."
             },
             "password": {
               "type": "string",
               "description": "Password of your PKCS#12 keystore."
+            }
+          }
+        },
+        "pem": {
+          "type": "object",
+          "additionalProperties": false,
+          "description": "Certificate in PEM format.",
+          "required": ["key", "certificate"],
+          "properties": {
+            "key": {
+              "type": "string",
+              "description": "Path to the certificate private key stored in PEM format."
+            },
+            "certificate": {
+              "type": "string",
+              "description": "Path to the certificate stored in PEM format."
+            },
+            "certificateAuthorities": {
+              "description": "List of paths to the certificate authorities stored in PEM format.",
+              "oneOf": [{
+                  "type": "string",
+                  "description": "Paths to the certificate authorities stored in PEM format. You can separate multiple certificate authorities by comma."
+                },
+                {
+                  "type": "array",
+                  "description": "Path to the certificate authority stored in PEM format.",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              ]
+            }
+          }
+        }
+      }
+    },
+    "keyring-certificate": { 
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["keystore", "truststore"],
+      "properties": {
+        "keystore": {
+          "type": "object",
+          "additionalProperties": false,
+          "description": "Certificate keystore.",
+          "required": ["type", "file", "alias"],
+          "properties": {
+            "type": {
+              "type": "string",
+              "description": "Keystore type.",
+              "enum": ["JCEKS", "JCECCAKS", "JCERACFKS", "JCECCARACFKS", "JCEHYBRIDRACFKS"]
+            },
+            "file": {
+              "type": "string",
+              "description": "Path of your z/OS keyring, including ring owner and ring name. Case sensitivity and spaces matter.",
+              "pattern": "^safkeyring:\/\/.*"
+            },
+            "password": {
+              "type": "string",
+              "description": "Literally 'password' may be needed when using keyrings for compatibility with java servers.",
+              "enum": ["", "password"]
+            },
+            "alias": {
+              "type": "string",
+              "description": "Certificate label of z/OS keyring. Case sensitivity and spaces matter."
+            }
+          }
+        },
+        "truststore": {
+          "type": "object",
+          "additionalProperties": false,
+          "description": "Certificate truststore.",
+          "required": ["type", "file"],
+          "properties": {
+            "type": {
+              "type": "string",
+              "description": "Truststore type.",
+              "enum": ["JCEKS", "JCECCAKS", "JCERACFKS", "JCECCARACFKS", "JCEHYBRIDRACFKS"]
+            },
+            "file": {
+              "type": "string",
+              "description": "Path of your z/OS keyring, including ring owner and ring name. Case sensitivity and spaces matter.",
+              "pattern": "^safkeyring:\/\/.*"
+            },
+            "password": {
+              "type": "string",
+              "description": "Literally 'password' may be needed when using keyrings for compatibility with java servers.",
+              "enum": ["", "password"]
             }
           }
         },
