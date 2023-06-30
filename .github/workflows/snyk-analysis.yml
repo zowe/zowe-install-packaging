@@ -30,7 +30,7 @@ jobs:
         id: setup-image-matrix
         run: |
           IMAGES_LIST=$(cat manifest.json.template | jq -r '.imageDependencies[] | "{\"image\": \"" + .registry + "/" + .name + ":" + .tag + "\"},"')
-          echo ::set-output name=image-matrix::{\"include\":[$IMAGES_LIST]}
+          echo image-matrix={\"include\":[$IMAGES_LIST]} >> $GITHUB_OUTPUT
     outputs:
       image-matrix: ${{ steps.setup-image-matrix.outputs.image-matrix }}
 

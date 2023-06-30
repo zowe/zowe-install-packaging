@@ -148,7 +148,7 @@ jobs:
 
           echo INPUTS_KEEP_TEMP_PAX_FOLDER=${{ github.event.inputs.KEEP_TEMP_PAX_FOLDER }} >> $GITHUB_ENV
           
-          echo ::set-output name=BUILD_WHAT::$BUILD_WHAT
+          echo BUILD_WHAT=$BUILD_WHAT >> $GITHUB_OUTPUT
       
       - name: '[Prep 7] Comment on PR to indicate build is started'
         uses: actions/github-script@v5
@@ -222,17 +222,17 @@ jobs:
         id: pax-prep
         run: |
           if [ "${{ env.INPUTS_BUILD_SMPE }}" == "true" ] || [ "${{ env.INPUTS_BUILD_PSWI }}" == "true" ] ; then
-            echo ::set-output name=EXTRA_FILES::zowe-smpe.zip,fmid.zip,pd.htm,smpe-promote.tar,smpe-build-logs.pax.Z,rename-back.sh
-            echo ::set-output name=BUILD_SMPE::yes
+            echo EXTRA_FILES=zowe-smpe.zip,fmid.zip,pd.htm,smpe-promote.tar,smpe-build-logs.pax.Z,rename-back.sh >> $GITHUB_OUTPUT
+            echo BUILD_SMPE=yes >> $GITHUB_OUTPUT
           else
-            echo ::set-output name=EXTRA_FILES::
-            echo ::set-output name=BUILD_SMPE::
+            echo EXTRA_FILES= >> $GITHUB_OUTPUT
+            echo BUILD_SMPE= >> $GITHUB_OUTPUT
           fi
           
           if [ "${{ env.INPUTS_KEEP_TEMP_PAX_FOLDER }}" == "true" ] ; then
-            echo ::set-output name=KEEP_TEMP_FOLDER::yes
+            echo KEEP_TEMP_FOLDER=yes >> $GITHUB_OUTPUT
           else
-            echo ::set-output name=KEEP_TEMP_FOLDER::
+            echo KEEP_TEMP_FOLDER= >> $GITHUB_OUTPUT
           fi
 
       - name: '[PAX/SMPE Pax 2] Packaging'
@@ -284,7 +284,7 @@ jobs:
         if: env.INPUTS_BUILD_DOCKER == 'true'
         run: |
           if [[ -f ".pax/zowe.pax" ]]; then
-            cp ".pax/zowe.pax" "containers/server-bundle/zowe.pax"
+            cp ".pax/zowe.pax" "containers/server-bundle/ubuntu/zowe.pax"
           else
             echo ".pax/zowe.pax not found, error building Linux Docker"
             exit 1
@@ -320,11 +320,11 @@ jobs:
       
       - name: '[TP_LINUX_DOCKER 2] Build Linux Docker'
         if: env.INPUTS_BUILD_DOCKER == 'true'
-        working-directory: containers/server-bundle
+        working-directory: containers/server-bundle/ubuntu
         run: |
           # copy utils to docker build folder
           mkdir -p utils
-          cp -r ../utils/* ./utils
+          cp -r ../../utils/* ./utils
 
           # show files
           echo ">>>>>>>>>>>>>>>>>> sub-node: "
@@ -366,8 +366,8 @@ jobs:
             .pax/zowe-PSWI*
             server-bundle.s390x.tar
             server-bundle.sources.s390x.tar
-            containers/server-bundle/server-bundle.amd64.tar
-            containers/server-bundle/server-bundle.sources.amd64.tar
+            containers/server-bundle/ubuntu/server-bundle.amd64.tar
+            containers/server-bundle/ubuntu/server-bundle.sources.amd64.tar
             containers/zowe-containerization.zip
 
       - name: '[Post Prep 7] Update PR comment to indicate build succeeded'
