@@ -43,7 +43,6 @@ jobs:
       - uses: zowe-actions/shared-actions/docker-build-local@main
         with:
           build-arg-list: NODE_CPU_ARCH=x64
-          dockerfile: Dockerfile.nodejava.amd64
         timeout-minutes: 5
 
       - name: Run Snyk to check Docker image for vulnerabilities
@@ -86,7 +85,6 @@ jobs:
           zlinux-ssh-key: ${{ secrets.ZLINUX_SSH_KEY }}
           zlinux-ssh-passphrase: ${{ secrets.ZLINUX_SSH_PASSPHRASE }}
           build-arg-list: NODE_CPU_ARCH=s390x
-          dockerfile: Dockerfile.nodejava.s390x
         timeout-minutes: 10
 
       - name: Run Snyk to check Docker image for vulnerabilities
