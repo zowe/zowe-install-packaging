@@ -14,7 +14,7 @@
 exm_file="${ZWE_CLI_PARAMETER_ERROR_CODE}"
 echo "file_name: ${exm_file}"
 
-ZWE_zowe_workspaceDirectory=$(read_yaml "$exm_file" '.zowe.workspaceDirectory')
+ZWE_zowe_workspaceDirectory=$(read_yaml "${ZWE_CLI_PARAMETER_ERROR_CODE}" ".zowe.workspaceDirectory")
 
 if [ -z "${ZWE_zowe_workspaceDirectory}" ]; then
   echo "Error ZWEL0157E: Zowe workspace directory (zowe.workspaceDirectory) is not defined in Zowe YAML configuration file."
