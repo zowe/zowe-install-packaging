@@ -324,7 +324,7 @@ jobs:
         run: |
           # copy utils to docker build folder
           mkdir -p utils
-          cp -r ../utils/* ./utils
+          cp -r ../../utils/* ./utils
 
           # show files
           echo ">>>>>>>>>>>>>>>>>> sub-node: "
