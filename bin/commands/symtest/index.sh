@@ -14,19 +14,21 @@
 exm_file="${ZWE_CLI_PARAMETER_ERROR_CODE}"
 echo "file_name: ${exm_file}"
 
-ZWE_zowe_workspaceDirectory=$(read_yaml "${ZWE_CLI_PARAMETER_ERROR_CODE}" ".zowe.workspaceDirectory")
+# Create a new file in the workspace directory
+filepath="${ZWE_CLI_PARAMETER_ERROR_CODE}/result.txt"
+newPath="/u/ts3800/rel2.9-6/workspace"
 
-if [ -z "${ZWE_zowe_workspaceDirectory}" ]; then
-  echo "Error ZWEL0157E: Zowe workspace directory (zowe.workspaceDirectory) is not defined in Zowe YAML configuration file."
-else
-  echo "Zowe workspace directory is defined: ${ZWE_zowe_workspaceDirectory}"
-  
-  # Create a new file in the workspace directory
-  filepath="${ZWE_zowe_workspaceDirectory}/result.txt"
-  
-  # Write the output of `pwd` and the message to the file
-  pwd > "$filepath"
-  echo "We have successfully written the content of the pwd: $(pwd) to this file" >> "$filepath"
-  
-  echo "File created: $filepath"
-fi
+newfilePath="${newPath}/resultnew.txt"
+
+echo "newfilePath: ${newfilePath}"
+
+# Write the output of `pwd` and the message to the file
+pwd > "$filepath"
+echo "We have successfully written the content of the pwd: $(pwd) to this file" >> "$filepath"
+
+pwd > "$newfilePath"
+echo "We have successfully written the content of the pwd: $(pwd) to this file" >> "$newfilePath"
+
+echo "File created: $filepath"
+echo "File created: $newfilePath"
+
