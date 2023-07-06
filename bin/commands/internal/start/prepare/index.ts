@@ -72,8 +72,10 @@ function prepareRunningInContainer() {
 // Prepare log directory
 function prepareLogDirectory() {
   const logDir = std.getenv('ZWE_zowe_logDirectory');
+  common.printMessage(`Going to create logdir=${logDir}`);
   if (logDir) {
-    os.mkdir(logDir, 0o750);
+    let mkdirErr = os.mkdir(logDir, 0o750);
+    common.printMessage(`mkdir completed with rc=${mkdirErr}`);
     if (!fs.isDirectoryWritable(logDir)) {
       common.printFormattedError("ZWELS", "zwe-internal-start-prepare,prepare_log_directory", `ZWEL0141E: User $(get_user_id) does not have write permission on ${logDir}.`);
       std.exit(141);
