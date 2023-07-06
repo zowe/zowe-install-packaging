@@ -223,7 +223,25 @@
     "configs": {
       "type": "object",
       "additionalProperties": true,
-      "description": "Component can define it's own configuration in this section in desired hierarchy. This is the brief guidance for component user to learn what are the configurations and what are the default values. Any configurations defined here can be placed into 'zowe.yaml' 'components.<component-name>' section for customization. You can choose to put configurations into 'components.myextension' or 'haInstance.<ha-instance>.components.myextension' of 'zowe.yaml'. Component can use auto-generate environment variables in lifecycle scripts to learn how the component is configured for current HA instance."
+      "description": "Component can define it's own configuration in this section in desired hierarchy. This is the brief guidance for component user to learn what are the configurations and what are the default values. Any configurations defined here can be placed into 'zowe.yaml' 'components.<component-name>' section for customization. You can choose to put configurations into 'components.myextension' or 'haInstance.<ha-instance>.components.myextension' of 'zowe.yaml'. Component can use auto-generate environment variables in lifecycle scripts to learn how the component is configured for current HA instance.",
+      "properties": {
+        "defaults": {
+          "oneOf": [
+            {
+              "type": "string",
+              "description": "Defines the location of a YAML config file in the schema of the Zowe configuration, which will be joined together with other configuration files at runtime, overriding Zowe's defaults but in turn being overridden by the user's customizations."
+            },
+            {
+              "type": "array",
+              "description": "Defines multiple YAML config files to be treated as the default configuration for this component.",
+              "items": {
+                "type": "string",
+                "description": "Defines the location of a YAML config file in the schema of the Zowe configuration, which will be joined together with other configuration files at runtime, overriding Zowe's defaults but in turn being overridden by the user's customizations."
+              }
+            }
+          ]
+        }
+      }
     }
   }
 }

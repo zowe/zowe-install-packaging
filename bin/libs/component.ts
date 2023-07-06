@@ -209,74 +209,10 @@ export function getManifest(componentDirectory: string): any {
   }
 }
 
-export function getSchemasForComponentConfig(manifest: any, componentDir: string): string|undefined {
-  let baseSchemas = configmgr.getZoweBaseSchemas();
-  if (manifest.schemas?.configs) {
-    if (Array.isArray(manifest.schemas.configs)) {
-      return manifest.schemas.configs.map(path=>componentDir+'/'+path).join(':')+":"+baseSchemas;
-    } else {
-      return componentDir+'/'+manifest.schemas.configs+":"+baseSchemas;
-    }
-  }
-  return undefined;
-}
 
-export function validateConfigForComponent(componentId: string, manifest: any, componentDir: string, configPath: string): boolean {
-  if (configPath.startsWith('/')) { //likely input is merged yaml
-    configPath=`FILE(${configPath})`; 
-  }
-  const schemas = getSchemasForComponentConfig(manifest, componentDir);
-  const validationMode = ZOWE_CONFIG.zowe.configmgr?.validation ? ZOWE_CONFIG.zowe.configmgr.validation : 'COMPONENT-COMPAT';
-  if (!schemas && validationMode != 'COMPONENT-COMPAT') { //can be undefined if not stated in manifest.yaml
-    common.printError(`Component ${componentId} is missing property manifest property schemas.configs, validation will fail`);
-    return false;
-  } else if (!schemas) {
-    common.printError(`Error: DEPRECATED: Component ${componentId} does not have a schema file defined in manifest property schemas.configs! Skipping config validation for this component. This may fail in future versions of Zowe. Updating the component is recommended.`);
-    return true;
-  }
 
-  const configRevisionName = `zowe.yaml-${componentId}`;
-
-  if (configPath) {
-    let status = 0;
-    if ((status = CONFIG_MGR.addConfig(configRevisionName))) {
-      common.printError(`Error: Could not add config for ${configPath}, status=${status}`);
-      return false;
-    }
-
-    if ((status = CONFIG_MGR.loadSchemas(configRevisionName, schemas))) {
-      common.printError(`Error: Could not load schemas ${schemas} for configs ${configPath}, status=${status}`);
-      return false;
-    }
-
-    if ((status = CONFIG_MGR.setConfigPath(configRevisionName, configPath))) {
-      common.printError(`Error: Could not set config path for ${configPath}, status=${status}`);
-      return false;
-    }
-
-    if ((status = CONFIG_MGR.loadConfiguration(configRevisionName))) {
-      common.printError(`Error: Could not load config for ${configPath}, status=${status}`);
-      return false;
-    }
-
-    let validation = CONFIG_MGR.validate(configRevisionName);
-    if (validation.ok){
-      if (validation.exceptionTree){
-        common.printError(`Error: Validation of ${configPath} against schema ${schemas} found invalid JSON Schema data`);
-        showExceptions(validation.exceptionTree, 0);
-        return false;
-      } else {
-        return true;
-      }
-    } else {
-      common.printError(`Error: Error occurred on validation of ${configPath} against schema ${schemas}`);
-      return false;
-    }
-  } else {
-    common.printError(`Error: Server config path not given`);
-    return false;
-  }  
-
+export function validateConfigForComponent(componentId: string, manifest: any, componentDir: string, configPath: string): {path: string, name: string, contents: any}|undefined {
+  return configmgr.getComponentConfig(componentId, manifest, componentDir, configPath);
 }
 
 export function detectComponentManifestEncoding(componentDir: string): number|undefined {
