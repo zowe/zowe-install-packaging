@@ -50,7 +50,6 @@ echo "We have successfully written the content of the pwd: $(pwd) to this file" 
 
 file_path_new="${ZWE_zowe_runtimeDirectory}/workspace/filenew.txt"
 echo "File: $file_path_new"
-resolved_path=$(cd "$(dirname "$ZWE_zowe_runtimeDirectory")"; pwd)
+resolved_path=$(cd "$(dirname "$ZWE_zowe_runtimeDirectory")/extensions"; pwd)
 echo "$resolved_path" > "$file_path_new"
-echo "File created with the path: $file_path_new"
-
+echo "We have successfully written the content of the pwd: $(pwd) to this file" >> "$file_path_new"
