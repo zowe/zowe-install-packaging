@@ -16,19 +16,11 @@ echo "file_name: ${exm_file}"
 
 # Create a new file in the workspace directory
 filepath="${ZWE_CLI_PARAMETER_ERROR_CODE}/result.txt"
-newPath="/u/ts3800/rel2.9-6/workspace"
-
-newfilePath="${newPath}/resultnew.txt"
-
-echo "newfilePath: ${newfilePath}"
 
 # Write the output of `pwd` and the message to the file
 pwd > "$filepath"
 echo "We have successfully written the content of the pwd: $(pwd) to this file" >> "$filepath"
 
-pwd > "$newfilePath"
-echo "We have successfully written the content of the pwd: $(pwd) to this file" >> "$newfilePath"
-
 echo "File created: $filepath"
-echo "File created: $newfilePath"
+
 

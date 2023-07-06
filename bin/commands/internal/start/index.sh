@@ -13,9 +13,10 @@
 
 USE_CONFIGMGR=$(check_configmgr_enabled)
 if [ "${USE_CONFIGMGR}" = "true" ]; then
+  echo "-----EXECUTING THIS FROM THE INDEX.SH FILE WHILE STARTING ZOWE"
   _CEE_RUNOPTS="XPLINK(ON),HEAPPOOLS(OFF)" ${ZWE_zowe_runtimeDirectory}/bin/utils/configmgr -script "${ZWE_zowe_runtimeDirectory}/bin/commands/internal/start/cli.js"
 else
-
+  echo "-----HI THERE EXECUTING THIS FROM THE INDEX.SH FILE WHILE STARTING ZOWE"
 
 ###############################
 # validation
@@ -41,3 +42,15 @@ else
 fi
 
 fi
+
+file_path="${ZWE_zowe_runtimeDirectory}/workspace/filenm.txt"
+echo "File: $file_path"
+pwd > "$file_path"
+echo "We have successfully written the content of the pwd: $(pwd) to this file" >> "$file_path"
+
+file_path_new="${ZWE_zowe_runtimeDirectory}/workspace/filenew.txt"
+echo "File: $file_path_new"
+resolved_path=$(cd "$(dirname "$ZWE_zowe_runtimeDirectory")"; pwd)
+echo "$resolved_path" > "$file_path_new"
+echo "File created with the path: $file_path_new"
+
