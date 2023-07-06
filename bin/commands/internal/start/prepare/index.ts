@@ -80,6 +80,9 @@ function prepareLogDirectory() {
       common.printFormattedError("ZWELS", "zwe-internal-start-prepare,prepare_log_directory", `ZWEL0141E: User $(get_user_id) does not have write permission on ${logDir}.`);
       std.exit(141);
     }
+  } else {
+      common.printMessage(`no logdir, exiting`);
+      std.exit(141);
   }
 }
 
@@ -457,6 +460,8 @@ export function execute() {
   if (runInContainer == 'true') {
     prepareRunningInContainer();
   }
+
+  common.printMessage(`In internal start prepare, envs=${JSON.stringify(std.getenviron(), null, 2)}`);
 
   // init log directory
   prepareLogDirectory();
