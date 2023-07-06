@@ -213,7 +213,7 @@
         },
         {
           "repository": "zowe-common-c",
-          "tag": "v2.x/staging",
+          "tag": "feature/embedzos",
           "destinations": ["Zowe PAX"]
         }
       ]
