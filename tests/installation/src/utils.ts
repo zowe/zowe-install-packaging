@@ -396,16 +396,20 @@ export async function installAndVerifyExtension(testcase: string, serverId: stri
 }
 
 /**
- * Install and verify SMPE PTF
+ * Install and verify SMPE PTF. Separate variables for FMID and PTF install operations.
  *
  * @param  {String}    testcase 
  * @param  {String}    serverId
- * @param  {Object}    extraVars
+ * @param  {Object}    extraFmidVars
+ * @param  {Object}    extraPtfVars
  */
-export async function installAndVerifySmpePtf(testcase: string, serverId: string, extraVars: {[key: string]: any} = {}): Promise<void> {
-  debug(`installAndVerifySmpePtf(${testcase}, ${serverId}, ${JSON.stringify(extraVars)})`);
+export async function installAndVerifySmpePtf(testcase: string, serverId: string, 
+  extraFmidVars: {[key: string]: any} = {}, 
+  extraPtfVars: {[key: string]: any} = {}): Promise<void> {
+  debug(`installAndVerifySmpePtf(${testcase}, ${serverId}, FMID: ${JSON.stringify(extraFmidVars)}, PTF: ${JSON.stringify(extraPtfVars)})`);
 
   debug(`run install-fmid.yml on ${serverId}`);
+ 
   const resultFmid = await runAnsiblePlaybook(
     testcase,
     'install-fmid.yml',
@@ -413,6 +417,7 @@ export async function installAndVerifySmpePtf(testcase: string, serverId: string
     {
       'zowe_build_remote': ZOWE_FMID,
       'skip_start': 'true',
+      ...extraFmidVars
     }
   );
 
@@ -423,7 +428,7 @@ export async function installAndVerifySmpePtf(testcase: string, serverId: string
     testcase,
     'install-ptf.yml',
     serverId,
-    extraVars
+    extraPtfVars
   );
 
   expect(resultPtf.code).toBe(0);
@@ -435,7 +440,7 @@ export async function installAndVerifySmpePtf(testcase: string, serverId: string
   // clean up sanity test folder
   cleanupSanityTestReportDir();
 
-  if (extraVars && extraVars['skip_start'] && extraVars['skip_start'] === 'true') {
+  if (extraPtfVars && extraPtfVars['skip_start'] && extraPtfVars['skip_start'] === 'true') {
     debug('running install-ptf.yml playbook with skip_start=true, skip verify');
 
   } else {
