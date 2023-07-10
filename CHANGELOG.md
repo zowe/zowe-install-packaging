@@ -2,14 +2,47 @@
 
 All notable changes to the Zowe Installer will be documented in this file.
 <!--Add the PR or issue number to the entry if available.-->
-## `Unreleased`
 
-- Updated ZWEWRF03 workflow to be up to date with the installed software
-
-## `2.5.0
+## `2.9.0`
 
 ### New features and enhancements
+- Users who have not set the value of "zowe.useConfimgr" will have the behavior now set to "true" rather than the previous "false". If you wish to use false still, just set "zowe.useConfigmgr=false" explicitly.
 
+## `2.8.0`
+
+### New features and enhancements
+- Component installation can now print stdout of install scripts [#3361](https://github.com/zowe/zowe-install-packaging/pull/3361)
+
+#### Minor enhancements/defect fixes
+- Bugfix: Component environment variables would not be aliased to the "_configs_" shorthand when the component had a configure script, but not a validate script, and zowe.useConfigmgr was enabled.
+- Buffix: When zowe.useConfigmgr=true, component installation would not run the installation script from the component root directory, but instead from the place zwe was executed, causing relative path differences versus zowe.useConfigmgr=false.
+
+## `2.7.0`
+
+### New features and enhancements
+- The zowe authorized loadlib now contains a new ZIS plugin as a member named "ZWESISDL". This is the ZIS Dynamic Plugin, and exists for use by other plugins that wish to access zowe-common-c utilities at runtime without needing to statically link them in the other plugin. This plugin must be referenced in the ZWESIP00 parmlib member before use. The samplib for ZWESIP00 now references this "ZWESISDL" member and it is recommended that you update your ZWESIP00 member using the samplib if you need to use this plugin.
+
+#### Minor enhancements/defect fixes
+- When zwe components install detects that the given component is already installed, it will suggest you to run zwe components upgrade instead.
+- Launcher parameters such as "shareAs" could not be customized globally due to zowe.launcher schema being wrong with some parameters nested inside another.
+- Launcher parameters within an individual component were not documented to exist despite the launcher allowing per-component customization.
+- Fixed that zwe would fail to recursively make missing directories if the root directory was not readable by the user.
+- zwe detects and warns against nodejs lower than version 14 (Due to end of life of v12)
+- Tracing and writing to log files would not work for component scripts when zowe.useConfigmgr=true
+- Node v18 was installed on marist system and test were made to run with node v18.
+
+
+## `2.6.0`
+
+#### Minor enhancements/defect fixes
+- When a component configure script failed during startup, no warning would be printed. Starting in 2.6, a warning will be printed and there's also an option to prevent Zowe from continuing startup when this failure is seen, by setting `zowe.launchScript.onComponentConfigureFail` to "exit"
+- Tar archived components would not be installed when zowe.useConfigmgr=true was set.
+- Various bugfixes made for reading and writing of parmlib configuration files when using the PARMLIB() syntax with zwe commands or the ZWESLSTC job.
+- Revised help documentation syntax for substitution values to fix auto-documentation, by changing angle brackets to square brackets.
+
+## `2.5.0`
+
+### New features and enhancements
 - zwe now has a `zwe config get` and `zwe config validate` command. The get command can be used to get a part of the zowe yaml configuration without needing to read the yaml yourself. `zwe config get` only returns values upon proving the configuration is valid first. `zwe config validate` can be used to perform validation of the zowe configuration files without running any additional actions. This is useful for verifying that a change is valid before starting zowe, for example. 
 
 ### New features and enhancements

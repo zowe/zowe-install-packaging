@@ -10,7 +10,7 @@
 */
 
 import * as index from '../install/index';
-import * as std from 'std';
+import * as std from 'cm_std';
 import * as configmgr from '../../../libs/configmgr';
 
 const skipEnable = true; //because its already done.

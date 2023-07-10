@@ -29,9 +29,9 @@ Workflow trigger is at [cicd-test](https://github.com/zowe/zowe-install-packagin
   - SMPE PTF
   - Extensions
   - Keyring
-  - z/OS node v12
   - z/OS node v14
   - z/OS node v16
+  - z/OS node v18
   - Non-strict Verify External Certificate
   - Install PTF twice
   - VSAM Caching storage method
@@ -111,7 +111,7 @@ Background: CICD testing relies on a `zowe.pax` or `zowe-smpe.zip` (for SMPE ins
 When running CICD integration tests during RC stage, the following string will be parsed into the Github Actions matrix. As a result, a total of 21 independent jobs will be spawned.
 
 ```
-basic/install.ts(zzow02,zzow03,zzow04);basic/install-ptf.ts(zzow02,zzow03,zzow04);basic/install-ext.ts(zzow03);extended/keyring.ts(zzow02,zzow03,zzow04);extended/node-versions/node-v8.ts(zzow02,zzow03,zzow04);extended/node-versions/node-v12.ts(zzow02,zzow03,zzow04);extended/node-versions/node-v14.ts(zzow02,zzow03,zzow04);extended/certificates/nonstrict-verify-external-certificate.ts(zzow02)
+basic/install.ts(zzow02,zzow03,zzow04);basic/install-ptf.ts(zzow02,zzow03,zzow04);basic/install-ext.ts(zzow03);extended/keyring.ts(zzow02,zzow03,zzow04);extended/node-versions/node-v8.ts(zzow02,zzow03,zzow04);extended/node-versions/node-v14.ts(zzow02,zzow03,zzow04);extended/certificates/nonstrict-verify-external-certificate.ts(zzow02)
 ```
 
 Total elapsed time when running in parallel is approximately 3.5 hours on paper idealy if all parallel jobs are executing at the same time. In reality, from numerous tests performed, total elapsed time is around 4 hours.  
@@ -123,9 +123,9 @@ Selected test running elapsed time:
 | ---- | ------------ |
 | Convenience Pax | 53m |
 | SMPE PTF | 68m |
+| z/OS node v18 | 45m |
 | z/OS node v16 | 45m |
 | z/OS node v14 | 45m |
-| z/OS node v12 | 45m |
 | Keyring | 53m |
 | Non-strict Verify External Certificate | 51m |
 | Extensions | 67m

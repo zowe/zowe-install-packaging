@@ -47,7 +47,7 @@ Within this directory are several dockerfiles that have different purposes
 ### Building docker image on Linux
 This folder and associated utils folder contains the scripts needed to build. Simply execute:
 ```sh
-cd zowe-install-packaging/containers/server-bundle
+cd zowe-install-packaging/containers/server-bundle/ubuntu
 mkdir utils
 cp -r ../utils/* ./utils
 docker build -t zowe/docker:latest .
@@ -56,7 +56,7 @@ docker build -t zowe/docker:latest .
 ### Building docker image on Windows
 This folder and associated utils folder contains the scripts needed to build. Simply execute:
 ```powershell
-cd zowe-install-packaging/containers/server-bundle
+cd zowe-install-packaging/containers/server-bundle/ubuntu
 mkdir utils
 copy ..\utils\* utils
 docker build -t zowe/docker:latest .

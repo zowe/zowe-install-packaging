@@ -9,8 +9,8 @@
   Copyright Contributors to the Zowe Project.
 */
 
-import * as std from 'std';
-import * as os from 'os';
+import * as std from 'cm_std';
+import * as os from 'cm_os';
 
 export const ENCODING_NAME_TO_CCSID:any = {
   'IBM-037': 37,

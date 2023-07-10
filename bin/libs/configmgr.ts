@@ -9,10 +9,11 @@
   Copyright Contributors to the Zowe Project.
 */
 
-import * as std from 'std';
-import * as os from 'os';
+import * as std from 'cm_std';
+import * as os from 'cm_os';
 import * as xplatform from 'xplatform';
 import { ConfigManager } from 'Configuration';
+import * as fs from './fs';
 
 import * as objUtils from '../utils/ObjUtils';
 
@@ -38,7 +39,7 @@ const parameterConfig = std.getenv('ZWE_CLI_PARAMETER_CONFIG');
   3. one or more parmlib paths with PARMLIB() syntax, ex PARMLIB(my.zowe(yaml)):PARMLIB(my.other.zowe(yaml)) ... note the member names must be the same for every PARMLIB mentioned!
   4. one or more of FILE and PARMLIB syntax combined, ex FILE(/my/1.yaml):FILE(/my2.yaml):PARMLIB(my.zowe(yaml)):PARMLIB(my.other.zowe(yaml))
  */
-const ZOWE_CONFIG_PATH = (parameterConfig && !parameterConfig.startsWith('FILE(')) ? `FILE(${parameterConfig})` : parameterConfig;
+const ZOWE_CONFIG_PATH = (parameterConfig && !parameterConfig.startsWith('FILE(') && !parameterConfig.startsWith('PARMLIB(')) ? `FILE(${parameterConfig})` : parameterConfig;
 let configLoaded = false;
 
 const COMMON_SCHEMA = `${std.getenv('ZWE_zowe_runtimeDirectory')}/schemas/server-common.json`;
@@ -52,23 +53,133 @@ export function getZoweBaseSchemas(): string {
   return ZOWE_SCHEMA_SET;
 }
 
-function mkdirp(path:string, mode?: number): number {
-  const parts = path.split('/');
-  let dir = '/';
-  for (let i = 0; i < parts.length; i++) {
-    dir+=parts[i]+'/';
-    let rc = os.mkdir(dir, mode ? mode : 0o777);
-    if (rc && (rc!=(0-std.Error.EEXIST))) {
-      return rc;
-    }
-  }
-  return 0;
-}
-
 function guaranteePath() {
   if (!std.getenv('PATH')) {
     std.setenv('PATH','/bin:.:/usr/bin');
   }
+}
+
+function getTempMergedYamlDir(): string|number {
+  let zwePrivateWorkspaceEnvDir: string;
+  let tmpDir = std.getenv('ZWE_PRIVATE_TMP_MERGED_YAML_DIR');
+  if (tmpDir && tmpDir != '1') {
+    zwePrivateWorkspaceEnvDir = tmpDir;
+    return zwePrivateWorkspaceEnvDir;
+  } else if (tmpDir == '1') {
+    //If this var is not undefined,
+    //A command is running that is likely to be an admin rather than STC user, so they wouldn't have .env folder permission
+    //Instead, this merged yaml should be temporary within a place they can write to.
+    let tmp = '';
+    for (const dir of [std.getenv('TMPDIR'), std.getenv('TMP'), '/tmp']) {
+      if (dir) {
+        let dirWritable = false;
+        let returnArray = os.stat(dir);
+        if (!returnArray[1]) { //no error
+          dirWritable = ((returnArray[0].mode & os.S_IFMT) == os.S_IFDIR)
+        } else {
+          if ((returnArray[1] != std.Error.ENOENT)) {
+            console.log(`directoryExists dir=${dir}, err=`+returnArray[1]);
+          }
+        }
+
+        if (dirWritable) {
+          tmp = dir;
+          break;
+        } else {
+          console.log(`Error ZWEL0110E: Doesn\'t have write permission on ${dir} directory.`);
+          std.exit(110);
+        }
+      }
+    }
+    if (!tmp) {
+      console.log(`Error: No writable temporary directory could be found, cannot continue`);
+      std.exit(1);
+    }
+    
+    zwePrivateWorkspaceEnvDir=`${tmp}/.zweenv-${Math.floor(Math.random()*10000)}`;
+    std.setenv('ZWE_PRIVATE_TMP_MERGED_YAML_DIR', zwePrivateWorkspaceEnvDir);
+    const mkdirrc = fs.mkdirp(zwePrivateWorkspaceEnvDir, 0o700);
+    if (mkdirrc) { return mkdirrc; }
+
+    console.log(`Temporary directory '${zwePrivateWorkspaceEnvDir}' created.\nZowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.`);
+    return zwePrivateWorkspaceEnvDir;
+  } else {
+    return 0;
+  }
+
+}
+
+function getDiscoveryServiceUrlHa(config) {
+  const list = [];
+  const defaultDs = config.components.discovery;
+  const haInstanceKeys = Object.keys(config.haInstances);
+  
+  for (const haInstanceKey of haInstanceKeys) {
+    const haInstance = config.haInstances[haInstanceKey];
+
+    if (!haInstance.hostname) {
+      console.log(`Error: 'hostname' value is missing for haInstance '${haInstanceKey}'`);
+      if (haInstanceKeys.length == 1) {
+        console.log(`Debug: Discovery server will be configured without HA`);
+        return null;
+      }
+      std.exit(1);
+    }
+
+    const haInstanceDs = haInstance.components?.discovery;
+    const enabled = haInstanceDs && (typeof haInstanceDs.enabled !== 'undefined') ? haInstanceDs.enabled : defaultDs.enabled;
+    if (enabled !== true) continue;
+
+    const port = haInstanceDs?.port ?? defaultDs.port;
+    if (!port) {
+      console.log(`Error: Missing configuration of diverery port, see 'components.discovery.port' or 'haInstances.${haInstanceKey}.components.discovery.port'`);
+      std.exit(1);
+    }
+
+    const url = `https://${haInstance.hostname}:${port}/eureka/`;
+
+    if (list.includes(url)) {
+      console.log(`Warn: Multiple haInstances reffers to the same hostname: ${haInstance.hostname}`);
+    } else {
+      list.push(url);
+    }
+
+  }
+
+  return list;
+}
+
+function getDiscoveryServiceUrlNonHa(config) {
+  const list = [];
+  if (config.components?.discovery?.enabled !== true) {
+    return list;
+  }
+
+  const port = config.components?.discovery?.port;
+  if (!port) {
+    console.log(`Error: missing configuration 'components.discovery.port'`);
+    std.exit(1);
+  }
+
+  config.zowe.externalDomains.forEach((domain: string) => {
+    const url = `https://${domain}:${port}/eureka/`;
+    if (list.includes(url)) {
+      console.log(`Warn: External domains are not unique: ${domain}`);
+    } else {
+      list.push(url);
+    }
+  });
+
+  return list;
+}
+
+function getDiscoveryServiceUrl(config) {
+  if (config.haInstances) {
+    const list = getDiscoveryServiceUrlHa(config);
+    if (list) return list;
+  }
+
+  return getDiscoveryServiceUrlNonHa(config);
 }
 
 function writeZoweConfigUpdate(updateObj: any, arrayMergeStrategy: number): number {
@@ -90,19 +201,28 @@ function writeZoweConfigUpdate(updateObj: any, arrayMergeStrategy: number): numb
         return xplatform.storeFileUTF8(destination, xplatform.AUTO_DETECT, textOrNull);
 
       } else if (destination.startsWith('PARMLIB(')) {
-        const workspace = ZOWE_CONFIG.workspaceDirectory;
         destination = destination.substring(8, destination.length-1);
 
-        //need a temp file to do the cp into parmlib
-        //ensure .env folder exists
-        let zwePrivateWorkspaceEnvDir = std.getenv('ZWE_PRIVATE_WORKSPACE_ENV_DIR');
-        if (!zwePrivateWorkspaceEnvDir) {
-          zwePrivateWorkspaceEnvDir=`${workspace}/.env`;
-          std.setenv('ZWE_PRIVATE_WORKSPACE_ENV_DIR', zwePrivateWorkspaceEnvDir);
+        let zwePrivateWorkspaceEnvDir: string;
+        let dirResult = getTempMergedYamlDir();
+        if (typeof dirResult == 'string') {
+          zwePrivateWorkspaceEnvDir = dirResult;
+        } else if (dirResult === 0) {
+          const workspace = ZOWE_CONFIG.zowe.workspaceDirectory;
+
+          //need a temp file to do the cp into parmlib
+          //ensure .env folder exists
+          let zwePrivateWorkspaceEnvDir = std.getenv('ZWE_PRIVATE_WORKSPACE_ENV_DIR');
+          if (!zwePrivateWorkspaceEnvDir) {
+            zwePrivateWorkspaceEnvDir=`${workspace}/.env`;
+            std.setenv('ZWE_PRIVATE_WORKSPACE_ENV_DIR', zwePrivateWorkspaceEnvDir);
+          }
+          fs.mkdirp(workspace, 0o770);
+          rc = fs.mkdirp(zwePrivateWorkspaceEnvDir, 0o700);
+          if (rc) { return rc; }
+        } else {
+          return dirResult;
         }
-        mkdirp(workspace, 0o770);
-        rc = mkdirp(zwePrivateWorkspaceEnvDir, 0o700);
-        if (rc) { return rc; }
 
         //make temp file
         let tempFilePath:string;
@@ -160,55 +280,20 @@ function writeMergedConfig(config: any): number {
   const workspace = config.zowe.workspaceDirectory;
 
   let zwePrivateWorkspaceEnvDir: string;
-  let tmpDir = std.getenv('ZWE_PRIVATE_TMP_MERGED_YAML_DIR');
-  if (tmpDir && tmpDir != '1') {
-    zwePrivateWorkspaceEnvDir = tmpDir;
-  } else if (tmpDir == '1') {
-    //If this var is not undefined,
-    //A command is running that is likely to be an admin rather than STC user, so they wouldn't have .env folder permission
-    //Instead, this merged yaml should be temporary within a place they can write to.
-    let tmp = '';
-    for (const dir of [std.getenv('TMPDIR'), std.getenv('TMP'), '/tmp']) {
-      if (dir) {
-        let dirWritable = false;
-        let returnArray = os.stat(dir);
-        if (!returnArray[1]) { //no error
-          dirWritable = ((returnArray[0].mode & os.S_IFMT) == os.S_IFDIR)
-        } else {
-          if ((returnArray[1] != std.Error.ENOENT)) {
-            console.log(`directoryExists dir=${dir}, err=`+returnArray[1]);
-          }
-        }
-
-        if (dirWritable) {
-          tmp = dir;
-          break;
-        } else {
-          console.log(`Error ZWEL0110E: Doesn\'t have write permission on ${dir} directory.`);
-          std.exit(110);
-        }
-      }
-    }
-    if (!tmp) {
-      console.log(`Error: No writable temporary directory could be found, cannot continue`);
-      std.exit(1);
-    }
-    
-    zwePrivateWorkspaceEnvDir=`${tmp}/.zweenv-${Math.floor(Math.random()*10000)}`;
-    std.setenv('ZWE_PRIVATE_TMP_MERGED_YAML_DIR', zwePrivateWorkspaceEnvDir);
-    const mkdirrc = mkdirp(zwePrivateWorkspaceEnvDir, 0o700);
-    if (mkdirrc) { return mkdirrc; }
-
-    console.log(`Temporary directory '${zwePrivateWorkspaceEnvDir}' created.\nZowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.`); 
-  } else {
+  let dirResult = getTempMergedYamlDir();
+  if (typeof dirResult == 'string') {
+    zwePrivateWorkspaceEnvDir = dirResult;
+  } else if (dirResult === 0) {
     zwePrivateWorkspaceEnvDir = std.getenv('ZWE_PRIVATE_WORKSPACE_ENV_DIR');
     if (!zwePrivateWorkspaceEnvDir) {
       zwePrivateWorkspaceEnvDir=`${workspace}/.env`;
       std.setenv('ZWE_PRIVATE_WORKSPACE_ENV_DIR', zwePrivateWorkspaceEnvDir);
     }
-    mkdirp(workspace, 0o770);
-    const mkdirrc = mkdirp(zwePrivateWorkspaceEnvDir, 0o700);
+    fs.mkdirp(workspace, 0o770);
+    const mkdirrc = fs.mkdirp(zwePrivateWorkspaceEnvDir, 0o700);
     if (mkdirrc) { return mkdirrc; }
+  } else {
+    return dirResult;
   }
   
   const destination = `${zwePrivateWorkspaceEnvDir}/.zowe-merged.yaml`;
@@ -483,31 +568,7 @@ export function getZoweConfigEnv(haInstance: string): any {
   //special things to keep as-is
   envs['ZWE_DISCOVERY_SERVICES_LIST'] = std.getenv('ZWE_DISCOVERY_SERVICES_LIST');
   if (!envs['ZWE_DISCOVERY_SERVICES_LIST']) {
-    let list = [];
-    if (config.components.discovery && (config.components.discovery.enabled === true)) {
-      const port = config.components.discovery.port;
-      config.zowe.externalDomains.forEach((domain:string)=> {
-        const url = `https://${domain}:${port}/eureka/`;
-        if (!list.includes(url)) {
-          list.push(url);
-        }
-      });
-    }
-
-    if (config.haInstances) {
-      let haInstanceKeys = Object.keys(config.haInstances);
-      haInstanceKeys.forEach((haInstanceKey:string)=> {
-        const haInstance = config.haInstances[haInstanceKey];
-        if (haInstance.hostname && haInstance.components && haInstance.components.discovery && (haInstance.components.discovery.enabled === true)) {
-          const port = haInstance.components.discovery.port;
-          const url = `https://${haInstance.hostname}:${port}/eureka/`;
-          if (!list.includes(url)) {
-            list.push(url);
-          }
-        }
-      });
-    }
-
+    let list = getDiscoveryServiceUrl(config);
     envs['ZWE_DISCOVERY_SERVICES_LIST'] = list.join(',');
   }
 

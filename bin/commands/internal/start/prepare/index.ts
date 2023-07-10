@@ -10,8 +10,8 @@
 */
 
 
-import * as std from 'std';
-import * as os from 'os';
+import * as std from 'cm_std';
+import * as os from 'cm_os';
 import * as zos from 'zos';
 import * as xplatform from 'xplatform';
 
@@ -71,7 +71,7 @@ function prepareRunningInContainer() {
 
 // Prepare log directory
 function prepareLogDirectory() {
-  const logDir = std.getenv('ZWE_zowe_logDirectory');
+  const logDir = ZOWE_CONFIG.zowe.logDirectory;
   if (logDir) {
     os.mkdir(logDir, 0o750);
     if (!fs.isDirectoryWritable(logDir)) {
@@ -223,7 +223,7 @@ function validateComponents(enabledComponents:string[]): any {
           //TODO verify that this returns things that we want, currently it just uses setenv
           const envVars = config.loadEnvironmentVariables(componentId);
           componentEnvironments[manifest.name] = envVars;
-          let result = shell.execSync('sh', '-c', `. ${runtimeDirectory}/bin/libs/index.sh && cd ${componentDir} && . ${fullPath}`);
+          let result = shell.execSync('sh', '-c', `. ${runtimeDirectory}/bin/libs/configmgr-index.sh && cd ${componentDir} && . ${fullPath}`);
           privateErrors=prevErrors;
           if (result.rc) {
             privateErrors++;
@@ -282,17 +282,20 @@ function configureComponents(componentEnvironments?: any, enabledComponents?:str
       // TODO if this is to force 1 component to configure before another, we should really just make a manifest declaration that 1 component needs to run before another. It's fine to run a simple dependency chain to determine order of execution without getting into the advanced realm of full blown package manager dependency management tier checks
       const preconfigureScript=manifest.commands ? manifest.commands.preConfigure : undefined;
       common.printFormattedTrace("ZWELS", "zwe-internal-start-prepare,configure_components", `- commands.preConfigure is ${preconfigureScript}`);
+      let loadedEnvVars = false;
       if (preconfigureScript) {
         const preconfigurePath=`${componentDir}/${preconfigureScript}`;
         if (fs.fileExists(preconfigurePath)) {
           common.printFormattedDebug("ZWELS", "zwe-internal-start-prepare,configure_components", `* process ${componentId} pre-configure command ...`);
           // execute preconfigure step. preconfigure does NOT export env vars.
-          if (componentEnvironments) {
+          if (componentEnvironments && componentEnvironments[componentName]) {
             config.applyEnviron(componentEnvironments[componentName]);
+            loadedEnvVars = true;
           } else {
             config.loadEnvironmentVariables(componentId);
+            loadedEnvVars = true;
           }
-          const result = shell.execOutErrSync('sh', '-c', `. ${runtimeDirectory}/bin/libs/index.sh && cd ${componentDir} && . ${preconfigurePath}`);
+          const result = shell.execOutErrSync('sh', '-c', `. ${runtimeDirectory}/bin/libs/configmgr-index.sh && cd ${componentDir} && . ${preconfigurePath}`);
           common.printFormattedDebug("ZWELS", "zwe-internal-start-prepare,configure_components", result.rc ? result.err : result.out);
         } else {
           common.printFormattedError("ZWELS", "zwe-internal-start-prepare,configure_components", `Error ZWEL0172E: Component ${componentId} has commands.preConfigure defined but the file is missing.`);
@@ -338,9 +341,16 @@ function configureComponents(componentEnvironments?: any, enabledComponents?:str
         const fullPath = `${componentDir}/${configureScript}`;
         if (fs.fileExists(fullPath)) {
           common.printFormattedDebug("ZWELS", "zwe-internal-start-prepare,configure_components", `* process ${componentId} configure command ...`);
+          if (!loadedEnvVars) {
+            if (componentEnvironments && componentEnvironments[componentName]) {
+              config.applyEnviron(componentEnvironments[componentName]);
+            } else {
+              config.loadEnvironmentVariables(componentId);
+            }
+          }
           // execute configure step and generate environment snapshot
           // NOTE: env var list is not updated because it should not have changed between preconfigure step and now
-          const result = shell.execOutSync('sh', '-c', `. ${runtimeDirectory}/bin/libs/index.sh && cd ${componentDir} && . ${fullPath} ; export rc=$? ; export -p`);
+          const result = shell.execOutSync('sh', '-c', `. ${runtimeDirectory}/bin/libs/configmgr-index.sh && cd ${componentDir} && . ${fullPath} ; export rc=$? ; export -p`);
 
           common.printFormattedDebug("ZWELS", "zwe-internal-start-prepare,configure_components", `${componentName} configure ended with rc=${result.rc}`);
           
@@ -355,13 +365,21 @@ function configureComponents(componentEnvironments?: any, enabledComponents?:str
                 shell.execSync('chmod', `700`, `"${zwePrivateWorkspaceEnvDir}/${componentName}/.${zweCliParameterHaInstance}.env"`);
               }
             }
-          }
-
-          if (result.rc == 0) {
             const outLines = result.out.split('\n');
             common.printFormattedInfo("ZWELS", "zwe-internal-start-prepare,configure_components", `- commands.configure output from ${componentId} is:`);
             common.printMessage(outLines.filter(line => !line.startsWith('export ')).join('\n'));
             common.printFormattedDebug("ZWELS", "zwe-internal-start-prepare,configure_components", outLines.filter(line => line.startsWith('export ')).join('\n'));
+          } else {
+            //not printformattederror because it makes silly long strings like "ERROR: 2022-12-07 20:00:47 <ZWELS:50791391> me ERROR (zwe-internal-start-prepare,configure_components) Error ZWEL0317E: Component app-server commands.configure ended with rc=22."
+            common.printError(`Error ZWEL0317E: Component ${componentId} commands.configure ended with rc=${result.rc}.`);
+            if (result.out) {
+              const outLines = result.out.split('\n');
+              common.printFormattedInfo("ZWELS", "zwe-internal-start-prepare,configure_components", `- commands.configure output from ${componentId} is:`);
+              common.printMessage(outLines.filter(line => !line.startsWith('export ')).join('\n'));
+            }
+            if (ZOWE_CONFIG.zowe.launchScript?.onComponentConfigureFail == 'exit') {
+              std.exit(1);
+            }
           }
         } else {
           common.printFormattedError("ZWELS", "zwe-internal-start-prepare,configure_components", `Error ZWEL0172E: Component ${componentId} has commands.configure defined but the file is missing.`);

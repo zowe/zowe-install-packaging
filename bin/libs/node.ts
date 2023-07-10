@@ -9,8 +9,8 @@
   Copyright Contributors to the Zowe Project.
 */
 
-import * as std from 'std';
-import * as os from 'os';
+import * as std from 'cm_std';
+import * as os from 'cm_os';
 
 import * as fs from './fs';
 import * as common from './common';
@@ -18,7 +18,7 @@ import * as shell from './shell';
 import * as config from './config';
 import { PathAPI as pathoid } from './pathoid';
 
-const NODE_MIN_VERSION=12;
+const NODE_MIN_VERSION=14;
 
 // enforce encoding of stdio/stdout/stderr
 // sometimes /dev/tty* ($SSH_TTY) are not configured properly, for example tagged as binary or wrong encoding

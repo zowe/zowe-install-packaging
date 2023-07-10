@@ -24,9 +24,9 @@ on:
           - SMPE PTF
           - Extensions
           - Keyring
-          - z/OS node v12
           - z/OS node v14
           - z/OS node v16
+          - z/OS node v18
           - Non-strict Verify External Certificate
           - Install PTF Twice
           - VSAM Caching Storage Method
@@ -63,8 +63,8 @@ env:
   DEFAULT_ZOWE_EXT_ARTIFACTORY_PATTERN: libs-snapshot-local/org/zowe/{ext-name}/*/{ext-name}-*.pax
 
   # below block can be overwritten, adjusted by DevOps only
-  # ZOS_NODE_VERSION more to choose from: v14.15.1, v16.13.0
-  ZOS_NODE_VERSION: v12.18.4
+  # ZOS_NODE_VERSION more to choose from: v14.21.3, v16.19.1
+  ZOS_NODE_VERSION: v14.21.3
   CLIENT_NODE_VERSION: v12.18.3
   INSTALL_TEST_DEBUG_INFORMATION: zowe-install-test:*
   SANITY_TEST_DEBUG_INFORMATION: zowe-sanity-test:*
@@ -75,9 +75,9 @@ env:
   SMPE_PTF_TESTFILE: basic/install-ptf.ts
   EXTENSIONS_TESTFILE: basic/install-ext.ts
   KEYRING_TESTFILE: extended/keyring.ts
-  ZOS_NODE_V12_TESTFILE: extended/node-versions/node-v12.ts
   ZOS_NODE_V14_TESTFILE: extended/node-versions/node-v14.ts
   ZOS_NODE_V16_TESTFILE: extended/node-versions/node-v16.ts
+  ZOS_NODE_V18_TESTFILE: extended/node-versions/node-v18.ts
   NON_STRICT_VERIFY_EXTERNAL_CERTIFICATE_TESTFILE: extended/certificates/nonstrict-verify-external-certificate.ts
   INSTALL_PTF_TWICE_TESTFILE: extended/install-ptf-two-times.ts
   VSAM_CACHING_STORAGE_METHOD_TESTFILE: extended/caching-storages/vsam-storage.ts
@@ -85,7 +85,7 @@ env:
   CONFIG_MANAGER_TESTFILE: extended/config-manager/enable-config-manager.ts
   GENERAL_API_DOCUMENTATION_TESTFILE: basic/install-api-gen.ts
   ZOWE_NIGHTLY_TESTS_FULL: basic/install.ts(all);basic/install-ptf.ts(all)
-  ZOWE_RELEASE_TESTS_FULL: basic/install.ts(all);basic/install-ptf.ts(all);basic/install-ext.ts(any);extended/keyring.ts(all);extended/node-versions/node-v12.ts(any);extended/node-versions/node-v14.ts(any);extended/node-versions/node-v16.ts(any);extended/certificates/nonstrict-verify-external-certificate.ts(any);extended/caching-storages/infinispan-storage.ts(any);extended/config-manager/enable-config-manager.ts(any)
+  ZOWE_RELEASE_TESTS_FULL: basic/install.ts(all);basic/install-ptf.ts(all);basic/install-ext.ts(any);extended/keyring.ts(all);extended/node-versions/node-v14.ts(any);extended/node-versions/node-v16.ts(any);extended/node-versions/node-v18.ts(zzow04):extended/certificates/nonstrict-verify-external-certificate.ts(any);extended/caching-storages/infinispan-storage.ts(any);extended/config-manager/enable-config-manager.ts(any)
 
 jobs:
   display-dispatch-event-id:
@@ -137,7 +137,7 @@ jobs:
       - name: '[Prep 2] Setup Node'
         uses: actions/setup-node@v3
         with:
-          node-version: '12'
+          node-version: '14'
 
       - name: '[Prep 3] Cache node modules'
         uses: actions/cache@v2
@@ -293,13 +293,13 @@ jobs:
               case 'Keyring':
                 eta = 53
                 break;
-              case 'z/OS node v12':
-                eta = 45
-                break;
               case 'z/OS node v14':
                 eta = 45
                 break;
               case 'z/OS node v16':
+                eta = 45
+                break;
+              case 'z/OS node v18':
                 eta = 45
                 break;
               case 'Infinispan Caching Storage Method':
@@ -365,6 +365,12 @@ jobs:
           SSH_PORT: ${{ secrets.SSH_PORT }}
           SSH_USER: ${{ secrets.SSH_USER }}
           SSH_PASSWORD: ${{ secrets.SSH_PASSWORD }}
+          OKTA_HOSTNAME: ${{ secrets.OKTA_HOSTNAME }}
+          OKTA_CLIENT_ID: ${{ secrets.OKTA_CLIENT_ID }}
+          OKTA_CLIENT_SECRET: ${{ secrets.OKTA_CLIENT_SECRET }}
+          OKTA_USER: ${{ secrets.OKTA_USER }}
+          OKTA_PASSWORD: ${{ secrets.OKTA_PASSWORD }}
+          OIDC_REGISTRY: ${{ secrets.OIDC_REGISTRY }}
           ZOS_NODE_HOME: ${{ steps.more-test-prep.outputs.NODE_HOME_PATTERN }}
       #     # ANSIBLE_VERBOSE: -vvv
 

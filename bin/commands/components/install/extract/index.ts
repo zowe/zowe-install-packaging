@@ -9,8 +9,8 @@
   Copyright Contributors to the Zowe Project.
 */
 
-import * as std from 'std';
-import * as os from 'os';
+import * as std from 'cm_std';
+import * as os from 'cm_os';
 import * as zos from 'zos';
 import * as xplatform from 'xplatform';
 
@@ -98,7 +98,7 @@ export function execute(componentFile: string, autoEncoding?: string, upgrade?: 
       java.requireJava();
       result = shell.execSync('sh', '-c', `cd ${tmpDir} && jar xf ${componentFile}`);
     } else if (componentFile.endsWith('.tar')) {
-      result = shell.execSync('sh', '-c', `_CEE_RUNOPTS="FILETAG() POSIX(ON)" pax -x tar -rf "${componentFile}"`);
+      result = shell.execSync('sh', '-c', `_CEE_RUNOPTS="FILETAG() POSIX(ON)" cd ${tmpDir} && pax -x tar -rf "${componentFile}"`);
     }
     if (result.rc) {
       common.printError(`Extract completed with rc=${result.rc}`);
@@ -157,7 +157,7 @@ export function execute(componentFile: string, autoEncoding?: string, upgrade?: 
   if (fs.pathExists(destinationDir)) {
     if (!upgrade) {
       fs.rmrf(tmpDir);
-      common.printErrorAndExit(`Error ZWEL0155E: Component ${componentName} already exists in ${targetDir}.`, undefined, 155);
+      common.printErrorAndExit(`Error ZWEL0155E: Component ${componentName} already exists in ${targetDir}. If you meant to upgrade this component, run the command 'zwe components upgrade' instead.`, undefined, 155);
     } else {
       if (fs.pathExists(bkpDir)) {
         fs.rmrf(bkpDir);

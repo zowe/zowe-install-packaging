@@ -9,8 +9,8 @@
   Copyright Contributors to the Zowe Project.
 */
 
-import * as std from 'std';
-import * as os from 'os';
+import * as std from 'cm_std';
+import * as os from 'cm_os';
 import * as zos from 'zos';
 import * as common from '../../../../libs/common';
 import * as config from '../../../../libs/config';
@@ -89,12 +89,12 @@ export function execute(componentId: string, runInBackground: boolean=false) {
         // FIXME: we have assumption here startScript is pointing to a shell script
         // if [[ "${start_script}" == *.sh ]]; then
         if (runInBackground === true) {
-          shell.exec('sh', '-c', `. ${runtimeDirectory}/bin/libs/index.sh && cd ${COMPONENT_DIR} && . ${fullPath}`);
+          shell.exec('sh', '-c', `. ${runtimeDirectory}/bin/libs/configmgr-index.sh && cd ${COMPONENT_DIR} && . ${fullPath}`);
         } else {
           // wait for all background subprocesses created by bin/start.sh exit
           // re-source libs is necessary to reclaim shell functions since this will be executed in a new shell
           //TODO does this do the same as the shell script before it?
-          shell.execSync('sh', '-c', `cd ${COMPONENT_DIR} ; cat "${fullPath}" | { echo ". \"${ZOWE_CONFIG.zowe.runtimeDirectory}/bin/libs/index.sh\"" ; cat ; echo; echo wait; } | /bin/sh`);
+          shell.execSync('sh', '-c', `cd ${COMPONENT_DIR} ; cat "${fullPath}" | { echo ". \"${ZOWE_CONFIG.zowe.runtimeDirectory}/bin/libs/configmgr-index.sh\"" ; cat ; echo; echo wait; } | /bin/sh`);
         }
       } else {
         common.printFormattedError("ZWELS", "zwe-internal-start-component", `Error ZWEL0172E: Component ${componentId} has commands.start defined but the file is missing.`);

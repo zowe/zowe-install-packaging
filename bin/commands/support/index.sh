@@ -16,9 +16,14 @@ print_level0_message "Collect information for Zowe support"
 ###############################
 # constants
 DATE=`date +%Y-%m-%d-%H-%M-%S`
-target_dir="${ZWE_CLI_PARAMETER_CONFIG_TARGET_DIR}"
+target_dir="${ZWE_CLI_PARAMETER_TARGET_DIR}"
 if [ -z "${target_dir}" ]; then
   target_dir=$(get_tmp_dir)
+else
+  curr_pwd=$(pwd)
+  cd "${target_dir}"
+  target_dir=$(pwd)
+  cd "${curr_pwd}"
 fi
 tmp_file_prefix=zwe-support
 tmp_pax="${target_dir}/${tmp_file_prefix}.${DATE}.pax"

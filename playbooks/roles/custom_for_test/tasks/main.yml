@@ -58,6 +58,14 @@
   vars:
     filename: USER-cert.cer
     method: scp
+# Upload CA certificate
+# This certificate will be configured in task Add DigiCert Global Root CA to the truststore
+- include_role:
+    name: custom_for_test
+    tasks_from: upload_certificate
+  vars:
+    filename: DigiCert_Global_Root_CA.cer
+    method: scp    
 # Upload client CA certificate
 # This certificate will be configured in task Add the external CA to the truststore
 - include_role:
@@ -82,6 +90,25 @@
     certificate: "{{ work_dir_remote }}/USER-cert.cer"
     dataset: USER
     label: API ML Client
+
+# ============================================================================
+# Add DigiCert Global Root CA to the truststore
+- name: Add DigiCert Global Root CA to the truststore
+  include_role:
+    name: zos
+    tasks_from: run_script
+  vars:
+    script_chdir: "{{ zowe_root_dir }}/bin"
+    script_filename: keytool
+    script_parameters: >-
+      -importcert -v
+      -trustcacerts -noprompt
+      -file "{{ work_dir_remote }}/DigiCert_Global_Root_CA.cer"
+      -alias "digcerca"
+      -keystore "{{ zowe_keystore_dir }}/{{ zowe_keystore_alias }}/{{ zowe_keystore_alias }}.truststore.p12"
+      -storepass "{{ zowe_keystore_password }}"
+      -storetype "PKCS12"
+  when: zos_keystore_mode is undefined or zos_keystore_mode != 'KEYSTORE_MODE_KEYRING'
 
 # ============================================================================
 # Add external API ML CA to the truststore

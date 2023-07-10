@@ -56,7 +56,7 @@ original_zss_port="${ZWE_components_zss_port}"
 # prepare target zowe.yaml for k8s
 cp "${ZWE_CLI_PARAMETER_CONFIG}" "${temp_dir}/zowe.yaml"
 
-if [ "${ZWE_zowe_certificate_keystore_type}" = "JCERACFKS" ]; then
+if [[ "${ZWE_zowe_certificate_keystore_type}" == JCE*KS ]]; then
   # export keyring to PKCS#12 format
   print_level1_message "Convert Keyring to PKCS#12 keystore for Kubernetes"
   print_message "You are using z/OS Keyring. All certificates used by Zowe will be exported."

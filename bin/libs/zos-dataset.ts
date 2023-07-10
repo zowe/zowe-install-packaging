@@ -10,7 +10,7 @@
   Copyright Contributors to the Zowe Project.
 */
 
-import * as std from 'std';
+import * as std from 'cm_std';
 
 import * as common from './common';
 import * as stringlib from './string';
@@ -276,18 +276,19 @@ export function apfAuthorizeDataset(dataset: string): number {
   return 0;
 }
 
-export function createDatasetTmpMember(dataset: string, prefix: string='ZW'): string {
+export function createDatasetTmpMember(dataset: string, prefix: string='ZW'): string | null {
   common.printTrace(`  > create_data_set_tmp_member in ${dataset}`);
-  while(true) {
+  for (var i = 0; i < 100; i++) {
     let rnd=Math.floor(Math.random()*10000);
 
     let member=`${prefix}${rnd}`.substring(0,8);
     common.printTrace(`    - test ${member}`);
     let memberExist=isDatasetExists(`${dataset}(${member})`);
     common.printTrace(`    - exist? ${memberExist}`);
-    if (memberExist) {
+    if (!memberExist) {
       common.printTrace("    - good");
       return member;
     }
   }
+  return null;
 }
