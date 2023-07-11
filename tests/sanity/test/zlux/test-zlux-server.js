@@ -17,7 +17,7 @@ const {
 } = require('../http-helper');
 const { APIML_AUTH_COOKIE } = require('../constants');
 
-describe(`test zLux server https://${process.env.ZOWE_EXTERNAL_HOST}:${process.env.ZOWE_ZLUX_HTTPS_PORT}`, function() {
+describe(`test zLux server https://${process.env.ZOWE_EXTERNAL_HOST}:${process.env.ZOWE_API_MEDIATION_GATEWAY_HTTP_PORT}`, function() {
 
   let zluxHost;
   let zluxBaseUrl;
@@ -42,7 +42,7 @@ describe(`test zLux server https://${process.env.ZOWE_EXTERNAL_HOST}:${process.e
   });
 
   describe('GET /', function() {
-    it('should redirect to ./ZLUX/plugins/org.zowe.zlux.bootstrap/web/', async function() {
+    it(`should redirect to https://${process.env.ZOWE_EXTERNAL_HOST}:${process.env.ZOWE_API_MEDIATION_GATEWAY_HTTP_PORT}/zlux/ui/v1/`, async function() {
       const res = await hqZlux.request({
         url: '/',
         maxRedirects: 0,
@@ -52,7 +52,7 @@ describe(`test zLux server https://${process.env.ZOWE_EXTERNAL_HOST}:${process.e
       expect(res.status).to.equal(HTTP_STATUS.REDIRECT);
       expect(res).to.have.property('headers');
       expect(res.headers).to.have.property('location');
-      expect(res.headers.location).to.equal('./ZLUX/plugins/org.zowe.zlux.bootstrap/web/');
+      expect(res.headers.location).to.equal(`https://${process.env.ZOWE_EXTERNAL_HOST}:${process.env.ZOWE_API_MEDIATION_GATEWAY_HTTP_PORT}/zlux/ui/v1/`);
     });
 
     it('should return ok', async function() {
