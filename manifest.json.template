@@ -34,7 +34,7 @@
     "org.zowe.zlux.tn3270-ng2": {
       "version": "2.10.0-V2.X-RC",
       "repository": "libs-snapshot-local",
-      "artifact": "tn3270-ng2-2.10.0-20230711.193210.pax"
+      "artifact": "tn3270-ng2-2.10.0-20230711.193249.pax"
     },
     "org.zowe.zlux.vt-ng2": {
       "version": "2.10.0-V2.X-RC",
@@ -49,7 +49,7 @@
     "org.zowe.zss": {
       "version": "2.10.0-RC",
       "repository": "libs-snapshot-local",
-      "artifact": "zss-2.10.0-rc-920-20230711194821.pax"
+      "artifact": "zss-2.10.0-rc-921-20230712132442.pax"
     },
     "org.zowe.explorer.jobs.jobs-api-package": {
       "version": "2.0.17",
@@ -111,12 +111,12 @@
     "org.zowe.configmgr-rexx": {
       "version": "2.10.0-V2.X-RC",
       "repository": "libs-snapshot-local",
-      "artifact": "configmgr-rexx-2.9.0-2023071157.pax"
+      "artifact": "configmgr-rexx-2.10.0-2023071214.pax"
     },
     "org.zowe.configmgr": {
       "version": "2.10.0-V2.X-RC",
       "repository": "libs-snapshot-local",
-      "artifact": "configmgr-2.9.0-2023071158.pax"
+      "artifact": "configmgr-2.10.0-2023071212.pax"
     },
     "org.zowe.launcher": {
       "version": "2.0.12"
