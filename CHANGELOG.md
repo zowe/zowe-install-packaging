@@ -3,6 +3,14 @@
 All notable changes to the Zowe Installer will be documented in this file.
 <!--Add the PR or issue number to the entry if available.-->
 
+## `2.10.0`
+
+### New features and enhancements
+- Enhancement: Added a new zwe "diagnose" command to find help on zowe error messages. (#3455)
+
+#### Minor enhancements/defect fixes
+- Enhancement: Check for node v18 which is now supported, but disallow v18.12.1 because it is known not to work for Zowe. (#3485)
+
 ## `2.9.0`
 
 ### New features and enhancements

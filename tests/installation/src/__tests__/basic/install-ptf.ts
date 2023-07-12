@@ -26,13 +26,21 @@ describe(testSuiteName, () => {
   });
 
   test('install and verify', async () => {
+    const apimlOidcVars =  {
+      'zowe_apiml_security_oidc_client_id': process.env['OKTA_CLIENT_ID'],
+      'zowe_apiml_security_oidc_client_secret': process.env['OKTA_CLIENT_SECRET'],
+      'zowe_apiml_security_oidc_registry': process.env['OIDC_REGISTRY'],
+      'zowe_apiml_security_oidc_introspect_url': `https://${process.env['OKTA_HOSTNAME']}/oauth2/default/v1/introspect`,
+    };
     await installAndVerifySmpePtf(
       testSuiteName,
       process.env.TEST_SERVER,
+      apimlOidcVars,
       {
         'zowe_build_local': process.env['ZOWE_BUILD_LOCAL'],
         'zowe_custom_for_test': 'true',
         'zowe_lock_keystore': 'false',
+        ...apimlOidcVars
       }
     );
   }, TEST_TIMEOUT_SMPE_PTF);

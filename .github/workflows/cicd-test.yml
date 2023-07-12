@@ -365,6 +365,12 @@ jobs:
           SSH_PORT: ${{ secrets.SSH_PORT }}
           SSH_USER: ${{ secrets.SSH_USER }}
           SSH_PASSWORD: ${{ secrets.SSH_PASSWORD }}
+          OKTA_HOSTNAME: ${{ secrets.OKTA_HOSTNAME }}
+          OKTA_CLIENT_ID: ${{ secrets.OKTA_CLIENT_ID }}
+          OKTA_CLIENT_SECRET: ${{ secrets.OKTA_CLIENT_SECRET }}
+          OKTA_USER: ${{ secrets.OKTA_USER }}
+          OKTA_PASSWORD: ${{ secrets.OKTA_PASSWORD }}
+          OIDC_REGISTRY: ${{ secrets.OIDC_REGISTRY }}
           ZOS_NODE_HOME: ${{ steps.more-test-prep.outputs.NODE_HOME_PATTERN }}
       #     # ANSIBLE_VERBOSE: -vvv
 

@@ -35,6 +35,11 @@
     - zowe_apiml_security_x509_enabled
     - zowe_apiml_security_zosmf_applid
     - zowe_apiml_security_auth_provider
+    - zowe_apiml_security_oidc_enabled
+    - zowe_apiml_security_oidc_client_id
+    - zowe_apiml_security_oidc_client_secret
+    - zowe_apiml_security_oidc_registry
+    - zowe_apiml_security_oidc_introspect_url
     - zowe_jobs_api_port
     - zowe_mvs_api_port
     - zowe_jobs_explorer_port
@@ -290,6 +295,11 @@
       "components.gateway.apiml.security.x509.enabled": "{{ zowe_apiml_security_x509_enabled|string|lower }}"
       "components.gateway.apiml.security.auth.provider": "{{ zowe_apiml_security_auth_provider|string|lower }}"
       "components.gateway.apiml.security.auth.zosmf.jwtAutoconfiguration": "{{ zowe_apiml_security_zosmf_jwt_autoconfiguration_mode }}"
+      "components.gateway.apiml.security.oidc.enabled": "{{ zowe_apiml_security_oidc_enabled|string|lower }}"
+      "components.gateway.apiml.security.oidc.clientId": "{{ zowe_apiml_security_oidc_client_id|string }}"
+      "components.gateway.apiml.security.oidc.clientSecret": "{{ zowe_apiml_security_oidc_client_secret|string }}"
+      "components.gateway.apiml.security.oidc.registry": "{{ zowe_apiml_security_oidc_registry|string }}"
+      "components.gateway.apiml.security.oidc.introspectUrl": "{{ zowe_apiml_security_oidc_introspect_url|string }}"
       # desktop customizations
       "zowe.environments.ZWED_SSH_PORT": "{{ zowe_zlux_terminal_ssh_port }}"
       "zowe.environments.ZWED_TN3270_PORT": "{{ zowe_zlux_terminal_telnet_port }}"
