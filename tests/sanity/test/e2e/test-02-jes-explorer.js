@@ -71,7 +71,7 @@ describe(`test ${APP_TO_TEST}`, function() {
       process.env.SSH_PASSWD
     );
     debug('loginMVD');
-    debug(`gateway: ${process.env.ZOWE_API_MEDIATION_GATEWAY_HTTP_PORT}`)
+    debug(`gateway: ${process.env.ZOWE_API_MEDIATION_GATEWAY_HTTP_PORT}`);
   });
 
 
