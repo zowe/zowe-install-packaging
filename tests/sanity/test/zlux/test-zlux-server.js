@@ -42,12 +42,11 @@ describe(`test zLux server https://${process.env.ZOWE_EXTERNAL_HOST}:${process.e
   });
 
   describe('GET /', function() {
-    it('should redirect to .ZLUX/plugins/org.zowe.zlux.bootstrap/web/', async function() {
+    it('should redirect to ./ZLUX/plugins/org.zowe.zlux.bootstrap/web/', async function() {
       const res = await hqZlux.request({
         url: '/',
         maxRedirects: 0,
       });
-      debug(`zlux: ${res}`);
       expect(res).to.have.property('status');
       expect(res.status).to.equal(HTTP_STATUS.REDIRECT);
       expect(res).to.have.property('headers');
