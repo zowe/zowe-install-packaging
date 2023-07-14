@@ -55,5 +55,5 @@ jobs:
       uses: snyk/actions/docker@master
       # we don't have original Dockerfile, cannot generate and upload sarif 
       with:
-        image: ${{ matrix.image }}
+        image: ${{ matrix.images }}
         command: test
