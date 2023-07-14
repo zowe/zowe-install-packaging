@@ -55,8 +55,6 @@ describe(`test ${APP_TO_TEST}`, function() {
     // init webdriver
     driver = await getDefaultDriver();
     debug('webdriver initialized');
-    debug('loginMVD');
-    debug(`gateway: ${process.env.ZOWE_API_MEDIATION_GATEWAY_HTTP_PORT}`);
     
     await setApimlAuthTokenCookie(driver, 	
       process.env.SSH_USER, 	
