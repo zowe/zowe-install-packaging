@@ -1,0 +1,3 @@
+from-v1|v1|boolean|required||||From which version will be migrating
+instance-env|ie|string|required||||Existing files with instance environment variables 
+yaml|y|string|required||||Configuration YAML file that will be created
