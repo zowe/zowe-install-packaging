@@ -23,6 +23,28 @@ import * as config from '../../../libs/config';
 import * as zosfs from '../../../libs/zos-fs';
 import * as zosdataset from '../../../libs/zos-dataset';
 
+const CEE_ENVFILE_CONTINUATION = '\\';
+const JCL_LINE_LENGHT = 71;
+
+function jclStmtSplit(line: string, splitter?: string): string{
+    if (splitter === undefined)
+      splitter = `\n//  `;
+    if (line.replace(`\v`, '').length > JCL_LINE_LENGHT)
+      return line.replace(`\v`, splitter);
+    else
+      return line.replace(`\v`, '');
+}
+
+function jclInStreamSplit(inStreamData: string, splitChars?: string): string{
+    if (splitChars === undefined)
+      splitChars = CEE_ENVFILE_CONTINUATION;
+    if (inStreamData.length > JCL_LINE_LENGHT){
+      return inStreamData.match(/.{1,70}/g).join(`${splitChars}\n`);
+    }  else {
+      return inStreamData;
+    }
+}
+
 export function execute(allowOverwrite: boolean = false) {
 
   common.printLevel1Message(`Install Zowe main started task`);
@@ -140,8 +162,8 @@ export function execute(allowOverwrite: boolean = false) {
       common.printTrace(`  * Output:`);
       common.printTrace(stringlib.paddingLeft(slstcContent.out, "    "));
 
-      const tmpFileContent = slstcContent.out.replace('//STEPLIB  DD   DSNAME=&SYSUID..LOADLIB,DISP=SHR', `//STEPLIB  DD   DSNAME=${authLoadlib},DISP=SHR`)
-        .replace('CONFIG=#zowe_yaml', `CONFIG=${std.getenv('ZWE_PRIVATE_ORIGINAL_CONFIG')}`);
+      const tmpFileContent = slstcContent.out.replace('//STEPLIB  DD   DSNAME=&SYSUID..LOADLIB,DISP=SHR', jclStmtSplit(`//STEPLIB  DD   DSNAME=${authLoadlib},\vDISP=SHR`))
+        .replace('CONFIG=#zowe_yaml', jclInStreamSplit(`CONFIG=${std.getenv('ZWE_PRIVATE_ORIGINAL_CONFIG')}`));
 
       xplatform.storeFileUTF8(tmpfile, xplatform.AUTO_DETECT, tmpFileContent);
       common.printTrace(`  * Stored:`);
@@ -175,16 +197,19 @@ export function execute(allowOverwrite: boolean = false) {
     common.printMessage(`Modify ZWESISTC and save as ${jcllib}(${security_stcs_zis})`);
     tmpfile = fs.createTmpFile(`zwe ${COMMAND_LIST}`.replace(new RegExp('\ ', 'g'), '-'));
     common.printDebug(`- Copy ${prefix}.${SAMP_LIB}(ZWESISTC) to ${tmpfile}`);
+    let stepLibAuth = jclStmtSplit(`//STEPLIB  DD   DSNAME=${authLoadlib},\vDISP=SHR`);
+    let stepLibPlugin = '';
+    if (authLoadlib !== authPluginLib) {
+        stepLibPlugin = jclStmtSplit(`\n//         DD   DSNAME=${authPluginLib},\vDISP=SHR`);
+    } 
     const sistcContent = shell.execOutSync('sh', '-c', `cat "//'${prefix}.${SAMP_LIB}(ZWESISTC)'" 2>&1`);
     if (sistcContent.out && sistcContent.rc == 0) {
       common.printDebug(`  * Succeeded`);
       common.printTrace(`  * Output:`);
       common.printTrace(stringlib.paddingLeft(sistcContent.out, "    "));
 
-      const tmpFileContent = sistcContent.out.replace('ZWES.SISSAMP', parmlib)
-        .split('\n').map(line => line.startsWith('//STEPLIB') ? `//STEPLIB  DD   DSNAME='${authLoadlib}',DISP=SHR\n`
-                                                              + `//         DD   DSNAME='${authPluginLib}',DISP=SHR`
-                                                              : line).join('\n');
+      const tmpFileContent = sistcContent.out.replace('//PARMLIB  DD   DSNAME=ZWES.SISSAMP,DISP=SHR', jclStmtSplit(`//PARMLIB  DD   DSNAME=${parmlib},\vDISP=SHR`))
+        .split('\n').map(line => line.startsWith('//STEPLIB') ? stepLibAuth + stepLibPlugin : line).join('\n');
       xplatform.storeFileUTF8(tmpfile, xplatform.AUTO_DETECT, tmpFileContent);
       common.printTrace(`  * Stored:`);
       common.printTrace(stringlib.paddingLeft(tmpFileContent, "    "));
@@ -224,9 +249,7 @@ export function execute(allowOverwrite: boolean = false) {
       common.printTrace(stringlib.paddingLeft(sastcContent.out, "    "));
       
       const tmpFileContent = sastcContent.out.split('\n')
-        .map(line => line.startsWith('//STEPLIB') ? `//STEPLIB  DD   DSNAME='${authLoadlib}',DISP=SHR\n`
-                                                  + `//         DD   DSNAME='${authPluginLib}',DISP=SHR`
-                                                  : line).join('\n');
+        .map(line => line.startsWith('//STEPLIB') ? stepLibAuth + stepLibPlugin : line).join('\n');
       xplatform.storeFileUTF8(tmpfile, xplatform.AUTO_DETECT, tmpFileContent);
       shell.execSync('chmod', '700', tmpfile);
     } else {
