@@ -27,7 +27,7 @@ const {
   waitUntilElement,
   waitUntilElementIsGone,
   waitUntilIframe,
-  loginMVD,
+  //loginMVD,
   launchApp,
   locateApp,
   switchToIframeAppContext,
