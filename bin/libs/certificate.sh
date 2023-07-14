@@ -1183,10 +1183,13 @@ keyring_export_to_pkcs12() {
 
   print_debug ">>>> Export certificate \"${label}\" from safkeyring:////${keyring_owner}/${keyring_name} to PKCS#12 keystore ${keystore_file}"
 
+ flags=$(get_java_pkcs12_keystore_flag)
+
   # create keystore if it doesn't exist
   if [ -f "${keystore_file}" ]; then
     print_debug "- Create keystore with dummy certificate ${dummy_cert}"
-    result=$(pkeytool -genkeypair \
+    result=$(pkeytool ${flags} \
+            -genkeypair \
             -alias "${dummy_cert}" \
             -dname "CN=Zowe Dummy Cert, OU=ZWELS, O=Zowe, C=US" \
             -keystore "${keystore_file}" \
@@ -1222,7 +1225,8 @@ keyring_export_to_pkcs12() {
   if [ "${cert_only}" = "true" ]; then
     # use keytool to import certificate
     print_debug "- Import certificate into keystore as \"${label}\""
-    result=$(pkeytool -import -v \
+    result=$(pkeytool ${flags} \
+            -import -v \
             -trustcacerts -noprompt \
             -alias "${label}" \
             -file "${uss_temp_target}.cer" \
