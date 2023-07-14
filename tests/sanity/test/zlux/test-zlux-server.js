@@ -47,7 +47,7 @@ describe(`test zLux server https://${process.env.ZOWE_EXTERNAL_HOST}:${process.e
         url: '/',
         maxRedirects: 0,
       });
-      
+      console.log('zlux:', res);
       expect(res).to.have.property('status');
       expect(res.status).to.equal(HTTP_STATUS.REDIRECT);
       expect(res).to.have.property('headers');
