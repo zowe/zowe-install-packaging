@@ -423,6 +423,35 @@
           "additionalProperties": false,
           "description": "Optional, advanced network configuration parameters",
           "properties": {
+            "bind": {
+              "type": "array",
+              "description": "The IP addresses which all of the Zowe servers will be binding to.",
+              "items": {
+                "type": "string"
+              }
+            },
+            "ciphers": {
+              "type": "array",
+              "description": "Acceptable TLS cipher suites for network connections.",
+              "items": {
+                "type": "string"
+              }
+            },
+            "curves": {
+              "type": "array",
+              "description": "Acceptable key exchange elliptic curves for network connections.",
+              "items": {
+                "type": "string"
+              }
+            },
+            "maxTls": {
+              "type": "string",
+              "description": "Maximum TLS version allowed for network connections. Must be: 1.0, 1.1, 1.2, or 1.3."
+            },
+            "minTls": {
+              "type": "string",
+              "description": "Minimum TLS version allowed for network connections. Must be: 1.0, 1.1, 1.2, or 1.3."
+            },
             "vipaIp": {
               "type": "string",
               "description": "The IP address which all of the Zowe servers will be binding to. If you are using multiple DIPVA addresses, do not use this option."
@@ -840,6 +869,49 @@
               "description": "Determines which SHAREAS mode should be used when starting a component",
               "enum": ["no", "yes", "must", ""],
               "default": "yes"
+            }
+          }
+        },
+        "zowe": {
+          "type": "object",
+          "description": "Component level overrides for top level Zowe network configuration.",
+          "additionalProperties": false,
+          "properties": {
+            "network": {
+              "type": "object",
+              "additionalProperties": false,
+              "description": "Optional, advanced network configuration parameters",
+              "properties": {
+                "bind": {
+                  "type": "array",
+                  "description": "The IP addresses which all of the Zowe servers will be binding to.",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "ciphers": {
+                  "type": "array",
+                  "description": "Acceptable TLS cipher suites for network connections.",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "curves": {
+                  "type": "array",
+                  "description": "Acceptable key exchange elliptic curves for network connections.",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "maxTls": {
+                  "type": "string",
+                  "description": "Maximum TLS version allowed for network connections. Must be: 1.0, 1.1, 1.2, or 1.3."
+                },
+                "minTls": {
+                  "type": "string",
+                  "description": "Minimum TLS version allowed for network connections. Must be: 1.0, 1.1, 1.2, or 1.3."
+                }
+              }
             }
           }
         }
