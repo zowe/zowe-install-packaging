@@ -8,7 +8,7 @@
  * Copyright IBM Corporation 2018, 2020
  */
 
-const { setApimlAuthTokenCookie } = require('explorer-fvt-utilities');
+//const { setApimlAuthTokenCookie } = require('explorer-fvt-utilities');
 const path = require('path');
 const expect = require('chai').expect;
 const debug = require('debug')('zowe-sanity-test:e2e:jes-explorer');
@@ -56,12 +56,12 @@ describe(`test ${APP_TO_TEST}`, function() {
     driver = await getDefaultDriver();
     debug('webdriver initialized');
     
-    await setApimlAuthTokenCookie(driver, 	
-      process.env.SSH_USER, 	
-      process.env.SSH_PASSWD, 	
-      `https://${process.env.ZOWE_EXTERNAL_HOST}:${process.env.ZOWE_API_MEDIATION_GATEWAY_HTTP_PORT}/gateway/api/v1/auth/login`, 	
-      `https://${process.env.ZOWE_EXTERNAL_HOST}:${process.env.ZOWE_API_MEDIATION_GATEWAY_HTTP_PORT}/zlux/ui/v1/ZLUX/plugins/org.zowe.explorer-jes/web/index.html`	
-    );
+    //await setApimlAuthTokenCookie(driver, 	
+    //  process.env.SSH_USER, 	
+    //  process.env.SSH_PASSWD, 	
+    //  `https://${process.env.ZOWE_EXTERNAL_HOST}:${process.env.ZOWE_API_MEDIATION_GATEWAY_HTTP_PORT}/gateway/api/v1/auth/login`, 	
+    //  `https://${process.env.ZOWE_EXTERNAL_HOST}:${process.env.ZOWE_API_MEDIATION_GATEWAY_HTTP_PORT}/zlux/ui/v1/ZLUX/plugins/org.zowe.explorer-jes/web/index.html`	
+    //);
 
     // load MVD login page
     await loginMVD(
