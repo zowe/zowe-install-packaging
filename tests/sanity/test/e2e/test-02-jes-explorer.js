@@ -8,7 +8,7 @@
  * Copyright IBM Corporation 2018, 2020
  */
 
-const { setApimlAuthTokenCookie } = require('explorer-fvt-utilities');
+//const { setApimlAuthTokenCookie } = require('explorer-fvt-utilities');
 const path = require('path');
 const expect = require('chai').expect;
 const debug = require('debug')('zowe-sanity-test:e2e:jes-explorer');
