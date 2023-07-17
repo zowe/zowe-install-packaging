@@ -427,7 +427,7 @@
               "type": "array",
               "description": "The IP addresses which all of the Zowe servers will be binding to.",
               "items": {
-                "type": "string"
+                "$ref": "/schemas/v2/server-common#zoweIpv4"
               }
             },
             "ciphers": {
@@ -446,11 +446,15 @@
             },
             "maxTls": {
               "type": "string",
-              "description": "Maximum TLS version allowed for network connections. Must be: 1.0, 1.1, 1.2, or 1.3."
+              "enum": ["1.0", "1.1", "1.2", "1.3"],
+              "default": "1.3",
+              "description": "Maximum TLS version allowed for network connections."
             },
             "minTls": {
               "type": "string",
-              "description": "Minimum TLS version allowed for network connections. Must be: 1.0, 1.1, 1.2, or 1.3."
+              "enum": ["1.0", "1.1", "1.2", "1.3"],
+              "default": "1.3",
+              "description": "Minimum TLS version allowed for network connections, and less than network.maxTls."
             },
             "vipaIp": {
               "type": "string",
@@ -886,7 +890,7 @@
                   "type": "array",
                   "description": "The IP addresses which all of the Zowe servers will be binding to.",
                   "items": {
-                    "type": "string"
+                    "$ref": "/schemas/v2/server-common#zoweIpv4"
                   }
                 },
                 "ciphers": {
@@ -905,11 +909,15 @@
                 },
                 "maxTls": {
                   "type": "string",
-                  "description": "Maximum TLS version allowed for network connections. Must be: 1.0, 1.1, 1.2, or 1.3."
+                  "enum": ["1.0", "1.1", "1.2", "1.3"],
+                  "default": "1.3",
+                  "description": "Maximum TLS version allowed for network connections."
                 },
                 "minTls": {
                   "type": "string",
-                  "description": "Minimum TLS version allowed for network connections. Must be: 1.0, 1.1, 1.2, or 1.3."
+                  "enum": ["1.0", "1.1", "1.2", "1.3"],
+                  "default": "1.3",
+                  "description": "Minimum TLS version allowed for network connections, and less than network.maxTls."
                 }
               }
             }
