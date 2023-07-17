@@ -42,17 +42,16 @@ describe(`test zLux server https://${process.env.ZOWE_EXTERNAL_HOST}:${process.e
   });
 
   describe('GET /', function() {
-    it(`should redirect to https://${process.env.ZOWE_EXTERNAL_HOST}:${process.env.ZOWE_API_MEDIATION_GATEWAY_HTTP_PORT}/zlux/ui/v1/`, async function() {
+    it('should redirect to ./ZLUX/plugins/org.zowe.zlux.bootstrap/web/', async function() {
       const res = await hqZlux.request({
         url: '/',
         maxRedirects: 0,
       });
-      console.log('zlux:', res);
       expect(res).to.have.property('status');
       expect(res.status).to.equal(HTTP_STATUS.REDIRECT);
       expect(res).to.have.property('headers');
       expect(res.headers).to.have.property('location');
-      expect(res.headers.location).to.equal(`https://${process.env.ZOWE_EXTERNAL_HOST}:${process.env.ZOWE_API_MEDIATION_GATEWAY_HTTP_PORT}/zlux/ui/v1/`);
+      expect(res.headers.location).to.equal('./ZLUX/plugins/org.zowe.zlux.bootstrap/web/');
     });
 
     it('should return ok', async function() {

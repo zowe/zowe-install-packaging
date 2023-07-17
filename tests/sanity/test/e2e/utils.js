@@ -543,7 +543,6 @@ const waitUntilIframe = async(driver, iframeSelector, parent) => {
 const launchApp = async(driver, appName) => {
   debug(`[launchApp] launching ${appName}`);
   await driver.switchTo().defaultContent();
-  await saveScreenshot(driver, testName, 'launching-app1');
 
   // find start icon
   const menu = await getElement(driver, 'rs-com-launchbar-menu');
