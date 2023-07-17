@@ -11,7 +11,7 @@ work_dir_local: .tmp
 # if run test in debug mode. for example, set to "test:*"
 zowe_sanity_test_debug_mode: ""
 # only run subset of test cases
-zowe_sanity_test_testcases: "\"./test/**/!(api-doc-gen).js\" --exclude ./**/test-zss-via-gateway.js --exclude ./**/test-caching-service-apis-via-gateway.js --exclude ./**/test-oidc-via-gateway.js --exclude ./**/test-02-jes-explorer.js --exclude ./**/test-03-mvs-explorer.js --exclude ./**/test-04-uss-explorer.js --exclude ./**/test-zlux-server.js "
+zowe_sanity_test_testcases: "\"./test/**/!(api-doc-gen).js\" --exclude ./**/test-zss-via-gateway.js --exclude ./**/test-caching-service-apis-via-gateway.js --exclude ./**/test-oidc-via-gateway.js --exclude ./**/test-zlux-server.js "
 # default folder of sanity test
 zowe_sanity_test_root_dir: ../tests/sanity
 
