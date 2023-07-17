@@ -62,7 +62,7 @@ describe(`test zLux server https://${process.env.ZOWE_EXTERNAL_HOST}:${process.e
 
   //    expect(res).to.have.property('status');
   //    expect(res.status).to.equal(HTTP_STATUS.SUCCESS);
-      // has been renamed to Zowe Desktop
+  // has been renamed to Zowe Desktop
   //    expect(res.data).to.match(/(Mainframe Virtual Desktop|Zowe Desktop)/);
   //  });
   //});
