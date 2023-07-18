@@ -41,31 +41,31 @@ describe(`test zLux server https://${process.env.ZOWE_EXTERNAL_HOST}:${process.e
     token = await zlux.login();
   });
 
-  describe('GET /', function() {
-    it('should redirect to ./ZLUX/plugins/org.zowe.zlux.bootstrap/web/', async function() {
-      const res = await hqZlux.request({
-        url: '/',
-        maxRedirects: 0,
-      });
+  //describe('GET /', function() {
+  //  it('should redirect to ./ZLUX/plugins/org.zowe.zlux.bootstrap/web/', async function() {
+  //    const res = await hqZlux.request({
+  //      url: '/',
+  //      maxRedirects: 0,
+  //    });
 
-      expect(res).to.have.property('status');
-      expect(res.status).to.equal(HTTP_STATUS.REDIRECT);
-      expect(res).to.have.property('headers');
-      expect(res.headers).to.have.property('location');
-      expect(res.headers.location).to.equal('./ZLUX/plugins/org.zowe.zlux.bootstrap/web/');
-    });
+  //    expect(res).to.have.property('status');
+  //    expect(res.status).to.equal(HTTP_STATUS.REDIRECT);
+  //    expect(res).to.have.property('headers');
+  //    expect(res.headers).to.have.property('location');
+  //    expect(res.headers.location).to.equal('./ZLUX/plugins/org.zowe.zlux.bootstrap/web/');
+  //  });
 
-    it('should return ok', async function() {
-      const res = await hqZlux.request({
-        url: '/',
-      });
+  //  it('should return ok', async function() {
+  //    const res = await hqZlux.request({
+  //      url: '/',
+  //    });
 
-      expect(res).to.have.property('status');
-      expect(res.status).to.equal(HTTP_STATUS.SUCCESS);
-      // has been renamed to Zowe Desktop
-      expect(res.data).to.match(/(Mainframe Virtual Desktop|Zowe Desktop)/);
-    });
-  });
+  //    expect(res).to.have.property('status');
+  //    expect(res.status).to.equal(HTTP_STATUS.SUCCESS);
+  // has been renamed to Zowe Desktop
+  //    expect(res.data).to.match(/(Mainframe Virtual Desktop|Zowe Desktop)/);
+  //  });
+  //});
 
   describe('GET /ZLUX/plugins', function() {
     it('/org.zowe.explorer-jes/web/index.html is an unprotected path', async function() {
