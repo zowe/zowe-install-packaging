@@ -1,1 +1,15 @@
-""
+{
+  "lockAcquiredTime": "Wed Jul 19 2023 18:51:38 GMT+0000 (Coordinated Universal Time)",
+  "uid": "1689792698101250512",
+  "repository": {
+    "owner": "zowe",
+    "repo": "zowe-install-packaging"
+  },
+  "branch": "user/markackert/add-root-cer-keyring-v2rc",
+  "workflow": "Zowe CICD Integration Tests",
+  "job": "cicd-test",
+  "actor": "ojcelis",
+  "runId": 5602950734,
+  "runNumber": 3039,
+  "link": "https://github.com/zowe/zowe-install-packaging/actions/runs/5602950734"
+}
