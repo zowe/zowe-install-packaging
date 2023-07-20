@@ -39,4 +39,11 @@ export const TEST_TIMEOUT_SMPE_PTF: number = 120 * 60 * 1000;
 export const KEYSTORE_MODE_KEYSTORE = 'KEYSTORE_MODE_KEYSTORE';
 export const KEYSTORE_MODE_KEYRING = 'KEYSTORE_MODE_KEYRING';
 
+export const APIML_OIDC_VARS =  {
+  'zowe_apiml_security_oidc_client_id': process.env['OKTA_CLIENT_ID'] || 'dummy_id_from_constants_ts',
+  'zowe_apiml_security_oidc_client_secret': process.env['OKTA_CLIENT_SECRET'] || 'dummy_secret_from_constants_ts',
+  'zowe_apiml_security_oidc_registry': process.env['OIDC_REGISTRY'] || 'dummy_registry_from_constants_ts',
+  'zowe_apiml_security_oidc_introspect_url': `https://${process.env['OKTA_HOSTNAME']}/oauth2/default/v1/introspect`,
+};
+
 // debug(`process.env >>>>>>>>>>>>>>>>>>>>>>>>>>\n${JSON.stringify(process.env)}\n<<<<<<<<<<<<<<<<<<<<<<<`);
