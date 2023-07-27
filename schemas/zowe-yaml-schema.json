@@ -475,6 +475,11 @@
               "description": "Determines which SHAREAS mode should be used when starting a component",
               "enum": ["no", "yes", "must", ""],
               "default": "yes"
+            },
+            "unsafeDisableZosVersionCheck": {
+              "type": "boolean",
+              "description": "Used to allow Zowe to warn, instead of error, when running on a version of zOS that this version of Zowe hasn't been verified as working with",
+              "default": "no"
             }
           }
         },
