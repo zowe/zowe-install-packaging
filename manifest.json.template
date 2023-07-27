@@ -40,7 +40,7 @@
       "artifact": "*.pax"
     },
     "org.zowe.zss": {
-      "version": "^2.0.0-STAGING",
+      "version": "^2.10.0-PR-632",
       "artifact": "*.pax"
     },
     "org.zowe.explorer.jobs.jobs-api-package": {
@@ -112,15 +112,15 @@
       "exclusions": ["*PR*.zip"]
     },
     "org.zowe.configmgr": {
-      "version": "^2.0.0-V2.X-STAGING",
+      "version": "^2.10.0-FEATURE-V2-ALLOW-BYPASS-VERSION-CHECK",
       "artifact": "*.pax"
     },
     "org.zowe.configmgr-rexx": {
-      "version": "^2.0.0-V2.X-STAGING",
+      "version": "^2.10.0-FEATURE-V2-ALLOW-BYPASS-VERSION-CHECK",
       "artifact": "*.pax"
     },
     "org.zowe.launcher": {
-      "version": "^2.0.0-SNAPSHOT"
+      "version": "^2.0.13-PR-90"
     },
     "org.zowe.keyring-utilities": {
       "version": "1.0.4",
