@@ -66,6 +66,11 @@ zowe_apiml_security_x509_enabled: false
 zowe_apiml_security_zosmf_applid: IZUDFLT
 zowe_apiml_security_auth_provider: zosmf
 zowe_apiml_security_zosmf_jwt_autoconfiguration_mode: auto
+zowe_apiml_security_oidc_enabled: false
+zowe_apiml_security_oidc_client_id:
+zowe_apiml_security_oidc_client_secret:
+zowe_apiml_security_oidc_registry:
+zowe_apiml_security_oidc_introspect_url:
 # explorer APIs/plugins ports
 zowe_jobs_api_port: 7558
 zowe_mvs_api_port: 7559
@@ -99,7 +104,7 @@ zowe_keystore_password: password
 zowe_keyring_alias: ZoweKeyring
 zowe_keyring_certname: ZoweCert
 zowe_keyring_external_intermediate_ca:
-zowe_keyring_external_root_ca:
+zowe_keyring_external_root_ca: brcmso
 zowe_keystore_alias: localhost
 zowe_jcllib:
 zowe_proclib_dsname: auto

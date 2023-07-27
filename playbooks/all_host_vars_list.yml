@@ -34,6 +34,10 @@ zowe_apiml_metrics_service_port: 7551
 zowe_apiml_nonstrict_verify_certficates_of_services: true
 zowe_apiml_security_auth_provider: zosmf
 zowe_apiml_security_x509_enabled: false
+zowe_apiml_security_oidc_enabled: false
+zowe_apiml_security_oidc_client_id:
+zowe_apiml_security_oidc_client_secret:
+zowe_apiml_security_oidc_registry:
 zowe_apiml_security_zosmf_applid: IZUDFLT
 zowe_apiml_security_zosmf_jwt_autoconfiguration_mode: auto
 zowe_apiml_verify_certficates_of_services: true
@@ -64,7 +68,7 @@ zowe_jobs_explorer_port: 7560
 zowe_keyring_alias: ZoweKeyring
 zowe_keyring_certname: ZoweCert
 zowe_keyring_external_intermediate_ca:
-zowe_keyring_external_root_ca:
+zowe_keyring_external_root_ca: brcmso
 zowe_keystore_alias: localhost
 zowe_keystore_dir: ~/.zowe/keystore
 zowe_keystore_password: password
