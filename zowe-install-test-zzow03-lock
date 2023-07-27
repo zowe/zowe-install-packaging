@@ -1,1 +1,15 @@
-""
+{
+  "lockAcquiredTime": "Thu Jul 27 2023 13:21:09 GMT+0000 (Coordinated Universal Time)",
+  "uid": "1690464069020659762",
+  "repository": {
+    "owner": "zowe",
+    "repo": "zowe-install-packaging"
+  },
+  "branch": "users/jstruga/fix-containerbug-for-rc",
+  "workflow": "Zowe CICD Integration Tests",
+  "job": "cicd-test",
+  "actor": "zowe-robot",
+  "runId": 5681049558,
+  "runNumber": 3073,
+  "link": "https://github.com/zowe/zowe-install-packaging/actions/runs/5681049558"
+}
