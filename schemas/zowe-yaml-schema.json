@@ -479,7 +479,7 @@
             "unsafeDisableZosVersionCheck": {
               "type": "boolean",
               "description": "Used to allow Zowe to warn, instead of error, when running on a version of zOS that this version of Zowe hasn't been verified as working with",
-              "default": "no"
+              "default": false
             }
           }
         },
