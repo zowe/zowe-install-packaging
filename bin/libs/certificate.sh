@@ -883,9 +883,11 @@ EOF
     racf_connect2="s/^ \+LABEL[(]'certlabel'[)].*\$/            LABEL('${connect_label}') +/"
   fi
 
-  # used by ACF2
-  # TODO: how to pass this?
-  stc_group=
+  # used by ACF2  
+  stc_group=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.security.groups.stc")
+  if [ -z "${stc_group}" ]; then
+    stc_group=${ZWE_PRIVATE_DEFAULT_ADMIN_GROUP}
+  fi
 
   ###############################
   # prepare ZWEKRING JCL
@@ -1010,8 +1012,10 @@ keyring_run_zwenokyr_jcl() {
   security_product=${7:-RACF}
 
   # used by ACF2
-  # TODO: how to pass this?
-  stc_group=
+  stc_group=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.security.groups.stc")
+  if [ -z "${stc_group}" ]; then
+    stc_group=${ZWE_PRIVATE_DEFAULT_ADMIN_GROUP}
+  fi
 
   ###############################
   # prepare ZWENOKYR JCL
