@@ -1,6 +1,6 @@
 {
   "name": "Zowe",
-  "version": "2.10.0",
+  "version": "2.11.0",
   "description": "Zowe is an open source project created to host technologies that benefit the Z platform from all members of the Z community (Integrated Software Vendors, System Integrators and z/OS consumers). Zowe, like Mac or Windows, comes with a set of APIs and OS capabilities that applications build on and also includes some applications out of the box. Zowe offers modern interfaces to interact with z/OS and allows you to work with z/OS in a way that is similar to what you experience on cloud platforms today. You can use these interfaces as delivered or through plug-ins and extensions that are created by clients or third-party vendors.",
   "license": "EPL-2.0",
   "homepage": "https://zowe.org",
@@ -40,7 +40,7 @@
       "artifact": "*.pax"
     },
     "org.zowe.zss": {
-      "version": "^2.10.0-PR-632",
+      "version": "^2.0.0-STAGING",
       "artifact": "*.pax"
     },
     "org.zowe.explorer.jobs.jobs-api-package": {
@@ -112,15 +112,15 @@
       "exclusions": ["*PR*.zip"]
     },
     "org.zowe.configmgr": {
-      "version": "^2.10.0-FEATURE-V2-ALLOW-BYPASS-VERSION-CHECK",
+      "version": "^2.0.0-V2.X-STAGING",
       "artifact": "*.pax"
     },
     "org.zowe.configmgr-rexx": {
-      "version": "^2.10.0-FEATURE-V2-ALLOW-BYPASS-VERSION-CHECK",
+      "version": "^2.0.0-V2.X-STAGING",
       "artifact": "*.pax"
     },
     "org.zowe.launcher": {
-      "version": "^2.0.13-PR-90"
+      "version": "^2.0.0-SNAPSHOT"
     },
     "org.zowe.keyring-utilities": {
       "version": "1.0.4",
