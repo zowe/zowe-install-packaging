@@ -546,6 +546,7 @@ components:
   app-server:
     enabled: true
     port: 7556
+    debug: false
     # we can customize any component with custom certificate
     # the missing definitions will be picked from "zowe.certificate"
     # certificate:

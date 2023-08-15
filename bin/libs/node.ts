@@ -113,6 +113,12 @@ export function validateNodeHome(nodeHome:string|undefined=std.getenv("NODE_HOME
         common.printError(`Node ${version} specifically is not compatible with Zowe. Please use a different version. See https://docs.zowe.org/stable/troubleshoot/app-framework/app-known-issues.html#desktop-apps-fail-to-load for more details.`);
         return false;
       }
+
+      if (version == 'v18.12.1') {
+        common.printError(`Node ${version} specifically is not compatible with Zowe. Please use a different version. See https://github.com/ibmruntimes/node-zos/issues/21 for more details.`);
+        return false;
+      }
+
       if (nodeMajorVersion < NODE_MIN_VERSION) {
         common.printError(`Node ${version} is less than the minimum level required of v${NODE_MIN_VERSION}.`);
         return false;
