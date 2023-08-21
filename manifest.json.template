@@ -112,15 +112,15 @@
       "exclusions": ["*PR*.zip"]
     },
     "org.zowe.configmgr": {
-      "version": "^2.0.0-V2.X-STAGING",
+      "version": "^2.11.0-BUGFIX-TRIM-ENV",
       "artifact": "*.pax"
     },
     "org.zowe.configmgr-rexx": {
-      "version": "^2.0.0-V2.X-STAGING",
+      "version": "^2.11.0-BUGFIX-TRIM-ENV",
       "artifact": "*.pax"
     },
     "org.zowe.launcher": {
-      "version": "^2.0.0-SNAPSHOT"
+      "version": "^2.0.13-PR-97"
     },
     "org.zowe.keyring-utilities": {
       "version": "1.0.4",
