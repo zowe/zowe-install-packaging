@@ -534,6 +534,14 @@
           "description": "Customize how Zowe should validate certificates used by components or other services.",
           "enum": ["STRICT", "NONSTRICT", "DISABLED"]
         },
+        "sysMessages" {
+          "type": "array",
+          "description": "List of strings to find in log messages that when matched will be additionally logged into the system's log (such as syslog on zos)"
+          "uniqueItems": true,
+          "items": {
+            "type": "string"
+          }
+        },
         "useConfigmgr": {
           "type": "boolean",
           "default": false,
