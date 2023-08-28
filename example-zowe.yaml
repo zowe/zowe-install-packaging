@@ -352,10 +352,10 @@ zowe:
 
   # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   # You can define any Zowe message portions to be checked for and the whole message added to the system log 
-  sysMessages:
-  #   Some examples
+  # sysMessages:
+  #   # Some examples
   #   - "ZWES1601I"
-  #   Not limited to Zowe message ID's
+  #   # Not limited to Zowe message ID's
   #   - "ERROR"
 
   # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
