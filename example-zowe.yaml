@@ -351,6 +351,14 @@ zowe:
   #   ZWED_TN3270_PORT: 23
 
   # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+  # You can define any Zowe message portions to be checked for and the whole message added to the system log 
+  sysMessages:
+  #   Some examples
+  #   - "ZWES1601I"
+  #   Not limited to Zowe message ID's
+  #   - "ERROR"
+
+  # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   # Enable debug mode for zowe launch scripts
   launchScript:
     # set to "debug" or "trace" to display extra debug information

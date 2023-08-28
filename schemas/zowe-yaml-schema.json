@@ -478,7 +478,7 @@
             },
             "unsafeDisableZosVersionCheck": {
               "type": "boolean",
-              "description": "Used to allow Zowe to warn, instead of error, when running on a version of zOS that this version of Zowe hasn't been verified as working with",
+              "description": "Used to allow Zowe to warn, instead of error, when running on a version of z/OS that this version of Zowe hasn't been verified as working with",
               "default": false
             }
           }
@@ -534,9 +534,9 @@
           "description": "Customize how Zowe should validate certificates used by components or other services.",
           "enum": ["STRICT", "NONSTRICT", "DISABLED"]
         },
-        "sysMessages" {
+        "sysMessages": {
           "type": "array",
-          "description": "List of strings to find in log messages that when matched will be additionally logged into the system's log (such as syslog on zos)"
+          "description": "List of Zowe message portions when matched will be additionally logged into the system's log (such as syslog on z/OS). Note: Some messages extremely early in the Zowe lifecycle may not be added to the system's log",
           "uniqueItems": true,
           "items": {
             "type": "string"
