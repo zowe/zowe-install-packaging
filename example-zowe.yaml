@@ -293,7 +293,7 @@ zowe:
   # * schema-backed validation of zowe.yaml
   # * should greatly improve startup time.
   # * can supply multiple zowe.yaml as defaults & overrides in the format of
-  #   FILE(/my/customizations.yaml):FILE(/company/customizations.yaml):FILE(/zowe/defaults.yaml)
+  #   FILE(/my/customizations.yaml):PARMLIB(MYORG.ZOWE(YAML)):FILE(/zowe/defaults.yaml)
   # * allows templating in zowe.yaml by putting references within ${{ }} blocks such as
   #    rewriting the job section below as
   #    job:
