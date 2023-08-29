@@ -132,3 +132,32 @@ validate_java_home() {
 
   print_debug "Java check is successful."
 }
+
+get_java_pkcs12_keystore_flag() {
+  java_version=$("${JAVA_HOME}/bin/java" -version 2>&1) # Capture stderr to stdout, so we can print below if error
+
+
+  # As we know the java -version command works then strip out the line we need
+  java_version_short=$(echo "${java_version}" | grep ^"java version" | sed -e "s/java version //g"| sed -e "s/\"//g")
+  if [[ $java_version_short == "" ]]; then
+    java_version_short=$(echo "${java_version}" | grep ^"openjdk version" | sed -e "s/openjdk version //g"| sed -e "s/\"//g")
+  fi
+  java_major_version=$(echo "${java_version_short}" | cut -d '.' -f 1)
+  java_minor_version=$(echo "${java_version_short}" | cut -d '.' -f 2)
+  java_fix_version=$(echo "${java_version_short}" | cut -d '_' -f 2)
+
+  if [ ${java_major_version} -eq 1 -a ${java_minor_version} -eq 8 ]; then
+    if [ ${java_fix_version} -lt 341 ]; then
+      printf " "
+    elif [ ${java_fix_version} -lt 361 ]; then
+      printf " -J-Dkeystore.pkcs12.certProtectionAlgorithm=PBEWithSHAAnd40BitRC2 -J-Dkeystore.pkcs12.certPbeIterationCount=50000 -J-Dkeystore.pkcs12.keyProtectionAlgorithm=PBEWithSHAAnd3KeyTripleDES -J-Dkeystore.pkcs12.keyPbeIterationCount=50000 "
+    else
+      printf " -J-Dkeystore.pkcs12.legacy "
+    fi
+  elif [ ${java_major_version} -eq 1 -a ${java_minor_version} -gt 8 ]; then
+    printf " -J-Dkeystore.pkcs12.legacy "
+  else
+    printf " "  
+  fi
+}
+
