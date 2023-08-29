@@ -352,9 +352,29 @@ zowe:
 
   # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   # You can define any Zowe message portions to be checked for and the whole message added to the system log 
-  # sysMessages:
-  #   # Some examples
-  #   - "ZWES1601I"
+  sysMessages:
+  #   # Zowe starting
+    - "ZWEL0021I"
+  #   # Zowe started
+    - "ZWEL0018I"
+    - "ZWEL0006I"
+  #   # Zowe ready to use
+    - "ZWES1601I"
+  #   # Zowe stopping
+    - "ZWEL0008I"
+  #   # Zowe stopped
+    - "ZWEL0022I"
+  #   # Zowe components starting
+    - "ZWEL0001I"
+  #   # Zowe components stopped
+    - "ZWEL0002I"
+  #   # API ML components ready
+    - "ZWEAM000I"
+  #   # App server ready
+    - "ZWED0031I"
+  #   # ZSS ready
+    - "ZWES1013I"
+
   #   # Not limited to Zowe message ID's
   #   - "ERROR"
 
