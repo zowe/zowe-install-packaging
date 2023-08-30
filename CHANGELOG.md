@@ -5,7 +5,11 @@ All notable changes to the Zowe Installer will be documented in this file.
 
 ## `2.11.0`
 
-### Minor enhancements/defect fixes
+### New features and enhancements
+- Enhancement: Duplicate log messages into syslog according to "zowe.sysMessages" array [#93](https://github.com/zowe/launcher/pull/93)
+
+#### Minor enhancements/defect fixes
+- Bugfix: `zowe-yaml-schema.json` validates unix directory path as `server-common#zowePath`
 - Bugfix: Fixed that Zowe would allow newer Java versions to generate PKCS12 keystores that was not compatible with some components. Newer versions of Java by default create PKCS12 keystores that aren't compatible with GSK / SystemSSL which components such as ZSS use, but include flags to restore a compatibility mode, which Zowe now uses. (#3507)
 
 ## `2.10.0`

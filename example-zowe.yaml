@@ -293,7 +293,7 @@ zowe:
   # * schema-backed validation of zowe.yaml
   # * should greatly improve startup time.
   # * can supply multiple zowe.yaml as defaults & overrides in the format of
-  #   FILE(/my/customizations.yaml):FILE(/company/customizations.yaml):FILE(/zowe/defaults.yaml)
+  #   FILE(/my/customizations.yaml):PARMLIB(MYORG.ZOWE(YAML)):FILE(/zowe/defaults.yaml)
   # * allows templating in zowe.yaml by putting references within ${{ }} blocks such as
   #    rewriting the job section below as
   #    job:
@@ -349,6 +349,34 @@ zowe:
   #   # Another example to customize SSH port for VT Terminal Desktop app
   #   ZWED_SSH_PORT: 22
   #   ZWED_TN3270_PORT: 23
+
+  # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+  # You can define any Zowe message portions to be checked for and the whole message added to the system log 
+  sysMessages:
+  #   # Zowe starting
+    - "ZWEL0021I"
+  #   # Zowe started
+    - "ZWEL0018I"
+    - "ZWEL0006I"
+  #   # Zowe ready to use
+    - "ZWES1601I"
+  #   # Zowe stopping
+    - "ZWEL0008I"
+  #   # Zowe stopped
+    - "ZWEL0022I"
+  #   # Zowe components starting
+    - "ZWEL0001I"
+  #   # Zowe components stopped
+    - "ZWEL0002I"
+  #   # API ML components ready
+    - "ZWEAM000I"
+  #   # App server ready
+    - "ZWED0031I"
+  #   # ZSS ready
+    - "ZWES1013I"
+
+  #   # Not limited to Zowe message ID's
+  #   - "ERROR"
 
   # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   # Enable debug mode for zowe launch scripts
