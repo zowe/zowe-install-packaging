@@ -1,1 +1,15 @@
-""
+{
+  "lockAcquiredTime": "Thu Aug 31 2023 16:54:33 GMT+0000 (Coordinated Universal Time)",
+  "uid": "1693500873503842894",
+  "repository": {
+    "owner": "zowe",
+    "repo": "zowe-install-packaging"
+  },
+  "branch": "traeok-patch-2",
+  "workflow": "Zowe CICD Integration Tests",
+  "job": "cicd-test",
+  "actor": "zowe-robot",
+  "runId": 6040190914,
+  "runNumber": 3202,
+  "link": "https://github.com/zowe/zowe-install-packaging/actions/runs/6040190914"
+}
