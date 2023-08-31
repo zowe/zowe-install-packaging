@@ -56,14 +56,12 @@
     "path": {
       "$anchor": "zowePath",
       "type": "string",
-      "pattern": "^([^\0]){1,1024}$",
       "minLength": 1,
       "maxLength": 1024
     },
     "file": {
       "$anchor": "zoweFile",
       "type": "string",
-      "pattern": "^([^\\\0]){1,256}$",
       "minLength": 1,
       "maxLength": 256
     },

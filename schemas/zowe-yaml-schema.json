@@ -49,7 +49,7 @@
                 },
                 "loadlib": {
                   "type": "string",
-                  "description": "States the path where Zowe executable utilities are located",
+                  "description": "States the dataset where Zowe executable utilities are located",
                   "default": "<hlq>.SZWELOAD"
                 },
                 "authLoadlib": {
@@ -190,7 +190,7 @@
                   "description": "PKCS#12 keystore settings",
                   "properties": {
                     "directory": {
-                      "type": "string",
+                      "$ref": "/schemas/v2/server-common#zowePath",
                       "description": "Keystore directory"
                     },
                     "name": {
@@ -388,19 +388,19 @@
           }
         },
         "runtimeDirectory": {
-          "type": "string",
+          "$ref": "/schemas/v2/server-common#zowePath",
           "description": "Path to where you installed Zowe."
         },
         "logDirectory": {
-          "type": "string",
+          "$ref": "/schemas/v2/server-common#zowePath",
           "description": "Path to where you want to store Zowe log files."
         },
         "workspaceDirectory": {
-          "type": "string",
+          "$ref": "/schemas/v2/server-common#zowePath",
           "description": "Path to where you want to store Zowe workspace files. Zowe workspace are used by Zowe component runtime to store temporary files."
         },
         "extensionDirectory": {
-          "type": "string",
+          "$ref": "/schemas/v2/server-common#zowePath",
           "description": "Path to where you want to store Zowe extensions. \"zwe components install\" will install new extensions into this directory."
         },
         "job": {
@@ -475,6 +475,11 @@
               "description": "Determines which SHAREAS mode should be used when starting a component",
               "enum": ["no", "yes", "must", ""],
               "default": "yes"
+            },
+            "unsafeDisableZosVersionCheck": {
+              "type": "boolean",
+              "description": "Used to allow Zowe to warn, instead of error, when running on a version of z/OS that this version of Zowe hasn't been verified as working with",
+              "default": false
             }
           }
         },
@@ -529,6 +534,14 @@
           "description": "Customize how Zowe should validate certificates used by components or other services.",
           "enum": ["STRICT", "NONSTRICT", "DISABLED"]
         },
+        "sysMessages": {
+          "type": "array",
+          "description": "List of Zowe message portions when matched will be additionally logged into the system's log (such as syslog on z/OS). Note: Some messages extremely early in the Zowe lifecycle may not be added to the system's log",
+          "uniqueItems": true,
+          "items": {
+            "type": "string"
+          }
+        },
         "useConfigmgr": {
           "type": "boolean",
           "default": false,
@@ -552,7 +565,7 @@
       "type": "object",
       "properties": {
         "home": {
-          "type": "string",
+          "$ref": "/schemas/v2/server-common#zowePath",
           "description": "Path to Java home directory."
         }
       }
@@ -561,7 +574,7 @@
       "type": "object",
       "properties": {
         "home": {
-          "type": "string",
+          "$ref": "/schemas/v2/server-common#zowePath",
           "description": "Path to node.js home directory."
         }
       }
@@ -650,7 +663,7 @@
               "const": "PKCS12"
             },
             "file": {
-              "type": "string",
+              "$ref": "/schemas/v2/server-common#zowePath",
               "description": "Path to your PKCS#12 keystore."
             },
             "password": {
@@ -675,7 +688,7 @@
               "const": "PKCS12"
             },
             "file": {
-              "type": "string",
+              "$ref": "/schemas/v2/server-common#zowePath",
               "description": "Path to your PKCS#12 keystore."
             },
             "password": {
@@ -691,24 +704,24 @@
           "required": ["key", "certificate"],
           "properties": {
             "key": {
-              "type": "string",
+              "$ref": "/schemas/v2/server-common#zowePath",
               "description": "Path to the certificate private key stored in PEM format."
             },
             "certificate": {
-              "type": "string",
+              "$ref": "/schemas/v2/server-common#zowePath",
               "description": "Path to the certificate stored in PEM format."
             },
             "certificateAuthorities": {
               "description": "List of paths to the certificate authorities stored in PEM format.",
               "oneOf": [{
-                  "type": "string",
+                  "$ref": "/schemas/v2/server-common#zowePath",
                   "description": "Paths to the certificate authorities stored in PEM format. You can separate multiple certificate authorities by comma."
                 },
                 {
                   "type": "array",
                   "description": "Path to the certificate authority stored in PEM format.",
                   "items": {
-                    "type": "string"
+                    "$ref": "/schemas/v2/server-common#zowePath"
                   }
                 }
               ]
@@ -779,24 +792,24 @@
           "required": ["key", "certificate"],
           "properties": {
             "key": {
-              "type": "string",
+              "$ref": "/schemas/v2/server-common#zowePath",
               "description": "Path to the certificate private key stored in PEM format."
             },
             "certificate": {
-              "type": "string",
+              "$ref": "/schemas/v2/server-common#zowePath",
               "description": "Path to the certificate stored in PEM format."
             },
             "certificateAuthorities": {
               "description": "List of paths to the certificate authorities stored in PEM format.",
               "oneOf": [{
-                  "type": "string",
+                  "$ref": "/schemas/v2/server-common#zowePath",
                   "description": "Paths to the certificate authorities stored in PEM format. You can separate multiple certificate authorities by comma."
                 },
                 {
                   "type": "array",
                   "description": "Path to the certificate authority stored in PEM format.",
                   "items": {
-                    "type": "string"
+                    "$ref": "/schemas/v2/server-common#zowePath"
                   }
                 }
               ]
@@ -855,7 +868,7 @@
           "description": "The location of the default registry for this handler. It could be a URL, path, dataset, whatever this handler supports"
         },
         "path": {
-          "type": "string",
+          "$ref": "/schemas/v2/server-common#zowePath",
           "description": "Unix file path to the configmgr-compatible JS file which implements the handler API"
         }
       }
