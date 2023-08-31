@@ -111,12 +111,12 @@
     "org.zowe.configmgr-rexx": {
       "version": "2.11.0-V2.X-RC",
       "repository": "libs-snapshot-local",
-      "artifact": "configmgr-rexx-2.11.0-2023082950.pax"
+      "artifact": "configmgr-rexx-2.11.0-2023083137.pax"
     },
     "org.zowe.configmgr": {
       "version": "2.11.0-V2.X-RC",
       "repository": "libs-snapshot-local",
-      "artifact": "configmgr-2.11.0-2023082956.pax"
+      "artifact": "configmgr-2.11.0-2023083140.pax"
     },
     "org.zowe.launcher": {
       "version": "2.0.13"
