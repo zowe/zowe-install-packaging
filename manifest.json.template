@@ -381,7 +381,7 @@
       "componentGroup": "Zowe Visual Studio Code Extension",
       "entries": [{
         "repository": "vscode-extension-for-zowe",
-        "tag": "v2.9.1",
+        "tag": "v2.10.0",
         "destinations": ["Visual Studio Code Marketplace"]
       }]
     },
@@ -406,7 +406,7 @@
     "zowe-launch-scripts": {
       "registry": "zowe-docker-release.jfrog.io",
       "name": "ompzowe/zowe-launch-scripts",
-      "tag" : "2.10.0-ubuntu"
+      "tag" : "2.11.0-ubuntu"
     },
     "api-catalog": {
       "registry": "zowe-docker-release.jfrog.io",
