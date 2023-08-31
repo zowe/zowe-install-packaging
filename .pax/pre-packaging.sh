@@ -147,7 +147,7 @@ SCRIPT_NAME=$(basename "$0")  # $0=./pre-packaging.sh
 BASE_DIR=$(cd $(dirname "$0"); pwd)      # <something>/.pax
 
 # use node v14 to build
-export NODE_HOME=/ZOWE/node/node-v14.21.3-os390-s390x
+export NODE_HOME=/ZOWE/node/node-v14.21.3.1-os390-s390x
 
 ZOWE_ROOT_DIR="${BASE_DIR}/content"
 
