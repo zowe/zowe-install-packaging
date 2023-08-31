@@ -1,0 +1,96 @@
+name: Update Zowe Component Versions and Create PR
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Release Version (x.x.x)'
+        required: true
+      zowe_version:
+        description: "Zowe Version Tag"
+        default: zowe-v2-lts
+        required: true
+        type: choice
+        options:
+        - zowe-v1-lts
+        - zowe-v2-lts
+
+jobs:
+  update_versions_and_create_pr:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Set Default Branch Environment Variable
+        run: |
+          if [[ "${{ github.event.inputs.zowe_version }}" == "zowe-v1-lts" ]]; then
+            echo "defaultBranch=v1.x/staging" >> $GITHUB_ENV
+          else
+            echo "defaultBranch=v2.x/staging" >> $GITHUB_ENV
+          fi
+
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ env.defaultBranch }}
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16
+
+      - name: Install Dependencies
+        run: |
+          sudo apt-get update -y
+          sudo apt install gh
+
+      - name: Create Branch
+        run: |
+          branch_name="v${{ github.event.inputs.version }}/rc"
+          git checkout -b "$branch_name"
+
+      - name: Get and Change Component Versions
+        id: get_versions
+        run: |
+          declare -A repoAndComponent
+          repoAndComponent[imperative]=imperative
+          repoAndComponent[cli]=zowe-cli
+          repoAndComponent[cics-for-zowe-cli]=zowe-cli-cics-plugin
+          repoAndComponent[db2-for-zowe-cli]=zowe-cli-db2-plugin
+          repoAndComponent[perf-timing]=perf-timing
+          repoAndComponent[mq-for-zowe-cli]=zowe-cli-mq-plugin
+          repoAndComponent[zos-ftp-for-zowe-cli]=zowe-cli-ftp-plugin
+
+          zowe_version=${{ github.event.inputs.zowe_version }}
+
+          echo "This PR updates the following package versions in manifest.json.template for \`$zowe_version\`" >> description.txt
+          echo "| Updated Package | Old Version | New Version |" >> description.txt
+          echo "| --- | --- | --- |" >> description.txt
+          for component in "${!repoAndComponent[@]}"; do
+              repo="${repoAndComponent[$component]}"
+              current_version=$(grep -A 2 "\"repository\": \"$repo\"" manifest.json.template | awk -F '"' '/"tag":/ {print $4}')
+              new_version=v$(npm view @zowe/$component "dist-tags.$zowe_version")
+              if [[ "$new_version" != "$current_version" ]]; then
+                  echo "|$component | $current_version | $new_version|" >> description.txt
+                  # Replaces the version number. If it doesn't match on the first line after the component, it goes to the next line and checks again.
+                  sed -i -E "/\"repository\": \"$repo\"/{n;s/(\"tag\": \").*(\",)/\1$new_version\2/}" manifest.json.template
+              fi
+          done
+
+      - name: Commit and Push Changes
+        run: |
+          git config --global user.name "GitHub Actions"
+          git config --global user.email "actions@github.com"
+          git add "manifest.json.template"
+          git commit -m "Update component versions"
+          git push origin HEAD
+
+      - name: Create Pull Request
+        run: |
+          version="${{ github.event.inputs.version }}"
+          branch_name="v$version/rc"
+          pr_title="Update versions for $version"
+          body_file=description.txt
+          gh pr create --base ${{ env.defaultBranch }} --head "$branch_name" --title "$pr_title" --body-file "$body_file" --reviewer atorrise
+          echo "Pull Request created successfully"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
