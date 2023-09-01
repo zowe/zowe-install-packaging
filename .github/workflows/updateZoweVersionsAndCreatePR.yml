@@ -38,10 +38,9 @@ jobs:
         with:
           node-version: lts/*
 
-      - name: Install Dependencies
+      - name: Update Package Lists
         run: |
           sudo apt-get update -y
-          sudo apt install gh
 
       - name: Create Branch
         run: |
