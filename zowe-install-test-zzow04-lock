@@ -1,15 +1,1 @@
-{
-  "lockAcquiredTime": "Tue Sep 05 2023 14:22:19 GMT+0000 (Coordinated Universal Time)",
-  "uid": "1693923739733622086",
-  "repository": {
-    "owner": "zowe",
-    "repo": "zowe-install-packaging"
-  },
-  "branch": "bugfix/v2/pem-when-keyring",
-  "workflow": "Zowe CICD Integration Tests",
-  "job": "cicd-test",
-  "actor": "zowe-robot",
-  "runId": 6085885267,
-  "runNumber": 3209,
-  "link": "https://github.com/zowe/zowe-install-packaging/actions/runs/6085885267"
-}
+""
