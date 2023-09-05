@@ -789,7 +789,6 @@
           "type": "object",
           "additionalProperties": false,
           "description": "Certificate in PEM format.",
-          "required": ["key", "certificate"],
           "properties": {
             "key": {
               "$ref": "/schemas/v2/server-common#zowePath",
