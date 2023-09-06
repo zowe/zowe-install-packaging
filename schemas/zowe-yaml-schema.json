@@ -789,27 +789,26 @@
           "type": "object",
           "additionalProperties": false,
           "description": "Certificate in PEM format.",
-          "required": ["key", "certificate"],
           "properties": {
             "key": {
-              "$ref": "/schemas/v2/server-common#zowePath",
+              "type": "string",
               "description": "Path to the certificate private key stored in PEM format."
             },
             "certificate": {
-              "$ref": "/schemas/v2/server-common#zowePath",
+              "type": "string",
               "description": "Path to the certificate stored in PEM format."
             },
             "certificateAuthorities": {
               "description": "List of paths to the certificate authorities stored in PEM format.",
               "oneOf": [{
-                  "$ref": "/schemas/v2/server-common#zowePath",
+                  "type": "string",
                   "description": "Paths to the certificate authorities stored in PEM format. You can separate multiple certificate authorities by comma."
                 },
                 {
                   "type": "array",
                   "description": "Path to the certificate authority stored in PEM format.",
                   "items": {
-                    "$ref": "/schemas/v2/server-common#zowePath"
+                    "type": "string"
                   }
                 }
               ]
