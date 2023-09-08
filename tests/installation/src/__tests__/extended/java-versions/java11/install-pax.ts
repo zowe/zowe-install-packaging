@@ -20,8 +20,8 @@ describe(testSuiteName, () => {
   beforeAll(() => {
     // validate variables
     checkMandatoryEnvironmentVariables([
-    'TEST_SERVER',
-    'ZOWE_BUILD_LOCAL',
+      'TEST_SERVER',
+      'ZOWE_BUILD_LOCAL',
     ]);
   });
 

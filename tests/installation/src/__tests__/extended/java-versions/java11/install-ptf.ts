@@ -18,7 +18,7 @@ import { TEST_TIMEOUT_SMPE_PTF } from '../../../../constants';
 const testSuiteName = 'Test SMPE PTF installation with java 11';
 describe(testSuiteName, () => {
   beforeAll(() => {
-      // validate variables
+    // validate variables
     checkMandatoryEnvironmentVariables([
       'TEST_SERVER',
       'ZOWE_BUILD_LOCAL',
