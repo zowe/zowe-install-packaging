@@ -12,8 +12,8 @@ import {
     checkMandatoryEnvironmentVariables,
     installAndVerifyConvenienceBuild,
     showZoweRuntimeLogs,
-  } from '../../../utils';
-  import {TEST_TIMEOUT_CONVENIENCE_BUILD} from '../../../constants';
+  } from '../../../../utils';
+  import {TEST_TIMEOUT_CONVENIENCE_BUILD} from '../../../../constants';
   
   const testSuiteName = 'Test convenience build installation with java 11';
   describe(testSuiteName, () => {

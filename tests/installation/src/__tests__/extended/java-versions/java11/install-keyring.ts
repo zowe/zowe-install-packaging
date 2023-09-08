@@ -12,11 +12,11 @@ import {
     checkMandatoryEnvironmentVariables,
     installAndVerifyConvenienceBuild,
     showZoweRuntimeLogs,
-  } from '../../../utils';
+  } from '../../../../utils';
   import {
     TEST_TIMEOUT_CONVENIENCE_BUILD,
     KEYSTORE_MODE_KEYRING,
-  } from '../../../constants';
+  } from '../../../../constants';
   
   const testServer = process.env.TEST_SERVER;
   const testSuiteName = 'Test convenience build installation by enabling VERIFY_CERTIFICATES with java 11';
