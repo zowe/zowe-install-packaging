@@ -49,6 +49,10 @@ case $install_test_choice in
   test_file="$ZOS_JAVA_11_PAX_TESTFILE"
   ;;
 
+"z/OS java 17 Pax")
+  test_file="$ZOS_JAVA_17_PAX_TESTFILE"
+  ;;
+
 "z/OS java 11 PTF")
   test_file="$ZOS_JAVA_11_PTF_TESTFILE"
   ;;
