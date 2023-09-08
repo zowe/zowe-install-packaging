@@ -32,6 +32,9 @@ Workflow trigger is at [cicd-test](https://github.com/zowe/zowe-install-packagin
   - z/OS node v14
   - z/OS node v16
   - z/OS node v18
+  - z/OS java 11 Pax
+  - z/OS java 11 PTF
+  - z/OS java 11 Keyring
   - Non-strict Verify External Certificate
   - Install PTF twice
   - VSAM Caching storage method
@@ -123,10 +126,13 @@ Selected test running elapsed time:
 | ---- | ------------ |
 | Convenience Pax | 53m |
 | SMPE PTF | 68m |
-| z/OS node v18 | 45m |
-| z/OS node v16 | 45m |
-| z/OS node v14 | 45m |
 | Keyring | 53m |
+| z/OS node v14 | 45m |
+| z/OS node v16 | 45m |
+| z/OS node v18 | 45m |
+| z/OS java 11 Pax | 53m |
+| z/OS java 11 PTF | 68m |
+| z/OS java 11 Keyring | 53m |
 | Non-strict Verify External Certificate | 51m |
 | Extensions | 67m
 | Zowe Release Tests | ~6hr 15 mins  

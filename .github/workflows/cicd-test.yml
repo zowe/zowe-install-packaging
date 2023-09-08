@@ -27,6 +27,9 @@ on:
           - z/OS node v14
           - z/OS node v16
           - z/OS node v18
+          - z/OS java 11 Pax
+          - z/OS java 11 PTF
+          - z/OS java 11 Keyring
           - Non-strict Verify External Certificate
           - Install PTF Twice
           - VSAM Caching Storage Method
@@ -78,6 +81,9 @@ env:
   ZOS_NODE_V14_TESTFILE: extended/node-versions/node-v14.ts
   ZOS_NODE_V16_TESTFILE: extended/node-versions/node-v16.ts
   ZOS_NODE_V18_TESTFILE: extended/node-versions/node-v18.ts
+  ZOS_JAVA_11_PAX_TESTFILE: extended/java-versions/java11/install-pax.ts
+  ZOS_JAVA_11_PAX_TESTFILE: extended/java-versions/java11/install-ptf.ts
+  ZOS_JAVA_11_KYRNG_TESTFILE: extended/java-versions/java11/install-keyring.ts
   NON_STRICT_VERIFY_EXTERNAL_CERTIFICATE_TESTFILE: extended/certificates/nonstrict-verify-external-certificate.ts
   INSTALL_PTF_TWICE_TESTFILE: extended/install-ptf-two-times.ts
   VSAM_CACHING_STORAGE_METHOD_TESTFILE: extended/caching-storages/vsam-storage.ts
@@ -85,7 +91,7 @@ env:
   CONFIG_MANAGER_TESTFILE: extended/config-manager/enable-config-manager.ts
   GENERAL_API_DOCUMENTATION_TESTFILE: basic/install-api-gen.ts
   ZOWE_NIGHTLY_TESTS_FULL: basic/install.ts(all);basic/install-ptf.ts(all)
-  ZOWE_RELEASE_TESTS_FULL: basic/install.ts(all);basic/install-ptf.ts(all);basic/install-ext.ts(any);extended/keyring.ts(all);extended/node-versions/node-v14.ts(any);extended/node-versions/node-v16.ts(any);extended/node-versions/node-v18.ts(zzow04):extended/certificates/nonstrict-verify-external-certificate.ts(any);extended/caching-storages/infinispan-storage.ts(any);extended/config-manager/enable-config-manager.ts(any)
+  ZOWE_RELEASE_TESTS_FULL: basic/install.ts(all);basic/install-ptf.ts(all);basic/install-ext.ts(any);extended/keyring.ts(all);extended/node-versions/node-v14.ts(any);extended/node-versions/node-v16.ts(any);extended/node-versions/node-v18.ts(zzow04);extended/java-versions/java11/install-pax.ts(any);extended/java-versions/java11/install-ptf.ts(any);extended/java-versions/java11/install-keyring.ts(all);extended/certificates/nonstrict-verify-external-certificate.ts(any);extended/caching-storages/infinispan-storage.ts(any);extended/config-manager/enable-config-manager.ts(any)
 
 jobs:
   display-dispatch-event-id:
@@ -302,6 +308,15 @@ jobs:
               case 'z/OS node v18':
                 eta = 45
                 break;
+              case 'z/OS java 11 Pax':
+                eta = 53
+                break;
+              case 'z/OS java 11 PTF':
+                eta = 68
+                break;
+              case 'z/OS java 11 Keyring':
+                eta = 53
+                break;q
               case 'Infinispan Caching Storage Method':
                 eta = 51
                 break;
