@@ -82,7 +82,7 @@ env:
   ZOS_NODE_V16_TESTFILE: extended/node-versions/node-v16.ts
   ZOS_NODE_V18_TESTFILE: extended/node-versions/node-v18.ts
   ZOS_JAVA_11_PAX_TESTFILE: extended/java-versions/java11/install-pax.ts
-  ZOS_JAVA_11_PAX_TESTFILE: extended/java-versions/java11/install-ptf.ts
+  ZOS_JAVA_11_PTF_TESTFILE: extended/java-versions/java11/install-ptf.ts
   ZOS_JAVA_11_KYRNG_TESTFILE: extended/java-versions/java11/install-keyring.ts
   NON_STRICT_VERIFY_EXTERNAL_CERTIFICATE_TESTFILE: extended/certificates/nonstrict-verify-external-certificate.ts
   INSTALL_PTF_TWICE_TESTFILE: extended/install-ptf-two-times.ts
