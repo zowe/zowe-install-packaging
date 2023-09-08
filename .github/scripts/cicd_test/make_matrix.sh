@@ -45,7 +45,7 @@ case $install_test_choice in
   test_force_system="zzow04"
   ;;
 
-"z/OS java 11 pax")
+"z/OS java 11 Pax")
   test_file="$ZOS_JAVA_11_PAX_TESTFILE"
   ;;
 
