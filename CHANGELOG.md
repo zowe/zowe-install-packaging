@@ -3,6 +3,11 @@
 All notable changes to the Zowe Installer will be documented in this file.
 <!--Add the PR or issue number to the entry if available.-->
 
+## `2.12.0`
+
+#### Minor enhancements/defect fixes
+- Enhancement: The job ZWESECUR now assigns the STC user the READ permission to the SAF resource IRR.RADMIN.LISTUSER. Previously this had to be done manually. (#3583)
+
 ## `2.11.0`
 
 ### New features and enhancements
