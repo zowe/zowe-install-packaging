@@ -350,6 +350,15 @@
   PERMIT OMVSAPPL CLASS(APPL) ID(&ZOWEUSER.) ACCESS(READ)
   SETROPTS RACLIST(APPL) REFRESH
 
+
+/* permit Zowe main server to read the OMVS segment of other users.  */
+/* this is used in the ZSS /omvs API which allows Zowe programs to   */
+/* know the user's home directory for convenience in editors         */
+  RLIST   FACILITY IRR.RADMIN.LISTUSER ALL
+  RDEFINE FACILITY IRR.RADMIN.LISTUSER UACC(NONE)
+  PERMIT IRR.RADMIN.LISTUSER CLASS(FACILITY) ACCESS(READ) ID(&ZOWEUSER.)
+
+  
 /* permit Zowe main server to set job name                           */
   RLIST   FACILITY BPX.JOBNAME ALL
   RDEFINE FACILITY BPX.JOBNAME UACC(NONE)
@@ -583,6 +592,12 @@ SET RESOURCE(APL)
 RECKEY OMVSAPPL ADD(SERVICE(READ) ROLE(&STCGRP.) ALLOW)
 F ACF2,REBUILD(APL)
 *
+* permit Zowe main server to read the OMVS segment of other users.  
+* this is used in the ZSS /omvs API which allows Zowe programs to   
+* know the user's home directory for convenience in editors
+SET RESOURCE (FAC)
+RECKEY IRR ADD(RADMIN.LISTUSER SERVICE(READ) ROLE(&STCGRP.) ALLOW)
+*
 * Allow STCGRP role access to BPX.JOBNAME
 RECKEY BPX ADD(JOBNAME SERVICE(READ) ROLE(&STCGRP.) ALLOW)
 F ACF2,REBUILD(FAC)
@@ -792,6 +807,13 @@ $$
   TSS PER(&ZOWEUSER.) IBMFAC(BPX.DAEMON) ACCESS(UPDATE)
   TSS WHOHAS IBMFAC(BPX.SERVER)
   TSS PER(&ZOWEUSER.) IBMFAC(BPX.SERVER) ACCESS(UPDATE)
+
+/* permit Zowe main server to read the OMVS segment of other users.  
+/* this is used in the ZSS /omvs API which allows Zowe programs to   
+/* know the user's home directory for convenience in editors
+  TSS ADD(&FACACID.) IBMFAC(IRR.)
+  TSS WHOHAS IBMFAC(IRR.RADMIN.LISTUSER)
+  TSS PER(&ZOWEUSER.) IBMFAC(IRR.RADMIN.LISTUSER) ACCESS(READ)
 
 /* permit Zowe main server to create a user's security environment   */
 /* comment out the following line if the OMVSAPPL is not defined     */
