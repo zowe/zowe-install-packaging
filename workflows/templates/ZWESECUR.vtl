@@ -356,7 +356,8 @@
 /* know the user's home directory for convenience in editors         */
   RLIST   FACILITY IRR.RADMIN.LISTUSER ALL
   RDEFINE FACILITY IRR.RADMIN.LISTUSER UACC(NONE)
-  PERMIT IRR.RADMIN.LISTUSER CLASS(FACILITY) ACCESS(READ) ID(&ZOWEUSER.)
+  PERMIT IRR.RADMIN.LISTUSER CLASS(FACILITY) ACCESS(READ) - 
+    ID(&ZOWEUSER.)
 
   
 /* permit Zowe main server to set job name                           */
