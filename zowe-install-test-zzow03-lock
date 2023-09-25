@@ -1,1 +1,15 @@
-""
+{
+  "lockAcquiredTime": "Mon Sep 25 2023 19:43:46 GMT+0000 (Coordinated Universal Time)",
+  "uid": "1695671026269033127",
+  "repository": {
+    "owner": "zowe",
+    "repo": "zowe-install-packaging"
+  },
+  "branch": "users/amanda/bump-explorer-apis-1.28.5-RC1",
+  "workflow": "Zowe CICD Integration Tests",
+  "job": "cicd-test",
+  "actor": "zowe-robot",
+  "runId": 6304085171,
+  "runNumber": 3278,
+  "link": "https://github.com/zowe/zowe-install-packaging/actions/runs/6304085171"
+}
