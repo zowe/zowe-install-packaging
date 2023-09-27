@@ -91,27 +91,27 @@
       "artifact": "explorer-ip*.pax"
     },
     "org.zowe.apiml.sdk.api-catalog-package": {
-      "version": "1.28.22",
+      "version": "1.28.23",
       "artifact": "api-catalog*.zip"
     },
     "org.zowe.apiml.sdk.discovery-package": {
-      "version": "1.28.22",
+      "version": "1.28.23",
       "artifact": "discovery*.zip"
     },
     "org.zowe.apiml.sdk.gateway-package": {
-      "version": "1.28.22",
+      "version": "1.28.23",
       "artifact": "gateway*.zip"
     },
     "org.zowe.apiml.sdk.caching-service-package": {
-      "version": "1.28.22",
+      "version": "1.28.23",
       "artifact": "caching-service*.zip"
     },
     "org.zowe.apiml.sdk.metrics-service-package": {
-      "version": "1.28.22",
+      "version": "1.28.23",
       "artifact": "metrics-service*.zip"
     },
     "org.zowe.apiml.sdk.apiml-common-lib-package": {
-      "version": "1.28.22",
+      "version": "1.28.23",
       "artifact": "apiml-common-lib-*.zip"
     },
     "org.zowe.apiml.sdk.common-java-lib-package": {
@@ -119,7 +119,7 @@
       "artifact": "common-java-lib-*.zip"
     },
     "org.zowe.apiml.sdk.apiml-sample-extension-package": {
-      "version": "1.28.22",
+      "version": "1.28.23",
       "artifact": "apiml-sample-extension-*.zip"
     },
     "org.zowe.launcher": {
@@ -441,23 +441,23 @@
     "api-catalog": {
       "registry": "zowe-docker-release.jfrog.io",
       "name": "ompzowe/api-catalog-services",
-      "tag" : "1.28.22-ubuntu"
+      "tag" : "1.28.23-ubuntu"
     },
     "caching": {
       "registry": "zowe-docker-release.jfrog.io",
       "name": "ompzowe/caching-service",
-      "tag" : "1.28.22-ubuntu"
+      "tag" : "1.28.23-ubuntu"
     },
     "discovery": {
       "kind": "statefulset",
       "registry": "zowe-docker-release.jfrog.io",
       "name": "ompzowe/discovery-service",
-      "tag" : "1.28.22-ubuntu"
+      "tag" : "1.28.23-ubuntu"
     },
     "gateway": {
       "registry": "zowe-docker-release.jfrog.io",
       "name": "ompzowe/gateway-service",
-      "tag" : "1.28.22-ubuntu"
+      "tag" : "1.28.23-ubuntu"
     },
     "app-server": {
       "registry": "zowe-docker-release.jfrog.io",
