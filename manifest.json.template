@@ -419,7 +419,7 @@
       "componentGroup": "Zowe Visual Studio Code Extension",
       "entries": [{
         "repository": "vscode-extension-for-zowe",
-        "tag": "v1.22.3",
+        "tag": "v1.22.5",
         "destinations": ["Visual Studio Code Marketplace"]
       }]
     },
@@ -436,28 +436,28 @@
     "zowe-launch-scripts": {
       "registry": "zowe-docker-release.jfrog.io",
       "name": "ompzowe/zowe-launch-scripts",
-      "tag" : "1.28.4-ubuntu"
+      "tag" : "1.28.5-ubuntu"
     },
     "api-catalog": {
       "registry": "zowe-docker-release.jfrog.io",
       "name": "ompzowe/api-catalog-services",
-      "tag" : "1.28.23-ubuntu"
+      "tag" : "1.28.24-ubuntu"
     },
     "caching": {
       "registry": "zowe-docker-release.jfrog.io",
       "name": "ompzowe/caching-service",
-      "tag" : "1.28.23-ubuntu"
+      "tag" : "1.28.24-ubuntu"
     },
     "discovery": {
       "kind": "statefulset",
       "registry": "zowe-docker-release.jfrog.io",
       "name": "ompzowe/discovery-service",
-      "tag" : "1.28.23-ubuntu"
+      "tag" : "1.28.24-ubuntu"
     },
     "gateway": {
       "registry": "zowe-docker-release.jfrog.io",
       "name": "ompzowe/gateway-service",
-      "tag" : "1.28.23-ubuntu"
+      "tag" : "1.28.24-ubuntu"
     },
     "app-server": {
       "registry": "zowe-docker-release.jfrog.io",
