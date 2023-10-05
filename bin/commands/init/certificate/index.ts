@@ -369,7 +369,7 @@ export function execute() {
     // should we clean up before creating new
     if (std.getenv('ZWE_CLI_PARAMETER_ALLOW_OVERWRITE') == "true") {
       // warning
-      common.printMessage(`Warning ZWEL0300W: Keyring "safkeyring:///${CERT_PARMS.keyring_owner}/${CERT_PARMS.keyring_name}" will be overwritten during configuration.`);
+      common.printMessage(`Warning ZWEL0300W: Keyring "safkeyring:////${CERT_PARMS.keyring_owner}/${CERT_PARMS.keyring_name}" will be overwritten during configuration.`);
 
       zweExec(stringlib.stripUndefined(
                      `certificate keyring-jcl clean `+
@@ -382,7 +382,7 @@ export function execute() {
                      `--security-product "${securityProduct}"`));
     } else {
       // error
-      // common.printErrorAndExit(`Error ZWEL0158E: Keyring "safkeyring:///${CERT_PARMS.keyring_owner}/${CERT_PARMS.keyring_name}" already exists.`, undefined, 158
+      // common.printErrorAndExit(`Error ZWEL0158E: Keyring "safkeyring:////${CERT_PARMS.keyring_owner}/${CERT_PARMS.keyring_name}" already exists.`, undefined, 158
     }
 
     switch (CERT_PARMS.keyring_option) {
