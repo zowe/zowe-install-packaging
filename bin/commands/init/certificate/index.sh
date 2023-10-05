@@ -351,7 +351,7 @@ elif [[ "${cert_type}" == JCE*KS ]]; then
   # should we clean up before creating new
   if [ "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITE}" = "true" ]; then
     # warning
-    print_message "Warning ZWEL0300W: Keyring \"safkeyring:///${keyring_owner}/${keyring_name}\" will be overwritten during configuration."
+    print_message "Warning ZWEL0300W: Keyring \"safkeyring:////${keyring_owner}/${keyring_name}\" will be overwritten during configuration."
 
     zwecli_inline_execute_command \
       certificate keyring-jcl clean \
@@ -364,7 +364,7 @@ elif [[ "${cert_type}" == JCE*KS ]]; then
       --security-product "${security_product}"
   else
     # error
-    # print_error_and_exit "Error ZWEL0158E: Keyring \"safkeyring:///${keyring_owner}/${keyring_name}\" already exists." "" 158
+    # print_error_and_exit "Error ZWEL0158E: Keyring \"safkeyring:////${keyring_owner}/${keyring_name}\" already exists." "" 158
   fi
 
   yaml_keyring_label=
