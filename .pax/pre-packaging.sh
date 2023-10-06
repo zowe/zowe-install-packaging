@@ -53,7 +53,7 @@ function _convertEbcdicToAscii
     echo "[$SCRIPT_NAME] will convert $input to ascii, results in $output_dir"
   fi
 
-  files_to_convert=$(ls "$input") # processes all files
+  files_to_convert=$(ls $input) # processes all files
   for ebcdic_file in $files_to_convert; do
     echo "[$SCRIPT_NAME] converting $ebcdic_file to ascii..."
     tmpfile="${ebcdic_file}.tmp"
@@ -358,7 +358,7 @@ else
 fi
 
 #3. Convert z/OSMF workflows and templates to ASCII in-place
-_convertEbcdicToAscii "${ZOWE_ROOT_DIR}/files/workflows/*"
+_convertEbcdicToAscii "${WORKFLOW_PATH}"
 
 #4. clean up working files
 echo "[$SCRIPT_NAME] clean up working files"
