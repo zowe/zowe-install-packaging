@@ -358,7 +358,7 @@ else
 fi
 
 #3. Convert z/OSMF workflows and templates to ASCII in-place
-_convertEbcdicToAscii "${WORKFLOW_PATH}/*"
+_convertEbcdicToAscii "${ZOWE_ROOT_DIR}/files/workflows/*"
 
 #4. clean up working files
 echo "[$SCRIPT_NAME] clean up working files"
