@@ -305,7 +305,7 @@ export function execute() {
     // lock keystore directory with proper permission
     // - group permission is none
     // NOTE: njq returns `null` or empty for boolean false, so let's check true
-    if (CERT_PARMS.pkcs12_lock && (CERT_PARMS.pkcs12_lock.toLowerCase() == "true")) {
+    if (CERT_PARMS.pkcs12_lock && (CERT_PARMS.pkcs12_lock.toString().toLowerCase() == "true")) {
       zweExec(stringlib.stripUndefined(
                      `certificate pkcs12 lock `+
                      `--keystore-dir "${CERT_PARMS.pkcs12_directory}" `+
