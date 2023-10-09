@@ -361,7 +361,7 @@ export function execute() {
       common.printMessage(`      password: "${CERT_PARMS.pkcs12_password}"`);
       common.printMessage(`    pem:`);
       common.printMessage(`      key: "${CERT_PARMS.pkcs12_directory}/${CERT_PARMS.pkcs12_name}/${CERT_PARMS.pkcs12_name_lc}.key"`);
-      common.printMessage(`      certificate: "${CERT_PARMS.pkcs12_diryectory}/${CERT_PARMS.pkcs12_name}/${CERT_PARMS.pkcs12_name_lc}.cer"`);
+      common.printMessage(`      certificate: "${CERT_PARMS.pkcs12_directory}/${CERT_PARMS.pkcs12_name}/${CERT_PARMS.pkcs12_name_lc}.cer"`);
       common.printMessage(`      certificateAuthorities: "${CERT_PARMS.yaml_pem_cas}"`);
       common.printMessage(``);
       common.printLevel2Message(`Zowe configuration requires manual updates.`);
