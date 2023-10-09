@@ -57,7 +57,7 @@ function _convertEbcdicToAscii
   for ebcdic_file in $files_to_convert; do
     echo "[$SCRIPT_NAME] converting $ebcdic_file to ascii..."
     tmpfile="${ebcdic_file}.tmp"
-    iconv -f IBM-1047 -t ISO-8859-1 "${ebcdic_file}" >"${tmpfile}"
+    iconv -f IBM-1047 -t ISO8859-1 "${ebcdic_file}" >"${tmpfile}"
     if [ "$using_output_dir" == "yes" ]; then
       mv "${tmpfile}" "${output_dir}/${file}"
     else
