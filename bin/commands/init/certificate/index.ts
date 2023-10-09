@@ -23,6 +23,7 @@ const ZWE_CLI_ENVS = {};
 ZWE_CLI_PARM_KEYS.forEach((key: string)=>{
   ZWE_CLI_ENVS[key] = std.getenv(key);
 });
+const CERT_TYPES = ["PKCS12", "JCEKS", "JCECCAKS", "JCERACFKS", "JCECCARACFKS", "JCEHYBRIDRACFKS"];
 
 function zweExec(command: string): void {
   const result = shell.execZweSync(command, ZWE_CLI_ENVS);
@@ -61,8 +62,8 @@ export function execute() {
   if (!certType) {
     common.printErrorAndExit(`Error ZWEL0157E: Certificate type (zowe.setup.certificate.type) is not defined in Zowe YAML configuration file.`, undefined, 157);
   }
-  if (certType != "PKCS12" && certType != "JCERACFKS") {
-    common.printErrorAndExit(`Error ZWEL0164E: Value of certificate type (zowe.setup.certificate.type) defined in Zowe YAML configuration file is invalid. Valid values are PKCS12 or JCERACFKS.`, undefined, 164);
+  if (!CERT_TYPES.includes(certType)) {
+    common.printErrorAndExit(`Error ZWEL0164E: Value of certificate type (zowe.setup.certificate.type) defined in Zowe YAML configuration file is invalid. Valid values are ${CERT_TYPES}.`, undefined, 164);
   }
   // read cert dname
   ['caCommonName', 'commonName', 'orgUnit', 'org', 'locality', 'state', 'country'].forEach((item:string)=> {
@@ -90,7 +91,7 @@ export function execute() {
         common.printErrorAndExit(`Error ZWEL0157E: Certificate alias of import keystore (zowe.setup.certificate.pkcs12.import.alias) is not defined in Zowe YAML configuration file.`, undefined, 157);
       }
     }
-  } else if  (certType == "JCERACFKS") {
+  } else if (certType.startsWith('JCE')) {
     CERT_PARMS.keyring_option=1;
     // read keyring info
     ['owner', 'name', 'label', 'caLabel'].forEach((item:string) => {
@@ -162,7 +163,7 @@ export function execute() {
     if (!CERT_PARMS.pkcs12_password) {
       CERT_PARMS.pkcs12_password='password';
     }
-  } else if  (certType == "JCERACFKS") {
+  } else if  (certType.startsWith('JCE')) {
     if (!CERT_PARMS.keyring_owner) {
       CERT_PARMS.keyring_owner=securityUsersZowe;
     }
@@ -364,7 +365,7 @@ export function execute() {
       common.printLevel2Message(`Zowe configuration requires manual updates.`);
     }
 
-  } else if (certType == "JCERACFKS") {
+  } else if (certType.startsWith('JCE')) {
     // FIXME: how do we check if keyring exists without permission on RDATALIB?
     // should we clean up before creating new
     if (std.getenv('ZWE_CLI_PARAMETER_ALLOW_OVERWRITE') == "true") {
@@ -476,14 +477,14 @@ export function execute() {
         zowe: {
           certificate: {
             keystore: {
-              type: "JCERACFKS",
+              type: certType,
               file: `safkeyring:////${CERT_PARMS.keyring_owner}/${CERT_PARMS.keyring_name}`,
               // we must set a dummy value here, other JDK will complain wrong parameter
               password: "password",
               alias: CERT_PARMS.yaml_keyring_label
             },
             truststore: {
-              type: "JCERACFKS",
+              type: certType,
               file: `safkeyring:////${CERT_PARMS.keyring_owner}/${CERT_PARMS.keyring_name}`,
               password: "password"
             },
@@ -504,12 +505,12 @@ export function execute() {
       common.printMessage(`zowe:`);
       common.printMessage(`  certificate:`);
       common.printMessage(`    keystore:`);
-      common.printMessage(`      type: JCERACFKS`);
+      common.printMessage(`      type: ${certType}`);
       common.printMessage(`      file: "safkeyring:////${CERT_PARMS.keyring_owner}/${CERT_PARMS.keyring_name}"`);
       common.printMessage(`      password: "password"`);
       common.printMessage(`      alias: "${CERT_PARMS.yaml_keyring_label}"`);
       common.printMessage(`    truststore:`);
-      common.printMessage(`      type: JCERACFKS`);
+      common.printMessage(`      type: ${certType}`);
       common.printMessage(`      file: "safkeyring:////${CERT_PARMS.keyring_owner}/${CERT_PARMS.keyring_name}"`);
       common.printMessage(`      password: "password"`);
       common.printMessage(`    pem:`);
