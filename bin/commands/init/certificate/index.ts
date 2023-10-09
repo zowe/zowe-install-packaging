@@ -63,7 +63,9 @@ export function execute() {
     common.printErrorAndExit(`Error ZWEL0157E: Certificate type (zowe.setup.certificate.type) is not defined in Zowe YAML configuration file.`, undefined, 157);
   }
   if (!CERT_TYPES.includes(certType)) {
-    common.printErrorAndExit(`Error ZWEL0164E: Value of certificate type (zowe.setup.certificate.type) defined in Zowe YAML configuration file is invalid. Valid values are ${CERT_TYPES}.`, undefined, 164);
+    let formattedList = CERT_TYPES.toString().replace(/,/g, ', ');
+    formattedList = formattedList.slice(0, formattedList.lastIndexOf(',')) + ' and' + formattedList.slice(formattedList.lastIndexOf(',') + 1);
+    common.printErrorAndExit(`Error ZWEL0164E: Value of certificate type "${certType}" (zowe.setup.certificate.type) defined in Zowe YAML configuration file is invalid. Valid values are ${formattedList}.`, undefined, 164);
   }
   // read cert dname
   ['caCommonName', 'commonName', 'orgUnit', 'org', 'locality', 'state', 'country'].forEach((item:string)=> {
