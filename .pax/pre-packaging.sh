@@ -40,6 +40,7 @@ function _convertEbcdicToAscii
   output_dir=$2
   using_output_dir="no"
 
+  wd=$(pwd)
   if [ -z "$output_dir" ]; then
     echo "[$SCRIPT_NAME] converting $input to ascii in-place"
   else
@@ -52,7 +53,7 @@ function _convertEbcdicToAscii
     using_output_dir="yes"
     echo "[$SCRIPT_NAME] will convert $input to ascii, results in $output_dir"
   fi
-
+  cd $input
   files_to_convert=$(ls $input) # processes all files
   for ebcdic_file in $files_to_convert; do
     echo "[$SCRIPT_NAME] converting $ebcdic_file to ascii..."
@@ -64,7 +65,7 @@ function _convertEbcdicToAscii
       mv "${tmpfile}" "${file}"
     fi
   done
-
+  cd $wd
   return 0
 }
 
