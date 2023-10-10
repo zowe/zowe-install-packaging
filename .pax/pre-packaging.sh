@@ -28,46 +28,48 @@
 
 # ---------------------------------------------------------------------
 # --- convert files to ascii
-# $1: (input) pattern to convert. will be determined by 'ls'
+# $1: (input) pattern to convert. 
+#              Files will be determined by 'find <pattern> -type f'
 # $2: (input) optional output directory.
-#             If unset, conversion happens in-place
+#              If unset, conversion happens in-place
+#              If set, conversion will mirror directory structure in output
 # (output) converted files or directory following $2
 # TODO: is this replacable with autoconv?
 # ---------------------------------------------------------------------
-function _convertEbcdicToAscii
-{
-  input=$1
-  output_dir=$2
-  using_output_dir="no"
+function _convertEbcdicToAscii {
+    input=$1
+    output_dir=$2
+    using_output_dir="no"
 
-  wd=$(pwd)
-  if [ -z "$output_dir" ]; then
-    echo "[$SCRIPT_NAME] converting $input to ascii in-place"
-  else
-    if [ -f "$output_dir" ]; then
-      echo "[$SCRIPT_NAME] $output_dir already exists and is a file, aborting _convertEbcdicToAscii"
-      return 1
-    elif [ ! -d "$output_dir" ]; then
-      mkdir -p "$output_dir"
-    fi
-    using_output_dir="yes"
-    echo "[$SCRIPT_NAME] will convert $input to ascii, results in $output_dir"
-  fi
-  cd $input
-  files_to_convert=$(ls $input) # processes all files
-  for ebcdic_file in $files_to_convert; do
-    echo "[$SCRIPT_NAME] converting $ebcdic_file to ascii..."
-    tmpfile="${ebcdic_file}.tmp"
-    iconv -f IBM-1047 -t ISO8859-1 "${ebcdic_file}" >"${tmpfile}"
-    if [ "$using_output_dir" == "yes" ]; then
-      mv "${tmpfile}" "${output_dir}/${ebcdic_file}"
+    if [ -z "$output_dir" ]; then
+        echo "[$SCRIPT_NAME] converting $input to ascii in-place"
     else
-      mv "${tmpfile}" "${ebcdic_file}"
+        if [ -f "$output_dir" ]; then
+            echo "[$SCRIPT_NAME] $output_dir already exists and is a file, aborting _convertEbcdicToAscii"
+            return 1
+        elif [ ! -d "$output_dir" ]; then
+            mkdir -p "$output_dir"
+        fi
+        using_output_dir="yes"
+        echo "[$SCRIPT_NAME] will convert $input to ascii, results in $output_dir"
     fi
-  done
-  cd $wd
-  return 0
-}
+    
+    files_to_convert=$(find $input -type f) # processes all files
+    for ebcdic_file in $files_to_convert; do
+        echo "[$SCRIPT_NAME] converting $ebcdic_file to ascii..."
+        tmpfile="$(basename $ebcdic_file).tmp"
+        iconv -f IBM-1047 -t ISO8859-1 "${ebcdic_file}" >${tmpfile}
+        if [[ "$using_output_dir" == "yes" ]]; then
+            dir_path=$(dirname $ebcdic_file)
+            mkdir -p ${output_dir}/${dir_path}
+            mv "${tmpfile}" "${output_dir}/${ebcdic_file}"
+        else
+            mv "${tmpfile}" "${ebcdic_file}"
+        fi
+    done
+
+    return 0
+} # _convertEbcdicToAscii
 
 # ---------------------------------------------------------------------
 # --- create JCL files
