@@ -60,9 +60,9 @@ function _convertEbcdicToAscii
     tmpfile="${ebcdic_file}.tmp"
     iconv -f IBM-1047 -t ISO8859-1 "${ebcdic_file}" >"${tmpfile}"
     if [ "$using_output_dir" == "yes" ]; then
-      mv "${tmpfile}" "${output_dir}/${file}"
+      mv "${tmpfile}" "${output_dir}/${ebcdic_file}"
     else
-      mv "${tmpfile}" "${file}"
+      mv "${tmpfile}" "${ebcdic_file}"
     fi
   done
   cd $wd
