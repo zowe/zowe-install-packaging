@@ -40,7 +40,7 @@
       "artifact": "*.pax"
     },
     "org.zowe.zss": {
-      "version": "^2.0.0-STAGING",
+      "version": "^2.12.0-PR-646",
       "artifact": "*.pax"
     },
     "org.zowe.explorer.jobs.jobs-api-package": {
