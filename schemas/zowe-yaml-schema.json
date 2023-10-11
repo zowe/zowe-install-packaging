@@ -419,53 +419,7 @@
           }
         },
         "network": {
-          "type": "object",
-          "additionalProperties": false,
-          "description": "Optional, advanced network configuration parameters",
-          "properties": {
-            "bind": {
-              "type": "array",
-              "description": "The IP addresses which all of the Zowe servers will be binding to.",
-              "items": {
-                "$ref": "/schemas/v2/server-common#zoweIpv4"
-              }
-            },
-            "ciphers": {
-              "type": "array",
-              "description": "Acceptable TLS cipher suites for network connections.",
-              "items": {
-                "type": "string"
-              }
-            },
-            "curves": {
-              "type": "array",
-              "description": "Acceptable key exchange elliptic curves for network connections.",
-              "items": {
-                "type": "string"
-              }
-            },
-            "maxTls": {
-              "type": "string",
-              "enum": ["1.0", "1.1", "1.2", "1.3"],
-              "default": "1.3",
-              "description": "Maximum TLS version allowed for network connections."
-            },
-            "minTls": {
-              "type": "string",
-              "enum": ["1.0", "1.1", "1.2", "1.3"],
-              "default": "1.3",
-              "description": "Minimum TLS version allowed for network connections, and less than network.maxTls."
-            },
-            "vipaIp": {
-              "type": "string",
-              "description": "The IP address which all of the Zowe servers will be binding to. If you are using multiple DIPVA addresses, do not use this option."
-            },
-            "validatePortFree": {
-              "type": "boolean",
-              "default": true,
-              "description": "Whether or not to ensure that the port a server is about to use is available. Usually, servers will know this when they attempt to bind to a port, so this option allows you to disable the additional verification step."
-            }
-          }
+          "$ref": "#/$defs/networkSettings"
         },
         "extensionRegistry": {
           "type": "object",
@@ -882,49 +836,88 @@
           "additionalProperties": false,
           "properties": {
             "network": {
-              "type": "object",
-              "additionalProperties": false,
-              "description": "Optional, advanced network configuration parameters",
-              "properties": {
-                "bind": {
-                  "type": "array",
-                  "description": "The IP addresses which all of the Zowe servers will be binding to.",
-                  "items": {
-                    "$ref": "/schemas/v2/server-common#zoweIpv4"
-                  }
-                },
-                "ciphers": {
-                  "type": "array",
-                  "description": "Acceptable TLS cipher suites for network connections.",
-                  "items": {
-                    "type": "string"
-                  }
-                },
-                "curves": {
-                  "type": "array",
-                  "description": "Acceptable key exchange elliptic curves for network connections.",
-                  "items": {
-                    "type": "string"
-                  }
-                },
-                "maxTls": {
-                  "type": "string",
-                  "enum": ["1.0", "1.1", "1.2", "1.3"],
-                  "default": "1.3",
-                  "description": "Maximum TLS version allowed for network connections."
-                },
-                "minTls": {
-                  "type": "string",
-                  "enum": ["1.0", "1.1", "1.2", "1.3"],
-                  "default": "1.3",
-                  "description": "Minimum TLS version allowed for network connections, and less than network.maxTls."
-                }
-              }
+              "$ref": "#/$defs/networkSettings"
             }
           }
         }
       }
     },
+    "tlsSettings": {
+     "$anchor": "tlsSettings",
+      "type": "object",
+      "properties": {
+        "ciphers": {
+          "type": "array",
+          "description": "Acceptable TLS cipher suites for network connections.",
+          "items": {
+            "type": "string"
+          }
+        },
+        "curves": {
+          "type": "array",
+          "description": "Acceptable key exchange elliptic curves for network connections.",
+          "items": {
+            "type": "string"
+          }
+        },
+        "maxTls": {
+          "type": "string",
+          "enum": ["TLSv1.0", "TLSv1.1", "TLSv1.2", "TLSv1.3"],
+          "default": "TLSv1.3",
+          "description": "Maximum TLS version allowed for network connections."
+        },
+        "minTls": {
+          "type": "string",
+          "enum": ["TLSv1.0", "TLSv1.1", "TLSv1.2", "TLSv1.3"],
+          "default": "TLSv1.3",
+          "description": "Minimum TLS version allowed for network connections, and less than network.maxTls."
+        }
+      }
+    },
+    "networkSettings": {
+      "type": "object",
+      "$anchor": "networkSettings",
+      "additionalProperties": false,
+      "description": "Optional, advanced network configuration parameters",
+      "properties": {
+        "server": {
+          "type": "object",
+          "additionalProperties": false,
+          "description": "Optional, advanced network configuration parameters for Zowe servers",
+          "properties": {
+            "tlsSettings": {
+              "$ref": "#/$defs/tlsSettings"      
+            },
+            "listenAddress": {
+              "type": "array",
+              "description": "The IP addresses which all of the Zowe servers will be binding on and listening to. Some servers may only support listening on the first element.",
+              "items": {
+                "$ref": "/schemas/v2/server-common#zoweIpv4"
+              }
+            },
+            "vipaIp": {
+              "type": "string",
+              "description": "The IP address which all of the Zowe servers will be binding to. If you are using multiple DIPVA addresses, do not use this option."
+            },
+            "validatePortFree": {
+              "type": "boolean",
+              "default": true,
+              "description": "Whether or not to ensure that the port a server is about to use is available. Usually, servers will know this when they attempt to bind to a port, so this option allows you to disable the additional verification step."
+            }
+          }
+        },
+        "client": {
+          "type": "object",
+          "additionalProperties": false,
+          "description": "Optional, advanced network configuration parameters for Zowe servers when sending requests as clients.",
+          "properties": {
+            "tlsSettings": {
+                "$ref": "#/$defs/tlsSettings"    
+            }
+          }
+        }
+      }
+    }
     "registryHandler": {
       "$anchor": "registryHandler",
       "type": "object",
