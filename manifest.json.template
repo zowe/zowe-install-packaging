@@ -140,7 +140,7 @@
       "componentGroup": "Imperative CLI Framework for Zowe",
       "entries": [{
         "repository": "imperative",
-        "tag": "v5.18.1",
+        "tag": "v5.18.2",
         "destinations": ["Zowe CLI Package"]
       }]
     }, {
@@ -219,7 +219,7 @@
       "componentGroup": "Zowe CLI",
       "entries": [{
         "repository": "zowe-cli",
-        "tag": "v7.18.4",
+        "tag": "v7.18.7",
         "destinations": ["Zowe CLI Package"]
       }]
     }, {
@@ -381,7 +381,7 @@
       "componentGroup": "Zowe Visual Studio Code Extension",
       "entries": [{
         "repository": "vscode-extension-for-zowe",
-        "tag": "v2.10.0",
+        "tag": "v2.11.1",
         "destinations": ["Visual Studio Code Marketplace"]
       }]
     },
