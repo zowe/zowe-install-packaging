@@ -1,3 +1,41 @@
+++HOLD(UO90038) SYSTEM FMID(AZWE001) REASON(ACTION) DATE(23284)
+  COMMENT(
+  ****************************************************************
+  * Affected function: Zowe configuration                        *
+  ****************************************************************
+  * Description: redo configuration                              *
+  ****************************************************************
+  * Timing: post-APPLY                                           *
+  ****************************************************************
+  * Part: instance directory                                     *
+  ****************************************************************
+  New changes are made to instance directory bin folder.
+  Run <ROOT_DIR>/bin/zowe-configure-instance.sh -c
+  <PATH_TO_INSTANCE_DIR> again.
+  
+  ****************************************************************
+  * Affected function: Zowe servers                              *
+  ****************************************************************
+  * Description: stop servers                                    *
+  ****************************************************************
+  * Timing: pre-APPLY                                            *
+  ****************************************************************
+  * Part: ZWESVSTC & ZWESISTC                                    *
+  ****************************************************************
+  Stop the Zowe servers before installing this update.
+  
+  ****************************************************************
+  * Affected function: Zowe servers                              *
+  ****************************************************************
+  * Description: start servers                                   *
+  ****************************************************************
+  * Timing: post-APPLY                                           *
+  ****************************************************************
+  * Part: ZWESVSTC or ZWESLSTC, and ZWESISTC                     *
+  ****************************************************************
+  Start the Zowe servers after installing this update.
+  
+  ).
 ++HOLD(UO90028) SYSTEM FMID(AZWE001) REASON(ACTION) DATE(23181)
   COMMENT(
   ****************************************************************
