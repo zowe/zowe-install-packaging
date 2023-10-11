@@ -1,1 +1,15 @@
-""
+{
+  "lockAcquiredTime": "Wed Oct 11 2023 12:12:21 GMT+0000 (Coordinated Universal Time)",
+  "uid": "1697026341539314798",
+  "repository": {
+    "owner": "zowe",
+    "repo": "zowe-install-packaging"
+  },
+  "branch": "user/muzikovam/fix-workflow-encoding",
+  "workflow": "Zowe Build and Packaging",
+  "job": "regular-build",
+  "actor": "muzikovam",
+  "runId": 6482042561,
+  "runNumber": 3840,
+  "link": "https://github.com/zowe/zowe-install-packaging/actions/runs/6482042561"
+}
