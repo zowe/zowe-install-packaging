@@ -34,7 +34,7 @@
     "org.zowe.zlux.tn3270-ng2": {
       "version": "2.12.0-V2.X-RC",
       "repository": "libs-snapshot-local",
-      "artifact": "tn3270-ng2-2.12.0-20231011.232649.pax"
+      "artifact": "tn3270-ng2-2.12.0-20231011.232650.pax"
     },
     "org.zowe.zlux.vt-ng2": {
       "version": "2.12.0-V2.X-RC",
