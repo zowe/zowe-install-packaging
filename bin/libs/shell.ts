@@ -87,10 +87,10 @@ export function execOutSync(command: string, ...args: string[]): ExecReturn {
     return { rc: -1 };
   }
   const rc = os.exec([command, ...args], { block: true, usePath: true, stdout: pipeArray[1]});
+  os.close(pipeArray[1]);
   
   let out = readStreamFully(pipeArray[0]);
   os.close(pipeArray[0]);
-  os.close(pipeArray[1]);
 
   return {
     rc, out
@@ -108,11 +108,11 @@ export function execErrSync(command: string, ...args: string[]): ExecReturn {
   if (!pipeArray){
     return { rc: -1 };
   }
-  const rc = os.exec([command, ...args], { block: true, usePath: true, stderr: pipeArray[1]});
-  
+  const rc = os.exec([command, ...args], { block: true, usePath: true, stderr: pipeArray[1]}); 
+  os.close(pipeArray[1]);  
+
   let err = readStreamFully(pipeArray[0]);
   os.close(pipeArray[0]);
-  os.close(pipeArray[1]);
 
   return {
     rc, err
@@ -131,16 +131,17 @@ export function execOutErrSync(command: string, ...args: string[]): ExecReturn {
     return { rc: -1 };
   }
   const rc = os.exec([command, ...args], { block: true, usePath: true, stdout: pipeArray[1], stderr: errArray[1]});
+  os.close(pipeArray[1]);
+  os.close(errArray[1]);
 
   let out = readStreamFully(pipeArray[0]);
   os.close(pipeArray[0]);
-  os.close(pipeArray[1]);
-
+  
   let err = readStreamFully(errArray[0]);
   os.close(errArray[0]);
-  os.close(errArray[1]);
+  
   return {
-    rc, err
+    rc, out, err 
   };
 }
 

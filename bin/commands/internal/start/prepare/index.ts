@@ -71,7 +71,7 @@ function prepareRunningInContainer() {
 
 // Prepare log directory
 function prepareLogDirectory() {
-  const logDir = std.getenv('ZWE_zowe_logDirectory');
+  const logDir = ZOWE_CONFIG.zowe.logDirectory;
   if (logDir) {
     os.mkdir(logDir, 0o750);
     if (!fs.isDirectoryWritable(logDir)) {
