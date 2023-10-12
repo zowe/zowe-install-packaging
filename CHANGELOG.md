@@ -2,13 +2,18 @@
 
 All notable changes to the Zowe Installer will be documented in this file.
 <!--Add the PR or issue number to the entry if available.-->
-## `2.12.0`
+## `2.13.0`
 
 ### New features and enhancements
 
 #### Minor enhancements/defect fixes
 - Bugfix: Workflow files in the Zowe PAX are now ASCII-encoded. Fixes [#3591](https://github.com/zowe/zowe-install-packaging/issues/3591).
 
+## `2.12.0`
+
+### New features and enhancements
+
+#### Minor enhancements/defect fixes
 
 ## `2.11.0`
 
