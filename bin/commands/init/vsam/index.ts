@@ -82,17 +82,16 @@ common.printLevel1Message(`Create VSAM storage for Zowe Caching Service`);
     }
   }
 
-  // VSAM cache cannot be overwritten, must delete manually
-  // FIXME: cat cannot be used to test VSAM data set
-  const vsam_existence=zosdataset.isDatasetExists(vsam_name);
-  if (vsam_existence == true) {
-    common.printErrorAndExit(`Error ZWEL0158E: ${vsam_name} already exists.`, undefined, 158);
+  if (!zosdataset.validDatasetName(vsam_name)){
+    common.printErrorAndExit(`Error ZWEL0157E: "${vsam_name}" (components.caching-service.storage.vsam.name) is not correctly defined in Zowe YAML configuration file.`, undefined, 157);
   }
-  if (allowOverwrite) {
-    // delete blindly and ignore errors
-    let result=zoslib.tsoCommand('delete', `'${vsam_name}'`);
+  const vsam_existence=zosdataset.tsoIsDatasetExists(vsam_name);
+  if (vsam_existence == 0) {
+    if (allowOverwrite)
+      zoslib.tsoCommand('delete', `'${vsam_name}'`);
+    else
+      common.printErrorAndExit(`Error ZWEL0158E: ${vsam_name} already exists.`, undefined, 158);
   }
-
 
   if (jcl_existence == true && allowOverwrite != true) {
     common.printMessage(`Skipped writing to ${jcllib}(ZWECSVSM). To write, you must use --allow-overwrite.`);
