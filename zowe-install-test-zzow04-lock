@@ -1,1 +1,15 @@
-""
+{
+  "lockAcquiredTime": "Thu Oct 12 2023 20:09:32 GMT+0000 (Coordinated Universal Time)",
+  "uid": "1697141372857790636",
+  "repository": {
+    "owner": "zowe",
+    "repo": "zowe-install-packaging"
+  },
+  "branch": "user/markackert/fix-workflow-encoding",
+  "workflow": "Zowe CICD Integration Tests",
+  "job": "cicd-test",
+  "actor": "zowe-robot",
+  "runId": 6500390750,
+  "runNumber": 3355,
+  "link": "https://github.com/zowe/zowe-install-packaging/actions/runs/6500390750"
+}
