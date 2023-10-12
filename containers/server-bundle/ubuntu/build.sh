@@ -20,13 +20,12 @@
 # ./build.sh amd64 https://zowe.jfrog.io/zowe/libs-snapshot-local/org/zowe/1.17.0-STAGING/zowe-1.17.0-staging-1052-20201017043641.pax
 
 mkdir -p utils
-cp -r ../utils/* ./utils
-if [ "$#" -lt 1 ]
-then
+cp -r ../../utils/* ./utils
+if [ "$#" -lt 1 ]; then
   echo "Usage: $0 <build name> [pax location]"
   exit 1
 fi
-   
+
 if [ "$1" = "" ]; then
   docker build -f Dockerfile --no-cache -t ompzowe/server-bundle:testing$1 .
 else
