@@ -177,6 +177,14 @@
   raw: tsocmd listds "'{{ zowe_dataset_prefix }}'" level | grep '{{ zowe_dataset_prefix }}' | grep -v 'UNABLE TO COMPLETE' | awk '{$1=$1};1' | xargs -I % tsocmd DELETE "'%'"
   ignore_errors: True
 
+- name: Cleanup last-kept logs 
+  raw: rm -rf /tmp/last-zowe-run && mkdir -p /tmp/last-zowe-run
+  ignore_errors: True
+
+- name: Collect this runs application logs
+  raw: cp -rf "{{ zowe_instance_dir }}/logs" /tmp/last-zowe-run
+  ignore_errors: True 
+
 # ============================================================================
 - name: Remove installation folders
   raw: echo rm -fr {{ item }} | su
