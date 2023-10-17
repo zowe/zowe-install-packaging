@@ -43,7 +43,7 @@ export const APIML_OIDC_VARS =  {
   'zowe_apiml_security_oidc_client_id': process.env['OKTA_CLIENT_ID'] || 'dummy_id_from_constants_ts',
   'zowe_apiml_security_oidc_client_secret': process.env['OKTA_CLIENT_SECRET'] || 'dummy_secret_from_constants_ts',
   'zowe_apiml_security_oidc_registry': process.env['OIDC_REGISTRY'] || 'dummy_registry_from_constants_ts',
-  'zowe_apiml_security_oidc_introspect_url': `https://${process.env['OKTA_HOSTNAME']}/oauth2/default/v1/introspect`,
+  'zowe_apiml_security_oidc_jwk_url': `https://${process.env['OKTA_HOSTNAME']}/oauth2/default/v1/keys`,
 };
 
 // debug(`process.env >>>>>>>>>>>>>>>>>>>>>>>>>>\n${JSON.stringify(process.env)}\n<<<<<<<<<<<<<<<<<<<<<<<`);

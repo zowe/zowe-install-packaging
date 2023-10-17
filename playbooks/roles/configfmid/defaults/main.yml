@@ -70,7 +70,7 @@ zowe_apiml_security_oidc_enabled: false
 zowe_apiml_security_oidc_client_id:
 zowe_apiml_security_oidc_client_secret:
 zowe_apiml_security_oidc_registry:
-zowe_apiml_security_oidc_introspect_url:
+zowe_apiml_security_oidc_jwk_url:
 # explorer APIs/plugins ports
 zowe_jobs_api_port: 7558
 zowe_mvs_api_port: 7559
