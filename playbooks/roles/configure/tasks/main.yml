@@ -39,7 +39,7 @@
     - zowe_apiml_security_oidc_client_id
     - zowe_apiml_security_oidc_client_secret
     - zowe_apiml_security_oidc_registry
-    - zowe_apiml_security_oidc_jwk_url
+    - zowe_apiml_security_oidc_jwks_uri
     - zowe_jobs_api_port
     - zowe_mvs_api_port
     - zowe_jobs_explorer_port
@@ -301,7 +301,7 @@
       "components.gateway.apiml.security.oidc.clientId": "{{ zowe_apiml_security_oidc_client_id|string }}"
       "components.gateway.apiml.security.oidc.clientSecret": "{{ zowe_apiml_security_oidc_client_secret|string }}"
       "components.gateway.apiml.security.oidc.registry": "{{ zowe_apiml_security_oidc_registry|string }}"
-      "components.gateway.apiml.security.oidc.jwkUrl": "{{ zowe_apiml_security_oidc_jwk_url|string }}"
+      "components.gateway.apiml.security.oidc.jwks.uri": "{{ zowe_apiml_security_oidc_jwks_uri|string }}"
       # desktop customizations
       "zowe.environments.ZWED_SSH_PORT": "{{ zowe_zlux_terminal_ssh_port }}"
       "zowe.environments.ZWED_TN3270_PORT": "{{ zowe_zlux_terminal_telnet_port }}"
