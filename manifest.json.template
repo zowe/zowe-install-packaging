@@ -73,27 +73,27 @@
       "artifact": "explorer-ip*.pax"
     },
     "org.zowe.apiml.api-catalog-package": {
-      "version": "2.12.0",
+      "version": "2.12.3",
       "artifact": "api-catalog*.zip"
     },
     "org.zowe.apiml.discovery-package": {
-      "version": "2.12.0",
+      "version": "2.12.3",
       "artifact": "discovery*.zip"
     },
     "org.zowe.apiml.gateway-package": {
-      "version": "2.12.0",
+      "version": "2.12.3",
       "artifact": "gateway*.zip"
     },
     "org.zowe.apiml.caching-service-package": {
-      "version": "2.12.0",
+      "version": "2.12.3",
       "artifact": "caching-service*.zip"
     },
     "org.zowe.apiml.metrics-service-package": {
-      "version": "2.12.0",
+      "version": "2.12.3",
       "artifact": "metrics-service*.zip"
     },
     "org.zowe.apiml.apiml-common-lib-package": {
-      "version": "2.12.0",
+      "version": "2.12.3",
       "artifact": "apiml-common-lib-*.zip"
     },
     "org.zowe.apiml.sdk.common-java-lib-package": {
@@ -101,11 +101,11 @@
       "artifact": "common-java-lib-*.zip"
     },
     "org.zowe.apiml.sdk.apiml-sample-extension-package": {
-      "version": "2.12.0",
+      "version": "2.12.3",
       "artifact": "apiml-sample-extension-*.zip"
     },
     "org.zowe.apiml.cloud-gateway-package": {
-      "version": "2.12.0",
+      "version": "2.12.3",
       "artifact": "cloud-gateway-*.zip"
     },
     "org.zowe.configmgr-rexx": {
@@ -411,23 +411,23 @@
     "api-catalog": {
       "registry": "zowe-docker-release.jfrog.io",
       "name": "ompzowe/api-catalog-services",
-      "tag" : "2.12.0-ubuntu"
+      "tag" : "2.12.3-ubuntu"
     },
     "caching": {
       "registry": "zowe-docker-release.jfrog.io",
       "name": "ompzowe/caching-service",
-      "tag" : "2.12.0-ubuntu"
+      "tag" : "2.12.3-ubuntu"
     },
     "discovery": {
       "kind": "statefulset",
       "registry": "zowe-docker-release.jfrog.io",
       "name": "ompzowe/discovery-service",
-      "tag" : "2.12.0-ubuntu"
+      "tag" : "2.12.3-ubuntu"
     },
     "gateway": {
       "registry": "zowe-docker-release.jfrog.io",
       "name": "ompzowe/gateway-service",
-      "tag" : "2.12.0-ubuntu"
+      "tag" : "2.12.3-ubuntu"
     },
     "app-server": {
       "registry": "zowe-docker-release.jfrog.io",
