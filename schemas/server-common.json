@@ -46,6 +46,27 @@
       "minLength": 1,
       "maxLength": 8
     },
+    "userAnyCase": {
+      "$anchor": "zoweUserAnyCase",
+      "type": "string",
+      "pattern": "^([A-Za-z0-9$#@]){1,8}$",
+      "minLength": 1,
+      "maxLength": 8
+    },
+    "groupNameAnyCase": {
+      "$anchor": "zoweGroupNameAnyCase",
+      "type": "string",
+      "pattern": "[A-Z#$@][A-Z0-9Z#@]{0,7}",
+      "minLength": 1,
+      "maxLength": 8
+    },
+    "groupNameUppercase": {
+      "$anchor": "zoweGroup",
+      "type": "string",
+      "pattern": "[A-Za-z#$@][A-Za-z0-9Z#@]{0,7}",
+      "minLength": 1,
+      "maxLength": 8
+    },
     "token": {
       "$anchor": "zoweToken",
       "type": "string",
