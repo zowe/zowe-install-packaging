@@ -884,8 +884,8 @@ EOF
   fi
 
   date_add_util="${ZWE_zowe_runtimeDirectory}/bin/utils/date-add.rex"
-  validity_ymd=$("${date_add_util}" ${validity} 1234-56-78)
-  validity_mdy=$("${date_add_util}" ${validity} 56/78/34)
+  validity_ymd=$("${date_add_util}" ${validity} YYYY-MM-DD)
+  validity_mdy=$("${date_add_util}" ${validity} MM/DD/YY)
 
   # option 2 needs further changes on JCL
   racf_connect1="s/dummy/dummy/"
