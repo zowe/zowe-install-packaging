@@ -122,17 +122,12 @@ validate_node_home() {
   node_fix_version=$(echo ${node_version} | cut -d '.' -f 3)
 
   # check node version
-  if [ "${node_version}" = "v14.17.2" ]; then
-    print_error "Node ${node_version} specifically is not compatible with Zowe. Please use a different version. See https://docs.zowe.org/stable/troubleshoot/app-framework/app-known-issues.html#desktop-apps-fail-to-load for more details."
-    return 1
-  fi
-
   if [ "${node_version}" = "v18.12.1" ]; then
     print_error "Node ${node_version} specifically is not compatible with Zowe. Please use a different version. See https://github.com/ibmruntimes/node-zos/issues/21 for more details."
     return 1
   fi
   
-  if [ ${node_major_version} -lt 14 ]; then
+  if [ ${node_major_version} -lt 16 ]; then
     print_error "Node ${node_version} is less than the minimum level required of v14+."
     return 1
   fi
