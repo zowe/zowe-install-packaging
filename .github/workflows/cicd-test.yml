@@ -24,7 +24,6 @@ on:
           - SMPE PTF
           - Extensions
           - Keyring
-          - z/OS node v14
           - z/OS node v16
           - z/OS node v18
           - Non-strict Verify External Certificate
@@ -63,8 +62,8 @@ env:
   DEFAULT_ZOWE_EXT_ARTIFACTORY_PATTERN: libs-snapshot-local/org/zowe/{ext-name}/*/{ext-name}-*.pax
 
   # below block can be overwritten, adjusted by DevOps only
-  # ZOS_NODE_VERSION more to choose from: v14.21.3.1, v16.20.1
-  ZOS_NODE_VERSION: v14.21.3.1
+  # ZOS_NODE_VERSION more to choose from: v16.20.1
+  ZOS_NODE_VERSION: v16.20.1
   CLIENT_NODE_VERSION: v12.18.3
   INSTALL_TEST_DEBUG_INFORMATION: zowe-install-test:*
   SANITY_TEST_DEBUG_INFORMATION: zowe-sanity-test:*
@@ -75,7 +74,6 @@ env:
   SMPE_PTF_TESTFILE: basic/install-ptf.ts
   EXTENSIONS_TESTFILE: basic/install-ext.ts
   KEYRING_TESTFILE: extended/keyring.ts
-  ZOS_NODE_V14_TESTFILE: extended/node-versions/node-v14.ts
   ZOS_NODE_V16_TESTFILE: extended/node-versions/node-v16.ts
   ZOS_NODE_V18_TESTFILE: extended/node-versions/node-v18.ts
   NON_STRICT_VERIFY_EXTERNAL_CERTIFICATE_TESTFILE: extended/certificates/nonstrict-verify-external-certificate.ts
@@ -292,9 +290,6 @@ jobs:
                 break;
               case 'Keyring':
                 eta = 53
-                break;
-              case 'z/OS node v14':
-                eta = 45
                 break;
               case 'z/OS node v16':
                 eta = 45
