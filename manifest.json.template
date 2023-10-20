@@ -78,7 +78,7 @@
     },
     "org.zowe.apiml.gateway-package": {
       "version": "2.12.3-PR-0001-20231019.085159-1",
-      "artifact": "gateway-package-2.12.3-PR-0001-20231019.085159-1.zip",
+      "artifact": "gateway-package-2.12.3-PR-0001-20231019.085159-1.zip"
     },
     "org.zowe.apiml.caching-service-package": {
       "version": "^2.1.1-SNAPSHOT",
