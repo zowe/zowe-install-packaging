@@ -32,10 +32,6 @@ case $install_test_choice in
   test_file="$KEYRING_TESTFILE"
   ;;
 
-"z/OS node v14")
-  test_file="$ZOS_NODE_V14_TESTFILE"
-  ;;
-
 "z/OS node v16")
   test_file="$ZOS_NODE_V16_TESTFILE"
   ;;
