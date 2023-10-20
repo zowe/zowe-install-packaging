@@ -22,6 +22,8 @@ export NODE_STDIN_CCSID=1047
 # Workaround Fix for node 8.16.1 that requires compatibility mode for untagged files
 export __UNTAGGED_READ_MODE=V6
 
+NODE_MIN=16
+
 ensure_node_is_on_path() {
   if [[ ":${PATH}:" != *":${NODE_HOME}/bin:"* ]]; then
     export PATH="${NODE_HOME}/bin:${PATH}"
@@ -127,8 +129,8 @@ validate_node_home() {
     return 1
   fi
   
-  if [ ${node_major_version} -lt 16 ]; then
-    print_error "Node ${node_version} is less than the minimum level required of v14+."
+  if [ ${node_major_version} -lt ${NODE_MIN} ]; then
+    print_error "Node ${node_version} is less than the minimum level required of v${NODE_MIN}+."
     return 1
   fi
   print_debug "Node ${node_version} is supported."
