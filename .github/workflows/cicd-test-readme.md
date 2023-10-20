@@ -29,7 +29,6 @@ Workflow trigger is at [cicd-test](https://github.com/zowe/zowe-install-packagin
   - SMPE PTF
   - Extensions
   - Keyring
-  - z/OS node v14
   - z/OS node v16
   - z/OS node v18
   - Non-strict Verify External Certificate
@@ -125,7 +124,6 @@ Selected test running elapsed time:
 | SMPE PTF | 68m |
 | z/OS node v18 | 45m |
 | z/OS node v16 | 45m |
-| z/OS node v14 | 45m |
 | Keyring | 53m |
 | Non-strict Verify External Certificate | 51m |
 | Extensions | 67m
