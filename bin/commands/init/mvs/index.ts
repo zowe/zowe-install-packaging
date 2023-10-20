@@ -98,7 +98,7 @@ export function execute(allowOverwrite?: boolean) {
     // FIXME: data_set_copy_to_data_set cannot be used to copy program?
     const authLoadlib=zoweConfig.zowe.setup?.dataset?.authLoadlib;
     if (authLoadlib) {
-      ['ZWESIS01', 'ZWESAUX'].forEach((ds)=> {
+      ['ZWESIS01', 'ZWESAUX', 'ZWESISDL'].forEach((ds)=> {
         common.printMessage(`Copy components/zss/LOADLIB/${ds} to ${authLoadlib}(${ds})`);
         let rc = zosdataset.copyToDataset(`${zoweConfig.zowe.runtimeDirectory}/components/zss/LOADLIB/${ds}`, `${authLoadlib}(${ds})`, "-X", allowOverwrite);
         if (rc!=0) {
