@@ -78,7 +78,7 @@ export function requireNode() {
     }
   }
   if (!std.getenv('NODE_HOME')) {
-    common.printErrorAndExit("Error ZWEL0121E: Cannot find node. Please define NODE_HOME environment variable.", undefined, 121);
+    common.printErrorAndExit("Error ZWEL0121E: Cannot find node. Please define NODE_HOME environment variable or set node.home in the YAML config file.", undefined, 121);
   }
 
   ensureNodeIsOnPath();

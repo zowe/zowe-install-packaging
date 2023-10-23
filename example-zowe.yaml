@@ -437,7 +437,7 @@ zowe:
 java:
   # **COMMONLY_CUSTOMIZED**
   # Path to your Java home directory
-  home: ""
+  home: "DETECT"
 
 
 #-------------------------------------------------------------------------------
@@ -452,7 +452,7 @@ java:
 node:
   # **COMMONLY_CUSTOMIZED**
   # Path to your node.js home directory
-  home: ""
+  home: "DETECT"
 
 
 #-------------------------------------------------------------------------------

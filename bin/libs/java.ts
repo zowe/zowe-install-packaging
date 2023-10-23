@@ -72,7 +72,7 @@ export function requireJava() {
     } 
   }
   if (!std.getenv('JAVA_HOME')) {
-    common.printErrorAndExit("Error ZWEL0122E: Cannot find java. Please define JAVA_HOME environment variable.", undefined, 122);
+    common.printErrorAndExit("Error ZWEL0122E: Cannot find java. Please define JAVA_HOME environment variable or set java.home in the YAML config file.", undefined, 122);
   }
 
   ensureJavaIsOnPath();

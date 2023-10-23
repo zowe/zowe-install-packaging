@@ -37,7 +37,7 @@ export function execute() {
   let newNodeHome;
   const configNodeHome=zoweConfig.node?.home;
   // only try to update if it's not defined
-  if (!configNodeHome) {
+  if (!configNodeHome || configNodeHome == 'DETECT') {
     node.requireNode();
     newNodeHome=std.getenv('NODE_HOME');
   }
@@ -46,7 +46,7 @@ export function execute() {
   let newJavaHome;
   const configJavaHome=zoweConfig.java?.home;
   // only try to update if it's not defined
-  if (!configJavaHome) {
+  if (!configJavaHome || configJavaHome == 'DETECT') {
     java.requireJava();
     newJavaHome=std.getenv('JAVA_HOME');
   }
