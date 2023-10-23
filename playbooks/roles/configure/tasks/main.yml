@@ -257,15 +257,32 @@
       "zowe.extensionDirectory": "{{ zowe_extension_dir }}"
       "zowe.job.name": "{{ zowe_job_prefix }}{{ zowe_instance_id }}SV"
       "zowe.job.prefix": "{{ zowe_job_prefix }}{{ zowe_instance_id }}"
-      # FIXME: multiplpe domains?
+      # FIXME: multiple domains?
       "zowe.externalDomains.0": "{{ zowe_external_domain_name }}"
       "zowe.externalPort": "{{ zowe_apiml_gateway_port }}"
       "zowe.launchScript.logLevel": "{{ zowe_launch_scripts_loglevel }}"
-      "java.home": "{{ zos_java_home }}"
-      "node.home": "{{ zos_node_home }}"
       "zOSMF.host": "{{ zos_zosmf_host }}"
       "zOSMF.port": "{{ zos_zosmf_port }}"
       "zOSMF.applId": "{{ zowe_apiml_security_zosmf_applid }}"
+
+- name: Update zowe.yaml java
+  when: zos_java_home is not none and zos_java_home != ''
+  import_role:
+    name: zos
+    tasks_from: update_zowe_yaml
+  vars:
+    configs:
+      "java.home": "{{ zos_java_home }}"
+
+
+- name: Update zowe.yaml node
+  when: zos_node_home is not none and zos_node_home != ''
+  import_role:
+    name: zos
+    tasks_from: update_zowe_yaml
+  vars:
+    configs:
+      "node.home": "{{ zos_node_home }}"
 
 - name: Update zowe.yaml runtime configs if IP is defined
   when: zowe_external_ip_address is not none and zowe_external_ip_address != ''
