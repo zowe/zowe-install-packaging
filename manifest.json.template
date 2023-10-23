@@ -119,7 +119,7 @@
       "artifact": "configmgr-2.12.0-2023101637.pax"
     },
     "org.zowe.launcher": {
-      "version": "2.0.14"
+      "version": "2.12.0"
     },
     "org.zowe.keyring-utilities": {
       "version": "1.0.4",
