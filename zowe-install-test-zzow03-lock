@@ -1,1 +1,15 @@
-""
+{
+  "lockAcquiredTime": "Tue Oct 24 2023 19:59:28 GMT+0000 (Coordinated Universal Time)",
+  "uid": "1698177568169196860",
+  "repository": {
+    "owner": "zowe",
+    "repo": "zowe-install-packaging"
+  },
+  "branch": "users/robot/promote-ptf-from-51",
+  "workflow": "Zowe CICD Integration Tests",
+  "job": "cicd-test",
+  "actor": "zowe-robot",
+  "runId": 6631877061,
+  "runNumber": 3431,
+  "link": "https://github.com/zowe/zowe-install-packaging/actions/runs/6631877061"
+}
