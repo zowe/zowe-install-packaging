@@ -46,7 +46,7 @@ function generateDocumentationForNode(curNode, assembledParentNode) {
             docContent += createDocContent(assembledDocNode[docType.fileName].content, docType);
             const parentDocContent = createDocContent(assembledDocNode[docType.fileName].parentContent, docType);
             if (parentDocContent) {
-                docContent += SUB_SECTION_HEADER_PREFIX + 'Inherited from parent command' + SEPARATOR + parentDocContent;
+                docContent += SEPARATOR + SUB_SECTION_HEADER_PREFIX + 'Inherited from parent command' + SEPARATOR + parentDocContent;
             }
         }
 
