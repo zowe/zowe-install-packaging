@@ -292,3 +292,28 @@ export function createDatasetTmpMember(dataset: string, prefix: string='ZW'): st
   }
   return null;
 }
+
+// schema/server-common.json: zoweDataset
+// note: the min lenght is 1
+export function validDatasetName(dsn: string): boolean {
+  common.printTrace(`- validDatasetName for "${dsn}"`);
+  if (!dsn || dsn.length < 2 || dsn.length > 44) {
+      common.printTrace('  * dataset null, empty or > 44 chars');
+      return false;
+  }
+  const result = !!dsn.match(/^([A-Z\$\#\@]){1}([A-Z0-9\$\#\@\-]){0,7}(\.([A-Z\$\#\@]){1}([A-Z0-9\$\#\@\-]){0,7}){0,11}$/g);
+  common.printTrace(`  * regex match: ${result}`);
+  return result;
+}
+
+// schema/server-common.json: zoweDatasetMember
+export function validDatasetMemberName(memberName:string): boolean {
+  common.printTrace(`- validDatasetMemberName for "${memberName}"`);
+  if (!memberName){
+      common.printTrace('  * no member name');
+      return false;
+  }
+  const result = !!memberName.match(/^([A-Z\$\#\@]){1}([A-Z0-9\$\#\@]){0,7}$/g);
+  common.printTrace(`  * regex match: ${result}`);
+  return result;
+}
