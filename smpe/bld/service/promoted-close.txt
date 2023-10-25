@@ -1,3 +1,48 @@
+    IO29289 -
+      PROBLEM SUMMARY:
+      ****************************************************************
+      * USERS AFFECTED: All Zowe users                               *
+      ****************************************************************
+      * PROBLEM DESCRIPTION: Update Zowe FMID AZWE002 to match the   *
+      *                      community release                       *
+      ****************************************************************
+      * RECOMMENDATION: Apply provided service                       *
+      ****************************************************************
+      The Zowe community version was updated to 2.12.0.
+      This PTF provides the community changes in SMP/E format.
+      Follow this link for more details on the community changes:
+      https://docs.zowe.org/stable/
+
+    IO29290 -
+      PROBLEM SUMMARY:
+      ****************************************************************
+      * USERS AFFECTED: All Zowe users                               *
+      ****************************************************************
+      * PROBLEM DESCRIPTION: Update Zowe FMID AZWE002 to match the   *
+      *                      community release                       *
+      ****************************************************************
+      * RECOMMENDATION: Apply provided service                       *
+      ****************************************************************
+      The Zowe community version was updated to 2.12.0.
+      This PTF provides the community changes in SMP/E format.
+      Follow this link for more details on the community changes:
+      https://docs.zowe.org/stable/
+
+    IO29291 -
+      PROBLEM SUMMARY:
+      ****************************************************************
+      * USERS AFFECTED: All Zowe users                               *
+      ****************************************************************
+      * PROBLEM DESCRIPTION: Update Zowe FMID AZWE002 to match the   *
+      *                      community release                       *
+      ****************************************************************
+      * RECOMMENDATION: Apply provided service                       *
+      ****************************************************************
+      The Zowe community version was updated to 2.12.0.
+      This PTF provides the community changes in SMP/E format.
+      Follow this link for more details on the community changes:
+      https://docs.zowe.org/stable/
+
     IO29286 -
       PROBLEM SUMMARY:
       ****************************************************************
