@@ -12,15 +12,15 @@ import {
   checkMandatoryEnvironmentVariables,
   installAndVerifyConvenienceBuild,
   showZoweRuntimeLogs,
-} from '../../../utils';
-import { TEST_TIMEOUT_CONVENIENCE_BUILD } from '../../../constants';
+} from '../../../../utils';
+import {TEST_TIMEOUT_CONVENIENCE_BUILD} from '../../../../constants';
 
-const testServer = process.env.TEST_SERVER;
-const testSuiteName = 'Test convenience build installation with node.js v14';
+const testSuiteName = 'Test convenience build installation with java 11';
 describe(testSuiteName, () => {
   beforeAll(() => {
     // validate variables
     checkMandatoryEnvironmentVariables([
+      'TEST_SERVER',
       'ZOWE_BUILD_LOCAL',
     ]);
   });
@@ -28,17 +28,18 @@ describe(testSuiteName, () => {
   test('install and verify', async () => {
     await installAndVerifyConvenienceBuild(
       testSuiteName,
-      testServer,
+      process.env.TEST_SERVER,
       {
         'zowe_build_local': process.env['ZOWE_BUILD_LOCAL'],
         'zowe_custom_for_test': 'true',
-        'zos_node_home': '/ZOWE/node/node-v14.21.3.1-os390-s390x',
+        'zos_java_home': '/ZOWE/node/J11.0_64',
         'zowe_lock_keystore': 'false',
       }
     );
   }, TEST_TIMEOUT_CONVENIENCE_BUILD);
 
   afterAll(async () => {
-    await showZoweRuntimeLogs(testServer);
+    await showZoweRuntimeLogs(process.env.TEST_SERVER);
   })
 });
+  

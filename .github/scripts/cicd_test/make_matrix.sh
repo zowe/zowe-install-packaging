@@ -45,6 +45,22 @@ case $install_test_choice in
   test_force_system="zzow04"
   ;;
 
+"z/OS java 11 Pax")
+  test_file="$ZOS_JAVA_11_PAX_TESTFILE"
+  ;;
+
+"z/OS java 17 Pax")
+  test_file="$ZOS_JAVA_17_PAX_TESTFILE"
+  ;;
+
+"z/OS java 11 PTF")
+  test_file="$ZOS_JAVA_11_PTF_TESTFILE"
+  ;;
+
+"z/OS java 11 Keyring")
+  test_file="$ZOS_JAVA_11_KYRNG_TESTFILE"
+  ;;
+
 "Non-strict Verify External Certificate")
   test_file="$NON_STRICT_VERIFY_EXTERNAL_CERTIFICATE_TESTFILE"
   ;;
