@@ -75,7 +75,7 @@ copy_to_data_set() {
   allow_overwrite="${4}"
 
   if [ "${allow_overwrite}" != "true" ]; then
-    if [ "$(is_data_set_exists "${ds_name}'")" = "true" ]; then
+    if [ "$(is_data_set_exists "${ds_name}")" = "true" ]; then
       print_error_and_exit "Error ZWEL0133E: Data set ${ds_name} already exists" "" 133
     fi
   fi
@@ -105,7 +105,7 @@ data_set_copy_to_data_set() {
   allow_overwrite="${4}"
 
   if [ "${allow_overwrite}" != "true" ]; then
-    if [ "$(is_data_set_exists "${ds_to}'")" = "true" ]; then
+    if [ "$(is_data_set_exists "${ds_to}")" = "true" ]; then
       print_error_and_exit "Error ZWEL0133E: Data set ${ds_to} already exists" "" 133
     fi
   fi
