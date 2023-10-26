@@ -466,9 +466,6 @@ EOF
     update_zowe_yaml "${ZWE_CLI_PARAMETER_CONFIG}" "zowe.certificate.truststore.file" "safkeyring:////${keyring_owner}/${keyring_name}"
     # we must set a dummy value here, other JDK will complain wrong parameter
     update_zowe_yaml "${ZWE_CLI_PARAMETER_CONFIG}" "zowe.certificate.truststore.password" "password"
-    update_zowe_yaml "${ZWE_CLI_PARAMETER_CONFIG}" "zowe.certificate.pem.key" ""
-    update_zowe_yaml "${ZWE_CLI_PARAMETER_CONFIG}" "zowe.certificate.pem.certificate" ""
-    update_zowe_yaml "${ZWE_CLI_PARAMETER_CONFIG}" "zowe.certificate.pem.certificateAuthorities" "${yaml_pem_cas}"
     print_level2_message "Zowe configuration is updated successfully."
   else
     print_level1_message "Update certificate configuration to ${ZWE_CLI_PARAMETER_CONFIG}"
@@ -485,10 +482,6 @@ EOF
     print_message "      type: ${cert_type:-JCERACFKS}"
     print_message "      file: \"safkeyring:////${keyring_owner}/${keyring_name}\""
     print_message "      password: \"password\""
-    print_message "    pem:"
-    print_message "      key: \"\""
-    print_message "      certificate: \"\""
-    print_message "      certificateAuthorities: \"${yaml_pem_cas}\""
     print_message ""
     print_level2_message "Zowe configuration requires manual updates."
   fi
