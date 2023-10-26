@@ -294,7 +294,7 @@ export function execute() {
 
     // after we export truststore, the imported CAs will be exported as extca*.cer
     if (certImportCAs) {
-      const getImportedCAs=shell.execOutSync('sh', '-c', `find "${CERT_PARMS.pkcs12_directory}/"${CERT_PARMS.pkcs12_name}" -name 'extca*.cer' -type f 2>&1`);
+      const getImportedCAs=shell.execOutSync('sh', '-c', `find "${CERT_PARMS.pkcs12_directory}/${CERT_PARMS.pkcs12_name}" -name 'extca*.cer' -type f 2>&1`);
       if (getImportedCAs.rc == 0) {
         const importedCAs = getImportedCAs.out.split('\n').join(',');
         if (!CERT_PARMS.yaml_pem_cas) {
@@ -411,7 +411,7 @@ export function execute() {
                        `--domains "${certDomains}" `+
                        `"${CERT_PARMS.keyring_trust_zosmf}" `+
                        `--zosmf-ca "${CERT_PARMS.zosmf_ca}" `+
-                       `--zosmf-user "${CERT_PARMS.zosmf_user}`));
+                       `--zosmf-user "${CERT_PARMS.zosmf_user}"`));
       
         CERT_PARMS.yaml_keyring_label=CERT_PARMS.keyring_label;
         // keyring string for self-signed CA
@@ -431,7 +431,7 @@ export function execute() {
                        `--security-product "${securityProduct}" `+
                        `"${CERT_PARMS.keyring_trust_zosmf}" `+
                        `--zosmf-ca "${CERT_PARMS.zosmf_ca}" `+
-                       `--zosmf-user "${CERT_PARMS.zosmf_user}`));
+                       `--zosmf-user "${CERT_PARMS.zosmf_user}"`));
 
         CERT_PARMS.yaml_keyring_label=CERT_PARMS.keyring_connect_label;
         break;
@@ -450,7 +450,7 @@ export function execute() {
                        `--security-product "${securityProduct}" `+
                        `"${CERT_PARMS.keyring_trust_zosmf}" `+
                        `--zosmf-ca "${CERT_PARMS.zosmf_ca}" `+
-                       `--zosmf-user "${CERT_PARMS.zosmf_user}`));
+                       `--zosmf-user "${CERT_PARMS.zosmf_user}"`));
         // FIXME: currently ZWEKRING jcl will import the cert and chain, CA will also be added to CERTAUTH, but the CA will not be connected to keyring.
         //        the CA imported could have label like LABEL00000001.
 
@@ -489,11 +489,6 @@ export function execute() {
               type: certType,
               file: `safkeyring:////${CERT_PARMS.keyring_owner}/${CERT_PARMS.keyring_name}`,
               password: "password"
-            },
-            pem: {
-              key: '',
-              certificate: '',
-              certificateAuthorities: ''
             }
           }
         }
@@ -515,10 +510,6 @@ export function execute() {
       common.printMessage(`      type: ${certType}`);
       common.printMessage(`      file: "safkeyring:////${CERT_PARMS.keyring_owner}/${CERT_PARMS.keyring_name}"`);
       common.printMessage(`      password: "password"`);
-      common.printMessage(`    pem:`);
-      common.printMessage(`      key: ""`);
-      common.printMessage(`      certificate: ""`);
-      common.printMessage(`      certificateAuthorities: "${CERT_PARMS.yaml_pem_cas}"`);
       common.printMessage(``);
       common.printLevel2Message(`Zowe configuration requires manual updates.`);
     }
