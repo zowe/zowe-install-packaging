@@ -11,6 +11,7 @@
 
 import * as index from './index';
 import * as std from 'cm_std';
+import * as common from '../../libs/common';
 import * as zosdataset from '../../libs/zos-dataset';
 
 const prefix = std.getenv("ZWE_CLI_PARAMETER_DATASET_PREFIX");
