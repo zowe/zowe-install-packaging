@@ -133,8 +133,6 @@ export function execute() {
   let verifyCertificates = zoweConfig.zowe.verifyCertificates ? zoweConfig.zowe.verifyCertificates.toUpperCase() : undefined;
   if (verifyCertificates == "STRICT" || verifyCertificates == "NONSTRICT") {
     CERT_PARMS.keyring_trust_zosmf="--trust-zosmf";
-    CERT_PARMS.zosmf_host = std.getenv('zosmf_host');
-    CERT_PARMS.zosmf_port = std.getenv('zosmf_port');
   } else {
     delete CERT_PARMS.zosmf_host;
     delete CERT_PARMS.zosmf_port;
@@ -154,10 +152,10 @@ export function execute() {
   }
   if (certType == "PKCS12") {
     if (!CERT_PARMS.pkcs12_caAlias) {
-      CERT_PARMS.pkcs12_caAlias='localCa';
+      CERT_PARMS.pkcs12_caAlias='local_ca';
     }
     if (!CERT_PARMS.pkcs12_caPassword) {
-      CERT_PARMS.pkcs12_caPassword='localCaPassword';
+      CERT_PARMS.pkcs12_caPassword='local_ca_password';
     }
     if (!CERT_PARMS.pkcs12_name) {
       CERT_PARMS.pkcs12_name='localhost';
