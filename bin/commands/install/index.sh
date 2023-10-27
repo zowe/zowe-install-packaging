@@ -38,6 +38,10 @@ ${ZWE_PRIVATE_DS_SZWEEXEC}|Zowe executable utilities library|dsntype(library) ds
 # validation
 if [ -n "${ZWE_CLI_PARAMETER_DATASET_PREFIX}" ]; then
   prefix="${ZWE_CLI_PARAMETER_DATASET_PREFIX}"
+  prefix_validate=$(echo "${prefix}" | grep -E '^([A-Z\$\#\@]){1}([A-Z0-9\$\#\@\-]){0,7}(\.([A-Z\$\#\@]){1}([A-Z0-9\$\#\@\-]){0,7}){0,11}$')
+  if [ -z "${prefix_validate}" ]; then
+    print_error_and_exit "Error ZWEL0102E: Invalid parameter --dataset-prefix=\"${prefix}\"." "" 102
+  fi
 else
   require_zowe_yaml
   # read prefix and validate
