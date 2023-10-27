@@ -917,7 +917,7 @@
           }
         }
       }
-    }
+    },
     "registryHandler": {
       "$anchor": "registryHandler",
       "type": "object",
