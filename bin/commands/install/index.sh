@@ -88,8 +88,9 @@ else
   # copy members
   cd "${ZWE_zowe_runtimeDirectory}/files/${ZWE_PRIVATE_DS_SZWESAMP}"
   for mb in $(find . -type f); do
-    print_message "Copy files/${ZWE_PRIVATE_DS_SZWESAMP}/$(basename ${mb}) to ${prefix}.${ZWE_PRIVATE_DS_SZWESAMP}"
-    copy_to_data_set "${mb}" "${prefix}.${ZWE_PRIVATE_DS_SZWESAMP}(${mb})" "" "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITE}"
+    base_mb=$(basename ${mb})
+    print_message "Copy files/${ZWE_PRIVATE_DS_SZWESAMP}/(${base_mb}) to ${prefix}.${ZWE_PRIVATE_DS_SZWESAMP(${base_mb})}"
+    copy_to_data_set "${mb}" "${prefix}.${ZWE_PRIVATE_DS_SZWESAMP}(${base_mb})" "" "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITE}"
     if [ $? -ne 0 ]; then
       print_error_and_exit "Error ZWEL0111E: Command aborts with error." "" 111
     fi
@@ -97,8 +98,9 @@ else
 
   cd "${ZWE_zowe_runtimeDirectory}/files/${ZWE_PRIVATE_DS_SZWEEXEC}"
   for mb in $(find . -type f); do
-    print_message "Copy files/${ZWE_PRIVATE_DS_SZWEEXEC}/$(basename ${mb}) to ${prefix}.${ZWE_PRIVATE_DS_SZWEEXEC}"
-    copy_to_data_set "${mb}" "${prefix}.${ZWE_PRIVATE_DS_SZWEEXEC}(${mb})" "" "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITE}"
+    base_mb=$(basename ${mb})
+    print_message "Copy files/${ZWE_PRIVATE_DS_SZWEEXEC}/(${base_mb}) to ${prefix}.${ZWE_PRIVATE_DS_SZWEEXEC(${base_mb})}"
+    copy_to_data_set "${mb}" "${prefix}.${ZWE_PRIVATE_DS_SZWEEXEC}(${base_mb})" "" "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITE}"
     if [ $? -ne 0 ]; then
       print_error_and_exit "Error ZWEL0111E: Command aborts with error." "" 111
     fi
@@ -106,13 +108,13 @@ else
   
   # prepare MVS for launcher
   cd "${ZWE_zowe_runtimeDirectory}/components/launcher"
-  print_message "Copy components/launcher/samplib/ZWESLSTC to ${prefix}.${ZWE_PRIVATE_DS_SZWESAMP}"
+  print_message "Copy components/launcher/samplib/ZWESLSTC to ${prefix}.${ZWE_PRIVATE_DS_SZWESAMP}(ZWESLSTC)"
   copy_to_data_set "samplib/ZWESLSTC" "${prefix}.${ZWE_PRIVATE_DS_SZWESAMP}(ZWESLSTC)" "" "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITE}"
   if [ $? -ne 0 ]; then
     print_error_and_exit "Error ZWEL0111E: Command aborts with error." "" 111
   fi
   
-  print_message "Copy components/launcher/bin/zowe_launcher to ${prefix}.${ZWE_PRIVATE_DS_SZWEAUTH}"
+  print_message "Copy components/launcher/bin/zowe_launcher to ${prefix}.${ZWE_PRIVATE_DS_SZWEAUTH}(ZWELNCH)"
   copy_to_data_set "bin/zowe_launcher" "${prefix}.${ZWE_PRIVATE_DS_SZWEAUTH}(ZWELNCH)" "-X" "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITE}"
   if [ $? -ne 0 ]; then
     print_error_and_exit "Error ZWEL0111E: Command aborts with error." "" 111
@@ -121,8 +123,9 @@ else
   # copy in configmgr rexx edition
   cd "${ZWE_zowe_runtimeDirectory}/files/${ZWE_PRIVATE_DS_SZWELOAD}"
   for mb in $(find . -type f); do
-    print_message "Copy files/${ZWE_PRIVATE_DS_SZWELOAD}/$(basename ${mb}) to ${prefix}.${ZWE_PRIVATE_DS_SZWELOAD}"
-    copy_to_data_set "${mb}" "${prefix}.${ZWE_PRIVATE_DS_SZWELOAD}(${mb})" "-X" "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITE}"
+    base_mb=$(basename ${mb})
+    print_message "Copy files/${ZWE_PRIVATE_DS_SZWELOAD}/(${base_mb}) to ${prefix}.${ZWE_PRIVATE_DS_SZWELOAD}(${base_mb})"
+    copy_to_data_set "${mb}" "${prefix}.${ZWE_PRIVATE_DS_SZWELOAD}(${base_mb})" "-X" "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITE}"
     if [ $? -ne 0 ]; then
       print_error_and_exit "Error ZWEL0111E: Command aborts with error." "" 111
     fi
@@ -146,7 +149,7 @@ else
   
   zss_loadlib="ZWESIS01 ZWESAUX ZWESISDL"
   for mb in ${zss_loadlib}; do
-    print_message "Copy components/zss/LOADLIB/${mb} to ${prefix}.${ZWE_PRIVATE_DS_SZWEAUTH}"
+    print_message "Copy components/zss/LOADLIB/${mb} to ${prefix}.${ZWE_PRIVATE_DS_SZWEAUTH}(${mb})"
     copy_to_data_set "LOADLIB/${mb}" "${prefix}.${ZWE_PRIVATE_DS_SZWEAUTH}(${mb})" "-X" "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITE}"
     if [ $? -ne 0 ]; then
       print_error_and_exit "Error ZWEL0111E: Command aborts with error." "" 111
