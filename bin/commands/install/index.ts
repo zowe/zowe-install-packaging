@@ -10,7 +10,7 @@
 */
 
 import * as std from 'cm_std';
-import * as os from 'cm_os'
+import * as os from 'cm_os';
 import * as common from '../../libs/common';
 import * as fs from '../../libs/fs';
 import * as zosdataset from '../../libs/zos-dataset';
@@ -92,7 +92,7 @@ export function execute(prefix: string) {
           common.printErrorAndExit("Error ZWEL0111E: Command aborts with error.", undefined, 111);
         }
       }
-    };
+    }
     
     common.printMessage('');
     
