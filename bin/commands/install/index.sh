@@ -89,7 +89,7 @@ else
   cd "${ZWE_zowe_runtimeDirectory}/files/${ZWE_PRIVATE_DS_SZWESAMP}"
   for mb in $(find . -type f); do
     base_mb=$(basename ${mb})
-    print_message "Copy files/${ZWE_PRIVATE_DS_SZWESAMP}/(${base_mb}) to ${prefix}.${ZWE_PRIVATE_DS_SZWESAMP(${base_mb})}"
+    print_message "Copy files/${ZWE_PRIVATE_DS_SZWESAMP}/(${base_mb}) to ${prefix}.${ZWE_PRIVATE_DS_SZWESAMP}(${base_mb})"
     copy_to_data_set "${mb}" "${prefix}.${ZWE_PRIVATE_DS_SZWESAMP}(${base_mb})" "" "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITE}"
     if [ $? -ne 0 ]; then
       print_error_and_exit "Error ZWEL0111E: Command aborts with error." "" 111
@@ -99,7 +99,7 @@ else
   cd "${ZWE_zowe_runtimeDirectory}/files/${ZWE_PRIVATE_DS_SZWEEXEC}"
   for mb in $(find . -type f); do
     base_mb=$(basename ${mb})
-    print_message "Copy files/${ZWE_PRIVATE_DS_SZWEEXEC}/(${base_mb}) to ${prefix}.${ZWE_PRIVATE_DS_SZWEEXEC(${base_mb})}"
+    print_message "Copy files/${ZWE_PRIVATE_DS_SZWEEXEC}/(${base_mb}) to ${prefix}.${ZWE_PRIVATE_DS_SZWEEXEC}(${base_mb})"
     copy_to_data_set "${mb}" "${prefix}.${ZWE_PRIVATE_DS_SZWEEXEC}(${base_mb})" "" "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITE}"
     if [ $? -ne 0 ]; then
       print_error_and_exit "Error ZWEL0111E: Command aborts with error." "" 111
