@@ -27,6 +27,51 @@
 # ./content/
 
 # ---------------------------------------------------------------------
+# --- convert files to ascii
+# $1: (input) pattern to convert. 
+#              Files will be determined by 'find <pattern> -type f'
+# $2: (input) optional output directory.
+#              If unset, conversion happens in-place
+#              If set, conversion will mirror directory structure in output
+# (output) converted files or directory following $2
+# TODO: is this replacable with autoconv?
+# ---------------------------------------------------------------------
+function _convertEbcdicToAscii {
+    input=$1
+    output_dir=$2
+    using_output_dir="no"
+
+    if [ -z "$output_dir" ]; then
+        echo "[$SCRIPT_NAME] converting $input to ascii in-place"
+    else
+        if [ -f "$output_dir" ]; then
+            echo "[$SCRIPT_NAME] $output_dir already exists and is a file, aborting _convertEbcdicToAscii"
+            return 1
+        elif [ ! -d "$output_dir" ]; then
+            mkdir -p "$output_dir"
+        fi
+        using_output_dir="yes"
+        echo "[$SCRIPT_NAME] will convert $input to ascii, results in $output_dir"
+    fi
+    
+    files_to_convert=$(find $input -type f) # processes all files
+    for ebcdic_file in $files_to_convert; do
+        echo "[$SCRIPT_NAME] converting $ebcdic_file to ascii..."
+        tmpfile="$(basename $ebcdic_file).tmp"
+        iconv -f IBM-1047 -t ISO8859-1 "${ebcdic_file}" >${tmpfile}
+        if [[ "$using_output_dir" == "yes" ]]; then
+            dir_path=$(dirname $ebcdic_file)
+            mkdir -p ${output_dir}/${dir_path}
+            mv "${tmpfile}" "${output_dir}/${ebcdic_file}"
+        else
+            mv "${tmpfile}" "${ebcdic_file}"
+        fi
+    done
+
+    return 0
+} # _convertEbcdicToAscii
+
+# ---------------------------------------------------------------------
 # --- create JCL files
 # $1: (input) location of .vtl & .properties files
 # $2: (input) base name of .vtl & .properties files, if directory then
@@ -35,33 +80,31 @@
 # ---------------------------------------------------------------------
 function _createJCL
 {
-  VTLCLI_PATH="/ZOWE/vtl-cli"        # tools, path must be absolute
+  VTLCLI_PATH="/ZOWE/vtl-cli" # tools, path must be absolute
   # vtl-cli source: https://github.com/plavjanik/vtl-cli
 
   if [ -f "$1/$2.vtl" ]; then
-    vtlList="$2.vtl"                             # process just this file
+    vtlList="$2.vtl" # process just this file
     vtlPath="$1"
   elif [ -d "$1/$2" ]; then
-    vtlList="$(ls $1/$2/)"           # process all if directory passed in
+    vtlList="$(ls $1/$2/)" # process all if directory passed in
     vtlPath="$1/${2:-.}"
   else
     echo "[$SCRIPT_NAME] $1/$2.vtl not found"
     exit 1
   fi
 
-  for vtlEntry in $vtlList
-  do
-    if [ "${vtlEntry##*.}" = "vtl" ]       # keep from last . (exclusive)
-    then
-      vtlBase="${vtlEntry%.*}"            # keep up to last . (exclusive)
+  for vtlEntry in $vtlList; do
+    if [ "${vtlEntry##*.}" = "vtl" ]; then # keep from last . (exclusive)
+      vtlBase="${vtlEntry%.*}"             # keep up to last . (exclusive)
       JCL="${JCL_PATH}/${vtlBase}.jcl"
       VTL="${vtlPath}/${vtlEntry}"
       if [ -f ${vtlPath}/${vtlBase}.properties ]; then
         YAML="${vtlPath}/${vtlBase}.properties"
-  #    elif [ -f ${vtlPath}/${vtlBase}.yaml ]; then
-  #      YAML="${vtlPath}/${vtlBase}.yaml"
-  #    elif [ -f ${vtlPath}/${vtlBase}.yml ]; then
-  #      YAML="${vtlPath}/${vtlBase}.yml"
+        #    elif [ -f ${vtlPath}/${vtlBase}.yaml ]; then
+        #      YAML="${vtlPath}/${vtlBase}.yaml"
+        #    elif [ -f ${vtlPath}/${vtlBase}.yml ]; then
+        #      YAML="${vtlPath}/${vtlBase}.yml"
       else
         echo "[$SCRIPT_NAME] ${vtlPath}/${vtlBase}.properties not found"
         exit 1
@@ -74,9 +117,9 @@ function _createJCL
       # assumes java is in $PATH
       java -jar ${VTLCLI_PATH}/vtl-cli.jar \
         -ie Cp1140 --yaml-context ${YAML} ${VTL} -o ${JCL} -oe Cp1140
-    fi    # vtl found
+    fi # vtl found
   done
-}    # _createJCL
+} # _createJCL
 
 # ---------------------------------------------------------------------
 # --- create workflow & JCL files
@@ -89,62 +132,63 @@ function _createJCL
 function _createWorkflow
 {
   here=$(pwd)
-  CREAXML_PATH="${here}/templates"   # tools, path must be absolute
+  CREAXML_PATH="${here}/templates" # tools, path must be absolute
 
   if [ -f "$1/$2.xml" ]; then
-    xmlList="$2.xml"                             # process just this file
+    xmlList="$2.xml" # process just this file
     xmlPath="$1"
   elif [ -d "$1/$2" ]; then
-    xmlList="$(ls $1/$2/)"           # process all if directory passed in
+    xmlList="$(ls $1/$2/)" # process all if directory passed in
     xmlPath="$1/${2:-.}"
   else
     echo "[$SCRIPT_NAME] $1/$2.xml not found"
     exit 1
   fi
 
-  for xmlEntry in $xmlList
-  do
-    if [ "${xmlEntry##*.}" = "xml" ]       # keep from last . (exclusive)
-    then
-      xmlBase="${xmlEntry%.*}"            # keep up to last . (exclusive)
-      XML="${here}/${WORKFLOW_PATH}/${xmlBase}.xml"   # use absolute path
+  for xmlEntry in $xmlList; do
+    if [ "${xmlEntry##*.}" = "xml" ]; then          # keep from last . (exclusive)
+      xmlBase="${xmlEntry%.*}"                      # keep up to last . (exclusive)
+      XML="${here}/${WORKFLOW_PATH}/${xmlBase}.xml" # use absolute path
 
       if [ -d ${xmlBase} ]; then
         # TODO ensure workflow yaml has all variables of JCL yamls
       fi
-      
+
       # create JCL related to this workflow
-      _createJCL ${xmlPath} ${xmlBase}    # ${xmlBase} can be a directory
+      _createJCL ${xmlPath} ${xmlBase} # ${xmlBase} can be a directory
 
       # create workflow
       echo "[$SCRIPT_NAME] creating $XML"
       # inlineTemplate definition in xml expects us to be in $xmlPath
       cd "${xmlPath}"
       ${CREAXML_PATH}/build-workflow.rex -d -i ${xmlEntry} -o ${XML}
-      rm -f ${xmlEntry}                # remove to avoid processing twice
-      cd -                                 # return to previous directory
+      rm -f ${xmlEntry} # remove to avoid processing twice
+      cd -              # return to previous directory
 
       # copy default variable definitions to ${WORKFLOW_PATH}
       if [ -f ${xmlPath}/${xmlBase}.properties ]; then
         YAML="${xmlPath}/${xmlBase}.properties"
-  #    elif [ -f ${xmlPath}/${xmlBase}.yaml ]; then
-  #      YAML="${xmlPath}/${xmlBase}.yaml"
-  #    elif [ -f ${xmlPath}/${xmlBase}.yml ]; then
-  #      YAML="${xmlPath}/${xmlBase}.yml"
+        #    elif [ -f ${xmlPath}/${xmlBase}.yaml ]; then
+        #      YAML="${xmlPath}/${xmlBase}.yaml"
+        #    elif [ -f ${xmlPath}/${xmlBase}.yml ]; then
+        #      YAML="${xmlPath}/${xmlBase}.yml"
       else
         echo "[$SCRIPT_NAME] ${xmlPath}/${xmlBase}.properties not found"
         exit 1
       fi
       cp "${YAML}" "${WORKFLOW_PATH}/${xmlBase}.properties"
-    fi    # xml found
+    fi # xml found
   done
-}    # _createWorkflow
+} # _createWorkflow
 
 # ---------------------------------------------------------------------
 # --- main --- main --- main --- main --- main --- main --- main ---
 # ---------------------------------------------------------------------
-SCRIPT_NAME=$(basename "$0")  # $0=./pre-packaging.sh
-BASE_DIR=$(cd $(dirname "$0"); pwd)      # <something>/.pax
+SCRIPT_NAME=$(basename "$0") # $0=./pre-packaging.sh
+BASE_DIR=$(
+  cd $(dirname "$0")
+  pwd
+) # <something>/.pax
 
 # use node v14 to build
 export NODE_HOME=/ZOWE/node/node-v14.21.3.1-os390-s390x
@@ -196,14 +240,13 @@ cd "${BASE_DIR}"
 
 # prepare for SMPE
 echo "[$SCRIPT_NAME] smpe is not part of zowe.pax, moving it out ..."
-mv ./content/smpe  .
+mv ./content/smpe .
 
 # workflow customization
 # >>>
 echo "[$SCRIPT_NAME] templates is not part of zowe.pax, moving it out ..."
-mv ./content/templates  .
+mv ./content/templates .
 chmod +x templates/*.rex
-
 
 mkdir -p "${ZOWE_ROOT_DIR}/bin/utils"
 configmgr=$(find "${ZOWE_ROOT_DIR}/files" -type f \( -name "configmgr-2*.pax" \) | head -n 1)
@@ -221,9 +264,8 @@ pax -ppx -rf "${configmgr_rexx}"
 rm "${configmgr_rexx}"
 cd "${BASE_DIR}"
 
-
 echo "[$SCRIPT_NAME] create dummy zowe.yaml for install"
-cat <<EOT >> "${BASE_DIR}/zowe.yaml"
+cat <<EOT >>"${BASE_DIR}/zowe.yaml"
 zowe:
   extensionDirectory: "${ZOWE_ROOT_DIR}/components"
   useConfigmgr: false
@@ -250,9 +292,9 @@ for component in app-server; do
   echo "[$SCRIPT_NAME] - ${component}"
   # FIXME: these environment variables are changed in v2
   ZOWE_ROOT_DIR=${ZOWE_ROOT_DIR} \
-  ZWED_INSTALL_DIR=${ZOWE_ROOT_DIR} \
-  LOG_FILE="${BASE_DIR}/logs/zwe-components-install-process-hook.log" \
-  "${ZOWE_ROOT_DIR}/bin/zwe" \
+    ZWED_INSTALL_DIR=${ZOWE_ROOT_DIR} \
+    LOG_FILE="${BASE_DIR}/logs/zwe-components-install-process-hook.log" \
+    "${ZOWE_ROOT_DIR}/bin/zwe" \
     components install process-hook \
     --component-name "${component}" \
     --config "${BASE_DIR}/zowe.yaml" \
@@ -318,7 +360,10 @@ else
   exit 1
 fi
 
-#3. clean up working files
+#3. Convert z/OSMF workflows and templates to ASCII in-place
+_convertEbcdicToAscii "${WORKFLOW_PATH}"
+
+#4. clean up working files
 echo "[$SCRIPT_NAME] clean up working files"
 rm -rf "./templates"
 
@@ -332,11 +377,11 @@ echo "[$SCRIPT_NAME] generate fingerprints"
 mkdir -p "${BASE_DIR}/fingerprints"
 mkdir -p "${ZOWE_ROOT_DIR}/fingerprint"
 cd "${ZOWE_ROOT_DIR}"
-find . -name ./SMPE             -prune \
-    -o -name "./ZWE*"           -prune \
-    -o -name ./fingerprint      -prune \
-    -o -type f -print > "${BASE_DIR}/fingerprints/files.in"
-java -cp "${ZOWE_ROOT_DIR}/bin/utils" HashFiles "${BASE_DIR}/fingerprints/files.in" | sort > "${ZOWE_ROOT_DIR}/fingerprint/RefRuntimeHash-${ZOWE_VERSION}.txt"
+find . -name ./SMPE -prune \
+  -o -name "./ZWE*" -prune \
+  -o -name ./fingerprint -prune \
+  -o -type f -print >"${BASE_DIR}/fingerprints/files.in"
+java -cp "${ZOWE_ROOT_DIR}/bin/utils" HashFiles "${BASE_DIR}/fingerprints/files.in" | sort >"${ZOWE_ROOT_DIR}/fingerprint/RefRuntimeHash-${ZOWE_VERSION}.txt"
 echo "[$SCRIPT_NAME] cleanup fingerprints code"
 rm -fr "${BASE_DIR}/fingerprints"
 
