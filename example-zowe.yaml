@@ -273,7 +273,7 @@ zowe:
   # runtime where the "zwe" command is located.
   #
   # This value is required by ZWESLSTC to know where is Zowe runtime.
-  runtimeDirectory: ""
+  runtimeDirectory: " "
 
   # **COMMONLY_CUSTOMIZED**
   # Where to store runtime logs
@@ -437,7 +437,7 @@ zowe:
 java:
   # **COMMONLY_CUSTOMIZED**
   # Path to your Java home directory
-  home: ""
+  home: " "
 
 
 #-------------------------------------------------------------------------------
@@ -452,7 +452,7 @@ java:
 node:
   # **COMMONLY_CUSTOMIZED**
   # Path to your node.js home directory
-  home: ""
+  home: " "
 
 
 #-------------------------------------------------------------------------------
