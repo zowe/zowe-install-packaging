@@ -20,8 +20,8 @@ import * as shell from './shell';
 // Get file encoding from z/OS USS tagging
 export function getFileEncoding(filePath: string): number|undefined {
   //zos.changeTag(file, id)
-  let returnArray = os.stat(filePath);
-  if (!returnArray[1] && ((returnArray[0].mode & os.S_IFREG) == os.S_IFREG)) { //no error, and is file
+  let returnArray = zos.zstat(filePath);
+  if (!returnArray[1] && ((returnArray[0].mode & os.S_IFMT) == os.S_IFREG)) { //no error, and is file
     return returnArray[0].ccsid;
   } else {
     common.printError(`getFileEncoding path=${filePath}, err=${returnArray[1]}`);
