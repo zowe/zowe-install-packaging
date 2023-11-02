@@ -163,6 +163,8 @@ export function execute() {
     if (!CERT_PARMS.pkcs12_password) {
       CERT_PARMS.pkcs12_password='password';
     }
+    CERT_PARMS.pkcs12_name_lc=CERT_PARMS.pkcs12_name.toLowerCase();
+    CERT_PARMS.pkcs12_caAlias_lc=CERT_PARMS.pkcs12_caAlias.toLowerCase();
   } else if  (certType.startsWith('JCE')) {
     if (!CERT_PARMS.keyring_owner) {
       CERT_PARMS.keyring_owner=securityUsersZowe;
@@ -182,8 +184,6 @@ export function execute() {
       CERT_PARMS.zosmf_ca="_auto_";
     }
   }
-  CERT_PARMS.pkcs12_name_lc=CERT_PARMS.pkcs12_name.toLowerCase();
-  CERT_PARMS.pkcs12_caAlias_lc=CERT_PARMS.pkcs12_caAlias.toLowerCase();
   // what PEM format CAs we should tell Zowe to use
   delete CERT_PARMS.yaml_pem_cas;
 
