@@ -75,7 +75,9 @@ require_java() {
   if [ -n "${ZWE_CLI_PARAMETER_CONFIG}" ]; then
     custom_java_home="$(shell_read_yaml_java_home "${ZWE_CLI_PARAMETER_CONFIG}")"
     if [ -n "${custom_java_home}" ]; then
-      export JAVA_HOME="${custom_java_home}"
+      if [ "${custom_java_home}" != "DETECT" ]; then
+        export JAVA_HOME="${custom_java_home}"
+      fi
     fi
   fi
   if [ -z "${JAVA_HOME}" ]; then

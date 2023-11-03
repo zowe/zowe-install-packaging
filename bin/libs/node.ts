@@ -67,7 +67,7 @@ export function requireNode() {
   }
   if (std.getenv('ZWE_CLI_PARAMETER_CONFIG')) {
     const customNodeHome = shellReadYamlNodeHome();
-    if (customNodeHome) {
+    if (customNodeHome && customNodeHome != "DETECT") {
       std.setenv('NODE_HOME', customNodeHome);
     }
   }
