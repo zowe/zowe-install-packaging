@@ -297,7 +297,7 @@ export function createDatasetTmpMember(dataset: string, prefix: string='ZW'): st
 // note: the min lenght is 1
 export function validDatasetName(dsn: string): boolean {
   common.printTrace(`- validDatasetName for "${dsn}"`);
-  if (!dsn || dsn.length < 2 || dsn.length > 44) {
+  if (!dsn || dsn.length < 1 || dsn.length > 44) {
       common.printTrace('  * dataset null, empty or > 44 chars');
       return false;
   }
