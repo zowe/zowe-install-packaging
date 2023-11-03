@@ -13,7 +13,7 @@
 
 USE_CONFIGMGR=$(check_configmgr_enabled)
 if [ "${USE_CONFIGMGR}" = "true" ]; then
-  if [ -z "${ZWE_CLI_PARAMETER_CONFIG}" ]; then
+  if [ -n "${ZWE_CLI_PARAMETER_DATASET_PREFIX}" ]; then
     _CEE_RUNOPTS="XPLINK(ON),HEAPPOOLS(OFF)" ${ZWE_zowe_runtimeDirectory}/bin/utils/configmgr -script "${ZWE_zowe_runtimeDirectory}/bin/commands/install/clix.js"
   else
     if [ -z "${ZWE_PRIVATE_TMP_MERGED_YAML_DIR}" ]; then
@@ -38,7 +38,7 @@ ${ZWE_PRIVATE_DS_SZWEEXEC}|Zowe executable utilities library|dsntype(library) ds
 # validation
 if [ -n "${ZWE_CLI_PARAMETER_DATASET_PREFIX}" ]; then
   prefix="${ZWE_CLI_PARAMETER_DATASET_PREFIX}"
-  prefix_validate=$(echo "${prefix}" | grep -E '^([A-Z\$\#\@]){1}([A-Z0-9\$\#\@\-]){0,7}(\.([A-Z\$\#\@]){1}([A-Z0-9\$\#\@\-]){0,7}){0,11}$')
+  prefix_validate=$(echo "${prefix}" | tr '[:lower:]' '[:upper:]' | grep -E '^([A-Z\$\#\@]){1}([A-Z0-9\$\#\@\-]){0,7}(\.([A-Z\$\#\@]){1}([A-Z0-9\$\#\@\-]){0,7}){0,11}$')
   if [ -z "${prefix_validate}" ]; then
     print_error_and_exit "Error ZWEL0102E: Invalid parameter --dataset-prefix=\"${prefix}\"." "" 102
   fi

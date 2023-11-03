@@ -15,7 +15,7 @@ import * as common from '../../libs/common';
 import * as zosdataset from '../../libs/zos-dataset';
 
 const prefix = std.getenv("ZWE_CLI_PARAMETER_DATASET_PREFIX");
-if (!prefix || !zosdataset.validDatasetName(prefix)){
+if (!prefix || !zosdataset.validDatasetName(prefix.toUpperCase())) {
   common.printLevel1Message("Install Zowe MVS data sets");
   common.printErrorAndExit(`Error ZWEL0102E: Invalid parameter --dataset-prefix="${prefix}".`, undefined, 102);
 }
