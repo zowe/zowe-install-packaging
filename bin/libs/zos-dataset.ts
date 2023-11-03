@@ -44,7 +44,7 @@ export function tsoIsDatasetExists(datasetName: string): number {
 }
 
 export function createDataSet(dsName: string, dsOptions: string): number {
-  const result=zoslib.tsoCommand(`ALLOCATE NEW DA('${dsName}') ${dsOptions}`);
+  const result=zoslib.tsoCommand(`"ALLOCATE NEW DA('${dsName}') ${dsOptions}"`);
   return result.rc;
 }
 
