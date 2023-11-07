@@ -1,1 +1,15 @@
-""
+{
+  "lockAcquiredTime": "Tue Nov 07 2023 07:43:31 GMT+0000 (Coordinated Universal Time)",
+  "uid": "1699343011580716609",
+  "repository": {
+    "owner": "zowe",
+    "repo": "zowe-install-packaging"
+  },
+  "branch": "test-linting-fixes",
+  "workflow": "Zowe CICD Integration Tests",
+  "job": "cicd-test",
+  "actor": "zowe-robot",
+  "runId": 6781396507,
+  "runNumber": 3496,
+  "link": "https://github.com/zowe/zowe-install-packaging/actions/runs/6781396507"
+}
