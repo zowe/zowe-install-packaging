@@ -29,7 +29,7 @@ jobs:
         with:
           node-version: 18
       - name: '[Prep 3] Get to version'
-        run: node -e "const currentVersion = require('manifest.json.template').version; console.log('${{ github.event.inputs.TO_COMMIT }}'.length > 0 ? 'TO=${{ github.event.inputs.TO_COMMIT }}' : 'TO='+currentVersion);" >> $GITHUB_ENV
+        run: node -e "const currentVersion = require('manifest.json.template').version; if ('${{ github.event.inputs.TO_COMMIT }}'.length > 0) { console.log('TO=${{ github.event.inputs.TO_COMMIT }}'} else { console.log('TO='+currentVersion) }" >> $GITHUB_ENV
       - name: '[Prep 4] Get from version'
         run: node -e "if ('${{ github.event.inputs.FROM_COMMIT }}'.length > 0) { console.log('FROM=${{ github.event.inputs.FROM_COMMIT }}') } else { let parts = envs.TO_COMMIT.split('.'); parts[1]--; console.log('FROM='+parts.join('.')); }" >> $GITHUB_ENV
       - name: '[Build] Make diff'
