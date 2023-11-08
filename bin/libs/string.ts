@@ -208,6 +208,18 @@ export function trim(input: string): string {
   return input.trim();
 }
 
+export function escapeDollar(str: string): string | undefined {
+  if (str === null || str === undefined)
+    return undefined;
+  return str.replace(/[$]/g, '\\$&');
+}
+
+export function escapeRegExp(str: string): string | undefined {
+  if (str === null || str === undefined)
+      return undefined;
+  return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
 // Replace all occurrences of a string with another	
 export function replace(sourceString: string, searchTerm: string, replaceTerm: string): string {
   const all = new RegExp(searchTerm, 'g')
