@@ -2,11 +2,8 @@ name: Generate schema diff
 on:
   push:
     branches:
-      - v1.x/rc
       - v1.x/master
-      - v2.x/rc
       - v2.x/master
-      - v3.x/rc
       - v3.x/master
 
   workflow_dispatch:
@@ -24,6 +21,8 @@ jobs:
     steps:
       - name: '[Prep 1] Checkout'
         uses: actions/checkout@v2
+        with:
+          fetch-depth: '0'
       - name: '[Prep 2] Setup Node'
         uses: actions/setup-node@v2
         with:
