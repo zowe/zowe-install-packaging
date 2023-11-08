@@ -12,10 +12,10 @@ on:
   workflow_dispatch:
     inputs:
       FROM_COMMIT:
-        description: 'Specify commit, branch or tag to diff from'
+        description: 'Specify tag (v prefix) to diff from'
         required: false
       TO_COMMIT:
-        description: 'Specify commit, branch or tag to diff to'
+        description: 'Specify tag (v prefix) to diff to'
         required: false
 
 jobs:
@@ -29,11 +29,11 @@ jobs:
         with:
           node-version: 18
       - name: '[Prep 3] Get to version'
-        run: node -e "const currentVersion = require('manifest.json.template').version; if ('${{ github.event.inputs.TO_COMMIT }}'.length > 0) { console.log('TO=${{ github.event.inputs.TO_COMMIT }}'} else { console.log('TO='+currentVersion) }" >> $GITHUB_ENV
+        run: node -e "const fs = require('fs'); const currentVersion = JSON.parse(fs.readFileSync('./manifest.json.template', 'utf8')).version; if ('${{ github.event.inputs.TO_COMMIT }}'.length > 0) { console.log('TO=${{ github.event.inputs.TO_COMMIT }}')} else { console.log('TO=v'+currentVersion) }" >> $GITHUB_ENV
       - name: '[Prep 4] Get from version'
-        run: node -e "if ('${{ github.event.inputs.FROM_COMMIT }}'.length > 0) { console.log('FROM=${{ github.event.inputs.FROM_COMMIT }}') } else { let parts = envs.TO_COMMIT.split('.'); parts[1]--; console.log('FROM='+parts.join('.')); }" >> $GITHUB_ENV
+        run: node -e "if ('${{ github.event.inputs.FROM_COMMIT }}'.length > 0) { console.log('FROM=${{ github.event.inputs.FROM_COMMIT }}') } else { let parts = '${{ env.TO }}'.split('.'); parts[1]--; console.log('FROM='+parts.join('.')); }" >> $GITHUB_ENV
       - name: '[Build] Make diff'
-        run: git diff ${{ envs.FROM }} ${{ envs.TO }} -- schemas > schemas.diff
+        run: git diff ${{ env.FROM }} ${{ env.TO }} -- schemas > schemas.diff
       - name: '[Upload]'
         uses: actions/upload-artifact@v3
         with:
