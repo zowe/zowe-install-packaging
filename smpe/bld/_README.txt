@@ -34,6 +34,7 @@ Note: SUP should only be updated if most products depending on the
   SUP(AZWE001)
   DELETE(AZWE001)
 3. remove select files from smpe/bld/service
+   - apar-bucket.txt
    - ptf-bucket.txt
    - promoted-apar.txt
    - promoted-close.txt
