@@ -213,6 +213,7 @@ jobs:
         with: 
           pax-name: zowe
           pax-options: '-o saveext'
+          pax-ssh-host: zzow08.zowe.marist.cloud
           pax-ssh-username: ${{ secrets.SSH_MARIST_USERNAME }}
           pax-ssh-password: ${{ secrets.SSH_MARIST_RACF_PASSWORD  }}
           keep-temp-folders: ${{ env.INPUTS_KEEP_TEMP_PAX_FOLDER }}
