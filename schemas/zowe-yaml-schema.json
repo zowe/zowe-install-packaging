@@ -885,10 +885,10 @@
           "additionalProperties": false,
           "description": "Optional, advanced network configuration parameters for Zowe servers",
           "properties": {
-            "tlsSettings": {
+            "tls": {
               "$ref": "#/$defs/tlsSettings"      
             },
-            "listenAddress": {
+            "listenAddresses": {
               "type": "array",
               "description": "The IP addresses which all of the Zowe servers will be binding on and listening to. Some servers may only support listening on the first element.",
               "items": {
@@ -911,7 +911,7 @@
           "additionalProperties": false,
           "description": "Optional, advanced network configuration parameters for Zowe servers when sending requests as clients.",
           "properties": {
-            "tlsSettings": {
+            "tls": {
                 "$ref": "#/$defs/tlsSettings"    
             }
           }
