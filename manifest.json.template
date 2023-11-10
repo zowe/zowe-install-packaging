@@ -12,7 +12,7 @@
   },
   "binaryDependencies": {
     "org.zowe.zlux.zlux-core": {
-      "version": "2.13.0-557-v2.x-staging-zlux-build",
+      "version": "2.13.0-562-v2.x-staging-zlux-build",
       "artifact": "*.pax"
     },
     "org.zowe.zlux.sample-angular-app": {
@@ -168,7 +168,7 @@
         },
         {
           "repository": "zlux-app-server",
-          "tag": "^2.13.0-PR-287",
+          "tag": "^2.13.0-PR-288",
           "destinations": ["Zowe PAX"]
         },
         {
@@ -188,7 +188,7 @@
         },
         {
           "repository": "zlux-server-framework",
-          "tag": "v2.x/staging",
+          "tag": "^2.13.0-PR-513",
           "destinations": ["Zowe PAX"]
         },
         {
