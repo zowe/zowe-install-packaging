@@ -138,3 +138,63 @@ export function validateJavaHome(javaHome:string|undefined=std.getenv("JAVA_HOME
     return false;
   }
 }
+
+export function getJavaPkcs12KeystoreFlag(javaHome:string|undefined=std.getenv("JAVA_HOME")): string {
+  if (!javaHome) {
+    common.printError("Cannot find java. Please define JAVA_HOME environment variable.");
+    return ' ';
+  }
+  if (!fs.fileExists(fs.resolvePath(javaHome,`/bin/java`))) {
+    common.printError(`JAVA_HOME: ${javaHome}/bin does not point to a valid install of Java.`);
+    return ' ';
+  }
+
+  let execReturn = shell.execErrSync(fs.resolvePath(javaHome,`/bin/java`), `-version`);
+  const version = execReturn.err;
+  if (execReturn.rc != 0) {
+    common.printError(`Java version check failed with return code: ${execReturn.rc}: ${version}`);
+    return ' ';
+  }
+ 
+  try {
+    let index = 0;
+    let javaVersionShort;
+    let versionLines = (version as string).split('\n'); // valid because of above rc check
+    for (let i = 0; i < versionLines.length; i++) {
+      if ((index = versionLines[i].indexOf('java version')) != -1) {
+        //format of: java version "1.8.0_321"
+        javaVersionShort=versionLines[i].substring(index+('java version'.length)+2, versionLines[i].length-1);
+        break;
+      } else if ((index = versionLines[i].indexOf('openjdk version')) != -1) {
+        javaVersionShort=versionLines[i].substring(index+('openjdk version'.length)+2, versionLines[i].length-1);
+        break;
+      }
+    }
+    if (!javaVersionShort){
+      common.printError("could not find java version");
+      return ' ';
+    }
+    let versionParts = javaVersionShort.split('.');
+    const javaMajorVersion=Number(versionParts[0]);
+    const javaMinorVersion=Number(versionParts[1]);
+    let fixParts = javaVersionShort.split('_');
+    const javaFixVersion=Number(fixParts[1]);
+
+    if (javaMajorVersion == 1 && javaMinorVersion == 8) {
+      if (javaFixVersion < 341) {
+        return ' ';
+      } else if (javaFixVersion < 361) {
+        return " -J-Dkeystore.pkcs12.certProtectionAlgorithm=PBEWithSHAAnd40BitRC2 -J-Dkeystore.pkcs12.certPbeIterationCount=50000 -J-Dkeystore.pkcs12.keyProtectionAlgorithm=PBEWithSHAAnd3KeyTripleDES -J-Dkeystore.pkcs12.keyPbeIterationCount=50000 "
+      } else {
+        return " -J-Dkeystore.pkcs12.legacy ";
+      }
+    } else if (javaMajorVersion == 1 && javaMinorVersion > 8) {
+      return " -J-Dkeystore.pkcs12.legacy ";
+    } else {
+      return ' ';
+    }
+
+  } catch (e) {
+    return ' ';
+  }
+}

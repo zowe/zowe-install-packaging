@@ -12,3 +12,5 @@ zowe_install_logs_dir: /ZOWE/logs
 
 zowe_smpe_volser: ZOWE03
 zowe_caching_vsam_volume: ZOWE03
+
+zowe_configure_ignore_security_failures: true # Required for keyring tests - only Root cert passed, missing intermediate RC=4
