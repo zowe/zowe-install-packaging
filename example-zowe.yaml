@@ -209,7 +209,7 @@ zowe:
     #   #   - 12.34.56.78
 
     # # >>>> Certificate setup scenario 4
-    # # Existing z/OS Keyring and connect to existing certificate
+    # # Zowe generated z/OS Keyring and connect to existing certificate
     # certificate:
     #   # Type of certificate storage. Valid values are: PKCS12, JCEKS, JCECCAKS, JCERACFKS, JCECCARACFKS, or JCEHYBRIDRACFKS
     #   type: JCERACFKS
@@ -233,7 +233,7 @@ zowe:
     #     - ""
 
     # # >>>> Certificate setup scenario 5
-    # # z/OS Keyring with importing certificate stored in data set
+    # # Zowe generated z/OS Keyring with importing certificate stored in data set
     # certificate:
     #   # Type of certificate storage. Valid values are: PKCS12, JCEKS, JCECCAKS, JCERACFKS, JCECCARACFKS, or JCEHYBRIDRACFKS
     #   type: JCERACFKS
