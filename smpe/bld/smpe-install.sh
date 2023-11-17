@@ -629,7 +629,8 @@ else
 fi    #
 
 # ensure we can access everything
-_super chown -R $(id -u) $stage
+# This started failing with an unknown error (not related to chown)
+# _super chown -R $(id -u) $stage
 
 # set permissions to ensure consistency & ability to move during split
 _cmd chmod -R 755 $stage
