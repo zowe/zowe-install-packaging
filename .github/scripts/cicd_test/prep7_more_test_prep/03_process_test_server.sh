@@ -14,12 +14,12 @@ TEST_SERVER=$(echo "$MATRIX_SERVER" | cut -d "-" -f2)
 
 case $TEST_SERVER in
 
-"zzow02")
-  TEST_SERVER_NICKNAME=marist-2
+"zzow06")
+  TEST_SERVER_NICKNAME=marist-6
   ;;
 
-"zzow03")
-  TEST_SERVER_NICKNAME=marist-3
+"zzow07")
+  TEST_SERVER_NICKNAME=marist-7
   ;;
 
 "zzow08")

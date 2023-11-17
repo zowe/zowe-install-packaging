@@ -101,7 +101,7 @@ else
       interim_test_file_server=$(echo $interim_test_file_server | sed "s#(any)#(zzow0$(echo $(($RANDOM % 3 + 2))))#")
     done
 
-    TEST_FILE_SERVER=$(echo $interim_test_file_server | sed "s#(all)#(zzow02,zzow03,zzow08)#g")
+    TEST_FILE_SERVER=$(echo $interim_test_file_server | sed "s#(all)#(zzow06,zzow07,zzow08)#g")
   fi
 fi
 

@@ -9,10 +9,10 @@ on:
         default: 'Any zzow servers'
         options: 
           - Any zzow servers
-          - zzow02
-          - zzow03
+          - zzow06
+          - zzow07
           - zzow08
-          - zzow02,zzow03,zzow08
+          - zzow06,zzow07,zzow08
       install-test:
         description: 'Choose Install Test'
         type: choice
