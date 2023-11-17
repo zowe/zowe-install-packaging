@@ -171,7 +171,7 @@ opts="$opts -l $log"                           # install log
 _cmd $extract/$zweScript install $opts </dev/null
 
 echo "-- copying product to  $stage"
-mkdir -p $stage
+_cmd mkdir -p $stage
 _cmd cd $extract
 _cmd pax -rw -px * $stage/   # use pax to copy with extattr preserved
 
@@ -630,7 +630,7 @@ fi    #
 
 # ensure we can access everything
 # This started failing with an unknown error (not related to chown)
-# _super chown -R $(id -u) $stage
+_cmd chown -R $(id -u) $stage
 
 # set permissions to ensure consistency & ability to move during split
 _cmd chmod -R 755 $stage
