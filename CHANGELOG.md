@@ -2,6 +2,31 @@
 
 All notable changes to the Zowe Installer will be documented in this file.
 <!--Add the PR or issue number to the entry if available.-->
+## `2.13.0`
+
+### New features and enhancements
+
+#### Minor enhancements/defect fixes
+- Bugfix: Workflow files in the Zowe PAX are now ASCII-encoded. Fixes [#3591](https://github.com/zowe/zowe-install-packaging/issues/3591).
+
+## `2.12.0`
+
+### New features and enhancements
+
+#### Minor enhancements/defect fixes
+
+## `2.13.0`
+#### Minor enhancements/defect fixes
+- Enhancement: `/bin/utils/date-add.rex` utility is accepting the date formatting as combination of YY|YYYY, MM, DD and any separator.
+
+## `2.11.0`
+
+### New features and enhancements
+- Enhancement: Duplicate log messages into syslog according to "zowe.sysMessages" array [#93](https://github.com/zowe/launcher/pull/93)
+
+#### Minor enhancements/defect fixes
+- Bugfix: `zowe-yaml-schema.json` validates unix directory path as `server-common#zowePath`
+- Bugfix: Fixed that Zowe would allow newer Java versions to generate PKCS12 keystores that was not compatible with some components. Newer versions of Java by default create PKCS12 keystores that aren't compatible with GSK / SystemSSL which components such as ZSS use, but include flags to restore a compatibility mode, which Zowe now uses. (#3507)
 
 ## `2.10.0`
 
