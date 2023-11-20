@@ -628,8 +628,7 @@ else
   _cmd pax -rw -px * $stage/   # use pax to copy with extattr preserved
 fi    #
 
-# ensure we can access everything
-# This started failing with an unknown error (not related to chown)
+# ensure we can access everything (previously _super, which may fail in some environments)
 _cmd chown -R $(id -u) $stage
 
 # set permissions to ensure consistency & ability to move during split
