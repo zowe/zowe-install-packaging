@@ -91,8 +91,8 @@ describe(`test ${APP_TO_TEST}`, function() {
     /* Open issue: test systems use non-standard port, so we DO see an error message. validate that. */
     const errorLabel = await getElement(viewport, 'com-rs-mvd-vt .vt-parent .toolbar .error-label', true);
     expect(errorLabel).to.be.an('object');
-   // const errorLabel = await getElement(viewport, 'com-rs-mvd-vt .vt-parent .toolbar .error-label', true);
-   // expect(errorLabel).to.not.be.an('object');
+    // const errorLabel = await getElement(viewport, 'com-rs-mvd-vt .vt-parent .toolbar .error-label', true);
+    // expect(errorLabel).to.not.be.an('object');
   });
 
 
