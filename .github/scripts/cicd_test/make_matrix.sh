@@ -98,7 +98,8 @@ else
     any_occurrence=$(echo $test_file | grep -o "(any)" | wc -l)
     interim_test_file_server=$test_file
     for i in $(seq $any_occurrence); do
-      interim_test_file_server=$(echo $interim_test_file_server | sed "s#(any)#(zzow0$(echo $(($RANDOM % 3 + 2))))#")
+      # Generates zzow06, zzow07, zzow08
+      interim_test_file_server=$(echo $interim_test_file_server | sed "s#(any)#(zzow0$(echo $(($RANDOM % 3 + 6))))#")
     done
 
     TEST_FILE_SERVER=$(echo $interim_test_file_server | sed "s#(all)#(zzow06,zzow07,zzow08)#g")
