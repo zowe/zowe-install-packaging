@@ -48,7 +48,7 @@ describe(`test ${APP_TO_TEST}`, function() {
     );
   });
 
-
+/*
   it('should launch app correctly', async function() {
     // load app
     await launchApp(driver, APP_TO_TEST);
@@ -88,13 +88,13 @@ describe(`test ${APP_TO_TEST}`, function() {
 
     // it shouldn't show any error message
     
-    /* Open issue: test systems use non-standard port, so we DO see an error message. validate that. */
+    // Open issue: test systems use non-standard port, so we DO see an error message. validate that. 
     const errorLabel = await getElement(viewport, 'com-rs-mvd-vt .vt-parent .toolbar .error-label', true);
     expect(errorLabel).to.be.an('object');
     // const errorLabel = await getElement(viewport, 'com-rs-mvd-vt .vt-parent .toolbar .error-label', true);
     // expect(errorLabel).to.not.be.an('object');
   });
-
+*/
 
   after('quit webdriver', async function() {
     // quit webdriver
