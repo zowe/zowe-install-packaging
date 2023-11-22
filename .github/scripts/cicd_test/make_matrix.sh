@@ -34,7 +34,7 @@ case $install_test_choice in
 
 "z/OS node v18")
   test_file="$ZOS_NODE_V18_TESTFILE"
-  test_force_system="zzow04"
+  test_force_system="zzow08"
   ;;
 
 "Non-strict Verify External Certificate")
@@ -90,10 +90,11 @@ else
     any_occurrence=$(echo $test_file | grep -o "(any)" | wc -l)
     interim_test_file_server=$test_file
     for i in $(seq $any_occurrence); do
-      interim_test_file_server=$(echo $interim_test_file_server | sed "s#(any)#(zzow0$(echo $(($RANDOM % 3 + 2))))#")
+      # Generates zzow06, zzow07, zzow08
+      interim_test_file_server=$(echo $interim_test_file_server | sed "s#(any)#(zzow0$(echo $(($RANDOM % 3 + 6))))#")
     done
 
-    TEST_FILE_SERVER=$(echo $interim_test_file_server | sed "s#(all)#(zzow02,zzow03,zzow04)#g")
+    TEST_FILE_SERVER=$(echo $interim_test_file_server | sed "s#(all)#(zzow06,zzow07,zzow08)#g")
   fi
 fi
 
