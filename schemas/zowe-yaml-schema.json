@@ -882,7 +882,7 @@
           "type": "string",
           "enum": ["TLSv1.2", "TLSv1.3"],
           "default": "TLSv1.2",
-          "description": "Minimum TLS version allowed for network connections, and less than network.maxTls."
+          "description": "Minimum TLS version allowed for network connections, and less than or equal to network.maxTls."
         }
       }
     },
