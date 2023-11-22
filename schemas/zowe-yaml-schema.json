@@ -860,7 +860,7 @@
       "properties": {
         "ciphers": {
           "type": "array",
-          "description": "Acceptable TLS cipher suites for network connections.",
+          "description": "Acceptable TLS cipher suites for network connections, in IANA format.",
           "items": {
             "type": "string"
           }
@@ -874,14 +874,14 @@
         },
         "maxTls": {
           "type": "string",
-          "enum": ["TLSv1.0", "TLSv1.1", "TLSv1.2", "TLSv1.3"],
+          "enum": ["TLSv1.2", "TLSv1.3"],
           "default": "TLSv1.3",
           "description": "Maximum TLS version allowed for network connections."
         },
         "minTls": {
           "type": "string",
-          "enum": ["TLSv1.0", "TLSv1.1", "TLSv1.2", "TLSv1.3"],
-          "default": "TLSv1.3",
+          "enum": ["TLSv1.2", "TLSv1.3"],
+          "default": "TLSv1.2",
           "description": "Minimum TLS version allowed for network connections, and less than network.maxTls."
         }
       }
