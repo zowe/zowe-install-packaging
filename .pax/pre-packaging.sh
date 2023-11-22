@@ -190,8 +190,8 @@ BASE_DIR=$(
   pwd
 ) # <something>/.pax
 
-# use node v14 to build
-export NODE_HOME=/ZOWE/node/node-v14.21.3.1-os390-s390x
+# use node v16 to build
+export NODE_HOME=/ZOWE/node/node-v16.20.1-os390-s390x
 
 ZOWE_ROOT_DIR="${BASE_DIR}/content"
 
