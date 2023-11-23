@@ -506,6 +506,7 @@ const SPECIAL_ENV_MAPS = {
   ZWE_java_home:'JAVA_HOME',
   ZWE_zOSMF_host: 'ZOSMF_HOST',
   ZWE_zOSMF_port: 'ZOSMF_PORT',
+  ZWE_zOSMF_scheme: 'ZOSMF_SCHEME',
   ZWE_zOSMF_applId: 'ZOSMF_APPLID'
 };
 
