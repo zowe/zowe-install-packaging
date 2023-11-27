@@ -588,6 +588,8 @@ components:
     port: 7557
     crossMemoryServerName: ZWESIS_STD
     tls: true
+    logLevels:
+      _zss.socketTrace: 5
     agent:
       jwt:
         fallback: true
