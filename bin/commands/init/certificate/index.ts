@@ -368,7 +368,7 @@ export function execute() {
   } else if (certType.startsWith('JCE')) {
     // FIXME: how do we check if keyring exists without permission on RDATALIB?
     // should we clean up before creating new
-    if (std.getenv('ZWE_CLI_PARAMETER_ALLOW_OVERWRITE') == "true") {
+    if (std.getenv('ZWE_CLI_PARAMETER_ALLOW_OVERWRITE') == "true" && CERT_PARMS.keyring_option == 1) {
       // warning
       common.printMessage(`Warning ZWEL0300W: Keyring "safkeyring:////${CERT_PARMS.keyring_owner}/${CERT_PARMS.keyring_name}" will be overwritten during configuration.`);
 
