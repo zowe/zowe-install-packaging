@@ -1,0 +1,91 @@
+//ZWEGENER JOB
+//*
+//* This job is responsible for generating other jobs required
+//* to configure Zowe.
+//*
+//* The method of validating your configuration is using
+//* JSON Schema <https://json-schema.org>. Zowe provides
+//* the ConfigMgr to assist in this. This job will invoke
+//* the ConfigMgr to validate your current configuration
+//* before generating any jobs. If there are any values
+//* that are incorrect, you will be notified. You should
+//* fix the value and then run this job again. You can run
+//* this job as many times as you need.
+//*
+//* Configmgr documentation:
+//* docs.zowe.org/stable/user-guide/configmgr-using
+//*
+//* Note: Any string with braces has an associated yaml value
+//*       in one of the yaml definitions for Zowe.
+//*       You should find the value and substitute it.
+//*
+//*       {key} -> value
+//*
+//GENER    EXEC PGM=IKJEFT1B
+//ISPPROF  DD   DSN=,DISP=(NEW,DELETE),UNIT=,
+//   DCB=(RECFM=FB,LRECL=80,BLKSIZE=3120,DSORG=PO),
+//   SPACE=(3120,(20,5,10))
+//*
+//* Replace {zowe.setup.dataset.prefix} with the
+//* HLQ where SMP/E installed data sets are located.
+//*
+//SYSPROC  DD   DSN={zowe.setup.dataset.prefix}.SZWEEXEC,DISP=SHR
+//*
+//* Replace {zowe.setup.dataset.loadlib} with the data set
+//* that contains Zowe executables. This data set will have
+//* the suffix 'SZWELOAD'.
+//*
+//*
+//STEPLIB  DD   DSN={zowe.setup.dataset.loadlib},DISP=SHR
+//ISPPLIB  DD   DSN=ISP.SISPPENU,DISP=SHR
+//ISPMLIB  DD   DSN=ISP.SISPMENU,DISP=SHR
+//ISPTLIB  DD   DSN=ISP.SISPTENU,DISP=SHR
+//ISPSLIB  DD   DSN=ISP.SISPSENU,DISP=SHR
+//*
+//* The order must be as follows.
+//*
+//* zowe-yaml-schema.json
+//* server-common.json
+//*
+//* Replace {zowe.runtimeDirectory} with where your Zowe run time
+//* directory is.
+//*
+//MYSCHEMA DD   *,DLM=$$
+FILE {zowe.runtimeDirectory}/schemas/zowe-yaml-schema.json
+FILE {zowe.runtimeDirectory}/schemas/server-common.json
+$$
+//*
+//* The DD below must include one or more FILE or PARMLIB
+//* Entries. The lower entries have their values
+//* Overridden by the higher entries.
+//* PARMLIB member must be named "ZWEYAML"
+//*
+//* Ex. PARMLIB MY.ZOWE.CUSTOMIZATIONS
+//*     FILE /the/zowe/defaults.yaml
+//MYCONFIG DD   *,DLM=$$
+FILE <full path to zowe.yaml file>
+$$
+//CMGROUT  DD   SYSOUT=*
+//SYSPRINT DD   SYSOUT=*
+//SYSTSPRT DD   SYSOUT=*
+//*
+//* Change 'generate' to 'nogenerate' if you only
+//* want to validate your configuration. The default
+//* option, 'generate', will validate and then generate
+//* jobs based on your configuration.
+//*
+//*   - generate
+//*   - nogenerate
+//*
+//* Change 'noverbose' to 'verbose' below for
+//* advanced logging. This is not needed unless
+//* there is an error.
+//*
+//*   - verbose
+//*   - noverbose
+//*
+//SYSTSIN  DD   *
+ISPSTART CMD(%ZWEGEN00 -
+generate -
+noverbose -
+)

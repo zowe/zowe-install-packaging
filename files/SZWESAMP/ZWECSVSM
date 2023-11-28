@@ -22,24 +22,11 @@
 //* 1) Add job name and job parameters to the JOB statement, to                 
 //*    meet your system requirements.                                           
 //*                                                                             
-//* 2) Change all #dsname placeholders to the desired data set name             
-//*    of the VSAM cluster. The maximum length is 38 characters.                
-//*                                                                             
-//* 3) Select whether the VSAM will utilize Record Level Sharing (RLS)          
-//*    services or not by updating the SET MODE= statement to specify           
-//*    either RLS or NONRLS.                                                    
-//*                                                                             
 //* When using RLS, customize the definitions in the RLS DD:                    
-//*                                                                             
-//* 4) Change the #storclas placeholder to the desired storage class            
-//*    name.                                                                    
 //*                                                                             
 //* 5) Optionally, change LOG option NONE to UNDO or ALL to set the             
 //*    desired recovery options for the RLS VSAM.                               
 //*                                                                             
-//* When NOT using RLS, customize the definitions in the NONRLS DD:             
-//*                                                                             
-//* 6) Change the #volume placeholder to the desired volume label.              
 //*                                                                             
 //* Note(s):                                                                    
 //*                                                                             
@@ -47,27 +34,25 @@
 //*                                                                             
 //********************************************************************          
 //*                                                                             
-//         SET MODE=NONRLS                       RLS or NONRLS                  
-//*                                                                             
 //ALLOC    EXEC PGM=IDCAMS,REGION=0M                                            
 //SYSPRINT DD SYSOUT=*                                                          
 //SYSIN    DD *                                                                 
   DEFINE CLUSTER -                                                              
-   (NAME(#dsname) -                                                             
-//         DD DDNAME=&MODE                                                      
+   (NAME({components.caching-service.storage.vsam.name}) -                                                             
+//         DD DDNAME={zowe.setup.vsam.mode}                                                      
 //         DD *                                                                 
     REC(80 20) -                                                                
     INDEXED) -                                                                  
-   DATA(NAME(#dsname.DATA) -                                                    
+   DATA(NAME({components.caching-service.storage.vsam.name}.DATA) -                                                    
     RECSZ(4096 4096) -                                                          
     UNIQUE -                                                                    
     KEYS(128 0)) -                                                              
-   INDEX(NAME(#dsname.INDEX) -                                                  
+   INDEX(NAME({components.caching-service.storage.vsam.name}.INDEX) -                                                  
     UNIQUE)                                                                     
 //RLS      DD *                                                                 
-    STORCLAS(#storclas) -                                                       
+    STORCLAS({zowe.setup.vsam.storageClass}) -                                                       
     LOG(NONE) -                                                                 
 //NONRLS   DD *                                                                 
-    VOLUME(#volume) -                                                           
+    VOLUME({zowe.setup.vsam.volume}) -                                                           
     SHAREOPTIONS(2 3) -                                                         
 //*                                                                             
