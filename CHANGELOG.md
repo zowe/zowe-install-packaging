@@ -5,9 +5,11 @@ All notable changes to the Zowe Installer will be documented in this file.
 ## `2.13.0`
 
 ### New features and enhancements
+- Enhancement: Added utility "getesm" into bin/utils. When run it outputs to STDOUT which ESM your system is using. (#3662)
 
 #### Minor enhancements/defect fixes
 - Bugfix: Workflow files in the Zowe PAX are now ASCII-encoded. Fixes [#3591](https://github.com/zowe/zowe-install-packaging/issues/3591).
+
 
 ## `2.12.0`
 
