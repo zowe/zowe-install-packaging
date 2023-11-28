@@ -21,15 +21,15 @@
               "description": "MVS data set related configurations",
               "properties": {
                 "prefix": {
-                  "type": "string",
+                  "$ref": "/schemas/v2/server-common#zoweDataset",
                   "description": "Where Zowe MVS data sets will be installed"
                 },
                 "proclib": {
-                  "type": "string",
+                  "$ref": "/schemas/v2/server-common#zoweDataset",
                   "description": "PROCLIB where Zowe STCs will be copied over"
                 },
                 "parmlib": {
-                  "type": "string",
+                  "$ref": "/schemas/v2/server-common#zoweDataset",
                   "description": "Zowe PARMLIB"
                 },
                 "parmlibMembers": {
@@ -44,21 +44,21 @@
                   }
                 },
                 "jcllib": {
-                  "type": "string",
+                  "$ref": "/schemas/v2/server-common#zoweDataset",
                   "description": "JCL library where Zowe will store temporary JCLs during initialization"
                 },
                 "loadlib": {
-                  "type": "string",
+                  "$ref": "/schemas/v2/server-common#zoweDataset",
                   "description": "States the dataset where Zowe executable utilities are located",
                   "default": "<hlq>.SZWELOAD"
                 },
                 "authLoadlib": {
-                  "type": "string",
+                  "$ref": "/schemas/v2/server-common#zoweDataset",
                   "description": "The dataset that contains any Zowe core code that needs to run APF-authorized, such as ZIS",
                   "default": "<hlq>.SZWEAUTH"
                 },
                 "authPluginLib": {
-                  "type": "string",
+                  "$ref": "/schemas/v2/server-common#zoweDataset",
                   "description": "APF authorized LOADLIB for Zowe ZIS Plugins"
                 }
               }
@@ -103,17 +103,17 @@
                   "description": "security group name",
                   "properties": {
                     "admin": {
-                      "type": "string",
+                      "$ref": "/schemas/v2/server-common#zoweGroupNameAnyCase",
                       "description": "Zowe admin user group",
                       "default": "ZWEADMIN"
                     },
                     "stc": {
-                      "type": "string",
+                      "$ref": "/schemas/v2/server-common#zoweGroupNameAnyCase",
                       "description": "Zowe STC group",
                       "default": "ZWEADMIN"
                     },
                     "sysProg": {
-                      "type": "string",
+                      "$ref": "/schemas/v2/server-common#zoweGroupNameAnyCase",
                       "description": "Zowe SysProg group",
                       "default": "ZWEADMIN"
                     }
@@ -125,12 +125,12 @@
                   "description": "security user name",
                   "properties": {
                     "zowe": {
-                      "type": "string",
+                      "$ref": "/schemas/v2/server-common#zoweUserAnyCase",
                       "description": "Zowe runtime user name of main service",
                       "default": "ZWESVUSR"
                     },
                     "zis": {
-                      "type": "string",
+                      "$ref": "/schemas/v2/server-common#zoweUserAnyCase",
                       "description": "Zowe runtime user name of ZIS",
                       "default": "ZWESIUSR"
                     }
@@ -142,17 +142,17 @@
                   "description": "STC names",
                   "properties": {
                     "zowe": {
-                      "type": "string",
+                      "$ref": "/schemas/v2/server-common#zoweJobname",
                       "description": "STC name of main service",
                       "default": "ZWESLSTC"
                     },
                     "zis": {
-                      "type": "string",
+                      "$ref": "/schemas/v2/server-common#zoweJobname",
                       "description": "STC name of ZIS",
                       "default": "ZWESISTC"
                     },
                     "aux": {
-                      "type": "string",
+                      "$ref": "/schemas/v2/server-common#zoweJobname",
                       "description": "STC name of Auxiliary Service",
                       "default": "ZWESASTC"
                     }
@@ -244,7 +244,7 @@
                   "description": "Configure this section if you are using z/OS keyring",
                   "properties": {
                     "owner": {
-                      "type": "string",
+                      "$ref": "/schemas/v2/server-common#zoweUserAnyCase",
                       "description": "keyring owner. If this is empty, Zowe will use the user ID defined as zowe.setup.security.users.zowe."
                     },
                     "name": {
@@ -282,7 +282,7 @@
                       "description": "Configure this section if you want to import existing certificate stored in data set to Zowe.",
                       "properties": {
                         "dsName": {
-                          "type": "string",
+                          "$ref": "/schemas/v2/server-common#zoweDataset",
                           "description": "Name of the data set holds the certificate issued by other CA. This data set should be in PKCS12 format and contain private key."
                         },
                         "password": {
@@ -301,7 +301,7 @@
                           "description": "z/OSMF certificate authority alias"
                         },
                         "user": {
-                          "type": "string",
+                          "$ref": "/schemas/v2/server-common#zoweUserAnyCase",
                           "description": "z/OSMF user. Zowe initialization utility can detect alias of z/OSMF CA for RACF security system. The automated detection requires this z/OSMF user as input."
                         }
                       }
@@ -339,7 +339,8 @@
                     },
                     "country": {
                       "type": "string",
-                      "description": "2 letters country code of certificate generated by Zowe."
+                      "description": "2 letters country code of certificate generated by Zowe.",
+                      "pattern": "[A-Z][A-Z]"
                     }
                   }
                 },
@@ -377,7 +378,8 @@
                 },
                 "volume": {
                   "type": "string",
-                  "description": "Volume name if you are using VSAM in NONRLS mode"
+                  "description": "Volume name if you are using VSAM in NONRLS mode",
+                  "maxLength": 6
                 },
                 "storageClass": {
                   "type": "string",
@@ -409,7 +411,7 @@
           "description": "Customize your Zowe z/OS JES job.",
           "properties": {
             "name": {
-              "type": "string",
+              "$ref": "/schemas/v2/server-common#zoweJobname",
               "description": "Job name of Zowe primary ZWESLSTC started task."
             },
             "prefix": {
@@ -419,20 +421,7 @@
           }
         },
         "network": {
-          "type": "object",
-          "additionalProperties": false,
-          "description": "Optional, advanced network configuration parameters",
-          "properties": {
-            "vipaIp": {
-              "type": "string",
-              "description": "The IP address which all of the Zowe servers will be binding to. If you are using multiple DIPVA addresses, do not use this option."
-            },
-            "validatePortFree": {
-              "type": "boolean",
-              "default": true,
-              "description": "Whether or not to ensure that the port a server is about to use is available. Usually, servers will know this when they attempt to bind to a port, so this option allows you to disable the additional verification step."
-            }
-          }
+          "$ref": "#/$defs/networkSettings"
         },
         "extensionRegistry": {
           "type": "object",
@@ -852,6 +841,92 @@
               "description": "Determines which SHAREAS mode should be used when starting a component",
               "enum": ["no", "yes", "must", ""],
               "default": "yes"
+            }
+          }
+        },
+        "zowe": {
+          "type": "object",
+          "description": "Component level overrides for top level Zowe network configuration.",
+          "additionalProperties": false,
+          "properties": {
+            "network": {
+              "$ref": "#/$defs/networkSettings"
+            }
+          }
+        }
+      }
+    },
+    "tlsSettings": {
+     "$anchor": "tlsSettings",
+      "type": "object",
+      "properties": {
+        "ciphers": {
+          "type": "array",
+          "description": "Acceptable TLS cipher suites for network connections, in IANA format.",
+          "items": {
+            "type": "string"
+          }
+        },
+        "curves": {
+          "type": "array",
+          "description": "Acceptable key exchange elliptic curves for network connections.",
+          "items": {
+            "type": "string"
+          }
+        },
+        "maxTls": {
+          "type": "string",
+          "enum": ["TLSv1.2", "TLSv1.3"],
+          "default": "TLSv1.3",
+          "description": "Maximum TLS version allowed for network connections."
+        },
+        "minTls": {
+          "type": "string",
+          "enum": ["TLSv1.2", "TLSv1.3"],
+          "default": "TLSv1.2",
+          "description": "Minimum TLS version allowed for network connections, and less than or equal to network.maxTls."
+        }
+      }
+    },
+    "networkSettings": {
+      "type": "object",
+      "$anchor": "networkSettings",
+      "additionalProperties": false,
+      "description": "Optional, advanced network configuration parameters",
+      "properties": {
+        "server": {
+          "type": "object",
+          "additionalProperties": false,
+          "description": "Optional, advanced network configuration parameters for Zowe servers",
+          "properties": {
+            "tls": {
+              "$ref": "#/$defs/tlsSettings"      
+            },
+            "listenAddresses": {
+              "type": "array",
+              "description": "The IP addresses which all of the Zowe servers will be binding on and listening to. Some servers may only support listening on the first element.",
+              "items": {
+                "$ref": "/schemas/v2/server-common#zoweIpv4"
+              }
+            },
+            "vipaIp": {
+              "type": "string",
+              "description": "The IP address which all of the Zowe servers will be binding to. If you are using multiple DIPVA addresses, do not use this option."
+            },
+            "validatePortFree": {
+              "type": "boolean",
+              "default": true,
+              "description": "Whether or not to ensure that the port a server is about to use is available. Usually, servers will know this when they attempt to bind to a port, so this option allows you to disable the additional verification step."
+            }
+          }
+        },
+        "client": {
+          "type": "object",
+          "additionalProperties": false,
+          "description": "Optional, advanced network configuration parameters for Zowe servers when sending requests as clients.",
+          "properties": {
+            "tls": {
+                "$ref": "#/$defs/tlsSettings"    
             }
           }
         }
