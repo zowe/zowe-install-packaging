@@ -1,1 +1,15 @@
-""
+{
+  "lockAcquiredTime": "Tue Nov 28 2023 11:58:52 GMT+0000 (Coordinated Universal Time)",
+  "uid": "1701172732951407563",
+  "repository": {
+    "owner": "zowe",
+    "repo": "zowe-install-packaging"
+  },
+  "branch": "feature/v2/add-getesm",
+  "workflow": "Zowe CICD Integration Tests",
+  "job": "cicd-test",
+  "actor": "1000TurquoisePogs",
+  "runId": 7018368242,
+  "runNumber": 3592,
+  "link": "https://github.com/zowe/zowe-install-packaging/actions/runs/7018368242"
+}
