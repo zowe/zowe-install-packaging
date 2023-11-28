@@ -137,13 +137,6 @@
   },
   "sourceDependencies": [
     {
-      "componentGroup": "Imperative CLI Framework for Zowe",
-      "entries": [{
-        "repository": "imperative",
-        "tag": "v5.19.0",
-        "destinations": ["Zowe CLI Package"]
-      }]
-    }, {
       "componentGroup": "Zowe API Mediation Layer",
       "entries": [{
         "repository": "api-layer",
@@ -234,13 +227,6 @@
       "entries": [{
         "repository": "zowe-cli-db2-plugin",
         "tag": "v5.0.4",
-        "destinations": ["Zowe CLI Package"]
-      }]
-    }, {
-      "componentGroup": "Performance Timing Utility",
-      "entries": [{
-        "repository": "perf-timing",
-        "tag": "v1.0.7",
         "destinations": ["Zowe CLI Package"]
       }]
     }, {
