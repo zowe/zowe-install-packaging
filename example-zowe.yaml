@@ -63,32 +63,32 @@ zowe:
       authPluginLib: IBMUSER.ZWEV2.CUST.ZWESAPL
 
     # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-    # # Security related configurations. This setup is optional.
-    # security:
-    #   # security product name. Can be RACF, ACF2 or TSS
-    #   product: RACF
-    #   # security group name
-    #   groups:
-    #     # Zowe admin user group
-    #     admin: ZWEADMIN
-    #     # Zowe STC group
-    #     stc: ZWEADMIN
-    #     # Zowe SysProg group
-    #     sysProg: ZWEADMIN
-    #   # security user name
-    #   users:
-    #     # Zowe runtime user name of main service
-    #     zowe: ZWESVUSR
-    #     # Zowe runtime user name of ZIS
-    #     zis: ZWESIUSR
-    #   # STC names
-    #   stcs:
-    #     # STC name of Zowe main service
-    #     zowe: ZWESLSTC
-    #     # STC name of Zowe ZIS
-    #     zis: ZWESISTC
-    #     # STC name of Zowe ZIS Auxiliary Server
-    #     aux: ZWESASTC
+    # Security related configurations. This setup is optional.
+    security:
+      # security product name. Can be RACF, ACF2 or TSS
+      product: RACF
+      # security group name
+      groups:
+        # Zowe admin user group
+        admin: ZWEADMIN
+        # Zowe STC group
+        stc: ZWEADMIN
+        # Zowe SysProg group
+        sysProg: ZWEADMIN
+      # security user name
+      users:
+        # Zowe runtime user name of main service
+        zowe: ZWESVUSR
+        # Zowe runtime user name of ZIS
+        zis: ZWESIUSR
+      # STC names
+      stcs:
+        # STC name of Zowe main service
+        zowe: ZWESLSTC
+        # STC name of Zowe ZIS
+        zis: ZWESISTC
+        # STC name of Zowe ZIS Auxiliary Server
+        aux: ZWESASTC
 
     # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
     # Certificate related configurations
@@ -98,52 +98,50 @@ zowe:
     # >>>> Certificate setup scenario 1
     # PKCS12 (keystore) with Zowe generate certificates.
     certificate:
-      # Type of certificate storage. Valid values are: PKCS12, JCEKS, JCECCAKS, JCERACFKS, JCECCARACFKS, or JCEHYBRIDRACFKS
       type: PKCS12
       pkcs12:
         # **COMMONLY_CUSTOMIZED**
         # Keystore directory
         directory: /var/zowe/keystore
-        # # Lock the keystore directory to only accessible by Zowe runtime user and group.
-        # lock: true
+        # Lock the keystore directory to only accessible by Zowe runtime user and group.
+        lock: true
         # **COMMONLY_CUSTOMIZED**
-        # # Certificate alias name. Optional, default value is localhost.
-        # # Note: please use all lower cases as alias.
-        # name: localhost
+        # Certificate alias name. Optional, default value is localhost.
+        # Note: please use all lower cases as alias.
+        name: localhost
         # **COMMONLY_CUSTOMIZED**
-        # # Keystore password. Optional, default value is password.
-        # password: password
+        # Keystore password. Optional, default value is password.
+        password: password
         # **COMMONLY_CUSTOMIZED**
-        # # Alias name of self-signed certificate authority. Optional, default value is local_ca.
-        # # Note: please use all lower cases as alias.
-        # caAlias: local_ca
+        # Alias name of self-signed certificate authority. Optional, default value is local_ca.
+        # Note: please use all lower cases as alias.
+        caAlias: local_ca
         # **COMMONLY_CUSTOMIZED**
-        # # Password of keystore stored self-signed certificate authority. Optional, default value is local_ca_password.
-        # caPassword: local_ca_password
-      # # Distinguished name for Zowe generated certificates. All optional.
-      # dname:
-      #   caCommonName: ""
-      #   commonName: ""
-      #   orgUnit: ""
-      #   org: ""
-      #   locality: ""
-      #   state: ""
-      #   country: ""
-      # # Validity days for Zowe generated certificates
-      # validity: 3650
-      # # Domain names and IPs should be added into certificate SAN
-      # # If this field is not defined, `zwe init` command will use
-      # # `zowe.externalDomains`.
+        # Password of keystore stored self-signed certificate authority. Optional, default value is local_ca_password.
+        caPassword: local_ca_password
+      # Distinguished name for Zowe generated certificates. All optional.
+      dname:
+        caCommonName: ""
+        commonName: "Zowe Development Instances"
+        orgUnit: "API Mediation Layer"
+        org: "Zowe Sample"
+        locality: "Prague"
+        state: "Prague"
+        country: ""
+      # Validity days for Zowe generated certificates
+      validity: 3650
+      # Domain names and IPs should be added into certificate SAN
+      # If this field is not defined, `zwe init` command will use
+      # `zowe.externalDomains`.
       # san:
-      #   # sample domain name
-      #   - dvipa.my-company.com
-      #   # sample IP address
+      #  # sample domain name
+      #  - dvipa.my-company.com
+      #  # sample IP address
       #   - 12.34.56.78
 
     # # >>>> Certificate setup scenario 2
     # # PKCS12 (keystore) with importing certificate generated by other CA.
     # certificate:
-    #   # Type of certificate storage. Valid values are: PKCS12, JCEKS, JCECCAKS, JCERACFKS, JCECCARACFKS, or JCEHYBRIDRACFKS
     #   type: PKCS12
     #   pkcs12:
     #     # **COMMONLY_CUSTOMIZED**
@@ -176,7 +174,7 @@ zowe:
     # # >>>> Certificate setup scenario 3
     # # Zowe generated z/OS Keyring with Zowe generated certificates.
     # certificate:
-    #   # Type of certificate storage. Valid values are: PKCS12, JCEKS, JCECCAKS, JCERACFKS, JCECCARACFKS, or JCEHYBRIDRACFKS
+    #   # Type of certificate storage. Valid values are: JCEKS, JCECCAKS, JCERACFKS, JCECCARACFKS, or JCEHYBRIDRACFKS
     #   type: JCERACFKS
     #   createZosmfTrust: true
     #   keyring:
@@ -192,11 +190,11 @@ zowe:
     #   # # Distinguished name for Zowe generated certificates. All optional.
     #   # dname:
     #   #   caCommonName: ""
-    #   #   commonName: ""
-    #   #   orgUnit: ""
-    #   #   org: ""
-    #   #   locality: ""
-    #   #   state: ""
+    #   #   commonName: "Zowe Development Instances"
+    #   #   orgUnit: "API Mediation Layer"
+    #   #   org: "Zowe Sample"
+    #   #   locality: "Prague"
+    #   #   state: "Prague"
     #   #   country: ""
     #   # # Validity days for Zowe generated certificates
     #   # validity: 3650
@@ -212,7 +210,7 @@ zowe:
     # # >>>> Certificate setup scenario 4
     # # Zowe generated z/OS Keyring and connect to existing certificate
     # certificate:
-    #   # Type of certificate storage. Valid values are: PKCS12, JCEKS, JCECCAKS, JCERACFKS, JCECCARACFKS, or JCEHYBRIDRACFKS
+    #   # Type of certificate storage. Valid values are: JCEKS, JCECCAKS, JCERACFKS, JCECCARACFKS, or JCEHYBRIDRACFKS
     #   type: JCERACFKS
     #   keyring:
     #     # **COMMONLY_CUSTOMIZED**
@@ -236,7 +234,7 @@ zowe:
     # # >>>> Certificate setup scenario 5
     # # Zowe generated z/OS Keyring with importing certificate stored in data set
     # certificate:
-    #   # Type of certificate storage. Valid values are: PKCS12, JCEKS, JCECCAKS, JCERACFKS, JCECCARACFKS, or JCEHYBRIDRACFKS
+    #   # Type of certificate storage. Valid values are: JCEKS, JCECCAKS, JCERACFKS, JCECCARACFKS, or JCEHYBRIDRACFKS
     #   type: JCERACFKS
     #   keyring:
     #     # **COMMONLY_CUSTOMIZED**
