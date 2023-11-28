@@ -18,7 +18,7 @@ import {
   KEYSTORE_MODE_KEYRING,
 } from '../../../constants';
 
-const testServer = 'marist-2';
+const testServer = 'marist-6';
 const testSuiteName = 'Test convenience build installation with keystore pointing to an ACF2 keyring';
 describe(testSuiteName, () => {
   beforeAll(() => {
