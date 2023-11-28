@@ -83,7 +83,7 @@ if [[ ! -z "$test_force_system" ]]; then
 else
   if [[ -z "$dont_parse_test_server" ]]; then
     if [[ "$test_server" == "Any zzow servers" ]]; then
-      test_server="zzow0"$(echo $(($RANDOM % 3 + 2)))
+      test_server="zzow0"$(echo $(($RANDOM % 3 + 6)))
     fi
     TEST_FILE_SERVER="$test_file($test_server)"
   else
