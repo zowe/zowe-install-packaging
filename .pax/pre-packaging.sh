@@ -295,7 +295,7 @@ done
 
 echo "[$SCRIPT_NAME] process commands.install hooks"
 # not all core components has commands.install
-for component in app-server; do
+for component in app-server common-java-lib; do
   echo "[$SCRIPT_NAME] - ${component}"
   # FIXME: these environment variables are changed in v2
   ZOWE_ROOT_DIR=${ZOWE_ROOT_DIR} \
