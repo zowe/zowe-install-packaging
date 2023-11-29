@@ -4,7 +4,7 @@ on:
   # Will run this on push when v2 is out
   push:
     branches:
-      - v2.x/rc
+      - v2.x/master
   workflow_dispatch:
 
 env:
