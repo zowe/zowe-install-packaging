@@ -9,10 +9,10 @@ on:
         default: 'Any zzow servers'
         options: 
           - Any zzow servers
-          - zzow02
-          - zzow03
-          - zzow04
-          - zzow02,zzow03,zzow04
+          - zzow06
+          - zzow07
+          - zzow08
+          - zzow06,zzow07,zzow08
       install-test:
         description: 'Choose Install Test'
         type: choice
@@ -79,8 +79,8 @@ env:
   VSAM_CACHING_STORAGE_METHOD_TESTFILE: extended/caching-storages/vsam-storage.ts
   INFINISPAN_CACHING_STORAGE_METHOD_TESTFILE: extended/caching-storages/infinispan-storage.ts
   GENERAL_API_DOCUMENTATION_TESTFILE: basic/install-api-gen.ts
-  ZOWE_RELEAE_TESTS_FULL: basic/install.ts(all);basic/install-ptf.ts(all);basic/install-docker.ts(any);basic/install-ext.ts(any);extended/keyring.ts(all);extended/node-versions/node-v16.ts(any);extended/certificates/nonstrict-verify-external-certificate.ts(any);extended/caching-storages/infinispan-storage.ts(any)
-  ZOWE_NIGHTLY_TESTS_FULL: basic/install.ts(all);basic/install-ptf.ts(all);basic/install-docker.ts(any)
+  ZOWE_NIGHTLY_TESTS_FULL: basic/install.ts(all);basic/install-ptf.ts(all)
+  ZOWE_RELEASE_TESTS_FULL: basic/install.ts(all);basic/install-ptf.ts(all);basic/install-ext.ts(any);extended/keyring.ts(all);extended/node-versions/node-v16.ts(any):extended/certificates/nonstrict-verify-external-certificate.ts(any);extended/caching-storages/infinispan-storage.ts(any)
 
 jobs:
   display-dispatch-event-id:

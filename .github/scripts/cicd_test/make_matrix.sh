@@ -66,7 +66,7 @@ case $install_test_choice in
   ;;
 
 "Zowe Release Tests")
-  test_file="$ZOWE_RELEAE_TESTS_FULL"
+  test_file="$ZOWE_RELEASE_TESTS_FULL"
   dont_parse_test_server=true
   ;;
 
@@ -78,17 +78,18 @@ esac
 
 if [[ -z "$dont_parse_test_server" ]]; then
   if [[ "$test_server" == "Any zzow servers" ]]; then
-    test_server="zzow0"$(echo $(($RANDOM % 3 + 2)))
+    test_server="zzow0"$(echo $(($RANDOM % 3 + 6)))
   fi
   TEST_FILE_SERVER="$test_file($test_server)"
 else
   any_occurrence=$(echo $test_file | grep -o "(any)" | wc -l)
   interim_test_file_server=$test_file
   for i in $(seq $any_occurrence); do
-    interim_test_file_server=$(echo $interim_test_file_server | sed "s#(any)#(zzow0$(echo $(($RANDOM % 3 + 2))))#")
+    interim_test_file_server=$(echo $interim_test_file_server | sed "s#(any)#(zzow0$(echo $(($RANDOM % 3 + 6))))#")
   done
 
-  TEST_FILE_SERVER=$(echo $interim_test_file_server | sed "s#(all)#(zzow02,zzow03,zzow04)#g")
+  TEST_FILE_SERVER=$(echo $interim_test_file_server | sed "s#(all)#(zzow06,zzow07,zzow08)#g")
+
 fi
 
 # this is the final string that can be recognizable by the matrix processing script down below
