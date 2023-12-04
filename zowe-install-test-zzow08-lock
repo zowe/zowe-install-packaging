@@ -1,1 +1,15 @@
-""
+{
+  "lockAcquiredTime": "Mon Dec 04 2023 17:46:19 GMT+0000 (Coordinated Universal Time)",
+  "uid": "1701711979878453426",
+  "repository": {
+    "owner": "zowe",
+    "repo": "zowe-install-packaging"
+  },
+  "branch": "user/markackert/v2x-rc-revert-schema-changes",
+  "workflow": "Zowe CICD Integration Tests",
+  "job": "cicd-test",
+  "actor": "zowe-robot",
+  "runId": 7090450838,
+  "runNumber": 3643,
+  "link": "https://github.com/zowe/zowe-install-packaging/actions/runs/7090450838"
+}
