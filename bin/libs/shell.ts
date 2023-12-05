@@ -13,6 +13,7 @@ import * as std from 'cm_std';
 import * as os from 'cm_os';
 import * as xplatform from 'xplatform';
 
+import * as common from './common';
 import * as fs from './fs';
 import * as stringlib from './string';
 import * as bufferlib from './buffer';
@@ -57,6 +58,8 @@ export function execSyncOptions(command: string, options: any, ...args: string[]
 
 
 export function execZweSync(parameters: string, env:any={}): ExecReturn {
+  common.printTrace('- execZweSync');
+  common.printTrace(`  * ${parameters}`);
   return execSyncOptions('sh', {block: true, usePath: true, env: env}, '-c', `${std.getenv('ZWE_zowe_runtimeDirectory')}/bin/zwe `+parameters);
 }
 

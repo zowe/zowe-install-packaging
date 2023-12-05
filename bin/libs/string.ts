@@ -256,6 +256,11 @@ export function stripUndefined(input: string): string {
   return input.replace(/undefined/g, '');
 }
 
+export function stripZweParms(command: string): string {
+  const cmdEnd = command.indexOf(' -') == -1 ? command.length : command.indexOf(' -');
+  return command.substring(0, cmdEnd).trim();
+}
+
 /*
 ###############################
 # Padding string on every lines of a file

@@ -374,6 +374,9 @@ zwecli_inline_execute_command() {
   saved_cli_parameters_list="${ZWE_CLI_PARAMETERS_LIST}"
   saved_cli_parameters_definitions="${ZWE_PRIVATE_CLI_PARAMETERS_DEFINITIONS}"
 
+  print_trace "- zwecli_inline_execute_command"
+  print_trace "  * ${*}"
+
   export ZWE_PRIVATE_CLI_IS_TOP_LEVEL_COMMAND=false
 
   # process new command

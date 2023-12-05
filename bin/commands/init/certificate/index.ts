@@ -28,7 +28,7 @@ const CERT_TYPES = ["PKCS12", "JCEKS", "JCECCAKS", "JCERACFKS", "JCECCARACFKS", 
 function zweExec(command: string): void {
   const result = shell.execZweSync(command, ZWE_CLI_ENVS);
   if (result.rc != 0) {
-    common.printErrorAndExit(`Error ZWEL0305E: Failed to call certificate command, rc=${result.rc}.`, undefined, 305);
+    common.printErrorAndExit(`Error ZWEL0305E: Failed to call "${stringlib.stripZweParms(command)}" command, rc=${result.rc}.`, undefined, 305);
   }
 }
 
