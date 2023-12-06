@@ -97,7 +97,7 @@
       "artifact": "apiml-common-lib-*.zip"
     },
     "org.zowe.apiml.sdk.common-java-lib-package": {
-      "version": "2.0.2",
+      "version": "2.0.3",
       "artifact": "common-java-lib-*.zip"
     },
     "org.zowe.apiml.sdk.apiml-sample-extension-package": {
@@ -164,7 +164,7 @@
        "componentGroup": "Zowe common java libraries",
        "entries": [{
          "repository": "common-java",
-         "tag": "v2.0.2",
+         "tag": "v2.0.3",
          "destinations": ["Zowe PAX"]
        }]
      }, {
