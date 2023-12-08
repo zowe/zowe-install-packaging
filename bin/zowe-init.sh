@@ -21,7 +21,7 @@
 
 # This script checks to see whether they are set, and if not tries to locate them, 
 # and if they can't be found prompt for them before setting them
-
+set -x
 echo "<zowe-init.sh>" >> $LOG_FILE
 
 # process input parameters.
