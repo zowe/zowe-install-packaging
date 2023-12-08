@@ -1,1 +1,15 @@
-""
+{
+  "lockAcquiredTime": "Fri Dec 08 2023 13:31:35 GMT+0000 (Coordinated Universal Time)",
+  "uid": "1702042295254378599",
+  "repository": {
+    "owner": "zowe",
+    "repo": "zowe-install-packaging"
+  },
+  "branch": "feature/v2/generate-yaml-diff",
+  "workflow": "Zowe CICD Integration Tests",
+  "job": "cicd-test",
+  "actor": "zowe-robot",
+  "runId": 7141953282,
+  "runNumber": 3659,
+  "link": "https://github.com/zowe/zowe-install-packaging/actions/runs/7141953282"
+}
