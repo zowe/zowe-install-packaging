@@ -47,9 +47,6 @@
 - name: Show zowe-setup-certificates.env
   raw: cat "{{ work_dir_remote }}/zowe-setup-certificates.env"
 
-- name: Show env
-  raw: env
-
 - name: Setup certificates
   import_role:
     name: zos
