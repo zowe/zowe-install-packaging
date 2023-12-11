@@ -30,13 +30,13 @@ function getComponentRegex {
   module=$1
   case "${module}" in
     apiml)
-      echo "api-catalog|caching|discovery|gateway|org.zowe.apiml.api-catalog-package|org.zowe.apiml.discovery-package|org.zowe.apiml.gateway-package|org.zowe.apiml.caching-service-package|org.zowe.apiml.metrics-service-package|org.zowe.apiml.apiml-common-lib-package|org.zowe.apiml.sdk.apiml-sample-extension-package|org.zowe.apiml.cloud-gateway-package";;
+      echo "api-catalog|caching|discovery|gateway|org.zowe.apiml.api-catalog-package|org.zowe.apiml.discovery-package|org.zowe.apiml.gateway-package|org.zowe.apiml.caching-service-package|org.zowe.apiml.metrics-service-package|org.zowe.apiml.apiml-common-lib-package|org.zowe.apiml.sdk.apiml-sample-extension-package|org.zowe.apiml.cloud-gateway-package|api-layer";;
     common-java)
       echo "org.zowe.apiml.sdk.common-java-lib-package|common-java";;
     jobs)
-      echo "jobs-api";;
+      echo "jobs-api|jobs|org.zowe.explorer.jobs.jobs-api-package";;
     files)
-      echo "files-api";;
+      echo "files-api|data-sets|org.zowe.explorer.files.files-api-package";;
     explorer-api-common)
       echo "explorer-api-common";;
     *)
@@ -93,6 +93,9 @@ function update {
   while read -r line; do
     if [[ "${line}" =~ ${moduleRegex} ]]; then
       selected=1
+    elif [[ "${line}" =~ \"entries\".*:.*{ ]]; then
+      # skipping entries line
+      selected=${selected}
     elif [[ "${line}" =~ :.*{ ]]; then
       selected=0
     fi
