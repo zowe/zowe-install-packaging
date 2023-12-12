@@ -127,10 +127,12 @@ function updateModule {
 if [ $# -ne 0 ]; then
   while (( $# )); do
     module=$1
-      version=""
-    if [[ ! "$2" =~ ^- ]]; then
+    version=""
+    if [[ ! "${2:-}" =~ ^- ]]; then
       version=$2
-      shift
+      if [[ ! -z "${2:-}" ]]; then
+        shift
+      fi
     fi
     shift
 
