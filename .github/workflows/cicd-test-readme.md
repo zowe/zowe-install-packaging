@@ -4,9 +4,9 @@ This guide will describe how you should input into Github Actions workflow input
 
 Currently we support three testing z/OS servers:
 
-- zzow02 (ACF2)
-- zzow03 (Top Secret/TSS)
-- zzow04 (RACF)
+- zzow06 (ACF2)
+- zzow07 (Top Secret/TSS)
+- zzow08 (RACF)
 
 Testing pipeline is running tests in parallel. The workflow will try to acquire the resource lock if available. If the resource lock is occupied, the workflow will wait until the lock is succesfully acquired.
 
@@ -17,7 +17,7 @@ Workflow trigger is at [cicd-test](https://github.com/zowe/zowe-install-packagin
 ### Choose Test Server
 
 - This input is a choice, and it's mandatory.  
-- You can choose from one of `zzow02`, `zzow03`, `zzow04`, `zzow02,zzow03,zzow04` (if you want to run the test on all zzow servers), or `Any zzow servers` (pick any zzow servers, potentially help reduce wait time)
+- You can choose from one of `zzow06`, `zzow07`, `zzow08`, `zzow06,zzow07,zzow08` (if you want to run the test on all zzow servers), or `Any zzow servers` (pick any zzow servers, potentially help reduce wait time)
 - Default is `Any zzow servers`
 
 ### Choose Install Test
@@ -120,7 +120,7 @@ Background: CICD testing relies on a `zowe.pax` or `zowe-smpe.zip` (for SMPE ins
 When running CICD integration tests during RC stage, the following string will be parsed into the Github Actions matrix. As a result, a total of 19 independent jobs will be spawned.
 
 ```
-basic/install.ts(zzow02,zzow03,zzow04);basic/install-ptf.ts(zzow02,zzow03,zzow04);basic/install-docker.ts(zzow04);basic/install-ext.ts(zzow03);extended/keyring.ts(zzow02,zzow03,zzow04);extended/node-versions/node-v16.ts(zzow02,zzow03,zzow04);extended/certificates/nonstrict-verify-external-certificate.ts(zzow02);extended/caching-storages/infinispan-storage.ts
+basic/install.ts(zzow06,zzow07,zzow08);basic/install-ptf.ts(zzow06,zzow07,zzow08);basic/install-docker.ts(zzow08);basic/install-ext.ts(zzow07);extended/keyring.ts(zzow06,zzow07,zzow08);extended/node-versions/node-v16.ts(zzow06,zzow07,zzow08);extended/certificates/nonstrict-verify-external-certificate.ts(zzow06);extended/caching-storages/infinispan-storage.ts
 ```
 
 Total elapsed time when running in parallel is approximately 3.5 hours on paper idealy if all parallel jobs are executing at the same time. In reality, from numerous tests performed, total elapsed time is around 4 hours.  
