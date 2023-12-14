@@ -18,9 +18,9 @@ import {TEST_TIMEOUT_SMPE_PTF} from '../../../../constants';
 /**
  * Define this test should run in a specific worker
  *
- * @worker marist-4
+ * @worker marist-8
  */
-const testServer = 'marist-4';
+const testServer = 'marist-8';
 const testSuiteName = 'Test SMPE PTF installation with RACF';
 describe(testSuiteName, () => {
   beforeAll(() => {
