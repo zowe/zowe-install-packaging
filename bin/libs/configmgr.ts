@@ -545,7 +545,7 @@ export function getZoweConfigEnv(haInstance: string): any {
     haFlattener.setSeparator('_');
     haFlattener.setPrefix('ZWE_');
     haFlattener.setKeepArrays(true);
-    let overrides = haFlattener.flatten(config.haInstances[haInstance]);
+    overrides = haFlattener.flatten(config.haInstances[haInstance]);
   } else {
     envs['ZWE_haInstance_hostname'] = config.zowe.externalDomains[0];
   }
