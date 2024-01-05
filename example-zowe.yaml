@@ -9,18 +9,19 @@
 ################################################################################
 
 #===============================================================================
-# This is a YAML configuration file for Zowe instance.
+# This is a YAML configuration file for a Zowe instance.
 #
 # YAML is a human-friendly data serialization language for all programming languages.
 # To learn more about YAML specifications, please check https://yaml.org/.
 #
-# To learn more details about the entries, please check https://docs.zowe.org/.
+# To learn more details about the content of this file, please check https://docs.zowe.org/.
 #
 # For first time users, or for the most common use cases, please pay more
-# attention on the entries marked with "**COMMONLY_CUSTOMIZED**".
+# attention to the entries marked with "**COMMONLY_CUSTOMIZED**". A "directory" refers
+# to a directory in z/OS Unix.
 #
 # If you modify any settings listed in "zwe init --help" command, you may need to
-# re-run "zwe init" command to make them take effect.
+# re-run the "zwe init" command to make them take effect.
 #===============================================================================
 
 #-------------------------------------------------------------------------------
@@ -268,9 +269,14 @@ zowe:
   # **COMMONLY_CUSTOMIZED**
   # Zowe runtime (root) directory
   #
-  # **NOTE**: if it is not specified and you passed "--update-config" argument
-  # when you run "zwe init" command, this value will be updated with the Zowe
+  # **NOTE**: 
+  # 1. if it is not specified and you passed "--update-config" argument
+  # when you ran "zwe init" command, this value will be updated with the Zowe
   # runtime where the "zwe" command is located.
+  #
+  # 2. the runtime directory is designed to be "read only". This is different from the
+  # log, workspace, and extension directories. Setting those three to the same parent folder
+  # as the runtime directory is unsupported & may cause issues
   #
   # This value is required by ZWESLSTC to know where is Zowe runtime.
   runtimeDirectory: ""
@@ -325,8 +331,8 @@ zowe:
 
   # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   # **COMMONLY_CUSTOMIZED**
-  # You can list your external domains how you want to access Zowe.
-  # This should be the domain list you would like to put into your web browser
+  # You can list your external domains on how you want to access Zowe.
+  # This should be the domain list you would like to put into your web browser's
   # address bar.
   externalDomains:
     # this should be the domain name to access Zowe APIML Gateway
@@ -351,7 +357,8 @@ zowe:
   #   ZWED_TN3270_PORT: 23
 
   # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-  # You can define any Zowe message portions to be checked for and the whole message added to the system log 
+  # You can define any Zowe message portions to be checked for and the message added to the 
+  # system log upon its logging, truncated to 126 characters. 
   sysMessages:
   #   # Zowe starting
     - "ZWEL0021I"
@@ -375,15 +382,15 @@ zowe:
   #   # ZSS ready
     - "ZWES1013I"
 
-  #   # Not limited to Zowe message ID's
+  #   # Not limited to Zowe message ID's, you can specify your own string for example:
   #   - "ERROR"
 
   # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-  # Enable debug mode for zowe launch scripts
+  # Enable debug mode for Zowe launch scripts
   launchScript:
-    # set to "debug" or "trace" to display extra debug information
+    # Set to "debug" or "trace" to display extra debug information
     logLevel: "info"
-    # set to "exit" if you'd like startup to exit if any component has an error in the configure stage, otherwise zwe will warn but continue.
+    # Set to "exit" if you'd like startup to exit if any component has an error in the configure stage, otherwise zwe will warn but continue.
     onComponentConfigureFail: "warn"
 
   # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -421,7 +428,7 @@ zowe:
   #              This mode does not validate certificate Common Name and Subject
   #              Alternative Name (SAN).
   # - DISABLED:  disable certificate validation. This is NOT recommended for
-  #              security 
+  #              security. 
   verifyCertificates: STRICT
 
 
@@ -463,7 +470,7 @@ node:
 #-------------------------------------------------------------------------------
 zOSMF:
   # **COMMONLY_CUSTOMIZED**
-  # host name of your z/OSMF instance
+  # Host name of your z/OSMF instance
   host: dvipa.my-company.com
   # **COMMONLY_CUSTOMIZED**
   port: 443
