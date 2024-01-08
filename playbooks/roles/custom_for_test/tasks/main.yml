@@ -170,3 +170,4 @@
       # "zowe.environments.LOGGING_LEVEL_ORG_APACHE": "TRACE"
       # "zowe.environments.LOGGING_LEVEL_COM_NETFLIX": "TRACE"
       # "zowe.environments.LOGGING_LEVEL_ORG_SPRINGFRAMEWORK": "TRACE"
+      "zowe.environments.APIML_SECURITY_USEINTERNALMAPPER": "true"
