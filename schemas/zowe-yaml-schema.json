@@ -861,8 +861,22 @@
           "properties": {
             "network": {
               "$ref": "#/$defs/networkSettings"
+            },
+            "job": {
+              "$ref": "#/$defs/componentJobSettings"
             }
           }
+        }
+      }
+    },
+    "componentJobSettings": {
+      "$anchor": "componentJobSettings",
+      "type": "object",
+      "description": "Component level overrides for job execution behavior",
+      "properties": {
+        "suffix": {
+          "type": "string",
+          "description": "Can be used by components to declare a jobname suffix to append to their job. This is not currently used by Zowe itself, it is up to components to use this value if desired. Zowe may use this value in the future."
         }
       }
     },
