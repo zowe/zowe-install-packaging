@@ -598,6 +598,7 @@ components:
     agent:
       jwt:
         fallback: true
+      64bit: true
 
   # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   jobs-api:
