@@ -667,7 +667,11 @@ export function zisPluginInstall(pluginPath: string, zisPluginlib: string, zisPa
   if (changed) {
     common.printDebug(`Parmlib modified, writing as \n${parmlibContents}`);
     xplatform.storeFileUTF8(parmlibMemberAsUnixFile, xplatform.AUTO_DETECT, parmlibContents);
-    zosdataset.copyToDataset(parmlibMemberAsUnixFile, `${zisParmlib}(${zisParmlibMember})`, "", true);
+    const rc = zosdataset.copyToDataset(parmlibMemberAsUnixFile, `${zisParmlib}(${zisParmlibMember})`, "", true);
+    if (rc != 0) {
+      common.printError(`Error ZWEL0200E: Failed to copy USS file ${parmlibMemberAsUnixFile} to MVS data set ${zisParmlib}.`);
+      return 200;
+    }
   }
   return 0;
 }

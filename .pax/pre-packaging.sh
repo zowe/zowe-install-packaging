@@ -249,6 +249,13 @@ mv ./content/templates .
 chmod +x templates/*.rex
 
 mkdir -p "${ZOWE_ROOT_DIR}/bin/utils"
+getesm=$(find "${ZOWE_ROOT_DIR}/files" -type f \( -name "getesm*.pax" \) | head -n 1)
+echo "[$SCRIPT_NAME] extract getesm $getesm"
+cd "${ZOWE_ROOT_DIR}/bin/utils"
+pax -ppx -rf "${getesm}"
+rm "${getesm}"
+cd "${BASE_DIR}"
+
 configmgr=$(find "${ZOWE_ROOT_DIR}/files" -type f \( -name "configmgr-2*.pax" \) | head -n 1)
 echo "[$SCRIPT_NAME] extract configmgr $configmgr"
 cd "${ZOWE_ROOT_DIR}/bin/utils"
@@ -288,7 +295,7 @@ done
 
 echo "[$SCRIPT_NAME] process commands.install hooks"
 # not all core components has commands.install
-for component in app-server; do
+for component in app-server common-java-lib; do
   echo "[$SCRIPT_NAME] - ${component}"
   # FIXME: these environment variables are changed in v2
   ZOWE_ROOT_DIR=${ZOWE_ROOT_DIR} \

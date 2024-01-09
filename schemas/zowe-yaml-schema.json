@@ -578,6 +578,10 @@
           "$ref": "#/$defs/port",
           "description": "Port number of your z/OSMF instance."
         },
+        "scheme": {
+          "$ref" : "#/$defs/scheme",
+          "description": "Scheme used to connect to z/OSMF instance. Optional for outbout AT-TLS, defaults to https"
+        },
         "applId": {
           "type": "string",
           "description": "Appl ID of your z/OSMF instance."
@@ -626,6 +630,14 @@
       "type": "integer",
       "minimum": 0,
       "maximum": 65535
+    },
+    "scheme": {
+      "type": "string",
+      "enum": [
+        "http",
+        "https"
+      ],
+      "default": "https"
     },
     "certificate": {
       "oneOf": [
@@ -849,8 +861,22 @@
           "properties": {
             "network": {
               "$ref": "#/$defs/networkSettings"
+            },
+            "job": {
+              "$ref": "#/$defs/componentJobSettings"
             }
           }
+        }
+      }
+    },
+    "componentJobSettings": {
+      "$anchor": "componentJobSettings",
+      "type": "object",
+      "description": "Component level overrides for job execution behavior",
+      "properties": {
+        "suffix": {
+          "type": "string",
+          "description": "Can be used by components to declare a jobname suffix to append to their job. This is not currently used by Zowe itself, it is up to components to use this value if desired. Zowe may use this value in the future."
         }
       }
     },
