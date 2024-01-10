@@ -217,7 +217,7 @@
       "componentGroup": "Zowe CLI",
       "entries": [{
         "repository": "zowe-cli",
-        "tag": "v7.20.1",
+        "tag": "v7.21.3",
         "destinations": ["Zowe CLI Package"]
       }]
     }, {
@@ -231,7 +231,7 @@
       "componentGroup": "IBM&reg Db2&reg Plug-in for Zowe CLI",
       "entries": [{
         "repository": "zowe-cli-db2-plugin",
-        "tag": "v5.0.5",
+        "tag": "v5.0.6",
         "destinations": ["Zowe CLI Package"]
       }]
     }, {
@@ -372,7 +372,7 @@
       "componentGroup": "Zowe Visual Studio Code Extension",
       "entries": [{
         "repository": "vscode-extension-for-zowe",
-        "tag": "v2.12.2",
+        "tag": "v2.13.1",
         "destinations": ["Visual Studio Code Marketplace"]
       }]
     },
