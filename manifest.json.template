@@ -52,11 +52,11 @@
       "artifact": "zss-2.14.0-rc-1083-20240109191933.pax"
     },
     "org.zowe.explorer.jobs.jobs-api-package": {
-      "version": "2.0.24",
+      "version": "2.0.25",
       "artifact": "jobs-api-package-*.zip"
     },
     "org.zowe.explorer.files.files-api-package": {
-      "version": "2.0.25",
+      "version": "2.0.26",
       "artifact": "files-api-package-*.zip"
     },
     "org.zowe.explorer-jes": {
@@ -97,7 +97,7 @@
       "artifact": "apiml-common-lib-*.zip"
     },
     "org.zowe.apiml.sdk.common-java-lib-package": {
-      "version": "2.0.4",
+      "version": "2.0.3",
       "artifact": "common-java-lib-*.zip"
     },
     "org.zowe.apiml.sdk.apiml-sample-extension-package": {
@@ -145,7 +145,7 @@
       "componentGroup": "Zowe API Mediation Layer",
       "entries": [{
         "repository": "api-layer",
-        "tag": "v2.13.2",
+        "tag": "v2.14.0",
         "destinations": ["Zowe PAX"]
       }]
     }, {
@@ -287,21 +287,21 @@
       "componentGroup": "Zowe Explorer Common REST Server",
       "entries": [{
         "repository": "explorer-api-common",
-        "tag": "2.0.29",
+        "tag": "2.0.30",
         "destinations": ["Zowe PAX"]
       }]
     }, {
       "componentGroup": "Zowe Explorer Data Sets REST Server",
       "entries": [{
         "repository": "data-sets",
-        "tag": "2.0.25",
+        "tag": "2.0.26",
         "destinations": ["Zowe PAX"]
       }]
     }, {
       "componentGroup": "Zowe Explorer Jobs REST Server",
       "entries": [{
         "repository": "jobs",
-        "tag": "2.0.24",
+        "tag": "2.0.25",
         "destinations": ["Zowe PAX"]
       }]
     },
