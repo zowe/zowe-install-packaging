@@ -14,7 +14,7 @@ function getArtifactId {
     apiml)
       echo "g=org.zowe.apiml&a=api-catalog-services";;
     common-java)
-      echo "g=org.zowe.apiml.sdk&a=attls";;
+      echo "g=org.zowe.apiml.sdk&a=common-java-lib-package";;
     jobs)
       echo "g=org.zowe.explorer.jobs&a=jobs-api-server";;
     files)
