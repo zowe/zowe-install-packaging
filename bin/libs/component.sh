@@ -551,6 +551,10 @@ zis_plugin_install() {
 
   if [ $changed -eq 1 ]; then
     copy_to_data_set "$parmlib_member_as_unix_file" "$zwes_zis_parmlib($zwes_zis_parmlib_member)" "" "true"
+    if [ $? != 0 ]; then
+      print_error "Error ZWEL0200E: Failed to copy USS file ${parmlib_member_as_unix_file} to MVS data set ${zwes_zis_parmlib}."
+      return 200
+    fi
   fi
 }
 
