@@ -16,7 +16,7 @@ import * as common from './common';
 import * as shell from './shell';
 import * as config from './config';
 
-const JAVA_MIN_VERSION=8;
+const JAVA_MIN_VERSION=17;
 
 export function ensureJavaIsOnPath(): void {
   let path=std.getenv('PATH') || '/bin:.:/usr/bin';
