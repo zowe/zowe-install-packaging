@@ -80,7 +80,7 @@
     },
     "org.zowe.apiml.caching-service-package": {
       "version": "3.0.0-PR-PR3269-SNAPSHOT",
-      "artifact": "caching-service-3.0.0-PR-PR3269-20240118.094521-1.zip"
+      "artifact": "caching-service-package-3.0.0-PR-PR3269-20240118.094521-1.zip"
     },
     "org.zowe.apiml.metrics-service-package": {
       "version": "3.0.0-PR-PR3269-SNAPSHOT",
