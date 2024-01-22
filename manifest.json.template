@@ -67,27 +67,27 @@
       "artifact": "*.pax"
     },
     "org.zowe.apiml.api-catalog-package": {
-      "version": "^2.1.1-SNAPSHOT",
+      "version": "3.0.0-PR-PR3269-20240118.094521-1",
       "artifact": "api-catalog-package-3.0.0-PR-PR3269-20240118.094521-1.zip"
     },
     "org.zowe.apiml.discovery-package": {
-      "version": "^2.1.1-SNAPSHOT",
+      "version": "3.0.0-PR-PR3269-20240118.094521-1",
       "artifact": "discovery-package-3.0.0-PR-PR3269-20240118.094521-1.zip"
     },
     "org.zowe.apiml.gateway-package": {
-      "version": "^2.1.1-SNAPSHOT",
+     "version": "3.0.0-PR-PR3269-20240118.094521-1",
       "artifact": "gateway-package-3.0.0-PR-PR3269-20240118.094521-1.zip"
     },
     "org.zowe.apiml.caching-service-package": {
-      "version": "^2.1.1-SNAPSHOT",
+      "version": "3.0.0-PR-PR3269-20240118.094521-1",
       "artifact": "caching-service-3.0.0-PR-PR3269-20240118.094521-1.zip"
     },
     "org.zowe.apiml.metrics-service-package": {
-      "version": "^2.1.1-SNAPSHOT",
+      "version": "3.0.0-PR-PR3269-20240118.094521-1",
       "artifact": "metrics-service-package-3.0.0-PR-PR3269-20240118.094521-1.zip"
     },
     "org.zowe.apiml.apiml-common-lib-package": {
-      "version": "^2.1.1-SNAPSHOT",
+     "version": "3.0.0-PR-PR3269-20240118.094521-1",
       "artifact": "apiml-common-lib-package-3.0.0-PR-PR3269-20240118.094521-1.zip"
     },
     "org.zowe.apiml.sdk.common-java-lib-package": {
@@ -101,7 +101,7 @@
       "exclusions": ["*PR*.zip"]
     },
     "org.zowe.apiml.cloud-gateway-package": {
-      "version": "^2.4.4-SNAPSHOT",
+      "version": "3.0.0-PR-PR3269-20240118.094521-1",
       "artifact": "cloud-gateway-package-3.0.0-PR-PR3269-20240118.094521-1.zip"
     },
     "org.zowe.getesm": {
