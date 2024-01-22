@@ -265,6 +265,7 @@ jobs:
         timeout-minutes: 10
         uses: zowe-actions/shared-actions/publish@main
         with:
+          sigstore-sign-artifacts: true
           artifacts: |
             .pax/zowe.pax
             .pax/zowe-smpe.zip
