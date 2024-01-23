@@ -185,10 +185,13 @@ end
 /* members which are not JCL */
 x = DeleteDataSet(jclCopy'(ZWEGENER)')
 x = DeleteDataSet(jclCopy'(ZWESLSTC)')
+x = DeleteDataSet(jclCopy'(ZWESASTC)')
 x = DeleteDataSet(jclCopy'(ZWESISTC)')
 x = DeleteDataSet(jclCopy'(ZWESIP00)')
+x = DeleteDataSet(jclCopy'(ZWESIPRG)')
 x = DeleteDataSet(jclCopy'(ZWESISCH)')
-x = DeleteDataSet(jclCopy'(ZWESASTC)')
+x = DeleteDataSet(jclCopy'(ZWESECKG)')
+
 
 say jcl' has been copied to 'jclCopy'.'
 
