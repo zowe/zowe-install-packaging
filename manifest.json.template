@@ -12,7 +12,7 @@
   },
   "binaryDependencies": {
     "org.zowe.zlux.zlux-core": {
-      "version": "2.14.0-V3.X-STAGING-ZLUX-CORE",
+      "version": "^3.0.0-V3.X-STAGING-ZLUX-CORE",
       "artifact": "*.pax"
     },
     "org.zowe.zlux.sample-angular-app": {
@@ -167,12 +167,12 @@
       "componentGroup": "Zowe Application Framework",
       "entries": [{
           "repository": "zlux-app-manager",
-          "tag": "v2.x/staging",
+          "tag": "v3.x/staging",
           "destinations": ["Zowe PAX"]
         },
         {
           "repository": "zlux-app-server",
-          "tag": "v2.x/staging",
+          "tag": "v3.x/staging",
           "destinations": ["Zowe PAX"]
         },
         {
@@ -187,17 +187,17 @@
         },
         {
           "repository": "zlux-platform",
-          "tag": "v2.x/staging",
+          "tag": "v3.x/staging",
           "destinations": ["Zowe PAX"]
         },
         {
           "repository": "zlux-server-framework",
-          "tag": "v2.x/staging",
+          "tag": "v3.x/staging",
           "destinations": ["Zowe PAX"]
         },
         {
           "repository": "zlux-shared",
-          "tag": "v2.x/staging",
+          "tag": "v3.x/staging",
           "destinations": ["Zowe PAX"]
         },
         {
@@ -207,17 +207,17 @@
         },
         {
           "repository": "zlux-build",
-          "tag": "v2.x/staging",
+          "tag": "v3.x/staging",
           "destinations": ["Zowe PAX"]
         },
         {
           "repository": "zss",
-          "tag": "v2.x/staging",
+          "tag": "v3.x/staging",
           "destinations": ["Zowe PAX"]
         },
         {
           "repository": "zowe-common-c",
-          "tag": "v2.x/staging",
+          "tag": "v3.x/staging",
           "destinations": ["Zowe PAX"]
         }
       ]
