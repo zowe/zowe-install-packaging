@@ -1,6 +1,6 @@
 # Change Log
 
-All notable changes to the Zowe Installer will be documented in this file.
+All notable changes to the Zowe Installer will be documented in this file. 
 <!--Add the PR or issue number to the entry if available.-->
 ## `2.14.0`
 
