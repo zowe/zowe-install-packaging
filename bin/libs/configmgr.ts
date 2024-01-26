@@ -48,6 +48,7 @@ const ZOWE_SCHEMA_ID = 'https://zowe.org/schemas/v2/server-base';
 const ZOWE_SCHEMA_SET=`${ZOWE_SCHEMA}:${COMMON_SCHEMA}`;
 
 export let ZOWE_CONFIG=getZoweConfig();
+let HA_CONFIGS = {};
 
 export function getZoweBaseSchemas(): string {
   return ZOWE_SCHEMA_SET;
@@ -373,6 +374,7 @@ export function updateZoweConfig(updateObj: any, writeUpdate: boolean, arrayMerg
   let rc = updateConfig(getZoweConfigName(), updateObj, arrayMergeStrategy);
   if (rc == 0) {
     ZOWE_CONFIG=getZoweConfig();
+    HA_CONFIGS = {}; //reset
     if (writeUpdate) {
       writeZoweConfigUpdate(updateObj, arrayMergeStrategy);
       writeMergedConfig(ZOWE_CONFIG);
@@ -490,14 +492,29 @@ function getConfig(configName: string, configPath: string, schemas: string): any
   }  
 }
 
-export function getZoweConfig(): any {
-  if (configLoaded) {
+function makeHaConfig(haInstance: string): any {
+  let config = getConfig(ZOWE_CONFIG_NAME, ZOWE_CONFIG_PATH, ZOWE_SCHEMA_SET);
+  if (config.haInstances && config.haInstances[haInstance]) {
+    let merger = new objUtils.Merger();
+    merger.mergeArrays = false;
+    let mergedConfig = merger.merge(config.haInstances[haInstance], config);
+    INSTANCE_KEYS_NOT_IN_BASE.forEach((key) => delete mergedConfig[key]);
+    HA_CONFIGS[haInstance] = mergedConfig;
+    return mergedConfig;
+  }
+  return config;
+}
+
+export function getZoweConfig(haInstance?: string): any {
+  if (configLoaded && !haInstance) {
     return getConfig(ZOWE_CONFIG_NAME, ZOWE_CONFIG_PATH, ZOWE_SCHEMA_SET);
+  } else if (configLoaded) {
+    return HA_CONFIGS[haInstance] || makeHaConfig(haInstance);
   } else {
     let config = getConfig(ZOWE_CONFIG_NAME, ZOWE_CONFIG_PATH, ZOWE_SCHEMA_SET);
     configLoaded = true;
     const writeResult = writeMergedConfig(config);
-    return config;
+    return haInstance ? makeHaConfig(haInstance) : config;
   }
 }
 
@@ -528,7 +545,7 @@ export function getZoweConfigEnv(haInstance: string): any {
     haFlattener.setSeparator('_');
     haFlattener.setPrefix('ZWE_');
     haFlattener.setKeepArrays(true);
-    let overrides = haFlattener.flatten(config.haInstances[haInstance]);
+    overrides = haFlattener.flatten(config.haInstances[haInstance]);
   } else {
     envs['ZWE_haInstance_hostname'] = config.zowe.externalDomains[0];
   }
