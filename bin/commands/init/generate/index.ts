@@ -24,9 +24,10 @@ export function execute(dryRun?: boolean) {
   const tempFile = fs.createTmpFile();
   zosFs.copyMvsToUss(ZOWE_CONFIG.zowe.setup.dataset.prefix + 'SZWESAMP(ZWEGENER)', tempFile);
   let jclContents = xplatform.loadFileUTF8(tempFile, xplatform.AUTO_DETECT);
-  jclContents = jclContents.replaceAll('{zowe.setup.dataset.prefix}', ZOWE_CONFIG.zowe.setup.dataset.prefix);
-  jclContents = jclContents.replaceAll('{zowe.setup.dataset.loadlib}', ZOWE_CONFIG.zowe.setup.dataset.loadlib);
-  jclContents = jclContents.replaceAll('{zowe.runtimeDirectory}', ZOWE_CONFIG.zowe.runtimeDirectory);
+
+  jclContents = jclContents.replace("DSN={zowe.setup.dataset.prefix}", "DSN="+ZOWE_CONFIG.zowe.setup.dataset.prefix);
+  jclContents = jclContents.replace("{zowe.setup.dataset.loadlib}", ZOWE_CONFIG.zowe.setup.dataset.loadlib);
+  jclContents = jclContents.replace(/\{zowe\.runtimeDirectory\}/gi, ZOWE_CONFIG.zowe.runtimeDirectory);
   jclContents = jclContents.replace('FILE <full path to zowe.yaml file>', 'FILE '+ZOWE_CONFIG.zowe.workspaceDirectory+'/.env/.zowe-merged.yaml');
   os.remove(tempFile);
   
