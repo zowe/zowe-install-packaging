@@ -1,8 +1,8 @@
 {
   "compilerOptions": {
-    "lib": [ "ES2020" ],
-    "module": "ES2020",
-    "target": "ES2020",
+    "lib": [ "ES2021" ],
+    "module": "ES2021",
+    "target": "ES2021",
     "moduleResolution": "node",
     "removeComments": false,
     "preserveConstEnums": true,
