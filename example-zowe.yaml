@@ -182,27 +182,27 @@ zowe:
     #     # keyring name
     #     name: ZoweKeyring
     #     # **COMMONLY_CUSTOMIZED**
-    #     # # Label of Zowe certificate. Optional, default value is localhost.
-    #     # label: localhost
+    #     # Label of Zowe certificate. Optional, default value is localhost.
+    #     label: localhost
     #     # **COMMONLY_CUSTOMIZED**
-    #     # # label of Zowe CA certificate. Optional, default value is localca.
-    #     # caLabel: localca
-    #   # # Distinguished name for Zowe generated certificates. All optional.
-    #   # dname:
-    #   #   caCommonName: ""
-    #   #   commonName: "Zowe Development Instances"
-    #   #   orgUnit: "API Mediation Layer"
-    #   #   org: "Zowe Sample"
-    #   #   locality: "Prague"
-    #   #   state: "Prague"
-    #   #   country: ""
-    #   # # Validity days for Zowe generated certificates
-    #   # validity: 3650
-    #   # # Domain names and IPs should be added into certificate SAN
-    #   # # If this field is not defined, `zwe init` command will use
-    #   # # `zowe.externalDomains`.
-    #   # # **NOTE**: due to the limitation of RACDCERT command, this field should
-    #   # #           contain exactly 2 entries with the domain name and IP address.
+    #     # label of Zowe CA certificate. Optional, default value is localca.
+    #     caLabel: localca
+    #   # Distinguished name for Zowe generated certificates. All optional.
+    #   dname:
+    #     caCommonName: ""
+    #     commonName: "Zowe Development Instances"
+    #     orgUnit: "API Mediation Layer"
+    #     org: "Zowe Sample"
+    #     locality: "Prague"
+    #     state: "Prague"
+    #     country: "CZ"
+    #   # Validity days for Zowe generated certificates
+    #   validity: 3650
+    #   # Domain names and IPs should be added into certificate SAN
+    #   # If this field is not defined, `zwe init` command will use
+    #   # `zowe.externalDomains`.
+    #   # **NOTE**: due to the limitation of RACDCERT command, this field should
+    #   #           contain exactly 2 entries with the domain name and IP address.
     #   # san:
     #   #   - dvipa.my-company.com
     #   #   - 12.34.56.78

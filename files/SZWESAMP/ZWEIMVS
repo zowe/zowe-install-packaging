@@ -1,0 +1,67 @@
+//ZWEIMVS JOB                                     
+//*                                                                    
+//* This program and the accompanying materials are made available     
+//* under the terms of the Eclipse Public License v2.0 which          
+//* accompanies this distribution, and is available at                 
+//* https://www.eclipse.org/legal/epl-v20.html                         
+//*                                                                    
+//* SPDX-License-Identifier: EPL-2.0                                   
+//*                                                                    
+//* Copyright Contributors to the Zowe Project. 2020, 2020             
+//*                                                                    
+//********************************************************************* 
+//*
+//*                                               
+//MKPARML EXEC PGM=IKJEFT01                       
+//SYSTSPRT DD SYSOUT=A                            
+//SYSTSIN DD *                                    
+ALLOC NEW DA('{zowe.setup.dataset.parmlib}') +       
+dsntype(library) dsorg(po) recfm(f b) lrecl(80) + 
+unit(sysallda) space(15,15) tracks                
+//*                                               
+//MKJCLL EXEC PGM=IKJEFT01                        
+//SYSTSPRT DD SYSOUT=A                            
+//SYSTSIN DD *                                    
+ALLOC NEW DA('{zowe.setup.dataset.jcllib}') +        
+dsntype(library) dsorg(po) recfm(f b) lrecl(80) + 
+unit(sysallda) space(15,15) tracks                
+//*                                               
+//MKAUTHL EXEC PGM=IKJEFT01                       
+//SYSTSPRT DD SYSOUT=A                            
+//SYSTSIN DD *                                    
+ALLOC NEW DA('{zowe.setup.dataset.authLoadLib}') +       
+dsntype(library) dsorg(po) recfm(u) lrecl(0) +    
+blksize(32760) unit(sysallda) space(30,15) tracks 
+//*                                               
+//MKAUTHP EXEC PGM=IKJEFT01                       
+//SYSTSPRT DD SYSOUT=A                            
+//SYSTSIN DD *                                    
+ALLOC NEW DA('{zowe.setup.dataset.authPluginLib}') +      
+dsntype(library) dsorg(po) recfm(u) lrecl(0) +    
+blksize(32760) unit(sysallda) space(30,15) tracks 
+//*                                               
+//MCOPY1 EXEC PGM=IEBCOPY                         
+//SYSPRINT DD SYSOUT=A                            
+//SYSUT1 DD DSN={zowe.setup.dataset.prefix}.SZWESAMP,DISP=SHR  
+//SYSUT2 DD DSN={zowe.setup.dataset.jcllib},DISP=OLD
+//SYSIN DD *                                      
+  COPY OUTDD=SYSUT2,INDD=SYSUT1                                  
+  SELECT MEMBER=(ZWESIP00)                          
+//*                                               
+//AUTHCPY EXEC PGM=BPXBATCH                       
+//BPXPRINT DD SYSOUT=*                            
+//STDOUT   DD SYSOUT=*                            
+//STDERR   DD SYSOUT=*                            
+//STDPARM DD *                                    
+SH cd {zowe.runtimeDirectory} &&                                    
+cd components/zss &&    
+cp LOADLIB/ZWESIS01                               
+"//'{zowe.setup.dataset.authLoadLib}(ZWESIS01)'" &&      
+cp LOADLIB/ZWESAUX                                
+"//'{zowe.setup.dataset.authLoadLib}(ZWESAUX)'" &&       
+cp LOADLIB/ZWESISDL                               
+"//'{zowe.setup.dataset.authLoadLib}(ZWESISDL)'" &&      
+cd ../launcher/bin &&                             
+cp zowe_launcher                                  
+"//'{zowe.setup.dataset.authLoadLib}(ZWELNCH)'"          
+/*

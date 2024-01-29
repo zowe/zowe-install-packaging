@@ -1,5 +1,4 @@
 #!/bin/sh
-
 #######################################################################
 # This program and the accompanying materials are made available
 # under the terms of the Eclipse Public License v2.0 which
@@ -15,10 +14,10 @@ print_level1_message "Initialize Zowe custom data sets"
 
 ###############################
 # constants
-cust_ds_list="parmlib|Zowe parameter library|dsntype(library) dsorg(po) recfm(f b) lrecl(80) unit(sysallda) space(15,15) tracks
-jcllib|Zowe JCL library|dsntype(library) dsorg(po) recfm(f b) lrecl(80) unit(sysallda) space(15,15) tracks
-authLoadlib|Zowe authorized load library|dsntype(library) dsorg(po) recfm(u) lrecl(0) blksize(32760) unit(sysallda) space(30,15) tracks
-authPluginLib|Zowe authorized plugin library|dsntype(library) dsorg(po) recfm(u) lrecl(0) blksize(32760) unit(sysallda) space(30,15) tracks"
+cust_ds_list="parmlib|Zowe parameter library
+jcllib|Zowe JCL library
+authLoadlib|Zowe authorized load library
+authPluginLib|Zowe authorized plugin library
 
 ###############################
 # validation
@@ -30,13 +29,20 @@ if [ -z "${prefix}" ]; then
   print_error_and_exit "Error ZWEL0157E: Zowe dataset prefix (zowe.setup.dataset.prefix) is not defined in Zowe YAML configuration file." "" 157
 fi
 
+jcllib_location=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.dataset.prefix")
+does_jcl_exist=$(is_data_set_exists "${jcllib_location}(ZWEIMVS)")
+if [ "${does_jcl_exist}" = "false" ]; then
+  print_error_and_exit "Error ZWEL0999E: ${jcllib_location}(ZWEIMVS) does not exist, cannot run. Run 'zwe init', 'zwe init generate', or submit JCL ${prefix}.SZWESAMP(ZWEGENER) before running this command." "" 999
+fi
+
+
+
 ###############################
 # create data sets if they do not exist
 print_message "Create data sets if they do not exist"
 while read -r line; do
   key=$(echo "${line}" | awk -F"|" '{print $1}')
   name=$(echo "${line}" | awk -F"|" '{print $2}')
-  spec=$(echo "${line}" | awk -F"|" '{print $3}')
   
   # read def and validate
   ds=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.dataset.${key}")
@@ -59,56 +65,41 @@ while read -r line; do
       # warning
       print_message "Warning ZWEL0301W: ${ds} already exists and will not be overwritten. For upgrades, you must use --allow-overwrite."
     fi
-  else
-    print_message "Creating ${ds}"
-    create_data_set "${ds}" "${spec}"
-    if [ $? -ne 0 ]; then
-      print_error_and_exit "Error ZWEL0111E: Command aborts with error." "" 111
-    fi
   fi
 done <<EOF
 $(echo "${cust_ds_list}")
 EOF
+
 print_message
 
 if [ "${ds_existence}" = "true" ] &&  [ "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITE}" != "true" ]; then
   print_message "Skipped writing to ${ds}. To write, you must use --allow-overwrite."
+  print_level2_message "Zowe custom data sets initialized with errors."
 else
-  ###############################
-  # copy sample lib members
-  parmlib=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.dataset.parmlib")
-  for ds in ZWESIP00; do
-    print_message "Copy ${prefix}.${ZWE_PRIVATE_DS_SZWESAMP}(${ds}) to ${parmlib}(${ds})"
-    data_set_copy_to_data_set "${prefix}" "${prefix}.${ZWE_PRIVATE_DS_SZWESAMP}(${ds})" "${parmlib}(${ds})" "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITE}"
-    if [ $? -ne 0 ]; then
-      print_error_and_exit "Error ZWEL0111E: Command aborts with error." "" 111
-    fi
-  done
 
-  ###############################
-  # copy auth lib members
-  # FIXME: data_set_copy_to_data_set cannot be used to copy program?
-  authLoadlib=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.dataset.authLoadlib")
-  if [ -n "${authLoadlib}" ]; then
-    for ds in ZWESIS01 ZWESAUX ZWESISDL; do
-      print_message "Copy components/zss/LOADLIB/${ds} to ${authLoadlib}(${ds})"
-      # data_set_copy_to_data_set "${prefix}" "${prefix}.${ZWE_PRIVATE_DS_SZWEAUTH}(${ds})" "${authLoadlib}(${ds})" "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITE}"
-      copy_to_data_set "${ZWE_zowe_runtimeDirectory}/components/zss/LOADLIB/${ds}" "${authLoadlib}(${ds})" "-X" "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITE}"
-      if [ $? -ne 0 ]; then
-        print_error_and_exit "Error ZWEL0111E: Command aborts with error." "" 111
-      fi
-    done
-    for ds in ZWELNCH; do
-      print_message "Copy components/launcher/bin/zowe_launcher to ${authLoadlib}(${ds})"
-      # data_set_copy_to_data_set "${prefix}" "${prefix}.${ZWE_PRIVATE_DS_SZWEAUTH}(${ds})" "${authLoadlib}(${ds})" "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITE}"
-      copy_to_data_set "${ZWE_zowe_runtimeDirectory}/components/launcher/bin/zowe_launcher" "${authLoadlib}(${ds})" "-X" "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITE}"
-      if [ $? -ne 0 ]; then
-        print_error_and_exit "Error ZWEL0111E: Command aborts with error." "" 111
-      fi
-    done
+  jcl_file=$(create_tmp_file)
+  copy_mvs_to_uss "${jcllib_location}(ZWEIMVS)" "${jcl_file}"
+  jcl_contents=$(cat "${jcl_file}")
+
+  print_message "Template JCL: ${prefix}.SZWESAMP(ZWEIMVS) , Executable JCL: ${jcl_location}(ZWEIMVS)"
+  print_message "JCL Content:"
+  print_message "$jcl_contents"
+
+  if [ -z "${ZWE_CLI_PARAMETER_DRY_RUN}" ]; then
+    print_message "Submitting Job ZWEIMVS"
+    jobid=$(submit_job "$jcl_contents")
+    rc=$(wait_for_job "${jobid}")
+    print_message "Job completed with RC=${rc}"
+    if [ "${rc}" -eq 0 ]; then
+      print_level2_message "Zowe custom data sets are initialized successfully."
+    else
+      print_level2_message "Zowe custom data sets initialized with errors."
+    fi
+  else
+    print_message "JCL not submitted, command run with dry run flag."
+    print_message "To perform command, re-run command without dry run flag, or submit the JCL directly"
+    print_level2_message "Zowe custom data sets are initialized successfully."
   fi
 fi
 
-###############################
-# exit message
-print_level2_message "Zowe custom data sets are initialized successfully."
+
