@@ -17,7 +17,7 @@
 //*
 //* Note: Any string with braces has an associated yaml value
 //*       in one of the yaml definitions for Zowe.
-//*       You should find the value and substitute it.
+//*       You must find the value and substitute it.
 //*
 //*       {key} -> value
 //*
