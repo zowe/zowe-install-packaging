@@ -87,6 +87,7 @@ else
 fi
 
 ###############################
+zwecli_inline_execute_command init generate
 zwecli_inline_execute_command init mvs
 zwecli_inline_execute_command init vsam
 if [ "${ZWE_CLI_PARAMETER_SKIP_SECURITY_SETUP}" != "true" ]; then
