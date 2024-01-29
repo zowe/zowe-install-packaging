@@ -35,6 +35,40 @@
 //* 1) Add job name and job parameters to the JOB statement, to
 //*    meet your system requirements.
 //*
+//* 2) Update the SET PRODUCT= statement to match your security
+//*    product.
+//*
+//* 3) Update the SET ADMINGRP= statement to match the desired
+//*    group name for Zowe administrators.
+//*
+//* 4) Update the SET STCGRP= statement to match the desired
+//*    group name for started tasks.
+//*
+//* 5) Update the SET ZOWEUSER= statement to match the desired
+//*    user ID for the ZOWE started task.
+//*
+//* 6) Update the SET ZISUSER= statement to match the desired
+//*    user ID for the ZIS started task.
+//*
+//* 7) Update the SET ZOWESTC= statement to match the desired
+//*    Zowe started task name.
+//*
+//* 8) Update the SET ZLNCHSTC= statement to match the desired
+//*    Zowe launcher started task name. It is applicable if you
+//*    run Zowe for high availability.
+//*
+//* 9) Update the SET ZISSTC= statement to match the desired
+//*    ZIS started task name.
+//*
+//* 10) Update the SET AUXSTC= statement to match the desired
+//*    ZIS Auxiliary started task name.
+//*
+//* 11) Update the SET HLQ= statement to match the desired
+//*     Zowe data set high level qualifier.
+//*
+//* 12) Update the SET SYSPROG= statement to match the existing
+//*     user ID or group used by z/OS system programmers.
+//*
 //* 13) When not using AUTOUID and AUTOGID to assign z/OS UNIX UID
 //*     and GID values, update the SET *ID= statements to match the
 //*     desired UID and GID values.
@@ -69,6 +103,19 @@
 #if($ibmTemplate == 'YES')
 //         EXPORT SYMLIST=*
 //*
+//         SET  PRODUCT=RACF         * RACF, ACF2, or TSS
+//*                     12345678
+//         SET ADMINGRP=ZWEADMIN     * group for Zowe administrators
+//         SET   STCGRP=&ADMINGRP.   * group for Zowe started tasks
+//         SET ZOWEUSER=ZWESVUSR     * userid for Zowe started task
+//         SET  ZISUSER=ZWESIUSR     * userid for ZIS started task
+//         SET  ZOWESTC=ZWESVSTC     * Zowe started task name
+//         SET ZLNCHSTC=ZWESLSTC     * Zowe started task name for HA
+//         SET   ZISSTC=ZWESISTC     * ZIS started task name
+//         SET   AUXSTC=ZWESASTC     * ZIS AUX started task name
+//         SET      HLQ=ZWE          * data set high level qualifier
+//         SET  SYSPROG=&ADMINGRP.   * system programmer user ID/group
+//*                     12345678
 //*
 //* The sample RACF and ACF2 commands assume AUTOUID and AUTOGID are
 //* enabled. When this is not the case, or you are using Top Secret,
@@ -98,6 +145,19 @@
 #if($ibmTemplate != 'YES')
 //         EXPORT SYMLIST=*
 //*
+//         SET  PRODUCT=${PRODUCT}       * RACF, ACF2, or TSS
+//*                     12345678
+//         SET ADMINGRP=${ADMINGRP}  * group for Zowe administrators
+//         SET   STCGRP=${STCGRP}    * group for Zowe started tasks
+//         SET ZOWEUSER=${ZOWEUSER}  * userid for Zowe started task
+//         SET  ZISUSER=${ZISUSER}   * userid for ZIS started task
+//         SET  ZOWESTC=${ZOWESTC}   * Zowe started task name
+//         SET ZLNCHSTC=${ZLNCHSTC}  * Zowe started task name for HA
+//         SET   ZISSTC=${ZISSTC}    * ZIS started task name
+//         SET   AUXSTC=${AUXSTC}    * ZIS AUX started task name
+//         SET      HLQ=${HLQ}       * data set high level qualifier
+//         SET  SYSPROG=${SYSPROG}   * system programmer user ID/group
+//*                     12345678
 //*
 //* The sample RACF and ACF2 commands assume AUTOUID and AUTOGID are
 //* enabled. When this is not the case, or you are using Top Secret,
@@ -133,7 +193,7 @@
 //*
 //RUN      EXEC PGM=IKJEFT01,REGION=0M
 //SYSTSPRT DD SYSOUT=*
-//SYSTSIN  DD DDNAME={zowe.setup.security.product}
+//SYSTSIN  DD DDNAME=&PRODUCT
 //*
 //*********************************************************************
 //*
@@ -172,12 +232,12 @@
 
 /* group for administrators                                          */
 /* replace AUTOGID with GID(&ADMINGID.) if AUTOGID not enabled       */
-  LISTGRP  {zowe.setup.security.groups.admin}. OMVS
-  ADDGROUP {zowe.setup.security.groups.admin}. OMVS(AUTOGID) -
+  LISTGRP  &ADMINGRP. OMVS
+  ADDGROUP &ADMINGRP. OMVS(AUTOGID) -
    DATA('ZOWE ADMINISTRATORS')
 
 /* uncomment to add existing user IDs to the &ADMINGRP group         */
-/* CONNECT (userid,userid,...) GROUP({zowe.setup.security.groups.admin}.) AUTH(USE) */
+/* CONNECT (userid,userid,...) GROUP(&ADMINGRP.) AUTH(USE) */
 
 /* DEFINE STARTED TASK ............................................. */
 
@@ -189,28 +249,28 @@
 /*   warning messages otherwise                                      */
 /* group for started tasks                                           */
 /* replace AUTOGID with GID(&STCGID.) if AUTOGID not enabled */
-  LISTGRP  {zowe.setup.security.groups.stc}. OMVS
-  ADDGROUP {zowe.setup.security.groups.stc}. OMVS(AUTOGID) -
+  LISTGRP  &STCGRP. OMVS
+  ADDGROUP &STCGRP. OMVS(AUTOGID) -
    DATA('STARTED TASK GROUP WITH OMVS SEGMENT')
 
 /* */
 
 /* userid for ZOWE main server                                       */
 /* replace AUTOUID with UID(&ZOWEUID.) if AUTOUID not enabled */
-  LISTUSER {zowe.setup.security.users.zowe}. OMVS
-  ADDUSER  {zowe.setup.security.users.zowe}. -
+  LISTUSER &ZOWEUSER. OMVS
+  ADDUSER  &ZOWEUSER. -
    NOPASSWORD -
-   DFLTGRP({zowe.setup.security.groups.stc}.) -
+   DFLTGRP(&STCGRP.) -
    OMVS(HOME(/tmp) PROGRAM(/bin/sh) AUTOUID) -
    NAME('ZOWE SERVER') -
    DATA('ZOWE MAIN SERVER')
 
 /* userid for ZIS cross memory server                                */
 /* replace AUTOUID with UID(&ZISUID.) if AUTOUID not enabled */
-  LISTUSER {zowe.setup.security.users.zis}. OMVS
-  ADDUSER  {zowe.setup.security.users.zis}. -
+  LISTUSER &ZISUSER. OMVS
+  ADDUSER  &ZISUSER. -
    NOPASSWORD -
-   DFLTGRP({zowe.setup.security.groups.stc}.) -
+   DFLTGRP(&STCGRP.) -
    OMVS(HOME(/tmp) PROGRAM(/bin/sh) AUTOUID) -
    NAME('ZOWE ZIS SERVER') -
    DATA('ZOWE ZIS CROSS MEMORY SERVER')
@@ -218,39 +278,39 @@
 /* */
 
 /* started task for ZOWE main server                                 */
-  RLIST   STARTED {zowe.setup.security.stcs.zowe}..* ALL STDATA
-  RDEFINE STARTED {zowe.setup.security.stcs.zowe}..* -
-   STDATA(USER({zowe.setup.security.users.zowe}.) GROUP({zowe.setup.security.groups.stc}.) TRUSTED(NO)) -
+  RLIST   STARTED &ZOWESTC..* ALL STDATA
+  RDEFINE STARTED &ZOWESTC..* -
+   STDATA(USER(&ZOWEUSER.) GROUP(&STCGRP.) TRUSTED(NO)) -
    DATA('ZOWE MAIN SERVER')
 
 /* started task for ZOWE Launcher in high availability               */
-  RLIST   STARTED {zowe.setup.security.stcs.zowe}..* ALL STDATA
-  RDEFINE STARTED {zowe.setup.security.stcs.zowe}..* -
-   STDATA(USER({zowe.setup.security.users.zowe}.) GROUP({zowe.setup.security.groups.stc}.) TRUSTED(NO)) -
+  RLIST   STARTED &ZLNCHSTC..* ALL STDATA
+  RDEFINE STARTED &ZLNCHSTC..* -
+   STDATA(USER(&ZOWEUSER.) GROUP(&STCGRP.) TRUSTED(NO)) -
    DATA('ZOWE LAUNCHER SERVER')
 
 /* started task for ZIS cross memory server                         */
-  RLIST   STARTED {zowe.setup.security.stcs.zis}..* ALL STDATA
-  RDEFINE STARTED {zowe.setup.security.stcs.zis}..* -
-   STDATA(USER({zowe.setup.security.users.zis}.) GROUP({zowe.setup.security.groups.stc}.) TRUSTED(NO)) -
+  RLIST   STARTED &ZISSTC..* ALL STDATA
+  RDEFINE STARTED &ZISSTC..* -
+   STDATA(USER(&ZISUSER.) GROUP(&STCGRP.) TRUSTED(NO)) -
    DATA('ZOWE ZIS CROSS MEMORY SERVER')
 
 /* started task for ZIS Auxiliary cross memory server                */
-  RLIST   STARTED {zowe.setup.security.stcs.aux}..* ALL STDATA
-  RDEFINE STARTED {zowe.setup.security.stcs.aux}..* -
-   STDATA(USER({zowe.setup.security.users.zis}.) GROUP({zowe.setup.security.groups.stc}.) TRUSTED(NO)) -
+  RLIST   STARTED &AUXSTC..* ALL STDATA
+  RDEFINE STARTED &AUXSTC..* -
+   STDATA(USER(&ZISUSER.) GROUP(&STCGRP.) TRUSTED(NO)) -
    DATA('ZOWE ZIS AUX CROSS MEMORY SERVER')
 
   SETROPTS RACLIST(STARTED) REFRESH
 
 /* show results .................................................... */
-  LISTGRP  {zowe.setup.security.groups.stc}. OMVS
-  LISTUSER {zowe.setup.security.users.zowe}. OMVS
-  LISTUSER {zowe.setup.security.users.zis}. OMVS
-  RLIST STARTED {zowe.setup.security.stcs.zowe}..* ALL STDATA
-  RLIST STARTED {zowe.setup.security.stcs.zowe}..* ALL STDATA
-  RLIST STARTED {zowe.setup.security.stcs.zis}..* ALL STDATA
-  RLIST STARTED {zowe.setup.security.stcs.aux}..*  ALL STDATA
+  LISTGRP  &STCGRP. OMVS
+  LISTUSER &ZOWEUSER. OMVS
+  LISTUSER &ZISUSER. OMVS
+  RLIST STARTED &ZOWESTC..* ALL STDATA
+  RLIST STARTED &ZLNCHSTC..* ALL STDATA
+  RLIST STARTED &ZISSTC..* ALL STDATA
+  RLIST STARTED &AUXSTC..*  ALL STDATA
 
 /* DEFINE ZIS SECURITY RESOURCES ................................... */
 
@@ -261,13 +321,13 @@
 /* DEFINE AUX SERVER PERMISIONS .................................... */
 
 /* permit AUX STC to use ZIS cross memory server                     */
-  PERMIT ZWES.IS CLASS(FACILITY) ACCESS(READ) ID({zowe.setup.security.users.zis}.)
+  PERMIT ZWES.IS CLASS(FACILITY) ACCESS(READ) ID(&ZISUSER.)
   SETROPTS RACLIST(FACILITY) REFRESH
 
 /* DEFINE ZOWE SERVER PERMISIONS ................................... */
 
 /* permit Zowe main server to use ZIS cross memory server            */
-  PERMIT ZWES.IS CLASS(FACILITY) ACCESS(READ) ID({zowe.setup.security.users.zowe}.)
+  PERMIT ZWES.IS CLASS(FACILITY) ACCESS(READ) ID(&ZOWEUSER.)
   SETROPTS RACLIST(FACILITY) REFRESH
 
 /* permit Zowe main server to create a user's security environment   */
@@ -278,22 +338,22 @@
 /*            it on a production system.                             */
   RLIST   FACILITY BPX.DAEMON ALL
   RDEFINE FACILITY BPX.DAEMON UACC(NONE)
-  PERMIT BPX.DAEMON CLASS(FACILITY) ACCESS(UPDATE) ID({zowe.setup.security.users.zowe}.)
+  PERMIT BPX.DAEMON CLASS(FACILITY) ACCESS(UPDATE) ID(&ZOWEUSER.)
 
   RLIST   FACILITY BPX.SERVER ALL
   RDEFINE FACILITY BPX.SERVER UACC(NONE)
-  PERMIT BPX.SERVER CLASS(FACILITY) ACCESS(UPDATE) ID({zowe.setup.security.users.zowe}.)
+  PERMIT BPX.SERVER CLASS(FACILITY) ACCESS(UPDATE) ID(&ZOWEUSER.)
 
 /* permit Zowe main server to create a user's security environment   */
 /* comment out the following 2 lines if the OMVSAPPL is not defined  */
 /* in your environment                                               */
-  PERMIT OMVSAPPL CLASS(APPL) ID({zowe.setup.security.users.zowe}.) ACCESS(READ)
+  PERMIT OMVSAPPL CLASS(APPL) ID(&ZOWEUSER.) ACCESS(READ)
   SETROPTS RACLIST(APPL) REFRESH
 
 /* permit Zowe main server to set job name                           */
   RLIST   FACILITY BPX.JOBNAME ALL
   RDEFINE FACILITY BPX.JOBNAME UACC(NONE)
-  PERMIT BPX.JOBNAME CLASS(FACILITY) ACCESS(READ) ID({zowe.setup.security.users.zowe}.)
+  PERMIT BPX.JOBNAME CLASS(FACILITY) ACCESS(READ) ID(&ZOWEUSER.)
 
   SETROPTS RACLIST(FACILITY) REFRESH
 
@@ -302,26 +362,26 @@
   RLIST   UNIXPRIV SUPERUSER.FILESYS ALL
   RDEFINE UNIXPRIV SUPERUSER.FILESYS UACC(NONE)
   PERMIT SUPERUSER.FILESYS CLASS(UNIXPRIV) ACCESS(CONTROL) -
-   ID({zowe.setup.security.users.zowe}.)
+   ID(&ZOWEUSER.)
 
   SETROPTS RACLIST(UNIXPRIV) REFRESH
 
 /* permit Zowe main server to use client certificate mapping service */
   RLIST   FACILITY IRR.RUSERMAP ALL
   RDEFINE FACILITY IRR.RUSERMAP UACC(NONE)
-  PERMIT IRR.RUSERMAP CLASS(FACILITY) ACCESS(READ) ID({zowe.setup.security.users.zowe}.)
+  PERMIT IRR.RUSERMAP CLASS(FACILITY) ACCESS(READ) ID(&ZOWEUSER.)
 
 /* permit Zowe main server to use distributed identity mapping       */
 /* service
   RLIST   FACILITY IRR.IDIDMAP.QUERY ALL
   RDEFINE FACILITY IRR.IDIDMAP.QUERY UACC(NONE)
   PERMIT IRR.IDIDMAP.QUERY CLASS(FACILITY) ACCESS(READ) -
-   ID({zowe.setup.security.users.zowe}.)
+   ID(&ZOWEUSER.)
 
 /* permit Zowe main server to cut SMF records                        */
   RLIST   FACILITY IRR.RAUDITX ALL
   RDEFINE FACILITY IRR.RAUDITX UACC(NONE)
-  PERMIT IRR.RAUDITX CLASS(FACILITY) ACCESS(READ) ID({zowe.setup.security.users.zowe}.)
+  PERMIT IRR.RAUDITX CLASS(FACILITY) ACCESS(READ) ID(&ZOWEUSER.)
 
   SETROPTS RACLIST(FACILITY) REFRESH
 /* show results .................................................... */
@@ -343,19 +403,19 @@
 /*   EGN is not active on your system.                               */
 
 /* HLQ stub                                                          */
-  LISTGRP  {zowe.setup.dataset.prefix}.
-  ADDGROUP {zowe.setup.dataset.prefix}. DATA('Zowe - HLQ STUB')
+  LISTGRP  &HLQ.
+  ADDGROUP &HLQ. DATA('Zowe - HLQ STUB')
 
 /* general data set protection                                       */
-  LISTDSD PREFIX({zowe.setup.dataset.prefix}.) ALL
-  ADDSD  '{zowe.setup.dataset.prefix}..*.**' UACC(READ) DATA('Zowe')
-  PERMIT '{zowe.setup.dataset.prefix}..*.**' CLASS(DATASET) ACCESS(ALTER) ID({zowe.setup.security.groups.sysProg}.)
+  LISTDSD PREFIX(&HLQ.) ALL
+  ADDSD  '&HLQ..*.**' UACC(READ) DATA('Zowe')
+  PERMIT '&HLQ..*.**' CLASS(DATASET) ACCESS(ALTER) ID(&SYSPROG.)
 
   SETROPTS GENERIC(DATASET) REFRESH
 
 /* show results .................................................... */
-  LISTGRP {zowe.setup.dataset.prefix}.
-  LISTDSD PREFIX({zowe.setup.dataset.prefix}.) ALL
+  LISTGRP &HLQ.
+  LISTDSD PREFIX(&HLQ.) ALL
 
 /* DEFINE ZOWE RESOURCE PROTECTION ................................. */
 
@@ -410,13 +470,13 @@ ACF
 * replace AUTOGID with GID(&ADMINGID.) if AUTOGID is not enabled
 *
 SET PROFILE(GROUP) DIV(OMVS)
-INSERT {zowe.setup.security.groups.admin}. AUTOGID
+INSERT &ADMINGRP. AUTOGID
 F ACF2,REBUILD(GRP),CLASS(P)
 *
 * uncomment and customize to add an existing userid as administrator
 *
 * SET X(ROL)
-* INSERT {zowe.setup.security.groups.admin}. INCLUDE(userid) ROLE
+* INSERT &ADMINGRP. INCLUDE(userid) ROLE
 * F ACF2,NEWXREF,TYPE(ROL)
 *
 * DEFINE STARTED TASK .............................................
@@ -427,7 +487,7 @@ F ACF2,REBUILD(GRP),CLASS(P)
 * replace AUTOGID with GID(&STCGID.) if AUTOGID is not enabled
 *
 SET PROFILE(GROUP) DIV(OMVS)
-INSERT {zowe.setup.security.groups.stc}. AUTOGID
+INSERT &STCGRP. AUTOGID
 F ACF2,REBUILD(GRP),CLASS(P)
 *
 *****
@@ -436,18 +496,18 @@ F ACF2,REBUILD(GRP),CLASS(P)
 * replace AUTOUID with UID(&ZOWEUID.) if AUTOUID is not enabled
 *
 SET LID
-INSERT {zowe.setup.security.users.zowe}. STC GROUP({zowe.setup.security.groups.stc}.)
+INSERT &ZOWEUSER. STC GROUP(&STCGRP.)
 SET PROFILE(USER) DIV(OMVS)
-INSERT {zowe.setup.security.users.zowe}. AUTOUID HOME(/tmp) OMVSPGM(/bin/sh)
+INSERT &ZOWEUSER. AUTOUID HOME(/tmp) OMVSPGM(/bin/sh)
 F ACF2,REBUILD(USR),CLASS(P),DIVISION(OMVS)
 *
 * userid for ZIS cross memory server
 * replace AUTOUID with UID(&ZISUID.) if AUTOUID is not enabled
 *
 SET LID
-INSERT {zowe.setup.security.users.zis}. STC GROUP({zowe.setup.security.groups.stc}.)
+INSERT &ZISUSER. STC GROUP(&STCGRP.)
 SET PROFILE(USER) DIV(OMVS)
-INSERT {zowe.setup.security.users.zis}. AUTOUID HOME(/tmp) OMVSPGM(/bin/sh)
+INSERT &ZISUSER. AUTOUID HOME(/tmp) OMVSPGM(/bin/sh)
 F ACF2,REBUILD(USR),CLASS(P),DIVISION(OMVS)
 *
 *****
@@ -455,44 +515,44 @@ F ACF2,REBUILD(USR),CLASS(P),DIVISION(OMVS)
 * started task for ZOWE main server
 *
 SET CONTROL(GSO)
-INSERT STC.{zowe.setup.security.stcs.zowe}. LOGONID({zowe.setup.security.users.zowe}.) +
-GROUP({zowe.setup.security.groups.stc}.) +
-STCID({zowe.setup.security.stcs.zowe}.)
+INSERT STC.&ZOWESTC. LOGONID(&ZOWEUSER.) +
+GROUP(&STCGRP.) +
+STCID(&ZOWESTC.)
 F ACF2,REFRESH(STC)
 *
 * started task for ZOWE Launcher in high availability
 *
 SET CONTROL(GSO)
-INSERT STC.{zowe.setup.security.stcs.zowe}. LOGONID({zowe.setup.security.users.zowe}.) +
-GROUP({zowe.setup.security.groups.stc}.) +
-STCID({zowe.setup.security.stcs.zowe}.)
+INSERT STC.&ZLNCHSTC. LOGONID(&ZOWEUSER.) +
+GROUP(&STCGRP.) +
+STCID(&ZLNCHSTC.)
 F ACF2,REFRESH(STC)
 *
 * started task for ZIS cross memory server
 *
 SET CONTROL(GSO)
-INSERT STC.{zowe.setup.security.stcs.zis}. LOGONID({zowe.setup.security.users.zis}.) +
-GROUP({zowe.setup.security.groups.stc}.) +
-STCID({zowe.setup.security.stcs.zis}.)
+INSERT STC.&ZISSTC. LOGONID(&ZISUSER.) +
+GROUP(&STCGRP.) +
+STCID(&ZISSTC.)
 F ACF2,REFRESH(STC)
 *
 * started task for ZIS Auxiliary cross memory server
 *
 SET CONTROL(GSO)
-INSERT STC.{zowe.setup.security.stcs.aux}. LOGONID({zowe.setup.security.users.zis}.) +
-GROUP({zowe.setup.security.groups.stc}.) +
-STCID({zowe.setup.security.stcs.aux}.)
+INSERT STC.&AUXSTC. LOGONID(&ZISUSER.) +
+GROUP(&STCGRP.) +
+STCID(&AUXSTC.)
 F ACF2,REFRESH(STC)
 *
 * DEFINE ZIS SECURITY RESOURCES ..................................
 *
-* define a role holding the permissions, add {zowe.setup.security.users.zis} and
-* {zowe.setup.security.users.zowe} to it
+* define a role holding the permissions, add &ZISUSER and
+* &ZOWEUSER to it
 *
 SET X(ROL)
-INSERT {zowe.setup.security.groups.stc}. INCLUDE({zowe.setup.security.users.zowe}.) ROLE
+INSERT &STCGRP. INCLUDE(&ZOWEUSER.) ROLE
 F ACF2,NEWXREF,TYPE(ROL)
-CHANGE {zowe.setup.security.groups.stc}. INCLUDE({zowe.setup.security.users.zis}.) ADD
+CHANGE &STCGRP. INCLUDE(&ZISUSER.) ADD
 F ACF2,NEWXREF,TYPE(ROL)
 *
 * DEFINE STC SERVER PERMISIONS ....................................
@@ -500,7 +560,7 @@ F ACF2,NEWXREF,TYPE(ROL)
 * permit AUX and Zowe main server to use ZIS cross memory server
 *
 SET RESOURCE(FAC)
-RECKEY ZWES ADD(IS SERVICE(READ) ROLE({zowe.setup.security.groups.stc}.) ALLOW)
+RECKEY ZWES ADD(IS SERVICE(READ) ROLE(&STCGRP.) ALLOW)
 F ACF2,REBUILD(FAC)
 *
 * DEFINE ZOWE SERVER PERMISIONS ...................................
@@ -513,18 +573,18 @@ F ACF2,REBUILD(FAC)
 *            it on a production system.
 *
 SET RESOURCE(FAC)
-RECKEY BPX ADD(DAEMON SERVICE(UPDATE) ROLE({zowe.setup.security.groups.stc}.) ALLOW)
-RECKEY BPX ADD(SERVER SERVICE(UPDATE) ROLE({zowe.setup.security.groups.stc}.) ALLOW)
+RECKEY BPX ADD(DAEMON SERVICE(UPDATE) ROLE(&STCGRP.) ALLOW)
+RECKEY BPX ADD(SERVER SERVICE(UPDATE) ROLE(&STCGRP.) ALLOW)
 *
 * permit Zowe main server to create a user's security environment
 * comment out the following 3 lines if the OMVSAPPL is not defined
 * in your environment
 SET RESOURCE(APL)
-RECKEY OMVSAPPL ADD(SERVICE(READ) ROLE({zowe.setup.security.groups.stc}.) ALLOW)
+RECKEY OMVSAPPL ADD(SERVICE(READ) ROLE(&STCGRP.) ALLOW)
 F ACF2,REBUILD(APL)
 *
 * Allow STCGRP role access to BPX.JOBNAME
-RECKEY BPX ADD(JOBNAME SERVICE(READ) ROLE({zowe.setup.security.groups.stc}.) ALLOW)
+RECKEY BPX ADD(JOBNAME SERVICE(READ) ROLE(&STCGRP.) ALLOW)
 F ACF2,REBUILD(FAC)
 *
 ** comment out to not use SUPERUSER.FILESYS, see JCL comments
@@ -535,27 +595,27 @@ COMPILE *
 $KEY(SUPERUSER.FILESYS)
 $TYPE(UNI)
 $ROLESET
- ROLE({zowe.setup.security.groups.stc}.) ALLOW
+ ROLE(&STCGRP.) ALLOW
 
 STORE
 * SET RESOURCE(UNI)
-* RECKEY SUPERUSER.FILESYS ADD(SERVICE(READ) ROLE({zowe.setup.security.groups.stc}.) ALLOW)
+* RECKEY SUPERUSER.FILESYS ADD(SERVICE(READ) ROLE(&STCGRP.) ALLOW)
 
   F ACF2,REBUILD(UNI)
 
 * allow STCGRP role to use client certificate mapping service
 SET RESOURCE(FAC)
-RECKEY IRR ADD(RUSERMAP ROLE({zowe.setup.security.groups.stc}.) SERVICE(READ) ALLOW)
+RECKEY IRR ADD(RUSERMAP ROLE(&STCGRP.) SERVICE(READ) ALLOW)
 F ACF2,REBUILD(FAC)
 
 * allow STCGRP role to use distributed identity mapping service
 SET RESOURCE(FAC)
-RECKEY IRR ADD(IDIDMAP.QUERY ROLE({zowe.setup.security.groups.stc}.) SERVICE(READ) ALLOW)
+RECKEY IRR ADD(IDIDMAP.QUERY ROLE(&STCGRP.) SERVICE(READ) ALLOW)
 F ACF2,REBUILD(FAC)
 
 * permit Zowe main server to cut SMF records
 SET RESOURCE(FAC)
-RECKEY IRR ADD(RAUDITX ROLE({zowe.setup.security.groups.stc}.) SERVICE(READ) ALLOW)
+RECKEY IRR ADD(RAUDITX ROLE(&STCGRP.) SERVICE(READ) ALLOW)
 F ACF2,REBUILD(FAC)
 
 *
@@ -567,13 +627,13 @@ F ACF2,REBUILD(FAC)
 *  HLQ stub
 SET RULE
 *  general data set protection
-LIST {zowe.setup.dataset.prefix}.
-RECKEY {zowe.setup.dataset.prefix}. ADD(- UID(-) READ(A) EXEC(P))
-RECKEY {zowe.setup.dataset.prefix}. +
-ADD(- UID({zowe.setup.security.groups.sysProg}.) READ(A) EXEC(A) ALLOC(A) WRITE(A))
+LIST &HLQ.
+RECKEY &HLQ. ADD(- UID(-) READ(A) EXEC(P))
+RECKEY &HLQ. +
+ADD(- UID(&SYSPROG.) READ(A) EXEC(A) ALLOC(A) WRITE(A))
 *
 *  show results
-LIST {zowe.setup.dataset.prefix}.
+LIST &HLQ.
 *
 
 *
@@ -614,67 +674,67 @@ $$
 /* DEFINE ADMINISTRATORS ........................................... */
 
 /* group for administrators                                          */
-  TSS LIST({zowe.setup.security.groups.admin}.) SEGMENT(OMVS)
-  TSS CREATE({zowe.setup.security.groups.admin}.) TYPE(GROUP) +
+  TSS LIST(&ADMINGRP.) SEGMENT(OMVS)
+  TSS CREATE(&ADMINGRP.) TYPE(GROUP) +
    NAME('ZOWE ADMINISTRATORS') +
    DEPT(&ADMINDEP.)
-  TSS ADD({zowe.setup.security.groups.admin}.) GID(&ADMINGID.)
+  TSS ADD(&ADMINGRP.) GID(&ADMINGID.)
 
 /* uncomment to add existing user IDs to the &ADMINGRP group         */
-/* TSS ADD(userid) GROUP({zowe.setup.security.groups.admin}.) */
+/* TSS ADD(userid) GROUP(&ADMINGRP.) */
 
 /* DEFINE STARTED TASK ............................................. */
 
 /* comment out if STCGRP matches ADMINGRP (default), expect          */
 /*   warning messages otherwise                                      */
 /* group for started tasks                                           */
-  TSS LIST({zowe.setup.security.groups.stc}.) SEGMENT(OMVS)
-  TSS CREATE({zowe.setup.security.groups.stc}.) TYPE(GROUP) +
+  TSS LIST(&STCGRP.) SEGMENT(OMVS)
+  TSS CREATE(&STCGRP.) TYPE(GROUP) +
    NAME('STC GROUP WITH OMVS SEGMENT') +
    DEPT(&STCGDEP.)
-  TSS ADD({zowe.setup.security.groups.stc}.) GID(&STCGID.)
+  TSS ADD(&STCGRP.) GID(&STCGID.)
 
 /* */
 
 /* userid for ZOWE main server                                       */
-  TSS LIST({zowe.setup.security.users.zowe}.) SEGMENT(OMVS)
-  TSS CREATE({zowe.setup.security.users.zowe}.) TYPE(USER) PASS(NOPW,0) +
+  TSS LIST(&ZOWEUSER.) SEGMENT(OMVS)
+  TSS CREATE(&ZOWEUSER.) TYPE(USER) PASS(NOPW,0) +
    NAME('ZOWE MAIN SERVER') +
    DEPT(&STCUDEP.)
-   TSS ADD({zowe.setup.security.users.zowe}.) GROUP({zowe.setup.security.groups.stc}.) +
-   DFLTGRP({zowe.setup.security.groups.stc}.) +
+   TSS ADD(&ZOWEUSER.) GROUP(&STCGRP.) +
+   DFLTGRP(&STCGRP.) +
    HOME(/tmp) OMVSPGM(/bin/sh) UID(&ZOWEUID.)
 
 /* userid for ZIS cross memory server                                */
-  TSS LIST({zowe.setup.security.users.zis}.) SEGMENT(OMVS)
-  TSS CREATE({zowe.setup.security.users.zis}.) TYPE(USER) PASS(NOPW,0) +
+  TSS LIST(&ZISUSER.) SEGMENT(OMVS)
+  TSS CREATE(&ZISUSER.) TYPE(USER) PASS(NOPW,0) +
    NAME('ZOWE ZIS CROSS MEMORY SERVER') +
    DEPT(&STCUDEP.)
-  TSS ADD({zowe.setup.security.users.zis}.) GROUP({zowe.setup.security.groups.stc}.) +
-   DFLTGRP({zowe.setup.security.groups.stc}.) +
+  TSS ADD(&ZISUSER.) GROUP(&STCGRP.) +
+   DFLTGRP(&STCGRP.) +
    HOME(/tmp) OMVSPGM(/bin/sh) UID(&ZISUID.)
 
 /* */
 
 /* started task for ZOWE main server                                 */
-  TSS LIST(STC) PROCNAME({zowe.setup.security.stcs.zowe}.) PREFIX
-  TSS ADD(STC) PROCNAME({zowe.setup.security.stcs.zowe}.) ACID({zowe.setup.security.users.zowe}.)
-  TSS ADD({zowe.setup.security.users.zowe}.) FAC(STC)
+  TSS LIST(STC) PROCNAME(&ZOWESTC.) PREFIX
+  TSS ADD(STC) PROCNAME(&ZOWESTC.) ACID(&ZOWEUSER.)
+  TSS ADD(&ZOWEUSER.) FAC(STC)
 
 /* started task for ZOWE Launcher in high availability               */
-  TSS LIST(STC) PROCNAME({zowe.setup.security.stcs.zowe}.) PREFIX
-  TSS ADD(STC) PROCNAME({zowe.setup.security.stcs.zowe}.) ACID({zowe.setup.security.users.zowe}.)
-  TSS ADD({zowe.setup.security.users.zowe}.) FAC(STC)
+  TSS LIST(STC) PROCNAME(&ZLNCHSTC.) PREFIX
+  TSS ADD(STC) PROCNAME(&ZLNCHSTC.) ACID(&ZOWEUSER.)
+  TSS ADD(&ZOWEUSER.) FAC(STC)
 
 /* started task for ZIS cross memory server                          */
-  TSS LIST(STC) PROCNAME({zowe.setup.security.stcs.zis}.) PREFIX
-  TSS ADD(STC) PROCNAME({zowe.setup.security.stcs.zis}.) ACID({zowe.setup.security.users.zis}.)
-  TSS ADD({zowe.setup.security.users.zis}.) FAC(STC)
+  TSS LIST(STC) PROCNAME(&ZISSTC.) PREFIX
+  TSS ADD(STC) PROCNAME(&ZISSTC.) ACID(&ZISUSER.)
+  TSS ADD(&ZISUSER.) FAC(STC)
 
 /* started task for ZIS Auxiliary cross memory server                */
-  TSS LIST(STC) PROCNAME({zowe.setup.security.stcs.aux}.) PREFIX
-  TSS ADD(STC) PROCNAME({zowe.setup.security.stcs.aux}.) ACID({zowe.setup.security.users.zis}.)
-  TSS ADD({zowe.setup.security.users.zis}.) FAC(STC)
+  TSS LIST(STC) PROCNAME(&AUXSTC.) PREFIX
+  TSS ADD(STC) PROCNAME(&AUXSTC.) ACID(&ZISUSER.)
+  TSS ADD(&ZISUSER.) FAC(STC)
 
 /* DEFINE ZIS SECURITY RESOURCES ................................... */
 
@@ -685,7 +745,7 @@ $$
 
 /* permit AUX STC to use ZIS cross memory server                     */
   TSS WHOHAS IBMFAC(ZWES.IS)
-  TSS PERMIT({zowe.setup.security.users.zis}.) IBMFAC(ZWES.IS) ACCESS(READ)
+  TSS PERMIT(&ZISUSER.) IBMFAC(ZWES.IS) ACCESS(READ)
 
 #if($ibmTemplate != 'YES')
 /* The ZOWESTC started task is a multi-user address space therefore  */
@@ -719,7 +779,7 @@ $$
 
 /* permit Zowe main server to use ZIS cross memory server            */
   TSS WHOHAS IBMFAC(ZWES.IS)
-  TSS PERMIT({zowe.setup.security.users.zowe}.) IBMFAC(ZWES.IS) ACCESS(READ)
+  TSS PERMIT(&ZOWEUSER.) IBMFAC(ZWES.IS) ACCESS(READ)
 
 /* permit Zowe main server to create a user's security environment   */
 /* ATTENTION: Defining the BPX.DAEMON or BPX.SERVER profile makes    */
@@ -729,37 +789,37 @@ $$
 /*            it on a production system.                             */
   TSS ADD(&FACACID.) IBMFAC(BPX.)
   TSS WHOHAS IBMFAC(BPX.DAEMON)
-  TSS PER({zowe.setup.security.users.zowe}.) IBMFAC(BPX.DAEMON) ACCESS(UPDATE)
+  TSS PER(&ZOWEUSER.) IBMFAC(BPX.DAEMON) ACCESS(UPDATE)
   TSS WHOHAS IBMFAC(BPX.SERVER)
-  TSS PER({zowe.setup.security.users.zowe}.) IBMFAC(BPX.SERVER) ACCESS(UPDATE)
+  TSS PER(&ZOWEUSER.) IBMFAC(BPX.SERVER) ACCESS(UPDATE)
 
 /* permit Zowe main server to create a user's security environment   */
 /* comment out the following line if the OMVSAPPL is not defined     */
 /* in your environment                                               */
-TSS PERMIT({zowe.setup.security.users.zowe}.) APPL(OMVSAPPL)
+TSS PERMIT(&ZOWEUSER.) APPL(OMVSAPPL)
 
 /* Allow ZOWEUSER access to BPX.JOBNAME                              */
   TSS WHOHAS IBMFAC(BPX.JOBNAME)
-  TSS PER({zowe.setup.security.users.zowe}.) IBMFAC(BPX.JOBNAME) ACCESS(READ)
+  TSS PER(&ZOWEUSER.) IBMFAC(BPX.JOBNAME) ACCESS(READ)
 
 /* comment out to not use SUPERUSER.FILESYS, see JCL comments        */
 /* permit Zowe main server to write persistent data                  */
   TSS ADD(&FACACID.) UNIXPRIV(SUPERUSE)
   TSS WHOHAS UNIXPRIV(SUPERUSER.FILESYS)
-  TSS PER({zowe.setup.security.users.zowe}.) UNIXPRIV(SUPERUSER.FILESYS) ACCESS(CONTROL)
+  TSS PER(&ZOWEUSER.) UNIXPRIV(SUPERUSER.FILESYS) ACCESS(CONTROL)
 
 /* permit Zowe main server to use client certificate mapping service */
   TSS WHOHAS IBMFAC(IRR.RUSERMAP)
-  TSS PER({zowe.setup.security.users.zowe}.) IBMFAC(IRR.RUSERMAP) ACCESS(READ)
+  TSS PER(&ZOWEUSER.) IBMFAC(IRR.RUSERMAP) ACCESS(READ)
 
 /* permit Zowe main server to use distributed identity mapping       */
 /* service
   TSS WHOHAS IBMFAC(IRR.IDIDMAP.QUERY)
-  TSS PER({zowe.setup.security.users.zowe}.) IBMFAC(IRR.IDIDMAP.QUERY) ACCESS(READ)
+  TSS PER(&ZOWEUSER.) IBMFAC(IRR.IDIDMAP.QUERY) ACCESS(READ)
 
 /* permit Zowe main server to cut SMF records                        */
   TSS WHOHAS IBMFAC(IRR.RAUDITX)
-  TSS PER({zowe.setup.security.users.zowe}.) IBMFAC(IRR.RAUDITX) ACCESS(READ)
+  TSS PER(&ZOWEUSER.) IBMFAC(IRR.RAUDITX) ACCESS(READ)
 
 /* DEFINE ZOWE DATA SET PROTECTION ................................. */
 
@@ -767,15 +827,15 @@ TSS PERMIT({zowe.setup.security.users.zowe}.) APPL(OMVSAPPL)
 /*   advised to protect it against updates.                          */
 
 /* HLQ stub                                                          */
-  TSS ADD(&ADMINDEP.) DATASET({zowe.setup.dataset.prefix}..)
+  TSS ADD(&ADMINDEP.) DATASET(&HLQ..)
 
 /* general data set protection                                       */
-  TSS WHOHAS DATASET({zowe.setup.dataset.prefix}.)
-  TSS PER(ALL) DATASET({zowe.setup.dataset.prefix}..) ACCESS(READ)
-  TSS PER({zowe.setup.security.groups.sysProg})  DATASET({zowe.setup.dataset.prefix}..) ACCESS(ALL)
+  TSS WHOHAS DATASET(&HLQ.)
+  TSS PER(ALL) DATASET(&HLQ..) ACCESS(READ)
+  TSS PER(&SYSPROG)  DATASET(&HLQ..) ACCESS(ALL)
 
 /* show results                                                      */
-  TSS WHOHAS DATASET({zowe.setup.dataset.prefix}.)
+  TSS WHOHAS DATASET(&HLQ.)
 
 /* DEFINE ZOWE RESOURCE PROTECTION ................................. */
 
