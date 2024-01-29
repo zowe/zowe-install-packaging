@@ -256,7 +256,7 @@ pax -ppx -rf "${getesm}"
 rm "${getesm}"
 cd "${BASE_DIR}"
 
-configmgr=$(find "${ZOWE_ROOT_DIR}/files" -type f \( -name "configmgr-2*.pax" \) | head -n 1)
+configmgr=$(find "${ZOWE_ROOT_DIR}/files" -type f \( -name "configmgr-3*.pax" \) | head -n 1)
 echo "[$SCRIPT_NAME] extract configmgr $configmgr"
 cd "${ZOWE_ROOT_DIR}/bin/utils"
 pax -ppx -rf "${configmgr}"
