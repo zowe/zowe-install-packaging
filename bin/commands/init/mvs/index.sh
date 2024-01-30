@@ -29,7 +29,7 @@ if [ -z "${prefix}" ]; then
   print_error_and_exit "Error ZWEL0157E: Zowe dataset prefix (zowe.setup.dataset.prefix) is not defined in Zowe YAML configuration file." "" 157
 fi
 
-jcllib_location=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.dataset.prefix")
+jcllib_location=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.dataset.jcllib")
 does_jcl_exist=$(is_data_set_exists "${jcllib_location}(ZWEIMVS)")
 if [ "${does_jcl_exist}" = "false" ]; then
   print_error_and_exit "Error ZWEL0999E: ${jcllib_location}(ZWEIMVS) does not exist, cannot run. Run 'zwe init', 'zwe init generate', or submit JCL ${prefix}.SZWESAMP(ZWEGENER) before running this command." "" 999
@@ -81,16 +81,29 @@ else
   copy_mvs_to_uss "${jcllib_location}(ZWEIMVS)" "${jcl_file}"
   jcl_contents=$(cat "${jcl_file}")
 
-  print_message "Template JCL: ${prefix}.SZWESAMP(ZWEIMVS) , Executable JCL: ${jcl_location}(ZWEIMVS)"
+  print_message "Template JCL: ${prefix}.SZWESAMP(ZWEIMVS) , Executable JCL: ${jcllib_location}(ZWEIMVS)"
   print_message "JCL Content:"
   print_message "$jcl_contents"
 
   if [ -z "${ZWE_CLI_PARAMETER_DRY_RUN}" ]; then
     print_message "Submitting Job ZWEIMVS"
     jobid=$(submit_job "$jcl_contents")
-    rc=$(wait_for_job "${jobid}")
-    print_message "Job completed with RC=${rc}"
-    if [ "${rc}" -eq 0 ]; then
+    code=$?
+    if [ ${code} -ne 0 ]; then
+      print_error_and_exit "Error ZWEL0161E: Failed to run JCL ${jcllib_location}(ZWEIMVS)." "" 161
+    fi
+    print_debug "- job id ${jobid}"
+
+    jobstate=$(wait_for_job "${jobid}")
+    code=$?
+    if [ ${code} -eq 1 ]; then
+        print_error_and_exit "Error ZWEL0162E: Failed to find job ${jobid} result." "" 162
+    fi
+    jobname=$(echo "${jobstate}" | awk -F, '{print $2}')
+    jobcctext=$(echo "${jobstate}" | awk -F, '{print $3}')
+    jobcccode=$(echo "${jobstate}" | awk -F, '{print $4}')
+
+    if [ "${code}" -eq 0 ]; then
       print_level2_message "Zowe custom data sets are initialized successfully."
     else
       print_level2_message "Zowe custom data sets initialized with errors."
