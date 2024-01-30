@@ -1,1 +1,15 @@
-""
+{
+  "lockAcquiredTime": "Tue Jan 30 2024 15:17:10 GMT+0000 (Coordinated Universal Time)",
+  "uid": "1706627830764669801",
+  "repository": {
+    "owner": "zowe",
+    "repo": "zowe-install-packaging"
+  },
+  "branch": "DivergentEuropeans-patch-2",
+  "workflow": "Zowe CICD Integration Tests",
+  "job": "cicd-test",
+  "actor": "zowe-robot",
+  "runId": 7713319752,
+  "runNumber": 3854,
+  "link": "https://github.com/zowe/zowe-install-packaging/actions/runs/7713319752"
+}
