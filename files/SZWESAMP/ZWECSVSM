@@ -38,21 +38,21 @@
 //SYSPRINT DD SYSOUT=*                                                          
 //SYSIN    DD *                                                                 
   DEFINE CLUSTER -                                                              
-   (NAME({components.caching-service.storage.vsam.name}) -                                                             
-//         DD DDNAME={zowe.setup.vsam.mode}                                                      
+   (NAME({components.caching-service.storage.vsam.name}) -                      
+//         DD DDNAME={zowe.setup.vsam.mode}                                     
 //         DD *                                                                 
     REC(80 20) -                                                                
     INDEXED) -                                                                  
-   DATA(NAME({components.caching-service.storage.vsam.name}.DATA) -                                                    
+   DATA(NAME({components.caching-service.storage.vsam.name}.DATA) -             
     RECSZ(4096 4096) -                                                          
     UNIQUE -                                                                    
     KEYS(128 0)) -                                                              
-   INDEX(NAME({components.caching-service.storage.vsam.name}.INDEX) -                                                  
+   INDEX(NAME({components.caching-service.storage.vsam.name}.INDEX) -           
     UNIQUE)                                                                     
 //RLS      DD *                                                                 
-    STORCLAS({zowe.setup.vsam.storageClass}) -                                                       
+    STORCLAS({zowe.setup.vsam.storageClass}) -                                  
     LOG(NONE) -                                                                 
 //NONRLS   DD *                                                                 
-    VOLUME({zowe.setup.vsam.volume}) -                                                           
+    VOLUME({zowe.setup.vsam.volume}) -                                          
     SHAREOPTIONS(2 3) -                                                         
 //*                                                                             
