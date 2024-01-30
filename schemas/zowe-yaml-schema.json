@@ -382,6 +382,10 @@
                 "storageClass": {
                   "type": "string",
                   "description": "Storage class name if you are using VSAM in RLS mode"
+                },
+                "name": {
+                  "type": "string",
+                  "description": "Data set name. Must match components.caching-service.storage.vsam.name"
                 }
               }
             }

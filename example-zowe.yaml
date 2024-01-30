@@ -40,6 +40,10 @@ zowe:
     dataset:
       # **COMMONLY_CUSTOMIZED**
       # where Zowe MVS data sets will be installed
+      # This prefix is used for the Zowe runtime datasets
+      # Including:
+      #  Auth Load Lib: SZWEAUTH
+      #  Load Lib: SZWELOAD
       prefix: IBMUSER.ZWEV2
       # **COMMONLY_CUSTOMIZED**
       # PROCLIB where Zowe STCs will be copied over
@@ -176,7 +180,6 @@ zowe:
     # certificate:
     #   # Type of certificate storage. Valid values are: JCEKS, JCECCAKS, JCERACFKS, JCECCARACFKS, or JCEHYBRIDRACFKS
     #   type: JCERACFKS
-    #   createZosmfTrust: true
     #   keyring:
     #     # **COMMONLY_CUSTOMIZED**
     #     # keyring name
@@ -254,6 +257,7 @@ zowe:
 
     # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
     # VSAM configurations if you are using VSAM as Caching Service storage
+    # This is used in the optional "zwe init vsam" command.
     vsam:
       # VSAM data set with Record-Level-Sharing enabled or not
       # Valid values could be: NONRLS or RLS.
@@ -262,6 +266,8 @@ zowe:
       volume: ""
       # Storage class name if you are using VSAM in RLS mode
       storageClass: ""
+      # Data set name. Must match components.caching-service.storage.vsam.name
+      name: ""
 
   # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   # **COMMONLY_CUSTOMIZED**

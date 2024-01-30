@@ -27,16 +27,14 @@
 //   SPACE=(3120,(20,5,10))
 //*
 //* Replace {zowe.setup.dataset.prefix} with the
-//* HLQ where SMP/E installed data sets are located.
+//* Value as seen in zowe.yaml
 //*
 //SYSPROC  DD   DSN={zowe.setup.dataset.prefix}.SZWEEXEC,DISP=SHR
 //*
-//* Replace {zowe.setup.dataset.loadlib} with the data set
-//* that contains Zowe executables. This data set will have
-//* the suffix 'SZWELOAD'.
+//* Replace {zowe.setup.dataset.prefix} with the
+//* Value as seen in zowe.yaml
 //*
-//*
-//STEPLIB  DD   DSN={zowe.setup.dataset.loadlib},DISP=SHR
+//STEPLIB  DD   DSN={zowe.setup.dataset.prefix}.SZWELOAD,DISP=SHR
 //ISPPLIB  DD   DSN=ISP.SISPPENU,DISP=SHR
 //ISPMLIB  DD   DSN=ISP.SISPMENU,DISP=SHR
 //ISPTLIB  DD   DSN=ISP.SISPTENU,DISP=SHR
@@ -48,7 +46,7 @@
 //* server-common.json
 //*
 //* Replace {zowe.runtimeDirectory} with where your Zowe run time
-//* directory is.
+//* directory is, as seen in zowe.yaml
 //*
 //MYSCHEMA DD   *,DLM=$$
 FILE {zowe.runtimeDirectory}/schemas/zowe-yaml-schema.json
