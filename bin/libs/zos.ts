@@ -25,6 +25,7 @@ export function tsoCommand(...args:string[]): { rc: number, out: string } {
     common.printTrace(`  * Exit code: ${result.rc}`);
     common.printTrace("  * Output:");
     if (result.out) {
+      result.out = result.out.substring(0, result.out.length - 1);
       common.printTrace(stringlib.paddingLeft(result.out, "    "));
     }
   } else {
@@ -35,8 +36,7 @@ export function tsoCommand(...args:string[]): { rc: number, out: string } {
       common.printError(stringlib.paddingLeft(result.out, "    "));
     }
   }
-  //we strip the '.' we added above
-  return { rc: result.rc, out: result.out ? result.out.substring(0, result.out.length-1) : '' };
+  return { rc: result.rc, out: result.out ? result.out : '' };
 }
 
 export function operatorCommand(command: string): { rc: number, out: string } {
