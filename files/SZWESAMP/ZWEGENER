@@ -1,8 +1,8 @@
-//ZWEGENER JOB                                                                   
-//*                                                                              
-//* This job is responsible for generating other jobs required                   
-//* to configure Zowe.                                                           
-//*                                                                              
+//ZWEGENER JOB                                                                  
+//*                                                                             
+//* This job is responsible for generating other jobs required                  
+//* to configure Zowe.                                                          
+//*                                                                             
 //* The method of validating your configuration is using
 //* JSON Schema <https://json-schema.org>. Zowe provides
 //* the ConfigMgr to assist in this. This job will invoke
