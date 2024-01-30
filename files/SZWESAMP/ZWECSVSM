@@ -38,16 +38,16 @@
 //SYSPRINT DD SYSOUT=*                                                          
 //SYSIN    DD *                                                                 
   DEFINE CLUSTER -                                                              
-   (NAME({components.caching-service.storage.vsam.name}) -                      
+   (NAME({zowe.setup.vsam.name}) -                      
 //         DD DDNAME={zowe.setup.vsam.mode}                                     
 //         DD *                                                                 
     REC(80 20) -                                                                
     INDEXED) -                                                                  
-   DATA(NAME({components.caching-service.storage.vsam.name}.DATA) -             
+   DATA(NAME({zowe.setup.vsam.name}.DATA) -             
     RECSZ(4096 4096) -                                                          
     UNIQUE -                                                                    
     KEYS(128 0)) -                                                              
-   INDEX(NAME({components.caching-service.storage.vsam.name}.INDEX) -           
+   INDEX(NAME({zowe.setup.vsam.name}.INDEX) -           
     UNIQUE)                                                                     
 //RLS      DD *                                                                 
     STORCLAS({zowe.setup.vsam.storageClass}) -                                  

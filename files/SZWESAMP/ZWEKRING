@@ -179,7 +179,7 @@ $$
             WITHLABEL('{zowe.setup.certificate.keyring.label}.') +
             KEYUSAGE(HANDSHAKE) +
             ALTNAME(IP(&IPADDRES) +
-                DOMAIN('{zowe.externalDomains[0]}')) +
+                DOMAIN('{zowe.externalDomains.0}')) +
             SIGNWITH(CERTAUTH +
                 LABEL('{zowe.setup.certificate.keyring.caLabel}'))
 
@@ -413,7 +413,7 @@ ACF
            EXPIRE(05/01/30) -
            LABEL({zowe.setup.certificate.keyring.label}.) -
            KEYUSAGE(HANDSHAKE) -
-           ALTNAME(IP=&IPADDRES DOMAIN={zowe.externalDomains[0]}) -
+           ALTNAME(IP=&IPADDRES DOMAIN={zowe.externalDomains.0}) -
            SIGNWITH(CERTAUTH.ZOWECA)
 *
 * Connect a Zowe's certificate with the keyring ................... */
@@ -590,7 +590,7 @@ $$
        NADATE(05/01/30) +
        LABLCERT({zowe.setup.certificate.keyring.label}.) +
        KEYUSAGE('HANDSHAKE') +
-       ALTNAME('DOMAIN={zowe.externalDomains[0]}') +
+       ALTNAME('DOMAIN={zowe.externalDomains.0}') +
        SIGNWITH(CERTAUTH,ZOWECA)
 
 /* Connect a Zowe's certificate with the keyring ................... */
