@@ -115,7 +115,7 @@ else
   # FIXME: move these parts to zss commands.install?
   # FIXME: ZWESIPRG is in zowe-install-packaging
   cd "${ZWE_zowe_runtimeDirectory}/components/zss"
-  zss_samplib="ZWESAUX=ZWESASTC ZWESIP00 ZWESIS01=ZWESISTC ZWESISCH"
+  zss_samplib="ZWESASTC ZWESIP00 ZWESISTC ZWESISCH"
   for mb in ${zss_samplib}; do
     mb_from=$(echo "${mb}" | awk -F= '{print $1}')
     mb_to=$(echo "${mb}" | awk -F= '{print $2}')

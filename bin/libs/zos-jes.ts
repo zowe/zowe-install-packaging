@@ -36,7 +36,11 @@ export function submitJob(jclFile: string): string|undefined {
   const code=result.rc;
   if (code==0) {
     let jobidlines = result.out.split('\n').filter(line=>line.indexOf('submitted')!=-1);
-    const jobid = jobidlines.length > 0 ? jobidlines[0].split(' ')[1] : undefined;
+    let jobid = jobidlines.length > 0 ? jobidlines[0].split(' ')[1] : undefined;
+    if (!jobid) {
+      jobidlines = result.out.split('\n').filter(line=>line.indexOf('$HASP')!=-1);
+      jobid = jobidlines.length > 0 ? jobidlines[0].split(' ')[1] : undefined;
+    }
     if (!jobid) {
       common.printDebug(`  * Failed to find job ID`);
       common.printError(`  * Exit code: ${code}`);
