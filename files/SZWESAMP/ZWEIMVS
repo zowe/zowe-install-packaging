@@ -43,7 +43,7 @@ blksize(32760) unit(sysallda) space(30,15) tracks
 //MCOPY1 EXEC PGM=IEBCOPY                         
 //SYSPRINT DD SYSOUT=A                            
 //SYSUT1 DD DSN={zowe.setup.dataset.prefix}.SZWESAMP,DISP=SHR  
-//SYSUT2 DD DSN={zowe.setup.dataset.jcllib},DISP=OLD
+//SYSUT2 DD DSN={zowe.setup.dataset.parmlib},DISP=OLD
 //SYSIN DD *                                      
   COPY OUTDD=SYSUT2,INDD=SYSUT1                                  
   SELECT MEMBER=(ZWESIP00)                          
