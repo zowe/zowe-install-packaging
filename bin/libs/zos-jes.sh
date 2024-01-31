@@ -38,6 +38,9 @@ submit_job() {
   if [ ${code} -eq 0 ]; then
     jobid=$(echo "${result}" | grep submitted | awk '{print $2}')
     if [ -z "${jobid}" ]; then
+      jobid=$(echo "${result}" | grep "$HASP" | awk '{print $2}')
+    fi
+    if [ -z "${jobid}" ]; then
       print_debug "  * Failed to find job ID"
       print_error "  * Exit code: ${code}"
       print_error "  * Output:"

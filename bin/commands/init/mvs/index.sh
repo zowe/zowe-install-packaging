@@ -87,7 +87,7 @@ else
 
   if [ -z "${ZWE_CLI_PARAMETER_DRY_RUN}" ]; then
     print_message "Submitting Job ZWEIMVS"
-    jobid=$(submit_job "$jcl_contents")
+    jobid=$(submit_job $jcl_file)
     code=$?
     if [ ${code} -ne 0 ]; then
       print_error_and_exit "Error ZWEL0161E: Failed to run JCL ${jcllib_location}(ZWEIMVS)." "" 161
@@ -96,6 +96,7 @@ else
 
     jobstate=$(wait_for_job "${jobid}")
     code=$?
+    rm $jcl_file
     if [ ${code} -eq 1 ]; then
         print_error_and_exit "Error ZWEL0162E: Failed to find job ${jobid} result." "" 162
     fi
@@ -112,6 +113,7 @@ else
     print_message "JCL not submitted, command run with dry run flag."
     print_message "To perform command, re-run command without dry run flag, or submit the JCL directly"
     print_level2_message "Zowe custom data sets are initialized successfully."
+    rm $jcl_file
   fi
 fi
 
