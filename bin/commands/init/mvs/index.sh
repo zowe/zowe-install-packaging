@@ -17,7 +17,7 @@ print_level1_message "Initialize Zowe custom data sets"
 cust_ds_list="parmlib|Zowe parameter library
 jcllib|Zowe JCL library
 authLoadlib|Zowe authorized load library
-authPluginLib|Zowe authorized plugin library
+authPluginLib|Zowe authorized plugin library"
 
 ###############################
 # validation
