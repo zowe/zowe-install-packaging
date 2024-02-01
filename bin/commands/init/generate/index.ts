@@ -27,13 +27,15 @@ export function execute(dryRun?: boolean) {
 
   jclContents = jclContents.replace(/\{zowe\.setup\.dataset\.prefix\}/gi, ZOWE_CONFIG.zowe.setup.dataset.prefix);
   jclContents = jclContents.replace(/\{zowe\.runtimeDirectory\}/gi, ZOWE_CONFIG.zowe.runtimeDirectory);
-  jclContents = jclContents.replace('FILE <full path to zowe.yaml file>', 'FILE '+ZOWE_CONFIG.zowe.workspaceDirectory+'/.env/.zowe-merged.yaml');
+  let absConfig = fs.convertToAbsolutePath(std.getenv('ZWE_PRIVATE_CONFIG_ORIG'));
+  jclContents = jclContents.replace('FILE <full path to zowe.yaml file>', 'FILE '+absConfig);
 
   xplatform.storeFileUTF8(tempFile, xplatform.AUTO_DETECT, jclContents);
   
   common.printMessage(`Template JCL: ${ZOWE_CONFIG.zowe.setup.dataset.prefix + '.SZWESAMP(ZWEGENER)'}`);
-  common.printMessage('JCL content:');
+  common.printMessage('--- JCL content ---');
   common.printMessage(jclContents);
+  common.printMessage('--- End of JCL ---');
   
   if (dryRun) {
     common.printMessage('JCL not submitted, command run with dry run flag.');

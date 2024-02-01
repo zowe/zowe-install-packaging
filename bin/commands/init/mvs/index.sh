@@ -30,14 +30,13 @@ if [ -z "${prefix}" ]; then
 fi
 
 jcllib_location=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.dataset.jcllib")
-jcllib=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.dataset.jcllib")
-does_jcl_exist=$(is_data_set_exists "${jcllib}(ZWEIMVS)")
+does_jcl_exist=$(is_data_set_exists "${jcllib_location}(ZWEIMVS)")
 if [ "${does_jcl_exist}" = "false" ]; then
   zwecli_inline_execute_command init generate
 fi
-does_jcl_exist=$(is_data_set_exists "${jcllib}(ZWEIMVS)")
+does_jcl_exist=$(is_data_set_exists "${jcllib_location}(ZWEIMVS)")
 if [ "${does_jcl_exist}" = "false" ]; then
-  print_error_and_exit "Error ZWEL0999E: ${jcllib}(ZWEIMVS) does not exist, cannot run. Run 'zwe init', 'zwe init generate', or submit JCL ${prefix}.SZWESAMP(ZWEGENER) before running this command." "" 999
+  print_error_and_exit "Error ZWEL0999E: ${jcllib_location}(ZWEIMVS) does not exist, cannot run. Run 'zwe init', 'zwe init generate', or submit JCL ${prefix}.SZWESAMP(ZWEGENER) before running this command." "" 999
 fi
 
 

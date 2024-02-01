@@ -36,7 +36,7 @@ parse arg operation verbosity
 
 schemaChain = GetSchemaChain()
 configChain = GetConfigChain()
-configChainWithMembers = GetConfigChainW[IithMembers()
+configChainWithMembers = GetConfigChainWithMembers()
 
 /*
 ================================================================================
