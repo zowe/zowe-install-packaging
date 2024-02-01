@@ -36,6 +36,7 @@ parse arg operation verbosity
 
 schemaChain = GetSchemaChain()
 configChain = GetConfigChain()
+configChainWithMembers = GetConfigChainW[IithMembers()
 
 /*
 ================================================================================
@@ -73,6 +74,7 @@ end
 CFG.zwe.header.user = USERID()
 CFG.zwe.header.date = TRANSLATE(DATE(), '-', ' ')
 CFG.zwe.header.time = TIME()
+CFG.ZWE_CLI_PARAMETER_CONFIG = configChainWithMembers
 
 /*
 ================================================================================
@@ -750,11 +752,41 @@ FreeByDSN:
       type = WORD(!contentToRead.j, 1)
       location = WORD(!contentToRead.j, 2)
       element = type'('location')'
+      if COMPARE(type, 'PARMLIB') = 0 then do
+        elementWithMember = 'PARMLIB('location'(ZWEYAML))'
+      end
       configChain = AddToChain(configChain, element)
     end
   end
 
   return configChain
+
+/*
+================================================================================
+  GetConfigChainWithMembers()
+================================================================================
+*/
+ GetConfigChainWithMembers:
+  procedure expose !verbose
+
+  configChain = ''
+
+  if ReadFromDataSet('myconfig') = 0 then do
+    do j = 1 to !contentToRead.0
+      type = WORD(!contentToRead.j, 1)
+      location = WORD(!contentToRead.j, 2)
+      if COMPARE(type, 'PARMLIB') = 0 then do
+        element = 'PARMLIB('location'(ZWEYAML))'
+      end
+      else do
+        element = type'('location')'
+      end
+      configChain = AddToChain(configChain, element)
+    end
+  end
+
+  return configChain
+
 
 /*
 ================================================================================

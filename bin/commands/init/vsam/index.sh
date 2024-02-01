@@ -32,12 +32,15 @@ if [ -z "${prefix}" ]; then
 fi
 
 jcllib=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.dataset.jcllib")
-does_jcl_exist=$(is_data_set_exists "${jcllib}(ZWEIMVS)")
+does_jcl_exist=$(is_data_set_exists "${jcllib}(ZWECSVSM)")
 if [ "${does_jcl_exist}" = "false" ]; then
-  print_error_and_exit "Error ZWEL0999E: ${jcllib}(ZWEIMVS) does not exist, cannot run. Run 'zwe init', 'zwe init generate', or submit JCL ${prefix}.SZWESAMP(ZWEGENER) before running this command." "" 999
+  zwecli_inline_execute_command init generate
 fi
-
-
+does_jcl_exist=$(is_data_set_exists "${jcllib}(ZWECSVSM)")
+if [ "${does_jcl_exist}" = "false" ]; then
+  print_error_and_exit "Error ZWEL0999E: ${jcllib}(ZWECSVSM) does not exist, cannot run. Run 'zwe init', 'zwe init generate', or submit JCL ${prefix}.SZWESAMP(ZWEGENER) before running this command." "" 999
+fi
+[I
 
 vsam_mode=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.vsam.mode")
 if [ -z "${vsam_mode}" ]; then
@@ -62,18 +65,6 @@ if [ -z "${vsam_name}" ]; then
   print_error_and_exit "Error ZWEL0157E: Zowe Caching Service VSAM data set name (components.caching-service.storage.vsam.name) is not defined in Zowe YAML configuration file." "" 157
 fi
 
-jcl_existence=$(is_data_set_exists "${jcllib}(ZWECSVSM)")
-if [ "${jcl_existence}" = "true" ]; then
-  if [ "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITE}" = "true" ]; then
-    # warning
-    print_message "Warning ZWEL0300W: ${jcllib}(ZWECSVSM) already exists. This data set member will be overwritten during configuration."
-  else
-    # print_error_and_exit "Error ZWEL0158E: ${jcllib}(ZWECSVSM) already exists." "" 158
-    # warning
-    print_message "Warning ZWEL0301W: ${jcllib}(ZWECSVSM) already exists and will not be overwritten. For upgrades, you must use --allow-overwrite."
-  fi
-fi
-
 # VSAM cache cannot be overwritten, must delete manually
 # FIXME: cat cannot be used to test VSAM data set
 vsam_existence=$(is_data_set_exists "${vsam_name}")
@@ -88,14 +79,15 @@ if [ "${vsam_existence}" = "true" ]; then
   fi
 fi
 
-
+ 
 jcl_file=$(create_tmp_file)
 copy_mvs_to_uss "${jcllib}(ZWECSVSM)" "${jcl_file}"
 jcl_contents=$(cat "${jcl_file}")
 
 print_message "Template JCL: ${prefix}.SZWESAMP(ZWECSVSM) , Executable JCL: ${jcllib}(ZWECSVSM)"
-print_message "JCL Content:"
+print_message "--- JCL Content ---"
 print_message "$jcl_contents"
+print_message "--- End of JCL ---"
 
 if [ -z "${ZWE_CLI_PARAMETER_DRY_RUN}" ]; then
     print_message "Submitting Job ZWECSVSM"
