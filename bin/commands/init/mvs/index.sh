@@ -30,9 +30,14 @@ if [ -z "${prefix}" ]; then
 fi
 
 jcllib_location=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.dataset.jcllib")
-does_jcl_exist=$(is_data_set_exists "${jcllib_location}(ZWEIMVS)")
+jcllib=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.dataset.jcllib")
+does_jcl_exist=$(is_data_set_exists "${jcllib}(ZWEIMVS)")
 if [ "${does_jcl_exist}" = "false" ]; then
-  print_error_and_exit "Error ZWEL0999E: ${jcllib_location}(ZWEIMVS) does not exist, cannot run. Run 'zwe init', 'zwe init generate', or submit JCL ${prefix}.SZWESAMP(ZWEGENER) before running this command." "" 999
+  zwecli_inline_execute_command init generate
+fi
+does_jcl_exist=$(is_data_set_exists "${jcllib}(ZWEIMVS)")
+if [ "${does_jcl_exist}" = "false" ]; then
+  print_error_and_exit "Error ZWEL0999E: ${jcllib}(ZWEIMVS) does not exist, cannot run. Run 'zwe init', 'zwe init generate', or submit JCL ${prefix}.SZWESAMP(ZWEGENER) before running this command." "" 999
 fi
 
 
@@ -82,8 +87,9 @@ else
   jcl_contents=$(cat "${jcl_file}")
 
   print_message "Template JCL: ${prefix}.SZWESAMP(ZWEIMVS) , Executable JCL: ${jcllib_location}(ZWEIMVS)"
-  print_message "JCL Content:"
+  print_message "--- JCL Content ---"
   print_message "$jcl_contents"
+  print_message "--- End of JCL ---"
 
   if [ -z "${ZWE_CLI_PARAMETER_DRY_RUN}" ]; then
     print_message "Submitting Job ZWEIMVS"
