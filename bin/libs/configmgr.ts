@@ -30,7 +30,7 @@ CONFIG_MGR.setTraceLevel(0);
 //these show the list of files used for zowe config prior to merging into a unified one.
 // ZWE_CLI_PARAMETER_CONFIG gets updated to point to the unified one once written.
 const parameterConfig = std.getenv('ZWE_CLI_PARAMETER_CONFIG');
-
+std.setenv('ZWE_PRIVATE_CONFIG_ORIG', parameterConfig);
 /*
   When using configmgr (--configmgr or zowe.useConfigmgr=true)
   the config property of Zowe can take a few shapes:

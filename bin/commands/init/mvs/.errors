@@ -4,3 +4,4 @@ ZWEL0301W||%s already exists and will not be overwritten. For upgrades, you must
 ZWEL0158E|158|%s already exists.
 ZWEL0161E|161|Failed to run JCL %s.
 ZWEL0162E|162|Failed to find job %s result.
+ZWEL0163E|163|Job %s ends with code %s.

@@ -40,7 +40,6 @@ does_jcl_exist=$(is_data_set_exists "${jcllib}(ZWECSVSM)")
 if [ "${does_jcl_exist}" = "false" ]; then
   print_error_and_exit "Error ZWEL0999E: ${jcllib}(ZWECSVSM) does not exist, cannot run. Run 'zwe init', 'zwe init generate', or submit JCL ${prefix}.SZWESAMP(ZWEGENER) before running this command." "" 999
 fi
-[I
 
 vsam_mode=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.vsam.mode")
 if [ -z "${vsam_mode}" ]; then
