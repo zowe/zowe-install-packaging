@@ -12,9 +12,9 @@
   },
   "binaryDependencies": {
     "org.zowe.zlux.zlux-core": {
-      "version": "2.14.0-zlux-server-framework-PR-533",
+      "version": "2.15.0-zlux-app-server-PR-294",
       "repository": "libs-snapshot-local",
-      "artifact": "zlux-core-2.14.0-20240124.172356.pax"
+      "artifact": "zlux-core-2.15.0-20240201.143548.pax"
     },
     "org.zowe.zlux.sample-angular-app": {
       "version": "2.14.0-V2.X-RC",
