@@ -2,6 +2,14 @@
 
 All notable changes to the Zowe Installer will be documented in this file.
 <!--Add the PR or issue number to the entry if available.-->
+## `2.14.0`
+
+### New features and enhancements
+- Enhancement: configmgr.ts now can return a Zowe config with the given HA instance's configuration substituted for convenience. This now used in zwe to fix an issue where zwe would not respect the preference of if a component was enabled or disabled in a particular instance when zowe.useConfigmgr was set to true.
+
+#### Minor enhancements/defect fixes
+- Bugfix: environment variables were not using the values specified for each HA instance when zowe.useConfigmgr was set to true.
+
 ## `2.13.0`
 
 ### New features and enhancements
