@@ -190,6 +190,11 @@ zowe:
     #     # **COMMONLY_CUSTOMIZED**
     #     # label of Zowe CA certificate. Optional, default value is localca.
     #     caLabel: localca
+    #     # If zowe.verifyCertificates is not DISABLED, zOSMF certificate
+    #     # Will be registered with the truststore. You can customize how this is performed here.
+    #     zOSMF:
+    #       ca: "_auto_"
+    #       user: "IZUSVR"
     #   # Distinguished name for Zowe generated certificates. All optional.
     #   dname:
     #     caCommonName: ""
@@ -210,6 +215,7 @@ zowe:
     #   #   - dvipa.my-company.com
     #   #   - 12.34.56.78
 
+
     # # >>>> Certificate setup scenario 4
     # # Zowe generated z/OS Keyring and connect to existing certificate
     # certificate:
@@ -226,6 +232,12 @@ zowe:
     #       # **COMMONLY_CUSTOMIZED**
     #       # Label of the existing certificate will be connected to Zowe keyring.
     #       label: ""
+    #     # If zowe.verifyCertificates is not DISABLED, zOSMF certificate
+    #     # Will be registered with the truststore. You can customize how this is performed here.
+    #     zOSMF:
+    #       ca: "_auto_"
+    #       user: "IZUSVR"
+
     #   # **COMMONLY_CUSTOMIZED**
     #   # If you have other certificate authorities want to be trusted in Zowe keyring,
     #   # list the certificate labels here.
@@ -254,6 +266,11 @@ zowe:
     #       # **COMMONLY_CUSTOMIZED**
     #       # Password for the PKCS12 data set.
     #       password: ""
+    #     # If zowe.verifyCertificates is not DISABLED, zOSMF certificate
+    #     # Will be registered with the truststore. You can customize how this is performed here.
+    #     zOSMF:
+    #       ca: "_auto_"
+    #       user: "IZUSVR"
 
     # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
     # VSAM configurations if you are using VSAM as Caching Service storage

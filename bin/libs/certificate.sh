@@ -838,6 +838,15 @@ keyring_run_zwekring_jcl() {
   validity="${16:-${ZWE_PRIVATE_DEFAULT_CERTIFICATE_VALIDITY}}"
   security_product=${17:-RACF}
 
+  member_prefix="ZWEIK"
+  if [ "${security_product}" = "TSS" ]; then
+    member_name="${member_prefix}T${jcloption}"
+  elif [ "${security_product}" = "ACF2" ]; then
+    member_name="${member_prefix}A${jcloption}"
+  else
+    member_name="${member_prefix}R${jcloption}"
+  fi
+
   # generate from domains list
   domain_name=
   ip_address=
@@ -895,67 +904,20 @@ EOF
   validity_ymd=$("${date_add_util}" ${validity} YYYY-MM-DD)
   validity_mdy=$("${date_add_util}" ${validity} MM/DD/YY)
 
-  # option 2 needs further changes on JCL
-  racf_connect1="s/dummy/dummy/"
-  racf_connect2="s/dummy/dummy/"
-  acf2_connect="s/dummy/dummy/"
-  tss_connect="s/dummy/dummy/"
-  if [ "${jcloption}" =  "2" ]; then
-    if [ "${connect_user}" = "SITE" ]; then
-      racf_connect1="s/^ \+RACDCERT CONNECT[(]SITE | ID[(]userid[)].*\$/   RACDCERT CONNECT(SITE +/"
-      acf2_connect="s/^ \+CONNECT CERTDATA[(]SITECERT\.digicert | userid\.digicert[)].*\$/   CONNECT CERTDATA(SITECERT.${connect_label}) -/"
-      tss_connect="s/^ \+RINGDATA[(]CERTSITE|userid,digicert[)].*\$/       RINGDATA(CERTSITE,${connect_label}) +/"
-    elif [ -n "${connect_user}" ]; then
-      racf_connect1="s/^ \+RACDCERT CONNECT[(]SITE | ID[(]userid[)].*\$/   RACDCERT CONNECT(ID(${connect_user}) +/"
-      acf2_connect="s/^ \+CONNECT CERTDATA[(]SITECERT\.digicert | userid\.digicert[)].*\$/   CONNECT CERTDATA(${connect_user}.${connect_label}) -/"
-      tss_connect="s/^ \+RINGDATA[(]CERTSITE|userid,digicert[)].*\$/       RINGDATA(${connect_user},${connect_label}) +/"
-    fi
-    racf_connect2="s/^ \+LABEL[(]'certlabel'[)].*\$/            LABEL('${connect_label}') +/"
-  fi
-
-  # used by ACF2  
-  stc_group=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.security.groups.stc")
-  if [ -z "${stc_group}" ]; then
-    stc_group=${ZWE_PRIVATE_DEFAULT_ADMIN_GROUP}
-  fi
-
   ###############################
   # prepare ZWEKRING JCL
-  print_message ">>>> Modify ZWEKRING"
+  print_debug ">>>> Prepare ${member_name}"
   print_debug "- Create temp file"
   tmpfile=$(create_tmp_file $(echo "zwe ${ZWE_CLI_COMMANDS_LIST}" | sed "s# #-#g"))
-  print_debug "  > temp file: ${tmpfile}"
-  print_debug "- Create temp data set member"
-  tmpdsm=$(create_data_set_tmp_member "${jcllib}" "ZW$(date +%H%M)")
   print_debug "  > data set member: ${jcllib}(tmpdsm)"
-  print_debug "- Copy ${prefix}.${ZWE_PRIVATE_DS_SZWESAMP}(ZWEKRING) to ${tmpfile}"
-  result=$(cat "//'${prefix}.${ZWE_PRIVATE_DS_SZWESAMP}(ZWEKRING)'" | \
-          sed  "s/^\/\/ \+SET \+PRODUCT=.*\$/\/\/         SET  PRODUCT=${security_product}/" | \
-          sed "s/^\/\/ \+SET \+ZOWEUSER=.*\$/\/\/         SET  ZOWEUSER=${keyring_owner:-${ZWE_PRIVATE_DEFAULT_ZOWE_USER}}/" | \
-          sed "s/^\/\/ \+SET \+ZOWERING=.*\$/\/\/         SET  ZOWERING='${keyring_name}'/" | \
-          sed   "s/^\/\/ \+SET \+OPTION=.*\$/\/\/         SET  OPTION=${jcloption}/" | \
-          sed    "s/^\/\/ \+SET \+LABEL=.*\$/\/\/         SET  LABEL='${alias}'/" | \
-          sed  "s/^\/\/ \+SET \+LOCALCA=.*\$/\/\/         SET  LOCALCA='${ca_alias}'/" | \
-          sed       "s/^\/\/ \+SET \+CN=.*\$/\/\/         SET  CN='${ZWE_PRIVATE_CERTIFICATE_COMMON_NAME:-${ZWE_PRIVATE_DEFAULT_CERTIFICATE_COMMON_NAME}}'/" | \
-          sed       "s/^\/\/ \+SET \+OU=.*\$/\/\/         SET  OU='${ZWE_PRIVATE_CERTIFICATE_ORG_UNIT:-${ZWE_PRIVATE_DEFAULT_CERTIFICATE_ORG_UNIT}}'/" | \
-          sed        "s/^\/\/ \+SET \+O=.*\$/\/\/         SET  O='${ZWE_PRIVATE_CERTIFICATE_ORG:-${ZWE_PRIVATE_DEFAULT_CERTIFICATE_ORG}}'/" | \
-          sed        "s/^\/\/ \+SET \+L=.*\$/\/\/         SET  L='${ZWE_PRIVATE_CERTIFICATE_LOCALITY:-${ZWE_PRIVATE_DEFAULT_CERTIFICATE_LOCALITY}}'/" | \
-          sed       "s/^\/\/ \+SET \+SP=.*\$/\/\/         SET  SP='${ZWE_PRIVATE_CERTIFICATE_STATE:-${ZWE_PRIVATE_DEFAULT_CERTIFICATE_STATE}}'/" | \
-          sed        "s/^\/\/ \+SET \+C=.*\$/\/\/         SET  C='${ZWE_PRIVATE_CERTIFICATE_COUNTRY:-${ZWE_PRIVATE_DEFAULT_CERTIFICATE_COUNTRY}}'/" | \
-          sed "s/^\/\/ \+SET \+HOSTNAME=.*\$/\/\/         SET  HOSTNAME='${domain_name}'/" | \
+  print_debug "- Copy ${jcllib}(${member_name}) to ${tmpfile}"
+  result=$(cat "//'${jcllib}(${member_name})'" | \
           sed "s/^\/\/ \+SET \+IPADDRES=.*\$/\/\/         SET  IPADDRES='${ip_address}'/" | \
-          sed   "s/^\/\/ \+SET \+DSNAME=.*\$/\/\/         SET  DSNAME=${import_ds_name}/" | \
-          sed "s/^\/\/ \+SET \+PKCSPASS=.*\$/\/\/         SET  PKCSPASS='${import_ds_password}'/" | \
           sed "s/^\/\/ \+SET \+IFZOWECA=.*\$/\/\/         SET  IFZOWECA=${import_ext_ca}/" | \
           sed "s/^\/\/ \+SET \+ITRMZWCA=.*\$/\/\/         SET  ITRMZWCA='${import_ext_intermediate_ca_label}'/" | \
           sed "s/^\/\/ \+SET \+ROOTZWCA=.*\$/\/\/         SET  ROOTZWCA='${import_ext_root_ca_label}'/" | \
           sed "s/^\/\/ \+SET \+IFROZFCA=.*\$/\/\/         SET  IFROZFCA=${trust_zosmf}/" | \
           sed "s/^\/\/ \+SET \+ROOTZFCA=.*\$/\/\/         SET  ROOTZFCA='${zosmf_root_ca}'/" | \
-          sed   "s/^\/\/ \+SET \+STCGRP=.*\$/\/\/         SET  STCGRP=${stc_group}/" | \
-          sed "${racf_connect1}" | \
-          sed "${racf_connect2}" | \
-          sed "${acf2_connect}" | \
-          sed "${tss_connect}" | \
           sed  "s/2030-05-01/${validity_ymd}/g" | \
           sed  "s#05/01/30#${validity_mdy}#g" \
           > "${tmpfile}")
@@ -977,30 +939,38 @@ EOF
     fi
   fi
   if [ ! -f "${tmpfile}" ]; then
-    print_error "Error ZWEL0159E: Failed to modify ${prefix}.${ZWE_PRIVATE_DS_SZWESAMP}(ZWEKRING)"
+    print_error "Error ZWEL0159E: Failed to modify ${jcllib}(${member_name})"
     return 159
   fi
-  print_trace "- Ensure ${tmpfile} encoding before copying into data set"
-  ensure_file_encoding "${tmpfile}" "SPDX-License-Identifier"
-  print_trace "- ${tmpfile} created, copy to ${jcllib}(${tmpdsm})"
-  copy_to_data_set "${tmpfile}" "${jcllib}(${tmpdsm})" "" "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITE}"
-  code=$?
-  print_trace "- Delete ${tmpfile}"
-  rm -f "${tmpfile}"
-  if [ ${code} -ne 0 ]; then
-    print_error "Error ZWEL0160E: Failed to write to ${jcllib}(${tmpdsm}). Please check if target data set is opened by others."
-    return 160
-  fi
-  print_message "    - ${jcllib}(${tmpdsm}) is prepared"
-  print_message
 
-  ###############################
-  # submit job
+  jcl_contents=$(cat "${tmpfile}")
+
+  print_message "Template JCL: ${prefix}.${ZWE_PRIVATE_DS_SZWESAMP}(${member_name}) , Executable JCL: ${jcllib}(${member_name})"
+  print_message "--- JCL Content ---"
+  print_message "$jcl_contents"
+  print_message "--- End of JCL ---"
+  
   if [ "${ZWE_CLI_PARAMETER_SECURITY_DRY_RUN}" = "true" ]; then
-    print_message "Dry-run mode, JCL will NOT be submitted on the system."
-    print_message "Please submit ${jcllib}(${tmpdsm}) manually."
+    print_message "JCL not submitted, command run with dry run flag."
+    print_message "To perform command, re-run command without dry run flag, or submit the JCL directly"
+    rm "${tmpfile}"
   else
-    print_message ">>>> Submit ${jcllib}(${tmpdsm})"
+    print_trace "- Ensure ${tmpfile} encoding before copying into data set"
+    ensure_file_encoding "${tmpfile}" "SPDX-License-Identifier"
+    print_trace "- ${tmpfile} created, writing back to ${jcllib}(${member_name})"
+    copy_to_data_set "${tmpfile}" "${jcllib}(${member_name})" "" "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITE}"
+    code=$?
+    print_trace "- Delete ${tmpfile}"
+    rm -f "${tmpfile}"
+    if [ ${code} -ne 0 ]; then
+      print_error "Error ZWEL0160E: Failed to write to ${jcllib}(${tmpdsm}). Please check if target data set is opened by others."
+      return 160
+    fi
+    print_debug "    - ${jcllib}(${member_name}) is prepared"
+  
+    ###############################
+    # submit job
+    print_message "Submitting Job ${member_name})"
     jobid=$(submit_job "//'${jcllib}(${tmpdsm})'")
     code=$?
     if [ ${code} -ne 0 ]; then
@@ -1041,72 +1011,20 @@ keyring_run_zwenokyr_jcl() {
   ca_alias="${6}"
   security_product=${7:-RACF}
 
-  # used by ACF2
-  stc_group=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.security.groups.stc")
-  if [ -z "${stc_group}" ]; then
-    stc_group=${ZWE_PRIVATE_DEFAULT_ADMIN_GROUP}
-  fi
+  jcl_contents=$(cat "//'${jcllib}(ZWENOKYR)'")
 
-  ###############################
-  # prepare ZWENOKYR JCL
-  print_message ">>>> Modify ZWENOKYR"
-  print_debug "- Create temp file"
-  tmpfile=$(create_tmp_file $(echo "zwe ${ZWE_CLI_COMMANDS_LIST}" | sed "s# #-#g"))
-  print_debug "  > temp file: ${tmpfile}"
-  print_debug "- Create temp data set member"
-  tmpdsm=$(create_data_set_tmp_member "${jcllib}" "ZW$(date +%H%M)")
-  print_debug "  > data set member: ${jcllib}(tmpdsm)"
-  print_debug "- Copy ${prefix}.${ZWE_PRIVATE_DS_SZWESAMP}(ZWENOKYR) to ${tmpfile}"
-  result=$(cat "//'${prefix}.${ZWE_PRIVATE_DS_SZWESAMP}(ZWENOKYR)'" | \
-          sed  "s/^\/\/ \+SET \+PRODUCT=.*\$/\/\/         SET  PRODUCT=${security_product}/" | \
-          sed "s/^\/\/ \+SET \+ZOWEUSER=.*\$/\/\/         SET  ZOWEUSER=${keyring_owner:-${ZWE_PRIVATE_DEFAULT_ZOWE_USER}}/" | \
-          sed "s/^\/\/ \+SET \+ZOWERING=.*\$/\/\/         SET  ZOWERING='${keyring_name}'/" | \
-          sed    "s/^\/\/ \+SET \+LABEL=.*\$/\/\/         SET  LABEL='${alias}'/" | \
-          sed  "s/^\/\/ \+SET \+LOCALCA=.*\$/\/\/         SET  LOCALCA='${ca_alias}'/" | \
-          sed   "s/^\/\/ \+SET \+STCGRP=.*\$/\/\/         SET  STCGRP=${stc_group}/" \
-          > "${tmpfile}")
-  code=$?
-  chmod 700 "${tmpfile}"
-  if [ ${code} -eq 0 ]; then
-    print_debug "  * Succeeded"
-    print_trace "  * Exit code: ${code}"
-    print_trace "  * Output:"
-    if [ -n "${result}" ]; then
-      print_trace "$(padding_left "${result}" "    ")"
-    fi
-  else
-    print_debug "  * Failed"
-    print_error "  * Exit code: ${code}"
-    print_error "  * Output:"
-    if [ -n "${result}" ]; then
-      print_error "$(padding_left "${result}" "    ")"
-    fi
-  fi
-  if [ ! -f "${tmpfile}" ]; then
-    print_error "Error ZWEL0159E: Failed to modify ${prefix}.${ZWE_PRIVATE_DS_SZWESAMP}(ZWENOKYR)"
-    return 159
-  fi
-  print_trace "- Ensure ${tmpfile} encoding before copying into data set"
-  ensure_file_encoding "${tmpfile}" "SPDX-License-Identifier"
-  print_trace "- ${tmpfile} created, copy to ${jcllib}(${tmpdsm})"
-  copy_to_data_set "${tmpfile}" "${jcllib}(${tmpdsm})" "" "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITE}"
-  code=$?
-  print_trace "- Delete ${tmpfile}"
-  rm -f "${tmpfile}"
-  if [ ${code} -ne 0 ]; then
-    print_error "Error ZWEL0160E: Failed to write to ${jcllib}(${tmpdsm}). Please check if target data set is opened by others."
-    return 160
-  fi
-  print_message "    - ${jcllib}(${tmpdsm}) is prepared"
-  print_message
-
+  print_message "Template JCL: ${prefix}.SZWESAMP(ZWENOKYR) , Executable JCL: ${jcllib}(ZWENOKYR)"
+  print_message "--- JCL Content ---"
+  print_message "$jcl_contents"
+  print_message "--- End of JCL ---"
+               
   ###############################
   # submit job
   if [ "${ZWE_CLI_PARAMETER_SECURITY_DRY_RUN}" = "true" ]; then
-    print_message "Dry-run mode, JCL will NOT be submitted on the system."
-    print_message "Please submit ${jcllib}(${tmpdsm}) manually."
+    print_message "JCL not submitted, command run with dry run flag."
+    print_message "To perform command, re-run command without dry run flag, or submit the JCL directly"
   else
-    print_message ">>>> Submit ${jcllib}(${tmpdsm})"
+    print_message "Submitting Job ZWENOKYR"
     jobid=$(submit_job "//'${jcllib}(${tmpdsm})'")
     code=$?
     if [ ${code} -ne 0 ]; then
