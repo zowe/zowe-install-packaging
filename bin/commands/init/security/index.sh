@@ -74,9 +74,7 @@ if [ -z "${security_stcs_aux}" ]; then
 fi
 
 
-jcl_file=$(create_tmp_file)
-copy_mvs_to_uss "${jcllib}(ZWEI${security_product})" "${jcl_file}"
-jcl_contents=$(cat "${jcl_file}")
+jcl_contents=$(cat "//'${jcllib}(ZWEI${security_product})'")
 
 print_message "Template JCL: ${prefix}.SZWESAMP(ZWEI${security_product}) , Executable JCL: ${jcllib}(ZWEI${security_product})"
 print_message "--- JCL Content ---"
@@ -87,7 +85,6 @@ job_has_failures=
 if [ "${ZWE_CLI_PARAMETER_SECURITY_DRY_RUN}" = "true" ]; then
   print_message "JCL not submitted, command run with dry run flag."
   print_message "To perform command, re-run command without dry run flag, or submit the JCL directly"
-  rm $jcl_file
 else
   ###############################
   # submit job

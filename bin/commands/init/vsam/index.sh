@@ -79,9 +79,7 @@ if [ "${vsam_existence}" = "true" ]; then
 fi
 
  
-jcl_file=$(create_tmp_file)
-copy_mvs_to_uss "${jcllib}(ZWECSVSM)" "${jcl_file}"
-jcl_contents=$(cat "${jcl_file}")
+jcl_contents=$(cat "//'${jcllib}(ZWECSVSM)")
 
 print_message "Template JCL: ${prefix}.SZWESAMP(ZWECSVSM) , Executable JCL: ${jcllib}(ZWECSVSM)"
 print_message "--- JCL Content ---"
@@ -90,7 +88,7 @@ print_message "--- End of JCL ---"
 
 if [ -z "${ZWE_CLI_PARAMETER_DRY_RUN}" ]; then
     print_message "Submitting Job ZWECSVSM"
-    jobid=$(submit_job $jcl_file)
+    jobid=$(submit_job "//'${jcllib}(ZWECSVSM)'")
     code=$?
     if [ ${code} -ne 0 ]; then
       print_error_and_exit "Error ZWEL0161E: Failed to run JCL ${jcllib}(ZWECSVSM)." "" 161
@@ -99,7 +97,6 @@ if [ -z "${ZWE_CLI_PARAMETER_DRY_RUN}" ]; then
 
     jobstate=$(wait_for_job "${jobid}")
     code=$?
-    rm $jcl_file
     if [ ${code} -eq 1 ]; then
         print_error_and_exit "Error ZWEL0162E: Failed to find job ${jobid} result." "" 162
     fi
@@ -116,5 +113,4 @@ else
     print_message "JCL not submitted, command run with dry run flag."
     print_message "To perform command, re-run command without dry run flag, or submit the JCL directly"
     print_level2_message "Command run successfully."
-    rm $jcl_file
 fi
