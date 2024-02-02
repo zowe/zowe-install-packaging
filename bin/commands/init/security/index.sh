@@ -14,9 +14,6 @@
 print_level1_message "Run Zowe security configurations"
 
 ###############################
-# constants
-
-###############################
 # validation
 require_zowe_yaml
 
@@ -25,118 +22,86 @@ prefix=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.dataset.prefix")
 if [ -z "${prefix}" ]; then
   print_error_and_exit "Error ZWEL0157E: Zowe dataset prefix (zowe.setup.dataset.prefix) is not defined in Zowe YAML configuration file." "" 157
 fi
-# read JCL library and validate
-jcllib=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.dataset.jcllib")
-if [ -z "${jcllib}" ]; then
-  print_error_and_exit "Error ZWEL0157E: Zowe custom JCL library (zowe.setup.dataset.jcllib) is not defined in Zowe YAML configuration file." "" 157
-fi
 security_product=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.security.product")
 if [ -z "${security_product}" ]; then
-  security_product=RACF
+  print_error_and_exit "Error ZWEL0157E: (zowe.setup.security.product) is not defined in Zowe YAML configuration file." "" 157
 fi
+
+# read JCL library and validate
+jcllib=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.dataset.jcllib")
+does_jcl_exist=$(is_data_set_exists "${jcllib}(ZWEI${security_product})")
+if [ "${does_jcl_exist}" = "false" ]; then
+  zwecli_inline_execute_command init generate
+fi
+does_jcl_exist=$(is_data_set_exists "${jcllib}(ZWEI${security_product})")
+if [ "${does_jcl_exist}" = "false" ]; then
+  print_error_and_exit "Error ZWEL0999E: ${jcllib}(ZWEI${security_product}) does not exist, cannot run. Run 'zwe init', 'zwe init generate', or submit JCL ${prefix}.SZWESAMP(ZWEGENER) before running this command." "" 999
+fi
+
+
+
 security_groups_admin=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.security.groups.admin")
 if [ -z "${security_groups_admin}" ]; then
-  security_groups_admin=${ZWE_PRIVATE_DEFAULT_ADMIN_GROUP}
+  print_error_and_exit "Error ZWEL0157E: (zowe.setup.security.groups.admin) is not defined in Zowe YAML configuration file." "" 157
 fi
 security_groups_stc=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.security.groups.stc")
 if [ -z "${security_groups_stc}" ]; then
-  security_groups_stc=${ZWE_PRIVATE_DEFAULT_ADMIN_GROUP}
+  print_error_and_exit "Error ZWEL0157E: (zowe.setup.security.groups.stc) is not defined in Zowe YAML configuration file." "" 157
 fi
 security_groups_sysProg=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.security.groups.sysProg")
 if [ -z "${security_groups_sysProg}" ]; then
-  security_groups_sysProg=${ZWE_PRIVATE_DEFAULT_ADMIN_GROUP}
+  print_error_and_exit "Error ZWEL0157E: (zowe.setup.security.groups.sysProg) is not defined in Zowe YAML configuration file." "" 157
 fi
 security_users_zowe=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.security.users.zowe")
 if [ -z "${security_users_zowe}" ]; then
-  security_users_zowe=${ZWE_PRIVATE_DEFAULT_ZOWE_USER}
+  print_error_and_exit "Error ZWEL0157E: (zowe.setup.security.users.zowe) is not defined in Zowe YAML configuration file." "" 157
 fi
 security_users_zis=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.security.users.zis")
 if [ -z "${security_users_zis}" ]; then
-  security_users_zis=${ZWE_PRIVATE_DEFAULT_ZIS_USER}
+  print_error_and_exit "Error ZWEL0157E: (zowe.setup.security.users.zis) is not defined in Zowe YAML configuration file." "" 157
 fi
 security_stcs_zowe=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.security.stcs.zowe")
 if [ -z "${security_stcs_zowe}" ]; then
-  security_stcs_zowe=${ZWE_PRIVATE_DEFAULT_ZOWE_STC}
+  print_error_and_exit "Error ZWEL0157E: (zowe.setup.security.stcs.zowe) is not defined in Zowe YAML configuration file." "" 157
 fi
 security_stcs_zis=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.security.stcs.zis")
 if [ -z "${security_stcs_zis}" ]; then
-  security_stcs_zis=${ZWE_PRIVATE_DEFAULT_ZIS_STC}
+  print_error_and_exit "Error ZWEL0157E: (zowe.setup.security.stcs.zis) is not defined in Zowe YAML configuration file." "" 157
 fi
 security_stcs_aux=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.security.stcs.aux")
 if [ -z "${security_stcs_aux}" ]; then
-  security_stcs_aux=${ZWE_PRIVATE_DEFAULT_AUX_STC}
+  print_error_and_exit "Error ZWEL0157E: (zowe.setup.security.stcs.aux) is not defined in Zowe YAML configuration file." "" 157
 fi
 
-###############################
-# prepare ZWESECUR JCL
-print_message "Modify ZWESECUR"
-tmpfile=$(create_tmp_file $(echo "zwe ${ZWE_CLI_COMMANDS_LIST}" | sed "s# #-#g"))
-tmpdsm=$(create_data_set_tmp_member "${jcllib}" "ZW$(date +%H%M)")
-print_debug "- Copy ${prefix}.${ZWE_PRIVATE_DS_SZWESAMP}(ZWESECUR) to ${tmpfile}"
-# cat "//'IBMUSER.ZWEV2.SZWESAMP(ZWESECUR)'" | sed "s/^\\/\\/ \\+SET \\+PRODUCT=.*\\$/\\/\\         SET  PRODUCT=ACF2         * RACF, ACF2, or TSS/"
-result=$(cat "//'${prefix}.${ZWE_PRIVATE_DS_SZWESAMP}(ZWESECUR)'" | \
-        sed  "s/^\/\/ \+SET \+PRODUCT=.*\$/\/\/         SET  PRODUCT=${security_product}/" | \
-        sed "s/^\/\/ \+SET \+ADMINGRP=.*\$/\/\/         SET  ADMINGRP=${security_groups_admin}/" | \
-        sed   "s/^\/\/ \+SET \+STCGRP=.*\$/\/\/         SET  STCGRP=${security_groups_stc}/" | \
-        sed "s/^\/\/ \+SET \+ZOWEUSER=.*\$/\/\/         SET  ZOWEUSER=${security_users_zowe}/" | \
-        sed  "s/^\/\/ \+SET \+ZISUSER=.*\$/\/\/         SET  ZISUSER=${security_users_zis}/" | \
-        sed  "s/^\/\/ \+SET \+ZOWESTC=.*\$/\/\/         SET  ZOWESTC=${security_stcs_zowe}/" | \
-        sed   "s/^\/\/ \+SET \+ZISSTC=.*\$/\/\/         SET  ZISSTC=${security_stcs_zis}/" | \
-        sed   "s/^\/\/ \+SET \+AUXSTC=.*\$/\/\/         SET  AUXSTC=${security_stcs_aux}/" | \
-        sed      "s/^\/\/ \+SET \+HLQ=.*\$/\/\/         SET  HLQ=${prefix}/" | \
-        sed  "s/^\/\/ \+SET \+SYSPROG=.*\$/\/\/         SET  SYSPROG=${security_groups_sysProg}/" \
-        > "${tmpfile}")
-code=$?
-chmod 700 "${tmpfile}"
-if [ ${code} -eq 0 ]; then
-  print_debug "  * Succeeded"
-  print_trace "  * Exit code: ${code}"
-  print_trace "  * Output:"
-  if [ -n "${result}" ]; then
-    print_trace "$(padding_left "${result}" "    ")"
-  fi
-else
-  print_debug "  * Failed"
-  print_error "  * Exit code: ${code}"
-  print_error "  * Output:"
-  if [ -n "${result}" ]; then
-    print_error "$(padding_left "${result}" "    ")"
-  fi
-fi
-if [ ! -f "${tmpfile}" ]; then
-  print_error_and_exit "Error ZWEL0159E: Failed to modify ${prefix}.${ZWE_PRIVATE_DS_SZWESAMP}(ZWESECUR)" "" 159
-fi
-print_trace "- ensure ${tmpfile} encoding before copying into data set"
-ensure_file_encoding "${tmpfile}" "SPDX-License-Identifier"
-print_trace "- ${tmpfile} created, copy to ${jcllib}(${tmpdsm})"
-copy_to_data_set "${tmpfile}" "${jcllib}(${tmpdsm})" "" "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITE}"
-code=$?
-print_trace "- Delete ${tmpfile}"
-rm -f "${tmpfile}"
-if [ ${code} -ne 0 ]; then
-  print_error_and_exit "Error ZWEL0160E: Failed to write to ${jcllib}(${tmpdsm}). Please check if target data set is opened by others." "" 160
-fi
-print_message "- ${jcllib}(${tmpdsm}) is prepared"
-print_message
 
-###############################
-# submit job
+jcl_file=$(create_tmp_file)
+copy_mvs_to_uss "${jcllib}(ZWEI${security_product})" "${jcl_file}"
+jcl_contents=$(cat "${jcl_file}")
+
+print_message "Template JCL: ${prefix}.SZWESAMP(ZWEI${security_product}) , Executable JCL: ${jcllib}(ZWEI${security_product})"
+print_message "--- JCL Content ---"
+print_message "$jcl_contents"
+print_message "--- End of JCL ---"
+
 job_has_failures=
 if [ "${ZWE_CLI_PARAMETER_SECURITY_DRY_RUN}" = "true" ]; then
-  print_message "Dry-run mode, security setup is NOT performed on the system."
-  print_message "Please submit ${jcllib}(${tmpdsm}) manually."
+  print_message "JCL not submitted, command run with dry run flag."
+  print_message "To perform command, re-run command without dry run flag, or submit the JCL directly"
+  rm $jcl_file
 else
-  print_message "Submit ${jcllib}(${tmpdsm})"
-  jobid=$(submit_job "//'${jcllib}(${tmpdsm})'")
+  ###############################
+  # submit job
+  print_message "Submitting Job ZWEI${security_product}"
+  jobid=$(submit_job "//'${jcllib}(ZWEI${security_product})'")
   code=$?
   if [ ${code} -ne 0 ]; then
     job_has_failures=true
     if [ "${ZWE_CLI_PARAMETER_IGNORE_SECURITY_FAILURES}" = "true" ]; then
-      print_error "Warning ZWEL0161W: Failed to run JCL ${jcllib}(${tmpdsm})."
+      print_error "Warning ZWEL0161W: Failed to run JCL ${jcllib}(ZWEI${security_product})."
       # skip wait for job status step
       jobid=
     else
-      print_error_and_exit "Error ZWEL0161E: Failed to run JCL ${jcllib}(${tmpdsm})." "" 161
+      print_error_and_exit "Error ZWEL0161E: Failed to run JCL ${jcllib}(ZWEI${security_product})." "" 161
     fi
   fi
 
@@ -179,5 +144,5 @@ fi
 if [ "${job_has_failures}" = "true" ]; then
   print_level2_message "Failed to apply Zowe security configurations. Please check job log for details."
 else
-  print_level2_message "Zowe security configurations are applied successfully."
+  print_level2_message "Command run successfully."
 fi

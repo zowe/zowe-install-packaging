@@ -115,6 +115,6 @@ if [ -z "${ZWE_CLI_PARAMETER_DRY_RUN}" ]; then
 else
     print_message "JCL not submitted, command run with dry run flag."
     print_message "To perform command, re-run command without dry run flag, or submit the JCL directly"
-    print_level2_message "Zowe Caching Service VSAM storage is created successfully."
+    print_level2_message "Command run successfully."
     rm $jcl_file
 fi
