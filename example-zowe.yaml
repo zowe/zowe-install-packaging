@@ -504,7 +504,7 @@ components:
           provider: zosmf
           zosmf:
             jwtAutoconfiguration: auto
-            serviceId: zosmf
+            serviceId: ibmzosmf
         authorization:
           endpoint:
             enabled: false
