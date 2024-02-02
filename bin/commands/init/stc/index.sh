@@ -108,7 +108,7 @@ else
   else
     print_message "JCL not submitted, command run with dry run flag."
     print_message "To perform command, re-run command without dry run flag, or submit the JCL directly"
-    print_level2_message "Zowe main started tasks are installed successfully."
+    print_level2_message "Command run successfully."
     rm $jcl_file
   fi
 fi
