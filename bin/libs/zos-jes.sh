@@ -32,13 +32,14 @@ submit_job() {
     return ${code}
   fi
 
-  result=$(submit "${jcl}")
+  # cat seems to work more reliably. sometimes, submit by itself just says it cannot find a real dataset.
+  result=$(cat "${jcl}" | submit 2>&1)
   # expected: JOB JOB????? submitted from path '...'
   code=$?
   if [ ${code} -eq 0 ]; then
     jobid=$(echo "${result}" | grep submitted | awk '{print $2}')
     if [ -z "${jobid}" ]; then
-      jobid=$(echo "${result}" | grep "$HASP" | awk '{print $2}')
+      jobid=$(echo "${result}" | grep "$HASP" | head -n 1 | awk '{print $2}')
     fi
     if [ -z "${jobid}" ]; then
       print_debug "  * Failed to find job ID"

@@ -12,41 +12,32 @@
 //********************************************************************* 
 //*
 //*                                               
-//MKPARML EXEC PGM=IKJEFT01                       
+//MKPDSE EXEC PGM=IKJEFT01                       
 //SYSTSPRT DD SYSOUT=A                            
 //SYSTSIN DD *                                    
 ALLOC NEW DA('{zowe.setup.dataset.parmlib}') +       
 dsntype(library) dsorg(po) recfm(f b) lrecl(80) + 
 unit(sysallda) space(15,15) tracks                
-//*                                               
-//MKJCLL EXEC PGM=IKJEFT01                        
-//SYSTSPRT DD SYSOUT=A                            
-//SYSTSIN DD *                                    
+  
 ALLOC NEW DA('{zowe.setup.dataset.jcllib}') +        
 dsntype(library) dsorg(po) recfm(f b) lrecl(80) + 
 unit(sysallda) space(15,15) tracks                
-//*                                               
-//MKAUTHL EXEC PGM=IKJEFT01                       
-//SYSTSPRT DD SYSOUT=A                            
-//SYSTSIN DD *                                    
+  
 ALLOC NEW DA('{zowe.setup.dataset.authLoadLib}') +       
 dsntype(library) dsorg(po) recfm(u) lrecl(0) +    
 blksize(32760) unit(sysallda) space(30,15) tracks 
-//*                                               
-//MKAUTHP EXEC PGM=IKJEFT01                       
-//SYSTSPRT DD SYSOUT=A                            
-//SYSTSIN DD *                                    
+  
 ALLOC NEW DA('{zowe.setup.dataset.authPluginLib}') +      
 dsntype(library) dsorg(po) recfm(u) lrecl(0) +    
 blksize(32760) unit(sysallda) space(30,15) tracks 
 //*                                               
-//MCOPY1 EXEC PGM=IEBCOPY                         
+//MEMBCPY EXEC PGM=IEBCOPY                         
 //SYSPRINT DD SYSOUT=A                            
 //SYSUT1 DD DSN={zowe.setup.dataset.prefix}.SZWESAMP,DISP=SHR  
 //SYSUT2 DD DSN={zowe.setup.dataset.parmlib},DISP=OLD
 //SYSIN DD *                                      
   COPY OUTDD=SYSUT2,INDD=SYSUT1                                  
-  SELECT MEMBER=(ZWESIP00)                          
+  SELECT MEMBER=((ZWESIP00,,R))                          
 //*                                               
 //AUTHCPY EXEC PGM=BPXBATCH                       
 //BPXPRINT DD SYSOUT=*                            

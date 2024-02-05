@@ -31,7 +31,8 @@ export function submitJob(jclFile: string): string|undefined {
     common.printTrace(stringlib.paddingLeft(catResult.out, "    "));
   }
 
-  const result=shell.execOutSync('sh', '-c', `submit "${jclFile}" 2>&1`);
+  // cat seems to work more reliably. sometimes, submit by itself just says it cannot find a real dataset.
+  const result=shell.execOutSync('sh', '-c', `cat "${jclFile}" | submit 2>&1`);
   // expected: JOB JOB????? submitted from path '...'
   const code=result.rc;
   if (code==0) {
