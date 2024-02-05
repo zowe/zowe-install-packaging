@@ -36,7 +36,7 @@ if [ -z "${does_jcl_exist}" ]; then
 fi
 
 # should be created, but may take time to discover.
-if [ -z "${does_jcl_exist"} ]; then
+if [ -z "${does_jcl_exist}" ]; then
 does_jcl_exist=
 for secs in 1 5 10 ; do
   does_jcl_exist=$(is_data_set_exists "${jcllib_location}(ZWEIMVS)")
