@@ -33,12 +33,25 @@ fi
 
 jcllib=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.dataset.jcllib")
 does_jcl_exist=$(is_data_set_exists "${jcllib}(ZWECSVSM)")
-if [ "${does_jcl_exist}" = "false" ]; then
+if [ -z "${does_jcl_exist}" ]; then
   zwecli_inline_execute_command init generate
 fi
-does_jcl_exist=$(is_data_set_exists "${jcllib}(ZWECSVSM)")
-if [ "${does_jcl_exist}" = "false" ]; then
+
+# should be created, but may take time to discover.
+if [ -z "${does_jcl_exist"} ]; then
+does_jcl_exist=
+for secs in 1 5 10 ; do
+  does_jcl_exist=$(is_data_set_exists "${jcllib}(ZWECSVSM)")
+  if [ -z "${does_jcl_exist}" ]; then
+    sleep ${secs}
+  else
+    break
+  fi
+done
+
+if [ -z "${does_jcl_exist}" ]; then
   print_error_and_exit "Error ZWEL0999E: ${jcllib}(ZWECSVSM) does not exist, cannot run. Run 'zwe init', 'zwe init generate', or submit JCL ${prefix}.SZWESAMP(ZWEGENER) before running this command." "" 999
+fi
 fi
 
 vsam_mode=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.vsam.mode")

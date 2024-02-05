@@ -79,7 +79,7 @@ export function waitForJob(jobid: string): {jobcctext?: string, jobcccode?: stri
 
   common.printDebug(`- Wait for job ${jobid} completed, starting at ${new Date().toString()}.`);
   // wait for job to finish
-  const timesSec = [1, 5, 10, 30, 100, 300, 500];
+  const timesSec = [1, 5, 10, 20, 30, 60, 100, 300, 500];
   for (let i = 0; i < timesSec.length; i++) {
     jobcctext = undefined;
     jobcccode = undefined;
@@ -114,22 +114,25 @@ export function waitForJob(jobid: string): {jobcctext?: string, jobcccode?: stri
       // ... $HASP890 JOB(JOB1)      CC=(COMPLETED,RC=0)  <-- accept this value
       // ... $HASP890 JOB(GIMUNZIP)  CC=()  <-- reject this value
       try {
-        const jobline = result.out.split('\n').filter(line => line.indexOf('$HASP890') != -1)[0];
-        const nameIndex = jobline.indexOf('JOB(');
-        const ccIndex = jobline.indexOf('CC=(');
-        jobname = jobline.substring(nameIndex+4, jobline.indexOf(')', nameIndex));
-        const cc = jobline.substring(ccIndex+4, jobline.indexOf(')', ccIndex)).split(',');
-        jobcctext = cc[0];
-        if (cc.length > 1) {
-          const equalSplit = cc[1].split('=');
-          if (equalSplit.length > 1) {
-            jobcccode = equalSplit[1];
+        const hasplines = result.out.split('\n').filter(line => line.indexOf('$HASP890') != -1);
+        if (hasplines && hasplines.length > 0) {
+          const jobline = hasplines[0];
+          const nameIndex = jobline.indexOf('JOB(');
+          const ccIndex = jobline.indexOf('CC=(');
+          jobname = jobline.substring(nameIndex+4, jobline.indexOf(')', nameIndex));
+          const cc = jobline.substring(ccIndex+4, jobline.indexOf(')', ccIndex)).split(',');
+          jobcctext = cc[0];
+          if (cc.length > 1) {
+            const equalSplit = cc[1].split('=');
+            if (equalSplit.length > 1) {
+              jobcccode = equalSplit[1];
+            }
           }
-        }
-        common.printTrace(`  * Job (${jobname}) status is ${jobcctext},RC=${jobcccode}`);
-        if ((jobcctext && jobcctext.length > 0) || (jobcccode && jobcccode.length > 0)) {
-          // job have CC state
-          break;
+          common.printTrace(`  * Job (${jobname}) status is ${jobcctext},RC=${jobcccode}`);
+          if ((jobcctext && jobcctext.length > 0) || (jobcccode && jobcccode.length > 0)) {
+            // job have CC state
+            break;
+          }
         }
       } catch (e) {
         break;

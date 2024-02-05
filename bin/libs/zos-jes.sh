@@ -103,14 +103,17 @@ wait_for_job() {
       # $DJ gives ...
       # ... $HASP890 JOB(JOB1)      CC=(COMPLETED,RC=0)  <-- accept this value
       # ... $HASP890 JOB(GIMUNZIP)  CC=()  <-- reject this value
-      jobstatus=$(echo "${result}" | grep '$HASP890' | sed 's#^.*\$HASP890 *JOB(\(.*\)) *CC=(\(.*\)).*$#\1,\2#')
-      jobname=$(echo "${jobstatus}" | awk -F, '{print $1}')
-      jobcctext=$(echo "${jobstatus}" | awk -F, '{print $2}')
-      jobcccode=$(echo "${jobstatus}" | awk -F, '{print $3}' | awk -F= '{print $2}')
-      print_trace "  * Job (${jobname}) status is ${jobcctext},RC=${jobcccode}"
-      if [ -n "${jobcctext}" -o -n "${jobcccode}" ]; then
-        # job have CC state
-        break
+      haspline=$(echo "${result}" | grep '$HASP890')
+      if [ -n "${haspline}" ]; then
+        jobstatus=$(echo "${haspline} | sed 's#^.*\$HASP890 *JOB(\(.*\)) *CC=(\(.*\)).*$#\1,\2#')
+        jobname=$(echo "${jobstatus}" | awk -F, '{print $1}')
+        jobcctext=$(echo "${jobstatus}" | awk -F, '{print $2}')
+        jobcccode=$(echo "${jobstatus}" | awk -F, '{print $3}' | awk -F= '{print $2}')
+        print_trace "  * Job (${jobname}) status is ${jobcctext},RC=${jobcccode}"
+        if [ -n "${jobcctext}" -o -n "${jobcccode}" ]; then
+          # job have CC state
+          break
+        fi
       fi
     fi
   done
