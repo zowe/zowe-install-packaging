@@ -105,7 +105,7 @@ wait_for_job() {
       # ... $HASP890 JOB(GIMUNZIP)  CC=()  <-- reject this value
       haspline=$(echo "${result}" | grep '$HASP890')
       if [ -n "${haspline}" ]; then
-        jobstatus=$(echo "${haspline} | sed 's#^.*\$HASP890 *JOB(\(.*\)) *CC=(\(.*\)).*$#\1,\2#')
+        jobstatus=$(echo "${haspline}" | sed 's#^.*\$HASP890 *JOB(\(.*\)) *CC=(\(.*\)).*$#\1,\2#')
         jobname=$(echo "${jobstatus}" | awk -F, '{print $1}')
         jobcctext=$(echo "${jobstatus}" | awk -F, '{print $2}')
         jobcccode=$(echo "${jobstatus}" | awk -F, '{print $3}' | awk -F= '{print $2}')
