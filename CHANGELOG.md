@@ -29,6 +29,11 @@ All notable changes to the Zowe Installer will be documented in this file.
 #### Minor enhancements/defect fixes
 - Enhancement: `/bin/utils/date-add.rex` utility is accepting the date formatting as combination of YY|YYYY, MM, DD and any separator.
 
+## `2.12.0`
+
+#### Minor enhancements/defect fixes
+- Enhancement: The job ZWESECUR now assigns the STC user the READ permission to the SAF resource IRR.RADMIN.LISTUSER. Previously this had to be done manually. (#3583)
+
 ## `2.11.0`
 
 ### New features and enhancements
