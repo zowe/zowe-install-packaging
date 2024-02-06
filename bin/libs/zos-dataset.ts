@@ -235,7 +235,7 @@ export function getDatasetVolume(dataset: string): { rc: number, volume?: string
 export function apfAuthorizeDataset(dataset: string): number {
   const result = isDatasetSmsManaged(dataset);
   if (result.rc) {
-    common.printError("Error ZWEL0134E: Failed to find SMS status of data set ${dataset}.");
+    common.printError(`Error ZWEL0134E: Failed to find SMS status of data set ${dataset}.`);
     return 134;
   }
 
@@ -256,7 +256,7 @@ export function apfAuthorizeDataset(dataset: string): number {
     }
   }
 
-  const apfCmd="SETPROG APF,ADD,DSNAME=${dataset},${apfVolumeParam}"
+  const apfCmd=`SETPROG APF,ADD,DSNAME=${dataset},${apfVolumeParam}`;
   if (std.getenv('ZWE_CLI_PARAMETER_SECURITY_DRY_RUN') == "true") {
     common.printMessage("- Dry-run mode, security setup is NOT performed on the system.");
     common.printMessage("  Please apply this operator command manually:");
@@ -277,7 +277,7 @@ export function apfAuthorizeDataset(dataset: string): number {
 }
 
 export function createDatasetTmpMember(dataset: string, prefix: string='ZW'): string | null {
-  common.printTrace(`  > create_data_set_tmp_member in ${dataset}`);
+    common.printTrace(`  > createDatasetTmpMember in ${dataset}`);
   for (var i = 0; i < 100; i++) {
     let rnd=Math.floor(Math.random()*10000);
 
