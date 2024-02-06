@@ -12,27 +12,17 @@
 //********************************************************************* 
 //*
 //*                                               
-//MCOPYL EXEC PGM=IEBCOPY                         
+//MCOPY EXEC PGM=IEBCOPY                         
 //SYSPRINT DD SYSOUT=A                            
 //SYSUT1 DD DSN={zowe.setup.dataset.jcllib},DISP=SHR  
 //SYSUT2 DD DSN={zowe.setup.dataset.proclib},DISP=OLD
 //SYSIN DD *                                      
   COPY OUTDD=SYSUT2,INDD=SYSUT1                                  
   SELECT MEMBER=((ZWESLSTC,{zowe.setup.security.stcs.zowe}))
-//*                                               
-//MCOPYI EXEC PGM=IEBCOPY                         
-//SYSPRINT DD SYSOUT=A                            
-//SYSUT1 DD DSN={zowe.setup.dataset.jcllib},DISP=SHR  
-//SYSUT2 DD DSN={zowe.setup.dataset.proclib},DISP=OLD
-//SYSIN DD *                                      
+
   COPY OUTDD=SYSUT2,INDD=SYSUT1                                  
   SELECT MEMBER=((ZWESISTC,{zowe.setup.security.stcs.zis}))
-//*                                               
-//MCOPYA EXEC PGM=IEBCOPY                         
-//SYSPRINT DD SYSOUT=A                            
-//SYSUT1 DD DSN={zowe.setup.dataset.jcllib},DISP=SHR  
-//SYSUT2 DD DSN={zowe.setup.dataset.proclib},DISP=OLD
-//SYSIN DD *                                      
+
   COPY OUTDD=SYSUT2,INDD=SYSUT1                           
   SELECT MEMBER=((ZWESASTC,{zowe.setup.security.stcs.aux}))
 //*                                               
