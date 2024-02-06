@@ -84,7 +84,6 @@ if [ "${vsam_existence}" = "true" ]; then
   if [ "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITE}" = "true" ]; then
     # delete blindly and ignore errors
     result=$(tso_command delete "'${vsam_name}'")
-  fi
   else
     # error
     print_error_and_exit "Error ZWEL0158E: ${vsam_name} already exists." "" 158

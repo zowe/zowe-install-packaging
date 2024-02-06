@@ -88,6 +88,13 @@ else
 
   jcl_file=$(create_tmp_file)
   copy_mvs_to_uss "${jcllib}(ZWEISTC)" "${jcl_file}"
+
+  # TODO limitation... if STC names are default, JCL IEBCOPY wont work,
+  #   because in member selection argument, the "rename" operation cannot be from/to the same name.
+  #   yet if we don't have the rename option, then name customization wont work either!
+  #   so, we have to have some conditional logic somewhere. until figuring out how to fix this in ZWEGENER, i am putting it here...
+  jcl_edit=$(cat "${jcl_file}" | sed "s/ZWESLSTC,ZWESLSTC/ZWESLSTC/" | sed "s/ZWESISTC,ZWESISTC/ZWESISTC/" | sed "s/ZWESASTC,ZWESASTC/ZWESASTC/")
+  echo "${jcl_edit}" > "${jcl_file}"
   jcl_contents=$(cat "${jcl_file}")
 
   print_message "Template JCL: ${prefix}.SZWESAMP(ZWEISTC) , Executable JCL: ${jcllib}(ZWEISTC)"
