@@ -138,7 +138,7 @@ wait_for_job() {
   fi
 }
 
-print_and_handle_jcl()
+print_and_handle_jcl() {
   jcl_location="${1}"
   job_name="{2}"
   jcllib="${3}"
