@@ -11,28 +11,11 @@
 //*
 //*********************************************************************
 //*
-//* Zowe Open Source Project
 //* This JCL can be used to define key ring and certificates for Zowe
 //*
-//*********************************************************************
 //* ATTENTION!
-//* Configure certificate for Zowe
-//* Select one of three options which is the most suitable for your
-//* environment and follow the appropriate action
-//*
-//* Options:
-//*  1. (default option) Generate Zowe's certificate that will be
-//*     signed by the Zowe's local CA
-//*
-//*  2. Zowe's certificate is already loaded in RACF database
-//*     ACTION:
-//*     a. modify the following snippet
-//*        CONNECT(SITE | ID(userid) +
-//*        LABEL('certlabel') +
-//*        to match the owner of the desired certificate
-//*
-//*  3. Import external Zowe's certificate from a data set in PKCS12
-//*     format
+//* Each ZWEIKR JCL is for different ESM and Keyring options.
+//  This one is for importing a PKCS12 certificate from a data set.
 //*
 //*********************************************************************
 //*
@@ -73,8 +56,7 @@
 //* 2. Assumption: signing CA chain of the Zowe external certificate is
 //*    added to the security database under the CERTAUTH userid.
 //*
-//* 3. If the Zowe certificate is imported from a data set then
-//*    the certificate has to be in PKCS12 format and has to
+//* 3. The imported PKCS12-formatted data set has to
 //*    contain Zowe certificate's signing CA chain and private key.
 //*
 //* 4. This job WILL complete with return code 0.
@@ -117,8 +99,8 @@ ACF
 //
 * Create the keyring .............................................. */
   SET PROFILE(USER) DIVISION(KEYRING)
-  INSERT {zowe.setup.security.users.zowe}..ZOWERING +
-  RINGNAME({zowe.setup.certificate.keyring.name}.)
+  INSERT {zowe.setup.security.users.zowe}.ZOWERING +
+  RINGNAME({zowe.setup.certificate.keyring.name})
   F ACF2,REBUILD(USR),CLASS(P),DIVISION(KEYRING)
 $$
 //*
@@ -131,18 +113,18 @@ ACF
 * Option 3 - BEGINNING ............................................ */
 * Import external certificate from data set ....................... */
    SET PROFILE(USER) DIV(CERTDATA)
-   INSERT {zowe.setup.security.users.zowe}..ZOWECERT -
-      DSNAME('{zowe.setup.certificate.keyring.import.dsName}.') -
+   INSERT {zowe.setup.security.users.zowe}.ZOWECERT -
+      DSNAME('{zowe.setup.certificate.keyring.import.dsName}') -
       LABEL(&LABEL.) -
-      PASSWORD('{zowe.setup.certificate.keyring.import.password}.') -
+      PASSWORD('{zowe.setup.certificate.keyring.import.password}') -
       TRUST
 *
 * Connect a Zowe's certificate with the keyring ................... */
    SET PROFILE(USER) DIVISION(CERTDATA)
-   CONNECT CERTDATA({zowe.setup.security.users.zowe}..ZOWECERT) -
-   KEYRING({zowe.setup.security.users.zowe}..ZOWERING) -
+   CONNECT CERTDATA({zowe.setup.security.users.zowe}.ZOWECERT) -
+   KEYRING({zowe.setup.security.users.zowe}.ZOWERING) -
    USAGE(PERSONAL) DEFAULT
-   CHKCERT {zowe.setup.security.users.zowe}..ZOWECERT
+   CHKCERT {zowe.setup.security.users.zowe}.ZOWECERT
 *
 * Option 3 - END .................................................. */
 $$
@@ -158,12 +140,12 @@ ACF
 * keyring ......................................................... */
    SET PROFILE(USER) DIVISION(CERTDATA)
    CONNECT CERTDATA(CERTAUTH.&ITRMZWCA.) -
-   RINGNAME({zowe.setup.certificate.keyring.name}.) -
-   KEYRING({zowe.setup.security.users.zowe}..ZOWERING) USAGE(CERTAUTH)
+   RINGNAME({zowe.setup.certificate.keyring.name}) -
+   KEYRING({zowe.setup.security.users.zowe}.ZOWERING) USAGE(CERTAUTH)
 *
    CONNECT CERTDATA(CERTAUTH.&ROOTZWCA.) -
-   RINGNAME({zowe.setup.certificate.keyring.name}.) -
-   KEYRING({zowe.setup.security.users.zowe}..ZOWERING) USAGE(CERTAUTH)
+   RINGNAME({zowe.setup.certificate.keyring.name}) -
+   KEYRING({zowe.setup.security.users.zowe}.ZOWERING) USAGE(CERTAUTH)
 $$
 //IFZWCAED ENDIF
 //*
@@ -178,9 +160,9 @@ ACF
 * authority (CA) with the keyring ................................. */
    SET PROFILE(USER) DIVISION(CERTDATA)
    CONNECT -
-     CERTDATA(CERTAUTH.{zowe.setup.certificate.keyring.zOSMF.ca}.) -
-     RINGNAME({zowe.setup.certificate.keyring.name}.) -
-     KEYRING({zowe.setup.security.users.zowe}..ZOWERING) -
+     CERTDATA(CERTAUTH.{zowe.setup.certificate.keyring.zOSMF.ca}) -
+     RINGNAME({zowe.setup.certificate.keyring.name}) -
+     KEYRING({zowe.setup.security.users.zowe}.ZOWERING) -
      USAGE(CERTAUTH)
 $$
 //IFZFCAED ENDIF
@@ -208,7 +190,7 @@ ACF
 *
 * List the keyring ................................................ */
   SET PROFILE(USER) DIVISION(KEYRING)
-  LIST {zowe.setup.security.users.zowe}..ZOWERING
+  LIST {zowe.setup.security.users.zowe}.ZOWERING
 * Common part - END ............................................... */
 $$
 //*

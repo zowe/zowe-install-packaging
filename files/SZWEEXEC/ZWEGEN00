@@ -78,55 +78,6 @@ CFG.ZWE_CLI_PARAMETER_CONFIG = configChainWithMembers
 
 /*
 ================================================================================
-    Determine the external security manager on the system so that the correct
-    jcl templates can be used.
-================================================================================
-*/
-
-CVT_ADDR = C2X(STORAGE(D2X(16), 4))
-CVTRAC_ADDR = C2X(STORAGE(D2X(X2D(CVT_ADDR) + 992), 4))
-CVTRAC_VAL = STORAGE(CVTRAC_ADDR, 4)
-
-esm.0 = 3
-
-esm.1.search = 'RCVT'
-esm.1.prefix = 'ZWEKRR'
-
-esm.2.search = 'RTSS'
-esm.2.prefix = 'ZWEKRT'
-
-esm.3.search = 'ACF2'
-esm.3.prefix = 'ZWEKRA'
-
-ringType = 0
-
-/* attempt to handle getting only 1 keyring jcl 
-if WORDINDEX(CFG.zowe.setup.certificate.type, 'JCE') > 0 then do
-  if LENGTH(CFG.zowe.setup.certificate.keyring.connect) > 0 then do
-    say 'connect exists, it is 'CFG.zowe.setup.certificate.keyring.connect'.'
-    ringType = 2
-  else if LENGTH(CFG.zowe.setup.certificate.keyring.import) > 0 then do
-    say 'import exists, it is 'CFG.zowe.setup.certificate.keyring.import'.'
-    ringType = 3
-  else do
-    say 'ring to be created'
-    ringType = 1
-  end
-else do
-  say 'pkcs12 to be used'  
-end
-
-if ringType > 0 then do
-  do i = 1 to esm.0
-    if COMPARE(esm.i.search, CVTRAC_VAL) = 0 then do
-      ringMember = 'ZWEKR'esm.i.prefix''ringType
-    end
-  end
-end
-*/
-
-/*
-================================================================================
     Create a data set with attributes like the original jcl library and copy
     all the members of esm jcl.
 ================================================================================
@@ -191,6 +142,69 @@ x = DeleteDataSet(jclCopy'(ZWESIPRG)')
 x = DeleteDataSet(jclCopy'(ZWESISCH)')
 x = DeleteDataSet(jclCopy'(ZWESECKG)')
 
+
+/*
+================================================================================
+    Determine the external security manager on the system so that the correct
+    jcl templates can be used.
+================================================================================
+*/
+
+CVT_ADDR = C2X(STORAGE(D2X(16), 4))
+CVTRAC_ADDR = C2X(STORAGE(D2X(X2D(CVT_ADDR) + 992), 4))
+CVTRAC_VAL = STORAGE(CVTRAC_ADDR, 4)
+
+ringType = 0
+
+/* attempt to handle getting only 1 keyring jcl 
+if WORDINDEX(CFG.zowe.setup.certificate.type, 'JCE') > 0 then do
+  if LENGTH(CFG.zowe.setup.certificate.keyring.connect) > 0 then do
+    say 'connect exists, it is 'CFG.zowe.setup.certificate.keyring.connect'.'
+    ringType = 2
+  end
+  if LENGTH(CFG.zowe.setup.certificate.keyring.import) > 0 then do
+    say 'import exists, it is 'CFG.zowe.setup.certificate.keyring.import'.'
+    ringType = 3
+  end
+  else do
+    say 'ring to be created'
+    ringType = 1
+  end
+else do
+  say 'pkcs12 to be used'  
+end
+*/  
+
+if COMPARE('RCVT', CVTRAC_VAL) = 0 then do
+  x = DeleteDataSet(jclCopy'(ZWEIKRA1)')
+  x = DeleteDataSet(jclCopy'(ZWEIKRA2)')
+  x = DeleteDataSet(jclCopy'(ZWEIKRA3)')
+  x = DeleteDataSet(jclCopy'(ZWEIKRT1)')
+  x = DeleteDataSet(jclCopy'(ZWEIKRT2)')
+  x = DeleteDataSet(jclCopy'(ZWEIKRT3)')
+  x = DeleteDataSet(jclCopy'(ZWEIACF2)')
+  x = DeleteDataSet(jclCopy'(ZWEITSS)')
+end
+if COMPARE('RTSS', CVTRAC_VAL) = 0 then do
+  x = DeleteDataSet(jclCopy'(ZWEIKRA1)')
+  x = DeleteDataSet(jclCopy'(ZWEIKRA2)')
+  x = DeleteDataSet(jclCopy'(ZWEIKRA3)')
+  x = DeleteDataSet(jclCopy'(ZWEIKRR1)')
+  x = DeleteDataSet(jclCopy'(ZWEIKRR2)')
+  x = DeleteDataSet(jclCopy'(ZWEIKRR3)')
+  x = DeleteDataSet(jclCopy'(ZWEIACF2)')
+  x = DeleteDataSet(jclCopy'(ZWEIRACF)')
+end
+else do
+  x = DeleteDataSet(jclCopy'(ZWEIKRT1)')
+  x = DeleteDataSet(jclCopy'(ZWEIKRT2)')
+  x = DeleteDataSet(jclCopy'(ZWEIKRT3)')
+  x = DeleteDataSet(jclCopy'(ZWEIKRR1)')
+  x = DeleteDataSet(jclCopy'(ZWEIKRR2)')
+  x = DeleteDataSet(jclCopy'(ZWEIKRR3)')      
+  x = DeleteDataSet(jclCopy'(ZWEIRACF)')
+  x = DeleteDataSet(jclCopy'(ZWEITSS)')
+end
 
 say jcl' has been copied to 'jclCopy'.'
 

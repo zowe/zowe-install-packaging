@@ -59,11 +59,11 @@
 
 /* Remove permit to use SITE owned certificate's private key */
   PERMIT IRR.DIGTCERT.GENCERT CLASS(FACILITY) +
-         DELETE ID({zowe.setup.security.users.zowe}.)
+         DELETE ID({zowe.setup.security.users.zowe})
 
 /* Remove permit to read keyring ................................... */
   PERMIT IRR.DIGTCERT.LISTRING CLASS(FACILITY) +
-         DELETE ID({zowe.setup.security.users.zowe}.)
+         DELETE ID({zowe.setup.security.users.zowe})
 
   SETROPTS RACLIST(FACILITY) REFRESH
 
@@ -73,7 +73,7 @@
   PERMIT +
     &USERNAME..{zowe.setup.certificate.keyring.name}..LST +
     CLASS(RDATALIB) DELETE +
-    ID({zowe.setup.security.users.zowe}.)
+    ID({zowe.setup.security.users.zowe})
   RDELETE RDATALIB +
           &USERNAME..{zowe.setup.certificate.keyring.name}..LST
 
@@ -81,16 +81,16 @@
   SETROPTS RACLIST(RDATALIB) REFRESH
 
 /* Delete LABEL certificate ........................................*/
-  RACDCERT DELETE(LABEL('{zowe.setup.certificate.keyring.label}.')) +
-           ID({zowe.setup.security.users.zowe}.)
+  RACDCERT DELETE(LABEL('{zowe.setup.certificate.keyring.label}')) +
+           ID({zowe.setup.security.users.zowe})
 
 /* Delete LOCALCA certificate ......................................*/
   RACDCERT DELETE(LABEL( +
-           '{zowe.setup.certificate.keyring.caLabel}.')) CERTAUTH
+           '{zowe.setup.certificate.keyring.caLabel}')) CERTAUTH
 
 /* Delete keyring ...................................................*/
-  RACDCERT DELRING({zowe.setup.certificate.keyring.name}.) +
-           ID({zowe.setup.security.users.zowe}.)
+  RACDCERT DELRING({zowe.setup.certificate.keyring.name}) +
+           ID({zowe.setup.security.users.zowe})
 
   SETROPTS RACLIST(DIGTCERT, DIGTRING) REFRESH
 
@@ -141,21 +141,21 @@ $$
 //TSS      DD DATA,DLM=$$,SYMBOLS=JCLONLY
 
 /* Remove permit to use SITE owned certificate's private key */
-   TSS REVOKE({zowe.setup.security.users.zowe}.) +
+   TSS REVOKE({zowe.setup.security.users.zowe}) +
        IBMFAC(IRR.DIGTCERT.GENCERT) ACCESS(CONTROL)
 
 /* Remove permit to read keyring ................................... */
-   TSS REVOKE({zowe.setup.security.users.zowe}.) +
+   TSS REVOKE({zowe.setup.security.users.zowe}) +
        IBMFAC(IRR.DIGTCERT.LISTRING) ACCESS(READ)
 
 /* Delete LABEL certificate ........................................*/
-   TSS REM({zowe.setup.security.users.zowe}.) DIGICERT(ZOWECERT)
+   TSS REM({zowe.setup.security.users.zowe}) DIGICERT(ZOWECERT)
 
 /* Delete LOCALCA certificate ......................................*/
    TSS REM(CERTAUTH) DIGICERT(ZOWECA)
 
 /* Delete keyring ...................................................*/
-   TSS REM({zowe.setup.security.users.zowe}.) KEYRING(ZOWERING)
+   TSS REM({zowe.setup.security.users.zowe}) KEYRING(ZOWERING)
 
 /* ................................................................. */
 /* only the last RC is returned, this command ensures it is a 0      */
