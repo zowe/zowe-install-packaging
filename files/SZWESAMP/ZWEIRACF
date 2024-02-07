@@ -98,7 +98,7 @@
 
 /* uncomment to add existing user IDs to the ADMINGRP group          */
 /* CONNECT (userid,userid,...) -                                     */
-/* GROUP({zowe.setup.security.groups.admin}.) AUTH(USE)              */
+/* GROUP({zowe.setup.security.groups.admin}) AUTH(USE)              */
 
 /* DEFINE STARTED TASK ............................................. */
 
@@ -121,7 +121,7 @@
   LISTUSER {zowe.setup.security.users.zowe}. OMVS
   ADDUSER  {zowe.setup.security.users.zowe}. -
    NOPASSWORD -
-   DFLTGRP({zowe.setup.security.groups.stc}.) -
+   DFLTGRP({zowe.setup.security.groups.stc}) -
    OMVS(HOME(/tmp) PROGRAM(/bin/sh) AUTOUID) -
    NAME('ZOWE SERVER') -
    DATA('ZOWE MAIN SERVER')
@@ -131,7 +131,7 @@
   LISTUSER {zowe.setup.security.users.zis}. OMVS
   ADDUSER  {zowe.setup.security.users.zis}. -
    NOPASSWORD -
-   DFLTGRP({zowe.setup.security.groups.stc}.) -
+   DFLTGRP({zowe.setup.security.groups.stc}) -
    OMVS(HOME(/tmp) PROGRAM(/bin/sh) AUTOUID) -
    NAME('ZOWE ZIS SERVER') -
    DATA('ZOWE ZIS CROSS MEMORY SERVER')
@@ -139,24 +139,24 @@
 /* */
 
 /* started task for ZOWE main server                                 */
-  RLIST   STARTED {zowe.setup.security.stcs.zowe}..* ALL STDATA
-  RDEFINE STARTED {zowe.setup.security.stcs.zowe}..* -
-   STDATA(USER({zowe.setup.security.users.zowe}.) -
-     GROUP({zowe.setup.security.groups.stc}.) -
+  RLIST   STARTED {zowe.setup.security.stcs.zowe}.* ALL STDATA
+  RDEFINE STARTED {zowe.setup.security.stcs.zowe}.* -
+   STDATA(USER({zowe.setup.security.users.zowe}) -
+     GROUP({zowe.setup.security.groups.stc}) -
    TRUSTED(NO)) DATA('ZOWE MAIN SERVER')
 
 /* started task for ZIS cross memory server                         */
-  RLIST   STARTED {zowe.setup.security.stcs.zis}..* ALL STDATA
-  RDEFINE STARTED {zowe.setup.security.stcs.zis}..* -
-   STDATA(USER({zowe.setup.security.users.zis}.) -
-   GROUP({zowe.setup.security.groups.stc}.) -
+  RLIST   STARTED {zowe.setup.security.stcs.zis}.* ALL STDATA
+  RDEFINE STARTED {zowe.setup.security.stcs.zis}.* -
+   STDATA(USER({zowe.setup.security.users.zis}) -
+   GROUP({zowe.setup.security.groups.stc}) -
    TRUSTED(NO)) DATA('ZOWE ZIS CROSS MEMORY SERVER')
 
 /* started task for ZIS Auxiliary cross memory server                */
-  RLIST   STARTED {zowe.setup.security.stcs.aux}..* ALL STDATA
-  RDEFINE STARTED {zowe.setup.security.stcs.aux}..* -
-   STDATA(USER({zowe.setup.security.users.zis}.) -
-   GROUP({zowe.setup.security.groups.stc}.) -
+  RLIST   STARTED {zowe.setup.security.stcs.aux}.* ALL STDATA
+  RDEFINE STARTED {zowe.setup.security.stcs.aux}.* -
+   STDATA(USER({zowe.setup.security.users.zis}) -
+   GROUP({zowe.setup.security.groups.stc}) -
    TRUSTED(NO)) DATA('ZOWE ZIS AUX CROSS MEMORY SERVER')
 
   SETROPTS RACLIST(STARTED) REFRESH
@@ -165,9 +165,9 @@
   LISTGRP  {zowe.setup.security.groups.stc}. OMVS
   LISTUSER {zowe.setup.security.users.zowe}. OMVS
   LISTUSER {zowe.setup.security.users.zis}. OMVS
-  RLIST STARTED {zowe.setup.security.stcs.zowe}..* ALL STDATA
-  RLIST STARTED {zowe.setup.security.stcs.zis}..* ALL STDATA
-  RLIST STARTED {zowe.setup.security.stcs.aux}..*  ALL STDATA
+  RLIST STARTED {zowe.setup.security.stcs.zowe}.* ALL STDATA
+  RLIST STARTED {zowe.setup.security.stcs.zis}.* ALL STDATA
+  RLIST STARTED {zowe.setup.security.stcs.aux}.*  ALL STDATA
 
 /* DEFINE ZIS SECURITY RESOURCES ................................... */
 
@@ -179,14 +179,14 @@
 
 /* permit AUX STC to use ZIS cross memory server                     */
   PERMIT ZWES.IS CLASS(FACILITY) ACCESS(READ) -
-    ID({zowe.setup.security.users.zis}.)
+    ID({zowe.setup.security.users.zis})
   SETROPTS RACLIST(FACILITY) REFRESH
 
 /* DEFINE ZOWE SERVER PERMISIONS ................................... */
 
 /* permit Zowe main server to use ZIS cross memory server            */
   PERMIT ZWES.IS CLASS(FACILITY) ACCESS(READ) -
-    ID({zowe.setup.security.users.zowe}.)
+    ID({zowe.setup.security.users.zowe})
   SETROPTS RACLIST(FACILITY) REFRESH
 
 /* permit Zowe main server to create a user's security environment   */
@@ -198,17 +198,17 @@
   RLIST   FACILITY BPX.DAEMON ALL
   RDEFINE FACILITY BPX.DAEMON UACC(NONE)
   PERMIT BPX.DAEMON CLASS(FACILITY) ACCESS(UPDATE) 0
-    ID({zowe.setup.security.users.zowe}.)
+    ID({zowe.setup.security.users.zowe})
 
   RLIST   FACILITY BPX.SERVER ALL
   RDEFINE FACILITY BPX.SERVER UACC(NONE)
   PERMIT BPX.SERVER CLASS(FACILITY) ACCESS(UPDATE) -
-    ID({zowe.setup.security.users.zowe}.)
+    ID({zowe.setup.security.users.zowe})
 
 /* permit Zowe main server to create a user's security environment   */
 /* comment out the following 2 lines if the OMVSAPPL is not defined  */
 /* in your environment                                               */
-  PERMIT OMVSAPPL CLASS(APPL) ID({zowe.setup.security.users.zowe}.) -
+  PERMIT OMVSAPPL CLASS(APPL) ID({zowe.setup.security.users.zowe}) -
     ACCESS(READ)
   SETROPTS RACLIST(APPL) REFRESH
 
@@ -216,7 +216,7 @@
   RLIST   FACILITY BPX.JOBNAME ALL
   RDEFINE FACILITY BPX.JOBNAME UACC(NONE)
   PERMIT BPX.JOBNAME CLASS(FACILITY) ACCESS(READ) -
-    ID({zowe.setup.security.users.zowe}.)
+    ID({zowe.setup.security.users.zowe})
 
   SETROPTS RACLIST(FACILITY) REFRESH
 
@@ -224,20 +224,20 @@
   RLIST   FACILITY IRR.RUSERMAP ALL
   RDEFINE FACILITY IRR.RUSERMAP UACC(NONE)
   PERMIT IRR.RUSERMAP CLASS(FACILITY) ACCESS(READ) -
-    ID({zowe.setup.security.users.zowe}.)
+    ID({zowe.setup.security.users.zowe})
 
 /* permit Zowe main server to use distributed identity mapping       */
 /* service
   RLIST   FACILITY IRR.IDIDMAP.QUERY ALL
   RDEFINE FACILITY IRR.IDIDMAP.QUERY UACC(NONE)
   PERMIT IRR.IDIDMAP.QUERY CLASS(FACILITY) ACCESS(READ) -
-   ID({zowe.setup.security.users.zowe}.)
+   ID({zowe.setup.security.users.zowe})
 
 /* permit Zowe main server to cut SMF records                        */
   RLIST   FACILITY IRR.RAUDITX ALL
   RDEFINE FACILITY IRR.RAUDITX UACC(NONE)
   PERMIT IRR.RAUDITX CLASS(FACILITY) ACCESS(READ) -
-    ID({zowe.setup.security.users.zowe}.)
+    ID({zowe.setup.security.users.zowe})
 
   SETROPTS RACLIST(FACILITY) REFRESH
 /* show results .................................................... */
@@ -262,16 +262,16 @@
   ADDGROUP {zowe.setup.dataset.prefix}. DATA('Zowe - HLQ STUB')
 
 /* general data set protection                                       */
-  LISTDSD PREFIX({zowe.setup.dataset.prefix}.) ALL
-  ADDSD  '{zowe.setup.dataset.prefix}..*.**' UACC(READ) DATA('Zowe')
-  PERMIT '{zowe.setup.dataset.prefix}..*.**' CLASS(DATASET) -
-    ACCESS(ALTER) ID({zowe.setup.security.groups.sysProg}.)
+  LISTDSD PREFIX({zowe.setup.dataset.prefix}) ALL
+  ADDSD  '{zowe.setup.dataset.prefix}.*.**' UACC(READ) DATA('Zowe')
+  PERMIT '{zowe.setup.dataset.prefix}.*.**' CLASS(DATASET) -
+    ACCESS(ALTER) ID({zowe.setup.security.groups.sysProg})
 
   SETROPTS GENERIC(DATASET) REFRESH
 
 /* show results .................................................... */
   LISTGRP {zowe.setup.dataset.prefix}.
-  LISTDSD PREFIX({zowe.setup.dataset.prefix}.) ALL
+  LISTDSD PREFIX({zowe.setup.dataset.prefix}) ALL
 
 /* DEFINE ZOWE RESOURCE PROTECTION ................................. */
 

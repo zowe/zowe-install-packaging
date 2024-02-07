@@ -11,28 +11,12 @@
 //*
 //*********************************************************************
 //*
-//* Zowe Open Source Project
 //* This JCL can be used to define key ring and certificates for Zowe
 //*
-//*********************************************************************
 //* ATTENTION!
-//* Configure certificate for Zowe
-//* Select one of three options which is the most suitable for your
-//* environment and follow the appropriate action
-//*
-//* Options:
-//*  1. (default option) Generate Zowe's certificate that will be
-//*     signed by the Zowe's local CA
-//*
-//*  2. Zowe's certificate is already loaded in RACF database
-//*     ACTION:
-//*     a. modify the following snippet
-//*        CONNECT(SITE | ID(userid) +
-//*        LABEL('certlabel') +
-//*        to match the owner of the desired certificate
-//*
-//*  3. Import external Zowe's certificate from a data set in PKCS12
-//*     format
+//* Each ZWEIKR JCL is for different ESM and Keyring options.
+//* This one is for generating new certificates
+//* Signed by a Zowe-generated local certificate authority (CA)
 //*
 //*********************************************************************
 //*
@@ -73,11 +57,7 @@
 //* 2. Assumption: signing CA chain of the Zowe external certificate is
 //*    added to the security database under the CERTAUTH userid.
 //*
-//* 3. If the Zowe certificate is imported from a data set then
-//*    the certificate has to be in PKCS12 format and has to
-//*    contain Zowe certificate's signing CA chain and private key.
-//*
-//* 4. This job WILL complete with return code 0.
+//* 3. This job WILL complete with return code 0.
 //*    The results of each command must be verified after completion.
 //*
 //*********************************************************************
@@ -115,8 +95,8 @@
 //TSS      DD DATA,DLM=$$,SYMBOLS=JCLONLY
 
 /* Create the keyring .............................................. */
-  TSS ADD({zowe.setup.security.users.zowe}.) KEYRING(ZOWERING) +
-      LABLRING({zowe.setup.certificate.keyring.name}.)
+  TSS ADD({zowe.setup.security.users.zowe}) KEYRING(ZOWERING) +
+      LABLRING({zowe.setup.certificate.keyring.name})
 $$
 //RUNOPT1  EXEC PGM=IKJEFT01,REGION=0M
 //SYSTSPRT DD SYSOUT=*
@@ -139,12 +119,12 @@ $$
         KEYUSAGE('CERTSIGN')
 
 /* Connect Zowe's local CA authority to the keyring ................ */
-  TSS ADD({zowe.setup.security.users.zowe}.) KEYRING(ZOWERING) +
-      LABLRING({zowe.setup.certificate.keyring.name}.) +
+  TSS ADD({zowe.setup.security.users.zowe}) KEYRING(ZOWERING) +
+      LABLRING({zowe.setup.certificate.keyring.name}) +
       RINGDATA(CERTAUTH,ZOWECA)
 
 /* Create a certificate signed by local zowe's CA .................. */
-   TSS GENCERT({zowe.setup.security.users.zowe}.) +
+   TSS GENCERT({zowe.setup.security.users.zowe}) +
        DIGICERT(ZOWECERT) +
        SUBJECTN( +
          'CN="{zowe.setup.certificate.dname}. certificate" +
@@ -155,13 +135,13 @@ $$
          C="{zowe.setup.certificate.dname.country}." ') +
        KEYSIZE(2048) +
        NADATE(05/01/30) +
-       LABLCERT({zowe.setup.certificate.keyring.label}.) +
+       LABLCERT({zowe.setup.certificate.keyring.label}) +
        KEYUSAGE('HANDSHAKE') +
        ALTNAME('DOMAIN={zowe.externalDomains.0}') +
        SIGNWITH(CERTAUTH,ZOWECA)
 
 /* Connect a Zowe's certificate with the keyring ................... */
-   TSS ADD({zowe.setup.security.users.zowe}.) KEYRING(ZOWERING) +
+   TSS ADD({zowe.setup.security.users.zowe}) KEYRING(ZOWERING) +
        RINGDATA({zowe.setup.security.users.zowe}.,ZOWECERT) +
        USAGE(PERSONAL) DEFAULT
 
@@ -176,12 +156,12 @@ $$
 
 /* Connect all CAs of the Zowe certificate's signing chain with the  */
 /* keyring ......................................................... */
-   TSS ADD({zowe.setup.security.users.zowe}.) KEYRING(ZOWERING) +
-       LABLRING({zowe.setup.certificate.keyring.name}.) +
+   TSS ADD({zowe.setup.security.users.zowe}) KEYRING(ZOWERING) +
+       LABLRING({zowe.setup.certificate.keyring.name}) +
        RINGDATA(CERTAUTH,&ITRMZWCA.) USAGE(CERTAUTH)
 
-   TSS ADD({zowe.setup.security.users.zowe}.) KEYRING(ZOWERING) +
-       LABLRING({zowe.setup.certificate.keyring.name}.) +
+   TSS ADD({zowe.setup.security.users.zowe}) KEYRING(ZOWERING) +
+       LABLRING({zowe.setup.certificate.keyring.name}) +
        RINGDATA(CERTAUTH,&ROOTZWCA.) USAGE(CERTAUTH)
 $$
 //IFZWCAED ENDIF
@@ -194,9 +174,9 @@ $$
 
 /* Connect the z/OSMF root CA signed by a recognized certificate ... */
 /* authority (CA) with the keyring ................................. */
-   TSS ADD({zowe.setup.security.users.zowe}.) KEYRING(ZOWERING) +
-     LABLRING({zowe.setup.certificate.keyring.name}.) +
-     RINGDATA(CERTAUTH,{zowe.setup.certificate.keyring.zOSMF.ca}.) +
+   TSS ADD({zowe.setup.security.users.zowe}) KEYRING(ZOWERING) +
+     LABLRING({zowe.setup.certificate.keyring.name}) +
+     RINGDATA(CERTAUTH,{zowe.setup.certificate.keyring.zOSMF.ca}) +
      USAGE(CERTAUTH)
 $$
 //IFZFCAED ENDIF
@@ -209,16 +189,16 @@ $$
 /* A common part for all options starts here ....................... */
 
 /* Allow ZOWEUSER to access keyring ................................ */
-  TSS PERMIT({zowe.setup.security.users.zowe}.) +
+  TSS PERMIT({zowe.setup.security.users.zowe}) +
       IBMFAC(IRR.DIGTCERT.LISTRING) ACCESS(READ)
 
 /* Uncomment this command if SITE acid owns the Zowe certificate ... */
-/* TSS PERMIT({zowe.setup.security.users.zowe}.) +
+/* TSS PERMIT({zowe.setup.security.users.zowe}) +
        IBMFAC(IRR.DIGTCERT.GENCERT) ACCESS(CONTROL)
 
 /* List the keyring ................................................ */
-  TSS LIST({zowe.setup.security.users.zowe}.) KEYRING(ZOWERING) +
-      LABLRING({zowe.setup.certificate.keyring.name}.)
+  TSS LIST({zowe.setup.security.users.zowe}) KEYRING(ZOWERING) +
+      LABLRING({zowe.setup.certificate.keyring.name})
 
 /* Common part - END ............................................... */
 /* only the last RC is returned, this command ensures it is a 0      */

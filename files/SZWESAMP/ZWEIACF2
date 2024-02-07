@@ -103,7 +103,7 @@ F ACF2,REBUILD(GRP),CLASS(P)
 *
 SET LID
 INSERT {zowe.setup.security.users.zowe}. +
-  STC GROUP({zowe.setup.security.groups.stc}.)
+  STC GROUP({zowe.setup.security.groups.stc})
 SET PROFILE(USER) DIV(OMVS)
 INSERT {zowe.setup.security.users.zowe}. +
   AUTOUID HOME(/tmp) OMVSPGM(/bin/sh)
@@ -114,7 +114,7 @@ F ACF2,REBUILD(USR),CLASS(P),DIVISION(OMVS)
 *
 SET LID
 INSERT {zowe.setup.security.users.zis}. +
-  STC GROUP({zowe.setup.security.groups.stc}.)
+  STC GROUP({zowe.setup.security.groups.stc})
 SET PROFILE(USER) DIV(OMVS)
 INSERT {zowe.setup.security.users.zis}. +
   AUTOUID HOME(/tmp) OMVSPGM(/bin/sh)
@@ -126,27 +126,27 @@ F ACF2,REBUILD(USR),CLASS(P),DIVISION(OMVS)
 *
 SET CONTROL(GSO)
 INSERT STC.{zowe.setup.security.stcs.zowe}. +
-  LOGONID({zowe.setup.security.users.zowe}.) +
-GROUP({zowe.setup.security.groups.stc}.) +
-STCID({zowe.setup.security.stcs.zowe}.)
+  LOGONID({zowe.setup.security.users.zowe}) +
+GROUP({zowe.setup.security.groups.stc}) +
+STCID({zowe.setup.security.stcs.zowe})
 F ACF2,REFRESH(STC)
 *
 * started task for ZIS cross memory server
 *
 SET CONTROL(GSO)
 INSERT STC.{zowe.setup.security.stcs.zis}. +
-  LOGONID({zowe.setup.security.users.zis}.) +
-GROUP({zowe.setup.security.groups.stc}.) +
-STCID({zowe.setup.security.stcs.zis}.)
+  LOGONID({zowe.setup.security.users.zis}) +
+GROUP({zowe.setup.security.groups.stc}) +
+STCID({zowe.setup.security.stcs.zis})
 F ACF2,REFRESH(STC)
 *
 * started task for ZIS Auxiliary cross memory server
 *
 SET CONTROL(GSO)
 INSERT STC.{zowe.setup.security.stcs.aux}. +
-  LOGONID({zowe.setup.security.users.zis}.) +
-GROUP({zowe.setup.security.groups.stc}.) +
-STCID({zowe.setup.security.stcs.aux}.)
+  LOGONID({zowe.setup.security.users.zis}) +
+GROUP({zowe.setup.security.groups.stc}) +
+STCID({zowe.setup.security.stcs.aux})
 F ACF2,REFRESH(STC)
 *
 * DEFINE ZIS SECURITY RESOURCES ..................................
@@ -156,10 +156,10 @@ F ACF2,REFRESH(STC)
 *
 SET X(ROL)
 INSERT {zowe.setup.security.groups.stc}. +
-  INCLUDE({zowe.setup.security.users.zowe}.) ROLE
+  INCLUDE({zowe.setup.security.users.zowe}) ROLE
 F ACF2,NEWXREF,TYPE(ROL)
 CHANGE {zowe.setup.security.groups.stc}. +
-  INCLUDE({zowe.setup.security.users.zis}.) ADD
+  INCLUDE({zowe.setup.security.users.zis}) ADD
 F ACF2,NEWXREF,TYPE(ROL)
 *
 * DEFINE STC SERVER PERMISIONS ....................................
@@ -168,7 +168,7 @@ F ACF2,NEWXREF,TYPE(ROL)
 *
 SET RESOURCE(FAC)
 RECKEY ZWES ADD(IS SERVICE(READ) +
-  ROLE({zowe.setup.security.groups.stc}.) ALLOW)
+  ROLE({zowe.setup.security.groups.stc}) ALLOW)
 F ACF2,REBUILD(FAC)
 *
 * DEFINE ZOWE SERVER PERMISIONS ...................................
@@ -182,38 +182,38 @@ F ACF2,REBUILD(FAC)
 *
 SET RESOURCE(FAC)
 RECKEY BPX ADD(DAEMON SERVICE(UPDATE) +
-  ROLE({zowe.setup.security.groups.stc}.) ALLOW)
+  ROLE({zowe.setup.security.groups.stc}) ALLOW)
 RECKEY BPX ADD(SERVER SERVICE(UPDATE) +
-  ROLE({zowe.setup.security.groups.stc}.) ALLOW)
+  ROLE({zowe.setup.security.groups.stc}) ALLOW)
 *
 * permit Zowe main server to create a user's security environment
 * comment out the following 3 lines if the OMVSAPPL is not defined
 * in your environment
 SET RESOURCE(APL)
 RECKEY OMVSAPPL ADD(SERVICE(READ) +
-  ROLE({zowe.setup.security.groups.stc}.) ALLOW)
+  ROLE({zowe.setup.security.groups.stc}) ALLOW)
 F ACF2,REBUILD(APL)
 *
 * Allow STCGRP role access to BPX.JOBNAME
 RECKEY BPX ADD(JOBNAME SERVICE(READ) +
-  ROLE({zowe.setup.security.groups.stc}.) ALLOW)
+  ROLE({zowe.setup.security.groups.stc}) ALLOW)
 F ACF2,REBUILD(FAC)
 
 * allow STCGRP role to use client certificate mapping service
 SET RESOURCE(FAC)
-RECKEY IRR ADD(RUSERMAP ROLE({zowe.setup.security.groups.stc}.) +
+RECKEY IRR ADD(RUSERMAP ROLE({zowe.setup.security.groups.stc}) +
   SERVICE(READ) ALLOW)
 F ACF2,REBUILD(FAC)
 
 * allow STCGRP role to use distributed identity mapping service
 SET RESOURCE(FAC)
 RECKEY IRR ADD(IDIDMAP.QUERY +
-  ROLE({zowe.setup.security.groups.stc}.) SERVICE(READ) ALLOW)
+  ROLE({zowe.setup.security.groups.stc}) SERVICE(READ) ALLOW)
 F ACF2,REBUILD(FAC)
 
 * permit Zowe main server to cut SMF records
 SET RESOURCE(FAC)
-RECKEY IRR ADD(RAUDITX ROLE({zowe.setup.security.groups.stc}.) +
+RECKEY IRR ADD(RAUDITX ROLE({zowe.setup.security.groups.stc}) +
   SERVICE(READ) ALLOW)
 F ACF2,REBUILD(FAC)
 
@@ -229,7 +229,7 @@ SET RULE
 LIST {zowe.setup.dataset.prefix}.
 RECKEY {zowe.setup.dataset.prefix}. ADD(- UID(-) READ(A) EXEC(P))
 RECKEY {zowe.setup.dataset.prefix}. +
-ADD(- UID({zowe.setup.security.groups.sysProg}.) +
+ADD(- UID({zowe.setup.security.groups.sysProg}) +
   READ(A) EXEC(A) ALLOC(A) WRITE(A))
 *
 *  show results

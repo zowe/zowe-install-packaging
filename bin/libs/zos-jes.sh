@@ -137,3 +137,62 @@ wait_for_job() {
     return 1
   fi
 }
+
+print_and_handle_jcl()
+  jcl_location="${1}"
+  job_name="{2}"
+  jcllib="${3}"
+  prefix="${4}"
+  remove_jcl_on_finish="${5}"
+  jcl_contents=$(cat "${jcl_location}")
+
+  print_message "Template JCL: ${prefix}.SZWESAMP(${job_name}) , Executable JCL: ${jcllib}(${job_name})"
+  print_message "--- JCL Content ---"
+  print_message "$jcl_contents"
+  print_message "--- End of JCL ---"
+
+  if [ -z "${ZWE_CLI_PARAMETER_DRY_RUN}" ]; then
+    print_message "Submitting Job ${job_name}"
+    jobid=$(submit_job "${jcl_location}'")
+    code=$?
+    if [ ${code} -ne 0 ]; then
+      if [ "${remove_jcl_on_finish}" = "true" ]; then
+        rm "${jcl_location}"
+      fi
+      print_error_and_exit "Error ZWEL0161E: Failed to run JCL ${jcllib}(${job_name})." "" 161
+    fi
+    print_debug "- job id ${jobid}"
+
+    jobstate=$(wait_for_job "${jobid}")
+    code=$?
+    if [ ${code} -eq 1 ]; then
+      if [ "${remove_jcl_on_finish}" = "true" ]; then
+        rm "${jcl_location}"
+      fi
+      print_error_and_exit "Error ZWEL0162E: Failed to find job ${jobid} result." "" 162
+    fi
+    jobname=$(echo "${jobstate}" | awk -F, '{print $2}')
+    jobcctext=$(echo "${jobstate}" | awk -F, '{print $3}')
+    jobcccode=$(echo "${jobstate}" | awk -F, '{print $4}')
+
+    if [ "${code}" -eq 0 ]; then
+    else
+      if [ "${remove_jcl_on_finish}" = "true" ]; then
+        rm "${jcl_location}"
+      fi
+      print_error_and_exit "Error ZWEL0163E: Job ${jobname}(${jobid}) ends with code ${jobcccode} (${jobcctext})." "" 163
+    fi
+    if [ "${remove_jcl_on_finish}" = "true" ]; then
+      rm "${jcl_location}"
+    fi
+    return 0
+  else
+    print_message "JCL not submitted, command run with dry run flag."
+    print_message "To perform command, re-run command without dry run flag, or submit the JCL directly"
+    print_level2_message "Command run successfully."
+    if [ "${remove_jcl_on_finish}" = "true" ]; then
+      rm "${jcl_location}"
+    fi
+    return 0
+  fi
+}
