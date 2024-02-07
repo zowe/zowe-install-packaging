@@ -109,7 +109,7 @@ export function ensureFileEncoding(file: string, expectedSample: string, expecte
       }
     }
     common.printTrace(`- Remove encoding tag of ${file}.`);
-    zos.changeTag(file, 0);
+    shell.execSync('sh', '-c', `chtag -r "${file}"`);
   } else {
     common.printTrace(`- Failed to detect encoding of ${file}.`);
   }
