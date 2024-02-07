@@ -72,7 +72,7 @@ if [ "${vsam_mode}" = "RLS" ]; then
     print_error_and_exit "Error ZWEL0157E: Zowe Caching Service VSAM data set RLS storage class (zowe.setup.vsam.storageClass) is not defined in Zowe YAML configuration file." "" 157
   fi
 fi
-vsam_name=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".components.caching-service.storage.vsam.name")
+vsam_name=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.vsam.name")
 if [ -z "${vsam_name}" ]; then
   print_error_and_exit "Error ZWEL0157E: Zowe Caching Service VSAM data set name (components.caching-service.storage.vsam.name) is not defined in Zowe YAML configuration file." "" 157
 fi
@@ -118,6 +118,10 @@ if [ -z "${ZWE_CLI_PARAMETER_DRY_RUN}" ]; then
 
     if [ "${code}" -eq 0 ]; then
         print_level2_message "Zowe Caching Service VSAM storage is created successfully."
+        if [ "${ZWE_CLI_PARAMETER_UPDATE_CONFIG}" = "true" ]; then
+          update_zowe_yaml "${ZWE_CLI_PARAMETER_CONFIG}" "components.caching-service.storage.vsam.name" "${vsam_name}"
+          print_level2_message "Zowe configuration is updated successfully."
+        fi
     else
         print_error_and_exit "Error ZWEL0163E: Job ${jobname}(${jobid}) ends with code ${jobcccode} (${jobcctext})." "" 163
     fi
