@@ -15,7 +15,6 @@ print_level1_message "Initialize Zowe custom data sets"
 ###############################
 # constants
 cust_ds_list="parmlib|Zowe parameter library
-jcllib|Zowe JCL library
 authLoadlib|Zowe authorized load library
 authPluginLib|Zowe authorized plugin library"
 
@@ -47,23 +46,32 @@ while read -r line; do
     else
       print_error_and_exit "Error ZWEL0157E: ${name} (zowe.setup.dataset.${key}) is not defined in Zowe YAML configuration file." "" 157
     fi
-  elif [ "${key}" = "authLoadlib" ]; then
-    if [ "${ds}" = "${prefix}.SZWESAMP" ]; then
+  fi
+
+  if [ "${key}" = "authLoadlib" ]; then
+    if [ "${ds}" = "${prefix}.SZWEAUTH" ]; then
       run_aloadlib_create="false"
     else
       run_aloadlib_create="true"
+      # check existence
+      ds_existence=$(is_data_set_exists "${ds}")
+      if [ "${ds_existence}" = "true" ]; then
+        if [ "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITE}" = "true" ]; then
+          print_message "Warning ZWEL0300W: ${ds} already exists. Members in this data set will be overwritten."
+        else
+          print_message "Warning ZWEL0301W: ${ds} already exists and will not be overwritten. For upgrades, you must use --allow-overwrite."
+        fi
+      fi       
     fi
-  fi
-  # check existence
-  ds_existence=$(is_data_set_exists "${ds}")
-  if [ "${ds_existence}" = "true" ]; then
-    if [ "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITE}" = "true" ]; then
-      # warning
-      print_message "Warning ZWEL0300W: ${ds} already exists. Members in this data set will be overwritten."
-    else
-      # print_error_and_exit "Error ZWEL0158E: ${ds} already exists." "" 158
-      # warning
-      print_message "Warning ZWEL0301W: ${ds} already exists and will not be overwritten. For upgrades, you must use --allow-overwrite."
+  else
+    # check existence
+    ds_existence=$(is_data_set_exists "${ds}")
+    if [ "${ds_existence}" = "true" ]; then
+      if [ "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITE}" = "true" ]; then
+        print_message "Warning ZWEL0300W: ${ds} already exists. Members in this data set will be overwritten."
+      else
+        print_message "Warning ZWEL0301W: ${ds} already exists and will not be overwritten. For upgrades, you must use --allow-overwrite."
+      fi
     fi
   fi
 done <<EOF

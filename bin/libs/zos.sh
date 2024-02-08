@@ -69,17 +69,26 @@ operator_command() {
 
 verify_generated_jcl() {
   # read JCL library and validate
-  jcllib=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.dataset.jcllib")
-  does_jcl_exist=$(tso_is_data_set_exists "${jcllib}")
+  does_jcl_exist=$(is_data_set_exists "${jcllib}")
   if [ -z "${does_jcl_exist}" ]; then
-    zwecli_inline_execute_command init generate
+    result=$(zwecli_inline_execute_command init generate)
   fi
 
+  # should be created, but may take time to discover.
   if [ -z "${does_jcl_exist}" ]; then
-    does_jcl_exist=$(tso_is_data_set_exists "${jcllib}")
+    does_jcl_exist=
+    for secs in 1 5 10 ; do
+      does_jcl_exist=$(is_data_set_exists "${jcllib}")
+      if [ -z "${does_jcl_exist}" ]; then
+        sleep ${secs}
+      else
+        break
+      fi
+    done
+
     if [ -z "${does_jcl_exist}" ]; then
-      prefix=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.dataset.prefix")
-      print_error_and_exit "Error ZWEL0999E: ${jcllib} does not exist, cannot run command. Run 'zwe init', 'zwe init generate', or submit JCL ${prefix}.SZWESAMP(ZWEGENER) before running this command." "" 999
+      print_error_and_exit "Error ZWEL0999E: ${jcllib} does not exist, cannot run. Run 'zwe init', 'zwe init generate', or submit JCL ${prefix}.SZWESAMP(ZWEGENER) before running this command." "" 999
+      return 999
     fi
   fi
   echo "${jcllib}"

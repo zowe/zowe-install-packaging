@@ -28,30 +28,8 @@ proclib=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.dataset.proclib")
 if [ -z "${proclib}" ]; then
   print_error_and_exit "Error ZWEL0157E: PROCLIB (zowe.setup.dataset.proclib) is not defined in Zowe YAML configuration file." "" 157
 fi
-# read JCL library and validate
-jcllib=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.dataset.jcllib")
-does_jcl_exist=$(is_data_set_exists "${jcllib}(ZWEISTC)")
-if [ -z "${does_jcl_exist}" ]; then
-  zwecli_inline_execute_command init generate
-fi
 
-# should be created, but may take time to discover.
-if [ -z "${does_jcl_exist}" ]; then
-does_jcl_exist=
-for secs in 1 5 10 ; do
-  does_jcl_exist=$(is_data_set_exists "${jcllib}(ZWEISTC)")
-  if [ -z "${does_jcl_exist}" ]; then
-    sleep ${secs}
-  else
-    break
-  fi
-done
-
-if [ -z "${does_jcl_exist}" ]; then
-  print_error_and_exit "Error ZWEL0999E: ${jcllib}(ZWEISTC) does not exist, cannot run. Run 'zwe init', 'zwe init generate', or submit JCL ${prefix}.SZWESAMP(ZWEGENER) before running this command." "" 999
-fi
-fi
-
+jcllib=$(verify_generated_jcl)
 
 security_stcs_zowe=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.security.stcs.zowe")
 if [ -z "${security_stcs_zowe}" ]; then
@@ -72,11 +50,8 @@ for mb in ${target_proclibs}; do
   stc_existence=$(is_data_set_exists "${proclib}(${mb})")
   if [ "${stc_existence}" = "true" ]; then
     if [ "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITE}" = "true" ]; then
-      # warning
       print_message "Warning ZWEL0300W: ${proclib}(${mb}) already exists. This data set member will be overwritten during configuration."
     else
-      # print_error_and_exit "Error ZWEL0158E: ${proclib}(${mb}) already exists." "" 158
-      # warning
       print_message "Warning ZWEL0301W: ${proclib}(${mb}) already exists and will not be overwritten. For upgrades, you must use --allow-overwrite."
     fi
   fi
@@ -95,43 +70,9 @@ else
   #   so, we have to have some conditional logic somewhere. until figuring out how to fix this in ZWEGENER, i am putting it here...
   jcl_edit=$(cat "${jcl_file}" | sed "s/ZWESLSTC,ZWESLSTC/ZWESLSTC/" | sed "s/ZWESISTC,ZWESISTC/ZWESISTC/" | sed "s/ZWESASTC,ZWESASTC/ZWESASTC/")
   echo "${jcl_edit}" > "${jcl_file}"
-  jcl_contents=$(cat "${jcl_file}")
 
-  print_message "Template JCL: ${prefix}.SZWESAMP(ZWEISTC) , Executable JCL: ${jcllib}(ZWEISTC)"
-  print_message "--- JCL Content ---"
-  print_message "$jcl_contents"
-  print_message "--- End of JCL ---"
-
-  if [ -z "${ZWE_CLI_PARAMETER_DRY_RUN}" ]; then
-    print_message "Submitting Job ZWEISTC"
-    jobid=$(submit_job $jcl_file)
-    code=$?
-    if [ ${code} -ne 0 ]; then
-      print_error_and_exit "Error ZWEL0161E: Failed to run JCL ${jcllib}(ZWEISTC)." "" 161
-    fi
-    print_debug "- job id ${jobid}"
-
-    jobstate=$(wait_for_job "${jobid}")
-    code=$?
-    rm $jcl_file
-    if [ ${code} -eq 1 ]; then
-      print_error_and_exit "Error ZWEL0162E: Failed to find job ${jobid} result." "" 162
-    fi
-    jobname=$(echo "${jobstate}" | awk -F, '{print $2}')
-    jobcctext=$(echo "${jobstate}" | awk -F, '{print $3}')
-    jobcccode=$(echo "${jobstate}" | awk -F, '{print $4}')
-
-    if [ "${code}" -eq 0 ]; then
-      print_level2_message "Zowe main started tasks are installed successfully."
-    else
-      print_error_and_exit "Error ZWEL0163E: Job ${jobname}(${jobid}) ends with code ${jobcccode} (${jobcctext})." "" 163
-    fi
-  else
-    print_message "JCL not submitted, command run with dry run flag."
-    print_message "To perform command, re-run command without dry run flag, or submit the JCL directly"
-    print_level2_message "Command run successfully."
-    rm $jcl_file
-  fi
+  print_and_handle_jcl "${jcl_file}" "ZWEISTC" "${jcllib}" "${prefix}" "true"
+  print_level2_message "Zowe main started tasks are installed successfully."
 fi
 
 
