@@ -69,13 +69,13 @@
 
 /* Remove keyring profile defined on RDATALIB class ................ */
   RLIST   RDATALIB +
-          &USERNAME..{zowe.setup.certificate.keyring.name}..LST ALL
+          &USERNAME..{zowe.setup.certificate.keyring.name}.LST ALL
   PERMIT +
-    &USERNAME..{zowe.setup.certificate.keyring.name}..LST +
+    &USERNAME..{zowe.setup.certificate.keyring.name}.LST +
     CLASS(RDATALIB) DELETE +
     ID({zowe.setup.security.users.zowe})
   RDELETE RDATALIB +
-          &USERNAME..{zowe.setup.certificate.keyring.name}..LST
+          &USERNAME..{zowe.setup.certificate.keyring.name}.LST
 
 /* Refresh to dynamically activate the changes. .................... */
   SETROPTS RACLIST(RDATALIB) REFRESH
@@ -120,14 +120,14 @@ ACF
   F ACF2,REBUILD(FAC)
 
 * Delete LABEL certificate ........................................*/
-  DELETE {zowe.setup.security.users.zowe}..ZOWECERT
+  DELETE {zowe.setup.security.users.zowe}.ZOWECERT
 
 * Delete LOCALCA certificate ......................................*/
   DELETE CERTAUTH.ZOWECA
 
 * Delete keyring ...................................................*/
   SET PROFILE(USER) DIVISION(KEYRING)
-  DELETE {zowe.setup.security.users.zowe}..ZOWERING
+  DELETE {zowe.setup.security.users.zowe}.ZOWERING
 
   F ACF2,REBUILD(USR),CLASS(P),DIVISION(KEYRING)
 

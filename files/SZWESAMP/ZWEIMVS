@@ -11,21 +11,21 @@
 //*                                                                    
 //********************************************************************* 
 //*
-//*                                               
+//* This job is used to create datasets used by a Zowe "instance"
+//* Instances represent a configuration of Zowe, different from the
+//* "runtime" datasets that are created upon install of Zowe / SMPE.
+//*
+//* If your choosen value of 'zowe.setup.dataset.authLoadLib' is not
+//* Equal to 'zowe.setup.prefix' + 'SZWELOAD',
+//* Then you must also run "ZWEIMVS2".
+//*
+//********************************************************************* 
 //MKPDSE EXEC PGM=IKJEFT01                       
 //SYSTSPRT DD SYSOUT=A                            
 //SYSTSIN DD *                                    
 ALLOC NEW DA('{zowe.setup.dataset.parmlib}') +       
 dsntype(library) dsorg(po) recfm(f b) lrecl(80) + 
 unit(sysallda) space(15,15) tracks                
-  
-ALLOC NEW DA('{zowe.setup.dataset.jcllib}') +        
-dsntype(library) dsorg(po) recfm(f b) lrecl(80) + 
-unit(sysallda) space(15,15) tracks                
-  
-ALLOC NEW DA('{zowe.setup.dataset.authLoadLib}') +       
-dsntype(library) dsorg(po) recfm(u) lrecl(0) +    
-blksize(32760) unit(sysallda) space(30,15) tracks 
   
 ALLOC NEW DA('{zowe.setup.dataset.authPluginLib}') +      
 dsntype(library) dsorg(po) recfm(u) lrecl(0) +    
@@ -39,20 +39,3 @@ blksize(32760) unit(sysallda) space(30,15) tracks
   COPY OUTDD=SYSUT2,INDD=SYSUT1                                  
   SELECT MEMBER=((ZWESIP00,,R))                          
 //*                                               
-//AUTHCPY EXEC PGM=BPXBATCH                       
-//BPXPRINT DD SYSOUT=*                            
-//STDOUT   DD SYSOUT=*                            
-//STDERR   DD SYSOUT=*                            
-//STDPARM DD *                                    
-SH cd {zowe.runtimeDirectory} &&                                    
-cd components/zss &&    
-cp LOADLIB/ZWESIS01                               
-"//'{zowe.setup.dataset.authLoadLib}(ZWESIS01)'" &&      
-cp LOADLIB/ZWESAUX                                
-"//'{zowe.setup.dataset.authLoadLib}(ZWESAUX)'" &&       
-cp LOADLIB/ZWESISDL                               
-"//'{zowe.setup.dataset.authLoadLib}(ZWESISDL)'" &&      
-cd ../launcher/bin &&                             
-cp zowe_launcher                                  
-"//'{zowe.setup.dataset.authLoadLib}(ZWELNCH)'"          
-/*
