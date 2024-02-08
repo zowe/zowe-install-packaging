@@ -416,7 +416,7 @@ function getMemberNameFromConfigPath(configPath: string): string|undefined {
 function stripMemberName(configPath: string, memberName: string): string {
   //Turn PARMLIB(my.zowe(yaml)):PARMLIB(my.other.zowe(yaml))
   //Into PARMLIB(my.zowe):FILE(/some/path.yaml):PARMLIB(my.other.zowe)
-  const replacer = new RegExp('\\('+stringlib.escapeRegExp(memberName)+'\\)\\)', 'gi');
+  const replacer = new RegExp('\\('+stringlib.escapeDollar(memberName)+'\\)\\)', 'gi');
   return configPath.replace(replacer, ")");
 }
   
