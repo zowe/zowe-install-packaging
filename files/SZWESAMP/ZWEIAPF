@@ -9,9 +9,22 @@
 //*                                                                    
 //* Copyright Contributors to the Zowe Project. 2020, 2020             
 //*                                                                    
-//********************************************************************* 
+//*********************************************************************
 //*
-//APFLOAD  COMMAND 'SETPROG APF,ADD,DSN={zowe.setup.dataset.authLoadLib}' 
-//*                                                     
-//APFLIB   COMMAND 'SETPROG APF,ADD,DSN={zowe.setup.dataset.authPluginLib}'                    
+//*  This JCL is used to set APF for the two datasets of Zowe
+//*  Which need it. You can issue this, or use another
+//*  Way to accomplish the task.
+//*
+//*
+//*
+//*  This dataset holds the APF portion of Zowe
+//         SET LOADLIB='{zowe.setup.dataset.authLoadLib}'
+//*
+//*  This dataset holds product plugins for ZIS,
+//*  ZIS is located in the LOADLIB.
+//         SET PLUGINLIB='{zowe.setup.dataset.authPluginLib}'
+//*
+//APFLOAD  COMMAND 'SETPROG APF,ADD,DSN=&LOADLIB' 
+//*   
+//APFLIB   COMMAND 'SETPROG APF,ADD,DSN=&PLUGINLIB'
 //*  
