@@ -195,7 +195,7 @@ if COMPARE('RTSS', CVTRAC_VAL) = 0 then do
   x = DeleteDataSet(jclCopy'(ZWEIACF2)')
   x = DeleteDataSet(jclCopy'(ZWEIRACF)')
 end
-else do
+if COMPARE('ACF2', CVTRAC_VAL) = 0 then do
   x = DeleteDataSet(jclCopy'(ZWEIKRT1)')
   x = DeleteDataSet(jclCopy'(ZWEIKRT2)')
   x = DeleteDataSet(jclCopy'(ZWEIKRT3)')

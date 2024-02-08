@@ -21,29 +21,8 @@ prefix=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.dataset.prefix")
 if [ -z "${prefix}" ]; then
   print_error_and_exit "Error ZWEL0157E: Zowe dataset prefix (zowe.setup.dataset.prefix) is not defined in Zowe YAML configuration file." "" 157
 fi
-# read JCL library and validate
-jcllib=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.dataset.jcllib")
-does_jcl_exist=$(is_data_set_exists "${jcllib}")
-if [ -z "${does_jcl_exist}" ]; then
-  zwecli_inline_execute_command init generate
-fi
 
-# should be created, but may take time to discover.
-if [ -z "${does_jcl_exist}" ]; then
-does_jcl_exist=
-for secs in 1 5 10 ; do
-  does_jcl_exist=$(is_data_set_exists "${jcllib}")
-  if [ -z "${does_jcl_exist}" ]; then
-    sleep ${secs}
-  else
-    break
-  fi
-done
-
-if [ -z "${does_jcl_exist}" ]; then
-  print_error_and_exit "Error ZWEL0999E: ${jcllib} does not exist, cannot run. Run 'zwe init', 'zwe init generate', or submit JCL ${prefix}.SZWESAMP(ZWEGENER) before running this command." "" 999
-fi
-fi
+jcllib=$(verify_generated_jcl)
 
 security_product=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.security.product")
 security_users_zowe=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.security.users.zowe")

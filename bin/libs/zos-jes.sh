@@ -140,11 +140,13 @@ wait_for_job() {
 
 print_and_handle_jcl() {
   jcl_location="${1}"
-  job_name="{2}"
+  job_name="${2}"
   jcllib="${3}"
   prefix="${4}"
   remove_jcl_on_finish="${5}"
+  continue_on_failure="${6}"
   jcl_contents=$(cat "${jcl_location}")
+  job_has_failures=false
 
   print_message "Template JCL: ${prefix}.SZWESAMP(${job_name}) , Executable JCL: ${jcllib}(${job_name})"
   print_message "--- JCL Content ---"
@@ -153,23 +155,34 @@ print_and_handle_jcl() {
 
   if [ -z "${ZWE_CLI_PARAMETER_DRY_RUN}" ]; then
     print_message "Submitting Job ${job_name}"
-    jobid=$(submit_job "${jcl_location}'")
+    jobid=$(submit_job "${jcl_location}")
     code=$?
     if [ ${code} -ne 0 ]; then
-      if [ "${remove_jcl_on_finish}" = "true" ]; then
-        rm "${jcl_location}"
+      job_has_failures=true
+      if [ "${continue_on_failure}" = "true" ]; then
+        print_error "Warning ZWEL0161W: Failed to run JCL ${jcllib}(${job_name})"
+        jobid=
+      else
+        if [ "${remove_jcl_on_finish}" = "true" ]; then
+          rm "${jcl_location}"
+        fi
+        print_error_and_exit "Error ZWEL0161E: Failed to run JCL ${jcllib}(${job_name})." "" 161
       fi
-      print_error_and_exit "Error ZWEL0161E: Failed to run JCL ${jcllib}(${job_name})." "" 161
     fi
     print_debug "- job id ${jobid}"
 
     jobstate=$(wait_for_job "${jobid}")
     code=$?
     if [ ${code} -eq 1 ]; then
-      if [ "${remove_jcl_on_finish}" = "true" ]; then
-        rm "${jcl_location}"
+      job_has_failures=true
+      if [ "${continue_on_failure}" = "true" ]; then
+        print_error "Warning ZWEL0162W: Failed to find job ${jobid} result."
+      else
+        if [ "${remove_jcl_on_finish}" = "true" ]; then
+          rm "${jcl_location}"
+        fi
+        print_error_and_exit "Error ZWEL0162E: Failed to find job ${jobid} result." "" 162
       fi
-      print_error_and_exit "Error ZWEL0162E: Failed to find job ${jobid} result." "" 162
     fi
     jobname=$(echo "${jobstate}" | awk -F, '{print $2}')
     jobcctext=$(echo "${jobstate}" | awk -F, '{print $3}')
@@ -177,13 +190,21 @@ print_and_handle_jcl() {
 
     if [ "${code}" -eq 0 ]; then
     else
-      if [ "${remove_jcl_on_finish}" = "true" ]; then
-        rm "${jcl_location}"
+      job_has_failures=true
+      if [ "${continue_on_failure}" = "true" ]; then
+        print_error "Warning ZWEL0163W: Job ${jobname}(${jobid}) ends with code ${jobcccode} (${jobcctext})."
+      else
+        if [ "${remove_jcl_on_finish}" = "true" ]; then
+          rm "${jcl_location}"
+        fi
+        print_error_and_exit "Error ZWEL0163E: Job ${jobname}(${jobid}) ends with code ${jobcccode} (${jobcctext})." "" 163
       fi
-      print_error_and_exit "Error ZWEL0163E: Job ${jobname}(${jobid}) ends with code ${jobcccode} (${jobcctext})." "" 163
     fi
     if [ "${remove_jcl_on_finish}" = "true" ]; then
       rm "${jcl_location}"
+    fi
+    if [ "${job_has_failures}" = "true" ]; then
+      print_level2_message "Job ended with some failures. Please check job log for details."
     fi
     return 0
   else

@@ -15,7 +15,7 @@
 //* Instances represent a configuration of Zowe, different from the
 //* "runtime" datasets that are created upon install of Zowe / SMPE.
 //*
-//* If your choosen value of 'zowe.setup.dataset.authLoadLib' is not
+//* If your choosen value of 'zowe.setup.dataset.authLoadlib' is not
 //* Equal to 'zowe.setup.prefix' + 'SZWELOAD',
 //* Then you must also run "ZWEIMVS2".
 //*
