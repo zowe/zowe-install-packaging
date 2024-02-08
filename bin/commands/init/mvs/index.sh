@@ -29,29 +29,7 @@ if [ -z "${prefix}" ]; then
   print_error_and_exit "Error ZWEL0157E: Zowe dataset prefix (zowe.setup.dataset.prefix) is not defined in Zowe YAML configuration file." "" 157
 fi
 
-jcllib_location=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.dataset.jcllib")
-does_jcl_exist=$(is_data_set_exists "${jcllib_location}(ZWEIMVS)")
-if [ -z "${does_jcl_exist}" ]; then
-  zwecli_inline_execute_command init generate
-fi
-
-# should be created, but may take time to discover.
-if [ -z "${does_jcl_exist}" ]; then
-does_jcl_exist=
-for secs in 1 5 10 ; do
-  does_jcl_exist=$(is_data_set_exists "${jcllib_location}(ZWEIMVS)")
-  if [ -z "${does_jcl_exist}" ]; then
-    sleep ${secs}
-  else
-    break
-  fi
-done
-
-if [ -z "${does_jcl_exist}" ]; then
-  print_error_and_exit "Error ZWEL0999E: ${jcllib_location}(ZWEIMVS) does not exist, cannot run. Run 'zwe init', 'zwe init generate', or submit JCL ${prefix}.SZWESAMP(ZWEGENER) before running this command." "" 999
-fi
-fi
-
+jcllib_location=$(verify_generated_jcl)
 
 ###############################
 # create data sets if they do not exist
@@ -68,6 +46,12 @@ while read -r line; do
       continue
     else
       print_error_and_exit "Error ZWEL0157E: ${name} (zowe.setup.dataset.${key}) is not defined in Zowe YAML configuration file." "" 157
+    fi
+  elif [ "${key}" = "authLoadlib" ]; then
+    if [ "${ds}" = "${prefix}.SZWESAMP" ]; then
+      run_aloadlib_create="false"
+    else
+      run_aloadlib_create="true"
     fi
   fi
   # check existence
@@ -93,41 +77,13 @@ if [ "${ds_existence}" = "true" ] &&  [ "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITE}" !
   print_level2_message "Zowe custom data sets initialized with errors."
 else
 
-  jcl_contents=$(cat "//'${jcllib_location}(ZWEIMVS)'")
 
-  print_message "Template JCL: ${prefix}.SZWESAMP(ZWEIMVS) , Executable JCL: ${jcllib_location}(ZWEIMVS)"
-  print_message "--- JCL Content ---"
-  print_message "$jcl_contents"
-  print_message "--- End of JCL ---"
-
-  if [ -z "${ZWE_CLI_PARAMETER_DRY_RUN}" ]; then
-    print_message "Submitting Job ZWEIMVS"
-    jobid=$(submit_job "//'${jcllib_location}(ZWEIMVS)'")
-    code=$?
-    if [ ${code} -ne 0 ]; then
-      print_error_and_exit "Error ZWEL0161E: Failed to run JCL ${jcllib_location}(ZWEIMVS)." "" 161
-    fi
-    print_debug "- job id ${jobid}"
-
-    jobstate=$(wait_for_job "${jobid}")
-    code=$?
-    if [ ${code} -eq 1 ]; then
-        print_error_and_exit "Error ZWEL0162E: Failed to find job ${jobid} result." "" 162
-    fi
-    jobname=$(echo "${jobstate}" | awk -F, '{print $2}')
-    jobcctext=$(echo "${jobstate}" | awk -F, '{print $3}')
-    jobcccode=$(echo "${jobstate}" | awk -F, '{print $4}')
-
-    if [ "${code}" -eq 0 ]; then
-      print_level2_message "Zowe custom data sets are initialized successfully."
-    else
-      print_level2_message "Zowe custom data sets initialized with errors."
-    fi
-  else
-    print_message "JCL not submitted, command run with dry run flag."
-    print_message "To perform command, re-run command without dry run flag, or submit the JCL directly"
-    print_level2_message "Command run successfully."
+  print_and_handle_jcl "//'${jcllib_location}(ZWEIMVS)'" "ZWEIMVS" "${jcllib_location}" "${prefix}"
+  if [ "${run_aloadlib_create}" = "true" ]; then
+    print_and_handle_jcl "//'${jcllib_location}(ZWEIMVS2)'" "ZWEIMVS2" "${jcllib_location}" "${prefix}"
   fi
+
+  print_level2_message "Zowe custom data sets are initialized successfully."
 fi
 
 

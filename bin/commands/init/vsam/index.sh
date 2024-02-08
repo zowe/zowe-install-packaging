@@ -31,102 +31,39 @@ if [ -z "${prefix}" ]; then
   print_error_and_exit "Error ZWEL0157E: Zowe dataset prefix (zowe.setup.dataset.prefix) is not defined in Zowe YAML configuration file." "" 157
 fi
 
-jcllib=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.dataset.jcllib")
-does_jcl_exist=$(is_data_set_exists "${jcllib}(ZWECSVSM)")
-if [ -z "${does_jcl_exist}" ]; then
-  zwecli_inline_execute_command init generate
-fi
+jcllib=$(verify_generated_jcl)
 
-# should be created, but may take time to discover.
-if [ -z "${does_jcl_exist}" ]; then
-does_jcl_exist=
-for secs in 1 5 10 ; do
-  does_jcl_exist=$(is_data_set_exists "${jcllib}(ZWECSVSM)")
-  if [ -z "${does_jcl_exist}" ]; then
-    sleep ${secs}
-  else
-    break
+required_yaml_content="mode volume storageClass name"
+
+for key in ${required_params}; do
+  eval "${key}=$(read_yaml \"${ZWE_CLI_PARAMETER_CONFIG}\" \".zowe.setup.vsam.${key}\")"
+  if [ -z "${key}" ]; then
+      print_error_and_exit "Error ZWEL0157E: VSAM parameter (zowe.setup.vsam.${key}) is not defined in Zowe YAML configuration file." "" 157
   fi
 done
 
-if [ -z "${does_jcl_exist}" ]; then
-  print_error_and_exit "Error ZWEL0999E: ${jcllib}(ZWECSVSM) does not exist, cannot run. Run 'zwe init', 'zwe init generate', or submit JCL ${prefix}.SZWESAMP(ZWEGENER) before running this command." "" 999
-fi
-fi
-
-vsam_mode=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.vsam.mode")
-if [ -z "${vsam_mode}" ]; then
-  vsam_mode=NONRLS
-fi
-vsam_volume=
-if [ "${vsam_mode}" = "NONRLS" ]; then
-  vsam_volume=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.vsam.volume")
-  if [ -z "${vsam_volume}" ]; then
-    print_error_and_exit "Error ZWEL0157E: Zowe Caching Service VSAM data set Non-RLS volume (zowe.setup.vsam.volume) is not defined in Zowe YAML configuration file." "" 157
-  fi
-fi
-vsam_storageClass=
-if [ "${vsam_mode}" = "RLS" ]; then
-  vsam_storageClass=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.vsam.storageClass")
-  if [ -z "${vsam_storageClass}" ]; then
-    print_error_and_exit "Error ZWEL0157E: Zowe Caching Service VSAM data set RLS storage class (zowe.setup.vsam.storageClass) is not defined in Zowe YAML configuration file." "" 157
-  fi
-fi
-vsam_name=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.vsam.name")
-if [ -z "${vsam_name}" ]; then
-  print_error_and_exit "Error ZWEL0157E: Zowe Caching Service VSAM data set name (components.caching-service.storage.vsam.name) is not defined in Zowe YAML configuration file." "" 157
-fi
-
 # VSAM cache cannot be overwritten, must delete manually
 # FIXME: cat cannot be used to test VSAM data set
-vsam_existence=$(is_data_set_exists "${vsam_name}")
+vsam_existence=$(is_data_set_exists "${name}")
 if [ "${vsam_existence}" = "true" ]; then
   if [ "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITE}" = "true" ]; then
     # delete blindly and ignore errors
-    result=$(tso_command delete "'${vsam_name}'")
+    result=$(tso_command delete "'${name}'")
   else
     # error
-    print_error_and_exit "Error ZWEL0158E: ${vsam_name} already exists." "" 158
+    print_error_and_exit "Error ZWEL0158E: ${name} already exists." "" 158
   fi
 fi
 
- 
-jcl_contents=$(cat "//'${jcllib}(ZWECSVSM)")
 
-print_message "Template JCL: ${prefix}.SZWESAMP(ZWECSVSM) , Executable JCL: ${jcllib}(ZWECSVSM)"
-print_message "--- JCL Content ---"
-print_message "$jcl_contents"
-print_message "--- End of JCL ---"
+###############################
+# execution (or dry-run)
 
+print_and_handle_jcl "//'${jcllib}(ZWECSVSM)" "ZWECSVSM" "${jcllib}" "${prefix}"
 if [ -z "${ZWE_CLI_PARAMETER_DRY_RUN}" ]; then
-    print_message "Submitting Job ZWECSVSM"
-    jobid=$(submit_job "//'${jcllib}(ZWECSVSM)'")
-    code=$?
-    if [ ${code} -ne 0 ]; then
-      print_error_and_exit "Error ZWEL0161E: Failed to run JCL ${jcllib}(ZWECSVSM)." "" 161
-    fi
-    print_debug "- job id ${jobid}"
-
-    jobstate=$(wait_for_job "${jobid}")
-    code=$?
-    if [ ${code} -eq 1 ]; then
-        print_error_and_exit "Error ZWEL0162E: Failed to find job ${jobid} result." "" 162
-    fi
-    jobname=$(echo "${jobstate}" | awk -F, '{print $2}')
-    jobcctext=$(echo "${jobstate}" | awk -F, '{print $3}')
-    jobcccode=$(echo "${jobstate}" | awk -F, '{print $4}')
-
-    if [ "${code}" -eq 0 ]; then
-        print_level2_message "Zowe Caching Service VSAM storage is created successfully."
-        if [ "${ZWE_CLI_PARAMETER_UPDATE_CONFIG}" = "true" ]; then
-          update_zowe_yaml "${ZWE_CLI_PARAMETER_CONFIG}" "components.caching-service.storage.vsam.name" "${vsam_name}"
-          print_level2_message "Zowe configuration is updated successfully."
-        fi
-    else
-        print_error_and_exit "Error ZWEL0163E: Job ${jobname}(${jobid}) ends with code ${jobcccode} (${jobcctext})." "" 163
-    fi
-else
-    print_message "JCL not submitted, command run with dry run flag."
-    print_message "To perform command, re-run command without dry run flag, or submit the JCL directly"
-    print_level2_message "Command run successfully."
+  print_level2_message "Zowe Caching Service VSAM storage is created successfully."
+  if [ "${ZWE_CLI_PARAMETER_UPDATE_CONFIG}" = "true" ]; then
+    update_zowe_yaml "${ZWE_CLI_PARAMETER_CONFIG}" "components.caching-service.storage.vsam.name" "${name}"
+    print_level2_message "Zowe configuration is updated successfully."
+  fi
 fi
