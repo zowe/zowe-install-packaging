@@ -24,6 +24,10 @@ if [ -z "${prefix}" ]; then
 fi
 
 jcllib=$(verify_generated_jcl)
+if [ "$?" -eq 1 ]; then
+  print_error_and_exit "Error ZWEL0999E: zowe.setup.dataset.jcllib does not exist, cannot run. Run 'zwe init', 'zwe init generate', or submit JCL ${prefix}.SZWESAMP(ZWEGENER) before running this command." "" 999
+fi
+
 
 validation_list="product groups.admin groups.stc groups.sysProg users.zowe users.zis stcs.zowe stcs.zis stcs.aux"
 
