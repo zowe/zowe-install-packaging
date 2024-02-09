@@ -10,6 +10,19 @@
 # Copyright Contributors to the Zowe Project.
 #######################################################################
 
+USE_CONFIGMGR=$(check_configmgr_enabled)
+if [ "${USE_CONFIGMGR}" = "true" ]; then
+  if [ -z "${ZWE_PRIVATE_TMP_MERGED_YAML_DIR}" ]; then
+
+    # user-facing command, use tmpdir to not mess up workspace permissions
+    export ZWE_PRIVATE_TMP_MERGED_YAML_DIR=1
+  fi
+  _CEE_RUNOPTS="XPLINK(ON),HEAPPOOLS(OFF)" ${ZWE_zowe_runtimeDirectory}/bin/utils/configmgr -script "${ZWE_zowe_runtimeDirectory}/bin/commands/init/mvs/cli.js"
+else
+  print_error_and_exit "Error ZWEL0316E: Command requires zowe.useConfigmgr=true to use." "" 316
+fi
+
+
 print_level1_message "Initialize Zowe custom data sets"
 
 ###############################
@@ -28,7 +41,7 @@ if [ -z "${prefix}" ]; then
   print_error_and_exit "Error ZWEL0157E: Zowe dataset prefix (zowe.setup.dataset.prefix) is not defined in Zowe YAML configuration file." "" 157
 fi
 
-jcllib_location=$(verify_generated_jcl)
+jcllib=$(verify_generated_jcl)
 if [ "$?" -eq 1 ]; then
   print_error_and_exit "Error ZWEL0999E: zowe.setup.dataset.jcllib does not exist, cannot run. Run 'zwe init', 'zwe init generate', or submit JCL ${prefix}.SZWESAMP(ZWEGENER) before running this command." "" 999
 fi
@@ -89,9 +102,9 @@ if [ "${ds_existence}" = "true" ] &&  [ "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITE}" !
 else
 
 
-  print_and_handle_jcl "//'${jcllib_location}(ZWEIMVS)'" "ZWEIMVS" "${jcllib_location}" "${prefix}"
+  print_and_handle_jcl "//'${jcllib}(ZWEIMVS)'" "ZWEIMVS" "${jcllib}" "${prefix}"
   if [ "${run_aloadlib_create}" = "true" ]; then
-    print_and_handle_jcl "//'${jcllib_location}(ZWEIMVS2)'" "ZWEIMVS2" "${jcllib_location}" "${prefix}"
+    print_and_handle_jcl "//'${jcllib}(ZWEIMVS2)'" "ZWEIMVS2" "${jcllib}" "${prefix}"
   fi
 
   print_level2_message "Zowe custom data sets are initialized successfully."

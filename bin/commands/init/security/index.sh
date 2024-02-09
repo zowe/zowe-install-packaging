@@ -11,6 +11,19 @@
 # Copyright Contributors to the Zowe Project.
 #######################################################################
 
+USE_CONFIGMGR=$(check_configmgr_enabled)
+if [ "${USE_CONFIGMGR}" = "true" ]; then
+  if [ -z "${ZWE_PRIVATE_TMP_MERGED_YAML_DIR}" ]; then
+
+    # user-facing command, use tmpdir to not mess up workspace permissions
+    export ZWE_PRIVATE_TMP_MERGED_YAML_DIR=1
+  fi
+  _CEE_RUNOPTS="XPLINK(ON),HEAPPOOLS(OFF)" ${ZWE_zowe_runtimeDirectory}/bin/utils/configmgr -script "${ZWE_zowe_runtimeDirectory}/bin/commands/init/security/cli.js"
+else
+  print_error_and_exit "Error ZWEL0316E: Command requires zowe.useConfigmgr=true to use." "" 316
+fi
+
+
 print_level1_message "Run Zowe security configurations"
 
 ###############################
@@ -29,7 +42,7 @@ if [ "$?" -eq 1 ]; then
 fi
 
 
-validation_list="product groups.admin groups.stc groups.sysProg users.zowe users.zis stcs.zowe stcs.zis stcs.aux"
+validation_list="groups.admin groups.stc groups.sysProg users.zowe users.zis stcs.zowe stcs.zis stcs.aux"
 
 for item in ${validation_list}; do
   result=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.security.${item}")
@@ -38,11 +51,16 @@ for item in ${validation_list}; do
   fi
 done
 
+security_product=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.security.product")
+if [ -z "${security_product}" ]; then
+  print_error_and_exit "Error ZWEL0157E: (zowe.setup.security.product) is not defined in Zowe YAML configuration file." "" 157
+fi
+
 ###############################
 # submit job
 print_and_handle_jcl "//'${jcllib}(ZWEI${security_product})'" "ZWEI${security_product}" "${jcllib}" "${prefix}" "false" "${ZWE_CLI_PARAMETER_IGNORE_SECURITY_FAILURES}"
 print_message ""
-print_message "WARNING: Due to the limitation of the ZWESECUR job, exit with 0 does not mean"
+print_message "WARNING: Due to the limitation of the ZWEI${security_product} job, exit with 0 does not mean"
 print_message "         the job is fully successful. Please check the job log to determine"
 print_message "         if there are any inline errors."
 print_message ""
