@@ -218,8 +218,7 @@ export function getDatasetVolume(dataset: string): { rc: number, volume?: string
     let volume: string;
     if (volumesIndex != -1) {
       let startIndex = volumesIndex + '--VOLUMES--'.length;
-      let endIndex = result.out.indexOf('--',startIndex);
-      volume = result.out.substring(startIndex, endIndex).trim();
+      volume = result.out.substring(startIndex).trim();
     }
     if (!volume) {
       common.printError("  * Failed to find volume information of the data set.");
