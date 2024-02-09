@@ -947,7 +947,7 @@
                   "description": "Designates one or more dynamic VIPAs (DVIPAs) for which this stack provides automatic backup if the owning stack fails.",
                   "additionalProperties": false,
                   "properties": {
-                    "addresss":{
+                    "addresses":{
                       "type": "array",
                       "description": "Specifies the intended order of the VIPAs. Place the highest rank VIPA at the beginning of the array, ordered by descending rank.",
                       "items": {
