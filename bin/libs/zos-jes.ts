@@ -16,20 +16,22 @@ import * as common from './common';
 import * as stringlib from './string';
 import * as shell from './shell';
 
-export function submitJob(jclFile: string): string|undefined {
-  common.printDebug(`- submit job ${jclFile}`);
+export function submitJob(jclFile: string, printJobDebug:boolean=true): string|undefined {
+  if (printJobDebug) {
+    common.printDebug(`- submit job ${jclFile}`);
 
-  common.printTrace(`- content of ${jclFile}`);
-  const catResult = shell.execOutSync('sh', '-c', `cat "${jclFile}" 2>&1`);
-  if (catResult.rc != 0) {
-    common.printTrace(`  * Failed`);
-    common.printTrace(`  * Exit code: ${catResult.rc}`);
-    common.printTrace(`  * Output:`);
-    common.printTrace(stringlib.paddingLeft(catResult.out, "    "));
-    return undefined;
-  }
-  else {
-    common.printTrace(stringlib.paddingLeft(catResult.out, "    "));
+    common.printTrace(`- content of ${jclFile}`);
+    const catResult = shell.execOutSync('sh', '-c', `cat "${jclFile}" 2>&1`);
+    if (catResult.rc != 0) {
+      common.printTrace(`  * Failed`);
+      common.printTrace(`  * Exit code: ${catResult.rc}`);
+      common.printTrace(`  * Output:`);
+      common.printTrace(stringlib.paddingLeft(catResult.out, "    "));
+      return undefined;
+    }
+    else {
+      common.printTrace(stringlib.paddingLeft(catResult.out, "    "));
+    }
   }
 
   // cat seems to work more reliably. sometimes, submit by itself just says it cannot find a real dataset.
@@ -175,7 +177,7 @@ export function printAndHandleJcl(jclLocation: string, jobName: string, jcllib: 
   let jobId: string|undefined;
   if (!std.getenv('ZWE_CLI_PARAMETER_DRY_RUN')) {
     common.printMessage(`Submitting Job ${jobName}`);
-    jobId=submitJob(jclLocation);
+    jobId=submitJob(jclLocation, false);
     if (!jobId) {
       jobHasFailures=true;
       if (continueOnFailure) {

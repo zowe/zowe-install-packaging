@@ -20,19 +20,9 @@ export function execute(allowOverwrite?: boolean) {
   common.requireZoweYaml();
   const ZOWE_CONFIG = config.getZoweConfig();
   
-  const datasets = [
-    { configKey: 'parmlib',
-      description: 'Zowe parameter library'
-    },
-    { configKey: 'authLoadlib',
-      description: 'Zowe authorized load library'
-    },
-    { configKey: 'authPluginLib',
-      description: 'Zowe authorized plugin library'
-    }
-  ];
+  const datasets = ['parmlib', 'authLoadlib', 'authPluginLib'];
 
-  const prefix=ZOWE_CONFIG.zowe.setup?.dataset?.prefix;
+  const prefix = ZOWE_CONFIG.zowe.setup?.dataset?.prefix;
   if (!prefix) {
     common.printErrorAndExit(`Error ZWEL0157E: Zowe dataset prefix (zowe.setup.dataset.prefix) is not defined in Zowe YAML configuration file.`, undefined, 157);
   }
@@ -47,24 +37,24 @@ export function execute(allowOverwrite?: boolean) {
   common.printMessage(`Create data sets if they do not exist`);
   let skippedDatasets: boolean = false;
 
-  datasets.forEach((datasetDef) => {    
+  for (let i = 0; i < datasets.length; i++) {
+    let key = datasets[i];
     // read def and validate
-    let skip:boolean = false;
-    const ds=ZOWE_CONFIG.zowe.setup?.dataset ? ZOWE_CONFIG.zowe.setup.dataset[datasetDef.configKey] : undefined;
+    let skip: boolean = false;
+    const ds = ZOWE_CONFIG.zowe.setup?.dataset ? ZOWE_CONFIG.zowe.setup.dataset[key] : undefined;
     if (!ds) {
       // authLoadlib can be empty
-      if (datasetDef.configKey == 'authLoadlib') {
+      if (key == 'authLoadlib') {
         skip=true;
       } else {
-        common.printErrorAndExit(`Error ZWEL0157E: ${datasetDef.configKey} (zowe.setup.dataset.${datasetDef.configKey}) is not defined in Zowe YAML configuration file.`, undefined, 157);
+        common.printErrorAndExit(`Error ZWEL0157E: ${key} (zowe.setup.dataset.${key}) is not defined in Zowe YAML configuration file.`, undefined, 157);
       }
     }
-
-    if (datasetDef.configKey == 'authLoadlib') {
-      runALoadlibCreate = ds == prefix+'SZWEAUTH' ? false : true;
-    }
-
     if (!skip) {
+      if (key == 'authLoadlib') {
+        runALoadlibCreate = ds == prefix+'SZWEAUTH' ? false : true;
+      }
+
       const datasetExists=zosdataset.isDatasetExists(ds);
       if (datasetExists) {
         if (allowOverwrite) {
@@ -75,7 +65,7 @@ export function execute(allowOverwrite?: boolean) {
         }
       }
     }
-  });
+  }
 
   if (skippedDatasets && !allowOverwrite) {
     common.printMessage(`Skipped writing to a dataset. To write, you must use --allow-overwrite.`);
