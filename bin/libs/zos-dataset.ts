@@ -91,7 +91,7 @@ export function datasetCopyToDataset(prefix: string, datasetFrom: string, datase
 //                1: there are some users
 // @output        output of operator command "d grs"
 export function listDatasetUser(datasetName: string): number {
-  const cmd=`D GRS,RES=(*,${datasetName})`;
+  const cmd = `D GRS,RES=(*,'${stringlib.escapeDollar(datasetName)}')`;
   const result=zoslib.operatorCommand(cmd);
   return result.out.includes('NO REQUESTORS FOR RESOURCE') ? 0 : 1;
   // example outputs:
