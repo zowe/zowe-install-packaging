@@ -30,6 +30,9 @@ if [ -z "${proclib}" ]; then
 fi
 
 jcllib=$(verify_generated_jcl)
+if [ "$?" -eq 1 ]; then
+  print_error_and_exit "Error ZWEL0999E: zowe.setup.dataset.jcllib does not exist, cannot run. Run 'zwe init', 'zwe init generate', or submit JCL ${prefix}.SZWESAMP(ZWEGENER) before running this command." "" 999
+fi
 
 security_stcs_zowe=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.security.stcs.zowe")
 if [ -z "${security_stcs_zowe}" ]; then

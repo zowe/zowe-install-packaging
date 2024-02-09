@@ -29,6 +29,9 @@ for key in ${required_params}; do
 done
 
 jcllib=$(verify_generated_jcl)
+if [ "$?" -eq 1 ]; then
+  print_error_and_exit "Error ZWEL0999E: zowe.setup.dataset.jcllib does not exist, cannot run. Run 'zwe init', 'zwe init generate', or submit JCL ${prefix}.SZWESAMP(ZWEGENER) before running this command." "" 999
+fi
 
 print_and_handle_jcl "//'${jcllib}(ZWEIAPF)'" "ZWEIAPF" "${jcllib}" "${prefix}"
 print_level2_message "Zowe load libraries are APF authorized successfully."
