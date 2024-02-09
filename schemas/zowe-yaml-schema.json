@@ -942,19 +942,9 @@
                   "default": false,
                   "description": "Enable if using DVIPA. Indicates to servers which hostname to use in requests."
                 },
-                "vipaBackup": {
-                  "type": "object",
-                  "description": "Designates one or more dynamic VIPAs (DVIPAs) for which this stack provides automatic backup if the owning stack fails.",
-                  "additionalProperties": false,
-                  "properties": {
-                    "addresses":{
-                      "type": "array",
-                      "description": "Specifies the intended order of the VIPAs. Place the highest rank VIPA at the beginning of the array, ordered by descending rank.",
-                      "items": {
-                        "$ref": "/schemas/v2/server-common#zoweIpv4"
-                      }
-                    }
-                  }
+                "vipa": {
+                  "description": "Dynamic virtual IP address (DVIPA) for which the Zowe servers are designated.",
+                  "$ref": "/schemas/v2/server-common#zoweIpv4"
                 }
               }
             },
