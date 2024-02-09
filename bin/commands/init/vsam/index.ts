@@ -38,7 +38,13 @@ export function execute(allowOverwrite?: boolean, dryRun?: boolean, updateConfig
     return common.printErrorAndExit(`Error ZWEL0999E: zowe.setup.dataset.jcllib does not exist, cannot run. Run 'zwe init', 'zwe init generate', or submit JCL ${prefix}.SZWESAMP(ZWEGENER) before running this command.`, undefined, 999);
   }
 
-  ['mode', 'volume', 'storageClass', 'name'].forEach((key)=> {
+  const mode = ZOWE_CONFIG.zowe.setup?.vsam?.mode;
+  if (!mode) {
+    return common.printErrorAndExit(`Error ZWEL0999E: VSAM parameter (zowe.setup.vsam.mode) is not defined in Zowe YAML configuration file.`, undefined, 157);
+  }
+  let keys = mode == 'NONRLS' ? ['volume', 'name'] : ['storageClass', 'name'];
+
+  keys.forEach((key)=> {
     if (!ZOWE_CONFIG.zowe.setup.vsam || !ZOWE_CONFIG.zowe.setup.vsam[key]) {
       return common.printErrorAndExit(`Error ZWEL0157E: VSAM parameter (zowe.setup.vsam.${key}) is not defined in Zowe YAML configuration file.`, undefined, 157);
     }

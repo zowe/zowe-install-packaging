@@ -52,7 +52,7 @@ export function execute(allowOverwrite?: boolean) {
     }
     if (!skip) {
       if (key == 'authLoadlib') {
-        runALoadlibCreate = ds == prefix+'SZWEAUTH' ? false : true;
+        runALoadlibCreate = ds == (prefix+'.SZWEAUTH') ? false : true;
       }
 
       const datasetExists=zosdataset.isDatasetExists(ds);
