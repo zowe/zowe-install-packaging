@@ -933,6 +933,11 @@
                 "$ref": "/schemas/v2/server-common#zoweIpv4"
               }
             },
+            "dvipa": {
+              "type": "boolean",
+              "default": false,
+              "description": "Enable if using DVIPA. Indicates to servers which hostname to use in requests."
+            },
             "vipaIp": {
               "type": "string",
               "description": "The IP address which all of the Zowe servers will be binding to. If you are using multiple DIPVA addresses, do not use this option."
