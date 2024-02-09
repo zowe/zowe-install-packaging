@@ -16,26 +16,31 @@ import * as common from './common';
 import * as stringlib from './string';
 import * as shell from './shell';
 
-export function submitJob(jclFile: string, printJobDebug:boolean=true): string|undefined {
+export function submitJob(jclFileOrContent: string, printJobDebug:boolean=true, jclIsContent?:boolean): string|undefined {
   if (printJobDebug) {
-    common.printDebug(`- submit job ${jclFile}`);
+    common.printDebug(`- submit job ${jclFileOrContent}`);
 
-    common.printTrace(`- content of ${jclFile}`);
-    const catResult = shell.execOutSync('sh', '-c', `cat "${jclFile}" 2>&1`);
-    if (catResult.rc != 0) {
-      common.printTrace(`  * Failed`);
-      common.printTrace(`  * Exit code: ${catResult.rc}`);
-      common.printTrace(`  * Output:`);
-      common.printTrace(stringlib.paddingLeft(catResult.out, "    "));
-      return undefined;
-    }
-    else {
-      common.printTrace(stringlib.paddingLeft(catResult.out, "    "));
+    common.printTrace(`- content of ${jclFileOrContent}`);
+    if (!jclIsContent) {
+      const catResult = shell.execOutSync('sh', '-c', `cat "${jclFileOrContent}" 2>&1`);
+      if (catResult.rc != 0) {
+        common.printTrace(`  * Failed`);
+        common.printTrace(`  * Exit code: ${catResult.rc}`);
+        common.printTrace(`  * Output:`);
+        common.printTrace(stringlib.paddingLeft(catResult.out, "    "));
+        return undefined;
+      }
+      else {
+        common.printTrace(stringlib.paddingLeft(catResult.out, "    "));
+      }
+    } else {
+      common.printTrace(jclFileOrContent);
     }
   }
 
   // cat seems to work more reliably. sometimes, submit by itself just says it cannot find a real dataset.
-  const result=shell.execOutSync('sh', '-c', `cat "${jclFile}" | submit 2>&1`);
+  const result = shell.execOutSync('sh', '-c', jclIsContent ? `echo "${jclFileOrContent}" | submit 2>&1`
+                                                            : `cat "${jclFileOrContent}" | submit 2>&1`);
   // expected: JOB JOB????? submitted from path '...'
   const code=result.rc;
   if (code==0) {
@@ -162,10 +167,13 @@ export function waitForJob(jobid: string): {jobcctext?: string, jobcccode?: stri
   }
 }
 
-export function printAndHandleJcl(jclLocation: string, jobName: string, jcllib: string, prefix: string, removeJclOnFinish?: boolean, continueOnFailure?: boolean){
-  const jclContents = shell.execOutSync('sh', '-c', `cat "${jclLocation}" 2>&1`).out;
+export function printAndHandleJcl(jclLocationOrContent: string, jobName: string, jcllib: string, prefix: string, removeJclOnFinish?: boolean, continueOnFailure?: boolean, jclIsContent?: boolean){
+  const jclContents = jclIsContent ? jclLocationOrContent : shell.execOutSync('sh', '-c', `cat "${jclLocationOrContent}" 2>&1`).out;
 
   let jobHasFailures = false;
+  if (jclIsContent) {
+    removeJclOnFinish = false;
+  }
 
   common.printMessage(`Template JCL: ${prefix}.SZWESAMP(${jobName}) , Executable JCL: ${jcllib}(${jobName})`);
   common.printMessage(`--- JCL Content ---`);
@@ -177,7 +185,7 @@ export function printAndHandleJcl(jclLocation: string, jobName: string, jcllib: 
   let jobId: string|undefined;
   if (!std.getenv('ZWE_CLI_PARAMETER_DRY_RUN')) {
     common.printMessage(`Submitting Job ${jobName}`);
-    jobId=submitJob(jclLocation, false);
+    jobId=submitJob(jclLocationOrContent, false, jclIsContent);
     if (!jobId) {
       jobHasFailures=true;
       if (continueOnFailure) {
@@ -185,7 +193,7 @@ export function printAndHandleJcl(jclLocation: string, jobName: string, jcllib: 
         jobId=undefined;
       } else {
         if (removeJclOnFinish) {
-          removeRc = os.remove(jclLocation);
+          removeRc = os.remove(jclLocationOrContent);
         }
           common.printErrorAndExit(`Error ZWEL0161E: Failed to run JCL ${jcllib}(${jobName}).`, undefined, 161);
       }
@@ -199,7 +207,7 @@ export function printAndHandleJcl(jclLocation: string, jobName: string, jcllib: 
         common.printError(`Warning ZWEL0162W: Failed to find job ${jobId} result.`);
       } else {
         if (removeJclOnFinish) {
-          removeRc = os.remove(jclLocation);
+          removeRc = os.remove(jclLocationOrContent);
         }
         common.printErrorAndExit(`Error ZWEL0162E: Failed to find job ${jobId} result.`, undefined, 162);
       }
@@ -209,13 +217,13 @@ export function printAndHandleJcl(jclLocation: string, jobName: string, jcllib: 
         common.printError(`Warning ZWEL0163W: Job ${jobname}(${jobId}) ends with code ${jobcccode} (${jobcctext}).`);
       } else {
         if (removeJclOnFinish) {
-          removeRc = os.remove(jclLocation);
+          removeRc = os.remove(jclLocationOrContent);
         }
         common.printErrorAndExit(`Error ZWEL0163E: Job ${jobname}(${jobId}) ends with code ${jobcccode} (${jobcctext}).`, undefined, 163);
       }
     }
     if (removeJclOnFinish) {
-      removeRc = os.remove(jclLocation);
+      removeRc = os.remove(jclLocationOrContent);
     }
     if (jobHasFailures) {
       common.printLevel2Message(`Job ended with some failures. Please check job log for details.`);
@@ -226,7 +234,7 @@ export function printAndHandleJcl(jclLocation: string, jobName: string, jcllib: 
     common.printMessage(`To perform command, re-run command without dry run flag, or submit the JCL directly`);
     common.printLevel2Message(`Command run successfully.`);
     if (removeJclOnFinish) {
-      removeRc = os.remove(jclLocation);
+      removeRc = os.remove(jclLocationOrContent);
     }
     return 0
   }

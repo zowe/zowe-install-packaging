@@ -141,6 +141,7 @@ x = DeleteDataSet(jclCopy'(ZWESIP00)')
 x = DeleteDataSet(jclCopy'(ZWESIPRG)')
 x = DeleteDataSet(jclCopy'(ZWESISCH)')
 x = DeleteDataSet(jclCopy'(ZWESECKG)')
+x = DeleteDataSet(jclCopy'(ZWEINSTL)')
 
 
 /*
