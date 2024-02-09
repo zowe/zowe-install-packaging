@@ -10,6 +10,7 @@
 */
 
 import * as os from 'cm_os';
+import * as std from 'cm_std';
 import * as zoslib from './zos';
 import * as common from './common';
 import * as stringlib from './string';
@@ -156,5 +157,75 @@ export function waitForJob(jobid: string): {jobcctext?: string, jobcccode?: stri
   } else {
     common.printError(`  * Job (${jobname? jobname : jobid}) doesn't finish within max waiting period.`);
     return {jobcctext, jobcccode, jobname, rc: 1};
+  }
+}
+
+export function printAndHandleJcl(jclLocation: string, jobName: string, jcllib: string, prefix: string, removeJclOnFinish?: boolean, continueOnFailure?: boolean){
+  const jclContents = shell.execOutSync('sh', '-c', `cat "${jclLocation}" 2>&1`).out;
+
+  let jobHasFailures = false;
+
+  common.printMessage(`Template JCL: ${prefix}.SZWESAMP(${jobName}) , Executable JCL: ${jcllib}(${jobName})`);
+  common.printMessage(`--- JCL Content ---`);
+  common.printMessage(jclContents);
+  common.printMessage(`--- End of JCL ---`);
+
+  let removeRc: number;
+
+  let jobId: string|undefined;
+  if (!std.getenv('ZWE_CLI_PARAMETER_DRY_RUN')) {
+    common.printMessage(`Submitting Job ${jobName}`);
+    jobId=submitJob(jclLocation);
+    if (!jobId) {
+      jobHasFailures=true;
+      if (continueOnFailure) {
+        common.printError(`Warning ZWEL0161W: Failed to run JCL ${jcllib}(${jobName})`);
+        jobId=undefined;
+      } else {
+        if (removeJclOnFinish) {
+          removeRc = os.remove(jclLocation);
+        }
+          common.printErrorAndExit(`Error ZWEL0161E: Failed to run JCL ${jcllib}(${jobName}).`, undefined, 161);
+      }
+    }
+    common.printDebug(`- job id ${jobId}`);
+
+    let {jobcctext, jobcccode, jobname, rc} = waitForJob(jobId);
+    if (rc) {
+      jobHasFailures=true;
+      if (continueOnFailure) {
+        common.printError(`Warning ZWEL0162W: Failed to find job ${jobId} result.`);
+      } else {
+        if (removeJclOnFinish) {
+          removeRc = os.remove(jclLocation);
+        }
+        common.printErrorAndExit(`Error ZWEL0162E: Failed to find job ${jobId} result.`, undefined, 162);
+      }
+    
+      jobHasFailures=true
+      if (continueOnFailure) {
+        common.printError(`Warning ZWEL0163W: Job ${jobname}(${jobId}) ends with code ${jobcccode} (${jobcctext}).`);
+      } else {
+        if (removeJclOnFinish) {
+          removeRc = os.remove(jclLocation);
+        }
+        common.printErrorAndExit(`Error ZWEL0163E: Job ${jobname}(${jobId}) ends with code ${jobcccode} (${jobcctext}).`, undefined, 163);
+      }
+    }
+    if (removeJclOnFinish) {
+      removeRc = os.remove(jclLocation);
+    }
+    if (jobHasFailures) {
+      common.printLevel2Message(`Job ended with some failures. Please check job log for details.`);
+    }
+    return 0
+  } else {
+    common.printMessage(`JCL not submitted, command run with dry run flag.`);
+    common.printMessage(`To perform command, re-run command without dry run flag, or submit the JCL directly`);
+    common.printLevel2Message(`Command run successfully.`);
+    if (removeJclOnFinish) {
+      removeRc = os.remove(jclLocation);
+    }
+    return 0
   }
 }
