@@ -816,17 +816,17 @@ keyring_run_zwekring_jcl() {
   jcllib="${2}"
   # should be 1, 2 or 3
   jcloption="${3}"
-  domains="${6}"
+  domains="${4}"
   # external CA labels separated by comma (label can have spaces)
-  ext_cas="${9}"
+  ext_cas="${5}"
   # set to 1 or true to import z/OSMF CA
   trust_zosmf=0
-  if [ "${10}" = "true" -o "${10}" = "1" ]; then
+  if [ "${6}" = "true" -o "${6}" = "1" ]; then
     trust_zosmf=1
   fi
-  zosmf_root_ca="${11}"
-  validity="${16:-${ZWE_PRIVATE_DEFAULT_CERTIFICATE_VALIDITY}}"
-  security_product=${17:-RACF}
+  zosmf_root_ca="${7}"
+  validity="${8}"
+  security_product="${9}"
 
   member_prefix="ZWEIK"
   if [ "${security_product}" = "TSS" ]; then
