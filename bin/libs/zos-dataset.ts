@@ -79,7 +79,7 @@ export function datasetCopyToDataset(prefix: string, datasetFrom: string, datase
     }
   }
 
-  const cmd=`exec '${prefix}.${std.getenv('ZWE_PRIVATE_DS_SZWEEXEC')}(ZWEMCOPY)' '${stringlib.escapeDollar(datasetFrom)} ${stringlib.escapeDollar(datasetTo)}'`;
+  const cmd = `exec '${stringlib.escapeDollar(prefix)}.${std.getenv('ZWE_PRIVATE_DS_SZWEEXEC')}(ZWEMCOPY)' '${stringlib.escapeDollar(datasetFrom)} ${stringlib.escapeDollar(datasetTo)}'`;
   const result = zoslib.tsoCommand(cmd);
   return result.rc;
 }
