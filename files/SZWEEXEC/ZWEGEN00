@@ -185,6 +185,8 @@ if COMPARE('RCVT', CVTRAC_VAL) = 0 then do
   x = DeleteDataSet(jclCopy'(ZWEIKRT3)')
   x = DeleteDataSet(jclCopy'(ZWEIACF2)')
   x = DeleteDataSet(jclCopy'(ZWEITSS)')
+  x = DeleteDataSet(jclCopy'(ZWENOKRA)')
+  x = DeleteDataSet(jclCopy'(ZWENOKRT)')
 end
 if COMPARE('RTSS', CVTRAC_VAL) = 0 then do
   x = DeleteDataSet(jclCopy'(ZWEIKRA1)')
@@ -195,6 +197,8 @@ if COMPARE('RTSS', CVTRAC_VAL) = 0 then do
   x = DeleteDataSet(jclCopy'(ZWEIKRR3)')
   x = DeleteDataSet(jclCopy'(ZWEIACF2)')
   x = DeleteDataSet(jclCopy'(ZWEIRACF)')
+  x = DeleteDataSet(jclCopy'(ZWENOKRA)')
+  x = DeleteDataSet(jclCopy'(ZWENOKRR)')
 end
 if COMPARE('ACF2', CVTRAC_VAL) = 0 then do
   x = DeleteDataSet(jclCopy'(ZWEIKRT1)')
@@ -205,6 +209,8 @@ if COMPARE('ACF2', CVTRAC_VAL) = 0 then do
   x = DeleteDataSet(jclCopy'(ZWEIKRR3)')      
   x = DeleteDataSet(jclCopy'(ZWEIRACF)')
   x = DeleteDataSet(jclCopy'(ZWEITSS)')
+  x = DeleteDataSet(jclCopy'(ZWENOKRT)')
+  x = DeleteDataSet(jclCopy'(ZWENOKRR)')
 end
 
 say jcl' has been copied to 'jclCopy'.'

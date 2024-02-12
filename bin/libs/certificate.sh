@@ -816,11 +816,7 @@ keyring_run_zwekring_jcl() {
   jcllib="${2}"
   # should be 1, 2 or 3
   jcloption="${3}"
-  keyring_owner="${4}"
-  keyring_name="${5}"
   domains="${6}"
-  alias="${7}"
-  ca_alias="${8}"
   # external CA labels separated by comma (label can have spaces)
   ext_cas="${9}"
   # set to 1 or true to import z/OSMF CA
@@ -829,12 +825,6 @@ keyring_run_zwekring_jcl() {
     trust_zosmf=1
   fi
   zosmf_root_ca="${11}"
-  # option 2 - connect existing
-  connect_user="${12}"
-  connect_label="${13}"
-  # option 3 - import from data set
-  import_ds_name="${14}"
-  import_ds_password="${15}"
   validity="${16:-${ZWE_PRIVATE_DEFAULT_CERTIFICATE_VALIDITY}}"
   security_product=${17:-RACF}
 
@@ -963,10 +953,10 @@ EOF
     ###############################
     # submit job
     print_message "Submitting Job ${member_name})"
-    jobid=$(submit_job "//'${jcllib}(${tmpdsm})'")
+    jobid=$(submit_job "${tmpfile}")
     code=$?
     if [ ${code} -ne 0 ]; then
-      print_error "Error ZWEL0161E: Failed to run JCL ${jcllib}(${tmpdsm})."
+      print_error "Error ZWEL0161E: Failed to run JCL ${jcllib}(${member_name})."
       return 161
     fi
     print_debug "- job id ${jobid}"
@@ -997,15 +987,21 @@ EOF
 keyring_run_zwenokyr_jcl() {
   prefix="${1}"
   jcllib="${2}"
-  keyring_owner="${3}"
-  keyring_name="${4}"
-  alias="${5}"
-  ca_alias="${6}"
-  security_product=${7:-RACF}
+  security_product="${3}"
 
-  jcl_contents=$(cat "//'${jcllib}(ZWENOKYR)'")
+  member_prefix="ZWEINOKR"
+  if [ "${security_product}" = "TSS" ]; then
+    member_name="${member_prefix}T"
+  elif [ "${security_product}" = "ACF2" ]; then
+    member_name="${member_prefix}A"
+  else
+    member_name="${member_prefix}R"
+  fi
 
-  print_message "Template JCL: ${prefix}.SZWESAMP(ZWENOKYR) , Executable JCL: ${jcllib}(ZWENOKYR)"
+
+  jcl_contents=$(cat "//'${jcllib}(${member_name})'")
+
+  print_message "Template JCL: ${prefix}.SZWESAMP(${member_name}) , Executable JCL: ${jcllib}(${member_name})"
   print_message "--- JCL Content ---"
   print_message "$jcl_contents"
   print_message "--- End of JCL ---"
@@ -1016,11 +1012,11 @@ keyring_run_zwenokyr_jcl() {
     print_message "JCL not submitted, command run with dry run flag."
     print_message "To perform command, re-run command without dry run flag, or submit the JCL directly"
   else
-    print_message "Submitting Job ZWENOKYR"
-    jobid=$(submit_job "//'${jcllib}(${tmpdsm})'")
+    print_message "Submitting Job ${member_name}"
+    jobid=$(submit_job "//'${jcllib}(${member_name}})'")
     code=$?
     if [ ${code} -ne 0 ]; then
-      print_error "Error ZWEL0161E: Failed to run JCL ${jcllib}(${tmpdsm})."
+      print_error "Error ZWEL0161E: Failed to run JCL ${jcllib}(${member_name})."
       return 161
     fi
     print_debug "- job id ${jobid}"
