@@ -115,15 +115,10 @@ else
   # FIXME: move these parts to zss commands.install?
   # FIXME: ZWESIPRG is in zowe-install-packaging
   cd "${ZWE_zowe_runtimeDirectory}/components/zss"
-  zss_samplib="ZWESAUX=ZWESASTC ZWESIP00 ZWESIS01=ZWESISTC ZWESISCH"
+  zss_samplib="ZWESASTC ZWESIP00 ZWESISTC ZWESISCH"
   for mb in ${zss_samplib}; do
-    mb_from=$(echo "${mb}" | awk -F= '{print $1}')
-    mb_to=$(echo "${mb}" | awk -F= '{print $2}')
-    if [ -z "${mb_to}" ]; then
-      mb_to="${mb_from}"
-    fi
-    print_message "Copy components/zss/SAMPLIB/${mb_from} to ${prefix}.${ZWE_PRIVATE_DS_SZWESAMP}(${mb_to})"
-    copy_to_data_set "SAMPLIB/${mb_from}" "${prefix}.${ZWE_PRIVATE_DS_SZWESAMP}(${mb_to})" "" "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITE}"
+    print_message "Copy components/zss/SAMPLIB/${mb} to ${prefix}.${ZWE_PRIVATE_DS_SZWESAMP}(${mb})"
+    copy_to_data_set "SAMPLIB/${mb}" "${prefix}.${ZWE_PRIVATE_DS_SZWESAMP}(${mb})" "" "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITE}"
     if [ $? -ne 0 ]; then
       print_error_and_exit "Error ZWEL0111E: Command aborts with error." "" 111
     fi
