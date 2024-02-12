@@ -112,7 +112,7 @@ ACF
   SET PROFILE(USER) DIVISION(CERTDATA)
   GENCERT CERTAUTH.ZOWECA -
           LABEL({zowe.setup.certificate.keyring.caLabel}) SIZE(2048) -
-          SUBJSDN(CN='{zowe.setup.certificate.dname}. CA' -
+          SUBJSDN(CN='{zowe.setup.certificate.dname.caCommonName}' -
                   OU='{zowe.setup.certificate.dname.orgUnit}.' -
                   O='{zowe.setup.certificate.dname.org}.' -
                   L='{zowe.setup.certificate.dname.locality}.' -
@@ -131,7 +131,7 @@ ACF
 * Create a certificate signed by local zowe's CA .................. */
    SET PROFILE(USER) DIV(CERTDATA)
    GENCERT {zowe.setup.security.users.zowe}.ZOWECERT -
-            SUBJSDN(CN='{zowe.setup.certificate.dname}. certificate' -
+            SUBJSDN(CN='{zowe.setup.certificate.dname.commonName}' -
                     OU='{zowe.setup.certificate.dname.orgUnit}.' -
                     O='{zowe.setup.certificate.dname.org}.' -
                     L='{zowe.setup.certificate.dname.locality}.' -

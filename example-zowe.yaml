@@ -125,8 +125,8 @@ zowe:
         caPassword: local_ca_password
       # Distinguished name for Zowe generated certificates. All optional.
       dname:
-        caCommonName: ""
-        commonName: "Zowe Development Instances"
+        caCommonName: "Zowe Development Instances CA"
+        commonName: "Zowe Development Instances Certificate"
         orgUnit: "API Mediation Layer"
         org: "Zowe Sample"
         locality: "Prague"
@@ -197,8 +197,8 @@ zowe:
     #       user: "IZUSVR"
     #   # Distinguished name for Zowe generated certificates. All optional.
     #   dname:
-    #     caCommonName: ""
-    #     commonName: "Zowe Development Instances"
+    #     caCommonName: "Zowe Development Instances CA"
+    #     commonName: "Zowe Development Instances Certificate"
     #     orgUnit: "API Mediation Layer"
     #     org: "Zowe Sample"
     #     locality: "Prague"
