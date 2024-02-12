@@ -84,20 +84,20 @@ export function execute(allowOverwrite: boolean = false) {
   if (stcExistence == true && !allowOverwrite) {
     common.printMessage(`Skipped writing to ${proclib}. To write, you must use --allow-overwrite.`);
   } else {
-    // prepare STCs
-
-    // ZWESISTC
+    // Fix JCL if needed - cannot copy member with same name via (foo,foo,R)
+    //                     must instead be (foo,,R), so do string replace if see dual name.
+    
     const tmpfile = fs.createTmpFile(`zwe ${COMMAND_LIST}`.replace(new RegExp('\ ', 'g'), '-'));
-    common.printDebug(`- Copy ${jcllib}(ZWESISTC) to ${tmpfile}`);
-    const sistcContent = shell.execOutSync('sh', '-c', `cat "//'${jcllib}(ZWESISTC)'" 2>&1`);
-    if (sistcContent.out && sistcContent.rc == 0) {
+    common.printDebug(`- Copy ${jcllib}(ZWEISTC) to ${tmpfile}`);
+    const jclContent = shell.execOutSync('sh', '-c', `cat "//'${jcllib}(ZWEISTC)'" 2>&1`);
+    if (jclContent.out && jclContent.rc == 0) {
       common.printDebug(`  * Succeeded`);
       common.printTrace(`  * Output:`);
-      common.printTrace(stringlib.paddingLeft(sistcContent.out, "    "));
+      common.printTrace(stringlib.paddingLeft(jclContent.out, "    "));
 
-      const tmpFileContent = sistcContent.out.replace("ZWESLSTC,ZWESLSTC", "ZWESLSTC")
-                                             .replace("ZWESISTC,ZWESISTC", "ZWESISTC")
-                                             .replace("ZWESASTC,ZWESASTC", "ZWESASTC");
+      const tmpFileContent = jclContent.out.replace("ZWESLSTC,ZWESLSTC", "ZWESLSTC,")
+                                           .replace("ZWESISTC,ZWESISTC", "ZWESISTC,")
+                                           .replace("ZWESASTC,ZWESASTC", "ZWESASTC,");
       xplatform.storeFileUTF8(tmpfile, xplatform.AUTO_DETECT, tmpFileContent);
       common.printTrace(`  * Stored:`);
       common.printTrace(stringlib.paddingLeft(tmpFileContent, "    "));
@@ -105,10 +105,10 @@ export function execute(allowOverwrite: boolean = false) {
       shell.execSync('chmod', '700', tmpfile);
     } else {
       common.printDebug(`  * Failed`);
-      common.printError(`  * Exit code: ${sistcContent.rc}`);
+      common.printError(`  * Exit code: ${jclContent.rc}`);
       common.printError(`  * Output:`);
-      if (sistcContent.out) {
-        common.printError(stringlib.paddingLeft(sistcContent.out, "    "));
+      if (jclContent.out) {
+        common.printError(stringlib.paddingLeft(jclContent.out, "    "));
       }
       std.exit(1);
     }
