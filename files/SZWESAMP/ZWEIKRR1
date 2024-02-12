@@ -108,7 +108,7 @@ $$
 /* Create Zowe's local CA authority .................................*/
    RACDCERT GENCERT CERTAUTH +
             SUBJECTSDN( +
-              CN('{zowe.setup.certificate.dname}. CA') +
+              CN('{zowe.setup.certificate.dname.caCommonName}') +
               OU('{zowe.setup.certificate.dname.orgUnit}') +
               O('{zowe.setup.certificate.dname.org}') +
               L('{zowe.setup.certificate.dname.locality}') +
@@ -128,7 +128,7 @@ $$
 /* Create a certificate signed by local zowe's CA .................. */
    RACDCERT GENCERT ID({zowe.setup.security.users.zowe}) +
             SUBJECTSDN( +
-              CN('{zowe.setup.certificate.dname}. certificate') +
+              CN('{zowe.setup.certificate.dname.commonName}') +
               OU('{zowe.setup.certificate.dname.orgUnit}') +
               O('{zowe.setup.certificate.dname.org}') +
               L('{zowe.setup.certificate.dname.locality}') +
