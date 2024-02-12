@@ -22,9 +22,9 @@
 //*
 //*  This dataset holds product plugins for ZIS,
 //*  ZIS is located in the LOADLIB.
-//         SET PLUGINLIB='{zowe.setup.dataset.authPluginLib}'
+//         SET PLUGLIB='{zowe.setup.dataset.authPluginLib}'
 //*
 //APFLOAD  COMMAND 'SETPROG APF,ADD,DSN=&LOADLIB' 
 //*   
-//APFLIB   COMMAND 'SETPROG APF,ADD,DSN=&PLUGINLIB'
+//APFLIB   COMMAND 'SETPROG APF,ADD,DSN=&PLUGLIB'
 //*  
