@@ -45,8 +45,20 @@
   vars:
     purge_jobs_name: "{{ job_name_to_purge }}"
   loop:
-  - ZWESECUR
-  - ZWEKRING
-  - ZWENOKYR
+  - ZWEIACF2
+  - ZWEIRACF
+  - ZWEITSS
+  - ZWEIKRR1
+  - ZWEIKRR2
+  - ZWEIKRR3
+  - ZWEIKRA1
+  - ZWEIKRA2
+  - ZWEIKRA3
+  - ZWEIKRT1
+  - ZWEIKRT2
+  - ZWEIKRT3
+  - ZWENOKRR
+  - ZWENOKRT
+  - ZWENOKRA
   loop_control:
     loop_var: job_name_to_purge

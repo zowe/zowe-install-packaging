@@ -1,4 +1,4 @@
-//ZWENOKYR JOB
+//ZWENOKRR JOB
 //*
 //* This program and the accompanying materials are made available
 //* under the terms of the Eclipse Public License v2.0 which
@@ -21,9 +21,6 @@
 //*
 //* 1) Add job name and job parameters to the JOB statement, to
 //*    meet your system requirements.
-//*
-//* 2) Customize the commands in the DD statement that matches your
-//*    security product so that they meet your system requirements.
 //*
 //* Note(s):
 //*
@@ -49,7 +46,7 @@
 //*
 //RUN      EXEC PGM=IKJEFT01,REGION=0M
 //SYSTSPRT DD SYSOUT=*
-//SYSTSIN  DD DDNAME={zowe.setup.security.product}
+//SYSTSIN  DD DDNAME=RACF
 //*
 //*********************************************************************
 //*
@@ -93,69 +90,6 @@
            ID({zowe.setup.security.users.zowe})
 
   SETROPTS RACLIST(DIGTCERT, DIGTRING) REFRESH
-
-/* ................................................................. */
-/* only the last RC is returned, this command ensures it is a 0      */
-PROFILE
-$$
-//*
-//*********************************************************************
-//*
-//* ACF2 ONLY, customize to meet your system requirements
-//*
-//ACF2     DD DATA,DLM=$$,SYMBOLS=JCLONLY
-ACF
-
-* Remove permit to use SITE owned certificate's private key
-  SET RESOURCE(FAC)
-  RECKEY IRR DEL(DIGTCERT.GENCERT +
-  ROLE({zowe.setup.security.groups.stc}) +
-  SERVICE(CONTROL) ALLOW)
-
-* Remove permit to read keyring ....................................*/
-  RECKEY IRR DEL(DIGTCERT.LISTRING +
-  ROLE({zowe.setup.security.groups.stc}) +
-  SERVICE(READ) ALLOW)
-
-  F ACF2,REBUILD(FAC)
-
-* Delete LABEL certificate ........................................*/
-  DELETE {zowe.setup.security.users.zowe}.ZOWECERT
-
-* Delete LOCALCA certificate ......................................*/
-  DELETE CERTAUTH.ZOWECA
-
-* Delete keyring ...................................................*/
-  SET PROFILE(USER) DIVISION(KEYRING)
-  DELETE {zowe.setup.security.users.zowe}.ZOWERING
-
-  F ACF2,REBUILD(USR),CLASS(P),DIVISION(KEYRING)
-
-END
-$$
-//*
-//*********************************************************************
-//*
-//* Top Secret ONLY, customize to meet your system requirements
-//*
-//TSS      DD DATA,DLM=$$,SYMBOLS=JCLONLY
-
-/* Remove permit to use SITE owned certificate's private key */
-   TSS REVOKE({zowe.setup.security.users.zowe}) +
-       IBMFAC(IRR.DIGTCERT.GENCERT) ACCESS(CONTROL)
-
-/* Remove permit to read keyring ................................... */
-   TSS REVOKE({zowe.setup.security.users.zowe}) +
-       IBMFAC(IRR.DIGTCERT.LISTRING) ACCESS(READ)
-
-/* Delete LABEL certificate ........................................*/
-   TSS REM({zowe.setup.security.users.zowe}) DIGICERT(ZOWECERT)
-
-/* Delete LOCALCA certificate ......................................*/
-   TSS REM(CERTAUTH) DIGICERT(ZOWECA)
-
-/* Delete keyring ...................................................*/
-   TSS REM({zowe.setup.security.users.zowe}) KEYRING(ZOWERING)
 
 /* ................................................................. */
 /* only the last RC is returned, this command ensures it is a 0      */
