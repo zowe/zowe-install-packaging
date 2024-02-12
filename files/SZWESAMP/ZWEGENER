@@ -13,7 +13,7 @@
 //* this job as many times as you need.
 //*
 //* Configmgr documentation:
-//* docs.zowe.org/stable/user-guide/configmgr-using
+//* https://docs.zowe.org/stable/user-guide/configmgr-using
 //*
 //* Note: Any string with braces has an associated yaml value
 //*       in one of the yaml definitions for Zowe.

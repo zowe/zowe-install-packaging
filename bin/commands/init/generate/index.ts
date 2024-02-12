@@ -27,7 +27,21 @@ export function execute(dryRun?: boolean) {
 
   jclContents = jclContents.replace(/\{zowe\.setup\.dataset\.prefix\}/gi, ZOWE_CONFIG.zowe.setup.dataset.prefix);
   jclContents = jclContents.replace(/\{zowe\.runtimeDirectory\}/gi, ZOWE_CONFIG.zowe.runtimeDirectory);
-  let absConfig = fs.convertToAbsolutePath(std.getenv('ZWE_PRIVATE_CONFIG_ORIG'));
+  let originalConfig = std.getenv('ZWE_PRIVATE_CONFIG_ORIG');
+  let fileIndex = originalConfig.indexOf('FILE(');
+  let lastIndex = 0;
+  let absConfig = '';
+  while (fileIndex != -1) {
+    absConfig += originalConfig.substring(lastIndex, fileIndex+5);
+    let parenIndex = originalConfig.indexOf(')', fileIndex+5);
+    let fileRef = originalConfig.substring(fileIndex+5, parenIndex);
+    let absRef = fs.convertToAbsolutePath(fileRef);
+    absConfig += absRef + ')';
+    lastIndex = parenIndex+1;
+    fileIndex = originalConfig.indexOf('FILE(', lastIndex);
+  }
+  absConfig += originalConfig.substring(lastIndex);
+
   jclContents = jclContents.replace('FILE <full path to zowe.yaml file>', 'FILE '+absConfig);
 
   xplatform.storeFileUTF8(tempFile, xplatform.AUTO_DETECT, jclContents);
