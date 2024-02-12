@@ -16,7 +16,7 @@
 //*
 //* ATTENTION!
 //* Each ZWEIKR JCL is for different ESM and Keyring options.
-//  This one is for importing a PKCS12 certificate from a data set.
+//* This one is for importing a PKCS12 certificate from a data set.
 //*
 //*********************************************************************
 //*
