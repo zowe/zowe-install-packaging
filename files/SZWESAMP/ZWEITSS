@@ -203,13 +203,13 @@ TSS PERMIT({zowe.setup.security.users.zowe}) APPL(OMVSAPPL)
 /*   advised to protect it against updates.                          */
 
 /* HLQ stub                                                          */
-  TSS ADD(&ADMINDEP.) DATASET({zowe.setup.dataset.prefix}.)
+  TSS ADD(&ADMINDEP.) DATASET({zowe.setup.dataset.prefix})
 
 /* general data set protection                                       */
   TSS WHOHAS DATASET({zowe.setup.dataset.prefix})
-  TSS PER(ALL) DATASET({zowe.setup.dataset.prefix}.) ACCESS(READ)
+  TSS PER(ALL) DATASET({zowe.setup.dataset.prefix}) ACCESS(READ)
   TSS PER({zowe.setup.security.groups.sysProg})  +
-    DATASET({zowe.setup.dataset.prefix}.) ACCESS(ALL)
+    DATASET({zowe.setup.dataset.prefix}) ACCESS(ALL)
 
 /* show results                                                      */
   TSS WHOHAS DATASET({zowe.setup.dataset.prefix})

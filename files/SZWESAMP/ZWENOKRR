@@ -32,7 +32,7 @@
 //*
 //*******************************************************************
 //*
-//*      * You do NOT need to set USERNAME when running ZWEGENER.
+//*      * You do NOT need to change USERNAME when running ZWEGENER.
 //*      * This is used to keep some lines under the column limit.
 //*
 //         SET USERNAME={zowe.setup.security.users.zowe}

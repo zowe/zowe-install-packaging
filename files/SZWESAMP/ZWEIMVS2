@@ -16,7 +16,7 @@
 //* 'zowe.setup.dataset.authLoadlib' is equal to
 //* 'zowe.setup.prefix' + 'SZWELOAD'.
 //*
-//* When running this job, you should also run ZwEIMVS
+//* When running this job, you should also run ZWEIMVS
 //*
 //********************************************************************* 
 //MKPDSE EXEC PGM=IKJEFT01                       
@@ -31,7 +31,7 @@ blksize(32760) unit(sysallda) space(30,15) tracks
 //STDOUT   DD SYSOUT=*                            
 //STDERR   DD SYSOUT=*                            
 //STDPARM DD *                                    
-SH cd {zowe.runtimeDirectory} &&                                    
+SH cd "{zowe.runtimeDirectory}" && 
 cd components/zss &&    
 cp LOADLIB/ZWESIS01                               
 "//'{zowe.setup.dataset.authLoadlib}(ZWESIS01)'" &&      

@@ -116,7 +116,7 @@ $$
 
 /* Connect a Zowe's certificate with the keyring ................... */
    TSS ADD({zowe.setup.security.users.zowe}) KEYRING(ZOWERING) +
-       RINGDATA({zowe.setup.security.users.zowe}.,ZOWECERT) +
+       RINGDATA({zowe.setup.security.users.zowe},ZOWECERT) +
        USAGE(PERSONAL) DEFAULT
 
 /* Option 3 - END .................................................. */
