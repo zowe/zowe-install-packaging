@@ -54,7 +54,7 @@ export function execute(allowOverwrite?: boolean, dryRun?: boolean, updateConfig
 
   const vsamExistence = zosDataset.isDatasetExists(name);
   if (vsamExistence && allowOverwrite) {
-    zosJes.printAndHandleJcl(`//'${jcllib}(ZWECSRVS)'`, `ZWECSRVS`, jcllib, prefix);
+    zosJes.printAndHandleJcl(`//'${jcllib}(ZWECSRVS)'`, `ZWECSRVS`, jcllib, prefix, false, true);
   } else if (vsamExistence) {
     return common.printErrorAndExit(`Error ZWEL0158E: ${name} already exists.`, undefined, 158);
   }
