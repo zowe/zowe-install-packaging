@@ -36,7 +36,9 @@ export function execute(allowOverwrite?: boolean) {
 
   common.printMessage(`Create data sets if they do not exist`);
   let skippedDatasets: boolean = false;
-
+  let needCleanup: boolean = false;
+  let needAuthCleanup: boolean = false;
+  
   for (let i = 0; i < datasets.length; i++) {
     let key = datasets[i];
     // read def and validate
@@ -58,11 +60,12 @@ export function execute(allowOverwrite?: boolean) {
       const datasetExists=zosdataset.isDatasetExists(ds);
       if (datasetExists) {
         if (allowOverwrite) {
-          common.printMessage(`Warning ZWEL0300W: ${ds} already exists. Members in this data set will be overwritten.`);
-          zosJes.printAndHandleJcl(`//'${jcllib}(ZWERMVS)'`, `ZWERMVS`, jcllib, prefix);
-          if (runALoadlibCreate === true) {
-            zosJes.printAndHandleJcl(`//'${jcllib}(ZWERMVS2)'`, `ZWERMVS2`, jcllib, prefix);
+          if (key != 'authLoadLib') {
+            needCleanup = true;
+          } else {
+            needAuthCleanup = true;
           }
+          common.printMessage(`Warning ZWEL0300W: ${ds} already exists. Members in this data set will be overwritten.`);
         } else {
           skippedDatasets = true;
           common.printMessage(`Warning ZWEL0301W: ${ds} already exists and will not be overwritten. For upgrades, you must use --allow-overwrite.`);
@@ -74,6 +77,13 @@ export function execute(allowOverwrite?: boolean) {
   if (skippedDatasets && !allowOverwrite) {
     common.printMessage(`Skipped writing to a dataset. To write, you must use --allow-overwrite.`);
   } else {
+    if (allowOverwrite && needCleanup) {
+      zosJes.printAndHandleJcl(`//'${jcllib}(ZWERMVS)'`, `ZWERMVS`, jcllib, prefix, false, true);
+    }
+    if (allowOverwrite && runALoadlibCreate === true && needAuthCleanup) {
+      zosJes.printAndHandleJcl(`//'${jcllib}(ZWERMVS2)'`, `ZWERMVS2`, jcllib, prefix, false, true);
+    }
+      
     zosJes.printAndHandleJcl(`//'${jcllib}(ZWEIMVS)'`, `ZWEIMVS`, jcllib, prefix);
     if (runALoadlibCreate === true) {
       zosJes.printAndHandleJcl(`//'${jcllib}(ZWEIMVS2)'`, `ZWEIMVS2`, jcllib, prefix);
