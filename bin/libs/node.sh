@@ -86,7 +86,9 @@ require_node() {
   if [ -n "${ZWE_CLI_PARAMETER_CONFIG}" ]; then
     custom_node_home=$(shell_read_yaml_node_home "${ZWE_CLI_PARAMETER_CONFIG}")
     if [ -n "${custom_node_home}" ]; then
-      export NODE_HOME="${custom_node_home}"
+      if [ "${custom_node_home}" != "DETECT" ]; then
+        export NODE_HOME="${custom_node_home}"
+      fi
     fi
   fi
   if [ -z "${NODE_HOME}" ]; then
