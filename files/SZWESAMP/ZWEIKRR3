@@ -94,7 +94,7 @@
 //*
 //RUNRACF  EXEC PGM=IKJEFT01,REGION=0M
 //SYSTSPRT DD SYSOUT=*
-//SYSTSIN  DD DDNAME={zowe.setup.security.product}
+//SYSTSIN  DD DDNAME=RACF
 //RACF     DD DATA,DLM=$$,SYMBOLS=JCLONLY
 
 /* Create the keyring .............................................. */
