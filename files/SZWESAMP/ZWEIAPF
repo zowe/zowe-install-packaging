@@ -17,6 +17,8 @@
 //*
 //*********************************************************************
 //*
+//EXEC14   EXEC  PGM=IEFBR14
+//*
 //*  This dataset holds the APF portion of Zowe
 //         SET LOADLIB='{zowe.setup.dataset.authLoadlib}'
 //*
