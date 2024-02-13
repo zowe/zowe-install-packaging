@@ -92,8 +92,8 @@
 
 /* group for administrators                                          */
 /* replace AUTOGID with GID(&ADMINGID.) if AUTOGID not enabled       */
-  LISTGRP  {zowe.setup.security.groups.admin}. OMVS
-  ADDGROUP {zowe.setup.security.groups.admin}. OMVS(AUTOGID) -
+  LISTGRP  {zowe.setup.security.groups.admin} OMVS
+  ADDGROUP {zowe.setup.security.groups.admin} OMVS(AUTOGID) -
    DATA('ZOWE ADMINISTRATORS')
 
 /* uncomment to add existing user IDs to the ADMINGRP group          */
@@ -110,16 +110,16 @@
 /*   warning messages otherwise                                      */
 /* group for started tasks                                           */
 /* replace AUTOGID with GID(&STCGID.) if AUTOGID not enabled */
-  LISTGRP  {zowe.setup.security.groups.stc}. OMVS
-  ADDGROUP {zowe.setup.security.groups.stc}. OMVS(AUTOGID) -
+  LISTGRP  {zowe.setup.security.groups.stc} OMVS
+  ADDGROUP {zowe.setup.security.groups.stc} OMVS(AUTOGID) -
    DATA('STARTED TASK GROUP WITH OMVS SEGMENT')
 
 /* */
 
 /* userid for ZOWE main server                                       */
 /* replace AUTOUID with UID(&ZOWEUID.) if AUTOUID not enabled */
-  LISTUSER {zowe.setup.security.users.zowe}. OMVS
-  ADDUSER  {zowe.setup.security.users.zowe}. -
+  LISTUSER {zowe.setup.security.users.zowe} OMVS
+  ADDUSER  {zowe.setup.security.users.zowe} -
    NOPASSWORD -
    DFLTGRP({zowe.setup.security.groups.stc}) -
    OMVS(HOME(/tmp) PROGRAM(/bin/sh) AUTOUID) -
@@ -128,8 +128,8 @@
 
 /* userid for ZIS cross memory server                                */
 /* replace AUTOUID with UID(&ZISUID.) if AUTOUID not enabled */
-  LISTUSER {zowe.setup.security.users.zis}. OMVS
-  ADDUSER  {zowe.setup.security.users.zis}. -
+  LISTUSER {zowe.setup.security.users.zis} OMVS
+  ADDUSER  {zowe.setup.security.users.zis} -
    NOPASSWORD -
    DFLTGRP({zowe.setup.security.groups.stc}) -
    OMVS(HOME(/tmp) PROGRAM(/bin/sh) AUTOUID) -
@@ -139,22 +139,22 @@
 /* */
 
 /* started task for ZOWE main server                                 */
-  RLIST   STARTED {zowe.setup.security.stcs.zowe}.* ALL STDATA
-  RDEFINE STARTED {zowe.setup.security.stcs.zowe}.* -
+  RLIST   STARTED {zowe.setup.security.stcs.zowe}* ALL STDATA
+  RDEFINE STARTED {zowe.setup.security.stcs.zowe}* -
    STDATA(USER({zowe.setup.security.users.zowe}) -
      GROUP({zowe.setup.security.groups.stc}) -
    TRUSTED(NO)) DATA('ZOWE MAIN SERVER')
 
 /* started task for ZIS cross memory server                         */
-  RLIST   STARTED {zowe.setup.security.stcs.zis}.* ALL STDATA
-  RDEFINE STARTED {zowe.setup.security.stcs.zis}.* -
+  RLIST   STARTED {zowe.setup.security.stcs.zis}* ALL STDATA
+  RDEFINE STARTED {zowe.setup.security.stcs.zis}* -
    STDATA(USER({zowe.setup.security.users.zis}) -
    GROUP({zowe.setup.security.groups.stc}) -
    TRUSTED(NO)) DATA('ZOWE ZIS CROSS MEMORY SERVER')
 
 /* started task for ZIS Auxiliary cross memory server                */
-  RLIST   STARTED {zowe.setup.security.stcs.aux}.* ALL STDATA
-  RDEFINE STARTED {zowe.setup.security.stcs.aux}.* -
+  RLIST   STARTED {zowe.setup.security.stcs.aux}* ALL STDATA
+  RDEFINE STARTED {zowe.setup.security.stcs.aux}* -
    STDATA(USER({zowe.setup.security.users.zis}) -
    GROUP({zowe.setup.security.groups.stc}) -
    TRUSTED(NO)) DATA('ZOWE ZIS AUX CROSS MEMORY SERVER')
@@ -162,12 +162,12 @@
   SETROPTS RACLIST(STARTED) REFRESH
 
 /* show results .................................................... */
-  LISTGRP  {zowe.setup.security.groups.stc}. OMVS
-  LISTUSER {zowe.setup.security.users.zowe}. OMVS
-  LISTUSER {zowe.setup.security.users.zis}. OMVS
-  RLIST STARTED {zowe.setup.security.stcs.zowe}.* ALL STDATA
-  RLIST STARTED {zowe.setup.security.stcs.zis}.* ALL STDATA
-  RLIST STARTED {zowe.setup.security.stcs.aux}.*  ALL STDATA
+  LISTGRP  {zowe.setup.security.groups.stc} OMVS
+  LISTUSER {zowe.setup.security.users.zowe} OMVS
+  LISTUSER {zowe.setup.security.users.zis} OMVS
+  RLIST STARTED {zowe.setup.security.stcs.zowe}* ALL STDATA
+  RLIST STARTED {zowe.setup.security.stcs.zis}* ALL STDATA
+  RLIST STARTED {zowe.setup.security.stcs.aux}*  ALL STDATA
 
 /* DEFINE ZIS SECURITY RESOURCES ................................... */
 
@@ -258,8 +258,8 @@
 /*   EGN is not active on your system.                               */
 
 /* HLQ stub                                                          */
-  LISTGRP  {zowe.setup.dataset.prefix}.
-  ADDGROUP {zowe.setup.dataset.prefix}. DATA('Zowe - HLQ STUB')
+  LISTGRP  {zowe.setup.dataset.prefix}
+  ADDGROUP {zowe.setup.dataset.prefix} DATA('Zowe - HLQ STUB')
 
 /* general data set protection                                       */
   LISTDSD PREFIX({zowe.setup.dataset.prefix}) ALL
@@ -270,7 +270,7 @@
   SETROPTS GENERIC(DATASET) REFRESH
 
 /* show results .................................................... */
-  LISTGRP {zowe.setup.dataset.prefix}.
+  LISTGRP {zowe.setup.dataset.prefix}
   LISTDSD PREFIX({zowe.setup.dataset.prefix}) ALL
 
 /* DEFINE ZOWE RESOURCE PROTECTION ................................. */

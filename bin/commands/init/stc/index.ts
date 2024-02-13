@@ -86,6 +86,9 @@ export function execute(allowOverwrite: boolean = false) {
   } else {
     // Fix JCL if needed - cannot copy member with same name via (foo,foo,R)
     //                     must instead be (foo,,R), so do string replace if see dual name.
+    if (stcExistence == true) {
+      zosJes.printAndHandleJcl(`//'${jcllib}(ZWERSTC)'`, `ZWERSTC`, jcllib, prefix);
+    }
     
     const tmpfile = fs.createTmpFile(`zwe ${COMMAND_LIST}`.replace(new RegExp('\ ', 'g'), '-'));
     common.printDebug(`- Copy ${jcllib}(ZWEISTC) to ${tmpfile}`);

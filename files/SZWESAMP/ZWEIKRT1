@@ -108,11 +108,11 @@ $$
         DIGICERT(ZOWECA) +
         SUBJECTN( +
           'CN="{zowe.setup.certificate.dname.caCommonName}" +
-          OU="{zowe.setup.certificate.dname.orgUnit}." +
-          O="{zowe.setup.certificate.dname.org}." +
-          L="{zowe.setup.certificate.dname.locality}." +
-          SP="{zowe.setup.certificate.dname.state}." +
-          C="{zowe.setup.certificate.dname.country}." ') +
+          OU="{zowe.setup.certificate.dname.orgUnit}" +
+          O="{zowe.setup.certificate.dname.org}" +
+          L="{zowe.setup.certificate.dname.locality}" +
+          SP="{zowe.setup.certificate.dname.state}" +
+          C="{zowe.setup.certificate.dname.country}" ') +
         KEYSIZE(2048) +
         NADATE(05/01/30) +
         LABLCERT({zowe.setup.certificate.keyring.caLabel}) +
@@ -128,11 +128,11 @@ $$
        DIGICERT(ZOWECERT) +
        SUBJECTN( +
          'CN="{zowe.setup.certificate.dname.commonName}" +
-         OU="{zowe.setup.certificate.dname.orgUnit}." +
-         O="{zowe.setup.certificate.dname.org}." +
-         L="{zowe.setup.certificate.dname.locality}." +
-         SP="{zowe.setup.certificate.dname.state}." +
-         C="{zowe.setup.certificate.dname.country}." ') +
+         OU="{zowe.setup.certificate.dname.orgUnit}" +
+         O="{zowe.setup.certificate.dname.org}" +
+         L="{zowe.setup.certificate.dname.locality}" +
+         SP="{zowe.setup.certificate.dname.state}" +
+         C="{zowe.setup.certificate.dname.country}" ') +
        KEYSIZE(2048) +
        NADATE(05/01/30) +
        LABLCERT({zowe.setup.certificate.keyring.label}) +
@@ -142,7 +142,7 @@ $$
 
 /* Connect a Zowe's certificate with the keyring ................... */
    TSS ADD({zowe.setup.security.users.zowe}) KEYRING(ZOWERING) +
-       RINGDATA({zowe.setup.security.users.zowe}.,ZOWECERT) +
+       RINGDATA({zowe.setup.security.users.zowe},ZOWECERT) +
        USAGE(PERSONAL) DEFAULT
 
 /* Option 1 - Default Option - END ................................. */

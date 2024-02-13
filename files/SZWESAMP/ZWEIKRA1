@@ -113,10 +113,10 @@ ACF
   GENCERT CERTAUTH.ZOWECA -
           LABEL({zowe.setup.certificate.keyring.caLabel}) SIZE(2048) -
           SUBJSDN(CN='{zowe.setup.certificate.dname.caCommonName}' -
-                  OU='{zowe.setup.certificate.dname.orgUnit}.' -
-                  O='{zowe.setup.certificate.dname.org}.' -
-                  L='{zowe.setup.certificate.dname.locality}.' -
-                  SP='{zowe.setup.certificate.dname.state}.' -
+                  OU='{zowe.setup.certificate.dname.orgUnit}' -
+                  O='{zowe.setup.certificate.dname.org}' -
+                  L='{zowe.setup.certificate.dname.locality}' -
+                  SP='{zowe.setup.certificate.dname.state}' -
                   C='{zowe.setup.certificate.dname.country}') -
   EXPIRE(05/01/30) -
   KEYUSAGE(CERTSIGN)
@@ -133,9 +133,9 @@ ACF
    GENCERT {zowe.setup.security.users.zowe}.ZOWECERT -
             SUBJSDN(CN='{zowe.setup.certificate.dname.commonName}' -
                     OU='{zowe.setup.certificate.dname.orgUnit}.' -
-                    O='{zowe.setup.certificate.dname.org}.' -
-                    L='{zowe.setup.certificate.dname.locality}.' -
-                    SP='{zowe.setup.certificate.dname.state}.' -
+                    O='{zowe.setup.certificate.dname.org}' -
+                    L='{zowe.setup.certificate.dname.locality}' -
+                    SP='{zowe.setup.certificate.dname.state}' -
                     C='{zowe.setup.certificate.dname.country}') -
            SIZE(2048) -
            EXPIRE(05/01/30) -

@@ -1,4 +1,4 @@
-//ZWEISTC JOB                                     
+//ZWERSTC JOB                                     
 //*                                                                    
 //* This program and the accompanying materials are made available     
 //* under the terms of the Eclipse Public License v2.0 which          
@@ -11,24 +11,24 @@
 //*                                                                    
 //********************************************************************* 
 //*
-//* This job is used to add proclib members
+//* This job is used to remove proclib members
 //* Used to start a Zowe "instance"
 //* Instances represent a configuration of Zowe, different from the
 //* "runtime" datasets that are created upon install of Zowe / SMPE.
 //*
 //********************************************************************* 
-//*                                               
-//MCOPY EXEC PGM=IEBCOPY                         
-//SYSPRINT DD SYSOUT=A                            
-//SYSUT1 DD DSN={zowe.setup.dataset.jcllib},DISP=SHR  
-//SYSUT2 DD DSN={zowe.setup.dataset.proclib},DISP=OLD
-//SYSIN DD *                                      
-  COPY OUTDD=SYSUT2,INDD=SYSUT1                                  
-  SELECT MEMBER=((ZWESLSTC,{zowe.setup.security.stcs.zowe},R))
-
-  COPY OUTDD=SYSUT2,INDD=SYSUT1                                  
-  SELECT MEMBER=((ZWESISTC,{zowe.setup.security.stcs.zis},R))
-
-  COPY OUTDD=SYSUT2,INDD=SYSUT1                           
-  SELECT MEMBER=((ZWESASTC,{zowe.setup.security.stcs.aux},R))
-//*                                               
+//*
+//*      * You do NOT need to change PROCLIB when running ZWEGENER.
+//*      * This is used to keep some lines under the column limit.
+//*
+//       SET PROCLIB={zowe.setup.dataset.proclib}
+//*
+//*********************************************************************
+//RMPROC   EXEC PGM=IKJEFT01                       
+//SYSTSPRT DD SYSOUT=A                            
+//SYSTSIN  DD *                                    
+DELETE ('&PROCLIB.({zowe.setup.security.stcs.zowe})', +
+        '&PROCLIB.({zowe.setup.security.stcs.zis})', +
+        '&PROCLIB.({zowe.setup.security.stcs.aux})') +
+       SCRATCH NONVSAM
+//*

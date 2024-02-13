@@ -76,13 +76,13 @@ ACF
 * replace AUTOGID with GID(&ADMINGID.) if AUTOGID is not enabled
 *
 SET PROFILE(GROUP) DIV(OMVS)
-INSERT {zowe.setup.security.groups.admin}. AUTOGID
+INSERT {zowe.setup.security.groups.admin} AUTOGID
 F ACF2,REBUILD(GRP),CLASS(P)
 *
 * uncomment and customize to add an existing userid as administrator
 *
 * SET X(ROL)
-* INSERT {zowe.setup.security.groups.admin}. INCLUDE(userid) ROLE
+* INSERT {zowe.setup.security.groups.admin} INCLUDE(userid) ROLE
 * F ACF2,NEWXREF,TYPE(ROL)
 *
 * DEFINE STARTED TASK .............................................
@@ -93,7 +93,7 @@ F ACF2,REBUILD(GRP),CLASS(P)
 * replace AUTOGID with GID(&STCGID.) if AUTOGID is not enabled
 *
 SET PROFILE(GROUP) DIV(OMVS)
-INSERT {zowe.setup.security.groups.stc}. AUTOGID
+INSERT {zowe.setup.security.groups.stc} AUTOGID
 F ACF2,REBUILD(GRP),CLASS(P)
 *
 *****
@@ -102,10 +102,10 @@ F ACF2,REBUILD(GRP),CLASS(P)
 * replace AUTOUID with UID(&ZOWEUID.) if AUTOUID is not enabled
 *
 SET LID
-INSERT {zowe.setup.security.users.zowe}. +
+INSERT {zowe.setup.security.users.zowe} +
   STC GROUP({zowe.setup.security.groups.stc})
 SET PROFILE(USER) DIV(OMVS)
-INSERT {zowe.setup.security.users.zowe}. +
+INSERT {zowe.setup.security.users.zowe} +
   AUTOUID HOME(/tmp) OMVSPGM(/bin/sh)
 F ACF2,REBUILD(USR),CLASS(P),DIVISION(OMVS)
 *
@@ -113,10 +113,10 @@ F ACF2,REBUILD(USR),CLASS(P),DIVISION(OMVS)
 * replace AUTOUID with UID(&ZISUID.) if AUTOUID is not enabled
 *
 SET LID
-INSERT {zowe.setup.security.users.zis}. +
+INSERT {zowe.setup.security.users.zis} +
   STC GROUP({zowe.setup.security.groups.stc})
 SET PROFILE(USER) DIV(OMVS)
-INSERT {zowe.setup.security.users.zis}. +
+INSERT {zowe.setup.security.users.zis} +
   AUTOUID HOME(/tmp) OMVSPGM(/bin/sh)
 F ACF2,REBUILD(USR),CLASS(P),DIVISION(OMVS)
 *
@@ -125,7 +125,7 @@ F ACF2,REBUILD(USR),CLASS(P),DIVISION(OMVS)
 * started task for ZOWE main server
 *
 SET CONTROL(GSO)
-INSERT STC.{zowe.setup.security.stcs.zowe}. +
+INSERT STC.{zowe.setup.security.stcs.zowe} +
   LOGONID({zowe.setup.security.users.zowe}) +
 GROUP({zowe.setup.security.groups.stc}) +
 STCID({zowe.setup.security.stcs.zowe})
@@ -134,7 +134,7 @@ F ACF2,REFRESH(STC)
 * started task for ZIS cross memory server
 *
 SET CONTROL(GSO)
-INSERT STC.{zowe.setup.security.stcs.zis}. +
+INSERT STC.{zowe.setup.security.stcs.zis} +
   LOGONID({zowe.setup.security.users.zis}) +
 GROUP({zowe.setup.security.groups.stc}) +
 STCID({zowe.setup.security.stcs.zis})
@@ -143,7 +143,7 @@ F ACF2,REFRESH(STC)
 * started task for ZIS Auxiliary cross memory server
 *
 SET CONTROL(GSO)
-INSERT STC.{zowe.setup.security.stcs.aux}. +
+INSERT STC.{zowe.setup.security.stcs.aux} +
   LOGONID({zowe.setup.security.users.zis}) +
 GROUP({zowe.setup.security.groups.stc}) +
 STCID({zowe.setup.security.stcs.aux})
@@ -155,10 +155,10 @@ F ACF2,REFRESH(STC)
 * ZOWEUSER to it
 *
 SET X(ROL)
-INSERT {zowe.setup.security.groups.stc}. +
+INSERT {zowe.setup.security.groups.stc} +
   INCLUDE({zowe.setup.security.users.zowe}) ROLE
 F ACF2,NEWXREF,TYPE(ROL)
-CHANGE {zowe.setup.security.groups.stc}. +
+CHANGE {zowe.setup.security.groups.stc} +
   INCLUDE({zowe.setup.security.users.zis}) ADD
 F ACF2,NEWXREF,TYPE(ROL)
 *
@@ -226,14 +226,14 @@ F ACF2,REBUILD(FAC)
 *  HLQ stub
 SET RULE
 *  general data set protection
-LIST {zowe.setup.dataset.prefix}.
-RECKEY {zowe.setup.dataset.prefix}. ADD(- UID(-) READ(A) EXEC(P))
-RECKEY {zowe.setup.dataset.prefix}. +
+LIST {zowe.setup.dataset.prefix}
+RECKEY {zowe.setup.dataset.prefix} ADD(- UID(-) READ(A) EXEC(P))
+RECKEY {zowe.setup.dataset.prefix} +
 ADD(- UID({zowe.setup.security.groups.sysProg}) +
   READ(A) EXEC(A) ALLOC(A) WRITE(A))
 *
 *  show results
-LIST {zowe.setup.dataset.prefix}.
+LIST {zowe.setup.dataset.prefix}
 *
 
 *

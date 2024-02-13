@@ -59,6 +59,10 @@ export function execute(allowOverwrite?: boolean) {
       if (datasetExists) {
         if (allowOverwrite) {
           common.printMessage(`Warning ZWEL0300W: ${ds} already exists. Members in this data set will be overwritten.`);
+          zosJes.printAndHandleJcl(`//'${jcllib}(ZWERMVS)'`, `ZWERMVS`, jcllib, prefix);
+          if (runALoadlibCreate === true) {
+            zosJes.printAndHandleJcl(`//'${jcllib}(ZWERMVS2)'`, `ZWERMVS2`, jcllib, prefix);
+          }
         } else {
           skippedDatasets = true;
           common.printMessage(`Warning ZWEL0301W: ${ds} already exists and will not be overwritten. For upgrades, you must use --allow-overwrite.`);

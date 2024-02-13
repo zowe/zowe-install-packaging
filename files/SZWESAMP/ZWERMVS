@@ -1,4 +1,4 @@
-//ZWEISTC JOB                                     
+//ZWERMVS JOB                                     
 //*                                                                    
 //* This program and the accompanying materials are made available     
 //* under the terms of the Eclipse Public License v2.0 which          
@@ -11,24 +11,19 @@
 //*                                                                    
 //********************************************************************* 
 //*
-//* This job is used to add proclib members
-//* Used to start a Zowe "instance"
+//* This job is used to remove datasets used by a Zowe "instance"
 //* Instances represent a configuration of Zowe, different from the
 //* "runtime" datasets that are created upon install of Zowe / SMPE.
 //*
+//* If your choosen value of 'zowe.setup.dataset.authLoadlib' is not
+//* Equal to 'zowe.setup.prefix' + 'SZWELOAD',
+//* Then you must also run "ZWERMVS2".
+//*
 //********************************************************************* 
-//*                                               
-//MCOPY EXEC PGM=IEBCOPY                         
-//SYSPRINT DD SYSOUT=A                            
-//SYSUT1 DD DSN={zowe.setup.dataset.jcllib},DISP=SHR  
-//SYSUT2 DD DSN={zowe.setup.dataset.proclib},DISP=OLD
-//SYSIN DD *                                      
-  COPY OUTDD=SYSUT2,INDD=SYSUT1                                  
-  SELECT MEMBER=((ZWESLSTC,{zowe.setup.security.stcs.zowe},R))
-
-  COPY OUTDD=SYSUT2,INDD=SYSUT1                                  
-  SELECT MEMBER=((ZWESISTC,{zowe.setup.security.stcs.zis},R))
-
-  COPY OUTDD=SYSUT2,INDD=SYSUT1                           
-  SELECT MEMBER=((ZWESASTC,{zowe.setup.security.stcs.aux},R))
+//RMPDSE EXEC PGM=IKJEFT01                       
+//SYSTSPRT DD SYSOUT=A                            
+//SYSTSIN DD *                                    
+DELETE ('{zowe.setup.dataset.parmlib}', +
+        '{zowe.setup.dataset.authPluginLib}') +
+       SCRATCH NONVSAM
 //*                                               
