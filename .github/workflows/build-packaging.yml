@@ -1,4 +1,11 @@
 name: Zowe Build and Packaging
+
+permissions:
+  id-token: write
+  issues: write
+  pull-requests: write
+  contents: write
+
 on:
   push:
     branches:
@@ -130,7 +137,7 @@ jobs:
           
           echo BUILD_WHAT=$BUILD_WHAT >> $GITHUB_OUTPUT
       
-      - name: '[Prep 7] Comment on PR to indicate build is started'
+      - name: '[Prep 7] Comment on PR to indicate build is started'         
         uses: actions/github-script@v5
         id: create-comment
         if: (github.event_name == 'workflow_dispatch' || github.event_name == 'pull_request') && startsWith(env.CURRENT_BRANCH, 'PR-')
@@ -265,6 +272,7 @@ jobs:
         timeout-minutes: 10
         uses: zowe-actions/shared-actions/publish@main
         with:
+          sigstore-sign-artifacts: true
           artifacts: |
             .pax/zowe.pax
             .pax/zowe-smpe.zip
