@@ -11,8 +11,13 @@
 export type ZStat = {
     dev: number;
     ino: number;
+    mode: number;
+    nlink: number;
     uid: number;
     gid: number;
+    rdev: number;
+    size: number;
+    blocks: number;
     atime: number;
     mtime: number;
     ctime: number;
