@@ -1,15 +1,1 @@
-{
-  "lockAcquiredTime": "Wed Feb 14 2024 20:54:08 GMT+0000 (Coordinated Universal Time)",
-  "uid": "1707944048015287606",
-  "repository": {
-    "owner": "zowe",
-    "repo": "zowe-install-packaging"
-  },
-  "branch": "user/markackert/periodic-2x-to-3x-sync",
-  "workflow": "Zowe CICD Integration Tests",
-  "job": "cicd-test",
-  "actor": "zowe-robot",
-  "runId": 7907247103,
-  "runNumber": 3971,
-  "link": "https://github.com/zowe/zowe-install-packaging/actions/runs/7907247103"
-}
+""
