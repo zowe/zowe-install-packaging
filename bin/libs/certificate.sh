@@ -876,7 +876,15 @@ EOF
 
   if [ "${trust_zosmf}" = "1" ]; then
     if [ "${zosmf_root_ca}" = "_auto_" ]; then
-      zosmf_root_ca=$(detect_zosmf_root_ca "${ZWE_PRIVATE_ZOSMF_USER}")
+      if [ "${security_product}" = "RACF" ]; then
+        zosmf_root_ca=$(detect_zosmf_root_ca_racf "${ZWE_PRIVATE_ZOSMF_USER}")
+      fi
+      if [ "${security_product}" = "TSS" ]; then
+        zosmf_root_ca=$(detect_zosmf_root_ca_tss "${ZWE_PRIVATE_ZOSMF_USER}")
+      fi
+      if [ "${security_product}" = "ACF2" ]; then
+        zosmf_root_ca=$(detect_zosmf_root_ca_acf2 "${ZWE_PRIVATE_ZOSMF_USER}")
+      fi
     fi
     if [ -z "${zosmf_root_ca}" ]; then
       print_error_and_exit "Error ZWEL0137E: z/OSMF root certificate authority is not provided (or cannot be detected) with trusting z/OSMF option enabled." "" 137
@@ -1397,12 +1405,76 @@ EOF
     "${labels_with_private_key}"
 }
 
-# this only works for RACF
-detect_zosmf_root_ca() {
+# FIXME
+#   - Support for multiple? | long | special characters entries
+detect_zosmf_root_ca_tss() {
   zosmf_user=${1:-IZUSVR}
   zosmf_root_ca=
 
-  print_trace "- Detect z/OSMF keyring by listing ID(${zosmf_user})"
+  print_trace "- Detect z/OSMF keyring by listing ID(${zosmf_user}) [TSS]"
+  zosmf_certs=$(tsocmd "TSS LIST(${zosmf_user}) KEYRING(ALL)" 2>&1)
+  code=$?
+  if [ ${code} -ne 0 ]; then
+    print_trace "  * Exit code: ${code}"
+    print_trace "  * Output:"
+    if [ -n "${zosmf_certs}" ]; then
+      print_trace "$(padding_left "${zosmf_certs}" "    ")"
+    fi
+    return 1
+  fi
+
+  # Output example:
+  # KEYRING LABEL = KEYRING.IZUDFLT
+  zosmf_keyring_name=$(echo "${zosmf_certs}" | grep "KEYRING LABEL = " | awk -F= '{ print $2 }'  | head -n 1)
+  if [ -n "${zosmf_keyring_name}" ]; then
+    print_trace "  * z/OSMF keyring name is ${zosmf_keyring_name}"
+    # Output example:
+    #   ACID(CERTAUTH)  DIGICERT(ABCDEFGH)  DEFAULT(NO )  USAGE(CERTAUTH)
+    #   LABLCERT(ZOSMF_ROOT_CA                   )
+    zosmf_root_ca=$(echo "${zosmf_certs}" | grep -A 1 "ACID(CERTAUTH)" | grep "LABLCERT(" | head -n 1)
+    zosmf_root_ca=$(echo "${zosmf_root_ca}" | awk '{ print substr( $0, 12, length($0)-13) }')
+    zosmf_root_ca=$(echo "${zosmf_root_ca}" | sed -e 's/^[[:space:]]*//;s/[[:space:]]*$//')
+    if [ -n "${zosmf_root_ca}" ]; then
+      print_trace "  * z/OSMF root certificate authority found: ${zosmf_root_ca}"
+      echo "${zosmf_root_ca}"
+      return 0
+    else
+      print_trace "  * Error: cannot detect z/OSMF root certificate authority"
+      return 2
+    fi
+  else
+    print_trace "  * Error: failed to detect z/OSMF keyring name"
+    return 3
+  fi
+}
+
+# FIXME
+#   - add similar code using ACFUNIX instead of tsocmd
+#   - or use JCLs to be sure it will always works
+detect_zosmf_root_ca_acf2() {
+  zosmf_user=${1:-IZUSVR}
+  zosmf_root_ca=
+
+  print_trace "- Detect z/OSMF keyring by listing ID(${zosmf_user}) [ACF2]"
+  echo "${zosmf_root_ca}"
+  return 1
+}
+
+# FIXME
+#   - Support for multiple? | long | special characters entries
+#   - RACDCERT LISTRING will be confused if label contains 'CERTAUTH' word:
+#
+#  Certificate Label Name             Cert Owner     USAGE      DEFAULT
+#  --------------------------------   ------------   --------   -------
+#  CERTAUTH_FOR_T800                  ID(SKYNET)     DEADLY       YES
+#  JOHN_CONNOR                        CERTAUTH       CERTAUTH     NO
+#
+#  Will return CERTAUTH_FOR_T800 instead of JOHN_CONNOR
+detect_zosmf_root_ca_racf() {
+  zosmf_user=${1:-IZUSVR}
+  zosmf_root_ca=
+
+  print_trace "- Detect z/OSMF keyring by listing ID(${zosmf_user}) [RACF]"
   zosmf_certs=$(tsocmd "RACDCERT LIST ID(${zosmf_user})" 2>&1)
   code=$?
   if [ ${code} -ne 0 ]; then
