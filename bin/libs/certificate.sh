@@ -325,7 +325,7 @@ pkcs12_create_certificate_and_sign() {
     >/dev/null 2>/dev/null
   if [ "$?" != "0" ]; then
     print_message ">>>> Import the Certificate Authority \"${ca_alias}\" to the keystore \"${keystore_name}\":"
-    cat /ZOWE/keystore/local_ca/local_ca.cer
+    print_message $(cat "/ZOWE/keystore/local_ca/local_ca.cer")
     result=$(pkeytool ${flags} \
               -importcert -v \
               -trustcacerts -noprompt \
@@ -335,7 +335,7 @@ pkcs12_create_certificate_and_sign() {
               -storepass "${password}" \
               -storetype "PKCS12")
   fi
-  cat /ZOWE/keystore/local_ca/local_ca.cer
+  print_message $(cat "/ZOWE/keystore/local_ca/local_ca.cer")
   # test if we need to import CA into truststore
   keytool -list -v -noprompt \
     -alias "${ca_alias}" \
