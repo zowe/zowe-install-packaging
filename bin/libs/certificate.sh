@@ -637,8 +637,10 @@ pkcs12_export_pem() {
       fi
       if [ `uname` = "OS/390" ]; then
         iconv -f ISO8859-1 -t IBM-1047 "${keystore_dir}/${alias_lc}.cer" > "${keystore_dir}/${alias_lc}.cer-ebcdic"
+        print_message $(cat "${keystore_dir}/${alias_lc}.cer")
+        print_message $(cat "${keystore_dir}/${alias_lc}.cer-ebcdic")
         mv "${keystore_dir}/${alias_lc}.cer-ebcdic" "${keystore_dir}/${alias_lc}.cer"
-        ensure_file_encoding "${keystore_dir}/${alias_lc}.cer" "CERTIFICATE"
+#        ensure_file_encoding "${keystore_dir}/${alias_lc}.cer" "CERTIFICATE"
       fi
     fi
   done <<EOF
@@ -662,8 +664,10 @@ EOF
       fi
       if [ `uname` = "OS/390" ]; then
         iconv -f ISO8859-1 -t IBM-1047 "${keystore_dir}/${alias_lc}.cer" > "${keystore_dir}/${alias_lc}.cer-ebcdic"
+        print_message $(cat "${keystore_dir}/${alias_lc}.cer")
+        print_message $(cat "${keystore_dir}/${alias_lc}.cer-ebcdic")
         mv "${keystore_dir}/${alias_lc}.cer-ebcdic" "${keystore_dir}/${alias_lc}.cer"
-        ensure_file_encoding "${keystore_dir}/${alias_lc}.cer" "CERTIFICATE"
+#        ensure_file_encoding "${keystore_dir}/${alias_lc}.cer" "CERTIFICATE"
       fi
     fi
   done <<EOF
@@ -690,7 +694,7 @@ EOF
         fi
 
         # it's already EBCDIC, remove tag if there are any
-        ensure_file_encoding "${keystore_dir}/${alias_lc}.key" "PRIVATE"
+#        ensure_file_encoding "${keystore_dir}/${alias_lc}.key" "PRIVATE"
       else
         java -cp "${ZWE_zowe_runtimeDirectory}/bin/utils" \
           ExportPrivateKeyLinux \
