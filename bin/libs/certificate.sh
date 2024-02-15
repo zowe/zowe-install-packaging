@@ -325,7 +325,7 @@ pkcs12_create_certificate_and_sign() {
     >/dev/null 2>/dev/null
   if [ "$?" != "0" ]; then
     print_message ">>>> Import the Certificate Authority \"${ca_alias}\" to the keystore \"${keystore_name}\":"
-    print_message $(cat "/ZOWE/keystore/local_ca/local_ca.cer")
+    print_message $(iconv -f ISO8859-1 -t IBM-1047 "/ZOWE/keystore/local_ca/local_ca.cer")
     result=$(pkeytool ${flags} \
               -importcert -v \
               -trustcacerts -noprompt \
@@ -335,7 +335,7 @@ pkcs12_create_certificate_and_sign() {
               -storepass "${password}" \
               -storetype "PKCS12")
   fi
-  print_message $(cat "/ZOWE/keystore/local_ca/local_ca.cer")
+
   # test if we need to import CA into truststore
   keytool -list -v -noprompt \
     -alias "${ca_alias}" \
@@ -361,6 +361,7 @@ pkcs12_create_certificate_and_sign() {
   fi
 
   print_message ">>>> Import the signed CSR to the keystore \"${keystore_name}\":"
+  print_message $(iconv -f ISO8859-1 -t IBM-1047 "/ZOWE/keystore/localhost/localhost.signed.cer")
   result=$(pkeytool ${flags} \
             -importcert -v \
             -trustcacerts -noprompt \
