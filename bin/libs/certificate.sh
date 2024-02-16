@@ -614,6 +614,7 @@ pkcs12_export_pem() {
   print_message ">>>> List content of keystore \"${keystore_file}\":"
   keystore_content=$(pkeytool -list \
             -keystore "${keystore_file}" \
+            -rfc \
             -storepass "${password}" \
             -storetype "PKCS12")
   if [ $? -ne 0 ]; then
@@ -630,7 +631,6 @@ pkcs12_export_pem() {
                 -keystore "${keystore_file}" \
                 -storepass "${password}" \
                 -storetype "PKCS12" \
-                -rfc \
                 -file "${keystore_dir}/${alias_lc}.cer")
       if [ $? -ne 0 ]; then
         return 1
@@ -657,7 +657,6 @@ EOF
                 -keystore "${keystore_file}" \
                 -storepass "${password}" \
                 -storetype "PKCS12" \
-                -rfc \
                 -file "${keystore_dir}/${alias_lc}.cer")
       if [ $? -ne 0 ]; then
         return 1
@@ -722,6 +721,7 @@ pkcs12_show_info() {
   print_debug ">>>> Show certificate information of ${alias}:"
   result=$(pkeytool -list -v \
             -alias "${alias}" \
+            -rfc \
             -keystore "${keystore_file}" \
             -storepass "${password}" \
             -storetype "PKCS12")
