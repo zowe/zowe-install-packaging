@@ -634,7 +634,7 @@ pkcs12_export_pem() {
       if [ $? -ne 0 ]; then
         return 1
       fi
-      if [ `uname` = "OS/390" ]; then
+      if [ `uname` = "OS/390" && $(get_java_version_minor) -gt 11 ]; then
         iconv -f ISO8859-1 -t IBM-1047 "${keystore_dir}/${alias_lc}.cer" > "${keystore_dir}/${alias_lc}.cer-ebcdic"
         print_message $(cat "${keystore_dir}/${alias_lc}.cer")
         print_message $(cat "${keystore_dir}/${alias_lc}.cer-ebcdic")
@@ -660,7 +660,7 @@ EOF
       if [ $? -ne 0 ]; then
         return 1
       fi
-      if [ `uname` = "OS/390" ]; then
+      if [ `uname` = "OS/390" && $(get_java_version_minor) -gt 11]; then
         iconv -f ISO8859-1 -t IBM-1047 "${keystore_dir}/${alias_lc}.cer" > "${keystore_dir}/${alias_lc}.cer-ebcdic"
         print_message $(cat "${keystore_dir}/${alias_lc}.cer")
         print_message $(cat "${keystore_dir}/${alias_lc}.cer-ebcdic")
