@@ -614,7 +614,6 @@ pkcs12_export_pem() {
   print_message ">>>> List content of keystore \"${keystore_file}\":"
   keystore_content=$(pkeytool -list \
             -keystore "${keystore_file}" \
-            -rfc \
             -storepass "${password}" \
             -storetype "PKCS12")
   if [ $? -ne 0 ]; then
