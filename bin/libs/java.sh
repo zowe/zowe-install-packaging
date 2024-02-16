@@ -132,17 +132,6 @@ validate_java_home() {
   print_debug "Java check is successful."
 }
 
-get_java_version_minor() {
-  java_version=$("${JAVA_HOME}/bin/java" -version 2>&1) # Capture stderr to stdout, so we can print below if error
-  # As we know the java -version command works then strip out the line we need
-  java_version_short=$(echo "${java_version}" | grep ^"java version" | sed -e "s/java version //g" | sed -e "s/\"//g")
-  if [[ $java_version_short == "" ]]; then
-    java_version_short=$(echo "${java_version}" | grep ^"openjdk version" | sed -e "s/openjdk version //g" | sed -e "s/\"//g")
-  fi
-  java_minor_version=$(echo "${java_version_short}" | cut -d '.' -f 2)
-  return $java_minor_version
-}
-
 get_java_pkcs12_keystore_flag() {
   java_version=$("${JAVA_HOME}/bin/java" -version 2>&1) # Capture stderr to stdout, so we can print below if error
 

@@ -325,7 +325,6 @@ pkcs12_create_certificate_and_sign() {
     >/dev/null 2>/dev/null
   if [ "$?" != "0" ]; then
     print_message ">>>> Import the Certificate Authority \"${ca_alias}\" to the keystore \"${keystore_name}\":"
-    print_message $(iconv -f ISO8859-1 -t IBM-1047 "/ZOWE/keystore/local_ca/local_ca.cer")
     result=$(pkeytool ${flags} \
               -importcert -v \
               -trustcacerts -noprompt \
@@ -361,7 +360,6 @@ pkcs12_create_certificate_and_sign() {
   fi
 
   print_message ">>>> Import the signed CSR to the keystore \"${keystore_name}\":"
-  print_message $(iconv -f ISO8859-1 -t IBM-1047 "/ZOWE/keystore/localhost/localhost.signed.cer")
   result=$(pkeytool ${flags} \
             -importcert -v \
             -trustcacerts -noprompt \
@@ -634,13 +632,6 @@ pkcs12_export_pem() {
       if [ $? -ne 0 ]; then
         return 1
       fi
-      if [ `uname` = "OS/390" && $(get_java_version_minor) -gt 11 ]; then
-        iconv -f ISO8859-1 -t IBM-1047 "${keystore_dir}/${alias_lc}.cer" > "${keystore_dir}/${alias_lc}.cer-ebcdic"
-        print_message $(cat "${keystore_dir}/${alias_lc}.cer")
-        print_message $(cat "${keystore_dir}/${alias_lc}.cer-ebcdic")
-        mv "${keystore_dir}/${alias_lc}.cer-ebcdic" "${keystore_dir}/${alias_lc}.cer"
-#        ensure_file_encoding "${keystore_dir}/${alias_lc}.cer" "CERTIFICATE"
-      fi
     fi
   done <<EOF
 $(echo "${aliases}")
@@ -659,13 +650,6 @@ EOF
                 -file "${keystore_dir}/${alias_lc}.cer")
       if [ $? -ne 0 ]; then
         return 1
-      fi
-      if [ `uname` = "OS/390" && $(get_java_version_minor) -gt 11]; then
-        iconv -f ISO8859-1 -t IBM-1047 "${keystore_dir}/${alias_lc}.cer" > "${keystore_dir}/${alias_lc}.cer-ebcdic"
-        print_message $(cat "${keystore_dir}/${alias_lc}.cer")
-        print_message $(cat "${keystore_dir}/${alias_lc}.cer-ebcdic")
-        mv "${keystore_dir}/${alias_lc}.cer-ebcdic" "${keystore_dir}/${alias_lc}.cer"
-#        ensure_file_encoding "${keystore_dir}/${alias_lc}.cer" "CERTIFICATE"
       fi
     fi
   done <<EOF
@@ -720,7 +704,6 @@ pkcs12_show_info() {
   print_debug ">>>> Show certificate information of ${alias}:"
   result=$(pkeytool -list -v \
             -alias "${alias}" \
-            -rfc \
             -keystore "${keystore_file}" \
             -storepass "${password}" \
             -storetype "PKCS12")
