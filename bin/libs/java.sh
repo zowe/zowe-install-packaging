@@ -157,7 +157,7 @@ get_java_pkcs12_keystore_flag() {
   elif [ ${java_major_version} -eq 1 -a ${java_minor_version} -gt 8 ]; then
     printf " -J-Dkeystore.pkcs12.legacy "
   else
-    printf " "  
+    printf " -J-Dkeystore.pkcs12.legacy "
   fi
 }
 
