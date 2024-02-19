@@ -628,6 +628,7 @@ pkcs12_export_pem() {
                 -keystore "${keystore_file}" \
                 -storepass "${password}" \
                 -storetype "PKCS12" \
+                -rfc \
                 -file "${keystore_dir}/${alias_lc}.cer")
       if [ $? -ne 0 ]; then
         return 1
@@ -647,9 +648,15 @@ EOF
                 -keystore "${keystore_file}" \
                 -storepass "${password}" \
                 -storetype "PKCS12" \
+                -rfc \
                 -file "${keystore_dir}/${alias_lc}.cer")
       if [ $? -ne 0 ]; then
         return 1
+      fi
+      if [ `uname` = "OS/390" ]; then
+        iconv -f ISO8859-1 -t IBM-1047 "${keystore_dir}/${alias_lc}.cer" > "${keystore_dir}/${alias_lc}.cer-ebcdic"
+        mv "${keystore_dir}/${alias_lc}.cer-ebcdic" "${keystore_dir}/${alias_lc}.cer"
+        ensure_file_encoding "${keystore_dir}/${alias_lc}.cer" "CERTIFICATE"
       fi
     fi
   done <<EOF
@@ -676,7 +683,7 @@ EOF
         fi
 
         # it's already EBCDIC, remove tag if there are any
-#        ensure_file_encoding "${keystore_dir}/${alias_lc}.key" "PRIVATE"
+        ensure_file_encoding "${keystore_dir}/${alias_lc}.key" "PRIVATE"
       else
         java -cp "${ZWE_zowe_runtimeDirectory}/bin/utils" \
           ExportPrivateKeyLinux \
