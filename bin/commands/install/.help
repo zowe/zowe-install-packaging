@@ -13,9 +13,16 @@ zowe:
       prefix: IBMUSER.ZWE
 ```
 
+The command does not require Zowe YAML configuration and can be used 
+with parameter `--dataset-prefix`.
+
+Note: if `--dataset-prefix` is used, `zowe.setup.dataset.prefix` is ignored. 
+
 Expected outputs:
 
-- Will create these data sets under `zowe.setup.dataset.prefix` definition:
+- Will create these data sets under `zowe.setup.dataset.prefix` 
+or `--dataset-prefix` definition:
   * `SZWEAUTH` contains few Zowe load modules (++PROGRAM).
   * `SZWESAMP` contains several sample configurations.
   * `SZWEEXEC` contains few utilities used by Zowe.
+  * `SZWELOAD` contains config manager for rexx.
