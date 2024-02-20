@@ -61,8 +61,8 @@ detect_java_home() {
   fi
 
   # fall back to the most well-known java path
-  if [ -z "${java_home}" -a -f /usr/lpp/java/J8.0_64/bin/java ]; then
-    java_home=/usr/lpp/java/J8.0_64
+  if [ -z "${java_home}" -a -f /usr/lpp/java/J17.0_64/bin/java ]; then
+    java_home=/usr/lpp/java/J17.0_64
   fi
 
   if [ -n "${java_home}" ]; then

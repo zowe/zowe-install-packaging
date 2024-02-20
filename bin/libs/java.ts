@@ -48,8 +48,8 @@ export function detectJavaHome(): string|undefined {
     }
   }
 
-  if (!javaBinHome && fs.fileExists('/usr/lpp/java/J8.0_64/bin/java')) {
-    return '/usr/lpp/java/J8.0_64';
+  if (!javaBinHome && fs.fileExists('/usr/lpp/java/J17.0_64/bin/java')) {
+    return '/usr/lpp/java/J17.0_64';
   }
   return undefined;
 }
