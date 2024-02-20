@@ -30,7 +30,7 @@ describe('test zss x509 certificate mapping via gateway', function() {
     }
 
     const res = await hq.request({
-      url: '/ibmzosmf/api/v1/restfiles/ds?dslevel=SYS1.PARMLIB*',
+      url: `/ibmzosmf/api/v1/restjobs/jobs?owner=${process.env.SSH_USER.toUpperCase()}&prefix=*`,
       headers: {
         Cookie: `${APIML_AUTH_COOKIE}=${token}`,
       }
