@@ -22,7 +22,7 @@ trim() {
     input=${1}
   fi
 
-  echo "${input}" | xargs
+  echo "${input}" | sed -e 's/^[[:space:]]*//;s/[[:space:]]*$//'
 }
 
 ###############################

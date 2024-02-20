@@ -376,6 +376,9 @@ zwecli_inline_execute_command() {
 
   export ZWE_PRIVATE_CLI_IS_TOP_LEVEL_COMMAND=false
 
+  print_trace "- zwecli_inline_execute_command"
+  print_trace "  * ${*}"
+
   # process new command
   . "${ZWE_zowe_runtimeDirectory}/bin/zwe"
 
