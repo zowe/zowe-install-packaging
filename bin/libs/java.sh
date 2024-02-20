@@ -19,7 +19,7 @@ ensure_java_is_on_path() {
 
 shell_read_yaml_java_home() {
   yaml="${1}"
-
+  print_message $(cat "${yaml}")
   java_home=$(shell_read_yaml_config "${yaml}" 'java' 'home')
   # validate NODE_HOME
   result=$(validate_java_home "${java_home}" 2>/dev/null)
@@ -72,8 +72,10 @@ detect_java_home() {
 
 require_java() {
   # prepare the JAVA_HOME in zowe.yaml
+  print_message "CLI param ${ZWE_CLI_PARAMETER_CONFIG}"
   if [ -n "${ZWE_CLI_PARAMETER_CONFIG}" ]; then
     custom_java_home="$(shell_read_yaml_java_home "${ZWE_CLI_PARAMETER_CONFIG}")"
+    print_message "custom java home ${custom_java_home}"
     if [ -n "${custom_java_home}" ]; then
       export JAVA_HOME="${custom_java_home}"
     fi
@@ -85,8 +87,9 @@ require_java() {
   if [ -z "${JAVA_HOME}" ]; then
     print_error_and_exit "Error ZWEL0122E: Cannot find java. Please define JAVA_HOME environment variable." "" 122
   fi
-
+  print_message "Version of java is: ${JAVA_HOME}"
   ensure_java_is_on_path
+  print_message "${PATH}"
 }
 
 validate_java_home() {

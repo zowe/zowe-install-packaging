@@ -27,7 +27,7 @@ clean_up_tmp_files() {
     rm -f "${cust_hashes}"
   fi
 }
-
+print_message $(java -version)
 ###############################
 # validation
 require_java
