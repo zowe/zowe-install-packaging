@@ -28,13 +28,12 @@ describe('test oidc mapping via gateway', function() {
     if (!token) {
       this.skip();
     }
-    
+
     const res = await hq.request({
-      url: `jobs/api/v2?owner=${process.env.SSH_USER.toUpperCase()}&prefix=*`,
+      url: '/ibmzosmf/api/v1/restfiles/ds?dslevel=SYS1.PARMLIB*',
       headers: {
         Cookie: `${APIML_AUTH_COOKIE}=${token}`,
-        'X-CSRF-ZOSMF-HEADER': '*',
-      },
+      }
     });
 
     expect(res).to.have.property('status');
