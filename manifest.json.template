@@ -86,6 +86,11 @@
       "artifact": "caching-service-*.zip",
       "exclusions": ["*PR*.zip"]
     },
+    "org.zowe.apiml.metrics-service-package": {
+      "version": "^2.1.1-SNAPSHOT",
+      "artifact": "metrics-service-*.zip",
+      "exclusions": ["*PR*.zip"]
+    },
     "org.zowe.apiml.apiml-common-lib-package": {
       "version": "^3.0.0-SNAPSHOT",
       "artifact": "apiml-common-lib-*.zip",
