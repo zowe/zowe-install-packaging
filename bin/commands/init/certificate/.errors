@@ -1,2 +1,3 @@
 ZWEL0157E|157|%s (%s) is not defined in Zowe YAML configuration file.
 ZWEL0164E|164|Value of %s (%s) defined in Zowe YAML configuration file is invalid. Valid values are %s.
+ZWEL0305E|305|Failed to call certificate command, rc=%s, message=%s.

@@ -18,6 +18,7 @@ import * as shell from './shell';
 import * as zoslib from './zos';
 
 export function isDatasetExists(datasetName: string): boolean {
+  if (!datasetName || datasetName.trim().length === 0) { return false; }
   const result = shell.execSync('sh', '-c', `cat "//'${datasetName}'" 1>/dev/null 2>&1`);
   return result.rc === 0;
 }
@@ -26,7 +27,9 @@ export function isDatasetExists(datasetName: string): boolean {
 // @return        0: exist
 //                1: data set is not in catalog
 //                2: data set member doesn't exist
+//                9: wrong datasetName or other error
 export function tsoIsDatasetExists(datasetName: string): number {
+  if (!datasetName || datasetName.trim().length === 0) { return 9; }
   const result = zoslib.tsoCommand(`listds '${datasetName}' label`);
   if (result.rc != 0) {
     if (result.out.includes('NOT IN CATALOG')) {
@@ -44,11 +47,14 @@ export function tsoIsDatasetExists(datasetName: string): number {
 }
 
 export function createDataSet(dsName: string, dsOptions: string): number {
+  if (!dsName || dsName.trim().length === 0) {
+    return 255;
+  }
   const result=zoslib.tsoCommand(`ALLOCATE NEW DA('${dsName}') ${dsOptions}`);
   return result.rc;
 }
 
-export function copyToDataset(filePath: string, dsName: string, cpOptions: string, allowOverwrite: boolean): number {
+export function copyToDataset(filePath: string, dsName: string, cpOptions: string='', allowOverwrite?: boolean): number {
   if (allowOverwrite != true) {
     if (isDatasetExists(dsName)) {
       common.printErrorAndExit(`Error ZWEL0133E: Data set ${dsName} already exists`, undefined, 133);
@@ -89,8 +95,10 @@ export function datasetCopyToDataset(prefix: string, datasetFrom: string, datase
 // @param dsn     data set name to check
 // @return        0: no users
 //                1: there are some users
+//                255: wrong datasetName
 // @output        output of operator command "d grs"
 export function listDatasetUser(datasetName: string): number {
+  if (!datasetName || datasetName.trim().length === 0) { return 255; }
   const cmd=`D GRS,RES=(*,${datasetName})`;
   const result=zoslib.operatorCommand(cmd);
   return result.out.includes('NO REQUESTORS FOR RESOURCE') ? 0 : 1;
@@ -126,8 +134,10 @@ export function listDatasetUser(datasetName: string): number {
 //                1: data set doesn't exist
 //                2: data set member doesn't exist
 //                3: data set is in use
+//                9: wrong dataset or other
 // @output        tso listds label output
 export function deleteDataset(dataset: string): number {
+  if (!dataset || dataset.trim().length === 0) { return 9; }
   const cmd=`delete '${dataset}'`;
   const result=zoslib.tsoCommand(cmd);
   if (result.rc != 0) {
@@ -170,6 +180,7 @@ export function isDatasetSmsManaged(dataset: string): { rc: number, smsManaged?:
   // SMS flag is in `FORMAT 1 DSCB` section second line, after 780037
 
   common.printTrace(`- Check if ${dataset} is SMS managed`);
+  if (!dataset || dataset.trim().length === 0) { return { rc: 255 }; }
   const labelResult = zoslib.tsoCommand(`listds '${dataset}' label`);
   const datasetLabel=labelResult.out;
   if (labelResult.rc == 0) {
@@ -212,14 +223,16 @@ export function isDatasetSmsManaged(dataset: string): { rc: number, smsManaged?:
 
 export function getDatasetVolume(dataset: string): { rc: number, volume?: string } {
   common.printTrace(`- Find volume of data set ${dataset}`);
+  if (!dataset || dataset.trim().length === 0) { return { rc: 255 }; }
   const result = zoslib.tsoCommand(`listds '${dataset}'`);
   if (result.rc == 0) {
-    let volumesIndex = result.out.indexOf('--VOLUMES--');
-    let volume: string;
-    if (volumesIndex != -1) {
-      let startIndex = volumesIndex + '--VOLUMES--'.length;
-      let endIndex = result.out.indexOf('--',startIndex);
-      volume = result.out.substring(startIndex, endIndex).trim();
+    const lines = result.out.split('\n');
+    let volume;
+    for (let i = 0; i < lines.length; i++) {
+      if (lines[i].trim() == '--VOLUMES--') {
+        volume = lines[i+1] ? lines[i+1].trim() : undefined;
+        break;
+      }
     }
     if (!volume) {
       common.printError("  * Failed to find volume information of the data set.");
@@ -235,7 +248,7 @@ export function getDatasetVolume(dataset: string): { rc: number, volume?: string
 export function apfAuthorizeDataset(dataset: string): number {
   const result = isDatasetSmsManaged(dataset);
   if (result.rc) {
-    common.printError("Error ZWEL0134E: Failed to find SMS status of data set ${dataset}.");
+    common.printError(`Error ZWEL0134E: Failed to find SMS status of data set ${dataset}.`);
     return 134;
   }
 
@@ -256,7 +269,7 @@ export function apfAuthorizeDataset(dataset: string): number {
     }
   }
 
-  const apfCmd="SETPROG APF,ADD,DSNAME=${dataset},${apfVolumeParam}"
+  const apfCmd=`SETPROG APF,ADD,DSNAME=${dataset},${apfVolumeParam}`;
   if (std.getenv('ZWE_CLI_PARAMETER_SECURITY_DRY_RUN') == "true") {
     common.printMessage("- Dry-run mode, security setup is NOT performed on the system.");
     common.printMessage("  Please apply this operator command manually:");
@@ -277,7 +290,8 @@ export function apfAuthorizeDataset(dataset: string): number {
 }
 
 export function createDatasetTmpMember(dataset: string, prefix: string='ZW'): string | null {
-  common.printTrace(`  > create_data_set_tmp_member in ${dataset}`);
+  common.printTrace(`  > createDatasetTmpMember in ${dataset}`);
+  if (!dataset || dataset.trim().length === 0) { return null; }
   for (var i = 0; i < 100; i++) {
     let rnd=Math.floor(Math.random()*10000);
 
@@ -291,4 +305,29 @@ export function createDatasetTmpMember(dataset: string, prefix: string='ZW'): st
     }
   }
   return null;
+}
+
+// schema/server-common.json: zoweDataset
+// note: the min lenght is 1
+export function validDatasetName(dsn: string): boolean {
+  common.printTrace(`- validDatasetName for "${dsn}"`);
+  if (!dsn || dsn.length < 2 || dsn.length > 44) {
+      common.printTrace('  * dataset null, empty or > 44 chars');
+      return false;
+  }
+  const result = !!dsn.match(/^([A-Z\$\#\@]){1}([A-Z0-9\$\#\@\-]){0,7}(\.([A-Z\$\#\@]){1}([A-Z0-9\$\#\@\-]){0,7}){0,11}$/g);
+  common.printTrace(`  * regex match: ${result}`);
+  return result;
+}
+
+// schema/server-common.json: zoweDatasetMember
+export function validDatasetMemberName(memberName:string): boolean {
+  common.printTrace(`- validDatasetMemberName for "${memberName}"`);
+  if (!memberName){
+      common.printTrace('  * no member name');
+      return false;
+  }
+  const result = !!memberName.match(/^([A-Z\$\#\@]){1}([A-Z0-9\$\#\@]){0,7}$/g);
+  common.printTrace(`  * regex match: ${result}`);
+  return result;
 }

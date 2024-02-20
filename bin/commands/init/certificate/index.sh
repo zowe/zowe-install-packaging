@@ -11,6 +11,17 @@
 # Copyright Contributors to the Zowe Project.
 #######################################################################
 
+USE_CONFIGMGR=$(check_configmgr_enabled)
+if [ "${USE_CONFIGMGR}" = "true" ]; then
+  if [ -z "${ZWE_PRIVATE_TMP_MERGED_YAML_DIR}" ]; then
+
+    # user-facing command, use tmpdir to not mess up workspace permissions
+    export ZWE_PRIVATE_TMP_MERGED_YAML_DIR=1
+  fi
+  _CEE_RUNOPTS="XPLINK(ON),HEAPPOOLS(OFF)" ${ZWE_zowe_runtimeDirectory}/bin/utils/configmgr -script "${ZWE_zowe_runtimeDirectory}/bin/commands/init/certificate/cli.js"
+else
+
+
 ###############################
 # validation
 require_zowe_yaml
@@ -340,7 +351,7 @@ elif [[ "${cert_type}" == JCE*KS ]]; then
   # should we clean up before creating new
   if [ "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITE}" = "true" ]; then
     # warning
-    print_message "Warning ZWEL0300W: Keyring \"safkeyring:///${keyring_owner}/${keyring_name}\" will be overwritten during configuration."
+    print_message "Warning ZWEL0300W: Keyring \"safkeyring:////${keyring_owner}/${keyring_name}\" will be overwritten during configuration."
 
     zwecli_inline_execute_command \
       certificate keyring-jcl clean \
@@ -353,7 +364,7 @@ elif [[ "${cert_type}" == JCE*KS ]]; then
       --security-product "${security_product}"
   else
     # error
-    # print_error_and_exit "Error ZWEL0158E: Keyring \"safkeyring:///${keyring_owner}/${keyring_name}\" already exists." "" 158
+    # print_error_and_exit "Error ZWEL0158E: Keyring \"safkeyring:////${keyring_owner}/${keyring_name}\" already exists." "" 158
   fi
 
   yaml_keyring_label=
@@ -455,9 +466,6 @@ EOF
     update_zowe_yaml "${ZWE_CLI_PARAMETER_CONFIG}" "zowe.certificate.truststore.file" "safkeyring:////${keyring_owner}/${keyring_name}"
     # we must set a dummy value here, other JDK will complain wrong parameter
     update_zowe_yaml "${ZWE_CLI_PARAMETER_CONFIG}" "zowe.certificate.truststore.password" "password"
-    update_zowe_yaml "${ZWE_CLI_PARAMETER_CONFIG}" "zowe.certificate.pem.key" ""
-    update_zowe_yaml "${ZWE_CLI_PARAMETER_CONFIG}" "zowe.certificate.pem.certificate" ""
-    update_zowe_yaml "${ZWE_CLI_PARAMETER_CONFIG}" "zowe.certificate.pem.certificateAuthorities" "${yaml_pem_cas}"
     print_level2_message "Zowe configuration is updated successfully."
   else
     print_level1_message "Update certificate configuration to ${ZWE_CLI_PARAMETER_CONFIG}"
@@ -474,10 +482,6 @@ EOF
     print_message "      type: ${cert_type:-JCERACFKS}"
     print_message "      file: \"safkeyring:////${keyring_owner}/${keyring_name}\""
     print_message "      password: \"password\""
-    print_message "    pem:"
-    print_message "      key: \"\""
-    print_message "      certificate: \"\""
-    print_message "      certificateAuthorities: \"${yaml_pem_cas}\""
     print_message ""
     print_level2_message "Zowe configuration requires manual updates."
   fi
@@ -490,4 +494,5 @@ if [ -n "${zosmf_host}" -a "${verify_certificates}" = "STRICT" ]; then
     certificate verify-service \
     --host "${zosmf_host}" \
     --port "${zosmf_port}"
+fi
 fi

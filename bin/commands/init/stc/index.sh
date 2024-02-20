@@ -11,6 +11,17 @@
 # Copyright Contributors to the Zowe Project.
 #######################################################################
 
+USE_CONFIGMGR=$(check_configmgr_enabled)
+if [ "${USE_CONFIGMGR}" = "true" ]; then
+  if [ -z "${ZWE_PRIVATE_TMP_MERGED_YAML_DIR}" ]; then
+
+    # user-facing command, use tmpdir to not mess up workspace permissions
+    export ZWE_PRIVATE_TMP_MERGED_YAML_DIR=1
+  fi
+  _CEE_RUNOPTS="XPLINK(ON),HEAPPOOLS(OFF)" ${ZWE_zowe_runtimeDirectory}/bin/utils/configmgr -script "${ZWE_zowe_runtimeDirectory}/bin/commands/init/stc/cli.js"
+else
+
+
 print_level1_message "Install Zowe main started task"
 
 ###############################
@@ -70,7 +81,7 @@ for mb in ${proclibs}; do
   # source in SZWESAMP
   samp_existence=$(is_data_set_exists "${prefix}.${ZWE_PRIVATE_DS_SZWESAMP}(${mb})")
   if [ "${samp_existence}" != "true" ]; then
-      print_error_and_exit "Error ZWEL0143E: ${prefix}.${ZWE_PRIVATE_DS_SZWESAMP}(${mb}) already exists. This data set member will be overwritten during configuration." "" 143
+      print_error_and_exit "Error ZWEL0143E: Cannot find data set member ${prefix}.${ZWE_PRIVATE_DS_SZWESAMP}(${mb}). You may need to re-run 'zwe install'." "" 143
   fi
 done
 for mb in ${target_proclibs}; do
@@ -255,3 +266,4 @@ fi
 ###############################
 # exit message
 print_level2_message "Zowe main started tasks are installed successfully."
+fi

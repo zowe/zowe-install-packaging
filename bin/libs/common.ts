@@ -14,7 +14,6 @@ import * as os from 'cm_os';
 import * as xplatform from 'xplatform';
 
 import * as fs from './fs';
-//import * as stringlib from './string';
 import * as shell from './shell';
 import * as strftime from './strftime';
 import * as bufferlib from './buffer';
@@ -128,36 +127,24 @@ export function date(...args: string[]): string|undefined {
 
 
 let logExists = false;
-let logFile:std.File|null = null;
 
 function writeLog(message: string): boolean {
-  if (!logExists) {
-    const filename = std.getenv('ZWE_PRIVATE_LOG_FILE');
-    if (filename) {
+  const filename = std.getenv('ZWE_PRIVATE_LOG_FILE');
+  if (filename) {
+    logExists = logExists || fs.fileExists(filename);
+    if (!logExists) {
+      xplatform.storeFileUTF8(filename, xplatform.AUTO_DETECT, message);
       logExists = fs.fileExists(filename);
-      if (!logExists) {
-        fs.createFile(filename, 0o640, message);
-        logExists = fs.fileExists(filename);
-      }
       if (logExists) {
-        let errObj = {errno:undefined};
-        logFile = std.open(filename, 'w', errObj);
-        if (errObj.errno) {
-          printError(`Error opening file ${filename}, errno=${errObj.errno}`);
-          logFile=null;
-          logExists=false;
-          return false;
-        }
+        shell.execSync(`chmod`, `640`, filename);
       }
+      return logExists;
+    }
+    else {
+      return xplatform.appendFileUTF8(filename, xplatform.AUTO_DETECT, message) == 0;
     }
   }
-  if (logFile===undefined || logFile===null) {
-    return false;
-  } else {
-    //TODO this does utf8. should we flip it to 1047 on zos?
-    logFile.puts(message);
-    return true;
-  }
+  return false;
 }
 
 
@@ -363,6 +350,45 @@ export function getZoweVersion(): string|undefined {
   }
   return std.getenv('ZWE_VERSION');
 }
+
+function paddingLeft(str: string, pad: string): string {
+  return str.split('\n')
+    .map(function(line:string) {
+      return pad+line;})
+    .join('\n');
+}
+/*for use with shell.ts results, particularly where error is in out attribute*/
+export function printShellResult(result: {rc: number, out?: string}, commandName: string  = 'command'): void {
+  if (result.rc == 0) {
+    printDebug(`  * ${commandName} succeeded`);
+    printTrace(`  * Exit code: ${result.rc}`);
+    printTrace(`  * Output:`);
+    if (result.out) {
+      printTrace(paddingLeft(result.out, "    "));
+    }
+  } else {
+    printDebug(`  * ${commandName} failed`);
+    printError(`  * Exit code: ${result.rc}`);
+    printError(`  * Output:`);
+    if (result.out) {
+      printError(paddingLeft(result.out, "    "));
+    }
+  }
+}
+
+/*for use with shell.ts results, particularly where error is in out attribute*/
+export function printShellResultIfError(result: {rc: number, out?: string}, commandName: string  = 'command'): void {
+  if (result.rc != 0) {
+    printDebug(`  * ${commandName} failed`);
+    printError(`  * Exit code: ${result.rc}`);
+    printError(`  * Output:`);
+    if (result.out) {
+      printError(paddingLeft(result.out, "    "));
+    }
+  }
+}
+
+
 
 
 //From 'index.sh'
