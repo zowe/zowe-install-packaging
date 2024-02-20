@@ -377,6 +377,8 @@ rm -rf "./templates"
 
 echo "[$SCRIPT_NAME] compile java utilities ..."
 cd "${ZOWE_ROOT_DIR}/bin/utils"
+echo "$(java -version 2>&1)"
+java -version
 javac HashFiles.java && rm HashFiles.java
 javac ExportPrivateKeyLinux.java && rm ExportPrivateKeyLinux.java
 javac ExportPrivateKeyZos.java && rm ExportPrivateKeyZos.java

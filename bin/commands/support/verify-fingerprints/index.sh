@@ -60,6 +60,7 @@ chmod 700 "${all_files}"
 print_debug "  * File list created as ${all_files}"
 
 print_message "- Calculate hashes of Zowe files"
+print_message $(java -version)
 cust_hashes=$(create_tmp_file "${tmp_file_prefix}")
 result=$(java -cp "${ZWE_zowe_runtimeDirectory}/bin/utils/" HashFiles "${all_files}" | sort > "${cust_hashes}")
 code=$?
