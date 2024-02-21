@@ -33,27 +33,38 @@ export function execute(dryRun?: boolean) {
   }
   
   const tempFile = fs.createTmpFile();
-  zosFs.copyMvsToUss(ZOWE_CONFIG.zowe.setup.dataset.prefix + '.SZWESAMP(ZWEGENER)', tempFile);
+  zosFs.copyMvsToUss(stringlib.escapeDollar(ZOWE_CONFIG.zowe.setup.dataset.prefix + '.SZWESAMP(ZWEGENER)'), tempFile);
   let jclContents = xplatform.loadFileUTF8(tempFile, xplatform.AUTO_DETECT);
 
   jclContents = jclContents.replace(/\{zowe\.setup\.dataset\.prefix\}/gi, prefix);
   jclContents = jclContents.replace(/\{zowe\.runtimeDirectory\}/gi, runtimeDirectory);
   let originalConfig = std.getenv('ZWE_PRIVATE_CONFIG_ORIG');
-  let fileIndex = originalConfig.indexOf('FILE(');
-  let lastIndex = 0;
-  let absConfig = '';
-  while (fileIndex != -1) {
-    absConfig += originalConfig.substring(lastIndex, fileIndex+5);
-    let parenIndex = originalConfig.indexOf(')', fileIndex+5);
-    let fileRef = originalConfig.substring(fileIndex+5, parenIndex);
-    let absRef = fs.convertToAbsolutePath(fileRef);
-    absConfig += absRef + ')';
-    lastIndex = parenIndex+1;
-    fileIndex = originalConfig.indexOf('FILE(', lastIndex);
+  let startingConfig = originalConfig;
+  if ((originalConfig.indexOf('FILE(') == -1) && (originalConfig.indexOf('PARMLIB(') == -1)) {
+    startingConfig = 'FILE('+originalConfig+')';
   }
-  absConfig += originalConfig.substring(lastIndex);
 
-  jclContents = jclContents.replace('FILE <full path to zowe.yaml file>', 'FILE '+absConfig);
+  let parts = startingConfig.split(/(FILE\(|PARMLIB\()/g).filter(item => item.length > 0);
+  let configLines = [];
+  let state = '';
+
+  for (let i = 0; i < parts.length; i++) {
+    let part = parts[i];
+    if (part == 'FILE(') {
+      state = part;
+    } else if (part == 'PARMLIB(') {
+      state = part;
+    } else if (state == 'FILE(') {
+      let filename = part.substring(0, part.indexOf(')'));
+      configLines.push('FILE '+fs.convertToAbsolutePath(filename));
+      state = null;
+    } else if (state == 'PARMLIB(') {
+      configLines.push('PARMLIB '+part.substring(0, part.indexOf('(')));
+      state = null;
+    }
+  }
+
+  jclContents = jclContents.replace('FILE <full path to zowe.yaml file>', configLines.join('\n'));
 
   xplatform.storeFileUTF8(tempFile, xplatform.AUTO_DETECT, jclContents);
   
