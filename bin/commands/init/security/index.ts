@@ -69,5 +69,4 @@ export function execute(dryRun?: boolean, ignoreSecurityFailures?: boolean) {
   common.printMessage(`         the job is fully successful. Please check the job log to determine`);
   common.printMessage(`         if there are any inline errors.`);
   common.printMessage(``);
-  common.printLevel2Message(`Command run successfully.`);
 }
