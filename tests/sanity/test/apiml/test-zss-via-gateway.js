@@ -33,7 +33,7 @@ describe('test zss x509 certificate mapping via gateway', function() {
       url: `/ibmzosmf/api/v1/restjobs/jobs?owner=${process.env.SSH_USER.toUpperCase()}&prefix=*`,
       headers: {
         Cookie: `${APIML_AUTH_COOKIE}=${token}`,
-      }
+      },
     });
 
     expect(res).to.have.property('status');
