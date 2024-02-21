@@ -80,7 +80,7 @@ export function execute(allowOverwrite?: boolean) {
     if (allowOverwrite && needCleanup) {
       zosJes.printAndHandleJcl(`//'${jcllib}(ZWERMVS)'`, `ZWERMVS`, jcllib, prefix, false, true);
     }
-    if (allowOverwrite && runALoadlibCreate === true && needAuthCleanup) {
+    if (allowOverwrite && needAuthCleanup) {
       zosJes.printAndHandleJcl(`//'${jcllib}(ZWERMVS2)'`, `ZWERMVS2`, jcllib, prefix, false, true);
     }
       

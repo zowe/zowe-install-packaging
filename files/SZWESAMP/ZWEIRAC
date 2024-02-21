@@ -1,4 +1,4 @@
-//ZWEIRACF JOB
+//ZWEIRAC JOB
 //*
 //* This program and the accompanying materials are made available
 //* under the terms of the Eclipse Public License v2.0 which
@@ -11,7 +11,6 @@
 //*
 //*********************************************************************
 //*
-//* Zowe Open Source Project
 //* This JCL can be used to define security permits for Zowe
 //*
 //*
@@ -58,8 +57,6 @@
 //* at AIM 2 or higher, and BPX.NEXT.USER must exist.
 //*
 //*********************************************************************
-//*
-//* EXECUTE COMMANDS FOR SELECTED SECURITY PRODUCT
 //*
 //RUN      EXEC PGM=IKJEFT01,REGION=0M
 //SYSTSPRT DD SYSOUT=*
@@ -275,28 +272,8 @@
 
 /* DEFINE ZOWE RESOURCE PROTECTION ................................. */
 
-/* - Defines new resource class for Zowe that protects access to     */
-/*   sensitive Zowe resources.                                       */
 /* - Defines resource APIML.SERVICES that controls access to         */
 /*   detailed information about API services to Zowe users.          */
-
-/* uncomment to activate CDT class to define ZOWE resource class     */
-/* SETROPTS CLASSACT(CDT) RACLIST(CDT)                               */
-
-/* define ZOWE resource class                                        */
-/* skip this command if the ZOWE resource class already exists       */
-/* use a unique value in POSIT                                       */
-  RDEFINE CDT ZOWE -
-    UACC(NONE) -
-    CDTINFO(DEFAULTUACC(NONE) -
-      FIRST(ALPHA) -
-      OTHER(ALPHA,NATIONAL,NUMERIC,SPECIAL) -
-      MAXLENGTH(246) -
-      POSIT(607) -
-      RACLIST(DISALLOWED))
-
-  SETROPTS RACLIST(CDT) REFRESH
-  SETROPTS CLASSACT(ZOWE)
 
 /* define resource for information about API services                */
   RDEFINE ZOWE APIML.SERVICES UACC(NONE)

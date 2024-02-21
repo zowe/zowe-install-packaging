@@ -11,7 +11,6 @@
 //*
 //*********************************************************************
 //*
-//* Zowe Open Source Project
 //* This JCL can be used to define security permits for Zowe
 //*
 //*
@@ -216,18 +215,11 @@ TSS PERMIT({zowe.setup.security.users.zowe}) APPL(OMVSAPPL)
 
 /* DEFINE ZOWE RESOURCE PROTECTION ................................. */
 
-/* - Defines new resource class for Zowe that protects access to     */
-/*   sensitive Zowe resources.                                       */
 /* - Defines resource APIML.SERVICES that controls access to         */
 /*   detailed information about API services to Zowe users.          */
 
-/* define ZOWE resource class                                        */
-/* skip this command if the ZOWE resource class already exists       */
-  TSS ADDTO(RDT) RESCLASS(ZOWE) MAXLEN(246) +
-    ACLST(NONE,READ,UPDATE,CONTROL) DEFACC(NONE)
-
 /* define resource for information about API services                */
-  TSS ADDTO(&ZOWEDEP.) ZOWE(APIML.)
+   TSS ADDTO(&ZOWEDEP.) ZOWE(APIML.)
 
 /* uncomment and replace "user" to permit Zowe users to access       */
 /* the resource:                                                     */
