@@ -1,0 +1,97 @@
+################################################################################
+# This program and the accompanying materials are made available under the terms of the
+# Eclipse Public License v2.0 which accompanies this distribution, and is available at
+# https://www.eclipse.org/legal/epl-v20.html
+#
+# SPDX-License-Identifier: EPL-2.0
+#
+# Copyright Contributors to the Zowe Project.
+################################################################################
+
+#===============================================================================
+#
+# This is a YAML configuration file for Zowe instance.
+#
+# To learn more about YAML specifications, please check https://yaml.org/.#
+# To learn more details about the entries, please check https://docs.zowe.org/.
+#
+#
+# This is a default file for zowe configuration.
+# You should not edit it.
+# Instead, you can add it to your list of configuration files
+# To reduce the amount of customization you need to do.
+# To learn more about collecting a list of such files,
+# See https://docs.zowe.org/stable/user-guide/configmgr-using/
+#
+# Note: This file requires configmgr to use, zowe.useConfigmgr=true must be set.
+#===============================================================================
+
+zowe:
+  setup:
+    dataset:
+      parmlib: ${{ zowe.setup.dataset.prefix }}.CUST.PARMLIB
+      # Holds Zowe PARMLIB members for plugins
+      parmlibMembers:
+        # For ZIS plugins
+        zis: ZWESIP00
+      # JCL library where Zowe will store temporary JCLs during initialization
+      jcllib: ${{ zowe.setup.dataset.prefix }}.CUST.JCLLIB
+      # Utilities for use by Zowe and extensions
+      loadlib: ${{ zowe.setup.dataset.prefix }}.SZWELOAD
+      # APF authorized LOADLIB for Zowe
+      authLoadlib: ${{ zowe.setup.dataset.prefix }}.SZWEAUTH
+      # APF authorized LOADLIB for Zowe ZIS Plugins
+      authPluginLib: ${{ zowe.setup.dataset.prefix }}.CUST.ZWESAPL
+  # Zowe workspace directory for storing settings
+  workspaceDirectory: ${{ zowe.templates.instanceDirectory }}/workspace
+
+  # Where extensions are installed
+  extensionDirectory: ${{ zowe.templates.instanceDirectory }}/extensions
+
+  useConfigmgr: true
+  # Setting to true will enable abilities as seen in the documentation:
+  # https://docs.zowe.org/stable/user-guide/configmgr-using/
+  configmgr:
+    # STRICT=quit on any error, including missing schema
+    # COMPONENT-COMPAT=if component missing schema, skip it with warning instead of quit
+    validation: "COMPONENT-COMPAT"
+
+
+  # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+  # This is an ID you use to separate multiple Zowe installs when determining
+  # resource names used in RBAC authorization checks such as dataservices with RBAC
+  # expects this ID in SAF resources 
+  rbacProfileIdentifier: ${{ zowe.template.instanceNickname }}
+
+  # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+  # This is an ID that can be used by servers that distinguish their cookies from unrelated Zowe installs, 
+  # for purposes such as to allow multiple copies of Zowe to be used within the same client
+  cookieIdentifier: ${{ zowe.template.instanceNickname }}
+
+  # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+  # Enable debug mode for zowe launch scripts
+  launchScript:
+    # set to "debug" or "trace" to display extra debug information
+    logLevel: "${{ ()=> { if (zowe.templates.trace.zwe === true) { return 'trace' } else { return 'info' } }() }}"
+
+  
+
+  components:
+    gateway:
+      apiml:
+        security:
+          auth:
+            provider: "${{ ()-> {if (zOSMF.host) { return 'zosmf' } else { return 'saf' } }() }}"
+
+    # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+    jobs-api:
+      enabled: false
+      debug: ${{ zowe.templates.trace.components }}
+      port: 7558
+
+    # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+    files-api:
+      enabled: false
+      debug: ${{ zowe.templates.trace.components }}
+      port: 7559
+      
