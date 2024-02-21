@@ -183,7 +183,7 @@ export function printAndHandleJcl(jclLocationOrContent: string, jobName: string,
   let removeRc: number;
 
   let jobId: string|undefined;
-  if (!std.getenv('ZWE_CLI_PARAMETER_DRY_RUN')) {
+  if (!std.getenv('ZWE_CLI_PARAMETER_DRY_RUN') && !std.getenv('ZWE_CLI_PARAMETER_SECURITY_DRY_RUN')) {
     common.printMessage(`Submitting Job ${jobName}`);
     jobId=submitJob(jclLocationOrContent, false, jclIsContent);
     if (!jobId) {
