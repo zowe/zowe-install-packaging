@@ -52,7 +52,7 @@ export function execute(allowOverwrite?: boolean, dryRun?: boolean, updateConfig
 
   const name = ZOWE_CONFIG.zowe.setup.vsam.name;
 
-  const vsamExistence = zosDataset.isDatasetExists(name);
+  const vsamExistence = zosDataset.isVsamDatasetExists(name);
   if (vsamExistence && allowOverwrite) {
     zosJes.printAndHandleJcl(`//'${jcllib}(ZWECSRVS)'`, `ZWECSRVS`, jcllib, prefix, false, true);
   } else if (vsamExistence) {

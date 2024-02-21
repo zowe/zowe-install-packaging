@@ -9,6 +9,7 @@
   Copyright Contributors to the Zowe Project.
 */
 
+import * as zos from 'zos';
 import * as common from '../../../libs/common';
 import * as config from '../../../libs/config';
 import * as zoslib from '../../../libs/zos';
@@ -32,10 +33,14 @@ export function execute(dryRun?: boolean, ignoreSecurityFailures?: boolean) {
     return common.printErrorAndExit(`Error ZWEL0999E: zowe.setup.dataset.jcllib does not exist, cannot run. Run 'zwe init', 'zwe init generate', or submit JCL ${prefix}.SZWESAMP(ZWEGENER) before running this command.`, undefined, 999);
   }
 
-  let securityProduct = ZOWE_CONFIG.zowe.setup?.security?.product;
-  if (!securityProduct) {
-    common.printErrorAndExit(`Error ZWEL0157E: Zowe dataset prefix (zowe.setup.dataset.prefix) is not defined in Zowe YAML configuration file.`, undefined, 157);
+  let securityProduct = zos.getEsm();
+  if (!securityProduct || securityProduct == 'NONE') {
+    securityProduct = ZOWE_CONFIG.zowe.setup?.security?.product;
+    if (!securityProduct) {
+      common.printErrorAndExit(`Error ZWEL0157E: Zowe dataset prefix (zowe.setup.dataset.prefix) is not defined in Zowe YAML configuration file.`, undefined, 157);
+    }
   }
+
   ['admin', 'stc', 'sysProg'].forEach((key)=> {
     if (!ZOWE_CONFIG.zowe.setup?.security?.groups || !ZOWE_CONFIG.zowe.setup?.security?.groups[key]) {
       common.printErrorAndExit(`Error ZWEL0157E: (zowe.setup.dataset.groups.${key}) is not defined in Zowe YAML configuration file.`, undefined, 157);
@@ -52,9 +57,15 @@ export function execute(dryRun?: boolean, ignoreSecurityFailures?: boolean) {
     }
   });
 
-  zosJes.printAndHandleJcl(`//'${jcllib}(ZWEI${securityProduct})'`, `ZWEI${securityProduct}`, jcllib, prefix, false, ignoreSecurityFailures);
+  const securityPrefix = securityProduct.substring(0,3);
+
+  if (zos.zosVersion() < 0x1020500) {
+    zosJes.printAndHandleJcl(`//'${jcllib}(ZWEI${securityPrefix}Z)'`, `ZWEI${securityPrefix}Z`, jcllib, prefix, false, ignoreSecurityFailures);
+  }
+
+  zosJes.printAndHandleJcl(`//'${jcllib}(ZWEI${securityPrefix})'`, `ZWEI${securityPrefix}`, jcllib, prefix, false, ignoreSecurityFailures);
   common.printMessage(``);
-  common.printMessage(`WARNING: Due to the limitation of the ZWEI${securityProduct} job, exit with 0 does not mean`);
+  common.printMessage(`WARNING: Due to the limitation of the ZWEI${securityPrefix} job, exit with 0 does not mean`);
   common.printMessage(`         the job is fully successful. Please check the job log to determine`);
   common.printMessage(`         if there are any inline errors.`);
   common.printMessage(``);
