@@ -21,12 +21,23 @@ import * as zosJes from '../../../libs/zos-jes';
 export function execute(dryRun?: boolean) {
   common.requireZoweYaml();
   const ZOWE_CONFIG=config.getZoweConfig();
+
+  const prefix=ZOWE_CONFIG.zowe.setup?.dataset?.prefix;
+  if (!prefix) {
+    common.printErrorAndExit(`Error ZWEL0157E: Zowe dataset prefix (zowe.setup.dataset.prefix) is not defined in Zowe YAML configuration file.`, undefined, 157);
+  }
+
+  const runtimeDirectory=ZOWE_CONFIG.zowe.runtimeDirectory;
+  if (!runtimeDirectory) {
+    common.printErrorAndExit(`Error ZWEL0157E: Zowe runtime directory (zowe.runtimeDirecotry) is not defined in Zowe YAML configuration file.`, undefined, 157);
+  }
+  
   const tempFile = fs.createTmpFile();
   zosFs.copyMvsToUss(ZOWE_CONFIG.zowe.setup.dataset.prefix + '.SZWESAMP(ZWEGENER)', tempFile);
   let jclContents = xplatform.loadFileUTF8(tempFile, xplatform.AUTO_DETECT);
 
-  jclContents = jclContents.replace(/\{zowe\.setup\.dataset\.prefix\}/gi, ZOWE_CONFIG.zowe.setup.dataset.prefix);
-  jclContents = jclContents.replace(/\{zowe\.runtimeDirectory\}/gi, ZOWE_CONFIG.zowe.runtimeDirectory);
+  jclContents = jclContents.replace(/\{zowe\.setup\.dataset\.prefix\}/gi, prefix);
+  jclContents = jclContents.replace(/\{zowe\.runtimeDirectory\}/gi, runtimeDirectory);
   let originalConfig = std.getenv('ZWE_PRIVATE_CONFIG_ORIG');
   let fileIndex = originalConfig.indexOf('FILE(');
   let lastIndex = 0;
