@@ -59,7 +59,7 @@ export function execute(dryRun?: boolean, ignoreSecurityFailures?: boolean) {
 
   const securityPrefix = securityProduct.substring(0,3);
 
-  if (zos.zosVersion() < 0x1020500) {
+  if (zos.getZosVersion() < 0x1020500) {
     zosJes.printAndHandleJcl(`//'${jcllib}(ZWEI${securityPrefix}Z)'`, `ZWEI${securityPrefix}Z`, jcllib, prefix, false, ignoreSecurityFailures);
   }
 
