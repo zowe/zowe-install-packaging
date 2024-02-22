@@ -30,11 +30,11 @@ export function execute(dryRun?: boolean) {
 
   const runtimeDirectory=ZOWE_CONFIG.zowe.runtimeDirectory;
   if (!runtimeDirectory) {
-    common.printErrorAndExit(`Error ZWEL0157E: Zowe runtime directory (zowe.runtimeDirecotry) is not defined in Zowe YAML configuration file.`, undefined, 157);
+    common.printErrorAndExit(`Error ZWEL0157E: Zowe runtime directory (zowe.runtimeDirectory) is not defined in Zowe YAML configuration file.`, undefined, 157);
   }
   
   const tempFile = fs.createTmpFile();
-  zosFs.copyMvsToUss(stringlib.escapeDollar(ZOWE_CONFIG.zowe.setup.dataset.prefix + '.SZWESAMP(ZWEGENER)'), tempFile);
+  zosFs.copyMvsToUss(ZOWE_CONFIG.zowe.setup.dataset.prefix + '.SZWESAMP(ZWEGENER)', tempFile);
   let jclContents = xplatform.loadFileUTF8(tempFile, xplatform.AUTO_DETECT);
 
   jclContents = jclContents.replace(/\{zowe\.setup\.dataset\.prefix\}/gi, prefix);
