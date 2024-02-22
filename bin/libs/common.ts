@@ -131,15 +131,15 @@ let logExists = false;
 let logFile:std.File|null = null;
 
 function writeLog(message: string): boolean {
+  const filename = std.getenv('ZWE_PRIVATE_LOG_FILE');
   if (!logExists) {
-    const filename = std.getenv('ZWE_PRIVATE_LOG_FILE');
     if (filename) {
       logExists = fs.fileExists(filename);
       if (!logExists) {
         fs.createFile(filename, 0o640, message);
         logExists = fs.fileExists(filename);
       }
-      if (logExists) {
+      if (logExists && (os.platform != 'zos')) {
         let errObj = {errno:undefined};
         logFile = std.open(filename, 'w', errObj);
         if (errObj.errno) {
@@ -153,9 +153,13 @@ function writeLog(message: string): boolean {
   }
   if (logFile===undefined || logFile===null) {
     return false;
-  } else {
+  } else if (os.platform != 'zos') {
     //TODO this does utf8. should we flip it to 1047 on zos?
-    logFile.puts(message);
+    logFile.puts(message+'\n');
+    return true;
+  } else {
+    //TODO on zos, there is some printing bug in the JS code. configmgr functions work well for writing, but the native qjs ones dont. for now, just using an echo...
+    shell.execSync('sh', '-c', `echo ${message} >> ${filename}`);
     return true;
   }
 }
@@ -173,7 +177,7 @@ export function printRawMessage(message: string, isError: boolean, writeTo:strin
     }
   }
   if (writeTo.includes('log')) {
-    writeLog(message+'\n');
+    writeLog(message);
   }
   return true;
 }
