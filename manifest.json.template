@@ -441,7 +441,7 @@
       "kind": "job",
       "registry": "zowe-docker-release.jfrog.io",
       "name": "ompzowe/explorer-mvs",
-      "tag" : "2.0.9-ubuntu"
+      "tag" : "2.0.10-ubuntu"
     },
     "explorer-uss": {
       "kind": "job",
