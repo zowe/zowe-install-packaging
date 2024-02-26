@@ -381,6 +381,8 @@ if card.0 > 0 then do
   say 'The job card was added to each member.'
 end
 
+exit
+
 /*
 ================================================================================
   Validate(schema, yaml)
