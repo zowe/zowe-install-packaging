@@ -66,7 +66,7 @@
       "version": "2.0.9"
     },
     "org.zowe.explorer-uss": {
-      "version": "2.0.7"
+      "version": "2.0.9"
     },
     "org.zowe.explorer-ip": {
       "version": "2.0.0",
@@ -280,7 +280,7 @@
       "componentGroup": "Zowe Desktop z/OS Unix Files UI Plugin",
       "entries": [{
         "repository": "explorer-uss",
-        "tag": "v2.0.7",
+        "tag": "v2.0.9",
         "destinations": ["Zowe PAX"]
       }]
     }, {
@@ -447,7 +447,7 @@
       "kind": "job",
       "registry": "zowe-docker-release.jfrog.io",
       "name": "ompzowe/explorer-uss",
-      "tag" : "2.0.7-ubuntu"
+      "tag" : "2.0.9-ubuntu"
     },
     "files-api": {
       "registry": "zowe-docker-release.jfrog.io",
