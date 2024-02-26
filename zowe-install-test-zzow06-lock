@@ -1,1 +1,15 @@
-""
+{
+  "lockAcquiredTime": "Mon Feb 26 2024 15:39:54 GMT+0000 (Coordinated Universal Time)",
+  "uid": "1708961993999607124",
+  "repository": {
+    "owner": "zowe",
+    "repo": "zowe-install-packaging"
+  },
+  "branch": "user/markackert/v215-explorer-uss-update",
+  "workflow": "Zowe CICD Integration Tests",
+  "job": "cicd-test",
+  "actor": "zowe-robot",
+  "runId": 8051525972,
+  "runNumber": 4043,
+  "link": "https://github.com/zowe/zowe-install-packaging/actions/runs/8051525972"
+}
