@@ -29,16 +29,16 @@
 //* Replace {zowe.setup.dataset.prefix} with the
 //* Value as seen in zowe.yaml
 //*
-//SYSPROC  DD   DSN={zowe.setup.dataset.prefix}.SZWEEXEC,DISP=SHR
+//SYSPROC  DD DSN={zowe.setup.dataset.prefix}.SZWEEXEC,DISP=SHR
 //*
 //* Replace {zowe.setup.dataset.prefix} with the
 //* Value as seen in zowe.yaml
 //*
-//STEPLIB  DD   DSN={zowe.setup.dataset.prefix}.SZWELOAD,DISP=SHR
-//ISPPLIB  DD   DSN=ISP.SISPPENU,DISP=SHR
-//ISPMLIB  DD   DSN=ISP.SISPMENU,DISP=SHR
-//ISPTLIB  DD   DSN=ISP.SISPTENU,DISP=SHR
-//ISPSLIB  DD   DSN=ISP.SISPSENU,DISP=SHR
+//STEPLIB  DD DSN={zowe.setup.dataset.prefix}.SZWELOAD,DISP=SHR
+//ISPPLIB  DD DSN=ISP.SISPPENU,DISP=SHR
+//ISPMLIB  DD DSN=ISP.SISPMENU,DISP=SHR
+//ISPTLIB  DD DSN=ISP.SISPTENU,DISP=SHR
+//ISPSLIB  DD DSN=ISP.SISPSENU,DISP=SHR
 //*
 //* The order must be as follows.
 //*
