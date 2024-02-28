@@ -44,6 +44,17 @@
             <default>IBMUSER.ZWEV2.CUST.PARMLIB</default>
         </string>
     </variable>
+    <variable name="zowe_setup_dataset_libzis" scope="instance" visibility="public">
+      <label>Zowe setup PARMLIB members for ZIS plugins</label>
+      <abstract>Zowe ZIS plugins PARMLIB</abstract>
+      <description>Holds PARMLIB members for ZIS plugins</description>
+      <category>zowe</category>
+      <string valueMustBeChoice="false" multiLine="false">
+          <!-- Put validation here -->
+          <!-- Specify choices here -->
+          <default>ZWESIP00</default>
+      </string>
+  </variable>
     <variable name="zowe_setup_dataset_jcllib" scope="instance" visibility="public">
         <label>Zowe setup MVS JCL library</label>
         <abstract>JCL library where Zowe will store temporary JCLs during initialization</abstract>
@@ -894,6 +905,7 @@ How we want to verify SSL certificates of services. Valid values are:
             <variableValue name="zowe_setup_dataset_prefix" scope="instance" noPromptIfSet="false" required="true"/>
             <variableValue name="zowe_setup_dataset_proclib" scope="instance" noPromptIfSet="false" required="true"/>
             <variableValue name="zowe_setup_dataset_parmlib" scope="instance" noPromptIfSet="false" required="true"/>
+            <variableValue name="zowe_setup_dataset_libzis" scope="instance" noPromptIfSet="false" required="true"/>
             <variableValue name="zowe_setup_dataset_jcllib" scope="instance" noPromptIfSet="false" required="true"/>
             <variableValue name="zowe_setup_dataset_authLoadlib" scope="instance" noPromptIfSet="false" required="false"/>
             <variableValue name="zowe_setup_dataset_authPluginLib" scope="instance" noPromptIfSet="false" required="true"/>
@@ -1243,14 +1255,18 @@ echo '  setup:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '    # MVS data set related configurations' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '    dataset:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '      # **COMMONLY_CUSTOMIZED**' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '      # Where Zowe MVS data sets will be installed' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '      prefix: "$!{instance-zowe_setup_dataset_prefix}"' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '      # where Zowe MVS data sets will be installed' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '      prefix: $!{instance-zowe_setup_dataset_prefix}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '      # **COMMONLY_CUSTOMIZED**' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '      # PROCLIB where Zowe STCs will be copied over' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '      proclib: "$!{instance-zowe_setup_dataset_proclib}"' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '      proclib: $!{instance-zowe_setup_dataset_proclib}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '      # **COMMONLY_CUSTOMIZED**' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '      # Zowe PARMLIB' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '      parmlib: "$!{instance-zowe_setup_dataset_parmlib}"' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '      parmlib: $!{instance-zowe_setup_dataset_parmlib}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '      # Holds Zowe PARMLIB members for plugins' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '      parmlibMembers:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '        # For ZIS plugins' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '        zis: $!{instance-zowe_setup_dataset_libzis}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '      # **COMMONLY_CUSTOMIZED**' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '      # JCL library where Zowe will store temporary JCLs during initialization' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '      jcllib: "$!{instance-zowe_setup_dataset_jcllib}"' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
