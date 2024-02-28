@@ -7,7 +7,8 @@ const rimraf = require('rimraf');
 const { default: Ajv } = require('ajv/dist/2019');
 const {assert, expect  }= require('chai');
 const velocity = require('velocityjs');
-
+const {detailedDiff} = require('deep-object-diff');
+ 
 
 /* 
   Runs tests which verify the current Zowe schema works against the zowe.yaml
@@ -92,15 +93,82 @@ describe('verify pswi zowe.yaml is consistent with rest of zowe', function(){
     ajvParser = ajv.compile(JSON.parse(fs.readFileSync(SCHEMA_ZOWE_YAML)));
 
     // Protect Base config
-    Object.freeze(WF_CONF_YAML_BASE);  // protect base configuration
+    Object.freeze(WF_CONF_YAML_BASE);
+
+  });
+
+
+  /**
+   * Attempts to find quote or type changes between examples-zowe and PSWI
+   */
+  it('field changes', function() {
+    const testConfig = getBaseConf();
+    const testDir = path.resolve(LOCAL_TEMP_DIR, 'test_field_changes');
+
+    const wfYamlPath = renderYaml(testConfig, testDir);
+    const wfYamlContent = YAML.parse(fs.readFileSync(wfYamlPath, 'utf8'));
+
+    const exampleZowePath = path.resolve('..','..','example-zowe.yaml');
+    const exampleZoweYamlContent = YAML.parse(fs.readFileSync(exampleZowePath, 'utf8'));
+
+    const res = detailedDiff(wfYamlContent, exampleZoweYamlContent);
+    // Enable for extra output - console.log(res);
+    expect(res.added, `There should be no added fields in the example Zowe Yaml. Found ${JSON.stringify(res.added)}`).to.be.empty;
+    expect(res.deleted, `There should be no deleted fields in the example Zowe Yaml. Found ${JSON.stringify(res.deleted)}`).to.be.empty;
+    expect(res.updated, `There should be no updated fields in the example Zowe Yaml. Found ${JSON.stringify(res.updated)}`).to.be.empty;
+  });
+
+  /** 
+   * Attempts to find comment changes between examples-zowe and PSWI
+   * 
+   * This is probably not a very good test?
+   */
+  it('comment mismatches', function() {
+    const testConfig = getBaseConf();
+    const testDir = path.resolve(LOCAL_TEMP_DIR, 'test_field_changes');
+
+    // Known failures fixed:
+    testConfig['java_home'] = '/usr/lpp/java/J8.0_64';
+    testConfig['node_home'] = '/var/home/node/18';
+
+    const wfYamlPath = renderYaml(testConfig, testDir);
+    const wfYamlContent = fs.readFileSync(wfYamlPath, 'utf8');
+    
+    const exampleZowePath = path.resolve('..','..','example-zowe.yaml');
+    const exampleZoweYamlContent = fs.readFileSync(exampleZowePath, 'utf8');
+
+    const wfZoweLines = wfYamlContent.split('\n');
+    const xmplZoweLines = exampleZoweYamlContent.split('\n');
+    
+    let desyncPoint = -1;
+    let desyncLines = [];
+    for (let i = 0; i < xmplZoweLines.length; i++) {
+      const xmplLine = xmplZoweLines[i].trim();
+      const wfLine = wfZoweLines[i].trim();
+      if (xmplLine.startsWith('#')) {
+        if (wfLine !== xmplLine) {
+          desyncLines.push({line: i, xmplLine: xmplLine, wfLine: wfLine });
+        }
+        if (!wfLine.startsWith('#')) {
+          desyncPoint = i;
+          break;
+        } 
+      }
+    }
+
+    if (desyncPoint > -1) {
+      console.log(`Detected comment desync around line ${desyncPoint}`);
+    }
+    expect(desyncLines, `There should be no comments out of sync, found: ${JSON.stringify(desyncLines)}`).to.have.lengthOf(0);
+    expect(desyncPoint, 'Expected desync point to be less than 0 (doesn\'t exist)').to.be.lessThan(0);
 
   });
 
   /**
-   * Attempts to find quote or type changes for individual fields
+   * Attempts to find differences in fields between example-zowe and PSWI
    */
-  it('test field changes', function() {
-
+  it('field quotation or type changes', function() {
+    // Nothing for now .
   });
 
   it('known failures', function() {
@@ -182,17 +250,23 @@ describe('verify pswi zowe.yaml is consistent with rest of zowe', function(){
 
   function runSchemaValidation(testConfig, testDir) {
     fs.mkdirpSync(testDir);
+      
+    const yamlPath = renderYaml(testConfig, testDir);
+    const zoweYaml = YAML.parse(fs.readFileSync(yamlPath, 'utf8'));
+    const validation = ajvParser(zoweYaml);
+    return { res: validation, errors: ajvParser.errors };
+  }
+
+  function renderYaml(testConfig, testDir) {
+    fs.mkdirpSync(testDir);
     const yamlPropertiesFile = path.resolve(testDir, 'zowe.test.properties.yaml');
-    const zoweYmlScriptOut = path.resolve(testDir, 'zowe.yaml.final.sh');
     testConfig['zowe_runtimeDirectory'] = testDir;
     fs.writeFileSync(yamlPropertiesFile, YAML.stringify(testConfig), { mode: 0o766 });
-   
+    const zoweYmlScriptOut = path.resolve(testDir, 'zowe.yaml.final.sh');
     const renderContent = velocity.render(fs.readFileSync(ZOWE_YAML_SH_TEMPLATE, 'utf8'), testConfig);
     fs.writeFileSync(zoweYmlScriptOut, renderContent, {mode: 0o755 });
     cp.execSync(`${zoweYmlScriptOut}`);
-    const zoweYaml = YAML.parse(fs.readFileSync(path.resolve(testDir, 'zowe.yaml'), 'utf8'));
-    const validation = ajvParser(zoweYaml);
-    return { res: validation, errors: ajvParser.errors };
+    return path.resolve(testDir, 'zowe.yaml');
   }
 
 });
