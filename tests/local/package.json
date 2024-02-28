@@ -5,13 +5,13 @@
   "main": "index.js",
   "license": "EPL-2.0",
   "devDependencies": {
-    "ajv": "^8.12.0",
+    "ajv": "8.12.0",
     "axios": "0.26.1",
     "chai": "4.3.6",
     "chromedriver": "2.46.0",
     "debug": "4.3.3",
     "eslint": "8.10.0",
-    "fs-extra": "^11.2.0",
+    "fs-extra": "11.2.0",
     "explorer-fvt-utilities": "2.0.1",
     "geckodriver": "2.0.4",
     "gunzip-maybe": "^1.4.2",
@@ -21,11 +21,12 @@
     "mocha-multi-reporters": "1.5.1",
     "mochawesome": "7.1.2",
     "node-ssh": "12.0.1",
-    "rimraf": "^5.0.5",
+    "rimraf": "5.0.5",
     "selenium-webdriver": "4.1.1",
-    "tar-fs": "^3.0.5",
-    "urllib": "^3.22.4",
-    "yaml": "^2.4.0"
+    "tar-fs": "3.0.5",
+    "urllib": "3.22.4",
+    "velocityjs": "2.0.6",
+    "yaml": "2.4.0"
   },
   "scripts": {
     "test": "mocha",
