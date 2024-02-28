@@ -28,7 +28,7 @@
       "$anchor": "zoweDatasetMember",
       "type": "string",
       "description": "A 1-8-char all caps dataset member name",
-      "pattern": "^([A-Z\\$\\#\\@]){1}([A-Z0-9\\$\\#\\@]){0,7}$",
+      "pattern": "^([A-Z\\\\$\\\\#\\\\@]){1}([A-Z0-9\\\\$\\\\#\\\\@]){0,7}$",
       "minLength": 1,
       "maxLength": 8
     },
