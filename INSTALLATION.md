@@ -4,6 +4,7 @@ Within the Zowe project, there exists several components for both client and ser
 Among them are the Zowe servers; Software that is run usually on z/OS, though some of these servers may also be capable of running in linux environment such as in containers.
 
 This document covers installation and configuration of Zowe's core server components on z/OS.
+This document is meant as a quick-start guide. Advanced topics of configuration, including networking, are not covered here, but instead can be found on [docs.zowe.org](https://docs.zowe.org)
 
 Table of contents:
 
