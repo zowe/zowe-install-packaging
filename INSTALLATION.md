@@ -61,21 +61,21 @@ The following covers installation when not using the Zowe Server Install Wizard.
 ### SMPE or PSWI
 1. When you install Zowe via SMPE or PSWI, the Runtime directory and datasets will be populated.
 2. Navigate to the Runtime Directory and copy the `example-zowe.yaml` file to a location outside this folder, generally wherever you want to put the Zowe Instance.
-3. Edit the YAML copy to set the values of `zowe.runtimeDirectory`, `java.home`, `node.home`, and `zowe.setup.datasets`, as follows
+3. Edit the YAML copy to set the values of `zowe.runtimeDirectory`, `java.home`, `node.home`, and `zowe.setup.dataset`, as follows
    1. `zowe.runtimeDirectory`: The location you extracted the PAX to.
    2. `java.home`: The location of the Java that will be used when installing & running Zowe. For example, if your java is located at /usr/lpp/java/J8.0_64/bin/java, then the java.home is /usr/lpp/java/J8.0_64
    3. `node.home`: The location of the NodeJS that will be used when installing & running ZOwe. For example, if your node is located at /usr/lpp/node/v18/bin/node, then the java.home is /usr/lpp/node/v18
-   4. `zowe.setup.datasets`: This section defines where both Runtime and Instance datasets of Zowe will be created.
+   4. `zowe.setup.dataset`: This section defines where both Runtime and Instance datasets of Zowe will be created.
 
 
 ### PAX
 1. Extract the PAX on some ZFS partition on z/OS (For example, `pax -ppx -rf zowe.pax`). At least 1200MB of free space is required.  The location you extract to is the "Runtime Directory"
 2. Navigate to the Runtime Directory and copy the `example-zowe.yaml` file to a location outside this folder, generally wherever you want to put the Zowe Instance.
-3. Edit the YAML copy to set the values of `zowe.runtimeDirectory`, `java.home`, `node.home`, and `zowe.setup.datasets`, as follows
+3. Edit the YAML copy to set the values of `zowe.runtimeDirectory`, `java.home`, `node.home`, and `zowe.setup.dataset`, as follows
    1. `zowe.runtimeDirectory`: The location you extracted the PAX to.
    2. `java.home`: The location of the Java that will be used when installing & running Zowe. For example, if your java is located at /usr/lpp/java/J8.0_64/bin/java, then the java.home is /usr/lpp/java/J8.0_64
    3. `node.home`: The location of the NodeJS that will be used when installing & running ZOwe. For example, if your node is located at /usr/lpp/node/v18/bin/node, then the java.home is /usr/lpp/node/v18
-   4. `zowe.setup.datasets`: This section defines where both Runtime and Instance datasets of Zowe will be created.
+   4. `zowe.setup.dataset`: This section defines where both Runtime and Instance datasets of Zowe will be created.
 5. Navigate to the `/bin` folder of the extracted location
 6. Run `./zwe install -c /path/to/zowe.yaml`. This creates the Runtime datasets for the Zowe release.
 
@@ -85,7 +85,7 @@ The following covers installation when not using the Zowe Server Install Wizard.
 
 The following covers configuration when not using the Zowe Server Install Wizard. When using that instead, please refer to the prompts within it instead of this guide.
 Aside from the Zowe Server Install Wizard, there are three other ways to configure a Zowe Instance.
-1. **JCL samples**: The Zowe Runtime dataset SZWESAMP contains templates of JCL that must be substituted with Zowe YAML parameters before executed. That can be done manually, or automatically via editing and submitting the job ZWEGENER, which will place resolved JCL into the PDSE defined at `zowe.setup.datasets.jcllib`
+1. **JCL samples**: The Zowe Runtime dataset SZWESAMP contains templates of JCL that must be substituted with Zowe YAML parameters before executed. That can be done manually, or automatically via editing and submitting the job ZWEGENER, which will place resolved JCL into the PDSE defined at `zowe.setup.dataset.jcllib`
 2. **zwe operations**: `zwe` is a Unix CLI program that has commands which will automate the execution of the JCL samples.
 3. **z/OSMF workflow**: The z/OSMF workflows will prompt you for Zowe YAML parameters before submitting jobs equivalent to the actions seen in the JCL samples.
 
@@ -94,7 +94,7 @@ Aside from the Zowe Server Install Wizard, there are three other ways to configu
 The Zowe Runtime Dataset `SZWESAMP` contains JCL samples that have templates referencing Zowe YAML parameters.
 They cannot be submitted without modification as a result.
 
-It is recommended to edit and submit the job `SZWESAMP(ZWEGENER)` which will validate the contents of your Zowe YAML before resolving the JCL templates and placing the resulting JCL into a separate PDSE created during installation, located at the value of `zowe.setup.datasets.jcllib`.
+It is recommended to edit and submit the job `SZWESAMP(ZWEGENER)` which will validate the contents of your Zowe YAML before resolving the JCL templates and placing the resulting JCL into a separate PDSE created during installation, located at the value of `zowe.setup.dataset.jcllib`.
 
 When the JCL is prepared, the following jobs can be submitted to perform the following Instance configuration actions:
 
