@@ -37,8 +37,11 @@ export function execute(dryRun?: boolean) {
   zosFs.copyMvsToUss(ZOWE_CONFIG.zowe.setup.dataset.prefix + '.SZWESAMP(ZWEGENER)', tempFile);
   let jclContents = xplatform.loadFileUTF8(tempFile, xplatform.AUTO_DETECT);
 
-  jclContents = jclContents.replace(/\{zowe\.setup\.dataset\.prefix\}/gi, prefix);
-  jclContents = jclContents.replace(/\{zowe\.runtimeDirectory\}/gi, runtimeDirectory);
+  // Replace is using special replacement patterns, by doubling '$' we will avoid that
+  // Otherwise: let d4 = '$$$$'; console.log('a'.replace(/a/gi, d4)); --> '$$' (we want '$$$$')
+  // $$ inserts a '$', replace(/[$]/g, '$$$$') => double each '$' occurence
+  jclContents = jclContents.replace(/\{zowe\.setup\.dataset\.prefix\}/gi, prefix.replace(/[$]/g, '$$$$'));
+  jclContents = jclContents.replace(/\{zowe\.runtimeDirectory\}/gi, runtimeDirectory.replace(/[$]/g, '$$$$'));
   let originalConfig = std.getenv('ZWE_PRIVATE_CONFIG_ORIG');
   let startingConfig = originalConfig;
   if ((originalConfig.indexOf('FILE(') == -1) && (originalConfig.indexOf('PARMLIB(') == -1)) {
@@ -57,10 +60,10 @@ export function execute(dryRun?: boolean) {
       state = part;
     } else if (state == 'FILE(') {
       let filename = part.substring(0, part.indexOf(')'));
-      configLines.push('FILE '+fs.convertToAbsolutePath(filename));
+      configLines.push('FILE ' + fs.convertToAbsolutePath(filename).replace(/[$]/g, '$$$$'));
       state = null;
     } else if (state == 'PARMLIB(') {
-      configLines.push('PARMLIB '+part.substring(0, part.indexOf('(')));
+      configLines.push('PARMLIB ' + part.substring(0, part.indexOf('(')).replace(/[$]/g, '$$$$'));
       state = null;
     }
   }
@@ -75,8 +78,8 @@ export function execute(dryRun?: boolean) {
   common.printMessage('--- End of JCL ---');
   
   if (dryRun) {
-    common.printMessage('JCL not submitted, command run with dry run flag.');
-    common.printMessage('To perform command, re-run command without dry run flag, or submit the JCL directly.');
+    common.printMessage('JCL not submitted, command run with "--dry-run" flag.');
+    common.printMessage('To perform command, re-run command without "--dry-run" flag, or submit the JCL directly.');
     os.remove(tempFile);
 
   } else { //TODO can we generate just for one step, or no reason?    
