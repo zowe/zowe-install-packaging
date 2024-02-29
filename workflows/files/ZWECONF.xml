@@ -1731,6 +1731,20 @@ echo '    debug: false' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 #end
 echo '' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '  # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+#if (${instance-components_cloud_gateway_enabled} == "true" )
+echo '  cloud-gateway:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '    enabled: ${instance-components_cloud_gateway_enabled}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '    port: ${instance-components_cloud_gateway_port}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '    debug: ${instance-components_cloud_gatewaye_debug}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+#end
+#if (${instance-components_cloud_gateway_enabled} == "false" )
+echo '  cloud-gateway:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '    enabled: ${instance-components_cloud_gateway_enabled}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '    port: 7563' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '    debug: false' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+#end
+echo '' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '  # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 #if (${instance-components_api_catalog_enabled} == "true" )
 echo '  api-catalog:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '    enabled: ${instance-components_api_catalog_enabled}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
@@ -1769,13 +1783,17 @@ echo '    debug: ${instance-components_caching_service_debug}' >> "${instance-zo
 echo '' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '    storage:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '      evictionStrategy: "$!{instance-components_caching_service_storage_evictionStrategy}"' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '      # can be inMemory, VSAM' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '      # can be inMemory, VSAM, redis or infinispan' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '      mode: "$!{instance-components_caching_service_storage_mode}"' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '      size: ${instance-components_caching_service_storage_size}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '      vsam:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '        # your VSAM data set created by ZWECSVSM job' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '        # your VSAM data set created by "zwe init vsam" command or ZWECSVSM JCL' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '        # this is required if storage mode is VSAM' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '        name: "$!{instance-components_caching_service_storage_vsam_name}"' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '      infinispan:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '        # this is required if storage mode is infinispan' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '        jgroups:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '          port: $!{instance-components_caching_service_storage_infinispan_jgroups_port}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 #end
 #if (${instance-components_caching_service_enabled} == "false" )
 echo '  caching-service:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
@@ -1785,13 +1803,17 @@ echo '    debug: false' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '    storage:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '      evictionStrategy: "reject"' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '      # can be inMemory, VSAM' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '      # can be inMemory, VSAM, redis or infinispan' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '      mode: "VSAM"' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '      size: 10000' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '      vsam:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '        # your VSAM data set created by ZWECSVSM job' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '        # this is required if storage mode is VSAM' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '        name: ""' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '      infinispan:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '        # this is required if storage mode is infinispan' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '        jgroups:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '          port: 7600' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 #end
 echo '' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '  # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
@@ -1799,11 +1821,13 @@ echo '  # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>' >> "${instance-zowe_runtimeDire
 echo '  app-server:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '    enabled: ${instance-components_app_server_enabled}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '    port: ${instance-components_app_server_port}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '    debug: ${instance-components_app_server_debug}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 #end
 #if (${instance-components_app_server_enabled} == "false" )
 echo '  app-server:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '    enabled: ${instance-components_app_server_enabled}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '    port: 7556' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '    debug: false' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 #end
 echo '    # we can customize any component with custom certificate' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '    # the missing definitions will be picked from "zowe.certificate"' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
@@ -1821,23 +1845,31 @@ echo '    enabled: ${instance-components_zss_enabled}' >> "${instance-zowe_runti
 echo '    port: ${instance-components_zss_port}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '    crossMemoryServerName: "$!{instance-components_zss_crossMemoryServerName}"' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '    tls: ${instance-components_zss_tls}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '    agent:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '      jwt:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '        fallback: ${instance-components_zss_agent_jwt_fallback}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 #end
 #if (${instance-components_zss_enabled} == "false" )
 echo '    enabled: ${instance-components_zss_enabled}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '    port: 7557' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '    crossMemoryServerName: "ZWESIS_STD"' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '    tls: true' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '    agent:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '      jwt:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '        fallback: true' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 #end
 echo '' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '  # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 #if (${instance-components_jobs_api_enabled} == "true" )
 echo '  jobs-api:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '    enabled: ${instance-components_jobs_api_enabled}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '    debug: ${instance-components_jobs_api_debug}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '    port: ${instance-components_jobs_api_port}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 #end
 #if (${instance-components_jobs_api_enabled} == "false" )
 echo '  jobs-api:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '    enabled: ${instance-components_jobs_api_enabled}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '    debug: false' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '    port: 7558' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 #end
 echo '' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
@@ -1845,11 +1877,13 @@ echo '  # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>' >> "${instance-zowe_runtimeDire
 #if (${instance-components_files_api_enabled} == "true" )
 echo '  files-api:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '    enabled: ${instance-components_files_api_enabled}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '    debug: ${instance-components_files_api_debug}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '    port: ${instance-components_files_api_port}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 #end
 #if (${instance-components_files_api_enabled} == "false" )
 echo '  files-api:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '    enabled: ${instance-components_files_api_enabled}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '    debug: false' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '    port: 7559' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 #end
 echo '' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
@@ -1887,7 +1921,8 @@ echo '#     hostname: lpar1.my-company.com' >> "${instance-zowe_runtimeDirectory
 echo '#     # Your &SYSNAME for this LPAR' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '#     # This sysname will be used to route your JES command to target system.' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '#     sysname: LPR1' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '#     # for this HA instance, we didn'\''t customize "components", so it will use default value.' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '#     # for this HA instance, we did not customize "components", so it will use default value.' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '#   # HA instance ID, we will start 2 instances on LPAR2' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '#   # **NOTE**, we can only start one gateway in same LPAR.' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '#   lpar2a:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
