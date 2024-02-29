@@ -901,6 +901,30 @@ How we want to verify SSL certificates of services. Valid values are:
             <default>true</default>
         </boolean>
     </variable>
+    <variable name="useconfig_manager_enabled" scope="instance" visibility="public">
+        <label>Enable Zowe configuration manager</label>
+        <abstract>Should Zowe configuration manager be enabled?</abstract>
+        <description>Should Zowe configuration manager be enabled?</description>
+        <category>configManager</category>
+        <boolean>
+            <!-- Put validation here -->
+            <!-- Specify choices here -->
+            <default>true</default>
+        </boolean>
+    </variable>
+    <variable name="config_manager_validation" scope="instance" visibility="public">
+        <label>Zowe configuration manager validation type</label>
+        <abstract>STRICT or COMPONENT-COMPAT validation type</abstract>
+        <description>STRICT=quit on any error, COMPONENT-COMPAT=if component missing schema, skip it with warning instead of quit</description>
+        <category>configManager</category>
+        <string valueMustBeChoice="false" multiLine="false">
+            <!-- Put validation here -->
+            <!-- Specify choices here -->
+            <choice>COMPONENT-COMPAT</choice>
+            <choice>STRICT</choice>            
+            <default>COMPONENT-COMPAT</default>
+        </string>
+    </variable>
     <!--atCreate-->
     <!--steps-->
     <step name="define_variables" optional="false">
@@ -1497,24 +1521,46 @@ echo '  # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>' >> "${instance-zowe_runtimeDire
 echo '  # **COMMONLY_CUSTOMIZED**' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '  # Zowe runtime (root) directory' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '  #' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '  # **NOTE**: if it'\''s not specified and you passed "--update-config" argument' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '  # when you run "zwe init" command, this value will be updated with the Zowe' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '  # **NOTE**: ' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '  # 1. if it is not specified and you passed "--update-config" argument' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '  # when you ran "zwe init" command, this value will be updated with the Zowe' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '  # runtime where the "zwe" command is located.' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '  #' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '  # 2. the runtime directory is designed to be "read only". This is different from the' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '  # log, workspace, and extension directories. Setting those three to the same parent folder' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '  # as the runtime directory is unsupported & may cause issues' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '  #' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '  # This value is required by ZWESLSTC to know where is Zowe runtime.' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '  runtimeDirectory: "$!{instance-zowe_runtimeDirectory}"' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '  # **COMMONLY_CUSTOMIZED**' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '  # Where to store runtime logs' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '  logDirectory: "$!{instance-zowe_logDirectory}"' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '  logDirectory: $!{instance-zowe_logDirectory}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '  # **COMMONLY_CUSTOMIZED**' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '  # Zowe runtime workspace directory' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '  workspaceDirectory: "$!{instance-zowe_workspaceDirectory}"' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '  workspaceDirectory: $!{instance-zowe_workspaceDirectory}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '  # **COMMONLY_CUSTOMIZED**' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '  # Where extensions are installed' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '  extensionDirectory: "$!{instance-zowe_extensionDirectory}"' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '  extensionDirectory: $!{instance-zowe_extensionDirectory}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '  # **COMMONLY_CUSTOMIZED**' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '  useConfigmgr: $!{instance-useconfig_manager_enabled}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '  # Setting to true will enable:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '  # * schema-backed validation of zowe.yaml' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '  # * should greatly improve startup time.' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '  # * can supply multiple zowe.yaml as defaults & overrides in the format of' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '  #   FILE(/my/customizations.yaml):PARMLIB(MYORG.ZOWE(YAML)):FILE(/zowe/defaults.yaml)' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '  # * allows templating in zowe.yaml by putting references within ${{ }} blocks such as' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '  #    rewriting the job section below as' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '  #    job:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '  #      name: ${{ zowe.job.prefix }}SV' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '  #      prefix: ZWE1' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '  configmgr:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '    # STRICT=quit on any error, including missing schema' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '    # COMPONENT-COMPAT=if component missing schema, skip it with warning instead of quit' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '    validation: "$!{instance-config_manager_validation}"' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '  # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '  # runtime z/OS job name' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
