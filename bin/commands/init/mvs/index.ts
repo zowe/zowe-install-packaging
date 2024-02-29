@@ -78,17 +78,16 @@ export function execute(allowOverwrite?: boolean) {
   if (skippedDatasets && !allowOverwrite) {
     common.printMessage(`Skipped writing to a dataset. To write, you must use --allow-overwrite.`);
   } else {
-    const jcllibEscaped = stringlib.escapeDollar(jcllib);
     if (allowOverwrite && needCleanup) {
-      zosJes.printAndHandleJcl(`//'${jcllibEscaped}(ZWERMVS)'`, `ZWERMVS`, jcllib, prefix, false, true);
+      zosJes.printAndHandleJcl(`//'${jcllib}(ZWERMVS)'`, `ZWERMVS`, jcllib, prefix, false, true);
     }
     if (allowOverwrite && needAuthCleanup) {
-      zosJes.printAndHandleJcl(`//'${jcllibEscaped}(ZWERMVS2)'`, `ZWERMVS2`, jcllib, prefix, false, true);
+      zosJes.printAndHandleJcl(`//'${jcllib}(ZWERMVS2)'`, `ZWERMVS2`, jcllib, prefix, false, true);
     }
       
-    zosJes.printAndHandleJcl(`//'${jcllibEscaped}(ZWEIMVS)'`, `ZWEIMVS`, jcllib, prefix);
+    zosJes.printAndHandleJcl(`//'${jcllib}(ZWEIMVS)'`, `ZWEIMVS`, jcllib, prefix);
     if (runALoadlibCreate === true) {
-      zosJes.printAndHandleJcl(`//'${jcllibEscaped}(ZWEIMVS2)'`, `ZWEIMVS2`, jcllib, prefix);
+      zosJes.printAndHandleJcl(`//'${jcllib}(ZWEIMVS2)'`, `ZWEIMVS2`, jcllib, prefix);
     }
   }
 

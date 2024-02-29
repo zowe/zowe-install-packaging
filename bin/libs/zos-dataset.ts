@@ -20,12 +20,14 @@ import * as zoslib from './zos';
 //TODO a bit of a hack. "cat" cant output a vsam, so it will always give errors.
 //     however, the errors it gives are different depending on if the vsam exists or not.
 export function isVsamDatasetExists(datasetName: string): boolean {
-  const result = shell.execErrSync('sh', '-c', `cat "//'${datasetName}'" 1>/dev/null 2>&1`);
+  common.printTrace(`  * isVsamDatasetExists: '${stringlib.escapeDollar(datasetName)}'`);
+  const result = shell.execErrSync('sh', '-c', `cat "//'${stringlib.escapeDollar(datasetName)}'" 1>/dev/null`);
   return !(result.err && result.err.includes('EDC5049I'));
   // EDC5049I = file not found
 }
 
 export function isDatasetExists(datasetName: string): boolean {
+  common.printTrace(`  * isDatasetExists: '${stringlib.escapeDollar(datasetName)}'`);
   const result = shell.execSync('sh', '-c', `cat "//'${stringlib.escapeDollar(datasetName)}'" 1>/dev/null 2>&1`);
   return result.rc === 0;
 }
@@ -35,6 +37,7 @@ export function isDatasetExists(datasetName: string): boolean {
 //                1: data set is not in catalog
 //                2: data set member doesn't exist
 export function tsoIsDatasetExists(datasetName: string): number {
+  common.printTrace(`  * tsoIsDatasetExists: '${stringlib.escapeDollar(datasetName)}'`);
   const result = zoslib.tsoCommand(`listds '${stringlib.escapeDollar(datasetName)}' label`);
   if (result.rc != 0) {
     if (result.out.includes('NOT IN CATALOG')) {
@@ -52,6 +55,7 @@ export function tsoIsDatasetExists(datasetName: string): number {
 }
 
 export function createDataSet(dsName: string, dsOptions: string): number {
+  common.printTrace(`  * createDataSet: '${stringlib.escapeDollar(dsName)}' ${dsOptions}`);
   const result=zoslib.tsoCommand(`ALLOCATE NEW DA('${stringlib.escapeDollar(dsName)}') ${dsOptions}`);
   return result.rc;
 }
@@ -81,7 +85,7 @@ export function copyToDataset(filePath: string, dsName: string, cpOptions: strin
 }
 
 export function getDatasetVolume(dataset: string): { rc: number, volume?: string } {
-  common.printTrace(`- Find volume of data set ${dataset}`);
+  common.printTrace(`- Find volume of data set ${stringlib.escapeDollar(dataset)}`);
   const result = zoslib.tsoCommand(`listds '${stringlib.escapeDollar(dataset)}'`);
   if (result.rc == 0) {
     let volumesIndex = result.out.indexOf('--VOLUMES--');

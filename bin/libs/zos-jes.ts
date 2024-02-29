@@ -168,7 +168,7 @@ export function waitForJob(jobid: string): {jobcctext?: string, jobcccode?: stri
 }
 
 export function printAndHandleJcl(jclLocationOrContent: string, jobName: string, jcllib: string, prefix: string, removeJclOnFinish?: boolean, continueOnFailure?: boolean, jclIsContent?: boolean){
-  const jclContents = jclIsContent ? jclLocationOrContent : shell.execOutSync('sh', '-c', `cat "${jclLocationOrContent}" 2>&1`).out;
+  const jclContents = jclIsContent ? jclLocationOrContent : shell.execOutSync('sh', '-c', `cat "${stringlib.escapeDollar(jclLocationOrContent)}" 2>&1`).out;
 
   let jobHasFailures = false;
   if (jclIsContent) {
