@@ -1,6 +1,7 @@
 # zowe-install-packaging
 
 This repository includes Zowe installation script and pipelines to build Zowe.
+If you are looking for a Zowe server installation guide, check out [docs.zowe.org](https://docs.zowe.org) or [INSTALLATION.md](https://github.com/zowe/zowe-install-packaging/blob/feature/v3/jcl/INSTALLATION.md)
 
 - [Branches](#branches)
 - [Manifest File](#manifest-file)
