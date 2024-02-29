@@ -62,10 +62,10 @@ The following covers installation when not using the Zowe Server Install Wizard.
 1. When you install Zowe via SMPE or PSWI, the Runtime directory and datasets will be populated.
 2. Navigate to the Runtime Directory and copy the `example-zowe.yaml` file to a location outside this folder, generally wherever you want to put the Zowe Instance.
 3. Edit the YAML copy to set the values of `zowe.runtimeDirectory`, `java.home`, `node.home`, and `zowe.setup.datasets`, as follows
-   1. zowe.runtimeDirectory: The location you extracted the PAX to.
-   2. java.home: The location of the Java that will be used when installing & running Zowe. For example, if your java is located at /usr/lpp/java/J8.0_64/bin/java, then the java.home is /usr/lpp/java/J8.0_64
-   3. node.home: The location of the NodeJS that will be used when installing & running ZOwe. For example, if your node is located at /usr/lpp/node/v18/bin/node, then the java.home is /usr/lpp/node/v18
-   4. zowe.setup.datasets: This section defines where both Runtime and Instance datasets of Zowe will be created.
+   1. `zowe.runtimeDirectory`: The location you extracted the PAX to.
+   2. `java.home`: The location of the Java that will be used when installing & running Zowe. For example, if your java is located at /usr/lpp/java/J8.0_64/bin/java, then the java.home is /usr/lpp/java/J8.0_64
+   3. `node.home`: The location of the NodeJS that will be used when installing & running ZOwe. For example, if your node is located at /usr/lpp/node/v18/bin/node, then the java.home is /usr/lpp/node/v18
+   4. `zowe.setup.datasets`: This section defines where both Runtime and Instance datasets of Zowe will be created.
 
 
 ### PAX
