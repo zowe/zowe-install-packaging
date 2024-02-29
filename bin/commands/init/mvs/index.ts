@@ -14,6 +14,7 @@ import * as zosJes from '../../../libs/zos-jes';
 import * as zosdataset from '../../../libs/zos-dataset';
 import * as common from '../../../libs/common';
 import * as config from '../../../libs/config';
+import * as stringlib from '../../../libs/string';
 
 export function execute(allowOverwrite?: boolean) {
   common.printLevel1Message(`Initialize Zowe custom data sets`);
@@ -77,16 +78,17 @@ export function execute(allowOverwrite?: boolean) {
   if (skippedDatasets && !allowOverwrite) {
     common.printMessage(`Skipped writing to a dataset. To write, you must use --allow-overwrite.`);
   } else {
+    const jcllibEscaped = stringlib.escapeDollar(jcllib);
     if (allowOverwrite && needCleanup) {
-      zosJes.printAndHandleJcl(`//'${jcllib}(ZWERMVS)'`, `ZWERMVS`, jcllib, prefix, false, true);
+      zosJes.printAndHandleJcl(`//'${jcllibEscaped}(ZWERMVS)'`, `ZWERMVS`, jcllib, prefix, false, true);
     }
     if (allowOverwrite && needAuthCleanup) {
-      zosJes.printAndHandleJcl(`//'${jcllib}(ZWERMVS2)'`, `ZWERMVS2`, jcllib, prefix, false, true);
+      zosJes.printAndHandleJcl(`//'${jcllibEscaped}(ZWERMVS2)'`, `ZWERMVS2`, jcllib, prefix, false, true);
     }
       
-    zosJes.printAndHandleJcl(`//'${jcllib}(ZWEIMVS)'`, `ZWEIMVS`, jcllib, prefix);
+    zosJes.printAndHandleJcl(`//'${jcllibEscaped}(ZWEIMVS)'`, `ZWEIMVS`, jcllib, prefix);
     if (runALoadlibCreate === true) {
-      zosJes.printAndHandleJcl(`//'${jcllib}(ZWEIMVS2)'`, `ZWEIMVS2`, jcllib, prefix);
+      zosJes.printAndHandleJcl(`//'${jcllibEscaped}(ZWEIMVS2)'`, `ZWEIMVS2`, jcllib, prefix);
     }
   }
 
