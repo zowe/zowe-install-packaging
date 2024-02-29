@@ -94,18 +94,18 @@ Aside from the Zowe Server Install Wizard, there are three other ways to configu
 The Zowe Runtime Dataset `SZWESAMP` contains JCL samples that have templates referencing Zowe YAML parameters.
 They cannot be submitted without modification as a result.
 
-It is recommended to edit and submit the job `SZWESAMP(ZWEGENER)` which will validate the contents of your Zowe YAML before resolving the JCL templates and placing the resulting JCL into a separate PDSE created during installation, located at the value of `zowe.setup.dataset.jcllib`.
+It is recommended to edit and submit the job SZWESAMP([ZWEGENER](https://github.com/zowe/zowe-install-packaging/tree/feature/v3/jcl/files/SZWESAMP/ZWEGENER)) which will validate the contents of your Zowe YAML before resolving the JCL templates and placing the resulting JCL into a separate PDSE created during installation, located at the value of `zowe.setup.dataset.jcllib`.
 
 When the JCL is prepared, the following jobs can be submitted to perform the following Instance configuration actions:
 
 #### Core Tasks
 |Task|Description|Sample JCL|
 |---|---|---|
-|Create Instance Datasets|Creates datasets for holding PARMLIB content and non-ZFS Extension content that is particular to one Zowe instance|ZWEIMVS|
-|APF Authorize privileged content|Zowe contains one privileged component, ZIS, which enables the security model by which the majority of Zowe is unprivileged and in key 8. The load library for the ZIS component (SZWEAUTH, or customized via YAML value `zowe.setup.dataset.authLoadlib`) and its extension library (The value value `zowe.setup.dataset.authPluginLib`) must be set APF authorized and run in key 4 to use ZIS and components that depend upon it|ZWEIAPF|
-|Grant SAF permissions|The STC accounts for Zowe need permissions for operating servers, and users need permissions for interacting with the servers.|RACF: ZWEIRAC<br><br>TSS: ZWEITSS<br><br>ACF2: ZWEIACF|
-|(z/OS v2.4 ONLY) Create Zowe SAF Resource Class|This is not needed on z/OS v2.5+. On z/OS v2.4, the SAF resource class for Zowe is not included, and must be created|RACF: ZWEIRACZ<br><br>TSS: ZWEITSSZ<br><br>ACF2: ZWEIACFZ|
-|Copy STC JCL to PROCLIB|The jobs for starting the Zowe webservers, ZWESLSTC, and the Zowe APF authorized cross-memory server, ZWESISTC, and its auxiliary address space, ZWESASTC, must be copied to the desired proclib for running. The YAML value `zowe.setup.dataset.proclib` defines where these members will be placed. The names of the members can be customized with YAML value `zowe.setup.security.stcs`|ZWEISTC|
+|Create Instance Datasets|Creates datasets for holding PARMLIB content and non-ZFS Extension content that is particular to one Zowe instance|[ZWEIMVS](https://github.com/zowe/zowe-install-packaging/tree/feature/v3/jcl/files/SZWESAMP/ZWEIMVS)|
+|APF Authorize privileged content|Zowe contains one privileged component, ZIS, which enables the security model by which the majority of Zowe is unprivileged and in key 8. The load library for the ZIS component (SZWEAUTH, or customized via YAML value `zowe.setup.dataset.authLoadlib`) and its extension library (The value value `zowe.setup.dataset.authPluginLib`) must be set APF authorized and run in key 4 to use ZIS and components that depend upon it|[ZWEIAPF](https://github.com/zowe/zowe-install-packaging/tree/feature/v3/jcl/files/SZWESAMP/ZWEIAPF)|
+|Grant SAF permissions|The STC accounts for Zowe need permissions for operating servers, and users need permissions for interacting with the servers.|RACF: [ZWEIRAC](https://github.com/zowe/zowe-install-packaging/tree/feature/v3/jcl/files/SZWESAMP/ZWEIRAC)<br><br>TSS: [ZWEITSS](https://github.com/zowe/zowe-install-packaging/tree/feature/v3/jcl/files/SZWESAMP/ZWEITSS)<br><br>ACF2: [ZWEIACF](https://github.com/zowe/zowe-install-packaging/tree/feature/v3/jcl/files/SZWESAMP/SZWIACF)|
+|(z/OS v2.4 ONLY) Create Zowe SAF Resource Class|This is not needed on z/OS v2.5+. On z/OS v2.4, the SAF resource class for Zowe is not included, and must be created|RACF: [ZWEIRACZ](https://github.com/zowe/zowe-install-packaging/tree/feature/v3/jcl/files/SZWESAMP/ZWEIRACZ)<br><br>TSS: [ZWEITSSZ](https://github.com/zowe/zowe-install-packaging/tree/feature/v3/jcl/files/SZWESAMP/ZWEITSSZ)<br><br>ACF2: [ZWEIACFZ](https://github.com/zowe/zowe-install-packaging/tree/feature/v3/jcl/files/SZWESAMP/ZWEIACFZ)|
+|Copy STC JCL to PROCLIB|The jobs for starting the Zowe webservers, ZWESLSTC, and the Zowe APF authorized cross-memory server, ZWESISTC, and its auxiliary address space, ZWESASTC, must be copied to the desired proclib for running. The YAML value `zowe.setup.dataset.proclib` defines where these members will be placed. The names of the members can be customized with YAML value `zowe.setup.security.stcs`|[ZWEISTC](https://github.com/zowe/zowe-install-packaging/tree/feature/v3/jcl/files/SZWESAMP/ZWEISTC)|
 
 
 #### Keyring Tasks
@@ -118,9 +118,9 @@ There are 4 options for setting up keyrings: Three scenarios covered by JCL samp
 
 |Keyring Setup Type|Description|Sample JCL|
 |---|---|---|
-|1|Zowe will create a keyring and populate it with a newly generated certificate and certificate authority. The certificate would be seen as "self-signed" by clients unless import of the CA to clients is performed|RACF: ZWEIKRR1<br><br>TSS: ZWEIKRT1<br><br>ACF2: ZWEIKRA1|
-|2|Zowe will create a keyring and populate it by connecting pre-existing certificates and CAs that you specify.|RACF: ZWEIKRR2<br><br>TSS: ZWEIKRT2<br><br>ACF2: ZWEIKRA2|
-|3|Zowe will create a keyring and populate it by importing PKCS12 content from a dataset that you specify.|RACF: ZWEIKRR3<br><br>TSS: ZWEIKRT3<br><br>ACF2: ZWEIKRA3|
+|1|Zowe will create a keyring and populate it with a newly generated certificate and certificate authority. The certificate would be seen as "self-signed" by clients unless import of the CA to clients is performed|RACF: [ZWEIKRR1](https://github.com/zowe/zowe-install-packaging/tree/feature/v3/jcl/files/SZWESAMP/ZWEIKRR1)<br><br>TSS: [ZWEIKRT1](https://github.com/zowe/zowe-install-packaging/tree/feature/v3/jcl/files/SZWESAMP/ZWEIKRT1)<br><br>ACF2: [ZWEIKRA1](https://github.com/zowe/zowe-install-packaging/tree/feature/v3/jcl/files/SZWESAMP/ZWEIKRA1)|
+|2|Zowe will create a keyring and populate it by connecting pre-existing certificates and CAs that you specify.|RACF: [ZWEIKRR2](https://github.com/zowe/zowe-install-packaging/tree/feature/v3/jcl/files/SZWESAMP/ZWEIKRR2)<br><br>TSS: [ZWEIKRT2](https://github.com/zowe/zowe-install-packaging/tree/feature/v3/jcl/files/SZWESAMP/ZWEIKRT2)<br><br>ACF2: [ZWEIKRA2](https://github.com/zowe/zowe-install-packaging/tree/feature/v3/jcl/files/SZWESAMP/ZWEIKRA2)|
+|3|Zowe will create a keyring and populate it by importing PKCS12 content from a dataset that you specify.|RACF: [ZWEIKRR3](https://github.com/zowe/zowe-install-packaging/tree/feature/v3/jcl/files/SZWESAMP/ZWEIKRR3)<br><br>TSS: [ZWEIKRT3](https://github.com/zowe/zowe-install-packaging/tree/feature/v3/jcl/files/SZWESAMP/ZWEIKRT3)<br><br>ACF2: [ZWEIKRA3](https://github.com/zowe/zowe-install-packaging/tree/feature/v3/jcl/files/SZWESAMP/ZWEIKRA3)|
 
 Alternatively, zowe can use a keyring provided by you as long as the contents meet Zowe's requirements and configure YAML values within `zowe.certificate` as follows:
 ```yaml
@@ -143,15 +143,15 @@ Among the choices is for it to use a VSAM dataset of your choice.
 
 |Task|Description|Sample JCL|
 |---|---|---|
-|Create VSAM Dataset for Caching Service|Creates a RLM or NONRLM dataset for the caching service using the YAML values in `zowe.setup.vsam`|ZWECSVSM|
+|Create VSAM Dataset for Caching Service|Creates a RLM or NONRLM dataset for the caching service using the YAML values in `zowe.setup.vsam`|[ZWECSVSM](https://github.com/zowe/zowe-install-packaging/tree/feature/v3/jcl/files/SZWESAMP/ZWECSVSM)|
 
 JCL samples for removing Zowe configuration also exist.
-|Action|Sample|
+|Action|Sample JCL|
 |---|---|
-|Remove Instance Datasets|ZWERMVS|
-|Remove SAF Permissions|ZWENOSEC|
-|Remove Keyring|ZWENOKR|
-|Remove Caching Service VSAM Dataset|ZWECSRVS|
+|Remove Instance Datasets|[ZWERMVS](https://github.com/zowe/zowe-install-packaging/tree/feature/v3/jcl/files/SZWESAMP/ZWERMVS)|
+|Remove SAF Permissions|[ZWENOSEC](https://github.com/zowe/zowe-install-packaging/tree/feature/v3/jcl/files/SZWESAMP/ZWENOSEC)|
+|Remove Keyring|[ZWENOKR](https://github.com/zowe/zowe-install-packaging/tree/feature/v3/jcl/files/SZWESAMP/ZWENOKR)|
+|Remove Caching Service VSAM Dataset|[ZWECSRVS](https://github.com/zowe/zowe-install-packaging/tree/feature/v3/jcl/files/SZWESAMP/ZWECSRVS)|
 
 ### Configuration by zwe
 
@@ -166,12 +166,12 @@ This allows you to review the actions before performing them with the appropriat
 
 The following commands can be run to set up a Zowe Instance via `zwe`
 
-|Task|Description|Command|
-|---|---|---|
-|Create Instance Datasets|Creates datasets for holding PARMLIB content and non-ZFS Extension content that is particular to one Zowe instance|`zwe init mvs`|
-|APF Authorize privileged content|Zowe contains one privileged component, ZIS, which enables the security model by which the majority of Zowe is unprivileged and in key 8. The load library for the ZIS component (SZWEAUTH, or customized via YAML value `zowe.setup.dataset.authLoadlib`) and its extension library (The value value `zowe.setup.dataset.authPluginLib`) must be set APF authorized and run in key 4 to use ZIS and components that depend upon it|`zwe init apfauth`|
-|Grant SAF permissions|The STC accounts for Zowe need permissions for operating servers, and users need permissions for interacting with the servers.|`zwe init security`|
-|Copy STC JCL to PROCLIB|The jobs for starting the Zowe webservers, ZWESLSTC, and the Zowe APF authorized cross-memory server, ZWESISTC, and its auxiliary address space, ZWESASTC, must be copied to the desired proclib for running. The YAML value `zowe.setup.dataset.proclib` defines where these members will be placed. The names of the members can be customized with YAML value `zowe.setup.security.stcs`|`zwe init stc`|
+|Task|Description|Command|Doc|
+|---|---|---|---|
+|Create Instance Datasets|Creates datasets for holding PARMLIB content and non-ZFS Extension content that is particular to one Zowe instance|`zwe init mvs`|[Doc](https://docs.zowe.org/stable/appendix/zwe_server_command_reference/zwe/init/zwe-init-mvs)|
+|APF Authorize privileged content|Zowe contains one privileged component, ZIS, which enables the security model by which the majority of Zowe is unprivileged and in key 8. The load library for the ZIS component (SZWEAUTH, or customized via YAML value `zowe.setup.dataset.authLoadlib`) and its extension library (The value value `zowe.setup.dataset.authPluginLib`) must be set APF authorized and run in key 4 to use ZIS and components that depend upon it|`zwe init apfauth`|[Doc](https://docs.zowe.org/stable/appendix/zwe_server_command_reference/zwe/init/zwe-init-apfauth)|
+|Grant SAF permissions|The STC accounts for Zowe need permissions for operating servers, and users need permissions for interacting with the servers.|`zwe init security`|[Doc](https://docs.zowe.org/stable/appendix/zwe_server_command_reference/zwe/init/zwe-init-security)|
+|Copy STC JCL to PROCLIB|The jobs for starting the Zowe webservers, ZWESLSTC, and the Zowe APF authorized cross-memory server, ZWESISTC, and its auxiliary address space, ZWESASTC, must be copied to the desired proclib for running. The YAML value `zowe.setup.dataset.proclib` defines where these members will be placed. The names of the members can be customized with YAML value `zowe.setup.security.stcs`|`zwe init stc`|[Doc](https://docs.zowe.org/stable/appendix/zwe_server_command_reference/zwe/init/zwe-init-stc)|
 
 
 #### Keystore or Keyring Configuration
@@ -211,9 +211,9 @@ zowe:
 If you plan to use the Zowe caching service Component, such as for high availability and fault tolerance reasons, then you must choose a form of database for it to use.
 Among the choices is for it to use a VSAM dataset of your choice.
 
-|Task|Description|Sample JCL|
-|---|---|---|
-|Create VSAM Dataset for Caching Service|Creates a RLM or NONRLM dataset for the caching service using the YAML values in `zowe.setup.vsam`|`zwe init vsam`|
+|Task|Description|Sample JCL|Doc|
+|---|---|---|---|
+|Create VSAM Dataset for Caching Service|Creates a RLM or NONRLM dataset for the caching service using the YAML values in `zowe.setup.vsam`|`zwe init vsam`|[Doc](https://docs.zowe.org/stable/appendix/zwe_server_command_reference/zwe/init/zwe-init-vsam)|
 
 
 
