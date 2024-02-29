@@ -66,7 +66,7 @@
             <default>IBMUSER.ZWEV2.CUST.JCLLIB</default>
         </string>
     </variable>
-    <variable name="zowe_setup_dataset_loadlibUtil" scope="instance" visibility="public">
+    <variable name="zowe_setup_dataset_loadlibPlugin" scope="instance" visibility="public">
         <label>Zowe setup Utilities and extensions library</label>
         <abstract>Load library where Zowe will store libraries Utilities for use by Zowe and extensions</abstract>
         <description>Load library for Utilities for use by Zowe and extensions</description>
@@ -80,11 +80,12 @@
     <variable name="zowe_setup_dataset_authLoadlib" scope="instance" visibility="public">
         <label>Zowe setup MVS auth load library</label>
         <abstract>APF authorized LOADLIB for Zowe</abstract>
-        <description>Optional. If it's empty, &lt;hlq&gt;.SZWEAUTH will be APF authorized</description>
+        <description>APF authorized LOADLIB for Zowe core</description>
         <category>zowe</category>
         <string valueMustBeChoice="false" multiLine="false">
             <!-- Put validation here -->
             <!-- Specify choices here -->
+            <default>IBMUSER.ZWEV2.SZWEAUTH</default>    
         </string>
     </variable>
     <variable name="zowe_setup_dataset_authPluginLib" scope="instance" visibility="public">
@@ -146,8 +147,7 @@
         <category>zowe</category>
         <string valueMustBeChoice="false" multiLine="false">
             <!-- Put validation here -->
-            <!-- Specify choices here -->
-            <default>VOL123</default>
+            <!-- Specify choices here -->            
         </string>
     </variable>
     <variable name="zowe_setup_vsam_storageClass" scope="instance" visibility="public">
@@ -918,7 +918,7 @@ How we want to verify SSL certificates of services. Valid values are:
             <variableValue name="zowe_setup_dataset_parmlib" scope="instance" noPromptIfSet="false" required="true"/>
             <variableValue name="zowe_setup_dataset_libzis" scope="instance" noPromptIfSet="false" required="true"/>
             <variableValue name="zowe_setup_dataset_jcllib" scope="instance" noPromptIfSet="false" required="true"/>
-            <variableValue name="zowe_setup_dataset_loadlibUtil" scope="instance" noPromptIfSet="false" required="true"/>
+            <variableValue name="zowe_setup_dataset_loadlibPlugin" scope="instance" noPromptIfSet="false" required="true"/>
             <variableValue name="zowe_setup_dataset_authLoadlib" scope="instance" noPromptIfSet="false" required="false"/>
             <variableValue name="zowe_setup_dataset_authPluginLib" scope="instance" noPromptIfSet="false" required="true"/>
             <variableValue name="zowe_setup_certificate_type" scope="instance" noPromptIfSet="false" required="true"/>
@@ -1283,13 +1283,12 @@ echo '      # **COMMONLY_CUSTOMIZED**' >> "${instance-zowe_runtimeDirectory}/zow
 echo '      # JCL library where Zowe will store temporary JCLs during initialization' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '      jcllib: $!{instance-zowe_setup_dataset_jcllib}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '      # Utilities for use by Zowe and extensions' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '      loadlib: $!{instance-zowe_setup_dataset_loadlibUtil}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '      loadlib: $!{instance-zowe_setup_dataset_loadlibPlugin}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '      # APF authorized LOADLIB for Zowe' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '      # Optional. If it'\''s empty, <prefix>.SZWEAUTH will be APF authorized.' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '      authLoadlib: "$!{instance-zowe_setup_dataset_authLoadlib}"' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '      authLoadlib: $!{instance-zowe_setup_dataset_authLoadlib}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '      # **COMMONLY_CUSTOMIZED**' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '      # APF authorized LOADLIB for Zowe ZIS Plugins' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '      authPluginLib: "$!{instance-zowe_setup_dataset_authPluginLib}"' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '      authPluginLib: $!{instance-zowe_setup_dataset_authPluginLib}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '    # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '    # # Security related configurations. This setup is optional.' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
@@ -1328,11 +1327,11 @@ echo '    # >>>> Certificate setup scenario 1' >> "${instance-zowe_runtimeDirect
 echo '    # PKCS12 (keystore) with Zowe generate certificates.' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '    certificate:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '      # Type of certificate storage. Valid values are: PKCS12, JCEKS, JCECCAKS, JCERACFKS, JCECCARACFKS, or JCEHYBRIDRACFKS' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '      type: "$!{instance-zowe_setup_certificate_type}"' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '      type: $!{instance-zowe_setup_certificate_type}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '      pkcs12:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '        # **COMMONLY_CUSTOMIZED**' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '        # Keystore directory' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '        directory: "$!{instance-zowe_setup_certificate_pkcs12_directory}"' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '        directory: $!{instance-zowe_setup_certificate_pkcs12_directory}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '        # # Lock the keystore directory to only accessible by Zowe runtime user and group.' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '        # lock: true' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '        # **COMMONLY_CUSTOMIZED**' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
@@ -1403,10 +1402,11 @@ echo '    #     # Path to the certificate authority signed the certificate will 
 echo '    #     - ""' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '    # # >>>> Certificate setup scenario 3' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '    # # z/OS Keyring with Zowe generated certificates.' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '    # # Zowe generated z/OS Keyring with Zowe generated certificates.' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '    # certificate:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '    #   # Type of certificate storage. Valid values are: PKCS12, JCEKS, JCECCAKS, JCERACFKS, JCECCARACFKS, or JCEHYBRIDRACFKS' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '    #   type: JCERACFKS' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '    #   createZosmfTrust: true' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '    #   keyring:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '    #     # **COMMONLY_CUSTOMIZED**' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '    #     # keyring name' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
@@ -1438,7 +1438,7 @@ echo '    #   #   - dvipa.my-company.com' >> "${instance-zowe_runtimeDirectory}/
 echo '    #   #   - 12.34.56.78' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '    # # >>>> Certificate setup scenario 4' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '    # # z/OS Keyring and connect to existing certificate' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '    # # Zowe generated z/OS Keyring and connect to existing certificate' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '    # certificate:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '    #   # Type of certificate storage. Valid values are: PKCS12, JCEKS, JCECCAKS, JCERACFKS, JCECCARACFKS, or JCEHYBRIDRACFKS' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '    #   type: JCERACFKS' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
@@ -1462,7 +1462,7 @@ echo '    #   importCertificateAuthorities:' >> "${instance-zowe_runtimeDirector
 echo '    #     - ""' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '    # # >>>> Certificate setup scenario 5' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '    # # z/OS Keyring with importing certificate stored in data set' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '    # # Zowe generated z/OS Keyring with importing certificate stored in data set' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '    # certificate:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '    #   # Type of certificate storage. Valid values are: PKCS12, JCEKS, JCECCAKS, JCERACFKS, JCECCARACFKS, or JCEHYBRIDRACFKS' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '    #   type: JCERACFKS' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
@@ -1487,7 +1487,7 @@ echo '    # VSAM configurations if you are using VSAM as Caching Service storage
 echo '    vsam:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '      # VSAM data set with Record-Level-Sharing enabled or not' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '      # Valid values could be: NONRLS or RLS.' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '      mode: "$!{instance-zowe_setup_vsam_mode}"' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '      mode: $!{instance-zowe_setup_vsam_mode}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '      # Volume name if you are using VSAM in NONRLS mode' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '      volume: "$!{instance-zowe_setup_vsam_volume}"' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '      # Storage class name if you are using VSAM in RLS mode' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
