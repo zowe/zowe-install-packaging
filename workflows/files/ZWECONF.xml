@@ -54,7 +54,7 @@
           <!-- Specify choices here -->
           <default>ZWESIP00</default>
       </string>
-  </variable>
+    </variable>
     <variable name="zowe_setup_dataset_jcllib" scope="instance" visibility="public">
         <label>Zowe setup MVS JCL library</label>
         <abstract>JCL library where Zowe will store temporary JCLs during initialization</abstract>
@@ -64,6 +64,17 @@
             <!-- Put validation here -->
             <!-- Specify choices here -->
             <default>IBMUSER.ZWEV2.CUST.JCLLIB</default>
+        </string>
+    </variable>
+    <variable name="zowe_setup_dataset_loadlibUtil" scope="instance" visibility="public">
+        <label>Zowe setup Utilities and extensions library</label>
+        <abstract>Load library where Zowe will store libraries Utilities for use by Zowe and extensions</abstract>
+        <description>Load library for Utilities for use by Zowe and extensions</description>
+        <category>zowe</category>
+        <string valueMustBeChoice="false" multiLine="false">
+            <!-- Put validation here -->
+            <!-- Specify choices here -->
+            <default>IBMUSER.ZWEV2.SZWELOAD</default>
         </string>
     </variable>
     <variable name="zowe_setup_dataset_authLoadlib" scope="instance" visibility="public">
@@ -907,6 +918,7 @@ How we want to verify SSL certificates of services. Valid values are:
             <variableValue name="zowe_setup_dataset_parmlib" scope="instance" noPromptIfSet="false" required="true"/>
             <variableValue name="zowe_setup_dataset_libzis" scope="instance" noPromptIfSet="false" required="true"/>
             <variableValue name="zowe_setup_dataset_jcllib" scope="instance" noPromptIfSet="false" required="true"/>
+            <variableValue name="zowe_setup_dataset_loadlibUtil" scope="instance" noPromptIfSet="false" required="true"/>
             <variableValue name="zowe_setup_dataset_authLoadlib" scope="instance" noPromptIfSet="false" required="false"/>
             <variableValue name="zowe_setup_dataset_authPluginLib" scope="instance" noPromptIfSet="false" required="true"/>
             <variableValue name="zowe_setup_certificate_type" scope="instance" noPromptIfSet="false" required="true"/>
@@ -1225,7 +1237,7 @@ echo '# Copyright Contributors to the Zowe Project.' >> "${instance-zowe_runtime
 echo '#[[################################################################################]]#' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '#===============================================================================' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '# This is a YAML configuration file for Zowe instance.' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '# This is a YAML configuration file for a Zowe instance.' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '#' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '# YAML is a human-friendly data serialization language for all programming languages.' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '# To learn more about YAML specifications, please check https://yaml.org/.' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
@@ -1269,7 +1281,9 @@ echo '        # For ZIS plugins' >> "${instance-zowe_runtimeDirectory}/zowe.yaml
 echo '        zis: $!{instance-zowe_setup_dataset_libzis}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '      # **COMMONLY_CUSTOMIZED**' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '      # JCL library where Zowe will store temporary JCLs during initialization' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '      jcllib: "$!{instance-zowe_setup_dataset_jcllib}"' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '      jcllib: $!{instance-zowe_setup_dataset_jcllib}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '      # Utilities for use by Zowe and extensions' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '      loadlib: $!{instance-zowe_setup_dataset_loadlibUtil}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '      # APF authorized LOADLIB for Zowe' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '      # Optional. If it'\''s empty, <prefix>.SZWEAUTH will be APF authorized.' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '      authLoadlib: "$!{instance-zowe_setup_dataset_authLoadlib}"' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
