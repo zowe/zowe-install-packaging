@@ -936,6 +936,17 @@ How we want to verify SSL certificates of services. Valid values are:
             <default>1</default>
         </string>
     </variable>
+    <variable name="zowe_cookieId" scope="instance" visibility="public">
+        <label>Zowe Cookie Identifier</label>
+        <abstract>ID that can be used by servers that distinguish their cookies from unrelated Zowe installs</abstract>
+        <description>ID when determining for purposes such as to allow multiple copies of Zowe to be used within the same client</description>
+        <category>zowe</category>
+        <string valueMustBeChoice="false" multiLine="false">
+            <!-- Put validation here -->
+            <!-- Specify choices here -->
+            <default>1</default>
+        </string>
+    </variable>
     <!--atCreate-->
     <!--steps-->
     <step name="define_variables" optional="false">
@@ -982,6 +993,7 @@ How we want to verify SSL certificates of services. Valid values are:
             <variableValue name="zowe_certificate_pem_certificateAuthorities" scope="instance" noPromptIfSet="false" required="true"/>
             <variableValue name="zowe_verifyCertificates" scope="instance" noPromptIfSet="false" required="true"/>
             <variableValue name="zowe_rbacProfileId" scope="instance" noPromptIfSet="false" required="true"/>
+            <variableValue name="zowe_cookieId" scope="instance" noPromptIfSet="false" required="true"/>
             <variableValue name="java_home" scope="instance" noPromptIfSet="false" required="true"/>
             <variableValue name="node_home" scope="instance" noPromptIfSet="false" required="true"/>
             <variableValue name="zOSMF_host" scope="instance" noPromptIfSet="false" required="true"/>
@@ -1591,9 +1603,14 @@ echo '  # expects this ID in SAF resources' >> "${instance-zowe_runtimeDirectory
 echo '  rbacProfileIdentifier: "$!{instance-zowe_rbacProfileId}"' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '  # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '  # This is an ID that can be used by servers that distinguish their cookies from unrelated Zowe installs, ' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '  # for purposes such as to allow multiple copies of Zowe to be used within the same client' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '  cookieIdentifier: "$!{instance-zowe_cookieId}"' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '  # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '  # **COMMONLY_CUSTOMIZED**' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '  # You can list your external domains how you want to access Zowe.' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '  # This should be the domain list you would like to put into your web browser' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '  # You can list your external domains on how you want to access Zowe.' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '  # This should be the domain list you would like to put into your web browser'\''s' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '  # address bar.' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '  externalDomains:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 #foreach($externalDomain in ${instance-zowe_externalDomains.split("\n")})
