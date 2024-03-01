@@ -265,6 +265,18 @@ some use cases, like containerization, this port could be different.</descriptio
             <default>info</default>
         </string>
     </variable>
+    <variable name="zowe_launchScript_CompConf" scope="instance" visibility="public">
+        <label>Zowe launch script component configuration</label>
+        <abstract>Set to "exit" or "warn" what to do, if any component has an error</abstract>
+        <description>Set to "exit" if you'd like startup to exit if any component has an error in the configure stage, otherwise zwe will warn but continue.</description>
+        <category>zowe</category>
+        <string valueMustBeChoice="false" multiLine="false">
+            <!-- Put validation here -->
+            <choice>warn</choice>
+            <choice>exit</choice>            
+            <default>warn</default>
+        </string>
+    </variable>
     <variable name="zowe_certificate_keystore_type" scope="instance" visibility="public">
         <label>Zowe certificate keystore type</label>
         <abstract>Certificate keystore type (PKCS12, JCEKS, JCECCAKS, JCERACFKS, JCECCARACFKS, or JCEHYBRIDRACFKS)</abstract>
@@ -983,6 +995,7 @@ How we want to verify SSL certificates of services. Valid values are:
             <variableValue name="zowe_externalDomains" scope="instance" noPromptIfSet="false" required="true"/>
             <variableValue name="zowe_externalPort" scope="instance" noPromptIfSet="false" required="true"/>
             <variableValue name="zowe_launchScript_logLevel" scope="instance" noPromptIfSet="false" required="false"/>
+            <variableValue name="zowe_launchScript_CompConf" scope="instance" noPromptIfSet="false" required="false"/>
             <variableValue name="zowe_certificate_keystore_type" scope="instance" noPromptIfSet="false" required="true"/>
             <variableValue name="zowe_certificate_keystore_file" scope="instance" noPromptIfSet="false" required="true"/>
             <variableValue name="zowe_certificate_keystore_password" scope="instance" noPromptIfSet="false" required="true"/>
@@ -1671,6 +1684,8 @@ echo '  # Enable debug mode for zowe launch scripts' >> "${instance-zowe_runtime
 echo '  launchScript:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '    # Set to "debug" or "trace" to display extra debug information' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '    logLevel: "$!{instance-zowe_launchScript_logLevel}"' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '    # Set to "exit" if you'd like startup to exit if any component has an error in the configure stage, otherwise zwe will warn but continue.' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '    onComponentConfigureFail: "$!{instance-zowe_launchScript_CompConf}"' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '  # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '  # Default Zowe certificate' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
