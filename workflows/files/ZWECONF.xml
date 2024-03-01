@@ -259,8 +259,10 @@ some use cases, like containerization, this port could be different.</descriptio
         <category>zowe</category>
         <string valueMustBeChoice="false" multiLine="false">
             <!-- Put validation here -->
+            <choice>info</choice>
             <choice>debug</choice>
             <choice>trace</choice>
+            <default>info</default>
         </string>
     </variable>
     <variable name="zowe_certificate_keystore_type" scope="instance" visibility="public">
@@ -1613,9 +1615,15 @@ echo '  # You can list your external domains on how you want to access Zowe.' >>
 echo '  # This should be the domain list you would like to put into your web browser'\''s' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '  # address bar.' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '  externalDomains:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '    # this should be the domain name to access Zowe APIML Gateway' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 #foreach($externalDomain in ${instance-zowe_externalDomains.split("\n")})
 echo '  - ${externalDomain}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 #end
+echo '  # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '  # This is the port you use to access Zowe Gateway from your web browser.' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '  #' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '  # In many use cases, this should be same as `components.gateway.port`. But in' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '  # some use cases, like containerization, this port could be different.' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '  externalPort: ${instance-zowe_externalPort}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '  # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
@@ -1628,6 +1636,35 @@ echo '' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '  #   # Another example to customize SSH port for VT Terminal Desktop app' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '  #   ZWED_SSH_PORT: 22' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '  #   ZWED_TN3270_PORT: 23' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '  # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '  # You can define any Zowe message portions to be checked for and the message added to the' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '  # system log upon its logging, truncated to 126 characters.' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '  sysMessages:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '  #   # Zowe starting' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '    - "ZWEL0021I"' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '  #   # Zowe started' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '    - "ZWEL0018I"' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '    - "ZWEL0006I"' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '  #   # Zowe ready to use' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '    - "ZWES1601I"' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '  #   # Zowe stopping' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '    - "ZWEL0008I"' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '  #   # Zowe stopped' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '    - "ZWEL0022I"' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '  #   # Zowe components starting' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '    - "ZWEL0001I"' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '  #   # Zowe components stopped' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '    - "ZWEL0002I"' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '  #   # API ML components ready' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '    - "ZWEAM000I"' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '  #   # App server ready' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '    - "ZWED0031I"' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '  #   # ZSS ready' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '    - "ZWES1013I"' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '  #   # Not limited to Zowe message ID's, you can specify your own string for example:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '  #   - "ERROR"' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '  # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '  # Enable debug mode for zowe launch scripts' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
