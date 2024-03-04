@@ -259,8 +259,22 @@ some use cases, like containerization, this port could be different.</descriptio
         <category>zowe</category>
         <string valueMustBeChoice="false" multiLine="false">
             <!-- Put validation here -->
+            <choice>info</choice>
             <choice>debug</choice>
             <choice>trace</choice>
+            <default>info</default>
+        </string>
+    </variable>
+    <variable name="zowe_launchScript_CompConf" scope="instance" visibility="public">
+        <label>Zowe launch script component configuration</label>
+        <abstract>Set to "exit" or "warn" what to do, if any component has an error</abstract>
+        <description>Set to "exit" if you'd like startup to exit if any component has an error in the configure stage, otherwise zwe will warn but continue.</description>
+        <category>zowe</category>
+        <string valueMustBeChoice="false" multiLine="false">
+            <!-- Put validation here -->
+            <choice>warn</choice>
+            <choice>exit</choice>            
+            <default>warn</default>
         </string>
     </variable>
     <variable name="zowe_certificate_keystore_type" scope="instance" visibility="public">
@@ -296,7 +310,10 @@ some use cases, like containerization, this port could be different.</descriptio
         <abstract>Certificate keystore password.</abstract>
         <description>Certificate keystore password.</description>
         <category>zowe</category>
-        <password />
+        <string valueMustBeChoice="false" multiLine="false">
+            <!-- Put validation here -->                        
+            <default>password</default>
+        </string>
     </variable>
     <variable name="zowe_certificate_keystore_alias" scope="instance" visibility="public">
         <label>Zowe certificate keystore alias</label>
@@ -336,7 +353,11 @@ some use cases, like containerization, this port could be different.</descriptio
         <abstract>Password for the certificate truststore</abstract>
         <description>Password for the certificate truststore</description>
         <category>zowe</category>
-        <password />
+        <string valueMustBeChoice="false" multiLine="false">
+            <!-- Put validation here -->
+            <!-- Specify choices here -->
+            <default>password</default>
+        </string>
     </variable>
     <variable name="zowe_certificate_pem_key" scope="instance" visibility="public">
         <label>Zowe certificate PEM key</label>
@@ -423,7 +444,7 @@ How we want to verify SSL certificates of services. Valid values are:
         <string valueMustBeChoice="false" multiLine="false">
             <!-- Put validation here -->
             <!-- Specify choices here -->
-            <default>example-domain.com</default>
+            <default>dvipa.my-company.com</default>
         </string>
     </variable>
     <variable name="zOSMF_port" scope="instance" visibility="public">
@@ -1026,6 +1047,17 @@ How we want to verify SSL certificates of services. Valid values are:
             <default>1</default>
         </string>
     </variable>
+    <variable name="zowe_cookieId" scope="instance" visibility="public">
+        <label>Zowe Cookie Identifier</label>
+        <abstract>ID that can be used by servers that distinguish their cookies from unrelated Zowe installs</abstract>
+        <description>ID when determining for purposes such as to allow multiple copies of Zowe to be used within the same client</description>
+        <category>zowe</category>
+        <string valueMustBeChoice="false" multiLine="false">
+            <!-- Put validation here -->
+            <!-- Specify choices here -->
+            <default>1</default>
+        </string>
+    </variable>
     <!--atCreate-->
     <!--steps-->
     <step name="define_variables" optional="false">
@@ -1060,6 +1092,7 @@ How we want to verify SSL certificates of services. Valid values are:
             <variableValue name="zowe_externalDomains" scope="instance" noPromptIfSet="false" required="true"/>
             <variableValue name="zowe_externalPort" scope="instance" noPromptIfSet="false" required="true"/>
             <variableValue name="zowe_launchScript_logLevel" scope="instance" noPromptIfSet="false" required="false"/>
+            <variableValue name="zowe_launchScript_CompConf" scope="instance" noPromptIfSet="false" required="false"/>
             <variableValue name="zowe_certificate_keystore_type" scope="instance" noPromptIfSet="false" required="true"/>
             <variableValue name="zowe_certificate_keystore_file" scope="instance" noPromptIfSet="false" required="true"/>
             <variableValue name="zowe_certificate_keystore_password" scope="instance" noPromptIfSet="false" required="true"/>
@@ -1072,6 +1105,7 @@ How we want to verify SSL certificates of services. Valid values are:
             <variableValue name="zowe_certificate_pem_certificateAuthorities" scope="instance" noPromptIfSet="false" required="true"/>
             <variableValue name="zowe_verifyCertificates" scope="instance" noPromptIfSet="false" required="true"/>
             <variableValue name="zowe_rbacProfileId" scope="instance" noPromptIfSet="false" required="true"/>
+            <variableValue name="zowe_cookieId" scope="instance" noPromptIfSet="false" required="true"/>
             <variableValue name="java_home" scope="instance" noPromptIfSet="false" required="true"/>
             <variableValue name="node_home" scope="instance" noPromptIfSet="false" required="true"/>
             <variableValue name="zOSMF_host" scope="instance" noPromptIfSet="false" required="true"/>
@@ -1711,14 +1745,25 @@ echo '  # expects this ID in SAF resources' >> "${instance-zowe_runtimeDirectory
 echo '  rbacProfileIdentifier: "$!{instance-zowe_rbacProfileId}"' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '  # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '  # This is an ID that can be used by servers that distinguish their cookies from unrelated Zowe installs, ' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '  # for purposes such as to allow multiple copies of Zowe to be used within the same client' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '  cookieIdentifier: "$!{instance-zowe_cookieId}"' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '  # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '  # **COMMONLY_CUSTOMIZED**' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '  # You can list your external domains how you want to access Zowe.' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '  # This should be the domain list you would like to put into your web browser' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '  # You can list your external domains on how you want to access Zowe.' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '  # This should be the domain list you would like to put into your web browser'\''s' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '  # address bar.' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '  externalDomains:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '    # this should be the domain name to access Zowe APIML Gateway' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 #foreach($externalDomain in ${instance-zowe_externalDomains.split("\n")})
 echo '  - ${externalDomain}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 #end
+echo '  # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '  # This is the port you use to access Zowe Gateway from your web browser.' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '  #' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '  # In many use cases, this should be same as `components.gateway.port`. But in' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '  # some use cases, like containerization, this port could be different.' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '  externalPort: ${instance-zowe_externalPort}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '  # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
@@ -1733,10 +1778,41 @@ echo '  #   ZWED_SSH_PORT: 22' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '  #   ZWED_TN3270_PORT: 23' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '  # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '  # You can define any Zowe message portions to be checked for and the message added to the' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '  # system log upon its logging, truncated to 126 characters.' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '  sysMessages:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '  #   # Zowe starting' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '    - "ZWEL0021I"' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '  #   # Zowe started' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '    - "ZWEL0018I"' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '    - "ZWEL0006I"' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '  #   # Zowe ready to use' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '    - "ZWES1601I"' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '  #   # Zowe stopping' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '    - "ZWEL0008I"' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '  #   # Zowe stopped' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '    - "ZWEL0022I"' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '  #   # Zowe components starting' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '    - "ZWEL0001I"' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '  #   # Zowe components stopped' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '    - "ZWEL0002I"' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '  #   # API ML components ready' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '    - "ZWEAM000I"' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '  #   # App server ready' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '    - "ZWED0031I"' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '  #   # ZSS ready' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '    - "ZWES1013I"' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '  #   # Not limited to Zowe message ID's, you can specify your own string for example:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '  #   - "ERROR"' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '  # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '  # Enable debug mode for zowe launch scripts' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '  launchScript:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '    # Set to "debug" or "trace" to display extra debug information' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '    logLevel: "$!{instance-zowe_launchScript_logLevel}"' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '    # Set to "exit" if you'd like startup to exit if any component has an error in the configure stage, otherwise zwe will warn but continue.' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '    onComponentConfigureFail: "$!{instance-zowe_launchScript_CompConf}"' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '  # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '  # Default Zowe certificate' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
@@ -1746,18 +1822,23 @@ echo '  # `--update-config` to `zwe init` command. The generated value will base
 echo '  # your setup in `zowe.setup.certificate` section.' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '  certificate:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '    keystore:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '      type: "$!{instance-zowe_certificate_keystore_type}"' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '      file: "$!{instance-zowe_certificate_keystore_file}"' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '      password: "$!{instance-zowe_certificate_keystore_password}"' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '      alias: "$!{instance-zowe_certificate_keystore_alias}"' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '      type: $!{instance-zowe_certificate_keystore_type}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '      # if keyrings, the format is safkeyring:////stcusername/KeyName' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '      file: $!{instance-zowe_certificate_keystore_file}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '      # "password" should either be the value you set when PKCS12, or literally "password" for keyrings.' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '      password: $!{instance-zowe_certificate_keystore_password}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '      # alias is the name of your key/cert. When using keyrings, get the Case Sensitive, Space Sensitive value in a TSO list ring.' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '      alias: $!{instance-zowe_certificate_keystore_alias}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '    truststore:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '      type: "$!{instance-zowe_certificate_truststore_type}"' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '      file: "$!{instance-zowe_certificate_truststore_file}"' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '      password: "$!{instance-zowe_certificate_truststore_password}"' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '      # truststore usually has same values as keystore (minus alias), but can be different if desired.' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '      type: $!{instance-zowe_certificate_truststore_type}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '      file: $!{instance-zowe_certificate_truststore_file}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '      password: $!{instance-zowe_certificate_truststore_password}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '    pem:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '      key: "$!{instance-zowe_certificate_pem_key}"' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '      certificate: "$!{instance-zowe_certificate_pem_certificate}"' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '      certificateAuthorities: "$!{instance-zowe_certificate_pem_certificateAuthorities}"' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '      key: $!{instance-zowe_certificate_pem_key}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '      certificate: $!{instance-zowe_certificate_pem_certificate}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '      #  if keyrings, the format is "safkeyring:////stcusername/KeyName&ca name"' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '      certificateAuthorities: $!{instance-zowe_certificate_pem_certificateAuthorities}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '  # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '  # How we want to verify SSL certificates of services. Valid values are:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
@@ -1768,8 +1849,8 @@ echo '  # - NONSTRICT: will validate if the certificate is trusted in our trust 
 echo '  #              This mode does not validate certificate Common Name and Subject' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '  #              Alternative Name (SAN).' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '  # - DISABLED:  disable certificate validation. This is NOT recommended for' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '  #              security ' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '  verifyCertificates: "$!{instance-zowe_verifyCertificates}"' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '  #              security.' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '  verifyCertificates: $!{instance-zowe_verifyCertificates}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '#-------------------------------------------------------------------------------' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
@@ -1810,11 +1891,11 @@ echo '# features. You need to define how to access your z/OSMF instance.' >> "${
 echo '#-------------------------------------------------------------------------------' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo 'zOSMF:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '  # **COMMONLY_CUSTOMIZED**' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '  # host name of your z/OSMF instance' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '  host: "$!{instance-zOSMF_host}"' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '  # Host name of your z/OSMF instance' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '  host: $!{instance-zOSMF_host}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '  # **COMMONLY_CUSTOMIZED**' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '  port: ${instance-zOSMF_port}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '  applId: "$!{instance-zOSMF_applId}"' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '  applId: $!{instance-zOSMF_applId}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '#-------------------------------------------------------------------------------' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
