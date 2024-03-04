@@ -2,6 +2,13 @@
 
 All notable changes to the Zowe Installer will be documented in this file.
 <!--Add the PR or issue number to the entry if available.-->
+## `2.15.0`
+
+## New features and enhancements
+
+## Minor enhancements/defect fixes
+- Bugfix: `zwe diagnose` running under comfigmgr and output formatted. Fixes #[3627](https://github.com/zowe/zowe-install-packaging/issues/3627).
+
 ## `2.14.0`
 
 ### New features and enhancements
@@ -17,17 +24,13 @@ All notable changes to the Zowe Installer will be documented in this file.
 
 #### Minor enhancements/defect fixes
 - Bugfix: Workflow files in the Zowe PAX are now ASCII-encoded. Fixes [#3591](https://github.com/zowe/zowe-install-packaging/issues/3591).
-
+- Enhancement: `/bin/utils/date-add.rex` utility is accepting the date formatting as combination of YY|YYYY, MM, DD and any separator.
 
 ## `2.12.0`
 
 ### New features and enhancements
 
 #### Minor enhancements/defect fixes
-
-## `2.13.0`
-#### Minor enhancements/defect fixes
-- Enhancement: `/bin/utils/date-add.rex` utility is accepting the date formatting as combination of YY|YYYY, MM, DD and any separator.
 
 ## `2.11.0`
 
