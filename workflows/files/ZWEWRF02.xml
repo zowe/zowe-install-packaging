@@ -108,7 +108,7 @@ MOUNTPOINT('${zfsmount}')
 //STDERR DD SYSOUT=*
 //STDPARM  DD *
 SH chown -R ${_step-stepOwnerUpper} ${zfsmount};
-chmod -R 755 ${zfsmount};
+chmod -R 775 ${zfsmount};
 /*</inlineTemplate>
             <submitAs maxRc="8">JCL</submitAs>
             <maxLrecl>80</maxLrecl>
