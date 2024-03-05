@@ -281,7 +281,7 @@ some use cases, like containerization, this port could be different.</descriptio
         <label>Zowe certificate keystore type</label>
         <abstract>Certificate keystore type (PKCS12, JCEKS, JCECCAKS, JCERACFKS, JCECCARACFKS, or JCEHYBRIDRACFKS)</abstract>
         <description>Certificate keystore type (PKCS12, JCEKS, JCECCAKS, JCERACFKS, JCECCARACFKS, or JCEHYBRIDRACFKS)</description>
-        <category>zowe</category>
+        <category>certificates</category>
         <string valueMustBeChoice="false" multiLine="false">
             <!-- Put validation here -->
             <!-- Specify choices here -->
@@ -298,7 +298,7 @@ some use cases, like containerization, this port could be different.</descriptio
         <label>Zowe certificate keystore file</label>
         <abstract>Zowe certificate keystore file</abstract>
         <description>Zowe certificate keystore file</description>
-        <category>zowe</category>
+        <category>certificates</category>
         <string valueMustBeChoice="false" multiLine="false">
             <!-- Put validation here -->
             <!-- Specify choices here -->
@@ -309,7 +309,7 @@ some use cases, like containerization, this port could be different.</descriptio
         <label>Zowe certificate keystore password</label>
         <abstract>Certificate keystore password.</abstract>
         <description>Certificate keystore password.</description>
-        <category>zowe</category>
+        <category>certificates</category>
         <string valueMustBeChoice="false" multiLine="false">
             <!-- Put validation here -->                        
             <default>password</default>
@@ -319,7 +319,7 @@ some use cases, like containerization, this port could be different.</descriptio
         <label>Zowe certificate keystore alias</label>
         <abstract>Alias for the certificate keystore</abstract>
         <description>Alias for the certificate keystore</description>
-        <category>zowe</category>
+        <category>certificates</category>
         <string valueMustBeChoice="false" multiLine="false">
             <!-- Put validation here -->
             <!-- Specify choices here -->
@@ -330,7 +330,7 @@ some use cases, like containerization, this port could be different.</descriptio
         <label>Zowe certificate truststore type</label>
         <abstract>zowe_certificate_truststore_type</abstract>
         <description>zowe_certificate_truststore_type</description>
-        <category>zowe</category>
+        <category>certificates</category>
         <string valueMustBeChoice="false" multiLine="false">
             <!-- Put validation here -->
             <!-- Specify choices here -->
@@ -341,7 +341,7 @@ some use cases, like containerization, this port could be different.</descriptio
         <label>Zowe certificate truststore file</label>
         <abstract>File location for the certificate truststore</abstract>
         <description>File location for the certificate truststore</description>
-        <category>zowe</category>
+        <category>certificates</category>
         <string valueMustBeChoice="false" multiLine="false">
             <!-- Put validation here -->
             <!-- Specify choices here -->
@@ -352,7 +352,7 @@ some use cases, like containerization, this port could be different.</descriptio
         <label>Zowe certificate truststore password</label>
         <abstract>Password for the certificate truststore</abstract>
         <description>Password for the certificate truststore</description>
-        <category>zowe</category>
+        <category>certificates</category>
         <string valueMustBeChoice="false" multiLine="false">
             <!-- Put validation here -->
             <!-- Specify choices here -->
@@ -363,7 +363,7 @@ some use cases, like containerization, this port could be different.</descriptio
         <label>Zowe certificate PEM key</label>
         <abstract>Path to the Zowe certificate PEM key</abstract>
         <description>Path to the Zowe certificate PEM key</description>
-        <category>zowe</category>
+        <category>certificates</category>
         <string valueMustBeChoice="false" multiLine="false">
             <!-- Put validation here -->
             <!-- Specify choices here -->
@@ -374,7 +374,7 @@ some use cases, like containerization, this port could be different.</descriptio
         <label>Zowe certificate PEM certificate</label>
         <abstract>Path to the PEM certificate</abstract>
         <description>Path to the PEM certificate</description>
-        <category>zowe</category>
+        <category>certificates</category>
         <string valueMustBeChoice="false" multiLine="false">
             <!-- Put validation here -->
             <!-- Specify choices here -->
@@ -385,7 +385,7 @@ some use cases, like containerization, this port could be different.</descriptio
         <label>Zowe certificate PEM certificate authorities</label>
         <abstract>zowe_certificate_pem_certificateAuthorities</abstract>
         <description>zowe_certificate_pem_certificateAuthorities</description>
-        <category>zowe</category>
+        <category>certificates</category>
         <string valueMustBeChoice="false" multiLine="false">
             <!-- Put validation here -->
             <!-- Specify choices here -->
@@ -406,7 +406,7 @@ How we want to verify SSL certificates of services. Valid values are:
 - DISABLED:  disable certificate validation. This is NOT recommended for
              security 
         ]]>        </description>
-        <category>zowe</category>
+        <category>certificates</category>
         <string valueMustBeChoice="true" multiLine="false">
             <!-- Put validation here -->
             <!-- Specify choices here -->
@@ -1080,9 +1080,6 @@ How we want to verify SSL certificates of services. Valid values are:
             <variableValue name="zowe_setup_dataset_authPluginLib" scope="instance" noPromptIfSet="false" required="true"/>
             <variableValue name="zowe_setup_certificate_type" scope="instance" noPromptIfSet="false" required="true"/>
             <variableValue name="zowe_setup_certificate_pkcs12_directory" scope="instance" noPromptIfSet="false" required="true"/>
-            <variableValue name="zowe_setup_vsam_mode" scope="instance" noPromptIfSet="false" required="true"/>
-            <variableValue name="zowe_setup_vsam_volume" scope="instance" noPromptIfSet="false" required="false"/>
-            <variableValue name="zowe_setup_vsam_storageClass" scope="instance" noPromptIfSet="false" required="false"/>
             <variableValue name="zowe_runtimeDirectory" scope="instance" noPromptIfSet="false" required="true"/>
             <variableValue name="zowe_logDirectory" scope="instance" noPromptIfSet="false" required="true"/>
             <variableValue name="zowe_workspaceDirectory" scope="instance" noPromptIfSet="false" required="true"/>
@@ -1262,9 +1259,12 @@ How we want to verify SSL certificates of services. Valid values are:
             <canMarkAsFailed>false</canMarkAsFailed>
             <!--template-->
         </step>
+      <step name="caching_service_vars" optional="false">
+        <title>Chaching Service variables</title>
+        <description>Specify the variables for the Caching Service</description>
         <step name="caching_service_variables" optional="false">
-            <title>Variables for Caching Service</title>
-            <description>Specify the variables for the Caching Service</description>
+            <title>Main variables for Caching Service</title>
+            <description>Specify the main variables for the Caching Service</description>
             <prereqStep name="main_variables"/>
             <condition>
                 <expression>1==1</expression>
@@ -1282,7 +1282,69 @@ How we want to verify SSL certificates of services. Valid values are:
             <variableValue name="components_caching_service_storage_evictionStrategy" scope="instance" noPromptIfSet="false" required="true"/>
             <variableValue name="components_caching_service_storage_mode" scope="instance" noPromptIfSet="false" required="true"/>
             <variableValue name="components_caching_service_storage_size" scope="instance" noPromptIfSet="false" required="true"/>
+            <instructions substitution="false">Run this step to specify the variables for the Caching Service</instructions>
+            <weight>1</weight>
+            <skills>z/OS System Programmer</skills>
+            <autoEnable>false</autoEnable>
+            <canMarkAsFailed>false</canMarkAsFailed>
+            <!--template-->
+        </step>
+        <step name="caching_service_vsam_variables" optional="false">
+            <title>Variables for Caching Service - VSAM mode</title>
+            <description>Specify the variables for the VSAM mode of Caching Service</description>
+            <prereqStep name="caching_service_variables"/>
+            <condition>
+                <expression>1==1</expression>
+                <description>Always true</description>
+                <targetStateSet>
+                    <extendStateExpression>
+                        <description>Skipped if Caching Service was not selected</description>
+                        <expression>!${instance-components_caching_service_enabled}</expression>
+                        <targetState>skipped</targetState>
+                    </extendStateExpression>
+                </targetStateSet>
+                <targetStateSet>
+                    <extendStateExpression>
+                        <description>Skipped if VSAM was not selected</description>
+                        <expression>!(${instance-components_caching_service_storage_mode} == "VSAM")</expression>
+                        <targetState>skipped</targetState>
+                    </extendStateExpression>
+                </targetStateSet>
+            </condition>
+            <variableValue name="zowe_setup_vsam_mode" scope="instance" noPromptIfSet="false" required="true"/>
+            <variableValue name="zowe_setup_vsam_volume" scope="instance" noPromptIfSet="false" required="false"/>
+            <variableValue name="zowe_setup_vsam_storageClass" scope="instance" noPromptIfSet="false" required="false"/>
             <variableValue name="components_caching_service_storage_vsam_name" scope="instance" noPromptIfSet="false" required="false"/>
+            <instructions substitution="false">Run this step to specify the variables for the Caching Service</instructions>
+            <weight>1</weight>
+            <skills>z/OS System Programmer</skills>
+            <autoEnable>false</autoEnable>
+            <canMarkAsFailed>false</canMarkAsFailed>
+            <!--template-->
+        </step>
+        <step name="caching_service_infinispan_variables" optional="false">
+            <title>Variables for Caching Service - infinispan mode</title>
+            <description>Specify the variables for the infinispan mode of Caching Service</description>
+            <prereqStep name="caching_service_variables"/>
+          <!-- shouldn't there be ALSO main_variables prereq, how are the conditions working now-->
+            <condition>
+                <expression>1==1</expression>
+                <description>Always true</description>
+                <targetStateSet>
+                    <extendStateExpression>
+                        <description>Skipped if Caching Service was not selected</description>
+                        <expression>!${instance-components_caching_service_enabled}</expression>
+                        <targetState>skipped</targetState>
+                    </extendStateExpression>
+                </targetStateSet>
+                <targetStateSet>
+                    <extendStateExpression>
+                        <description>Skipped if infinispan was not selected</description>
+                        <expression>!(${instance-components_caching_service_storage_mode} == "infinispan")</expression>
+                        <targetState>skipped</targetState>
+                    </extendStateExpression>
+                </targetStateSet>
+            </condition>
             <variableValue name="components_caching_service_storage_infinispan_jgroups_port" scope="instance" noPromptIfSet="false" required="false"/>
             <instructions substitution="false">Run this step to specify the variables for the Caching Service</instructions>
             <weight>1</weight>
@@ -1290,6 +1352,7 @@ How we want to verify SSL certificates of services. Valid values are:
             <autoEnable>false</autoEnable>
             <canMarkAsFailed>false</canMarkAsFailed>
             <!--template-->
+        </step>
         </step>
         <step name="app_server_variables" optional="false">
             <title>App Server variables</title>
@@ -2315,7 +2378,11 @@ export NODE_HOME='${instance-node_home}'
 
 export PATH=$PATH:'${instance-zowe_runtimeDirectory}/bin'
 
-zwe init -c '${instance-zowe_runtimeDirectory}/zowe.yaml'</inlineTemplate>
+zwe init -c mvs '${instance-zowe_runtimeDirectory}/zowe.yaml' --allow-overwrite
+zwe init -c stc '${instance-zowe_runtimeDirectory}/zowe.yaml' --allow-overwrite
+#if (${instance-components_caching_service_storage_mode} == "VSAM" &amp;&amp; ${instance-components_caching_service_enabled})
+zwe init -c vsam '${instance-zowe_runtimeDirectory}/zowe.yaml' --allow-overwrite
+#end</inlineTemplate>
                 <submitAs maxRc="0">shell-JCL</submitAs>
                 <maxLrecl>1024</maxLrecl>
                 <!-- zosmfOutput -->
