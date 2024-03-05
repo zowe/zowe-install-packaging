@@ -1154,7 +1154,7 @@ How we want to verify SSL certificates of services. Valid values are:
             <variableValue name="components_gateway_apiml_security_auth_zosmf_jwtAutoconfiguration" scope="instance" noPromptIfSet="false" required="true"/>
             <variableValue name="components_gateway_apiml_security_auth_zosmf_serviceId" scope="instance" noPromptIfSet="false" required="true"/>
             <variableValue name="components_gateway_apiml_security_authorization_endpoint_enabled" scope="instance" noPromptIfSet="false" required="true"/>
-            <variableValue name="components_gateway_apiml_security_authorization_provider" scope="instance" noPromptIfSet="false" required="true"/>
+            <variableValue name="components_gateway_apiml_security_authorization_provider" scope="instance" noPromptIfSet="false" required="false"/>
             <variableValue name="components_gateway_apiml_security_x509_enabled" scope="instance" noPromptIfSet="false" required="true"/>
             <variableValue name="components_gateway_server_internal_enabled" scope="instance" noPromptIfSet="false" required="true"/>
             <variableValue name="components_gateway_server_internal_port" scope="instance" noPromptIfSet="false" required="true"/>
@@ -1804,15 +1804,15 @@ echo '    - "ZWED0031I"' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '  #   # ZSS ready' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '    - "ZWES1013I"' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '  #   # Not limited to Zowe message ID\'s, you can specify your own string for example:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '  #   # Not limited to Zowe message ID'\''s, you can specify your own string for example:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '  #   - "ERROR"' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '  # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '  # Enable debug mode for zowe launch scripts' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '  # Enable debug mode for Zowe launch scripts' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '  launchScript:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '    # Set to "debug" or "trace" to display extra debug information' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '    logLevel: "$!{instance-zowe_launchScript_logLevel}"' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '    # Set to "exit" if you\'d like startup to exit if any component has an error in the configure stage, otherwise zwe will warn but continue.' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '    # Set to "exit" if you'\''d like startup to exit if any component has an error in the configure stage, otherwise zwe will warn but continue.' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '    onComponentConfigureFail: "$!{instance-zowe_launchScript_CompConf}"' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '  # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
