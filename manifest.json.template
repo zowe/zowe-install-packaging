@@ -67,24 +67,20 @@
       "artifact": "*.pax"
     },
     "org.zowe.apiml.api-catalog-package": {
-      "version": "^3.0.0-SNAPSHOT",
-      "artifact": "api-catalog-*.zip",
-      "exclusions": ["*PR*.zip"]
+      "version": "3.0.3-PR-2233-SNAPSHOT",
+      "artifact": "api-catalog-*.zip"
     },
     "org.zowe.apiml.discovery-package": {
-      "version": "^3.0.0-SNAPSHOT",
-      "artifact": "discovery-*.zip",
-      "exclusions": ["*PR*.zip"]
+      "version": "3.0.3-PR-2233-SNAPSHOT",
+      "artifact": "discovery-*.zip"
     },
     "org.zowe.apiml.gateway-package": {
-      "version": "^3.0.0-SNAPSHOT",
-      "artifact": "gateway-*.zip",
-      "exclusions": ["*PR*.zip"]
+      "version": "3.0.3-PR-2233-SNAPSHOT",
+      "artifact": "gateway-*.zip"
     },
     "org.zowe.apiml.caching-service-package": {
-      "version": "^3.0.0-SNAPSHOT",
-      "artifact": "caching-service-*.zip",
-      "exclusions": ["*PR*.zip"]
+      "version": "3.0.3-PR-2233-SNAPSHOT",
+      "artifact": "caching-service-*.zip"
     },
     "org.zowe.apiml.metrics-service-package": {
       "version": "^2.1.1-SNAPSHOT",
@@ -92,9 +88,8 @@
       "exclusions": ["*PR*.zip"]
     },
     "org.zowe.apiml.apiml-common-lib-package": {
-      "version": "^3.0.0-SNAPSHOT",
-      "artifact": "apiml-common-lib-*.zip",
-      "exclusions": ["*PR*.zip"]
+      "version": "3.0.3-PR-2233-SNAPSHOT",
+      "artifact": "apiml-common-lib-*.zip"
     },
     "org.zowe.apiml.sdk.common-java-lib-package": {
       "version": "^2.0.0-SNAPSHOT",
@@ -102,14 +97,12 @@
       "exclusions": ["*PR*.zip"]
     },
     "org.zowe.apiml.sdk.apiml-sample-extension-package": {
-      "version": "^3.0.0-SNAPSHOT",
-      "artifact": "apiml-sample-extension-*.zip",
-      "exclusions": ["*PR*.zip"]
+      "version": "3.0.3-PR-2233-SNAPSHOT",
+      "artifact": "apiml-sample-extension-*.zip"
     },
     "org.zowe.apiml.cloud-gateway-package": {
-      "version": "^3.0.0-SNAPSHOT",
-      "artifact": "cloud-gateway-*.zip",
-      "exclusions": ["*PR*.zip"]
+      "version": "3.0.3-PR-2233-SNAPSHOT",
+      "artifact": "cloud-gateway-*.zip"
     },
     "org.zowe.getesm": {
       "version": "^3.0.0-V3.X-STAGING",
