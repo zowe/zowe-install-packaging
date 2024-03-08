@@ -346,6 +346,13 @@ zowe:
   externalPort: 7554
 
   # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+  #
+  # In this section, behavior such as which TLS levels, ciphers should be used, and if native TLS versus AT-TLS should be used.
+  # See the schema for options.
+  network:
+    attls: false
+
+  # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   # You can un-comment and define any extra environment variables as key/value
   # pairs here.
   # environments:
@@ -497,7 +504,6 @@ components:
     enabled: true
     port: 7554
     debug: false
-
     apiml:
       security:
         auth:
@@ -594,7 +600,6 @@ components:
     enabled: true
     port: 7557
     crossMemoryServerName: ZWESIS_STD
-    tls: true
     agent:
       jwt:
         fallback: true
