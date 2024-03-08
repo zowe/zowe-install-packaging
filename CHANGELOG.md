@@ -2,6 +2,12 @@
 
 All notable changes to the Zowe Installer will be documented in this file.
 <!--Add the PR or issue number to the entry if available.-->
+
+## `2.16.0`
+
+## New features and enhancements
+- Enhancement: Added zowe.network.server.attls as a boolean for controlling global or per-component way to tell Zowe servers that they should operate in a mode compatible with an AT-TLS setup. [#3463](https://github.com/zowe/zowe-install-packaging/pull/3463)
+
 ## `2.15.0`
 
 ## New features and enhancements
@@ -48,10 +54,6 @@ All notable changes to the Zowe Installer will be documented in this file.
 
 #### Minor enhancements/defect fixes
 - Enhancement: Check for node v18 which is now supported, but disallow v18.12.1 because it is known not to work for Zowe. (#3485)
-
-## `2.10.0`
-
-- Enhancement: Implement global/component AT-TLS yaml config
 
 ## `2.9.0`
 
