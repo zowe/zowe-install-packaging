@@ -68,7 +68,7 @@ zowe_jobs_explorer_port: 7560
 zowe_keyring_alias: ZoweKeyring
 zowe_keyring_certname: ZoweCert
 zowe_keyring_external_intermediate_ca:
-zowe_keyring_external_root_ca:
+zowe_keyring_external_root_ca: brcmso
 zowe_keystore_alias: localhost
 zowe_keystore_dir: ~/.zowe/keystore
 zowe_keystore_password: password

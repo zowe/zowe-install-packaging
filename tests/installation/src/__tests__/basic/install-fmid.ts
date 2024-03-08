@@ -31,10 +31,6 @@ describe(testSuiteName, () => {
       process.env.TEST_SERVER,
       {
         'zowe_build_local': process.env['ZOWE_BUILD_LOCAL'],
-        'zowe_apiml_security_oidc_client_id': process.env['OKTA_CLIENT_ID'],
-        'zowe_apiml_security_oidc_client_secret': process.env['OKTA_CLIENT_SECRET'],
-        'zowe_apiml_security_oidc_registry': process.env['OIDC_REGISTRY'],
-        'zowe_apiml_security_oidc_introspect_url': `https://${process.env['OKTA_HOSTNAME']}/oauth2/default/v1/introspect`,
         'zowe_custom_for_test': 'true',
         'zowe_lock_keystore': 'false',
       }

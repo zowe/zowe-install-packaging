@@ -14,22 +14,22 @@ TEST_SERVER=$(echo "$MATRIX_SERVER" | cut -d "-" -f2)
 
 case $TEST_SERVER in
 
-"zzow02")
-    TEST_SERVER_NICKNAME=marist-2
-    ;;
+"zzow06")
+  TEST_SERVER_NICKNAME=marist-6
+  ;;
 
-"zzow03")
-    TEST_SERVER_NICKNAME=marist-3
-    ;;
+"zzow07")
+  TEST_SERVER_NICKNAME=marist-7
+  ;;
 
-"zzow04")
-    TEST_SERVER_NICKNAME=marist-4
-    ;;
+"zzow08")
+  TEST_SERVER_NICKNAME=marist-8
+  ;;
 
 *)
-    printf "${RED}[Check 2 ERROR] Something went wrong when parsing test server nickname\n"
-    exit 1
-    ;;
+  printf "${RED}[Check 2 ERROR] Something went wrong when parsing test server nickname\n"
+  exit 1
+  ;;
 esac
 
 assert_env_var "TEST_SERVER"

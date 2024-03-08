@@ -2,6 +2,52 @@
 
 All notable changes to the Zowe Installer will be documented in this file.
 <!--Add the PR or issue number to the entry if available.-->
+## `2.15.0`
+
+## New features and enhancements
+
+## Minor enhancements/defect fixes
+- Bugfix: `zwe diagnose` running under comfigmgr and output formatted. Fixes #[3627](https://github.com/zowe/zowe-install-packaging/issues/3627).
+
+## `2.14.0`
+
+### New features and enhancements
+- Enhancement: configmgr.ts now can return a Zowe config with the given HA instance's configuration substituted for convenience. This now used in zwe to fix an issue where zwe would not respect the preference of if a component was enabled or disabled in a particular instance when zowe.useConfigmgr was set to true.
+
+#### Minor enhancements/defect fixes
+- Bugfix: environment variables were not using the values specified for each HA instance when zowe.useConfigmgr was set to true.
+
+## `2.13.0`
+
+### New features and enhancements
+- Enhancement: Added utility "getesm" into bin/utils. When run it outputs to STDOUT which ESM your system is using. (#3662)
+
+#### Minor enhancements/defect fixes
+- Bugfix: Workflow files in the Zowe PAX are now ASCII-encoded. Fixes [#3591](https://github.com/zowe/zowe-install-packaging/issues/3591).
+- Enhancement: `/bin/utils/date-add.rex` utility is accepting the date formatting as combination of YY|YYYY, MM, DD and any separator.
+
+## `2.12.0`
+
+### New features and enhancements
+
+#### Minor enhancements/defect fixes
+
+## `2.11.0`
+
+### New features and enhancements
+- Enhancement: Duplicate log messages into syslog according to "zowe.sysMessages" array [#93](https://github.com/zowe/launcher/pull/93)
+
+#### Minor enhancements/defect fixes
+- Bugfix: `zowe-yaml-schema.json` validates unix directory path as `server-common#zowePath`
+- Bugfix: Fixed that Zowe would allow newer Java versions to generate PKCS12 keystores that was not compatible with some components. Newer versions of Java by default create PKCS12 keystores that aren't compatible with GSK / SystemSSL which components such as ZSS use, but include flags to restore a compatibility mode, which Zowe now uses. (#3507)
+
+## `2.10.0`
+
+### New features and enhancements
+- Enhancement: Added a new zwe "diagnose" command to find help on zowe error messages. (#3455)
+
+#### Minor enhancements/defect fixes
+- Enhancement: Check for node v18 which is now supported, but disallow v18.12.1 because it is known not to work for Zowe. (#3485)
 
 ## `2.10.0`
 

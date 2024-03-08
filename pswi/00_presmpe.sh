@@ -8,6 +8,7 @@ echo ""
 echo "Script for preparing datasets for SMP/E (PTFs)..."
 echo "Host               :" $ZOSMF_URL
 echo "Port               :" $ZOSMF_PORT
+echo "SSH Port           :" $ZZOW_SSH_PORT
 echo "z/OSMF system      :" $ZOSMF_SYSTEM
 echo "FMID               :" $FMID
 echo "RFDSNPFX           :" $RFDSNPFX
@@ -27,7 +28,7 @@ sh scripts/tmp_mounts.sh "${TMP_ZFS}" "${TMP_MOUNT}"
 if [ $? -gt 0 ];then exit -1;fi 
 
 cd unzipped
-sshpass -p${ZOSMF_PASS} sftp -o HostKeyAlgorithms=+ssh-rsa -o BatchMode=no -o StrictHostKeyChecking=no -o PubkeyAuthentication=no -b - -P 22 ${ZOSMF_USER}@${HOST} << EOF
+sshpass -p${ZOSMF_PASS} sftp -o HostKeyAlgorithms=+ssh-rsa -o BatchMode=no -o StrictHostKeyChecking=no -o PubkeyAuthentication=no -b - -P ${ZZOW_SSH_PORT} ${ZOSMF_USER}@${HOST} << EOF
 cd ${TMP_MOUNT}
 put ${FMID}.pax.Z
 EOF
@@ -76,13 +77,13 @@ rm JCL
 cd unzipped
 if [ $PTFNR -eq 2 ]
 then
-sshpass -p${ZOSMF_PASS} sftp -o HostKeyAlgorithms=+ssh-rsa -o BatchMode=no -o StrictHostKeyChecking=no -o PubkeyAuthentication=no -b - -P 22 ${ZOSMF_USER}@${HOST} << EOF
+sshpass -p${ZOSMF_PASS} sftp -o HostKeyAlgorithms=+ssh-rsa -o BatchMode=no -o StrictHostKeyChecking=no -o PubkeyAuthentication=no -b - -P ${ZZOW_SSH_PORT} ${ZOSMF_USER}@${HOST} << EOF
 cd ${TMP_MOUNT}
 put ${RFDSNPFX}.${FMID}.${PTF1} ${PTF1}
 put ${RFDSNPFX}.${FMID}.${PTF2} ${PTF2}
 EOF
 else
-sshpass -p${ZOSMF_PASS} sftp -o HostKeyAlgorithms=+ssh-rsa -o BatchMode=no -o StrictHostKeyChecking=no -o PubkeyAuthentication=no -b - -P 22 ${ZOSMF_USER}@${HOST} << EOF
+sshpass -p${ZOSMF_PASS} sftp -o HostKeyAlgorithms=+ssh-rsa -o BatchMode=no -o StrictHostKeyChecking=no -o PubkeyAuthentication=no -b - -P ${ZZOW_SSH_PORT} ${ZOSMF_USER}@${HOST} << EOF
 cd ${TMP_MOUNT}
 put ${RFDSNPFX}.${FMID}.${PTF1} ${PTF1}
 EOF

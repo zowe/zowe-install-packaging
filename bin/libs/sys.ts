@@ -114,10 +114,10 @@ export function waitForProcessExit(pid: number): boolean {
   }
   
   if (shellReturn.rc == 0) {
-    common.printFormattedDebug("ZWELS", "sys-utils.sh,wait_for_process_exit:", `process ${pid} does NOT exit before timeout`);
+    common.printFormattedDebug("ZWELS", "sys.ts,wait_for_process_exit:", `process ${pid} does NOT exit before timeout`);
     return false;
   } else {
-    common.printFormattedDebug("ZWELS", "sys-utils.sh,wait_for_process_exit:", `process ${pid} no longer exists`);
+    common.printFormattedDebug("ZWELS", "sys.ts,wait_for_process_exit:", `process ${pid} no longer exists`);
     return true;
   }
 }
@@ -138,14 +138,14 @@ export function gracefullyShutdown(pid?: number): boolean {
   }
   if (pid >= 1) {
     let children = findAllChildProcesses(pid);
-    common.printFormattedDebug("ZWELS", "sys-utils.sh,gracefully_shutdown", "SIGTERM signal received, shutting down process ${pid} and all child processes");
+    common.printFormattedDebug("ZWELS", "sys.ts,gracefully_shutdown", "SIGTERM signal received, shutting down process ${pid} and all child processes");
 
     // send SIGTERM to all children
     os.kill(pid, 15);
     children.forEach((pid:number)=>{
       waitForProcessExit(pid);
     });
-    common.printFormattedDebug("ZWELS", "sys-utils.sh,gracefully_shutdown", "all child processes exited");
+    common.printFormattedDebug("ZWELS", "sys.ts,gracefully_shutdown", "all child processes exited");
     return true;
   }
   return false;

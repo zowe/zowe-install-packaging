@@ -21,6 +21,7 @@ import {
   ANSIBLE_ROOT_DIR,
   SANITY_TEST_REPORTS_DIR,
   INSTALL_TEST_REPORTS_DIR,
+  APIML_OIDC_VARS,
 } from './constants';
 
 /**
@@ -209,7 +210,7 @@ async function installAndVerifyZowe(testcase: string, installPlaybook: string, s
     testcase,
     installPlaybook,
     serverId,
-    extraVars
+    { ...APIML_OIDC_VARS , ...extraVars}
   );
 
   expect(resultInstall.code).toBe(0);
@@ -335,7 +336,7 @@ export async function installAndVerifyDockerBuild(testcase: string, serverId: st
     testcase,
     'install-docker.yml',
     serverId,
-    extraVars
+    { ...extraVars, ...APIML_OIDC_VARS }
   );
 
   expect(resultInstall.code).toBe(0);
@@ -396,16 +397,18 @@ export async function installAndVerifyExtension(testcase: string, serverId: stri
 }
 
 /**
- * Install and verify SMPE PTF
+ * Install and verify SMPE PTF. Separate variables for FMID and PTF install operations.
  *
  * @param  {String}    testcase 
  * @param  {String}    serverId
- * @param  {Object}    extraVars
+ * @param  {Object}    extraFmidVars
+ * @param  {Object}    extraPtfVars
  */
-export async function installAndVerifySmpePtf(testcase: string, serverId: string, extraVars: {[key: string]: any} = {}): Promise<void> {
-  debug(`installAndVerifySmpePtf(${testcase}, ${serverId}, ${JSON.stringify(extraVars)})`);
+export async function installAndVerifySmpePtf(testcase: string, serverId: string,  extraPtfVars: {[key: string]: any} = {}): Promise<void> {
+  debug(`installAndVerifySmpePtf(${testcase}, ${serverId}, ${JSON.stringify(extraPtfVars)})`);
 
   debug(`run install-fmid.yml on ${serverId}`);
+ 
   const resultFmid = await runAnsiblePlaybook(
     testcase,
     'install-fmid.yml',
@@ -413,6 +416,7 @@ export async function installAndVerifySmpePtf(testcase: string, serverId: string
     {
       'zowe_build_remote': ZOWE_FMID,
       'skip_start': 'true',
+      ...APIML_OIDC_VARS
     }
   );
 
@@ -423,7 +427,7 @@ export async function installAndVerifySmpePtf(testcase: string, serverId: string
     testcase,
     'install-ptf.yml',
     serverId,
-    extraVars
+    { ...extraPtfVars, ...APIML_OIDC_VARS }
   );
 
   expect(resultPtf.code).toBe(0);
@@ -435,7 +439,7 @@ export async function installAndVerifySmpePtf(testcase: string, serverId: string
   // clean up sanity test folder
   cleanupSanityTestReportDir();
 
-  if (extraVars && extraVars['skip_start'] && extraVars['skip_start'] === 'true') {
+  if (extraPtfVars && extraPtfVars['skip_start'] && extraPtfVars['skip_start'] === 'true') {
     debug('running install-ptf.yml playbook with skip_start=true, skip verify');
 
   } else {
@@ -463,7 +467,7 @@ export async function installAndGenerateApiDocs(testcase: string, serverId: stri
     testcase,
     'install.yml',
     serverId,
-    extraVars
+    { ...extraVars, ...APIML_OIDC_VARS }
   );
 
   expect(resultInstall.code).toBe(0);
@@ -509,7 +513,7 @@ export async function showZoweRuntimeLogs(serverId: string, extraVars: {[key: st
       'doesn\'t matter',
       'show-logs.yml',
       serverId,
-      extraVars
+      { ...extraVars, ...APIML_OIDC_VARS }
     );
   } catch (e) {
     debug(`showZoweRuntimeLogs failed: ${e}`);

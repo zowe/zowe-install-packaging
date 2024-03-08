@@ -1,4 +1,11 @@
 name: Zowe Build and Packaging
+
+permissions:
+  id-token: write
+  issues: write
+  pull-requests: write
+  contents: write
+
 on:
   push:
     branches:
@@ -130,7 +137,7 @@ jobs:
           
           echo BUILD_WHAT=$BUILD_WHAT >> $GITHUB_OUTPUT
       
-      - name: '[Prep 7] Comment on PR to indicate build is started'
+      - name: '[Prep 7] Comment on PR to indicate build is started'         
         uses: actions/github-script@v5
         id: create-comment
         if: (github.event_name == 'workflow_dispatch' || github.event_name == 'pull_request') && startsWith(env.CURRENT_BRANCH, 'PR-')
@@ -171,7 +178,7 @@ jobs:
         with:
           manifest-file-path: ${{ github.workspace }}/manifest.json
           default-target-path: .pax/binaryDependencies/
-          expected-count: 29
+          expected-count: 30
       
       # this step is not doing a publish, we are just utilizing this actions to get the PUBLISH_TARGET_PATH, 
       # and it will be used in the next step: [Download 3] Download SMPE build log
@@ -236,7 +243,7 @@ jobs:
         with:
           lock-repository: ${{ github.repository }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          lock-resource-name: zowe-psi-build-zzow03-lock
+          lock-resource-name: zowe-psi-build-zzow07-lock
           lock-avg-retry-interval: 60
 
       - name: '[SMPE Pax 4] Build PSWI'
@@ -249,6 +256,7 @@ jobs:
         env:
           ZOSMF_USER: ${{ secrets.ZOWE_PSWI_BUILD_USR }}
           ZOSMF_PASS: ${{ secrets.ZOWE_PSWI_BUILD_PASSWD }}
+          ZZOW_SSH_PORT: ${{ secrets.SSH_MARIST_ALLSYS_PORT }}
           VERSION: ${{ env.P_VERSION }}
 
       - name: '[K8S] Build Kubernetes'
@@ -264,6 +272,7 @@ jobs:
         timeout-minutes: 10
         uses: zowe-actions/shared-actions/publish@main
         with:
+          sigstore-sign-artifacts: true
           artifacts: |
             .pax/zowe.pax
             .pax/zowe-smpe.zip
