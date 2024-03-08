@@ -103,7 +103,9 @@ function getTempMergedYamlDir(): string|number {
     const mkdirrc = fs.mkdirp(zwePrivateWorkspaceEnvDir, 0o700);
     if (mkdirrc) { return mkdirrc; }
 
-    console.log(`Temporary directory '${zwePrivateWorkspaceEnvDir}' created.\nZowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.`);
+    if (!std.getenv('ZWE_CLI_PARAMETER_SILENT')) {
+      console.log(`Temporary directory '${zwePrivateWorkspaceEnvDir}' created.\nZowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.`);
+    }
     return zwePrivateWorkspaceEnvDir;
   } else {
     return 0;
@@ -270,9 +272,7 @@ export function cleanupTempDir() {
     }
     const rc = os.exec(['rm', '-rf', tmpDir],
                        {block: true, usePath: true});
-    if (rc == 0) {
-      console.log(`Temporary directory ${tmpDir} removed successfully.`);
-    } else {
+    if (rc != 0) {
       console.log(`Error: Temporary directory ${tmpDir} was not removed successfully, manual cleanup is needed. rc=${rc}`);
     }
   }

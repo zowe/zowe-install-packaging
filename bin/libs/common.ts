@@ -12,6 +12,7 @@
 import * as std from 'cm_std';
 import * as os from 'cm_os';
 import * as xplatform from 'xplatform';
+import * as zos from 'zos';
 
 import * as fs from './fs';
 //import * as stringlib from './string';
@@ -130,6 +131,13 @@ export function date(...args: string[]): string|undefined {
 let logExists = false;
 let logFile:std.File|null = null;
 
+export function finishLogFile() {
+  if (logFile) {
+    logFile.close();
+    zos.changeTag(std.getenv('ZWE_PRIVATE_LOG_FILE'), 819);
+  }
+}
+
 function writeLog(message: string): boolean {
   const filename = std.getenv('ZWE_PRIVATE_LOG_FILE');
   if (!logExists) {
@@ -139,7 +147,7 @@ function writeLog(message: string): boolean {
         fs.createFile(filename, 0o640, message);
         logExists = fs.fileExists(filename);
       }
-      if (logExists && (os.platform != 'zos')) {
+      if (logExists) {
         let errObj = {errno:undefined};
         logFile = std.open(filename, 'w', errObj);
         if (errObj.errno) {
@@ -153,13 +161,9 @@ function writeLog(message: string): boolean {
   }
   if (logFile===undefined || logFile===null) {
     return false;
-  } else if (os.platform != 'zos') {
+  } else {
     //TODO this does utf8. should we flip it to 1047 on zos?
     logFile.puts(message+'\n');
-    return true;
-  } else {
-    //TODO on zos, there is some printing bug in the JS code. configmgr functions work well for writing, but the native qjs ones dont. for now, just using an echo...
-    shell.execSync('sh', '-c', `echo ${message} >> ${filename}`);
     return true;
   }
 }
