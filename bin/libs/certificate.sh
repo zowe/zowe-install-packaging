@@ -828,7 +828,7 @@ keyring_run_zwekring_jcl() {
   validity="${8}"
   security_product="${9}"
 
-  member_prefix="ZWEIK"
+  member_prefix="ZWEIKR"
   if [ "${security_product}" = "TSS" ]; then
     member_name="${member_prefix}T${jcloption}"
   elif [ "${security_product}" = "ACF2" ]; then
@@ -997,7 +997,7 @@ keyring_run_zwenokyr_jcl() {
   jcllib="${2}"
   security_product="${3}"
 
-  member_prefix="ZWEINOKR"
+  member_prefix="ZWENOKR"
   if [ "${security_product}" = "TSS" ]; then
     member_name="${member_prefix}T"
   elif [ "${security_product}" = "ACF2" ]; then
