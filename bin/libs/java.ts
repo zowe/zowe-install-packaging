@@ -61,7 +61,7 @@ export function requireJava() {
   }
   if (std.getenv('ZWE_CLI_PARAMETER_CONFIG')) {
     const customJavaHome = shellReadYamlJavaHome();
-    if (customJavaHome && customJavaHome != "DETECT") {
+    if (customJavaHome) {
       std.setenv('JAVA_HOME', customJavaHome);
     }
   }
@@ -72,7 +72,7 @@ export function requireJava() {
     } 
   }
   if (!std.getenv('JAVA_HOME')) {
-    common.printErrorAndExit("Error ZWEL0122E: Cannot find java. Please define JAVA_HOME environment variable or set java.home in the YAML config file.", undefined, 122);
+    common.printErrorAndExit("Error ZWEL0122E: Cannot find java. Set the java.path value in the Zowe YAML, or include java in the PATH environment variable of any accounts that start or manage Zowe", undefined, 122);
   }
 
   ensureJavaIsOnPath();

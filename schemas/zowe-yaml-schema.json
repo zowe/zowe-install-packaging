@@ -556,8 +556,8 @@
       "type": "object",
       "properties": {
         "home": {
-          "$ref": "/schemas/v2/server-common#zowePath",
-          "description": "Path to Java home directory."
+          "$ref": "/schemas/v2/server-common#zoweOptionalPath",
+          "description": "Path to Java home directory. If java is at '/java/home/bin/java', than this would be '/java/home' "
         }
       }
     },
@@ -565,8 +565,8 @@
       "type": "object",
       "properties": {
         "home": {
-          "$ref": "/schemas/v2/server-common#zowePath",
-          "description": "Path to node.js home directory."
+          "$ref": "/schemas/v2/server-common#zoweOptionalPath",
+          "description": "Path to node.js home directory. If node is at '/node/home/bin/node', than this would be '/node/home' ""
         }
       }
     },

@@ -86,9 +86,7 @@ require_node() {
   if [ -n "${ZWE_CLI_PARAMETER_CONFIG}" ]; then
     custom_node_home=$(shell_read_yaml_node_home "${ZWE_CLI_PARAMETER_CONFIG}")
     if [ -n "${custom_node_home}" ]; then
-      if [ "${custom_node_home}" != "DETECT" ]; then
-        export NODE_HOME="${custom_node_home}"
-      fi
+      export NODE_HOME="${custom_node_home}"
     fi
   fi
   if [ -z "${NODE_HOME}" ]; then
@@ -96,7 +94,7 @@ require_node() {
   fi
 
   if [ -z "${NODE_HOME}" ]; then
-    print_error_and_exit "Error ZWEL0121E: Cannot find node. Please define NODE_HOME environment variable." "" 121
+    print_error_and_exit "Error ZWEL0121E: Cannot find node. Set the node.path value in the Zowe YAML, or include node in the PATH environment variable of any accounts that start or manage Zowe" "" 121
   fi
 
   ensure_node_is_on_path
