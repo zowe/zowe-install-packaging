@@ -1,1 +1,15 @@
-""
+{
+  "lockAcquiredTime": "Mon Mar 11 2024 16:58:40 GMT+0000 (Coordinated Universal Time)",
+  "uid": "1710176320467723131",
+  "repository": {
+    "owner": "zowe",
+    "repo": "zowe-install-packaging"
+  },
+  "branch": "user/markackert/smpe-build-fix",
+  "workflow": "Zowe Build and Packaging",
+  "job": "regular-build",
+  "actor": "MarkAckert",
+  "runId": 8236162651,
+  "runNumber": 4719,
+  "link": "https://github.com/zowe/zowe-install-packaging/actions/runs/8236162651"
+}
