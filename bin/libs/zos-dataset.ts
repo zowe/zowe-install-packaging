@@ -104,3 +104,70 @@ export function getDatasetVolume(dataset: string): { rc: number, volume?: string
     return { rc: 1 }
   }
 }
+
+
+export function isDatasetSmsManaged(dataset: string): { rc: number, smsManaged?: boolean } {
+  // REF: https://www.ibm.com/docs/en/zos/2.3.0?topic=dscbs-how-found
+  //      bit DS1SMSDS at offset 78(X'4E')
+  //
+  // Example of listds response:
+  //
+  // listds 'IBMUSER.LOADLIB' label
+  // IBMUSER.LOADLIB
+  // --RECFM-LRECL-BLKSIZE-DSORG
+  //   U     **    6144    PO                                                                                          
+  // --VOLUMES--
+  //   VPMVSH
+  // --FORMAT 1 DSCB--
+  // F1 E5D7D4E5E2C8 0001 780034 000000 09 00 00 C9C2D4D6E2E5E2F24040404040
+  // 78003708000000 0200 C0 00 1800 0000 00 0000 82 80000002 000000 0000 0000
+  // 0100037D000A037E0004 01010018000C0018000D 0102006F000D006F000E 0000000217
+  // --FORMAT 3 DSCB--
+  // 03030303 0103009200090092000A 01040092000B0092000C 01050092000D0092000E
+  // 0106035B0006035B0007 F3 0107035B0008035B0009 0108035B000A035B000B
+  // 00000000000000000000 00000000000000000000 00000000000000000000
+  // 00000000000000000000 00000000000000000000 00000000000000000000
+  // 00000000000000000000 0000000000
+  //
+  // SMS flag is in `FORMAT 1 DSCB` section second line, after 780037
+
+  common.printTrace(`- Check if ${dataset} is SMS managed`);
+  const labelResult = zoslib.tsoCommand(`listds '${stringlib.escapeDollar(dataset)}' label`);
+  const datasetLabel=labelResult.out;
+  if (labelResult.rc == 0) {
+    let formatIndex = datasetLabel.indexOf('--FORMAT 1 DSCB--');
+    let dscb_fmt1: string;
+    if (formatIndex == -1) {
+      formatIndex = datasetLabel.indexOf('--FORMAT 8 DSCB--');
+    }
+    if (formatIndex != -1) {
+      let startIndex = formatIndex + '--FORMAT 8 DSCB--'.length;
+      let endIndex = datasetLabel.indexOf('--',startIndex);
+      dscb_fmt1 = datasetLabel.substring(startIndex, endIndex);
+    }
+    if (!dscb_fmt1) {
+      common.printError("  * Failed to find format 1 data set control block information.");
+      return { rc: 2 };
+    } else {
+      const lines = dscb_fmt1.split('\n');
+      const line = lines.length > 1 ? lines[1] : '';
+      const ds1smsfg = line.substring(6,8);
+      common.printTrace(`  * DS1SMSFG: ${ds1smsfg}`);
+      if (!ds1smsfg) {
+        common.printError("  * Failed to find system managed storage indicators from format 1 data set control block.");
+        return { rc: 3 };
+      } else {
+        const ds1smsds=parseInt(ds1smsfg, 16) & 0x80;
+        common.printTrace(`  * DS1SMSDS: ${ds1smsds}`);
+        if (ds1smsds == 128) {
+          // sms managed
+          return { rc: 0, smsManaged: true };
+        } else {
+          return { rc: 0, smsManaged: false };
+        }
+      }
+    }
+  } else {
+    return { rc: 1 };
+  }
+}
