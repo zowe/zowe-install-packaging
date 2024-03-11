@@ -1,1 +1,15 @@
-""
+{
+  "lockAcquiredTime": "Mon Mar 11 2024 12:45:34 GMT+0000 (Coordinated Universal Time)",
+  "uid": "1710161134718180238",
+  "repository": {
+    "owner": "zowe",
+    "repo": "zowe-install-packaging"
+  },
+  "branch": "user/pavelzlatnik/fix-zweconf-yaml-generator",
+  "workflow": "Zowe Build and Packaging",
+  "job": "regular-build",
+  "actor": "muzikovam",
+  "runId": 8232680854,
+  "runNumber": 4717,
+  "link": "https://github.com/zowe/zowe-install-packaging/actions/runs/8232680854"
+}
