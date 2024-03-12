@@ -557,39 +557,6 @@ How we want to verify SSL certificates of services. Valid values are:
             <default>false</default>
         </boolean>
     </variable>
-    <variable name="components_metrics_service_enabled" scope="instance" visibility="public">
-        <label>Enable metrics service</label>
-        <abstract>Use this option to enable the metrics seervice</abstract>
-        <description>Use this option to enable the metrics seervice</description>
-        <category>components</category>
-        <boolean>
-            <!-- Put validation here -->
-            <!-- Specify choices here -->
-            <default>false</default>
-        </boolean>
-    </variable>
-    <variable name="components_metrics_service_port" scope="instance" visibility="public">
-        <label>Metrics service port</label>
-        <abstract>Port for the metrics service</abstract>
-        <description>Port for the metrics service</description>
-        <category>components</category>
-        <integer>
-            <!-- Put validation here -->
-            <!-- Specify choices here -->
-            <default>7551</default>
-        </integer>
-    </variable>
-    <variable name="components_metrics_service_debug" scope="instance" visibility="public">
-        <label>Metrics service debug</label>
-        <abstract>Check this value to get additional debugging</abstract>
-        <description>Check this value to get additional debugging</description>
-        <category>components</category>
-        <boolean>
-            <!-- Put validation here -->
-            <!-- Specify choices here -->
-            <default>false</default>
-        </boolean>
-    </variable>
     <variable name="components_api_catalog_enabled" scope="instance" visibility="public">
         <label>Enable API catalog</label>
         <abstract>Use this option to enable the API catalog</abstract>
@@ -928,7 +895,6 @@ How we want to verify SSL certificates of services. Valid values are:
             <variableValue name="zOSMF_port" scope="instance" noPromptIfSet="false" required="true"/>
             <variableValue name="zOSMF_applId" scope="instance" noPromptIfSet="false" required="true"/>
             <variableValue name="components_gateway_enabled" scope="instance" noPromptIfSet="false" required="true"/>
-            <variableValue name="components_metrics_service_enabled" scope="instance" noPromptIfSet="false" required="true"/>
             <variableValue name="components_api_catalog_enabled" scope="instance" noPromptIfSet="false" required="true"/>
             <variableValue name="components_discovery_enabled" scope="instance" noPromptIfSet="false" required="true"/>
             <variableValue name="components_caching_service_enabled" scope="instance" noPromptIfSet="false" required="true"/>
@@ -973,30 +939,6 @@ How we want to verify SSL certificates of services. Valid values are:
             <variableValue name="components_gateway_server_internal_port" scope="instance" noPromptIfSet="false" required="true"/>
             <variableValue name="components_gateway_server_internal_ssl_enabled" scope="instance" noPromptIfSet="false" required="true"/>
             <instructions substitution="true">Run this step to fill gateway component variables.</instructions>
-            <weight>1</weight>
-            <skills>z/OS System Programmer</skills>
-            <autoEnable>false</autoEnable>
-            <canMarkAsFailed>false</canMarkAsFailed>
-            <!--template-->
-        </step>
-        <step name="metrics_component" optional="false">
-            <title>Metrics component variables</title>
-            <description>Specify the variables for the metrics component</description>
-            <prereqStep name="main_variables"/>
-            <condition>
-                <expression>1 == 1</expression>
-                <description>Always true</description>
-                <targetStateSet>
-                    <extendStateExpression>
-                        <description>Skipped if the metrics component was not selected</description>
-                        <expression>!${instance-components_metrics_service_enabled}</expression>
-                        <targetState>skipped</targetState>
-                    </extendStateExpression>
-                </targetStateSet>
-            </condition>
-            <variableValue name="components_metrics_service_port" scope="instance" noPromptIfSet="false" required="true"/>
-            <variableValue name="components_metrics_service_debug" scope="instance" noPromptIfSet="false" required="true"/>
-            <instructions substitution="false">Run this step to specify the metrics variables</instructions>
             <weight>1</weight>
             <skills>z/OS System Programmer</skills>
             <autoEnable>false</autoEnable>
@@ -1686,18 +1628,6 @@ echo '    #   keystore:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '    #     alias: ""' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '  # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-#if (${instance-components_metrics_service_enabled} == "true" )
-echo '  metrics-service:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '    enabled: ${instance-components_metrics_service_enabled}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '    port: ${instance-components_metrics_service_port}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '    debug: ${instance-components_metrics_service_debug}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-#end
-#if (${instance-components_metrics_service_enabled} == "false" )
-echo '  metrics-service:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '    enabled: ${instance-components_metrics_service_enabled}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '    port: 7551' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '    debug: false' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-#end
 echo '' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '  # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 #if (${instance-components_api_catalog_enabled} == "true" )
@@ -1799,30 +1729,6 @@ echo '    tls: true' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 #end
 echo '' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '  # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-#if (${instance-components_jobs_api_enabled} == "true" )
-echo '  jobs-api:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '    enabled: ${instance-components_jobs_api_enabled}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '    port: ${instance-components_jobs_api_port}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-#end
-#if (${instance-components_jobs_api_enabled} == "false" )
-echo '  jobs-api:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '    enabled: ${instance-components_jobs_api_enabled}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '    port: 7558' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-#end
-echo '' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '  # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-#if (${instance-components_files_api_enabled} == "true" )
-echo '  files-api:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '    enabled: ${instance-components_files_api_enabled}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '    port: ${instance-components_files_api_port}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-#end
-#if (${instance-components_files_api_enabled} == "false" )
-echo '  files-api:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '    enabled: ${instance-components_files_api_enabled}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '    port: 7559' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-#end
-echo '' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '  # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '  explorer-jes:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '    enabled: ${instance-components_explorer_jes_enabled}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
@@ -1879,12 +1785,6 @@ echo '#         enabled: false' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '#       zss:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '#         # no app-server in this instance' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '#         enabled: false' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '#       jobs-api:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '#         port: 18545' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '#         enabled: true' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '#       files-api:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '#         port: 18547' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '#         enabled: true' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '#       caching-service:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '#         port: 17555' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '#' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
@@ -1906,10 +1806,6 @@ echo '#         enabled: false' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '#         port: 28544' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '#       zss:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '#         port: 28542' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '#       jobs-api:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '#         enabled: true' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '#       files-api:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '#         enabled: false' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '#       caching-service:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '#         enabled: false' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 ]]></inlineTemplate>
