@@ -274,15 +274,15 @@ These servers by default use the TCP IP address `0.0.0.0` which assigns the serv
 If this default is not desired, it is recommended to use [TCPIP port assignment statements](https://www.ibm.com/docs/en/zos/2.4.0?topic=assignments-profiletcpip-port) to restrict the IP & ports of each server by their jobnames.
 The jobnames of each Zowe component is derived from the property `zowe.job.prefix` + `<component-suffix>`, where the suffix is seen in the port table above.
 
-When `zowe.job.prefix` is "ZWE1", An example of port reservations could be:
+When `zowe.job.prefix` is "ZWE1", An example of port reservations with a fixed IP of "10.11.12.13" could be:
 
 ```
-   7552 TCP ZWE1AC      ; Zowe API Catalog
-   7553 TCP ZWE1AD      ; Zowe Discovery
-   7554 TCP ZWE1AG      ; Zowe Gateway
-   7555 TCP ZWE1CS      ; Zowe Caching Service
-   7556 TCP ZWE1DS      ; Zowe App Server
-   7557 TCP ZWE1SZ      ; Zowe ZSS
+   7552 TCP ZWE1AC BIND 10.11.12.13 ; Zowe API Catalog
+   7553 TCP ZWE1AD BIND 10.11.12.13 ; Zowe Discovery
+   7554 TCP ZWE1AG BIND 10.11.12.13 ; Zowe Gateway
+   7555 TCP ZWE1CS BIND 10.11.12.13 ; Zowe Caching Service
+   7556 TCP ZWE1DS BIND 10.11.12.13 ; Zowe App Server
+   7557 TCP ZWE1SZ BIND 10.11.12.13 ; Zowe ZSS
 ```
 
 ### TLS configuration
