@@ -12,7 +12,7 @@ k8s_gateway_domain:
 k8s_list_domain_ip: localhost
 k8s_networking:
 k8s_pv_name:
-k8s_required_apps: ["api-catalog", "app-server", "caching", "explorer-jes", "explorer-mvs", "explorer-uss", "discovery", "files-api", "gateway", "jobs-api"]
+k8s_required_apps: ["api-catalog", "app-server", "caching", "explorer-jes", "explorer-mvs", "explorer-uss", "discovery", "gateway"]
 k8s_service: loadbalancer
 k8s_storageclass: 
 kubeconfig:
@@ -30,7 +30,6 @@ zowe_apiml_discovery_port: 7553
 zowe_apiml_gateway_port: 7554
 zowe_apiml_cloud_gateway_port: 7563
 zowe_apiml_gateway_timeout_millis: 600000
-zowe_apiml_metrics_service_port: 7551
 zowe_apiml_nonstrict_verify_certficates_of_services: true
 zowe_apiml_security_auth_provider: zosmf
 zowe_apiml_security_x509_enabled: false

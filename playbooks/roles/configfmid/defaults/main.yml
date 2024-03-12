@@ -7,14 +7,11 @@
 zowe_core_components:
 - gateway
 - cloud-gateway
-- metrics-service
 - api-catalog
 - discovery
 - caching-service
 - app-server
 - zss
-- jobs-api
-- files-api
 - explorer-jes
 - explorer-mvs
 - explorer-uss
@@ -54,7 +51,6 @@ zos_zosmf_user: IZUSVR
 # default z/OSMF Certificate Authority
 zos_zosmf_ca:
 # APIML ports
-zowe_apiml_metrics_service_port: 7551
 zowe_apiml_catalog_port: 7552
 zowe_apiml_discovery_port: 7553
 zowe_apiml_gateway_port: 7554
