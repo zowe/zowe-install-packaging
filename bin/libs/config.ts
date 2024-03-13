@@ -136,7 +136,7 @@ export function generateInstanceEnvFromYamlConfig(haInstance: string) {
     let flat = [];
     if (componentManifest.configs) {
       componentsWithConfigs.push(currentComponent);
-      let currentComponentJson = {};
+      let currentComponentJson:any = {};
       currentComponentJson.components = {};
       currentComponentJson.components[currentComponent] = componentManifest.configs;
       jsonConfig = merger.merge( jsonConfig, currentComponentJson);
