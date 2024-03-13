@@ -769,50 +769,6 @@ How we want to verify SSL certificates of services. Valid values are:
             <default>true</default>
         </boolean>
     </variable>
-    <variable name="components_jobs_api_enabled" scope="instance" visibility="public">
-        <label>Enable jobs API</label>
-        <abstract>Check this option to enable the jobs API</abstract>
-        <description>Check this option to enable the jobs API</description>
-        <category>components</category>
-        <boolean>
-            <!-- Put validation here -->
-            <!-- Specify choices here -->
-            <default>false</default>
-        </boolean>
-    </variable>
-    <variable name="components_jobs_api_port" scope="instance" visibility="public">
-        <label>Jobs API port</label>
-        <abstract>Port for the Jobs API</abstract>
-        <description>Port for the Jobs API</description>
-        <category>components</category>
-        <integer>
-            <!-- Put validation here -->
-            <!-- Specify choices here -->
-            <default>7558</default>
-        </integer>
-    </variable>
-    <variable name="components_files_api_enabled" scope="instance" visibility="public">
-        <label>Enable files API</label>
-        <abstract>Check this option to enable the files API</abstract>
-        <description>Check this option to enable the files API</description>
-        <category>components</category>
-        <boolean>
-            <!-- Put validation here -->
-            <!-- Specify choices here -->
-            <default>false</default>
-        </boolean>
-    </variable>
-    <variable name="components_files_api_port" scope="instance" visibility="public">
-        <label>Files API port</label>
-        <abstract>Port which will be used by the Files API</abstract>
-        <description>Port which will be used by the Files API</description>
-        <category>components</category>
-        <integer>
-            <!-- Put validation here -->
-            <!-- Specify choices here -->
-            <default>7559</default>
-        </integer>
-    </variable>
     <variable name="components_explorer_jes_enabled" scope="instance" visibility="public">
         <label>Enable explorer JES</label>
         <abstract>Check this to enable the JES explorer</abstract>
