@@ -856,8 +856,6 @@ How we want to verify SSL certificates of services. Valid values are:
             <variableValue name="components_caching_service_enabled" scope="instance" noPromptIfSet="false" required="true"/>
             <variableValue name="components_app_server_enabled" scope="instance" noPromptIfSet="false" required="true"/>
             <variableValue name="components_zss_enabled" scope="instance" noPromptIfSet="false" required="true"/>
-            <variableValue name="components_jobs_api_enabled" scope="instance" noPromptIfSet="false" required="true"/>
-            <variableValue name="components_files_api_enabled" scope="instance" noPromptIfSet="false" required="true"/>
             <variableValue name="components_explorer_jes_enabled" scope="instance" noPromptIfSet="false" required="true"/>
             <variableValue name="components_explorer_mvs_enabled" scope="instance" noPromptIfSet="false" required="true"/>
             <variableValue name="components_explorer_uss_enabled" scope="instance" noPromptIfSet="false" required="true"/>
@@ -1019,52 +1017,6 @@ How we want to verify SSL certificates of services. Valid values are:
             <variableValue name="components_zss_crossMemoryServerName" scope="instance" noPromptIfSet="false" required="true"/>
             <variableValue name="components_zss_tls" scope="instance" noPromptIfSet="false" required="true"/>
             <instructions substitution="false">Run this step to specify the values for the ZSS variables</instructions>
-            <weight>1</weight>
-            <skills>z/OS System Programmer</skills>
-            <autoEnable>false</autoEnable>
-            <canMarkAsFailed>false</canMarkAsFailed>
-            <!--template-->
-        </step>
-        <step name="jobs_api_variables" optional="false">
-            <title>Jobs API Variables</title>
-            <description>Define variables for the Jobs API</description>
-            <prereqStep name="main_variables"/>
-            <condition>
-                <expression>1==1</expression>
-                <description>Always true</description>
-                <targetStateSet>
-                    <extendStateExpression>
-                        <description>Skips if the Jobs API wasn't selected</description>
-                        <expression>!${instance-components_jobs_api_enabled}</expression>
-                        <targetState>skipped</targetState>
-                    </extendStateExpression>
-                </targetStateSet>
-            </condition>
-            <variableValue name="components_jobs_api_port" scope="instance" noPromptIfSet="false" required="true"/>
-            <instructions substitution="false">Run this step to define the variables for the Jobs API</instructions>
-            <weight>1</weight>
-            <skills>z/OS System Programmer</skills>
-            <autoEnable>false</autoEnable>
-            <canMarkAsFailed>false</canMarkAsFailed>
-            <!--template-->
-        </step>
-        <step name="files_api_variables" optional="false">
-            <title>Files API Variables</title>
-            <description>Specify the variables for Files API</description>
-            <prereqStep name="main_variables"/>
-            <condition>
-                <expression>1==1</expression>
-                <description>Always true</description>
-                <targetStateSet>
-                    <extendStateExpression>
-                        <description>Skips this step if the Files API wasn't selected</description>
-                        <expression>!${instance-components_files_api_enabled}</expression>
-                        <targetState>skipped</targetState>
-                    </extendStateExpression>
-                </targetStateSet>
-            </condition>
-            <variableValue name="components_files_api_port" scope="instance" noPromptIfSet="false" required="true"/>
-            <instructions substitution="false">Run this step to specify the variables for the Files API</instructions>
             <weight>1</weight>
             <skills>z/OS System Programmer</skills>
             <autoEnable>false</autoEnable>

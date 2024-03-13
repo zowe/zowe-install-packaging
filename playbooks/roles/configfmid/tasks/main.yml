@@ -40,8 +40,6 @@
     - zowe_apiml_security_oidc_client_secret
     - zowe_apiml_security_oidc_registry
     - zowe_apiml_security_oidc_jwks_uri
-    - zowe_jobs_api_port
-    - zowe_mvs_api_port
     - zowe_jobs_explorer_port
     - zowe_mvs_explorer_port
     - zowe_uss_explorer_port

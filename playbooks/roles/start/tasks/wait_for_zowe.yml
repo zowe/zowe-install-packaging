@@ -25,7 +25,6 @@
     - zowe_external_domain_name
     #- zowe_zss_port
     - zowe_zlux_port
-    - zowe_jobs_api_port
     - zowe_apiml_gateway_port
 
 - name: Check if zowe_test_user has a value
