@@ -44,7 +44,7 @@ vsam_volume=
 if [ "${vsam_mode}" = "NONRLS" ]; then
   vsam_volume=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.vsam.volume")
   if [ -z "${vsam_volume}" ]; then
-    print_error_and_exit "Error ZWEL0148E: Zowe Caching Service VSAM data set Non-RLS attribute (zowe.setup.vsam.volume) is not defined in Zowe YAML configuration file." "" 148
+    print_error_and_exit "Error ZWEL0148E: Zowe Caching Service VSAM data set volume (zowe.setup.vsam.volume) is not defined in Zowe YAML configuration file." "" 148
   fi
 fi
 vsam_storageClass=
