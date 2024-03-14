@@ -84,6 +84,25 @@
   # hide log to avoid exposing zowe_test_user and zowe_test_password
   no_log: True
 
+- name: Wait for Jobs API port {{ zowe_jobs_api_port }} to be available
+  uri:
+    url: "https://{{ zowe_zos_host }}:{{ zowe_jobs_api_port }}/jobs/api/v1?prefix=ZWE*&status=ACTIVE"
+    url_password: "{{ zowe_test_password }}"
+    url_username: "{{ zowe_test_user }}"
+    follow_redirects: none
+    method: GET
+    validate_certs: false
+  register: _result
+  until: _result.status == 200
+  retries: "{{ wait_for_zowe_service_retries | int }}"
+  delay: "{{ wait_for_zowe_service_delay | int }}"
+  # if zowe_zos_host and zowe_external_domain_name are not same, zlux could be
+  # started off z/OS and then we couldn't test right now
+  when: zowe_zos_host == zowe_external_domain_name and (zowe_launch_components is not none and "jobs-api" in zowe_launch_components)
+  delegate_to: localhost
+  # hide log to avoid exposing zowe_test_user and zowe_test_password
+  no_log: True
+
 - name: Wait for Desktop at {{zowe_zos_host}} port {{ zowe_zlux_port }} to be available
   uri:
     url: "https://{{ zowe_zos_host }}:{{ zowe_zlux_port }}"

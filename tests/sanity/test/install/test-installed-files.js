@@ -32,6 +32,10 @@ describe('verify installed files', function() {
     await sshHelper.executeCommandWithNoError(`test -f ${process.env.ZOWE_ROOT_DIR}/bin/utils/opercmd.rex`);
   });
 
+  it('components/jobs-api/bin/jobs-api-server-*.jar should exist', async function() {
+    await sshHelper.executeCommandWithNoError(`test -f ${process.env.ZOWE_ROOT_DIR}/components/jobs-api/bin/jobs-api-server-*.jar`);
+  });
+
   it('fingerprint directory should exist', async function() {
     await sshHelper.executeCommandWithNoError(`test -d ${process.env.ZOWE_ROOT_DIR}/fingerprint`);
   });

@@ -530,6 +530,12 @@ components:
     #     alias: ""
 
   # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+  metrics-service:
+    enabled: false
+    port: 7551
+    debug: false
+
+  # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   cloud-gateway:
     enabled: false
     port: 7563
@@ -595,6 +601,18 @@ components:
       64bit: true
 
   # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+  jobs-api:
+    enabled: false
+    debug: false
+    port: 7558
+
+  # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+  files-api:
+    enabled: false
+    debug: false
+    port: 7559
+
+  # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   explorer-jes:
     enabled: true
 
@@ -652,6 +670,12 @@ components:
 #       zss:
 #         # no app-server in this instance
 #         enabled: false
+#       jobs-api:
+#         port: 18545
+#         enabled: true
+#       files-api:
+#         port: 18547
+#         enabled: true
 #       caching-service:
 #         port: 17555
 #
@@ -673,5 +697,9 @@ components:
 #         port: 28544
 #       zss:
 #         port: 28542
+#       jobs-api:
+#         enabled: true
+#       files-api:
+#         enabled: false
 #       caching-service:
 #         enabled: false

@@ -122,6 +122,14 @@ data:
         tls: true
         crossMemoryServerName: ZWESIS_STD
 
+      jobs-api:
+        enabled: true
+        port: 8545
+
+      files-api:
+        enabled: true
+        port: 8547
+
       explorer-jes:
         enabled: true
 
