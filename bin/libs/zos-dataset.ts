@@ -130,20 +130,30 @@ export function isDatasetSmsManaged(dataset: string): { rc: number, smsManaged?:
   // 00000000000000000000 0000000000
   //
   // SMS flag is in `FORMAT 1 DSCB` section second line, after 780037
+  // The first flag 'F1' is DS1FMTID at offset 44(X'2C')
+  //
+  // Notes:
+  //   The first section is --FORMAT 1 DSCB-- xor --FORMAT 8 DSCB--
+  //   The section --FORMAT 3 DSCB-- is optional
+  //
 
   common.printTrace(`- Check if ${dataset} is SMS managed`);
   const labelResult = zoslib.tsoCommand(`listds '${stringlib.escapeDollar(dataset)}' label`);
   const datasetLabel=labelResult.out;
   if (labelResult.rc == 0) {
-    let formatIndex = datasetLabel.indexOf('--FORMAT 1 DSCB--');
+    let formatIndex = datasetLabel.indexOf("--FORMAT 1 DSCB--\n");
     let dscb_fmt1: string;
     if (formatIndex == -1) {
-      formatIndex = datasetLabel.indexOf('--FORMAT 8 DSCB--');
+      formatIndex = datasetLabel.indexOf("--FORMAT 8 DSCB--\n");
     }
     if (formatIndex != -1) {
-      let startIndex = formatIndex + '--FORMAT 8 DSCB--'.length;
+      let startIndex = formatIndex + "--FORMAT 8 DSCB--\n".length;
       let endIndex = datasetLabel.indexOf('--',startIndex);
-      dscb_fmt1 = datasetLabel.substring(startIndex, endIndex);
+      if (endIndex != -1) {
+        dscb_fmt1 = datasetLabel.substring(startIndex, endIndex);
+      } else {
+        dscb_fmt1 = datasetLabel.substring(startIndex);
+      }
     }
     if (!dscb_fmt1) {
       common.printError("  * Failed to find format 1 data set control block information.");

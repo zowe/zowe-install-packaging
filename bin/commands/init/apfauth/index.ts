@@ -53,7 +53,7 @@ export function execute() {
     const COMMAND_LIST = std.getenv('ZWE_CLI_COMMANDS_LIST');
     const tmpfile = fs.createTmpFile(`zwe ${COMMAND_LIST}`.replace(new RegExp('\ ', 'g'), '-'));
     common.printDebug(`- Copy ${jcllib}(ZWEIAPF) to ${tmpfile}`);
-    let jclContent = shell.execOutSync('sh', '-c', `cat "//'${jcllib}(ZWEIAPF)'" 2>&1`);
+    let jclContent = shell.execOutSync('sh', '-c', `cat "//'${stringlib.escapeDollar(jcllib)}(ZWEIAPF)'" 2>&1`);
     if (jclContent.out && jclContent.rc == 0) {
       common.printDebug(`  * Succeeded`);
       common.printTrace(`  * Output:`);
