@@ -237,6 +237,31 @@ jobs:
           cat rename-back.sh
           ./rename-back.sh
 
+      - name: '[SMPE Pax 4] Prepare to sign SMP/e PTFs individually'
+        if: env.INPUTS_BUILD_SMPE == 'true' || env.INPUTS_BUILD_PSWI == 'true'
+        run: |
+          cd .pax
+          mkdir -p smpe_sign
+          unzip zowe-smpe.zip -d smpe_sign
+      
+      - name: '[SMPE Pax 5] Sign PTFs'
+        id: sign-smpe
+        if: env.INPUTS_BUILD_SMPE == 'true' || env.INPUTS_BUILD_PSWI == 'true'
+        uses: zowe-actions/shared-actions/sigstore-sign-artifacts@main
+        with:
+          output_path: .pax/smpe_sign
+          artifacts: |
+            .pax/smpe_sign/*
+
+      - name: '[SMPE Pax 6] Rebuild SMPE ZIP'
+        id: rezip-smpe
+        if: env.INPUTS_BUILD_SMPE == 'true' || env.INPUTS_BUILD_PSWI == 'true'
+        run: |
+          cd .pax
+          rm zowe-smpe.zip
+          zip zowe-smpe.zip smpe_sign/*
+          rm -rf smpe_sign
+
       - name: '[PSI-LOCK] Lock marist servers to build PSWI'
         uses: zowe-actions/shared-actions/lock-resource@main
         if: env.INPUTS_BUILD_PSWI == 'true'
@@ -246,7 +271,7 @@ jobs:
           lock-resource-name: zowe-psi-build-zzow07-lock
           lock-avg-retry-interval: 60
 
-      - name: '[SMPE Pax 4] Build PSWI'
+      - name: '[SMPE Pax 7] Build PSWI'
         if: env.INPUTS_BUILD_PSWI == 'true'
         timeout-minutes: 60
         run: |
@@ -285,7 +310,7 @@ jobs:
         env:
           DEBUG: 'zowe-actions:shared-actions:publish'
 
-      - name: '[Post Prep 7] Update PR comment to indicate build succeeded'
+      - name: '[Post Prep 6] Update PR comment to indicate build succeeded'
         uses: actions/github-script@v5
         if: steps.create-comment.outputs.result != '' && success()
         with:
@@ -311,7 +336,7 @@ jobs:
               body: `${{ steps.process-inputs.outputs.BUILD_WHAT }} build ${context.runNumber} FAILED. \n Link to workflow run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}`
             });
 
-      - name: '[Post Prep 7] Update PR comment to indicate build cancelled'
+      - name: '[Post Prep 8] Update PR comment to indicate build cancelled'
         uses: actions/github-script@v5
         if: steps.create-comment.outputs.result != '' && cancelled()
         with:
