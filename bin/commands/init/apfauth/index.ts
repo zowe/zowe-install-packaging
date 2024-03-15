@@ -64,8 +64,8 @@ export function execute() {
         jclContent.out = jclContent.out.replace("SET LOADLOC='SMS'", `SET LOADLOC='VOLUME=${result3.volume}'`);
       }
       if (!result2.smsManaged) {
-        let result4 = zosDs.getDatasetVolume(ZOWE_CONFIG.zowe.setup.dataset.authLoadlib);
-        jclContent.out = jclContent.out.replace("SET LOADLOC='SMS'", `SET PLUGLOC='VOLUME=${result4.volume}'`);
+        let result4 = zosDs.getDatasetVolume(ZOWE_CONFIG.zowe.setup.dataset.authPluginLib);
+        jclContent.out = jclContent.out.replace("SET PLUGLOC='SMS'", `SET PLUGLOC='VOLUME=${result4.volume}'`);
       }
 
       xplatform.storeFileUTF8(tmpfile, xplatform.AUTO_DETECT, jclContent.out);
