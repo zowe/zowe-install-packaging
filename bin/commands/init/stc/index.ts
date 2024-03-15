@@ -92,7 +92,7 @@ export function execute(allowOverwrite: boolean = false) {
     
     const tmpfile = fs.createTmpFile(`zwe ${COMMAND_LIST}`.replace(new RegExp('\ ', 'g'), '-'));
     common.printDebug(`- Copy ${jcllib}(ZWEISTC) to ${tmpfile}`);
-    const jclContent = shell.execOutSync('sh', '-c', `cat "//'${jcllib}(ZWEISTC)'" 2>&1`);
+    const jclContent = shell.execOutSync('sh', '-c', `cat "//'${stringlib.escapeDollar(jcllib)}(ZWEISTC)'" 2>&1`);
     if (jclContent.out && jclContent.rc == 0) {
       common.printDebug(`  * Succeeded`);
       common.printTrace(`  * Output:`);
