@@ -43,16 +43,6 @@
       "version": "^3.0.0-STAGING",
       "artifact": "*.pax"
     },
-    "org.zowe.explorer.jobs.jobs-api-package": {
-      "version": "^2.0.7-SNAPSHOT",
-      "artifact": "jobs-api-package-*.zip",
-      "exclusions": ["*PR*.zip","*BRANCH*"]
-    },
-    "org.zowe.explorer.files.files-api-package": {
-      "version": "^2.0.7-SNAPSHOT",
-      "artifact": "files-api-package-*.zip",
-      "exclusions": ["*PR*.zip","*BRANCH*"]
-    },
     "org.zowe.explorer-jes": {
       "version": "~2.0.2-SNAPSHOT"
     },
@@ -84,11 +74,6 @@
     "org.zowe.apiml.caching-service-package": {
       "version": "^2.1.1-SNAPSHOT",
       "artifact": "caching-service-*.zip",
-      "exclusions": ["*PR*.zip"]
-    },
-    "org.zowe.apiml.metrics-service-package": {
-      "version": "^2.1.1-SNAPSHOT",
-      "artifact": "metrics-service-*.zip",
       "exclusions": ["*PR*.zip"]
     },
     "org.zowe.apiml.apiml-common-lib-package": {
@@ -264,13 +249,6 @@
         "destinations": ["Zowe CLI Package"]
       }]
     }, {
-      "componentGroup": "IBM&reg IMS&reg Plug-in for Zowe CLI",
-      "entries": [{
-        "repository": "zowe-cli-ims-plugin",
-        "tag": "master",
-        "destinations": ["Zowe CLI Package"]
-      }]
-    }, {
       "componentGroup": "Zowe Desktop Data Sets UI Plugin",
       "entries": [{
         "repository": "explorer-mvs",
@@ -299,28 +277,6 @@
         "destinations": ["Zowe PAX"]
       }]
     }, {
-      "componentGroup": "Zowe Explorer Common REST Server",
-      "entries": [{
-        "repository": "explorer-api-common",
-        "tag": "v2.x/master",
-        "destinations": ["Zowe PAX"]
-      }]
-    }, {
-      "componentGroup": "Zowe Explorer Data Sets REST Server",
-      "entries": [{
-        "repository": "data-sets",
-        "tag": "v2.x/master",
-        "destinations": ["Zowe PAX"]
-      }]
-    }, {
-      "componentGroup": "Zowe Explorer Jobs REST Server",
-      "entries": [{
-        "repository": "jobs",
-        "tag": "v2.x/master",
-        "destinations": ["Zowe PAX"]
-      }]
-    },
-    {
       "componentGroup": "Zowe Desktop TN3270 Emulator Plug-in",
       "entries": [{
         "repository": "tn3270-ng2",
@@ -454,16 +410,6 @@
         "kind": "job",
         "registry": "zowe-docker-release.jfrog.io",
         "name": "ompzowe/explorer-uss",
-        "tag" : "2-ubuntu"
-    },
-    "files-api": {
-        "registry": "zowe-docker-release.jfrog.io",
-        "name": "ompzowe/files-api",
-        "tag" : "2-ubuntu"
-    },
-    "jobs-api": {
-        "registry": "zowe-docker-release.jfrog.io",
-        "name": "ompzowe/jobs-api",
         "tag" : "2-ubuntu"
     },
     "base": {

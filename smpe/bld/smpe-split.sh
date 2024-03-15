@@ -105,8 +105,6 @@ list="$list components/caching-service"                         # pax02
 list="$list components/discovery"                               # pax03
 list="$list components/gateway"                                 # pax04
 list="$list components/app-server"                              # pax05
-list="$list components/files-api"                               # pax06
-list="$list components/jobs-api"                                # pax07
 
 test "$debug" && echo "for f in $list"
 for f in $list
