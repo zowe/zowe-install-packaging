@@ -14,6 +14,7 @@ import * as os from 'cm_os';
 import * as xplatform from 'xplatform';
 import { ConfigManager } from 'Configuration';
 import * as fs from './fs';
+import * as stringlib from './string';
 
 import * as objUtils from '../utils/ObjUtils';
 
@@ -415,7 +416,7 @@ function getMemberNameFromConfigPath(configPath: string): string|undefined {
 function stripMemberName(configPath: string, memberName: string): string {
   //Turn PARMLIB(my.zowe(yaml)):PARMLIB(my.other.zowe(yaml))
   //Into PARMLIB(my.zowe):FILE(/some/path.yaml):PARMLIB(my.other.zowe)
-  const replacer = new RegExp('\\('+memberName+'\\)\\)', 'gi');
+  const replacer = new RegExp('\\('+stringlib.escapeDollar(memberName)+'\\)\\)', 'gi');
   return configPath.replace(replacer, ")");
 }
   
