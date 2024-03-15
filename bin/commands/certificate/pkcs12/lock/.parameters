@@ -1,4 +1,4 @@
 keystore-dir|d|string|required||||Keystore directory.
 user||string|required||||Owner of the keystore directory.
 group||string|required||||Group of the keystore directory.
-group-permission||string|||||Group permission. Can be <empty> for no permission, or `read`, `write`.
+group-permission||string|||||Group permission. Can be `<empty>` for no permission, or `read`, `write`.
