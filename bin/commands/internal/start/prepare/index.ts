@@ -146,7 +146,7 @@ function globalValidate(enabledComponents:string[]): void {
 
     // validate java for some core components
     //TODO this should be a manifest parameter that you require java, not a hardcoded list. What if extensions require it?
-    if (enabledComponents.includes('gateway') || enabledComponents.includes('cloud-gateway') || enabledComponents.includes('discovery') || enabledComponents.includes('api-catalog') || enabledComponents.includes('caching-service') || enabledComponents.includes('metrics-service') || enabledComponents.includes('files-api') || enabledComponents.includes('jobs-api')) {
+    if (enabledComponents.includes('gateway') || enabledComponents.includes('cloud-gateway') || enabledComponents.includes('discovery') || enabledComponents.includes('api-catalog') || enabledComponents.includes('caching-service')) {
       let javaOk = java.validateJavaHome();
       if (!javaOk) {
         privateErrors++;
@@ -165,7 +165,7 @@ function globalValidate(enabledComponents:string[]): void {
 
   // validate z/OSMF for some core components
   if (zosmfHost && zosmfPort) {
-    if (enabledComponents.includes('discovery') || enabledComponents.includes('files-api') || enabledComponents.includes('jobs-api')) {
+    if (enabledComponents.includes('discovery')) {
       let zosmfOk = zosmf.validateZosmfHostAndPort(zosmfHost, zosmfPort);
       if (!zosmfOk) {
         privateErrors++;

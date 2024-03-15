@@ -557,39 +557,6 @@ How we want to verify SSL certificates of services. Valid values are:
             <default>false</default>
         </boolean>
     </variable>
-    <variable name="components_metrics_service_enabled" scope="instance" visibility="public">
-        <label>Enable metrics service</label>
-        <abstract>Use this option to enable the metrics seervice</abstract>
-        <description>Use this option to enable the metrics seervice</description>
-        <category>components</category>
-        <boolean>
-            <!-- Put validation here -->
-            <!-- Specify choices here -->
-            <default>false</default>
-        </boolean>
-    </variable>
-    <variable name="components_metrics_service_port" scope="instance" visibility="public">
-        <label>Metrics service port</label>
-        <abstract>Port for the metrics service</abstract>
-        <description>Port for the metrics service</description>
-        <category>components</category>
-        <integer>
-            <!-- Put validation here -->
-            <!-- Specify choices here -->
-            <default>7551</default>
-        </integer>
-    </variable>
-    <variable name="components_metrics_service_debug" scope="instance" visibility="public">
-        <label>Metrics service debug</label>
-        <abstract>Check this value to get additional debugging</abstract>
-        <description>Check this value to get additional debugging</description>
-        <category>components</category>
-        <boolean>
-            <!-- Put validation here -->
-            <!-- Specify choices here -->
-            <default>false</default>
-        </boolean>
-    </variable>
     <variable name="components_api_catalog_enabled" scope="instance" visibility="public">
         <label>Enable API catalog</label>
         <abstract>Use this option to enable the API catalog</abstract>
@@ -802,50 +769,6 @@ How we want to verify SSL certificates of services. Valid values are:
             <default>true</default>
         </boolean>
     </variable>
-    <variable name="components_jobs_api_enabled" scope="instance" visibility="public">
-        <label>Enable jobs API</label>
-        <abstract>Check this option to enable the jobs API</abstract>
-        <description>Check this option to enable the jobs API</description>
-        <category>components</category>
-        <boolean>
-            <!-- Put validation here -->
-            <!-- Specify choices here -->
-            <default>false</default>
-        </boolean>
-    </variable>
-    <variable name="components_jobs_api_port" scope="instance" visibility="public">
-        <label>Jobs API port</label>
-        <abstract>Port for the Jobs API</abstract>
-        <description>Port for the Jobs API</description>
-        <category>components</category>
-        <integer>
-            <!-- Put validation here -->
-            <!-- Specify choices here -->
-            <default>7558</default>
-        </integer>
-    </variable>
-    <variable name="components_files_api_enabled" scope="instance" visibility="public">
-        <label>Enable files API</label>
-        <abstract>Check this option to enable the files API</abstract>
-        <description>Check this option to enable the files API</description>
-        <category>components</category>
-        <boolean>
-            <!-- Put validation here -->
-            <!-- Specify choices here -->
-            <default>false</default>
-        </boolean>
-    </variable>
-    <variable name="components_files_api_port" scope="instance" visibility="public">
-        <label>Files API port</label>
-        <abstract>Port which will be used by the Files API</abstract>
-        <description>Port which will be used by the Files API</description>
-        <category>components</category>
-        <integer>
-            <!-- Put validation here -->
-            <!-- Specify choices here -->
-            <default>7559</default>
-        </integer>
-    </variable>
     <variable name="components_explorer_jes_enabled" scope="instance" visibility="public">
         <label>Enable explorer JES</label>
         <abstract>Check this to enable the JES explorer</abstract>
@@ -928,14 +851,11 @@ How we want to verify SSL certificates of services. Valid values are:
             <variableValue name="zOSMF_port" scope="instance" noPromptIfSet="false" required="true"/>
             <variableValue name="zOSMF_applId" scope="instance" noPromptIfSet="false" required="true"/>
             <variableValue name="components_gateway_enabled" scope="instance" noPromptIfSet="false" required="true"/>
-            <variableValue name="components_metrics_service_enabled" scope="instance" noPromptIfSet="false" required="true"/>
             <variableValue name="components_api_catalog_enabled" scope="instance" noPromptIfSet="false" required="true"/>
             <variableValue name="components_discovery_enabled" scope="instance" noPromptIfSet="false" required="true"/>
             <variableValue name="components_caching_service_enabled" scope="instance" noPromptIfSet="false" required="true"/>
             <variableValue name="components_app_server_enabled" scope="instance" noPromptIfSet="false" required="true"/>
             <variableValue name="components_zss_enabled" scope="instance" noPromptIfSet="false" required="true"/>
-            <variableValue name="components_jobs_api_enabled" scope="instance" noPromptIfSet="false" required="true"/>
-            <variableValue name="components_files_api_enabled" scope="instance" noPromptIfSet="false" required="true"/>
             <variableValue name="components_explorer_jes_enabled" scope="instance" noPromptIfSet="false" required="true"/>
             <variableValue name="components_explorer_mvs_enabled" scope="instance" noPromptIfSet="false" required="true"/>
             <variableValue name="components_explorer_uss_enabled" scope="instance" noPromptIfSet="false" required="true"/>
@@ -973,30 +893,6 @@ How we want to verify SSL certificates of services. Valid values are:
             <variableValue name="components_gateway_server_internal_port" scope="instance" noPromptIfSet="false" required="true"/>
             <variableValue name="components_gateway_server_internal_ssl_enabled" scope="instance" noPromptIfSet="false" required="true"/>
             <instructions substitution="true">Run this step to fill gateway component variables.</instructions>
-            <weight>1</weight>
-            <skills>z/OS System Programmer</skills>
-            <autoEnable>false</autoEnable>
-            <canMarkAsFailed>false</canMarkAsFailed>
-            <!--template-->
-        </step>
-        <step name="metrics_component" optional="false">
-            <title>Metrics component variables</title>
-            <description>Specify the variables for the metrics component</description>
-            <prereqStep name="main_variables"/>
-            <condition>
-                <expression>1 == 1</expression>
-                <description>Always true</description>
-                <targetStateSet>
-                    <extendStateExpression>
-                        <description>Skipped if the metrics component was not selected</description>
-                        <expression>!${instance-components_metrics_service_enabled}</expression>
-                        <targetState>skipped</targetState>
-                    </extendStateExpression>
-                </targetStateSet>
-            </condition>
-            <variableValue name="components_metrics_service_port" scope="instance" noPromptIfSet="false" required="true"/>
-            <variableValue name="components_metrics_service_debug" scope="instance" noPromptIfSet="false" required="true"/>
-            <instructions substitution="false">Run this step to specify the metrics variables</instructions>
             <weight>1</weight>
             <skills>z/OS System Programmer</skills>
             <autoEnable>false</autoEnable>
@@ -1121,52 +1017,6 @@ How we want to verify SSL certificates of services. Valid values are:
             <variableValue name="components_zss_crossMemoryServerName" scope="instance" noPromptIfSet="false" required="true"/>
             <variableValue name="components_zss_tls" scope="instance" noPromptIfSet="false" required="true"/>
             <instructions substitution="false">Run this step to specify the values for the ZSS variables</instructions>
-            <weight>1</weight>
-            <skills>z/OS System Programmer</skills>
-            <autoEnable>false</autoEnable>
-            <canMarkAsFailed>false</canMarkAsFailed>
-            <!--template-->
-        </step>
-        <step name="jobs_api_variables" optional="false">
-            <title>Jobs API Variables</title>
-            <description>Define variables for the Jobs API</description>
-            <prereqStep name="main_variables"/>
-            <condition>
-                <expression>1==1</expression>
-                <description>Always true</description>
-                <targetStateSet>
-                    <extendStateExpression>
-                        <description>Skips if the Jobs API wasn't selected</description>
-                        <expression>!${instance-components_jobs_api_enabled}</expression>
-                        <targetState>skipped</targetState>
-                    </extendStateExpression>
-                </targetStateSet>
-            </condition>
-            <variableValue name="components_jobs_api_port" scope="instance" noPromptIfSet="false" required="true"/>
-            <instructions substitution="false">Run this step to define the variables for the Jobs API</instructions>
-            <weight>1</weight>
-            <skills>z/OS System Programmer</skills>
-            <autoEnable>false</autoEnable>
-            <canMarkAsFailed>false</canMarkAsFailed>
-            <!--template-->
-        </step>
-        <step name="files_api_variables" optional="false">
-            <title>Files API Variables</title>
-            <description>Specify the variables for Files API</description>
-            <prereqStep name="main_variables"/>
-            <condition>
-                <expression>1==1</expression>
-                <description>Always true</description>
-                <targetStateSet>
-                    <extendStateExpression>
-                        <description>Skips this step if the Files API wasn't selected</description>
-                        <expression>!${instance-components_files_api_enabled}</expression>
-                        <targetState>skipped</targetState>
-                    </extendStateExpression>
-                </targetStateSet>
-            </condition>
-            <variableValue name="components_files_api_port" scope="instance" noPromptIfSet="false" required="true"/>
-            <instructions substitution="false">Run this step to specify the variables for the Files API</instructions>
             <weight>1</weight>
             <skills>z/OS System Programmer</skills>
             <autoEnable>false</autoEnable>
@@ -1686,18 +1536,6 @@ echo '    #   keystore:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '    #     alias: ""' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '  # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-#if (${instance-components_metrics_service_enabled} == "true" )
-echo '  metrics-service:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '    enabled: ${instance-components_metrics_service_enabled}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '    port: ${instance-components_metrics_service_port}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '    debug: ${instance-components_metrics_service_debug}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-#end
-#if (${instance-components_metrics_service_enabled} == "false" )
-echo '  metrics-service:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '    enabled: ${instance-components_metrics_service_enabled}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '    port: 7551' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '    debug: false' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-#end
 echo '' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '  # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 #if (${instance-components_api_catalog_enabled} == "true" )
@@ -1799,30 +1637,6 @@ echo '    tls: true' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 #end
 echo '' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '  # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-#if (${instance-components_jobs_api_enabled} == "true" )
-echo '  jobs-api:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '    enabled: ${instance-components_jobs_api_enabled}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '    port: ${instance-components_jobs_api_port}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-#end
-#if (${instance-components_jobs_api_enabled} == "false" )
-echo '  jobs-api:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '    enabled: ${instance-components_jobs_api_enabled}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '    port: 7558' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-#end
-echo '' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '  # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-#if (${instance-components_files_api_enabled} == "true" )
-echo '  files-api:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '    enabled: ${instance-components_files_api_enabled}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '    port: ${instance-components_files_api_port}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-#end
-#if (${instance-components_files_api_enabled} == "false" )
-echo '  files-api:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '    enabled: ${instance-components_files_api_enabled}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '    port: 7559' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-#end
-echo '' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '  # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '  explorer-jes:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '    enabled: ${instance-components_explorer_jes_enabled}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
@@ -1879,12 +1693,6 @@ echo '#         enabled: false' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '#       zss:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '#         # no app-server in this instance' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '#         enabled: false' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '#       jobs-api:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '#         port: 18545' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '#         enabled: true' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '#       files-api:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '#         port: 18547' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '#         enabled: true' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '#       caching-service:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '#         port: 17555' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '#' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
@@ -1906,10 +1714,6 @@ echo '#         enabled: false' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '#         port: 28544' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '#       zss:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '#         port: 28542' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '#       jobs-api:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '#         enabled: true' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '#       files-api:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '#         enabled: false' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '#       caching-service:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '#         enabled: false' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 ]]></inlineTemplate>
