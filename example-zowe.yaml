@@ -452,9 +452,8 @@ zowe:
 #-------------------------------------------------------------------------------
 java:
   # **COMMONLY_CUSTOMIZED**
-  # Path to your Java home directory.
-  # If "DETECT", will check for java in PATH
-  home: "DETECT"
+  # Path to Java home directory. If java is at '/java/home/bin/java', than this would be '/java/home'
+  home: ""
 
 
 #-------------------------------------------------------------------------------
@@ -468,9 +467,8 @@ java:
 #-------------------------------------------------------------------------------
 node:
   # **COMMONLY_CUSTOMIZED**
-  # Path to your node.js home directory
-  # If "DETECT", will check for node in PATH
-  home: "DETECT"
+  # Path to Node home directory. If node is at '/node/home/bin/node', than this would be '/node/home'
+  home: ""
 
 
 #-------------------------------------------------------------------------------

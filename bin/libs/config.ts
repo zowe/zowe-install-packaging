@@ -48,21 +48,6 @@ export function updateZoweConfig(updateObj: any, writeUpdate: boolean, arrayMerg
   return configmgr.updateZoweConfig(updateObj, writeUpdate, arrayMergeStrategy);
 }
 
-// Convert instance.env to zowe.yaml file
-export function convertInstanceEnvToYaml(instanceEnv: string, zoweYaml?: string) {
-  // we need node for following commands
-  node.ensureNodeIsOnPath();
-
-  if (!zoweYaml) {
-    shell.execSync('node', `${std.getenv('ROOT_DIR')}/bin/utils/config-converter/src/cli.js`, `env`, `yaml`, instanceEnv);
-  } else {
-    shell.execSync('node', `${std.getenv('ROOT_DIR')}/bin/utils/config-converter/src/cli.js`, `env`, `yaml`, instanceEnv, `-o`, zoweYaml);
-
-    zosfs.ensureFileEncoding(zoweYaml, "zowe:", 1047);
-
-    shell.execSync('chmod', `640`, zoweYaml);
-  }
-}
 
 //////////////////////////////////////////////////////////////
 // Check encoding of a file and convert to IBM-1047 if needed.

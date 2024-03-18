@@ -11,7 +11,9 @@
 
 import * as index from './index';
 import * as configmgr from '../../../libs/configmgr';
+import * as common from '../../../libs/common';
 
 index.execute();
 
 configmgr.cleanupTempDir();
+common.finishLogFile();

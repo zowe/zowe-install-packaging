@@ -21,12 +21,15 @@
 //*
 //*  This dataset holds the APF portion of Zowe
 //         SET LOADLIB='{zowe.setup.dataset.authLoadlib}'
+//*  SMS may have to be replaced with VOLUME=SOME.DSN when not SMS
+//         SET LOADLOC='SMS'
 //*
 //*  This dataset holds product plugins for ZIS,
 //*  ZIS is located in the LOADLIB.
 //         SET PLUGLIB='{zowe.setup.dataset.authPluginLib}'
+//         SET PLUGLOC='SMS'
 //*
-//APFLOAD  COMMAND 'SETPROG APF,ADD,DSN=&LOADLIB' 
+//APFLOAD  COMMAND 'SETPROG APF,ADD,DSN=&LOADLIB.,&LOADLOC.' 
 //*   
-//APFLIB   COMMAND 'SETPROG APF,ADD,DSN=&PLUGLIB'
+//APFLIB   COMMAND 'SETPROG APF,ADD,DSN=&PLUGLIB.,&PLUGLOC.'
 //*  

@@ -75,9 +75,7 @@ require_java() {
   if [ -n "${ZWE_CLI_PARAMETER_CONFIG}" ]; then
     custom_java_home="$(shell_read_yaml_java_home "${ZWE_CLI_PARAMETER_CONFIG}")"
     if [ -n "${custom_java_home}" ]; then
-      if [ "${custom_java_home}" != "DETECT" ]; then
-        export JAVA_HOME="${custom_java_home}"
-      fi
+      export JAVA_HOME="${custom_java_home}"
     fi
   fi
   if [ -z "${JAVA_HOME}" ]; then
@@ -85,7 +83,7 @@ require_java() {
   fi
 
   if [ -z "${JAVA_HOME}" ]; then
-    print_error_and_exit "Error ZWEL0122E: Cannot find java. Please define JAVA_HOME environment variable." "" 122
+    print_error_and_exit "Error ZWEL0122E: Cannot find java. Set the java.path value in the Zowe YAML, or include java in the PATH environment variable of any accounts that start or manage Zowe" "" 122
   fi
 
   ensure_java_is_on_path

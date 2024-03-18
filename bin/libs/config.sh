@@ -14,26 +14,6 @@
 # @internal 
 
 ###############################
-# Convert instance.env to zowe.yaml file
-convert_instance_env_to_yaml() {
-  instance_env="${1}"
-  zowe_yaml="${2}"
-
-  # we need node for following commands
-  ensure_node_is_on_path 1>/dev/null 2>&1
-
-  if [ -z "${zowe_yaml}" ]; then
-    node "${ROOT_DIR}/bin/utils/config-converter/src/cli.js" env yaml "${instance_env}"
-  else
-    node "${ROOT_DIR}/bin/utils/config-converter/src/cli.js" env yaml "${instance_env}" -o "${zowe_yaml}"
-
-    ensure_file_encoding "${zowe_yaml}" "zowe:" "IBM-1047"
-
-    chmod 640 "${zowe_yaml}"
-  fi
-}
-
-###############################
 # Check encoding of a file and convert to IBM-1047 if needed.
 #
 # Note: usually this is required if the file is supposed to be shell script,

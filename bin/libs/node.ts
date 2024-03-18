@@ -67,7 +67,7 @@ export function requireNode() {
   }
   if (std.getenv('ZWE_CLI_PARAMETER_CONFIG')) {
     const customNodeHome = shellReadYamlNodeHome();
-    if (customNodeHome && customNodeHome != "DETECT") {
+    if (customNodeHome) {
       std.setenv('NODE_HOME', customNodeHome);
     }
   }
@@ -78,7 +78,7 @@ export function requireNode() {
     }
   }
   if (!std.getenv('NODE_HOME')) {
-    common.printErrorAndExit("Error ZWEL0121E: Cannot find node. Please define NODE_HOME environment variable or set node.home in the YAML config file.", undefined, 121);
+    common.printErrorAndExit("Error ZWEL0121E: Cannot find node. Set the node.path value in the Zowe YAML, or include node in the PATH environment variable of any accounts that start or manage Zowe", undefined, 121);
   }
 
   ensureNodeIsOnPath();

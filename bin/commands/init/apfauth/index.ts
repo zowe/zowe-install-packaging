@@ -9,10 +9,16 @@
   Copyright Contributors to the Zowe Project.
 */
 
+import * as std from 'cm_std';
 import * as zosJes from '../../../libs/zos-jes';
+import * as zosDs  from '../../../libs/zos-dataset';
 import * as zoslib from '../../../libs/zos';
 import * as common from '../../../libs/common';
 import * as config from '../../../libs/config';
+import * as fs     from '../../../libs/fs';
+import * as shell  from '../../../libs/shell';
+import * as stringlib from '../../../libs/string';
+import * as xplatform from 'xplatform';
 
 export function execute() {
 
@@ -41,7 +47,48 @@ export function execute() {
     }
   });
 
-  
-  zosJes.printAndHandleJcl(`//'${jcllib}(ZWEIAPF)'`, `ZWEIAPF`, jcllib, prefix);  
+  let result1 = zosDs.isDatasetSmsManaged(ZOWE_CONFIG.zowe.setup.dataset.authLoadlib);
+  let result2 = zosDs.isDatasetSmsManaged(ZOWE_CONFIG.zowe.setup.dataset.authPluginLib);
+  if (!result1.smsManaged || !result2.smsManaged) {
+    const COMMAND_LIST = std.getenv('ZWE_CLI_COMMANDS_LIST');
+    const tmpfile = fs.createTmpFile(`zwe ${COMMAND_LIST}`.replace(new RegExp('\ ', 'g'), '-'));
+    common.printDebug(`- Copy ${jcllib}(ZWEIAPF) to ${tmpfile}`);
+    let jclContent = shell.execOutSync('sh', '-c', `cat "//'${stringlib.escapeDollar(jcllib)}(ZWEIAPF)'" 2>&1`);
+    if (jclContent.out && jclContent.rc == 0) {
+      common.printDebug(`  * Succeeded`);
+      common.printTrace(`  * Output:`);
+      common.printTrace(stringlib.paddingLeft(jclContent.out, "    "));
+      
+      if (!result1.smsManaged) {
+        let result3 = zosDs.getDatasetVolume(ZOWE_CONFIG.zowe.setup.dataset.authLoadlib);
+        jclContent.out = jclContent.out.replace("SET LOADLOC='SMS'", `SET LOADLOC='VOLUME=${result3.volume}'`);
+      }
+      if (!result2.smsManaged) {
+        let result4 = zosDs.getDatasetVolume(ZOWE_CONFIG.zowe.setup.dataset.authPluginLib);
+        jclContent.out = jclContent.out.replace("SET PLUGLOC='SMS'", `SET PLUGLOC='VOLUME=${result4.volume}'`);
+      }
+
+      xplatform.storeFileUTF8(tmpfile, xplatform.AUTO_DETECT, jclContent.out);
+      common.printTrace(`  * Stored:`);
+      common.printTrace(stringlib.paddingLeft(jclContent.out, "    "));
+
+      shell.execSync('chmod', '700', tmpfile);
+      if (!fs.fileExists(tmpfile)) {
+        common.printErrorAndExit(`Error ZWEL0159E: Failed to prepare ZWEIAPF`, undefined, 159);
+      }
+      
+      zosJes.printAndHandleJcl(tmpfile, `ZWEIAPF`, jcllib, prefix, true);
+    } else {
+      common.printDebug(`  * Failed`);
+      common.printError(`  * Exit code: ${jclContent.rc}`);
+      common.printError(`  * Output:`);
+      if (jclContent.out) {
+        common.printError(stringlib.paddingLeft(jclContent.out, "    "));
+      }
+      std.exit(1);
+    }
+  } else {
+    zosJes.printAndHandleJcl(`//'${jcllib}(ZWEIAPF)'`, `ZWEIAPF`, jcllib, prefix);      
+  }
   common.printLevel2Message(`Zowe load libraries are APF authorized successfully.`);
 }
