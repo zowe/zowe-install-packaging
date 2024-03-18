@@ -861,7 +861,7 @@
         "zowe": {
           "type": "object",
           "description": "Component level overrides for top level Zowe network configuration.",
-          "additionalProperties": false,
+          "additionalProperties": true,
           "properties": {
             "network": {
               "$ref": "#/$defs/networkSettings"
