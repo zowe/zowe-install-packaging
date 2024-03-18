@@ -344,3 +344,16 @@ export function itemInList(stringList: string, stringToFind?: string, separator:
   }
   return stringList.split(separator).includes(stringToFind);
 }
+
+export function escapeDollar(str: string): string | undefined {
+  if (str === null || str === undefined)
+    return undefined;
+  return str.replace(/[$]/g, '\\$&');
+}
+
+export function escapeRegExp(str: string): string | undefined {
+  if (str === null || str === undefined)
+      return undefined;
+  return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+

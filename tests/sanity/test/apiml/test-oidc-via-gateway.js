@@ -30,7 +30,7 @@ describe('test oidc mapping via gateway', function() {
     }
 
     const res = await hq.request({
-      url: `/ibmzosmf/api/v1/restjobs/jobs?owner=${process.env.SSH_USER.toUpperCase()}&prefix=*`,
+      url: `ibmzosmf/api/v1/restjobs/jobs?owner=${process.env.SSH_USER.toUpperCase()}&prefix=*`,
       headers: {
         Cookie: `${APIML_AUTH_COOKIE}=${token}`,
         'X-CSRF-ZOSMF-HEADER': '*',
