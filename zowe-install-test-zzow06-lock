@@ -1,15 +1,1 @@
-{
-  "lockAcquiredTime": "Mon Mar 18 2024 17:08:24 GMT+0000 (Coordinated Universal Time)",
-  "uid": "1710781704359197114",
-  "repository": {
-    "owner": "zowe",
-    "repo": "zowe-install-packaging"
-  },
-  "branch": "user/markackert/sign-ptfs-individually",
-  "workflow": "Zowe CICD Integration Tests",
-  "job": "cicd-test",
-  "actor": "zowe-robot",
-  "runId": 8330682563,
-  "runNumber": 4156,
-  "link": "https://github.com/zowe/zowe-install-packaging/actions/runs/8330682563"
-}
+""
