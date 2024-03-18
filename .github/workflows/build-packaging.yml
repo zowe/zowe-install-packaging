@@ -259,7 +259,7 @@ jobs:
         run: |
           cd .pax
           rm zowe-smpe.zip
-          zip zowe-smpe.zip smpe_sign/*
+          zip -j zowe-smpe.zip smpe_sign/*
           rm -rf smpe_sign
 
       - name: '[PSI-LOCK] Lock marist servers to build PSWI'
