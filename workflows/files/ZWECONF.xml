@@ -68,7 +68,7 @@
     </variable>
     <variable name="zowe_setup_dataset_loadlibPlugin" scope="instance" visibility="public">
         <label>Zowe setup Utilities and extensions library</label>
-        <abstract>Load library where Zowe will store libraries Utilities for use by Zowe and extensions</abstract>
+        <abstract>Load library where Zowe stores libraries for Utilities for use by Zowe and extensions</abstract>
         <description>Load library for Utilities for use by Zowe and extensions</description>
         <category>zowe</category>
         <string valueMustBeChoice="false" multiLine="false">
@@ -239,8 +239,8 @@ some use cases, like containerization, this port could be different.</descriptio
     </variable>
     <variable name="zowe_launchScript_CompConf" scope="instance" visibility="public">
         <label>Zowe launch script component configuration</label>
-        <abstract>Set to "exit" or "warn" what to do, if any component has an error</abstract>
-        <description>Set to "exit" if you'd like startup to exit if any component has an error in the configure stage, otherwise zwe will warn but continue.</description>
+        <abstract>Set to "exit" or "warn" if any component has an error</abstract>
+        <description>Set to "exit" if you want startup to exit if any component has an error in the configuration stage, otherwise zwe will issue a warning but continue running.</description>
         <category>zowe</category>
         <string valueMustBeChoice="false" multiLine="false">
             <!-- Put validation here -->
@@ -883,7 +883,7 @@ How we want to verify SSL certificates of services. Valid values are:
     <variable name="components_zss_agent_jwt_fallback" scope="instance" visibility="public">
         <label>ZSS JWT fallback</label>
         <abstract>Check this to enable fallback</abstract>
-        <description>Whether the agent will issue and accept cookies from itself in the event a JWT cannot be provided</description>
+        <description>If fallback is enabled, the agent issues and accepts cookies from itself in the event a JWT cannot be provided.</description>
         <category>components</category>
         <boolean>
             <!-- Put validation here -->
@@ -1027,8 +1027,8 @@ How we want to verify SSL certificates of services. Valid values are:
     </variable>
     <variable name="zowe_cookieId" scope="instance" visibility="public">
         <label>Zowe Cookie Identifier</label>
-        <abstract>ID that can be used by servers that distinguish their cookies from unrelated Zowe installs</abstract>
-        <description>ID when determining for purposes such as to allow multiple copies of Zowe to be used within the same client</description>
+        <abstract>ID that can be used by servers to distinguish their cookies from unrelated Zowe installs</abstract>
+        <description>ID which allows multiple copies of Zowe to be used within the same client</description>
         <category>zowe</category>
         <string valueMustBeChoice="false" multiLine="false">
             <!-- Put validation here -->

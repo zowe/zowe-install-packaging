@@ -48,8 +48,8 @@
     <step name="MountZFS" optional="false">
         <title>Mount ZOWE zFS</title>
         <description>This step mounts ZOWE zFS on the mount point that was selected during the deployment.</description>
-        <instructions substitution="false">Make sure you have correct SYSAFF in the following JCL so the filesystem is
-         mounted correctly.
+        <instructions substitution="false">Make sure you have the correct SYSAFF in the following JCL so the filesystem is
+mounted correctly.
         </instructions>
         <weight>1</weight>
         <skills>z/OS system programmer</skills>
@@ -86,9 +86,9 @@ MOUNTPOINT('${zfsmount}')
     </step>
   <step name="chown" optional="false">
         <title>Change ownership</title>
-        <description>This step changes the ownership and mode of ZOWE USS directory so the zwe command can be called.</description>
-        <instructions substitution="false">Make sure you have correct SYSAFF in the following JCL so the filesystem is
-         mounted correctly.
+        <description>This step changes the ownership and mode of the ZOWE USS directory so the zwe command can be called.</description>
+        <instructions substitution="false">Make sure you have the correct SYSAFF in the following JCL so the filesystem is
+mounted correctly.
         </instructions>
         <weight>1</weight>
         <skills>z/OS system programmer</skills>
