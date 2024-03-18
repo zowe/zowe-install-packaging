@@ -73,19 +73,27 @@ export function verifyGeneratedJcl(config:any): string {
     return undefined;
   }
   // read JCL library and validate
-  let doesJclExist=zosDataset.isDatasetExists(jcllib);
+  let doesJclExist: boolean|number = zosDataset.isDatasetExists(jcllib);
   if (!doesJclExist) {
-    initGenerate.execute();
+    doesJclExist = zosDataset.tsoIsDatasetExists(jcllib);
+    if (!doesJclExist) {
+      initGenerate.execute();
+    }
   }
 
   // should be created, but may take time to discover.
   if (!doesJclExist) {
-    const interval = [1,5,10];
+    const interval = [1,5,10,30];
     for (let i = 0; i < interval.length; i++) {
       let secs = interval[i];
       doesJclExist=zosDataset.isDatasetExists(jcllib);
       if (!doesJclExist) {
-        os.sleep(secs*1000);
+        doesJclExist = zosDataset.tsoIsDatasetExists(jcllib);
+        if (!doesJclExist) {
+          os.sleep(secs*1000);
+        } else {
+          break;
+        }
       } else {
         break;
       }
