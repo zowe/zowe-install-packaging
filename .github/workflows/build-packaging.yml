@@ -60,7 +60,7 @@ jobs:
   pr-comment-check:
 
     name: 'PR Comment Trigger'
-    if: ${{ github.event.issue.pull_request && github.event_name == 'issue_comment' }}
+    if: ${{ github.event_name == 'issue_comment' }}
     runs-on: ubuntu-latest
     outputs:
       run_build: ${{ steps.check-comment.outputs.run_build }}
