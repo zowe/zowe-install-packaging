@@ -415,7 +415,7 @@ jobs:
             TEST_SUITE="SMPE PTF"
           elif [[ "${{ contains(github.event.pull_request.labels.*.name, 'Test: Extended') }}" == true ]]; then
             TEST_SUITE="Zowe Nightly Tests"
-          elif [[ "${{ contains(github.event.pull_request.labels.*.name, 'Test: Everything') }}" == true ]]; then
+          elif [[ "${{ contains(github.event.pull_request.labels.*.name, 'Test: Silly') }}" == true ]]; then
             TEST_SUITE="Zowe Release Tests"
           else 
             echo "Unknown test label encountered; defaulting to Convenience Pax."
