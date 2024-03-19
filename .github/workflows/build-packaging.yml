@@ -73,7 +73,6 @@ jobs:
   pr-comment-check:
 
     name: 'PR Comment Trigger'
-    if: (github.event_name == 'issue_comment')
     runs-on: ubuntu-latest
     outputs:
       run_build: ${{ steps.check-comment.outputs.run_build }}
@@ -105,10 +104,9 @@ jobs:
   regular-build:
 
     if: |
-      "(${{ github.event_name != 'issue_comment' }} || steps.pr-comment-check.outputs.run_build == 'true') && 
-       (${{ github.event_name == 'workflow_dispatch' }} || ${{ !contains(github.event.pull_request.labels.*.name, 'Build: None') }})"
+      "${{ (github.event_name != 'issue_comment' || needs.pr-comment-check.outputs.run_build == 'true') && (github.event_name == 'workflow_dispatch' || !contains(github.event.pull_request.labels.*.name, 'Build: None')) }}"
     runs-on: ubuntu-latest
-    needs: check-permission
+    needs: [pr-comment-check, check-permission]
     steps: 
       - name: '[Prep 1] Checkout'
         uses: actions/checkout@v4
