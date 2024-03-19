@@ -81,7 +81,7 @@ jobs:
         id: check-comment
         run: |
           echo "run_build=false" >> $GITHUB_OUTPUT
-          if [[ ${{ github.event.issue.pull_request }} && ${{ github.event_name == 'issue_comment' }} && ${{ github.event.comment.body }} = '/ci' ]]; then
+          if [[ ! -z "${{ github.event.issue.pull_request }}" && ${{ github.event_name == 'issue_comment' }} && "${{ github.event.comment.body }}" = '/ci' ]]; then
             echo "run_build=true" >> $GITHUB_OUTPUT
           fi     
 
