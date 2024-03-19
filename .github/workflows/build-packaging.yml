@@ -92,7 +92,7 @@ jobs:
   
   regular-build:
 
-    if: ${{ github.event_name != 'issue_comment' || needs.pr-comment-check.outputs.run_build == 'true' }}
+    if: ${{ github.event_name != 'issue_comment' }} || steps.pr-comment-check.outputs.run_build 
     runs-on: ubuntu-latest
     needs: check-permission
     steps: 
@@ -147,35 +147,33 @@ jobs:
               console.error('Cannot read manifest or manifest is invalid.');
             }
 
-      - name: '[Prep 6a] Process github.event.inputs'
+      - name: '[Prep 6a] Process labels for ci build (pull, push, comment)'
         id: process-labels
+        if: github.event_name != 'workflow_dispatch'
         run: |
           BUILD_WHAT="PAX"
-          
-          echo INPUTS_BUILD_PSWI=${{ github.event.inputs.BUILD_PSWI }} >> $GITHUB_ENV
-          if [[ "${{ github.event.inputs.BUILD_PSWI }}" == true ]]; then
-            echo INPUTS_BUILD_SMPE=true >> $GITHUB_ENV
+            
+          if [[ "${{ contains(github.event.pull_request.labels.*.name, 'Build: PSWI') }}" == true ]]; then
             BUILD_WHAT=$BUILD_WHAT", SMPE, PSWI"
           else
-            echo INPUTS_BUILD_SMPE=${{ github.event.inputs.BUILD_SMPE }} >> $GITHUB_ENV
-            if [[ "${{ github.event.inputs.BUILD_SMPE }}" == true ]]; then
+            if [[ "${{ contains(github.event.pull_request.labels.*.name, 'Build: SMPE') }}" == true ]]; then
               BUILD_WHAT=$BUILD_WHAT", SMPE"
             fi
           fi
 
-          echo INPUTS_BUILD_KUBERNETES=${{ github.event.inputs.BUILD_KUBERNETES }} >> $GITHUB_ENV
-          if [[ "${{ github.event.inputs.BUILD_KUBERNETES }}" == true ]]; then
+          if [[ "${{ contains(github.event.pull_request.labels.*.name, 'Build: Kubernetes') }}" == true ]]; then
             BUILD_WHAT=$BUILD_WHAT", K8S"
           fi
 
-          echo INPUTS_KEEP_TEMP_PAX_FOLDER=${{ github.event.inputs.KEEP_TEMP_PAX_FOLDER }} >> $GITHUB_ENV
-          
+          echo INPUTS_KEEP_TEMP_PAX_FOLDER="${{ contains(github.event.pull_request.labels.*.name, 'Build: Debug-Remote') }}" >> $GITHUB_ENV
+
           echo BUILD_WHAT=$BUILD_WHAT >> $GITHUB_OUTPUT
 
-      - name: '[Prep 6b] Process github.event.inputs'
+      - name: '[Prep 6b] Process github.event.inputs for manually triggered build'
         id: process-inputs
+        if: github.event_name == 'workflow_dispatch'
         run: |
-          BUILD_WHAT="PAX"
+          BUILD_WHAT="${{ steps.process-labels.outputs.BUILD_WHAT_LABELS }}"
           
           echo INPUTS_BUILD_PSWI=${{ github.event.inputs.BUILD_PSWI }} >> $GITHUB_ENV
           if [[ "${{ github.event.inputs.BUILD_PSWI }}" == true ]]; then
@@ -394,8 +392,8 @@ jobs:
       "${{ (github.event_name == 'pull_request' 
                 && !contains(github.event.pull_request.labels.*.name, 'Build: None') 
                 && !contains(github.event.pull_request.labels.*.name, 'Test: None')) || 
-          (github.event_name == 'push' && contains(github.ref, 'staging')) ||
-          (needs.pr-comment-check.outputs.run_build == 'true') }}"
+          (github.event_name == 'push' && contains(github.ref, 'staging')) }} ||
+          steps.pr-comment-check.outputs.run_build"
          
     steps:
       - name: 'Determine branch name'
@@ -410,13 +408,13 @@ jobs:
         id: get-test-suite
         run: |
           TEST_SUITE="Convenience Pax"
-          if [[ "${{ contains(github.event.pull_request.labels.*.name, 'Test: Basic') }}" ]]; then
+          if [[ "${{ contains(github.event.pull_request.labels.*.name, 'Test: Basic') }}" == true ]]; then
             TEST_SUITE="Convenience Pax"
-          elif [[ "${{ contains(github.event.pull_request.labels.*.name, 'Test: SMPE') }}" ]]; then
+          elif [[ "${{ contains(github.event.pull_request.labels.*.name, 'Test: SMPE') }}" == true ]]; then
             TEST_SUITE="SMPE PTF"
-          elif [[ "${{ contains(github.event.pull_request.labels.*.name, 'Test: Extended') }}" ]]; then
+          elif [[ "${{ contains(github.event.pull_request.labels.*.name, 'Test: Extended') }}" == true ]]; then
             TEST_SUITE="Zowe Nightly Tests"
-          elif [[ "${{ contains(github.event.pull_request.labels.*.name, 'Test: Everything') }}" ]]; then
+          elif [[ "${{ contains(github.event.pull_request.labels.*.name, 'Test: Everything') }}" == true ]]; then
             TEST_SUITE="Zowe Release Tests"
           else 
             echo "Unknown test label encountered; defaulting to Convenience Pax."
