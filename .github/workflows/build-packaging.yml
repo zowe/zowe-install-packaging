@@ -65,10 +65,10 @@ jobs:
           echo "! build:none by *.name ${{ !contains(github.event.pull_request.labels.*.name, 'Build: None') }}"
           echo "test:none ${{ contains(github.event.pull_request.labels, 'Test: None') }}"
           echo "build:kuber ${{ contains(github.event.pull_request.labels.*.name, 'Build: Kubernetes') }}"
-          echo "(${{ github.event_name != 'issue_comment' }} || steps.pr-comment-check.outputs.run_build == 'true') && 
-                 (${{ github.event_name == 'workflow_dispatch' }} || ${{ !contains(github.event.pull_request.labels.*.name, 'Build: None') }})"
-          echo "${{ (github.event_name != 'issue_comment' || steps.pr-comment-check.outputs.run_build == 'true') && (github.event_name == 'workflow_dispatch' || !contains(github.event.pull_request.labels.*.name, 'Build: None')) }}"
-
+          echo "Run Build Step:"
+          echo "${{ (github.event_name != 'issue_comment' || needs.pr-comment-check.outputs.run_build == 'true') && (github.event_name == 'workflow_dispatch' || !contains(github.event.pull_request.labels.*.name, 'Build: None')) }}"
+          echo "Run Test Step:"
+          echo  "${{  ( github.event_name == 'push' && contains(github.ref, 'staging') ) || ( (github.event_name == 'pull_request' || github.event_name == 'issue_comment') && !contains(github.event.pull_request.labels.*.name, 'Build: None') && !contains(github.event.pull_request.labels.*.name, 'Test: None') ) }}"
 
   pr-comment-check:
 
@@ -104,7 +104,8 @@ jobs:
   regular-build:
 
     if: |
-      "${{ (github.event_name != 'issue_comment' || needs.pr-comment-check.outputs.run_build == 'true') && (github.event_name == 'workflow_dispatch' || !contains(github.event.pull_request.labels.*.name, 'Build: None')) }}"
+      "${{ (github.event_name != 'issue_comment' || needs.pr-comment-check.outputs.run_build == 'true') 
+        && (github.event_name == 'workflow_dispatch' || !contains(github.event.pull_request.labels.*.name, 'Build: None')) }}"
     runs-on: ubuntu-latest
     needs: [pr-comment-check, check-permission]
     steps: 
@@ -403,11 +404,10 @@ jobs:
     needs: regular-build
     runs-on: ubuntu-latest
     if: |
-      "${{ (github.event_name == 'pull_request' 
-                && !contains(github.event.pull_request.labels.*.name, 'Build: None') 
-                && !contains(github.event.pull_request.labels.*.name, 'Test: None')) || 
-          (github.event_name == 'push' && contains(github.ref, 'staging')) }} ||
-          steps.pr-comment-check.outputs.run_build"
+      "${{  ( github.event_name == 'push' && contains(github.ref, 'staging') ) ||
+            ( (github.event_name == 'pull_request' || github.event_name == 'issue_comment') && 
+              !contains(github.event.pull_request.labels.*.name, 'Build: None') && 
+              !contains(github.event.pull_request.labels.*.name, 'Test: None') ) }}"
          
     steps:
       - name: 'Determine branch name'
@@ -422,13 +422,13 @@ jobs:
         id: get-test-suite
         run: |
           TEST_SUITE="Convenience Pax"
-          if [[ "${{ contains(github.event.pull_request.labels.*.name, 'Test: Basic') }}" == true ]]; then
+          if [[ "${{ contains(github.event.pull_request.labels.*.name, 'Test: Basic') }}" = "true" ]]; then
             TEST_SUITE="Convenience Pax"
-          elif [[ "${{ contains(github.event.pull_request.labels.*.name, 'Test: SMPE') }}" == true ]]; then
+          elif [[ "${{ contains(github.event.pull_request.labels.*.name, 'Test: SMPE') }}" = "true" ]]; then
             TEST_SUITE="SMPE PTF"
-          elif [[ "${{ contains(github.event.pull_request.labels.*.name, 'Test: Extended') }}" == true ]]; then
+          elif [[ "${{ contains(github.event.pull_request.labels.*.name, 'Test: Extended') }}" = "true" ]]; then
             TEST_SUITE="Zowe Nightly Tests"
-          elif [[ "${{ contains(github.event.pull_request.labels.*.name, 'Test: Silly') }}" == true ]]; then
+          elif [[ "${{ contains(github.event.pull_request.labels.*.name, 'Test: Silly') }}" = "true" ]]; then
             TEST_SUITE="Zowe Release Tests"
           else 
             echo "Unknown test label encountered; defaulting to 'Test: Basic' and running Convenience Pax tests."
