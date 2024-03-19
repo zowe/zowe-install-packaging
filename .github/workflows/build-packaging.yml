@@ -60,7 +60,7 @@ jobs:
   pr-comment-check:
 
     name: 'PR Comment Trigger'
-    if: ${{ github.event_name == 'issue_comment' }}
+    if: (github.event_name == 'issue_comment')
     runs-on: ubuntu-latest
     outputs:
       run_build: ${{ steps.check-comment.outputs.run_build }}
@@ -98,7 +98,9 @@ jobs:
     needs: check-permission
     steps: 
       - name: '[Prep 1] Checkout'
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event_name == 'issue_comment' && format('refs/pull/{0}/head', github.event.issue.number) || '' }}
   
       - name: '[Prep 2] Setup jFrog CLI'
         uses: jfrog/setup-jfrog-cli@v2
