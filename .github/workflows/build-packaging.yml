@@ -42,14 +42,7 @@ on:
         required: false
         type: string
 
-env:
-  BUILD_LABEL: 'see-regular-build-prepare-6a'
-  TEST_LABEL: 'see-call-integration-test-prepare'
-  ISSUE_COMMENT_RUN_BUILD: false
-
 jobs:
-
- 
 
   pr-comment-check:
 
