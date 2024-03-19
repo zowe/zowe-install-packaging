@@ -44,7 +44,7 @@ vsam_volume=
 if [ "${vsam_mode}" = "NONRLS" ]; then
   vsam_volume=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.vsam.volume")
   if [ -z "${vsam_volume}" ]; then
-    print_error_and_exit "Error ZWEL0148E: Zowe Caching Service VSAM data set volume (zowe.setup.vsam.volume) is not defined in Zowe YAML configuration file." "" 148
+    print_error_and_exit "Error ZWEL0157E: Zowe Caching Service VSAM data set volume (zowe.setup.vsam.volume) is not defined in Zowe YAML configuration file." "" 157
   fi
 fi
 vsam_storageClass=
@@ -56,7 +56,7 @@ if [ "${vsam_mode}" = "RLS" ]; then
 fi
 vsam_name=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".components.caching-service.storage.vsam.name")
 if [ -z "${vsam_name}" ]; then
-  print_error_and_exit "Error ZWEL0149E: Zowe Caching Service VSAM data set name (components.caching-service.storage.vsam.name) is not defined in Zowe YAML configuration file." "" 149
+  print_error_and_exit "Error ZWEL0157E: Zowe Caching Service VSAM data set name (components.caching-service.storage.vsam.name) is not defined in Zowe YAML configuration file." "" 157
 fi
 
 jcl_existence=$(is_data_set_exists "${jcllib}(ZWECSVSM)")
