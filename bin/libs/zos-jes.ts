@@ -96,7 +96,8 @@ export function waitForJob(jobid: string): {jobcctext?: string, jobcccode?: stri
     is_jes3 = false;
     const secs = timesSec[i];
     common.printTrace(`  * Wait for ${secs} seconds`);
-    os.sleep(secs*1000);
+    //os.sleep(secs*1000); Bypass the problem with sleep
+    shell.execSync('sh', '-c', `sleep ${secs}`);
     
     let result=zoslib.operatorCommand(`\\$D ${jobid},CC`);
     // if it's JES3, we receive this:
