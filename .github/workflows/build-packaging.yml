@@ -156,19 +156,19 @@ jobs:
         run: |
           BUILD_WHAT="PAX"
             
-          if [[ "${{ contains(github.event.pull_request.labels.*.name, 'Build: PSWI') }}" == true ]]; then
+          if [[ "${{ contains(github.event.pull_request.labels.*.name, 'Build: PSWI') }}" == "true" ]]; then
             BUILD_WHAT=$BUILD_WHAT", SMPE, PSWI"
           else
-            if [[ "${{ contains(github.event.pull_request.labels.*.name, 'Build: SMPE') }}" == true ]]; then
+            if [[ "${{ contains(github.event.pull_request.labels.*.name, 'Build: SMPE') }}" == "true" ]]; then
               BUILD_WHAT=$BUILD_WHAT", SMPE"
             fi
           fi
 
-          if [[ "${{ contains(github.event.pull_request.labels.*.name, 'Build: Kubernetes') }}" == true ]]; then
+          if [[ "${{ contains(github.event.pull_request.labels.*.name, 'Build: Kubernetes') }}" == "true" ]]; then
             BUILD_WHAT=$BUILD_WHAT", K8S"
           fi
 
-          echo INPUTS_KEEP_TEMP_PAX_FOLDER="${{ contains(github.event.pull_request.labels.*.name, 'Build: Debug-Remote') }}" >> $GITHUB_ENV
+          echo "INPUTS_KEEP_TEMP_PAX_FOLDER=${{ contains(github.event.pull_request.labels.*.name, 'Build: Debug-Remote') }}" >> $GITHUB_ENV
 
           echo BUILD_WHAT=$BUILD_WHAT >> $GITHUB_OUTPUT
 
