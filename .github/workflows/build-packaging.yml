@@ -65,6 +65,9 @@ jobs:
           echo "! build:none by *.name ${{ !contains(github.event.pull_request.labels.*.name, 'Build: None') }}"
           echo "test:none ${{ contains(github.event.pull_request.labels, 'Test: None') }}"
           echo "build:kuber ${{ contains(github.event.pull_request.labels.*.name, 'Build: Kubernetes') }}"
+          echo "(${{ github.event_name != 'issue_comment' }} || steps.pr-comment-check.outputs.run_build == 'true') && 
+                 (${{ github.event_name == 'workflow_dispatch' }} || ${{ !contains(github.event.pull_request.labels.*.name, 'Build: None') }})"
+          echo "${{ (github.event_name != 'issue_comment' || steps.pr-comment-check.outputs.run_build == 'true') && (github.event_name == 'workflow_dispatch' || !contains(github.event.pull_request.labels.*.name, 'Build: None')) }}"
 
 
   pr-comment-check:
