@@ -56,6 +56,15 @@ jobs:
         run: echo "$GITHUB_CONTEXT"
         env:
           GITHUB_CONTEXT: ${{ toJson(github) }}
+      - name: 'dump other logic tests'
+        run: |
+          echo "issue_comment ${{ github.event_name == 'issue_comment' }}"
+          echo "wfdispatch ${{ github.event_name == 'workflow_dispatch' }}"
+          echo "build:none ${{ contains(github.event.pull_request.labels, 'Build: None') }}"
+          echo "build:none by *.name ${{ contains(github.event.pull_request.labels.*.name, 'Build: None') }}"
+          echo "test:none ${{ contains(github.event.pull_request.labels, 'Test: None') }}"
+          echo "build:kuber ${{ contains(github.event.pull_request.labels.*.name, 'Build: Kubernetes') }}"
+
 
   pr-comment-check:
 
