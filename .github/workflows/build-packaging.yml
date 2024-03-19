@@ -418,7 +418,7 @@ jobs:
           elif [[ "${{ contains(github.event.pull_request.labels.*.name, 'Test: Silly') }}" == true ]]; then
             TEST_SUITE="Zowe Release Tests"
           else 
-            echo "Unknown test label encountered; defaulting to Convenience Pax."
+            echo "Unknown test label encountered; defaulting to 'Test: Basic' and running Convenience Pax tests."
           fi
           echo "TEST_SUITE=$TEST_SUITE" >> $GITHUB_OUTPUT
 
