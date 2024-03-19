@@ -54,6 +54,11 @@ All notable changes to the Zowe Installer will be documented in this file.
 ### New features and enhancements
 - Users who have not set the value of "zowe.useConfimgr" will have the behavior now set to "true" rather than the previous "false". If you wish to use false still, just set "zowe.useConfigmgr=false" explicitly.
 
+## `2.9.0`
+
+#### Minor enhancements/defect fixes
+- Enhancement: Warn when detecting a java version newer than what's officially known to work.
+
 ## `2.8.0`
 
 ### New features and enhancements

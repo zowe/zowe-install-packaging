@@ -91,6 +91,9 @@ require_java() {
 
 
 validate_java_home() {
+  java_min_version=8
+  java_max_warn=8
+
   java_home="${1:-${JAVA_HOME}}"
 
   if [ -z "${java_home}" ]; then
@@ -121,15 +124,18 @@ validate_java_home() {
   too_low=
   if [ ${java_major_version} -lt 1 ]; then
     too_low="true"
-  elif [ ${java_major_version} -eq 1 -a ${java_minor_version} -lt 8 ]; then
+  elif [ ${java_major_version} -eq 1 -a ${java_minor_version} -lt ${java_min_version} ]; then
     too_low="true"
   fi
   if [ "${too_low}" = "true" ]; then
     print_error "Java ${java_version_short} is less than the minimum level required of Java 8 (1.8.0)."
     return 1
   fi
-  print_debug "Java ${java_version_short} is supported."
-
+  if [ ${java_minor_version} -gt ${java_max_warn} ]; then
+    print_error "Warning: Java version ${java_version_short} is greater than the maximum known working version of Java ${java_max_warn}."
+  else
+    print_debug "Java ${java_version_short} is supported."
+  fi
   print_debug "Java check is successful."
 }
 

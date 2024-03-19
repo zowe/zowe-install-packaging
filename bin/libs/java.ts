@@ -17,6 +17,8 @@ import * as shell from './shell';
 import * as config from './config';
 
 const JAVA_MIN_VERSION=8;
+const JAVA_MAX_WARN=8; //warn if newer than this
+//const JAVA_MAX_ERROR=8; //error on this.
 
 export function ensureJavaIsOnPath(): void {
   let path=std.getenv('PATH') || '/bin:.:/usr/bin';
@@ -129,9 +131,11 @@ export function validateJavaHome(javaHome:string|undefined=std.getenv("JAVA_HOME
     if (tooLow) {
       common.printError(`Java ${javaVersionShort} is less than the minimum level required of Java ${JAVA_MIN_VERSION}.`);
       return false;
+    } else if (javaMajorVersion > JAVA_MAX_WARN) {
+      common.printError(`Warning: Java version ${javaVersionShort} is greater than the maximum known working version of Java ${JAVA_MAX_WARN}.`); 
+    } else {
+      common.printDebug(`Java ${javaVersionShort} is supported.`);
     }
-
-    common.printDebug(`Java ${javaVersionShort} is supported.`);
     common.printDebug(`Java check is successful.`);
     return true;
   } catch (e) {
