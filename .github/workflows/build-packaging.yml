@@ -46,7 +46,7 @@ jobs:
 
   pr-comment-check:
 
-    name: 'PR Comment Trigger'
+    name: 'PR Comment Check'
     runs-on: ubuntu-latest
     outputs:
       issue_run_ci: ${{ steps.check-comment.outputs.issue_run_ci }}
