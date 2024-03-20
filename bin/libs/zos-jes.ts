@@ -96,8 +96,11 @@ export function waitForJob(jobid: string): {jobcctext?: string, jobcccode?: stri
     is_jes3 = false;
     const secs = timesSec[i];
     common.printTrace(`  * Wait for ${secs} seconds`);
-    //os.sleep(secs*1000); Bypass the problem with sleep
-    shell.execSync('sh', '-c', `sleep ${secs}`);
+
+    // TODO os.sleep has a problem described in https://github.com/zowe/zowe-common-c/issues/439 that may be fixed in https://github.com/zowe/zowe-common-c/issues/439
+    os.sleep(secs*1000); 
+    // Use this to bypass the problem with sleep
+    // shell.execSync('sh', '-c', `sleep ${secs}`);
     
     let result=zoslib.operatorCommand(`\\$D ${jobid},CC`);
     // if it's JES3, we receive this:
