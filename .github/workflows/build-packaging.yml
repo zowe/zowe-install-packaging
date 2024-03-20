@@ -157,14 +157,18 @@ jobs:
           BUILD_WHAT="PAX"
             
           if [[ "${{ contains(github.event.pull_request.labels.*.name, 'Build: PSWI') }}" == "true" ]]; then
+            echo INPUTS_BUILD_PSWI=true >> $GITHUB_ENV
+            echo INPUTS_BUILD_SMPE=true >> $GITHUB_ENV
             BUILD_WHAT=$BUILD_WHAT", SMPE, PSWI"
           else
             if [[ "${{ contains(github.event.pull_request.labels.*.name, 'Build: SMPE') }}" == "true" ]]; then
+              echo INPUTS_BUILD_SMPE=true >> $GITHUB_ENV
               BUILD_WHAT=$BUILD_WHAT", SMPE"
             fi
           fi
 
           if [[ "${{ contains(github.event.pull_request.labels.*.name, 'Build: Kubernetes') }}" == "true" ]]; then
+            echo INPUTS_BUILD_KUBERNETES=true >> $GITHUB_ENV
             BUILD_WHAT=$BUILD_WHAT", K8S"
           fi
 
