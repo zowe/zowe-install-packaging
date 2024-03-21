@@ -40,7 +40,7 @@ Runtime: The read-only content that comprises a version of Zowe.
 
 **Instance**: A collection of configuration and persistent data for Zowe that uses a particular Runtime.
 
-**HA Instance**: An optional subset of an Instance which varies its configuration for redundant copies of Zowe components across one or more LPARs for high avilability and fault tolerance.
+**HA Instance**: An optional subset of an Instance which varies its configuration for redundant copies of Zowe components across one or more LPARs for high availability and fault tolerance.
 
 **Component**: A unit of software that is managed by Zowe's launcher and has a folder structure that allows Zowe's tools to manage it. Components may contain a webserver or an extension to another component.
 
@@ -49,7 +49,7 @@ Runtime: The read-only content that comprises a version of Zowe.
 **Keystore**: Zowe has several HTTPS servers which require certificates to function. You can store these certificates in a Keyring, or in a ZFS Keystore directory in the form of PKCS12 files.
 
 ### Configuration Concepts
-**Zowe YAML File**: Each Instance is configured by a YAML document composed of one or more unix file or PDSE member. It can be as simple as a "zowe.yaml" unix file, or ZWEYAML parmlib member, or advanced configuration can ba accomplished by splitting configuration across multiple such files. This allows for defaults and customizations, splitting the configuration by administrative duty, or even splitting the configuration by core configuration versus extension configuration. 
+**Zowe YAML File**: Each Instance is configured by a YAML document composed of one or more unix file or PDSE member. It can be as simple as a "zowe.yaml" unix file, or ZWEYAML parmlib member, or advanced configuration can be accomplished by splitting configuration across multiple such files. This allows for defaults and customizations, splitting the configuration by administrative duty, or even splitting the configuration by core configuration versus extension configuration. 
 
 **Schema**: The YAML file is backed by a Schema, found within `runtimeDirectory/schemas` ([link](https://github.com/zowe/zowe-install-packaging/tree/v2.x/staging/schemas)). Whenever Zowe starts up, or when most `zwe` commands are used, Zowe will check that the YAML file is valid before executing the requested operation, to reduce chance of misconfiguration. The schema also details advanced configuration parameters that may not be needed in basic installs.
 
@@ -183,7 +183,7 @@ JCL samples for removing Zowe configuration also exist.
 If you type `zwe init --help`, you will see each configuration command that is available.
 Each command reads configuration properties from the Zowe YAML files, and combines that with the JCL samples from the SZWESAMP dataset.
 The commands resolve the JCL sample templates into usable JCL within the dataset defined by YAML value `zowe.setup.dataset.jcllib`.
-Before each command runs, it will pritn the JCL that it is submitting.
+Before each command runs, it will print the JCL that it is submitting.
 
 Every `zwe init` command also has a `--dry-run` option which validates the configuration, prints the JCL, but does not submit it.
 This allows you to review the actions before performing them with the appropriate administrator.
