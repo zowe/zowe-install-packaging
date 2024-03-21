@@ -351,9 +351,50 @@
   when: zowe_configure_ignore_security_failures
 
 # ============================================================================
-- name: Init Zowe
+- name: Init Zowe mvs
   import_role:
     name: zos
     tasks_from: run_zwe
   vars:
-    parameters: "init {{ zwe_init_params }}"
+    parameters: "init mvs {{ zwe_init_params }}"
+
+# ============================================================================
+- name: Init Zowe vsam
+  import_role:
+    name: zos
+    tasks_from: run_zwe
+  vars:
+    parameters: "init vsam {{ zwe_init_params }}"
+
+# ============================================================================
+- name: Init Zowe stc
+  import_role:
+    name: zos
+    tasks_from: run_zwe
+  vars:
+    parameters: "init stc {{ zwe_init_params }}"
+
+# ============================================================================
+- name: Init Zowe security
+  import_role:
+    name: zos
+    tasks_from: run_zwe
+  vars:
+    parameters: "init security {{ zwe_init_params }}"
+
+# ============================================================================
+- name: Init Zowe apfauth
+  import_role:
+    name: zos
+    tasks_from: run_zwe
+  vars:
+    parameters: "init apfauth {{ zwe_init_params }}"
+
+# ============================================================================
+- name: Init Zowe certificate
+  import_role:
+    name: zos
+    tasks_from: run_zwe
+  vars:
+    parameters: "init certificate {{ zwe_init_params }}"
+

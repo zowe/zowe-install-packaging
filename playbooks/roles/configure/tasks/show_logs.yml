@@ -37,8 +37,12 @@
   vars:
     show_jobs_name: "{{ job_name_to_show }}"
   loop:
-  - ZWEIACF2
-  - ZWEIRACF
+  - ZWEGENER
+  - ZWEIMVS
+  - ZWEIMVS2
+  - ZWEIAPF
+  - ZWEIACF
+  - ZWEIRAC
   - ZWEITSS
   - ZWEIKRR1
   - ZWEIKRR2
