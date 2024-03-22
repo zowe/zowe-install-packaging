@@ -75,12 +75,7 @@ export function verifyGeneratedJcl(config:any): string {
   // read JCL library and validate
   let doesJclExist: boolean = zosDataset.isDatasetExists(jcllib);
   if (!doesJclExist) {
-    let rc: number = zosDataset.tsoIsDatasetExists(jcllib);
-    if (rc != 0) {
-      initGenerate.execute();
-    } else {
-      doesJclExist = true;
-    }
+    initGenerate.execute();
   }
 
   // should be created, but may take time to discover.
@@ -90,13 +85,7 @@ export function verifyGeneratedJcl(config:any): string {
       let secs = interval[i];
       doesJclExist=zosDataset.isDatasetExists(jcllib);
       if (!doesJclExist) {
-        let rc: number = zosDataset.tsoIsDatasetExists(jcllib);
-        if (rc != 0) {
-          os.sleep(secs*1000);
-        } else {
-          doesJclExist = true;
-          break;
-        }
+        os.sleep(secs*1000);
       } else {
         break;
       }
