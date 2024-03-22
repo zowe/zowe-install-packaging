@@ -203,7 +203,7 @@ jobs:
           
           echo INPUTS_BUILD_PSWI=${{ github.event.inputs.BUILD_PSWI }} >> $GITHUB_ENV
           if [[ "${{ github.event.inputs.BUILD_PSWI }}" == true ]]; then
-            if [[ "${{ github.event.inputs.PSWI_SMPE_ARTIFACTORY_PATH }}" == ""]]; then
+            if [[ "${{ github.event.inputs.PSWI_SMPE_ARTIFACTORY_PATH }}" == "" ]]; then
               echo INPUTS_BUILD_SMPE=true >> $GITHUB_ENV
               BUILD_WHAT=$BUILD_WHAT", SMPE, PSWI"
             else
