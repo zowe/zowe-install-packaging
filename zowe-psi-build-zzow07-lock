@@ -1,15 +1,1 @@
-{
-  "lockAcquiredTime": "Fri Mar 22 2024 15:53:15 GMT+0000 (Coordinated Universal Time)",
-  "uid": "1711122795921510411",
-  "repository": {
-    "owner": "zowe",
-    "repo": "zowe-install-packaging"
-  },
-  "branch": "user/muzikovam/smpeVolume",
-  "workflow": "Zowe Build and Packaging",
-  "job": "regular-build",
-  "actor": "muzikovam",
-  "runId": 8392682972,
-  "runNumber": 4824,
-  "link": "https://github.com/zowe/zowe-install-packaging/actions/runs/8392682972"
-}
+""
