@@ -1,1 +1,15 @@
-""
+{
+  "lockAcquiredTime": "Fri Mar 22 2024 19:17:53 GMT+0000 (Coordinated Universal Time)",
+  "uid": "1711135073989171095",
+  "repository": {
+    "owner": "zowe",
+    "repo": "zowe-install-packaging"
+  },
+  "branch": "user/markackert/2.15-pswi-fixes",
+  "workflow": "Zowe Build and Packaging",
+  "job": "regular-build",
+  "actor": "MarkAckert",
+  "runId": 8395356709,
+  "runNumber": 4836,
+  "link": "https://github.com/zowe/zowe-install-packaging/actions/runs/8395356709"
+}
