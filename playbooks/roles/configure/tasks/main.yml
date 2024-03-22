@@ -359,6 +359,15 @@
     parameters: "init mvs {{ zwe_init_params }}"
 
 # ============================================================================
+- name: Init Zowe apfauth
+  import_role:
+    name: zos
+    tasks_from: run_zwe
+  vars:
+    parameters: "init apfauth {{ zwe_init_params }}"
+
+    
+# ============================================================================
 - name: Init Zowe vsam
   import_role:
     name: zos
@@ -382,13 +391,6 @@
   vars:
     parameters: "init security {{ zwe_init_params }}"
 
-# ============================================================================
-- name: Init Zowe apfauth
-  import_role:
-    name: zos
-    tasks_from: run_zwe
-  vars:
-    parameters: "init apfauth {{ zwe_init_params }}"
 
 # ============================================================================
 - name: Init Zowe certificate

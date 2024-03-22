@@ -52,8 +52,8 @@ export function execute() {
   if (!result1.smsManaged || !result2.smsManaged) {
     const COMMAND_LIST = std.getenv('ZWE_CLI_COMMANDS_LIST');
     const tmpfile = fs.createTmpFile(`zwe ${COMMAND_LIST}`.replace(new RegExp('\ ', 'g'), '-'));
-    common.printDebug(`- Copy ${jcllib}(ZWEIAPF) to ${tmpfile}`);
-    let jclContent = shell.execOutSync('sh', '-c', `cat "//'${stringlib.escapeDollar(jcllib)}(ZWEIAPF)'" 2>&1`);
+    common.printDebug(`- Copy ${jcllib}(ZWEIAPF2) to ${tmpfile}`);
+    let jclContent = shell.execOutSync('sh', '-c', `cat "//'${stringlib.escapeDollar(jcllib)}(ZWEIAPF2)'" 2>&1`);
     if (jclContent.out && jclContent.rc == 0) {
       common.printDebug(`  * Succeeded`);
       common.printTrace(`  * Output:`);
@@ -74,10 +74,10 @@ export function execute() {
 
       shell.execSync('chmod', '700', tmpfile);
       if (!fs.fileExists(tmpfile)) {
-        common.printErrorAndExit(`Error ZWEL0159E: Failed to prepare ZWEIAPF`, undefined, 159);
+        common.printErrorAndExit(`Error ZWEL0159E: Failed to prepare ZWEIAPF2`, undefined, 159);
       }
       
-      zosJes.printAndHandleJcl(tmpfile, `ZWEIAPF`, jcllib, prefix, true);
+      zosJes.printAndHandleJcl(tmpfile, `ZWEIAPF2`, jcllib, prefix, true);
     } else {
       common.printDebug(`  * Failed`);
       common.printError(`  * Exit code: ${jclContent.rc}`);
@@ -88,7 +88,7 @@ export function execute() {
       std.exit(1);
     }
   } else {
-    zosJes.printAndHandleJcl(`//'${jcllib}(ZWEIAPF)'`, `ZWEIAPF`, jcllib, prefix);      
+    zosJes.printAndHandleJcl(`//'${jcllib}(ZWEIAPF2)'`, `ZWEIAPF2`, jcllib, prefix);      
   }
   common.printLevel2Message(`Zowe load libraries are APF authorized successfully.`);
 }
