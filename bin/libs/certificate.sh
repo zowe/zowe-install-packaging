@@ -1021,7 +1021,7 @@ keyring_run_zwenokyr_jcl() {
     print_message "To perform command, re-run command without dry run flag, or submit the JCL directly"
   else
     print_message "Submitting Job ${member_name}"
-    jobid=$(submit_job "//'${jcllib}(${member_name}})'")
+    jobid=$(submit_job "//'${jcllib}(${member_name})'")
     code=$?
     if [ ${code} -ne 0 ]; then
       print_error "Error ZWEL0161E: Failed to run JCL ${jcllib}(${member_name})."
