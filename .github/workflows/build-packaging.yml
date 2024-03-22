@@ -30,6 +30,11 @@ on:
         required: false
         default: false
         type: boolean
+      PSWI_SMPE_ARTIFACTORY_PATH:
+        description: 'Artifactory path to find an already-built Zowe SMPE package, instead of building from scratch'
+        required: false
+        default: ''
+        type: string
       KEEP_TEMP_PAX_FOLDER:
         description: 'do we need to keep temp pax folder?'
         required: false
@@ -198,8 +203,13 @@ jobs:
           
           echo INPUTS_BUILD_PSWI=${{ github.event.inputs.BUILD_PSWI }} >> $GITHUB_ENV
           if [[ "${{ github.event.inputs.BUILD_PSWI }}" == true ]]; then
-            echo INPUTS_BUILD_SMPE=true >> $GITHUB_ENV
-            BUILD_WHAT=$BUILD_WHAT", SMPE, PSWI"
+            if [[ "${{ github.event.inputs.PSWI_SMPE_ARTIFACTORY_PATH }}" == ""]]; then
+              echo INPUTS_BUILD_SMPE=true >> $GITHUB_ENV
+              BUILD_WHAT=$BUILD_WHAT", SMPE, PSWI"
+            else
+              echo INPUTS_BUILD_SMPE=false >> $GITHUB_ENV
+              BUILD_WHAT="PSWI"
+            fi
           else
             echo INPUTS_BUILD_SMPE=${{ github.event.inputs.BUILD_SMPE }} >> $GITHUB_ENV
             if [[ "${{ github.event.inputs.BUILD_SMPE }}" == true ]]; then
@@ -280,8 +290,13 @@ jobs:
         id: pax-prep
         run: |
           if [ "${{ env.INPUTS_BUILD_SMPE }}" == "true" ] || [ "${{ env.INPUTS_BUILD_PSWI }}" == "true" ] ; then
-            echo EXTRA_FILES=zowe-smpe.zip,fmid.zip,pd.htm,smpe-promote.tar,smpe-build-logs.pax.Z,rename-back.sh >> $GITHUB_OUTPUT
-            echo BUILD_SMPE=yes >> $GITHUB_OUTPUT
+            if [[ "${{ github.event.inputs.PSWI_SMPE_ARTIFACTORY_PATH }}" == ""]]; then
+              echo EXTRA_FILES=zowe-smpe.zip,fmid.zip,pd.htm,smpe-promote.tar,smpe-build-logs.pax.Z,rename-back.sh >> $GITHUB_OUTPUT
+              echo BUILD_SMPE=yes >> $GITHUB_OUTPUT
+            else
+              echo EXTRA_FILES= >> $GITHUB_OUTPUT
+              echo BUILD_SMPE= >> $GITHUB_OUTPUT
+            fi
           else
             echo EXTRA_FILES= >> $GITHUB_OUTPUT
             echo BUILD_SMPE= >> $GITHUB_OUTPUT
@@ -295,6 +310,7 @@ jobs:
 
       - name: '[PAX/SMPE Pax 2] Packaging'
         timeout-minutes: 60
+        if: env.INPUTS_BUILD_PSWI != 'true' || (env.INPUTS_BUILD_PSWI == 'true' && github.event.inputs.PSWI_SMPE_ARTIFACTORY_PATH == '')
         uses: zowe-actions/shared-actions/make-pax@main
         with: 
           pax-name: zowe
@@ -309,7 +325,7 @@ jobs:
             KEEP_TEMP_FOLDER=${{ steps.pax-prep.outputs.KEEP_TEMP_FOLDER }}
 
       - name: '[SMPE Pax 3] Post-make pax'
-        if: env.INPUTS_BUILD_SMPE == 'true' || env.INPUTS_BUILD_PSWI == 'true'
+        if: env.INPUTS_BUILD_SMPE == 'true' || (env.INPUTS_BUILD_PSWI == 'true' && github.event.inputs.PSWI_SMPE_ARTIFACTORY_PATH == '')
         run: |
           cd .pax
           chmod +x rename-back.sh
@@ -324,6 +340,13 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           lock-resource-name: zowe-psi-build-zzow07-lock
           lock-avg-retry-interval: 60
+
+      - name: '[PSWI 0] PSWI pre-build check for existing smpe'
+        if: env.INPUTS_BUILD_PSWI == 'true' && github.event.inputs.PSWI_SMPE_ARTIFACTORY_PATH != ''
+        run: |
+          jfrog rt dl libs-release-local/org/zowe/2.0.0/zowe-smpe-*.zip --flat=true .pax/AZWE002.zip
+          jfrog rt dl ${{github.event.inputs.PSWI_SMPE_ARTIFACTORY_PATH}}/zowe-smpe-*.zip --flat=true .pax/zowe-smpe.zip
+
 
       - name: '[SMPE Pax 4] Build PSWI'
         if: env.INPUTS_BUILD_PSWI == 'true'
