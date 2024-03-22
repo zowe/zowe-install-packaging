@@ -12,6 +12,8 @@ on:
       - v2.x/staging 
   pull_request:
     types: [opened, synchronize]
+  issue_comment:
+    types: [created, edited]
 
   workflow_dispatch:
     inputs:
@@ -41,6 +43,38 @@ on:
         type: string
 
 jobs:
+
+  pr-comment-check:
+
+    name: 'PR Comment Check'
+    runs-on: ubuntu-latest
+    outputs:
+      issue_run_ci: ${{ steps.check-comment.outputs.issue_run_ci }}
+    steps:
+      - name: Check for a comment triggering a build
+        id: check-comment
+        run: |
+          echo "issue_run_ci=false" >> $GITHUB_OUTPUT
+          if [[ ! -z "${{ github.event.issue.pull_request }}" && ${{ github.event_name == 'issue_comment' }} && "${{ github.event.comment.body }}" = '/ci' ]]; then
+            echo "issue_run_ci=true" >> $GITHUB_OUTPUT
+          fi     
+
+  set-run-conditions:
+    runs-on: ubuntu-latest
+    needs: pr-comment-check
+    outputs:
+      should-build: ${{ steps.check-build.outputs.run_build }}
+      should-test: ${{ steps.check-test.outputs.run_test}}
+    steps:
+      - id: check-build
+        name: 'export conditional used to determine if we should run a build'
+        run: |
+          echo "run_build=${{ (github.event_name != 'issue_comment' || needs.pr-comment-check.outputs.issue_run_ci == 'true') && (github.event_name == 'workflow_dispatch' || !contains(github.event.pull_request.labels.*.name, 'Build: None')) }}" >> $GITHUB_OUTPUT
+      - id: check-test
+        name: 'export conditional used to determine if we should run a test suite'
+        run: |
+          echo "run_test=${{  ( github.event_name == 'push' && contains(github.ref, 'staging') ) || ( (github.event_name == 'pull_request' || github.event_name == 'issue_comment') && !contains(github.event.pull_request.labels.*.name, 'Build: None') && !contains(github.event.pull_request.labels.*.name, 'Test: None') ) }}" >> $GITHUB_OUTPUT
+
   display-dispatch-event-id:
     if: github.event.inputs.RANDOM_DISPATCH_EVENT_ID != ''
     runs-on: ubuntu-latest
@@ -56,13 +90,17 @@ jobs:
         uses: zowe-actions/shared-actions/permission-check@main
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}  
-  
+
   regular-build:
+
+    if: ${{ needs.set-run-conditions.outputs.should-build == 'true' }}
     runs-on: ubuntu-latest
-    needs: check-permission
+    needs: [set-run-conditions, check-permission]
     steps: 
       - name: '[Prep 1] Checkout'
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event_name == 'issue_comment' && format('refs/pull/{0}/head', github.event.issue.number) || '' }}
   
       - name: '[Prep 2] Setup jFrog CLI'
         uses: jfrog/setup-jfrog-cli@v2
@@ -112,10 +150,37 @@ jobs:
               console.error('Cannot read manifest or manifest is invalid.');
             }
 
-      - name: '[Prep 6] Process github.event.inputs'
-        id: process-inputs
+      - name: '[Prep 6a] Process labels for ci build (pull, push, comment)'
+        id: process-labels
+        if: github.event_name != 'workflow_dispatch'
         run: |
           BUILD_WHAT="PAX"
+            
+          if [[ "${{ contains(github.event.pull_request.labels.*.name, 'Build: PSWI') }}" == "true" ]]; then
+            echo INPUTS_BUILD_PSWI=true >> $GITHUB_ENV
+            echo INPUTS_BUILD_SMPE=true >> $GITHUB_ENV
+            BUILD_WHAT=$BUILD_WHAT", SMPE, PSWI"
+          else
+            if [[ "${{ contains(github.event.pull_request.labels.*.name, 'Build: SMPE') }}" == "true" ]]; then
+              echo INPUTS_BUILD_SMPE=true >> $GITHUB_ENV
+              BUILD_WHAT=$BUILD_WHAT", SMPE"
+            fi
+          fi
+
+          if [[ "${{ contains(github.event.pull_request.labels.*.name, 'Build: Kubernetes') }}" == "true" ]]; then
+            echo INPUTS_BUILD_KUBERNETES=true >> $GITHUB_ENV
+            BUILD_WHAT=$BUILD_WHAT", K8S"
+          fi
+
+          echo "INPUTS_KEEP_TEMP_PAX_FOLDER=${{ contains(github.event.pull_request.labels.*.name, 'Build: Debug-Remote') }}" >> $GITHUB_ENV
+
+          echo BUILD_WHAT=$BUILD_WHAT >> $GITHUB_OUTPUT
+
+      - name: '[Prep 6b] Process github.event.inputs for manually triggered build'
+        id: process-inputs
+        if: github.event_name == 'workflow_dispatch'
+        run: |
+          BUILD_WHAT="${{ steps.process-labels.outputs.BUILD_WHAT_LABELS }}"
           
           echo INPUTS_BUILD_PSWI=${{ github.event.inputs.BUILD_PSWI }} >> $GITHUB_ENV
           if [[ "${{ github.event.inputs.BUILD_PSWI }}" == true ]]; then
@@ -352,9 +417,11 @@ jobs:
   # only run auto integration tests when the workflow is triggered by pull request
   # default running Convenience Pax on any zzow server
   call-integration-test:
-    needs: regular-build
+
+    needs: [set-run-conditions, regular-build]
     runs-on: ubuntu-latest
-    if: github.event_name == 'pull_request' || (github.event_name == 'push' && contains(github.ref, 'staging'))
+    if: ${{ needs.set-run-conditions.outputs.should-test == 'true' }}
+
     steps:
       - name: 'Determine branch name'
         run: |
@@ -363,6 +430,23 @@ jobs:
           else
             echo "BRANCH_NAME=$(echo ${GITHUB_REF_NAME})" >> $GITHUB_ENV
           fi
+
+      - name: 'Determine test suite'
+        id: get-test-suite
+        run: |
+          TEST_SUITE="Convenience Pax"
+          if [[ "${{ contains(github.event.pull_request.labels.*.name, 'Test: Basic') }}" = "true" ]]; then
+            TEST_SUITE="Convenience Pax"
+          elif [[ "${{ contains(github.event.pull_request.labels.*.name, 'Test: SMPE') }}" = "true" ]]; then
+            TEST_SUITE="SMPE PTF"
+          elif [[ "${{ contains(github.event.pull_request.labels.*.name, 'Test: Extended') }}" = "true" ]]; then
+            TEST_SUITE="Zowe Nightly Tests"
+          elif [[ "${{ contains(github.event.pull_request.labels.*.name, 'Test: Silly') }}" = "true" ]]; then
+            TEST_SUITE="Zowe Release Tests"
+          else 
+            echo "Unknown test label encountered; defaulting to 'Test: Basic' and running Convenience Pax tests."
+          fi
+          echo "TEST_SUITE=$TEST_SUITE" >> $GITHUB_OUTPUT
 
       - name: 'Call test workflow'
         uses: zowe-actions/shared-actions/workflow-remote-call-wait@main
@@ -374,7 +458,7 @@ jobs:
           workflow-filename: cicd-test.yml
           branch-name: ${{ env.BRANCH_NAME }}
           poll-frequency: 3
-          inputs-json-string: '{"custom-zowe-artifactory-pattern-or-build-number":"${{ github.run_number }}"}'
+          inputs-json-string: '{"custom-zowe-artifactory-pattern-or-build-number":"${{ github.run_number }}", "install-test": "${{ steps.get-test-suite.outputs.TEST_SUITE }}"}'
         # env:
         #   DEBUG: 'workflow-remote-call-wait'
       
