@@ -73,11 +73,13 @@ export function verifyGeneratedJcl(config:any): string {
     return undefined;
   }
   // read JCL library and validate
-  let doesJclExist: boolean|number = zosDataset.isDatasetExists(jcllib);
+  let doesJclExist: boolean = zosDataset.isDatasetExists(jcllib);
   if (!doesJclExist) {
-    doesJclExist = zosDataset.tsoIsDatasetExists(jcllib);
-    if (!doesJclExist) {
+    let rc: number = zosDataset.tsoIsDatasetExists(jcllib);
+    if (rc != 0) {
       initGenerate.execute();
+    } else {
+      doesJclExist = true;
     }
   }
 
@@ -88,10 +90,11 @@ export function verifyGeneratedJcl(config:any): string {
       let secs = interval[i];
       doesJclExist=zosDataset.isDatasetExists(jcllib);
       if (!doesJclExist) {
-        doesJclExist = zosDataset.tsoIsDatasetExists(jcllib);
-        if (!doesJclExist) {
+        let rc: number = zosDataset.tsoIsDatasetExists(jcllib);
+        if (rc != 0) {
           os.sleep(secs*1000);
         } else {
+          doesJclExist = true;
           break;
         }
       } else {
