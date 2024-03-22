@@ -290,7 +290,7 @@ jobs:
         id: pax-prep
         run: |
           if [ "${{ env.INPUTS_BUILD_SMPE }}" == "true" ] || [ "${{ env.INPUTS_BUILD_PSWI }}" == "true" ] ; then
-            if [[ "${{ github.event.inputs.PSWI_SMPE_ARTIFACTORY_PATH }}" == ""]]; then
+            if [[ "${{ github.event.inputs.PSWI_SMPE_ARTIFACTORY_PATH }}" == "" ]]; then
               echo EXTRA_FILES=zowe-smpe.zip,fmid.zip,pd.htm,smpe-promote.tar,smpe-build-logs.pax.Z,rename-back.sh >> $GITHUB_OUTPUT
               echo BUILD_SMPE=yes >> $GITHUB_OUTPUT
             else
