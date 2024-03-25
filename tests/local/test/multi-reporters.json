@@ -1,0 +1,13 @@
+{
+  "reporterEnabled": "mocha-jenkins-reporter, mochawesome",
+  "mochaJenkinsReporterReporterOptions": {
+    "junit_report_path": "reports/junit.xml"
+  },
+  "mochawesomeReporterOptions": {
+    "reportDir": "reports",
+    "reportFilename": "index",
+    "html": true,
+    "json": false,
+    "quiet": true
+  }
+}
