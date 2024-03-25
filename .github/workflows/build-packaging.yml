@@ -236,7 +236,7 @@ jobs:
 
       - name: '[PAX/SMPE Pax 2] Packaging'
         timeout-minutes: 60
-        if: env.INPUTS_BUILD_PSWI != 'true' || (env.INPUTS_BUILD_PSWI == 'true' && github.event.inputs.PSWI_SMPE_ARTIFACTORY_PATH == '' && github.event.inputs.PSWI_SMPE_AZWE_ARTIFACTORY_PATH != '')
+        if: env.INPUTS_BUILD_PSWI != 'true' || (env.INPUTS_BUILD_PSWI == 'true' && github.event.inputs.PSWI_SMPE_ARTIFACTORY_PATH == '' && github.event.inputs.PSWI_SMPE_AZWE_ARTIFACTORY_PATH == '')
         uses: zowe-actions/shared-actions/make-pax@main
         with: 
           pax-name: zowe
@@ -251,7 +251,7 @@ jobs:
             KEEP_TEMP_FOLDER=${{ steps.pax-prep.outputs.KEEP_TEMP_FOLDER }}
 
       - name: '[SMPE Pax 3] Post-make pax'
-        if: env.INPUTS_BUILD_SMPE == 'true' || (env.INPUTS_BUILD_PSWI == 'true' && github.event.inputs.PSWI_SMPE_ARTIFACTORY_PATH == '' && github.event.inputs.PSWI_SMPE_AZWE_ARTIFACTORY_PATH != '')
+        if: env.INPUTS_BUILD_SMPE == 'true' || (env.INPUTS_BUILD_PSWI == 'true' && github.event.inputs.PSWI_SMPE_ARTIFACTORY_PATH == '' && github.event.inputs.PSWI_SMPE_AZWE_ARTIFACTORY_PATH == '')
         run: |
           cd .pax
           chmod +x rename-back.sh
