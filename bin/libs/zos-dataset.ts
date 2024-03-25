@@ -28,7 +28,7 @@ export function isVsamDatasetExists(datasetName: string): boolean {
 
 export function isDatasetExists(datasetName: string): boolean {
   common.printTrace(`  * isDatasetExists: '${stringlib.escapeDollar(datasetName)}'`);
-  const result = shell.execSync('sh', '-c', `cat "//'${stringlib.escapeDollar(datasetName)}'" 2>&1`);
+  const result = shell.execSync('sh', '-c', `cat "//'${stringlib.escapeDollar(datasetName)}'" 1>/dev/null 2>&1`);
   return result.rc === 0;
 }
 

@@ -15,17 +15,9 @@
 //*  Which need it. You can issue this, or use another
 //*  Way to accomplish the task.
 //*
-//*********************************************************************
-//*
-//*  This dataset holds the APF portion of Zowe
-//         SET LOADLIB='{zowe.setup.dataset.authLoadlib}'
-//*  SMS may have to be replaced with VOLUME=SOME.DSN when not SMS
-//         SET LOADLOC='SMS'
-//*
-//*  This dataset holds product plugins for ZIS,
-//*  ZIS is located in the LOADLIB.
-//         SET PLUGLIB='{zowe.setup.dataset.authPluginLib}'
-//         SET PLUGLOC='SMS'
+//*  The following variables are derived from the zowe YAML config:
+//*  LOADLIB: the dataset that holds the APF portion of Zowe
+//*  PLUGLIB: The dataset that holds the extensions for ZIS.
 //*
 //*********************************************************************
 //*
@@ -36,6 +28,10 @@
 //STDPARM DD *
 SH cd "{zowe.runtimeDirectory}" &&
 cd bin/utils &&
-./opercmd.rex "SETPROG APF,ADD,DSN=&LOADLIB.,&LOADLOC." &&
-./opercmd.rex "SETPROG APF,ADD,DSN=&PLUGLIB.,&PLUGLOC."
+export LOADLIB={zowe.setup.dataset.authLoadlib} &&
+export LOADLOC=SMS &&
+export PLUGLIB={zowe.setup.dataset.authPluginLib} &&
+export PLUGLOC=SMS &&
+./opercmd.rex "SETPROG APF,ADD,DSN=$LOADLIB,$LOADLOC" &&
+./opercmd.rex "SETPROG APF,ADD,DSN=$PLUGLIB,$PLUGLOC"
 //*  

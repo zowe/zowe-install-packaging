@@ -61,7 +61,7 @@ export function execute(allowOverwrite?: boolean) {
       const datasetExists=zosdataset.isDatasetExists(ds);
       if (datasetExists) {
         if (allowOverwrite) {
-          if (key != 'authLoadLib') {
+          if (key != 'authLoadlib') {
             needCleanup = true;
           } else {
             needAuthCleanup = true;
