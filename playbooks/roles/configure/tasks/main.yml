@@ -95,7 +95,8 @@
       "zowe.setup.dataset.proclib": "{{ zowe_proclib_dsname }}"
       "zowe.setup.dataset.parmlib": "{{ zowe_xmem_parmlib }}"
       "zowe.setup.dataset.jcllib": "{{ zowe_jcllib }}"
-      "zowe.setup.dataset.authLoadlib": "{{ zowe_xmem_loadlib }}"
+      "zowe.setup.dataset.loadlib": "{{ zowe_dataset_prefix }}.SZWELOAD"
+      "zowe.setup.dataset.authLoadlib": "{{ zowe_dataset_prefix }}.SZWEAUTH"
       "zowe.setup.dataset.authPluginLib": "{{ zowe_xmem_pluginlib }}"
       "zowe.useConfigmgr": "{{ zowe_use_config_manager|lower }}" 
 
