@@ -9,8 +9,8 @@
   Copyright Contributors to the Zowe Project.
 */
 
-import * as std from 'std';
-import * as os from 'os';
+import * as std from 'cm_std';
+import * as os from 'cm_os';
 import * as zos from 'zos';
 import * as common from './common';
 import * as stringlib from './string';
@@ -73,7 +73,7 @@ export function readYaml(file: string, key: string) {
   const jq=`${utils_dir}/njq/src/index.js`;
   const fconv=`${utils_dir}/fconv/src/index.js`;
 
-  common.printTrace(`- read_yaml load content from ${file}`);
+  common.printTrace(`- readYaml load content from ${file}`);
   if (std.getenv('ZWE_CLI_PARAMETER_CONFIG') == file) {
     return fakejq.jqget(ZOWE_CONFIG, key);
   } else {
@@ -86,7 +86,7 @@ export function readYaml(file: string, key: string) {
       return;
     }
 
-    common.printTrace(`- read_yaml ${key} from yaml content`);
+    common.printTrace(`- readYaml ${key} from yaml content`);
     const result=shell.execOutSync('sh', '-c', `echo "${ZWE_PRIVATE_YAML_CACHE}" | node "${jq}" -r "${key}" 2>&1`);
     code=result.rc;
     common.printTrace(`  * Exit code: ${code}`);
@@ -104,7 +104,7 @@ export function readJson(file: string, key: string):any {
   const utils_dir=`${ZOWE_CONFIG.zowe.runtimeDirectory}/bin/utils`;
   const jq=`${utils_dir}/njq/src/index.js`;
 
-  common.printTrace(`- read_json ${key} from ${file}`);
+  common.printTrace(`- readJson ${key} from ${file}`);
   let result=shell.execOutSync('sh', '-c', `cat "${file}" | node "${jq}" -r "${key}" 2>&1`);
   const code = result.rc;
   common.printTrace(`  * Exit code: ${code}`);

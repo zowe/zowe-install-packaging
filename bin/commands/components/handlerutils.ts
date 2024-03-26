@@ -9,7 +9,7 @@
   Copyright Contributors to the Zowe Project.
 */
 
-import * as std from 'std';
+import * as std from 'cm_std';
 import * as common from '../../libs/common';
 import * as configlib from '../../libs/config';
 import * as shell from '../../libs/shell';

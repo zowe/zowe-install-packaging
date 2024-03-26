@@ -10,8 +10,8 @@
 */
 
 import * as index from './index';
-import * as std from 'std';
-import * as os from 'os';
+import * as std from 'cm_std';
+import * as os from 'cm_os';
 import * as configmgr from '../../../libs/configmgr';
 
 const upgrade = false; //would be true for upgrade.ts

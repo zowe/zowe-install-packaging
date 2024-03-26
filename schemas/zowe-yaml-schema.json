@@ -49,7 +49,7 @@
                 },
                 "loadlib": {
                   "type": "string",
-                  "description": "States the path where Zowe executable utilities are located",
+                  "description": "States the dataset where Zowe executable utilities are located",
                   "default": "<hlq>.SZWELOAD"
                 },
                 "authLoadlib": {
@@ -190,7 +190,7 @@
                   "description": "PKCS#12 keystore settings",
                   "properties": {
                     "directory": {
-                      "type": "string",
+                      "$ref": "/schemas/v2/server-common#zowePath",
                       "description": "Keystore directory"
                     },
                     "name": {
@@ -388,19 +388,19 @@
           }
         },
         "runtimeDirectory": {
-          "type": "string",
+          "$ref": "/schemas/v2/server-common#zowePath",
           "description": "Path to where you installed Zowe."
         },
         "logDirectory": {
-          "type": "string",
+          "$ref": "/schemas/v2/server-common#zowePath",
           "description": "Path to where you want to store Zowe log files."
         },
         "workspaceDirectory": {
-          "type": "string",
+          "$ref": "/schemas/v2/server-common#zowePath",
           "description": "Path to where you want to store Zowe workspace files. Zowe workspace are used by Zowe component runtime to store temporary files."
         },
         "extensionDirectory": {
-          "type": "string",
+          "$ref": "/schemas/v2/server-common#zowePath",
           "description": "Path to where you want to store Zowe extensions. \"zwe components install\" will install new extensions into this directory."
         },
         "job": {
@@ -419,20 +419,7 @@
           }
         },
         "network": {
-          "type": "object",
-          "additionalProperties": false,
-          "description": "Optional, advanced network configuration parameters",
-          "properties": {
-            "vipaIp": {
-              "type": "string",
-              "description": "The IP address which all of the Zowe servers will be binding to. If you are using multiple DIPVA addresses, do not use this option."
-            },
-            "validatePortFree": {
-              "type": "boolean",
-              "default": true,
-              "description": "Whether or not to ensure that the port a server is about to use is available. Usually, servers will know this when they attempt to bind to a port, so this option allows you to disable the additional verification step."
-            }
-          }
+          "$ref": "#/$defs/networkSettings"
         },
         "extensionRegistry": {
           "type": "object",
@@ -475,6 +462,11 @@
               "description": "Determines which SHAREAS mode should be used when starting a component",
               "enum": ["no", "yes", "must", ""],
               "default": "yes"
+            },
+            "unsafeDisableZosVersionCheck": {
+              "type": "boolean",
+              "description": "Used to allow Zowe to warn, instead of error, when running on a version of z/OS that this version of Zowe hasn't been verified as working with",
+              "default": false
             }
           }
         },
@@ -529,6 +521,14 @@
           "description": "Customize how Zowe should validate certificates used by components or other services.",
           "enum": ["STRICT", "NONSTRICT", "DISABLED"]
         },
+        "sysMessages": {
+          "type": "array",
+          "description": "List of Zowe message portions when matched will be additionally logged into the system's log (such as syslog on z/OS). Note: Some messages extremely early in the Zowe lifecycle may not be added to the system's log",
+          "uniqueItems": true,
+          "items": {
+            "type": "string"
+          }
+        },
         "useConfigmgr": {
           "type": "boolean",
           "default": false,
@@ -552,7 +552,7 @@
       "type": "object",
       "properties": {
         "home": {
-          "type": "string",
+          "$ref": "/schemas/v2/server-common#zowePath",
           "description": "Path to Java home directory."
         }
       }
@@ -561,7 +561,7 @@
       "type": "object",
       "properties": {
         "home": {
-          "type": "string",
+          "$ref": "/schemas/v2/server-common#zowePath",
           "description": "Path to node.js home directory."
         }
       }
@@ -577,6 +577,10 @@
         "port": {
           "$ref": "#/$defs/port",
           "description": "Port number of your z/OSMF instance."
+        },
+        "scheme": {
+          "$ref" : "#/$defs/scheme",
+          "description": "Scheme used to connect to z/OSMF instance. Optional for outbout AT-TLS, defaults to https"
         },
         "applId": {
           "type": "string",
@@ -627,7 +631,21 @@
       "minimum": 0,
       "maximum": 65535
     },
+    "scheme": {
+      "type": "string",
+      "enum": [
+        "http",
+        "https"
+      ],
+      "default": "https"
+    },
     "certificate": {
+      "oneOf": [
+        { "$ref": "#/$defs/pkcs12-certificate" }, 
+        { "$ref": "#/$defs/keyring-certificate" }
+      ]
+    },
+    "pkcs12-certificate": { 
       "type": "object",
       "additionalProperties": false,
       "required": ["keystore", "truststore", "pem"],
@@ -641,11 +659,11 @@
             "type": {
               "type": "string",
               "description": "Keystore type.",
-              "enum": ["PKCS12", "JCEKS", "JCECCAKS", "JCERACFKS", "JCECCARACFKS", "JCEHYBRIDRACFKS"]
+              "const": "PKCS12"
             },
             "file": {
-              "type": "string",
-              "description": "Path to your PKCS#12 keystore or z/OS keyring."
+              "$ref": "/schemas/v2/server-common#zowePath",
+              "description": "Path to your PKCS#12 keystore."
             },
             "password": {
               "type": "string",
@@ -653,7 +671,7 @@
             },
             "alias": {
               "type": "string",
-              "description": "Certificate alias name of defined in your PKCS#12 keystore, or certificate label of z/OS keyring."
+              "description": "Certificate alias name of defined in your PKCS#12 keystore"
             }
           }
         },
@@ -666,11 +684,11 @@
             "type": {
               "type": "string",
               "description": "Truststore type.",
-              "enum": ["PKCS12", "JCEKS", "JCECCAKS", "JCERACFKS", "JCECCARACFKS", "JCEHYBRIDRACFKS"]
+              "const": "PKCS12"
             },
             "file": {
-              "type": "string",
-              "description": "Path to your PKCS#12 keystore or z/OS keyring."
+              "$ref": "/schemas/v2/server-common#zowePath",
+              "description": "Path to your PKCS#12 keystore."
             },
             "password": {
               "type": "string",
@@ -683,6 +701,93 @@
           "additionalProperties": false,
           "description": "Certificate in PEM format.",
           "required": ["key", "certificate"],
+          "properties": {
+            "key": {
+              "$ref": "/schemas/v2/server-common#zowePath",
+              "description": "Path to the certificate private key stored in PEM format."
+            },
+            "certificate": {
+              "$ref": "/schemas/v2/server-common#zowePath",
+              "description": "Path to the certificate stored in PEM format."
+            },
+            "certificateAuthorities": {
+              "description": "List of paths to the certificate authorities stored in PEM format.",
+              "oneOf": [{
+                  "$ref": "/schemas/v2/server-common#zowePath",
+                  "description": "Paths to the certificate authorities stored in PEM format. You can separate multiple certificate authorities by comma."
+                },
+                {
+                  "type": "array",
+                  "description": "Path to the certificate authority stored in PEM format.",
+                  "items": {
+                    "$ref": "/schemas/v2/server-common#zowePath"
+                  }
+                }
+              ]
+            }
+          }
+        }
+      }
+    },
+    "keyring-certificate": { 
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["keystore", "truststore"],
+      "properties": {
+        "keystore": {
+          "type": "object",
+          "additionalProperties": false,
+          "description": "Certificate keystore.",
+          "required": ["type", "file", "alias"],
+          "properties": {
+            "type": {
+              "type": "string",
+              "description": "Keystore type.",
+              "enum": ["JCEKS", "JCECCAKS", "JCERACFKS", "JCECCARACFKS", "JCEHYBRIDRACFKS"]
+            },
+            "file": {
+              "type": "string",
+              "description": "Path of your z/OS keyring, including ring owner and ring name. Case sensitivity and spaces matter.",
+              "pattern": "^safkeyring:\/\/.*"
+            },
+            "password": {
+              "type": "string",
+              "description": "Literally 'password' may be needed when using keyrings for compatibility with java servers.",
+              "enum": ["", "password"]
+            },
+            "alias": {
+              "type": "string",
+              "description": "Certificate label of z/OS keyring. Case sensitivity and spaces matter."
+            }
+          }
+        },
+        "truststore": {
+          "type": "object",
+          "additionalProperties": false,
+          "description": "Certificate truststore.",
+          "required": ["type", "file"],
+          "properties": {
+            "type": {
+              "type": "string",
+              "description": "Truststore type.",
+              "enum": ["JCEKS", "JCECCAKS", "JCERACFKS", "JCECCARACFKS", "JCEHYBRIDRACFKS"]
+            },
+            "file": {
+              "type": "string",
+              "description": "Path of your z/OS keyring, including ring owner and ring name. Case sensitivity and spaces matter.",
+              "pattern": "^safkeyring:\/\/.*"
+            },
+            "password": {
+              "type": "string",
+              "description": "Literally 'password' may be needed when using keyrings for compatibility with java servers.",
+              "enum": ["", "password"]
+            }
+          }
+        },
+        "pem": {
+          "type": "object",
+          "additionalProperties": false,
+          "description": "Certificate in PEM format.",
           "properties": {
             "key": {
               "type": "string",
@@ -748,6 +853,106 @@
               "default": "yes"
             }
           }
+        },
+        "zowe": {
+          "type": "object",
+          "description": "Component level overrides for top level Zowe network configuration.",
+          "additionalProperties": true,
+          "properties": {
+            "network": {
+              "$ref": "#/$defs/networkSettings"
+            },
+            "job": {
+              "$ref": "#/$defs/componentJobSettings"
+            }
+          }
+        }
+      }
+    },
+    "componentJobSettings": {
+      "$anchor": "componentJobSettings",
+      "type": "object",
+      "description": "Component level overrides for job execution behavior",
+      "properties": {
+        "suffix": {
+          "type": "string",
+          "description": "Can be used by components to declare a jobname suffix to append to their job. This is not currently used by Zowe itself, it is up to components to use this value if desired. Zowe may use this value in the future."
+        }
+      }
+    },
+    "tlsSettings": {
+     "$anchor": "tlsSettings",
+      "type": "object",
+      "properties": {
+        "ciphers": {
+          "type": "array",
+          "description": "Acceptable TLS cipher suites for network connections, in IANA format.",
+          "items": {
+            "type": "string"
+          }
+        },
+        "curves": {
+          "type": "array",
+          "description": "Acceptable key exchange elliptic curves for network connections.",
+          "items": {
+            "type": "string"
+          }
+        },
+        "maxTls": {
+          "type": "string",
+          "enum": ["TLSv1.2", "TLSv1.3"],
+          "default": "TLSv1.3",
+          "description": "Maximum TLS version allowed for network connections."
+        },
+        "minTls": {
+          "type": "string",
+          "enum": ["TLSv1.2", "TLSv1.3"],
+          "default": "TLSv1.2",
+          "description": "Minimum TLS version allowed for network connections, and less than or equal to network.maxTls."
+        }
+      }
+    },
+    "networkSettings": {
+      "type": "object",
+      "$anchor": "networkSettings",
+      "additionalProperties": false,
+      "description": "Optional, advanced network configuration parameters",
+      "properties": {
+        "server": {
+          "type": "object",
+          "additionalProperties": false,
+          "description": "Optional, advanced network configuration parameters for Zowe servers",
+          "properties": {
+            "tls": {
+              "$ref": "#/$defs/tlsSettings"      
+            },
+            "listenAddresses": {
+              "type": "array",
+              "description": "The IP addresses which all of the Zowe servers will be binding on and listening to. Some servers may only support listening on the first element.",
+              "items": {
+                "$ref": "/schemas/v2/server-common#zoweIpv4"
+              }
+            },
+            "vipaIp": {
+              "type": "string",
+              "description": "The IP address which all of the Zowe servers will be binding to. If you are using multiple DIPVA addresses, do not use this option."
+            },
+            "validatePortFree": {
+              "type": "boolean",
+              "default": true,
+              "description": "Whether or not to ensure that the port a server is about to use is available. Usually, servers will know this when they attempt to bind to a port, so this option allows you to disable the additional verification step."
+            }
+          }
+        },
+        "client": {
+          "type": "object",
+          "additionalProperties": false,
+          "description": "Optional, advanced network configuration parameters for Zowe servers when sending requests as clients.",
+          "properties": {
+            "tls": {
+                "$ref": "#/$defs/tlsSettings"    
+            }
+          }
         }
       }
     },
@@ -761,7 +966,7 @@
           "description": "The location of the default registry for this handler. It could be a URL, path, dataset, whatever this handler supports"
         },
         "path": {
-          "type": "string",
+          "$ref": "/schemas/v2/server-common#zowePath",
           "description": "Unix file path to the configmgr-compatible JS file which implements the handler API"
         }
       }

@@ -9,8 +9,8 @@
   Copyright Contributors to the Zowe Project.
 */
 
-import * as std from 'std';
-import * as os from 'os';
+import * as std from 'cm_std';
+import * as os from 'cm_os';
 import * as zos from 'zos';
 
 import * as common from './common';
@@ -20,11 +20,13 @@ import * as shell from './shell';
 // Get file encoding from z/OS USS tagging
 export function getFileEncoding(filePath: string): number|undefined {
   //zos.changeTag(file, id)
-  let returnArray = os.stat(filePath);
-  if (!returnArray[1] && ((returnArray[0].mode & os.S_IFREG) == os.S_IFREG)) { //no error, and is file
-    return returnArray[0].ccsid;
-  } else {
-    common.printError(`getFileEncoding path=${filePath}, err=${returnArray[1]}`);
+  if (os.platform == 'zos') {
+    let returnArray = zos.zstat(filePath);
+    if (!returnArray[1] && ((returnArray[0].mode & os.S_IFMT) == os.S_IFREG)) { //no error, and is file
+      return returnArray[0].ccsid;
+    } else {
+      common.printError(`getFileEncoding path=${filePath}, err=${returnArray[1]}`);
+    }
   }
   return undefined;
 }
@@ -85,7 +87,7 @@ export function detectFileEncoding(fileName: string, expectedSample: string, exp
 
 export function copyMvsToUss(dataset: string, file: string): number {
   common.printDebug(`copyMvsToUss dataset=${dataset}, file=${file}`);
-  const result = shell.execSync('sh', '-c', `cp "//'${dataset}'" "${file}"`);
+  const result = shell.execSync('sh', '-c', `cp "//'${stringlib.escapeDollar(dataset)}'" '${file}'`);
   return result.rc;
 }
 
@@ -109,7 +111,7 @@ export function ensureFileEncoding(file: string, expectedSample: string, expecte
       }
     }
     common.printTrace(`- Remove encoding tag of ${file}.`);
-    zos.changeTag(file, 0);
+    shell.execSync('sh', '-c', `chtag -r "${file}"`);
   } else {
     common.printTrace(`- Failed to detect encoding of ${file}.`);
   }

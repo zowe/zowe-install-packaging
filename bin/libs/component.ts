@@ -9,8 +9,8 @@
   Copyright Contributors to the Zowe Project.
 */
 
-import * as std from 'std';
-import * as os from 'os';
+import * as std from 'cm_std';
+import * as os from 'cm_os';
 import * as zos from 'zos';
 import * as xplatform from 'xplatform';
 import { ConfigManager } from 'Configuration';
@@ -24,6 +24,7 @@ import * as shell from './shell';
 import * as configmgr from './configmgr';
 import * as varlib from './var';
 import * as fakejq from './fakejq';
+import * as configUtils from './config';
 
 const CONFIG_MGR=configmgr.CONFIG_MGR;
 const ZOWE_CONFIG=configmgr.ZOWE_CONFIG;
@@ -44,11 +45,13 @@ const PLUGIN_DEF_SCHEMA_ID = "https://zowe.org/schemas/v2/appfw-plugin-definitio
 const PLUGIN_DEF_SCHEMAS = `${runtimeDirectory}/components/app-server/schemas/plugindefinition-schema.json`;
 
 
-export function getEnabledComponents(): string[] {
-  let components = Object.keys(ZOWE_CONFIG.components);
-  let enabled:string[] = [];
-  components.forEach((key:string) => {
-    if (ZOWE_CONFIG.components[key].enabled == true) {
+export function getEnabledComponents() {
+  let haInstance = configUtils.sanitizeHaInstanceId();
+  let haConfig = configmgr.getZoweConfig(haInstance);
+  let components = Object.keys(haConfig.components);
+  let enabled: string[] = [];
+  components.forEach((key) => {
+    if (haConfig.components[key].enabled == true) {
       enabled.push(key);
     }
   });
@@ -353,15 +356,7 @@ export function findAllEnabledComponents(): string {
 }
 
 export function findAllEnabledComponents2(): string[] {
-  let installedComponentsEnv=std.getenv('ZWE_INSTALLED_COMPONENTS');
-  let installedComponents = installedComponentsEnv ? installedComponentsEnv.split(',') : null;
-  if (!installedComponents) {
-    installedComponents = findAllInstalledComponents2();
-  }
-  return installedComponents.filter(function(component: string) {
-    let componentNameAsEnv=stringlib.sanitizeAlphanum(component);
-    return std.getenv(`ZWE_components_${componentNameAsEnv}_enabled`) == 'true';
-  });
+  return getEnabledComponents();
 }
 
 export function findAllLaunchComponents(): string {
@@ -672,7 +667,11 @@ export function zisPluginInstall(pluginPath: string, zisPluginlib: string, zisPa
   if (changed) {
     common.printDebug(`Parmlib modified, writing as \n${parmlibContents}`);
     xplatform.storeFileUTF8(parmlibMemberAsUnixFile, xplatform.AUTO_DETECT, parmlibContents);
-    zosdataset.copyToDataset(parmlibMemberAsUnixFile, `${zisParmlib}(${zisParmlibMember})`, "", true);
+    const rc = zosdataset.copyToDataset(parmlibMemberAsUnixFile, `${zisParmlib}(${zisParmlibMember})`, "", true);
+    if (rc != 0) {
+      common.printError(`Error ZWEL0200E: Failed to copy USS file ${parmlibMemberAsUnixFile} to MVS data set ${zisParmlib}.`);
+      return 200;
+    }
   }
   return 0;
 }
