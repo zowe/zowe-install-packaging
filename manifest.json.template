@@ -57,23 +57,23 @@
       "artifact": "*.pax"
     },
     "org.zowe.apiml.api-catalog-package": {
-      "version": "3.0.3-PR-2233-SNAPSHOT",
+      "version": "^3.0.3-SNAPSHOT",
       "artifact": "api-catalog-*.zip"
     },
     "org.zowe.apiml.discovery-package": {
-      "version": "3.0.3-PR-2233-SNAPSHOT",
+      "version": "^3.0.3-SNAPSHOT",
       "artifact": "discovery-*.zip"
     },
     "org.zowe.apiml.gateway-package": {
-      "version": "3.0.3-PR-2233-SNAPSHOT",
+      "version": "^3.0.3-SNAPSHOT",
       "artifact": "gateway-*.zip"
     },
     "org.zowe.apiml.caching-service-package": {
-      "version": "3.0.3-PR-2233-SNAPSHOT",
+      "version": "^3.0.3-SNAPSHOT",
       "artifact": "caching-service-*.zip"
     },
     "org.zowe.apiml.apiml-common-lib-package": {
-      "version": "3.0.3-PR-2233-SNAPSHOT",
+      "version": "^3.0.3-SNAPSHOT",
       "artifact": "apiml-common-lib-*.zip"
     },
     "org.zowe.apiml.sdk.common-java-lib-package": {
@@ -82,11 +82,11 @@
       "exclusions": ["*PR*.zip"]
     },
     "org.zowe.apiml.sdk.apiml-sample-extension-package": {
-      "version": "3.0.3-PR-2233-SNAPSHOT",
+      "version": "^3.0.3-SNAPSHOT",
       "artifact": "apiml-sample-extension-*.zip"
     },
     "org.zowe.apiml.cloud-gateway-package": {
-      "version": "3.0.3-PR-2233-SNAPSHOT",
+      "version": "^3.0.3-SNAPSHOT",
       "artifact": "cloud-gateway-*.zip"
     },
     "org.zowe.getesm": {
