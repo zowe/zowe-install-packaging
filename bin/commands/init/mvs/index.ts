@@ -63,10 +63,12 @@ export function execute(allowOverwrite?: boolean) {
         if (allowOverwrite) {
           if (key != 'authLoadlib') {
             needCleanup = true;
-          } else {
+            common.printMessage(`Warning ZWEL0300W: ${ds} already exists. Members in this data set will be overwritten.`);
+          } else if (ds != (prefix+'.SZWEAUTH')) {
+            //Do not delete the shipped auth load lib.
             needAuthCleanup = true;
           }
-          common.printMessage(`Warning ZWEL0300W: ${ds} already exists. Members in this data set will be overwritten.`);
+
         } else {
           skippedDatasets = true;
           common.printMessage(`Warning ZWEL0301W: ${ds} already exists and will not be overwritten. For upgrades, you must use --allow-overwrite.`);
