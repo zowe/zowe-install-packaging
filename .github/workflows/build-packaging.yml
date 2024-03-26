@@ -31,12 +31,12 @@ on:
         default: false
         type: boolean
       PSWI_SMPE_ARTIFACTORY_PATH:
-        description: 'Set both this and AZWE_ARTIFACTORY_PATH. This is the Artifactory path to find an already-built Zowe SMPE package, instead of building from scratch'
+        description: 'Optional. Artifactory path to a pre-built SMP/e artifact.'
         required: false
         default: ''
         type: string
       PSWI_SMPE_AZWE_ARTIFACTORY_PATH:
-        description: 'Set both this and SMPE_ARTIFACTORY_PATH. This is the Artifactory path to find a pre-built AZWE FMID, instead of building from scratch'
+        description: 'Optional. Artifactory path to a pre-built pre-built AZWE FMID.'
         required: false
         default: ''
         type: string
