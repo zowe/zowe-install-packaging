@@ -61,8 +61,8 @@
       "artifact": "api-catalog-*.zip"
     },
     "org.zowe.apiml.discovery-package": {
-      "version": "3.0.3-PR-0001-SNAPSHOT",
-      "artifact": "discovery-package-3.0.3-PR-0001-20240322.160632-1.zip"
+      "version": "3.0.3-PR-2233-SNAPSHOT",
+      "artifact": "discovery-*.zip"
     },
     "org.zowe.apiml.gateway-package": {
       "version": "3.0.3-PR-2233-SNAPSHOT",
