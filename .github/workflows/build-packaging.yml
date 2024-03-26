@@ -73,7 +73,10 @@ jobs:
       - id: check-test
         name: 'export conditional used to determine if we should run a test suite'
         run: |
-          echo "run_test=${{  steps.check-build.outputs.run_build == 'true' && !contains(github.event.pull_request.labels.*.name, 'Test: None') }}" >> $GITHUB_OUTPUT
+          echo ${{ steps.check-build.outputs.run_build == 'true' }}
+          echo ${{ !contains(github.event.pull_request.labels.*.name, 'Test: None') }}
+          echo ${{ contains(github.event.pull_request.labels.*.name, 'Test: None') != 'true' }}
+          echo "run_test=${{  steps.check-build.outputs.run_build == 'true' && contains(github.event.pull_request.labels.*.name, 'Test: None') != 'true' }}" >> $GITHUB_OUTPUT
 
   display-dispatch-event-id:
     if: github.event.inputs.RANDOM_DISPATCH_EVENT_ID != ''
