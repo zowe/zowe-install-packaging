@@ -14,7 +14,7 @@ import java.io.FileWriter;
 import java.security.Key;
 import java.security.KeyStore;
 import java.util.Base64;
-import com.ibm.crypto.provider.RACFInputStream;
+import com.ibm.crypto.zsecurity.provider.RACFInputStream;
 
 public class ExportPrivateKeyZos {
     private String keystoreName;

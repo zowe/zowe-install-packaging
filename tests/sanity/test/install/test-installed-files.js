@@ -42,7 +42,7 @@ describe('verify installed files', function() {
 
   it('fingerprint should match', async function() {
     // IMPORT: After 'source' the profile, JAVA_HOME environment variable must exist
-    const fingerprintStdout = await sshHelper.executeCommandWithNoError(`touch ~/.profile && . ~/.profile && ${process.env.ZOWE_ROOT_DIR}/bin/zwe support verify-fingerprints`);
+    const fingerprintStdout = await sshHelper.executeCommandWithNoError(`touch ~/.profile && . ~/.profile && ${process.env.ZOWE_ROOT_DIR}/bin/zwe support verify-fingerprints --config /ZOWE/tmp/.zowe/zowe.yaml`);
     debug('fingerprint show result:', fingerprintStdout);
     addContext(this, {
       title: 'fingerprint show result',

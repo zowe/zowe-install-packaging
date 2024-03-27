@@ -28,6 +28,8 @@ ZWE_PRIVATE_DEFAULT_CERTIFICATE_VALIDITY="3650"
 ZWE_PRIVATE_DEFAULT_CERTIFICATE_KEY_USAGE="keyEncipherment,digitalSignature,nonRepudiation,dataEncipherment"
 ZWE_PRIVATE_DEFAULT_CERTIFICATE_EXTENDED_KEY_USAGE="clientAuth,serverAuth"
 
+JAVA_KEYTOOL_FLAG=" -J-Dkeystore.pkcs12.legacy "
+
 #######################################################################
 # Notes: some keyring related functions, like ncert, are using R_datalib behind the scene. It requires proper
 #        permission setup on the server.
@@ -199,8 +201,6 @@ pkcs12_create_certificate_authority() {
   password="${3}"
   common_name=${4:-${ZWE_PRIVATE_DEFAULT_CERTIFICATE_CA_COMMON_NAME}}
 
-  flags=$(get_java_pkcs12_keystore_flag)
-
   print_message ">>>> Generate PKCS12 format local CA with alias ${alias}:"
   mkdir -p "${keystore_dir}/${alias}"
   result=$(pkeytool -genkeypair -v \
@@ -212,7 +212,7 @@ pkcs12_create_certificate_authority() {
             -storepass "${password}" \
             -storetype "PKCS12" \
             -validity "${ZWE_PRIVATE_CERTIFICATE_CA_VALIDITY:-${ZWE_PRIVATE_DEFAULT_CERTIFICATE_CA_VALIDITY}}" \
-            ${flags} \
+            ${JAVA_KEYTOOL_FLAG} \
             -ext KeyUsage="keyCertSign" \
             -ext BasicConstraints:"critical=ca:true")
   if [ $? -ne 0 ]; then
@@ -237,11 +237,9 @@ pkcs12_create_certificate_and_sign() {
 
   print_message ">>>> Generate certificate \"${alias}\" in the keystore ${keystore_name}:"
 
-  flags=$(get_java_pkcs12_keystore_flag)
-
   mkdir -p "${keystore_dir}/${keystore_name}"
   result=$(pkeytool -genkeypair -v \
-            ${flags} \
+            ${JAVA_KEYTOOL_FLAG} \
             -alias "${alias}" \
             -keyalg RSA -keysize 2048 \
             -keystore "${keystore_dir}/${keystore_name}/${keystore_name}.keystore.p12" \
@@ -259,7 +257,7 @@ pkcs12_create_certificate_and_sign() {
   fi
 
   print_message ">>>> Generate CSR for the certificate \"${alias}\" in the keystore \"${keystore_name}\":"
-  result=$(pkeytool ${flags} \
+  result=$(pkeytool ${JAVA_KEYTOOL_FLAG} \
             -certreq -v \
             -alias "${alias}" \
             -keystore "${keystore_dir}/${keystore_name}/${keystore_name}.keystore.p12" \
@@ -288,7 +286,7 @@ pkcs12_create_certificate_and_sign() {
   san="${san}dns:localhost.localdomain,dns:localhost,ip:127.0.0.1"
 
   print_message ">>>> Sign the CSR using the Certificate Authority \"${ca_alias}\":"
-  result=$(pkeytool ${flags} \
+  result=$(pkeytool ${JAVA_KEYTOOL_FLAG} \
             -gencert -v \
             -infile "${keystore_dir}/${keystore_name}/${alias}.csr" \
             -outfile "${keystore_dir}/${keystore_name}/${alias}.signed.cer" \
@@ -325,7 +323,7 @@ pkcs12_create_certificate_and_sign() {
     >/dev/null 2>/dev/null
   if [ "$?" != "0" ]; then
     print_message ">>>> Import the Certificate Authority \"${ca_alias}\" to the keystore \"${keystore_name}\":"
-    result=$(pkeytool ${flags} \
+    result=$(pkeytool ${JAVA_KEYTOOL_FLAG} \
               -importcert -v \
               -trustcacerts -noprompt \
               -file "${ca_cert_file}" \
@@ -344,7 +342,7 @@ pkcs12_create_certificate_and_sign() {
     >/dev/null 2>/dev/null
   if [ "$?" != "0" ]; then
     print_message ">>>> Import the Certificate Authority \"${ca_alias}\" to the truststore \"${keystore_name}\":"
-    result=$(pkeytool ${flags} \
+    result=$(pkeytool ${JAVA_KEYTOOL_FLAG} \
               -importcert -v \
               -trustcacerts -noprompt \
               -file "${ca_cert_file}" \
@@ -360,7 +358,7 @@ pkcs12_create_certificate_and_sign() {
   fi
 
   print_message ">>>> Import the signed CSR to the keystore \"${keystore_name}\":"
-  result=$(pkeytool ${flags} \
+  result=$(pkeytool ${JAVA_KEYTOOL_FLAG} \
             -importcert -v \
             -trustcacerts -noprompt \
             -file "${keystore_dir}/${keystore_name}/${alias}.signed.cer" \
@@ -477,9 +475,7 @@ pkcs12_import_pkcs12_keystore() {
     return 1
   fi
 
-  flags=$(get_java_pkcs12_keystore_flag)
-
-  result=$(pkeytool ${flags} \
+  result=$(pkeytool ${JAVA_KEYTOOL_FLAG} \
             -importkeystore -v \
             -noprompt \
             -deststoretype "PKCS12" \
@@ -508,14 +504,12 @@ pkcs12_import_certificates() {
   ca_files="${3}"
   alias="${4:-extca}"
 
-  flags=$(get_java_pkcs12_keystore_flag)
-
   ca_index=1
   while read -r ca_file; do
     ca_file=$(echo "${ca_file}" | trim)
     if [ -n "${ca_file}" ]; then
       print_message ">>>> Import \"${ca_file}\" to the keystore \"${dest_keystore}\":"
-      result=$(pkeytool ${flags} \
+      result=$(pkeytool ${JAVA_KEYTOOL_FLAG} \
                 -importcert -v \
                 -trustcacerts -noprompt \
                 -file "${ca_file}" \
@@ -568,8 +562,6 @@ pkcs12_trust_service() {
     return 1
   fi
 
-  flags=$(get_java_pkcs12_keystore_flag)
-
   # parse keytool output into separate files
   csplit -s -k -f "${keystore_dir}/${keystore_name}/${service_alias}" "${tmp_file}" /-----END\ CERTIFICATE-----/1 \
     {$(expr `grep -c -e '-----END CERTIFICATE-----' "${tmp_file}"` - 1)}
@@ -578,7 +570,7 @@ pkcs12_trust_service() {
     cert_file=$(basename "${cert}")
     cert_alias=${cert_file%.cer}
     echo ">>>> Import a certificate \"${cert_alias}\" to the truststore:"
-    result=$(pkeytool ${flags} \
+    result=$(pkeytool ${JAVA_KEYTOOL_FLAG} \
               -importcert -v \
               -trustcacerts \
               -noprompt \
@@ -632,11 +624,6 @@ pkcs12_export_pem() {
                 -file "${keystore_dir}/${alias_lc}.cer")
       if [ $? -ne 0 ]; then
         return 1
-      fi
-      if [ `uname` = "OS/390" ]; then
-        iconv -f ISO8859-1 -t IBM-1047 "${keystore_dir}/${alias_lc}.cer" > "${keystore_dir}/${alias_lc}.cer-ebcdic"
-        mv "${keystore_dir}/${alias_lc}.cer-ebcdic" "${keystore_dir}/${alias_lc}.cer"
-        ensure_file_encoding "${keystore_dir}/${alias_lc}.cer" "CERTIFICATE"
       fi
     fi
   done <<EOF
@@ -1195,12 +1182,11 @@ keyring_export_to_pkcs12() {
 
   print_debug ">>>> Export certificate \"${label}\" from safkeyring:////${keyring_owner}/${keyring_name} to PKCS#12 keystore ${keystore_file}"
 
- flags=$(get_java_pkcs12_keystore_flag)
 
   # create keystore if it doesn't exist
   if [ -f "${keystore_file}" ]; then
     print_debug "- Create keystore with dummy certificate ${dummy_cert}"
-    result=$(pkeytool ${flags} \
+    result=$(pkeytool ${JAVA_KEYTOOL_FLAG} \
             -genkeypair \
             -alias "${dummy_cert}" \
             -dname "CN=Zowe Dummy Cert, OU=ZWELS, O=Zowe, C=US" \
@@ -1237,7 +1223,7 @@ keyring_export_to_pkcs12() {
   if [ "${cert_only}" = "true" ]; then
     # use keytool to import certificate
     print_debug "- Import certificate into keystore as \"${label}\""
-    result=$(pkeytool ${flags} \
+    result=$(pkeytool ${JAVA_KEYTOOL_FLAG} \
             -import -v \
             -trustcacerts -noprompt \
             -alias "${label}" \
