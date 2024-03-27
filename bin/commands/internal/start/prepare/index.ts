@@ -137,11 +137,12 @@ function globalValidate(enabledComponents:string[]): void {
   if (runInContainer != 'true') {
     // only do these check when it's not running in container
 
-    // currently node is always required
-    let nodeOk = node.validateNodeHome();
-    if (!nodeOk) {
-      privateErrors++;
-      common.printFormattedError('ZWELS', "zwe-internal-start-prepare,global_validate", `Could not validate node home`);
+    if (enabledComponents.includes('app-server')) {
+      let nodeOk = node.validateNodeHome();
+      if (!nodeOk) {
+        privateErrors++;
+        common.printFormattedError('ZWELS', "zwe-internal-start-prepare,global_validate", `Could not validate node home`);
+      }
     }
 
     // validate java for some core components
@@ -438,7 +439,10 @@ export function execute() {
     // other extensions need to specify `require_java` in their validate.sh
     java.requireJava();
   }
-  node.requireNode();
+  if (stringlib.itemInList('app-server', std.getenv('ZWE_CLI_PARAMETER_COMPONENT'))) {
+    // other extensions need to specify `require_node` in their validate.sh
+    node.requireNode();
+  }
   common.requireZoweYaml();
 
   // overwrite ZWE_PRIVATE_LOG_LEVEL_ZWELS with zowe.launchScript.logLevel config in YAML
