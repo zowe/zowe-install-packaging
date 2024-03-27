@@ -1,0 +1,7 @@
+/* REXX */
+parse pull args
+changeFrom = word(args, 1)
+changeTo = word(args, 2)
+address isredit 'macro'
+address isredit 'change all 'changeFrom changeTo
+address isredit 'end'

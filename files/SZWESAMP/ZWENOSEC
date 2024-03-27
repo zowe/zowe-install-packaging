@@ -22,37 +22,7 @@
 //* 1) Add job name and job parameters to the JOB statement, to
 //*    meet your system requirements.
 //*
-//* 2) Update the SET PRODUCT= statement to match your security
-//*    product.
-//*
-//* 3) Update the SET ADMINGRP= statement to match the desired
-//*    group name for Zowe administrators.
-//*
-//* 4) Update the SET STCGRP= statement to match the desired
-//*    group name for started tasks.
-//*
-//* 5) Update the SET ZOWEUSER= statement to match the desired
-//*    user ID for the ZOWE started task.
-//*
-//* 6) Update the SET ZISUSER= statement to match the desired
-//*    user ID for the ZIS started task.
-//*
-//* 7) Update the SET ZOWESTC= statement to match the desired
-//*    Zowe started task name.
-//*
-//* 8) Update the SET ZISSTC= statement to match the desired
-//*    ZIS started task name.
-//*
-//* 9) Update the SET AUXSTC= statement to match the desired
-//*     ZIS Auxiliary Server started task name.
-//*
-//* 10) Update the SET HLQ= statement to match the desired
-//*     Zowe data set high level qualifier.
-//*
-//* 11) Update the SET SYSPROG= statement to match the existing
-//*     user ID or group used by z/OS system programmers.
-//*
-//* 12) Customize the commands in the DD statement that matches your
+//* 2) Customize the commands in the DD statement that matches your
 //*     security product so that they meet your system requirements.
 //*
 //* Note(s):
@@ -69,19 +39,6 @@
 //*********************************************************************
 //         EXPORT SYMLIST=*
 //*
-//         SET PRODUCT=RACF          * RACF, ACF2, or TSS
-//*                     12345678
-//         SET ADMINGRP=ZWEADMIN     * group for Zowe administrators
-//         SET   STCGRP=&ADMINGRP.   * group for Zowe started tasks
-//         SET ZOWEUSER=ZWESVUSR     * userid for Zowe started task
-//         SET  ZISUSER=ZWESIUSR     * userid for ZIS started task
-//         SET  ZOWESTC=ZWESVSTC     * Zowe started task name
-//         SET   ZISSTC=ZWESISTC     * ZIS started task name
-//         SET   AUXSTC=ZWESASTC     * ZIS AUX started task name
-//         SET      HLQ=ZWE          * data set high level qualifier
-//         SET  SYSPROG=&ADMINGRP.   * system programmer user ID/group
-//*                     12345678
-//*
 //* Top Secret ONLY -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -
 //*                     12345678
 //         SET ADMINDEP=SYSPDEPT     * department owning admin group
@@ -96,7 +53,7 @@
 //*
 //RUN      EXEC PGM=IKJEFT01,REGION=0M
 //SYSTSPRT DD SYSOUT=*
-//SYSTSIN  DD DDNAME=&PRODUCT
+//SYSTSIN  DD DDNAME={zowe.setup.security.product}
 //*
 //*********************************************************************
 //*
@@ -112,13 +69,14 @@
 /*   EGN is not active on your system.                               */
 
 /* remove general data set protection                                */
-  LISTDSD PREFIX(&HLQ.) ALL
-  PERMIT '&HLQ..*.**' CLASS(DATASET) DELETE ID(&SYSPROG.)
-  DELDSD '&HLQ..*.**'
+  LISTDSD PREFIX({zowe.setup.datasets.prefix}) ALL
+  PERMIT '{zowe.setup.datasets.prefix}.*.**' CLASS(DATASET) +
+         DELETE ID({zowe.setup.security.groups.sysProg})
+  DELDSD '{zowe.setup.datasets.prefix}.*.**'
 
 /* remove HLQ stub                                                   */
-  LISTGRP  &HLQ.
-  DELGROUP &HLQ.
+  LISTGRP  {zowe.setup.datasets.prefix}.
+  DELGROUP {zowe.setup.datasets.prefix}.
 
   SETROPTS GENERIC(DATASET) REFRESH
 
@@ -126,33 +84,42 @@
 
 /* remove permit to use ZIS                                          */
   RLIST  FACILITY ZWES.IS ALL
-  PERMIT ZWES.IS CLASS(FACILITY) DELETE ID(&ZOWEUSER.)
+  PERMIT ZWES.IS CLASS(FACILITY) +
+         DELETE ID({zowe.setup.security.users.zowe})
 
 /* remove permit to create a user's security environment             */
   RLIST  FACILITY BPX.DAEMON ALL
-  PERMIT BPX.DAEMON CLASS(FACILITY) DELETE ID(&ZOWEUSER.)
+  PERMIT BPX.DAEMON CLASS(FACILITY) DELETE +
+         ID({zowe.setup.security.users.zowe})
 
   RLIST  FACILITY BPX.SERVER ALL
-  PERMIT BPX.SERVER CLASS(FACILITY) DELETE ID(&ZOWEUSER.)
+  PERMIT BPX.SERVER CLASS(FACILITY) DELETE +
+         ID({zowe.setup.security.users.zowe})
 
-  PERMIT OMVSAPPL CLASS(APPL) DELETE ID(&ZOWEUSER.)
+  PERMIT OMVSAPPL CLASS(APPL) DELETE +
+         ID({zowe.setup.security.users.zowe})
 
 /* remove permit to set jobname                                      */
   RLIST  FACILITY BPX.JOBNAME ALL
-  PERMIT BPX.JOBNAME CLASS(FACILITY) DELETE ID(&ZOWEUSER.)
+  PERMIT BPX.JOBNAME CLASS(FACILITY) DELETE +
+         ID({zowe.setup.security.users.zowe})
 
 /* remove permit to write persistent data                            */
   RLIST  UNIXPRIV SUPERUSER.FILESYS ALL
-  PERMIT SUPERUSER.FILESYS CLASS(UNIXPRIV) DELETE ID(&ZOWEUSER.)
+  PERMIT SUPERUSER.FILESYS CLASS(UNIXPRIV) DELETE +
+         ID({zowe.setup.security.users.zowe})
 
 /* remove permit to use client certificate mapping service           */
-  PERMIT IRR.RUSERMAP CLASS(FACILITY) DELETE ID(&ZOWEUSER.)
+  PERMIT IRR.RUSERMAP CLASS(FACILITY) DELETE +
+         ID({zowe.setup.security.users.zowe})
 
 /* remove permit to use distributed identity mapping service         */
-  PERMIT IRR.IDIDMAP.QUERY CLASS(FACILITY) DELETE ID(&ZOWEUSER.)
+  PERMIT IRR.IDIDMAP.QUERY CLASS(FACILITY) DELETE +
+         ID({zowe.setup.security.users.zowe})
 
 /* remove permit Zowe main server to cut SMF records                 */
-  PERMIT IRR.RAUDITX CLASS(FACILITY) DELETE ID(&ZOWEUSER.)
+  PERMIT IRR.RAUDITX CLASS(FACILITY) DELETE +
+         ID({zowe.setup.security.users.zowe})
 
   SETROPTS RACLIST(FACILITY) REFRESH
   SETROPTS RACLIST(UNIXPRIV) REFRESH
@@ -161,46 +128,50 @@
 
 /* remove permit to use ZIS                                          */
   RLIST  FACILITY ZWES.IS ALL
-  PERMIT ZWES.IS CLASS(FACILITY) DELETE ID(&ZISUSER.)
+  PERMIT ZWES.IS CLASS(FACILITY) DELETE +
+         ID({zowe.setup.security.users.zis})
 
 /* REMOVE STARTED TASKS ............................................ */
 
 /* remove userid for ZOWE main server                                */
-  LISTUSER &ZOWEUSER. OMVS
-  DELUSER  &ZOWEUSER.
+  LISTUSER {zowe.setup.security.users.zowe}. OMVS
+  DELUSER  {zowe.setup.security.users.zowe}.
 
 /* remove userid for ZIS                                             */
-  LISTUSER &ZISUSER. OMVS
-  DELUSER  &ZISUSER.
+  LISTUSER {zowe.setup.security.users.zis}. OMVS
+  DELUSER  {zowe.setup.security.users.zis}.
 
-/* comment out if &STCGRP matches &ADMINGRP (default), expect        */
+/* comment out if {zowe.setup.security.groups.stc} matches           */
+/* {zowe.setup.security.groups.admin} (default), expect              */
 /*   warning messages otherwise                                      */
 /* remove group for started tasks                                    */
-  LISTGRP  &STCGRP. OMVS
-  DELGROUP &STCGRP.
+  LISTGRP  {zowe.setup.security.groups.stc}. OMVS
+  DELGROUP {zowe.setup.security.groups.stc}.
 
 /* remove started task for ZOWE main server                          */
-  RLIST   STARTED &ZOWESTC..* ALL STDATA
-  RDELETE STARTED &ZOWESTC..*
+  RLIST   STARTED {zowe.setup.security.stcs.zowe}.* ALL STDATA
+  RDELETE STARTED {zowe.setup.security.stcs.zowe}.*
 
 /* remove started task for ZIS                                       */
-  RLIST   STARTED &ZISSTC..* ALL STDATA
-  RDELETE STARTED &ZISSTC..*
+  RLIST   STARTED {zowe.setup.security.stcs.zis}.* ALL STDATA
+  RDELETE STARTED {zowe.setup.security.stcs.zis}.*
 
 /* remove started task for ZIS Auxiliary server                      */
-  RLIST   STARTED &AUXSTC..* ALL STDATA
-  RDELETE STARTED &AUXSTC..*
+  RLIST   STARTED {zowe.setup.security.stcs.aux}.* ALL STDATA
+  RDELETE STARTED {zowe.setup.security.stcs.aux}.*
 
   SETROPTS RACLIST(STARTED) REFRESH
 
 /* REMOVE ADMINISTRATORS ........................................... */
 
-/* uncomment to remove user IDs from the &ADMINGRP group             */
-/* REMOVE (userid,userid,...) GROUP(&ADMINGRP.)                      */
+/* uncomment to remove user IDs from                                 */
+/* the {zowe.setup.security.groups.admin} group                      */
+/* REMOVE (userid,userid,...)                                        */
+/* GROUP({zowe.setup.security.groups.admin})                        */
 
 /* remove group for administrators                                   */
-  LISTGRP  &ADMINGRP. OMVS
-  DELGROUP &ADMINGRP.
+  LISTGRP  {zowe.setup.security.groups.admin}. OMVS
+  DELGROUP {zowe.setup.security.groups.admin}.
 
 /* REMOVE ZOWE RESOURCE CLASS ...................................... */
 /* uncomment commands to below if the ZOWE class has been created    */
@@ -230,30 +201,30 @@ ACF
 * group for administrators
 *
 SET PROFILE(GROUP) DIV(OMVS)
-DELETE &ADMINGRP.
+DELETE {zowe.setup.security.groups.admin}.
 F ACF2,REBUILD(GRP),CLASS(P)
 *
 *
 SET LID
 SET PROFILE(USER) DIV(OMVS)
-DELETE &ZOWEUSER.
+DELETE {zowe.setup.security.users.zowe}.
 F ACF2,REBUILD(USR),CLASS(P),DIVISION(OMVS)
 *
 SET LID
 SET PROFILE(USER) DIV(OMVS)
-DELETE &ZISUSER.
+DELETE {zowe.setup.security.users.zis}.
 F ACF2,REBUILD(USR),CLASS(P),DIVISION(OMVS)
 *
 * remove userid for ZOWE main server (ZISSTC,AUXSTC have same user id)
 SET LID
-LIST &ZOWEUSER
-DELETE &ZOWEUSER.
+LIST {zowe.setup.security.users.zowe}
+DELETE {zowe.setup.security.users.zowe}.
 *
 *
 * remove userid for ZIS                                              */
 SET LID
-LIST &ZISUSER
-DELETE &ZISUSER.
+LIST {zowe.setup.security.users.zis}
+DELETE {zowe.setup.security.users.zis}.
 *
 *
 *****
@@ -262,35 +233,40 @@ DELETE &ZISUSER.
 *
 SET CONTROL(GSO)
 LIST LIKE(STC.Z-)
-DELETE STC.&ZOWESTC.
+DELETE STC.{zowe.setup.security.stcs.zowe}.
 F ACF2,REFRESH(STC)
 *
 * started task for ZIS
 *
 SET CONTROL(GSO)
-DELETE STC.&ZISSTC.
+DELETE STC.{zowe.setup.security.stcs.zis}.
 F ACF2,REFRESH(STC)
 *
 * started task for ZIS Auxiliary server
 *
 SET CONTROL(GSO)
-DELETE STC.&AUXSTC.
+DELETE STC.{zowe.setup.security.stcs.aux}.
 F ACF2,REFRESH(STC)
 *
 * Revoke access to ZIS
 SET RESOURCE(FAC)
-RECKEY ZWES DEL(IS ROLE(&STCGRP.) SERVICE(READ) ALLOW)
+RECKEY ZWES DEL(IS ROLE({zowe.setup.security.groups.stc}) +
+       SERVICE(READ) ALLOW)
 F ACF2,REBUILD(FAC)
 *
 * Remove Zowe main server
 *
 SET RESOURCE(FAC)
-RECKEY BPX DEL(DAEMON ROLE(&STCGRP.) SERVICE(UPDATE) ALLOW)
-RECKEY BPX DEL(SERVER ROLE(&STCGRP.) SERVICE(UPDATE) ALLOW)
-RECKEY BPX DEL(JOBNAME ROLE(&STCGRP.) SERVICE(READ) ALLOW)
+RECKEY BPX DEL(DAEMON ROLE({zowe.setup.security.groups.stc}) +
+       SERVICE(UPDATE) ALLOW)
+RECKEY BPX DEL(SERVER ROLE({zowe.setup.security.groups.stc}) +
+       SERVICE(UPDATE) ALLOW)
+RECKEY BPX DEL(JOBNAME ROLE({zowe.setup.security.groups.stc}) +
+       SERVICE(READ) ALLOW)
 F ACF2,REBUILD(FAC)
 SET RESOURCE(APL)
-RECKEY OMVSAPPL DEL(SERVICE(READ) ROLE(&STCGRP.) ALLOW)
+RECKEY OMVSAPPL DEL(SERVICE(READ) +
+       ROLE({zowe.setup.security.groups.stc}) ALLOW)
 F ACF2,REBUILD(APL)
 * Remove UNI
 *
@@ -303,24 +279,27 @@ F ACF2,REBUILD(UNI)
 * Remove STCGRP role permission to use client certificate mapping
 * service
 SET RESOURCE(FAC)
-RECKEY IRR DEL(RUSERMAP ROLE(&STCGRP.) SERVICE(READ) ALLOW)
+RECKEY IRR DEL(RUSERMAP ROLE({zowe.setup.security.groups.stc}) +
+       SERVICE(READ) ALLOW)
 F ACF2,REBUILD(FAC)
 
 * Remove STCGRP role permission to use distributed certificate mapping
 * service
 SET RESOURCE(FAC)
-RECKEY IRR DEL(IDIDMAP.QUERY ROLE(&STCGRP.) SERVICE(READ) ALLOW)
+RECKEY IRR DEL(IDIDMAP.QUERY +
+       ROLE({zowe.setup.security.groups.stc}) SERVICE(READ) ALLOW)
 F ACF2,REBUILD(FAC)
 
 * Remove STCGRP role permission to cut SMF records
 SET RESOURCE(FAC)
-RECKEY IRR DEL(RAUDITX ROLE(&STCGRP.) SERVICE(READ) ALLOW)
+RECKEY IRR DEL(RAUDITX ROLE({zowe.setup.security.groups.stc}) +
+       SERVICE(READ) ALLOW)
 F ACF2,REBUILD(FAC)
 
 *  Remove  data set protection
 SET RULE
-LIST &HLQ.
-DELETE &HLQ.
+LIST {zowe.setup.datasets.prefix}.
+DELETE {zowe.setup.datasets.prefix}.
 *
 
 * Remove ZOWE resource class
@@ -344,88 +323,94 @@ $$
 
 /* REMOVE ZOWE DATA SET PROTECTION ................................. */
 /* removE general data set protection                                */
-TSS WHOHAS DATASET(&HLQ)
-TSS REVOKE(ALL) DATASET(&HLQ..)
-TSS REVOKE(&SYSPROG) DATASET(&HLQ..)
-TSS REMOVE(&ADMINDEP) DATASET(&HLQ..)
+TSS WHOHAS DATASET({zowe.setup.datasets.prefix})
+TSS REVOKE(ALL) DATASET({zowe.setup.datasets.prefix})
+TSS REVOKE({zowe.setup.security.groups.sysProg}) +
+    DATASET({zowe.setup.datasets.prefix})
+TSS REMOVE(&ADMINDEP) DATASET({zowe.setup.datasets.prefix})
 
 /* REMOVE ZOWE SERVER PERMISIONS ................................... */
 
 /* remove permit to use ZIS                                          */
 TSS WHOHAS IBMFAC(ZWES.IS)
-TSS REVOKE(&ZOWEUSER) IBMFAC(ZWES.IS)
+TSS REVOKE({zowe.setup.security.users.zowe}) IBMFAC(ZWES.IS)
 
 /* remove permit to create a user's security environment             */
 TSS WHOHAS IBMFAC(BPX.DAEMON)
-TSS REVOKE(&ZOWEUSER) IBMFAC(BPX.DAEMON)
+TSS REVOKE({zowe.setup.security.users.zowe}) IBMFAC(BPX.DAEMON)
 TSS WHOHAS IBMFAC(BPX.SERVER)
-TSS REVOKE(&ZOWEUSER) IBMFAC(BPX.SERVER)
+TSS REVOKE({zowe.setup.security.users.zowe}) IBMFAC(BPX.SERVER)
 TSS WHOHAS APPL(OMVSAPPL)
-TSS REVOKE(&ZOWEUSER) APPL(OMVSAPPL)
+TSS REVOKE({zowe.setup.security.users.zowe}) APPL(OMVSAPPL)
 
 /* remove permit to set jobname                                      */
 TSS WHOHAS IBMFAC(BPX.JOBNAME)
-TSS REVOKE(&ZOWEUSER) IBMFAC(BPX.JOBNAME)
+TSS REVOKE({zowe.setup.security.users.zowe}) IBMFAC(BPX.JOBNAME)
 
 /* remove permit to write persistent data                            */
 TSS WHOHAS UNIXPRIV(SUPERUSER.FILESYS)
-TSS REVOKE(&ZOWEUSER) UNIXPRIV(SUPERUSER.FILESYS)
+TSS REVOKE({zowe.setup.security.users.zowe}) +
+    UNIXPRIV(SUPERUSER.FILESYS)
 
 /* remove permit Zowe main server to use client certificate mapping  */
 /* service                                                           */
 TSS WHOHAS IBMFAC(IRR.RUSERMAP)
-TSS REVOKE(&ZOWEUSER.) IBMFAC(IRR.RUSERMAP)
+TSS REVOKE({zowe.setup.security.users.zowe}) IBMFAC(IRR.RUSERMAP)
 
 /* remove permit Zowe main server to use distributed identity        */
 /* mapping service                                                   */
 TSS WHOHAS IBMFAC(IRR.IDIDMAP.QUERY)
-TSS REVOKE(&ZOWEUSER.) IBMFAC(IRR.IDIDMAP.QUERY)
+TSS REVOKE({zowe.setup.security.users.zowe}) +
+    IBMFAC(IRR.IDIDMAP.QUERY)
 
 /* remove permit Zowe main server to cut SMF records                 */
 TSS WHOHAS IBMFAC(IRR.RAUDITX)
-TSS REVOKE(&ZOWEUSER.) IBMFAC(IRR.RAUDITX)
+TSS REVOKE({zowe.setup.security.users.zowe}) IBMFAC(IRR.RAUDITX)
 
 /* REMOVE AUX SERVER PERMISIONS .................................... */
 
 /* remove permit to use ZIS                                          */
 TSS WHOHAS IBMFAC(ZWES.IS)
-TSS REVOKE(&ZISUSER) IBMFAC(ZWES.IS)
+TSS REVOKE({zowe.setup.security.users.zis}) IBMFAC(ZWES.IS)
 
 /* REMOVE STARTED TASKS ............................................ */
 
 /* remove userid for ZOWE main server                                */
-TSS LIST(&ZOWEUSER)
-TSS DELETE(&ZOWEUSER)
+TSS LIST({zowe.setup.security.users.zowe})
+TSS DELETE({zowe.setup.security.users.zowe})
 
 /* remove userid for ZIS                                             */
-TSS LIST(&ZISUSER)
-TSS DELETE(&ZISUSER)
+TSS LIST({zowe.setup.security.users.zis})
+TSS DELETE({zowe.setup.security.users.zis})
 
-/* comment out if &STCGRP matches &ADMINGRP (default), expect        */
+/* comment out if {zowe.setup.security.groups.stc} matches           */
+/* {zowe.setup.security.groups.admin} (default), expect              */
 /*   warning messages otherwise                                      */
 /* remove group for started tasks                                    */
-TSS LIST(&STCGRP)
-TSS DELETE(&STCGRP)
+TSS LIST({zowe.setup.security.groups.stc})
+TSS DELETE({zowe.setup.security.groups.stc})
 
 /* remove started task for ZOWE main server                          */
 TSS LIST(STC)
-TSS REMOVE(STC) PROCNAME(&ZOWESTC)
+TSS REMOVE(STC) PROCNAME({zowe.setup.security.stcs.zowe})
 
 /* remove started task for ZIS                                       */
 TSS LIST(STC)
-TSS REMOVE(STC) PROCNAME(&ZISSTC)
+TSS REMOVE(STC) PROCNAME({zowe.setup.security.stcs.zis})
 
 /* remove started task for ZIS Auxiliary server                      */
 TSS LIST(STC)
-TSS REMOVE(STC) PROCNAME(&AUXSTC)
+TSS REMOVE(STC) PROCNAME({zowe.setup.security.stcs.aux})
 
 /* REMOVE ADMINISTRATORS ........................................... */
 
-/* uncomment to remove user IDs from the &ADMINGRP group             */
-/* TSS REMOVE (userid) GROUP(&ADMINGRP.)                             */
+/* uncomment to remove user IDs from                                 */
+/* the {zowe.setup.security.groups.admin} group                      */
+/* TSS REMOVE (userid) +                                             */
+/*     GROUP({zowe.setup.security.groups.admin})                    */
 /* remove group for administrators                                   */
-TSS LIST(&ADMINGRP)
-TSS DELETE(&ADMINGRP)
+TSS LIST({zowe.setup.security.groups.admin})
+TSS DELETE({zowe.setup.security.groups.admin})
 
 /* REMOVE ZOWE RESOURCE CLASS ...................................... */
 /* uncomment commands to below if the ZOWE class has been created    */

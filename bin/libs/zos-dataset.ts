@@ -17,7 +17,17 @@ import * as stringlib from './string';
 import * as shell from './shell';
 import * as zoslib from './zos';
 
+//TODO a bit of a hack. "cat" cant output a vsam, so it will always give errors.
+//     however, the errors it gives are different depending on if the vsam exists or not.
+export function isVsamDatasetExists(datasetName: string): boolean {
+  common.printTrace(`  * isVsamDatasetExists: '${stringlib.escapeDollar(datasetName)}'`);
+  const result = shell.execErrSync('sh', '-c', `cat "//'${stringlib.escapeDollar(datasetName)}'" 1>/dev/null`);
+  return !(result.err && result.err.includes('EDC5049I'));
+  // EDC5049I = file not found
+}
+
 export function isDatasetExists(datasetName: string): boolean {
+  common.printTrace(`  * isDatasetExists: '${stringlib.escapeDollar(datasetName)}'`);
   const result = shell.execSync('sh', '-c', `cat "//'${stringlib.escapeDollar(datasetName)}'" 1>/dev/null 2>&1`);
   return result.rc === 0;
 }
@@ -27,6 +37,7 @@ export function isDatasetExists(datasetName: string): boolean {
 //                1: data set is not in catalog
 //                2: data set member doesn't exist
 export function tsoIsDatasetExists(datasetName: string): number {
+  common.printTrace(`  * tsoIsDatasetExists: '${stringlib.escapeDollar(datasetName)}'`);
   const result = zoslib.tsoCommand(`listds '${stringlib.escapeDollar(datasetName)}' label`);
   if (result.rc != 0) {
     if (result.out.includes('NOT IN CATALOG')) {
@@ -44,6 +55,7 @@ export function tsoIsDatasetExists(datasetName: string): number {
 }
 
 export function createDataSet(dsName: string, dsOptions: string): number {
+  common.printTrace(`  * createDataSet: '${stringlib.escapeDollar(dsName)}' ${dsOptions}`);
   const result=zoslib.tsoCommand(`ALLOCATE NEW DA('${stringlib.escapeDollar(dsName)}') ${dsOptions}`);
   return result.rc;
 }
@@ -72,77 +84,27 @@ export function copyToDataset(filePath: string, dsName: string, cpOptions: strin
   return result.rc;
 }
 
-export function datasetCopyToDataset(prefix: string, datasetFrom: string, datasetTo: string, allowOverwrite: boolean): number {
-  if (allowOverwrite != true) {
-    if (isDatasetExists(datasetTo)) {
-      common.printErrorAndExit(`Error ZWEL0133E: Data set ${datasetTo} already exists`, undefined, 133);
+export function getDatasetVolume(dataset: string): { rc: number, volume?: string } {
+  common.printTrace(`- Find volume of data set ${stringlib.escapeDollar(dataset)}`);
+  const result = zoslib.tsoCommand(`listds '${stringlib.escapeDollar(dataset)}'`);
+  if (result.rc == 0) {
+    let volumesIndex = result.out.indexOf('--VOLUMES--');
+    let volume: string;
+    if (volumesIndex != -1) {
+      let startIndex = volumesIndex + '--VOLUMES--'.length;
+      volume = result.out.substring(startIndex).trim();
     }
-  }
-
-  const cmd = `exec '${stringlib.escapeDollar(prefix)}.${std.getenv('ZWE_PRIVATE_DS_SZWEEXEC')}(ZWEMCOPY)' '${stringlib.escapeDollar(datasetFrom)} ${stringlib.escapeDollar(datasetTo)}'`;
-  const result = zoslib.tsoCommand(cmd);
-  return result.rc;
-}
-
-// List users of a data set
-//
-// @param dsn     data set name to check
-// @return        0: no users
-//                1: there are some users
-// @output        output of operator command "d grs"
-export function listDatasetUser(datasetName: string): number {
-  const cmd = `D GRS,RES=(*,'${stringlib.escapeDollar(datasetName)}')`;
-  const result=zoslib.operatorCommand(cmd);
-  return result.out.includes('NO REQUESTORS FOR RESOURCE') ? 0 : 1;
-  // example outputs:
-  //
-  // server    2021040  22:29:30.60             ISF031I CONSOLE MYCONS ACTIVATED
-  // server    2021040  22:29:30.60            -D GRS,RES=(*,IBMUSER.PARMLIB)
-  // server    2021040  22:29:30.60             ISG343I 22.29.30 GRS STATUS 336
-  //                                            S=SYSTEM  SYSDSN   IBMUSER.PARMLIB
-  //                                            SYSNAME        JOBNAME         ASID     TCBADDR   EXC/SHR    STATUS
-  //                                            server    ZWESISTC           0045       006FED90   SHARE      OWN
-  // ISF754I Command 'SET CONSOLE MYCONS' generated from associated variable ISFCONS.
-  // ISF776I Processing started for action 1 of 1.
-  // ISF769I System command issued, command text: D GRS,RES=(*,IBMUSER.PARMLIB).
-  // ISF766I Request completed, status: COMMAND ISSUED.
-  //
-  // example output:
-  //
-  // server    2021040  22:31:07.32             ISF031I CONSOLE MYCONS ACTIVATED
-  // server    2021040  22:31:07.32            -D GRS,RES=(*,IBMUSER.LOADLIB)
-  // server    2021040  22:31:07.32             ISG343I 22.31.07 GRS STATUS 363
-  //                                            NO REQUESTORS FOR RESOURCE  *        IBMUSER.LOADLIB
-  // ISF754I Command 'SET CONSOLE MYCONS' generated from associated variable ISFCONS.
-  // ISF776I Processing started for action 1 of 1.
-  // ISF769I System command issued, command text: D GRS,RES=(*,IBMUSER.LOADLIB).
-  // ISF766I Request completed, status: COMMAND ISSUED.
-}
-
-// Delete data set
-//
-// @param dsn     data set (or with member) name to delete
-// @return        0: exist
-//                1: data set doesn't exist
-//                2: data set member doesn't exist
-//                3: data set is in use
-// @output        tso listds label output
-export function deleteDataset(dataset: string): number {
-  const cmd=`delete '${stringlib.escapeDollar(dataset)}'`;
-  const result=zoslib.tsoCommand(cmd);
-  if (result.rc != 0) {
-    if (result.out.includes('NOT IN CATALOG')) {
-      return 1;
-    } else if (result.out.includes('NOT FOUND')) {
-      return 2;
-    } else if (result.out.includes('IN USE BY')) {
-      return 3;
+    if (!volume) {
+      common.printError("  * Failed to find volume information of the data set.");
+      return { rc: 2 }
+    } else {
+      return { rc: 0, volume: volume }
     }
-    // some other error we don't know yet
-    return 9;
+  } else {
+    return { rc: 1 }
   }
-  return 0;
 }
+
 
 export function isDatasetSmsManaged(dataset: string): { rc: number, smsManaged?: boolean } {
   // REF: https://www.ibm.com/docs/en/zos/2.3.0?topic=dscbs-how-found
@@ -168,20 +130,30 @@ export function isDatasetSmsManaged(dataset: string): { rc: number, smsManaged?:
   // 00000000000000000000 0000000000
   //
   // SMS flag is in `FORMAT 1 DSCB` section second line, after 780037
+  // The first flag 'F1' is DS1FMTID at offset 44(X'2C')
+  //
+  // Notes:
+  //   The first section is --FORMAT 1 DSCB-- xor --FORMAT 8 DSCB--
+  //   The section --FORMAT 3 DSCB-- is optional
+  //
 
   common.printTrace(`- Check if ${dataset} is SMS managed`);
   const labelResult = zoslib.tsoCommand(`listds '${stringlib.escapeDollar(dataset)}' label`);
   const datasetLabel=labelResult.out;
   if (labelResult.rc == 0) {
-    let formatIndex = datasetLabel.indexOf('--FORMAT 1 DSCB--');
+    let formatIndex = datasetLabel.indexOf("--FORMAT 1 DSCB--\n");
     let dscb_fmt1: string;
     if (formatIndex == -1) {
-      formatIndex = datasetLabel.indexOf('--FORMAT 8 DSCB--');
+      formatIndex = datasetLabel.indexOf("--FORMAT 8 DSCB--\n");
     }
     if (formatIndex != -1) {
-      let startIndex = formatIndex + '--FORMAT 8 DSCB--'.length;
+      let startIndex = formatIndex + "--FORMAT 8 DSCB--\n".length;
       let endIndex = datasetLabel.indexOf('--',startIndex);
-      dscb_fmt1 = datasetLabel.substring(startIndex, endIndex);
+      if (endIndex != -1) {
+        dscb_fmt1 = datasetLabel.substring(startIndex, endIndex);
+      } else {
+        dscb_fmt1 = datasetLabel.substring(startIndex);
+      }
     }
     if (!dscb_fmt1) {
       common.printError("  * Failed to find format 1 data set control block information.");
@@ -208,86 +180,4 @@ export function isDatasetSmsManaged(dataset: string): { rc: number, smsManaged?:
   } else {
     return { rc: 1 };
   }
-}
-
-export function getDatasetVolume(dataset: string): { rc: number, volume?: string } {
-  common.printTrace(`- Find volume of data set ${dataset}`);
-  const result = zoslib.tsoCommand(`listds '${stringlib.escapeDollar(dataset)}'`);
-  if (result.rc == 0) {
-    let volumesIndex = result.out.indexOf('--VOLUMES--');
-    let volume: string;
-    if (volumesIndex != -1) {
-      let startIndex = volumesIndex + '--VOLUMES--'.length;
-      volume = result.out.substring(startIndex).trim();
-    }
-    if (!volume) {
-      common.printError("  * Failed to find volume information of the data set.");
-      return { rc: 2 }
-    } else {
-      return { rc: 0, volume: volume }
-    }
-  } else {
-    return { rc: 1 }
-  }
-}
-
-export function apfAuthorizeDataset(dataset: string): number {
-  const result = isDatasetSmsManaged(dataset);
-  if (result.rc) {
-    common.printError(`Error ZWEL0134E: Failed to find SMS status of data set ${dataset}.`);
-    return 134;
-  }
-
-  let apfVolumeParam:string;
-  if (result.smsManaged) {
-    common.printDebug(`- ${dataset} is SMS managed`);
-    apfVolumeParam="SMS"
-  } else {
-    common.printDebug(`- ${dataset} is not SMS managed`);
-    const volumeResult = getDatasetVolume(dataset);
-    const dsVolume=volumeResult.volume;
-    if (volumeResult.rc == 0) {
-      common.printDebug(`- Volume of ${dataset} is ${dsVolume}`);
-      apfVolumeParam=`VOLUME=${dsVolume}`;
-    } else {
-      common.printError(`Error ZWEL0135E: Failed to find volume of data set ${dataset}.`);
-      return 135;
-    }
-  }
-
-  const apfCmd=`SETPROG APF,ADD,DSNAME=${dataset},${apfVolumeParam}`;
-  if (std.getenv('ZWE_CLI_PARAMETER_SECURITY_DRY_RUN') == "true") {
-    common.printMessage("- Dry-run mode, security setup is NOT performed on the system.");
-    common.printMessage("  Please apply this operator command manually:");
-    common.printMessage('');
-    common.printMessage(`  ${apfCmd}`);
-    common.printMessage('');
-  } else {
-    const authResult = zoslib.operatorCommand(apfCmd);
-    const apfAuthSuccess=authResult.out && authResult.out.includes('ADDED TO APF LIST');
-    if (result.rc == 0 && apfAuthSuccess) {
-      return 0;
-    } else {
-      common.printError(`Error ZWEL0136E: Failed to APF authorize data set ${dataset}.`);
-      return 136;
-    }
-  }
-  return 0;
-}
-
-export function createDatasetTmpMember(dataset: string, prefix: string='ZW'): string | null {
-    common.printTrace(`  > createDatasetTmpMember in ${dataset}`);
-  for (var i = 0; i < 100; i++) {
-    let rnd=Math.floor(Math.random()*10000);
-
-    let member=`${prefix}${rnd}`.substring(0,8);
-    common.printTrace(`    - test ${member}`);
-    let memberExist=isDatasetExists(`${dataset}(${member})`);
-    common.printTrace(`    - exist? ${memberExist}`);
-    if (!memberExist) {
-      common.printTrace("    - good");
-      return member;
-    }
-  }
-  return null;
 }

@@ -12,6 +12,7 @@
 import * as std from 'cm_std';
 import * as os from 'cm_os';
 import * as xplatform from 'xplatform';
+import * as zos from 'zos';
 
 import * as fs from './fs';
 //import * as stringlib from './string';
@@ -130,9 +131,16 @@ export function date(...args: string[]): string|undefined {
 let logExists = false;
 let logFile:std.File|null = null;
 
+export function finishLogFile() {
+  if (logFile) {
+    logFile.close();
+    zos.changeTag(std.getenv('ZWE_PRIVATE_LOG_FILE'), 819);
+  }
+}
+
 function writeLog(message: string): boolean {
+  const filename = std.getenv('ZWE_PRIVATE_LOG_FILE');
   if (!logExists) {
-    const filename = std.getenv('ZWE_PRIVATE_LOG_FILE');
     if (filename) {
       logExists = fs.fileExists(filename);
       if (!logExists) {
@@ -155,7 +163,7 @@ function writeLog(message: string): boolean {
     return false;
   } else {
     //TODO this does utf8. should we flip it to 1047 on zos?
-    logFile.puts(message);
+    logFile.puts(message+'\n');
     return true;
   }
 }
@@ -173,7 +181,7 @@ export function printRawMessage(message: string, isError: boolean, writeTo:strin
     }
   }
   if (writeTo.includes('log')) {
-    writeLog(message+'\n');
+    writeLog(message);
   }
   return true;
 }

@@ -32,11 +32,15 @@ submit_job() {
     return ${code}
   fi
 
-  result=$(submit "${jcl}")
+  # cat seems to work more reliably. sometimes, submit by itself just says it cannot find a real dataset.
+  result=$(cat "${jcl}" | submit 2>&1)
   # expected: JOB JOB????? submitted from path '...'
   code=$?
   if [ ${code} -eq 0 ]; then
     jobid=$(echo "${result}" | grep submitted | awk '{print $2}')
+    if [ -z "${jobid}" ]; then
+      jobid=$(echo "${result}" | grep "$HASP" | head -n 1 | awk '{print $2}')
+    fi
     if [ -z "${jobid}" ]; then
       print_debug "  * Failed to find job ID"
       print_error "  * Exit code: ${code}"
@@ -100,14 +104,17 @@ wait_for_job() {
       # $DJ gives ...
       # ... $HASP890 JOB(JOB1)      CC=(COMPLETED,RC=0)  <-- accept this value
       # ... $HASP890 JOB(GIMUNZIP)  CC=()  <-- reject this value
-      jobstatus=$(echo "${result}" | grep '$HASP890' | sed 's#^.*\$HASP890 *JOB(\(.*\)) *CC=(\(.*\)).*$#\1,\2#')
-      jobname=$(echo "${jobstatus}" | awk -F, '{print $1}')
-      jobcctext=$(echo "${jobstatus}" | awk -F, '{print $2}')
-      jobcccode=$(echo "${jobstatus}" | awk -F, '{print $3}' | awk -F= '{print $2}')
-      print_trace "  * Job (${jobname}) status is ${jobcctext},RC=${jobcccode}"
-      if [ -n "${jobcctext}" -o -n "${jobcccode}" ]; then
-        # job have CC state
-        break
+      haspline=$(echo "${result}" | grep '$HASP890')
+      if [ -n "${haspline}" ]; then
+        jobstatus=$(echo "${haspline}" | sed 's#^.*\$HASP890 *JOB(\(.*\)) *CC=(\(.*\)).*$#\1,\2#')
+        jobname=$(echo "${jobstatus}" | awk -F, '{print $1}')
+        jobcctext=$(echo "${jobstatus}" | awk -F, '{print $2}')
+        jobcccode=$(echo "${jobstatus}" | awk -F, '{print $3}' | awk -F= '{print $2}')
+        print_trace "  * Job (${jobname}) status is ${jobcctext},RC=${jobcccode}"
+        if [ -n "${jobcctext}" -o -n "${jobcccode}" ]; then
+          # job have CC state
+          break
+        fi
       fi
     fi
   done
@@ -128,5 +135,85 @@ wait_for_job() {
   else
     print_error "  * Job (${jobname:-${jobid}}) doesn't finish within max waiting period."
     return 1
+  fi
+}
+
+print_and_handle_jcl() {
+  jcl_location="${1}"
+  job_name="${2}"
+  jcllib="${3}"
+  prefix="${4}"
+  remove_jcl_on_finish="${5}"
+  continue_on_failure="${6}"
+  jcl_contents=$(cat "${jcl_location}")
+  job_has_failures=false
+
+  print_message "Template JCL: ${prefix}.SZWESAMP(${job_name}) , Executable JCL: ${jcllib}(${job_name})"
+  print_message "--- JCL Content ---"
+  print_message "$jcl_contents"
+  print_message "--- End of JCL ---"
+
+  if [ -z "${ZWE_CLI_PARAMETER_DRY_RUN}" ]; then
+    print_message "Submitting Job ${job_name}"
+    jobid=$(submit_job "${jcl_location}")
+    code=$?
+    if [ ${code} -ne 0 ]; then
+      job_has_failures=true
+      if [ "${continue_on_failure}" = "true" ]; then
+        print_error "Warning ZWEL0161W: Failed to run JCL ${jcllib}(${job_name})"
+        jobid=
+      else
+        if [ "${remove_jcl_on_finish}" = "true" ]; then
+          rm "${jcl_location}"
+        fi
+        print_error_and_exit "Error ZWEL0161E: Failed to run JCL ${jcllib}(${job_name})." "" 161
+      fi
+    fi
+    print_debug "- job id ${jobid}"
+
+    jobstate=$(wait_for_job "${jobid}")
+    code=$?
+    if [ ${code} -eq 1 ]; then
+      job_has_failures=true
+      if [ "${continue_on_failure}" = "true" ]; then
+        print_error "Warning ZWEL0162W: Failed to find job ${jobid} result."
+      else
+        if [ "${remove_jcl_on_finish}" = "true" ]; then
+          rm "${jcl_location}"
+        fi
+        print_error_and_exit "Error ZWEL0162E: Failed to find job ${jobid} result." "" 162
+      fi
+    fi
+    jobname=$(echo "${jobstate}" | awk -F, '{print $2}')
+    jobcctext=$(echo "${jobstate}" | awk -F, '{print $3}')
+    jobcccode=$(echo "${jobstate}" | awk -F, '{print $4}')
+
+    if [ "${code}" -eq 0 ]; then
+    else
+      job_has_failures=true
+      if [ "${continue_on_failure}" = "true" ]; then
+        print_error "Warning ZWEL0163W: Job ${jobname}(${jobid}) ends with code ${jobcccode} (${jobcctext})."
+      else
+        if [ "${remove_jcl_on_finish}" = "true" ]; then
+          rm "${jcl_location}"
+        fi
+        print_error_and_exit "Error ZWEL0163E: Job ${jobname}(${jobid}) ends with code ${jobcccode} (${jobcctext})." "" 163
+      fi
+    fi
+    if [ "${remove_jcl_on_finish}" = "true" ]; then
+      rm "${jcl_location}"
+    fi
+    if [ "${job_has_failures}" = "true" ]; then
+      print_level2_message "Job ended with some failures. Please check job log for details."
+    fi
+    return 0
+  else
+    print_message "JCL not submitted, command run with dry run flag."
+    print_message "To perform command, re-run command without dry run flag, or submit the JCL directly"
+    print_level2_message "Command run successfully."
+    if [ "${remove_jcl_on_finish}" = "true" ]; then
+      rm "${jcl_location}"
+    fi
+    return 0
   fi
 }
