@@ -56,7 +56,7 @@
     },
     "autoEncoding": {
       "type": "array",
-      "description": "An array of paths to recursively search and automatically tag according to file extension, via execution of the tag-files script 'https://github.com/zowe/zowe-install-packaging/blob/v2.x/master/bin/utils/tag-files.sh'"
+      "description": "An array of paths to recursively search and automatically tag according to file extension, via execution of the tag-files script 'https://github.com/zowe/zowe-install-packaging/blob/v3.x/master/bin/utils/tag-files.sh'"
     },
     "homepage": {
       "type": "string",

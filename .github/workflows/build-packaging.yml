@@ -9,7 +9,7 @@ permissions:
 on:
   push:
     branches:
-      - v2.x/staging 
+      - v3.x/staging 
   pull_request:
     types: [opened, synchronize]
   issue_comment:
