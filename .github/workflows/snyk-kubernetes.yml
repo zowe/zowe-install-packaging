@@ -3,8 +3,8 @@ name: Kubernetes IaC Scan
 on:
   push:
     branches:
-      - v2.x/master
-      - v2.x/staging
+      - v3.x/master
+      - v3.x/staging
   # pull_request:
   #   types: [opened, synchronize]
   workflow_dispatch:
