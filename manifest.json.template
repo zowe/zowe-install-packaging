@@ -116,7 +116,7 @@
       "artifact": "*.pax"
     },
     "org.zowe.configmgr": {
-      "version": "^2.15.0-FEATURE-V2-ZOS-VERSION-GET-ESM",
+      "version": "^2.0.0-V2.X-STAGING",
       "artifact": "*.pax"
     },
     "org.zowe.configmgr-rexx": {
