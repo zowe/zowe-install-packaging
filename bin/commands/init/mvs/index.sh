@@ -10,6 +10,8 @@
 # Copyright Contributors to the Zowe Project.
 #######################################################################
 
+init_missing_yaml_properties
+
 USE_CONFIGMGR=$(check_configmgr_enabled)
 if [ "${USE_CONFIGMGR}" = "true" ]; then
   if [ -z "${ZWE_PRIVATE_TMP_MERGED_YAML_DIR}" ]; then
