@@ -1,6 +1,6 @@
 permissions: read-all
 
-name: Check Markdown Links - PR
+name: Check Markdown Links - Weekly
 
 on:
   push:

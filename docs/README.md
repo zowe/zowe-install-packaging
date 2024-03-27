@@ -1,8 +1,8 @@
 # Zowe-Install-Packaging Docs
 
-This folder and associated documents contains information useful to maintainers of the zowe-install-packaging repository.
+This folder and associated documents contains information useful to maintainers and committers of the zowe-install-packaging repository.
 
-This is not user-facing documentation.
+This is not Zowe consumer documentation.
 
 ### Table of contents
 
@@ -11,12 +11,15 @@ This is not user-facing documentation.
   - [Manifest.json](#manifest-metadata)
   - [Branch Strategy](#branch-strategy)
   - [Tests](#testing)
-- Infrastructure, Pipelines and Automation
-  - [Build and Test](./pipelines/build_test.md)
-  - [Containers](./pipelines/containers.md)
-  - [Supply-chain, attributions](./pipelines/supply-chain.md)
+- [Infrastructure, Pipelines and Automation](#infrastructure-pipelines-and-automation)
+  - [Infrastructure](#automation-overview)
+  - [Build and Test](#build-and-test)
+    - [Using PR Labels](#using-pr-labels)
+    - [Creating a custom Zowe build](#creating-a-custom-zowe-build)
+  - [Containers](#containers)
+<!-- - [Supply-chain, attributions](./pipelines/supply-chain.md) -->
   - [Release](./pipelines/release.md)
-- Distribution Formats
+- [Distribution Formats](#distribution-formats)
   - [Pax](./distributions/pax.md)
   - [SMP/e](./distributions/smpe.md)
   - [PSWI](./distributions/zowe_pswi_tech_prev.md)
@@ -150,18 +153,102 @@ The zowe-install-packaging repository is the convergence point for Zowe's compon
 
 ### Testing
 
-Automated e2e tests are driven from the [./tests](../tests) folder in the repository, which contains two testing suites - installation and sanity - each with multiple test cases included. In general, individual installation test cases require the most time to complete and sanity tests are always run after an installation test case within our automation. Most install test cases are pass-throughs which invoke ansible playbooks to deploy Zowe onto a target backend system with a few pre-configured ansible variables. The ansible playbooks can be found in the [./playbooks](../playbooks/) directory and detailed documentation can be found [in the playbooks README](../playbooks/README.md).
+Automated e2e tests are driven from the [./tests](../tests) folder in the repository, which contains two testing suites - installation and sanity - each with multiple test cases. In general, individual installation test cases require the most time to complete and sanity tests are always run after an installation test case as part of the automation. Install test cases setup ansible variables and then invoke ansible playbooks to deploy Zowe onto a target backend system with a few pre-configured ansible variables. The ansible playbooks can be found in the [./playbooks](../playbooks/) directory and detailed documentation can be found [in the playbooks README](../playbooks/README.md).
 
-### Automation 
+Zowe runs nightly builds against every staging branch which has an active development or maintenance release line, e.g. `v2.x/staging` and `v3.x/staging` for `v2` and `v3` respectively. The nightly builds create PAX and SMP/e distributions of Zowe, and runs both a PAX installation test and an SMP/e installation test on all our mainframe systems with the nightly build artifacts. Once weekly, an extended test suite is run which covers additional scenarios, which notably includes keyring tests.
 
-Zowe's Automation runs using Github Actions, and leverages functionality present in the [zowe-actions github actions repo](https://github.com/zowe-actions/shared-actions). Important functionality from that repo includes the capability to transfer of files to a mainframe backend in either binary or ASCII mode, as well as build scripts which are executed on the remote system. The actions relies on a set of scripts defined in a `.pax` folder within the repository, which executes a series of scripts in order:
+
+## Infrastructure, Pipelines, and Automation
+
+The Zowe community builds distributable, executable artifacts in addition to the source code present in the github organization. In order to produce these artifacts, the community needs infrastructure and automation tailored to work with mainframe systems. This section covers what we're building, where we're building it, and how it's built. 
+
+All of Zowe's automation runs on Github Actions, and most of the automation leverages functionality present in the [zowe-actions github organization](https://github.com/zowe-actions/). Key functionality from that GH organization includes the capability to transfer files to a mainframe backend in either binary or ASCII mode, as well as execute build scripts on the mainframe backend. 
+All of Zowe's GHA content is defined under the standard [.github](../.github/workflows/) folder. You can review each individual workflow for more information; some workflows will be covered in this document.
+
+### Infrastructure
+
+Zowe relies heavily on three backend mainframe systems managed exclusively through the Systems Squad. These systems run recent releases of z/OS with each of the respective mainframe security managers (RACF,TSS,ACF2), and have commonly used and freely available software installed, such as Java, Node.JS, etc. All of Zowe's builds which require a mainframe to complete - which is typically compilation of platform-specific code or platform-specific packaging activities - are run on one of these three systems. Most builds round robin between the systems to spread out load; some few rely on a single system for a particular feature. These systems are _not_ for public use.
+
+Zowe also relies on z/Linux instances, which are used primarily for container pipelines which create s390x compatible images. See [Containers](#containers) for more information on containers built by Zowe.
+
+Zowe has very limited distributed infrastructure and does not currently require it; relying on the runners provided by Github Actions to drive our automation has been sufficient. 
+
+We use a cloud Artifactory instance to publish and retrieve artifacts for use across pipelines. It's not common to see build artifacts attached as GHA artifacts since they're uploaded to Artifactory, and instead we publish build logs and test results to the GHA output.
+
+### Build and Test
+
+Zowe's Build and Test automation is defined by two key workflows: the [Zowe Build and Packaging Workflow](../.github/workflows/build-packaging.yml), and the [Zowe CICD Integration Tests Workflow](../.github/workflows/cicd-test.yml). Both of these workflows can be triggered manually by a repository committer, and both are run automatically as part of any pull request which targets a protected base branch. We cannot build Zowe in parallel on a single system, so whenever a build is running on a given system, for any distribution selected, that system is locked for the duration of the build to prevent concurrent builds.
+
+The build and packaging workflow is responsible for creating [distributions of Zowe](#distribution-formats) by collecting Zowe's individual components through the [manifest.json](#manifest-metadata). By default, the build and packaging workflow only creates a PAX file; creating an SMP/e or PSWI build requires a manual build or [a PR label](#using-pr-labels). 
+
+The build workflow makes heavy use of `zowe-actions`, and relies on a set of scripts defined in a `.pax` folder within the repository, which executes a series of scripts in order:
 
 1. `prepare-workspace.sh` - Script run on the build machine (Github Actions), which sets up the local filesystem to transfer files to the backend machine. 
 2. `pre-packaging.sh` - Script run on the backend machine before the pax is assembled.
-3. `post-packaging.sh` - Script run on the backend machine after the pax is asssembled.
+3. `post-packaging.sh` - Script run on the backend machine after the pax is assembled.
 4. `catchall-packaging.sh` - Script run on the build machine after all other actions. Always runs, even if an earlier script failed.
 
-The rest of Zowe's automation is triggered as part of github actions, and is defined under the [.github](../.github/workflows/) folder. See each individual workflow for more information.
+Together, these scripts are responsible for creating the Zowe PAX file. If the build is set to create an SMP/e build, then the `post-packaging.sh` script will invoke scripts under the `smpe` directory, which create SMP/e installable media from the PAX file. If the build is set to create a PSWI distribution, the SMP/e build is first created (this is automatically enabled by automation, even when the SMP/e option is unset). After the SMP/e build is complete, the Github Action workflow will run the PSWI scripts from the `pswi` folder (`pswi/PSWI-marist.sh`) to create the distribution.
+
+The Zowe CICD Test workflow is responsible for taking previously built Zowe artifacts and running a sanity test suite against them. In order to run the sanity test suite, the pre-built Zowe artifacts first need to be installed, and this is where a majority of our automation is focused - on repeated installation of Zowe artifacts for the PAX and SMP/e distributions, including installations with different configuration parameters set. (The PSWI distribution does not have an automated install, as there is no API surface for driving the installation actions). All CICD tests suites are collected under the [tests](../tests/) folder. 
+
+When the Zowe CICD Test workflow is run manually through `workflow_dispatch`, the automation requires information about which Zowe artifact to test. This can be provided as either an artifactory pattern to a folder with build artifacts, e.g. `libs-snapshot-local/org/zowe/2.15.0-MY-PR/`, or more conveniently a `Zowe Build and Packaging Workflow` build number, e.g. `4688`, which references the Github Action workflow number that created a PAX or SMP/e artifact.
+When the Zowe CICD Test workflow is run automatically, it's as part of an extended Build and Packaging workflow where the Zowe artifact information is provided to the CICD Test workflow under the hood. This automatic run happens on any push to a pull request which is targeting a protected base branch, or as part of our nightly build and test suite.
+
+The installation tests, or automated installs of Zowe, all leverage Ansible playbooks to drive the actions on the mainframe. To read more about the Ansible playbooks and their construction, see the [playbook README](../playbooks/README.md).
+
+#### Using PR Labels
+
+Since the `Zowe Build and Packaging Workflow` takes a variable amount of time to complete based on the build artifacts selected, e.g. PAX ~ 7m, SMP/e ~ 25m, PSWI ~ 45m, and the build locks a system for its duration, we are conservative in our automated build frequency and build output. These workflows only run when manually requested and on pushes to PRs against default branches, and the build automation is setup to only build PAX files by default. This restriction and conservative approach is also true for tests; we only run an install test against a single system when a pull request build completes successfully. However, since this repository covers a broad set of tools and purpose, and some changes may require builds of SMP/e or PSWI artifacts or no artifacts at all, the behavior or builds triggered within a PR can be modified by adding labels. The following labels are supported and modify the behaviors of automated builds in pull requests:
+
+Build Labels:
+* Build: None
+* __Build: PAX__ (default)
+* Build: SMPE
+* Build: PSWI
+* Build: Kubernetes
+* Build: Debug-Remote
+
+`Build: None` will supersede other build labels; the rest of the build labels act by composition. `Build: PSWI` auto-includes SMP/e, as SMP/e is required to build the PSWI. Using both `Build: SMPE` and `Build: PSWI` will create just the one PSWI. `Build: Debug-Remote` is a special label that can retain some server-side build information for additional debugging. Please check with the Systems squad before adding this label.
+
+Test Labels:
+* Test: None
+* __Test: Basic__ (default)
+* Test: SMPE
+* Test: Extended
+* Test: Silly (Release Tests; about 5 hours to complete)
+
+Tests do _not_ work by composition, and instead will default to the smallest test suite by specified label. Test composition requires far more refactoring, so the work on that is deferred pending requirement from other squads. The decision to default to the least amount of testing is to avoid locking up our systems unnecessarily. 
+
+#### Creating a Custom Zowe Build
+
+If your changes are in `zowe-install-packaging`, you can create a custom zowe build by either manually triggering a `Zowe Build and Packaging` github workflow using your branch, or by opening a pull request which will automatically start a Zowe build.
+
+If your changes are in components represented by the [Zowe Manifest](#manifest-metadata), your options depend on how the Zowe build picks up your changes:
+
+- If you released a snapshot build of your component, very likely the change will be picked up by the `vx.y/staging` branch build. If not, review the `binaryDependencies` section in `manifest.json.template` [file specification](#binary-dependencies).
+- If your changes are still in a branch of a component repository, you should create a new branch in `zowe-install-packaging` where you edit the `manifest.json.template` file directly to use your component's branch build. 
+
+```
+  "org.zowe.explorer.jobs": {
+    "artifact": "lib-snapshot-local/org/zowe/explorer/jobs/0.2.7-MY-BRANCH-BUILD.zip",
+    "explode": "true"
+  },
+```
+
+### Containers
+
+Zowe produces a containerized distribution which lets you run Zowe's server side components, minus the ZSS, in a Kubernetes environment. The container definitions for Zowe's base containers and automation are part of this repository, under the [containers](../containers/) directory. See the [conformance document](../containers/conformance.md) for more information on best practices for consuming the images and style guidelines for writing Zowe Dockerfiles. 
+
+Container builds include the following workflows:
+
+* [Base Image Build](../.github/workflows/base-images.yml)
+* [Base JDK Image Build](../.github/workflows/base-jdk-images.yml)
+* [Base Node Image Build](../.github/workflows/base-node-images.yml)
+* [Launch Script Images Build](../.github/workflows/zowe-launch-scripts-images.yml)
+* (deprecated - docker compose) [Server Bundle Images Build](../.github/workflows/server-bundle-base-images.yml)
+
+All of these builds rely heavily on helper actions defined in [zowe-actions](https://github.com/zowe-actions/shared-actions/), though the build process is standard - build each image and publish to Artifactory. The containers are built for both x86 and s390x architectures, after which the manifests are merged together and published to Artifactory.
 
 
 ### Packaging, Install, Configuration
@@ -177,21 +264,6 @@ The rest of Zowe's automation is triggered as part of github actions, and is def
 Pull Requests are always required to make changes to this repository. Generally, pull requests against any `rc` or `master` branch must be approved and merged by a member of the Zowe Systems Squad, while pull requests against `staging` may be approved by other Zowe squads.
 
 
-### Creating Custom Zowe Build
-
-If your changes are in `zowe-install-packaging`, you can create a custom zowe build by either manually triggering a `Zowe Build and Packaging` github workflow using your branch, or by opening a pull request which will automatically start a Zowe build.
-
-If your changes are in components represented by the [Zowe Manifest](#manifest-metadata), your options depend on how the Zowe build picks up your changes:
-
-- If you released a snapshot build of your component, very likely the change will be picked up by the `vx.y/staging` branch build. If not, review the `binaryDependencies` section in `manifest.json.template` [file specification](#binary-dependencies).
-- If your changes are still in a branch of a component repository, you should create a new branch in `zowe-install-packaging` where you edit the `manifest.json.template` file directly to use your component's branch build. 
-
-```
-  "org.zowe.explorer.jobs": {
-    "artifact": "lib-snapshot-local/org/zowe/explorer/jobs/0.2.7-MY-BRANCH-BUILD.zip",
-    "explode": "true"
-  },
-```
 
 ### Automate Install / Uninstall of Zowe with Ansible
 

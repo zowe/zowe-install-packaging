@@ -13,7 +13,7 @@ To contribute to this repository, please follow the [contributing guidelines](./
 
 ## Building
 
-Zowe-Install-Packaging is composed of multiple sub-modules and directories which drive the aggregation of individual Zowe components into a final distributable package users can take to install on their mainframe systems. This repository contains pipeline definitions, pipeline implementation details, simple component provenance information, scripts which improve the install and configuration of Zowe, test suites, and more artifacts related to the final package formats. There is no individual build for the entire repository, but instead multiple related builds that require different aspects of the repository. To see more about these builds, check our Github Actions definition [here](./.github/workflows/). To see more about whats in the repository, see [the repository overview](./docs/repos/overview.md). To verify code changes, open a PR and request a review from one of the contact points below. See more about PRs and builds [here](./docs/broken_link).
+Zowe-Install-Packaging is composed of multiple sub-modules and directories which drive the aggregation of individual Zowe components into a final distributable package users can take to install on their mainframe systems. This repository contains pipeline definitions, pipeline implementation details, simple component provenance information, scripts which improve the install and configuration of Zowe, test suites, and more artifacts related to the final package formats. There is no individual build for the entire repository, but instead multiple related builds that require different aspects of the repository. To see more about these builds, check our Github Actions definition [here](./.github/workflows/). To see more about whats in the repository, see [our repository doc](./docs/README.md). To verify code changes, open a PR and request a review from one of the contact points below.
 
 ## Running Zowe
 
@@ -30,7 +30,7 @@ For submitting code changes unrelated to a Zowe component update, please contact
 
 For each Zowe component, we have point of contact(s) in case if we want to confirm the versions defined in the `manifest.json.template`. For more information on the `manifest.json`, see the [repo overview](./repos/overview.md):
 
-- API Mediation Layer: Elliot Jalley, Mark Ackert
+- API Mediation Layer: Elliot Jalley, Jakub Balhar, Mark Ackert
   * Binary Dependencies
     - org.zowe.apiml.sdk.zowe-install
   * Source Dependencies
