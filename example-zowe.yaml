@@ -131,7 +131,7 @@ zowe:
         org: "Zowe Sample"
         locality: "Prague"
         state: "Prague"
-        country: ""
+        country: "CZ"
       # Validity days for Zowe generated certificates
       validity: 3650
       # Domain names and IPs should be added into certificate SAN
