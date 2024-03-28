@@ -3,3 +3,5 @@ zos_security_system: TSS
 zowe_sanity_test_testcases: "./test/**/!(api-doc-gen).js"
 zowe_apiml_security_x509_enabled: true
 zos_zosmf_ca: ZOSMFCA
+ansible_port: 65522
+zowe_configure_ignore_security_failures: true # Required for keyring tests - only Root cert passed, missing intermediate RC=4

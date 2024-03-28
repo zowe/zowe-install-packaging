@@ -27,7 +27,7 @@ set -x
 # ./content/zowe-${ZOWE_VERSION}/
 
 # use node v14 to build
-export NODE_HOME=/ZOWE/node/node-v14.21.3-os390-s390x
+export NODE_HOME=/ZOWE/node/node-v16.20.2-os390-s390x
 
 # ---------------------------------------------------------------------
 # --- create JCL files
