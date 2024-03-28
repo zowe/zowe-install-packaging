@@ -228,21 +228,21 @@
       "componentGroup": "Zowe CLI",
       "entries": [{
         "repository": "zowe-cli",
-        "tag": "zowe-v1-lts",
+        "tag": "v6.40.27",
         "destinations": ["Zowe CLI Package"]
       }]
     }, {
       "componentGroup": "IBM&reg CICS&reg Plug-in for Zowe CLI",
       "entries": [{
         "repository": "zowe-cli-cics-plugin",
-        "tag": "zowe-v1-lts",
+        "tag": "v4.0.11",
         "destinations": ["Zowe CLI Package"]
       }]
     }, {
       "componentGroup": "IBM&reg Db2&reg Plug-in for Zowe CLI",
       "entries": [{
         "repository": "zowe-cli-db2-plugin",
-        "tag": "zowe-v1-lts",
+        "tag": "v4.1.13",
         "destinations": ["Zowe CLI Package"]
       }]
     }, {
@@ -256,28 +256,28 @@
       "componentGroup": "IBM&reg MQ Plug-in for Zowe CLI",
       "entries": [{
         "repository": "zowe-cli-mq-plugin",
-        "tag": "zowe-v1-lts",
+        "tag": "v2.0.4",
         "destinations": ["Zowe CLI Package"]
       }]
     }, {
       "componentGroup": "Secure Credential Store Plug-in for Zowe CLI",
       "entries": [{
         "repository": "zowe-cli-scs-plugin",
-        "tag": "master",
+        "tag": "v4.1.12",
         "destinations": ["Zowe CLI Package"]
       }]
     }, {
       "componentGroup": "z/OS&reg FTP Plug-in for Zowe CLI",
       "entries": [{
         "repository": "zowe-cli-ftp-plugin",
-        "tag": "zowe-v1-lts",
+        "tag": "v1.8.8",
         "destinations": ["Zowe CLI Package"]
       }]
     }, {
       "componentGroup": "IBM&reg IMS&reg Plug-in for Zowe CLI",
       "entries": [{
         "repository": "zowe-cli-ims-plugin",
-        "tag": "zowe-v1-lts",
+        "tag": "v2.0.5",
         "destinations": ["Zowe CLI Package"]
       }]
     }, {
