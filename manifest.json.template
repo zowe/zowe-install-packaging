@@ -82,34 +82,28 @@
       "artifact": "*.pax"
     },
     "org.zowe.apiml.sdk.api-catalog-package": {
-      "version": "~1.28.0-SNAPSHOT",
-      "artifact": "api-catalog-*.zip",
-      "exclusions": ["*PR*.zip"]
+      "version": "1.28.25",
+      "artifact": "api-catalog*.zip"
     },
     "org.zowe.apiml.sdk.discovery-package": {
-      "version": "~1.28.0-SNAPSHOT",
-      "artifact": "discovery-*.zip",
-      "exclusions": ["*PR*.zip"]
+      "version": "1.28.25",
+      "artifact": "discovery*.zip"
     },
     "org.zowe.apiml.sdk.gateway-package": {
-      "version": "~1.28.0-SNAPSHOT",
-      "artifact": "gateway-*.zip",
-      "exclusions": ["*PR*.zip"]
+      "version": "1.28.25",
+      "artifact": "gateway*.zip"
     },
     "org.zowe.apiml.sdk.caching-service-package": {
-      "version": "~1.28.0-SNAPSHOT",
-      "artifact": "caching-service-*.zip",
-      "exclusions": ["*PR*.zip"]
+      "version": "1.28.25",
+      "artifact": "caching-service*.zip"
     },
     "org.zowe.apiml.sdk.metrics-service-package": {
-      "version": "~1.28.0-SNAPSHOT",
-      "artifact": "metrics-service-*.zip",
-      "exclusions": ["*PR*.zip"]
+      "version": "1.28.25",
+      "artifact": "metrics-service*.zip"
     },
     "org.zowe.apiml.sdk.apiml-common-lib-package": {
-      "version": "~1.28.0-SNAPSHOT",
-      "artifact": "apiml-common-lib-*.zip",
-      "exclusions": ["*PR*.zip"]
+      "version": "1.28.25",
+      "artifact": "apiml-common-lib-*.zip"
     },
     "org.zowe.apiml.sdk.common-java-lib-package": {
       "version": "~1.21.3-SNAPSHOT",
@@ -117,9 +111,8 @@
       "exclusions": ["*PR*.zip"]
     },
     "org.zowe.apiml.sdk.apiml-sample-extension-package": {
-      "version": "~1.28.0-SNAPSHOT",
-      "artifact": "apiml-sample-extension-*.zip",
-      "exclusions": ["*PR*.zip"]
+      "version": "1.28.25",
+      "artifact": "apiml-sample-extension-*.zip"
     },
     "org.zowe.launcher": {
       "version": "~0.0.3-SNAPSHOT"
@@ -441,23 +434,23 @@
     "api-catalog": {
       "registry": "zowe-docker-release.jfrog.io",
       "name": "ompzowe/api-catalog-services",
-      "tag" : "1-ubuntu"
+      "tag" : "1.28.25-ubuntu"
     },
     "caching": {
       "registry": "zowe-docker-release.jfrog.io",
       "name": "ompzowe/caching-service",
-      "tag" : "1-ubuntu"
+      "tag" : "1.28.25-ubuntu"
     },
     "discovery": {
       "kind": "statefulset",
       "registry": "zowe-docker-release.jfrog.io",
       "name": "ompzowe/discovery-service",
-      "tag" : "1-ubuntu"
+      "tag" : "1.28.25-ubuntu"
     },
     "gateway": {
       "registry": "zowe-docker-release.jfrog.io",
       "name": "ompzowe/gateway-service",
-      "tag" : "1-ubuntu"
+      "tag" : "1.28.25-ubuntu"
     },
     "app-server": {
       "registry": "zowe-docker-release.jfrog.io",
