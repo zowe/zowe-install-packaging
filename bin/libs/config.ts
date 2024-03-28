@@ -175,6 +175,7 @@ export function generateInstanceEnvFromYamlConfig(haInstance: string) {
         componentFileArray.push(`ZWE_configs_${key}=${envs['ZWE_components_'+componentAlpha+'_'+key]}`);
       }
     });
+    componentFileArray = componentFileArray.map((row)=> { return row.endsWith('=null') ? row.substring(0, row.length-5)+'=' : row });
     
     const componentFileContent = componentFileArray.join('\n');
     rc = xplatform.storeFileUTF8(`${folderName}/.instance-${haInstance}.env`, xplatform.AUTO_DETECT, componentFileContent);
@@ -185,6 +186,7 @@ export function generateInstanceEnvFromYamlConfig(haInstance: string) {
     }
   });
 
+  envFileArray = envFileArray.map((row)=> { return row.endsWith('=null') ? row.substring(0, row.length-5)+'=' : row });
   let envFileContent = envFileArray.join('\n');
   let rc = xplatform.storeFileUTF8(`${zwePrivateWorkspaceEnvDir}/.instance-${haInstance}.env`, xplatform.AUTO_DETECT, envFileContent);
   if (rc) {
