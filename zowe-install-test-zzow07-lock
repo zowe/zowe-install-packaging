@@ -1,15 +1,1 @@
-{
-  "lockAcquiredTime": "Thu Mar 28 2024 16:46:03 GMT+0000 (Coordinated Universal Time)",
-  "uid": "1711644363256692345",
-  "repository": {
-    "owner": "zowe",
-    "repo": "zowe-install-packaging"
-  },
-  "branch": "user/markackert/2.15-master-backsync-staging",
-  "workflow": "Zowe CICD Integration Tests",
-  "job": "cicd-test",
-  "actor": "zowe-robot",
-  "runId": 8470707607,
-  "runNumber": 4235,
-  "link": "https://github.com/zowe/zowe-install-packaging/actions/runs/8470707607"
-}
+""
