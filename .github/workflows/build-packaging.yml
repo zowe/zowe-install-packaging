@@ -264,7 +264,7 @@ jobs:
         with:
           lock-repository: ${{ github.repository }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          lock-resource-name: zowe-psi-build-zzow03-lock
+          lock-resource-name: zowe-psi-build-zzow07-lock
           lock-avg-retry-interval: 60
       
       - name: '[SMPE Pax 4] Build PSWI'
@@ -277,6 +277,7 @@ jobs:
         env:
           ZOSMF_USER: ${{ secrets.ZOWE_PSWI_BUILD_USR }}
           ZOSMF_PASS: ${{ secrets.ZOWE_PSWI_BUILD_PASSWD }}
+          ZZOW_SSH_PORT: ${{ secrets.SSH_MARIST_ALLSYS_PORT }}
           VERSION: ${{ env.P_VERSION }}
 
       - name: '[TP_DOCKER] Copy zowe.pax to prepare for building Docker images'
