@@ -78,7 +78,7 @@ export function generateInstanceEnvFromYamlConfig(haInstance: string) {
   }
 
   // delete old files to avoid potential issues
-  common.printFormattedTrace( "ZWELS", "bin/libs/config.ts,generate_instance_env_from_yaml_config", `deleting old files under ${zwePrivateWorkspaceEnvDir}`);
+  common.printFormattedTrace( "ZWELS", "bin/libs/config.ts,generateInstanceEnvFromYamlConfig", `deleting old files under ${zwePrivateWorkspaceEnvDir}`);
   let foundFiles = fs.getFilesInDirectory(zwePrivateWorkspaceEnvDir);
   if (foundFiles) {
     foundFiles.forEach((file:string)=> {
@@ -98,9 +98,9 @@ export function generateInstanceEnvFromYamlConfig(haInstance: string) {
   merger.mergeArrays = false;
 
   // convert YAML configurations to backward compatible .instance-<ha-id>.env files
-  common.printFormattedTrace("ZWELS", "bin/libs/config.ts,generate_instance_env_from_yaml_config", `config-converter yaml env --ha ${haInstance}`);
+  common.printFormattedTrace("ZWELS", "bin/libs/config.ts,generateInstanceEnvFromYamlConfig", `getZoweConfigEnv(${haInstance})`);
   const envs = configmgr.getZoweConfigEnv(haInstance);
-  common.printFormattedTrace("ZWELS", "bin/libs/config.ts,generate_instance_env_from_yaml_config", `- Output: ${JSON.stringify(envs, null, 2)}`);
+  common.printFormattedTrace("ZWELS", "bin/libs/config.ts,generateInstanceEnvFromYamlConfig", `- Output: ${JSON.stringify(envs, null, 2)}`);
   const envKeys = Object.keys(envs);
   let envFileArray=[];
   
@@ -117,7 +117,7 @@ export function generateInstanceEnvFromYamlConfig(haInstance: string) {
     let rc = fs.mkdirp(folderName, 0o700);
     if (rc) {
       //TODO error code
-      common.printFormattedError("ZWELS", "bin/libs/config.ts,generate_instance_env_from_yaml_config", `Failed to make env var folder for component=${currentComponent}`);
+      common.printFormattedError("ZWELS", "bin/libs/config.ts,generateInstanceEnvFromYamlConfig", `Failed to make env var folder for component=${currentComponent}`);
     }
     let componentFileArray = [];
     componentFileArray.push('#!/bin/sh');
@@ -173,7 +173,7 @@ export function generateInstanceEnvFromYamlConfig(haInstance: string) {
     const componentFileContent = componentFileArray.join('\n');
     rc = xplatform.storeFileUTF8(`${folderName}/.instance-${haInstance}.env`, xplatform.AUTO_DETECT, componentFileContent);
     if (rc) { 
-      common.printFormattedError("ZWELS", "bin/libs/config.ts,generate_instance_env_from_yaml_config", `ZWEL0140E: Failed to translate Zowe configuration (${cliParameterConfig}).`);
+      common.printFormattedError("ZWELS", "bin/libs/config.ts,generateInstanceEnvFromYamlConfig", `ZWEL0140E: Failed to translate Zowe configuration (${cliParameterConfig}).`);
       std.exit(140);
       return;
     }
@@ -203,7 +203,7 @@ export function generateInstanceEnvFromYamlConfig(haInstance: string) {
   xplatform.storeFileUTF8(`${zwePrivateWorkspaceEnvDir}/.zowe-${haInstance}.json`, xplatform.AUTO_DETECT, JSON.stringify(haConfig, null, 2));
 
   if (!fs.fileExists(`${zwePrivateWorkspaceEnvDir}/.zowe.json`)) {
-    common.printFormattedError("ZWELS", "bin/libs/config.ts,generate_instance_env_from_yaml_config", `ZWEL0140E: Failed to translate Zowe configuration (${cliParameterConfig}).`);
+    common.printFormattedError("ZWELS", "bin/libs/config.ts,generateInstanceEnvFromYamlConfig", `ZWEL0140E: Failed to translate Zowe configuration (${cliParameterConfig}).`);
     std.exit(140);
   }
 
@@ -212,7 +212,7 @@ export function generateInstanceEnvFromYamlConfig(haInstance: string) {
   let envFileContent = envFileArray.join('\n');
   let rc = xplatform.storeFileUTF8(`${zwePrivateWorkspaceEnvDir}/.instance-${haInstance}.env`, xplatform.AUTO_DETECT, envFileContent);
   if (rc) {
-    common.printFormattedError("ZWELS", "bin/libs/config.ts,generate_instance_env_from_yaml_config", `ZWEL0140E: Failed to translate Zowe configuration (${cliParameterConfig}).`);
+    common.printFormattedError("ZWELS", "bin/libs/config.ts,generateInstanceEnvFromYamlConfig", `ZWEL0140E: Failed to translate Zowe configuration (${cliParameterConfig}).`);
     std.exit(140);
     return;
   }
