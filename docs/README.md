@@ -18,8 +18,9 @@ This is not Zowe consumer documentation.
     - [Creating a custom Zowe build](#creating-a-custom-zowe-build)
   - [Containers](#containers)
 <!-- - [Supply-chain, attributions](./pipelines/supply-chain.md) -->
-  - [Release](./pipelines/release.md)
+  - [Release Process](#release-process)
 - [Distribution Formats](#distribution-formats)
+  - [Client Components](#client-components)
   - [Pax](./distributions/pax.md)
   - [SMP/e](./distributions/smpe.md)
   - [PSWI](./distributions/zowe_pswi_tech_prev.md)
@@ -143,10 +144,10 @@ The following fields are deprecated in the manifest file, and not used at any po
 
 ### Branch Strategy
 
-The zowe-install-packaging repository is the convergence point for Zowe's component integrations and release activities and so must be able to support both rapid iteration from multiple component squads testing their latest code and respective integrations, as well as support component and code stability during release windows. Our branching, build, and release strategies are defined to meet those requirements.
+The zowe-install-packaging repository is the convergence point for Zowe's component integrations and release activities and so must be able to support both rapid iteration from multiple component squads testing their latest code and respective integrations, as well as support component and code stability during release windows across multiple release lines. Our branching, build, and release strategies are defined to meet those requirements.
 
-- The `vN.x/staging` branch is the active development branch for the `vN` release line, and creates builds on a nightly basis. This branch typically creates stable builds but may occasionally generate an unstable build. By default, all development changes should be opened as Pull Requests against this branch.
-- The `vN.x/rc` branches are used to create release candidates and stabilize them. It's an intermediate state where we finalize and harden the code to prepare for the coming release. This branch is updated from `vN.x/staging` in preparation for a release and further updated in response to feedback on generated release candidates. Once the Zowe TSC votes to promote a release candidate, this branch will be merged into `vN.x/master` as the latest official release. 
+- The `vN.x/staging` branch is the active development branch for the `vN` release line, and creates builds on a nightly basis. This branch typically creates stable builds but may occasionally generate an unstable build, as this branch is configured to automatically pickup new component builds. By default, all development changes should be opened as Pull Requests against this branch.
+- The `vN.x/rc` branches are used to create release candidates and stabilize them. It's an intermediate state where we finalize and harden the code to prepare for the coming release. This branch is updated from `vN.x/staging` in preparation for a release with locked-in component artifacts, and is occasionally further updated in response to feedback on generated release candidates. Once the Zowe TSC votes to promote a release candidate, this branch will be merged into `vN.x/master` as the latest official release. 
 - From any `vN.x/master` branch, you can find the most recent **official** build within the Zowe `vN` release line. e.g., official Zowe v2 releases can be found in `v2.x/master`. Every official build also generates a tag in the `zowe-install-packaging` repository. When an official release is produced, `vN.x/master` is merged back into `vN.x/staging` to ensure capture of any changes which went into `vN.x/rc`.
 - All other branches are considered work-in-progress. We suggest using a naming structure which makes both their intent and ownership clear. e.g., something like `user/[myusername]/[feature-or-effective-change]` or `feat/[group-name]/[feature-description-or-issue-#]`, but we don't require any particular structure.
 
@@ -236,6 +237,10 @@ If your changes are in components represented by the [Zowe Manifest](#manifest-m
   },
 ```
 
+#### Component Tracking
+
+Pull Requests are always required to make changes to the `zowe-install-packaging` repository. Generally, pull requests against any `rc` or `master` branch must be approved and merged by a member of the Zowe Systems Squad, while pull requests against `staging` may be approved by other Zowe squads.
+
 ### Containers
 
 Zowe produces a containerized distribution which lets you run Zowe's server side components, minus the ZSS, in a Kubernetes environment. The container definitions for Zowe's base containers and automation are part of this repository, under the [containers](../containers/) directory. See the [conformance document](../containers/conformance.md) for more information on best practices for consuming the images and style guidelines for writing Zowe Dockerfiles. 
@@ -250,18 +255,35 @@ Container builds include the following workflows:
 
 All of these builds rely heavily on helper actions defined in [zowe-actions](https://github.com/zowe-actions/shared-actions/), though the build process is standard - build each image and publish to Artifactory. The containers are built for both x86 and s390x architectures, after which the manifests are merged together and published to Artifactory.
 
+### Release Process
+
+Zowe follows a regular release cadence for all of it's supported release lines, as outlined in the [community documentation](https://github.com/zowe/community/blob/master/Project%20Management/Schedule/Zowe%20PI%20%26%20Sprint%20Cadence.md). As outlined in the branch strategy, Zowe releases are first created in the `vN.x/rc` branch, and after the community has verified the RC candidates the final release is created from the `Vn.x/master` branch. The Systems Squad is responsible for release engineering activities and can be contacted for further details on the exact release process.
 
 ### Packaging, Install, Configuration
 
 
 
 
+## Distribution Formats
 
+Zowe is a collection of both distributed client and mainframe server-side components, with consumers have that have various restrictions on their ability to consume both groups of software, and processes that require us to create artifacts according to mainframe standards and practices. All that to say, we've created multiple distributions of client and server components which in net try to address the most common consumer requirements for software acquisition and all represent the same Zowe components. 
 
+This document will capture where the components are deployed today to illustrate our thinking around them, though the final say will be either in Zowe docs (docs.zowe.org), the [Zowe community repo](https://github.com/zowe/community), or of course the components respective source repositories.
 
-#### Component Tracking
+### Client Components
 
-Pull Requests are always required to make changes to this repository. Generally, pull requests against any `rc` or `master` branch must be approved and merged by a member of the Zowe Systems Squad, while pull requests against `staging` may be approved by other Zowe squads.
+The Zowe client components at time of writing refer to the Zowe CLI, Zowe Explorer for VSCode, Zowe Explorer for IntelliJ, and various Zowe Client SDKs, including a Node SDK, Python SDK, Java SDK, and Kotlin SDK. In general, client components are deployed to registries which are standard for the language and package environments, and more popular or mature components ([GA/LTS designation](https://github.com/zowe/community/blob/master/Technical-Steering-Committee/projects.md)) may additionally be available via a zowe.org download when it makes sense. Each component follows the below table for distribution. In general, this repository does not manage the deployment of the client projects to these destinations, so as part of the release process we ask the client component squads to update the manifest json
+
+| Component | Distribution Formats | Notes | 
+| ----- | ----- | ----- | 
+| Zowe CLI | NPM Package, Standalone Bundle (offline-installable) | The Zowe CLI is an NPM project and is easily installed by NPM through npmjs.com, however many of our consumers don't have access to the npmjs.com package registry. Therefore, a standalone bundle which includes all of the CLI's dependencies is provided for download on [zowe.org](https://zowe.org), and can be installed with a standard `npm install` command. | 
+| Zowe Explorer for VSCode | VSCode Extension Marketplace, OpenVSX | The Zowe Explorer for VSCode is available through two common VSCode marketplaces - the official VSCode Marketplace and open-vsx.org. There is a VSIX which can be installed offline, though this is only available through its [github releases](https://github.com/zowe/zowe-explorer-vscode/releases), and is generally not required for most consumers. |
+| Zowe Explorer for IntelliJ | [IntelliJ Plugin Marketplace](https://plugins.jetbrains.com/plugin/18688-zowe-explorer) |  The Zowe Explorer for IntelliJ is available through Intellij's Plugin Marketplace. There is no other installation available. | 
+| Zowe Node SDK | NPM Package, zowe.org | The Zowe Node SDK is the backbone of the Zowe CLI, and it's available on npmjs.com. Since the Node SDK is the backbone of the Zowe CLI and also an LTS (long term support) component, we made it available on zowe.org as an offline installable package. |
+| Zowe Python SDK | Pypy | The Zowe Python SDK is an incubating project which is available through PyPI and installable with pip. |
+| Zowe Java SDK | Maven Central | The Zowe Java SDK is a GA poject which is available through maven central |
+| Zowe Kotlin SDK | Zowe Artifactory | The Zowe Kotlin SDK is an LTS project which is available through Zowe's artifactory |
+
 
 
 
