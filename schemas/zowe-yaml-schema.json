@@ -880,9 +880,10 @@
         }
       }
     },
-    "tlsSettings": {
-     "$anchor": "tlsSettings",
+    "nativeTlsSettings": {
+     "$anchor": "nativeTlsSettings",
       "type": "object",
+      "additionalProperties": false,
       "properties": {
         "ciphers": {
           "type": "array",
@@ -912,41 +913,14 @@
         }
       }
     },
-    "attlsServerSetting": {
+    "attlsSetting": {
       "type": "object",
       "additionalProperties": false,
-      "description": "Optional, advanced network configuration parameters for Zowe servers",
       "properties": {
         "attls": {
           "type": "boolean",
           "default": false,
-          "description": "Enable AT-TLS for this component. AT-TLS should only be enabled in a z/OS host environment. Servers will be switched into HTTP mode to accomodate z/OS the specific AT-TLS feature which wraps network calls in HTTPS."
-        }
-      }
-    },
-    "nativeTlsServerSetting": {
-      "type": "object",
-      "additionalProperties": false,
-      "description": "Optional, advanced network configuration parameters for Zowe servers",
-      "properties": {
-        "tls": {
-          "$ref": "#/$defs/tlsSettings"      
-        },
-        "listenAddresses": {
-          "type": "array",
-          "description": "The IP addresses which all of the Zowe servers will be binding on and listening to. Some servers may only support listening on the first element.",
-          "items": {
-            "$ref": "/schemas/v2/server-common#zoweIpv4"
-          }
-        },
-        "vipaIp": {
-          "type": "string",
-          "description": "The IP address which all of the Zowe servers will be binding to. If you are using multiple DIPVA addresses, do not use this option."
-        },
-        "validatePortFree": {
-          "type": "boolean",
-          "default": true,
-          "description": "Whether or not to ensure that the port a server is about to use is available. Usually, servers will know this when they attempt to bind to a port, so this option allows you to disable the additional verification step."
+          "description": "Enables AT-TLS for client or server operations. AT-TLS should only be enabled in a z/OS host environment. Servers will be switched into HTTP mode to accomodate z/OS the specific AT-TLS feature which wraps network calls in TLS."
         }
       }
     },
@@ -957,10 +931,33 @@
       "description": "Optional, advanced network configuration parameters",
       "properties": {
         "server": {
-          "oneOf": [
-            { "$ref": "#/$defs/attlsServerSetting" },
-            { "$ref": "#/$defs/nativeTlsServerSetting" }
-          ]
+          "type": "object",
+          "description": "Optional, advanced network configuration parameters for Zowe servers",
+          "properties": {
+            "listenAddresses": {
+              "type": "array",
+              "description": "The IP addresses which all of the Zowe servers will be binding on and listening to. Some servers may only support listening on the first element.",
+              "items": {
+                "$ref": "/schemas/v2/server-common#zoweIpv4"
+              }
+            },
+            "vipaIp": {
+              "type": "string",
+              "description": "The IP address which all of the Zowe servers will be binding to. If you are using multiple DIPVA addresses, do not use this option."
+            },
+            "validatePortFree": {
+              "type": "boolean",
+              "default": true,
+              "description": "Whether or not to ensure that the port a server is about to use is available. Usually, servers will know this when they attempt to bind to a port, so this option allows you to disable the additional verification step."
+            },
+            "tls": {
+              "oneOf": [
+                { "$ref": "#/$defs/attlsSetting" },
+                { "$ref": "#/$defs/nativeTlsServerSetting" }
+              ]
+            }
+          }
+
         },
         "client": {
           "type": "object",
@@ -968,7 +965,10 @@
           "description": "Optional, advanced network configuration parameters for Zowe servers when sending requests as clients.",
           "properties": {
             "tls": {
-                "$ref": "#/$defs/tlsSettings"    
+              "oneOf": [
+                { "$ref": "#/$defs/attlsSetting" },
+                { "$ref": "#/$defs/nativeTlsServerSetting" }
+              ]
             }
           }
         }
