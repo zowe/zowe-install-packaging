@@ -883,7 +883,6 @@
     "nativeTlsSettings": {
      "$anchor": "nativeTlsSettings",
       "type": "object",
-      "additionalProperties": false,
       "properties": {
         "ciphers": {
           "type": "array",
@@ -918,8 +917,7 @@
       "additionalProperties": false,
       "properties": {
         "attls": {
-          "type": "boolean",
-          "default": false,
+          "const": true,
           "description": "Enables AT-TLS for client or server operations. AT-TLS should only be enabled in a z/OS host environment. Servers will be switched into HTTP mode to accomodate z/OS the specific AT-TLS feature which wraps network calls in TLS."
         }
       }
