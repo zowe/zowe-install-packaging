@@ -2,6 +2,13 @@
 
 All notable changes to the Zowe Installer will be documented in this file.
 <!--Add the PR or issue number to the entry if available.-->
+
+## `2.16.0
+
+## Minor enhancements/defect fixes
+- Bugfix: zowe.network.validatePortFree and zowe.network.vipaIp variables were moved from zowe.network to zowe.network.server in the schema but not in the code, causing inability to use them without the workaround of specifying them as environment variables ZWE_NETWORK_VALIDATE_PORT_FREE and ZWE_NETWORK_VIPA_IP instead. Now, the variables match the schema: zowe.network.server is used instead of zowe.network.
+
+
 ## `2.15.0`
 
 ## New features and enhancements
