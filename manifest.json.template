@@ -440,7 +440,7 @@
     "zowe-launch-scripts": {
       "registry": "zowe-docker-snapshot.jfrog.io",
       "name": "ompzowe/zowe-launch-scripts",
-      "tag" : "1.25.0-ubuntu.staging"
+      "tag" : "1.28.6-ubuntu"
     },
     "api-catalog": {
       "registry": "zowe-docker-release.jfrog.io",
@@ -472,32 +472,32 @@
       "kind": "job",
       "registry": "zowe-docker-release.jfrog.io",
       "name": "ompzowe/explorer-ip",
-      "tag" : "1-ubuntu"
+      "tag" : "1.0.1-ubuntu"
     },
     "explorer-jes": {
       "registry": "zowe-docker-release.jfrog.io",
       "name": "ompzowe/explorer-jes",
-      "tag" : "1-ubuntu"
+      "tag" : "1.0.23-ubuntu"
     },
     "explorer-mvs": {
       "registry": "zowe-docker-release.jfrog.io",
       "name": "ompzowe/explorer-mvs",
-      "tag" : "1-ubuntu"
+      "tag" : "1.0.21-ubuntu"
     },
     "explorer-uss": {
       "registry": "zowe-docker-release.jfrog.io",
       "name": "ompzowe/explorer-uss",
-      "tag" : "1-ubuntu"
+      "tag" : "1.0.23-ubuntu"
     },
     "files-api": {
       "registry": "zowe-docker-release.jfrog.io",
       "name": "ompzowe/files-api",
-      "tag" : "1-ubuntu"
+      "tag" : "1.0.24-ubuntu"
     },
     "jobs-api": {
       "registry": "zowe-docker-release.jfrog.io",
       "name": "ompzowe/jobs-api",
-      "tag" : "1-ubuntu"
+      "tag" : "1.0.22-ubuntu"
     }
   },
   "dependencyDecisions": {
