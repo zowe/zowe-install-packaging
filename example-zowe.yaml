@@ -350,7 +350,12 @@ zowe:
   # In this section, behavior such as which TLS levels, ciphers should be used, and if native TLS versus AT-TLS should be used.
   # See the schema for options.
   network:
-    attls: false
+    server:
+      tls:
+        attls: false
+    client:
+      tls:
+        attls: false
 
   # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   # You can un-comment and define any extra environment variables as key/value
