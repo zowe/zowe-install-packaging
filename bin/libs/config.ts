@@ -168,7 +168,7 @@ export function generateInstanceEnvFromYamlConfig(haInstance: string) {
         componentFileArray.push(`ZWE_configs_${key}=${envs['ZWE_components_'+componentAlpha+'_'+key]}`);
       }
     });
-    
+
     componentFileArray = componentFileArray.map((row)=> { return row.endsWith('=null') ? row.substring(0, row.length-5)+'=' : row });
     const componentFileContent = componentFileArray.join('\n');
     rc = xplatform.storeFileUTF8(`${folderName}/.instance-${haInstance}.env`, xplatform.AUTO_DETECT, componentFileContent);
@@ -178,7 +178,6 @@ export function generateInstanceEnvFromYamlConfig(haInstance: string) {
       return;
     }
   });
-
 
   // we want this, but not at the top level.
   let hostname = jsonConfig.hostname;
@@ -206,7 +205,6 @@ export function generateInstanceEnvFromYamlConfig(haInstance: string) {
     common.printFormattedError("ZWELS", "bin/libs/config.ts,generateInstanceEnvFromYamlConfig", `ZWEL0140E: Failed to translate Zowe configuration (${cliParameterConfig}).`);
     std.exit(140);
   }
-
 
   envFileArray = envFileArray.map((row)=> { return row.endsWith('=null') ? row.substring(0, row.length-5)+'=' : row });
   let envFileContent = envFileArray.join('\n');
