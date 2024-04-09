@@ -1,7 +1,5 @@
 /* REXX */
-parse pull args
-changeFrom = word(args, 1)
-changeTo = word(args, 2)
+parse pull changeFrom changeTo
 address isredit 'macro'
-address isredit 'change all 'changeFrom changeTo
+address isredit 'change all 'changeFrom "X'"||c2x(changeTo)"'"
 address isredit 'end'
