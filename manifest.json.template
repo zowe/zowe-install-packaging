@@ -438,7 +438,7 @@
   ],
   "imageDependencies": {
     "zowe-launch-scripts": {
-      "registry": "zowe-docker-snapshot.jfrog.io",
+      "registry": "zowe-docker-release.jfrog.io",
       "name": "ompzowe/zowe-launch-scripts",
       "tag" : "1.28.6-ubuntu"
     },
