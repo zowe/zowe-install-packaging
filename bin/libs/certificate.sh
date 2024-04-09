@@ -943,15 +943,9 @@ EOF
   if [ "${ZWE_CLI_PARAMETER_SECURITY_DRY_RUN}" = "true" ]; then
     print_message "JCL not submitted, command run with dry run flag."
     print_message "To perform command, re-run command without dry run flag, or submit the JCL directly"
+    print_trace "- Delete ${tmpfile}"
     rm "${tmpfile}"
   else
-    print_trace "- Ensure ${tmpfile} encoding before copying into data set"
-    ensure_file_encoding "${tmpfile}" "SPDX-License-Identifier"
-    print_trace "- ${tmpfile} created, writing back to ${jcllib}(${member_name})"
-    copy_to_data_set "${tmpfile}" "${jcllib}(${member_name})" "" "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITE}"
-    code=$?
-    print_trace "- Delete ${tmpfile}"
-    rm -f "${tmpfile}"
     if [ ${code} -ne 0 ]; then
       print_error "Error ZWEL0160E: Failed to write to ${jcllib}(${tmpdsm}). Please check if target data set is opened by others."
       return 160
@@ -960,11 +954,13 @@ EOF
   
     ###############################
     # submit job
-    print_message "Submitting Job ${member_name})"
+    print_message "Submitting Job ${member_name}"
     jobid=$(submit_job "${tmpfile}")
     code=$?
     if [ ${code} -ne 0 ]; then
       print_error "Error ZWEL0161E: Failed to run JCL ${jcllib}(${member_name})."
+      print_trace "- Delete ${tmpfile}"
+      rm -f "${tmpfile}"
       return 161
     fi
     print_debug "- job id ${jobid}"
@@ -972,6 +968,8 @@ EOF
     code=$?
     if [ ${code} -eq 1 ]; then
       print_error "Error ZWEL0162E: Failed to find job ${jobid} result."
+      print_trace "- Delete ${tmpfile}"
+      rm -f "${tmpfile}"
       return 162
     fi
     jobname=$(echo "${jobstate}" | awk -F, '{print $2}')
@@ -987,8 +985,12 @@ EOF
       print_message ""
     else
       print_error "Error ZWEL0163E: Job ${jobname}(${jobid}) ends with code ${jobcccode} (${jobcctext})."
+      print_trace "- Delete ${tmpfile}"
+      rm -f "${tmpfile}"
       return 163
     fi
+    print_trace "- Delete ${tmpfile}"
+    rm -f "${tmpfile}"
   fi
 }
 
