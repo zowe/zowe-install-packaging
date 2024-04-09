@@ -951,7 +951,7 @@
             "tls": {
               "oneOf": [
                 { "$ref": "#/$defs/attlsSetting" },
-                { "$ref": "#/$defs/nativeTlsServerSetting" }
+                { "$ref": "#/$defs/nativeTlsSettings" }
               ]
             }
           }
@@ -965,7 +965,7 @@
             "tls": {
               "oneOf": [
                 { "$ref": "#/$defs/attlsSetting" },
-                { "$ref": "#/$defs/nativeTlsServerSetting" }
+                { "$ref": "#/$defs/nativeTlsSettings" }
               ]
             }
           }
