@@ -42,6 +42,9 @@ export function execute(dryRun?: boolean) {
   // $$ inserts a '$', replace(/[$]/g, '$$$$') => double each '$' occurence
   jclContents = jclContents.replace(/\{zowe\.setup\.dataset\.prefix\}/gi, prefix.replace(/[$]/g, '$$$$'));
   jclContents = jclContents.replace(/\{zowe\.runtimeDirectory\}/gi, runtimeDirectory.replace(/[$]/g, '$$$$'));
+  if (std.getenv('ZWE_PRIVATE_LOG_LEVEL_ZWELS') !== 'INFO') {
+    jclContents = jclContents.replace('noverbose -', 'verbose -');
+  }
   let originalConfig = std.getenv('ZWE_PRIVATE_CONFIG_ORIG');
   let startingConfig = originalConfig;
   if ((originalConfig.indexOf('FILE(') == -1) && (originalConfig.indexOf('PARMLIB(') == -1)) {
