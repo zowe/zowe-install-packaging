@@ -146,13 +146,6 @@
   },
   "sourceDependencies": [
     {
-      "componentGroup": "Imperative CLI Framework for Zowe",
-      "entries": [{
-        "repository": "imperative",
-        "tag": "zowe-v1-lts",
-        "destinations": ["Zowe CLI Package"]
-      }]
-    }, {
       "componentGroup": "Zowe API Mediation Layer",
       "entries": [{
         "repository": "api-layer",
