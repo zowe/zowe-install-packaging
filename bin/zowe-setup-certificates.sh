@@ -33,7 +33,6 @@
 # - COMPONENT_LEVEL_CERTIFICATES - optional - if you want to generate dedicated certificates for certain components.
 # - EXTERNAL_COMPONENT_CERTIFICATES - optional - external certificates for each of components listed in COMPONENT_LEVEL_CERTIFICATES
 # - EXTERNAL_COMPONENT_CERTIFICATE_ALIASES - optional - external certificate aliases for each of components listed in COMPONENT_LEVEL_CERTIFICATES
-
 function detectExternalCAs {
   echo "Detecting external CAs ... STARTED"
   EXTERNAL_ROOT_CA=

@@ -9,10 +9,10 @@ on:
         default: 'Any zzow servers'
         options: 
           - Any zzow servers
-          - zzow02
-          - zzow03
-          - zzow04
-          - zzow02,zzow03,zzow04
+          - zzow06
+          - zzow07
+          - zzow08
+          - zzow06,zzow07,zzow08
       install-test:
         description: 'Choose Install Test'
         type: choice
@@ -60,8 +60,8 @@ env:
   DEFAULT_ZOWE_EXT_ARTIFACTORY_PATTERN: libs-snapshot-local/org/zowe/{ext-name}/*/{ext-name}-*.pax
 
   # can be overwritten, adjusted by DevOps only
-  ZOS_NODE_VERSION: v14.21.3
-  # ZOS_NODE_VERSION more to choose from: v14.21.3, v16.19.1
+  ZOS_NODE_VERSION: v16.20.2
+  # ZOS_NODE_VERSION more to choose from: v16.20.2
   CLIENT_NODE_VERSION: v12.18.3
   INSTALL_TEST_DEBUG_INFORMATION: zowe-install-test:*
   SANITY_TEST_DEBUG_INFORMATION: zowe-sanity-test:*
@@ -79,8 +79,8 @@ env:
   VSAM_CACHING_STORAGE_METHOD_TESTFILE: extended/caching-storages/vsam-storage.ts
   INFINISPAN_CACHING_STORAGE_METHOD_TESTFILE: extended/caching-storages/infinispan-storage.ts
   GENERAL_API_DOCUMENTATION_TESTFILE: basic/install-api-gen.ts
-  ZOWE_RELEAE_TESTS_FULL: basic/install.ts(all);basic/install-ptf.ts(all);basic/install-docker.ts(any);basic/install-ext.ts(any);extended/keyring.ts(all);extended/node-versions/node-v16.ts(any);extended/certificates/nonstrict-verify-external-certificate.ts(any);extended/caching-storages/infinispan-storage.ts(any)
-  ZOWE_NIGHTLY_TESTS_FULL: basic/install.ts(all);basic/install-ptf.ts(all);basic/install-docker.ts(any)
+  ZOWE_NIGHTLY_TESTS_FULL: basic/install.ts(all);basic/install-ptf.ts(all)
+  ZOWE_RELEASE_TESTS_FULL: basic/install.ts(all);basic/install-ptf.ts(all);basic/install-ext.ts(any);extended/keyring.ts(all);extended/node-versions/node-v16.ts(any):extended/certificates/nonstrict-verify-external-certificate.ts(any);extended/caching-storages/infinispan-storage.ts(any)
 
 jobs:
   display-dispatch-event-id:
@@ -132,7 +132,7 @@ jobs:
       - name: '[Prep 2] Setup Node'
         uses: actions/setup-node@v3
         with:
-          node-version: '14'
+          node-version: '18'
 
       - name: '[Prep 3] Cache node modules'
         uses: actions/cache@v2

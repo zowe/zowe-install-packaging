@@ -21,7 +21,6 @@
 
 # This script checks to see whether they are set, and if not tries to locate them, 
 # and if they can't be found prompt for them before setting them
-
 echo "<zowe-init.sh>" >> $LOG_FILE
 
 # process input parameters.
@@ -167,7 +166,7 @@ then
     rc=$?
     if [[ -n "$hn" && $rc -eq 0 ]]
     then
-          ZOWE_IP_ADDRESS=`$ping_bin -A ipv4 $hn|sed -n 's/.* (\(.*\)).*/\1/p'`
+          ZOWE_IP_ADDRESS=`$ping_bin -A ipv4 $hn|sed -n '1 s/.* (\(.*\)).*/\1/p'`
           if [[ ! -n "$ZOWE_IP_ADDRESS" ]]
           then
                echo Error: $ping_bin $hn command failed to find IP
