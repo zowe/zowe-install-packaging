@@ -149,14 +149,14 @@
       "componentGroup": "Zowe API Mediation Layer",
       "entries": [{
         "repository": "api-layer",
-        "tag": "v1.x.x",
+        "tag": "v1.28.25",
         "destinations": ["Zowe PAX"]
       }]
     }, {
        "componentGroup": "Zowe common java libraries",
        "entries": [{
          "repository": "common-java",
-         "tag": "v1",
+         "tag": "v1.21.3",
          "destinations": ["Zowe PAX"]
        }]
      }, {
@@ -227,7 +227,7 @@
     }, {
       "componentGroup": "IBM&reg CICS&reg Plug-in for Zowe CLI",
       "entries": [{
-        "repository": "zowe-cli-cics-plugin",
+        "repository": "cics-for-zowe-client",
         "tag": "v4.0.11",
         "destinations": ["Zowe CLI Package"]
       }]
