@@ -60,7 +60,6 @@ echo "Java version: ${JAVA_VERSION}" >> "${VERSION_FILE}"
 echo "NodeJS version: ${NODE_VERSION}" >> "${VERSION_FILE}"
 echo "External Security Manager: ${ESM}" >> "${VERSION_FILE}"
 echo "CEE Runtime Options: ${CEE_OPTIONS}" >> "${VERSION_FILE}"
-echo "Environment variables: ${ENVIRONMENT_VARIABLES}" >> "${VERSION_FILE}"
 print_message
 
 ###############################
