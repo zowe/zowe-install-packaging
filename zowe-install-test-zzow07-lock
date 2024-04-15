@@ -1,15 +1,1 @@
-{
-  "lockAcquiredTime": "Mon Apr 15 2024 20:39:54 GMT+0000 (Coordinated Universal Time)",
-  "uid": "1713213594088454098",
-  "repository": {
-    "owner": "zowe",
-    "repo": "zowe-install-packaging"
-  },
-  "branch": "user/markackert/ci-label-behavior-updates",
-  "workflow": "Zowe CICD Integration Tests",
-  "job": "cicd-test",
-  "actor": "zowe-robot",
-  "runId": 8695775953,
-  "runNumber": 4307,
-  "link": "https://github.com/zowe/zowe-install-packaging/actions/runs/8695775953"
-}
+""
