@@ -47,6 +47,8 @@ print_level1_message "Collecting information about z/OS, Java, NodeJS and ESM"
 VERSION_FILE="${tmp_dir}/version_output"
 ZOS_VERSION=`operator_command "D IPLINFO" | grep -i release | xargs`
 print_message "- z/OS: ${ZOS_VERSION}"
+CEE_OPTIONS=`tsocmd "OMVS RUNOPTS('RPTOPTS(ON)')"`
+print_message "- CEE Runtime Options: ${CEE_OPTIONS}"
 JAVA_VERSION=`${JAVA_HOME}/bin/java -version 2>&1 | head -n 1`
 print_message "- Java: ${JAVA_VERSION}"
 NODE_VERSION=`${NODE_HOME}/bin/node --version`
@@ -57,6 +59,8 @@ echo "z/OS version: ${ZOS_VERSION}" > "${VERSION_FILE}"
 echo "Java version: ${JAVA_VERSION}" >> "${VERSION_FILE}"
 echo "NodeJS version: ${NODE_VERSION}" >> "${VERSION_FILE}"
 echo "External Security Manager: ${ESM}" >> "${VERSION_FILE}"
+echo "CEE Runtime Options: ${CEE_OPTIONS}" >> "${VERSION_FILE}"
+echo "Environment variables: ${ENVIRONMENT_VARIABLES}" >> "${VERSION_FILE}"
 print_message
 
 ###############################

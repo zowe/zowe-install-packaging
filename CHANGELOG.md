@@ -6,7 +6,9 @@ All notable changes to the Zowe Installer will be documented in this file.
 ## `2.16.0
 
 ## Minor enhancements/defect fixes
+- Enhancement: The command `zwe support` now includes CEE Runtime option output to better diagnose issues related to environment customization.
 - Bugfix: zowe.network.validatePortFree and zowe.network.vipaIp variables were moved from zowe.network to zowe.network.server in the schema but not in the code, causing inability to use them without the workaround of specifying them as environment variables ZWE_NETWORK_VALIDATE_PORT_FREE and ZWE_NETWORK_VIPA_IP instead. Now, the variables match the schema: zowe.network.server is used instead of zowe.network.
+- Bugfix: configmgr operations now run with HEAPPOOLS64 set to OFF to avoid abends caused when this parameter is not OFF.
 
 
 ## `2.15.0`
