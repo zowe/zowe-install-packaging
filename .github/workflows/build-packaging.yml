@@ -95,6 +95,8 @@ jobs:
         # run_build explanation: workflow_dispatch can be manual, '/ci' comment trigger, or nightly. 
         #   If this is a workflow_disaptch and not a '/ci' trigger, always run, ignoring PR labels. Otherwise, always check the label.
         run: |
+          echo ${{ steps.get-labels.outputs.result }}
+          echo ${{ fromJson(steps.get-labels.outputs.result) }}
           echo "run_build=${{ (github.event_name == 'workflow_dispatch' && github.event.inputs.ORIGIN_ISSUE_TRIGGER == 'false') || !contains(fromJson(steps.get-labels.outputs.result), 'Build: None') }}" >> $GITHUB_OUTPUT
       - id: check-test
         name: 'export conditional used to determine if we should run a test suite'
