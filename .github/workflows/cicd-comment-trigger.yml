@@ -32,9 +32,10 @@ jobs:
     name: 'Get PR Branch'
     runs-on: ubuntu-latest
     outputs:
-      pr_branch_name: 
+      pr_branch_name: ${{ steps.get-pr-name.outputs.pr_branch_name }}
     steps:
       - name: Find PR Branch Name
+        id: get-pr-name
         run: | 
           gh config set pager cat 
           PR_BRANCH=$(gh pr view ${{ github.event.issue.number }} -R zowe/zowe-install-packaging --json headRefName  -q .headRefName)
