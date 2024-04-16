@@ -74,7 +74,7 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
             if ('${{ github.event_name}}' == 'pull_request') {
-              return ${{ toJson(github.event.pull_request.labels) }}
+              return JSON.stringify(${{ toJson(github.event.pull_request.labels) }})
             }  
             else if ('${{ github.event.inputs.ORIGIN_ISSUE_TRIGGER}}' == 'true') {
               github.rest.pulls.list({
@@ -99,6 +99,9 @@ jobs:
       - id: check-test
         name: 'export conditional used to determine if we should run a test suite'
         run: |
+          echo ${{ steps.check-build.outputs.run_build == 'true' }}
+          echo ${{ steps.check-build.outputs.run_build == 'false' }}
+          echo ${{ contains(fromJson(steps.get-labels.outputs.result), 'Test: None') }}
           echo "run_test=${{ (steps.check-build.outputs.run_build == 'true' && !contains(fromJson(steps.get-labels.outputs.result), 'Test: None')) }}" >> $GITHUB_OUTPUT
 
   display-dispatch-event-id:
