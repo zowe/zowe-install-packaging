@@ -37,9 +37,10 @@ jobs:
       - name: Find PR Branch Name
         run: | 
           gh config set pager cat 
-          PR_BRANCH=$(gh pr view ${{ github.event.issue.pull_request }} -R zowe/zowe-install-packaging --json headRefName  -q .headRefName)
+          PR_BRANCH=$(gh pr view ${{ github.event.issue.number }} -R zowe/zowe-install-packaging --json headRefName  -q .headRefName)
           echo "pr_branch_name=$PR_BRANCH" >> $GITHUB_OUTPUT
-
+        env:
+          GH_TOKEN: ${{ github.token }}
 
   trigger-ci:
     name: 'Trigger Build'
