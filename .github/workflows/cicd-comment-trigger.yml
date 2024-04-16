@@ -13,14 +13,6 @@ on:
 
 jobs:
 
-  dump-env:
-    name: 'Debug Env'
-    runs-on: ubuntu-latest
-    steps:
-      - name: Dump env
-        run: |
-          echo ${{ fromJson(github) }}
-
   pr-comment-check:
 
     name: 'PR Comment Check'
