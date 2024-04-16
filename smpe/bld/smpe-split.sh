@@ -91,14 +91,15 @@ _cmd mkdir -p $split
 # . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
 
 cnt=0                           # counter, part of target pax file name
-# let will: increase $cnt
-# "echo 0$cnt" will: create a counter at least 2 chars long
-# sed will: take the last 2 chars of the expanded counter
 
 # ---
 
 # split large components/files into their own pax
-# ACTION: update SMPMCS.txt when altering this logic
+# ACTION: update SMPMCS.txt when adding/removing pax files
+# ACTION: do NOT remove pax files in service stream without consulting
+#         an SMP/E specialist, as doing so without precautions will 
+#         break the SUPersede chain of the PTFs (see also _README.txt).
+#         You can change pax content in the service stream.
 list=""                                  # path based on $ZOWE_ROOT_DIR
 list="$list components/api-catalog"                             # pax01
 list="$list components/caching-service"                         # pax02
@@ -109,6 +110,9 @@ list="$list components/app-server"                              # pax05
 test "$debug" && echo "for f in $list"
 for f in $list
 do
+# let will: increase $cnt
+# "echo 0$cnt" will: create a counter at least 2 chars long
+# sed will: take the last 2 chars of the expanded counter
   let cnt=$cnt+1 ; file=${mask}$(echo 0$cnt | sed 's/.*\(..\)$/\1/')
   _move $stage $split/$file echo $f
 done    # for f
@@ -116,6 +120,7 @@ done    # for f
 # ---
 
 # all remaining files and directories
+# see earlier for explanation of "file=" logic 
 # ACTION: update SMPMCS.txt when altering this logic
 let cnt=$cnt+1 ; file=${mask}$(echo 0$cnt | sed 's/.*\(..\)$/\1/')
 _move $stage $split/$file ls -A $stage                          # pax08
