@@ -79,11 +79,11 @@ jobs:
             else if ('${{ github.event.inputs.ORIGIN_ISSUE_TRIGGER}}' == 'true') {
               github.rest.pulls.list({
                 state: 'open',
-                head: 'zowe:${{ env.GITHUB_HEAD_REF }}',
+                head: 'zowe:${{ github.ref_name }}',
                 owner: 'zowe',
                 repo: 'zowe-install-packaging'
               }).then((resp) => {
-                const pr = resp.data.find((item) => item.head.ref == 'user/markackert/ci-label-behavior-updates')
+                const pr = resp.data.find((item) => item.head.ref == '${{ github.ref_name }}')
                 return JSON.stringify(pr.labels)
               })
             } else {
