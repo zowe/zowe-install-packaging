@@ -48,6 +48,9 @@ jobs:
     needs: [pr-comment-check, get-pr-branch]
     if: ${{ needs.pr-comment-check.outputs.issue_run_ci == 'true' }}
     steps:
+      - name: debug
+        run: | 
+          echo ${{ needs.get-pr-branch.outputs.pr_branch_name }}
       - name: 'Trigger Build workflow'
         uses: zowe-actions/shared-actions/workflow-remote-call-wait@main    
         with:
