@@ -101,6 +101,8 @@ jobs:
         run: |
           echo ${{ steps.check-build.outputs.run_build == 'true' }}
           echo ${{ steps.check-build.outputs.run_build == 'false' }}
+          echo ${{ steps.get-labels.outputs.result }}
+          echo ${{ fromJson(steps.get-labels.outputs.result) }}
           echo ${{ contains(fromJson(steps.get-labels.outputs.result), 'Test: None') }}
           echo "run_test=${{ (steps.check-build.outputs.run_build == 'true' && !contains(fromJson(steps.get-labels.outputs.result), 'Test: None')) }}" >> $GITHUB_OUTPUT
 
