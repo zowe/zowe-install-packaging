@@ -77,7 +77,7 @@ jobs:
               return JSON.stringify(${{ toJson(github.event.pull_request.labels) }})
             }  
             else if ('${{ github.event.inputs.ORIGIN_ISSUE_TRIGGER}}' == 'true') {
-              github.rest.pulls.list({
+              const res = await github.rest.pulls.list({
                 state: 'open',
                 head: 'zowe:${{ github.ref_name }}',
                 owner: 'zowe',
@@ -86,6 +86,7 @@ jobs:
                 const pr = resp.data.find((item) => item.head.ref == '${{ github.ref_name }}')
                 return JSON.stringify(pr.labels)
               })
+              return res;
             } else {
               return '[]'
             }
