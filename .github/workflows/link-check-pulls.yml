@@ -1,0 +1,21 @@
+permissions: read-all
+
+name: Check Markdown Links - PR
+
+on:
+  push:
+    branches-ignore:
+      - 'v2.x/*'
+      - 'v1.x/*'
+  pull_request:
+    branches:
+      - '**'
+
+jobs:
+  markdown-link-check:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@8e5e7e5ab8b370d6c329ec480221332ada57f0ab # v3.5.2
+
+    - uses: gaurav-nelson/github-action-markdown-link-check@d53a906aa6b22b8979d33bc86170567e619495ec # v1.0.15
