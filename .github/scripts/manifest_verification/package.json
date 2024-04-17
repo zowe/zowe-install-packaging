@@ -1,0 +1,16 @@
+{
+  "name": "manifest_verification",
+  "version": "1.0.0",
+  "description": "Script to verify Zowe manifest sourceDependencies",
+  "main": "check_sources.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "EPL-2.0",
+  "dependencies": {
+    "@actions/core": "^1.10.1",
+    "@octokit/rest": "^20.1.0",
+    "fs-extra": "^11.2.0"
+  }
+}

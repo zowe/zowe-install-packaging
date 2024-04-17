@@ -1,0 +1,24 @@
+name: Manifest SourceDependencies Verification
+
+permissions: read-all
+
+on:
+
+  pull_request:
+    types: [opened, synchronize]
+
+jobs:
+
+  check-manifest:
+    runs-on: ubuntu-latest
+    steps:
+
+      - name: Install Dependencies for script to work
+        run: npm install
+        working-directory: ./.github/scripts/manifest_verification
+
+      - name: Run Check
+        run: node ./.github/scripts/manifest_verification/check_sources.js
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          BASE_REF: ${{ github.event.pull_request.base.ref }}
