@@ -108,11 +108,12 @@ async function main() {
     }
   }
 
+  let didFail = false;
+
   const failRepos = analyzedRepos.filter((item) => item.result === results.fail);
   if (failRepos != null && failRepos.length > 0) {
     core.warning('The following repositories do not have a matching tag or branch: ' + JSON.stringify(failRepos, null, {indent: 4}))
     core.setFailed('There are manifest sourceDependencies without a matching tag or branch. Review the output and update the manifest.')
-    return;
   }
 
   const warnRepos = analyzedRepos.filter((item) => item.name === results.warn) ;
@@ -120,8 +121,8 @@ async function main() {
     core.warning('The following repositories have a branch instead of tag: ' + JSON.stringify(warnRepos, null, {indent: 4}))
     if (isRcOrMaster(baseRef)) {
       core.setFailed('Merges to RC and master require tags instead of branches for sourceDependencies.');
-      return;
     }
   }
+
 }
 main()
