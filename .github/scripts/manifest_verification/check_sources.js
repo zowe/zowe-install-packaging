@@ -2,7 +2,6 @@
 
 const core = require('@actions/core');
 const fs = require('fs-extra');
-const { Octokit } = require('@octokit/rest')
 
 const results = {
   success: 'found_matching_tag',
@@ -29,9 +28,8 @@ async function main() {
 
   const baseRef = process.env['BASE_REF'].trim();
 
-  const github = new Octokit({
-    auth: process.env['GITHUB_TOKEN']
-  });
+  const github = require('@actions/github')
+  const octokit = github.getOctokit(process.env['GITHUB_TOKEN']);
 
   // expect script to be run from repo root
   const sourceDeps = fs.readJSONSync('./manifest.json.template').sourceDependencies;
@@ -59,7 +57,7 @@ async function main() {
       const repo = entry.repository;
       const tag = entry.tag;
 
-      const tags = await github.rest.repos.listTags({
+      const tags = await octokit.rest.repos.listTags({
         owner: 'zowe',
         repo: repo,
       }).then((resp) => {
@@ -75,15 +73,29 @@ async function main() {
       }
 
       // if we didn't find tag, look at branches
-      const branches = await github.rest.repos.listBranches({
+      // 2 REST Requests, unset protected was operating as protected=false
+      const protBranches = await octokit.rest.repos.listBranches({
         owner: 'zowe',
-        repo: repo
+        repo: repo,
+        protected: true
       }).then((resp) => {
         if (resp.status < 400) {
           return resp.data;
         }
         return [];
       })
+      const unProtBranches = await octokit.rest.repos.listBranches({
+        owner: 'zowe',
+        repo: repo,
+        protected: false
+      }).then((resp) => {
+        if (resp.status < 400) {
+          return resp.data;
+        }
+        return [];
+      })
+
+      const branches = [...protBranches, ...unProtBranches];
 
       const knownBranch = branches.find((item) => item.name === tag);
       if (knownBranch != null && knownBranch.name.trim().length > 0) {
