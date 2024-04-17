@@ -13,6 +13,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
 
+      - name: Checkout code
+        uses: actions/checkout@v4
+
       - name: Install Dependencies for script to work
         run: npm install
         working-directory: .github/scripts/manifest_verification
