@@ -11,7 +11,7 @@ const results = {
 
 
 function isRcOrMaster(branchName) {
-  return /v[0-9]\.x\-[rc|master]/i.test(branchName);
+  return /v[0-9]\.x\/(rc|master)/i.test(branchName);
 }
 
 async function main() {
@@ -56,7 +56,25 @@ async function main() {
     for (const entry of dep.entries) {
       const repo = entry.repository;
       const tag = entry.tag;
+    
+      const isCommit = await github.rest.repos.getCommit({
+        owner: 'zowe',
+        repo: repo,
+        ref: tag
+      }).then((resp) => {
+        if (resp.status < 400) {
+          return true;
+        }
+        return false;
+      })
 
+      // Pinning repos with a commit is ok
+      if (isCommit) {
+        analyzedRepos.push({repository: repo, tag: tag, result: results.success});
+        continue;
+      }
+
+      // If not a commit, check repo tags
       const tags = await octokit.rest.repos.listTags({
         owner: 'zowe',
         repo: repo,
@@ -103,7 +121,7 @@ async function main() {
         continue;
       }
 
-      // if we didn't find tag or branch
+      // if we didn't find commit, tag or branch
       analyzedRepos.push({repository: repo, tag: tag, result: results.fail});
     }
   }
@@ -113,14 +131,14 @@ async function main() {
   const failRepos = analyzedRepos.filter((item) => item.result === results.fail);
   if (failRepos != null && failRepos.length > 0) {
     core.warning('There are manifest sourceDependencies without a matching tag or branch. Review the output and update the manifest.');
-    core.warning('The following repositories do not have a matching tag or branch: ' + JSON.stringify(failRepos, null, {indent: 4}))
+    core.warning('The following repositories do not have a matching commit hash, tag or branch: ' + JSON.stringify(failRepos, null, {indent: 4}))
     didFail = true;
   }
 
-  const warnRepos = analyzedRepos.filter((item) => item.name === results.warn) ;
+  const warnRepos = analyzedRepos.filter((item) => item.result === results.warn) ;
   if (warnRepos != null && warnRepos.length > 0) { 
     if (isRcOrMaster(baseRef)) {
-      core.warning('Merges to RC and master require tags instead of branches for sourceDependencies.')
+      core.warning('Merges to RC and master require tags or commit hashes instead of branches for sourceDependencies.')
       didFail = true
     }
     core.warning('The following repositories have a branch instead of tag: ' + JSON.stringify(warnRepos, null, {indent: 4}))
