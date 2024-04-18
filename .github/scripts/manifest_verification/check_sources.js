@@ -4,11 +4,14 @@ const core = require('@actions/core');
 const fs = require('fs-extra');
 
 const results = {
-  success: 'found_matching_tag',
+  success: 'found_matching_commit_or_tag',
   warn: 'found_matching_branch',
   fail: 'no_matching_tag_or_branch'
 }
 
+function is_sha(item) {
+  return /^[0-9a-f]{7}$/.test(item) || /^[0-9a-f]{40}$/.test(item)
+}
 
 function isRcOrMaster(branchName) {
   return /v[0-9]\.x\/(rc|master)/i.test(branchName);
@@ -57,21 +60,24 @@ async function main() {
       const repo = entry.repository;
       const tag = entry.tag;
     
-      const isCommit = await octokit.rest.repos.getCommit({
-        owner: 'zowe',
-        repo: repo,
-        ref: tag
-      }).then((resp) => {
-        if (resp.status < 400) {
-          return true;
-        }
-        return false;
-      })
+      // octokit ref/commit_sha APIs work for branches/tags, and we only want to test when its an actual hash 
+      if (is_sha(tag)) {
+        const isCommit = await octokit.rest.repos.getCommit({
+          owner: 'zowe',
+          repo: repo,
+          ref: tag
+        }).then((resp) => {
+          if (resp.status < 400) {
+            return true;
+          }
+          return false;
+        })
 
-      // Pinning repos with a commit is ok
-      if (isCommit) {
-        analyzedRepos.push({repository: repo, tag: tag, result: results.success});
-        continue;
+        // Pinning repos with a commit is ok
+        if (isCommit) {
+          analyzedRepos.push({repository: repo, tag: tag, result: results.success});
+          continue;
+        }
       }
 
       // If not a commit, check repo tags
