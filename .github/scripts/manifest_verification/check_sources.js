@@ -112,16 +112,22 @@ async function main() {
 
   const failRepos = analyzedRepos.filter((item) => item.result === results.fail);
   if (failRepos != null && failRepos.length > 0) {
+    core.warning('There are manifest sourceDependencies without a matching tag or branch. Review the output and update the manifest.');
     core.warning('The following repositories do not have a matching tag or branch: ' + JSON.stringify(failRepos, null, {indent: 4}))
-    core.setFailed('There are manifest sourceDependencies without a matching tag or branch. Review the output and update the manifest.')
+    didFail = true;
   }
 
   const warnRepos = analyzedRepos.filter((item) => item.name === results.warn) ;
   if (warnRepos != null && warnRepos.length > 0) { 
-    core.warning('The following repositories have a branch instead of tag: ' + JSON.stringify(warnRepos, null, {indent: 4}))
     if (isRcOrMaster(baseRef)) {
-      core.setFailed('Merges to RC and master require tags instead of branches for sourceDependencies.');
+      core.warning('Merges to RC and master require tags instead of branches for sourceDependencies.')
+      didFail = true
     }
+    core.warning('The following repositories have a branch instead of tag: ' + JSON.stringify(warnRepos, null, {indent: 4}))
+  }
+
+  if (didFail) {
+    core.setFailed('The manifest validation was not successful. Review the warning output for more details.');
   }
 
 }
