@@ -3,7 +3,6 @@ name: Manifest SourceDependencies Verification
 permissions: read-all
 
 on:
-
   pull_request:
     types: [opened, synchronize]
 
