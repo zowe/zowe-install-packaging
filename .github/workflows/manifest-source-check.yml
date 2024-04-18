@@ -7,7 +7,6 @@ on:
     types: [opened, synchronize]
 
 jobs:
-
   check-manifest:
     runs-on: ubuntu-latest
     steps:
