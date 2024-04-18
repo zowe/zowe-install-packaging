@@ -57,7 +57,7 @@ async function main() {
       const repo = entry.repository;
       const tag = entry.tag;
     
-      const isCommit = await github.rest.repos.getCommit({
+      const isCommit = await octokit.rest.repos.getCommit({
         owner: 'zowe',
         repo: repo,
         ref: tag
@@ -84,6 +84,7 @@ async function main() {
         }
         return [];
       })
+
       const knownTag = tags.find((item) => item.name === tag);
       if (knownTag != null && knownTag.name.trim().length > 0) {
         analyzedRepos.push({repository: repo, tag: tag, result: results.success});
