@@ -28,9 +28,9 @@
 //STDPARM DD *
 SH cd "{zowe.runtimeDirectory}" &&
 cd bin/utils &&
-export LOADLIB={zowe.setup.dataset.authLoadlib} &&
+export LOADLIB='{zowe.setup.dataset.authLoadlib}' &&
 export LOADLOC=SMS &&
-export PLUGLIB={zowe.setup.dataset.authPluginLib} &&
+export PLUGLIB='{zowe.setup.dataset.authPluginLib}' &&
 export PLUGLOC=SMS &&
 ./opercmd.rex "SETPROG APF,ADD,DSN=$LOADLIB,$LOADLOC" &&
 ./opercmd.rex "SETPROG APF,ADD,DSN=$PLUGLIB,$PLUGLOC"

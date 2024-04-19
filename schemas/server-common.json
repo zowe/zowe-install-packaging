@@ -17,26 +17,28 @@
       "pattern": "^(([\\^\\~\\>\\<]?)|(>=?)|(<=?))[0-9]*\\.[0-9]*\\.[0-9]*(-*[a-zA-Z][0-9a-zA-Z\\-\\.]*)?(\\+[0-9a-zA-Z\\-\\.]*)?$"
     },
     "dataset": {
+      "$anchor": "zoweDataset",
       "type": "string",
-      "minLength": 3,
+      "description": "A 44-char all caps dotted ZOS name",
       "pattern": "^([A-Z\\$\\#\\@]){1}([A-Z0-9\\$\\#\\@\\-]){0,7}(\\.([A-Z\\$\\#\\@]){1}([A-Z0-9\\$\\#\\@\\-]){0,7}){0,11}$",
-      "oneOf": [
-        {
-          "$anchor": "zoweDataset",
-          "description": "A 44-char all caps dotted ZOS name",
-          "maxLength": 44
-        },
-        {
-          "$anchor": "zoweDatasetPrefix",
-          "description": "A 35-char all caps dotted ZOS name (space for '.SZWEnnnn')",
-          "maxLength": 35
-        },
-        {
-          "$anchor": "zoweDatasetVsam",
-          "description": "A 38-char all caps dotted ZOS name (space for '.INDEX')",
-          "maxLength": 38
-        }
-      ]
+      "minLength": 3,
+      "maxLength": 44
+    },
+    "datasetPrefix": {
+      "$anchor": "zoweDatasetPrefix",
+      "type": "string",
+      "description": "A 35-char all caps dotted ZOS name (space for '.SZWEnnnn')",
+      "pattern": "^([A-Z\\$\\#\\@]){1}([A-Z0-9\\$\\#\\@\\-]){0,7}(\\.([A-Z\\$\\#\\@]){1}([A-Z0-9\\$\\#\\@\\-]){0,7}){0,11}$",
+      "minLength": 3,
+      "maxLength": 35
+    },
+    "datasetVsam": {
+      "$anchor": "zoweDatasetVsam",
+      "type": "string",
+      "description": "A 38-char all caps dotted ZOS name (space for '.INDEX')",
+      "pattern": "^([A-Z\\$\\#\\@]){1}([A-Z0-9\\$\\#\\@\\-]){0,7}(\\.([A-Z\\$\\#\\@]){1}([A-Z0-9\\$\\#\\@\\-]){0,7}){0,11}$",
+      "minLength": 3,
+      "maxLength": 38
     },
     "datasetMember": {
       "$anchor": "zoweDatasetMember",
