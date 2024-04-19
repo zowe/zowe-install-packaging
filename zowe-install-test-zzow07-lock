@@ -1,1 +1,15 @@
-""
+{
+  "lockAcquiredTime": "Fri Apr 19 2024 15:20:20 GMT+0000 (Coordinated Universal Time)",
+  "uid": "1713540020719449181",
+  "repository": {
+    "owner": "zowe",
+    "repo": "zowe-install-packaging"
+  },
+  "branch": "user/markackert/fix-orion-v1",
+  "workflow": "Zowe CICD Integration Tests",
+  "job": "cicd-test",
+  "actor": "zowe-robot",
+  "runId": 8755871067,
+  "runNumber": 4347,
+  "link": "https://github.com/zowe/zowe-install-packaging/actions/runs/8755871067"
+}
