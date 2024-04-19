@@ -127,14 +127,7 @@
     }
   },
   "sourceDependencies": [
-    {
-      "componentGroup": "Imperative CLI Framework for Zowe",
-      "entries": [{
-        "repository": "imperative",
-        "tag": "master",
-        "destinations": ["Zowe CLI Package"]
-      }]
-    }, {
+   {
       "componentGroup": "Zowe API Mediation Layer",
       "entries": [{
         "repository": "api-layer",
@@ -259,7 +252,7 @@
       "componentGroup": "Zowe Desktop Eclipse Orion-based React Editor",
       "entries": [{
         "repository": "orion-editor-component",
-        "tag": "master",
+        "tag": "v2.x/master",
         "destinations": ["Zowe PAX"]
       }]
     }, {
