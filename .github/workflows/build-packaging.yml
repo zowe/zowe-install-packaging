@@ -177,7 +177,7 @@ jobs:
 
       - name: '[Prep 6a] Process labels for ci build (pull, push, comment)'
         id: process-labels
-        if: github.event_name != 'workflow_dispatch'
+        if: github.event_name != 'workflow_dispatch' || '${{ github.event.inputs.ORIGIN_ISSUE_TRIGGER}}' == 'true'
         run: |
           BUILD_WHAT="PAX"
             
@@ -203,7 +203,7 @@ jobs:
 
       - name: '[Prep 6b] Process github.event.inputs for manually triggered build'
         id: process-inputs
-        if: github.event_name == 'workflow_dispatch'
+        if: github.event_name == 'workflow_dispatch' && '${{ github.event.inputs.ORIGIN_ISSUE_TRIGGER}}' != 'true'
         run: |
           BUILD_WHAT="${{ steps.process-labels.outputs.BUILD_WHAT_LABELS }}"
           
