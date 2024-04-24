@@ -133,14 +133,10 @@ For each Zowe component, we have point of contact(s) in case if we want to confi
     - zlux-editor
 - Explorer APIs / UI Plugins: Jordan Cain
   * Binary Dependencies
-    - org.zowe.explorer.data.sets
-    - org.zowe.explorer.jobs
     - org.zowe.explorer-jes
     - org.zowe.explorer-mvs
     - org.zowe.explorer-uss
   * Source Dependencies
-    - data-sets
-    - jobs
     - explorer-api-common
     - explorer-jes
     - explorer-mvs
@@ -157,10 +153,9 @@ For each Zowe component, we have point of contact(s) in case if we want to confi
     - zowe-cli-mq-plugin
     - zowe-cli-scs-plugin
     - zowe-cli-ftp-plugin
-    - zowe-cli-ims-plugin
 - Explorer (Visual Studio Code Extension): Fernando Rijo Cedeno, Mark Ackert
   * Source Dependencies
-    - vscode-extension-for-zowe
+    - zowe-explorer-vscode
 - License: Mark Ackert
   * Binary Dependencies
     - org.zowe.licenses

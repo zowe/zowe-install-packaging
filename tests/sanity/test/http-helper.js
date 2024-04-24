@@ -323,7 +323,7 @@ class APIMLAuth {
     debug('================================= APIMLAuth.isLoggedIn');
 
     const res = await this.httpRequest.request({
-      url: '/zosmf/api/v1/restfiles/ds?dslevel=SYS1.PARMLIB*',
+      url: '/ibmzosmf/api/v1/zosmf/restfiles/ds?dslevel=SYS1.PARMLIB*',
       headers: {
         ...headers,
         'X-CSRF-ZOSMF-HEADER': '*',

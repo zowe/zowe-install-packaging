@@ -748,7 +748,7 @@
             "file": {
               "type": "string",
               "description": "Path of your z/OS keyring, including ring owner and ring name. Case sensitivity and spaces matter.",
-              "pattern": "^safkeyring:\/\/.*"
+              "pattern": "^safkeyring(?:jce(?:cca|hybrid)?)?:\/\/.*"
             },
             "password": {
               "type": "string",
@@ -775,7 +775,7 @@
             "file": {
               "type": "string",
               "description": "Path of your z/OS keyring, including ring owner and ring name. Case sensitivity and spaces matter.",
-              "pattern": "^safkeyring:\/\/.*"
+              "pattern": "^safkeyring(?:jce(?:cca|hybrid)?)?:\/\/.*"
             },
             "password": {
               "type": "string",
@@ -857,7 +857,7 @@
         "zowe": {
           "type": "object",
           "description": "Component level overrides for top level Zowe network configuration.",
-          "additionalProperties": false,
+          "additionalProperties": true,
           "properties": {
             "network": {
               "$ref": "#/$defs/networkSettings"

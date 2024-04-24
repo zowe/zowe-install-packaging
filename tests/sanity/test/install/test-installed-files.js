@@ -32,10 +32,6 @@ describe('verify installed files', function() {
     await sshHelper.executeCommandWithNoError(`test -f ${process.env.ZOWE_ROOT_DIR}/bin/utils/opercmd.rex`);
   });
 
-  it('components/jobs-api/bin/jobs-api-server-*.jar should exist', async function() {
-    await sshHelper.executeCommandWithNoError(`test -f ${process.env.ZOWE_ROOT_DIR}/components/jobs-api/bin/jobs-api-server-*.jar`);
-  });
-
   it('fingerprint directory should exist', async function() {
     await sshHelper.executeCommandWithNoError(`test -d ${process.env.ZOWE_ROOT_DIR}/fingerprint`);
   });
@@ -46,7 +42,8 @@ describe('verify installed files', function() {
 
   it('fingerprint should match', async function() {
     // IMPORT: After 'source' the profile, JAVA_HOME environment variable must exist
-    const fingerprintStdout = await sshHelper.executeCommandWithNoError(`touch ~/.profile && . ~/.profile && ${process.env.ZOWE_ROOT_DIR}/bin/zwe support verify-fingerprints`);
+    // note the --config <zowe_yaml_path> assumes the instance dir, which is set in ansible playbooks
+    const fingerprintStdout = await sshHelper.executeCommandWithNoError(`touch ~/.profile && . ~/.profile && ${process.env.ZOWE_ROOT_DIR}/bin/zwe support verify-fingerprints --config /ZOWE/tmp/.zowe/zowe.yaml`);
     debug('fingerprint show result:', fingerprintStdout);
     addContext(this, {
       title: 'fingerprint show result',

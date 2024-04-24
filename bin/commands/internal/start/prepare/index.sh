@@ -17,7 +17,7 @@
 
 USE_CONFIGMGR=$(check_configmgr_enabled)
 if [ "${USE_CONFIGMGR}" = "true" ]; then
-  _CEE_RUNOPTS="XPLINK(ON),HEAPPOOLS(OFF)" ${ZWE_zowe_runtimeDirectory}/bin/utils/configmgr -script "${ZWE_zowe_runtimeDirectory}/bin/commands/internal/start/prepare/cli.js"
+  _CEE_RUNOPTS="XPLINK(ON),HEAPPOOLS(OFF),HEAPPOOLS64(OFF)" ${ZWE_zowe_runtimeDirectory}/bin/utils/configmgr -script "${ZWE_zowe_runtimeDirectory}/bin/commands/internal/start/prepare/cli.js"
 else
 
 
@@ -128,7 +128,7 @@ global_validate() {
     validate_this "validate_node_home 2>&1" "zwe-internal-start-prepare,global_validate:${LINENO}"
 
     # validate java for some core components
-    if [[ ${ZWE_ENABLED_COMPONENTS} == *"gateway"* || ${ZWE_ENABLED_COMPONENTS} == *"cloud-gateway"* || ${ZWE_ENABLED_COMPONENTS} == *"discovery"* || ${ZWE_ENABLED_COMPONENTS} == *"api-catalog"* || ${ZWE_ENABLED_COMPONENTS} == *"caching-service"* || ${ZWE_ENABLED_COMPONENTS} == *"metrics-service"* || ${ZWE_ENABLED_COMPONENTS} == *"files-api"* || ${ZWE_ENABLED_COMPONENTS} == *"jobs-api"* ]]; then
+    if [[ ${ZWE_ENABLED_COMPONENTS} == *"gateway"* || ${ZWE_ENABLED_COMPONENTS} == *"cloud-gateway"* || ${ZWE_ENABLED_COMPONENTS} == *"discovery"* || ${ZWE_ENABLED_COMPONENTS} == *"api-catalog"* || ${ZWE_ENABLED_COMPONENTS} == *"caching-service"* ]]; then
       validate_this "validate_java_home 2>&1" "zwe-internal-start-prepare,global_validate:${LINENO}"
     fi
   else
@@ -139,7 +139,7 @@ global_validate() {
 
   # validate z/OSMF for some core components
   if [ -n "${ZOSMF_HOST}" -a -n "${ZOSMF_PORT}" ]; then
-    if [[ ${ZWE_ENABLED_COMPONENTS} == *"discovery"* || ${ZWE_ENABLED_COMPONENTS} == *"files-api"* || ${ZWE_ENABLED_COMPONENTS} == *"jobs-api"* ]]; then
+    if [[ ${ZWE_ENABLED_COMPONENTS} == *"discovery"* ]]; then
       validate_this "validate_zosmf_host_and_port \"${ZOSMF_HOST}\" \"${ZOSMF_PORT}\" 2>&1" "zwe-internal-start-prepare,global_validate:${LINENO}"
     fi
   elif [ "${ZWE_components_gateway_apiml_security_auth_provider}" = "zosmf" ]; then

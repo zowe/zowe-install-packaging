@@ -340,7 +340,7 @@ elif [[ "${cert_type}" == JCE*KS ]]; then
   # should we clean up before creating new
   if [ "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITE}" = "true" ]; then
     # warning
-    print_message "Warning ZWEL0300W: Keyring \"safkeyring:///${keyring_owner}/${keyring_name}\" will be overwritten during configuration."
+    print_message "Warning ZWEL0300W: Keyring \"safkeyring://${keyring_owner}/${keyring_name}\" will be overwritten during configuration."
 
     zwecli_inline_execute_command \
       certificate keyring-jcl clean \
@@ -384,7 +384,7 @@ elif [[ "${cert_type}" == JCE*KS ]]; then
       
       yaml_keyring_label="${keyring_label}"
       # keyring string for self-signed CA
-      yaml_pem_cas="safkeyring:////${keyring_owner}/${keyring_name}&${keyring_caLabel}"
+      yaml_pem_cas="safkeyring://${keyring_owner}/${keyring_name}&${keyring_caLabel}"
       ;;
     2)
       # connect existing certs to zowe keyring
@@ -433,9 +433,9 @@ elif [[ "${cert_type}" == JCE*KS ]]; then
       item=$(echo "${item}" | trim)
       if [ -n "${item}" ]; then
         if [ -n "${yaml_pem_cas}" ]; then
-          yaml_pem_cas="${yaml_pem_cas},safkeyring:////${keyring_owner}/${keyring_name}&${item}"
+          yaml_pem_cas="${yaml_pem_cas},safkeyring://${keyring_owner}/${keyring_name}&${item}"
         else
-          yaml_pem_cas="safkeyring:////${keyring_owner}/${keyring_name}&${item}"
+          yaml_pem_cas="safkeyring://${keyring_owner}/${keyring_name}&${item}"
         fi
       fi
     done <<EOF
@@ -447,12 +447,12 @@ EOF
   if [ "${ZWE_CLI_PARAMETER_UPDATE_CONFIG}" = "true" ]; then
     print_level1_message "Update certificate configuration to ${ZWE_CLI_PARAMETER_CONFIG}"
     update_zowe_yaml "${ZWE_CLI_PARAMETER_CONFIG}" "zowe.certificate.keystore.type" "${cert_type:-JCERACFKS}"
-    update_zowe_yaml "${ZWE_CLI_PARAMETER_CONFIG}" "zowe.certificate.keystore.file" "safkeyring:////${keyring_owner}/${keyring_name}"
+    update_zowe_yaml "${ZWE_CLI_PARAMETER_CONFIG}" "zowe.certificate.keystore.file" "safkeyring://${keyring_owner}/${keyring_name}"
     # we must set a dummy value here, other JDK will complain wrong parameter
     update_zowe_yaml "${ZWE_CLI_PARAMETER_CONFIG}" "zowe.certificate.keystore.password" "password"
     update_zowe_yaml "${ZWE_CLI_PARAMETER_CONFIG}" "zowe.certificate.keystore.alias" "${yaml_keyring_label}"
     update_zowe_yaml "${ZWE_CLI_PARAMETER_CONFIG}" "zowe.certificate.truststore.type" "${cert_type:-JCERACFKS}"
-    update_zowe_yaml "${ZWE_CLI_PARAMETER_CONFIG}" "zowe.certificate.truststore.file" "safkeyring:////${keyring_owner}/${keyring_name}"
+    update_zowe_yaml "${ZWE_CLI_PARAMETER_CONFIG}" "zowe.certificate.truststore.file" "safkeyring://${keyring_owner}/${keyring_name}"
     # we must set a dummy value here, other JDK will complain wrong parameter
     update_zowe_yaml "${ZWE_CLI_PARAMETER_CONFIG}" "zowe.certificate.truststore.password" "password"
     update_zowe_yaml "${ZWE_CLI_PARAMETER_CONFIG}" "zowe.certificate.pem.key" ""
@@ -467,12 +467,12 @@ EOF
     print_message "  certificate:"
     print_message "    keystore:"
     print_message "      type: ${cert_type:-JCERACFKS}"
-    print_message "      file: \"safkeyring:////${keyring_owner}/${keyring_name}\""
+    print_message "      file: \"safkeyring://${keyring_owner}/${keyring_name}\""
     print_message "      password: \"password\""
     print_message "      alias: \"${yaml_keyring_label}\""
     print_message "    truststore:"
     print_message "      type: ${cert_type:-JCERACFKS}"
-    print_message "      file: \"safkeyring:////${keyring_owner}/${keyring_name}\""
+    print_message "      file: \"safkeyring://${keyring_owner}/${keyring_name}\""
     print_message "      password: \"password\""
     print_message "    pem:"
     print_message "      key: \"\""

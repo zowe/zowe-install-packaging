@@ -137,16 +137,17 @@ function globalValidate(enabledComponents:string[]): void {
   if (runInContainer != 'true') {
     // only do these check when it's not running in container
 
-    // currently node is always required
-    let nodeOk = node.validateNodeHome();
-    if (!nodeOk) {
-      privateErrors++;
-      common.printFormattedError('ZWELS', "zwe-internal-start-prepare,global_validate", `Could not validate node home`);
+    if (enabledComponents.includes('app-server')) {
+      let nodeOk = node.validateNodeHome();
+      if (!nodeOk) {
+        privateErrors++;
+        common.printFormattedError('ZWELS', "zwe-internal-start-prepare,global_validate", `Could not validate node home`);
+      }
     }
 
     // validate java for some core components
     //TODO this should be a manifest parameter that you require java, not a hardcoded list. What if extensions require it?
-    if (enabledComponents.includes('gateway') || enabledComponents.includes('cloud-gateway') || enabledComponents.includes('discovery') || enabledComponents.includes('api-catalog') || enabledComponents.includes('caching-service') || enabledComponents.includes('metrics-service') || enabledComponents.includes('files-api') || enabledComponents.includes('jobs-api')) {
+    if (enabledComponents.includes('gateway') || enabledComponents.includes('cloud-gateway') || enabledComponents.includes('discovery') || enabledComponents.includes('api-catalog') || enabledComponents.includes('caching-service')) {
       let javaOk = java.validateJavaHome();
       if (!javaOk) {
         privateErrors++;
@@ -165,7 +166,7 @@ function globalValidate(enabledComponents:string[]): void {
 
   // validate z/OSMF for some core components
   if (zosmfHost && zosmfPort) {
-    if (enabledComponents.includes('discovery') || enabledComponents.includes('files-api') || enabledComponents.includes('jobs-api')) {
+    if (enabledComponents.includes('discovery')) {
       let zosmfOk = zosmf.validateZosmfHostAndPort(zosmfHost, zosmfPort);
       if (!zosmfOk) {
         privateErrors++;
@@ -438,7 +439,10 @@ export function execute() {
     // other extensions need to specify `require_java` in their validate.sh
     java.requireJava();
   }
-  node.requireNode();
+  if (stringlib.itemInList('app-server', std.getenv('ZWE_CLI_PARAMETER_COMPONENT'))) {
+    // other extensions need to specify `require_node` in their validate.sh
+    node.requireNode();
+  }
   common.requireZoweYaml();
 
   // overwrite ZWE_PRIVATE_LOG_LEVEL_ZWELS with zowe.launchScript.logLevel config in YAML
