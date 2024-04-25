@@ -12,10 +12,12 @@
 import * as std from 'cm_std';
 import * as os from 'cm_os';
 import * as zos from 'zos';
+import * as xplatform from 'xplatform';
 import * as common from '../../../../libs/common';
 import * as config from '../../../../libs/config';
 import * as shell from '../../../../libs/shell';
 import * as varlib from '../../../../libs/var';
+import * as stringlib from '../../../../libs/string';
 import * as java from '../../../../libs/java';
 import * as fs from '../../../../libs/fs';
 import * as component from '../../../../libs/component';
@@ -93,8 +95,27 @@ export function execute(componentId: string, runInBackground: boolean=false) {
         } else {
           // wait for all background subprocesses created by bin/start.sh exit
           // re-source libs is necessary to reclaim shell functions since this will be executed in a new shell
-          //TODO does this do the same as the shell script before it?
-          shell.execSync('sh', '-c', `cd ${COMPONENT_DIR} ; cat "${fullPath}" | { echo ". \"${ZOWE_CONFIG.zowe.runtimeDirectory}/bin/libs/configmgr-index.sh\"" ; cat ; echo; echo wait; } | /bin/sh`);
+          const startScriptContents = `cd ${COMPONENT_DIR} ; . "${ZOWE_CONFIG.zowe.runtimeDirectory}/bin/libs/configmgr-index.sh" ; ${xplatform.loadFileUTF8(fullPath, xplatform.AUTO_DETECT)} ; wait;`;
+          const pipeArray = os.pipe();
+          if (!pipeArray) {
+            //TODO error message
+            common.printFormattedError("ZWELS", "zwe-internal-start-component", `Error ZWEL???E: Could not create pipe.`);    
+            return;
+          }
+          //TODO this will not work with unicode codepoints longer than a byte
+          const buf = new ArrayBuffer(startScriptContents.length);
+          const view = new Uint8Array(startScriptContents.length);
+          const ebcdicString = stringlib.asciiToEbcdic(startScriptContents);
+          for (let i = 0; i < startScriptContents.length; i++) {
+            view[i] = ebcdicString.charCodeAt(i);
+          }
+
+          os.write(pipeArray[1], buf, 0, startScriptContents.length);
+          os.close(pipeArray[1]);
+          os.exec(['/bin/sh'],
+                  {block: true, usePath: true, stdin: pipeArray[0]});
+          os.close(pipeArray[0]);
+          
         }
       } else {
         common.printFormattedError("ZWELS", "zwe-internal-start-component", `Error ZWEL0172E: Component ${componentId} has commands.start defined but the file is missing.`);
