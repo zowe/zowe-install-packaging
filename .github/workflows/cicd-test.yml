@@ -127,6 +127,32 @@ jobs:
       fail-fast: false
     environment: ${{ matrix.server }}
     steps:
+      - name: 'Get PR Number'
+        id: get-pr-num
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            if ('${{ github.event_name }}' == 'pull_request') {
+              return '${{ github.event.pull_request.number }}'
+            }  
+            else {
+              const res = await github.rest.pulls.list({
+                state: 'open',
+                head: 'zowe:${{ github.ref_name }}',
+                owner: 'zowe',
+                repo: 'zowe-install-packaging'
+              }).then((resp) => {
+                if (resp.status < 300) {
+                  const pr = resp.data.find((item) => item.head.ref == '${{ github.ref_name }}')
+                  return `${pr.number}`
+                } else {
+                  return ''
+                }
+              })
+              return res;
+            }
+
       - name: '[Prep 1] Checkout'
         uses: actions/checkout@v2
 
@@ -222,10 +248,10 @@ jobs:
         working-directory: ${{ runner.temp }}/cli
         run: npm install -g zowe-cli*.tgz
       
-      - name: '[Comment] Post comments on PR about what tests are gonna be run'
+      - name: '[Comment 1] Post comments on PR about what tests are gonna be run'
         uses: actions/github-script@v5
         id: create-comment
-        if: startsWith(env.CURRENT_BRANCH, 'PR-')
+        if: ${{ steps.get-pr-num.outputs.result != ''}}
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
@@ -235,7 +261,7 @@ jobs:
               installTest = 'Convenience Pax'
             }
 
-            var prNum='${{ env.CURRENT_BRANCH }}'.split('-')[1]
+            var prNum='${{ steps.get-pr-num.outputs.result }}'
 
             var body=`Test workflow ${context.runNumber} is started.\n`
             body += `Running install test: ${installTest} \n`
@@ -245,14 +271,29 @@ jobs:
             body += `ETA: unknown (This ETA will get updated once the machine lock is acquired) \n`
             body += `Link to workflow run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}`
             
-            const { data: comment } = await github.rest.issues.createComment({ 
-              issue_number: prNum,
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              body: body
-            });
+            return body
 
-            return comment.id;
+      - name: '[Comment 1] Find Comment'
+        uses: peter-evans/find-comment@v3
+        if: ${{ steps.create-comment.outputs.result != '' }}
+        id: fc
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          issue-number: ${{ steps.get-pr-num.outputs.result }}
+          comment-author: 'github-actions[bot]'
+          body-includes: Test status
+  
+      - name: '[Comment 1] Create or update comment'
+        uses: peter-evans/create-or-update-comment@v4
+        if: ${{ steps.create-comment.outputs.result != '' }}
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          comment-id: ${{ steps.fc.outputs.comment-id }}
+          issue-number: ${{ steps.get-pr-num.outputs.result }}
+          body: |
+            Test status
+            ${{ steps.create-comment.outputs.result }}
+          edit-mode: replace
 
       - name: '[LOCK] Lock marist servers'
         uses: zowe-actions/shared-actions/lock-resource@main
@@ -262,7 +303,7 @@ jobs:
           lock-resource-name: zowe-install-test-${{ steps.more-test-prep.outputs.TEST_SERVER }}-lock
           lock-avg-retry-interval: 60
       
-      - name: '[Comment] Update comment after lock is acquired'
+      - name: '[Comment 2] Update comment after lock is acquired'
         uses: actions/github-script@v5
         if: steps.create-comment.outputs.result != ''
         with:
@@ -335,7 +376,7 @@ jobs:
             github.rest.issues.updateComment({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              comment_id: ${{ steps.create-comment.outputs.result }},
+              comment_id: ${{ steps.fc.outputs.comment-id }},
               body: body
             });
 
@@ -378,12 +419,20 @@ jobs:
           name: InstallTestReports-${{ env.TEST_NAME }}-${{ steps.more-test-prep.outputs.TEST_SERVER_NICKNAME }}-${{ github.run_id }}-${{ env.CURRENT_TIME }}
           path: ${{ env.INSTALL_TEST_PATH }}/reports/
 
-      - name: '[Comment] Update PR comment to indicate test succeeded'
+      - name: '[Post Prep 7] Update PR comment to indicate final build status'
         uses: actions/github-script@v5
-        if: steps.create-comment.outputs.result != '' && success()
+        if: steps.fc.outputs.comment-id != '' 
+        id: create-final-status-comment
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
+            let status = "SUCCEEDED";
+            if (${{ contains(steps.*.outcome, 'failure') }} == true) {
+              status = "FAILED"
+            } else if (${{ contains(steps.*.outcome, 'cancelled')}} == true) {
+              status = "CANCELLED"
+            } 
+
             var installTest = "${{ github.event.inputs.install-test }}"
             var eta
             if (installTest == '') {  
@@ -395,69 +444,22 @@ jobs:
             body += `Running install test: ${installTest} \n`
             body += `The zowe artifact being used by this test workflow: ${{ steps.more-test-prep.outputs.ZOWE_ARTIFACTORY_FINAL }} \n`
             body += `Running on machine: ${{ steps.more-test-prep.outputs.TEST_SERVER }} \n`
-            body += `Result: SUCCESS \n`
+            body += `Result: ${status} \n`
             body += `Link to workflow run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}`
-            
-            github.rest.issues.updateComment({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              comment_id: ${{ steps.create-comment.outputs.result }},
-              body: body
-            });
 
-      - name: '[Comment] Update PR comment to indicate test failed'
-        uses: actions/github-script@v5
-        if: steps.create-comment.outputs.result != '' && failure()
+            return body
+    
+      - name: '[Post Prep 7b] Create or update comment'
+        uses: peter-evans/create-or-update-comment@v4
+        if: steps.fc.outputs.comment-id != ''
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            var installTest = "${{ github.event.inputs.install-test }}"
-            var eta
-            if (installTest == '') {  
-              // if null, this is very likely to be triggered by pr auto test
-              installTest = 'Convenience Pax'
-            }
-
-            var body=`Test workflow ${context.runNumber} is started.\n`
-            body += `Running install test: ${installTest} \n`
-            body += `The zowe artifact being used by this test workflow: ${{ steps.more-test-prep.outputs.ZOWE_ARTIFACTORY_FINAL }} \n`
-            body += `Running on machine: ${{ steps.more-test-prep.outputs.TEST_SERVER }} \n`
-            body += `Result: FAILURE \n`
-            body += `Link to workflow run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}`
-
-            github.rest.issues.updateComment({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              comment_id: ${{ steps.create-comment.outputs.result }},
-              body: body
-            });
-
-      - name: '[Comment] Update PR comment to indicate test cancelled'
-        uses: actions/github-script@v5
-        if: steps.create-comment.outputs.result != '' && cancelled()
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            var installTest = "${{ github.event.inputs.install-test }}"
-            var eta
-            if (installTest == '') {  
-              // if null, this is very likely to be triggered by pr auto test
-              installTest = 'Convenience Pax'
-            }
-
-            var body=`Test workflow ${context.runNumber} is started.\n`
-            body += `Running install test: ${installTest} \n`
-            body += `The zowe artifact being used by this test workflow: ${{ steps.more-test-prep.outputs.ZOWE_ARTIFACTORY_FINAL }} \n`
-            body += `Running on machine: ${{ steps.more-test-prep.outputs.TEST_SERVER }} \n`
-            body += `Result: CANCELLED \n`
-            body += `Link to workflow run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}`
-            
-            github.rest.issues.updateComment({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              comment_id: ${{ steps.create-comment.outputs.result }},
-              body: body
-            });
+          token: ${{ secrets.GITHUB_TOKEN }}
+          comment-id: ${{ steps.fc.outputs.comment-id }}
+          issue-number: ${{ steps.get-pr-num.outputs.result }}
+          body: |
+            Build status
+            ${{ steps.create-final-status-comment.outputs.result }}
+          edit-mode: replace
 
   # keep-curl:
   #   runs-on: ubuntu-latest

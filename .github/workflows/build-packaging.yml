@@ -63,10 +63,35 @@ jobs:
   set-run-conditions:
     runs-on: ubuntu-latest
     outputs:
+      pr-number: ${{ steps.get-pr-num.outputs.result }}
       pr-labels: ${{ steps.get-labels.outputs.result }}
       should-build: ${{ steps.check-build.outputs.run_build }}
       should-test: ${{ steps.check-test.outputs.run_test}}
     steps:
+      - name: 'Get PR Number'
+        id: get-pr-num
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            if ('${{ github.event_name}}' == 'pull_request') {
+              return '${{ github.event.pull_request.number }}'
+            }  
+            else if ('${{ github.event.inputs.ORIGIN_ISSUE_TRIGGER}}' == 'true') {
+              const res = await github.rest.pulls.list({
+                state: 'open',
+                head: 'zowe:${{ github.ref_name }}',
+                owner: 'zowe',
+                repo: 'zowe-install-packaging'
+              }).then((resp) => {
+                const pr = resp.data.find((item) => item.head.ref == '${{ github.ref_name }}')
+                return `${pr.number}`
+              })
+              return res;
+            } else {
+              return ''
+            }
+        
       - name: 'Get labels'
         id: get-labels
         uses: actions/github-script@v7
@@ -136,19 +161,11 @@ jobs:
         run: |
           COMMIT_HASH=$(git rev-parse --verify HEAD)
           CURRENT_TIME=$(date +%s)
-          if [[ -z "${{ github.event.pull_request.number }}" ]]; then
-            # meaning the workflow is NOT triggered from pull_request 
-            # sometimes user can manually trigger a workflow on a branch that a PR is open,
-            # thus try to find out if a PR is opened against this running branch
-            pr_num=$(curl -s -H "Accept: application/vnd.github.v3+json" https://api.github.com/repos/${{ github.repository }}/pulls?head=${{ github.repository_owner }}:${{ github.ref }} | jq -r '.[] | .number')
-            if [[ -z "$pr_num" ]]; then
-              # meaning PR is not open, we collect the branch name
-              CURRENT_BRANCH=${GITHUB_REF_NAME}
-            else
-              CURRENT_BRANCH=PR-$pr_num
-            fi
+          if [[ -z "${{ needs.set-run-conditions.outputs.pr-number }}" ]]; then
+            # meaning PR is not open, we collect the branch name
+            CURRENT_BRANCH=${GITHUB_REF_NAME}
           else
-            CURRENT_BRANCH=PR-${{ github.event.pull_request.number }}
+            CURRENT_BRANCH=PR-${{ needs.set-run-conditions.outputs.pr-number }}
           fi
 
           sed -e "s#{BUILD_BRANCH}#${CURRENT_BRANCH}#g" \
@@ -231,11 +248,11 @@ jobs:
           echo INPUTS_KEEP_TEMP_PAX_FOLDER=${{ github.event.inputs.KEEP_TEMP_PAX_FOLDER }} >> $GITHUB_ENV
           
           echo BUILD_WHAT=$BUILD_WHAT >> $GITHUB_OUTPUT
-      
-      - name: '[Prep 7] Comment on PR to indicate build is started'         
+
+      - name: '[Prep 7a] Create build status comment body'         
         uses: actions/github-script@v5
-        id: create-comment
-        if: (github.event_name == 'workflow_dispatch' || github.event_name == 'pull_request') && startsWith(env.CURRENT_BRANCH, 'PR-')
+        id: create-comment-body
+        if: ${{ needs.set-run-conditions.outputs.pr-number != '' }}
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
@@ -257,15 +274,29 @@ jobs:
             const finish_time_UTC = finish_time.toLocaleString('en-GB', { timeZone: 'Europe/London' }).split(', ')[1] + " GMT"
             const finish_time_PST = finish_time.toLocaleString('en-US', { timeZone: 'America/Los_Angeles' }).split(', ')[1] + " PST"
             
-            const prNum='${{ env.CURRENT_BRANCH }}'.split('-')[1]
-
-            const { data: comment } = await github.rest.issues.createComment({ 
-              issue_number: prNum,
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              body: `${{ steps.process-inputs.outputs.BUILD_WHAT }} build ${context.runNumber} is started, please wait... \n Estimated build time: ${total_bld_time} mins. Check back around: \n ${finish_time_EST}  |  ${finish_time_CET}  |  ${finish_time_UTC}  |  ${finish_time_PST} \n (This comment will get updated once build result is out) \n Link to workflow run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}`
-            });
-            return comment.id;
+            return `${{ steps.process-inputs.outputs.BUILD_WHAT }} build ${context.runNumber} is started, please wait... \n Estimated build time: ${total_bld_time} mins. Check back around: \n ${finish_time_EST}  |  ${finish_time_CET}  |  ${finish_time_UTC}  |  ${finish_time_PST} \n (This comment will get updated once build result is out) \n Link to workflow run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}`
+            
+      - name: '[Prep 7b] Find Comment'
+        uses: peter-evans/find-comment@v3
+        if: ${{ steps.create-comment-body.outputs.result != '' }}
+        id: fc
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          issue-number: ${{ needs.set-run-conditions.outputs.pr-number }}
+          comment-author: 'github-actions[bot]'
+          body-includes: Build status
+  
+      - name: '[Prep 7c] Create or update comment'
+        uses: peter-evans/create-or-update-comment@v4
+        if: ${{ steps.create-comment-body.outputs.result != '' }}
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          comment-id: ${{ steps.fc.outputs.comment-id }}
+          issue-number: ${{ github.event.pull_request.number }}
+          body: |
+            Build status
+            ${{ steps.create-comment-body.outputs.result }}
+          edit-mode: replace
 
       - name: '[PAX/SMPE Download 1] Download from jfrog according to manifest'
         timeout-minutes: 5
@@ -393,44 +424,31 @@ jobs:
         env:
           DEBUG: 'zowe-actions:shared-actions:publish'
 
-      - name: '[Post Prep 7] Update PR comment to indicate build succeeded'
+      - name: '[Post Prep 7] Update PR comment to indicate final build status'
         uses: actions/github-script@v5
-        if: steps.create-comment.outputs.result != '' && success()
+        if: steps.fc.outputs.comment-id != ''
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
-            github.rest.issues.updateComment({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              comment_id: ${{ steps.create-comment.outputs.result }},
-              body: `${{ steps.process-inputs.outputs.BUILD_WHAT }} build ${context.runNumber} SUCCEEDED. \n Link to workflow run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}`
-            });
+            let status = "SUCCEEDED";
+            if (${{ contains(steps.*.outcome, 'failure') }} == true) {
+              status = "FAILED"
+            } else if (${{ contains(steps.*.outcome, 'cancelled')}} == true) {
+              status = "CANCELLED"
+            } 
+            return `${{ steps.process-inputs.outputs.BUILD_WHAT }} build ${context.runNumber} ${status}. \n Link to workflow run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}`
 
-      - name: '[Post Prep 7] Update PR comment to indicate build failed'
-        uses: actions/github-script@v5
-        if: steps.create-comment.outputs.result != '' && failure()
+      - name: '[Post Prep 7b] Create or update comment'
+        uses: peter-evans/create-or-update-comment@v4
+        if: steps.fc.outputs.comment-id != ''
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            github.rest.issues.updateComment({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              comment_id: ${{ steps.create-comment.outputs.result }},
-              body: `${{ steps.process-inputs.outputs.BUILD_WHAT }} build ${context.runNumber} FAILED. \n Link to workflow run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}`
-            });
-
-      - name: '[Post Prep 7] Update PR comment to indicate build cancelled'
-        uses: actions/github-script@v5
-        if: steps.create-comment.outputs.result != '' && cancelled()
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            github.rest.issues.updateComment({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              comment_id: ${{ steps.create-comment.outputs.result }},
-              body: `${{ steps.process-inputs.outputs.BUILD_WHAT }} build ${context.runNumber} CANCELLED. \n Link to workflow run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}`
-            });
+          token: ${{ secrets.GITHUB_TOKEN }}
+          comment-id: ${{ steps.fc.outputs.comment-id }}
+          issue-number: ${{ github.event.pull_request.number }}
+          body: |
+            Build status
+            ${{ steps.create-comment-body.outputs.result }}
+          edit-mode: replace
 
   # only run auto integration tests when the workflow is triggered by pull request
   # default running Convenience Pax on any zzow server

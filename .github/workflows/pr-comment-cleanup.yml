@@ -1,0 +1,77 @@
+name: PR Comment Cleanup
+
+permissions:
+  issues: write
+  pull-requests: write
+
+on:
+  workflow_dispatch:
+    inputs:
+      pr-number:
+        description: The PR number to clean up
+        type: string
+        required: true
+
+
+jobs:
+
+  cleanup-pr-comments:
+    runs-on: ubuntu-latest
+
+    steps: 
+    - name: Repository checkout
+      uses: actions/checkout@v3
+
+    - name: Verify Pull Request Metadata
+      id: pr-check
+      uses: actions/github-script@v7
+      with: 
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        script: |
+          const res = await github.rest.pulls.get({
+            owner: 'zowe',
+            repo: 'zowe-install-packaging'
+            pull_number: ${{ github.event.inputs.pr-number }}
+          }).then((resp) => {
+            if (resp < 300) {
+              return 'OK';
+            }
+            return `NOT_FOUND`
+          })
+          return res;
+
+    - name: Remove all comments from github-actions[bot]
+      uses: actions/github-script@v7
+      if: ${{ steps.pr-check.outputs.result == 'OK' }} 
+      with: 
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        script: |
+          const comments =  await github.rest.issues.listComments({
+            owner: 'zowe',
+            repo: 'zowe-install-packaging',
+            issue_number: '3812',
+          }).then((resp) => {
+            return resp.data;
+          });
+
+          comments.filter((comment) => {
+            console.log(`${comment.user.login}:${comment.id}`);
+            return comment.user.login === 'github-actions[bot]'
+          }).forEach(async (comment) => {
+              console.log(`Deleting ${comment.id}`);
+              await github.rest.issues.deleteComment({
+                  owner: 'zowe', 
+                  repo: 'zowe-install-packaging',
+                  comment_id: comment.id,
+              }).then((resp) => {
+                if (resp.status >= 400) {
+                  console.log(`Error trying to delete ${comment.id}`);
+                  console.log(`${resp.status}`);
+                }
+              })
+          })
+
+
+      
+
+
