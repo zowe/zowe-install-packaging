@@ -104,7 +104,7 @@ export function execute(componentId: string, runInBackground: boolean=false) {
           }
           //TODO this will not work with unicode codepoints longer than a byte
           const buf = new ArrayBuffer(startScriptContents.length);
-          const view = new Uint8Array(startScriptContents.length);
+          const view = new Uint8Array(buf);
           const ebcdicString = stringlib.asciiToEbcdic(startScriptContents);
           for (let i = 0; i < startScriptContents.length; i++) {
             view[i] = ebcdicString.charCodeAt(i);
