@@ -98,8 +98,7 @@ export function execute(componentId: string, runInBackground: boolean=false) {
           const startScriptContents = `cd ${COMPONENT_DIR} ; . "${ZOWE_CONFIG.zowe.runtimeDirectory}/bin/libs/configmgr-index.sh" ; ${xplatform.loadFileUTF8(fullPath, xplatform.AUTO_DETECT)} ; wait;`;
           const pipeArray = os.pipe();
           if (!pipeArray) {
-            //TODO error message
-            common.printFormattedError("ZWELS", "zwe-internal-start-component", `Error ZWEL???E: Could not create pipe.`);    
+            common.printFormattedError("ZWELS", "zwe-internal-start-component", `Error ZWEL064E: failed to run command os.pipe - Connot start component ${componentId}`);
             return;
           }
           //TODO this will not work with unicode codepoints longer than a byte
