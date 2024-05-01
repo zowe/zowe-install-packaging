@@ -75,7 +75,7 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
             if ('${{ github.event_name}}' == 'pull_request') {
-              return '${{ github.event.pull_request.number }}'
+              return ${{ github.event.pull_request.number }}
             }  
             else if ('${{ github.event.inputs.ORIGIN_ISSUE_TRIGGER}}' == 'true') {
               const res = await github.rest.pulls.list({
@@ -85,7 +85,7 @@ jobs:
                 repo: 'zowe-install-packaging'
               }).then((resp) => {
                 const pr = resp.data.find((item) => item.head.ref == '${{ github.ref_name }}')
-                return `${pr.number}`
+                return ${pr.number}
               })
               return res;
             } else {
@@ -281,7 +281,7 @@ jobs:
         if: ${{ steps.create-comment-body.outputs.result != '' }}
         id: fc
         with:
-          issue-number: 3813
+          issue-number: ${{ needs.set-run-conditions.outputs.pr-number }}
           comment-author: 'github-actions[bot]'
           body-includes: Build status
   
