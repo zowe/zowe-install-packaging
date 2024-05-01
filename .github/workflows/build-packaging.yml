@@ -269,7 +269,9 @@ jobs:
             const finish_time_UTC = finish_time.toLocaleString('en-GB', { timeZone: 'Europe/London' }).split(', ')[1] + " GMT"
             const finish_time_PST = finish_time.toLocaleString('en-US', { timeZone: 'America/Los_Angeles' }).split(', ')[1] + " PST"
             
-            return `${{ env.BUILD_WHAT }} build ${context.runNumber} is started, please wait... 
+            const fs = require('fs');
+            fs.writeFileSync('/tmp/comment.txt', `Build status
+              ${{ env.BUILD_WHAT }} build ${context.runNumber} is started, please wait... 
               Estimated build time: ${total_bld_time} mins. Check back around: 
               ${finish_time_EST}  |  ${finish_time_CET}  |  ${finish_time_UTC}  |  ${finish_time_PST} 
               (This comment will get updated once build result is out)
@@ -291,9 +293,7 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           comment-id: ${{ steps.fc.outputs.comment-id }}
           issue-number: ${{ github.event.pull_request.number }}
-          body: |
-            Build status
-            ${{ steps.create-comment-body.outputs.result }}
+          body-path: /tmp/comment.txt
           edit-mode: replace
 
       - name: '[PAX/SMPE Download 1] Download from jfrog according to manifest'
@@ -434,8 +434,10 @@ jobs:
             } else if (${{ contains(steps.*.outcome, 'cancelled')}} == true) {
               status = "CANCELLED"
             } 
-            return `${{ env.BUILD_WHAT }} build ${context.runNumber} ${status}. 
-               Link to workflow run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}`
+            const fs = require('fs');
+            fs.writeFileSync('/tmp/comment.txt', `Build status
+              ${{ env.BUILD_WHAT }} build ${context.runNumber} ${status}. 
+              Link to workflow run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}`
 
       - name: '[Post Prep 7b] Create or update comment'
         uses: peter-evans/create-or-update-comment@v4
@@ -444,9 +446,7 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           comment-id: ${{ steps.fc.outputs.comment-id }}
           issue-number: ${{ github.event.pull_request.number }}
-          body: |
-            Build status
-            ${{ steps.create-comment-body.outputs.result }}
+          body-path: /tmp/comment.txt
           edit-mode: replace
 
   # only run auto integration tests when the workflow is triggered by pull request

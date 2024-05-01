@@ -263,13 +263,15 @@ jobs:
 
             var prNum='${{ steps.get-pr-num.outputs.result }}'
 
-            return `Test workflow ${context.runNumber} is started.
+            const fs = require('fs');
+            fs.writeFileSync('/tmp/comment.txt', `Test status
+              Test workflow ${context.runNumber} is started.
               Running install test: ${installTest}
               The zowe artifact being used by this test workflow: ${{ steps.more-test-prep.outputs.ZOWE_ARTIFACTORY_FINAL }}
               Running on machine: ${{ steps.more-test-prep.outputs.TEST_SERVER }}
               Acquiring the test server lock first, please wait...
               ETA: unknown (This ETA will get updated once the machine lock is acquired)
-              Link to workflow run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}`
+              Link to workflow run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}`);
             
 
       - name: '[Comment 1] Find Comment'
@@ -289,9 +291,7 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           comment-id: ${{ steps.fc.outputs.comment-id }}
           issue-number: ${{ steps.get-pr-num.outputs.result }}
-          body: |
-            Test status
-            ${{ steps.create-comment.outputs.result }}
+          body-path: /tmp/comment.txt
           edit-mode: replace
 
       - name: '[LOCK] Lock marist servers'
@@ -361,8 +361,9 @@ jobs:
               eta = 'unknown'
               expectedTimeString = `Check back later.`
             }
-
-            return `Test workflow ${context.runNumber} is started.
+            const fs = require('fs');
+            fs.writeFileSync('/tmp/comment.txt', `Test status
+              Test workflow ${context.runNumber} is started.
               Running install test: ${installTest}
               The zowe artifact being used by this test workflow: ${{ steps.more-test-prep.outputs.ZOWE_ARTIFACTORY_FINAL }}
               Running on machine: ${{ steps.more-test-prep.outputs.TEST_SERVER }}
@@ -370,7 +371,7 @@ jobs:
               ETA: ${eta} mins
               ${expectedTimeString}
               Result: <PENDING> (will get updated once test is finished)
-              Link to workflow run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}`
+              Link to workflow run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}`);
     
       - name: '[Comment 3] Create or update comment'
         uses: peter-evans/create-or-update-comment@v4
@@ -379,9 +380,7 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           comment-id: ${{ steps.fc.outputs.comment-id }}
           issue-number: ${{ steps.get-pr-num.outputs.result }}
-          body: |
-            Test status
-            ${{ steps.estimate-comment.outputs.result }}
+          body-path: /tmp/comment.txt
           edit-mode: replace     
 
       - name: '[Test] Test starts from here'
@@ -443,13 +442,14 @@ jobs:
               // if null, this is very likely to be triggered by pr auto test
               installTest = 'Convenience Pax'
             }
-
-            return `Test workflow ${context.runNumber} is started.
+            const fs = require('fs');
+            fs.writeFileSync('/tmp/comment.txt', `Test status
+              Test workflow ${context.runNumber} is started.
               Running install test: ${installTest}
               The zowe artifact being used by this test workflow: ${{ steps.more-test-prep.outputs.ZOWE_ARTIFACTORY_FINAL }}
               Running on machine: ${{ steps.more-test-prep.outputs.TEST_SERVER }}
               Result: ${status}
-              Link to workflow run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}`
+              Link to workflow run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}`);
 
 
     
@@ -460,9 +460,7 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           comment-id: ${{ steps.fc.outputs.comment-id }}
           issue-number: ${{ steps.get-pr-num.outputs.result }}
-          body: |
-            Test status
-            ${{ steps.create-final-status-comment.outputs.result }}
+          body-path: /tmp/comment.txt
           edit-mode: replace
 
   # keep-curl:
