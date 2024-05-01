@@ -75,8 +75,8 @@
     - 204
   register: _result
   until: _result.status == 204
-  retries: "{{ wait_for_zowe_service_retries | int }}"
-  delay: "{{ wait_for_zowe_service_delay | int }}"
+  retries: "{{ wait_for_zowe_service_delay | int }}"
+  delay: "{{ wait_for_zowe_service_retries | int }}"
   # if zowe_zos_host and zowe_external_domain_name are not same, zlux could be
   # started off z/OS and then we couldn't test right now
   when: zowe_zos_host == zowe_external_domain_name and (zowe_launch_components is none or zowe_launch_components == "" or "api-catalog" in zowe_launch_components)
@@ -144,7 +144,7 @@
 
 - name: Wait a little longer for ZWES1601I
   uri:
-    url: "https://{{ zowe_zos_host }}:{{ zowe_apiml_gateway_port}}/gateway/api/v1/auth/keys/public/current"
+    url: "https://{{ zowe_zos_host }}:{{ zowe_apiml_gateway_port }}/gateway/api/v1/auth/keys/public/current"
     follow_redirects: none
     method: GET
     validate_certs: false
@@ -152,6 +152,8 @@
   until: _result.status == 200
   retries: "{{ wait_for_zowe_service_delay | int }}"
   delay: "{{ wait_for_zowe_service_retries | int }}"
+  when: zowe_zos_host == zowe_external_domain_name and (zowe_launch_components is none or zowe_launch_components == "" or "gateway" in zowe_launch_components)
+  delegate_to: localhost
   # Yes, these numbers are reversed, to increase likelihood 1601i will be seen since this is not a reliable way to find it
 
 # - name: Wait for being able to login to ZSS
