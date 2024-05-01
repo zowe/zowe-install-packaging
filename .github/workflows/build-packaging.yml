@@ -55,9 +55,6 @@ on:
         required: false
         type: boolean
 
-env:
-  PR_LABELS:
-
 jobs:
 
   set-run-conditions:
@@ -272,7 +269,7 @@ jobs:
             const finish_time_UTC = finish_time.toLocaleString('en-GB', { timeZone: 'Europe/London' }).split(', ')[1] + " GMT"
             const finish_time_PST = finish_time.toLocaleString('en-US', { timeZone: 'America/Los_Angeles' }).split(', ')[1] + " PST"
             
-            return `${{ github.env.BUILD_WHAT }} build ${context.runNumber} is started, please wait... \\n Estimated build time: ${total_bld_time} mins. Check back around: \n ${finish_time_EST}  |  ${finish_time_CET}  |  ${finish_time_UTC}  |  ${finish_time_PST} \n (This comment will get updated once build result is out) \n Link to workflow run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}`
+            return `${{ env.BUILD_WHAT }} build ${context.runNumber} is started, please wait... \\n Estimated build time: ${total_bld_time} mins. Check back around: \n ${finish_time_EST}  |  ${finish_time_CET}  |  ${finish_time_UTC}  |  ${finish_time_PST} \n (This comment will get updated once build result is out) \n Link to workflow run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}`
             
       - name: '[Prep 7b] Find Comment'
         uses: peter-evans/find-comment@v3
@@ -433,7 +430,7 @@ jobs:
             } else if (${{ contains(steps.*.outcome, 'cancelled')}} == true) {
               status = "CANCELLED"
             } 
-            return `${{ github.env.BUILD_WHAT }} build ${context.runNumber} ${status}. \n Link to workflow run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}`
+            return `${{ env.BUILD_WHAT }} build ${context.runNumber} ${status}. \n Link to workflow run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}`
 
       - name: '[Post Prep 7b] Create or update comment'
         uses: peter-evans/create-or-update-comment@v4
