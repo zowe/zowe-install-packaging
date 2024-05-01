@@ -193,7 +193,6 @@ jobs:
             }
 
       - name: '[Prep 6a] Process labels for ci build (pull, push, comment)'
-        id: process-labels
         if: github.event_name != 'workflow_dispatch'
         run: |
           BUILD_WHAT="PAX"
@@ -216,10 +215,9 @@ jobs:
 
           echo "INPUTS_KEEP_TEMP_PAX_FOLDER=${{ contains(fromJson(needs.set-run-conditions.outputs.pr-labels), 'Build: Debug-Remote') }}" >> $GITHUB_ENV
 
-          echo BUILD_WHAT=$BUILD_WHAT >> $GITHUB_OUTPUT
+          echo BUILD_WHAT=$BUILD_WHAT >> $GITHUB_ENV
 
       - name: '[Prep 6b] Process github.event.inputs for manually triggered build'
-        id: process-inputs
         if: github.event_name == 'workflow_dispatch'
         run: |
           BUILD_WHAT="${{ steps.process-labels.outputs.BUILD_WHAT_LABELS }}"
@@ -247,7 +245,7 @@ jobs:
 
           echo INPUTS_KEEP_TEMP_PAX_FOLDER=${{ github.event.inputs.KEEP_TEMP_PAX_FOLDER }} >> $GITHUB_ENV
           
-          echo BUILD_WHAT=$BUILD_WHAT >> $GITHUB_OUTPUT
+          echo BUILD_WHAT=$BUILD_WHAT >> $GITHUB_ENV
 
       - name: '[Prep 7a] Create build status comment body'         
         uses: actions/github-script@v5
@@ -274,7 +272,7 @@ jobs:
             const finish_time_UTC = finish_time.toLocaleString('en-GB', { timeZone: 'Europe/London' }).split(', ')[1] + " GMT"
             const finish_time_PST = finish_time.toLocaleString('en-US', { timeZone: 'America/Los_Angeles' }).split(', ')[1] + " PST"
             
-            return `${{ steps.process-inputs.outputs.BUILD_WHAT }} build ${context.runNumber} is started, please wait... \n Estimated build time: ${total_bld_time} mins. Check back around: \n ${finish_time_EST}  |  ${finish_time_CET}  |  ${finish_time_UTC}  |  ${finish_time_PST} \n (This comment will get updated once build result is out) \n Link to workflow run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}`
+            return `${{ github.env.BUILD_WHAT }} build ${context.runNumber} is started, please wait... \\n Estimated build time: ${total_bld_time} mins. Check back around: \n ${finish_time_EST}  |  ${finish_time_CET}  |  ${finish_time_UTC}  |  ${finish_time_PST} \n (This comment will get updated once build result is out) \n Link to workflow run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}`
             
       - name: '[Prep 7b] Find Comment'
         uses: peter-evans/find-comment@v3
@@ -435,7 +433,7 @@ jobs:
             } else if (${{ contains(steps.*.outcome, 'cancelled')}} == true) {
               status = "CANCELLED"
             } 
-            return `${{ steps.process-inputs.outputs.BUILD_WHAT }} build ${context.runNumber} ${status}. \n Link to workflow run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}`
+            return `${{ github.env.BUILD_WHAT }} build ${context.runNumber} ${status}. \n Link to workflow run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}`
 
       - name: '[Post Prep 7b] Create or update comment'
         uses: peter-evans/create-or-update-comment@v4
