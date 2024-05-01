@@ -263,8 +263,7 @@ jobs:
 
             var prNum='${{ steps.get-pr-num.outputs.result }}'
 
-            return 
-             `Test workflow ${context.runNumber} is started.
+            return `Test workflow ${context.runNumber} is started.
               Running install test: ${installTest}
               The zowe artifact being used by this test workflow: ${{ steps.more-test-prep.outputs.ZOWE_ARTIFACTORY_FINAL }}
               Running on machine: ${{ steps.more-test-prep.outputs.TEST_SERVER }}
@@ -363,8 +362,7 @@ jobs:
               expectedTimeString = `Check back later.`
             }
 
-            return 
-             `Test workflow ${context.runNumber} is started.
+            return `Test workflow ${context.runNumber} is started.
               Running install test: ${installTest}
               The zowe artifact being used by this test workflow: ${{ steps.more-test-prep.outputs.ZOWE_ARTIFACTORY_FINAL }}
               Running on machine: ${{ steps.more-test-prep.outputs.TEST_SERVER }}
@@ -446,8 +444,7 @@ jobs:
               installTest = 'Convenience Pax'
             }
 
-            return 
-             `Test workflow ${context.runNumber} is started.
+            return `Test workflow ${context.runNumber} is started.
               Running install test: ${installTest}
               The zowe artifact being used by this test workflow: ${{ steps.more-test-prep.outputs.ZOWE_ARTIFACTORY_FINAL }}
               Running on machine: ${{ steps.more-test-prep.outputs.TEST_SERVER }}
