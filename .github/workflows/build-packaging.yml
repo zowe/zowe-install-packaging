@@ -85,7 +85,7 @@ jobs:
                 repo: 'zowe-install-packaging'
               }).then((resp) => {
                 const pr = resp.data.find((item) => item.head.ref == '${{ github.ref_name }}')
-                return ${pr.number}
+                return pr.number
               })
               return res;
             } else {
