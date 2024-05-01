@@ -272,7 +272,8 @@ jobs:
               Acquiring the test server lock first, please wait...
               ETA: unknown (This ETA will get updated once the machine lock is acquired)
               Link to workflow run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}`);
-            
+
+            return 'OK'
 
       - name: '[Comment 1] Find Comment'
         uses: peter-evans/find-comment@v3
@@ -372,6 +373,8 @@ jobs:
               ${expectedTimeString}
               Result: <PENDING> (will get updated once test is finished)
               Link to workflow run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}`);
+
+            return 'OK'
     
       - name: '[Comment 3] Create or update comment'
         uses: peter-evans/create-or-update-comment@v4
@@ -450,7 +453,8 @@ jobs:
               Running on machine: ${{ steps.more-test-prep.outputs.TEST_SERVER }}
               Result: ${status}
               Link to workflow run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}`);
-
+            
+            return 'OK'
 
     
       - name: '[Post Prep 7b] Create or update comment'

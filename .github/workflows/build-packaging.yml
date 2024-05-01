@@ -276,6 +276,7 @@ jobs:
               ${finish_time_EST}  |  ${finish_time_CET}  |  ${finish_time_UTC}  |  ${finish_time_PST} 
               (This comment will get updated once build result is out)
               Link to workflow run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}`);
+            return 'OK'
             
       - name: '[Prep 7b] Find Comment'
         uses: peter-evans/find-comment@v3
@@ -438,6 +439,8 @@ jobs:
             fs.writeFileSync('/tmp/comment.txt', `Build status
               ${{ env.BUILD_WHAT }} build ${context.runNumber} ${status}. 
               Link to workflow run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}`);
+            return 'OK'
+
 
       - name: '[Post Prep 7b] Create or update comment'
         uses: peter-evans/create-or-update-comment@v4
