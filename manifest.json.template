@@ -223,7 +223,7 @@
     }, {
       "componentGroup": "IBM&reg CICS&reg Plug-in for Zowe CLI",
       "entries": [{
-        "repository": "zowe-cli-cics-plugin",
+        "repository": "cics-for-zowe-client",
         "tag": "v5.0.5",
         "destinations": ["Zowe CLI Package"]
       }]

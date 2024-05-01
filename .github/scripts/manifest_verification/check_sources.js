@@ -81,15 +81,18 @@ async function main() {
       }
 
       // If not a commit, check repo tags
-      const tags = await octokit.rest.repos.listTags({
-        owner: 'zowe',
-        repo: repo,
-      }).then((resp) => {
-        if (resp.status < 400) {
-          return resp.data;
+      //  requires paginate API.
+
+      const tags = await octokit.paginate(
+        "GET /repos/{owner}/{repo}/tags",
+        {
+            owner: 'zowe',
+            repo: repo,
         }
-        return [];
-      })
+      ).then((resp) => {
+        // resp is the aggregated data from paginate.. [ { name: 'tag-a', ..other-fields.. }, {}, {}, ...]
+        return resp; 
+      });
 
       const knownTag = tags.find((item) => item.name === tag);
       if (knownTag != null && knownTag.name.trim().length > 0) {
