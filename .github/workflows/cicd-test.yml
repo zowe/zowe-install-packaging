@@ -427,7 +427,7 @@ jobs:
 
       - name: '[Post Prep 7] Update PR comment to indicate final build status'
         uses: actions/github-script@v5
-        if: steps.fc.outputs.comment-id != '' 
+        if: always()
         id: create-final-status-comment
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
@@ -459,7 +459,7 @@ jobs:
     
       - name: '[Post Prep 7b] Create or update comment'
         uses: peter-evans/create-or-update-comment@v4
-        if: steps.fc.outputs.comment-id != ''
+        if: always()
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           comment-id: ${{ steps.fc.outputs.comment-id }}
