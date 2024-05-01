@@ -134,7 +134,7 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
             if ('${{ github.event_name }}' == 'pull_request') {
-              return '${{ github.event.pull_request.number }}'
+              return ${{ github.event.pull_request.number }}
             }  
             else {
               const res = await github.rest.pulls.list({
@@ -145,7 +145,7 @@ jobs:
               }).then((resp) => {
                 if (resp.status < 300) {
                   const pr = resp.data.find((item) => item.head.ref == '${{ github.ref_name }}')
-                  return `${pr.number}`
+                  return pr.number
                 } else {
                   return ''
                 }
@@ -263,15 +263,15 @@ jobs:
 
             var prNum='${{ steps.get-pr-num.outputs.result }}'
 
-            var body=`Test workflow ${context.runNumber} is started.\n`
-            body += `Running install test: ${installTest} \n`
-            body += `The zowe artifact being used by this test workflow: ${{ steps.more-test-prep.outputs.ZOWE_ARTIFACTORY_FINAL }} \n`
-            body += `Running on machine: ${{ steps.more-test-prep.outputs.TEST_SERVER }} \n`
-            body += `Acquiring the test server lock first, please wait... \n `
-            body += `ETA: unknown (This ETA will get updated once the machine lock is acquired) \n`
-            body += `Link to workflow run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}`
+            return 
+             `Test workflow ${context.runNumber} is started.
+              Running install test: ${installTest}
+              The zowe artifact being used by this test workflow: ${{ steps.more-test-prep.outputs.ZOWE_ARTIFACTORY_FINAL }}
+              Running on machine: ${{ steps.more-test-prep.outputs.TEST_SERVER }}
+              Acquiring the test server lock first, please wait...
+              ETA: unknown (This ETA will get updated once the machine lock is acquired)
+              Link to workflow run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}`
             
-            return body
 
       - name: '[Comment 1] Find Comment'
         uses: peter-evans/find-comment@v3
@@ -305,6 +305,7 @@ jobs:
       
       - name: '[Comment 2] Update comment after lock is acquired'
         uses: actions/github-script@v5
+        id: estimate-comment
         if: steps.create-comment.outputs.result != ''
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
@@ -359,26 +360,31 @@ jobs:
             }
             else {
               eta = 'unknown'
+              expectedTimeString = `Check back later.`
             }
 
-            var body=`Test workflow ${context.runNumber} is started.\n`
-            body += `Running install test: ${installTest} \n`
-            body += `The zowe artifact being used by this test workflow: ${{ steps.more-test-prep.outputs.ZOWE_ARTIFACTORY_FINAL }} \n`
-            body += `Running on machine: ${{ steps.more-test-prep.outputs.TEST_SERVER }} \n`
-            body += `Lock acquired, start the test now, please wait... \n `
-            body += `ETA: ${eta} mins \n`
-            if (expectedTimeString != '') {
-              body += `${expectedTimeString} \n`
-            }
-            body += `Result: <PENDING> (will get updated once test is finished) \n`
-            body += `Link to workflow run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}`
-            
-            github.rest.issues.updateComment({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              comment_id: ${{ steps.fc.outputs.comment-id }},
-              body: body
-            });
+            return 
+             `Test workflow ${context.runNumber} is started.
+              Running install test: ${installTest}
+              The zowe artifact being used by this test workflow: ${{ steps.more-test-prep.outputs.ZOWE_ARTIFACTORY_FINAL }}
+              Running on machine: ${{ steps.more-test-prep.outputs.TEST_SERVER }}
+              Lock acquired, start the test now, please wait...
+              ETA: ${eta} mins
+              ${expectedTimeString}
+              Result: <PENDING> (will get updated once test is finished)
+              Link to workflow run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}`
+    
+      - name: '[Comment 3] Create or update comment'
+        uses: peter-evans/create-or-update-comment@v4
+        if: steps.fc.outputs.comment-id != ''
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          comment-id: ${{ steps.fc.outputs.comment-id }}
+          issue-number: ${{ steps.get-pr-num.outputs.result }}
+          body: |
+            Test status
+            ${{ steps.estimate-comment.outputs.result }}
+          edit-mode: replace     
 
       - name: '[Test] Test starts from here'
         timeout-minutes: 180
@@ -440,14 +446,15 @@ jobs:
               installTest = 'Convenience Pax'
             }
 
-            var body=`Test workflow ${context.runNumber} is started.\n`
-            body += `Running install test: ${installTest} \n`
-            body += `The zowe artifact being used by this test workflow: ${{ steps.more-test-prep.outputs.ZOWE_ARTIFACTORY_FINAL }} \n`
-            body += `Running on machine: ${{ steps.more-test-prep.outputs.TEST_SERVER }} \n`
-            body += `Result: ${status} \n`
-            body += `Link to workflow run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}`
+            return 
+             `Test workflow ${context.runNumber} is started.
+              Running install test: ${installTest}
+              The zowe artifact being used by this test workflow: ${{ steps.more-test-prep.outputs.ZOWE_ARTIFACTORY_FINAL }}
+              Running on machine: ${{ steps.more-test-prep.outputs.TEST_SERVER }}
+              Result: ${status}
+              Link to workflow run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}`
 
-            return body
+
     
       - name: '[Post Prep 7b] Create or update comment'
         uses: peter-evans/create-or-update-comment@v4
@@ -457,7 +464,7 @@ jobs:
           comment-id: ${{ steps.fc.outputs.comment-id }}
           issue-number: ${{ steps.get-pr-num.outputs.result }}
           body: |
-            Build status
+            Test status
             ${{ steps.create-final-status-comment.outputs.result }}
           edit-mode: replace
 
