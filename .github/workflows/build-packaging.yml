@@ -281,7 +281,6 @@ jobs:
         if: ${{ steps.create-comment-body.outputs.result != '' }}
         id: fc
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
           issue-number: ${{ needs.set-run-conditions.outputs.pr-number }}
           comment-author: 'github-actions[bot]'
           body-includes: Build status
