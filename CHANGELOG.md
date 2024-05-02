@@ -3,7 +3,7 @@
 All notable changes to the Zowe Installer will be documented in this file.
 <!--Add the PR or issue number to the entry if available.-->
 
-## `2.16.0`
+## `2.17.0`
 
 ## New features and enhancements
 - Enhancement: Added zowe.network.server.tls.attls and zowe.network.client.tls.attls as booleans for controlling global or per-component way to tell Zowe servers that they should operate in a mode compatible with an AT-TLS setup. [#3463](https://github.com/zowe/zowe-install-packaging/pull/3463)
