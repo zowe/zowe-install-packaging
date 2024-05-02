@@ -228,6 +228,7 @@ jobs:
           npm run lint
 
       - name: '[Download 1] Download zowe.pax or smpe-zowe.zip'
+        id: download-server-artifacts
         uses: zowe-actions/shared-actions/jfrog-download@main
         with:
           source-path-or-pattern: ${{ steps.more-test-prep.outputs.ZOWE_ARTIFACTORY_FINAL }}
@@ -236,6 +237,7 @@ jobs:
           expected-count: 1
 
       - name: '[Download 2] Download cli package'
+        id: download-cli-artifacts
         uses: zowe-actions/shared-actions/jfrog-download@main
         with:
           source-path-or-pattern: ${{ steps.more-test-prep.outputs.ZOWE_CLI_ARTIFACTORY_FINAL }}
@@ -296,6 +298,7 @@ jobs:
           edit-mode: replace
 
       - name: '[LOCK] Lock marist servers'
+        id: lock-system
         uses: zowe-actions/shared-actions/lock-resource@main
         with:
           lock-repository: ${{ github.repository }}
@@ -387,6 +390,7 @@ jobs:
           edit-mode: replace     
 
       - name: '[Test] Test starts from here'
+        id: test-suite
         timeout-minutes: 180
         working-directory: ${{ env.INSTALL_TEST_PATH }}
         run: npm test -- --testPathPattern --detectOpenHandles dist/__tests__/$(echo "${{ matrix.test }}" | sed "s/.ts/.js/g")
