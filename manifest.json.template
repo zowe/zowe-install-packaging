@@ -124,7 +124,7 @@
       "artifact": "configmgr-2.16.0-2024050253.pax"
     },
     "org.zowe.launcher": {
-      "version": "2.15.0"
+      "version": "2.16.0"
     },
     "org.zowe.keyring-utilities": {
       "version": "1.0.4",
@@ -364,7 +364,7 @@
         "destinations": ["Zowe PAX"]
       }, {
         "repository": "launcher",
-        "tag": "v2.0.15",
+        "tag": "v2.0.16",
         "destinations": ["Zowe PAX"]
       }]
     },
