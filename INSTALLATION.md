@@ -139,12 +139,12 @@ zowe:
   certificate:
     keystore:
       type: JCERACFKS
-      name: "safkeyring://<STC Account Name>/<Ring Name>"
+      file: "safkeyring://<STC Account Name>/<Ring Name>"
       alias: "<Name of your certificate>"
       password: "password" #literally "password". keyrings do not use passwords, so this is a placeholder.
     truststore:
       type: JCERACFKS
-      name: "safkeyring://<STC Account Name>/<Ring Name>"
+      file: "safkeyring://<STC Account Name>/<Ring Name>"
       password: "password" #literally "password". keyrings do not use passwords, so this is a placeholder.
 ```
 
@@ -218,12 +218,12 @@ zowe:
   certificate:
     keystore:
       type: JCERACFKS
-      name: "safkeyring://<STC Account Name>/<Ring Name>"
+      file: "safkeyring://<STC Account Name>/<Ring Name>"
       alias: "<Name of your certificate>"
       password: "password" #literally "password". keyrings do not use passwords, so this is a placeholder.
     truststore:
       type: JCERACFKS
-      name: "safkeyring://<STC Account Name>/<Ring Name>"
+      file: "safkeyring://<STC Account Name>/<Ring Name>"
       password: "password" #literally "password". keyrings do not use passwords, so this is a placeholder.
 ```
 
