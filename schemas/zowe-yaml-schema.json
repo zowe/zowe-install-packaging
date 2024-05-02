@@ -883,7 +883,19 @@
     "nativeTlsSettings": {
      "$anchor": "nativeTlsSettings",
       "type": "object",
+      "additionalProperties": false,
       "properties": {
+        "attls": {
+          "anyOf": [
+            {
+              "type": "string",
+              "enum": [ "", "false" ]
+            },
+            {
+              "const": false
+            }
+          ]
+        },
         "ciphers": {
           "type": "array",
           "description": "Acceptable TLS cipher suites for network connections, in IANA format.",
@@ -949,7 +961,7 @@
               "description": "Whether or not to ensure that the port a server is about to use is available. Usually, servers will know this when they attempt to bind to a port, so this option allows you to disable the additional verification step."
             },
             "tls": {
-              "oneOf": [
+              "anyOf": [
                 { "$ref": "#/$defs/attlsSetting" },
                 { "$ref": "#/$defs/nativeTlsSettings" }
               ]
@@ -963,7 +975,7 @@
           "description": "Optional, advanced network configuration parameters for Zowe servers when sending requests as clients.",
           "properties": {
             "tls": {
-              "oneOf": [
+              "anyOf": [
                 { "$ref": "#/$defs/attlsSetting" },
                 { "$ref": "#/$defs/nativeTlsSettings" }
               ]
