@@ -262,14 +262,14 @@ The following lists the default ports of each server of Zowe that is enabled by 
 
 These are customized within the YAML at `components.<component-name>.port`, such as `components.zss.port` to customize the ZSS port.
 
-|Component|Component Category|Default TCP Port|Jobname Suffix|Note|
-|---|---|---|---|---|
-|api-catalog|API Mediation Layer|7552|AC|Provides API documentation|
-|discovery|API Mediation Layer|7553|AD|Used by the gateway to discover presence and health each server in a Zowe instance for routing|
-|gateway|API Mediation Layer|7554|AG|When enabled, the port chosen should also be the value of `zowe.externalPort`. Zowe can be configured to have this port as the only externally-accessible port as the gateway can proxy the other Zowe servers.|
-|caching-service|API Mediation Layer|7555|CS|Provides a cache for high-availability/fault-tolerant operation|
-|app-server|App Framework|7556|DS|Provides the Desktop, requires NodeJS|
-|zss|App Framework|7557|SZ|Provides APIs|
+|Component|Component Category|TCP Port|Job Suffix|Log Suffix|Note|
+|---|---|---|---|---|---|
+|api-catalog|API Mediation Layer|7552|AC|AAC|Provides API documentation|
+|discovery|API Mediation Layer|7553|AD|ADS|Used by the gateway to discover presence and health each server in a Zowe instance for routing|
+|gateway|API Mediation Layer|7554|AG|AGW|When enabled, the port chosen should also be the value of `zowe.externalPort`. Zowe can be configured to have this port as the only externally-accessible port as the gateway can proxy the other Zowe servers.|
+|caching-service|API Mediation Layer|7555|CS|ACS|Provides a cache for high-availability/fault-tolerant operation|
+|app-server|App Framework|7556|DS|D|Provides the Desktop, requires NodeJS|
+|zss|App Framework|7557|SZ|SZ|Provides APIs|
 
 Zowe also has a property, `zowe.externalPort` that describes where clients should connect to access Zowe. This must match the gateway port when the gateway is enabled. When it isn't, this port should match the primary server of Zowe that you are using.
 
