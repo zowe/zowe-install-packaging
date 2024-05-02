@@ -84,6 +84,11 @@
   raw: find "{{ zowe_instance_dir }}/logs" -type f | xargs -i sh -c 'echo ">>>>>>>>>>>>>>>>>>>>>>>> {} >>>>>>>>>>>>>>>>>>>>>>>" && cat {}'
   ignore_errors: True
 
+- name: Show gsk trace
+  raw: 'echo ">>>>>>> {{ zowe_instance_dir }}/logs/zss.tlstrace >>>>>>>" && gsktrace {{ zowe_instance_dir }}/logs/zss.tlstrace'
+  ignore_errors: True
+
+  
 # ============================================================================
 - name: List APIML static registration dir
   raw: ls -l "{{ zowe_instance_dir }}/workspace/api-mediation/api-defs"
@@ -97,6 +102,7 @@
 - name: List app-server plugins dir
   raw: ls -l "{{ zowe_instance_dir }}/workspace/app-server/plugins"
   ignore_errors: True
+
 
 - name: Show Zowe runtime logs
   raw: find "{{ zowe_instance_dir }}/workspace/app-server/plugins" -type f | xargs -i sh -c 'echo ">>>>>>>>>>>>>>>>>>>>>>>> {} >>>>>>>>>>>>>>>>>>>>>>>" && iconv -f ISO8859-1 -t IBM-1047 {}'
