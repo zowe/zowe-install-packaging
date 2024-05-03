@@ -68,6 +68,11 @@
   raw: find "{{ zowe_instance_dir }}/logs" -type f | xargs -i sh -c 'echo ">>>>>>>>>>>>>>>>>>>>>>>> {} >>>>>>>>>>>>>>>>>>>>>>>" && cat {}'
   ignore_errors: True
 
+- name: Show gsk trace
+  raw: 'echo ">>>>>>> {{ zowe_instance_dir }}/logs/zss.tlstrace >>>>>>>" && gsktrace {{ zowe_instance_dir }}/logs/zss.tlstrace'
+  ignore_errors: True
+
+  
 # ============================================================================
 - name: List APIML static registration dir
   raw: ls -l "{{ zowe_instance_dir }}/workspace/api-mediation/api-defs"
