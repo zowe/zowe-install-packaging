@@ -258,7 +258,7 @@ if [ "${cert_type}" = "PKCS12" ]; then
       --keystore "${pkcs12_name}" \
       --alias "${pkcs12_name}" \
       --password "${pkcs12_password}" \
-      --common-name "${dname_caCommonName}" \
+      --common-name "${dname_commonName}" \
       --org-unit "${dname_orgUnit}" \
       --org "${dname_org}" \
       --locality "${dname_locality}" \
