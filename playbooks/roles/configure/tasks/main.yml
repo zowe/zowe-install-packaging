@@ -176,7 +176,7 @@
       tasks_from: update_zowe_yaml
     vars:
       configs:
-        "zowe.setup.certificate.keyring.caLabel": "{{ zowe_keyring_ca_label }}"
+        "zowe.setup.certificate.keyring.caLabel": "{{ zowe_keystore_ca_label }}"
         "zowe.setup.certificate.dname.caCommonName": "{{ zowe_keystore_cert_dname_ca_common_name }}"
         "zowe.setup.certificate.dname.commonName": "{{ zowe_keystore_cert_dname_common_name }}"
         "zowe.setup.certificate.dname.orgUnit": "{{ zowe_keystore_cert_dname_org_unit }}"
