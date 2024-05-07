@@ -162,7 +162,7 @@ For each Zowe component, we have point of contact(s) in case if we want to confi
     - zowe-cli-ims-plugin
 - Explorer (Visual Studio Code Extension): Fernando Rijo Cedeno, Mark Ackert
   * Source Dependencies
-    - vscode-extension-for-zowe
+    - zowe-explorer-vscode
 - License: Mark Ackert
   * Binary Dependencies
     - org.zowe.licenses
