@@ -169,6 +169,22 @@
         "zowe.setup.certificate.keyring.name": "{{ zowe_keyring_alias }}"
         "zowe.setup.certificate.keyring.label": "{{ zowe_keyring_certname }}"
         "zowe.setup.certificate.importCertificateAuthorities.0": "{{ zowe_external_certficate_authorities }},{{ zowe_keyring_external_intermediate_ca }},{{ zowe_keyring_external_root_ca }}"
+  - name: Update keyring setup when generating certificates
+    when: zowe_external_certficate == '' or zowe_external_certificate is undefined
+    import_role:
+      name: zos
+      tasks_from: update_zowe_yaml
+    vars:
+      configs:
+        "zowe.setup.certificate.keyring.caLabel": "{{ zowe_keyring_ca_label }}"
+        "zowe.setup.certificate.dname.caCommonName": "{{ zowe_keystore_cert_dname_ca_common_name }}"
+        "zowe.setup.certificate.dname.commonName": "{{ zowe_keystore_cert_dname_common_name }}"
+        "zowe.setup.certificate.dname.orgUnit": "{{ zowe_keystore_cert_dname_org_unit }}"
+        "zowe.setup.certificate.dname.org": "{{ zowe_keystore_cert_dname_org }}"
+        "zowe.setup.certificate.dname.locality": "{{ zowe_keystore_cert_dname_locality }}"
+        "zowe.setup.certificate.dname.state": "{{ zowe_keystore_cert_dname_state }}"
+        "zowe.setup.certificate.dname.country": "{{ zowe_keystore_cert_dname_country }}"
+        "zowe.setup.certificate.validity": "{{ zowe_keystore_cert_validity }}"
   - name: Update keyring setup when connecting to external certificate
     when: zowe_external_certficate is not none and zowe_external_certficate != ''
     import_role:
@@ -176,11 +192,10 @@
       tasks_from: update_zowe_yaml
     vars:
       configs:
-        # FIXME: import or connect?
         "zowe.setup.certificate.keyring.connect.user": "{{ zowe_external_certficate }}"
         "zowe.setup.certificate.keyring.connect.label": "{{ zowe_external_certficate_alias }}"
-        "zowe.setup.certificate.keyring.import.dsName": "{{ zowe_external_certficate }}"
-        "zowe.setup.certificate.keyring.import.password": "{{ zowe_external_certficate_alias }}"
+        # FIXME: Zowe has ignored "import" when "connect" exists.
+        # TODO: Write a test for "import" separately.
   - name: Update keyring setup to help import z/OSMF CA
     import_role:
       name: zos

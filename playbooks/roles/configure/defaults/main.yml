@@ -102,11 +102,21 @@ zowe_external_certficate_alias:
 zowe_external_certficate_authorities:
 zowe_keystore_dir: ~/.zowe/keystore
 zowe_keystore_password: password
+zowe_keystore_ca_password: ca-password
+zowe_keystore_alias: localhost
+zowe_keystore_ca_label: localca
+zowe_keystore_cert_dname_ca_common_name: Zowe Development Instances CA
+zowe_keystore_cert_dname_common_name: Zowe Development Instances Certificate
+zowe_keystore_cert_dname_org_unit: API Mediation Layer
+zowe_keystore_cert_dname_org: Zowe Sample
+zowe_keystore_cert_dname_locality: Prague
+zowe_keystore_cert_dname_state: Prague
+zowe_keystore_cert_dname_country: CZ
+zowe_keystore_cert_validity: 3650
 zowe_keyring_alias: ZoweKeyring
 zowe_keyring_certname: ZoweCert
 zowe_keyring_external_intermediate_ca:
 zowe_keyring_external_root_ca: brcmso
-zowe_keystore_alias: localhost
 zowe_jcllib:
 zowe_proclib_dsname: auto
 zowe_proclib_membername: ZWESLSTC
