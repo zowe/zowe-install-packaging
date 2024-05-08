@@ -1,0 +1,475 @@
+name: Zowe CICD Integration Tests
+on:   
+  workflow_dispatch:
+    inputs:
+      test-server:
+        description: 'Choose Test Server'
+        type: choice
+        required: true
+        default: 'Any zzow servers'
+        options: 
+          - Any zzow servers
+          - zzow06
+          - zzow07
+          - zzow08
+          - zzow06,zzow07,zzow08
+      install-test:
+        description: 'Choose Zwe Test'
+        type: choice
+        required: true
+        default: Convenience Pax
+        options:
+          - Convenience Pax
+          - SMPE FMID
+          - SMPE PTF
+          - Extensions
+          - Keyring
+          - z/OS node v18
+          - Non-strict Verify External Certificate
+          - Install PTF Twice
+          - VSAM Caching Storage Method
+          - Infinispan Caching Storage Method
+          - Config Manager
+          - Generate API Documentation
+          - Zowe Nightly Tests
+          - Zowe Release Tests
+      custom-zowe-artifactory-pattern-or-build-number:
+        description: 'Custom Zowe Artifactory Pattern or Build Number:'
+        required: false
+      custom-extension-list:
+        description: 'Custom Extension List:'
+        required: false
+        # FIXME: too slow to test 2, temporarily only test 1
+        # default: 'sample-node-api;sample-trial-app'
+        default: 'sample-node-api'
+      RANDOM_DISPATCH_EVENT_ID:
+        description: 'random dispatch event id'
+        required: false
+        type: string
+
+# create a new branch to overwrite following defaults if necessary
+env:
+  # constants
+  INSTALL_TEST_PATH: tests/installation
+  SANITY_TEST_PATH: tests/sanity
+  DEFAULT_ZOWE_PAX_ARTIFACTORY_PATTERN: libs-snapshot-local/org/zowe/*zowe*{branch-name}*.pax
+  DEFAULT_ZOWE_SMPE_ARTIFACTORY_PATTERN: libs-snapshot-local/org/zowe/*zowe-smpe*{branch-name}*.zip
+  DEFAULT_ZOWE_CLI_ARTIFACTORY_PATTERN: PLACE_HOLDER/org/zowe/cli/zowe-cli-package/*zowe-cli-package-2*.zip
+  DEFAULT_ZOWE_EXT_ARTIFACTORY_PATTERN: libs-snapshot-local/org/zowe/{ext-name}/*/{ext-name}-*.pax
+
+  # below block can be overwritten, adjusted by DevOps only
+  # ZOS_NODE_VERSION more to choose from: v16.20.1,  v18.16.0
+  ZOS_NODE_VERSION: v16.20.1
+  CLIENT_NODE_VERSION: v12.18.3
+  INSTALL_TEST_DEBUG_INFORMATION: zowe-install-test:*
+  SANITY_TEST_DEBUG_INFORMATION: zowe-sanity-test:*
+
+  # catalogue of files associated with install test configurations
+  CONVENIENCE_PAX_TESTFILE: basic/install.ts
+  SMPE_FMID_TESTFILE: basic/install-fmid.ts
+  SMPE_PTF_TESTFILE: basic/install-ptf.ts
+  EXTENSIONS_TESTFILE: basic/install-ext.ts
+  KEYRING_TESTFILE: extended/keyring.ts
+  ZOS_NODE_V18_TESTFILE: extended/node-versions/node-v18.ts
+  NON_STRICT_VERIFY_EXTERNAL_CERTIFICATE_TESTFILE: extended/certificates/nonstrict-verify-external-certificate.ts
+  INSTALL_PTF_TWICE_TESTFILE: extended/install-ptf-two-times.ts
+  VSAM_CACHING_STORAGE_METHOD_TESTFILE: extended/caching-storages/vsam-storage.ts
+  INFINISPAN_CACHING_STORAGE_METHOD_TESTFILE: extended/caching-storages/infinispan-storage.ts
+  CONFIG_MANAGER_TESTFILE: extended/config-manager/enable-config-manager.ts
+  GENERAL_API_DOCUMENTATION_TESTFILE: basic/install-api-gen.ts
+  ZOWE_NIGHTLY_TESTS_FULL: basic/install.ts(all);basic/install-ptf.ts(all)
+  ZOWE_RELEASE_TESTS_FULL: basic/install.ts(all);basic/install-ptf.ts(all);basic/install-ext.ts(any);extended/keyring.ts(all);extended/node-versions/node-v18.ts(zzow08):extended/certificates/nonstrict-verify-external-certificate.ts(any);extended/caching-storages/infinispan-storage.ts(any);extended/config-manager/enable-config-manager.ts(any)
+
+jobs:
+  display-dispatch-event-id:
+    if: github.event.inputs.RANDOM_DISPATCH_EVENT_ID != ''
+    runs-on: ubuntu-latest
+    steps:
+      - name: RANDOM_DISPATCH_EVENT_ID is ${{ github.event.inputs.RANDOM_DISPATCH_EVENT_ID }}
+        run: echo "prints random dispatch event id sent from workflow dispatch event"
+
+  check-permission:
+    runs-on: ubuntu-latest
+    steps:
+      # this action will fail the whole workflow if permission check fails
+      - name: check permission
+        uses: zowe-actions/shared-actions/permission-check@main
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+  make-matrix:
+    runs-on: ubuntu-latest
+    needs: check-permission
+    steps:
+      - name: '[Prep 1] Checkout'
+        uses: actions/checkout@v2
+
+      - name: Make matrix
+        id: set-matrix
+        run: |
+          cd .github/scripts/cicd_test
+          chmod +x make_matrix.sh
+          source make_matrix.sh
+        env:
+          test_server: ${{ github.event.inputs.test-server }}
+          install_test_choice: ${{ github.event.inputs.install-test }}
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
+
+  cicd-test:
+    runs-on: ubuntu-latest
+    needs: make-matrix
+    strategy:
+      matrix: ${{ fromJson(needs.make-matrix.outputs.matrix) }}
+      fail-fast: false
+    environment: ${{ matrix.server }}
+    steps:
+      - name: '[Prep 1] Checkout'
+        uses: actions/checkout@v2
+
+      - name: '[Prep 2] Setup Node'
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      - name: '[Prep 3] Cache node modules'
+        uses: actions/cache@v2
+        with:
+          # npm cache files are stored in `~/.npm` on Linux/macOS
+          path: |
+            ~/.npm
+            ~/.nvm/.cache
+            ~/.nvm/versions
+          key: ${{ runner.os }}-build-cache-node-modules-${{ hashFiles('tests/installation/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-build-cache-node-modules-
+
+      - name: '[Prep 4] Setup jFrog CLI'
+        uses: jfrog/setup-jfrog-cli@v2
+        env:
+          JF_ENV_1: ${{ secrets.JF_ARTIFACTORY_TOKEN }}
+
+      - name: '[Prep 5] Validate package.json'
+        uses: zowe-actions/shared-actions/validate-package-json@main
+
+      - name: '[Prep 6] Prepare workflow'
+        uses: zowe-actions/shared-actions/prepare-workflow@main
+
+      - name: '[Prep 7] Additional Prep work'
+        id: more-test-prep
+        run: |
+          cd .github/scripts/cicd_test/prep7_more_test_prep
+          chmod +x *.sh
+          source 00_init.sh
+          source 01_helper_functions.sh
+          source 02_process_zowe_art_pattern.sh
+          source 03_process_test_server.sh
+          source 04_process_cli_art_pattern.sh
+          source 05_process_ext_list.sh
+          source 06_process_outputs.sh
+        env:
+          CURRENT_BRANCH: ${{ env.CURRENT_BRANCH }}
+          MATRIX_TEST: ${{ matrix.test }}
+          MATRIX_SERVER: ${{ matrix.server }}
+          INPUT_CUSTOM_ZOWE_ART_PAT_OR_BLDNUM: ${{ github.event.inputs.custom-zowe-artifactory-pattern-or-build-number }}
+          CUSTOM_ZOWE_CLI_ARTIFACTORY_PATTERN: ${{ github.event.inputs.custom-zowe-cli-artifactory-pattern }}
+          CUSTOM_EXTENSION_LIST: ${{ github.event.inputs.custom-extension-list }}
+
+      - name: '[Setup 1] Project Setup 1'
+        working-directory: ${{ env.INSTALL_TEST_PATH }}
+        run: |
+          npm ci
+          npm run build
+
+      - name: '[Setup 2] Project Setup 2'
+        working-directory: ${{ env.SANITY_TEST_PATH }}
+        run: |
+          npm ci
+
+      - name: '[Lint 1] Lint 1'
+        timeout-minutes: 2
+        working-directory: ${{ env.INSTALL_TEST_PATH }}
+        run: |
+          npm run lint
+
+      - name: '[Lint 2] Lint 2'
+        timeout-minutes: 2
+        working-directory: ${{ env.SANITY_TEST_PATH }}
+        run: |
+          npm run lint
+
+      - name: '[Download 1] Download zowe.pax or smpe-zowe.zip'
+        uses: zowe-actions/shared-actions/jfrog-download@main
+        with:
+          source-path-or-pattern: ${{ steps.more-test-prep.outputs.ZOWE_ARTIFACTORY_FINAL }}
+          default-target-path: ${{ runner.temp }}/zowe/
+          extra-options: --flat=true
+          expected-count: 1
+
+      - name: '[Download 2] Download cli package'
+        uses: zowe-actions/shared-actions/jfrog-download@main
+        with:
+          source-path-or-pattern: ${{ steps.more-test-prep.outputs.ZOWE_CLI_ARTIFACTORY_FINAL }}
+          default-target-path: ${{ runner.temp }}/cli/
+          extra-options: --flat=true --explode=true
+          expected-count: 1
+
+      - name: '[Install] Install CLI'
+        timeout-minutes: 10
+        working-directory: ${{ runner.temp }}/cli
+        run: npm install -g zowe-cli*.tgz
+      
+      - name: '[Comment] Post comments on PR about what tests are gonna be run'
+        uses: actions/github-script@v5
+        id: create-comment
+        if: startsWith(env.CURRENT_BRANCH, 'PR-')
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            var installTest = "${{ github.event.inputs.install-test }}"
+            if (installTest == '') {  
+              // if null, this is very likely to be triggered by pr auto test
+              installTest = 'Convenience Pax'
+            }
+
+            var prNum='${{ env.CURRENT_BRANCH }}'.split('-')[1]
+
+            var body=`Test workflow ${context.runNumber} is started.\n`
+            body += `Running install test: ${installTest} \n`
+            body += `The zowe artifact being used by this test workflow: ${{ steps.more-test-prep.outputs.ZOWE_ARTIFACTORY_FINAL }} \n`
+            body += `Running on machine: ${{ steps.more-test-prep.outputs.TEST_SERVER }} \n`
+            body += `Acquiring the test server lock first, please wait... \n `
+            body += `ETA: unknown (This ETA will get updated once the machine lock is acquired) \n`
+            body += `Link to workflow run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}`
+            
+            const { data: comment } = await github.rest.issues.createComment({ 
+              issue_number: prNum,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: body
+            });
+
+            return comment.id;
+
+      - name: '[LOCK] Lock marist servers'
+        uses: zowe-actions/shared-actions/lock-resource@main
+        with:
+          lock-repository: ${{ github.repository }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          lock-resource-name: zowe-zwe-system-test-${{ steps.more-test-prep.outputs.TEST_SERVER }}-lock
+          lock-avg-retry-interval: 60
+      
+      - name: '[Comment] Update comment after lock is acquired'
+        uses: actions/github-script@v5
+        if: steps.create-comment.outputs.result != ''
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            var installTest = "${{ github.event.inputs.install-test }}"
+            var eta
+            if (installTest == '') {  
+              // if null, this is very likely to be triggered by pr auto test
+              installTest = 'Convenience Pax'
+            }
+
+            // get ETA for each test run
+            switch(installTest) {
+              case 'Convenience Pax':
+                eta = 53
+                break;
+              case 'SMPE PTF':
+                eta = 68
+                break;
+              case 'Extensions':
+                eta = 67
+                break;
+              case 'Keyring':
+                eta = 53
+                break;
+              case 'z/OS node v18':
+                eta = 45
+                break;
+              case 'Infinispan Caching Storage Method':
+                eta = 51
+                break;
+              case 'VSAM Caching Storage Method':
+                eta = 51
+                break;
+              case 'Non-strict Verify External Certificate':
+                eta = 51
+                break;
+              case 'Zowe Release Tests':
+                eta = 376
+                break;
+              default:
+            }
+
+            var expectedTimeString
+            if (eta != '') {
+              const finish_time = new Date(new Date().getTime() + eta*60*1000);
+              const finish_time_EST = finish_time.toLocaleString('en-CA', { timeZone: 'Canada/Eastern' }).split(', ')[1] + " EST"
+              const finish_time_CET = finish_time.toLocaleString('en-EU', { timeZone: 'Europe/Prague' }).split(', ')[1] + " CET"
+              const finish_time_UTC = finish_time.toLocaleString('en-GB', { timeZone: 'Europe/London' }).split(', ')[1] + " GMT"
+              const finish_time_PST = finish_time.toLocaleString('en-US', { timeZone: 'America/Los_Angeles' }).split(', ')[1] + " PST"
+              expectedTimeString = `Check back around: \n ${finish_time_EST}  |  ${finish_time_CET}  |  ${finish_time_UTC}  |  ${finish_time_PST} \n`
+            }
+            else {
+              eta = 'unknown'
+            }
+
+            var body=`Test workflow ${context.runNumber} is started.\n`
+            body += `Running install test: ${installTest} \n`
+            body += `The zowe artifact being used by this test workflow: ${{ steps.more-test-prep.outputs.ZOWE_ARTIFACTORY_FINAL }} \n`
+            body += `Running on machine: ${{ steps.more-test-prep.outputs.TEST_SERVER }} \n`
+            body += `Lock acquired, start the test now, please wait... \n `
+            body += `ETA: ${eta} mins \n`
+            if (expectedTimeString != '') {
+              body += `${expectedTimeString} \n`
+            }
+            body += `Result: <PENDING> (will get updated once test is finished) \n`
+            body += `Link to workflow run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}`
+            
+            github.rest.issues.updateComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              comment_id: ${{ steps.create-comment.outputs.result }},
+              body: body
+            });
+
+      - name: '[Test] Test starts from here'
+        timeout-minutes: 180
+        working-directory: ${{ env.INSTALL_TEST_PATH }}
+        run: npm test -- --testPathPattern --detectOpenHandles dist/__tests__/$(echo "${{ matrix.test }}" | sed "s/.ts/.js/g")
+        env:
+          ANSIBLE_FORCE_COLOR: true
+          TEST_SERVER: ${{ steps.more-test-prep.outputs.TEST_SERVER_NICKNAME }}
+          ZOWE_BUILD_LOCAL: "${{ runner.temp }}/zowe/${{ steps.more-test-prep.outputs.ZOWE_ARTIFACTORY_FINAL_FILENAME }}"
+          ZOWE_DOCKER_URL: ${{ steps.more-test-prep.outputs.ZOWE_TP_DOCKER_ARTIFACTORY_URL }}
+          EXTENSIONS_LIST: ${{ steps.more-test-prep.outputs.EXTENSION_LIST }}
+          SANITY_TEST_DEBUG: ${{ env.SANITY_TEST_DEBUG_INFORMATION }}
+          DEBUG: ${{ env.INSTALL_TEST_DEBUG_INFORMATION }}
+          SSH_HOST: ${{ secrets.SSH_HOST }}
+          SSH_PORT: ${{ secrets.SSH_PORT }}
+          SSH_USER: ${{ secrets.SSH_USER }}
+          SSH_PASSWORD: ${{ secrets.SSH_PASSWORD }}
+          OKTA_HOSTNAME: ${{ secrets.OKTA_HOSTNAME }}
+          OKTA_CLIENT_ID: ${{ secrets.OKTA_CLIENT_ID }}
+          OKTA_CLIENT_SECRET: ${{ secrets.OKTA_CLIENT_SECRET }}
+          OKTA_USER: ${{ secrets.OKTA_USER }}
+          OKTA_PASSWORD: ${{ secrets.OKTA_PASSWORD }}
+          OIDC_REGISTRY: ${{ secrets.OIDC_REGISTRY }}
+          ZOS_NODE_HOME: ${{ steps.more-test-prep.outputs.NODE_HOME_PATTERN }}
+      #     # ANSIBLE_VERBOSE: -vvv
+
+      - name: '[After Test 1] Prepare to upload test report'
+        if: always()
+        working-directory: ${{ env.INSTALL_TEST_PATH }}
+        run: | 
+          echo CURRENT_TIME=$(date +%s) >> $GITHUB_ENV
+          echo TEST_NAME=$(echo "${{ matrix.test }}" | sed 's#.*\/##g') >> $GITHUB_ENV
+
+      - name: '[After Test 2] Upload test report'
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: InstallTestReports-${{ env.TEST_NAME }}-${{ steps.more-test-prep.outputs.TEST_SERVER_NICKNAME }}-${{ github.run_id }}-${{ env.CURRENT_TIME }}
+          path: ${{ env.INSTALL_TEST_PATH }}/reports/
+
+      - name: '[Comment] Update PR comment to indicate test succeeded'
+        uses: actions/github-script@v5
+        if: steps.create-comment.outputs.result != '' && success()
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            var installTest = "${{ github.event.inputs.install-test }}"
+            var eta
+            if (installTest == '') {  
+              // if null, this is very likely to be triggered by pr auto test
+              installTest = 'Convenience Pax'
+            }
+
+            var body=`Test workflow ${context.runNumber} is started.\n`
+            body += `Running install test: ${installTest} \n`
+            body += `The zowe artifact being used by this test workflow: ${{ steps.more-test-prep.outputs.ZOWE_ARTIFACTORY_FINAL }} \n`
+            body += `Running on machine: ${{ steps.more-test-prep.outputs.TEST_SERVER }} \n`
+            body += `Result: SUCCESS \n`
+            body += `Link to workflow run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}`
+            
+            github.rest.issues.updateComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              comment_id: ${{ steps.create-comment.outputs.result }},
+              body: body
+            });
+
+      - name: '[Comment] Update PR comment to indicate test failed'
+        uses: actions/github-script@v5
+        if: steps.create-comment.outputs.result != '' && failure()
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            var installTest = "${{ github.event.inputs.install-test }}"
+            var eta
+            if (installTest == '') {  
+              // if null, this is very likely to be triggered by pr auto test
+              installTest = 'Convenience Pax'
+            }
+
+            var body=`Test workflow ${context.runNumber} is started.\n`
+            body += `Running install test: ${installTest} \n`
+            body += `The zowe artifact being used by this test workflow: ${{ steps.more-test-prep.outputs.ZOWE_ARTIFACTORY_FINAL }} \n`
+            body += `Running on machine: ${{ steps.more-test-prep.outputs.TEST_SERVER }} \n`
+            body += `Result: FAILURE \n`
+            body += `Link to workflow run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}`
+
+            github.rest.issues.updateComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              comment_id: ${{ steps.create-comment.outputs.result }},
+              body: body
+            });
+
+      - name: '[Comment] Update PR comment to indicate test cancelled'
+        uses: actions/github-script@v5
+        if: steps.create-comment.outputs.result != '' && cancelled()
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            var installTest = "${{ github.event.inputs.install-test }}"
+            var eta
+            if (installTest == '') {  
+              // if null, this is very likely to be triggered by pr auto test
+              installTest = 'Convenience Pax'
+            }
+
+            var body=`Test workflow ${context.runNumber} is started.\n`
+            body += `Running install test: ${installTest} \n`
+            body += `The zowe artifact being used by this test workflow: ${{ steps.more-test-prep.outputs.ZOWE_ARTIFACTORY_FINAL }} \n`
+            body += `Running on machine: ${{ steps.more-test-prep.outputs.TEST_SERVER }} \n`
+            body += `Result: CANCELLED \n`
+            body += `Link to workflow run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}`
+            
+            github.rest.issues.updateComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              comment_id: ${{ steps.create-comment.outputs.result }},
+              body: body
+            });
+
+  # keep-curl:
+  #   runs-on: ubuntu-latest
+  #   needs: make-matrix
+  #   strategy:
+  #     matrix: ${{ fromJson(needs.make-matrix.outputs.matrix) }}
+  #     fail-fast: false
+  #   environment: ${{ matrix.server }}
+  #   steps:
+  #     - name: curl gateway
+  #       timeout-minutes: 180
+  #       run: |
+  #         sleep 30m
+
+  #         while sleep 5;
+  #         do
+  #           curl -k -s -S https://${{ secrets.SSH_HOST }}:7554 1>/dev/null || true;
+  #         done

@@ -1,0 +1,87 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Dummy tests a test 1`] = `
+"
+$ zwe 
+
+------------------
+Synopsis
+    zwe  [sub-command [sub-command]...] [parameter [parameter]...]
+
+------------------
+Description
+    A command line utility helps you managing Zowe instance.
+    
+    You can issue --help or -h to find information for all commands it supports.
+
+------------------
+Global parameters
+    --help|-h  (optional)
+        Display this help. 
+    --debug|--verbose|-v  (optional)
+        Enable verbose mode. 
+    --trace|-vv  (optional)
+        Enable trace level debug mode. 
+    --silent|-s  (optional)
+        Do not display messages to standard output. 
+    --log-dir|--log|-l string (optional)
+        Write logs to this directory. 
+    --config|-c string (optional)
+        Path to Zowe configuration zowe.yaml file. 
+    --configmgr  (optional)
+        Enable use of configmgr capabilities. 
+------------------
+Available sub-command(s)
+    - certificate
+    - components
+    - config
+    - diagnose
+    - init
+    - install
+    - internal
+    - migrate
+    - sample
+    - start
+    - stop
+    - support
+    - version
+
+------------------
+Example(s)
+    zwe install -h
+    
+    zwe init --allow-overwrite --config /path/to/zowe.yaml
+    
+    zwe start -c /path/to/zowe.yaml"
+`;
+
+exports[`Dummy tests run echo 1`] = `
+"
+$ hi"
+`;
+
+exports[`Dummy tests run echo 2`] = `
+"
+$ export TERM=xterm
+
+# python3
+export PYTHON_HOME=/ZOWE/node/python3/usr/lpp/IBM/cyp/v3r12/pyz
+
+# java 8
+export JAVA_HOME=/ZOWE/node/J8.0_64
+
+# these variables are required by v8, v12
+export _BPXK_AUTOCVT=ON
+export _CEE_RUNOPTS="FILETAG(AUTOCVT,AUTOTAG) POSIX(ON)"
+
+# node v14.15.1
+#export NODE_HOME=/ZOWE/node/node-v14.21.3-os390-s390x
+
+# node v16.20.1
+export NODE_HOME=/ZOWE/node/node-v16.20.2-os390-s390x
+
+# node v18.x
+# export NODE_HOME=/ZOWE/node/node-v18.16.0
+
+export PATH=/bin:.:/ZOWE/bin:$NODE_HOME/bin:$JAVA_HOME/bin:$PYTHON_HOME/bin"
+`;
