@@ -124,10 +124,10 @@ for item in host port; do
   var_val=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zOSMF.${item}")
   eval "${var_name}=\"${var_val}\""
 done
-keyring_trust_zosmf=
+keyring_trust_zosmf=0
 verify_certificates=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.verifyCertificates" | upper_case)
 if [ "${verify_certificates}" = "STRICT" -o "${verify_certificates}" = "NONSTRICT" ]; then
-  keyring_trust_zosmf="--trust-zosmf"
+  keyring_trust_zosmf=1
 else
   # no need to trust z/OSMF service
   zosmf_host=

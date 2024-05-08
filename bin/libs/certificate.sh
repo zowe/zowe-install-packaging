@@ -819,11 +819,8 @@ keyring_run_zwekring_jcl() {
   domains="${4}"
   # external CA labels separated by comma (label can have spaces)
   ext_cas="${5}"
-  # set to 1 or true to import z/OSMF CA
-  trust_zosmf=0
-  if [ "${6}" = "true" -o "${6}" = "1" ]; then
-    trust_zosmf=1
-  fi
+  # set to 1 to import z/OSMF CA
+  trust_zosmf="${6}"
   zosmf_root_ca="${7}"
   validity="${8}"
   security_product="${9}"

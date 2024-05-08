@@ -41,10 +41,9 @@
 //*     Zowe certificate. It is only applicable if Zowe certificate
 //*     signed by a recognized certificate authority (CA).
 //*
-//* 6) If you enable VERIFY_CERTIFICATES or
-//*     NONSTRICT_VERIFY_CERTIFICATES and define ROOTZFCA, set
-//*     IFROZFCA to 1 to connect z/OSMF certificate authority to
-//*     Zowe keyring. Otherwise set to 0.
+//* 6) If you set zowe.verifyCertificates to
+//*     STRICT or NONSTRICT, then set IFROZFCA to 1 
+//*     to connect z/OSMF certificate authority to Zowe keyring.
 //*
 //* 7) Customize the commands in the DD statement that matches your
 //*     security product so that they meet your system requirements.
