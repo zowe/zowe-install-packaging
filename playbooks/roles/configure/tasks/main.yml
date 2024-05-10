@@ -354,7 +354,7 @@
 - name: Set zwe_init_params variables
   set_fact:
     # --allow-overwrite is needed to overwrite anything left by FMID install
-    zwe_init_params: "--update-config -l \"{{ zowe_install_logs_dir }}\" --allow-overwrite"
+    zwe_init_params: "--update-config -l \"{{ zowe_install_logs_dir }}\" --allow-overwrite --config {{ zowe_instance_dir }}/zowe.yaml"
 
 - name: Set --security-dry-run or not
   set_fact:
