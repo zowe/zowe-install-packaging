@@ -121,7 +121,7 @@
     "org.zowe.configmgr": {
       "version": "2.16.0-V2.X-RC",
       "repository": "libs-snapshot-local",
-      "artifact": "configmgr-2.16.0-2024050253.pax"
+      "artifact": "configmgr-2.16.0-2024051014.pax"
     },
     "org.zowe.launcher": {
       "version": "2.16.0"
@@ -388,7 +388,7 @@
       "componentGroup": "Configmgr",
       "entries": [{
         "repository": "zowe-common-c",
-        "tag": "configmgr-v2.16.0-RC1",
+        "tag": "099a869",
         "destinations": ["Zowe PAX"]
       }]
     }
