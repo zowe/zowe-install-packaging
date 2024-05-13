@@ -124,7 +124,9 @@
       "artifact": "configmgr-2.16.0-2024051014.pax"
     },
     "org.zowe.launcher": {
-      "version": "2.16.0"
+      "version": "^2.15.0-PR-115",
+      "artifact": "*.pax",
+      "repository": "libs-snapshot-local"
     },
     "org.zowe.keyring-utilities": {
       "version": "1.0.4",
