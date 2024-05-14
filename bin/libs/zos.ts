@@ -72,8 +72,9 @@ export function verifyGeneratedJcl(config:any): string {
   if (!jcllib) {
     return undefined;
   }
-  // read JCL library and validate
-  let doesJclExist: boolean = zosDataset.isDatasetExists(jcllib);
+  const expectedMember = jcllib+'(ZWEIMVS)';
+  // read JCL library and validate using expected member ZWEIMVS (init mvs command)
+  let doesJclExist: boolean = zosDataset.isDatasetExists(expectedMember);
   if (!doesJclExist) {
     initGenerate.execute();
   }
@@ -83,7 +84,7 @@ export function verifyGeneratedJcl(config:any): string {
     const interval = [1,5,10,30];
     for (let i = 0; i < interval.length; i++) {
       let secs = interval[i];
-      doesJclExist=zosDataset.isDatasetExists(jcllib);
+      doesJclExist=zosDataset.isDatasetExists(expectedMember);
       if (!doesJclExist) {
         os.sleep(secs*1000);
       } else {
