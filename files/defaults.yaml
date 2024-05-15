@@ -175,28 +175,28 @@ zowe:
   # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   # You can define any Zowe message portions to be checked for and the message added to the 
   # system log upon its logging, truncated to 126 characters. 
-  sysMessages:
+  #sysMessages:
   #   # Zowe starting
-    - "ZWEL0021I"
+  #  - "ZWEL0021I"
   #   # Zowe started
-    - "ZWEL0018I"
-    - "ZWEL0006I"
+  #  - "ZWEL0018I"
+  #  - "ZWEL0006I"
   #   # Zowe ready to use
-    - "ZWES1601I"
+  #  - "ZWES1601I"
   #   # Zowe stopping
-    - "ZWEL0008I"
+  #  - "ZWEL0008I"
   #   # Zowe stopped
-    - "ZWEL0022I"
+  #  - "ZWEL0022I"
   #   # Zowe components starting
-    - "ZWEL0001I"
+  #  - "ZWEL0001I"
   #   # Zowe components stopped
-    - "ZWEL0002I"
+  #  - "ZWEL0002I"
   #   # API ML components ready
-    - "ZWEAM000I"
+  #  - "ZWEAM000I"
   #   # App server ready
-    - "ZWED0031I"
+  #  - "ZWED0031I"
   #   # ZSS ready
-    - "ZWES1013I"
+  #  - "ZWES1013I"
 
   # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   # Enable debug mode for Zowe launch scripts
