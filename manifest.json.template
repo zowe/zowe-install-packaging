@@ -111,17 +111,17 @@
     "org.zowe.configmgr-rexx": {
       "version": "2.16.0-V2.X-RC",
       "repository": "libs-snapshot-local",
-      "artifact": "configmgr-rexx-2.16.0-2024050253.pax"
+      "artifact": "configmgr-rexx-2.16.0-2024051503.pax"
     },
 	"org.zowe.getesm": {
       "version": "2.16.0-V2.X-RC",
       "repository": "libs-snapshot-local",
-      "artifact": "getesm-2.16.0-2024050250.pax"
+      "artifact": "getesm-2.16.0-2024051552.pax"
     },
     "org.zowe.configmgr": {
       "version": "2.16.0-V2.X-RC",
       "repository": "libs-snapshot-local",
-      "artifact": "configmgr-2.16.0-2024051014.pax"
+      "artifact": "configmgr-2.16.0-2024051543.pax"
     },
     "org.zowe.launcher": {
       "version": "2.16.0"
@@ -388,7 +388,7 @@
       "componentGroup": "Configmgr",
       "entries": [{
         "repository": "zowe-common-c",
-        "tag": "099a869",
+        "tag": "configmgr-v2.16.0-RC2",
         "destinations": ["Zowe PAX"]
       }]
     }
