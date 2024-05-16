@@ -155,15 +155,6 @@ zowe:
   # This is an ID that can be used by servers that distinguish their cookies from unrelated Zowe installs, 
   # for purposes such as to allow multiple copies of Zowe to be used within the same client
   cookieIdentifier: "1"
-
-  # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-  
-  # You can list your external domains on how you want to access Zowe.
-  # This should be the domain list you would like to put into your web browser's
-  # address bar.
-  externalDomains:
-    # this should be the domain name to access Zowe APIML Gateway
-    - "${{ zos.resolveSymbol('&SYSNAME') }}"
   
   # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   # This is the port you use to access Zowe Gateway from your web browser.
@@ -171,32 +162,6 @@ zowe:
   # In many use cases, this should be same as `components.gateway.port`. But in
   # some use cases, like containerization, this port could be different.
   externalPort: 7554
-
-  # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-  # You can define any Zowe message portions to be checked for and the message added to the 
-  # system log upon its logging, truncated to 126 characters. 
-  #sysMessages:
-  #   # Zowe starting
-  #  - "ZWEL0021I"
-  #   # Zowe started
-  #  - "ZWEL0018I"
-  #  - "ZWEL0006I"
-  #   # Zowe ready to use
-  #  - "ZWES1601I"
-  #   # Zowe stopping
-  #  - "ZWEL0008I"
-  #   # Zowe stopped
-  #  - "ZWEL0022I"
-  #   # Zowe components starting
-  #  - "ZWEL0001I"
-  #   # Zowe components stopped
-  #  - "ZWEL0002I"
-  #   # API ML components ready
-  #  - "ZWEAM000I"
-  #   # App server ready
-  #  - "ZWED0031I"
-  #   # ZSS ready
-  #  - "ZWES1013I"
 
   # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   # Enable debug mode for Zowe launch scripts
