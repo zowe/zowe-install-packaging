@@ -38,7 +38,7 @@
                   "description": "Holds Zowe PARMLIB members for plugins",
                   "properties": {
                     "zis": {
-                      "$ref": "/schemas/v2/server-common#zoweDatasetMember",
+                      "$ref": "/schemas/v2/server-common#zisParmlibMember",
                       "description": "PARMLIB member used by ZIS"
                     }
                   }
