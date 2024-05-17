@@ -8,12 +8,10 @@
  * Copyright Contributors to the Zowe Project.
  */
 
-import * as files from '@zowe/zos-files-for-zowe-sdk';
 import * as yaml from 'yaml';
-import { THIS_TEST_BASE_YAML } from '../constants';
+import { THIS_TEST_BASE_YAML } from './TestConfig';
 import * as fs from 'fs-extra';
-import * as _ from 'lodash';
-import ZoweYamlType from '../ZoweYamlType';
+import ZoweYamlType from '../types/ZoweYamlType';
 
 export class ZoweYaml {
   /* public updateField(field: string, value: string) {

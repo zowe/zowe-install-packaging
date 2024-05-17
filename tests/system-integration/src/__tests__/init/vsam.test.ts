@@ -8,44 +8,60 @@
  * Copyright Contributors to the Zowe Project.
  */
 
-import { RemoteTestRunner } from '../RemoteTestRunner';
-import { ZoweYaml } from '../ZoweYaml';
+import { REMOTE_SYSTEM_INFO, TEST_COLLECT_SPOOL } from '../../config/TestConfig';
+import ZoweYamlType from '../../types/ZoweYamlType';
+import { RemoteTestRunner } from '../../zos/RemoteTestRunner';
+import { ZoweYaml } from '../../config/ZoweYaml';
+import { DatasetType, TestAwareFiles, TestManagedDataset } from '../../zos/TestAwareFiles';
 
-const testSuiteName = 'Dummy tests';
+const testSuiteName = 'init vsam';
 describe(testSuiteName, () => {
-  beforeEach(() => {});
+  let testRunner: RemoteTestRunner;
+  let cfgYaml: ZoweYamlType;
+  let cleanupDatasets: TestManagedDataset[] = []; // a list of datasets deleted after every test
 
-  it('run echo', async () => {
-    const testRunner = new RemoteTestRunner();
-
-    console.log('heres a log');
-    const cfgYaml = ZoweYaml.basicZoweYaml();
-    cfgYaml.java.home = '/ZOWE/node/J21.0_64/';
-    const result = await testRunner.runRaw('echo "hi"');
-    console.log(result);
-    console.log(JSON.stringify(result));
-    expect(result.rc).toBe(0); // 100 is expected...
-    expect(result.stdout).not.toBeNull();
-    expect(result.stdout).toMatchSnapshot();
-
-    const result2 = await testRunner.runRaw('cat /u/zowead3/.profile');
-    console.log(result2);
-    console.log(JSON.stringify(result2));
-    expect(result2.rc).toBe(0); // 100 is expected...
-    expect(result2.stdout).not.toBeNull();
-    expect(result2.stdout).toMatchSnapshot();
+  beforeAll(() => {
+    testRunner = new RemoteTestRunner('vsam');
+  });
+  beforeEach(() => {
+    cfgYaml = ZoweYaml.basicZoweYaml();
+    // customizations for all vsam tests
+    cfgYaml.zowe.setup.vsam.name = REMOTE_SYSTEM_INFO.prefix + '.VSAMTEST';
+    cfgYaml.zowe.setup.vsam.volume = REMOTE_SYSTEM_INFO.volume;
   });
 
-  it('a test', async () => {
-    const testRunner = new RemoteTestRunner();
-    console.log('heres a log');
-    const cfgYaml = ZoweYaml.basicZoweYaml();
-    cfgYaml.java.home = '/ZOWE/node/J21.0_64/';
-    const result = await testRunner.runTest(cfgYaml, '--help');
-    console.log(result);
-    console.log(JSON.stringify(result));
-    expect(result.rc).toBe(100); // 100 is expected...
+  afterEach(async () => {
+    if (TEST_COLLECT_SPOOL) {
+      testRunner.collectSpool();
+    }
+    // re-created in every `init vsam` based on changes to zowe yaml command...
+    const jcllib: TestManagedDataset = { name: REMOTE_SYSTEM_INFO.jcllib, type: DatasetType.NON_CLUSTER };
+
+    // try to delete everything we know about
+    TestAwareFiles.deleteAll([...cleanupDatasets, jcllib]);
+    cleanupDatasets = [];
+  });
+
+  it('disable cfgmgr', async () => {
+    cfgYaml.zowe.useConfigmgr = false;
+    const result = await testRunner.runZweTest(cfgYaml, 'init vsam');
     expect(result.stdout).not.toBeNull();
-    expect(result.stdout).toMatchSnapshot();
+    expect(result.cleanedStdout).toMatchSnapshot();
+    expect(result.rc).toBe(60); // 60 is expected...
+  });
+
+  it('BAD: bad ds prefix', async () => {
+    cfgYaml.zowe.setup.dataset.prefix = 'ZOWEAD6.ZWETEST.NOEXIST';
+    const result = await testRunner.runZweTest(cfgYaml, 'init vsam --dry-run');
+    expect(result.stdout).not.toBeNull();
+    expect(result.cleanedStdout).toMatchSnapshot();
+    expect(result.rc).toBe(231);
+  });
+
+  it('GOOD: simple --dry-run', async () => {
+    const result = await testRunner.runZweTest(cfgYaml, 'init vsam --dry-run');
+    expect(result.stdout).not.toBeNull();
+    expect(result.cleanedStdout).toMatchSnapshot();
+    expect(result.rc).toBe(0); // 60 is expected...
   });
 });

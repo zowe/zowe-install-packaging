@@ -8,25 +8,32 @@
  * Copyright Contributors to the Zowe Project.
  */
 
-import { CLEANUP_AFTER_TESTS, REMOTE_TEST_DIR, TEST_JOBS_RUN_FILE, TEST_YAML_DIR } from './constants';
+import { REMOTE_TEARDOWN, REMOTE_TEST_DIR, TEST_JOBS_RUN_FILE as TEST_JOBS_TRACKING_FILE } from './config/TestConfig';
 import * as uss from './uss';
 import * as fs from 'fs-extra';
-
+import * as jobs from '@zowe/zos-jobs-for-zowe-sdk';
+import { getZosmfSession } from './zowe';
 module.exports = async () => {
-  if (!CLEANUP_AFTER_TESTS) {
+  if (!REMOTE_TEARDOWN) {
     return;
   }
 
   await uss.runCommand(`rm -rf ${REMOTE_TEST_DIR}`);
 
-  if (fs.existsSync(`${TEST_JOBS_RUN_FILE}`)) {
-    fs.readFileSync(`${TEST_JOBS_RUN_FILE}`, 'utf8')
+  // await files.Dataset.deleteDataset();
+
+  if (fs.existsSync(`${TEST_JOBS_TRACKING_FILE}`)) {
+    fs.readFileSync(`${TEST_JOBS_TRACKING_FILE}`, 'utf8')
       .split('\n')
-      .forEach((job) => {
+      .forEach(async (job) => {
+        const jobPieces = job.split(':');
+        const jobName = jobPieces[0];
+        const jobId = jobPieces[1];
+        console.log('Purging ' + job);
+        await jobs.DeleteJobs.deleteJob(getZosmfSession(), jobName, jobId);
         //
-        console.log('Purge ' + job);
       });
   }
 
-  fs.rmdirSync(TEST_YAML_DIR);
+  // fs.rmdirSync(TEST_YAML_DIR);
 };

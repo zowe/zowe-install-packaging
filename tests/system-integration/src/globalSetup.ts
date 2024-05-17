@@ -9,45 +9,221 @@
  */
 
 import * as uss from './uss';
+import * as _ from 'lodash';
 import * as files from '@zowe/zos-files-for-zowe-sdk';
-import { REMOTE_TEST_DIR, REPO_ROOT_DIR, TEST_YAML_DIR, THIS_TEST_BASE_YAML, THIS_TEST_ROOT_DIR } from './constants';
+import {
+  DOWNLOAD_CONFIGMGR,
+  JFROG_CREDENTIALS,
+  REMOTE_SETUP,
+  REMOTE_SYSTEM_INFO,
+  REMOTE_TEST_DIR,
+  REPO_ROOT_DIR,
+  TEST_DATASETS_LINGERING_FILE,
+  TEST_JOBS_RUN_FILE,
+  THIS_TEST_BASE_YAML,
+  THIS_TEST_ROOT_DIR,
+} from './config/TestConfig';
 import * as fs from 'fs-extra';
 import { getZosmfSession } from './zowe';
+import * as yaml from 'yaml';
+import ZoweYamlType from './types/ZoweYamlType';
+import { JfrogClient } from 'jfrog-client-js';
+import { processManifestVersion } from './utils';
+import { execSync } from 'child_process';
+
+const zosmfSession = getZosmfSession();
+
+function setupBaseYaml() {
+  console.log(`Using example-zowe.yaml as base for future zowe.yaml modifications...`);
+  const zoweYaml: ZoweYamlType = yaml.parse(fs.readFileSync(`${REPO_ROOT_DIR}/example-zowe.yaml`, 'utf8')) as ZoweYamlType;
+
+  zoweYaml.java.home = REMOTE_SYSTEM_INFO.zosJavaHome;
+  zoweYaml.node.home = REMOTE_SYSTEM_INFO.zosNodeHome;
+  zoweYaml.zowe.runtimeDirectory = `${REMOTE_TEST_DIR}`;
+  zoweYaml.zowe.setup.dataset.prefix = REMOTE_SYSTEM_INFO.prefix;
+  zoweYaml.zowe.setup.dataset.jcllib = REMOTE_SYSTEM_INFO.jcllib;
+  // zoweYaml.zowe.setup.dataset.loadlib = REMOTE_SYSTEM_INFO.szweexec;
+  // zoweYaml.node.home = systemDefaults.zos_node_home;
+  // zoweYaml.zowe.runtimeDirectory = systemDefaults.
+  fs.writeFileSync(THIS_TEST_BASE_YAML, yaml.stringify(zoweYaml));
+}
+
+const jf = new JfrogClient({
+  platformUrl: 'https://zowe.jfrog.io/',
+  username: JFROG_CREDENTIALS.user,
+  accessToken: JFROG_CREDENTIALS.token,
+});
+
+async function downloadManifestDep(binaryName: string): Promise<string> {
+  const manifestJson = fs.readJSONSync(`${REPO_ROOT_DIR}/manifest.json.template`, 'utf8');
+  const binaryDep = manifestJson['binaryDependencies'][binaryName];
+  const dlSpec = processManifestVersion(binaryDep.version);
+  const nameMatch = binaryDep?.artifact || '*';
+
+  // get folders so we can regex against
+  const pathMatch = `${binaryName.replace(/\./g, '/')}/${dlSpec.versionPattern}`;
+
+  const searchResults = await jf
+    .artifactory()
+    .search()
+    .aqlSearch(
+      `
+      items.find({
+        "repo": "${dlSpec.repository}",
+        "path": {"$match": "${pathMatch}"},
+        "name": {"$match": "${nameMatch}" }
+      }).sort({"$desc" : ["created"]}).limit(1)
+      
+    `.replace(/\s/g, ''),
+    );
+  if (searchResults.results == null || searchResults.results.length === 0) {
+    throw new Error(`Could not find a ${binaryDep} matching the manifest.json spec`);
+  }
+  const artifact = searchResults.results[0];
+  const dlFile = `${THIS_TEST_ROOT_DIR}/.build/${artifact.name}`;
+  await jf.artifactory().download().downloadArtifactToFile(`${artifact.repo}/${artifact.path}/${artifact.name}`, dlFile);
+  return dlFile;
+}
+
+async function cleanUssDir(dir: string) {
+  console.log(`Checking if ${dir} is clean...`);
+  const lsOut = await uss.runCommand(`ls ${dir}`);
+  if (lsOut.rc === 0) {
+    // already exists
+    console.log(`Cleaning up old ${dir}...`);
+    await uss.runCommand(`rm -rf ${dir}`);
+  }
+}
 
 module.exports = async () => {
   // check directories and configmgr look OK
-  console.log(`${REPO_ROOT_DIR}`);
   if (!fs.existsSync(`${REPO_ROOT_DIR}/bin/zwe`)) {
     throw new Error('Could not locate the zwe tool locally. Ensure you are running tests from the test project root');
   }
-  const configmgrPax = fs.readdirSync(`${THIS_TEST_ROOT_DIR}/.build`).find((item) => /configmgr.*\.pax/g.test(item));
-  if (configmgrPax == null) {
-    throw new Error('Could not locate a configmgr pax in the .build directory');
-  }
-
-  console.log(`Using example-zowe.yaml as base for future zowe.yaml modifications...`);
-  fs.copyFileSync(`${REPO_ROOT_DIR}/example-zowe.yaml`, THIS_TEST_BASE_YAML);
+  setupBaseYaml();
   fs.mkdirpSync(`${THIS_TEST_ROOT_DIR}/.build/zowe`);
-  fs.mkdirpSync(`${TEST_YAML_DIR}`);
-  console.log('Setting up remote server...');
-  await uss.runCommand(`mkdir -p ${REMOTE_TEST_DIR}`);
+  fs.rmSync(TEST_DATASETS_LINGERING_FILE, { force: true });
+  fs.rmSync(TEST_JOBS_RUN_FILE, { force: true });
 
-  console.log(`Uploading ${configmgrPax} to ${REMOTE_TEST_DIR}/configmgr.pax ...`);
-  await files.Upload.fileToUssFile(
-    getZosmfSession(),
-    `${THIS_TEST_ROOT_DIR}/.build/${configmgrPax}`,
-    `${REMOTE_TEST_DIR}/configmgr.pax`,
-    { binary: true },
-  );
+  if (REMOTE_SETUP) {
+    if (DOWNLOAD_CONFIGMGR) {
+      await downloadManifestDep('org.zowe.configmgr');
+      await downloadManifestDep('org.zowe.configmgr-rexx');
+    }
 
-  console.log(`Uploading ${REPO_ROOT_DIR}/bin to ${REMOTE_TEST_DIR}/bin...`);
-  await files.Upload.dirToUSSDirRecursive(getZosmfSession(), `${REPO_ROOT_DIR}/bin`, `${REMOTE_TEST_DIR}/bin/`, {
-    binary: false,
-    includeHidden: true,
-  });
+    const configmgrPax = fs.readdirSync(`${THIS_TEST_ROOT_DIR}/.build`).find((item) => /configmgr.*\.pax/g.test(item));
+    if (configmgrPax == null) {
+      throw new Error('Could not locate a configmgr pax in the .build directory');
+    }
 
-  console.log(`Unpacking configmgr and placing it in bin/utils ...`);
-  await uss.runCommand(`pax -ppx -rf configmgr.pax && mv configmgr bin/utils/`, `${REMOTE_TEST_DIR}`);
+    const configmgrRexxPax = fs.readdirSync(`${THIS_TEST_ROOT_DIR}/.build`).find((item) => /configmgr-rexx.*\.pax/g.test(item));
+    if (configmgrRexxPax == null) {
+      throw new Error('Could not locate a configmgr-rexx pax in the .build directory');
+    }
 
-  console.log('Remote server setup complete');
+    console.log('Setting up remote server...');
+    await uss.runCommand(`mkdir -p ${REMOTE_TEST_DIR}`);
+
+    console.log(`Uploading ${configmgrPax} to ${REMOTE_TEST_DIR}/configmgr.pax ...`);
+    await files.Upload.fileToUssFile(
+      zosmfSession,
+      `${THIS_TEST_ROOT_DIR}/.build/${configmgrPax}`,
+      `${REMOTE_TEST_DIR}/configmgr.pax`,
+      { binary: true },
+    );
+
+    console.log(`Uploading ${configmgrRexxPax} to ${REMOTE_TEST_DIR}/configmgr-rexx.pax ...`);
+    await files.Upload.fileToUssFile(
+      zosmfSession,
+      `${THIS_TEST_ROOT_DIR}/.build/${configmgrRexxPax}`,
+      `${REMOTE_TEST_DIR}/configmgr-rexx.pax`,
+      { binary: true },
+    );
+
+    console.log(`Building zwe typescript...`);
+    execSync(`npm install && npm run prod`, { cwd: `${REPO_ROOT_DIR}/build/zwe` });
+
+    await cleanUssDir(`${REMOTE_TEST_DIR}/bin`);
+    await cleanUssDir(`${REMOTE_TEST_DIR}/schemas`);
+
+    console.log(`Uploading ${REPO_ROOT_DIR}/bin to ${REMOTE_TEST_DIR}/bin...`);
+    await files.Upload.dirToUSSDirRecursive(zosmfSession, `${REPO_ROOT_DIR}/bin`, `${REMOTE_TEST_DIR}/bin/`, {
+      binary: false,
+      includeHidden: true,
+    });
+
+    console.log(`Uploading ${REPO_ROOT_DIR}/schemas to ${REMOTE_TEST_DIR}/schemas...`);
+    await files.Upload.dirToUSSDirRecursive(zosmfSession, `${REPO_ROOT_DIR}/schemas`, `${REMOTE_TEST_DIR}/schemas/`, {
+      binary: false,
+      includeHidden: true,
+    });
+
+    await createPds(REMOTE_SYSTEM_INFO.szweexec, {
+      primary: 5,
+      secondary: 1,
+    });
+    await createPds(REMOTE_SYSTEM_INFO.szwesamp, {
+      primary: 5,
+      secondary: 1,
+    });
+    await createPds(REMOTE_SYSTEM_INFO.szweload, {
+      primary: 5,
+      recfm: 'U',
+      lrecl: 0,
+      secondary: 1,
+    });
+
+    console.log(`Unpacking configmgr and placing it in bin/utils ...`);
+    await uss.runCommand(`pax -ppx -rf configmgr.pax && mv configmgr bin/utils/`, `${REMOTE_TEST_DIR}`);
+
+    console.log(`Unpacking configmgr-rexx and placing it in ${REMOTE_SYSTEM_INFO.szweload} ...`);
+    await uss.runCommand(`pax -ppx -rf configmgr-rexx.pax`, `${REMOTE_TEST_DIR}`);
+    for (const pgm of ['ZWERXCFG', 'ZWECFG31', 'ZWECFG64']) {
+      await uss.runCommand(`cp -X ${pgm} "//'${REMOTE_SYSTEM_INFO.szweload}(${pgm})'"`, `${REMOTE_TEST_DIR}`);
+    }
+
+    console.log(`Uploading sample JCL from files/SZWESAMP to ${REMOTE_SYSTEM_INFO.szwesamp}...`);
+    await files.Upload.dirToPds(zosmfSession, `${REPO_ROOT_DIR}/files/SZWESAMP`, REMOTE_SYSTEM_INFO.szwesamp, {
+      binary: false,
+    });
+
+    console.log(`Uploading JCL from files/SZWEEXEC to ${REMOTE_SYSTEM_INFO.szweexec}...`);
+    await files.Upload.dirToPds(zosmfSession, `${REPO_ROOT_DIR}/files/SZWEEXEC`, REMOTE_SYSTEM_INFO.szweexec, {
+      binary: false,
+    });
+
+    console.log('Remote server setup complete');
+  }
 };
+
+async function createPds(pdsName: string, createOpts: Partial<files.ICreateDataSetOptions>) {
+  const defaultPdsOpts: files.ICreateDataSetOptions = {
+    lrecl: 80,
+    recfm: 'FB',
+    blksize: 32720,
+    alcunit: 'cyl',
+    primary: 10,
+    secondary: 2,
+    dsorg: 'PO',
+    dsntype: 'library',
+    volser: REMOTE_SYSTEM_INFO.volume,
+  };
+  const mergedOpts: Partial<files.ICreateDataSetOptions> = _.merge({}, defaultPdsOpts, createOpts);
+  console.log(`Creating ${pdsName}`);
+  await createDataset(pdsName, files.CreateDataSetTypeEnum.DATA_SET_PARTITIONED, mergedOpts);
+}
+
+async function createDataset(dsName: string, type: files.CreateDataSetTypeEnum, createOpts: Partial<files.ICreateDataSetOptions>) {
+  console.log(`Checking if ${dsName} exists...`);
+  const listPdsResp = await files.List.dataSet(zosmfSession, dsName, {
+    pattern: dsName,
+  });
+  console.log(JSON.stringify(listPdsResp));
+  const respItems: { [key: string]: string }[] = listPdsResp.apiResponse?.items;
+  if (respItems != null && respItems.find((item) => item.dsname === dsName) != null) {
+    console.log(`Pds exists, cleaning up...`);
+    await files.Delete.dataSet(zosmfSession, dsName, {});
+  }
+  console.log(`Creating ${dsName}`);
+  await files.Create.dataSet(zosmfSession, type, dsName, createOpts);
+}

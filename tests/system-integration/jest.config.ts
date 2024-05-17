@@ -16,6 +16,7 @@ const config: Config = {
   globalTeardown: '<rootDir>/src/globalTeardown.ts',
   preset: 'ts-jest',
   testRegex: '__tests__.*\\.*?\\.(spec|test)\\.ts$',
+  maxWorkers: 1,
   reporters: [
     'default',
     [

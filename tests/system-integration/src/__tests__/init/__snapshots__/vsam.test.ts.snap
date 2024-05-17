@@ -1,87 +1,192 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`Dummy tests a test 1`] = `
+exports[`init vsam BAD: bad ds prefix 1`] = `
 "
-$ zwe 
+$ Temporary directory '/tmp/.zweenv-6996' created.
+Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
+-------------------------------------------------------------------------------
+>> Initialize Zowe custom data sets
 
-------------------
-Synopsis
-    zwe  [sub-command [sub-command]...] [parameter [parameter]...]
-
-------------------
-Description
-    A command line utility helps you managing Zowe instance.
-    
-    You can issue --help or -h to find information for all commands it supports.
-
-------------------
-Global parameters
-    --help|-h  (optional)
-        Display this help. 
-    --debug|--verbose|-v  (optional)
-        Enable verbose mode. 
-    --trace|-vv  (optional)
-        Enable trace level debug mode. 
-    --silent|-s  (optional)
-        Do not display messages to standard output. 
-    --log-dir|--log|-l string (optional)
-        Write logs to this directory. 
-    --config|-c string (optional)
-        Path to Zowe configuration zowe.yaml file. 
-    --configmgr  (optional)
-        Enable use of configmgr capabilities. 
-------------------
-Available sub-command(s)
-    - certificate
-    - components
-    - config
-    - diagnose
-    - init
-    - install
-    - internal
-    - migrate
-    - sample
-    - start
-    - stop
-    - support
-    - version
-
-------------------
-Example(s)
-    zwe install -h
-    
-    zwe init --allow-overwrite --config /path/to/zowe.yaml
-    
-    zwe start -c /path/to/zowe.yaml"
+cp: FSUM6258 cannot open file "//'ZOWEAD6.ZWETEST.NOEXIST.SZWESAMP(ZWEGENER)'": EDC5049I The specified file name could not be located. (errno2=0xC00B0641)
+Error ZWETODOE: ZOWEAD6.ZWETEST.NOEXIST.SZWESAMP(ZWEGENER) could not be copied. Review other error output from the 'cp' command.
+ERROR: Error ZWEL0999E: zowe.setup.dataset.jcllib does not exist, cannot run. Run 'zwe init', 'zwe init generate', or submit JCL ZOWEAD6.ZWETEST.NOEXIST.SZWESAMP(ZWEGENER) before running this command."
 `;
 
-exports[`Dummy tests run echo 1`] = `
+exports[`init vsam GOOD: simple --dry-run 1`] = `
 "
-$ hi"
+$ Temporary directory '/tmp/.zweenv-1582' created.
+Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
+-------------------------------------------------------------------------------
+>> Initialize Zowe custom data sets
+
+Template JCL: ZOWEAD6.ZWETEST.SZWESAMP(ZWEGENER)
+--- JCL content ---
+//ZWEGENER JOB
+//*
+//* This job is responsible for generating other jobs required
+//* to configure Zowe.
+//*
+//* The method of validating your configuration is using
+//* JSON Schema <https://json-schema.org>. Zowe provides
+//* the ConfigMgr to assist in this. This job will invoke
+//* the ConfigMgr to validate your current configuration
+//* before generating any jobs. If there are any values
+//* that are incorrect, you will be notified. You should
+//* fix the value and then run this job again. You can run
+//* this job as many times as you need.
+//*
+//* Configmgr documentation:
+//* https://docs.zowe.org/stable/user-guide/configmgr-using
+//*
+//* Note: Any string with braces has an associated yaml value
+//*       in one of the yaml definitions for Zowe.
+//*       You must find the value and substitute it.
+//*
+//*       {key} -> value
+//*
+//GENER    EXEC PGM=IKJEFT1B
+//ISPPROF  DD   DSN=,DISP=(NEW,DELETE),UNIT=,
+//   DCB=(RECFM=FB,LRECL=80,BLKSIZE=3120,DSORG=PO),
+//   SPACE=(3120,(20,5,10))
+//*
+//* Replace ZOWEAD6.ZWETEST with the
+//* Value as seen in zowe.yaml
+//*
+//SYSPROC  DD DSN=ZOWEAD6.ZWETEST.SZWEEXEC,DISP=SHR
+//*
+//* Replace ZOWEAD6.ZWETEST with the
+//* Value as seen in zowe.yaml
+//*
+//STEPLIB  DD DSN=ZOWEAD6.ZWETEST.SZWELOAD,DISP=SHR
+//ISPPLIB  DD DSN=ISP.SISPPENU,DISP=SHR
+//ISPMLIB  DD DSN=ISP.SISPMENU,DISP=SHR
+//ISPTLIB  DD DSN=ISP.SISPTENU,DISP=SHR
+//ISPSLIB  DD DSN=ISP.SISPSENU,DISP=SHR
+//*
+//* The order must be as follows.
+//*
+//* zowe-yaml-schema.json
+//* server-common.json
+//*
+//* Replace /ZOWE/zwe-integration with where your Zowe run time
+//* directory is, as seen in zowe.yaml
+//*
+//MYSCHEMA DD   *,DLM=$$
+FILE /ZOWE/zwe-integration/schemas/zowe-yaml-schema.json
+FILE /ZOWE/zwe-integration/schemas/server-common.json
+$$
+//*
+//* The DD below must include one or more FILE or PARMLIB
+//* Entries. The lower entries have their values
+//* Overridden by the higher entries.
+//* PARMLIB member must be named "ZWEYAML"
+//*
+//* Ex. PARMLIB MY.ZOWE.CUSTOM.PARMLIB
+//*     FILE /the/zowe/defaults.yaml
+//MYCONFIG DD   *,DLM=$$
+FILE /ZOWE/zwe-integration/zowe.test.yaml
+$$
+//CMGROUT  DD   SYSOUT=*
+//SYSPRINT DD   SYSOUT=*
+//SYSTSPRT DD   SYSOUT=*
+//*
+//* Change 'generate' to 'nogenerate' if you only
+//* want to validate your configuration. The default
+//* option, 'generate', will validate and then generate
+//* jobs based on your configuration.
+//*
+//*   - generate
+//*   - nogenerate
+//*
+//* Change 'noverbose' to 'verbose' below for
+//* advanced logging. This is not needed unless
+//* there is an error.
+//*
+//*   - verbose
+//*   - noverbose
+//*
+//SYSTSIN  DD   *
+ISPSTART CMD(%ZWEGEN00 -
+generate -
+noverbose -
+)
+
+--- End of JCL ---
+Submitting Job ZWEGENER
+Job ZWEGENER(JOB00000) completed with RC=0
+Zowe JCL generated successfully
+Template JCL: ZOWEAD6.ZWETEST.SZWESAMP(ZWECSVSM) , Executable JCL: ZOWEAD6.ZWETEST.JCLLIB(ZWECSVSM)
+--- JCL Content ---
+//ZWECSVSM JOB
+//*
+//* This program and the accompanying materials are made available
+//* under the terms of the Eclipse Public License v2.0 which
+//* accompanies this distribution, and is available at
+//* https://www.eclipse.org/legal/epl-v20.html
+//*
+//* SPDX-License-Identifier: EPL-2.0
+//*
+//* Copyright Contributors to the Zowe Project. 2020, 2020
+//*
+//*********************************************************************
+//*
+//* Zowe Open Source Project
+//* This JCL creates the VSAM data set for the Caching Service.
+//*
+//*
+//* CAUTION: This is neither a JCL procedure nor a complete job.
+//* Before using this JCL, you will have to make the following
+//* modifications:
+//*
+//* 1) Add job name and job parameters to the JOB statement, to
+//*    meet your system requirements.
+//*
+//* When using RLS, customize the definitions in the RLS DD:
+//*
+//* 5) Optionally, change LOG option NONE to UNDO or ALL to set the
+//*    desired recovery options for the RLS VSAM.
+//*
+//*
+//* Note(s):
+//*
+//* 1. This job should complete with return code 0.
+//*
+//********************************************************************
+//*
+//ALLOC    EXEC PGM=IDCAMS,REGION=0M
+//SYSPRINT DD SYSOUT=*
+//SYSIN    DD *
+  DEFINE CLUSTER -
+   (NAME(ZOWEAD6.ZWETEST.VSAMTEST) -
+//         DD DDNAME=NONRLS
+//         DD *
+    REC(80 20) -
+    INDEXED) -
+   DATA(NAME(ZOWEAD6.ZWETEST.VSAMTEST.DATA) -
+    RECSZ(4096 4096) -
+    UNIQUE -
+    KEYS(128 0)) -
+   INDEX(NAME(ZOWEAD6.ZWETEST.VSAMTEST.INDEX) -
+    UNIQUE)
+//RLS      DD *
+    STORCLAS() -
+    LOG(NONE) -
+//NONRLS   DD *
+    VOLUME(ZOS003) -
+    SHAREOPTIONS(2 3) -
+//*
+--- End of JCL ---
+JCL not submitted, command run with "--dry-run" flag.
+To perform command, re-run command without "--dry-run" flag, or submit the JCL directly
+
+>> Command run successfully.
+
+
+>> Zowe Caching Service VSAM storage is created successfully.
+"
 `;
 
-exports[`Dummy tests run echo 2`] = `
+exports[`init vsam disable cfgmgr 1`] = `
 "
-$ export TERM=xterm
-
-# python3
-export PYTHON_HOME=/ZOWE/node/python3/usr/lpp/IBM/cyp/v3r12/pyz
-
-# java 8
-export JAVA_HOME=/ZOWE/node/J8.0_64
-
-# these variables are required by v8, v12
-export _BPXK_AUTOCVT=ON
-export _CEE_RUNOPTS="FILETAG(AUTOCVT,AUTOTAG) POSIX(ON)"
-
-# node v14.15.1
-#export NODE_HOME=/ZOWE/node/node-v14.21.3-os390-s390x
-
-# node v16.20.1
-export NODE_HOME=/ZOWE/node/node-v16.20.2-os390-s390x
-
-# node v18.x
-# export NODE_HOME=/ZOWE/node/node-v18.16.0
-
-export PATH=/bin:.:/ZOWE/bin:$NODE_HOME/bin:$JAVA_HOME/bin:$PYTHON_HOME/bin"
+$ Error ZWEL0316E: Command requires zowe.useConfigmgr=true to use."
 `;

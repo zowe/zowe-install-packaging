@@ -1,0 +1,61 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Canary tests a test 1`] = `
+"
+$ zwe 
+
+------------------
+Synopsis
+    zwe  [sub-command [sub-command]...] [parameter [parameter]...]
+
+------------------
+Description
+    A command line utility helps you managing Zowe instance.
+    
+    You can issue --help or -h to find information for all commands it supports.
+
+------------------
+Global parameters
+    --help|-h  (optional)
+        Display this help. 
+    --debug|--verbose|-v  (optional)
+        Enable verbose mode. 
+    --trace|-vv  (optional)
+        Enable trace level debug mode. 
+    --silent|-s  (optional)
+        Do not display messages to standard output. 
+    --log-dir|--log|-l string (optional)
+        Write logs to this directory. 
+    --config|-c string (optional)
+        Path to Zowe configuration zowe.yaml file. 
+    --configmgr  (optional)
+        Enable use of configmgr capabilities. 
+------------------
+Available sub-command(s)
+    - certificate
+    - components
+    - config
+    - diagnose
+    - init
+    - install
+    - internal
+    - migrate
+    - sample
+    - start
+    - stop
+    - support
+    - version
+
+------------------
+Example(s)
+    zwe install -h
+    
+    zwe init --allow-overwrite --config /path/to/zowe.yaml
+    
+    zwe start -c /path/to/zowe.yaml"
+`;
+
+exports[`Canary tests run echo 1`] = `
+"
+$ hi"
+`;

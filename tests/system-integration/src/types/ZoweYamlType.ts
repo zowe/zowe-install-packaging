@@ -8,14 +8,17 @@
  * Copyright Contributors to the Zowe Project.
  */
 
+/* eslint-disable max-len */
+/* eslint-disable quotes */
+
 import { FromSchema } from 'json-schema-to-ts';
-import zoweYamlSchema from '../../../schemas/zowe-yaml-schema.json';
-import serverYamlSchema from '../../../schemas/server-common.json';
+import zoweYamlSchema from '../../../../schemas/zowe-yaml-schema.json';
+import serverYamlSchema from '../../../../schemas/server-common.json';
 
 // modified "$id" field in server-common schema so `json-schema-to-ts` could resolve the references
 const serverCommonSchema = serverYamlSchema as {
   $schema: 'https://json-schema.org/draft/2019-09/schema';
-  $id: 'schemas/v2/server-common';
+  $id: '/schemas/v2/server-common';
   title: 'Common types';
   description: 'Configuration types that are common in Zowe and may be referenced by multiple components';
   $defs: {
@@ -38,6 +41,22 @@ const serverCommonSchema = serverYamlSchema as {
       pattern: '^([A-Z\\$\\#\\@]){1}([A-Z0-9\\$\\#\\@\\-]){0,7}(\\.([A-Z\\$\\#\\@]){1}([A-Z0-9\\$\\#\\@\\-]){0,7}){0,11}$';
       minLength: 3;
       maxLength: 44;
+    };
+    datasetPrefix: {
+      $anchor: 'zoweDatasetPrefix';
+      type: 'string';
+      description: "A 35-char all caps dotted ZOS name (space for '.SZWEnnnn')";
+      pattern: '^([A-Z\\$\\#\\@]){1}([A-Z0-9\\$\\#\\@\\-]){0,7}(\\.([A-Z\\$\\#\\@]){1}([A-Z0-9\\$\\#\\@\\-]){0,7}){0,11}$';
+      minLength: 3;
+      maxLength: 35;
+    };
+    datasetVsam: {
+      $anchor: 'zoweDatasetVsam';
+      type: 'string';
+      description: "A 38-char all caps dotted ZOS name (space for '.INDEX')";
+      pattern: '^([A-Z\\$\\#\\@]){1}([A-Z0-9\\$\\#\\@\\-]){0,7}(\\.([A-Z\\$\\#\\@]){1}([A-Z0-9\\$\\#\\@\\-]){0,7}){0,11}$';
+      minLength: 3;
+      maxLength: 38;
     };
     datasetMember: {
       $anchor: 'zoweDatasetMember';
@@ -67,6 +86,12 @@ const serverCommonSchema = serverYamlSchema as {
       pattern: '^([A-Z0-9$#@.]){1,32}$';
       minLength: 1;
       maxLength: 32;
+    };
+    optionalPath: {
+      $anchor: 'zoweOptionalPath';
+      type: 'string';
+      minLength: 0;
+      maxLength: 1024;
     };
     path: {
       $anchor: 'zowePath';
@@ -110,7 +135,7 @@ const serverCommonSchema = serverYamlSchema as {
 
 const zoweSchema = zoweYamlSchema as {
   $schema: 'https://json-schema.org/draft/2019-09/schema';
-  $id: 'https://zowe.orgschemas/v2/server-base';
+  $id: 'https://zowe.org/schemas/v2/server-base';
   title: 'Zowe configuration file';
   description: 'Configuration file for Zowe (zowe.org) version 2.';
   type: 'object';
@@ -131,15 +156,15 @@ const zoweSchema = zoweYamlSchema as {
               description: 'MVS data set related configurations';
               properties: {
                 prefix: {
-                  type: 'string';
+                  $ref: '/schemas/v2/server-common#zoweDatasetPrefix';
                   description: 'Where Zowe MVS data sets will be installed';
                 };
                 proclib: {
-                  type: 'string';
+                  $ref: '/schemas/v2/server-common#zoweDataset';
                   description: 'PROCLIB where Zowe STCs will be copied over';
                 };
                 parmlib: {
-                  type: 'string';
+                  $ref: '/schemas/v2/server-common#zoweDataset';
                   description: 'Zowe PARMLIB';
                 };
                 parmlibMembers: {
@@ -148,27 +173,27 @@ const zoweSchema = zoweYamlSchema as {
                   description: 'Holds Zowe PARMLIB members for plugins';
                   properties: {
                     zis: {
-                      $ref: 'schemas/v2/server-common#zoweDatasetMember';
+                      $ref: '/schemas/v2/server-common#zoweDatasetMember';
                       description: 'PARMLIB member used by ZIS';
                     };
                   };
                 };
                 jcllib: {
-                  type: 'string';
+                  $ref: '/schemas/v2/server-common#zoweDataset';
                   description: 'JCL library where Zowe will store temporary JCLs during initialization';
                 };
                 loadlib: {
-                  type: 'string';
+                  $ref: '/schemas/v2/server-common#zoweDataset';
                   description: 'States the dataset where Zowe executable utilities are located';
                   default: '<hlq>.SZWELOAD';
                 };
                 authLoadlib: {
-                  type: 'string';
+                  $ref: '/schemas/v2/server-common#zoweDataset';
                   description: 'The dataset that contains any Zowe core code that needs to run APF-authorized, such as ZIS';
                   default: '<hlq>.SZWEAUTH';
                 };
                 authPluginLib: {
-                  type: 'string';
+                  $ref: '/schemas/v2/server-common#zoweDataset';
                   description: 'APF authorized LOADLIB for Zowe ZIS Plugins';
                 };
               };
@@ -249,17 +274,17 @@ const zoweSchema = zoweYamlSchema as {
                   description: 'STC names';
                   properties: {
                     zowe: {
-                      type: 'string';
+                      $ref: '/schemas/v2/server-common#zoweDatasetMember';
                       description: 'STC name of main service';
                       default: 'ZWESLSTC';
                     };
                     zis: {
-                      type: 'string';
+                      $ref: '/schemas/v2/server-common#zoweDatasetMember';
                       description: 'STC name of ZIS';
                       default: 'ZWESISTC';
                     };
                     aux: {
-                      type: 'string';
+                      $ref: '/schemas/v2/server-common#zoweDatasetMember';
                       description: 'STC name of Auxiliary Service';
                       default: 'ZWESASTC';
                     };
@@ -297,7 +322,7 @@ const zoweSchema = zoweYamlSchema as {
                   description: 'PKCS#12 keystore settings';
                   properties: {
                     directory: {
-                      $ref: 'schemas/v2/server-common#zowePath';
+                      $ref: '/schemas/v2/server-common#zowePath';
                       description: 'Keystore directory';
                     };
                     name: {
@@ -490,24 +515,28 @@ const zoweSchema = zoweYamlSchema as {
                   type: 'string';
                   description: 'Storage class name if you are using VSAM in RLS mode';
                 };
+                name: {
+                  $ref: '/schemas/v2/server-common#zoweDatasetVsam';
+                  description: 'Data set name. Must match components.caching-service.storage.vsam.name';
+                };
               };
             };
           };
         };
         runtimeDirectory: {
-          $ref: 'schemas/v2/server-common#zowePath';
+          $ref: '/schemas/v2/server-common#zowePath';
           description: 'Path to where you installed Zowe.';
         };
         logDirectory: {
-          $ref: 'schemas/v2/server-common#zowePath';
+          $ref: '/schemas/v2/server-common#zowePath';
           description: 'Path to where you want to store Zowe log files.';
         };
         workspaceDirectory: {
-          $ref: 'schemas/v2/server-common#zowePath';
+          $ref: '/schemas/v2/server-common#zowePath';
           description: 'Path to where you want to store Zowe workspace files. Zowe workspace are used by Zowe component runtime to store temporary files.';
         };
         extensionDirectory: {
-          $ref: 'schemas/v2/server-common#zowePath';
+          $ref: '/schemas/v2/server-common#zowePath';
           description: 'Path to where you want to store Zowe extensions. "zwe components install" will install new extensions into this directory.';
         };
         job: {
@@ -535,7 +564,7 @@ const zoweSchema = zoweYamlSchema as {
           properties: {
             defaultHandler: {
               type: 'string';
-              description: 'The name of a handler specified in the handlers section. Will be used as the default for \'zwe components\' commands';
+              description: "The name of a handler specified in the handlers section. Will be used as the default for 'zwe components' commands";
             };
             handlers: {
               type: 'object';
@@ -572,7 +601,7 @@ const zoweSchema = zoweYamlSchema as {
             };
             unsafeDisableZosVersionCheck: {
               type: 'boolean';
-              description: 'Used to allow Zowe to warn, instead of error, when running on a version of z/OS that this version of Zowe hasn\'t been verified as working with';
+              description: "Used to allow Zowe to warn, instead of error, when running on a version of z/OS that this version of Zowe hasn't been verified as working with";
               default: false;
             };
           };
@@ -613,7 +642,7 @@ const zoweSchema = zoweYamlSchema as {
             };
             onComponentConfigureFail: {
               type: 'string';
-              description: 'Chooses how \'zwe start\' behaves if a component configure script fails';
+              description: "Chooses how 'zwe start' behaves if a component configure script fails";
               enum: ['warn', 'exit'];
               default: 'warn';
             };
@@ -630,7 +659,7 @@ const zoweSchema = zoweYamlSchema as {
         };
         sysMessages: {
           type: 'array';
-          description: 'List of Zowe message portions when matched will be additionally logged into the system\'s log (such as syslog on z/OS). Note: Some messages extremely early in the Zowe lifecycle may not be added to the system\'s log';
+          description: "List of Zowe message portions when matched will be additionally logged into the system's log (such as syslog on z/OS). Note: Some messages extremely early in the Zowe lifecycle may not be added to the system's log";
           uniqueItems: true;
           items: {
             type: 'string';
@@ -649,7 +678,6 @@ const zoweSchema = zoweYamlSchema as {
             validation: {
               type: 'string';
               enum: ['STRICT', 'COMPONENT-COMPAT'];
-              // eslint-disable-next-line max-len
               description: 'States how configmgr will do validation: Will it quit on any error (STRICT) or quit on any error except the case of a component not having a schema file (COMPONENT-COMPAT)';
             };
           };
@@ -660,8 +688,8 @@ const zoweSchema = zoweYamlSchema as {
       type: 'object';
       properties: {
         home: {
-          $ref: 'schemas/v2/server-common#zowePath';
-          description: 'Path to Java home directory.';
+          $ref: '/schemas/v2/server-common#zoweOptionalPath';
+          description: "Path to Java home directory. If java is at '/java/home/bin/java', than this would be '/java/home'";
         };
       };
     };
@@ -669,8 +697,8 @@ const zoweSchema = zoweYamlSchema as {
       type: 'object';
       properties: {
         home: {
-          $ref: 'schemas/v2/server-common#zowePath';
-          description: 'Path to node.js home directory.';
+          $ref: '/schemas/v2/server-common#zoweOptionalPath';
+          description: "Path to node.js home directory. If node is at '/node/home/bin/node', than this would be '/node/home'";
         };
       };
     };
@@ -764,7 +792,7 @@ const zoweSchema = zoweYamlSchema as {
               const: 'PKCS12';
             };
             file: {
-              $ref: 'schemas/v2/server-common#zowePath';
+              $ref: '/schemas/v2/server-common#zowePath';
               description: 'Path to your PKCS#12 keystore.';
             };
             password: {
@@ -789,7 +817,7 @@ const zoweSchema = zoweYamlSchema as {
               const: 'PKCS12';
             };
             file: {
-              $ref: 'schemas/v2/server-common#zowePath';
+              $ref: '/schemas/v2/server-common#zowePath';
               description: 'Path to your PKCS#12 keystore.';
             };
             password: {
@@ -805,25 +833,25 @@ const zoweSchema = zoweYamlSchema as {
           required: ['key', 'certificate'];
           properties: {
             key: {
-              $ref: 'schemas/v2/server-common#zowePath';
+              $ref: '/schemas/v2/server-common#zowePath';
               description: 'Path to the certificate private key stored in PEM format.';
             };
             certificate: {
-              $ref: 'schemas/v2/server-common#zowePath';
+              $ref: '/schemas/v2/server-common#zowePath';
               description: 'Path to the certificate stored in PEM format.';
             };
             certificateAuthorities: {
               description: 'List of paths to the certificate authorities stored in PEM format.';
               oneOf: [
                 {
-                  $ref: 'schemas/v2/server-common#zowePath';
+                  $ref: '/schemas/v2/server-common#zowePath';
                   description: 'Paths to the certificate authorities stored in PEM format. You can separate multiple certificate authorities by comma.';
                 },
                 {
                   type: 'array';
                   description: 'Path to the certificate authority stored in PEM format.';
                   items: {
-                    $ref: 'schemas/v2/server-common#zowePath';
+                    $ref: '/schemas/v2/server-common#zowePath';
                   };
                 },
               ];
@@ -855,7 +883,7 @@ const zoweSchema = zoweYamlSchema as {
             };
             password: {
               type: 'string';
-              description: 'Literally \'password\' may be needed when using keyrings for compatibility with java servers.';
+              description: "Literally 'password' may be needed when using keyrings for compatibility with java servers.";
               enum: ['', 'password'];
             };
             alias: {
@@ -882,7 +910,7 @@ const zoweSchema = zoweYamlSchema as {
             };
             password: {
               type: 'string';
-              description: 'Literally \'password\' may be needed when using keyrings for compatibility with java servers.';
+              description: "Literally 'password' may be needed when using keyrings for compatibility with java servers.";
               enum: ['', 'password'];
             };
           };
@@ -1034,7 +1062,7 @@ const zoweSchema = zoweYamlSchema as {
               type: 'array';
               description: 'The IP addresses which all of the Zowe servers will be binding on and listening to. Some servers may only support listening on the first element.';
               items: {
-                $ref: 'schemas/v2/server-common#zoweIpv4';
+                $ref: '/schemas/v2/server-common#zoweIpv4';
               };
             };
             vipaIp: {
@@ -1070,7 +1098,7 @@ const zoweSchema = zoweYamlSchema as {
           description: 'The location of the default registry for this handler. It could be a URL, path, dataset, whatever this handler supports';
         };
         path: {
-          $ref: 'schemas/v2/server-common#zowePath';
+          $ref: '/schemas/v2/server-common#zowePath';
           description: 'Unix file path to the configmgr-compatible JS file which implements the handler API';
         };
       };

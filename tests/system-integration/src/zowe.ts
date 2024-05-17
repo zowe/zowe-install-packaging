@@ -9,26 +9,18 @@
  */
 
 import { ConnectionPropsForSessCfg, Session } from '@zowe/imperative';
-import { REMOTE_CONNECTION } from './constants';
-
-let cachedZosmfSession: Session;
+import { REMOTE_CONNECTION_CFG } from './config/TestConfig';
 
 export function getZosmfSession(): Session {
-  if (cachedZosmfSession != null) {
-    return cachedZosmfSession;
-  }
-
   const sessCfg: unknown = {
-    hostname: REMOTE_CONNECTION.host,
-    port: REMOTE_CONNECTION.zosmf_port,
-    user: REMOTE_CONNECTION.user,
-    password: REMOTE_CONNECTION.password,
-    rejectUnauthorized: REMOTE_CONNECTION.zosmf_reject_unauthorized,
+    hostname: REMOTE_CONNECTION_CFG.host,
+    port: REMOTE_CONNECTION_CFG.zosmf_port,
+    user: REMOTE_CONNECTION_CFG.user,
+    password: REMOTE_CONNECTION_CFG.password,
+    rejectUnauthorized: REMOTE_CONNECTION_CFG.zosmf_reject_unauthorized,
     protocol: 'https',
   };
 
   ConnectionPropsForSessCfg.resolveSessCfgProps(sessCfg, { $0: '', _: [] }, {});
-  cachedZosmfSession = new Session(sessCfg);
-  console.log('returning not cached ' + cachedZosmfSession);
-  return cachedZosmfSession;
+  return new Session(sessCfg);
 }
