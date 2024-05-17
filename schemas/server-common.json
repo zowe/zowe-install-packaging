@@ -69,7 +69,7 @@
       "minLength": 1,
       "maxLength": 32
     },
-    "path": {
+    "optionalPath": {
       "$anchor": "zoweOptionalPath",
       "type": "string",
       "minLength": 0,

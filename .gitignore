@@ -29,6 +29,11 @@ tmp/
 # Compiled TS files
 bin/libs/*.js
 build/zwe/out
+bin/**/cli.js
+bin/**/index.js
+bin/utils/ObjUtils.js
+bin/commands/components/handlerutils.js
+bin/commands/components/npm.js
 
 # Mac files
 .DS_Store

@@ -34,7 +34,12 @@ export function execute(dryRun?: boolean) {
   }
   
   const tempFile = fs.createTmpFile();
-  zosFs.copyMvsToUss(ZOWE_CONFIG.zowe.setup.dataset.prefix + '.SZWESAMP(ZWEGENER)', tempFile);
+  const copyResult= zosFs.copyMvsToUss(ZOWE_CONFIG.zowe.setup.dataset.prefix + '.SZWESAMP(ZWEGENER)', tempFile);
+  if (copyResult != 0) {
+    //TODO: error message id
+    common.printMessage(`Error ZWETODOE: ${ZOWE_CONFIG.zowe.setup.dataset.prefix}.SZWESAMP(ZWEGENER) could not be copied. Review other error output from the 'cp' command.`);
+    return;
+  }
   let jclContents = xplatform.loadFileUTF8(tempFile, xplatform.AUTO_DETECT);
 
   // Replace is using special replacement patterns, by doubling '$' we will avoid that
@@ -91,7 +96,7 @@ export function execute(dryRun?: boolean) {
     const result = zosJes.waitForJob(jobid);
     os.remove(tempFile);
 
-    common.printMessage(`Job completed with RC=${result.rc}`);
+    common.printMessage(`Job ZWEGENER(${jobid}) completed with RC=${result.rc}`);
     if (result.rc == 0) {
       common.printMessage("Zowe JCL generated successfully");
     } else {
