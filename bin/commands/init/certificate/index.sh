@@ -21,6 +21,7 @@ if [ -z "${ZWE_PRIVATE_TMP_MERGED_YAML_DIR}" ]; then
   mkdir -p ${ZWE_PRIVATE_TMP_MERGED_YAML_DIR}
   _CEE_RUNOPTS="XPLINK(ON),HEAPPOOLS(OFF),HEAPPOOLS64(OFF)" ${ZWE_zowe_runtimeDirectory}/bin/utils/configmgr -script "${ZWE_zowe_runtimeDirectory}/bin/commands/internal/config/output/cli.js"
   # use the yaml configmgr returns because it will contain defaults for the version we are using.
+  CONFIG_TO_WRITE=${ZWE_CLI_PARAMETER_CONFIG}
   ZWE_CLI_PARAMETER_CONFIG=${ZWE_PRIVATE_TMP_MERGED_YAML_DIR}/.zowe-merged.yaml
 fi
 
@@ -354,6 +355,7 @@ if [ "${cert_type}" = "PKCS12" ]; then
 
   pkcs12_name_lc=$(echo "${pkcs12_name}" | lower_case)
 
+  ZWE_CLI_PARAMETER_CONFIG=${CONFIG_TO_WRITE}
   # update zowe.yaml
   if [ "${ZWE_CLI_PARAMETER_UPDATE_CONFIG}" = "true" ]; then
     print_level1_message "Update certificate configuration to ${ZWE_CLI_PARAMETER_CONFIG}"
