@@ -1,2 +1,3 @@
+ZWEL0143E|143|Cannot find data set member %s. You may need to re-run zwe install.
 ZWEL0157E|157|%s (%s) is not defined in Zowe YAML configuration file.
 ZWEL0316E|316|Command requires zowe.useConfigmgr=true to use.

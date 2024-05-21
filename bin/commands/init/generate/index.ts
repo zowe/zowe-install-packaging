@@ -34,7 +34,9 @@ export function execute(dryRun?: boolean) {
   }
   
   const tempFile = fs.createTmpFile();
-  zosFs.copyMvsToUss(ZOWE_CONFIG.zowe.setup.dataset.prefix + '.SZWESAMP(ZWEGENER)', tempFile);
+  if (zosFs.copyMvsToUss(ZOWE_CONFIG.zowe.setup.dataset.prefix + '.SZWESAMP(ZWEGENER)', tempFile) !== 0) {
+    common.printErrorAndExit(`ZWEL0143E Cannot find data set member '${ZOWE_CONFIG.zowe.setup.dataset.prefix + '.SZWESAMP(ZWEGENER)'}'. You may need to re-run zwe install.`, undefined, 143);
+  }
   let jclContents = xplatform.loadFileUTF8(tempFile, xplatform.AUTO_DETECT);
 
   // Replace is using special replacement patterns, by doubling '$' we will avoid that
