@@ -15,6 +15,15 @@
 # validation
 require_zowe_yaml
 
+if [ -z "${ZWE_PRIVATE_TMP_MERGED_YAML_DIR}" ]; then
+  # user-facing command, use tmpdir to not mess up workspace permissions
+  export ZWE_PRIVATE_TMP_MERGED_YAML_DIR=$(create_tmp_file)
+  _CEE_RUNOPTS="XPLINK(ON),HEAPPOOLS(OFF),HEAPPOOLS64(OFF)" ${ZWE_zowe_runtimeDirectory}/bin/utils/configmgr -script "${ZWE_zowe_runtimeDirectory}/bin/commands/internal/config/output/cli.js"
+  # use the yaml configmgr returns because it will contain defaults for the version we are using.
+  ZWE_CLI_PARAMETER_CONFIG=${ZWE_PRIVATE_TMP_MERGED_YAML_DIR}/.zowe-merged.yaml
+fi
+
+
 ###############################
 # read prefix and validate
 prefix=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.dataset.prefix")
@@ -229,6 +238,7 @@ if [ "${cert_type}" = "PKCS12" ]; then
     pkcs12_caPassword=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.certificate.pkcs12.caPassword")
     pkcs12_caAlias=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.certificate.pkcs12.caAlias")
     pkcs12_caAlias_lc=$(echo "${pkcs12_caAlias}" | lower_case)
+
     # create CA
     zwecli_inline_execute_command \
       certificate pkcs12 create ca \
@@ -457,4 +467,9 @@ if [ -n "${zosmf_host}" -a "${verify_certificates}" = "STRICT" ]; then
     certificate verify-service \
     --host "${zosmf_host}" \
     --port "${zosmf_port}"
+fi
+
+# cleanup temp file made at top.
+if [ -n "$ZWE_PRIVATE_TMP_MERGED_YAML_DIR" ]; then
+  rm "${ZWE_PRIVATE_TMP_MERGED_YAML_DIR}/.zowe-merged.yaml"
 fi
