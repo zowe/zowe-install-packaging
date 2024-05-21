@@ -15,5 +15,4 @@ import * as config from '../../../../libs/config';
 export function execute() {
   common.requireZoweYaml();
   const ZOWE_CONFIG=config.getZoweConfig();
-  common.printMessage(`Runtime YAML placed at ${ZOWE_CONFIG.zowe.workspaceDirectory}/.env/.zowe-merged.yaml`);
 }
