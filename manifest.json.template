@@ -109,9 +109,9 @@
       "artifact": "cloud-gateway-*.zip"
     },
     "org.zowe.configmgr-rexx": {
-      "version": "2.16.0-V2.X-RC",
+      "version": "2.16.0-FEATURE-V2-ALLOW-NULL-STRING",
       "repository": "libs-snapshot-local",
-      "artifact": "configmgr-rexx-2.16.0-2024051503.pax"
+      "artifact": "configmgr-rexx-2.16.0-2024052040.pax"
     },
 	"org.zowe.getesm": {
       "version": "2.16.0-V2.X-RC",
@@ -119,9 +119,9 @@
       "artifact": "getesm-2.16.0-2024051552.pax"
     },
     "org.zowe.configmgr": {
-      "version": "2.16.0-V2.X-RC",
+      "version": "2.16.0-FEATURE-V2-ALLOW-NULL-STRING",
       "repository": "libs-snapshot-local",
-      "artifact": "configmgr-2.16.0-2024051543.pax"
+      "artifact": "configmgr-2.16.0-2024052038.pax"
     },
     "org.zowe.launcher": {
       "version": "2.16.0"
