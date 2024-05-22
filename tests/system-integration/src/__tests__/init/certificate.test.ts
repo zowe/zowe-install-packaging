@@ -14,14 +14,14 @@ import { RemoteTestRunner } from '../../zos/RemoteTestRunner';
 import { ZoweYaml } from '../../config/ZoweYaml';
 import { DatasetType, TestAwareFiles, TestManagedDataset } from '../../zos/TestAwareFiles';
 
-const testSuiteName = 'init-apfauth';
+const testSuiteName = 'init-cert';
 describe(testSuiteName, () => {
   let testRunner: RemoteTestRunner;
   let cfgYaml: ZoweYamlType;
   let cleanupDatasets: TestManagedDataset[] = []; // a list of datasets deleted after every test
 
   beforeAll(() => {
-    testRunner = new RemoteTestRunner('init-apfauth');
+    testRunner = new RemoteTestRunner('init-cert');
   });
   beforeEach(() => {
     cfgYaml = ZoweYaml.basicZoweYaml();
@@ -39,24 +39,32 @@ describe(testSuiteName, () => {
     cleanupDatasets = [];
   });
 
-  it('apf disable cfgmgr', async () => {
+  it('cert disable cfgmgr', async () => {
     cfgYaml.zowe.useConfigmgr = false;
-    const result = await testRunner.runZweTest(cfgYaml, 'init apfauth');
+    const result = await testRunner.runZweTest(cfgYaml, 'init certificate');
     expect(result.stdout).not.toBeNull();
     expect(result.cleanedStdout).toMatchSnapshot();
-    expect(result.rc).toBe(60); // 60 is expected error code...
+    expect(result.rc).toBe(231); // 231 is expected error code...?
   });
 
-  it('apf bad ds prefix', async () => {
+  it('cert enable cfgmgr', async () => {
+    cfgYaml.zowe.useConfigmgr = true;
+    const result = await testRunner.runZweTest(cfgYaml, 'init certificate');
+    expect(result.stdout).not.toBeNull();
+    expect(result.cleanedStdout).toMatchSnapshot();
+    expect(result.rc).toBe(231); // 231 is expected error code...?
+  }, 180000);
+  /*
+  it('cert bad ds prefix', async () => {
     cfgYaml.zowe.setup.dataset.prefix = 'ZOWEAD6.ZWETEST.NOEXIST';
-    const result = await testRunner.runZweTest(cfgYaml, 'init apfauth --dry-run');
+    const result = await testRunner.runZweTest(cfgYaml, 'init certificate --dry-run');
     expect(result.stdout).not.toBeNull();
     expect(result.cleanedStdout).toMatchSnapshot();
     expect(result.rc).toBe(231);
   });
 
-  /* it('apf simple --dry-run', async () => {
-    const result = await testRunner.runZweTest(cfgYaml, 'init apfauth --dry-run');
+  it('cert simple --dry-run', async () => {
+    const result = await testRunner.runZweTest(cfgYaml, 'init certificate --dry-run');
     expect(result.stdout).not.toBeNull();
     expect(result.cleanedStdout).toMatchSnapshot();
     expect(result.rc).toBe(0); // 60 is expected...

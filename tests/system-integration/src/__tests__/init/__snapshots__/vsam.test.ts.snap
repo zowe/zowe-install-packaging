@@ -1,25 +1,13 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`init vsam BAD: bad ds prefix 1`] = `
+exports[`init-vsam creates vsam 1`] = `
 "
-$ Temporary directory '/tmp/.zweenv-6996' created.
+$ Temporary directory '/tmp/.zweenv-0000' created.
 Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
 -------------------------------------------------------------------------------
 >> Initialize Zowe custom data sets
 
-cp: FSUM6258 cannot open file "//'ZOWEAD6.ZWETEST.NOEXIST.SZWESAMP(ZWEGENER)'": EDC5049I The specified file name could not be located. (errno2=0xC00B0641)
-Error ZWETODOE: ZOWEAD6.ZWETEST.NOEXIST.SZWESAMP(ZWEGENER) could not be copied. Review other error output from the 'cp' command.
-ERROR: Error ZWEL0999E: zowe.setup.dataset.jcllib does not exist, cannot run. Run 'zwe init', 'zwe init generate', or submit JCL ZOWEAD6.ZWETEST.NOEXIST.SZWESAMP(ZWEGENER) before running this command."
-`;
-
-exports[`init vsam GOOD: simple --dry-run 1`] = `
-"
-$ Temporary directory '/tmp/.zweenv-1582' created.
-Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
--------------------------------------------------------------------------------
->> Initialize Zowe custom data sets
-
-Template JCL: ZOWEAD6.ZWETEST.SZWESAMP(ZWEGENER)
+Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWEGENER)
 --- JCL content ---
 //ZWEGENER JOB
 //*
@@ -49,15 +37,15 @@ Template JCL: ZOWEAD6.ZWETEST.SZWESAMP(ZWEGENER)
 //   DCB=(RECFM=FB,LRECL=80,BLKSIZE=3120,DSORG=PO),
 //   SPACE=(3120,(20,5,10))
 //*
-//* Replace ZOWEAD6.ZWETEST with the
+//* Replace TEST.DATASET.PFX with the
 //* Value as seen in zowe.yaml
 //*
-//SYSPROC  DD DSN=ZOWEAD6.ZWETEST.SZWEEXEC,DISP=SHR
+//SYSPROC  DD DSN=TEST.DATASET.PFX.SZWEEXEC,DISP=SHR
 //*
-//* Replace ZOWEAD6.ZWETEST with the
+//* Replace TEST.DATASET.PFX with the
 //* Value as seen in zowe.yaml
 //*
-//STEPLIB  DD DSN=ZOWEAD6.ZWETEST.SZWELOAD,DISP=SHR
+//STEPLIB  DD DSN=TEST.DATASET.PFX.SZWELOAD,DISP=SHR
 //ISPPLIB  DD DSN=ISP.SISPPENU,DISP=SHR
 //ISPMLIB  DD DSN=ISP.SISPMENU,DISP=SHR
 //ISPTLIB  DD DSN=ISP.SISPTENU,DISP=SHR
@@ -68,12 +56,12 @@ Template JCL: ZOWEAD6.ZWETEST.SZWESAMP(ZWEGENER)
 //* zowe-yaml-schema.json
 //* server-common.json
 //*
-//* Replace /ZOWE/zwe-integration with where your Zowe run time
+//* Replace /test/dir with where your Zowe run time
 //* directory is, as seen in zowe.yaml
 //*
 //MYSCHEMA DD   *,DLM=$$
-FILE /ZOWE/zwe-integration/schemas/zowe-yaml-schema.json
-FILE /ZOWE/zwe-integration/schemas/server-common.json
+FILE /test/dir/schemas/zowe-yaml-schema.json
+FILE /test/dir/schemas/server-common.json
 $$
 //*
 //* The DD below must include one or more FILE or PARMLIB
@@ -84,7 +72,7 @@ $$
 //* Ex. PARMLIB MY.ZOWE.CUSTOM.PARMLIB
 //*     FILE /the/zowe/defaults.yaml
 //MYCONFIG DD   *,DLM=$$
-FILE /ZOWE/zwe-integration/zowe.test.yaml
+FILE /test/dir/zowe.test.yaml
 $$
 //CMGROUT  DD   SYSOUT=*
 //SYSPRINT DD   SYSOUT=*
@@ -115,7 +103,7 @@ noverbose -
 Submitting Job ZWEGENER
 Job ZWEGENER(JOB00000) completed with RC=0
 Zowe JCL generated successfully
-Template JCL: ZOWEAD6.ZWETEST.SZWESAMP(ZWECSVSM) , Executable JCL: ZOWEAD6.ZWETEST.JCLLIB(ZWECSVSM)
+Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWECSVSM) , Executable JCL: TEST.DATASET.PFX.JCLLIB(ZWECSVSM)
 --- JCL Content ---
 //ZWECSVSM JOB
 //*
@@ -157,36 +145,28 @@ Template JCL: ZOWEAD6.ZWETEST.SZWESAMP(ZWECSVSM) , Executable JCL: ZOWEAD6.ZWETE
 //SYSPRINT DD SYSOUT=*
 //SYSIN    DD *
   DEFINE CLUSTER -
-   (NAME(ZOWEAD6.ZWETEST.VSAMTEST) -
+   (NAME(TEST.DATASET.PFX.VSAMTEST) -
 //         DD DDNAME=NONRLS
 //         DD *
     REC(80 20) -
     INDEXED) -
-   DATA(NAME(ZOWEAD6.ZWETEST.VSAMTEST.DATA) -
+   DATA(NAME(TEST.DATASET.PFX.VSAMTEST.DATA) -
     RECSZ(4096 4096) -
     UNIQUE -
     KEYS(128 0)) -
-   INDEX(NAME(ZOWEAD6.ZWETEST.VSAMTEST.INDEX) -
+   INDEX(NAME(TEST.DATASET.PFX.VSAMTEST.INDEX) -
     UNIQUE)
 //RLS      DD *
     STORCLAS() -
     LOG(NONE) -
 //NONRLS   DD *
-    VOLUME(ZOS003) -
+    VOLUME(TSTVOL) -
     SHAREOPTIONS(2 3) -
 //*
 --- End of JCL ---
-JCL not submitted, command run with "--dry-run" flag.
-To perform command, re-run command without "--dry-run" flag, or submit the JCL directly
-
->> Command run successfully.
-
+Submitting Job ZWECSVSM
+Job ZWECSVSM(JOB00000) completed with RC=0
 
 >> Zowe Caching Service VSAM storage is created successfully.
 "
-`;
-
-exports[`init vsam disable cfgmgr 1`] = `
-"
-$ Error ZWEL0316E: Command requires zowe.useConfigmgr=true to use."
 `;

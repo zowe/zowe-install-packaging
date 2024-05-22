@@ -10,16 +10,18 @@
 
 import * as uss from './uss';
 import * as _ from 'lodash';
+import * as path from 'path';
 import * as files from '@zowe/zos-files-for-zowe-sdk';
 import {
   DOWNLOAD_CONFIGMGR,
+  DOWNLOAD_ZOWE_TOOLS,
   JFROG_CREDENTIALS,
   REMOTE_SETUP,
   REMOTE_SYSTEM_INFO,
-  REMOTE_TEST_DIR,
   REPO_ROOT_DIR,
   TEST_DATASETS_LINGERING_FILE,
   TEST_JOBS_RUN_FILE,
+  TEST_OUTPUT_DIR,
   THIS_TEST_BASE_YAML,
   THIS_TEST_ROOT_DIR,
 } from './config/TestConfig';
@@ -29,7 +31,8 @@ import * as yaml from 'yaml';
 import ZoweYamlType from './types/ZoweYamlType';
 import { JfrogClient } from 'jfrog-client-js';
 import { processManifestVersion } from './utils';
-import { execSync } from 'child_process';
+import { exec, execSync } from 'child_process';
+import { cwd } from 'process';
 
 const zosmfSession = getZosmfSession();
 
@@ -39,9 +42,12 @@ function setupBaseYaml() {
 
   zoweYaml.java.home = REMOTE_SYSTEM_INFO.zosJavaHome;
   zoweYaml.node.home = REMOTE_SYSTEM_INFO.zosNodeHome;
-  zoweYaml.zowe.runtimeDirectory = `${REMOTE_TEST_DIR}`;
+  zoweYaml.zowe.runtimeDirectory = REMOTE_SYSTEM_INFO.ussTestDir;
   zoweYaml.zowe.setup.dataset.prefix = REMOTE_SYSTEM_INFO.prefix;
   zoweYaml.zowe.setup.dataset.jcllib = REMOTE_SYSTEM_INFO.jcllib;
+  zoweYaml.zowe.setup.vsam.name = REMOTE_SYSTEM_INFO.prefix + '.VSAM';
+  zoweYaml.zowe.setup.vsam.volume = REMOTE_SYSTEM_INFO.volume;
+  zoweYaml.zowe.setup.certificate.pkcs12.directory = REMOTE_SYSTEM_INFO.ussTestDir;
   // zoweYaml.zowe.setup.dataset.loadlib = REMOTE_SYSTEM_INFO.szweexec;
   // zoweYaml.node.home = systemDefaults.zos_node_home;
   // zoweYaml.zowe.runtimeDirectory = systemDefaults.
@@ -100,15 +106,20 @@ module.exports = async () => {
   if (!fs.existsSync(`${REPO_ROOT_DIR}/bin/zwe`)) {
     throw new Error('Could not locate the zwe tool locally. Ensure you are running tests from the test project root');
   }
+  fs.mkdirpSync(`${THIS_TEST_ROOT_DIR}/.build`);
   setupBaseYaml();
-  fs.mkdirpSync(`${THIS_TEST_ROOT_DIR}/.build/zowe`);
   fs.rmSync(TEST_DATASETS_LINGERING_FILE, { force: true });
   fs.rmSync(TEST_JOBS_RUN_FILE, { force: true });
+  fs.rmSync(TEST_OUTPUT_DIR, { force: true, recursive: true });
+  fs.mkdirpSync(TEST_OUTPUT_DIR);
 
   if (REMOTE_SETUP) {
     if (DOWNLOAD_CONFIGMGR) {
       await downloadManifestDep('org.zowe.configmgr');
       await downloadManifestDep('org.zowe.configmgr-rexx');
+    }
+    if (DOWNLOAD_ZOWE_TOOLS) {
+      await downloadManifestDep('org.zowe.utility-tools');
     }
 
     const configmgrPax = fs.readdirSync(`${THIS_TEST_ROOT_DIR}/.build`).find((item) => /configmgr.*\.pax/g.test(item));
@@ -121,39 +132,104 @@ module.exports = async () => {
       throw new Error('Could not locate a configmgr-rexx pax in the .build directory');
     }
 
-    console.log('Setting up remote server...');
-    await uss.runCommand(`mkdir -p ${REMOTE_TEST_DIR}`);
+    const zoweToolsZip = fs.readdirSync(`${THIS_TEST_ROOT_DIR}/.build`).find((item) => /zowe-utility-tools.*\.zip/g.test(item));
+    if (zoweToolsZip == null) {
+      throw new Error('Could not locate zowe-utility-tools zip in the .build directory');
+    }
 
-    console.log(`Uploading ${configmgrPax} to ${REMOTE_TEST_DIR}/configmgr.pax ...`);
+    console.log('Setting up remote server...');
+    await uss.runCommand(`mkdir -p ${REMOTE_SYSTEM_INFO.ussTestDir}`);
+
+    console.log(`Uploading ${configmgrPax} to ${REMOTE_SYSTEM_INFO.ussTestDir}/configmgr.pax ...`);
     await files.Upload.fileToUssFile(
       zosmfSession,
       `${THIS_TEST_ROOT_DIR}/.build/${configmgrPax}`,
-      `${REMOTE_TEST_DIR}/configmgr.pax`,
+      `${REMOTE_SYSTEM_INFO.ussTestDir}/configmgr.pax`,
       { binary: true },
     );
 
-    console.log(`Uploading ${configmgrRexxPax} to ${REMOTE_TEST_DIR}/configmgr-rexx.pax ...`);
+    console.log(`Uploading ${configmgrRexxPax} to ${REMOTE_SYSTEM_INFO.ussTestDir}/configmgr-rexx.pax ...`);
     await files.Upload.fileToUssFile(
       zosmfSession,
       `${THIS_TEST_ROOT_DIR}/.build/${configmgrRexxPax}`,
-      `${REMOTE_TEST_DIR}/configmgr-rexx.pax`,
+      `${REMOTE_SYSTEM_INFO.ussTestDir}/configmgr-rexx.pax`,
       { binary: true },
     );
 
     console.log(`Building zwe typescript...`);
     execSync(`npm install && npm run prod`, { cwd: `${REPO_ROOT_DIR}/build/zwe` });
 
-    await cleanUssDir(`${REMOTE_TEST_DIR}/bin`);
-    await cleanUssDir(`${REMOTE_TEST_DIR}/schemas`);
+    await cleanUssDir(`${REMOTE_SYSTEM_INFO.ussTestDir}/bin`);
+    await cleanUssDir(`${REMOTE_SYSTEM_INFO.ussTestDir}/schemas`);
 
-    console.log(`Uploading ${REPO_ROOT_DIR}/bin to ${REMOTE_TEST_DIR}/bin...`);
-    await files.Upload.dirToUSSDirRecursive(zosmfSession, `${REPO_ROOT_DIR}/bin`, `${REMOTE_TEST_DIR}/bin/`, {
-      binary: false,
-      includeHidden: true,
+    console.log(`Uploading conversion script...`);
+    await files.Upload.fileToUssFile(
+      zosmfSession,
+      `${THIS_TEST_ROOT_DIR}/resources/convert_to_ebcdic.sh`,
+      `${REMOTE_SYSTEM_INFO.ussTestDir}/convert_to_ebcdic.sh`,
+    );
+
+    console.log(`Uploading ${REPO_ROOT_DIR}/bin to ${REMOTE_SYSTEM_INFO.ussTestDir}/bin...`);
+    // archive without compression (issues on some backends)
+    execSync(`tar -cf ${THIS_TEST_ROOT_DIR}/.build/zwe.tar -C ${REPO_ROOT_DIR} bin`);
+    await files.Upload.fileToUssFile(
+      zosmfSession,
+      `${THIS_TEST_ROOT_DIR}/.build/zwe.tar`,
+      `${REMOTE_SYSTEM_INFO.ussTestDir}/zwe.tar`,
+      {
+        binary: true,
+      },
+    );
+    await uss.runCommand(`tar -xf zwe.tar`, REMOTE_SYSTEM_INFO.ussTestDir);
+
+    // zowe-install-packaging-tools
+    const utilsDir = path.resolve(THIS_TEST_ROOT_DIR, '.build', 'utility-tools');
+    fs.mkdirpSync(`${utilsDir}`);
+    execSync(`unzip -o ${THIS_TEST_ROOT_DIR}/.build/${zoweToolsZip} -d ${utilsDir}`, { cwd: THIS_TEST_ROOT_DIR });
+
+    for (const file of fs.readdirSync(utilsDir)) {
+      const match = file.match(/zowe-(.*)-[0-9]?.*tgz/im);
+      if (match) {
+        const fileName = match[0];
+        const pkgName = match[1];
+
+        console.log(`Uploading ${pkgName} to ${REMOTE_SYSTEM_INFO.ussTestDir}/bin/utils...`);
+        // re-archive without compression (issues on some backends)
+        execSync(`tar xzf ${fileName} && tar -cf ${pkgName}.tar package && rm -rf package`, { cwd: utilsDir });
+        await files.Upload.fileToUssFile(
+          zosmfSession,
+          `${utilsDir}/${pkgName}.tar`,
+          `${REMOTE_SYSTEM_INFO.ussTestDir}/${pkgName}.tar`,
+          {
+            binary: true,
+          },
+        );
+        await uss.runCommand(`tar xf ${pkgName}.tar`, REMOTE_SYSTEM_INFO.ussTestDir);
+        await uss.runCommand(`mv package ./bin/utils/${pkgName}`, REMOTE_SYSTEM_INFO.ussTestDir);
+      }
+    }
+    let ncertPax = '';
+    console.log(`Uploading ncert to ${REMOTE_SYSTEM_INFO.ussTestDir}/bin/utils...`);
+    fs.readdirSync(`${THIS_TEST_ROOT_DIR}/.build/utility-tools`).forEach((item) => {
+      const match = item.match(/zowe-ncert-([0-9]?.*)\.pax/im);
+      if (match && match[1]) {
+        ncertPax = match[0];
+      }
     });
+    await files.Upload.fileToUssFile(
+      zosmfSession,
+      `${THIS_TEST_ROOT_DIR}/.build/utility-tools/${ncertPax}`,
+      `${REMOTE_SYSTEM_INFO.ussTestDir}/ncert.pax`,
+      {
+        binary: true,
+      },
+    );
 
-    console.log(`Uploading ${REPO_ROOT_DIR}/schemas to ${REMOTE_TEST_DIR}/schemas...`);
-    await files.Upload.dirToUSSDirRecursive(zosmfSession, `${REPO_ROOT_DIR}/schemas`, `${REMOTE_TEST_DIR}/schemas/`, {
+    console.log(`Converting everything in ${REMOTE_SYSTEM_INFO.ussTestDir}/bin to EBCDIC...`);
+    await uss.runCommand(`chmod +x convert_to_ebcdic.sh && ./convert_to_ebcdic.sh`, REMOTE_SYSTEM_INFO.ussTestDir);
+
+    console.log(`Uploading ${REPO_ROOT_DIR}/schemas to ${REMOTE_SYSTEM_INFO.ussTestDir}/schemas...`);
+    await files.Upload.dirToUSSDirRecursive(zosmfSession, `${REPO_ROOT_DIR}/schemas`, `${REMOTE_SYSTEM_INFO.ussTestDir}/schemas/`, {
       binary: false,
       includeHidden: true,
     });
@@ -174,13 +250,16 @@ module.exports = async () => {
     });
 
     console.log(`Unpacking configmgr and placing it in bin/utils ...`);
-    await uss.runCommand(`pax -ppx -rf configmgr.pax && mv configmgr bin/utils/`, `${REMOTE_TEST_DIR}`);
+    await uss.runCommand(`pax -ppx -rf configmgr.pax && mv configmgr bin/utils/`, `${REMOTE_SYSTEM_INFO.ussTestDir}`);
 
     console.log(`Unpacking configmgr-rexx and placing it in ${REMOTE_SYSTEM_INFO.szweload} ...`);
-    await uss.runCommand(`pax -ppx -rf configmgr-rexx.pax`, `${REMOTE_TEST_DIR}`);
+    await uss.runCommand(`pax -ppx -rf configmgr-rexx.pax`, `${REMOTE_SYSTEM_INFO.ussTestDir}`);
     for (const pgm of ['ZWERXCFG', 'ZWECFG31', 'ZWECFG64']) {
-      await uss.runCommand(`cp -X ${pgm} "//'${REMOTE_SYSTEM_INFO.szweload}(${pgm})'"`, `${REMOTE_TEST_DIR}`);
+      await uss.runCommand(`cp -X ${pgm} "//'${REMOTE_SYSTEM_INFO.szweload}(${pgm})'"`, `${REMOTE_SYSTEM_INFO.ussTestDir}`);
     }
+
+    console.log(`Unpacking ncert.pax from zowe-install-packaging-tools and placing it in bin/utils/...`);
+    await uss.runCommand(`pax -ppx -rf ncert.pax -s#^#./bin/utils/ncert/#g`, `${REMOTE_SYSTEM_INFO.ussTestDir}`);
 
     console.log(`Uploading sample JCL from files/SZWESAMP to ${REMOTE_SYSTEM_INFO.szwesamp}...`);
     await files.Upload.dirToPds(zosmfSession, `${REPO_ROOT_DIR}/files/SZWESAMP`, REMOTE_SYSTEM_INFO.szwesamp, {

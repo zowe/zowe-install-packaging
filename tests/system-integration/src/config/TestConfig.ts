@@ -24,33 +24,12 @@ class ConfigItem<T> {
     this.default = defaultVal;
   }
 }
-
-type TestConfigData = {
-  zos_java_home: string;
-  zos_node_home: string;
-  host: string;
-  user: string;
-  password: string;
-  ssh_port: string;
-  zosmf_port: string;
-  remote_test_dir: string;
-  test_ds_hlq: string;
-  test_volume: string;
-  zosmf_reject_unauthorized: string;
-  download_configmgr: string;
-  remote_setup: boolean;
-  remote_teardown: boolean;
-  jfrog_user: string;
-  jfrog_token: string;
-  collect_test_spool: string;
-};
-
 const configFields: ConfigItem<unknown>[] = [
   new ConfigItem('zos_java_home', false),
   new ConfigItem('zos_node_home', false),
-  new ConfigItem('host', true),
-  new ConfigItem('user', true),
-  new ConfigItem('password', true),
+  new ConfigItem('zos_host', true),
+  new ConfigItem('zos_user', true),
+  new ConfigItem('zos_password', true),
   new ConfigItem('ssh_port', true),
   new ConfigItem('zosmf_port', true),
   new ConfigItem('remote_test_dir', true),
@@ -58,6 +37,7 @@ const configFields: ConfigItem<unknown>[] = [
   new ConfigItem('test_volume', true),
   new ConfigItem('zosmf_reject_unauthorized', false, false),
   new ConfigItem('download_configmgr', false, true),
+  new ConfigItem('download_zowe_tools', false, true),
   new ConfigItem('remote_setup', false),
   new ConfigItem('remote_teardown', false),
   new ConfigItem('jfrog_user', false),
@@ -65,22 +45,21 @@ const configFields: ConfigItem<unknown>[] = [
   new ConfigItem('collect_test_spool', false, true),
 ];
 
-//
 export const REPO_ROOT_DIR: string = findDirWalkingUpOrThrow('zowe-install-packaging');
 export const THIS_TEST_ROOT_DIR: string = findDirWalkingUpOrThrow('system-integration'); // JEST runs in the src dir
-
 const configFile = process.env['TEST_CONFIG_FILE'] || `${THIS_TEST_ROOT_DIR}/resources/test_config.yml`;
 const configData = getConfig(configFile);
 
 export const THIS_TEST_BASE_YAML: string = path.resolve(THIS_TEST_ROOT_DIR, '.build', 'zowe.yaml.base');
+export const TEST_OUTPUT_DIR: string = path.resolve(THIS_TEST_ROOT_DIR, '.build', 'output');
 export const INSTALL_TEST_ROOT_DIR: string = path.resolve(__dirname, '../');
 export const TEST_DATASETS_LINGERING_FILE = path.resolve(THIS_TEST_ROOT_DIR, '.build', 'lingering_ds.txt');
 export const TEST_JOBS_RUN_FILE = path.resolve(THIS_TEST_ROOT_DIR, '.build', 'jobs-run.txt');
+export const DOWNLOAD_ZOWE_TOOLS = yn(configData.download_zowe_tools, { default: true });
 export const DOWNLOAD_CONFIGMGR = yn(configData.download_configmgr, { default: true });
-export const TEST_DATASETS_HLQ = configData.test_ds_hlq || 'ZWETESTS';
+export const TEST_DATASETS_HLQ = configData.test_ds_hlq || configData.zos_user + '.ZWETESTS';
 export const REMOTE_SETUP = yn(configData.remote_setup, { default: true });
 export const REMOTE_TEARDOWN = yn(configData.remote_teardown, { default: true });
-export const REMOTE_TEST_DIR = configData.remote_test_dir;
 export const TEST_COLLECT_SPOOL = yn(configData.collect_test_spool);
 export const JFROG_CREDENTIALS = {
   user: configData.jfrog_user,
@@ -97,18 +76,40 @@ export const REMOTE_SYSTEM_INFO = {
   szwesamp: `${configData.test_ds_hlq}.SZWESAMP`,
   jcllib: `${configData.test_ds_hlq}.JCLLIB`,
   szweload: `${configData.test_ds_hlq}.SZWELOAD`,
+  ussTestDir: configData.remote_test_dir,
 };
 
 export const REMOTE_CONNECTION_CFG = {
-  host: configData.host,
+  host: configData.zos_host,
   ssh_port: Number(configData.ssh_port),
   zosmf_port: Number(configData.zosmf_port),
-  user: configData.user,
-  password: configData.password,
+  user: configData.zos_user,
+  password: configData.zos_password,
   zosmf_reject_unauthorized: ru,
 };
 
-export function getConfig(configFile: string): TestConfigData {
+type TestConfigData = {
+  zos_java_home: string;
+  zos_node_home: string;
+  zos_host: string;
+  zos_user: string;
+  zos_password: string;
+  ssh_port: string;
+  zosmf_port: string;
+  remote_test_dir: string;
+  test_ds_hlq: string;
+  test_volume: string;
+  zosmf_reject_unauthorized: string;
+  download_configmgr: string;
+  download_zowe_tools: boolean;
+  remote_setup: boolean;
+  remote_teardown: boolean;
+  jfrog_user: string;
+  jfrog_token: string;
+  collect_test_spool: string;
+};
+
+function getConfig(configFile: string): TestConfigData {
   const rawConfig = yaml.parse(fs.readFileSync(configFile, 'utf8'));
   const configData: { [key: string]: string } = {};
 

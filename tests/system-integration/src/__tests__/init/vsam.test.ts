@@ -14,14 +14,14 @@ import { RemoteTestRunner } from '../../zos/RemoteTestRunner';
 import { ZoweYaml } from '../../config/ZoweYaml';
 import { DatasetType, TestAwareFiles, TestManagedDataset } from '../../zos/TestAwareFiles';
 
-const testSuiteName = 'init vsam';
+const testSuiteName = 'init-vsam';
 describe(testSuiteName, () => {
   let testRunner: RemoteTestRunner;
   let cfgYaml: ZoweYamlType;
   let cleanupDatasets: TestManagedDataset[] = []; // a list of datasets deleted after every test
 
   beforeAll(() => {
-    testRunner = new RemoteTestRunner('vsam');
+    testRunner = new RemoteTestRunner('init-vsam');
   });
   beforeEach(() => {
     cfgYaml = ZoweYaml.basicZoweYaml();
@@ -32,13 +32,13 @@ describe(testSuiteName, () => {
 
   afterEach(async () => {
     if (TEST_COLLECT_SPOOL) {
-      testRunner.collectSpool();
+      await testRunner.collectSpool();
     }
     // re-created in every `init vsam` based on changes to zowe yaml command...
     const jcllib: TestManagedDataset = { name: REMOTE_SYSTEM_INFO.jcllib, type: DatasetType.NON_CLUSTER };
 
     // try to delete everything we know about
-    TestAwareFiles.deleteAll([...cleanupDatasets, jcllib]);
+    await TestAwareFiles.deleteAll([...cleanupDatasets, jcllib]);
     cleanupDatasets = [];
   });
 
@@ -63,5 +63,13 @@ describe(testSuiteName, () => {
     expect(result.stdout).not.toBeNull();
     expect(result.cleanedStdout).toMatchSnapshot();
     expect(result.rc).toBe(0); // 60 is expected...
+  });
+
+  fit('creates vsam', async () => {
+    const result = await testRunner.runZweTest(cfgYaml, 'init vsam');
+    expect(result.stdout).not.toBeNull();
+    expect(result.cleanedStdout).toMatchSnapshot();
+    expect(result.rc).toBe(0); // 60 is expected...  });
+    cleanupDatasets.push({ name: cfgYaml.zowe.setup.vsam.name as string, type: DatasetType.VSAM });
   });
 });

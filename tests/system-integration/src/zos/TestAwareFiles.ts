@@ -21,32 +21,28 @@ export class TestAwareFiles {
     const deleteOps: DeleteDs[] = [];
     datasets.forEach((dataset) => {
       if (dataset.type === DatasetType.VSAM) {
-        try {
-          deleteOps.push({ ds: dataset, action: files.Delete.vsam(this.session, dataset.name, { purge: true }) });
-        } catch (error) {
-          // TODO: ?
-        }
+        deleteOps.push({ ds: dataset, action: files.Delete.vsam(this.session, dataset.name, { purge: true }) });
       } else if (dataset.type === DatasetType.ZFS) {
-        try {
-          deleteOps.push({ ds: dataset, action: files.Delete.zfs(this.session, dataset.name, {}) });
-        } catch (error) {
-          // TODO: ?
-        }
+        deleteOps.push({ ds: dataset, action: files.Delete.zfs(this.session, dataset.name, {}) });
       } else if (dataset.type === DatasetType.NON_CLUSTER) {
-        try {
-          deleteOps.push({ ds: dataset, action: files.Delete.dataSet(this.session, dataset.name, {}) });
-        } catch (error) {
-          // TODO: ?
-        }
+        deleteOps.push({ ds: dataset, action: files.Delete.dataSet(this.session, dataset.name, {}) });
       }
     });
-    deleteOps.forEach(async (dsDelete) => {
-      const res = await dsDelete.action;
+    for (const dsDelete of deleteOps) {
+      let res = { success: false };
+      try {
+        res = await dsDelete.action;
+      } catch (error) {
+        // if error message indicates 404, dataset didn't exist to be deleted.
+        if (error?.mDetails?.msg && error.mDetails.msg.includes('status 404')) {
+          res.success = true; // consider dataset deleted.
+        }
+      }
       if (!res.success) {
         console.log(`Issue deleting ${dsDelete.ds.name}. Will try again during teardown.`);
-        fs.appendFileSync(TEST_DATASETS_LINGERING_FILE, `${dsDelete.ds.name}:${dsDelete.ds.type}`);
+        fs.appendFileSync(TEST_DATASETS_LINGERING_FILE, `${dsDelete.ds.name}:${dsDelete.ds.type}\n`);
       }
-    });
+    }
   }
 }
 
@@ -60,8 +56,12 @@ export type TestManagedDataset = {
   type: DatasetType;
 };
 
+// Not sure why eslint was flagging these?
 export enum DatasetType {
+  // eslint-disable-next-line no-unused-vars
   NON_CLUSTER,
+  // eslint-disable-next-line no-unused-vars
   VSAM,
+  // eslint-disable-next-line no-unused-vars
   ZFS,
 }

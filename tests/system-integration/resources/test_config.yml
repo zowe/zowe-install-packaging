@@ -1,7 +1,7 @@
 # These below variables can be replaced 
-host: 
-user: 
-password: 
+zos_host: 
+zos_user: 
+zos_password: 
 ssh_port: 
 zosmf_port: 
 remote_test_dir: 
@@ -12,7 +12,8 @@ remote_teardown: false
 test_ds_hlq: 
 test_volume:
 zosmf_reject_unauthorized: 
-download_configmgr: false
+download_configmgr: true
+download_zowe_tools: true
 jfrog_user:
 jfrog_token:
 collect_test_spool: true

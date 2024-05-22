@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<testsuites name="Zowe System Integration Test" tests="2" failures="0" errors="0" time="11.911">
-  <testsuite name="Dummy tests" errors="0" failures="0" skipped="0" timestamp="2024-05-08T18:47:58" time="11.819" tests="2">
-    <testcase classname="src/__tests__/init/vsam.test.ts" name="Dummy tests - run echo" time="3.978">
-    </testcase>
-    <testcase classname="src/__tests__/init/vsam.test.ts" name="Dummy tests - a test" time="4.267">
-    </testcase>
-  </testsuite>
-</testsuites>

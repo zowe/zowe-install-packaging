@@ -18,6 +18,12 @@ export class ZoweYaml {
     // this.zoweYaml[field] = value;
   }*/
 
+  /**
+   * This functions reads the template zowe.yaml created in {@link ../globalSetup.ts}
+   * and coerces it to a JSON Object.
+   *
+   * @returns ZoweYaml JSON Object
+   */
   static basicZoweYaml(): ZoweYamlType {
     const fileContents = fs.readFileSync(THIS_TEST_BASE_YAML, 'utf8');
     const zoweYaml = yaml.parse(fileContents);
