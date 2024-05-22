@@ -80,26 +80,24 @@ zowe:
     certificate:
       type: PKCS12
       pkcs12: 
-        directory: "${{ zowe.setup.certificate.type != 'PKCS12' ? null : '/var/zowe/keystore' }}"
-        lock: "${{ zowe.setup.certificate.type != 'PKCS12' ? null : true }}"
-        name: "${{ zowe.setup.certificate.type == 'PKCS12' && !zowe.setup.certificate.pkcs12.import ? 'localhost' : null }}"
-        password: "${{ zowe.setup.certificate.type == 'PKCS12' && !zowe.setup.certificate.pkcs12.import ? 'password' : null }}"
-        caAlias: "${{ zowe.setup.certificate.type == 'PKCS12' && !zowe.setup.certificate.pkcs12.import ? 'local_ca' : null }}"
-        caPassword: "${{ zowe.setup.certificate.type == 'PKCS12' && !zowe.setup.certificate.pkcs12.import ? 'local_ca_password' : null }}"
-
-#"${{ zowe.setup.certificate.type != 'PKCS12' ? null : zowe.setup.certificate.pkcs12.import ? { directory: zowe.setup.certificate.pkcs12.directory, lock: zowe.setup.certificate.pkcs12.lock, import: zowe.setup.certificate.pkcs12.import }  : { directory: '/var/zowe/keystore', lock: true, name: 'localhost', password: 'password', caAlias: 'local_ca', caPassword: 'local_ca_password'} }}"
+        directory: "${{ zowe.setup.certificate.type != 'PKCS12' ? undefined : '/var/zowe/keystore' }}"
+        lock: "${{ zowe.setup.certificate.type != 'PKCS12' ? undefined : true }}"
+        name: "${{ zowe.setup.certificate.type == 'PKCS12' && !zowe.setup.certificate.pkcs12.import ? 'localhost' : undefined }}"
+        password: "${{ zowe.setup.certificate.type == 'PKCS12' && !zowe.setup.certificate.pkcs12.import ? 'password' : undefined }}"
+        caAlias: "${{ zowe.setup.certificate.type == 'PKCS12' && !zowe.setup.certificate.pkcs12.import ? 'local_ca' : undefined }}"
+        caPassword: "${{ zowe.setup.certificate.type == 'PKCS12' && !zowe.setup.certificate.pkcs12.import ? 'local_ca_password' : undefined }}"
 
       # Distinguished name for Zowe generated certificates.
       dname: 
-        caCommonName: "${{ (zowe.setup.certificate.pkcs12?.name || zowe.setup.certificate.keyring?.label) ? 'Zowe Development Instances CA' : null }}"
-        commonName: "${{ (zowe.setup.certificate.pkcs12?.name || zowe.setup.certificate.keyring?.label) ? 'Zowe Development Instances Certificate' : null }}"
-        orgUnit: "${{ (zowe.setup.certificate.pkcs12?.name || zowe.setup.certificate.keyring?.label) ? 'API Mediation Layer' : null }}"
-        org: "${{ (zowe.setup.certificate.pkcs12?.name || zowe.setup.certificate.keyring?.label) ? 'Zowe Sample' : null }}"
-        locality: "${{ (zowe.setup.certificate.pkcs12?.name || zowe.setup.certificate.keyring?.label) ? 'Prague' : null }}"
-        state: "${{ (zowe.setup.certificate.pkcs12?.name || zowe.setup.certificate.keyring?.label) ? 'Prague' : null }}"
-        country: "${{ (zowe.setup.certificate.pkcs12?.name || zowe.setup.certificate.keyring?.label) ? 'CZ' : null }}"
+        caCommonName: "${{ (zowe.setup.certificate.pkcs12?.name || zowe.setup.certificate.keyring?.label) ? 'Zowe Development Instances CA' : undefined }}"
+        commonName: "${{ (zowe.setup.certificate.pkcs12?.name || zowe.setup.certificate.keyring?.label) ? 'Zowe Development Instances Certificate' : undefined }}"
+        orgUnit: "${{ (zowe.setup.certificate.pkcs12?.name || zowe.setup.certificate.keyring?.label) ? 'API Mediation Layer' : undefined }}"
+        org: "${{ (zowe.setup.certificate.pkcs12?.name || zowe.setup.certificate.keyring?.label) ? 'Zowe Sample' : undefined }}"
+        locality: "${{ (zowe.setup.certificate.pkcs12?.name || zowe.setup.certificate.keyring?.label) ? 'Prague' : undefined }}"
+        state: "${{ (zowe.setup.certificate.pkcs12?.name || zowe.setup.certificate.keyring?.label) ? 'Prague' : undefined }}"
+        country: "${{ (zowe.setup.certificate.pkcs12?.name || zowe.setup.certificate.keyring?.label) ? 'CZ' : undefined }}"
       # Validity days for Zowe generated certificates
-      validity: "${{ (zowe.setup.certificate.pkcs12?.import || zowe.setup.certificate.keyring?.label) ? null : 3650 }}"
+      validity: "${{ (zowe.setup.certificate.pkcs12?.import || zowe.setup.certificate.keyring?.label) ? undefined : 3650 }}"
 
   
   # Where to store runtime logs
