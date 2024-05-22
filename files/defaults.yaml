@@ -32,9 +32,6 @@ zowe:
     dataset:      
       # where Zowe MVS data sets will be installed
       # This prefix is used for the Zowe runtime datasets
-      # Including:
-      #  Auth Load Lib: SZWEAUTH
-      #  Load Lib: SZWELOAD
       prefix: IBMUSER.ZWEV2
       
       # PROCLIB where Zowe STCs will be copied over
@@ -42,7 +39,6 @@ zowe:
       
       # Zowe PARMLIB
       parmlib: IBMUSER.ZWEV2.CUST.PARMLIB
-      # Holds Zowe PARMLIB members for plugins
       parmlibMembers:
         # For ZIS plugins
         zis: ZWESIP00
@@ -58,25 +54,18 @@ zowe:
       authPluginLib: IBMUSER.ZWEV2.CUST.ZWESAPL
 
     # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-    # Security related configurations. This setup is optional.
     security:
       # security product name. Can be RACF, ACF2 or TSS
       product: RACF
-      # security group name
       groups:
-        # Zowe admin user group
         admin: ZWEADMIN
-        # Zowe STC group
         stc: ZWEADMIN
-        # Zowe SysProg group
         sysProg: ZWEADMIN
-      # security user name
       users:
         # Zowe runtime user name of main service
         zowe: ZWESVUSR
         # Zowe runtime user name of ZIS
         zis: ZWESIUSR
-      # STC names
       stcs:
         # STC name of Zowe main service
         zowe: ZWESLSTC
@@ -87,38 +76,30 @@ zowe:
 
     # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
     # Certificate related configurations
-    #
-    # There are 5 configurations cases. Please choose one from below.
-
-    # >>>> Certificate setup scenario 1
-    # PKCS12 (keystore) with Zowe generate certificates.
+    # This section fully defines a default for certificate scenario 1, but makes way when detecting any other scenarios.
     certificate:
       type: PKCS12
-      pkcs12:
-        
-        # Keystore directory
-        directory: /var/zowe/keystore
-        # Lock the keystore directory to only accessible by Zowe runtime user and group.
-        lock: true
-        
-        # Certificate alias name.
-        name: localhost
-        password: password
-        
-        # Alias name of self-signed certificate authority.
-        caAlias: local_ca
-        caPassword: local_ca_password
+      pkcs12: 
+        directory: "${{ zowe.setup.certificate.type != 'PKCS12' ? null : '/var/zowe/keystore' }}"
+        lock: "${{ zowe.setup.certificate.type != 'PKCS12' ? null : true }}"
+        name: "${{ zowe.setup.certificate.type == 'PKCS12' && !zowe.setup.certificate.pkcs12.import ? 'localhost' : null }}"
+        password: "${{ zowe.setup.certificate.type == 'PKCS12' && !zowe.setup.certificate.pkcs12.import ? 'password' : null }}"
+        caAlias: "${{ zowe.setup.certificate.type == 'PKCS12' && !zowe.setup.certificate.pkcs12.import ? 'local_ca' : null }}"
+        caPassword: "${{ zowe.setup.certificate.type == 'PKCS12' && !zowe.setup.certificate.pkcs12.import ? 'local_ca_password' : null }}"
+
+#"${{ zowe.setup.certificate.type != 'PKCS12' ? null : zowe.setup.certificate.pkcs12.import ? { directory: zowe.setup.certificate.pkcs12.directory, lock: zowe.setup.certificate.pkcs12.lock, import: zowe.setup.certificate.pkcs12.import }  : { directory: '/var/zowe/keystore', lock: true, name: 'localhost', password: 'password', caAlias: 'local_ca', caPassword: 'local_ca_password'} }}"
+
       # Distinguished name for Zowe generated certificates.
-      dname:
-        caCommonName: "Zowe Development Instances CA"
-        commonName: "Zowe Development Instances Certificate"
-        orgUnit: "API Mediation Layer"
-        org: "Zowe Sample"
-        locality: "Prague"
-        state: "Prague"
-        country: "CZ"
+      dname: 
+        caCommonName: "${{ (zowe.setup.certificate.pkcs12?.name || zowe.setup.certificate.keyring?.label) ? 'Zowe Development Instances CA' : null }}"
+        commonName: "${{ (zowe.setup.certificate.pkcs12?.name || zowe.setup.certificate.keyring?.label) ? 'Zowe Development Instances Certificate' : null }}"
+        orgUnit: "${{ (zowe.setup.certificate.pkcs12?.name || zowe.setup.certificate.keyring?.label) ? 'API Mediation Layer' : null }}"
+        org: "${{ (zowe.setup.certificate.pkcs12?.name || zowe.setup.certificate.keyring?.label) ? 'Zowe Sample' : null }}"
+        locality: "${{ (zowe.setup.certificate.pkcs12?.name || zowe.setup.certificate.keyring?.label) ? 'Prague' : null }}"
+        state: "${{ (zowe.setup.certificate.pkcs12?.name || zowe.setup.certificate.keyring?.label) ? 'Prague' : null }}"
+        country: "${{ (zowe.setup.certificate.pkcs12?.name || zowe.setup.certificate.keyring?.label) ? 'CZ' : null }}"
       # Validity days for Zowe generated certificates
-      validity: 3650
+      validity: "${{ (zowe.setup.certificate.pkcs12?.import || zowe.setup.certificate.keyring?.label) ? null : 3650 }}"
 
   
   # Where to store runtime logs
