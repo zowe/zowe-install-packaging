@@ -114,7 +114,7 @@ export function execute(allowOverwrite?: boolean, dryRun?: boolean, ignoreSecuri
     initSecurity.execute(dryRun, ignoreSecurityFailures);
   }
   //initCertificate.execute();
-  let result = shell.execSync('sh', '-c', `${std.getenv('ZWE_zowe_runtimeDirectory')}/bin/zwe init certificate ${dryRun?'--dry-run':''} ${updateConfig?'--update-config':''} ${allowOverwrite?'--alow-overwrite':''} ${ignoreSecurityFailures?'--ignore-security-failures':''} -c "${std.getenv('ZWE_CLI_PARAMETER_CONFIG')}"`);
+  let result = shell.execSync('sh', '-c', `ZWE_PRIVATE_CLI_LIBRARY_LOADED= ${std.getenv('ZWE_zowe_runtimeDirectory')}/bin/zwe init certificate ${dryRun?'--dry-run':''} ${updateConfig?'--update-config':''} ${allowOverwrite?'--allow-overwrite':''} ${ignoreSecurityFailures?'--ignore-security-failures':''} -c "${std.getenv('ZWE_CLI_PARAMETER_CONFIG')}"`);
   initStc.execute(allowOverwrite);
 
   common.printLevel1Message(`Zowe is configured successfully.`);

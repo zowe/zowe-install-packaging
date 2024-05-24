@@ -14,17 +14,17 @@
 ###############################
 # validation
 require_zowe_yaml
-
-if [ -z "${ZWE_PRIVATE_TMP_MERGED_YAML_DIR}" ]; then
-  # user-facing command, use tmpdir to not mess up workspace permissions
-  export ZWE_PRIVATE_TMP_MERGED_YAML_DIR=$(create_tmp_file)
-  mkdir -p ${ZWE_PRIVATE_TMP_MERGED_YAML_DIR}
-  _CEE_RUNOPTS="XPLINK(ON),HEAPPOOLS(OFF),HEAPPOOLS64(OFF)" ${ZWE_zowe_runtimeDirectory}/bin/utils/configmgr -script "${ZWE_zowe_runtimeDirectory}/bin/commands/internal/config/output/cli.js"
-  # use the yaml configmgr returns because it will contain defaults for the version we are using.
+if [ -n "${ZWE_PRIVATE_CONFIG_ORIG}" ]; then
+  CONFIG_TO_WRITE=${ZWE_PRIVATE_CONFIG_ORIG}
+else
   CONFIG_TO_WRITE=${ZWE_CLI_PARAMETER_CONFIG}
-  ZWE_CLI_PARAMETER_CONFIG=${ZWE_PRIVATE_TMP_MERGED_YAML_DIR}/.zowe-merged.yaml
 fi
 
+export ZWE_PRIVATE_TMP_MERGED_YAML_DIR=$(create_tmp_file)
+mkdir -p ${ZWE_PRIVATE_TMP_MERGED_YAML_DIR}
+_CEE_RUNOPTS="XPLINK(ON),HEAPPOOLS(OFF),HEAPPOOLS64(OFF)" ${ZWE_zowe_runtimeDirectory}/bin/utils/configmgr -script "${ZWE_zowe_runtimeDirectory}/bin/commands/internal/config/output/cli.js"
+# use the yaml configmgr returns because it will contain defaults for the version we are using.
+ZWE_CLI_PARAMETER_CONFIG=${ZWE_PRIVATE_TMP_MERGED_YAML_DIR}/.zowe-merged.yaml
 
 ###############################
 # read prefix and validate
@@ -431,6 +431,7 @@ else # JCE* content
     print_level2_message "Certificate is generated in keyring successfully."
   fi
 
+  ZWE_CLI_PARAMETER_CONFIG=${CONFIG_TO_WRITE}
   # update zowe.yaml
   if [ "${ZWE_CLI_PARAMETER_UPDATE_CONFIG}" = "true" ]; then
     print_level1_message "Update certificate configuration to ${ZWE_CLI_PARAMETER_CONFIG}"
