@@ -238,6 +238,17 @@ module.exports = async () => {
       includeHidden: true,
     });
 
+    console.log(`Uploading ${REPO_ROOT_DIR}/files/defaults.yaml to ${REMOTE_SYSTEM_INFO.ussTestDir}...`);
+    await uss.runCommand(`mkdir -p ${REMOTE_SYSTEM_INFO.ussTestDir}/files`);
+    await files.Upload.fileToUssFile(
+      zosmfSession,
+      `${REPO_ROOT_DIR}/files/defaults.yaml`,
+      `${REMOTE_SYSTEM_INFO.ussTestDir}/files/defaults.yaml`,
+      {
+        binary: false,
+      },
+    );
+
     await createPds(REMOTE_SYSTEM_INFO.szweexec, {
       primary: 5,
       secondary: 1,

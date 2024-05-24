@@ -12,15 +12,14 @@ import * as fs from 'fs-extra';
 import { getZosmfSession } from './zowe';
 import * as files from '@zowe/zos-files-for-zowe-sdk';
 import { LINGERING_REMOTE_FILES_FILE } from '../config/TestConfig';
-export class TestAwareFiles {
+export class TestFileActions {
   private static readonly session = getZosmfSession();
 
   constructor() {}
 
-  public static async deleteAll(datasets: TestManagedFile[]) {
+  public static async deleteAll(datasets: TestFile[]) {
     const deleteOps: DeleteFile[] = [];
     datasets.forEach((testFile) => {
-      console.log(`Cleaning up ${testFile.name}`);
       let delPromise;
       switch (testFile.type) {
         case FileType.DS_VSAM:
@@ -60,11 +59,11 @@ export class TestAwareFiles {
 }
 
 type DeleteFile = {
-  file: TestManagedFile;
+  file: TestFile;
   action: Promise<files.IDeleteVsamResponse | files.IZosFilesResponse>;
 };
 
-export type TestManagedFile = {
+export type TestFile = {
   name: string;
   type: FileType;
 };

@@ -12,7 +12,7 @@ import { REMOTE_SYSTEM_INFO, TEST_COLLECT_SPOOL } from '../../config/TestConfig'
 import ZoweYamlType from '../../types/ZoweYamlType';
 import { RemoteTestRunner } from '../../zos/RemoteTestRunner';
 import { ZoweYaml } from '../../config/ZoweYaml';
-import { FileType, TestAwareFiles as TestFileActions, TestManagedFile as TestFile } from '../../zos/TestAwareFiles';
+import { FileType, TestFileActions, TestFile } from '../../zos/TestFileActions';
 
 const testSuiteName = 'init-apfauth';
 describe(`${testSuiteName}`, () => {
@@ -35,7 +35,7 @@ describe(`${testSuiteName}`, () => {
     const jcllib: TestFile = { name: REMOTE_SYSTEM_INFO.jcllib, type: FileType.DS_NON_CLUSTER };
 
     // try to delete everything we know about
-    //  await TestFileActions.deleteAll([...cleanupDatasets, jcllib]);
+    await TestFileActions.deleteAll([...cleanupDatasets, jcllib]);
     cleanupDatasets = [];
   });
 

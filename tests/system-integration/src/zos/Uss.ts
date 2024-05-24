@@ -24,7 +24,6 @@ export async function runCommand(command: string, cwd: string = '~') {
     if (data.trim()) {
       stdout += data;
     }
-    console.log(stdout);
   });
   return { data: stdout, rc: rc };
 }

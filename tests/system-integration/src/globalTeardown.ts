@@ -12,7 +12,7 @@ import { REMOTE_TEARDOWN, LINGERING_REMOTE_FILES_FILE, TEST_JOBS_RUN_FILE } from
 import * as fs from 'fs-extra';
 import * as jobs from '@zowe/zos-jobs-for-zowe-sdk';
 import { getZosmfSession } from './zos/zowe';
-import { TestAwareFiles, TestManagedFile } from './zos/TestAwareFiles';
+import { TestFileActions, TestFile } from './zos/TestFileActions';
 module.exports = async () => {
   if (!REMOTE_TEARDOWN) {
     return;
@@ -25,17 +25,17 @@ module.exports = async () => {
       .readFileSync(`${LINGERING_REMOTE_FILES_FILE}`, 'utf8')
       .split('\n')
       .filter((line) => line.trim().length > 0);
-    const dsDeletes: TestManagedFile[] = dsList.map((dsEntry) => {
+    const dsDeletes: TestFile[] = dsList.map((dsEntry) => {
       const dsPieces = dsEntry.split(':');
       const enumVal = Number(dsPieces[1]);
-      const ds: TestManagedFile = {
+      const ds: TestFile = {
         name: dsPieces[0],
         type: enumVal,
       };
       return ds;
     });
 
-    await TestAwareFiles.deleteAll(dsDeletes);
+    await TestFileActions.deleteAll(dsDeletes);
   }
 
   if (fs.existsSync(`${TEST_JOBS_RUN_FILE}`)) {
