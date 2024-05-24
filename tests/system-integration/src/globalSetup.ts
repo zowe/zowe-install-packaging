@@ -8,7 +8,7 @@
  * Copyright Contributors to the Zowe Project.
  */
 
-import * as uss from './uss';
+import * as uss from './zos/Uss';
 import * as _ from 'lodash';
 import * as path from 'path';
 import * as files from '@zowe/zos-files-for-zowe-sdk';
@@ -19,20 +19,20 @@ import {
   REMOTE_SETUP,
   REMOTE_SYSTEM_INFO,
   REPO_ROOT_DIR,
-  TEST_DATASETS_LINGERING_FILE,
+  LINGERING_REMOTE_FILES_FILE,
   TEST_JOBS_RUN_FILE,
   TEST_OUTPUT_DIR,
   THIS_TEST_BASE_YAML,
   THIS_TEST_ROOT_DIR,
+  ZOWE_YAML_OVERRIDES,
 } from './config/TestConfig';
 import * as fs from 'fs-extra';
-import { getZosmfSession } from './zowe';
+import { getZosmfSession } from './zos/zowe';
 import * as yaml from 'yaml';
 import ZoweYamlType from './types/ZoweYamlType';
 import { JfrogClient } from 'jfrog-client-js';
 import { processManifestVersion } from './utils';
-import { exec, execSync } from 'child_process';
-import { cwd } from 'process';
+import { execSync } from 'child_process';
 
 const zosmfSession = getZosmfSession();
 
@@ -51,7 +51,11 @@ function setupBaseYaml() {
   // zoweYaml.zowe.setup.dataset.loadlib = REMOTE_SYSTEM_INFO.szweexec;
   // zoweYaml.node.home = systemDefaults.zos_node_home;
   // zoweYaml.zowe.runtimeDirectory = systemDefaults.
-  fs.writeFileSync(THIS_TEST_BASE_YAML, yaml.stringify(zoweYaml));
+
+  //
+  const finalYaml = _.merge({}, zoweYaml, ZOWE_YAML_OVERRIDES);
+
+  fs.writeFileSync(THIS_TEST_BASE_YAML, yaml.stringify(finalYaml));
 }
 
 const jf = new JfrogClient({
@@ -108,7 +112,7 @@ module.exports = async () => {
   }
   fs.mkdirpSync(`${THIS_TEST_ROOT_DIR}/.build`);
   setupBaseYaml();
-  fs.rmSync(TEST_DATASETS_LINGERING_FILE, { force: true });
+  fs.rmSync(LINGERING_REMOTE_FILES_FILE, { force: true });
   fs.rmSync(TEST_JOBS_RUN_FILE, { force: true });
   fs.rmSync(TEST_OUTPUT_DIR, { force: true, recursive: true });
   fs.mkdirpSync(TEST_OUTPUT_DIR);
@@ -260,6 +264,9 @@ module.exports = async () => {
 
     console.log(`Unpacking ncert.pax from zowe-install-packaging-tools and placing it in bin/utils/...`);
     await uss.runCommand(`pax -ppx -rf ncert.pax -s#^#./bin/utils/ncert/#g`, `${REMOTE_SYSTEM_INFO.ussTestDir}`);
+
+    console.log(`Compiling Java utilities in bin/utils using ${REMOTE_SYSTEM_INFO.zosJavaHome}...`);
+    await uss.runCommand(`${REMOTE_SYSTEM_INFO.zosJavaHome}/bin/javac *.java`, `${REMOTE_SYSTEM_INFO.ussTestDir}/bin/utils`);
 
     console.log(`Uploading sample JCL from files/SZWESAMP to ${REMOTE_SYSTEM_INFO.szwesamp}...`);
     await files.Upload.dirToPds(zosmfSession, `${REPO_ROOT_DIR}/files/SZWESAMP`, REMOTE_SYSTEM_INFO.szwesamp, {

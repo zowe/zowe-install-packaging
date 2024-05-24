@@ -1,15 +1,7 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`init-cert cert disable cfgmgr 1`] = `
+exports[`init-cert (SHORT) cert disable cfgmgr 1`] = `
 "
 $ Error ZWEL0316E: Command requires zowe.useConfigmgr=true to use.
 Error ZWEL0999E: zowe.setup.dataset.jcllib does not exist, cannot run. Run 'zwe init', 'zwe init generate', or submit JCL TEST.DATASET.PFX.SZWESAMP(ZWEGENER) before running this command."
-`;
-
-exports[`init-cert cert enable cfgmgr 1`] = `
-"
-$ -------------------------------------------------------------------------------
->> Creating certificate authority "local_ca"
-
-Error ZWEL0158E: Keystore "/test/dir/local_ca/local_ca.keystore.p12" already exists."
 `;

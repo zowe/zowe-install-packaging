@@ -8,25 +8,23 @@
  * Copyright Contributors to the Zowe Project.
  */
 
-import { REMOTE_CONNECTION_CFG } from './config/TestConfig';
+import { REMOTE_CONNECTION_CFG } from '../config/TestConfig';
 import { Shell, SshSession } from '@zowe/zos-uss-for-zowe-sdk';
 
-function getSession(): SshSession {
-  return new SshSession({
+export async function runCommand(command: string, cwd: string = '~') {
+  const session = new SshSession({
     hostname: REMOTE_CONNECTION_CFG.host,
     port: REMOTE_CONNECTION_CFG.ssh_port,
     user: REMOTE_CONNECTION_CFG.user,
     password: REMOTE_CONNECTION_CFG.password,
   });
-}
 
-export async function runCommand(command: string, cwd: string = '~') {
-  const session = getSession();
   let stdout = '';
   const rc = await Shell.executeSshCwd(session, command, cwd, (data) => {
     if (data.trim()) {
       stdout += data;
     }
+    console.log(stdout);
   });
   return { data: stdout, rc: rc };
 }

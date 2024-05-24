@@ -9,59 +9,76 @@
  */
 
 import * as fs from 'fs-extra';
-import { getZosmfSession } from '../zowe';
+import { getZosmfSession } from './zowe';
 import * as files from '@zowe/zos-files-for-zowe-sdk';
-import { TEST_DATASETS_LINGERING_FILE } from '../config/TestConfig';
+import { LINGERING_REMOTE_FILES_FILE } from '../config/TestConfig';
 export class TestAwareFiles {
   private static readonly session = getZosmfSession();
 
   constructor() {}
 
-  public static async deleteAll(datasets: TestManagedDataset[]) {
-    const deleteOps: DeleteDs[] = [];
-    datasets.forEach((dataset) => {
-      if (dataset.type === DatasetType.VSAM) {
-        deleteOps.push({ ds: dataset, action: files.Delete.vsam(this.session, dataset.name, { purge: true }) });
-      } else if (dataset.type === DatasetType.ZFS) {
-        deleteOps.push({ ds: dataset, action: files.Delete.zfs(this.session, dataset.name, {}) });
-      } else if (dataset.type === DatasetType.NON_CLUSTER) {
-        deleteOps.push({ ds: dataset, action: files.Delete.dataSet(this.session, dataset.name, {}) });
+  public static async deleteAll(datasets: TestManagedFile[]) {
+    const deleteOps: DeleteFile[] = [];
+    datasets.forEach((testFile) => {
+      console.log(`Cleaning up ${testFile.name}`);
+      let delPromise;
+      switch (testFile.type) {
+        case FileType.DS_VSAM:
+          delPromise = files.Delete.vsam(this.session, testFile.name, { purge: true });
+          break;
+        case FileType.DS_ZFS:
+          delPromise = files.Delete.zfs(this.session, testFile.name, {});
+          break;
+        case FileType.DS_NON_CLUSTER:
+          delPromise = files.Delete.dataSet(this.session, testFile.name, {});
+          break;
+        case FileType.USS_FILE:
+          delPromise = files.Delete.ussFile(this.session, testFile.name, false);
+          break;
+        case FileType.USS_DIR:
+          delPromise = files.Delete.ussFile(this.session, testFile.name, true);
+          break;
       }
+      deleteOps.push({ file: testFile, action: delPromise });
     });
     for (const dsDelete of deleteOps) {
       let res = { success: false };
       try {
         res = await dsDelete.action;
       } catch (error) {
-        // if error message indicates 404, dataset didn't exist to be deleted.
+        // if error message indicates 404, file didn't exist to be deleted.
         if (error?.mDetails?.msg && error.mDetails.msg.includes('status 404')) {
-          res.success = true; // consider dataset deleted.
+          res.success = true; // consider file deleted.
         }
       }
       if (!res.success) {
-        console.log(`Issue deleting ${dsDelete.ds.name}. Will try again during teardown.`);
-        fs.appendFileSync(TEST_DATASETS_LINGERING_FILE, `${dsDelete.ds.name}:${dsDelete.ds.type}\n`);
+        console.log(`Issue deleting ${dsDelete.file.name}. Will try again during teardown.`);
+        fs.appendFileSync(LINGERING_REMOTE_FILES_FILE, `${dsDelete.file.name}:${dsDelete.file.type}\n`);
       }
     }
   }
 }
 
-type DeleteDs = {
-  ds: TestManagedDataset;
+type DeleteFile = {
+  file: TestManagedFile;
   action: Promise<files.IDeleteVsamResponse | files.IZosFilesResponse>;
 };
 
-export type TestManagedDataset = {
+export type TestManagedFile = {
   name: string;
-  type: DatasetType;
+  type: FileType;
 };
 
-// Not sure why eslint was flagging these?
-export enum DatasetType {
+// why is eslint flagging these?
+export enum FileType {
   // eslint-disable-next-line no-unused-vars
-  NON_CLUSTER,
+  DS_NON_CLUSTER,
   // eslint-disable-next-line no-unused-vars
-  VSAM,
+  DS_VSAM,
   // eslint-disable-next-line no-unused-vars
-  ZFS,
+  DS_ZFS,
+  // eslint-disable-next-line no-unused-vars
+  USS_FILE,
+  // eslint-disable-next-line no-unused-vars
+  USS_DIR,
 }

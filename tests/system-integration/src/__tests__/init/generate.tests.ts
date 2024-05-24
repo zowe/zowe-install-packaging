@@ -7,3 +7,70 @@
  *
  * Copyright Contributors to the Zowe Project.
  */
+
+import { REMOTE_SYSTEM_INFO, TEST_COLLECT_SPOOL } from '../../config/TestConfig';
+import ZoweYamlType from '../../types/ZoweYamlType';
+import { RemoteTestRunner } from '../../zos/RemoteTestRunner';
+import { ZoweYaml } from '../../config/ZoweYaml';
+import { FileType, TestAwareFiles, TestManagedFile } from '../../zos/TestAwareFiles';
+
+const testSuiteName = 'init-vsam';
+describe(`${testSuiteName}`, () => {
+  let testRunner: RemoteTestRunner;
+  let cfgYaml: ZoweYamlType;
+  let cleanupDatasets: TestManagedFile[] = []; // a list of datasets deleted after every test
+
+  beforeAll(() => {
+    testRunner = new RemoteTestRunner(testSuiteName);
+  });
+  beforeEach(() => {
+    cfgYaml = ZoweYaml.basicZoweYaml();
+  });
+
+  afterEach(async () => {
+    if (TEST_COLLECT_SPOOL) {
+      await testRunner.collectSpool();
+    }
+    // re-created in every `init vsam` based on changes to zowe yaml command...
+    const jcllib: TestManagedFile = { name: REMOTE_SYSTEM_INFO.jcllib, type: FileType.DS_NON_CLUSTER };
+
+    // try to delete everything we know about
+    await TestAwareFiles.deleteAll([...cleanupDatasets, jcllib]);
+    cleanupDatasets = [];
+  });
+
+  describe('(SHORT)', () => {
+    it('disable cfgmgr', async () => {
+      cfgYaml.zowe.useConfigmgr = false;
+      const result = await testRunner.runZweTest(cfgYaml, 'init vsam');
+      expect(result.stdout).not.toBeNull();
+      expect(result.cleanedStdout).toMatchSnapshot();
+      expect(result.rc).toBe(60); // 60 is expected...
+    });
+
+    it('BAD: bad ds prefix', async () => {
+      cfgYaml.zowe.setup.dataset.prefix = 'ZOWEAD6.ZWETEST.NOEXIST';
+      const result = await testRunner.runZweTest(cfgYaml, 'init vsam --dry-run');
+      expect(result.stdout).not.toBeNull();
+      expect(result.cleanedStdout).toMatchSnapshot();
+      expect(result.rc).toBe(231);
+    });
+
+    it('GOOD: simple --dry-run', async () => {
+      const result = await testRunner.runZweTest(cfgYaml, 'init vsam --dry-run');
+      expect(result.stdout).not.toBeNull();
+      expect(result.cleanedStdout).toMatchSnapshot();
+      expect(result.rc).toBe(0); // 60 is expected...
+    });
+  });
+
+  describe('(LONG)', () => {
+    it('creates vsam', async () => {
+      const result = await testRunner.runZweTest(cfgYaml, 'init vsam');
+      cleanupDatasets.push({ name: cfgYaml.zowe.setup.vsam.name as string, type: FileType.DS_VSAM });
+      expect(result.stdout).not.toBeNull();
+      expect(result.cleanedStdout).toMatchSnapshot();
+      expect(result.rc).toBe(0); // 60 is expected...  });
+    });
+  });
+});

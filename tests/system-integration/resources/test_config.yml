@@ -17,3 +17,13 @@ download_zowe_tools: true
 jfrog_user:
 jfrog_token:
 collect_test_spool: true
+
+###  Always overrides any computed values in globalSetup.
+###  Only use to debug or write tests initially;
+###    these values are __not__ substituted in command response snapshots.
+#zowe_yaml_overrides:
+#  zowe:
+#    setup:
+#  zOSMF:
+#    host: some-other.host.value
+#    port: 10443

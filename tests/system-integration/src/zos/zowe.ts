@@ -9,7 +9,7 @@
  */
 
 import { ConnectionPropsForSessCfg, Session } from '@zowe/imperative';
-import { REMOTE_CONNECTION_CFG } from './config/TestConfig';
+import { REMOTE_CONNECTION_CFG } from '../config/TestConfig';
 
 export function getZosmfSession(): Session {
   const sessCfg: unknown = {

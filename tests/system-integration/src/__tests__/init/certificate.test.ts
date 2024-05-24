@@ -12,17 +12,18 @@ import { REMOTE_SYSTEM_INFO, TEST_COLLECT_SPOOL } from '../../config/TestConfig'
 import ZoweYamlType from '../../types/ZoweYamlType';
 import { RemoteTestRunner } from '../../zos/RemoteTestRunner';
 import { ZoweYaml } from '../../config/ZoweYaml';
-import { DatasetType, TestAwareFiles, TestManagedDataset } from '../../zos/TestAwareFiles';
+import { FileType, TestAwareFiles, TestManagedFile } from '../../zos/TestAwareFiles';
 
 const testSuiteName = 'init-cert';
-describe(testSuiteName, () => {
+describe(`${testSuiteName}`, () => {
   let testRunner: RemoteTestRunner;
   let cfgYaml: ZoweYamlType;
-  let cleanupDatasets: TestManagedDataset[] = []; // a list of datasets deleted after every test
+  let cleanupFiles: TestManagedFile[] = []; // a list of datasets deleted after every test
 
   beforeAll(() => {
-    testRunner = new RemoteTestRunner('init-cert');
+    testRunner = new RemoteTestRunner(testSuiteName);
   });
+
   beforeEach(() => {
     cfgYaml = ZoweYaml.basicZoweYaml();
   });
@@ -32,48 +33,82 @@ describe(testSuiteName, () => {
       await testRunner.collectSpool();
     }
     // re-created in every `init` subcommand based on changes to zowe yaml command...
-    const jcllib: TestManagedDataset = { name: REMOTE_SYSTEM_INFO.jcllib, type: DatasetType.NON_CLUSTER };
+    const jcllib: TestManagedFile = { name: REMOTE_SYSTEM_INFO.jcllib, type: FileType.DS_NON_CLUSTER };
 
     // try to delete everything we know about
-    await TestAwareFiles.deleteAll([...cleanupDatasets, jcllib]);
-    cleanupDatasets = [];
+    await TestAwareFiles.deleteAll([...cleanupFiles, jcllib]);
+    cleanupFiles = [];
   });
 
-  it('cert disable cfgmgr', async () => {
-    cfgYaml.zowe.useConfigmgr = false;
-    const result = await testRunner.runZweTest(cfgYaml, 'init certificate');
-    expect(result.stdout).not.toBeNull();
-    expect(result.cleanedStdout).toMatchSnapshot();
-    expect(result.rc).toBe(231); // 231 is expected error code...?
+  describe('(SHORT)', () => {
+    it('cert disable cfgmgr', async () => {
+      cfgYaml.zowe.useConfigmgr = false;
+      const result = await testRunner.runZweTest(cfgYaml, 'init certificate');
+      expect(result.stdout).not.toBeNull();
+      expect(result.cleanedStdout).toMatchSnapshot();
+      expect(result.rc).toBe(231); // 231 is expected error code...?
+    });
+
+    /*
+    it('cert bad ds prefix', async () => {
+      cfgYaml.zowe.setup.dataset.prefix = 'ZOWEAD6.ZWETEST.NOEXIST';
+      const result = await testRunner.runZweTest(cfgYaml, 'init certificate --dry-run');
+      expect(result.stdout).not.toBeNull();
+      expect(result.cleanedStdout).toMatchSnapshot();
+      expect(result.rc).toBe(231);
+    });
+
+    it('cert simple --dry-run', async () => {
+      const result = await testRunner.runZweTest(cfgYaml, 'init certificate --dry-run');
+      expect(result.stdout).not.toBeNull();
+      expect(result.cleanedStdout).toMatchSnapshot();
+      expect(result.rc).toBe(0); // 60 is expected...
+    });
+
+    /* it('apf security-dry-run', async () => {
+      const result = await testRunner.runZweTest(cfgYaml, 'init apfauth --security-dry-run');
+      expect(result.stdout).not.toBeNull();
+      expect(result.cleanedStdout).toMatchSnapshot();
+      expect(result.rc).toBe(0); // 60 is expected...  });
+    });*/
   });
 
-  it('cert enable cfgmgr', async () => {
-    cfgYaml.zowe.useConfigmgr = true;
-    const result = await testRunner.runZweTest(cfgYaml, 'init certificate');
-    expect(result.stdout).not.toBeNull();
-    expect(result.cleanedStdout).toMatchSnapshot();
-    expect(result.rc).toBe(231); // 231 is expected error code...?
-  }, 180000);
-  /*
-  it('cert bad ds prefix', async () => {
-    cfgYaml.zowe.setup.dataset.prefix = 'ZOWEAD6.ZWETEST.NOEXIST';
-    const result = await testRunner.runZweTest(cfgYaml, 'init certificate --dry-run');
-    expect(result.stdout).not.toBeNull();
-    expect(result.cleanedStdout).toMatchSnapshot();
-    expect(result.rc).toBe(231);
-  });
+  describe('(LONG)', () => {
+    it('cert bad hostname', async () => {
+      cfgYaml.zowe.useConfigmgr = true;
+      cfgYaml.zOSMF.host = 'doesnt-exist.anywhere.cloud';
+      const result = await testRunner.runZweTest(cfgYaml, 'init certificate');
+      cleanupFiles.push(
+        {
+          name: cfgYaml.zowe.setup.certificate.pkcs12.directory + '/local_ca/',
+          type: FileType.USS_DIR,
+        },
+        {
+          name: cfgYaml.zowe.setup.certificate.pkcs12.directory + '/localhost/',
+          type: FileType.USS_DIR,
+        },
+      );
+      expect(result.stdout).not.toBeNull();
+      expect(result.cleanedStdout).toMatchSnapshot();
+      expect(result.rc).toBe(231); // 231 is expected error code...?
+    }, 180000);
 
-  it('cert simple --dry-run', async () => {
-    const result = await testRunner.runZweTest(cfgYaml, 'init certificate --dry-run');
-    expect(result.stdout).not.toBeNull();
-    expect(result.cleanedStdout).toMatchSnapshot();
-    expect(result.rc).toBe(0); // 60 is expected...
+    it('cert enable cfgmgr', async () => {
+      cfgYaml.zowe.useConfigmgr = true;
+      const result = await testRunner.runZweTest(cfgYaml, 'init certificate');
+      cleanupFiles.push(
+        {
+          name: cfgYaml.zowe.setup.certificate.pkcs12.directory + '/local_ca/',
+          type: FileType.USS_DIR,
+        },
+        {
+          name: cfgYaml.zowe.setup.certificate.pkcs12.directory + '/localhost/',
+          type: FileType.USS_DIR,
+        },
+      );
+      expect(result.stdout).not.toBeNull();
+      expect(result.cleanedStdout).toMatchSnapshot();
+      expect(result.rc).toBe(231); // 231 is expected error code...?
+    }, 180000);
   });
-
-  /* it('apf security-dry-run', async () => {
-    const result = await testRunner.runZweTest(cfgYaml, 'init apfauth --security-dry-run');
-    expect(result.stdout).not.toBeNull();
-    expect(result.cleanedStdout).toMatchSnapshot();
-    expect(result.rc).toBe(0); // 60 is expected...  });
-  });*/
 });

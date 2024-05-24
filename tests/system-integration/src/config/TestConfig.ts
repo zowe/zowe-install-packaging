@@ -13,6 +13,7 @@ import * as fs from 'fs-extra';
 import * as yaml from 'yaml';
 import yn from 'yn';
 import { findDirWalkingUpOrThrow } from '../utils';
+import ZoweYamlType from '../types/ZoweYamlType';
 class ConfigItem<T> {
   public readonly name: string;
   public readonly required: boolean;
@@ -43,6 +44,7 @@ const configFields: ConfigItem<unknown>[] = [
   new ConfigItem('jfrog_user', false),
   new ConfigItem('jfrog_token', false),
   new ConfigItem('collect_test_spool', false, true),
+  new ConfigItem('zowe_yaml_overrides', false),
 ];
 
 export const REPO_ROOT_DIR: string = findDirWalkingUpOrThrow('zowe-install-packaging');
@@ -53,13 +55,14 @@ const configData = getConfig(configFile);
 export const THIS_TEST_BASE_YAML: string = path.resolve(THIS_TEST_ROOT_DIR, '.build', 'zowe.yaml.base');
 export const TEST_OUTPUT_DIR: string = path.resolve(THIS_TEST_ROOT_DIR, '.build', 'output');
 export const INSTALL_TEST_ROOT_DIR: string = path.resolve(__dirname, '../');
-export const TEST_DATASETS_LINGERING_FILE = path.resolve(THIS_TEST_ROOT_DIR, '.build', 'lingering_ds.txt');
+export const LINGERING_REMOTE_FILES_FILE = path.resolve(THIS_TEST_ROOT_DIR, '.build', 'lingering_ds.txt');
 export const TEST_JOBS_RUN_FILE = path.resolve(THIS_TEST_ROOT_DIR, '.build', 'jobs-run.txt');
 export const DOWNLOAD_ZOWE_TOOLS = yn(configData.download_zowe_tools, { default: true });
 export const DOWNLOAD_CONFIGMGR = yn(configData.download_configmgr, { default: true });
 export const TEST_DATASETS_HLQ = configData.test_ds_hlq || configData.zos_user + '.ZWETESTS';
 export const REMOTE_SETUP = yn(configData.remote_setup, { default: true });
 export const REMOTE_TEARDOWN = yn(configData.remote_teardown, { default: true });
+export const ZOWE_YAML_OVERRIDES = configData.zowe_yaml_overrides;
 export const TEST_COLLECT_SPOOL = yn(configData.collect_test_spool);
 export const JFROG_CREDENTIALS = {
   user: configData.jfrog_user,
@@ -77,6 +80,8 @@ export const REMOTE_SYSTEM_INFO = {
   jcllib: `${configData.test_ds_hlq}.JCLLIB`,
   szweload: `${configData.test_ds_hlq}.SZWELOAD`,
   ussTestDir: configData.remote_test_dir,
+  hostname: configData.zos_host,
+  zosmfPort: configData.zosmf_port,
 };
 
 export const REMOTE_CONNECTION_CFG = {
@@ -107,6 +112,7 @@ type TestConfigData = {
   jfrog_user: string;
   jfrog_token: string;
   collect_test_spool: string;
+  zowe_yaml_overrides: Partial<ZoweYamlType>;
 };
 
 function getConfig(configFile: string): TestConfigData {

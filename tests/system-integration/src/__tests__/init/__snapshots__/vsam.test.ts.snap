@@ -1,6 +1,18 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`init-vsam creates vsam 1`] = `
+exports[`init-vsam (SHORT) BAD: bad ds prefix 1`] = `
+"
+$ Temporary directory '/tmp/.zweenv-0000' created.
+Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
+-------------------------------------------------------------------------------
+>> Initialize Zowe custom data sets
+
+cp: FSUM6258 cannot open file "//'TEST.DATASET.PFX.NOEXIST.SZWESAMP(ZWEGENER)'": EDC5049I The specified file name could not be located. (errno2=0xC00B0641)
+Error ZWETODOE: TEST.DATASET.PFX.NOEXIST.SZWESAMP(ZWEGENER) could not be copied. Review other error output from the 'cp' command.
+ERROR: Error ZWEL0999E: zowe.setup.dataset.jcllib does not exist, cannot run. Run 'zwe init', 'zwe init generate', or submit JCL TEST.DATASET.PFX.NOEXIST.SZWESAMP(ZWEGENER) before running this command."
+`;
+
+exports[`init-vsam (SHORT) GOOD: simple --dry-run 1`] = `
 "
 $ Temporary directory '/tmp/.zweenv-0000' created.
 Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
@@ -164,9 +176,17 @@ Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWECSVSM) , Executable JCL: TEST.DATASET
     SHAREOPTIONS(2 3) -
 //*
 --- End of JCL ---
-Submitting Job ZWECSVSM
-Job ZWECSVSM(JOB00000) completed with RC=0
+JCL not submitted, command run with "--dry-run" flag.
+To perform command, re-run command without "--dry-run" flag, or submit the JCL directly
+
+>> Command run successfully.
+
 
 >> Zowe Caching Service VSAM storage is created successfully.
 "
+`;
+
+exports[`init-vsam (SHORT) disable cfgmgr 1`] = `
+"
+$ Error ZWEL0316E: Command requires zowe.useConfigmgr=true to use."
 `;

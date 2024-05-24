@@ -1,0 +1,18 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`init-apfauth (SHORT) apf bad ds prefix 1`] = `
+"
+$ Temporary directory '/tmp/.zweenv-0000' created.
+Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
+-------------------------------------------------------------------------------
+>> APF authorize load libraries
+
+cp: FSUM6258 cannot open file "//'TEST.DATASET.PFX.NOEXIST.SZWESAMP(ZWEGENER)'": EDC5049I The specified file name could not be located. (errno2=0xC00B0641)
+Error ZWETODOE: TEST.DATASET.PFX.NOEXIST.SZWESAMP(ZWEGENER) could not be copied. Review other error output from the 'cp' command.
+ERROR: Error ZWEL0999E: zowe.setup.dataset.jcllib does not exist, cannot run. Run 'zwe init', 'zwe init generate', or submit JCL TEST.DATASET.PFX.NOEXIST.SZWESAMP(ZWEGENER) before running this command."
+`;
+
+exports[`init-apfauth (SHORT) apf disable cfgmgr 1`] = `
+"
+$ Error ZWEL0316E: Command requires zowe.useConfigmgr=true to use."
+`;

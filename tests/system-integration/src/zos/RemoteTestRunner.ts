@@ -9,8 +9,8 @@
  */
 
 import { Session } from '@zowe/imperative';
-import { getZosmfSession } from '../zowe';
-import * as uss from '../uss';
+import { getZosmfSession } from './zowe';
+import * as uss from './Uss';
 import ZoweYamlType from '../types/ZoweYamlType';
 import { REMOTE_SYSTEM_INFO, TEST_JOBS_RUN_FILE, TEST_OUTPUT_DIR } from '../config/TestConfig';
 import * as files from '@zowe/zos-files-for-zowe-sdk';
@@ -22,6 +22,7 @@ export class RemoteTestRunner {
   private readonly spoolOutputTemplate: string;
   private readonly session: Session;
   private trackedJobs: jobs.IDownloadAllSpoolContentParms[] = [];
+  private cleanFns: ((stdout: string) => string)[] = [];
 
   constructor(testGroup: string) {
     this.session = getZosmfSession();
@@ -54,8 +55,18 @@ export class RemoteTestRunner {
     this.trackedJobs = [];
   }
 
+  public addCleanFn(replaceFn: (output: string) => string) {
+    this.cleanFns.push(replaceFn);
+  }
+
   private cleanOutput(stdout: string): string {
-    return stdout
+    let cleanedOutput = stdout;
+    // user-supplied
+    this.cleanFns.forEach((fn) => {
+      cleanedOutput = fn(cleanedOutput);
+    });
+    // built-in
+    return cleanedOutput
       .replace(/(JOB[0-9]{5})/gim, 'JOB00000')
       .replaceAll(`${REMOTE_SYSTEM_INFO.prefix}`, 'TEST.DATASET.PFX')
       .replaceAll(`${this.session.ISession.user}`, 'TESTUSR0')
@@ -63,6 +74,8 @@ export class RemoteTestRunner {
       .replaceAll(REMOTE_SYSTEM_INFO.volume, 'TSTVOL')
       .replaceAll(REMOTE_SYSTEM_INFO.zosJavaHome, '/test/java/home')
       .replaceAll(REMOTE_SYSTEM_INFO.zosNodeHome, '/test/node/home')
+      .replaceAll(REMOTE_SYSTEM_INFO.hostname, 'some.test.hostname')
+      .replaceAll(REMOTE_SYSTEM_INFO.zosmfPort, '12321')
       .replaceAll(REMOTE_SYSTEM_INFO.ussTestDir, '/test/dir');
   }
 
@@ -102,7 +115,7 @@ export class RemoteTestRunner {
 
     // for each match, 0=full matched string, 1=jobname, 2=jobid, 3=rc
     for (const match of matches) {
-      fs.appendFileSync(TEST_JOBS_RUN_FILE, `${match[1]}:${match[2]}`);
+      fs.appendFileSync(TEST_JOBS_RUN_FILE, `${match[1]}:${match[2]}\n`);
       this.trackedJobs.push({
         jobname: match[1],
         jobid: match[2],
