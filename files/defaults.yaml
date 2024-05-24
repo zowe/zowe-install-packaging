@@ -1,0 +1,292 @@
+################################################################################
+# This program and the accompanying materials are made available under the terms of the
+# Eclipse Public License v2.0 which accompanies this distribution, and is available at
+# https://www.eclipse.org/legal/epl-v20.html
+#
+# SPDX-License-Identifier: EPL-2.0
+#
+# Copyright Contributors to the Zowe Project.
+################################################################################
+
+#===============================================================================
+# This is the default YAML configuration file for a Zowe instance.
+#
+# It should not be edited.
+#
+# You should use "example-zowe.yaml" as a reference for customizing
+# Your own Zowe configuration.
+#===============================================================================
+
+#-------------------------------------------------------------------------------
+# Zowe global configurations
+#
+# This section includes Zowe setup information used by `zwe install` and
+# `zwe init` command, as well as default configurations for Zowe runtime.
+#-------------------------------------------------------------------------------
+zowe:
+  #-------------------------------------------------------------------------------
+  # These configurations are used by "zwe install" or "zwe init" commands.
+  #-------------------------------------------------------------------------------
+  setup:
+    # MVS data set related configurations
+    dataset:      
+      # where Zowe MVS data sets will be installed
+      # This prefix is used for the Zowe runtime datasets
+      prefix: IBMUSER.ZWEV2
+      
+      # PROCLIB where Zowe STCs will be copied over
+      proclib: USER.PROCLIB
+      
+      # Zowe PARMLIB
+      parmlib: IBMUSER.ZWEV2.CUST.PARMLIB
+      parmlibMembers:
+        # For ZIS plugins
+        zis: ZWESIP00
+      
+      # JCL library where Zowe will store temporary JCLs during initialization
+      jcllib: IBMUSER.ZWEV2.CUST.JCLLIB
+      # Utilities for use by Zowe and extensions
+      loadlib: IBMUSER.ZWEV2.SZWELOAD
+      # APF authorized LOADLIB for Zowe
+      authLoadlib: IBMUSER.ZWEV2.SZWEAUTH
+      
+      # APF authorized LOADLIB for Zowe ZIS Plugins
+      authPluginLib: IBMUSER.ZWEV2.CUST.ZWESAPL
+
+    # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+    security:
+      # security product name. Can be RACF, ACF2 or TSS
+      product: RACF
+      groups:
+        admin: ZWEADMIN
+        stc: ZWEADMIN
+        sysProg: ZWEADMIN
+      users:
+        # Zowe runtime user name of main service
+        zowe: ZWESVUSR
+        # Zowe runtime user name of ZIS
+        zis: ZWESIUSR
+      stcs:
+        # STC name of Zowe main service
+        zowe: ZWESLSTC
+        # STC name of Zowe ZIS
+        zis: ZWESISTC
+        # STC name of Zowe ZIS Auxiliary Server
+        aux: ZWESASTC
+
+    # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+    # Certificate related configurations
+    # This section fully defines a default for certificate scenario 1, but makes way when detecting any other scenarios.
+    certificate:
+      type: PKCS12
+      pkcs12: 
+        directory: "${{ zowe.setup.certificate.type != 'PKCS12' ? null : '/var/zowe/keystore' }}"
+        lock: "${{ zowe.setup.certificate.type != 'PKCS12' ? null : true }}"
+        name: "${{ zowe.setup.certificate.type == 'PKCS12' && !zowe.setup.certificate.pkcs12.import ? 'localhost' : null }}"
+        password: "${{ zowe.setup.certificate.type == 'PKCS12' && !zowe.setup.certificate.pkcs12.import ? 'password' : null }}"
+        caAlias: "${{ zowe.setup.certificate.type == 'PKCS12' && !zowe.setup.certificate.pkcs12.import ? 'local_ca' : null }}"
+        caPassword: "${{ zowe.setup.certificate.type == 'PKCS12' && !zowe.setup.certificate.pkcs12.import ? 'local_ca_password' : null }}"
+
+#"${{ zowe.setup.certificate.type != 'PKCS12' ? null : zowe.setup.certificate.pkcs12.import ? { directory: zowe.setup.certificate.pkcs12.directory, lock: zowe.setup.certificate.pkcs12.lock, import: zowe.setup.certificate.pkcs12.import }  : { directory: '/var/zowe/keystore', lock: true, name: 'localhost', password: 'password', caAlias: 'local_ca', caPassword: 'local_ca_password'} }}"
+
+      # Distinguished name for Zowe generated certificates.
+      dname: 
+        caCommonName: "${{ (zowe.setup.certificate.pkcs12?.name || zowe.setup.certificate.keyring?.label) ? 'Zowe Development Instances CA' : null }}"
+        commonName: "${{ (zowe.setup.certificate.pkcs12?.name || zowe.setup.certificate.keyring?.label) ? 'Zowe Development Instances Certificate' : null }}"
+        orgUnit: "${{ (zowe.setup.certificate.pkcs12?.name || zowe.setup.certificate.keyring?.label) ? 'API Mediation Layer' : null }}"
+        org: "${{ (zowe.setup.certificate.pkcs12?.name || zowe.setup.certificate.keyring?.label) ? 'Zowe Sample' : null }}"
+        locality: "${{ (zowe.setup.certificate.pkcs12?.name || zowe.setup.certificate.keyring?.label) ? 'Prague' : null }}"
+        state: "${{ (zowe.setup.certificate.pkcs12?.name || zowe.setup.certificate.keyring?.label) ? 'Prague' : null }}"
+        country: "${{ (zowe.setup.certificate.pkcs12?.name || zowe.setup.certificate.keyring?.label) ? 'CZ' : null }}"
+      # Validity days for Zowe generated certificates
+      validity: "${{ (zowe.setup.certificate.pkcs12?.import || zowe.setup.certificate.keyring?.label) ? null : 3650 }}"
+
+  
+  # Where to store runtime logs
+  logDirectory: /global/zowe/logs
+
+  
+  # Zowe runtime workspace directory
+  workspaceDirectory: /global/zowe/workspace
+
+  
+  # Where extensions are installed
+  extensionDirectory: /global/zowe/extensions
+
+  configmgr:
+    # STRICT=quit on any error, including missing schema
+    # COMPONENT-COMPAT=if component missing schema, skip it with warning instead of quit
+    validation: "STRICT"
+
+  # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+  # runtime z/OS job name
+  job:
+    # Zowe JES job name
+    name: ZWE1SV
+    # Prefix of component address space
+    prefix: ZWE1
+
+  # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+  # This is an ID you use to separate multiple Zowe installs when determining
+  # resource names used in RBAC authorization checks such as dataservices with RBAC
+  # expects this ID in SAF resources 
+  rbacProfileIdentifier: "1"
+
+  # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+  # This is an ID that can be used by servers that distinguish their cookies from unrelated Zowe installs, 
+  # for purposes such as to allow multiple copies of Zowe to be used within the same client
+  cookieIdentifier: "1"
+  
+  # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+  # This is the port you use to access Zowe Gateway from your web browser.
+  #
+  # In many use cases, this should be same as `components.gateway.port`. But in
+  # some use cases, like containerization, this port could be different.
+  externalPort: 7554
+
+  # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+  # Enable debug mode for Zowe launch scripts
+  launchScript:
+    # Set to "debug" or "trace" to display extra debug information
+    logLevel: "info"
+    # Set to "exit" if you'd like startup to exit if any component has an error in the configure stage, otherwise zwe will warn but continue.
+    onComponentConfigureFail: "warn"
+
+  # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+  # How we want to verify SSL certificates of services. Valid values are:
+  # - STRICT:    will validate if the certificate is trusted in our trust store and
+  #              if the certificate Command Name and Subject Alternative Name (SAN)
+  #              is validate. This is recommended for the best security.
+  # - NONSTRICT: will validate if the certificate is trusted in our trust store.
+  #              This mode does not validate certificate Common Name and Subject
+  #              Alternative Name (SAN).
+  # - DISABLED:  disable certificate validation. This is NOT recommended for
+  #              security. 
+  verifyCertificates: STRICT
+
+#-------------------------------------------------------------------------------
+# z/OSMF configuration
+#
+# If your Zowe instance is configured to use z/OSMF for authentication or other
+# features. You need to define how to access your z/OSMF instance.
+#-------------------------------------------------------------------------------
+zOSMF:
+  host: "${{ zos.resolveSymbol('&SYSNAME') }}"
+  port: 443
+  applId: IZUDFLT
+
+
+#-------------------------------------------------------------------------------
+# Zowe components default configurations
+#-------------------------------------------------------------------------------
+components:
+
+  # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+  gateway:
+    enabled: true
+    port: 7554
+    debug: false
+
+    apiml:
+      security:
+        auth:
+          provider: zosmf
+          zosmf:
+            jwtAutoconfiguration: auto
+            serviceId: zosmf
+        authorization:
+          endpoint:
+            enabled: false
+          provider: ""
+        x509:
+          enabled: false
+    server:
+      internal:
+      # gateway supports internal connector
+        enabled: false
+        port: 7550
+        ssl:
+          enabled: false
+
+  # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+  metrics-service:
+    enabled: false
+    port: 7551
+    debug: false
+
+  # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+  cloud-gateway:
+    enabled: false
+    port: 7563
+    debug: false
+
+  # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+  api-catalog:
+    enabled: true
+    port: 7552
+    debug: false
+
+  # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+  discovery:
+    enabled: true
+    port: 7553
+    debug: false
+
+  # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+  caching-service:
+    enabled: true
+    port: 7555
+    debug: false
+
+    storage:
+      evictionStrategy: reject
+      # can be inMemory, VSAM, redis or infinispan
+      mode: VSAM
+      size: 10000
+      vsam:
+        # your VSAM data set created by "zwe init vsam" command or ZWECSVSM JCL
+        # this is required if storage mode is VSAM
+        name: ""
+      infinispan:
+        # this is required if storage mode is infinispan
+        jgroups:
+          port: 7600
+
+  # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+  app-server:
+    enabled: true
+    port: 7556
+    debug: false
+
+  # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+  zss:
+    enabled: true
+    port: 7557
+    crossMemoryServerName: ZWESIS_STD
+    agent:
+      jwt:
+        fallback: true
+
+  # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+  jobs-api:
+    enabled: false
+    debug: false
+    port: 7558
+
+  # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+  files-api:
+    enabled: false
+    debug: false
+    port: 7559
+
+  # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+  explorer-jes:
+    enabled: true
+
+  # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+  explorer-mvs:
+    enabled: true
+
+  # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+  explorer-uss:
+    enabled: true

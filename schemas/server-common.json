@@ -48,6 +48,12 @@
       "minLength": 1,
       "maxLength": 8
     },
+    "zisParmlibMember": {
+      "$anchor": "zisParmlibMember",
+      "type": "string",
+      "description": "ZIS parmlib member name in format ZWESIPnn, where nn is suffix",
+      "pattern": "^ZWESIP[A-Z0-9\\$\\#\\@]{2}$"
+    },
     "jobname": {
       "$anchor": "zoweJobname",
       "type": "string",

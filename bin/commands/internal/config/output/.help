@@ -1,0 +1,1 @@
+Outputs the merged YAML used at Zowe runtime into zowe.workspaceDirectory/.env/.zowe-merged.yaml

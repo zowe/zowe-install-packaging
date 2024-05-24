@@ -22,7 +22,7 @@ export function submitJob(jclFileOrContent: string, printJobDebug:boolean=true, 
 
     common.printTrace(`- content of ${jclFileOrContent}`);
     if (!jclIsContent) {
-      const catResult = shell.execOutSync('sh', '-c', `cat "${jclFileOrContent}" 2>&1`);
+      const catResult = shell.execOutSync('sh', '-c', `cat "${stringlib.escapeDollar(jclFileOrContent)}" 2>&1`);
       if (catResult.rc != 0) {
         common.printTrace(`  * Failed`);
         common.printTrace(`  * Exit code: ${catResult.rc}`);
@@ -40,7 +40,7 @@ export function submitJob(jclFileOrContent: string, printJobDebug:boolean=true, 
 
   // cat seems to work more reliably. sometimes, submit by itself just says it cannot find a real dataset.
   const result = shell.execOutSync('sh', '-c', jclIsContent ? `echo "${jclFileOrContent}" | submit 2>&1`
-                                                            : `cat "${jclFileOrContent}" | submit 2>&1`);
+                                                            : `cat "${stringlib.escapeDollar(jclFileOrContent)}" | submit 2>&1`);
   // expected: JOB JOB????? submitted from path '...'
   const code=result.rc;
   if (code==0) {
