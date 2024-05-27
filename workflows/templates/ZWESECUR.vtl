@@ -395,7 +395,8 @@
 
 /* general data set protection                                       */
   LISTDSD PREFIX(&HLQ.) ALL
-  ADDSD  '&HLQ..*.**' UACC(READ) DATA('Zowe')
+  ADDSD  '&HLQ..*.**' UACC(READ) -
+    DATA('Zowe')
   PERMIT '&HLQ..*.**' CLASS(DATASET) ACCESS(ALTER) ID(&SYSPROG.)
 
   SETROPTS GENERIC(DATASET) REFRESH
