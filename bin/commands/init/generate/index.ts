@@ -68,6 +68,14 @@ export function execute(dryRun?: boolean) {
       configLines.push('FILE ' + fs.convertToAbsolutePath(filename).replace(/[$]/g, '$$$$'));
       state = null;
     } else if (state == 'PARMLIB(') {
+      let memberIndex = part.indexOf('(');
+      if (memberIndex != -1) {
+        let endIndex = part.indexOf(')', memberIndex);
+        let member = part.substring(memberIndex+1, endIndex);
+        if (member.toUpperCase() != 'ZWEYAML') {
+          common.printErrorAndExit(`ZWEL0318E Configuration stored in PARMLIB must use member name ZWEYAML when using generate action.`, undefined, 318);
+        }
+      }
       configLines.push('PARMLIB ' + part.substring(0, part.indexOf('(')).replace(/[$]/g, '$$$$'));
       state = null;
     }

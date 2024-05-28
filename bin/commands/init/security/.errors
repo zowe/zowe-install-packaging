@@ -7,4 +7,3 @@ ZWEL0162E|162|Failed to find job %s result.
 ZWEL0162W||Failed to find job %s result.
 ZWEL0163E|163|Job %s ends with code %s.
 ZWEL0163W||Job %s ends with code %s.
-ZWEL0316E|316|Command requires zowe.useConfigmgr=true to use.

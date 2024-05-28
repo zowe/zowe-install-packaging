@@ -5,4 +5,3 @@ ZWEL0158E|158|%s already exists.
 ZWEL0161E|161|Failed to run JCL %s.
 ZWEL0162E|162|Failed to find job %s result.
 ZWEL0163E|163|Job %s ends with code %s.
-ZWEL0316E|316|Command requires zowe.useConfigmgr=true to use.
