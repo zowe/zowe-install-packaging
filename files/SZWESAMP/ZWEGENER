@@ -69,10 +69,13 @@ $$
 //* Overridden by the higher entries.
 //* PARMLIB member must be named "ZWEYAML"
 //*
+//* Do not remove the defaults.yaml entry.
+//*
 //* Ex. PARMLIB MY.ZOWE.CUSTOM.PARMLIB
 //*     FILE /the/zowe/defaults.yaml
 //MYCONFIG DD   *,DLM=$$
 FILE <full path to zowe.yaml file>
+FILE {zowe.runtimeDirectory}/files/defaults.yaml
 $$
 //CMGROUT  DD   SYSOUT=*
 //SYSPRINT DD   SYSOUT=*
