@@ -386,7 +386,7 @@
                 "name": {
                   "anyOf": [
                     { "type": "null" },
-                    { "type": "string", maxLength: 0 },
+                    { "type": "string", "maxLength": 0 },
                     {
                       "$ref": "/schemas/v2/server-common#zoweDatasetVsam",
                       "description": "Data set name. Must match components.caching-service.storage.vsam.name"
