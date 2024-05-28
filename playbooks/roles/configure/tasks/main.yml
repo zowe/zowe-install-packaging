@@ -241,7 +241,6 @@
       "zowe.setup.vsam.volume": "{{ zowe_caching_vsam_volume }}"
       "zowe.setup.vsam.storageClass": "{{ zowe_caching_vsam_storage_class }}"
       "components.caching-service.storage.mode": "{{ zowe_caching_service_persistent }}"
-      "zowe.setup.vsam.name": "{{ zowe_dataset_prefix }}.{{ zowe_caching_service_vsam_dsprefix }}{{ zowe_instance_id }}"
       "components.caching-service.storage.vsam.name": "{{ zowe_dataset_prefix }}.{{ zowe_caching_service_vsam_dsprefix }}{{ zowe_instance_id }}"
 
 - name: Update zowe.yaml zowe.setup.vsam.mode to NONRLS

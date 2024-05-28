@@ -101,6 +101,10 @@ zowe:
       # Validity days for Zowe generated certificates
       validity: "${{ (zowe.setup.certificate.pkcs12?.import || zowe.setup.certificate.keyring?.label) ? null : 3650 }}"
 
+    vsam:
+      # Default to caching service entry as it predates this one
+      name: "${{ ()=> { if (components['caching-service']?.storage?.vsam?.name) { return components['caching-service'].storage.vsam.name } else { return '' } }() }}"
+
   
   # Where to store runtime logs
   logDirectory: /global/zowe/logs
