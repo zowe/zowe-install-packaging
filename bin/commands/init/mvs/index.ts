@@ -34,7 +34,7 @@ export function execute(allowOverwrite?: boolean) {
 
   const jcllib = zoslib.verifyGeneratedJcl(ZOWE_CONFIG);
   if (!jcllib) {
-    common.printErrorAndExit(`Error ZWEL0999E: zowe.setup.dataset.jcllib does not exist, cannot run. Run 'zwe init', 'zwe init generate', or submit JCL ${prefix}.SZWESAMP(ZWEGENER) before running this command.`, undefined, 999);
+    common.printErrorAndExit(`Error ZWEL0319E: zowe.setup.dataset.jcllib does not exist, cannot run. Run 'zwe init', 'zwe init generate', or submit JCL ${prefix}.SZWESAMP(ZWEGENER) before running this command.`, undefined, 319);
   }
 
   let runALoadlibCreate: boolean;
@@ -120,7 +120,7 @@ export function execute(allowOverwrite?: boolean) {
         std.exit(1);
       }
       if (!fs.fileExists(tmpfile)) {
-        common.printErrorAndExit(`Error ZWEL0159E: Failed to prepare ZWEIMVS`, undefined, 159);
+        common.printErrorAndExit(`Error ZWEL0159E: Failed to modify ZWEIMVS`, undefined, 159);
       }
       
       zosJes.printAndHandleJcl(tmpfile, `ZWEIMVS`, jcllib, prefix, true);

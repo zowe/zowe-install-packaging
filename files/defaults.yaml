@@ -30,28 +30,9 @@ zowe:
   setup:
     # MVS data set related configurations
     dataset:      
-      # where Zowe MVS data sets will be installed
-      # This prefix is used for the Zowe runtime datasets
-      prefix: IBMUSER.ZWEV2
-      
-      # PROCLIB where Zowe STCs will be copied over
-      proclib: USER.PROCLIB
-      
-      # Zowe PARMLIB
-      parmlib: IBMUSER.ZWEV2.CUST.PARMLIB
       parmlibMembers:
         # For ZIS plugins
         zis: ZWESIP00
-      
-      # JCL library where Zowe will store temporary JCLs during initialization
-      jcllib: IBMUSER.ZWEV2.CUST.JCLLIB
-      # Utilities for use by Zowe and extensions
-      loadlib: IBMUSER.ZWEV2.SZWELOAD
-      # APF authorized LOADLIB for Zowe
-      authLoadlib: IBMUSER.ZWEV2.SZWEAUTH
-      
-      # APF authorized LOADLIB for Zowe ZIS Plugins
-      authPluginLib: IBMUSER.ZWEV2.CUST.ZWESAPL
 
     # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
     security:

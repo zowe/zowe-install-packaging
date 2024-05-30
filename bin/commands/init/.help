@@ -4,12 +4,17 @@ You can find an example zowe.yaml in Zowe runtime directory folder.
 
 This command will run these sub-commands in sequence:
 
+- `zwe init generate`
 - `zwe init mvs`
 - `zwe init vsam`
 - `zwe init apfauth`
 - `zwe init security`
 - `zwe init certificate`
 - `zwe init stc`
+
+If you pass `--dry-run` with this command, each subcommand will print out the
+JCL that it would submit, without doing the submission. This can be used to
+review what Zowe would do before doing it.
 
 If you pass `--skip-security-setup` with this command, `zwe init apfauth` and
 `zwe init security` steps will be skipped.
