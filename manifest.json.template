@@ -67,12 +67,12 @@
       "artifact": "zss-1.28.7-rc-1142-20240529170519.pax"
     },
     "org.zowe.explorer.jobs.jobs-api-package": {
-      "version": "1.0.23",
+      "version": "1.0.24",
       "artifact": "jobs-api-package-*.zip",
       "exclusions": ["*PR*.zip","*BRANCH*"]
     },
     "org.zowe.explorer.files.files-api-package": {
-      "version": "1.0.25",
+      "version": "1.0.26",
       "artifact": "files-api-package-*.zip",
       "exclusions": ["*PR*.zip","*BRANCH*"]
     },
@@ -93,27 +93,27 @@
       "artifact": "*.pax"
     },
     "org.zowe.apiml.sdk.api-catalog-package": {
-      "version": "1.28.25",
+      "version": "1.28.26",
       "artifact": "api-catalog*.zip"
     },
     "org.zowe.apiml.sdk.discovery-package": {
-      "version": "1.28.25",
+      "version": "1.28.26",
       "artifact": "discovery*.zip"
     },
     "org.zowe.apiml.sdk.gateway-package": {
-      "version": "1.28.25",
+      "version": "1.28.26",
       "artifact": "gateway*.zip"
     },
     "org.zowe.apiml.sdk.caching-service-package": {
-      "version": "1.28.25",
+      "version": "1.28.26",
       "artifact": "caching-service*.zip"
     },
     "org.zowe.apiml.sdk.metrics-service-package": {
-      "version": "1.28.25",
+      "version": "1.28.26",
       "artifact": "metrics-service*.zip"
     },
     "org.zowe.apiml.sdk.apiml-common-lib-package": {
-      "version": "1.28.25",
+      "version": "1.28.26",
       "artifact": "apiml-common-lib-*.zip"
     },
     "org.zowe.apiml.sdk.common-java-lib-package": {
@@ -122,7 +122,7 @@
       "exclusions": ["*PR*.zip"]
     },
     "org.zowe.apiml.sdk.apiml-sample-extension-package": {
-      "version": "1.28.25",
+      "version": "1.28.26",
       "artifact": "apiml-sample-extension-*.zip"
     },
     "org.zowe.launcher": {
@@ -140,7 +140,7 @@
       "version": "~0.0.8-SNAPSHOT"
     },
     "org.zowe.licenses": {
-      "version": "1.28.1",
+      "version": "1.28.7",
       "artifact": "zowe_licenses_full.zip"
     }
   },
@@ -228,7 +228,7 @@
       "componentGroup": "Zowe CLI",
       "entries": [{
         "repository": "zowe-cli",
-        "tag": "v6.40.27",
+        "tag": "v6.40.28",
         "destinations": ["Zowe CLI Package"]
       }]
     }, {
@@ -291,7 +291,7 @@
       "componentGroup": "Zowe Desktop Eclipse Orion-based React Editor",
       "entries": [{
         "repository": "orion-editor-component",
-        "tag": "master",
+        "tag": "v2.x/master",
         "destinations": ["Zowe PAX"]
       }]
     }, {
@@ -326,14 +326,14 @@
       "componentGroup": "Zowe Explorer Data Sets REST Server",
       "entries": [{
         "repository": "data-sets",
-        "tag": "v1.x/master",
+        "tag": "1.0.26",
         "destinations": ["Zowe PAX"]
       }]
     }, {
       "componentGroup": "Zowe Explorer Jobs REST Server",
       "entries": [{
         "repository": "jobs",
-        "tag": "v1.x/master",
+        "tag": "1.0.24",
         "destinations": ["Zowe PAX"]
       }]
     }, {
@@ -422,7 +422,7 @@
     {
       "componentGroup": "Zowe Visual Studio Code Extension",
       "entries": [{
-        "repository": "vscode-extension-for-zowe",
+        "repository": "zowe-explorer-vscode",
         "tag": "v1-lts",
         "destinations": ["Visual Studio Code Marketplace"]
       }]
@@ -445,23 +445,23 @@
     "api-catalog": {
       "registry": "zowe-docker-release.jfrog.io",
       "name": "ompzowe/api-catalog-services",
-      "tag" : "1.28.25-ubuntu"
+      "tag" : "1.28.26-ubuntu"
     },
     "caching": {
       "registry": "zowe-docker-release.jfrog.io",
       "name": "ompzowe/caching-service",
-      "tag" : "1.28.25-ubuntu"
+      "tag" : "1.28.26-ubuntu"
     },
     "discovery": {
       "kind": "statefulset",
       "registry": "zowe-docker-release.jfrog.io",
       "name": "ompzowe/discovery-service",
-      "tag" : "1.28.25-ubuntu"
+      "tag" : "1.28.26-ubuntu"
     },
     "gateway": {
       "registry": "zowe-docker-release.jfrog.io",
       "name": "ompzowe/gateway-service",
-      "tag" : "1.28.25-ubuntu"
+      "tag" : "1.28.26-ubuntu"
     },
     "app-server": {
       "registry": "zowe-docker-release.jfrog.io",
@@ -492,12 +492,12 @@
     "files-api": {
       "registry": "zowe-docker-release.jfrog.io",
       "name": "ompzowe/files-api",
-      "tag" : "1.0.24-ubuntu"
+      "tag" : "1.0.25-ubuntu"
     },
     "jobs-api": {
       "registry": "zowe-docker-release.jfrog.io",
       "name": "ompzowe/jobs-api",
-      "tag" : "1.0.22-ubuntu"
+      "tag" : "1.0.23-ubuntu"
     }
   },
   "dependencyDecisions": {
