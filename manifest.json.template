@@ -326,14 +326,14 @@
       "componentGroup": "Zowe Explorer Data Sets REST Server",
       "entries": [{
         "repository": "data-sets",
-        "tag": "v1.x/master",
+        "tag": "1.0.26",
         "destinations": ["Zowe PAX"]
       }]
     }, {
       "componentGroup": "Zowe Explorer Jobs REST Server",
       "entries": [{
         "repository": "jobs",
-        "tag": "v1.x/master",
+        "tag": "1.0.24",
         "destinations": ["Zowe PAX"]
       }]
     }, {
