@@ -114,12 +114,19 @@ function getTempMergedYamlDir(): string|number {
 function getDiscoveryServiceUrlHa(config) {
   const list = [];
   const defaultDs = config.components.discovery;
+  const externalDomains = config.zowe.externalDomains;
+  const useExternal = config.zowe.network?.findDiscoveryOnExternal;
+
   const haInstanceKeys = Object.keys(config.haInstances);
   
   for (const haInstanceKey of haInstanceKeys) {
     const haInstance = config.haInstances[haInstanceKey];
 
-    if (!haInstance.hostname) {
+    let haDiscovery = haInstance.components?.discovery;
+    let enabled = (typeof haDiscovery.enabled) == 'boolean' ? haDiscovery.enabled : defaultDs.enabled;
+    if (enabled !== true) continue;
+    
+    if (!useExternal && !haInstance.hostname) {
       console.log(`Error: 'hostname' value is missing for haInstance '${haInstanceKey}'`);
       if (haInstanceKeys.length == 1) {
         console.log(`Debug: Discovery server will be configured without HA`);
@@ -128,23 +135,21 @@ function getDiscoveryServiceUrlHa(config) {
       std.exit(1);
     }
 
-    const haInstanceDs = haInstance.components?.discovery;
-    const enabled = haInstanceDs && (typeof haInstanceDs.enabled !== 'undefined') ? haInstanceDs.enabled : defaultDs.enabled;
-    if (enabled !== true) continue;
-
-    const port = haInstanceDs?.port ?? defaultDs.port;
+    let hostnames = useExternal ? externalDomains : [haInstance.hostname];
+    
+    const port = haDiscovery.port ? haDiscovery.port : defaultDs.port;
     if (!port) {
-      console.log(`Error: Missing configuration of diverery port, see 'components.discovery.port' or 'haInstances.${haInstanceKey}.components.discovery.port'`);
+      console.log(`Error: Missing configuration of discovery port, see 'components.discovery.port' or 'haInstances.${haInstanceKey}.components.discovery.port'`);
       std.exit(1);
     }
 
-    const url = `https://${haInstance.hostname}:${port}/eureka/`;
+    hostnames.forEach((hostname)=> {
+      const url = `https://${hostname}:${port}/eureka/`;
 
-    if (list.includes(url)) {
-      console.log(`Warn: Multiple haInstances reffers to the same hostname: ${haInstance.hostname}`);
-    } else {
-      list.push(url);
-    }
+      if (!list.includes(url)) {
+        list.push(url);
+      }
+    });
 
   }
 

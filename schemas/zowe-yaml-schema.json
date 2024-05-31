@@ -951,6 +951,10 @@
                 "$ref": "/schemas/v2/server-common#zoweIpv4"
               }
             },
+            "findDiscoveryOnExternal": {
+              "type": "boolean",
+              "description": "Defaults to true when HA instances are not used, else false. When set to true and using HA instances, the variable ZWE_DISCOVERY_SERVICES_LIST used by components to find all discovery servers will be derived from the hostnames of each haInstances object. When false or not using HA instances, the externalDomains values will be used for hostnames instead."
+            }
             "vipaIp": {
               "type": "string",
               "description": "The IP address which all of the Zowe servers will be binding to. If you are using multiple DIPVA addresses, do not use this option."
