@@ -52,9 +52,6 @@ zowe:
       # Zowe PARMLIB
       parmlib: IBMUSER.ZWEV2.CUST.PARMLIB
       # Holds Zowe PARMLIB members for plugins
-      parmlibMembers:
-        # For ZIS plugins
-        zis: ZWESIP00
       # **COMMONLY_CUSTOMIZED**
       # JCL library where Zowe will store temporary JCLs during initialization
       jcllib: IBMUSER.ZWEV2.CUST.JCLLIB
@@ -284,7 +281,7 @@ zowe:
       # Storage class name if you are using VSAM in RLS mode
       storageClass: ""
       # Data set name. Must match components.caching-service.storage.vsam.name
-      name: ""
+      # name: ""
 
   # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   # **COMMONLY_CUSTOMIZED**

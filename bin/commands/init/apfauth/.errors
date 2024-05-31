@@ -1,2 +1,2 @@
 ZWEL0157E|157|%s (%s) is not defined in Zowe YAML configuration file.
-ZWEL0316E|316|Command requires zowe.useConfigmgr=true to use.
+ZWEL0319E|319|zowe.setup.dataset.jcllib does not exist, cannot run. Run 'zwe init', 'zwe init generate', or submit JCL ${prefix}.SZWESAMP(ZWEGENER) before running this command.

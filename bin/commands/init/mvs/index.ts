@@ -9,6 +9,10 @@
   Copyright Contributors to the Zowe Project.
 */
 
+import * as std from 'cm_std';
+import * as xplatform from 'xplatform';
+import * as fs from '../../../libs/fs';
+import * as shell from '../../../libs/shell';
 import * as zoslib from '../../../libs/zos';
 import * as zosJes from '../../../libs/zos-jes';
 import * as zosdataset from '../../../libs/zos-dataset';
@@ -30,7 +34,7 @@ export function execute(allowOverwrite?: boolean) {
 
   const jcllib = zoslib.verifyGeneratedJcl(ZOWE_CONFIG);
   if (!jcllib) {
-    common.printErrorAndExit(`Error ZWEL0999E: zowe.setup.dataset.jcllib does not exist, cannot run. Run 'zwe init', 'zwe init generate', or submit JCL ${prefix}.SZWESAMP(ZWEGENER) before running this command.`, undefined, 999);
+    common.printErrorAndExit(`Error ZWEL0319E: zowe.setup.dataset.jcllib does not exist, cannot run. Run 'zwe init', 'zwe init generate', or submit JCL ${prefix}.SZWESAMP(ZWEGENER) before running this command.`, undefined, 319);
   }
 
   let runALoadlibCreate: boolean;
@@ -86,8 +90,45 @@ export function execute(allowOverwrite?: boolean) {
     if (allowOverwrite && needAuthCleanup) {
       zosJes.printAndHandleJcl(`//'${jcllib}(ZWERMVS2)'`, `ZWERMVS2`, jcllib, prefix, false, true);
     }
+
+    const zisParmlib = ZOWE_CONFIG.zowe.setup?.dataset?.parmlibMembers?.zis;
+    
+    if (zisParmlib && (zisParmlib != 'ZWESIP00')) {
+
+      const COMMAND_LIST = std.getenv('ZWE_CLI_COMMANDS_LIST');
+      const tmpfile = fs.createTmpFile(`zwe ${COMMAND_LIST}`.replace(new RegExp('\ ', 'g'), '-'));
+      common.printDebug(`- Copy ${jcllib}(ZWEIMVS) to ${tmpfile}`);
+      const jclContent = shell.execOutSync('sh', '-c', `cat "//'${stringlib.escapeDollar(jcllib)}(ZWEIMVS)'" 2>&1`);
+      if (jclContent.out && jclContent.rc == 0) {
+        common.printDebug(`  * Succeeded`);
+        common.printTrace(`  * Output:`);
+        common.printTrace(stringlib.paddingLeft(jclContent.out, "    "));
+
+        const tmpFileContent = jclContent.out.replace("ZWESIP00,", zisParmlib.toUpperCase()+',');
+        xplatform.storeFileUTF8(tmpfile, xplatform.AUTO_DETECT, tmpFileContent);
+        common.printTrace(`  * Stored:`);
+        common.printTrace(stringlib.paddingLeft(tmpFileContent, "    "));
+
+        shell.execSync('chmod', '700', tmpfile);
+      } else {
+        common.printDebug(`  * Failed`);
+        common.printError(`  * Exit code: ${jclContent.rc}`);
+        common.printError(`  * Output:`);
+        if (jclContent.out) {
+          common.printError(stringlib.paddingLeft(jclContent.out, "    "));
+        }
+        std.exit(1);
+      }
+      if (!fs.fileExists(tmpfile)) {
+        common.printErrorAndExit(`Error ZWEL0159E: Failed to modify ZWEIMVS`, undefined, 159);
+      }
       
-    zosJes.printAndHandleJcl(`//'${jcllib}(ZWEIMVS)'`, `ZWEIMVS`, jcllib, prefix);
+      zosJes.printAndHandleJcl(tmpfile, `ZWEIMVS`, jcllib, prefix, true);
+
+      
+    } else {
+      zosJes.printAndHandleJcl(`//'${jcllib}(ZWEIMVS)'`, `ZWEIMVS`, jcllib, prefix);
+    }
     if (runALoadlibCreate === true) {
       zosJes.printAndHandleJcl(`//'${jcllib}(ZWEIMVS2)'`, `ZWEIMVS2`, jcllib, prefix);
     }

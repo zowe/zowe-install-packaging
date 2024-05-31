@@ -8,4 +8,4 @@ ZWEL0160E|160|Failed to write to %s. Please check if target data set is opened b
 ZWEL0161E|161|Failed to run JCL %s.
 ZWEL0162E|162|Failed to find job %s result.
 ZWEL0163E|163|Job %s ends with code %s.
-ZWEL0316E|316|Command requires zowe.useConfigmgr=true to use.
+ZWEL0319E|319|zowe.setup.dataset.jcllib does not exist, cannot run. Run 'zwe init', 'zwe init generate', or submit JCL ${prefix}.SZWESAMP(ZWEGENER) before running this command.
