@@ -1,0 +1,379 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`init-vsam (LONG) creates vsam 1`] = `
+"
+$ Temporary directory '/tmp/.zweenv-0000' created.
+Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
+-------------------------------------------------------------------------------
+>> Initialize Zowe custom data sets
+
+Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWEGENER)
+--- JCL content ---
+//ZWEGENER JOB
+//*
+//* This program and the accompanying materials are made available
+//* under the terms of the Eclipse Public License v2.0 which
+//* accompanies this distribution, and is available at
+//* https://www.eclipse.org/legal/epl-v20.html
+//*
+//* SPDX-License-Identifier: EPL-2.0
+//*
+//* Copyright Contributors to the Zowe Project. 2020, 2020
+//*
+//*********************************************************************
+//*
+//* This job is responsible for generating other jobs required
+//* to configure Zowe.
+//*
+//* The method of validating your configuration is using
+//* JSON Schema <https://json-schema.org>. Zowe provides
+//* the ConfigMgr to assist in this. This job will invoke
+//* the ConfigMgr to validate your current configuration
+//* before generating any jobs. If there are any values
+//* that are incorrect, you will be notified. You should
+//* fix the value and then run this job again. You can run
+//* this job as many times as you need.
+//*
+//* Configmgr documentation:
+//* https://docs.zowe.org/stable/user-guide/configmgr-using
+//*
+//* Note: Any string with braces has an associated yaml value
+//*       in one of the yaml definitions for Zowe.
+//*       You must find the value and substitute it.
+//*
+//*       {key} -> value
+//*
+//GENER    EXEC PGM=IKJEFT1B
+//ISPPROF  DD   DSN=,DISP=(NEW,DELETE),UNIT=,
+//   DCB=(RECFM=FB,LRECL=80,BLKSIZE=3120,DSORG=PO),
+//   SPACE=(3120,(20,5,10))
+//*
+//* Replace TEST.DATASET.PFX with the
+//* Value as seen in zowe.yaml
+//*
+//SYSPROC  DD DSN=TEST.DATASET.PFX.SZWEEXEC,DISP=SHR
+//*
+//* Replace TEST.DATASET.PFX with the
+//* Value as seen in zowe.yaml
+//*
+//STEPLIB  DD DSN=TEST.DATASET.PFX.SZWELOAD,DISP=SHR
+//ISPPLIB  DD DSN=ISP.SISPPENU,DISP=SHR
+//ISPMLIB  DD DSN=ISP.SISPMENU,DISP=SHR
+//ISPTLIB  DD DSN=ISP.SISPTENU,DISP=SHR
+//ISPSLIB  DD DSN=ISP.SISPSENU,DISP=SHR
+//*
+//* The order must be as follows.
+//*
+//* zowe-yaml-schema.json
+//* server-common.json
+//*
+//* Replace /test/dir with where your Zowe run time
+//* directory is, as seen in zowe.yaml
+//*
+//MYSCHEMA DD   *,DLM=$$
+FILE /test/dir/schemas/zowe-yaml-schema.json
+FILE /test/dir/schemas/server-common.json
+$$
+//*
+//* The DD below must include one or more FILE or PARMLIB
+//* Entries. The lower entries have their values
+//* Overridden by the higher entries.
+//* PARMLIB member must be named "ZWEYAML"
+//*
+//* Ex. PARMLIB MY.ZOWE.CUSTOM.PARMLIB
+//*     FILE /the/zowe/defaults.yaml
+//MYCONFIG DD   *,DLM=$$
+FILE /test/dir/zowe.test.yaml
+$$
+//CMGROUT  DD   SYSOUT=*
+//SYSPRINT DD   SYSOUT=*
+//SYSTSPRT DD   SYSOUT=*
+//*
+//* Change 'generate' to 'nogenerate' if you only
+//* want to validate your configuration. The default
+//* option, 'generate', will validate and then generate
+//* jobs based on your configuration.
+//*
+//*   - generate
+//*   - nogenerate
+//*
+//* Change 'noverbose' to 'verbose' below for
+//* advanced logging. This is not needed unless
+//* there is an error.
+//*
+//*   - verbose
+//*   - noverbose
+//*
+//SYSTSIN  DD   *
+ISPSTART CMD(%ZWEGEN00 -
+generate -
+noverbose -
+)
+
+--- End of JCL ---
+Submitting Job ZWEGENER
+Job ZWEGENER(JOB00000) completed with RC=0
+Zowe JCL generated successfully
+Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWECSVSM) , Executable JCL: TEST.DATASET.PFX.JCLLIB(ZWECSVSM)
+--- JCL Content ---
+//ZWECSVSM JOB
+//*
+//* This program and the accompanying materials are made available
+//* under the terms of the Eclipse Public License v2.0 which
+//* accompanies this distribution, and is available at
+//* https://www.eclipse.org/legal/epl-v20.html
+//*
+//* SPDX-License-Identifier: EPL-2.0
+//*
+//* Copyright Contributors to the Zowe Project. 2020, 2020
+//*
+//*********************************************************************
+//*
+//* Zowe Open Source Project
+//* This JCL creates the VSAM data set for the Caching Service.
+//*
+//*
+//* CAUTION: This is neither a JCL procedure nor a complete job.
+//* Before using this JCL, you will have to make the following
+//* modifications:
+//*
+//* 1) Add job name and job parameters to the JOB statement, to
+//*    meet your system requirements.
+//*
+//* When using RLS, customize the definitions in the RLS DD:
+//*
+//* 2) Optionally, change LOG option NONE to UNDO or ALL to set the
+//*    desired recovery options for the RLS VSAM.
+//*
+//*
+//* Note(s):
+//*
+//* 1. This job should complete with return code 0.
+//*
+//********************************************************************
+//*
+//ALLOC    EXEC PGM=IDCAMS,REGION=0M
+//SYSPRINT DD SYSOUT=*
+//SYSIN    DD *
+  DEFINE CLUSTER -
+   (NAME(TEST.DATASET.PFX.VSAMTEST) -
+//         DD DDNAME=NONRLS
+//         DD *
+    REC(80 20) -
+    INDEXED) -
+   DATA(NAME(TEST.DATASET.PFX.VSAMTEST.DATA) -
+    RECSZ(4096 4096) -
+    UNIQUE -
+    KEYS(128 0)) -
+   INDEX(NAME(TEST.DATASET.PFX.VSAMTEST.INDEX) -
+    UNIQUE)
+//RLS      DD *
+    STORCLAS() -
+    LOG(NONE) -
+//NONRLS   DD *
+    VOLUME(TSTVOL) -
+    SHAREOPTIONS(2 3) -
+//*
+--- End of JCL ---
+Submitting Job ZWECSVSM
+Job ZWECSVSM(JOB00000) completed with RC=0
+
+>> Zowe Caching Service VSAM storage is created successfully.
+"
+`;
+
+exports[`init-vsam (SHORT) BAD: bad ds prefix 1`] = `
+"
+$ Temporary directory '/tmp/.zweenv-0000' created.
+Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
+-------------------------------------------------------------------------------
+>> Initialize Zowe custom data sets
+
+cp: FSUM6258 cannot open file "//'TEST.DATASET.PFX.NOEXIST.SZWESAMP(ZWEGENER)'": EDC5049I The specified file name could not be located. (errno2=0xC00B0641)
+ERROR: ZWEL0143E Cannot find data set member 'TEST.DATASET.PFX.NOEXIST.SZWESAMP(ZWEGENER)'. You may need to re-run zwe install."
+`;
+
+exports[`init-vsam (SHORT) GOOD: simple --dry-run 1`] = `
+"
+$ Temporary directory '/tmp/.zweenv-0000' created.
+Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
+-------------------------------------------------------------------------------
+>> Initialize Zowe custom data sets
+
+Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWEGENER)
+--- JCL content ---
+//ZWEGENER JOB
+//*
+//* This program and the accompanying materials are made available
+//* under the terms of the Eclipse Public License v2.0 which
+//* accompanies this distribution, and is available at
+//* https://www.eclipse.org/legal/epl-v20.html
+//*
+//* SPDX-License-Identifier: EPL-2.0
+//*
+//* Copyright Contributors to the Zowe Project. 2020, 2020
+//*
+//*********************************************************************
+//*
+//* This job is responsible for generating other jobs required
+//* to configure Zowe.
+//*
+//* The method of validating your configuration is using
+//* JSON Schema <https://json-schema.org>. Zowe provides
+//* the ConfigMgr to assist in this. This job will invoke
+//* the ConfigMgr to validate your current configuration
+//* before generating any jobs. If there are any values
+//* that are incorrect, you will be notified. You should
+//* fix the value and then run this job again. You can run
+//* this job as many times as you need.
+//*
+//* Configmgr documentation:
+//* https://docs.zowe.org/stable/user-guide/configmgr-using
+//*
+//* Note: Any string with braces has an associated yaml value
+//*       in one of the yaml definitions for Zowe.
+//*       You must find the value and substitute it.
+//*
+//*       {key} -> value
+//*
+//GENER    EXEC PGM=IKJEFT1B
+//ISPPROF  DD   DSN=,DISP=(NEW,DELETE),UNIT=,
+//   DCB=(RECFM=FB,LRECL=80,BLKSIZE=3120,DSORG=PO),
+//   SPACE=(3120,(20,5,10))
+//*
+//* Replace TEST.DATASET.PFX with the
+//* Value as seen in zowe.yaml
+//*
+//SYSPROC  DD DSN=TEST.DATASET.PFX.SZWEEXEC,DISP=SHR
+//*
+//* Replace TEST.DATASET.PFX with the
+//* Value as seen in zowe.yaml
+//*
+//STEPLIB  DD DSN=TEST.DATASET.PFX.SZWELOAD,DISP=SHR
+//ISPPLIB  DD DSN=ISP.SISPPENU,DISP=SHR
+//ISPMLIB  DD DSN=ISP.SISPMENU,DISP=SHR
+//ISPTLIB  DD DSN=ISP.SISPTENU,DISP=SHR
+//ISPSLIB  DD DSN=ISP.SISPSENU,DISP=SHR
+//*
+//* The order must be as follows.
+//*
+//* zowe-yaml-schema.json
+//* server-common.json
+//*
+//* Replace /test/dir with where your Zowe run time
+//* directory is, as seen in zowe.yaml
+//*
+//MYSCHEMA DD   *,DLM=$$
+FILE /test/dir/schemas/zowe-yaml-schema.json
+FILE /test/dir/schemas/server-common.json
+$$
+//*
+//* The DD below must include one or more FILE or PARMLIB
+//* Entries. The lower entries have their values
+//* Overridden by the higher entries.
+//* PARMLIB member must be named "ZWEYAML"
+//*
+//* Ex. PARMLIB MY.ZOWE.CUSTOM.PARMLIB
+//*     FILE /the/zowe/defaults.yaml
+//MYCONFIG DD   *,DLM=$$
+FILE /test/dir/zowe.test.yaml
+$$
+//CMGROUT  DD   SYSOUT=*
+//SYSPRINT DD   SYSOUT=*
+//SYSTSPRT DD   SYSOUT=*
+//*
+//* Change 'generate' to 'nogenerate' if you only
+//* want to validate your configuration. The default
+//* option, 'generate', will validate and then generate
+//* jobs based on your configuration.
+//*
+//*   - generate
+//*   - nogenerate
+//*
+//* Change 'noverbose' to 'verbose' below for
+//* advanced logging. This is not needed unless
+//* there is an error.
+//*
+//*   - verbose
+//*   - noverbose
+//*
+//SYSTSIN  DD   *
+ISPSTART CMD(%ZWEGEN00 -
+generate -
+noverbose -
+)
+
+--- End of JCL ---
+Submitting Job ZWEGENER
+Job ZWEGENER(JOB00000) completed with RC=0
+Zowe JCL generated successfully
+Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWECSVSM) , Executable JCL: TEST.DATASET.PFX.JCLLIB(ZWECSVSM)
+--- JCL Content ---
+//ZWECSVSM JOB
+//*
+//* This program and the accompanying materials are made available
+//* under the terms of the Eclipse Public License v2.0 which
+//* accompanies this distribution, and is available at
+//* https://www.eclipse.org/legal/epl-v20.html
+//*
+//* SPDX-License-Identifier: EPL-2.0
+//*
+//* Copyright Contributors to the Zowe Project. 2020, 2020
+//*
+//*********************************************************************
+//*
+//* Zowe Open Source Project
+//* This JCL creates the VSAM data set for the Caching Service.
+//*
+//*
+//* CAUTION: This is neither a JCL procedure nor a complete job.
+//* Before using this JCL, you will have to make the following
+//* modifications:
+//*
+//* 1) Add job name and job parameters to the JOB statement, to
+//*    meet your system requirements.
+//*
+//* When using RLS, customize the definitions in the RLS DD:
+//*
+//* 2) Optionally, change LOG option NONE to UNDO or ALL to set the
+//*    desired recovery options for the RLS VSAM.
+//*
+//*
+//* Note(s):
+//*
+//* 1. This job should complete with return code 0.
+//*
+//********************************************************************
+//*
+//ALLOC    EXEC PGM=IDCAMS,REGION=0M
+//SYSPRINT DD SYSOUT=*
+//SYSIN    DD *
+  DEFINE CLUSTER -
+   (NAME(TEST.DATASET.PFX.VSAMTEST) -
+//         DD DDNAME=NONRLS
+//         DD *
+    REC(80 20) -
+    INDEXED) -
+   DATA(NAME(TEST.DATASET.PFX.VSAMTEST.DATA) -
+    RECSZ(4096 4096) -
+    UNIQUE -
+    KEYS(128 0)) -
+   INDEX(NAME(TEST.DATASET.PFX.VSAMTEST.INDEX) -
+    UNIQUE)
+//RLS      DD *
+    STORCLAS() -
+    LOG(NONE) -
+//NONRLS   DD *
+    VOLUME(TSTVOL) -
+    SHAREOPTIONS(2 3) -
+//*
+--- End of JCL ---
+JCL not submitted, command run with "--dry-run" flag.
+To perform command, re-run command without "--dry-run" flag, or submit the JCL directly
+
+>> Command run successfully.
+
+
+>> Zowe Caching Service VSAM storage is created successfully.
+"
+`;

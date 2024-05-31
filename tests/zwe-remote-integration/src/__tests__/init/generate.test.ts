@@ -9,7 +9,7 @@
  */
 
 import { REMOTE_SYSTEM_INFO, TEST_COLLECT_SPOOL } from '../../config/TestConfig';
-import ZoweYamlType from '../../types/ZoweYamlType';
+import ZoweYamlType from '../../config/ZoweYamlType';
 import { RemoteTestRunner } from '../../zos/RemoteTestRunner';
 import { ZoweYaml } from '../../config/ZoweYaml';
 import { FileType, TestFileActions, TestFile } from '../../zos/TestFileActions';

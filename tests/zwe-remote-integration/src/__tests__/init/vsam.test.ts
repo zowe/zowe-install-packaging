@@ -9,12 +9,12 @@
  */
 
 import { REMOTE_SYSTEM_INFO, TEST_COLLECT_SPOOL } from '../../config/TestConfig';
-import ZoweYamlType from '../../types/ZoweYamlType';
+import ZoweYamlType from '../../config/ZoweYamlType';
 import { RemoteTestRunner } from '../../zos/RemoteTestRunner';
 import { ZoweYaml } from '../../config/ZoweYaml';
 import { FileType, TestFileActions, TestFile } from '../../zos/TestFileActions';
 
-const testSuiteName = 'init-apfauth';
+const testSuiteName = 'init-vsam';
 describe(`${testSuiteName}`, () => {
   let testRunner: RemoteTestRunner;
   let cfgYaml: ZoweYamlType;
@@ -25,13 +25,16 @@ describe(`${testSuiteName}`, () => {
   });
   beforeEach(() => {
     cfgYaml = ZoweYaml.basicZoweYaml();
+    // customizations for all vsam tests
+    cfgYaml.zowe.setup.vsam.name = REMOTE_SYSTEM_INFO.prefix + '.VSAMTEST';
+    cfgYaml.zowe.setup.vsam.volume = REMOTE_SYSTEM_INFO.volume;
   });
 
   afterEach(async () => {
     if (TEST_COLLECT_SPOOL) {
       await testRunner.collectSpool();
     }
-    // re-created in every `init` subcommand based on changes to zowe yaml command...
+    // re-created in every `init vsam` based on changes to zowe yaml command...
     const jcllib: TestFile = { name: REMOTE_SYSTEM_INFO.jcllib, type: FileType.DS_NON_CLUSTER };
 
     // try to delete everything we know about
@@ -39,44 +42,39 @@ describe(`${testSuiteName}`, () => {
     cleanupDatasets = [];
   });
 
-  describe('(LONG)', () => {});
-
   describe('(SHORT)', () => {
-    it('apf disable cfgmgr', async () => {
+    /* it('disable cfgmgr', async () => {
       cfgYaml.zowe.useConfigmgr = false;
-      const result = await testRunner.runZweTest(cfgYaml, 'init apfauth');
+      const result = await testRunner.runZweTest(cfgYaml, 'init vsam');
+      cleanupDatasets.push({ name: cfgYaml.zowe.setup.vsam.name as string, type: FileType.DS_VSAM });
       expect(result.stdout).not.toBeNull();
       expect(result.cleanedStdout).toMatchSnapshot();
-      expect(result.rc).toBe(60); // 60 is expected error code...
-    });
+      expect(result.rc).toBe(60); // 60 is expected...
+    });*/
 
-    it('apf bad ds prefix', async () => {
+    it('BAD: bad ds prefix', async () => {
       cfgYaml.zowe.setup.dataset.prefix = 'ZOWEAD6.ZWETEST.NOEXIST';
-      const result = await testRunner.runZweTest(cfgYaml, 'init apfauth --dry-run');
+      const result = await testRunner.runZweTest(cfgYaml, 'init vsam --dry-run');
       expect(result.stdout).not.toBeNull();
       expect(result.cleanedStdout).toMatchSnapshot();
       expect(result.rc).toBe(231);
     });
 
-    it('apf dry-run', async () => {
-      const result = await testRunner.runZweTest(cfgYaml, 'init apfauth --dry-run');
-      expect(result.stdout).not.toBeNull();
-      expect(result.cleanedStdout).toMatchSnapshot();
-      expect(result.rc).toBe(231);
-    }, 400000);
-
-    /* it('apf simple --dry-run', async () => {
-      const result = await testRunner.runZweTest(cfgYaml, 'init apfauth --dry-run');
+    it('GOOD: simple --dry-run', async () => {
+      const result = await testRunner.runZweTest(cfgYaml, 'init vsam --dry-run');
       expect(result.stdout).not.toBeNull();
       expect(result.cleanedStdout).toMatchSnapshot();
       expect(result.rc).toBe(0); // 60 is expected...
     });
+  });
 
-    /* it('apf security-dry-run', async () => {
-      const result = await testRunner.runZweTest(cfgYaml, 'init apfauth --security-dry-run');
+  describe('(LONG)', () => {
+    it('creates vsam', async () => {
+      const result = await testRunner.runZweTest(cfgYaml, 'init vsam');
+      cleanupDatasets.push({ name: cfgYaml.zowe.setup.vsam.name as string, type: FileType.DS_VSAM });
       expect(result.stdout).not.toBeNull();
       expect(result.cleanedStdout).toMatchSnapshot();
       expect(result.rc).toBe(0); // 60 is expected...  });
-    });*/
+    });
   });
 });

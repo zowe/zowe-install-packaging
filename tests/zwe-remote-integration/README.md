@@ -1,17 +1,19 @@
 # Zowe System-Integration Test
 
-Runs integration tests for components in the zowe-install-packaging repository which require a backend system to execute.
+Runs integration-style tests for the `zwe` command line utility. The `zwe` tool requires a backend system to run these tests and some tests may modify system state as part of their execution. (TODO: more information on system state changes / accepted tests, e.g. dataset creation happens but security manager updates will not)
 
-## Programming Language And Main Testing Method
+## Programming Languages, Tools, Pre-Reqs
 
 - Node.js, with recommended [v20.x LTS](https://nodejs.org/docs/latest-v20.x/api/index.html)
 - [Jest](https://jestjs.io/)
+- Requires `tar` and `unzip` on the command line
+- Makes heavy use of [@zowe/cli](https://github.com/zowe/zowe-cli) Node SDKs
 
 ## Testing Behaviors & Limitations
 
-These tests currently work by uploading the `zwe` command line tool as it currently exists in this repo; i.e. not from a PAX file. This means that certain capabilities which require compiled java files in the `/bin/utils` dir will not work. 
+These tests currently work by deploying a working `zwe` command line tool to a remote system, using the `zwe` component as-is from this repo; i.e. not from a pre-built PAX file. All of `zwe`'s dependencies will be set in place on the remote system as part of setup.
 
-These tests expect a valid configmgr PAX file to exist under a `.build` directory in the test directory (`tests/system-integration/.build/cfgmgr*pax`). The automated workflow will download configmgr using the `manifest.json.template`` in the root directory.
+Each test runs a given `zwe` command and compares both stdout and return codes to pre
 
 
 ## Run Test Cases On Your Local

@@ -8,8 +8,7 @@ Zowe will remove it on success, but if zwe exits with a non-zero code manual cle
 >> APF authorize load libraries
 
 cp: FSUM6258 cannot open file "//'TEST.DATASET.PFX.NOEXIST.SZWESAMP(ZWEGENER)'": EDC5049I The specified file name could not be located. (errno2=0xC00B0641)
-Error ZWETODOE: TEST.DATASET.PFX.NOEXIST.SZWESAMP(ZWEGENER) could not be copied. Review other error output from the 'cp' command.
-ERROR: Error ZWEL0999E: zowe.setup.dataset.jcllib does not exist, cannot run. Run 'zwe init', 'zwe init generate', or submit JCL TEST.DATASET.PFX.NOEXIST.SZWESAMP(ZWEGENER) before running this command."
+ERROR: ZWEL0143E Cannot find data set member 'TEST.DATASET.PFX.NOEXIST.SZWESAMP(ZWEGENER)'. You may need to re-run zwe install."
 `;
 
 exports[`init-apfauth (SHORT) apf disable cfgmgr 1`] = `

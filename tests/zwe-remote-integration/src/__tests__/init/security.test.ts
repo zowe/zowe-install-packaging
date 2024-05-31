@@ -8,3 +8,6 @@
  * Copyright Contributors to the Zowe Project.
  */
 
+const testSuiteName = 'init-security';
+describe(`${testSuiteName}`, () => {});
+export {}; // remove when tests are written

@@ -8,3 +8,6 @@
  * Copyright Contributors to the Zowe Project.
  */
 
+const testSuiteName = 'init-mvs';
+describe(`${testSuiteName}`, () => {});
+export {}; // remove when tests are written

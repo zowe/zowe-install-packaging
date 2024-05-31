@@ -13,7 +13,7 @@ import * as fs from 'fs-extra';
 import * as yaml from 'yaml';
 import yn from 'yn';
 import { findDirWalkingUpOrThrow } from '../utils';
-import ZoweYamlType from '../types/ZoweYamlType';
+import ZoweYamlType from './ZoweYamlType';
 class ConfigItem<T> {
   public readonly name: string;
   public readonly required: boolean;
@@ -48,7 +48,7 @@ const configFields: ConfigItem<unknown>[] = [
 ];
 
 export const REPO_ROOT_DIR: string = findDirWalkingUpOrThrow('zowe-install-packaging');
-export const THIS_TEST_ROOT_DIR: string = findDirWalkingUpOrThrow('system-integration'); // JEST runs in the src dir
+export const THIS_TEST_ROOT_DIR: string = findDirWalkingUpOrThrow('zwe-remote-integration'); // JEST runs in the src dir
 const configFile = process.env['TEST_CONFIG_FILE'] || `${THIS_TEST_ROOT_DIR}/resources/test_config.yml`;
 const configData = getConfig(configFile);
 

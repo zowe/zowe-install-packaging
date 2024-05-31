@@ -29,7 +29,7 @@ import {
 import * as fs from 'fs-extra';
 import { getZosmfSession } from './zos/zowe';
 import * as yaml from 'yaml';
-import ZoweYamlType from './types/ZoweYamlType';
+import ZoweYamlType from './config/ZoweYamlType';
 import { JfrogClient } from 'jfrog-client-js';
 import { processManifestVersion } from './utils';
 import { execSync } from 'child_process';

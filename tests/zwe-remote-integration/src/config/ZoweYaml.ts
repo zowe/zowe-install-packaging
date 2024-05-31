@@ -11,7 +11,7 @@
 import * as yaml from 'yaml';
 import { THIS_TEST_BASE_YAML } from './TestConfig';
 import * as fs from 'fs-extra';
-import ZoweYamlType from '../types/ZoweYamlType';
+import ZoweYamlType from './ZoweYamlType';
 
 export class ZoweYaml {
   /* public updateField(field: string, value: string) {

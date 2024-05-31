@@ -41,16 +41,15 @@
     "typescript": "5.4.5",
     "xml2js": "0.6.2",
     "yaml": "^2.4.2",
-    "yn": "4.0.0"
+    "yn": "4.0.0",
+    "json-schema-to-ts": "^3.1.0",
+    "node-jq": "^4.3.1"
   },
   "scripts": {
     "build": "tsc",
-    "test": "jest --no-colors --runInBand",
+    "test:ci": "jest --no-colors --runInBand --testNamePattern=\".*(CI).*\"",
+    "test:extended": "jest --no-colors --runInBand",
     "merge-reports": "node dist/merge-test-reports.js",
     "lint": "eslint ."
-  },
-  "dependencies": {
-    "json-schema-to-ts": "^3.1.0",
-    "node-jq": "^4.3.1"
   }
 }

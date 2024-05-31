@@ -11,7 +11,7 @@
 import { Session } from '@zowe/imperative';
 import { getZosmfSession } from './zowe';
 import * as uss from './Uss';
-import ZoweYamlType from '../types/ZoweYamlType';
+import ZoweYamlType from '../config/ZoweYamlType';
 import { REMOTE_SYSTEM_INFO, TEST_JOBS_RUN_FILE, TEST_OUTPUT_DIR } from '../config/TestConfig';
 import * as files from '@zowe/zos-files-for-zowe-sdk';
 import * as fs from 'fs-extra';
