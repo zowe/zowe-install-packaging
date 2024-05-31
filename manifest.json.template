@@ -91,9 +91,9 @@
       "artifact": "apiml-sample-extension-*.zip",
       "exclusions": ["*PR*.zip"]
     },
-    "org.zowe.apiml.cloud-gateway-package": {
+    "org.zowe.apiml.gateway-package": {
       "version": "^3.0.3-SNAPSHOT",
-      "artifact": "cloud-gateway-*.zip",
+      "artifact": "gateway-*.zip",
       "exclusions": ["*PR*.zip"]
     },
     "org.zowe.getesm": {

@@ -495,7 +495,7 @@ components:
   # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   zaas:
     enabled: true
-    port: 7554
+    port: 7563
     debug: false
 
     apiml:
@@ -519,9 +519,9 @@ components:
     #     alias: ""
 
   # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-  cloud-gateway:
-    enabled: false
-    port: 7563
+  gateway:
+    enabled: true
+    port: 7554
     debug: false
 
   # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -653,7 +653,7 @@ components:
 #     components:
 #       zaas:
 #         enabled: false
-#       cloud-gateway:
+#       gateway:
 #         enabled: false
 #       discovery:
 #         enabled: false
