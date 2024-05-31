@@ -11,7 +11,7 @@
 import { REMOTE_TEARDOWN, LINGERING_REMOTE_FILES_FILE, TEST_JOBS_RUN_FILE } from './config/TestConfig';
 import * as fs from 'fs-extra';
 import * as jobs from '@zowe/zos-jobs-for-zowe-sdk';
-import { getZosmfSession } from './zos/zowe';
+import { getSession } from './zos/ZosmfSession';
 import { TestFileActions, TestFile } from './zos/TestFileActions';
 module.exports = async () => {
   if (!REMOTE_TEARDOWN) {
@@ -48,7 +48,7 @@ module.exports = async () => {
       const jobName = jobPieces[0];
       const jobId = jobPieces[1];
       console.log('Purging ' + job);
-      await jobs.DeleteJobs.deleteJob(getZosmfSession(), jobName, jobId);
+      await jobs.DeleteJobs.deleteJob(getSession(), jobName, jobId);
     }
   }
 

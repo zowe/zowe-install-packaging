@@ -9,11 +9,11 @@
  */
 
 import * as fs from 'fs-extra';
-import { getZosmfSession } from './zowe';
+import { getSession } from './ZosmfSession';
 import * as files from '@zowe/zos-files-for-zowe-sdk';
 import { LINGERING_REMOTE_FILES_FILE } from '../config/TestConfig';
 export class TestFileActions {
-  private static readonly session = getZosmfSession();
+  private static readonly session = getSession();
 
   constructor() {}
 

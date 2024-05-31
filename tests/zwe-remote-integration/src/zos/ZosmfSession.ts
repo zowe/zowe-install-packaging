@@ -11,7 +11,7 @@
 import { ConnectionPropsForSessCfg, Session } from '@zowe/imperative';
 import { REMOTE_CONNECTION_CFG } from '../config/TestConfig';
 
-export function getZosmfSession(): Session {
+export function getSession(): Session {
   const sessCfg: unknown = {
     hostname: REMOTE_CONNECTION_CFG.host,
     port: REMOTE_CONNECTION_CFG.zosmf_port,

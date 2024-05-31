@@ -9,7 +9,7 @@
  */
 
 import { Session } from '@zowe/imperative';
-import { getZosmfSession } from './zowe';
+import { getSession } from './ZosmfSession';
 import * as uss from './Uss';
 import ZoweYamlType from '../config/ZoweYamlType';
 import { REMOTE_SYSTEM_INFO, TEST_JOBS_RUN_FILE, TEST_OUTPUT_DIR } from '../config/TestConfig';
@@ -25,7 +25,7 @@ export class RemoteTestRunner {
   private cleanFns: ((stdout: string) => string)[] = [];
 
   constructor(testGroup: string) {
-    this.session = getZosmfSession();
+    this.session = getSession();
     this.yamlOutputTemplate = `${TEST_OUTPUT_DIR}/${testGroup}/{{ testInstance }}/yaml`;
     this.spoolOutputTemplate = `${TEST_OUTPUT_DIR}/${testGroup}//{{ testInstance }}/spool`;
   }
@@ -46,7 +46,7 @@ export class RemoteTestRunner {
     const spoolOutputDir = this.spoolOutputTemplate.replace('{{ testInstance }}', testName);
     fs.mkdirpSync(spoolOutputDir);
     for (const job of this.trackedJobs) {
-      await jobs.DownloadJobs.downloadAllSpoolContentCommon(getZosmfSession(), {
+      await jobs.DownloadJobs.downloadAllSpoolContentCommon(getSession(), {
         ...job,
         outDir: spoolOutputDir,
         extension: '.txt', // arbitrarily chosen to keep things readable...

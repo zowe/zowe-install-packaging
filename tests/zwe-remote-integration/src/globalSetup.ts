@@ -27,14 +27,14 @@ import {
   ZOWE_YAML_OVERRIDES,
 } from './config/TestConfig';
 import * as fs from 'fs-extra';
-import { getZosmfSession } from './zos/zowe';
+import { getSession } from './zos/ZosmfSession';
 import * as yaml from 'yaml';
 import ZoweYamlType from './config/ZoweYamlType';
 import { JfrogClient } from 'jfrog-client-js';
 import { processManifestVersion } from './utils';
 import { execSync } from 'child_process';
 
-const zosmfSession = getZosmfSession();
+const zosmfSession = getSession();
 
 function setupBaseYaml() {
   console.log(`Using example-zowe.yaml as base for future zowe.yaml modifications...`);
