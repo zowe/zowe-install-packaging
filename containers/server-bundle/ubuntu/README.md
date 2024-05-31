@@ -6,13 +6,14 @@
  - ZSS and ZSS Cross memory server up and running
 
 **TL;DR**:
+
 ```sh
 docker pull ompzowe/server-bundle:latest
 export DISCOVERY_PORT=7553
 export GATEWAY_PORT=7554
 export APP_SERVER_PORT=7556
 
-#add non-default settings with --env, using same properties as seen in instance.env
+# add non-default settings with --env, using same properties as seen in instance.env
 #   --env ZWED_TN3270_PORT=23
 docker run -it \
     -h your_hostname \
@@ -34,6 +35,7 @@ docker run -it \
     --mount type=bind,source=c:\temp\certs,target=/home/zowe/certs \
     ompzowe/server-bundle:latest
 ```
+
 Open browser and test it
  - API Mediation Layer: https://myhost.acme.net:7554
  - App Framework: https://myhost.acme.net:7556

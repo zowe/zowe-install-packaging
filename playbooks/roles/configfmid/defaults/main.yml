@@ -5,7 +5,7 @@
 
 # full core components list, they should show up in components section in zowe.yaml
 zowe_core_components:
-- gateway
+- zaas
 - cloud-gateway
 - api-catalog
 - discovery
