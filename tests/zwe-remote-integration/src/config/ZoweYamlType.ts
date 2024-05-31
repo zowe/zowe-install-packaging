@@ -516,8 +516,14 @@ const zoweSchema = zoweYamlSchema as {
                   description: 'Storage class name if you are using VSAM in RLS mode';
                 };
                 name: {
-                  $ref: '/schemas/v2/server-common#zoweDatasetVsam';
-                  description: 'Data set name. Must match components.caching-service.storage.vsam.name';
+                  anyOf: [
+                    { type: 'null' },
+                    { type: 'string'; maxLength: 0 },
+                    {
+                      $ref: '/schemas/v2/server-common#zoweDatasetVsam';
+                      description: 'Data set name. Must match components.caching-service.storage.vsam.name';
+                    },
+                  ];
                 };
               };
             };
