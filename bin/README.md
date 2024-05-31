@@ -80,6 +80,7 @@ These Zowe environment variables are created globally. Any Zowe components, exte
 - `ZWE_ENABLED_COMPONENTS` is a list of components will be started in current HA instance.
 - `ZWE_GATEWAY_HOST` contains domain name to access gateway internally.
 - `ZWE_GATEWAY_SHARED_LIBS` contains a directory where gateway shared libraries are installed.
+- `ZWE_ZAAS_SHARED_LIBS` contains a directory where zaas (Zowe Authentication and Authorization Service) libraries are installed.
 - `ZWE_INSTALLED_COMPONENTS` is a list of all installed components.
 - `ZWE_LAUNCH_COMPONENTS` is a list of enabled components for current HA instance and has start command defined.
 - `ZWE_POD_CLUSTERNAME` indicates the current Kubernetes cluster name Zowe is running. This variable is only applicable when Zowe is running in Kubernetes.

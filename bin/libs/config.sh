@@ -144,6 +144,7 @@ load_environment_variables() {
   export ZWE_PRIVATE_WORKSPACE_ENV_DIR="${ZWE_zowe_workspaceDirectory}/.env"
   export ZWE_STATIC_DEFINITIONS_DIR="${ZWE_zowe_workspaceDirectory}/api-mediation/api-defs"
   export ZWE_GATEWAY_SHARED_LIBS="${ZWE_zowe_workspaceDirectory}/gateway/sharedLibs/"
+  export ZWE_ZAAS_SHARED_LIBS="${ZWE_zowe_workspaceDirectory}/zaas/sharedLibs/"
   export ZWE_DISCOVERY_SHARED_LIBS="${ZWE_zowe_workspaceDirectory}/discovery/sharedLibs/"
 
   # now we can load all variables
