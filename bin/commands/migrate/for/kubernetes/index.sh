@@ -49,7 +49,7 @@ mkdir -p "${ZWE_PRIVATE_WORKSPACE_ENV_DIR}"
 generate_instance_env_from_yaml_config convert-for-k8s
 source_env "${ZWE_PRIVATE_WORKSPACE_ENV_DIR}/.instance-convert-for-k8s.env"
 # prepare full SAN list for k8s
-full_k8s_domain_list="${ZWE_CLI_PARAMETER_DOMAINS},localhost.localdomain,localhost,127.0.0.1,*.${ZWE_CLI_PARAMETER_K8S_NAMESPACE}.svc.${ZWE_CLI_PARAMETER_K8S_CLUSTER_NAME},*.${ZWE_CLI_PARAMETER_K8S_NAMESPACE}.pod.${ZWE_CLI_PARAMETER_K8S_CLUSTER_NAME},*.discovery-service.${ZWE_CLI_PARAMETER_K8S_NAMESPACE}.svc.${ZWE_CLI_PARAMETER_K8S_CLUSTER_NAME},*.gateway-service.${ZWE_CLI_PARAMETER_K8S_NAMESPACE}.svc.${ZWE_CLI_PARAMETER_K8S_CLUSTER_NAME}"
+full_k8s_domain_list="${ZWE_CLI_PARAMETER_DOMAINS},localhost.localdomain,localhost,127.0.0.1,*.${ZWE_CLI_PARAMETER_K8S_NAMESPACE}.svc.${ZWE_CLI_PARAMETER_K8S_CLUSTER_NAME},*.${ZWE_CLI_PARAMETER_K8S_NAMESPACE}.pod.${ZWE_CLI_PARAMETER_K8S_CLUSTER_NAME},*.discovery-service.${ZWE_CLI_PARAMETER_K8S_NAMESPACE}.svc.${ZWE_CLI_PARAMETER_K8S_CLUSTER_NAME},*.gateway-service.${ZWE_CLI_PARAMETER_K8S_NAMESPACE}.svc.${ZWE_CLI_PARAMETER_K8S_CLUSTER_NAME}*.zaas-service.${ZWE_CLI_PARAMETER_K8S_NAMESPACE}.svc.${ZWE_CLI_PARAMETER_K8S_CLUSTER_NAME}"
 original_zss_host="${ZWE_zowe_externalDomains_0}"
 original_zss_port="${ZWE_components_zss_port}"
 
@@ -220,11 +220,11 @@ update_zowe_yaml "${temp_dir}/zowe.yaml" "components.explorer-uss.enabled" "true
 
 update_zowe_yaml "${temp_dir}/zowe.yaml" "components.gateway.apiml.security.x509.externalMapperUrl" ""
 update_zowe_yaml "${temp_dir}/zowe.yaml" "components.gateway.apiml.security.authorization.endpoint.url" ""
-gateway_auth_provider=$(read_yaml "${temp_dir}/zowe.yaml" ".components.gateway.apiml.security.authorization.endpoint.provider")
-if [ "${gateway_auth_provider}" != "" ]; then
+zaas_auth_provider=$(read_yaml "${temp_dir}/zowe.yaml" ".components.zaas.apiml.security.authorization.endpoint.provider")
+if [ "${zaas_auth_provider}" != "" ]; then
   print_message "Zowe APIML Gateway authorization provider is suggested to be empty when running in Kubernetes. 'native' is not supported off Z platform."
 fi
-update_zowe_yaml "${temp_dir}/zowe.yaml" "components.gateway.apiml.security.authorization.endpoint.provider" ""
+update_zowe_yaml "${temp_dir}/zowe.yaml" "components.gateway.apiml.security.authorization.endpoint.provider" "" # does this exist?
 update_zowe_yaml "${temp_dir}/zowe.yaml" "components.discovery.replicas" "1"
 update_zowe_yaml "${temp_dir}/zowe.yaml" "components.caching-service.storage.mode" ""
 

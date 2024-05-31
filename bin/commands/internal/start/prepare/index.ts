@@ -147,7 +147,7 @@ function globalValidate(enabledComponents:string[]): void {
 
     // validate java for some core components
     //TODO this should be a manifest parameter that you require java, not a hardcoded list. What if extensions require it?
-    if (enabledComponents.includes('gateway') || enabledComponents.includes('cloud-gateway') || enabledComponents.includes('discovery') || enabledComponents.includes('api-catalog') || enabledComponents.includes('caching-service')) {
+    if (enabledComponents.includes('zaas') || enabledComponents.includes('cloud-gateway') || enabledComponents.includes('discovery') || enabledComponents.includes('api-catalog') || enabledComponents.includes('caching-service')) {
       let javaOk = java.validateJavaHome();
       if (!javaOk) {
         privateErrors++;
@@ -172,7 +172,7 @@ function globalValidate(enabledComponents:string[]): void {
         privateErrors++;
         common.printFormattedError('ZWELS', "zwe-internal-start-prepare,global_validate", "Zosmf validation failed");
       }
-    } else if (std.getenv('ZWE_components_gateway_apiml_security_auth_provider') == "zosmf") {
+    } else if (std.getenv('ZWE_components_zaas_apiml_security_auth_provider') == "zosmf") {
       let zosmfOk = zosmf.validateZosmfAsAuthProvider(zosmfHost, zosmfPort, 'zosmf');
       if (!zosmfOk) {
         privateErrors++;

@@ -1247,9 +1247,6 @@ How we want to verify SSL certificates of services. Valid values are:
             <variableValue name="components_gateway_apiml_security_authorization_endpoint_enabled" scope="instance" noPromptIfSet="false" required="true"/>
             <variableValue name="components_gateway_apiml_security_authorization_provider" scope="instance" noPromptIfSet="false" required="false"/>
             <variableValue name="components_gateway_apiml_security_x509_enabled" scope="instance" noPromptIfSet="false" required="true"/>
-            <variableValue name="components_gateway_server_internal_enabled" scope="instance" noPromptIfSet="false" required="true"/>
-            <variableValue name="components_gateway_server_internal_port" scope="instance" noPromptIfSet="false" required="true"/>
-            <variableValue name="components_gateway_server_internal_ssl_enabled" scope="instance" noPromptIfSet="false" required="true"/>
             <instructions substitution="true">Run this step to fill gateway component variables.</instructions>
             <weight>1</weight>
             <skills>z/OS System Programmer</skills>

@@ -128,7 +128,7 @@ global_validate() {
     validate_this "validate_node_home 2>&1" "zwe-internal-start-prepare,global_validate:${LINENO}"
 
     # validate java for some core components
-    if [[ ${ZWE_ENABLED_COMPONENTS} == *"gateway"* || ${ZWE_ENABLED_COMPONENTS} == *"cloud-gateway"* || ${ZWE_ENABLED_COMPONENTS} == *"discovery"* || ${ZWE_ENABLED_COMPONENTS} == *"api-catalog"* || ${ZWE_ENABLED_COMPONENTS} == *"caching-service"* ]]; then
+    if [[ ${ZWE_ENABLED_COMPONENTS} == *"zaas"* || ${ZWE_ENABLED_COMPONENTS} == *"cloud-gateway"* || ${ZWE_ENABLED_COMPONENTS} == *"discovery"* || ${ZWE_ENABLED_COMPONENTS} == *"api-catalog"* || ${ZWE_ENABLED_COMPONENTS} == *"caching-service"* ]]; then
       validate_this "validate_java_home 2>&1" "zwe-internal-start-prepare,global_validate:${LINENO}"
     fi
   else
@@ -142,8 +142,8 @@ global_validate() {
     if [[ ${ZWE_ENABLED_COMPONENTS} == *"discovery"* ]]; then
       validate_this "validate_zosmf_host_and_port \"${ZOSMF_HOST}\" \"${ZOSMF_PORT}\" 2>&1" "zwe-internal-start-prepare,global_validate:${LINENO}"
     fi
-  elif [ "${ZWE_components_gateway_apiml_security_auth_provider}" = "zosmf" ]; then
-    validate_this "validate_zosmf_as_auth_provider \"${ZOSMF_HOST}\" \"${ZOSMF_PORT}\" \"${ZWE_components_gateway_apiml_security_auth_provider}\" 2>&1" "zwe-internal-start-prepare,global_validate:${LINENO}"
+  elif [ "${ZWE_components_zaas_apiml_security_auth_provider}" = "zosmf" ]; then
+    validate_this "validate_zosmf_as_auth_provider \"${ZOSMF_HOST}\" \"${ZOSMF_PORT}\" \"${ZWE_components_zaas_apiml_security_auth_provider}\" 2>&1" "zwe-internal-start-prepare,global_validate:${LINENO}"
   fi
 
   check_runtime_validation_result "zwe-internal-start-prepare,global_validate:${LINENO}"

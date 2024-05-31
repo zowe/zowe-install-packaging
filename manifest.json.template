@@ -66,9 +66,9 @@
       "artifact": "discovery-*.zip",
       "exclusions": ["*PR*.zip"]
     },
-    "org.zowe.apiml.gateway-package": {
+    "org.zowe.apiml.zaas-package": {
       "version": "^3.0.3-SNAPSHOT",
-      "artifact": "gateway-*.zip",
+      "artifact": "zaas-*.zip",
       "exclusions": ["*PR*.zip"]
     },
     "org.zowe.apiml.caching-service-package": {
@@ -371,9 +371,9 @@
       "name": "ompzowe/discovery-service",
       "tag" : "3.0.0-SNAPSHOT-ubuntu.v2-x-x"
     },
-    "gateway": {
+    "zaas": {
         "registry": "zowe-docker-snapshot.jfrog.io",
-        "name": "ompzowe/gateway-service",
+        "name": "ompzowe/zaas-service",
         "tag" : "3.0.0-SNAPSHOT-ubuntu.v2-x-x"
     },
     "app-server": {

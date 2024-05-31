@@ -493,7 +493,7 @@ zOSMF:
 components:
 
   # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-  gateway:
+  zaas:
     enabled: true
     port: 7554
     debug: false
@@ -511,17 +511,6 @@ components:
           provider: ""
         x509:
           enabled: false
-    server:
-      internal:
-      # gateway supports internal connector
-        enabled: false
-        port: 7550
-        ssl:
-          enabled: false
-          # internal connector can use different certificate
-          # certificate:
-          #   keystore:
-          #     alias: ""
 
     # If we customize this to use different external certificate, than should also
     # define "server.internal.ssl.certificate" and enable "server.internal.ssl.enabled".
@@ -662,7 +651,9 @@ components:
 
 #     # These configurations will overwrite highest level default "components" configuration
 #     components:
-#       gateway:
+#       zaas:
+#         enabled: false
+#       cloud-gateway:
 #         enabled: false
 #       discovery:
 #         enabled: false
