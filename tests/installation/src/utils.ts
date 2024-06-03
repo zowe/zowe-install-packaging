@@ -415,6 +415,7 @@ export async function installAndVerifySmpePtf(testcase: string, serverId: string
     serverId,
     {
       'zowe_build_remote': ZOWE_FMID,
+      'skip_configfmid': 'true',
       'skip_start': 'true',
       ...APIML_OIDC_VARS
     }

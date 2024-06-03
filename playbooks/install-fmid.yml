@@ -83,6 +83,7 @@
   # Configure Zowe
   - import_role:
       name: configfmid
+    when: not skip_configfmid|default(False)
 
   # ============================================================================
   # Customize for testing
