@@ -400,6 +400,7 @@ function getMemberNameFromConfigPath(configPath: string): string|undefined {
       const memberEnd = configPath.indexOf('))', memberStart+1);
       if (memberEnd == -1) {
         console.log(`Error: malformed PARMLIB syntax for ${configPath}. Must use syntax PARMLIB(dataset.name(member))`);
+        return undefined;
       }
       const thisMember = configPath.substring(memberStart+1, memberEnd);
       if (!member) {

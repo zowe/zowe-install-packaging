@@ -41,7 +41,7 @@
 //*     signed by a recognized certificate authority (CA).
 //*
 //* 6) If you set zowe.verifyCertificates to
-//*     STRICT or NONSTRICT, then set IFROZFCA to 1 
+//*     STRICT or NONSTRICT, then set IFROZFCA to 1
 //*     to connect z/OSMF certificate authority to Zowe keyring.
 //*
 //* 7) Customize the commands in the DD statement that matches your
@@ -185,7 +185,7 @@ $$
    PERMIT +
    &USERNAME..{zowe.setup.certificate.keyring.name}.LST +
    CLASS(RDATALIB) ID({zowe.setup.security.users.zowe}) +
-   ACCESS(CONTROL) 
+   ACCESS(CONTROL)
 
 /* Uncomment this command to allow other user to access key ring ... */
 /* PERMIT &USERNAME..{zowe.setup.certificate.keyring.name}.LST +    */
