@@ -804,8 +804,57 @@ export function processComponentAppfwPlugin(componentDir: string): boolean {
 }
 
 /*
- Parse and process manifest Gateway Shared Libs (gatewaySharedLibs) definitions
+ Parse and process manifest Zaas Shared Libs (zaasSharedLibs) definitions
+ The supported manifest entry is ".zaasSharedLibs". All shared libs
+ defined will be passed to install-app.sh for proper installation.
+*/
+export function processComponentZaasSharedLibs(componentDir: string): boolean {
+  const zaasSharedLibs = std.getenv('ZWE_ZAAS_SHARED_LIBS');
+  fs.mkdirp(zaasSharedLibs, 0o770);
 
+  const manifest = getManifest(componentDir);
+  let pluginName;
+  let zaasSharedLibsWorkspacePath:string|undefined;
+  
+  if (manifest && manifest.zaasSharedLibs) {
+    for (let i = 0; i < manifest.zaasSharedLibs.length; i++) {
+      const zaasSharedLibsDef = manifest.zaasSharedLibs[i];
+      const fileOrDir=`${componentDir}/${zaasSharedLibsDef}`;
+      if (!pluginName) {
+        pluginName = manifest.name;
+        if (!pluginName) {
+          common.printError(`Cannot read name from the plugin ${componentDir}`);
+          return false;
+        }
+        zaasSharedLibsWorkspacePath = `${zaasSharedLibs}/${pluginName}`;
+        fs.mkdirp(zaasSharedLibsWorkspacePath, 0o770);
+      }
+
+      if (!zaasSharedLibsWorkspacePath){
+        common.printError("Unexpected error: did not find zaasSharedLibsWorkspacePath");
+        return false;
+      }
+
+      const manifestPath = getManifestPath(componentDir);
+      if (manifestPath){
+        fs.cp(manifestPath, zaasSharedLibsWorkspacePath);
+      }
+
+      if (fs.fileExists(fileOrDir)) {
+        fs.cp(fileOrDir, zaasSharedLibsWorkspacePath);
+      } else if (fs.directoryExists(fileOrDir)) {
+        fs.cp(`${fileOrDir}/\*`, zaasSharedLibsWorkspacePath);
+      } else {
+        common.printError(`Zaas shared libs directory ${fileOrDir} is not accessible`);
+        return false;
+      }
+    }
+  }
+  return true;
+}
+
+/*
+ Parse and process manifest Gateway Shared Libs (gatewaySharedLibs) definitions
  The supported manifest entry is ".gatewaySharedLibs". All shared libs
  defined will be passed to install-app.sh for proper installation.
 */

@@ -269,6 +269,17 @@ configure_components() {
         fi
       fi
 
+      # - zaas shared lib
+      result=$(process_component_zaas_shared_libs "${component_dir}" 2>&1)
+      retval=$?
+      if [ -n "${result}" ]; then
+        if [ "${retval}" = "0" ]; then
+          print_formatted_debug "ZWELS" "zwe-internal-start-prepare,configure_components:${LINENO}" "${result}"
+        else
+          print_formatted_error "ZWELS" "zwe-internal-start-prepare,configure_components:${LINENO}" "${result}"
+        fi
+      fi
+
       # - gateway shared lib
       result=$(process_component_gateway_shared_libs "${component_dir}" 2>&1)
       retval=$?

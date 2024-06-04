@@ -318,6 +318,14 @@ function configureComponents(componentEnvironments?: any, enabledComponents?:str
       } else {
         common.printFormattedError("ZWELS", "zwe-internal-start-prepare,configure_components", `${componentName} processComponentAppfwPlugin failure`);
       }
+
+      // zaas shared lib
+      success=component.processComponentZaasSharedLibs(componentDir);
+      if (success) {
+        common.printFormattedDebug("ZWELS", "zwe-internal-start-prepare,configure_components", `${componentName} processComponentZaasSharedLibs success`);
+      } else {
+        common.printFormattedError("ZWELS", "zwe-internal-start-prepare,configure_components", `${componentName} processComponentZaasSharedLibs failure`);
+      }
                                     
       // - gateway shared lib
       success=component.processComponentGatewaySharedLibs(componentDir);
