@@ -23,7 +23,7 @@
 ================================================================================
 */
 
-parse arg operation verbosity 
+parse arg operation verbosity
 
 !verbose = COMPARE(verbosity, 'noverbose')
 
@@ -157,7 +157,7 @@ CVTRAC_VAL = STORAGE(CVTRAC_ADDR, 4)
 
 ringType = 0
 
-/* attempt to handle getting only 1 keyring jcl 
+/* attempt to handle getting only 1 keyring jcl
 if WORDINDEX(CFG.zowe.setup.certificate.type, 'JCE') > 0 then do
   if LENGTH(CFG.zowe.setup.certificate.keyring.connect) > 0 then do
     say 'connect exists, it is 'CFG.zowe.setup.certificate.keyring.connect'.'
@@ -172,9 +172,9 @@ if WORDINDEX(CFG.zowe.setup.certificate.type, 'JCE') > 0 then do
     ringType = 1
   end
 else do
-  say 'pkcs12 to be used'  
+  say 'pkcs12 to be used'
 end
-*/  
+*/
 
 if COMPARE('RCVT', CVTRAC_VAL) = 0 then do
   x = DeleteDataSet(jclCopy'(ZWEIKRA1)')
@@ -210,7 +210,7 @@ if COMPARE('ACF2', CVTRAC_VAL) = 0 then do
   x = DeleteDataSet(jclCopy'(ZWEIKRT3)')
   x = DeleteDataSet(jclCopy'(ZWEIKRR1)')
   x = DeleteDataSet(jclCopy'(ZWEIKRR2)')
-  x = DeleteDataSet(jclCopy'(ZWEIKRR3)')      
+  x = DeleteDataSet(jclCopy'(ZWEIKRR3)')
   x = DeleteDataSet(jclCopy'(ZWEIRAC)')
   x = DeleteDataSet(jclCopy'(ZWEIRACZ)')
   x = DeleteDataSet(jclCopy'(ZWEITSS)')
@@ -275,19 +275,21 @@ do i = 1 to members.0
       len = lastChar - firstChar + 1
       if len > 0 then do
         sub = SUBSTR(!contentToRead.j, firstChar, len)
-        call Print 'Substitution found for' sub'.'
-        isFound = 0
-        do n = 1 to members.i.substitutions.0
-          if COMPARE(members.i.substitutions.n, sub) = 0 then do
-            call Print 'Substitution 'sub' already noted. Skipping.'
-            isFound = 1
-            leave
+        if len = length(strip(sub)) then do
+          call Print 'Substitution found for' sub'.'
+          isFound = 0
+          do n = 1 to members.i.substitutions.0
+            if COMPARE(members.i.substitutions.n, sub) = 0 then do
+              call Print 'Substitution 'sub' already noted. Skipping.'
+              isFound = 1
+              leave
+            end
           end
-        end
-        if isFound <> 1 then do
-          k = members.i.substitutions.0 + 1
-          members.i.substitutions.k = sub
-          members.i.substitutions.0 = k
+          if isFound <> 1 then do
+            k = members.i.substitutions.0 + 1
+            members.i.substitutions.k = sub
+            members.i.substitutions.0 = k
+          end
         end
       end
       if lastChar < 0 then do
