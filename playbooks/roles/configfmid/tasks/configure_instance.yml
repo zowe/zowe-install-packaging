@@ -1,5 +1,9 @@
 ---
 # this playbook call bin/zowe-configure-instance.sh to create instance
+
+- name: Dump env (debug)
+  raw: env
+
 - name: Create Zowe instance
   import_role:
     name: zos
