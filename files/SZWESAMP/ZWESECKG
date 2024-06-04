@@ -133,6 +133,6 @@ void printHex(unsigned char *text, unsigned int len)
 } /* end printHex */
 /*
 //BIND.SYSIN DD *
- INCLUDE '/usr/lib/CSFDLL31.x'                                          
+ INCLUDE '/usr/lib/CSFDLL31.x'
 /*
 //
