@@ -83,7 +83,7 @@
   # ============================================================================
   - name: Test upgraded configuration
     import_role:
-      name: configfmid
+      name: configptf
       tasks_from: validate_configuration
 
   # ============================================================================
