@@ -104,7 +104,7 @@ export function execute(allowOverwrite?: boolean) {
         common.printTrace(`  * Output:`);
         common.printTrace(stringlib.paddingLeft(jclContent.out, "    "));
 
-        const tmpFileContent = jclContent.out.replace("ZWESIP00,", zisParmlib.toUpperCase()+',');
+        const tmpFileContent = jclContent.out.replace("ZWESIP00,", "ZWESIP00," + zisParmlib.toUpperCase());
         xplatform.storeFileUTF8(tmpfile, xplatform.AUTO_DETECT, tmpFileContent);
         common.printTrace(`  * Stored:`);
         common.printTrace(stringlib.paddingLeft(tmpFileContent, "    "));
