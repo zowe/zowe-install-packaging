@@ -40,7 +40,7 @@
       "artifact": "*.pax"
     },
     "org.zowe.zss": {
-      "version": "^2.15.0-PR-683",
+      "version": "^2.16.0-PR-683",
       "artifact": "*.pax"
     },
     "org.zowe.explorer.jobs.jobs-api-package": {
@@ -124,7 +124,7 @@
       "artifact": "*.pax"
     },
     "org.zowe.launcher": {
-      "version": "^2.15.0-PR-107"
+      "version": "^2.0.0-SNAPSHOT"
     },
     "org.zowe.keyring-utilities": {
       "version": "1.0.4",
