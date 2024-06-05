@@ -174,3 +174,9 @@
     when: not ptfs_existence[item]
     loop: 
     - "{{ zowe_smpe_ptf_2 }}"
+
+# ============================================================================
+# Setup certificates
+- import_role:
+    name: ptf
+    tasks_from: setup_certificates

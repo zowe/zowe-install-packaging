@@ -64,12 +64,6 @@
   when: not zowe_configure_skip_zwesecur
 
 # ============================================================================
-# Setup certificates
-- import_role:
-    name: configfmid
-    tasks_from: setup_certificates
-
-# ============================================================================
 # Configure Zowe Instance
 - import_role:
     name: configfmid

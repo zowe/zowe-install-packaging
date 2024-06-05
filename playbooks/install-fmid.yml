@@ -81,19 +81,8 @@
 
   # ============================================================================
   # Configure Zowe
-
-  ## This runs only when skip_configfmid=true. Checks that instance.env is preserved
-  ##  during a PTF upgrade. (See install-ptf.yml for instance verification)
   - import_role:
       name: configfmid
-      tasks_from: configure_instance
-    when: skip_configfmid|default(False)
-
-  ## This runs by default, or when skip_configfmid=false. Full configuration and 
-  ## installation of Zowe from the FMID base PAX. No longer compatible on z/OS 2.5+
-  - import_role:
-      name: configfmid
-    when: not skip_configfmid|default(False)
 
   # ============================================================================
   # Start Zowe
