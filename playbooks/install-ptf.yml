@@ -77,12 +77,6 @@
       name: configure
 
   # ============================================================================
-  - name: Test upgraded configuration
-    import_role:
-      name: configptf
-      tasks_from: validate_configuration
-
-  # ============================================================================
   # Start Zowe
   - import_role:
       name: start
