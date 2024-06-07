@@ -3,9 +3,15 @@
 All notable changes to the Zowe Installer will be documented in this file.
 <!--Add the PR or issue number to the entry if available.-->
 
-## `2.16.0
+## `2.17.0`
+
+## New features and enhancements
+- Enhancement: Added zowe.network.server.tls.attls and zowe.network.client.tls.attls as booleans for controlling global or per-component way to tell Zowe servers that they should operate in a mode compatible with an AT-TLS setup. [#3463](https://github.com/zowe/zowe-install-packaging/pull/3463)
+
+## `2.16.0`
 
 ## Minor enhancements/defect fixes
+- Enhancement: Reduced resource consumption by removal of one shell process per server that was used when starting each server.  (#3812)
 - Enhancement: The command `zwe support` now includes CEE Runtime option output to better diagnose issues related to environment customization. (#3799)
 - Bugfix: zowe.network.validatePortFree and zowe.network.vipaIp variables were moved from zowe.network to zowe.network.server in the schema but not in the code, causing inability to use them without the workaround of specifying them as environment variables ZWE_NETWORK_VALIDATE_PORT_FREE and ZWE_NETWORK_VIPA_IP instead. Now, the variables match the schema: zowe.network.server is used instead of zowe.network.
 - Bugfix: configmgr operations now run with HEAPPOOLS64 set to OFF to avoid abends caused when this parameter is not OFF. (#3799)
