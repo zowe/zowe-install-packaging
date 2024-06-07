@@ -1,5 +1,5 @@
 /* REXX */
-parse pull changeFrom changeTo
+parse pull changeCommand
 address isredit 'macro'
-address isredit 'change all 'changeFrom "X'"||c2x(changeTo)"'"
+address isredit changeCommand
 address isredit 'end'

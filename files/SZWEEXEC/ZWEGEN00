@@ -305,10 +305,16 @@ say 'All of the substitutions were found.'
 /*
 ================================================================================
     Invoke the edit macro on the substitutions for each member.
+    ZWECHG: change all word1 word2
+      word1 is expected to be {zowe.something}
+      word2 is anything, including spaces or special chars
+      In such case use: change all word1 X'c2x(word2)'
 ================================================================================
 */
 
 say 'Invoking the edit macro on each member.'
+
+SPECIAL_CHARS = ' ''"'
 
 do i = 1 to members.0
     if members.i.substitutions.0 > 0 then do
@@ -317,8 +323,27 @@ do i = 1 to members.0
         call Print 'Edit 'd'.'
         old = '{'members.i.substitutions.j'}'
         new = value('CFG.'members.i.substitutions.j)
-        queue old new
-        call Print 'Change' old 'to' new'.'
+        specials = 0
+        changeMode = 'Normal'
+        do s = 1 to length(SPECIAL_CHARS)
+          specials = specials + pos(substr(SPECIAL_CHARS, s, 1), new)
+        end
+        changeCommand = 'change all 'old
+        if specials > 0 then do
+          changeCommand = changeCommand "X'"c2x(new)"'"
+          changeMode = 'Hex'
+        end
+        else do
+          changeCommand = changeCommand new
+        end
+        if length(changeCommand) > 255 then do
+          say 'Stopping at 'd'.'
+          say '  Command too long:'
+          say '  'changeCommand
+          ExitWithRC(8)
+        end
+        queue changeCommand
+        call Print '('changeMode') Change' old 'to' new'.'
         cmd = 'edit dataset('"'"d"'"') macro(zwechg)'
         call Print cmd
         address ispexec cmd
