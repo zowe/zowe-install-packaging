@@ -45,13 +45,13 @@
 # ============================================================================
 # Install Zowe proc
 - import_role:
-    name: configfmid
+    name: configptf
     tasks_from: install_proc
 
 # ============================================================================
 # Install Cross Memory Server
 - import_role:
-    name: configfmid
+    name: configptf
     tasks_from: install_xmem_server
   vars:
     zowe_xmem_install_from_path: "{{ zowe_root_dir }}/scripts/utils"
@@ -59,18 +59,12 @@
 # ============================================================================
 # Run ZWESECUR
 - import_role:
-    name: configfmid
+    name: configptf
     tasks_from: create_security_defn
   when: not zowe_configure_skip_zwesecur
 
 # ============================================================================
-# Setup certificates
-- import_role:
-    name: configfmid
-    tasks_from: setup_certificates
-
-# ============================================================================
 # Configure Zowe Instance
 - import_role:
-    name: configfmid
+    name: configptf
     tasks_from: configure_instance
