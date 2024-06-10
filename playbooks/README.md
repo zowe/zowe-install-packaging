@@ -261,6 +261,8 @@ $ ansible-playbook -l <server> show-logs.yml -v
 - **zowe_auto_create_user_group**: A boolean value to enable or disable creating Zowe user and group. Default value is `false`.
 - **zowe_configure_skip_zwesecur**: A boolean value to skip running `ZWESECUR` job when configure Zowe instance.
 - **zos_keystore_mode**: An optional string to configure Zowe instance to store certificates into Keyring instead of keystore. Valid values are `<empty>` (default value) or `KEYSTORE_MODE_KEYRING`.
+- **convert_upload**: A boolean value to convert uploaded scripts from ASCII to EBCDIC post-transfer. Required for some distros, such as MacOSX. Default value is `false`.
+- **skip_configfmid**: A boolean value to skip automatically configuring Zowe after FMID installation. Default value is `false`.
 - **skip_start**: A boolean value to skip automatically starting Zowe after installation. Default value is `false`.
 - **zowe_uninstall_before_install**: If you want to uninstall Zowe before installing a new version. Default value is `true`.
 - **ZOWE_COMPONENTS_UPGRADE**: An optional boolean value to enable upgrading Zowe components to the latest version. If set to `true`,
