@@ -61,6 +61,7 @@
       name: fmid
       tasks_from: overwrite_vars
 
+
   # ============================================================================
   # FIXME
   - name: Check if zowe_keystore_dir has a value
@@ -74,12 +75,6 @@
   # Configure Zowe ?
   - import_role:
       name: configure
-
-  # ============================================================================
-  - name: Test upgraded configuration
-    import_role:
-      name: configfmid
-      tasks_from: validate_configuration
 
   # ============================================================================
   # Start Zowe
