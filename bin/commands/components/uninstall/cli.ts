@@ -10,7 +10,7 @@
 */
 
 import * as index from './index';
-import * as std from 'std';
+import * as std from 'cm_std';
 import * as configmgr from '../../../libs/configmgr';
 
 index.execute(std.getenv('ZWE_CLI_PARAMETER_COMPONENT_NAME'), std.getenv('ZWE_CLI_PARAMETER_HANDLER'), std.getenv('ZWE_CLI_PARAMETER_REGISTRY'), (std.getenv('ZWE_CLI_PARAMETER_DRY_RUN') === 'true'));

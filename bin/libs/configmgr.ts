@@ -9,10 +9,12 @@
   Copyright Contributors to the Zowe Project.
 */
 
-import * as std from 'std';
-import * as os from 'os';
+import * as std from 'cm_std';
+import * as os from 'cm_os';
 import * as xplatform from 'xplatform';
 import { ConfigManager } from 'Configuration';
+import * as fs from './fs';
+import * as stringlib from './string';
 
 import * as objUtils from '../utils/ObjUtils';
 
@@ -47,22 +49,10 @@ const ZOWE_SCHEMA_ID = 'https://zowe.org/schemas/v2/server-base';
 const ZOWE_SCHEMA_SET=`${ZOWE_SCHEMA}:${COMMON_SCHEMA}`;
 
 export let ZOWE_CONFIG=getZoweConfig();
+let HA_CONFIGS = {};
 
 export function getZoweBaseSchemas(): string {
   return ZOWE_SCHEMA_SET;
-}
-
-function mkdirp(path:string, mode?: number): number {
-  const parts = path.split('/');
-  let dir = '/';
-  for (let i = 0; i < parts.length; i++) {
-    dir+=parts[i]+'/';
-    let rc = os.mkdir(dir, mode ? mode : 0o777);
-    if (rc && (rc!=(0-std.Error.EEXIST))) {
-      return rc;
-    }
-  }
-  return 0;
 }
 
 function guaranteePath() {
@@ -110,7 +100,7 @@ function getTempMergedYamlDir(): string|number {
     
     zwePrivateWorkspaceEnvDir=`${tmp}/.zweenv-${Math.floor(Math.random()*10000)}`;
     std.setenv('ZWE_PRIVATE_TMP_MERGED_YAML_DIR', zwePrivateWorkspaceEnvDir);
-    const mkdirrc = mkdirp(zwePrivateWorkspaceEnvDir, 0o700);
+    const mkdirrc = fs.mkdirp(zwePrivateWorkspaceEnvDir, 0o700);
     if (mkdirrc) { return mkdirrc; }
 
     console.log(`Temporary directory '${zwePrivateWorkspaceEnvDir}' created.\nZowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.`);
@@ -119,6 +109,79 @@ function getTempMergedYamlDir(): string|number {
     return 0;
   }
 
+}
+
+function getDiscoveryServiceUrlHa(config) {
+  const list = [];
+  const defaultDs = config.components.discovery;
+  const haInstanceKeys = Object.keys(config.haInstances);
+  
+  for (const haInstanceKey of haInstanceKeys) {
+    const haInstance = config.haInstances[haInstanceKey];
+
+    if (!haInstance.hostname) {
+      console.log(`Error: 'hostname' value is missing for haInstance '${haInstanceKey}'`);
+      if (haInstanceKeys.length == 1) {
+        console.log(`Debug: Discovery server will be configured without HA`);
+        return null;
+      }
+      std.exit(1);
+    }
+
+    const haInstanceDs = haInstance.components?.discovery;
+    const enabled = haInstanceDs && (typeof haInstanceDs.enabled !== 'undefined') ? haInstanceDs.enabled : defaultDs.enabled;
+    if (enabled !== true) continue;
+
+    const port = haInstanceDs?.port ?? defaultDs.port;
+    if (!port) {
+      console.log(`Error: Missing configuration of diverery port, see 'components.discovery.port' or 'haInstances.${haInstanceKey}.components.discovery.port'`);
+      std.exit(1);
+    }
+
+    const url = `https://${haInstance.hostname}:${port}/eureka/`;
+
+    if (list.includes(url)) {
+      console.log(`Warn: Multiple haInstances reffers to the same hostname: ${haInstance.hostname}`);
+    } else {
+      list.push(url);
+    }
+
+  }
+
+  return list;
+}
+
+function getDiscoveryServiceUrlNonHa(config) {
+  const list = [];
+  if (config.components?.discovery?.enabled !== true) {
+    return list;
+  }
+
+  const port = config.components?.discovery?.port;
+  if (!port) {
+    console.log(`Error: missing configuration 'components.discovery.port'`);
+    std.exit(1);
+  }
+
+  config.zowe.externalDomains.forEach((domain: string) => {
+    const url = `https://${domain}:${port}/eureka/`;
+    if (list.includes(url)) {
+      console.log(`Warn: External domains are not unique: ${domain}`);
+    } else {
+      list.push(url);
+    }
+  });
+
+  return list;
+}
+
+function getDiscoveryServiceUrl(config) {
+  if (config.haInstances) {
+    const list = getDiscoveryServiceUrlHa(config);
+    if (list) return list;
+  }
+
+  return getDiscoveryServiceUrlNonHa(config);
 }
 
 function writeZoweConfigUpdate(updateObj: any, arrayMergeStrategy: number): number {
@@ -156,8 +219,8 @@ function writeZoweConfigUpdate(updateObj: any, arrayMergeStrategy: number): numb
             zwePrivateWorkspaceEnvDir=`${workspace}/.env`;
             std.setenv('ZWE_PRIVATE_WORKSPACE_ENV_DIR', zwePrivateWorkspaceEnvDir);
           }
-          mkdirp(workspace, 0o770);
-          rc = mkdirp(zwePrivateWorkspaceEnvDir, 0o700);
+          fs.mkdirp(workspace, 0o770);
+          rc = fs.mkdirp(zwePrivateWorkspaceEnvDir, 0o700);
           if (rc) { return rc; }
         } else {
           return dirResult;
@@ -228,8 +291,8 @@ function writeMergedConfig(config: any): number {
       zwePrivateWorkspaceEnvDir=`${workspace}/.env`;
       std.setenv('ZWE_PRIVATE_WORKSPACE_ENV_DIR', zwePrivateWorkspaceEnvDir);
     }
-    mkdirp(workspace, 0o770);
-    const mkdirrc = mkdirp(zwePrivateWorkspaceEnvDir, 0o700);
+    fs.mkdirp(workspace, 0o770);
+    const mkdirrc = fs.mkdirp(zwePrivateWorkspaceEnvDir, 0o700);
     if (mkdirrc) { return mkdirrc; }
   } else {
     return dirResult;
@@ -312,6 +375,7 @@ export function updateZoweConfig(updateObj: any, writeUpdate: boolean, arrayMerg
   let rc = updateConfig(getZoweConfigName(), updateObj, arrayMergeStrategy);
   if (rc == 0) {
     ZOWE_CONFIG=getZoweConfig();
+    HA_CONFIGS = {}; //reset
     if (writeUpdate) {
       writeZoweConfigUpdate(updateObj, arrayMergeStrategy);
       writeMergedConfig(ZOWE_CONFIG);
@@ -352,7 +416,7 @@ function getMemberNameFromConfigPath(configPath: string): string|undefined {
 function stripMemberName(configPath: string, memberName: string): string {
   //Turn PARMLIB(my.zowe(yaml)):PARMLIB(my.other.zowe(yaml))
   //Into PARMLIB(my.zowe):FILE(/some/path.yaml):PARMLIB(my.other.zowe)
-  const replacer = new RegExp('\\('+memberName+'\\)\\)', 'gi');
+  const replacer = new RegExp('\\('+stringlib.escapeDollar(memberName)+'\\)\\)', 'gi');
   return configPath.replace(replacer, ")");
 }
   
@@ -429,14 +493,29 @@ function getConfig(configName: string, configPath: string, schemas: string): any
   }  
 }
 
-export function getZoweConfig(): any {
-  if (configLoaded) {
+function makeHaConfig(haInstance: string): any {
+  let config = getConfig(ZOWE_CONFIG_NAME, ZOWE_CONFIG_PATH, ZOWE_SCHEMA_SET);
+  if (config.haInstances && config.haInstances[haInstance]) {
+    let merger = new objUtils.Merger();
+    merger.mergeArrays = false;
+    let mergedConfig = merger.merge(config.haInstances[haInstance], config);
+    INSTANCE_KEYS_NOT_IN_BASE.forEach((key) => delete mergedConfig[key]);
+    HA_CONFIGS[haInstance] = mergedConfig;
+    return mergedConfig;
+  }
+  return config;
+}
+
+export function getZoweConfig(haInstance?: string): any {
+  if (configLoaded && !haInstance) {
     return getConfig(ZOWE_CONFIG_NAME, ZOWE_CONFIG_PATH, ZOWE_SCHEMA_SET);
+  } else if (configLoaded) {
+    return HA_CONFIGS[haInstance] || makeHaConfig(haInstance);
   } else {
     let config = getConfig(ZOWE_CONFIG_NAME, ZOWE_CONFIG_PATH, ZOWE_SCHEMA_SET);
     configLoaded = true;
     const writeResult = writeMergedConfig(config);
-    return config;
+    return haInstance ? makeHaConfig(haInstance) : config;
   }
 }
 
@@ -467,7 +546,7 @@ export function getZoweConfigEnv(haInstance: string): any {
     haFlattener.setSeparator('_');
     haFlattener.setPrefix('ZWE_');
     haFlattener.setKeepArrays(true);
-    let overrides = haFlattener.flatten(config.haInstances[haInstance]);
+    overrides = haFlattener.flatten(config.haInstances[haInstance]);
   } else {
     envs['ZWE_haInstance_hostname'] = config.zowe.externalDomains[0];
   }
@@ -507,31 +586,7 @@ export function getZoweConfigEnv(haInstance: string): any {
   //special things to keep as-is
   envs['ZWE_DISCOVERY_SERVICES_LIST'] = std.getenv('ZWE_DISCOVERY_SERVICES_LIST');
   if (!envs['ZWE_DISCOVERY_SERVICES_LIST']) {
-    let list = [];
-    if (config.components.discovery && (config.components.discovery.enabled === true)) {
-      const port = config.components.discovery.port;
-      config.zowe.externalDomains.forEach((domain:string)=> {
-        const url = `https://${domain}:${port}/eureka/`;
-        if (!list.includes(url)) {
-          list.push(url);
-        }
-      });
-    }
-
-    if (config.haInstances) {
-      let haInstanceKeys = Object.keys(config.haInstances);
-      haInstanceKeys.forEach((haInstanceKey:string)=> {
-        const haInstance = config.haInstances[haInstanceKey];
-        if (haInstance.hostname && haInstance.components && haInstance.components.discovery && (haInstance.components.discovery.enabled === true)) {
-          const port = haInstance.components.discovery.port;
-          const url = `https://${haInstance.hostname}:${port}/eureka/`;
-          if (!list.includes(url)) {
-            list.push(url);
-          }
-        }
-      });
-    }
-
+    let list = getDiscoveryServiceUrl(config);
     envs['ZWE_DISCOVERY_SERVICES_LIST'] = list.join(',');
   }
 

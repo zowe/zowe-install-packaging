@@ -58,10 +58,10 @@ jobs:
           then 
             echo ">>>>>Changes committed to ${{ env.DOCS_SITE_COMMIT_BRANCH }}, now pushing";
             git push origin ${{ env.DOCS_SITE_COMMIT_BRANCH }}
-            echo "::set-output name=createPr::true"
+            echo "createPr=true" >> $GITHUB_OUTPUT
           else
             echo ">>>>>No update to documentation";
-            echo "::set-output name=createPr::false"
+            echo "createPr=false" >> $GITHUB_OUTPUT
           fi
 
       - name: Create PR if doesn't exist

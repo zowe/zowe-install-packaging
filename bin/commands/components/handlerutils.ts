@@ -9,7 +9,7 @@
   Copyright Contributors to the Zowe Project.
 */
 
-import * as std from 'std';
+import * as std from 'cm_std';
 import * as common from '../../libs/common';
 import * as configlib from '../../libs/config';
 import * as shell from '../../libs/shell';
@@ -45,7 +45,7 @@ export class HandlerCaller {
     std.setenv('ZWE_CLI_REGISTRY_COMMAND', 'search');
     common.printMessage(`Calling handler '${this.handler}' to search for ${componentName}`);
 
-    const result = shell.execSync('sh', '-c', `_CEE_RUNOPTS="XPLINK(ON),HEAPPOOLS(OFF)" ${std.getenv('ZWE_zowe_runtimeDirectory')}/bin/utils/configmgr -script "${this.handlerPath}"`);
+    const result = shell.execSync('sh', '-c', `_CEE_RUNOPTS="XPLINK(ON),HEAPPOOLS(OFF),HEAPPOOLS64(OFF)" ${std.getenv('ZWE_zowe_runtimeDirectory')}/bin/utils/configmgr -script "${this.handlerPath}"`);
     common.printMessage(`Handler search exited with rc=${result.rc}`);
     return result.rc;
   }
@@ -59,7 +59,7 @@ export class HandlerCaller {
     
     std.setenv('ZWE_CLI_REGISTRY_DRY_RUN', dryRun ? 'true' : 'false');
 
-    const result = shell.execOutSync('sh', '-c', `_CEE_RUNOPTS="XPLINK(ON),HEAPPOOLS(OFF)" ${std.getenv('ZWE_zowe_runtimeDirectory')}/bin/utils/configmgr -script "${this.handlerPath}"`);
+    const result = shell.execOutSync('sh', '-c', `_CEE_RUNOPTS="XPLINK(ON),HEAPPOOLS(OFF),HEAPPOOLS64(OFF)" ${std.getenv('ZWE_zowe_runtimeDirectory')}/bin/utils/configmgr -script "${this.handlerPath}"`);
     common.printMessage(`Handler uninstall exited with rc=${result.rc}`);
 
     if (result.rc) {
@@ -95,7 +95,7 @@ export class HandlerCaller {
     std.setenv('ZWE_CLI_REGISTRY_DRY_RUN', dryRun ? 'true' : 'false');
 
 
-    const result = shell.execOutSync('sh', '-c', `_CEE_RUNOPTS="XPLINK(ON),HEAPPOOLS(OFF)" ${std.getenv('ZWE_zowe_runtimeDirectory')}/bin/utils/configmgr -script "${this.handlerPath}"`);
+    const result = shell.execOutSync('sh', '-c', `_CEE_RUNOPTS="XPLINK(ON),HEAPPOOLS(OFF),HEAPPOOLS64(OFF)" ${std.getenv('ZWE_zowe_runtimeDirectory')}/bin/utils/configmgr -script "${this.handlerPath}"`);
     common.printMessage(`Handler ${action} exited with rc=${result.rc}`);
 
     if (result.rc) {

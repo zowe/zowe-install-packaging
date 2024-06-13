@@ -10,7 +10,7 @@
   Copyright Contributors to the Zowe Project.
 */
 
-import * as std from 'std';
+import * as std from 'cm_std';
 
 import * as common from './common';
 import * as stringlib from './string';
@@ -18,7 +18,7 @@ import * as shell from './shell';
 import * as zoslib from './zos';
 
 export function isDatasetExists(datasetName: string): boolean {
-  const result = shell.execSync('sh', '-c', `cat "//'${datasetName}'" 1>/dev/null 2>&1`);
+  const result = shell.execSync('sh', '-c', `cat "//'${stringlib.escapeDollar(datasetName)}'" 1>/dev/null 2>&1`);
   return result.rc === 0;
 }
 
@@ -27,7 +27,7 @@ export function isDatasetExists(datasetName: string): boolean {
 //                1: data set is not in catalog
 //                2: data set member doesn't exist
 export function tsoIsDatasetExists(datasetName: string): number {
-  const result = zoslib.tsoCommand(`listds '${datasetName}' label`);
+  const result = zoslib.tsoCommand(`listds '${stringlib.escapeDollar(datasetName)}' label`);
   if (result.rc != 0) {
     if (result.out.includes('NOT IN CATALOG')) {
       return 1;
@@ -44,7 +44,7 @@ export function tsoIsDatasetExists(datasetName: string): number {
 }
 
 export function createDataSet(dsName: string, dsOptions: string): number {
-  const result=zoslib.tsoCommand(`ALLOCATE NEW DA('${dsName}') ${dsOptions}`);
+  const result=zoslib.tsoCommand(`ALLOCATE NEW DA('${stringlib.escapeDollar(dsName)}') ${dsOptions}`);
   return result.rc;
 }
 
@@ -55,7 +55,7 @@ export function copyToDataset(filePath: string, dsName: string, cpOptions: strin
     }
   }
 
-  const cpCommand=`cp ${cpOptions} -v "${filePath}" "//'${dsName}'"`;
+  const cpCommand=`cp ${cpOptions} -v "${filePath}" "//'${stringlib.escapeDollar(dsName)}'"`;
   common.printDebug('- '+cpCommand);
   const result=shell.execOutSync('sh', '-c', `${cpCommand} 2>&1`);
   if (result.rc == 0) {
@@ -79,7 +79,7 @@ export function datasetCopyToDataset(prefix: string, datasetFrom: string, datase
     }
   }
 
-  const cmd=`exec '${prefix}.${std.getenv('ZWE_PRIVATE_DS_SZWEEXEC')}(ZWEMCOPY)' '${datasetFrom} ${datasetTo}'`;
+  const cmd = `exec '${stringlib.escapeDollar(prefix)}.${std.getenv('ZWE_PRIVATE_DS_SZWEEXEC')}(ZWEMCOPY)' '${stringlib.escapeDollar(datasetFrom)} ${stringlib.escapeDollar(datasetTo)}'`;
   const result = zoslib.tsoCommand(cmd);
   return result.rc;
 }
@@ -91,7 +91,7 @@ export function datasetCopyToDataset(prefix: string, datasetFrom: string, datase
 //                1: there are some users
 // @output        output of operator command "d grs"
 export function listDatasetUser(datasetName: string): number {
-  const cmd=`D GRS,RES=(*,${datasetName})`;
+  const cmd = `D GRS,RES=(*,'${stringlib.escapeDollar(datasetName)}')`;
   const result=zoslib.operatorCommand(cmd);
   return result.out.includes('NO REQUESTORS FOR RESOURCE') ? 0 : 1;
   // example outputs:
@@ -128,7 +128,7 @@ export function listDatasetUser(datasetName: string): number {
 //                3: data set is in use
 // @output        tso listds label output
 export function deleteDataset(dataset: string): number {
-  const cmd=`delete '${dataset}'`;
+  const cmd=`delete '${stringlib.escapeDollar(dataset)}'`;
   const result=zoslib.tsoCommand(cmd);
   if (result.rc != 0) {
     if (result.out.includes('NOT IN CATALOG')) {
@@ -170,7 +170,7 @@ export function isDatasetSmsManaged(dataset: string): { rc: number, smsManaged?:
   // SMS flag is in `FORMAT 1 DSCB` section second line, after 780037
 
   common.printTrace(`- Check if ${dataset} is SMS managed`);
-  const labelResult = zoslib.tsoCommand(`listds '${dataset}' label`);
+  const labelResult = zoslib.tsoCommand(`listds '${stringlib.escapeDollar(dataset)}' label`);
   const datasetLabel=labelResult.out;
   if (labelResult.rc == 0) {
     let formatIndex = datasetLabel.indexOf('--FORMAT 1 DSCB--');
@@ -212,14 +212,13 @@ export function isDatasetSmsManaged(dataset: string): { rc: number, smsManaged?:
 
 export function getDatasetVolume(dataset: string): { rc: number, volume?: string } {
   common.printTrace(`- Find volume of data set ${dataset}`);
-  const result = zoslib.tsoCommand(`listds '${dataset}'`);
+  const result = zoslib.tsoCommand(`listds '${stringlib.escapeDollar(dataset)}'`);
   if (result.rc == 0) {
     let volumesIndex = result.out.indexOf('--VOLUMES--');
     let volume: string;
     if (volumesIndex != -1) {
       let startIndex = volumesIndex + '--VOLUMES--'.length;
-      let endIndex = result.out.indexOf('--',startIndex);
-      volume = result.out.substring(startIndex, endIndex).trim();
+      volume = result.out.substring(startIndex).trim();
     }
     if (!volume) {
       common.printError("  * Failed to find volume information of the data set.");
@@ -235,7 +234,7 @@ export function getDatasetVolume(dataset: string): { rc: number, volume?: string
 export function apfAuthorizeDataset(dataset: string): number {
   const result = isDatasetSmsManaged(dataset);
   if (result.rc) {
-    common.printError("Error ZWEL0134E: Failed to find SMS status of data set ${dataset}.");
+    common.printError(`Error ZWEL0134E: Failed to find SMS status of data set ${dataset}.`);
     return 134;
   }
 
@@ -256,7 +255,7 @@ export function apfAuthorizeDataset(dataset: string): number {
     }
   }
 
-  const apfCmd="SETPROG APF,ADD,DSNAME=${dataset},${apfVolumeParam}"
+  const apfCmd=`SETPROG APF,ADD,DSNAME=${dataset},${apfVolumeParam}`;
   if (std.getenv('ZWE_CLI_PARAMETER_SECURITY_DRY_RUN') == "true") {
     common.printMessage("- Dry-run mode, security setup is NOT performed on the system.");
     common.printMessage("  Please apply this operator command manually:");
@@ -276,18 +275,19 @@ export function apfAuthorizeDataset(dataset: string): number {
   return 0;
 }
 
-export function createDatasetTmpMember(dataset: string, prefix: string='ZW'): string {
-  common.printTrace(`  > create_data_set_tmp_member in ${dataset}`);
-  while(true) {
+export function createDatasetTmpMember(dataset: string, prefix: string='ZW'): string | null {
+    common.printTrace(`  > createDatasetTmpMember in ${dataset}`);
+  for (var i = 0; i < 100; i++) {
     let rnd=Math.floor(Math.random()*10000);
 
     let member=`${prefix}${rnd}`.substring(0,8);
     common.printTrace(`    - test ${member}`);
     let memberExist=isDatasetExists(`${dataset}(${member})`);
     common.printTrace(`    - exist? ${memberExist}`);
-    if (memberExist) {
+    if (!memberExist) {
       common.printTrace("    - good");
       return member;
     }
   }
+  return null;
 }

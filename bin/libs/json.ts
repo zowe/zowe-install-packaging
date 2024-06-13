@@ -9,8 +9,8 @@
   Copyright Contributors to the Zowe Project.
 */
 
-import * as std from 'std';
-import * as os from 'os';
+import * as std from 'cm_std';
+import * as os from 'cm_os';
 import * as zos from 'zos';
 import * as common from './common';
 import * as stringlib from './string';
@@ -66,91 +66,8 @@ export function shellReadYamlConfig(yamlFile: string, parentKey: string, key: st
   }
 }
 
-//NOTE: PARMLIB only supported when destination is zowe.yaml
-export function readYaml(file: string, key: string) {
-  const ZOWE_CONFIG=config.getZoweConfig();
-  const utils_dir=`${ZOWE_CONFIG.zowe.runtimeDirectory}/bin/utils`;
-  const jq=`${utils_dir}/njq/src/index.js`;
-  const fconv=`${utils_dir}/fconv/src/index.js`;
-
-  common.printTrace(`- read_yaml load content from ${file}`);
-  if (std.getenv('ZWE_CLI_PARAMETER_CONFIG') == file) {
-    return fakejq.jqget(ZOWE_CONFIG, key);
-  } else {
-    const ZWE_PRIVATE_YAML_CACHE=shell.execOutSync('sh', '-c', `node "${fconv}" --input-format=yaml "${file}" 2>&1`);
-    let code=ZWE_PRIVATE_YAML_CACHE.rc;
-    common.printTrace(`  * Exit code: ${code}`);
-    if (code != 0) {
-      common.printError("  * Output:");
-      common.printError(stringlib.paddingLeft(ZWE_PRIVATE_YAML_CACHE.out, "    "));
-      return;
-    }
-
-    common.printTrace(`- read_yaml ${key} from yaml content`);
-    const result=shell.execOutSync('sh', '-c', `echo "${ZWE_PRIVATE_YAML_CACHE}" | node "${jq}" -r "${key}" 2>&1`);
-    code=result.rc;
-    common.printTrace(`  * Exit code: ${code}`);
-    common.printTrace("  * Output:");
-    if (result.out) {
-      common.printTrace(stringlib.paddingLeft(result.out, "    "));
-    }
-
-    return result.out
-  }
-}
-
-export function readJson(file: string, key: string):any {
-  const ZOWE_CONFIG=config.getZoweConfig();
-  const utils_dir=`${ZOWE_CONFIG.zowe.runtimeDirectory}/bin/utils`;
-  const jq=`${utils_dir}/njq/src/index.js`;
-
-  common.printTrace(`- read_json ${key} from ${file}`);
-  let result=shell.execOutSync('sh', '-c', `cat "${file}" | node "${jq}" -r "${key}" 2>&1`);
-  const code = result.rc;
-  common.printTrace(`  * Exit code: ${code}`);
-  common.printTrace(`  * Output:`);
-  if ( result.out ) {
-    common.printTrace(stringlib.paddingLeft(result.out, "    "));
-  }
-
-  return result.out;
-}
-
 export function readJsonString(input: string, key: string): any {
   return fakejq.jqget(JSON.parse(input), key);
-}
-
-//NOTE: PARMLIB only supported when destination is zowe.yaml
-export function updateYaml(file: string, key: string, val: any, expectedSample: string) {
-  const ZOWE_CONFIG=config.getZoweConfig();
-  const utils_dir=`${ZOWE_CONFIG.zowe.runtimeDirectory}/bin/utils`;
-  const config_converter=`${utils_dir}/config-converter/src/cli.js`
-
-  
-  common.printMessage(`- update "${key}" with value: ${val}`);
-  if (std.getenv('ZWE_CLI_PARAMETER_CONFIG') == file) {
-    updateZoweYaml(file, key, val);
-  } else {
-    // TODO what would we write thats not the zowe config? this sounds like an opportunity to disorganize.
-    let result=shell.execOutSync('sh', '-c', `node "${config_converter}" yaml update "${file}" "${key}" "${val}"`);
-    const code = result.rc;
-    if (code == 0) {
-      common.printTrace(`  * Exit code: ${code}`);
-      common.printTrace(`  * Output:`);
-      if (result.out) {
-        common.printTrace(stringlib.paddingLeft(result.out, "    "));
-      }
-    } else {
-      common.printError(`  * Exit code: ${code}`);
-      common.printError("  * Output:");
-      if (result.out) {
-        common.printError(stringlib.paddingLeft(result.out, "    "));
-      }
-      common.printErrorAndExit(`Error ZWEL0138E: Failed to update key ${key} of file ${file}.`, undefined, 138);
-    }
-
-    zosfs.ensureFileEncoding(file, expectedSample);
-  }
 }
 
 export function updateZoweYaml(file: string, key: string, val: any) {
@@ -163,35 +80,4 @@ export function updateZoweYaml(file: string, key: string, val: any) {
   } else {
     common.printError(`  * Error`); 
   }
-}
-
-//TODO: PARMLIB not supported.
-export function deleteYaml(file: string, key: string, expectedSample: string) {
-  const ZOWE_CONFIG=config.getZoweConfig();
-  const utils_dir=`${ZOWE_CONFIG.zowe.runtimeDirectory}/bin/utils`;
-  const config_converter=`${utils_dir}/config-converter/src/cli.js`
-
-  common.printMessage(`- delete \"${key}\"`);
-  let result=shell.execOutSync('sh', '-c', `node "${config_converter}" yaml delete "${file}" "${key}"`);
-  const code = result.rc;
-  if (code == 0) {
-    common.printTrace(`  * Exit code: ${code}`);
-    common.printTrace(`  * Output:`);
-    if (result.out) {
-      common.printTrace(stringlib.paddingLeft(result.out, "    "));
-    }
-  } else {
-    common.printError(`  * Exit code: ${code}`);
-    common.printError("  * Output:");
-    if (result.out) {
-      common.printError(stringlib.paddingLeft(result.out, "    "));
-    }
-    common.printErrorAndExit(`Error ZWEL0138E: Failed to delete key ${key} of file ${file}.`, undefined, 138);
-  }
-
-  zosfs.ensureFileEncoding(file, expectedSample);
-}
-
-export function deleteZoweYaml(file: string, key: string) {
-  deleteYaml(file, key, "zowe:");
 }

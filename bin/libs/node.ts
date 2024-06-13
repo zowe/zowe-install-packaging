@@ -9,8 +9,8 @@
   Copyright Contributors to the Zowe Project.
 */
 
-import * as std from 'std';
-import * as os from 'os';
+import * as std from 'cm_std';
+import * as os from 'cm_os';
 
 import * as fs from './fs';
 import * as common from './common';
@@ -18,7 +18,7 @@ import * as shell from './shell';
 import * as config from './config';
 import { PathAPI as pathoid } from './pathoid';
 
-const NODE_MIN_VERSION=12;
+const NODE_MIN_VERSION=16;
 
 // enforce encoding of stdio/stdout/stderr
 // sometimes /dev/tty* ($SSH_TTY) are not configured properly, for example tagged as binary or wrong encoding
@@ -109,10 +109,11 @@ export function validateNodeHome(nodeHome:string|undefined=std.getenv("NODE_HOME
       //const nodeMinorVersion = Number(parts[1]);
       //const nodePatchVersion = Number(parts[2]);
 
-      if (version == 'v14.17.2') {
-        common.printError(`Node ${version} specifically is not compatible with Zowe. Please use a different version. See https://docs.zowe.org/stable/troubleshoot/app-framework/app-known-issues.html#desktop-apps-fail-to-load for more details.`);
+      if (version == 'v18.12.1') {
+        common.printError(`Node ${version} specifically is not compatible with Zowe. Please use a different version. See https://github.com/ibmruntimes/node-zos/issues/21 for more details.`);
         return false;
       }
+
       if (nodeMajorVersion < NODE_MIN_VERSION) {
         common.printError(`Node ${version} is less than the minimum level required of v${NODE_MIN_VERSION}.`);
         return false;

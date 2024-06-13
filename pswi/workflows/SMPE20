@@ -465,7 +465,7 @@
 //            MGMTCLAS=&amp;MGCLAS,
 #end
 //            DSNTYPE=LIBRARY,
-//            SPACE=(TRK,(12000,3000,80))
+//            SPACE=(TRK,(5250,5250,80))
 //*
 //SMPSCDS  DD DSN=&amp;DSPREFIX..SMPSCDS,
 //            DISP=(NEW,CATLG,DELETE),
@@ -1142,7 +1142,7 @@
      MANAGEMENTCLASS(&amp;MGCLAS)  -
 #end
      LINEAR -
-     TRACKS(21000 2100) -
+     TRACKS(27900 2100) -
      SHAREOPTIONS(3) -
    )
 //*

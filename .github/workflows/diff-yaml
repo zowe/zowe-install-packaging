@@ -1,0 +1,41 @@
+name: Generate example yaml diff
+on:
+  push:
+    branches:
+      - v1.x/master
+      - v2.x/master
+      - v3.x/master
+
+  workflow_dispatch:
+    inputs:
+      FROM_COMMIT:
+        description: 'Specify tag (v prefix) to diff from'
+        required: false
+      TO_COMMIT:
+        description: 'Specify tag (v prefix) to diff to'
+        required: false
+
+jobs:
+  diff:
+    runs-on: ubuntu-latest
+    steps:
+      - name: '[Prep 1] Checkout'
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: '0'
+      - name: '[Prep 2] Setup Node'
+        uses: actions/setup-node@v2
+        with:
+          node-version: 18
+      - name: '[Prep 3] Get to version'
+        run: node -e "const fs = require('fs'); const currentVersion = JSON.parse(fs.readFileSync('./manifest.json.template', 'utf8')).version; if ('${{ github.event.inputs.TO_COMMIT }}'.length > 0) { console.log('TO=${{ github.event.inputs.TO_COMMIT }}')} else { console.log('TO=v'+currentVersion) }" >> $GITHUB_ENV
+      - name: '[Prep 4] Get from version'
+        run: node -e "if ('${{ github.event.inputs.FROM_COMMIT }}'.length > 0) { console.log('FROM=${{ github.event.inputs.FROM_COMMIT }}') } else { let parts = '${{ env.TO }}'.split('.'); parts[1]--; console.log('FROM='+parts.join('.')); }" >> $GITHUB_ENV
+      - name: '[Build] Make diff'
+        run: git diff ${{ env.FROM }} ${{ env.TO }} -- example-zowe.yaml > example-yaml.diff
+      - name: '[Upload]'
+        uses: actions/upload-artifact@v3
+        with:
+          name: example-yaml.diff
+          path: example-yaml.diff
+          if-no-files-found: error

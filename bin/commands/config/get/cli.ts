@@ -8,7 +8,7 @@
  
   Copyright Contributors to the Zowe Project.
 */
-import * as std from 'std';
+import * as std from 'cm_std';
 import * as index from './../../internal/config/get/index';
 import * as configmgr from '../../../libs/configmgr';
 

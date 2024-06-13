@@ -135,6 +135,8 @@
   RLIST  FACILITY BPX.SERVER ALL
   PERMIT BPX.SERVER CLASS(FACILITY) DELETE ID(&ZOWEUSER.)
 
+  PERMIT OMVSAPPL CLASS(APPL) DELETE ID(&ZOWEUSER.)
+
 /* remove permit to set jobname                                      */
   RLIST  FACILITY BPX.JOBNAME ALL
   PERMIT BPX.JOBNAME CLASS(FACILITY) DELETE ID(&ZOWEUSER.)
@@ -143,8 +145,14 @@
   RLIST  UNIXPRIV SUPERUSER.FILESYS ALL
   PERMIT SUPERUSER.FILESYS CLASS(UNIXPRIV) DELETE ID(&ZOWEUSER.)
 
-/* remove permit to use identity mapping service                     */
+/* remove permit to use client certificate mapping service           */
   PERMIT IRR.RUSERMAP CLASS(FACILITY) DELETE ID(&ZOWEUSER.)
+
+/* remove permit to use distributed identity mapping service         */
+  PERMIT IRR.IDIDMAP.QUERY CLASS(FACILITY) DELETE ID(&ZOWEUSER.)
+
+/* remove permit Zowe main server to cut SMF records                 */
+  PERMIT IRR.RAUDITX CLASS(FACILITY) DELETE ID(&ZOWEUSER.)
 
   SETROPTS RACLIST(FACILITY) REFRESH
   SETROPTS RACLIST(UNIXPRIV) REFRESH
@@ -281,6 +289,9 @@ RECKEY BPX DEL(DAEMON ROLE(&STCGRP.) SERVICE(UPDATE) ALLOW)
 RECKEY BPX DEL(SERVER ROLE(&STCGRP.) SERVICE(UPDATE) ALLOW)
 RECKEY BPX DEL(JOBNAME ROLE(&STCGRP.) SERVICE(READ) ALLOW)
 F ACF2,REBUILD(FAC)
+SET RESOURCE(APL)
+RECKEY OMVSAPPL DEL(SERVICE(READ) ROLE(&STCGRP.) ALLOW)
+F ACF2,REBUILD(APL)
 * Remove UNI
 *
 SET RESOURCE(UNI)
@@ -289,9 +300,21 @@ DELETE SUPERUSER.FILESYS
 
 F ACF2,REBUILD(UNI)
 
-/* Remove STCGRP role permission to use identity mapping service   */
+* Remove STCGRP role permission to use client certificate mapping
+* service
 SET RESOURCE(FAC)
 RECKEY IRR DEL(RUSERMAP ROLE(&STCGRP.) SERVICE(READ) ALLOW)
+F ACF2,REBUILD(FAC)
+
+* Remove STCGRP role permission to use distributed certificate mapping
+* service
+SET RESOURCE(FAC)
+RECKEY IRR DEL(IDIDMAP.QUERY ROLE(&STCGRP.) SERVICE(READ) ALLOW)
+F ACF2,REBUILD(FAC)
+
+* Remove STCGRP role permission to cut SMF records
+SET RESOURCE(FAC)
+RECKEY IRR DEL(RAUDITX ROLE(&STCGRP.) SERVICE(READ) ALLOW)
 F ACF2,REBUILD(FAC)
 
 *  Remove  data set protection
@@ -337,6 +360,8 @@ TSS WHOHAS IBMFAC(BPX.DAEMON)
 TSS REVOKE(&ZOWEUSER) IBMFAC(BPX.DAEMON)
 TSS WHOHAS IBMFAC(BPX.SERVER)
 TSS REVOKE(&ZOWEUSER) IBMFAC(BPX.SERVER)
+TSS WHOHAS APPL(OMVSAPPL)
+TSS REVOKE(&ZOWEUSER) APPL(OMVSAPPL)
 
 /* remove permit to set jobname                                      */
 TSS WHOHAS IBMFAC(BPX.JOBNAME)
@@ -346,8 +371,19 @@ TSS REVOKE(&ZOWEUSER) IBMFAC(BPX.JOBNAME)
 TSS WHOHAS UNIXPRIV(SUPERUSER.FILESYS)
 TSS REVOKE(&ZOWEUSER) UNIXPRIV(SUPERUSER.FILESYS)
 
-/* remove permit Zowe main server to use identity mapping service   */
+/* remove permit Zowe main server to use client certificate mapping  */
+/* service                                                           */
+TSS WHOHAS IBMFAC(IRR.RUSERMAP)
 TSS REVOKE(&ZOWEUSER.) IBMFAC(IRR.RUSERMAP)
+
+/* remove permit Zowe main server to use distributed identity        */
+/* mapping service                                                   */
+TSS WHOHAS IBMFAC(IRR.IDIDMAP.QUERY)
+TSS REVOKE(&ZOWEUSER.) IBMFAC(IRR.IDIDMAP.QUERY)
+
+/* remove permit Zowe main server to cut SMF records                 */
+TSS WHOHAS IBMFAC(IRR.RAUDITX)
+TSS REVOKE(&ZOWEUSER.) IBMFAC(IRR.RAUDITX)
 
 /* REMOVE AUX SERVER PERMISIONS .................................... */
 

@@ -8,6 +8,6 @@
  
   Copyright Contributors to the Zowe Project.
 */
-import * as std from 'std';
+import * as std from 'cm_std';
 import * as index from './index';
 index.execute(std.getenv('ZWE_CLI_PARAMETER_PATH'), std.getenv('ZWE_CLI_PARAMETER_HA_INSTANCE'));

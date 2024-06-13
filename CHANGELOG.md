@@ -2,9 +2,96 @@
 
 All notable changes to the Zowe Installer will be documented in this file.
 <!--Add the PR or issue number to the entry if available.-->
-## `Unreleased`
 
-- Updated ZWEWRF03 workflow to be up to date with the installed software
+## `2.17.0`
+
+## New features and enhancements
+- Enhancement: Added zowe.network.server.tls.attls and zowe.network.client.tls.attls as booleans for controlling global or per-component way to tell Zowe servers that they should operate in a mode compatible with an AT-TLS setup. [#3463](https://github.com/zowe/zowe-install-packaging/pull/3463)
+
+## `2.16.0`
+
+## Minor enhancements/defect fixes
+- Enhancement: Reduced resource consumption by removal of one shell process per server that was used when starting each server.  (#3812)
+- Enhancement: The command `zwe support` now includes CEE Runtime option output to better diagnose issues related to environment customization. (#3799)
+- Bugfix: zowe.network.validatePortFree and zowe.network.vipaIp variables were moved from zowe.network to zowe.network.server in the schema but not in the code, causing inability to use them without the workaround of specifying them as environment variables ZWE_NETWORK_VALIDATE_PORT_FREE and ZWE_NETWORK_VIPA_IP instead. Now, the variables match the schema: zowe.network.server is used instead of zowe.network.
+- Bugfix: configmgr operations now run with HEAPPOOLS64 set to OFF to avoid abends caused when this parameter is not OFF. (#3799)
+
+
+## `2.15.0`
+
+## New features and enhancements
+
+## Minor enhancements/defect fixes
+- Bugfix: `zwe diagnose` running under comfigmgr and output formatted. Fixes #[3627](https://github.com/zowe/zowe-install-packaging/issues/3627).
+
+## `2.14.0`
+
+### New features and enhancements
+- Enhancement: configmgr.ts now can return a Zowe config with the given HA instance's configuration substituted for convenience. This now used in zwe to fix an issue where zwe would not respect the preference of if a component was enabled or disabled in a particular instance when zowe.useConfigmgr was set to true.
+
+#### Minor enhancements/defect fixes
+- Bugfix: environment variables were not using the values specified for each HA instance when zowe.useConfigmgr was set to true.
+
+## `2.13.0`
+
+### New features and enhancements
+- Enhancement: Added utility "getesm" into bin/utils. When run it outputs to STDOUT which ESM your system is using. (#3662)
+
+#### Minor enhancements/defect fixes
+- Bugfix: Workflow files in the Zowe PAX are now ASCII-encoded. Fixes [#3591](https://github.com/zowe/zowe-install-packaging/issues/3591).
+- Enhancement: `/bin/utils/date-add.rex` utility is accepting the date formatting as combination of YY|YYYY, MM, DD and any separator.
+
+## `2.12.0`
+
+### New features and enhancements
+
+#### Minor enhancements/defect fixes
+
+## `2.11.0`
+
+### New features and enhancements
+- Enhancement: Duplicate log messages into syslog according to "zowe.sysMessages" array [#93](https://github.com/zowe/launcher/pull/93)
+
+#### Minor enhancements/defect fixes
+- Bugfix: `zowe-yaml-schema.json` validates unix directory path as `server-common#zowePath`
+- Bugfix: Fixed that Zowe would allow newer Java versions to generate PKCS12 keystores that was not compatible with some components. Newer versions of Java by default create PKCS12 keystores that aren't compatible with GSK / SystemSSL which components such as ZSS use, but include flags to restore a compatibility mode, which Zowe now uses. (#3507)
+
+## `2.10.0`
+
+### New features and enhancements
+- Enhancement: Added a new zwe "diagnose" command to find help on zowe error messages. (#3455)
+
+#### Minor enhancements/defect fixes
+- Enhancement: Check for node v18 which is now supported, but disallow v18.12.1 because it is known not to work for Zowe. (#3485)
+
+## `2.9.0`
+
+### New features and enhancements
+- Users who have not set the value of "zowe.useConfimgr" will have the behavior now set to "true" rather than the previous "false". If you wish to use false still, just set "zowe.useConfigmgr=false" explicitly.
+
+## `2.8.0`
+
+### New features and enhancements
+- Component installation can now print stdout of install scripts [#3361](https://github.com/zowe/zowe-install-packaging/pull/3361)
+
+#### Minor enhancements/defect fixes
+- Bugfix: Component environment variables would not be aliased to the "_configs_" shorthand when the component had a configure script, but not a validate script, and zowe.useConfigmgr was enabled.
+- Buffix: When zowe.useConfigmgr=true, component installation would not run the installation script from the component root directory, but instead from the place zwe was executed, causing relative path differences versus zowe.useConfigmgr=false.
+
+## `2.7.0`
+
+### New features and enhancements
+- The zowe authorized loadlib now contains a new ZIS plugin as a member named "ZWESISDL". This is the ZIS Dynamic Plugin, and exists for use by other plugins that wish to access zowe-common-c utilities at runtime without needing to statically link them in the other plugin. This plugin must be referenced in the ZWESIP00 parmlib member before use. The samplib for ZWESIP00 now references this "ZWESISDL" member and it is recommended that you update your ZWESIP00 member using the samplib if you need to use this plugin.
+
+#### Minor enhancements/defect fixes
+- When zwe components install detects that the given component is already installed, it will suggest you to run zwe components upgrade instead.
+- Launcher parameters such as "shareAs" could not be customized globally due to zowe.launcher schema being wrong with some parameters nested inside another.
+- Launcher parameters within an individual component were not documented to exist despite the launcher allowing per-component customization.
+- Fixed that zwe would fail to recursively make missing directories if the root directory was not readable by the user.
+- zwe detects and warns against nodejs lower than version 14 (Due to end of life of v12)
+- Tracing and writing to log files would not work for component scripts when zowe.useConfigmgr=true
+- Node v18 was installed on marist system and test were made to run with node v18.
+
 
 ## `2.6.0`
 

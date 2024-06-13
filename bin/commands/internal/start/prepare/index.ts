@@ -10,8 +10,8 @@
 */
 
 
-import * as std from 'std';
-import * as os from 'os';
+import * as std from 'cm_std';
+import * as os from 'cm_os';
 import * as zos from 'zos';
 import * as xplatform from 'xplatform';
 
@@ -71,7 +71,7 @@ function prepareRunningInContainer() {
 
 // Prepare log directory
 function prepareLogDirectory() {
-  const logDir = std.getenv('ZWE_zowe_logDirectory');
+  const logDir = ZOWE_CONFIG.zowe.logDirectory;
   if (logDir) {
     os.mkdir(logDir, 0o750);
     if (!fs.isDirectoryWritable(logDir)) {
@@ -137,11 +137,12 @@ function globalValidate(enabledComponents:string[]): void {
   if (runInContainer != 'true') {
     // only do these check when it's not running in container
 
-    // currently node is always required
-    let nodeOk = node.validateNodeHome();
-    if (!nodeOk) {
-      privateErrors++;
-      common.printFormattedError('ZWELS', "zwe-internal-start-prepare,global_validate", `Could not validate node home`);
+    if (enabledComponents.includes('app-server')) {
+      let nodeOk = node.validateNodeHome();
+      if (!nodeOk) {
+        privateErrors++;
+        common.printFormattedError('ZWELS', "zwe-internal-start-prepare,global_validate", `Could not validate node home`);
+      }
     }
 
     // validate java for some core components
@@ -223,7 +224,7 @@ function validateComponents(enabledComponents:string[]): any {
           //TODO verify that this returns things that we want, currently it just uses setenv
           const envVars = config.loadEnvironmentVariables(componentId);
           componentEnvironments[manifest.name] = envVars;
-          let result = shell.execSync('sh', '-c', `. ${runtimeDirectory}/bin/libs/index.sh && cd ${componentDir} && . ${fullPath}`);
+          let result = shell.execSync('sh', '-c', `. ${runtimeDirectory}/bin/libs/configmgr-index.sh && cd ${componentDir} && . ${fullPath}`);
           privateErrors=prevErrors;
           if (result.rc) {
             privateErrors++;
@@ -282,17 +283,20 @@ function configureComponents(componentEnvironments?: any, enabledComponents?:str
       // TODO if this is to force 1 component to configure before another, we should really just make a manifest declaration that 1 component needs to run before another. It's fine to run a simple dependency chain to determine order of execution without getting into the advanced realm of full blown package manager dependency management tier checks
       const preconfigureScript=manifest.commands ? manifest.commands.preConfigure : undefined;
       common.printFormattedTrace("ZWELS", "zwe-internal-start-prepare,configure_components", `- commands.preConfigure is ${preconfigureScript}`);
+      let loadedEnvVars = false;
       if (preconfigureScript) {
         const preconfigurePath=`${componentDir}/${preconfigureScript}`;
         if (fs.fileExists(preconfigurePath)) {
           common.printFormattedDebug("ZWELS", "zwe-internal-start-prepare,configure_components", `* process ${componentId} pre-configure command ...`);
           // execute preconfigure step. preconfigure does NOT export env vars.
-          if (componentEnvironments) {
+          if (componentEnvironments && componentEnvironments[componentName]) {
             config.applyEnviron(componentEnvironments[componentName]);
+            loadedEnvVars = true;
           } else {
             config.loadEnvironmentVariables(componentId);
+            loadedEnvVars = true;
           }
-          const result = shell.execOutErrSync('sh', '-c', `. ${runtimeDirectory}/bin/libs/index.sh && cd ${componentDir} && . ${preconfigurePath}`);
+          const result = shell.execOutErrSync('sh', '-c', `. ${runtimeDirectory}/bin/libs/configmgr-index.sh && cd ${componentDir} && . ${preconfigurePath}`);
           common.printFormattedDebug("ZWELS", "zwe-internal-start-prepare,configure_components", result.rc ? result.err : result.out);
         } else {
           common.printFormattedError("ZWELS", "zwe-internal-start-prepare,configure_components", `Error ZWEL0172E: Component ${componentId} has commands.preConfigure defined but the file is missing.`);
@@ -338,9 +342,16 @@ function configureComponents(componentEnvironments?: any, enabledComponents?:str
         const fullPath = `${componentDir}/${configureScript}`;
         if (fs.fileExists(fullPath)) {
           common.printFormattedDebug("ZWELS", "zwe-internal-start-prepare,configure_components", `* process ${componentId} configure command ...`);
+          if (!loadedEnvVars) {
+            if (componentEnvironments && componentEnvironments[componentName]) {
+              config.applyEnviron(componentEnvironments[componentName]);
+            } else {
+              config.loadEnvironmentVariables(componentId);
+            }
+          }
           // execute configure step and generate environment snapshot
           // NOTE: env var list is not updated because it should not have changed between preconfigure step and now
-          const result = shell.execOutSync('sh', '-c', `. ${runtimeDirectory}/bin/libs/index.sh && cd ${componentDir} && . ${fullPath} ; export rc=$? ; export -p`);
+          const result = shell.execOutSync('sh', '-c', `. ${runtimeDirectory}/bin/libs/configmgr-index.sh && cd ${componentDir} && . ${fullPath} ; export rc=$? ; export -p`);
 
           common.printFormattedDebug("ZWELS", "zwe-internal-start-prepare,configure_components", `${componentName} configure ended with rc=${result.rc}`);
           
@@ -428,7 +439,10 @@ export function execute() {
     // other extensions need to specify `require_java` in their validate.sh
     java.requireJava();
   }
-  node.requireNode();
+  if (stringlib.itemInList('app-server', std.getenv('ZWE_CLI_PARAMETER_COMPONENT'))) {
+    // other extensions need to specify `require_node` in their validate.sh
+    node.requireNode();
+  }
   common.requireZoweYaml();
 
   // overwrite ZWE_PRIVATE_LOG_LEVEL_ZWELS with zowe.launchScript.logLevel config in YAML

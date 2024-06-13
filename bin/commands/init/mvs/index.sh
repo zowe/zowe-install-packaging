@@ -90,7 +90,7 @@ else
   # FIXME: data_set_copy_to_data_set cannot be used to copy program?
   authLoadlib=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.dataset.authLoadlib")
   if [ -n "${authLoadlib}" ]; then
-    for ds in ZWESIS01 ZWESAUX; do
+    for ds in ZWESIS01 ZWESAUX ZWESISDL; do
       print_message "Copy components/zss/LOADLIB/${ds} to ${authLoadlib}(${ds})"
       # data_set_copy_to_data_set "${prefix}" "${prefix}.${ZWE_PRIVATE_DS_SZWEAUTH}(${ds})" "${authLoadlib}(${ds})" "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITE}"
       copy_to_data_set "${ZWE_zowe_runtimeDirectory}/components/zss/LOADLIB/${ds}" "${authLoadlib}(${ds})" "-X" "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITE}"

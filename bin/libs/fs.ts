@@ -9,8 +9,8 @@
   Copyright Contributors to the Zowe Project.
 */
 
-import * as std from 'std';
-import * as os from 'os';
+import * as std from 'cm_std';
+import * as os from 'cm_os';
 import * as zos from 'zos';
 
 import * as common from './common';
@@ -66,11 +66,31 @@ export function resolvePath(...parts:string[]): string {
 }
 
 export function mkdirp(path:string, mode?: number): number {
-  const parts = path.split('/');
-  let dir = '/';
-  for (let i = 0; i < parts.length; i++) {
-    dir+=parts[i]+'/';
-    let rc = os.mkdir(dir, mode ? mode : 0o777);
+  let paths: string[] = [];
+  let parts = path.split('/');
+  let currentPath = '';
+  parts.forEach((part:string)=> {
+    currentPath+='/'+part;
+    if (currentPath.startsWith('//')) {
+      currentPath = currentPath.substring(1);
+    }
+    paths.push(currentPath);
+  });
+
+  let firstMissingDir: number;
+  for (let i = paths.length-1; i > -1; i--) {
+    if (directoryExists(paths[i])) {
+      firstMissingDir = i+1;
+      break;
+    }
+  }
+
+  common.printDebug('paths='+JSON.stringify(paths));
+  if (firstMissingDir >= paths.length) { return 0; }
+  common.printDebug('firstMissingDir='+paths[firstMissingDir]);
+
+  for (let i = firstMissingDir; i < paths.length; i++) {
+    let rc = os.mkdir(paths[i], mode ? mode : 0o777);
     if (rc && (rc!=(0-std.Error.EEXIST))) {
       return rc;
     }
