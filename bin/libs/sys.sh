@@ -112,7 +112,7 @@ find_all_child_processes() {
 wait_for_process_exit() {
   pid="${1}"
 
-  print_formatted_debug "ZWELS" "sys-utils.sh,wait_for_process_exit:${LINENO}" "waiting for process $pid to exit"
+  print_formatted_debug "ZWELS" "sys.sh,wait_for_process_exit:${LINENO}" "waiting for process $pid to exit"
 
   iterator_index=0
   max_iterator_index=30
@@ -123,13 +123,13 @@ wait_for_process_exit() {
     found=$(ps -p ${pid} -o pid 2>/dev/null | tail -n +2)
   done
   if [ -n "${found}" ]; then
-    print_formatted_debug "ZWELS" "sys-utils.sh,wait_for_process_exit:${LINENO}" "process $pid does NOT exit before timeout"
+    print_formatted_debug "ZWELS" "sys.sh,wait_for_process_exit:${LINENO}" "process $pid does NOT exit before timeout"
     return 1
   elif [ ${iterator_index} -eq 0 ]; then
-    print_formatted_debug "ZWELS" "sys-utils.sh,wait_for_process_exit:${LINENO}" "process $pid does NOT exist or already exited"
+    print_formatted_debug "ZWELS" "sys.sh,wait_for_process_exit:${LINENO}" "process $pid does NOT exist or already exited"
     return 0
   else
-    print_formatted_debug "ZWELS" "sys-utils.sh,wait_for_process_exit:${LINENO}" "process $pid exited gracefully"
+    print_formatted_debug "ZWELS" "sys.sh,wait_for_process_exit:${LINENO}" "process $pid exited gracefully"
     return 0
   fi
 }
@@ -145,16 +145,16 @@ wait_for_process_exit() {
 gracefully_shutdown() {
   pid=${1:-${ZWE_GRACEFULLY_SHUTDOWN_PID:-1}}
 
-  print_formatted_debug "ZWELS" "sys-utils.sh,gracefully_shutdown:${LINENO}" "SIGTERM signal received, shutting down process ${pid} and all child processes"
+  print_formatted_debug "ZWELS" "sys.sh,gracefully_shutdown:${LINENO}" "SIGTERM signal received, shutting down process ${pid} and all child processes"
   if [ -n "${pid}" ]; then
     children=$(find_all_child_processes $pid)
-    print_formatted_debug "ZWELS" "sys-utils.sh,gracefully_shutdown:${LINENO}" "propagate SIGTERM to all children: ${children}"
+    print_formatted_debug "ZWELS" "sys.sh,gracefully_shutdown:${LINENO}" "propagate SIGTERM to all children: ${children}"
     # send SIGTERM to all children
     kill -15 ${children} 2>/dev/null
     for pid in ${children}; do
       wait_for_process_exit $pid
     done
-    print_formatted_debug "ZWELS" "sys-utils.sh,gracefully_shutdown:${LINENO}" "all child processes exited"
+    print_formatted_debug "ZWELS" "sys.sh,gracefully_shutdown:${LINENO}" "all child processes exited"
   fi
 
   exit 0

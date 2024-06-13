@@ -1,0 +1,2 @@
+ha-instance|i|string|||||Zowe high availability instance ID.
+path|p|string|required||||Path of the configuration. For example, `components.gateway.port`.

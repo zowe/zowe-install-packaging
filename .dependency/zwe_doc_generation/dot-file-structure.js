@@ -45,6 +45,11 @@ const parameterTable = {
         },
         {
             position: 7,
+            meaning: 'Reserved for future use',
+            ignore: true
+        },
+        {
+            position: 8,
             meaning: 'Help message'
         }
     ]

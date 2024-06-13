@@ -156,8 +156,8 @@
 #end
         WAITFORDSN
         SHR .
-    ADD DDDEF (SZWESAMP)
-        DATASET(&THLQ..SZWESAMP)
+    ADD DDDEF (SZWEEXEC)
+        DATASET(&THLQ..SZWEEXEC)
         UNIT(SYSALLDA)
 #if( $tvol and $tvol != "" and $tvol != '#tvol') 
         VOLUME(&TVOL)
@@ -167,8 +167,19 @@
 #end
         WAITFORDSN
         SHR .
-    ADD DDDEF (SZWEEXEC)
-        DATASET(&THLQ..SZWEEXEC)
+    ADD DDDEF (SZWELOAD)
+        DATASET(&THLQ..SZWELOAD)
+        UNIT(SYSALLDA)
+#if( $tvol and $tvol != "" and $tvol != '#tvol') 
+        VOLUME(&TVOL)
+#end
+#if($ibmTemplate == 'YES')
+     /* VOLUME(&TVOL) */
+#end
+        WAITFORDSN
+        SHR .
+    ADD DDDEF (SZWESAMP)
+        DATASET(&THLQ..SZWESAMP)
         UNIT(SYSALLDA)
 #if( $tvol and $tvol != "" and $tvol != '#tvol') 
         VOLUME(&TVOL)

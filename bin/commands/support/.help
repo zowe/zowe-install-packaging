@@ -6,13 +6,15 @@ This command will collect these information:
   * z/OS version
   * Java version
   * Node.js version
+  * External Security Manager
+  * CEE Runtime Options
 - Zowe configurations
   * Zowe manifest.json
   * Zowe configuration file
   * Zowe installation logs
   * Zowe PKCS#12 keystore if used
-  * Zowe temporary configuration files under `<workspace>/.env`
-  * Zowe APIML static registration files under `<workspace>/api-mediation/api-defs`
+  * Zowe temporary configuration files under "`zowe.workspaceDirectory`/.env"
+  * Zowe APIML static registration files under "`zowe.workspaceDirectory`/api-mediation/api-defs"
 - Zowe runtime
   * Active running Zowe processes
   * Zowe job log

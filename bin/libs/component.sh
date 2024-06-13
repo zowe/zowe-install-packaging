@@ -350,7 +350,7 @@ test_or_set_pc_bit() {
       echo "PC bit set successfully."
       return 0
     else
-      echo "PC bit not set. This must be set such as by executing 'extattr +p $COMPONENT_HOME/lib/sys.so' as a user with sufficient privilege."
+      echo "PC bit not set. This must be set such as by executing 'extattr +p ${path}' as a user with sufficient privilege."
       return 1
     fi
   fi
@@ -541,8 +541,7 @@ zis_plugin_install() {
             if [ $? -ne 0 ]; then
               print_message "Failed to install ZIS plugin: ${zis_plugin_id}"
               exit 1
-            else
-              fi
+            fi
           fi
         done < "${samplib_path}/${params}"
       done
@@ -552,6 +551,10 @@ zis_plugin_install() {
 
   if [ $changed -eq 1 ]; then
     copy_to_data_set "$parmlib_member_as_unix_file" "$zwes_zis_parmlib($zwes_zis_parmlib_member)" "" "true"
+    if [ $? != 0 ]; then
+      print_error "Error ZWEL0200E: Failed to copy USS file ${parmlib_member_as_unix_file} to MVS data set ${zwes_zis_parmlib}."
+      return 200
+    fi
   fi
 }
 

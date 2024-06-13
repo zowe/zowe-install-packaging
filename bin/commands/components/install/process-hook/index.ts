@@ -9,22 +9,13 @@
   Copyright Contributors to the Zowe Project.
 */
 
-import * as std from 'std';
-import * as os from 'os';
-import * as zos from 'zos';
-import * as xplatform from 'xplatform';
-
-import * as fs from '../../../../libs/fs';
+import * as std from 'cm_std';
 import * as common from '../../../../libs/common';
 import * as stringlib from '../../../../libs/string';
 import * as shell from '../../../../libs/shell';
-import * as sys from '../../../../libs/sys';
 import * as config from '../../../../libs/config';
 import * as component from '../../../../libs/component';
 import * as varlib from '../../../../libs/var';
-import * as java from '../../../../libs/java';
-import * as node from '../../../../libs/node';
-import * as zosmf from '../../../../libs/zosmf';
 import { PathAPI as pathoid } from '../../../../libs/pathoid';
 
 export function execute(componentName: string) {
@@ -43,13 +34,29 @@ export function execute(componentName: string) {
   if (installScript) {
     common.printMessage(`Process ${installScript} defined in manifest commands.install:`);
     const scriptPath = pathoid.join(targetDir, componentName, installScript);
+    const componentRoot = pathoid.join(targetDir, componentName);
     // run commands
-    const result = shell.execOutSync('sh', '-c', `. ${ZOWE_CONFIG.zowe.runtimeDirectory}/bin/libs/index.sh && . ${scriptPath}`);
+    const result = shell.execOutSync('sh', '-c', `. ${ZOWE_CONFIG.zowe.runtimeDirectory}/bin/libs/configmgr-index.sh && cd ${componentRoot} && . ${scriptPath} ; export rc=$? ; export -p`);
+    if (result.rc==0) {
+      varlib.getEnvironmentExports(result.out, true);
+      const outLines = result.out.split('\n');
+      common.printFormattedInfo("ZWELS", "zwe-components-install-process-hook", `- commands.install output from ${componentName} is:`);
+      common.printMessage(outLines.filter(line => !line.startsWith('export ')).join('\n'));
+      common.printFormattedDebug("ZWELS", "zwe-components-install-process-hook", outLines.filter(line => line.startsWith('export ')).join('\n'));
+    } else {
+      common.printError(`install script ended with error, rc=${result.rc}`);
+      if (result.out) {
+        const outLines = result.out.split('\n');
+        common.printFormattedInfo("ZWELS", "zwe-components-install-process-hook", `- commands.install output from ${componentName} is:`);
+        common.printMessage(outLines.filter(line => !line.startsWith('export ')).join('\n'));
+      }
+      std.exit(result.rc);
+    }
+
   } else {
     common.printDebug(`Module ${componentName} does not have commands.install defined.`);
   }
 
-  if (os.platform == 'zos') {
-    component.processZssPluginInstall(componentDir);
-  }
+  component.processZssPluginInstall(componentDir);
+  component.processZisPluginInstall(componentDir);
 }

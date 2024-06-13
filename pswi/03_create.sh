@@ -8,6 +8,7 @@ echo ""
 echo "Script for creating a Portable Software Instance..."
 echo "Host               :" $ZOSMF_URL
 echo "Port               :" $ZOSMF_PORT
+echo "SSH Port           :" $ZZOW_SSH_PORT
 echo "CSI HLQ            :" $CSIHLQ
 echo "SMP/E zone         :" $ZONE
 echo "z/OSMF system      :" $ZOSMF_SYSTEM
@@ -131,28 +132,34 @@ echo "SH set -x;set -e;" >> JCL
 echo "cd ${WORK_MOUNT};" >> JCL
 echo "source=\"${ZOWE_MOUNT}files/workflows/ZWEWRF02.xml\";" >> JCL
 echo "target=\"//'${WORKFLOW_DSN}(ZWEWRF02)'\";" >> JCL
-echo "sed 's|UTF-8|IBM-1047|g' \$source > _ZWEWRF02;" >> JCL                         
-echo "cp -T _ZWEWRF02 \$target;" >> JCL
+echo "iconv -f ISO8859-1 -t IBM-1047 \$source > _ZWEWRF02;" >> JCL
+echo "sed 's|UTF-8|IBM-1047|g' _ZWEWRF02 > ZWEWRF02;" >> JCL                         
+echo "cp -T ZWEWRF02 \$target;" >> JCL
 echo "source=\"${ZOWE_MOUNT}files/workflows/ZWECRECR.xml\";" >> JCL
 echo "target=\"//'${WORKFLOW_DSN}(ZWECRECR)'\";" >> JCL
-echo "sed 's|UTF-8|IBM-1047|g' \$source > _ZWECRECR;" >> JCL                         
-echo "cp -T _ZWECRECR \$target;" >> JCL
+echo "iconv -f ISO8859-1 -t IBM-1047 \$source > _ZWECRECR;" >> JCL
+echo "sed 's|UTF-8|IBM-1047|g' _ZWECRECR > ZWECRECR;" >> JCL                         
+echo "cp -T ZWECRECR \$target;" >> JCL
 echo "source=\"${ZOWE_MOUNT}files/workflows/ZWEKRING.xml\";" >> JCL
 echo "target=\"//'${WORKFLOW_DSN}(ZWEKRING)'\";" >> JCL
-echo "sed 's|UTF-8|IBM-1047|g' \$source > _ZWEKRING;" >> JCL                         
-echo "cp -T _ZWEKRING \$target;" >> JCL
+echo "iconv -f ISO8859-1 -t IBM-1047 \$source > _ZWEKRING;" >> JCL
+echo "sed 's|UTF-8|IBM-1047|g' _ZWEKRING > ZWEKRING;" >> JCL                         
+echo "cp -T ZWEKRING \$target;" >> JCL
 echo "source=\"${ZOWE_MOUNT}files/workflows/ZWELOADC.xml\";" >> JCL
 echo "target=\"//'${WORKFLOW_DSN}(ZWELOADC)'\";" >> JCL
-echo "sed 's|UTF-8|IBM-1047|g' \$source > _ZWELOADC;" >> JCL                         
-echo "cp -T _ZWELOADC \$target;" >> JCL
+echo "iconv -f ISO8859-1 -t IBM-1047 \$source > _ZWELOADC;" >> JCL
+echo "sed 's|UTF-8|IBM-1047|g' _ZWELOADC > ZWELOADC;" >> JCL                         
+echo "cp -T ZWELOADC \$target;" >> JCL
 echo "source=\"${ZOWE_MOUNT}files/workflows/ZWESIGNC.xml\";" >> JCL
 echo "target=\"//'${WORKFLOW_DSN}(ZWESIGNC)'\";" >> JCL
-echo "sed 's|UTF-8|IBM-1047|g' \$source > _ZWESIGNC;" >> JCL                         
-echo "cp -T _ZWESIGNC \$target;" >> JCL
+echo "iconv -f ISO8859-1 -t IBM-1047 \$source > _ZWESIGNC;" >> JCL
+echo "sed 's|UTF-8|IBM-1047|g' _ZWESIGNC > ZWESIGNC;" >> JCL                         
+echo "cp -T ZWESIGNC \$target;" >> JCL
 echo "source=\"${ZOWE_MOUNT}files/workflows/ZWECONF.xml\";" >> JCL
 echo "target=\"//'${WORKFLOW_DSN}(ZWECONF)'\";" >> JCL
-echo "sed 's|UTF-8|IBM-1047|g' \$source > _ZWECONF;" >> JCL                         
-echo "cp -T _ZWECONF \$target;" >> JCL
+echo "iconv -f ISO8859-1 -t IBM-1047 \$source > _ZWECONF;" >> JCL
+echo "sed 's|UTF-8|IBM-1047|g' _ZWECONF > ZWECONF;" >> JCL                         
+echo "cp -T ZWECONF \$target;" >> JCL
 echo "/*" >> JCL
 
 sh scripts/submit_jcl.sh "`cat JCL`"
@@ -325,7 +332,7 @@ if [ $? -gt 0 ];then exit -1;fi
 rm JCL
 
 cd ../.pax
-sshpass -p${ZOSMF_PASS} sftp -o BatchMode=no -o StrictHostKeyChecking=no -o PubkeyAuthentication=no -b - -P 22 ${ZOSMF_USER}@${HOST} << EOF
+sshpass -p${ZOSMF_PASS} sftp -o HostKeyAlgorithms=+ssh-rsa -o BatchMode=no -o StrictHostKeyChecking=no -o PubkeyAuthentication=no -b - -P ${ZZOW_SSH_PORT} ${ZOSMF_USER}@${HOST} << EOF
 cd ${TMP_MOUNT}
 get ${SWI_NAME}.pax.Z
 EOF

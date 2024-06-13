@@ -12,7 +12,7 @@
 //*********************************************************************
 //*
 //* Zowe Open Source Project
-//* This JCL can be used to define key ring and certificates for Zowe
+//* This JCL can be used to remove key ring and certificates for Zowe
 //*
 //*
 //* CAUTION: This is neither a JCL procedure nor a complete job.

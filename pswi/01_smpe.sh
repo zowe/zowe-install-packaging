@@ -9,6 +9,7 @@ echo ""
 echo "Script for creation of ZOWE SMP/E environment..."
 echo "Host                        :" $ZOSMF_URL
 echo "Port                        :" $ZOSMF_PORT
+echo "SSH Port                    :" $ZZOW_SSH_PORT
 echo "z/OSMF system               :" $ZOSMF_SYSTEM
 echo "Dataset with workflows      :" $WORKFLOW_DS
 echo "SMPE workflow name          :" $SMPE_WF_NAME
@@ -42,7 +43,7 @@ echo "Uploading workflow SMPE into ${DIR} directory thru SSH"
 
 cd workflows
 
-sshpass -p${ZOSMF_PASS} sftp -o BatchMode=no -o StrictHostKeyChecking=no -o PubkeyAuthentication=no -b - -P 22 ${ZOSMF_USER}@${HOST} << EOF
+sshpass -p${ZOSMF_PASS} sftp -o HostKeyAlgorithms=+ssh-rsa -o BatchMode=no -o StrictHostKeyChecking=no -o PubkeyAuthentication=no -b - -P ${ZZOW_SSH_PORT} ${ZOSMF_USER}@${HOST} << EOF
 cd ${DIR}
 put SMPE20
 EOF

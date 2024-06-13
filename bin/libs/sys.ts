@@ -9,8 +9,8 @@
   Copyright Contributors to the Zowe Project.
 */
 
-import * as std from 'std';
-import * as os from 'os';
+import * as std from 'cm_std';
+import * as os from 'cm_os';
 
 import * as common from './common';
 import * as shell from './shell';
@@ -21,7 +21,11 @@ const pwd = os.getcwd();
 std.setenv('ZWE_PWD', pwd[0] ? pwd[0] : '/');
 
 // Return system name in lower case
+let sysname:string;
 export function getSysname(): string|undefined {
+  if (typeof sysname == 'string') {
+    return sysname.toLowerCase();
+  }
   let shellReturn = shell.execOutSync('sysvar', 'SYSNAME');
   if (!shellReturn.out) {
     // works for z/OS and most Linux with hostname command
@@ -31,7 +35,8 @@ export function getSysname(): string|undefined {
     shellReturn = shell.execOutSync('uname', '-n');
   }
   if (shellReturn.out) {
-    return shellReturn.out.toLowerCase();
+    sysname = shellReturn.out.toLowerCase();
+    return sysname;
   }
   return undefined;
 }
@@ -109,10 +114,10 @@ export function waitForProcessExit(pid: number): boolean {
   }
   
   if (shellReturn.rc == 0) {
-    common.printFormattedDebug("ZWELS", "sys-utils.sh,wait_for_process_exit:", `process ${pid} does NOT exit before timeout`);
+    common.printFormattedDebug("ZWELS", "sys.ts,wait_for_process_exit:", `process ${pid} does NOT exit before timeout`);
     return false;
   } else {
-    common.printFormattedDebug("ZWELS", "sys-utils.sh,wait_for_process_exit:", `process ${pid} no longer exists`);
+    common.printFormattedDebug("ZWELS", "sys.ts,wait_for_process_exit:", `process ${pid} no longer exists`);
     return true;
   }
 }
@@ -133,14 +138,14 @@ export function gracefullyShutdown(pid?: number): boolean {
   }
   if (pid >= 1) {
     let children = findAllChildProcesses(pid);
-    common.printFormattedDebug("ZWELS", "sys-utils.sh,gracefully_shutdown", "SIGTERM signal received, shutting down process ${pid} and all child processes");
+    common.printFormattedDebug("ZWELS", "sys.ts,gracefully_shutdown", "SIGTERM signal received, shutting down process ${pid} and all child processes");
 
     // send SIGTERM to all children
     os.kill(pid, 15);
     children.forEach((pid:number)=>{
       waitForProcessExit(pid);
     });
-    common.printFormattedDebug("ZWELS", "sys-utils.sh,gracefully_shutdown", "all child processes exited");
+    common.printFormattedDebug("ZWELS", "sys.ts,gracefully_shutdown", "all child processes exited");
     return true;
   }
   return false;
@@ -156,6 +161,10 @@ export function executeCommand(...args:string[]) {
   let errHandler = (data:string)=> {
     err=data;
   }
+  if (!std.getenv('PATH')) {
+    std.setenv('PATH','/bin:.:/usr/bin');
+  }
+
   const rc = os.exec(args,
                      {block: true, usePath: true, out: handler, err: errHandler});
   if (!rc) {

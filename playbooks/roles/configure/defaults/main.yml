@@ -6,6 +6,7 @@
 # full core components list, they should show up in components section in zowe.yaml
 zowe_core_components:
 - gateway
+- cloud-gateway
 - metrics-service
 - api-catalog
 - discovery
@@ -57,6 +58,7 @@ zowe_apiml_metrics_service_port: 7551
 zowe_apiml_catalog_port: 7552
 zowe_apiml_discovery_port: 7553
 zowe_apiml_gateway_port: 7554
+zowe_apiml_cloud_gateway_port: 7563
 zowe_apiml_verify_certficates_of_services: true
 zowe_apiml_nonstrict_verify_certficates_of_services: true
 # APIML configuration properties
@@ -65,6 +67,11 @@ zowe_apiml_security_x509_enabled: false
 zowe_apiml_security_zosmf_applid: IZUDFLT
 zowe_apiml_security_auth_provider: zosmf
 zowe_apiml_security_zosmf_jwt_autoconfiguration_mode: auto
+zowe_apiml_security_oidc_enabled: false
+zowe_apiml_security_oidc_client_id:
+zowe_apiml_security_oidc_client_secret:
+zowe_apiml_security_oidc_registry:
+zowe_apiml_security_oidc_jwks_uri:
 # explorer APIs/plugins ports
 zowe_jobs_api_port: 7558
 zowe_mvs_api_port: 7559
@@ -98,7 +105,7 @@ zowe_keystore_password: password
 zowe_keyring_alias: ZoweKeyring
 zowe_keyring_certname: ZoweCert
 zowe_keyring_external_intermediate_ca:
-zowe_keyring_external_root_ca:
+zowe_keyring_external_root_ca: brcmso
 zowe_keystore_alias: localhost
 zowe_jcllib:
 zowe_proclib_dsname: auto
@@ -139,3 +146,6 @@ zowe_lock_keystore: true
 zowe_launch_components:
 # log level for Zowe launch scripts
 zowe_launch_scripts_loglevel: 
+
+# turn config manager on or off
+zowe_use_config_manager: true

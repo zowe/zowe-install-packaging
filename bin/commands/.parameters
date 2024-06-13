@@ -4,4 +4,4 @@ trace|vv|boolean|||||Enable trace level debug mode.
 silent|s|boolean|||||Do not display messages to standard output.
 log-dir,log|l|string|||||Write logs to this directory.
 config|c|string|||||Path to Zowe configuration zowe.yaml file.
-configmgr||boolean|||||(Experimental, WIP)Enable use of configmgr capabilities.
+configmgr||boolean|||||Enable use of configmgr capabilities.

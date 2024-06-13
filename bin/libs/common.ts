@@ -9,15 +9,15 @@
   Copyright Contributors to the Zowe Project.
 */
 
-import * as std from 'std';
-import * as os from 'os';
+import * as std from 'cm_std';
+import * as os from 'cm_os';
 import * as xplatform from 'xplatform';
 
 import * as fs from './fs';
 //import * as stringlib from './string';
 import * as shell from './shell';
 import * as strftime from './strftime';
-
+import * as bufferlib from './buffer';
 declare namespace console {
   function log(...args:string[]): void;
 };
@@ -57,12 +57,27 @@ export function requireZoweYaml() {
   if (!configFiles) {
     printErrorAndExit(`Error ZWEL0108E: Zowe YAML config file is required.`);
   } else {
-    configFiles.split(',').forEach(function(file: string) {
-      //TODO parmlib
-      if (!fs.fileExists(file)) {
-        printErrorAndExit(`Error ZWEL0109E: The Zowe YAML config file ${file} does not exist.`, undefined, 109);
-      }
-    });
+    //configmgr will consume this property and error out if it doesnt like it, or not, so just let it do the error-checking
+  }
+}
+
+const BUFFER_SIZE=4096;
+function readStreamFully(fd:number):string{
+  let readBuffer = new Uint8Array(BUFFER_SIZE);
+  let fileBuffer = new bufferlib.ExpandableBuffer(BUFFER_SIZE);
+  
+  let bytesRead = 0;
+  do {
+    bytesRead = os.read(fd, readBuffer.buffer, 0, BUFFER_SIZE);
+    fileBuffer.append(readBuffer,0,bytesRead);
+  } while (bytesRead == BUFFER_SIZE);
+  // let hex = fileBuffer.dump(fileBuffer.pos);
+  // console.log("out "+hex);
+  let result = fileBuffer.getString();
+  if (result.endsWith('\n')) {
+    return result.substring(0,result.length-1);
+  } else {
+    return result;
   }
 }
 
@@ -76,14 +91,23 @@ export function getUserId(): string|undefined {
     user = std.getenv('LOGNAME');
   }
   if (!user) {
-    let out;
-    let handler = (data:string)=> {
-      out=data;
+
+    let pipeArray = os.pipe();
+    if (!pipeArray){
+      return user;
     }
-    const rc = os.exec(['whoami'],
-                       {block: true, usePath: true, out: handler});
+    if (!std.getenv('PATH')) {
+      std.setenv('PATH','/bin:.:/usr/bin');
+    }
+    const rc = os.exec(['whoami'], { block: true, usePath: true, stdout: pipeArray[1]});
+    
+    let out = readStreamFully(pipeArray[0]);
+    os.close(pipeArray[0]);
+    os.close(pipeArray[1]);
+
     if (!rc) {
-      return out;
+      user=out;
+      std.setenv('USER', user);
     }
   }
   return user;
@@ -350,6 +374,6 @@ std.setenv('ZWE_PRIVATE_DEFAULT_ZIS_USER', 'ZWESIUSR');
 std.setenv('ZWE_PRIVATE_DEFAULT_ZOWE_STC', 'ZWESLSTC');
 std.setenv('ZWE_PRIVATE_DEFAULT_ZIS_STC', 'ZWESISTC');
 std.setenv('ZWE_PRIVATE_DEFAULT_AUX_STC', 'ZWESASTC');
-std.setenv('ZWE_PRIVATE_CORE_COMPONENTS_REQUIRE_JAVA', 'gateway,discovery,api-catalog,caching-service,metrics-service,files-api,jobs-api');
+std.setenv('ZWE_PRIVATE_CORE_COMPONENTS_REQUIRE_JAVA', 'gateway,cloud-gateway,discovery,api-catalog,caching-service,metrics-service,files-api,jobs-api');
 
 std.setenv('ZWE_PRIVATE_CLI_LIBRARY_LOADED', 'true');

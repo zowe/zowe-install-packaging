@@ -15,8 +15,10 @@ print_level0_message "Install Zowe MVS data sets"
 
 ###############################
 # constants
+# keep in sync with workflows/templates/smpe-install/ZWE3ALOC.vtl
 cust_ds_list="${ZWE_PRIVATE_DS_SZWESAMP}|Zowe sample library|dsntype(library) dsorg(po) recfm(f b) lrecl(80) unit(sysallda) space(15,15) tracks
 ${ZWE_PRIVATE_DS_SZWEAUTH}|Zowe authorized load library|dsntype(library) dsorg(po) recfm(u) lrecl(0) blksize(32760) unit(sysallda) space(30,15) tracks
+${ZWE_PRIVATE_DS_SZWELOAD}|Zowe load library|dsntype(library) dsorg(po) recfm(u) lrecl(0) blksize(32760) unit(sysallda) space(30,15) tracks
 ${ZWE_PRIVATE_DS_SZWEEXEC}|Zowe executable utilities library|dsntype(library) dsorg(po) recfm(f b) lrecl(80) unit(sysallda) space(15,15) tracks"
 
 ###############################
@@ -100,6 +102,16 @@ else
     print_error_and_exit "Error ZWEL0111E: Command aborts with error." "" 111
   fi
 
+  # copy in configmgr rexx edition
+  cd "${ZWE_zowe_runtimeDirectory}/files/${ZWE_PRIVATE_DS_SZWELOAD}"
+  for mb in $(find . -type f); do
+    print_message "Copy files/${ZWE_PRIVATE_DS_SZWELOAD}/$(basename ${mb}) to ${prefix}.${ZWE_PRIVATE_DS_SZWELOAD}"
+    copy_to_data_set "${mb}" "${prefix}.${ZWE_PRIVATE_DS_SZWELOAD}" "" "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITE}"
+    if [ $? -ne 0 ]; then
+      print_error_and_exit "Error ZWEL0111E: Command aborts with error." "" 111
+    fi
+  done
+
   # FIXME: move these parts to zss commands.install?
   # FIXME: ZWESIPRG is in zowe-install-packaging
   cd "${ZWE_zowe_runtimeDirectory}/components/zss"
@@ -116,7 +128,7 @@ else
       print_error_and_exit "Error ZWEL0111E: Command aborts with error." "" 111
     fi
   done
-  zss_loadlib="ZWESIS01 ZWESAUX"
+  zss_loadlib="ZWESIS01 ZWESAUX ZWESISDL"
   for mb in ${zss_loadlib}; do
     print_message "Copy components/zss/LOADLIB/${mb} to ${prefix}.${ZWE_PRIVATE_DS_SZWEAUTH}"
     copy_to_data_set "LOADLIB/${mb}" "${prefix}.${ZWE_PRIVATE_DS_SZWEAUTH}" "-X" "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITE}"

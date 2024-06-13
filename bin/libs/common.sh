@@ -31,12 +31,16 @@ check_configmgr_enabled() {
     if [[ ${ZWE_CLI_PARAMETER_CONFIG} == "FILE("* ]]
     then
       echo "true"
-    elif [[ ${ZWE_CLI_PARAMETER_CONFIG} == "LIB("* ]]
+    elif [[ ${ZWE_CLI_PARAMETER_CONFIG} == "PARMLIB("* ]]
     then
       echo "true"
     else
       USE_CONFIGMGR=$(shell_read_yaml_config "${ZWE_CLI_PARAMETER_CONFIG}" 'zowe' 'useConfigmgr')
-      echo $USE_CONFIGMGR  
+      if [ "${USE_CONFIGMGR}" = "false" ]; then
+        echo "false"
+      else
+        echo "true"
+      fi
     fi
   fi
 }

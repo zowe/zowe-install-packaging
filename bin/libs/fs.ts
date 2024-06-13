@@ -9,8 +9,8 @@
   Copyright Contributors to the Zowe Project.
 */
 
-import * as std from 'std';
-import * as os from 'os';
+import * as std from 'cm_std';
+import * as os from 'cm_os';
 import * as zos from 'zos';
 
 import * as common from './common';
@@ -66,11 +66,31 @@ export function resolvePath(...parts:string[]): string {
 }
 
 export function mkdirp(path:string, mode?: number): number {
-  const parts = path.split('/');
-  let dir = '/';
-  for (let i = 0; i < parts.length; i++) {
-    dir+=parts[i]+'/';
-    let rc = os.mkdir(dir, mode ? mode : 0o777);
+  let paths: string[] = [];
+  let parts = path.split('/');
+  let currentPath = '';
+  parts.forEach((part:string)=> {
+    currentPath+='/'+part;
+    if (currentPath.startsWith('//')) {
+      currentPath = currentPath.substring(1);
+    }
+    paths.push(currentPath);
+  });
+
+  let firstMissingDir: number;
+  for (let i = paths.length-1; i > -1; i--) {
+    if (directoryExists(paths[i])) {
+      firstMissingDir = i+1;
+      break;
+    }
+  }
+
+  common.printDebug('paths='+JSON.stringify(paths));
+  if (firstMissingDir >= paths.length) { return 0; }
+  common.printDebug('firstMissingDir='+paths[firstMissingDir]);
+
+  for (let i = firstMissingDir; i < paths.length; i++) {
+    let rc = os.mkdir(paths[i], mode ? mode : 0o777);
     if (rc && (rc!=(0-std.Error.EEXIST))) {
       return rc;
     }
@@ -87,8 +107,9 @@ export function cpr(from: string, to: string): void {
   shell.execSync('cp', `-r`, from, to);
 }
 
-export function rmrf(path: string): void {
-  shell.execSync('rm', `-rf`, path);
+export function rmrf(path: string): number {
+  const result = shell.execSync('rm', `-rf`, path);
+  return result.rc;
 }
 
 export function appendToFile(path:string, content:string):void {
@@ -223,23 +244,28 @@ export function pathHasPermissions(path: string, mode: number): boolean {
   }
 }
 
-export function convertToAbsolutePath(file: string): string|undefined {
-  const result = os.realpath(file);
+export function convertToAbsolutePath(path: string): string|undefined {
+  const result = os.realpath(path);
   if (!result[1]) {
     return result[0];
   } else {
-    common.printError(`Could not convert ${file} to absolute path, err=${result[1]}`);
+    common.printError(`Could not convert ${path} to absolute path, err=${result[1]}`);
   }
   return undefined;
 }
 
 export function getTmpDir(): string {
-  let tmp = std.getenv('TMPDIR');
-  if (!tmp) {
-    tmp = std.getenv('TMP');
-  }
-  if (!tmp) {
-    tmp = '/tmp';
+  let tmp = '';
+  common.printDebug(`  > Check if either TMPDIR or TMP points to writable directory, else try '/tmp' directory`);
+  for (const dir of [std.getenv('TMPDIR'), std.getenv('TMP'), '/tmp']) {
+    if (dir) {
+      if (isDirectoryAccessible(dir)) {
+        tmp = dir;
+        break;
+      } else {
+        common.printErrorAndExit(`Error ZWEL0110E: Doesn't have write permission on ${dir} directory.`, undefined, 110);
+      }
+    }
   }
   return tmp;
 }
@@ -253,7 +279,7 @@ export function createTmpFile(prefix: string = 'zwe', tmpdir?: string): string|u
   }
   common.printTrace(`  > create_tmp_file on ${tmpdir}`);
   while (true) {
-    let file = `${tmpdir}/${prefix}-${std.getenv('random')}`;
+    let file = `${tmpdir}/${prefix}-${Math.floor(Math.random()*10000)}`;
     common.printTrace(`    - test ${file}`);
     if (!pathExists(file)) {
       common.printTrace(`    - good`);

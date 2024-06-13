@@ -1,0 +1,4 @@
+Runs schema validation upon given zowe yaml configuration files.
+This command can be used to prove that the zowe configuration is good before starting zowe.
+It requires that zowe.useConfigmgr=true or --configmgr are set.
+This command can optionally validate enabled components or all components, but otherwise would only validate the zowe core configuration.

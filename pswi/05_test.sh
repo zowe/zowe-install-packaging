@@ -8,6 +8,7 @@ echo ""
 echo "Script for testing a Portable Software Instance..."
 echo "Host                   :" $ZOSMF_URL
 echo "Port                   :" $ZOSMF_PORT
+echo "SSH Port               :" $ZZOW_SSH_PORT
 echo "PSWI name              :" $PSWI
 echo "z/OSMF system          :" $ZOSMF_SYSTEM
 echo "Test HLQ               :" $TEST_HLQ
@@ -33,7 +34,7 @@ sh scripts/tmp_mounts.sh "${TMP_ZFS}" "${TMP_MOUNT}"
 if [ $? -gt 0 ];then exit -1;fi 
 
 cd ../.pax
-sshpass -p${ZOSMF_PASS} sftp -o BatchMode=no -o StrictHostKeyChecking=no -o PubkeyAuthentication=no -b - -P 22 ${ZOSMF_USER}@${HOST} << EOF
+sshpass -p${ZOSMF_PASS} sftp -o HostKeyAlgorithms=+ssh-rsa -o BatchMode=no -o StrictHostKeyChecking=no -o PubkeyAuthentication=no -b - -P ${ZZOW_SSH_PORT} ${ZOSMF_USER}@${HOST} << EOF
 cd ${TMP_MOUNT}
 put ${SWI_NAME}.pax.Z
 EOF

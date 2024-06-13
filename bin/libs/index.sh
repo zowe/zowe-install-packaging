@@ -17,16 +17,17 @@ if [ -z "${ZWE_zowe_runtimeDirectory}" ]; then
 fi
 
 export ZWE_PRIVATE_DS_SZWEAUTH=SZWEAUTH
-export ZWE_PRIVATE_DS_SZWEPLUG=SZWEPLUG
+export ZWE_PRIVATE_DS_SZWEPLUG=ZWESAPL
 export ZWE_PRIVATE_DS_SZWESAMP=SZWESAMP
 export ZWE_PRIVATE_DS_SZWEEXEC=SZWEEXEC
+export ZWE_PRIVATE_DS_SZWELOAD=SZWELOAD
 export ZWE_PRIVATE_DEFAULT_ADMIN_GROUP=ZWEADMIN
 export ZWE_PRIVATE_DEFAULT_ZOWE_USER=ZWESVUSR
 export ZWE_PRIVATE_DEFAULT_ZIS_USER=ZWESIUSR
 export ZWE_PRIVATE_DEFAULT_ZOWE_STC=ZWESLSTC
 export ZWE_PRIVATE_DEFAULT_ZIS_STC=ZWESISTC
 export ZWE_PRIVATE_DEFAULT_AUX_STC=ZWESASTC
-export ZWE_PRIVATE_CORE_COMPONENTS_REQUIRE_JAVA=gateway,discovery,api-catalog,caching-service,metrics-service,files-api,jobs-api
+export ZWE_PRIVATE_CORE_COMPONENTS_REQUIRE_JAVA=gateway,cloud-gateway,discovery,api-catalog,caching-service,metrics-service,files-api,jobs-api
 
 . "${ZWE_zowe_runtimeDirectory}/bin/libs/certificate.sh"
 . "${ZWE_zowe_runtimeDirectory}/bin/libs/container.sh"

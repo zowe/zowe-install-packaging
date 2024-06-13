@@ -4,4 +4,4 @@ FILE_LOCAL=$1
 FILE_REMOTE=$2
 
 echo "SCP $FILE_LOCAL ==> $FILE_REMOTE"
-sshpass -p "{{ hostvars[inventory_hostname].ansible_password }}" scp -P {{ hostvars[inventory_hostname].ansible_port | default('22') }} $FILE_LOCAL {{ hostvars[inventory_hostname].ansible_user }}@{{ hostvars[inventory_hostname].ansible_ssh_host }}:$FILE_REMOTE
+sshpass -p "{{ hostvars[inventory_hostname].ansible_password }}" scp -oHostKeyAlgorithms=+ssh-rsa -P {{ hostvars[inventory_hostname].ansible_port | default('22') }} $FILE_LOCAL {{ hostvars[inventory_hostname].ansible_user }}@{{ hostvars[inventory_hostname].ansible_ssh_host }}:$FILE_REMOTE

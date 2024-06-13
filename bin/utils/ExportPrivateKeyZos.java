@@ -26,7 +26,7 @@ public class ExportPrivateKeyZos {
 
     public void export() throws Exception {
         KeyStore keystore = KeyStore.getInstance(keyStoreType);
-        if ("JCERACFKS".equalsIgnoreCase(keyStoreType)) {
+        if ((keyStoreType != null) && keyStoreType.toUpperCase().startsWith("JCE") && keyStoreType.toUpperCase().endsWith("KS")) {
             String splits[] = keystoreName.replaceFirst("safkeyring://", "").split("/");
             keystore.load(new RACFInputStream(splits[0], splits[1], keyStorePassword), keyStorePassword);
 
