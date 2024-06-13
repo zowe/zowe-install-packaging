@@ -64,6 +64,17 @@
     file_upload_hashcheck: false
   loop: "{{ zowe_ptf_install_jcls }}"
 
+# ============================================================================
+# Convert uploaded JCLs in remote workspace if necessary
+- name: (Optional) convert PTF installation JCLs
+  vars:
+    filename: "{{ item }}.jcl"
+  loop: "{{ zowe_ptf_install_jcls }}"
+  when: convert_upload|default(False)
+  raw: iconv -f ISO8859-1 -t IBM-1047 "{{ work_dir_remote }}/{{ filename }}" > "{{ work_dir_remote }}/{{ filename }}.ebcdic" && mv  "{{ work_dir_remote }}/{{ filename }}.ebcdic"  "{{ work_dir_remote }}/{{ filename }}"
+
+
+
 - name: Fix JCLs is we only have 1 PTF
   when: zowe_smpe_ptf_2 == ""
   block:
@@ -129,12 +140,12 @@
     mode: 0700
   delegate_to: localhost
 
-- import_role:
-    name: zos
-    tasks_from: upload_and_run_script
-  vars:
-    upload_and_run_script_filename: install-SMPE-SYSMOD.sh
-    upload_and_run_script_parameters: "\"{{ zowe_smpe_hlq_dsn }}\" \"{{ zowe_smpe_hlq_csi }}\" \"{{ (zowe_smpe_dir_prefix is regex(\"/$\")) | ternary(zowe_smpe_dir_prefix, zowe_smpe_dir_prefix + \"/\") }}\" \"{{ work_dir_remote }}\" \"{{ zowe_smpe_fmid }}\" \"{{ zowe_smpe_ptf }}\" \"{{ zowe_smpe_ptf_2 }}\" \"{{ zowe_smpe_volser }}\" install"
+#- import_role:
+#    name: zos
+#    tasks_from: upload_and_run_script
+#  vars:
+#    upload_and_run_script_filename: install-SMPE-SYSMOD.sh
+#    upload_and_run_script_parameters: "\"{{ zowe_smpe_hlq_dsn }}\" \"{{ zowe_smpe_hlq_csi }}\" \"{{ (zowe_smpe_dir_prefix is regex(\"/$\")) | ternary(zowe_smpe_dir_prefix, zowe_smpe_dir_prefix + \"/\") }}\" \"{{ work_dir_remote }}\" \"{{ zowe_smpe_fmid }}\" \"{{ zowe_smpe_ptf }}\" \"{{ zowe_smpe_ptf_2 }}\" \"{{ zowe_smpe_volser }}\" install"
 
 - name: Check if the first PTF is installed properly
   block:

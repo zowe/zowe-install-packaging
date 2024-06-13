@@ -53,6 +53,10 @@
     file_upload_method: scp
     file_upload_hashcheck: false
 
+- name: Convert ascii to ebcdic
+  when: convert_upload|default(False)
+  raw: iconv -f ISO8859-1 -t IBM-1047 "{{ work_dir_remote }}/LSTFMID.jcl" > "{{ work_dir_remote }}/LSTFMID.jcl.ebcdic" && mv  "{{ work_dir_remote }}/LSTFMID.jcl.ebcdic"  "{{ work_dir_remote }}/LSTFMID.jcl"
+
 # ============================================================================
 # Run LSTFMID.jcl
 - name: Run LSTFMID.jcl
