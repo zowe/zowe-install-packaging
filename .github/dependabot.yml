@@ -1,0 +1,22 @@
+version: 2
+
+updates:
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: weekly
+    groups:
+      all-version-dependencies:
+        applies-to: version-updates
+        patterns:
+          - "*"
+        update-types:
+          - "patch"
+          - "minor"
+      all-security-minorpatch:
+        applies-to: security-updates  
+        patterns:
+          - "*"
+        update-types:
+          - "patch"
+          - "minor"
