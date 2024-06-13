@@ -10,6 +10,9 @@ updates:
         applies-to: version-updates
         patterns:
           - "*"
+        update-types:
+          - "patch"
+          - "minor"
       all-security-minorpatch:
         applies-to: security-updates  
         patterns:
