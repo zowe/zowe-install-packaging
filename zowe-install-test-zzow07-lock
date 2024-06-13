@@ -1,1 +1,15 @@
-""
+{
+  "lockAcquiredTime": "Thu Jun 13 2024 17:07:15 GMT+0000 (Coordinated Universal Time)",
+  "uid": "1718298435232503617",
+  "repository": {
+    "owner": "zowe",
+    "repo": "zowe-install-packaging"
+  },
+  "branch": "user/markackert/snyk-patch",
+  "workflow": "Zowe CICD Integration Tests",
+  "job": "cicd-test",
+  "actor": "zowe-robot",
+  "runId": 9503794537,
+  "runNumber": 4746,
+  "link": "https://github.com/zowe/zowe-install-packaging/actions/runs/9503794537"
+}
