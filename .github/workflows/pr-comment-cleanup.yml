@@ -49,7 +49,7 @@ jobs:
           const comments =  await github.rest.issues.listComments({
             owner: 'zowe',
             repo: 'zowe-install-packaging',
-            issue_number: '3812',
+            issue_number: '${{ github.event.inputs.pr-number }}',
           }).then((resp) => {
             return resp.data;
           });
