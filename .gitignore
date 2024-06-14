@@ -3,6 +3,8 @@ tmp/
 .vscode/
 .pytest_cache/
 *.pyc
+*.iml
+.idea
 
 # emacs save files
 *~

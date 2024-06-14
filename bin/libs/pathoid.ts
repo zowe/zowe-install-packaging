@@ -9,7 +9,7 @@
   Copyright Contributors to the Zowe Project.
 */
 
-import * as os from 'os';
+import * as os from 'cm_os';
 import * as xplatform from 'xplatform';
 
 declare namespace console {

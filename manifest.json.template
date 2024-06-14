@@ -1,6 +1,6 @@
 {
   "name": "Zowe",
-  "version": "2.8.0",
+  "version": "2.16.0",
   "description": "Zowe is an open source project created to host technologies that benefit the Z platform from all members of the Z community (Integrated Software Vendors, System Integrators and z/OS consumers). Zowe, like Mac or Windows, comes with a set of APIs and OS capabilities that applications build on and also includes some applications out of the box. Zowe offers modern interfaces to interact with z/OS and allows you to work with z/OS in a way that is similar to what you experience on cloud platforms today. You can use these interfaces as delivered or through plug-ins and extensions that are created by clients or third-party vendors.",
   "license": "EPL-2.0",
   "homepage": "https://zowe.org",
@@ -97,7 +97,7 @@
       "exclusions": ["*PR*.zip"]
     },
     "org.zowe.apiml.sdk.common-java-lib-package": {
-      "version": "~2.0.0-SNAPSHOT",
+      "version": "^2.0.0-SNAPSHOT",
       "artifact": "common-java-lib-*.zip",
       "exclusions": ["*PR*.zip"]
     },
@@ -111,16 +111,20 @@
       "artifact": "cloud-gateway-*.zip",
       "exclusions": ["*PR*.zip"]
     },
+    "org.zowe.getesm": {
+      "version": "^2.0.0-V2.X-STAGING",
+      "artifact": "*.pax"
+    },
     "org.zowe.configmgr": {
-      "version": "~0.4.2-v2.x_staging",
+      "version": "^2.0.0-V2.X-STAGING",
       "artifact": "*.pax"
     },
     "org.zowe.configmgr-rexx": {
-      "version": "~0.4.2-V2.X-STAGING",
+      "version": "^2.0.0-V2.X-STAGING",
       "artifact": "*.pax"
     },
     "org.zowe.launcher": {
-      "version": "~2.0.8-SNAPSHOT"
+      "version": "^2.0.0-SNAPSHOT"
     },
     "org.zowe.keyring-utilities": {
       "version": "1.0.4",
@@ -138,14 +142,7 @@
     }
   },
   "sourceDependencies": [
-    {
-      "componentGroup": "Imperative CLI Framework for Zowe",
-      "entries": [{
-        "repository": "imperative",
-        "tag": "master",
-        "destinations": ["Zowe CLI Package"]
-      }]
-    }, {
+   {
       "componentGroup": "Zowe API Mediation Layer",
       "entries": [{
         "repository": "api-layer",
@@ -277,7 +274,7 @@
       "componentGroup": "Zowe Desktop Eclipse Orion-based React Editor",
       "entries": [{
         "repository": "orion-editor-component",
-        "tag": "master",
+        "tag": "v2.x/master",
         "destinations": ["Zowe PAX"]
       }]
     }, {
@@ -382,8 +379,8 @@
     {
       "componentGroup": "Zowe Visual Studio Code Extension",
       "entries": [{
-        "repository": "vscode-extension-for-zowe",
-        "tag": "master",
+        "repository": "zowe-explorer-vscode",
+        "tag": "main",
         "destinations": ["Visual Studio Code Marketplace"]
       }]
     },
@@ -465,17 +462,17 @@
     "base": {
         "registry": "zowe-docker-release.jfrog.io",
         "name": "ompzowe/base",
-        "tag" : "2.0-ubuntu"
+        "tag" : "2-ubuntu"
     },
     "base-jdk": {
         "registry": "zowe-docker-release.jfrog.io",
         "name": "ompzowe/base-jdk",
-        "tag" : "2.0-ubuntu"
+        "tag" : "2-ubuntu"
     },
     "base-node": {
         "registry": "zowe-docker-release.jfrog.io",
         "name": "ompzowe/base-node",
-        "tag" : "2.0-ubuntu"
+        "tag" : "2-ubuntu"
     }
   },
   "dependencyDecisions": {

@@ -9,6 +9,6 @@
   Copyright Contributors to the Zowe Project.
 */
 
-import * as std from 'std';
+import * as std from 'cm_std';
 import * as index from './index';
 index.execute(std.getenv('ZWE_CLI_PARAMETER_COMPONENT_NAME'));

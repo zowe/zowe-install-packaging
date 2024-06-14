@@ -10,5 +10,5 @@
 */
 
 import * as index from './index';
-import * as std from 'std';
+import * as std from 'cm_std';
 index.execute(std.getenv("ZWE_CLI_PARAMETER_COMPONENT"), false);

@@ -9,8 +9,8 @@
   Copyright Contributors to the Zowe Project.
 */
 
-import * as std from 'std';
-import * as os from 'os';
+import * as std from 'cm_std';
+import * as os from 'cm_os';
 
 export const ENCODING_NAME_TO_CCSID:any = {
   'IBM-037': 37,
@@ -344,3 +344,16 @@ export function itemInList(stringList: string, stringToFind?: string, separator:
   }
   return stringList.split(separator).includes(stringToFind);
 }
+
+export function escapeDollar(str: string): string | undefined {
+  if (str === null || str === undefined)
+    return undefined;
+  return str.replace(/[$]/g, '\\$&');
+}
+
+export function escapeRegExp(str: string): string | undefined {
+  if (str === null || str === undefined)
+      return undefined;
+  return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+

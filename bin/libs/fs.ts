@@ -9,8 +9,8 @@
   Copyright Contributors to the Zowe Project.
 */
 
-import * as std from 'std';
-import * as os from 'os';
+import * as std from 'cm_std';
+import * as os from 'cm_os';
 import * as zos from 'zos';
 
 import * as common from './common';
@@ -85,9 +85,9 @@ export function mkdirp(path:string, mode?: number): number {
     }
   }
 
-  common.printMessage('paths='+JSON.stringify(paths));
+  common.printDebug('paths='+JSON.stringify(paths));
   if (firstMissingDir >= paths.length) { return 0; }
-  common.printMessage('firstMissingDir='+paths[firstMissingDir]);
+  common.printDebug('firstMissingDir='+paths[firstMissingDir]);
 
   for (let i = firstMissingDir; i < paths.length; i++) {
     let rc = os.mkdir(paths[i], mode ? mode : 0o777);

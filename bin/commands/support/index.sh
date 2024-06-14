@@ -11,6 +11,13 @@
 # Copyright Contributors to the Zowe Project.
 #######################################################################
 
+print_message_file() {
+  msg="${1}"
+  out_file="${2}"
+  print_message "- ${msg}"
+  echo "${msg}" >> "${out_file}"
+}
+
 print_level0_message "Collect information for Zowe support"
 
 ###############################
@@ -43,17 +50,23 @@ print_debug "Temporary directory created: ${tmp_dir}"
 print_message
 
 ###############################
-print_level1_message "Collecting version of z/OS, Java, NodeJS"
-VERSION_FILE="${tmp_dir}/version_output"
+print_level1_message "Collecting various environment information"
+ENVIRONMENT_FILE="${tmp_dir}/environment_output"
+echo "[Environment information]" > "${ENVIRONMENT_FILE}"
 ZOS_VERSION=`operator_command "D IPLINFO" | grep -i release | xargs`
-print_message "- z/OS: ${ZOS_VERSION}"
+if [ -z "${ZOS_VERSION}" ]; then
+  ZOS_VERSION=`sysvar SYSOSLVL`
+fi
 JAVA_VERSION=`${JAVA_HOME}/bin/java -version 2>&1 | head -n 1`
-print_message "- Java: ${JAVA_VERSION}"
 NODE_VERSION=`${NODE_HOME}/bin/node --version`
-print_message "- NodeJS: ${NODE_VERSION}"
-echo "z/OS version: ${ZOS_VERSION}" > "${VERSION_FILE}"
-echo "Java version: ${JAVA_VERSION}" >> "${VERSION_FILE}"
-echo "NodeJS version: ${NODE_VERSION}" >> "${VERSION_FILE}"
+ESM=`"${ZWE_zowe_runtimeDirectory}/bin/utils/getesm"`
+CEE_OPTIONS=`tsocmd "OMVS RUNOPTS('RPTOPTS(ON)')" 2>&1`
+
+print_message_file "z/OS version: ${ZOS_VERSION}" "${ENVIRONMENT_FILE}"
+print_message_file "Java version: ${JAVA_VERSION}" "${ENVIRONMENT_FILE}"
+print_message_file "NodeJS version: ${NODE_VERSION}" "${ENVIRONMENT_FILE}"
+print_message_file "External Security Manager: ${ESM}" "${ENVIRONMENT_FILE}"
+print_message_file "CEE Runtime Options: ${CEE_OPTIONS}" "${ENVIRONMENT_FILE}"
 print_message
 
 ###############################
