@@ -150,6 +150,14 @@ export function execute(componentFile: string, autoEncoding?: string, upgrade?: 
     common.printErrorAndExit(`Error ZWEL0167E: Cannot find component name from ${componentFile} package manifest`, undefined, 167);
   }
   common.printDebug(`- Component name found as ${componentName}`);
+
+  // If the component has appfw plugins, their validity should be checked against appfw plugin schema.
+  //   If invalid, the installation will exit with an error message.
+  if (manifest.appfwPlugins) {
+    manifest.appfwPlugins.forEach((appfwPlugin: {path: string})=> {
+      component.getPluginDefinition(pathoid.resolve(tmpDir, appfwPlugin.path));
+    });
+  }
   
   const destinationDir = pathoid.resolve(targetDir, componentName);
   const bkpDir = pathoid.resolve(targetDir, `${componentName}_zwebkp`);
