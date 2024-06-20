@@ -1,6 +1,6 @@
 Init Zowe instance based on zowe.yaml configuration.
 
-You can find an example zowe.yaml in Zowe runtime directory folder.
+You can find an `example-zowe.yaml` in Zowe runtime directory folder.
 
 This command will run these sub-commands in sequence:
 

@@ -22,6 +22,6 @@
 //RMPDSE EXEC PGM=IKJEFT01
 //SYSTSPRT DD SYSOUT=A
 //SYSTSIN DD *
-DELETE '{zowe.setup.dataset.authLoadLib}' +
+DELETE '{zowe.setup.dataset.authLoadlib}' +
        SCRATCH NONVSAM
 //*

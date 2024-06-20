@@ -1,0 +1,3 @@
+zwe init generate --config /path/to/zowe.yaml
+
+zwe init generate -c 'PARMLIB(ZOWE.PARMLIB(ZWEYAML))' --dry-run

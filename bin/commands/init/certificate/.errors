@@ -1,2 +1,4 @@
 ZWEL0157E|157|%s (%s) is not defined in Zowe YAML configuration file.
 ZWEL0164E|164|Value of %s (%s) defined in Zowe YAML configuration file is invalid. Valid values are %s.
+ZWEL0174E|174|Failed to generate certificate in Zowe keyring "%s/%s".
+ZWEL0319E|319|zowe.setup.dataset.jcllib does not exist, cannot run. Run 'zwe init', 'zwe init generate', or submit JCL ${prefix}.SZWESAMP(ZWEGENER) before running this command.

@@ -6,7 +6,7 @@ already prepared during SMPE install.
 
 These Zowe YAML configurations showing with sample values are used:
 
-```
+```yaml
 zowe:
   setup:
     dataset:

@@ -1,10 +1,13 @@
-This command will run ZWESECUR jcl.
+This command will run jcl based on the security product:
+- `ZWEIACF` for ACF2
+- `ZWEIRAC` for RACF
+- `ZWEITSS` for Top Secret
 
 NOTE: You require proper permission to run security configuration.
 
 These Zowe YAML configurations showing with sample values are used:
 
-```
+```yaml
 zowe:
   setup:
     dataset:

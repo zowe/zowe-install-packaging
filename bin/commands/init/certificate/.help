@@ -7,7 +7,7 @@ be written back to your Zowe YAML configuration file:
 
 These Zowe YAML configurations showing with sample values are used:
 
-```
+```yaml
 zowe:
   setup:
     dataset:
