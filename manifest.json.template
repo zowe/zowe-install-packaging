@@ -73,27 +73,27 @@
       "artifact": "explorer-ip*.pax"
     },
     "org.zowe.apiml.api-catalog-package": {
-      "version": "2.16.0",
+      "version": "2.16.2",
       "artifact": "api-catalog*.zip"
     },
     "org.zowe.apiml.discovery-package": {
-      "version": "2.16.0",
+      "version": "2.16.2",
       "artifact": "discovery*.zip"
     },
     "org.zowe.apiml.gateway-package": {
-      "version": "2.16.0",
+      "version": "2.16.2",
       "artifact": "gateway*.zip"
     },
     "org.zowe.apiml.caching-service-package": {
-      "version": "2.16.0",
+      "version": "2.16.2",
       "artifact": "caching-service*.zip"
     },
     "org.zowe.apiml.metrics-service-package": {
-      "version": "2.16.0",
+      "version": "2.16.2",
       "artifact": "metrics-service*.zip"
     },
     "org.zowe.apiml.apiml-common-lib-package": {
-      "version": "2.16.0",
+      "version": "2.16.2",
       "artifact": "apiml-common-lib-*.zip"
     },
     "org.zowe.apiml.sdk.common-java-lib-package": {
@@ -101,27 +101,27 @@
       "artifact": "common-java-lib-*.zip"
     },
     "org.zowe.apiml.sdk.apiml-sample-extension-package": {
-      "version": "2.16.0",
+      "version": "2.16.2",
       "artifact": "apiml-sample-extension-*.zip"
     },
     "org.zowe.apiml.cloud-gateway-package": {
-      "version": "2.16.0",
+      "version": "2.16.2",
       "artifact": "cloud-gateway-*.zip"
     },
     "org.zowe.configmgr-rexx": {
       "version": "2.16.0-V2.X-RC",
       "repository": "libs-snapshot-local",
-      "artifact": "configmgr-rexx-2.16.0-2024050253.pax"
+      "artifact": "configmgr-rexx-2.16.0-2024052150.pax"
     },
 	"org.zowe.getesm": {
       "version": "2.16.0-V2.X-RC",
       "repository": "libs-snapshot-local",
-      "artifact": "getesm-2.16.0-2024050250.pax"
+      "artifact": "getesm-2.16.0-2024051552.pax"
     },
     "org.zowe.configmgr": {
       "version": "2.16.0-V2.X-RC",
       "repository": "libs-snapshot-local",
-      "artifact": "configmgr-2.16.0-2024051014.pax"
+      "artifact": "configmgr-2.16.0-2024052151.pax"
     },
     "org.zowe.launcher": {
       "version": "^2.15.0-PR-115",
@@ -147,7 +147,7 @@
       "componentGroup": "Zowe API Mediation Layer",
       "entries": [{
         "repository": "api-layer",
-        "tag": "v2.16.0",
+        "tag": "v2.16.2",
         "destinations": ["Zowe PAX"]
       }]
     }, {
@@ -390,7 +390,7 @@
       "componentGroup": "Configmgr",
       "entries": [{
         "repository": "zowe-common-c",
-        "tag": "099a869",
+        "tag": "configmgr-v2.16.0-RC4",
         "destinations": ["Zowe PAX"]
       }]
     }
@@ -404,23 +404,23 @@
     "api-catalog": {
       "registry": "zowe-docker-release.jfrog.io",
       "name": "ompzowe/api-catalog-services",
-      "tag" : "2.16.0-ubuntu"
+      "tag" : "2.16.2-ubuntu"
     },
     "caching": {
       "registry": "zowe-docker-release.jfrog.io",
       "name": "ompzowe/caching-service",
-      "tag" : "2.16.0-ubuntu"
+      "tag" : "2.16.2-ubuntu"
     },
     "discovery": {
       "kind": "statefulset",
       "registry": "zowe-docker-release.jfrog.io",
       "name": "ompzowe/discovery-service",
-      "tag" : "2.16.0-ubuntu"
+      "tag" : "2.16.2-ubuntu"
     },
     "gateway": {
       "registry": "zowe-docker-release.jfrog.io",
       "name": "ompzowe/gateway-service",
-      "tag" : "2.16.0-ubuntu"
+      "tag" : "2.16.2-ubuntu"
     },
     "app-server": {
       "registry": "zowe-docker-release.jfrog.io",
