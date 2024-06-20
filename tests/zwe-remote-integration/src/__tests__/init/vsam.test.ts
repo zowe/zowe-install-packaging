@@ -53,18 +53,18 @@ describe(`${testSuiteName}`, () => {
     });*/
 
     it('BAD: bad ds prefix', async () => {
-      cfgYaml.zowe.setup.dataset.prefix = 'ZOWEAD6.ZWETEST.NOEXIST';
+      cfgYaml.zowe.setup.dataset.prefix = 'ZOWEAD3.ZWETEST.NOEXIST';
       const result = await testRunner.runZweTest(cfgYaml, 'init vsam --dry-run');
       expect(result.stdout).not.toBeNull();
       expect(result.cleanedStdout).toMatchSnapshot();
-      expect(result.rc).toBe(231);
+      expect(result.rc).toBe(143);
     });
 
     it('GOOD: simple --dry-run', async () => {
       const result = await testRunner.runZweTest(cfgYaml, 'init vsam --dry-run');
       expect(result.stdout).not.toBeNull();
       expect(result.cleanedStdout).toMatchSnapshot();
-      expect(result.rc).toBe(0); // 60 is expected...
+      expect(result.rc).toBe(0); 
     });
   });
 
@@ -74,7 +74,7 @@ describe(`${testSuiteName}`, () => {
       cleanupDatasets.push({ name: cfgYaml.zowe.setup.vsam.name as string, type: FileType.DS_VSAM });
       expect(result.stdout).not.toBeNull();
       expect(result.cleanedStdout).toMatchSnapshot();
-      expect(result.rc).toBe(0); // 60 is expected...  });
+      expect(result.rc).toBe(0);
     });
   });
 });

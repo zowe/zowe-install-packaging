@@ -51,7 +51,7 @@ describe(`${testSuiteName}`, () => {
 
     /*
     it('cert bad ds prefix', async () => {
-      cfgYaml.zowe.setup.dataset.prefix = 'ZOWEAD6.ZWETEST.NOEXIST';
+      cfgYaml.zowe.setup.dataset.prefix = 'ZOWEAD3.ZWETEST.NOEXIST';
       const result = await testRunner.runZweTest(cfgYaml, 'init certificate --dry-run');
       expect(result.stdout).not.toBeNull();
       expect(result.cleanedStdout).toMatchSnapshot();

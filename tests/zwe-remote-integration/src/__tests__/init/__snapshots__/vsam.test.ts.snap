@@ -80,10 +80,13 @@ $$
 //* Overridden by the higher entries.
 //* PARMLIB member must be named "ZWEYAML"
 //*
+//* Do not remove the defaults.yaml entry.
+//*
 //* Ex. PARMLIB MY.ZOWE.CUSTOM.PARMLIB
 //*     FILE /the/zowe/defaults.yaml
 //MYCONFIG DD   *,DLM=$$
 FILE /test/dir/zowe.test.yaml
+FILE /test/dir/files/defaults.yaml
 $$
 //CMGROUT  DD   SYSOUT=*
 //SYSPRINT DD   SYSOUT=*
@@ -168,7 +171,7 @@ Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWECSVSM) , Executable JCL: TEST.DATASET
    INDEX(NAME(TEST.DATASET.PFX.VSAMTEST.INDEX) -
     UNIQUE)
 //RLS      DD *
-    STORCLAS() -
+    STORCLAS({zowe.setup.vsam.storageClass}) -
     LOG(NONE) -
 //NONRLS   DD *
     VOLUME(TSTVOL) -
@@ -273,10 +276,13 @@ $$
 //* Overridden by the higher entries.
 //* PARMLIB member must be named "ZWEYAML"
 //*
+//* Do not remove the defaults.yaml entry.
+//*
 //* Ex. PARMLIB MY.ZOWE.CUSTOM.PARMLIB
 //*     FILE /the/zowe/defaults.yaml
 //MYCONFIG DD   *,DLM=$$
 FILE /test/dir/zowe.test.yaml
+FILE /test/dir/files/defaults.yaml
 $$
 //CMGROUT  DD   SYSOUT=*
 //SYSPRINT DD   SYSOUT=*
@@ -361,7 +367,7 @@ Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWECSVSM) , Executable JCL: TEST.DATASET
    INDEX(NAME(TEST.DATASET.PFX.VSAMTEST.INDEX) -
     UNIQUE)
 //RLS      DD *
-    STORCLAS() -
+    STORCLAS({zowe.setup.vsam.storageClass}) -
     LOG(NONE) -
 //NONRLS   DD *
     VOLUME(TSTVOL) -

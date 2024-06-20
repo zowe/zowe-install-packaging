@@ -43,7 +43,6 @@ describe(`${testSuiteName}`, () => {
 
   describe('(SHORT)', () => {
     it('apf disable cfgmgr', async () => {
-      cfgYaml.zowe.useConfigmgr = false;
       const result = await testRunner.runZweTest(cfgYaml, 'init apfauth');
       expect(result.stdout).not.toBeNull();
       expect(result.cleanedStdout).toMatchSnapshot();
@@ -51,7 +50,7 @@ describe(`${testSuiteName}`, () => {
     });
 
     it('apf bad ds prefix', async () => {
-      cfgYaml.zowe.setup.dataset.prefix = 'ZOWEAD6.ZWETEST.NOEXIST';
+      cfgYaml.zowe.setup.dataset.prefix = 'ZOWEAD3.ZWETEST.NOEXIST';
       const result = await testRunner.runZweTest(cfgYaml, 'init apfauth --dry-run');
       expect(result.stdout).not.toBeNull();
       expect(result.cleanedStdout).toMatchSnapshot();

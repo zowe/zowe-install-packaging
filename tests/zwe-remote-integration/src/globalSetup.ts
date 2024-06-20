@@ -141,7 +141,7 @@ module.exports = async () => {
       throw new Error('Could not locate zowe-utility-tools zip in the .build directory');
     }
 
-    console.log('Setting up remote server...');
+    console.log(`Setting up remote server on ${REMOTE_SYSTEM_INFO.hostname}...`);
     await uss.runCommand(`mkdir -p ${REMOTE_SYSTEM_INFO.ussTestDir}`);
 
     console.log(`Uploading ${configmgrPax} to ${REMOTE_SYSTEM_INFO.ussTestDir}/configmgr.pax ...`);
@@ -231,6 +231,8 @@ module.exports = async () => {
 
     console.log(`Converting everything in ${REMOTE_SYSTEM_INFO.ussTestDir}/bin to EBCDIC...`);
     await uss.runCommand(`chmod +x convert_to_ebcdic.sh && ./convert_to_ebcdic.sh`, REMOTE_SYSTEM_INFO.ussTestDir);
+    await uss.runCommand(`chmod 755 ${REMOTE_SYSTEM_INFO.ussTestDir}/bin/zwe && ` +
+    `chmod 755 ${REMOTE_SYSTEM_INFO.ussTestDir}/bin/utils/opercmd.rex `, REMOTE_SYSTEM_INFO.ussTestDir);
 
     console.log(`Uploading ${REPO_ROOT_DIR}/schemas to ${REMOTE_SYSTEM_INFO.ussTestDir}/schemas...`);
     await files.Upload.dirToUSSDirRecursive(zosmfSession, `${REPO_ROOT_DIR}/schemas`, `${REMOTE_SYSTEM_INFO.ussTestDir}/schemas/`, {
