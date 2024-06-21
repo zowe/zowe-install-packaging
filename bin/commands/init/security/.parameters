@@ -1,2 +1,2 @@
-security-dry-run,dry-run||boolean|||||Generates and prints JCL but does not execute
+security-dry-run,dry-run||boolean|||||Generates and prints JCL but does not execute.
 ignore-security-failures||boolean|||||Whether to ignore security setup job failures.
