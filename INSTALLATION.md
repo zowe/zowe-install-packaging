@@ -164,7 +164,7 @@ Among the choices is for it to use a VSAM dataset of your choice.
 
 |Task|Description|Sample JCL|
 |---|---|---|
-|Create VSAM Dataset for Caching Service|**Action**: Create a RLM or NONRLM dataset for the caching service, and set the name into the YAML value `components.caching-service.storage.vsam.name`|[ZWECSVSM](https://github.com/zowe/zowe-install-packaging/tree/feature/v3/jcl/files/SZWESAMP/ZWECSVSM)|
+|Create VSAM Dataset for Caching Service|**Action**: Create a RLS or NONRLS dataset for the caching service, and set the name into the YAML value `components.caching-service.storage.vsam.name`|[ZWECSVSM](https://github.com/zowe/zowe-install-packaging/tree/feature/v3/jcl/files/SZWESAMP/ZWECSVSM)|
 
 JCL samples for removing Zowe configuration also exist.
 |Action|Sample JCL|
@@ -245,7 +245,7 @@ Among the choices is for it to use a VSAM dataset of your choice.
 
 |Task|Description|Sample JCL|Doc|
 |---|---|---|---|
-|Create VSAM Dataset for Caching Service|Creates a RLM or NONRLM dataset for the caching service using the YAML values in `zowe.setup.vsam`|`zwe init vsam`|[Doc](https://docs.zowe.org/stable/appendix/zwe_server_command_reference/zwe/init/zwe-init-vsam)|
+|Create VSAM Dataset for Caching Service|Creates a RLS or NONRLS dataset for the caching service using the YAML values in `zowe.setup.vsam`|`zwe init vsam`|[Doc](https://docs.zowe.org/stable/appendix/zwe_server_command_reference/zwe/init/zwe-init-vsam)|
 
 <br>
 <br>
