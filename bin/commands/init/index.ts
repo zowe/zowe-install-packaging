@@ -10,6 +10,7 @@
 */
 
 import * as std from 'cm_std';
+import * as os from 'cm_os';
 import * as shell from '../../libs/shell';
 import * as zoslib from '../../libs/zos';
 import * as json from '../../libs/json';
@@ -62,7 +63,8 @@ export function execute(allowOverwrite?: boolean, dryRun?: boolean, ignoreSecuri
   // do we have zowe.runtimeDirectory defined in zowe.yaml?
   const configRuntimeDir = zoweConfig.zowe?.runtimeDirectory;
   if (configRuntimeDir) {
-    if (configRuntimeDir != std.getenv('ZWE_zowe_runtimeDirectory')) {
+    let realPathResult = os.realpath(configRuntimeDir);
+    if (realPathResult[1] != 0 || realPathResult[0] != std.getenv('ZWE_zowe_runtimeDirectory')) {
       common.printErrorAndExit(`Error ZWEL0105E: The Zowe YAML config file is associated to Zowe runtime "${configRuntimeDir}", which is not same as where zwe command is located.`, undefined, 105);
     }
   } else {
