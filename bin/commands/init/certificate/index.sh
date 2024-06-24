@@ -11,6 +11,8 @@
 # Copyright Contributors to the Zowe Project.
 #######################################################################
 
+print_level1_message "Generate certificate"
+
 ###############################
 # validation
 require_zowe_yaml
