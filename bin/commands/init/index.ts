@@ -83,7 +83,7 @@ export function execute(allowOverwrite?: boolean, dryRun?: boolean, ignoreSecuri
       if (newZoweRuntimeDir) {
         updateObj.zowe = {runtimeDirectory: newZoweRuntimeDir};
       }
-      json.updateZoweYamlFromObj(std.getenv('ZOWE_CLI_PARAMETER_CONFIG'), updateObj);
+      json.updateZoweYamlFromObj(std.getenv('ZWE_CLI_PARAMETER_CONFIG'), updateObj);
 
       common.printLevel2Message(`Runtime directory, Java and/or node.js settings are updated successfully.`);
     } else {
