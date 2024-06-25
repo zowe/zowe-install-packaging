@@ -35,8 +35,11 @@ parse arg operation verbosity
 */
 
 schemaChain = GetSchemaChain()
+
+runtime = GetRuntimeDirectory()
+defaultYaml = 'FILE('runtime'/files/defaults.yaml)'
 configChain = GetConfigChain()
-configChainWithMembers = GetConfigChainWithMembers()
+configChain = AddToChain(configChain, defaultYaml)
 
 /*
 ================================================================================
@@ -45,6 +48,11 @@ configChainWithMembers = GetConfigChainWithMembers()
 */
 
 if Validate(schemaChain, configChain) > 0 then do
+  ExitWithRC(8)
+end
+
+if runtime = '' then do
+  say 'Runtime directory not found.'
   ExitWithRC(8)
 end
 
@@ -74,7 +82,6 @@ end
 CFG.zwe.header.user = USERID()
 CFG.zwe.header.date = TRANSLATE(DATE(), '-', ' ')
 CFG.zwe.header.time = TIME()
-CFG.ZWE_CLI_PARAMETER_CONFIG = configChainWithMembers
 
 /*
 ================================================================================
@@ -380,6 +387,55 @@ if card.0 > 0 then do
   end
   say 'The job card was added to each member.'
 end
+
+
+
+say 'Checking the ZWESLSTC CONFIG entry'
+
+if AllocateDataSet(jclCopy'(ZWESLSTC)', 'zwejcl') > 0 then do
+  ExitWithRC(8)
+end
+if ReadFromDataSet('zwejcl') > 0 then do
+  ExitWithRC(8)
+end
+if FreeByDD('zwejcl') > 0 then do
+  ExitWithRC(8)
+end
+do j = 1 to !contentToRead.0
+  if COMPARE(contentToRead.j, 'CONFIG={ZWE_CLI_PARAMETER_CONFIG}') = 0 then do
+    say 'Defining CONFIG entry for ZWESLSTC'
+    currentline = j
+    ReadFromDataSet('myconfig')
+    do j = 1 to !contentToRead.0
+      type = WORD(!contentToRead.j, 1)
+      location = WORD(!contentToRead.j, 2)
+      element = type'('location')'
+      if COMPARE(type, 'PARMLIB') = 0 then do
+        element = 'PARMLIB('location'(ZWEYAML))'
+      end
+      if j = 1 then do
+        cmd = 'LINE 'currentline' = CONFIG='element
+        if !contentToRead.0 > 1 then do
+          cmd = cmd':\'
+        end
+        address ISREDIT cmd
+      end
+      else do
+        if j > 2 then do
+          currentline = currentline + 1
+        end
+        cmd = 'LINE_AFTER 'currentline' = 'element
+        if !contentToRead.0 > j then do
+          cmd = cmd':\'
+        end
+        address ISREDIT cmd
+      end
+    end
+    leave
+  end
+end
+
+
 
 exit
 
@@ -781,9 +837,6 @@ FreeByDSN:
       type = WORD(!contentToRead.j, 1)
       location = WORD(!contentToRead.j, 2)
       element = type'('location')'
-      if COMPARE(type, 'PARMLIB') = 0 then do
-        elementWithMember = 'PARMLIB('location'(ZWEYAML))'
-      end
       configChain = AddToChain(configChain, element)
     end
   end
@@ -792,30 +845,21 @@ FreeByDSN:
 
 /*
 ================================================================================
-  GetConfigChainWithMembers()
+  GetRuntimeDirectory()
 ================================================================================
 */
- GetConfigChainWithMembers:
-  procedure expose !verbose
+GetRuntimeDirectory:
 
-  configChain = ''
+  runtime = ''
 
-  if ReadFromDataSet('myconfig') = 0 then do
-    do j = 1 to !contentToRead.0
-      type = WORD(!contentToRead.j, 1)
-      location = WORD(!contentToRead.j, 2)
-      if COMPARE(type, 'PARMLIB') = 0 then do
-        element = 'PARMLIB('location'(ZWEYAML))'
-      end
-      else do
-        element = type'('location')'
-      end
-      configChain = AddToChain(configChain, element)
-    end
+  if ReadFromDataSet('myschema') = 0 then do
+    type = WORD(!contentToRead.1, 1)
+    location = WORD(!contentToRead.1, 2)
+    offset = INDEX(location, '/schemas/zowe-yaml-schema.json')
+    runtime = SUBSTR(location, offset)
   end
 
-  return configChain
-
+  return runtime
 
 /*
 ================================================================================

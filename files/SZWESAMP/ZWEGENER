@@ -59,7 +59,7 @@ $$
 //* PARMLIB member must be named "ZWEYAML"
 //*
 //* Ex. PARMLIB MY.ZOWE.CUSTOM.PARMLIB
-//*     FILE /the/zowe/defaults.yaml
+//*     FILE /some/other/zowe.yaml
 //MYCONFIG DD   *,DLM=$$
 FILE <full path to zowe.yaml file>
 $$
