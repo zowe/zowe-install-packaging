@@ -72,7 +72,7 @@ $$
 //* Do not remove the defaults.yaml entry.
 //*
 //* Ex. PARMLIB MY.ZOWE.CUSTOM.PARMLIB
-//*     FILE /the/zowe/defaults.yaml
+//*     FILE /some/other/zowe.yaml
 //MYCONFIG DD   *,DLM=$$
 FILE <full path to zowe.yaml file>
 FILE {zowe.runtimeDirectory}/files/defaults.yaml
