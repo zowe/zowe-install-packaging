@@ -790,11 +790,11 @@
           "description": "Certificate in PEM format.",
           "properties": {
             "key": {
-              "type": "string",
+              "type": [ "string", "null" ],
               "description": "Path to the certificate private key stored in PEM format."
             },
             "certificate": {
-              "type": "string",
+              "type": [ "string", "null" ],
               "description": "Path to the certificate stored in PEM format."
             },
             "certificateAuthorities": {
