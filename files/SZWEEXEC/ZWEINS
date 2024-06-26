@@ -1,11 +1,7 @@
 /* REXX */
-insertCmd.0 = queued()
-do i = 1 to insertCmd.0
-  parse pull iCmd
-  insertCmd.i = iCmd
-end
 address isredit 'macro'
-do i = 1 to insertCmd.0
-  address isredit insertCmd.i
+do i = 1 to queued()
+  parse pull insertCmd
+  address isredit insertCmd
 end
 address isredit 'end'
