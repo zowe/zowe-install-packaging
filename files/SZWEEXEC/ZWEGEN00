@@ -898,7 +898,7 @@ GetRuntimeDirectory:
     type = WORD(!contentToRead.1, 1)
     location = WORD(!contentToRead.1, 2)
     offset = INDEX(location, '/schemas/zowe-yaml-schema.json')
-    runtime = SUBSTR(location, offset)
+    runtime = SUBSTR(location, 1, offset)
   end
 
   return runtime
