@@ -23,7 +23,7 @@
 ================================================================================
 */
 
-parse arg operation verbosity 
+parse arg operation verbosity
 
 !verbose = COMPARE(verbosity, 'noverbose')
 
@@ -164,7 +164,7 @@ CVTRAC_VAL = STORAGE(CVTRAC_ADDR, 4)
 
 ringType = 0
 
-/* attempt to handle getting only 1 keyring jcl 
+/* attempt to handle getting only 1 keyring jcl
 if WORDINDEX(CFG.zowe.setup.certificate.type, 'JCE') > 0 then do
   if LENGTH(CFG.zowe.setup.certificate.keyring.connect) > 0 then do
     say 'connect exists, it is 'CFG.zowe.setup.certificate.keyring.connect'.'
@@ -179,9 +179,9 @@ if WORDINDEX(CFG.zowe.setup.certificate.type, 'JCE') > 0 then do
     ringType = 1
   end
 else do
-  say 'pkcs12 to be used'  
+  say 'pkcs12 to be used'
 end
-*/  
+*/
 
 if COMPARE('RCVT', CVTRAC_VAL) = 0 then do
   x = DeleteDataSet(jclCopy'(ZWEIKRA1)')
@@ -217,7 +217,7 @@ if COMPARE('ACF2', CVTRAC_VAL) = 0 then do
   x = DeleteDataSet(jclCopy'(ZWEIKRT3)')
   x = DeleteDataSet(jclCopy'(ZWEIKRR1)')
   x = DeleteDataSet(jclCopy'(ZWEIKRR2)')
-  x = DeleteDataSet(jclCopy'(ZWEIKRR3)')      
+  x = DeleteDataSet(jclCopy'(ZWEIKRR3)')
   x = DeleteDataSet(jclCopy'(ZWEIRAC)')
   x = DeleteDataSet(jclCopy'(ZWEIRACZ)')
   x = DeleteDataSet(jclCopy'(ZWEITSS)')
@@ -227,6 +227,98 @@ if COMPARE('ACF2', CVTRAC_VAL) = 0 then do
 end
 
 say jcl' has been copied to 'jclCopy'.'
+
+say 'Checking the ZWESLSTC CONFIG entry'
+
+if AllocateDataSet(jclCopy'(ZWESLSTC)', 'zwejcl') > 0 then do
+  ExitWithRC(8)
+end
+if ReadFromDataSet('zwejcl') > 0 then do
+  ExitWithRC(8)
+end
+if FreeByDD('zwejcl') > 0 then do
+  ExitWithRC(8)
+end
+do j = 1 to !contentToRead.0
+  if COMPARE(!contentToRead.j, 'CONFIG={ZWE_CLI_PARAMETER_CONFIG}') = 0 then do
+    currentline = j
+    say 'Defining CONFIG entry for ZWESLSTC on line 'currentline
+    if ReadFromDataSet('myconfig') > 0 then do
+      ExitWithRC(8)
+    end
+    d=jclCopy'(ZWESLSTC)'
+    do j = 1 to !contentToRead.0
+      type = WORD(!contentToRead.j, 1)
+      location = WORD(!contentToRead.j, 2)
+      element = type'('location')'
+      if COMPARE(type, 'PARMLIB') = 0 then do
+        element = 'PARMLIB('location'(ZWEYAML))'
+      end
+      say 'Add to config='element
+      if j = 1 then do
+        changeCommand = 'LINE 'currentline' = "CONFIG='element
+        if !contentToRead.0 > 1 then do
+          changeCommand = changeCommand':\"'
+        end
+        else do
+          changeCommand = changeCommand'"'
+        end
+        say 'Run 'changeCommand
+        if length(changeCommand) > 72 then do
+          say 'Stopping at 'd'.'
+          say '  Command too long:'
+          say '  'changeCommand
+          ExitWithRC(8)
+        end
+        queue changeCommand
+        call Print changeCommand
+        cmd = 'edit dataset('"'"d"'"') macro(zwechg)'
+        call Print cmd
+        address ispexec cmd
+        if RC <= 4 then do
+          call Print 'Edit successful.'
+        end
+        else do
+          say 'Stopping at 'd'.'
+          ExitWithRC(8)
+        end
+      end
+      else do
+        if j > 2 then do
+          currentline = currentline + 1
+        end
+        cmd = 'LINE_AFTER 'currentline' = "'element
+        if !contentToRead.0 > j then do
+          changeCommand = changeCommand':\"'
+        end
+        else do
+          changeCommand = changeCommand'"'
+        end
+        say 'Run 'changeCommand
+        if length(changeCommand) > 72 then do
+          say 'Stopping at 'd'.'
+          say '  Command too long:'
+          say '  'changeCommand
+          ExitWithRC(8)
+        end
+        queue changeCommand
+        call Print changeCommand
+        cmd = 'edit dataset('"'"d"'"') macro(zwechg)'
+        call Print cmd
+        address ispexec cmd
+        if RC <= 4 then do
+          call Print 'Edit successful.'
+        end
+        else do
+          say 'Stopping at 'd'.'
+          ExitWithRC(8)
+        end
+      end
+    end
+    leave
+  end
+end
+
 
 /*
 ================================================================================
@@ -282,19 +374,21 @@ do i = 1 to members.0
       len = lastChar - firstChar + 1
       if len > 0 then do
         sub = SUBSTR(!contentToRead.j, firstChar, len)
-        call Print 'Substitution found for' sub'.'
-        isFound = 0
-        do n = 1 to members.i.substitutions.0
-          if COMPARE(members.i.substitutions.n, sub) = 0 then do
-            call Print 'Substitution 'sub' already noted. Skipping.'
-            isFound = 1
-            leave
+        if len = length(strip(sub)) then do
+          call Print 'Substitution found for' sub'.'
+          isFound = 0
+          do n = 1 to members.i.substitutions.0
+            if COMPARE(members.i.substitutions.n, sub) = 0 then do
+              call Print 'Substitution 'sub' already noted. Skipping.'
+              isFound = 1
+              leave
+            end
           end
-        end
-        if isFound <> 1 then do
-          k = members.i.substitutions.0 + 1
-          members.i.substitutions.k = sub
-          members.i.substitutions.0 = k
+          if isFound <> 1 then do
+            k = members.i.substitutions.0 + 1
+            members.i.substitutions.k = sub
+            members.i.substitutions.0 = k
+          end
         end
       end
       if lastChar < 0 then do
@@ -310,31 +404,52 @@ say 'All of the substitutions were found.'
 /*
 ================================================================================
     Invoke the edit macro on the substitutions for each member.
+    ZWECHG: change all word1 word2
+      word1 is expected to be {zowe.something}
+      word2 is anything, including spaces, single or double apostrophes
 ================================================================================
 */
 
 say 'Invoking the edit macro on each member.'
 
 do i = 1 to members.0
-    if members.i.substitutions.0 > 0 then do
-      do j = 1 to members.i.substitutions.0
-        d = jclCopy'('members.i.name')'
-        call Print 'Edit 'd'.'
-        old = '{'members.i.substitutions.j'}'
-        new = value('CFG.'members.i.substitutions.j)
-        queue old new
-        call Print 'Change' old 'to' new'.'
-        cmd = 'edit dataset('"'"d"'"') macro(zwechg)'
-        call Print cmd
-        address ispexec cmd
-        if RC <= 4 then do
-          call Print 'Edit successful.'
-        end
-        else do
-          say 'Stopping at 'd'.'
-          ExitWithRC(8)
-        end
+  if members.i.substitutions.0 > 0 then do
+    do j = 1 to members.i.substitutions.0
+      d = jclCopy'('members.i.name')'
+      call Print 'Edit 'd'.'
+      old = '{'members.i.substitutions.j'}'
+      new = value('CFG.'members.i.substitutions.j)
+      apostrophes1 = "'"
+      apostrophes2 = "'"
+      if pos("'", new) > 0 & pos('"', new) = 0 then do
+        apostrophes1 = '"'
+        apostrophes2 = '"'
       end
+      if pos("'", new) > 0 & pos('"', new) > 0 then do
+        apostrophes1 = "X'"
+        apostrophes2 = "'"
+        new = c2x(new)
+      end
+      changeCommand = 'change all 'old apostrophes1||new||apostrophes2
+      if length(changeCommand) > 255 then do
+        say 'Stopping at 'd'.'
+        say '  Command too long:'
+        say '  'changeCommand
+        ExitWithRC(8)
+      end
+      queue changeCommand
+      call Print changeCommand
+      cmd = 'edit dataset('"'"d"'"') macro(zwechg)'
+      call Print cmd
+      address ispexec cmd
+      if RC <= 4 then do
+        call Print 'Edit successful.'
+      end
+      else do
+        say 'Stopping at 'd'.'
+        ExitWithRC(8)
+      end
+    end
   end
 end
 
@@ -388,52 +503,6 @@ if card.0 > 0 then do
   say 'The job card was added to each member.'
 end
 
-
-
-say 'Checking the ZWESLSTC CONFIG entry'
-
-if AllocateDataSet(jclCopy'(ZWESLSTC)', 'zwejcl') > 0 then do
-  ExitWithRC(8)
-end
-if ReadFromDataSet('zwejcl') > 0 then do
-  ExitWithRC(8)
-end
-if FreeByDD('zwejcl') > 0 then do
-  ExitWithRC(8)
-end
-do j = 1 to !contentToRead.0
-  if COMPARE(contentToRead.j, 'CONFIG={ZWE_CLI_PARAMETER_CONFIG}') = 0 then do
-    say 'Defining CONFIG entry for ZWESLSTC'
-    currentline = j
-    ReadFromDataSet('myconfig')
-    do j = 1 to !contentToRead.0
-      type = WORD(!contentToRead.j, 1)
-      location = WORD(!contentToRead.j, 2)
-      element = type'('location')'
-      if COMPARE(type, 'PARMLIB') = 0 then do
-        element = 'PARMLIB('location'(ZWEYAML))'
-      end
-      if j = 1 then do
-        cmd = 'LINE 'currentline' = CONFIG='element
-        if !contentToRead.0 > 1 then do
-          cmd = cmd':\'
-        end
-        address ISREDIT cmd
-      end
-      else do
-        if j > 2 then do
-          currentline = currentline + 1
-        end
-        cmd = 'LINE_AFTER 'currentline' = 'element
-        if !contentToRead.0 > j then do
-          cmd = cmd':\'
-        end
-        address ISREDIT cmd
-      end
-    end
-    leave
-  end
-end
 
 
 
@@ -856,7 +925,7 @@ GetRuntimeDirectory:
     type = WORD(!contentToRead.1, 1)
     location = WORD(!contentToRead.1, 2)
     offset = INDEX(location, '/schemas/zowe-yaml-schema.json')
-    runtime = SUBSTR(location, offset)
+    runtime = SUBSTR(location, 1, offset)
   end
 
   return runtime
