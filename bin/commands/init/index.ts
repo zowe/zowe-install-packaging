@@ -102,7 +102,7 @@ export function execute(allowOverwrite?: boolean, dryRun?: boolean, ignoreSecuri
         common.printMessage(`  home: "${newJavaHome}"`);
       }
 
-      common.printLevel2Message(`Please manually update "${std.getenv('ZWE_CLI_PARAMETER_CONFIG_ORIG')}" before you start Zowe.`);
+      common.printLevel2Message(`Please manually update "${std.getenv('ZWE_PRIVATE_CONFIG_ORIG')}" before you start Zowe.`);
     }
   } else {
     common.printLevel2Message(`No need to update runtime directory, Java and node.js settings.`);

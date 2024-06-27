@@ -6,7 +6,7 @@ These JCL files can be run by any means desired afterward.
 The actions of `zwe init` will run them automatically if desired.
 Each `zwe init` action has a `--dry-run` command which will print the value of the particular JCL file used, but not submit it.
 
-This command supports `--security-dry-run` or `--dry-run` when called directly, but not when called on behalf of another `init` oepration, as this command is used to create the JCL for all the other init commands and their `--dry-run` options.
+This command supports `--security-dry-run` or `--dry-run` when called directly, but not when called on behalf of another `init` operation, as this command is used to create the JCL for all the other init commands and their `--dry-run` options.
 For example, if you run `zwe init generate --dry-run`, a dry run of the operation occurs. But if you run `zwe init mvs --dry-run`, `init mvs` requires the JCL to exist, so JCL generation will occur but the `init mvs` JCL will not be submitted afterward.
 
 The following JCL will be created into the jcllib, using the content of the same name from within the SZWESAMP dataset:
