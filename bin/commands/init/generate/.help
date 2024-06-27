@@ -1,6 +1,6 @@
 Generate ready to execute JCL samples from zowe.yaml configuration values.
 
-This command executes the job ZWEGENER which copies the JCL templates from Zowe's SZWESAMP dataset, minus those not valid for your system ESM, and creates resolved, ready to execute JCL content within the dataset defined by the zowe.yaml property `zowe.setup.dataset.jcllib` (such as `zowe.setup.dataset.prefix` + "CUST.JCLLIB")
+This command executes the job ZWEGENER which copies the JCL templates from Zowe's SZWESAMP dataset, except those not valid for your system ESM, and creates resolved, ready to execute JCL content within the dataset defined by the zowe.yaml property `zowe.setup.dataset.jcllib` (such as `zowe.setup.dataset.prefix` + "CUST.JCLLIB")
 
 These JCL files can be run by any means desired afterward.
 The actions of `zwe init` will run them automatically if desired.
@@ -59,7 +59,7 @@ STC job setup:
 - ZWERSTC: Removes the Zowe STC JCL from the proclib
 
 
-If you want to use a premade keyring with Zowe,, do not run these. These are for Zowe assisting in keyring creation.
+If you want to use a premade keyring with Zowe, do not run these. These are for Zowe assisting in keyring creation.
 
 The above datasets can be run to set up a Zowe instance.
 You can also use `zwe init` or `zwe init` subcommands to have them run automatically.
