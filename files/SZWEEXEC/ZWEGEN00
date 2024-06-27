@@ -25,6 +25,14 @@
 
 parse arg operation verbosity
 
+VALID_OPERATIONS = '"generate" | "nogenerate"'
+VALID_VERBOSITY = '"verbose" | "noverbose"'
+
+if POS(verbosity, VALID_VERBOSITY) = 0 then do
+  say 'Error: "'verbosity'" is not a valid verbosity.'
+  say '       Valid verbosity levels are: '||VALID_VERBOSITY
+  ExitWithRC(8)
+end
 !verbose = COMPARE(verbosity, 'noverbose')
 
 /*
@@ -62,6 +70,12 @@ end
     values.
 ================================================================================
 */
+
+if POS(operation, VALID_OPERATIONS) = 0 then do
+  say 'Error: "'operation'" is not a valid operation.'
+  say '       Valid operations are: '||VALID_OPERATIONS
+  ExitWithRC(8)
+end
 
 if COMPARE(operation, 'nogenerate') = 0 then do
   exit 0
