@@ -10,6 +10,8 @@
 # Copyright Contributors to the Zowe Project.
 #######################################################################
 
+init_missing_yaml_properties
+
 if [ -z "${ZWE_PRIVATE_TMP_MERGED_YAML_DIR}" ]; then
   # user-facing command, use tmpdir to not mess up workspace permissions
   export ZWE_PRIVATE_TMP_MERGED_YAML_DIR=1
