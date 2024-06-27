@@ -16,6 +16,39 @@ If you pass `--dry-run` with this command, each subcommand will print out the
 JCL that it would submit, without doing the submission. This can be used to
 review what Zowe would do before doing it.
 
+The following are the JCL submitted by each command as needed
+
+- `zwe init mvs`
+    - ZWEIMVS
+    - (If `--allow-overwrite` specified and old datasets exist) ZWERMVS
+    - (If `zowe.setup.dataset.authLoadLib` is not named prefix + ZWELOAD) ZWEIMVS2
+    - (If above is true, and the dataset exists, and `--allow-overwrite` is set) ZWERMVS2
+- `zwe init vsam`
+    - ZWECSVSM
+    - (If `--allow-overwrite` specified and old datasets exist) ZWECSRVS
+- `zwe init apfauth`
+    - ZWEIAPF2
+- `zwe init security`
+    - (If RACF) ZWEIRAC
+    - (If RACF and z/OS 2.4) ZWIRACZ
+    - (If TSS) ZWEITSS
+    - (If TSS and z/OS 2.4) ZWITSSZ
+    - (If ACF2) ZWEIACF
+    - (If ACF2 and z/OS 2.4) ZWIACFZ
+- `zwe init certificate`
+    - (If creating keyring and certificate for RACF) ZWEIKRR1
+    - (If creating keyring and connecting certificate for RACF) ZWEIKRR2
+    - (If creating keyring and importing certificate for RACF) ZWEIKRR3
+    - (If creating keyring and certificate for TSS) ZWEIKRR1
+    - (If creating keyring and connecting certificate for TSS) ZWEIKRT2
+    - (If creating keyring and importing certificate for TSS) ZWEIKRT3
+    - (If creating keyring and certificate for ACF2) ZWEIKRA1
+    - (If creating keyring and connecting certificate for ACF2) ZWEIKRA2
+    - (If creating keyring and importing certificate for ACF2) ZWEIKRA3
+- `zwe init stc`
+    - ZWEISTC
+    - (If `--allow-overwrite` specified and old members exist) ZWERSTC
+
 If you pass `--skip-security-setup` with this command, `zwe init apfauth` and
 `zwe init security` steps will be skipped.
 

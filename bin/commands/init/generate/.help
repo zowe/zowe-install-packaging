@@ -1,0 +1,65 @@
+Generate ready to execute JCL samples from zowe.yaml configuration values.
+
+This command executes the job ZWEGENER which copies the JCL templates from Zowe's SZWESAMP dataset, minus those not valid for your system ESM, and creates resolved, ready to execute JCL content within the dataset defined by the zowe.yaml property `zowe.setup.dataset.jcllib` (such as `zowe.setup.dataset.prefix` + "CUST.JCLLIB")
+
+These JCL files can be run by any means desired afterward.
+The actions of `zwe init` will run them automatically if desired.
+Each `zwe init` action has a `--dry-run` command which will print the value of the particular JCL file used, but not submit it.
+
+`--security-dry-run` or `--dry-run` do not have an affect on the generate command, as this command is used to create the JCL for all the other init commands and their `--dry-run` options.
+
+The following JCL will be created into the jcllib, using the content of the same name from within the SZWESAMP dataset:
+
+Instance dataset creation:
+- ZWEIMVS: Creates Zowe instance datasets
+- ZWERMVS: Removes these datasets
+- ZWEIMVS2: Creates the `zowe.setup.dataset.authLoadLib` dataset if you have customized its name. This is not recommended, it is best to leave it as default.
+- ZWERMVS2: Removes the above customized dataset.
+
+VSAM for caching service creation:
+- ZWECSVSM: Creates a VSAM for the caching service
+- ZWECSRVS: Removes the VSAM
+
+ZIS APF Authorization:
+- ZWEIAPF: An example of how one would APF authorize the ZIS content of Zowe.
+- ZWEIAPF2: An example of how one would APF authorize the ZIS content of Zowe.
+You may wish to do this step another way.
+You can read https://docs.zowe.org/stable/user-guide/apf-authorize-load-library to learn more.
+
+SAF permission setup:
+- ZWEIRAC: Sets up SAF permissions for RACF
+- ZWEIRACZ: Sets up the Zowe class for RACF if on z/OS 2.4 or older
+- ZWEITSS: Sets up SAF permissions for TSS
+- ZWEITSSZ: Sets up the Zowe class for TSS if on z/OS 2.4 or older
+- ZWEIACF: Sets up SAF permissions for ACF2
+- ZWEIACFZ: Sets up the Zowe class for ACF2 if on z/OS 2.4 or older
+
+SAF permission removal:
+- ZWENOSEC: Removes SAF permissions. Has RACF, TSS, ACF2 sections.
+
+
+Keyring creation:
+- ZWEIKRR1: Creates a keyring and certificate for RACF
+- ZWEIKRR2: Creates a keyring and connects a certificate for RACF
+- ZWEIKRR3: Creates a keyring and imports a certificate for RACF
+- ZWEIKRT1: Creates a keyring and certificate for TSS
+- ZWEIKRT2: Creates a keyring and connects a certificate for TSS
+- ZWEIKRT3: Creates a keyring and imports a certificate for TSS
+- ZWEIKRA1: Creates a keyring and certificate for ACF2
+- ZWEIKRA2: Creates a keyring and connects a certificate for ACF2
+- ZWEIKRA3: Creates a keyring and imports a certificate for ACF2
+
+Keyring removal:
+- ZWENOKRR: Removes Zowe's keyring for RACF
+- ZWENOKRT: Removes Zowe's keyring for TSS
+- ZWENORRA: Removes Zowe's keyring for ACF2
+
+STC job setup:
+- ZWEISTC: Copies the STC JCL of Zowe into your proclib
+- ZWERSTC: Removes the Zowe STC JCL from the proclib
+
+
+If you want to use a premade keyring with Zowe,, do not run these. These are for Zowe assisting in keyring creation.
+
+The above datasets can be run to set up a Zowe instance.
+You can also use `zwe init` or `zwe init` subcommands to have them run automatically.
