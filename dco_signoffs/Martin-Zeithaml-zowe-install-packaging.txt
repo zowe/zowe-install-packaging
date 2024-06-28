@@ -1,0 +1,5 @@
+I, Martin Zeithaml hereby sign-off-by all of my past commits to this repo subject to the Developer Certificate of Origin (DCO), Version 1.1. In the past I have used emails:  66114686+Martin-Zeithaml@users.noreply.github.com
+
+f1611632b117f5fb91e495e21cbabe4c4b51e2c4 Use the zos function for getFileEncoding
+44f1316296413913354a40246ee92db28d7589c2 TSS: Detect zOSMF Root CA
+4cf6e9d017cd0ede6026c610dc0a1d72f88fad3e ZWEGEN00: verify the operation and verbosity
