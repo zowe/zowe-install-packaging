@@ -1,0 +1,259 @@
+//ZWEITSS JOB
+//*
+//* This program and the accompanying materials are made available
+//* under the terms of the Eclipse Public License v2.0 which
+//* accompanies this distribution, and is available at
+//* https://www.eclipse.org/legal/epl-v20.html
+//*
+//* SPDX-License-Identifier: EPL-2.0
+//*
+//* Copyright Contributors to the Zowe Project. 2018, 2020
+//*
+//*********************************************************************
+//*
+//* This JCL can be used to define security permits for Zowe
+//*
+//*
+//* CAUTION: This is neither a JCL procedure nor a complete job.
+//* Before using this JCL, you will have to make the following
+//* modifications:
+//*
+//* 1) Add job name and job parameters to the JOB statement, to
+//*    meet your system requirements.
+//*
+//* 2) When not using AUTOUID and AUTOGID to assign z/OS UNIX UID
+//*     and GID values, update the SET *ID= statements to match the
+//*     desired UID and GID values.
+//*
+//* 3) Customize the commands in the DD statement that matches your
+//*     security product so that they meet your system requirements.
+//*
+//* Note(s):
+//*
+//* 1. THE USER ID THAT RUNS THIS JOB MUST HAVE SUFFICIENT AUTHORITY
+//*    TO ALTER SECURITY DEFINITONS
+//*
+//* 2. The Zowe started task user ID 'zowe.setup.security.users.zowe'
+//*    Writes persistent data to 'zowe.workspaceDirectory'
+//*    This sample JCL makes the Zowe started task part of
+//*    the Zowe admin group 'zowe.setup.security.groups.admin'
+//*    to facilitate admin access to this directory.
+//*
+//* 3. This job WILL complete with return code 0.
+//*    The results of each command must be verified after completion.
+//*
+//*********************************************************************
+//         EXPORT SYMLIST=*
+//*
+//* Provide appropriate (numeric) values to these SET commands.
+//         SET ADMINGID=             * Group ID for ZOWE administrators
+//         SET   STCGID=&ADMINGID.   * Group ID for ZOWE started tasks
+//         SET  ZOWEUID=             * UID for ZOWE started task User
+//         SET   ZISUID=             * UID for ZIS started task User
+//*
+//* If a default UID and GID range is defined, you can specify '?'
+//* in the SET *ID= statements to utilize auto-assignment
+//* of UID and GID.
+//*
+//*                     12345678
+//         SET ADMINDEP=             * department owning admin group
+//         SET  STCGDEP=             * department owning STC group
+//         SET  STCUDEP=             * department owning STC user IDs
+//         SET  ZOWEDEP=             * department owning Zowe resources
+//         SET  FACACID=             * ACID owning IBMFAC
+//*                     12345678
+//*
+//*********************************************************************
+//*
+//* EXECUTE COMMANDS FOR SELECTED SECURITY PRODUCT
+//*
+//RUN      EXEC PGM=IKJEFT01,REGION=0M
+//SYSTSPRT DD SYSOUT=*
+//SYSTSIN  DD DDNAME=TSS
+//TSS      DD DATA,DLM=$$,SYMBOLS=JCLONLY
+
+/* DEFINE ADMINISTRATORS ........................................... */
+
+/* group for administrators                                          */
+  TSS LIST({zowe.setup.security.groups.admin}) SEGMENT(OMVS)
+  TSS CREATE({zowe.setup.security.groups.admin}) TYPE(GROUP) +
+   NAME('ZOWE ADMINISTRATORS') +
+   DEPT(&ADMINDEP.)
+  TSS ADD({zowe.setup.security.groups.admin}) GID(&ADMINGID.)
+
+/* uncomment to add existing user IDs to the Zowe admin group        */
+/* TSS ADD(userid) GROUP({zowe.setup.security.groups.admin}) */
+
+/* DEFINE STARTED TASK ............................................. */
+
+/* comment out if STCGRP matches ADMINGRP (default), expect          */
+/*   warning messages otherwise                                      */
+/* group for started tasks                                           */
+  TSS LIST({zowe.setup.security.groups.stc}) SEGMENT(OMVS)
+  TSS CREATE({zowe.setup.security.groups.stc}) TYPE(GROUP) +
+   NAME('STC GROUP WITH OMVS SEGMENT') +
+   DEPT(&STCGDEP.)
+  TSS ADD({zowe.setup.security.groups.stc}) GID(&STCGID.)
+
+/* */
+
+/* userid for ZOWE main server                                       */
+  TSS LIST({zowe.setup.security.users.zowe}) SEGMENT(OMVS)
+  TSS CREATE({zowe.setup.security.users.zowe}) TYPE(USER) PASS(NOPW,0) +
+   NAME('ZOWE MAIN SERVER') +
+   DEPT(&STCUDEP.)
+   TSS ADD({zowe.setup.security.users.zowe}) +
+   GROUP({zowe.setup.security.groups.stc}) +
+   DFLTGRP({zowe.setup.security.groups.stc}) +
+   HOME(/tmp) OMVSPGM(/bin/sh) UID(&ZOWEUID.)
+
+/* userid for ZIS cross memory server                                */
+  TSS LIST({zowe.setup.security.users.zis}) SEGMENT(OMVS)
+  TSS CREATE({zowe.setup.security.users.zis}) TYPE(USER) PASS(NOPW,0) +
+   NAME('ZOWE ZIS CROSS MEMORY SERVER') +
+   DEPT(&STCUDEP.)
+  TSS ADD({zowe.setup.security.users.zis}) +
+   GROUP({zowe.setup.security.groups.stc}) +
+   DFLTGRP({zowe.setup.security.groups.stc}) +
+   HOME(/tmp) OMVSPGM(/bin/sh) UID(&ZISUID.)
+
+/* */
+
+/* started task for ZOWE main server                                 */
+  TSS LIST(STC) PROCNAME({zowe.setup.security.stcs.zowe}) PREFIX
+  TSS ADD(STC) PROCNAME({zowe.setup.security.stcs.zowe}) +
+    ACID({zowe.setup.security.users.zowe})
+  TSS ADD({zowe.setup.security.users.zowe}) FAC(STC)
+
+/* started task for ZIS cross memory server                          */
+  TSS LIST(STC) PROCNAME({zowe.setup.security.stcs.zis}) PREFIX
+  TSS ADD(STC) PROCNAME({zowe.setup.security.stcs.zis}) +
+    ACID({zowe.setup.security.users.zis})
+  TSS ADD({zowe.setup.security.users.zis}) FAC(STC)
+
+/* started task for ZIS Auxiliary cross memory server                */
+  TSS LIST(STC) PROCNAME({zowe.setup.security.stcs.aux}) PREFIX
+  TSS ADD(STC) PROCNAME({zowe.setup.security.stcs.aux}) +
+    ACID({zowe.setup.security.users.zis})
+  TSS ADD({zowe.setup.security.users.zis}) FAC(STC)
+
+/* DEFINE ZIS SECURITY RESOURCES ................................... */
+
+/* define ZIS security profile                                       */
+  TSS ADD(&FACACID.) IBMFAC(ZWES.IS)
+
+/* DEFINE AUX SERVER PERMISIONS .................................... */
+
+/* permit AUX STC to use ZIS cross memory server                     */
+  TSS WHOHAS IBMFAC(ZWES.IS)
+  TSS PERMIT({zowe.setup.security.users.zis}) IBMFAC(ZWES.IS) +
+    ACCESS(READ)
+
+/* DEFINE ZOWE SERVER PERMISIONS ................................... */
+
+/* permit Zowe main server to use ZIS cross memory server            */
+  TSS WHOHAS IBMFAC(ZWES.IS)
+  TSS PERMIT({zowe.setup.security.users.zowe}) IBMFAC(ZWES.IS) +
+    ACCESS(READ)
+
+/* permit Zowe main server to create a user's security environment   */
+/* ATTENTION: Defining the BPX.DAEMON or BPX.SERVER profile makes    */
+/*            z/OS UNIX switch to z/OS UNIX level security. This is  */
+/*            more secure, but it can impact operation of existing   */
+/*            applications. Test this thoroughly before activating   */
+/*            it on a production system.                             */
+  TSS ADD(&FACACID.) IBMFAC(BPX.)
+  TSS WHOHAS IBMFAC(BPX.DAEMON)
+  TSS PER({zowe.setup.security.users.zowe}) IBMFAC(BPX.DAEMON) +
+    ACCESS(UPDATE)
+  TSS WHOHAS IBMFAC(BPX.SERVER)
+  TSS PER({zowe.setup.security.users.zowe}) IBMFAC(BPX.SERVER) +
+    ACCESS(UPDATE)
+
+/* permit Zowe main server to create a user's security environment   */
+/* comment out the following line if the OMVSAPPL is not defined     */
+/* in your environment                                               */
+TSS PERMIT({zowe.setup.security.users.zowe}) APPL(OMVSAPPL)
+
+/* Allow ZOWEUSER access to BPX.JOBNAME                              */
+  TSS WHOHAS IBMFAC(BPX.JOBNAME)
+  TSS PER({zowe.setup.security.users.zowe}) IBMFAC(BPX.JOBNAME) +
+    ACCESS(READ)
+
+/* permit Zowe main server to use client certificate mapping service */
+  TSS WHOHAS IBMFAC(IRR.RUSERMAP)
+  TSS PER({zowe.setup.security.users.zowe}) IBMFAC(IRR.RUSERMAP) +
+    ACCESS(READ)
+
+/* permit Zowe main server to use distributed identity mapping       */
+/* service
+  TSS WHOHAS IBMFAC(IRR.IDIDMAP.QUERY)
+  TSS PER({zowe.setup.security.users.zowe}) +
+    IBMFAC(IRR.IDIDMAP.QUERY) ACCESS(READ)
+
+/* permit Zowe main server to cut SMF records                        */
+  TSS WHOHAS IBMFAC(IRR.RAUDITX)
+  TSS PER({zowe.setup.security.users.zowe}) IBMFAC(IRR.RAUDITX) +
+    ACCESS(READ)
+
+/* DEFINE ZOWE DATA SET PROTECTION ................................. */
+
+/* - HLQ..SZWEAUTH is an APF authorized data set. It is strongly     */
+/*   advised to protect it against updates.                          */
+
+/* HLQ stub                                                          */
+  TSS ADD(&ADMINDEP.) DATASET({zowe.setup.dataset.prefix})
+
+/* general data set protection                                       */
+  TSS WHOHAS DATASET({zowe.setup.dataset.prefix})
+  TSS PER(ALL) DATASET({zowe.setup.dataset.prefix}) ACCESS(READ)
+  TSS PER({zowe.setup.security.groups.sysProg})  +
+    DATASET({zowe.setup.dataset.prefix}) ACCESS(ALL)
+
+/* show results                                                      */
+  TSS WHOHAS DATASET({zowe.setup.dataset.prefix})
+
+/* DEFINE ZOWE RESOURCE PROTECTION ................................. */
+
+/* - Defines resource APIML.SERVICES that controls access to         */
+/*   detailed information about API services to Zowe users.          */
+
+/* define resource for information about API services                */
+   TSS ADDTO(&ZOWEDEP.) ZOWE(APIML.)
+
+/* uncomment and replace "user" to permit Zowe users to access       */
+/* the resource:                                                     */
+/* TSS PERMIT(user) ZOWE(APIML.SERVICES) ACCESS(READ)                */
+
+/* show results                                                      */
+   TSS LIST(RDT) RESCLASS(ZOWE)
+
+/* If any of these started tasks are multiusers address spaces       */
+/* a TSS FACILITY needs to be defined and assigned to the started    */
+/* and should not be using the STC FACILITY . The all acids signing  */
+/* on to the started tasks will need to be authorized to the         */
+/* FACILITY.                                                         */
+/*                                                                   */
+/* Create FACILITY example:                                          */
+/* In the TSSPARMS add the following lines to create                 */
+/* the new FACILITY.                                                 */
+/*                                                                   */
+/* FACILITY(USER11=NAME=ZOWE)                                        */
+/* FACILITY(ZOWE=MODE=FAIL)                                          */
+/* FACILITY(ZOWE=RES)                                                */
+/*                                                                   */
+/* To assign the FACILITY to the started task issue the following    */
+/* command:                                                          */
+/*                                                                   */
+/* TSS ADD(started_task_acid) MASTFAC(ZOWE)                          */
+/*                                                                   */
+/* To authorize a user to signon to the FACILITY, issues the         */
+/* following command.                                                */
+/*                                                                   */
+/* TSS ADD(user_acid) FAC(ZOWE)                                      */
+
+/* ................................................................. */
+/* only the last RC is returned, this command ensures it is a 0      */
+PROFILE
+$$
+//*
