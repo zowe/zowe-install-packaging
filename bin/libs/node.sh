@@ -94,7 +94,7 @@ require_node() {
   fi
 
   if [ -z "${NODE_HOME}" ]; then
-    print_error_and_exit "Error ZWEL0121E: Cannot find node. Please define NODE_HOME environment variable." "" 121
+    print_error_and_exit "Error ZWEL0121E: Cannot find node. Set the node.path value in the Zowe YAML, or include node in the PATH environment variable of any accounts that start or manage Zowe" "" 121
   fi
 
   ensure_node_is_on_path
