@@ -114,47 +114,52 @@ function showExceptions(e: any,depth: number): void {
   }
 }
 
-export function getPluginDefinition(pluginRootPath:string) {
+export function getPluginDefinition(pluginRootPath:string, continueOnFailure?: boolean) {
   const pluginDefinitionPath = `${pluginRootPath}/pluginDefinition.json`;
+  const configId = `appfwPlugin:${pluginRootPath}`;
+
+  const printer = continueOnFailure ? common.printError : common.printErrorAndExit;
 
   if (fs.fileExists(pluginDefinitionPath)) {
     let status;
-    if ((status = CONFIG_MGR.addConfig(pluginRootPath))) {
-      common.printErrorAndExit(`Could not add config for ${pluginRootPath}, status=${status}`);
+    if ((status = CONFIG_MGR.addConfig(configId))) {
+      printer(`Could not add config for ${pluginRootPath}, status=${status}`);
       return null;
     }
     
-    if ((status = CONFIG_MGR.loadSchemas(pluginRootPath, PLUGIN_DEF_SCHEMAS))) {
-      common.printErrorAndExit(`Could not load schemas ${PLUGIN_DEF_SCHEMAS} for plugin ${pluginRootPath}, status=${status}`);
+    if ((status = CONFIG_MGR.loadSchemas(configId, PLUGIN_DEF_SCHEMAS))) {
+      printer(`Could not load schemas ${PLUGIN_DEF_SCHEMAS} for plugin ${pluginRootPath}, status=${status}`);
       return null;
     }
 
 
-    if ((status = CONFIG_MGR.setConfigPath(pluginRootPath, `FILE(${pluginDefinitionPath})`))) {
-      common.printErrorAndExit(`Could not set config path for ${pluginDefinitionPath}, status=${status}`);
+    if ((status = CONFIG_MGR.setConfigPath(configId, `FILE(${pluginDefinitionPath})`))) {
+      printer(`Could not set config path for ${pluginDefinitionPath}, status=${status}`);
       return null;
     }
-    if ((status = CONFIG_MGR.loadConfiguration(pluginRootPath))) {
-      common.printErrorAndExit(`Could not load config for ${pluginDefinitionPath}, status=${status}`);
+    if ((status = CONFIG_MGR.loadConfiguration(configId))) {
+      printer(`Could not load config for ${pluginDefinitionPath}, status=${status}`);
       return null;
     }
 
-    let validation = CONFIG_MGR.validate(pluginRootPath);
+    let validation = CONFIG_MGR.validate(configId);
     if (validation.ok){
       if (validation.exceptionTree){
         common.printError(`Validation of ${pluginDefinitionPath} against schema ${PLUGIN_DEF_SCHEMA_ID} found invalid JSON Schema data`);
         showExceptions(validation.exceptionTree, 0);
-        std.exit(1);
+        if (!continueOnFailure) {
+          std.exit(1);
+        }
         return null;
       } else {
-        return CONFIG_MGR.getConfigData(pluginRootPath);
+        return CONFIG_MGR.getConfigData(configId);
       }
     } else {
-      common.printErrorAndExit(`Error occurred on validation of ${pluginDefinitionPath} against schema ${PLUGIN_DEF_SCHEMA_ID} `);
+      printer(`Error occurred on validation of ${pluginDefinitionPath} against schema ${PLUGIN_DEF_SCHEMA_ID} `);
       return null;
     }
   } else {
-    common.printErrorAndExit(`Plugin at ${pluginRootPath} has no pluginDefinition.json`);
+    printer(`Plugin at ${pluginRootPath} has no pluginDefinition.json`);
     return null;
   }
 }
