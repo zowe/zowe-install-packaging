@@ -24,6 +24,14 @@
       "minLength": 3,
       "maxLength": 44
     },
+    "datasetVsam": {
+      "$anchor": "zoweDatasetVsam",
+      "type": "string",
+      "description": "A 38-char all caps dotted ZOS name (space for '.INDEX')",
+      "pattern": "^([A-Z\\$\\#\\@]){1}([A-Z0-9\\$\\#\\@\\-]){0,7}(\\.([A-Z\\$\\#\\@]){1}([A-Z0-9\\$\\#\\@\\-]){0,7}){0,11}$",
+      "minLength": 3,
+      "maxLength": 38
+    },
     "datasetMember": {
       "$anchor": "zoweDatasetMember",
       "type": "string",
