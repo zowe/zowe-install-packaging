@@ -90,7 +90,6 @@ zowe:
     # COMPONENT-COMPAT=if component missing schema, skip it with warning instead of quit
     validation: "COMPONENT-COMPAT"
 
-
   # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   # runtime z/OS job name
   job:
