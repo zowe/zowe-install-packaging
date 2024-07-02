@@ -1,6 +1,11 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`Canary tests a test 1`] = `
+exports[`canary run echo 1`] = `
+"
+$ hi"
+`;
+
+exports[`canary run zwe help 1`] = `
 "
 $ zwe 
 
@@ -53,9 +58,4 @@ Example(s)
     zwe init --allow-overwrite --config /path/to/zowe.yaml
     
     zwe start -c /path/to/zowe.yaml"
-`;
-
-exports[`Canary tests run echo 1`] = `
-"
-$ hi"
 `;

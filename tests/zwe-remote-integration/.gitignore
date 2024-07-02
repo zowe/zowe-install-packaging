@@ -1,4 +1,4 @@
 .build/*
 lib/
 reports/*
-resources/custom_config.yml
+resources/custom_config*

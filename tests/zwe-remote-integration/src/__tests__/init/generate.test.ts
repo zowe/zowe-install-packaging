@@ -8,29 +8,30 @@
  * Copyright Contributors to the Zowe Project.
  */
 
-import { REMOTE_SYSTEM_INFO, TEST_COLLECT_SPOOL } from '../../config/TestConfig';
+import { REMOTE_SYSTEM_INFO } from '../../config/TestConfig';
 import ZoweYamlType from '../../config/ZoweYamlType';
 import { RemoteTestRunner } from '../../zos/RemoteTestRunner';
-import { ZoweYaml } from '../../config/ZoweYaml';
+import { ZoweConfig } from '../../config/ZoweConfig';
 import { FileType, TestFileActions, TestFile } from '../../zos/TestFileActions';
 
 const testSuiteName = 'init-generate';
 describe(`${testSuiteName}`, () => {
   let testRunner: RemoteTestRunner;
   let cfgYaml: ZoweYamlType;
+  let defaultCfgYaml: ZoweYamlType;
   let cleanupDatasets: TestFile[] = []; // a list of datasets deleted after every test
 
   beforeAll(() => {
     testRunner = new RemoteTestRunner(testSuiteName);
   });
   beforeEach(() => {
-    cfgYaml = ZoweYaml.basicZoweYaml();
+    cfgYaml = ZoweConfig.getZoweYaml();
+    defaultCfgYaml = ZoweConfig.getDefaultsYaml();
   });
 
   afterEach(async () => {
-    if (TEST_COLLECT_SPOOL) {
-      await testRunner.collectSpool();
-    }
+    await testRunner.postTest();
+
     // re-created in every `init generate` based on changes to zowe yaml command...
     const jcllib: TestFile = { name: REMOTE_SYSTEM_INFO.jcllib, type: FileType.DS_NON_CLUSTER };
 
@@ -61,6 +62,32 @@ describe(`${testSuiteName}`, () => {
       expect(result.stdout).not.toBeNull();
       expect(result.cleanedStdout).toMatchSnapshot();
       expect(result.rc).toBe(0); // 60 is expected...
+    });
+
+    it('BAD: missing defaults.yaml', async () => {
+      await testRunner.removeFileForTest('files/defaults.yaml');
+      const result = await testRunner.runZweTest(cfgYaml, 'init vsam --dry-run');
+      expect(result.stdout).not.toBeNull();
+      expect(result.cleanedStdout).toMatchSnapshot(); // FIXME: the snapshot indicates processing continues when it shouldn't
+      expect(result.rc).not.toBe(0);
+    });
+
+    it('BAD: invalid value defaults.yaml', async () => {
+      // @ts-expect-error intentionally setting an incorrect value
+      defaultCfgYaml.zowe.configmgr.validation = 'WRONG_VALUE';
+      const result = await testRunner.runZweTest(cfgYaml, 'init vsam --dry-run');
+      expect(result.stdout).not.toBeNull();
+      expect(result.cleanedStdout).toMatchSnapshot(); // FIXME: the snapshot indicates processing continues when it shouldn't
+      expect(result.rc).not.toBe(0);
+    });
+
+    it('BAD: invalid format defaults.yaml', async () => {
+      // @ts-expect-error invalid yaml format
+      defaultCfgYaml.zowe = '....\n somefield:\n  #another:\n' + defaultCfgYaml.zowe;
+      const result = await testRunner.runZweTest(cfgYaml, 'init vsam --dry-run');
+      expect(result.stdout).not.toBeNull();
+      expect(result.cleanedStdout).toMatchSnapshot(); // FIXME: the snapshot indicates processing continues when it shouldn't
+      expect(result.rc).not.toBe(0);
     });
   });
 

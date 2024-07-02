@@ -8,10 +8,10 @@
  * Copyright Contributors to the Zowe Project.
  */
 
-import { REMOTE_SYSTEM_INFO, TEST_COLLECT_SPOOL } from '../../config/TestConfig';
+import { REMOTE_SYSTEM_INFO } from '../../config/TestConfig';
 import ZoweYamlType from '../../config/ZoweYamlType';
 import { RemoteTestRunner } from '../../zos/RemoteTestRunner';
-import { ZoweYaml } from '../../config/ZoweYaml';
+import { ZoweConfig } from '../../config/ZoweConfig';
 import { FileType, TestFileActions, TestFile } from '../../zos/TestFileActions';
 
 const testSuiteName = 'init-apfauth';
@@ -24,51 +24,58 @@ describe(`${testSuiteName}`, () => {
     testRunner = new RemoteTestRunner(testSuiteName);
   });
   beforeEach(() => {
-    cfgYaml = ZoweYaml.basicZoweYaml();
+    cfgYaml = ZoweConfig.getZoweYaml();
   });
 
   afterEach(async () => {
-    if (TEST_COLLECT_SPOOL) {
-      await testRunner.collectSpool();
-    }
-    // re-created in every `init` subcommand based on changes to zowe yaml command...
-    const jcllib: TestFile = { name: REMOTE_SYSTEM_INFO.jcllib, type: FileType.DS_NON_CLUSTER };
-
-    // try to delete everything we know about
-    await TestFileActions.deleteAll([...cleanupDatasets, jcllib]);
+    await testRunner.postTest();
+    await TestFileActions.deleteAll(cleanupDatasets);
     cleanupDatasets = [];
   });
 
-  describe('(LONG)', () => {});
-
-  describe('(SHORT)', () => {
-    it('apf disable cfgmgr', async () => {
-      const result = await testRunner.runZweTest(cfgYaml, 'init apfauth');
-      expect(result.stdout).not.toBeNull();
-      expect(result.cleanedStdout).toMatchSnapshot();
-      expect(result.rc).toBe(60); // 60 is expected error code...
+  describe('(LONG)', () => {
+    beforeEach(async () => {
+      // re-created in every `init` subcommand based on changes to zowe yaml command...
+      const jcllib: TestFile = { name: REMOTE_SYSTEM_INFO.jcllib, type: FileType.DS_NON_CLUSTER };
+      // try to delete everything we know about
+      await TestFileActions.deleteAll([jcllib]);
     });
 
     it('apf bad ds prefix', async () => {
-      cfgYaml.zowe.setup.dataset.prefix = 'ZOWEAD3.ZWETEST.NOEXIST';
+      cfgYaml.zowe.setup.dataset.jcllib = 'ZOWEAD3.ZWETEST.NOEXIST';
+      const result = await testRunner.runZweTest(cfgYaml, 'init apfauth --dry-run');
+      expect(result.stdout).not.toBeNull();
+      expect(result.cleanedStdout).toMatchSnapshot();
+      expect(result.rc).toBe(231);
+    });
+  });
+
+  describe('(SHORT)', () => {
+    beforeAll(() => {
+      testRunner.runZweTest(cfgYaml, 'init generate');
+    });
+
+    it('apf bad authLoadLib', async () => {
+      cfgYaml.zowe.setup.dataset.authLoadlib = 'DOES.NOT.EXIST';
       const result = await testRunner.runZweTest(cfgYaml, 'init apfauth --dry-run');
       expect(result.stdout).not.toBeNull();
       expect(result.cleanedStdout).toMatchSnapshot();
       expect(result.rc).toBe(231);
     });
 
-    it('apf dry-run', async () => {
+    it('apf bad authPluginLib', async () => {
+      cfgYaml.zowe.setup.dataset.authPluginLib = 'DOES.NOT.EXIST';
       const result = await testRunner.runZweTest(cfgYaml, 'init apfauth --dry-run');
       expect(result.stdout).not.toBeNull();
       expect(result.cleanedStdout).toMatchSnapshot();
       expect(result.rc).toBe(231);
-    }, 400000);
+    });
 
-    /* it('apf simple --dry-run', async () => {
+    it('apf simple --dry-run', async () => {
       const result = await testRunner.runZweTest(cfgYaml, 'init apfauth --dry-run');
       expect(result.stdout).not.toBeNull();
       expect(result.cleanedStdout).toMatchSnapshot();
-      expect(result.rc).toBe(0); // 60 is expected...
+      expect(result.rc).toBe(60); // 60 is expected...
     });
 
     /* it('apf security-dry-run', async () => {

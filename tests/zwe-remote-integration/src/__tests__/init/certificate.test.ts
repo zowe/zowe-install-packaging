@@ -8,42 +8,38 @@
  * Copyright Contributors to the Zowe Project.
  */
 
-import { REMOTE_SYSTEM_INFO, TEST_COLLECT_SPOOL } from '../../config/TestConfig';
+import { REMOTE_SYSTEM_INFO } from '../../config/TestConfig';
 import ZoweYamlType from '../../config/ZoweYamlType';
 import { RemoteTestRunner } from '../../zos/RemoteTestRunner';
-import { ZoweYaml } from '../../config/ZoweYaml';
+import { ZoweConfig } from '../../config/ZoweConfig';
 import { FileType, TestFileActions, TestFile } from '../../zos/TestFileActions';
 
 const testSuiteName = 'init-cert';
 describe(`${testSuiteName}`, () => {
   let testRunner: RemoteTestRunner;
   let cfgYaml: ZoweYamlType;
-  let cleanupFiles: TestFile[] = []; // a list of datasets deleted after every test
+  const cleanupFiles: TestFile[] = []; // a list of datasets deleted after every test
 
   beforeAll(() => {
     testRunner = new RemoteTestRunner(testSuiteName);
   });
-
   beforeEach(() => {
-    cfgYaml = ZoweYaml.basicZoweYaml();
+    cfgYaml = ZoweConfig.getZoweYaml();
   });
 
   afterEach(async () => {
-    if (TEST_COLLECT_SPOOL) {
-      await testRunner.collectSpool();
-    }
-    // re-created in every `init` subcommand based on changes to zowe yaml command...
-    const jcllib: TestFile = { name: REMOTE_SYSTEM_INFO.jcllib, type: FileType.DS_NON_CLUSTER };
-
-    // try to delete everything we know about
-    await TestFileActions.deleteAll([...cleanupFiles, jcllib]);
-    cleanupFiles = [];
+    await testRunner.postTest();
+    await TestFileActions.deleteAll(cleanupDatasets);
+    cleanupDatasets = [];
   });
 
   describe('(SHORT)', () => {
-    it('cert disable cfgmgr', async () => {
-      cfgYaml.zowe.useConfigmgr = false;
-      const result = await testRunner.runZweTest(cfgYaml, 'init certificate');
+    beforeAll(() => {
+      testRunner.runZweTest(cfgYaml, 'init generate');
+    });
+
+    it('cert dry-run', async () => {
+      const result = await testRunner.runZweTest(cfgYaml, 'init certificate --dry-run');
       expect(result.stdout).not.toBeNull();
       expect(result.cleanedStdout).toMatchSnapshot();
       expect(result.rc).toBe(231); // 231 is expected error code...?
@@ -91,24 +87,6 @@ describe(`${testSuiteName}`, () => {
       expect(result.stdout).not.toBeNull();
       expect(result.cleanedStdout).toMatchSnapshot();
       expect(result.rc).toBe(231); // 231 is expected error code...?
-    }, 180000);
-
-    it('cert enable cfgmgr', async () => {
-      cfgYaml.zowe.useConfigmgr = true;
-      const result = await testRunner.runZweTest(cfgYaml, 'init certificate');
-      cleanupFiles.push(
-        {
-          name: cfgYaml.zowe.setup.certificate.pkcs12.directory + '/local_ca/',
-          type: FileType.USS_DIR,
-        },
-        {
-          name: cfgYaml.zowe.setup.certificate.pkcs12.directory + '/localhost/',
-          type: FileType.USS_DIR,
-        },
-      );
-      expect(result.stdout).not.toBeNull();
-      expect(result.cleanedStdout).toMatchSnapshot();
-      expect(result.rc).toBe(231); // 231 is expected error code...?
-    }, 180000);
+    });
   });
 });

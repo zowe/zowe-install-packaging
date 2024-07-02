@@ -52,7 +52,8 @@ export const THIS_TEST_ROOT_DIR: string = findDirWalkingUpOrThrow('zwe-remote-in
 const configFile = process.env['TEST_CONFIG_FILE'] || `${THIS_TEST_ROOT_DIR}/resources/test_config.yml`;
 const configData = getConfig(configFile);
 
-export const THIS_TEST_BASE_YAML: string = path.resolve(THIS_TEST_ROOT_DIR, '.build', 'zowe.yaml.base');
+export const THIS_TEST_BASE_ZOWE_YAML: string = path.resolve(THIS_TEST_ROOT_DIR, '.build', 'zowe.yaml.base');
+export const THIS_TEST_BASE_DEFAULTS_YAML: string = path.resolve(THIS_TEST_ROOT_DIR, '.build', 'defaults.yaml.base');
 export const TEST_OUTPUT_DIR: string = path.resolve(THIS_TEST_ROOT_DIR, '.build', 'output');
 export const INSTALL_TEST_ROOT_DIR: string = path.resolve(__dirname, '../');
 export const LINGERING_REMOTE_FILES_FILE = path.resolve(THIS_TEST_ROOT_DIR, '.build', 'lingering_ds.txt');
@@ -79,6 +80,8 @@ export const REMOTE_SYSTEM_INFO = {
   szwesamp: `${configData.test_ds_hlq}.SZWESAMP`,
   jcllib: `${configData.test_ds_hlq}.JCLLIB`,
   szweload: `${configData.test_ds_hlq}.SZWELOAD`,
+  authLoadLib: `${configData.test_ds_hlq}.SZWELOAD`,
+  authPluginLib: `${configData.test_ds_hlq}.ZWESAPL`,
   ussTestDir: configData.remote_test_dir,
   hostname: configData.zos_host,
   zosmfPort: configData.zosmf_port,

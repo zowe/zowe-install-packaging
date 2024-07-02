@@ -9,12 +9,12 @@
  */
 
 import { RemoteTestRunner } from '../../zos/RemoteTestRunner';
-import { ZoweYaml } from '../../config/ZoweYaml';
+import { ZoweConfig } from '../../config/ZoweConfig';
 
 /**
  * Make sure the test suite and remote system are working as expected
  */
-const testSuiteName = 'Canary tests';
+const testSuiteName = 'canary';
 describe(testSuiteName, () => {
   let testRunner: RemoteTestRunner;
   beforeAll(() => {
@@ -22,7 +22,7 @@ describe(testSuiteName, () => {
   });
 
   it('run echo', async () => {
-    const cfgYaml = ZoweYaml.basicZoweYaml();
+    const cfgYaml = ZoweConfig.getZoweYaml();
     cfgYaml.java.home = '/ZOWE/node/J21.0_64/';
     const result = await testRunner.runRaw('echo "hi"');
     expect(result.rc).toBe(0);
@@ -30,8 +30,8 @@ describe(testSuiteName, () => {
     expect(result.stdout).toMatchSnapshot();
   });
 
-  it('a test', async () => {
-    const cfgYaml = ZoweYaml.basicZoweYaml();
+  it('run zwe help', async () => {
+    const cfgYaml = ZoweConfig.getZoweYaml();
     cfgYaml.java.home = '/ZOWE/node/J21.0_64/';
     const result = await testRunner.runZweTest(cfgYaml, '--help');
     expect(result.rc).toBe(100); // 100 is expected...

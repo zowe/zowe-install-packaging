@@ -8,10 +8,10 @@
  * Copyright Contributors to the Zowe Project.
  */
 
-import { REMOTE_SYSTEM_INFO, TEST_COLLECT_SPOOL } from '../../config/TestConfig';
+import { REMOTE_SYSTEM_INFO } from '../../config/TestConfig';
 import ZoweYamlType from '../../config/ZoweYamlType';
 import { RemoteTestRunner } from '../../zos/RemoteTestRunner';
-import { ZoweYaml } from '../../config/ZoweYaml';
+import { ZoweConfig } from '../../config/ZoweConfig';
 import { FileType, TestFileActions, TestFile } from '../../zos/TestFileActions';
 
 const testSuiteName = 'init-vsam';
@@ -24,16 +24,15 @@ describe(`${testSuiteName}`, () => {
     testRunner = new RemoteTestRunner(testSuiteName);
   });
   beforeEach(() => {
-    cfgYaml = ZoweYaml.basicZoweYaml();
+    cfgYaml = ZoweConfig.getZoweYaml();
     // customizations for all vsam tests
     cfgYaml.zowe.setup.vsam.name = REMOTE_SYSTEM_INFO.prefix + '.VSAMTEST';
     cfgYaml.zowe.setup.vsam.volume = REMOTE_SYSTEM_INFO.volume;
   });
 
   afterEach(async () => {
-    if (TEST_COLLECT_SPOOL) {
-      await testRunner.collectSpool();
-    }
+    await testRunner.postTest();
+
     // re-created in every `init vsam` based on changes to zowe yaml command...
     const jcllib: TestFile = { name: REMOTE_SYSTEM_INFO.jcllib, type: FileType.DS_NON_CLUSTER };
 
@@ -57,14 +56,15 @@ describe(`${testSuiteName}`, () => {
       const result = await testRunner.runZweTest(cfgYaml, 'init vsam --dry-run');
       expect(result.stdout).not.toBeNull();
       expect(result.cleanedStdout).toMatchSnapshot();
-      expect(result.rc).toBe(143);
+      expect(result.rc).not.toBe(0);
+      expect(result.rc).toBe(143); // is this useful or not 0 enough?
     });
 
     it('GOOD: simple --dry-run', async () => {
       const result = await testRunner.runZweTest(cfgYaml, 'init vsam --dry-run');
       expect(result.stdout).not.toBeNull();
       expect(result.cleanedStdout).toMatchSnapshot();
-      expect(result.rc).toBe(0); 
+      expect(result.rc).toBe(0);
     });
   });
 

@@ -9,11 +9,11 @@
  */
 
 import * as yaml from 'yaml';
-import { THIS_TEST_BASE_YAML } from './TestConfig';
+import { THIS_TEST_BASE_DEFAULTS_YAML, THIS_TEST_BASE_ZOWE_YAML } from './TestConfig';
 import * as fs from 'fs-extra';
 import ZoweYamlType from './ZoweYamlType';
 
-export class ZoweYaml {
+export class ZoweConfig {
   /* public updateField(field: string, value: string) {
     // this.zoweYaml[field] = value;
   }*/
@@ -24,9 +24,15 @@ export class ZoweYaml {
    *
    * @returns ZoweYaml JSON Object
    */
-  static basicZoweYaml(): ZoweYamlType {
-    const fileContents = fs.readFileSync(THIS_TEST_BASE_YAML, 'utf8');
+  static getZoweYaml(): ZoweYamlType {
+    const fileContents = fs.readFileSync(THIS_TEST_BASE_ZOWE_YAML, 'utf8');
     const zoweYaml = yaml.parse(fileContents);
     return zoweYaml as ZoweYamlType;
+  }
+
+  static getDefaultsYaml(): ZoweYamlType {
+    const fileContents = fs.readFileSync(THIS_TEST_BASE_DEFAULTS_YAML, 'utf8');
+    const defaultsYaml = yaml.parse(fileContents);
+    return defaultsYaml as ZoweYamlType;
   }
 }

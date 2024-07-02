@@ -171,7 +171,7 @@ Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWECSVSM) , Executable JCL: TEST.DATASET
    INDEX(NAME(TEST.DATASET.PFX.VSAMTEST.INDEX) -
     UNIQUE)
 //RLS      DD *
-    STORCLAS({zowe.setup.vsam.storageClass}) -
+    STORCLAS() -
     LOG(NONE) -
 //NONRLS   DD *
     VOLUME(TSTVOL) -
@@ -367,7 +367,7 @@ Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWECSVSM) , Executable JCL: TEST.DATASET
    INDEX(NAME(TEST.DATASET.PFX.VSAMTEST.INDEX) -
     UNIQUE)
 //RLS      DD *
-    STORCLAS({zowe.setup.vsam.storageClass}) -
+    STORCLAS() -
     LOG(NONE) -
 //NONRLS   DD *
     VOLUME(TSTVOL) -

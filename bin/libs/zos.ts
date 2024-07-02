@@ -18,7 +18,7 @@ import * as zosDataset from './zos-dataset';
 import * as initGenerate from '../commands/init/generate/index';
 
 export function tsoCommand(...args:string[]): { rc: number, out: string } {
-  let message = "tsocmd " + '"' + args.join(' ') + '"';
+  let message = "tsocmd " + '"' + args.join(' ') + '" < /dev/null';
   common.printDebug('- '+message);
   //we echo at the end to avoid a configmgr quirk where trying to read stdout when empty can hang waiting for bytes
   const result = shell.execOutSync('sh', '-c', `${message} 2>&1 && echo '.'`);

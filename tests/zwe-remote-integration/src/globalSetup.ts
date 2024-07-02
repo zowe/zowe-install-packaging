@@ -22,9 +22,10 @@ import {
   LINGERING_REMOTE_FILES_FILE,
   TEST_JOBS_RUN_FILE,
   TEST_OUTPUT_DIR,
-  THIS_TEST_BASE_YAML,
+  THIS_TEST_BASE_ZOWE_YAML,
   THIS_TEST_ROOT_DIR,
   ZOWE_YAML_OVERRIDES,
+  THIS_TEST_BASE_DEFAULTS_YAML,
 } from './config/TestConfig';
 import * as fs from 'fs-extra';
 import { getSession } from './zos/ZosmfSession';
@@ -48,6 +49,8 @@ function setupBaseYaml() {
   zoweYaml.zowe.setup.vsam.name = REMOTE_SYSTEM_INFO.prefix + '.VSAM';
   zoweYaml.zowe.setup.vsam.volume = REMOTE_SYSTEM_INFO.volume;
   zoweYaml.zowe.setup.certificate.pkcs12.directory = REMOTE_SYSTEM_INFO.ussTestDir;
+  zoweYaml.zowe.setup.dataset.authLoadlib = REMOTE_SYSTEM_INFO.authLoadLib;
+  zoweYaml.zowe.setup.dataset.authPluginLib = REMOTE_SYSTEM_INFO.authPluginLib;
   // zoweYaml.zowe.setup.dataset.loadlib = REMOTE_SYSTEM_INFO.szweexec;
   // zoweYaml.node.home = systemDefaults.zos_node_home;
   // zoweYaml.zowe.runtimeDirectory = systemDefaults.
@@ -55,7 +58,11 @@ function setupBaseYaml() {
   //
   const finalYaml = _.merge({}, zoweYaml, ZOWE_YAML_OVERRIDES);
 
-  fs.writeFileSync(THIS_TEST_BASE_YAML, yaml.stringify(finalYaml));
+  fs.writeFileSync(THIS_TEST_BASE_ZOWE_YAML, yaml.stringify(finalYaml));
+
+  console.log(`Using files/defaults.yaml as base for future defaults.yaml modifications...`);
+  const defaultsYaml: ZoweYamlType = yaml.parse(fs.readFileSync(`${REPO_ROOT_DIR}/files/defaults.yaml`, 'utf8')) as ZoweYamlType;
+  fs.writeFileSync(THIS_TEST_BASE_DEFAULTS_YAML, yaml.stringify(defaultsYaml));
 }
 
 const jf = new JfrogClient({
@@ -231,8 +238,10 @@ module.exports = async () => {
 
     console.log(`Converting everything in ${REMOTE_SYSTEM_INFO.ussTestDir}/bin to EBCDIC...`);
     await uss.runCommand(`chmod +x convert_to_ebcdic.sh && ./convert_to_ebcdic.sh`, REMOTE_SYSTEM_INFO.ussTestDir);
-    await uss.runCommand(`chmod 755 ${REMOTE_SYSTEM_INFO.ussTestDir}/bin/zwe && ` +
-    `chmod 755 ${REMOTE_SYSTEM_INFO.ussTestDir}/bin/utils/opercmd.rex `, REMOTE_SYSTEM_INFO.ussTestDir);
+    await uss.runCommand(
+      `chmod 755 ${REMOTE_SYSTEM_INFO.ussTestDir}/bin/zwe && ` + `chmod 755 ${REMOTE_SYSTEM_INFO.ussTestDir}/bin/utils/opercmd.rex `,
+      REMOTE_SYSTEM_INFO.ussTestDir,
+    );
 
     console.log(`Uploading ${REPO_ROOT_DIR}/schemas to ${REMOTE_SYSTEM_INFO.ussTestDir}/schemas...`);
     await files.Upload.dirToUSSDirRecursive(zosmfSession, `${REPO_ROOT_DIR}/schemas`, `${REMOTE_SYSTEM_INFO.ussTestDir}/schemas/`, {
@@ -260,6 +269,18 @@ module.exports = async () => {
       secondary: 1,
     });
     await createPds(REMOTE_SYSTEM_INFO.szweload, {
+      primary: 5,
+      recfm: 'U',
+      lrecl: 0,
+      secondary: 1,
+    });
+    await createPds(REMOTE_SYSTEM_INFO.authLoadLib, {
+      primary: 5,
+      recfm: 'U',
+      lrecl: 0,
+      secondary: 1,
+    });
+    await createPds(REMOTE_SYSTEM_INFO.authPluginLib, {
       primary: 5,
       recfm: 'U',
       lrecl: 0,
