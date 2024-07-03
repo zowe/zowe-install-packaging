@@ -34,6 +34,7 @@ import ZoweYamlType from './config/ZoweYamlType';
 import { JfrogClient } from 'jfrog-client-js';
 import { processManifestVersion } from './utils';
 import { execSync } from 'child_process';
+import { createPds } from './zos/Files';
 
 const zosmfSession = getSession();
 
@@ -58,11 +59,11 @@ function setupBaseYaml() {
   //
   const finalYaml = _.merge({}, zoweYaml, ZOWE_YAML_OVERRIDES);
 
-  fs.writeFileSync(THIS_TEST_BASE_ZOWE_YAML, yaml.stringify(finalYaml));
+  fs.writeFileSync(THIS_TEST_BASE_ZOWE_YAML, yaml.stringify(finalYaml, { nullStr: '' }));
 
   console.log(`Using files/defaults.yaml as base for future defaults.yaml modifications...`);
   const defaultsYaml: ZoweYamlType = yaml.parse(fs.readFileSync(`${REPO_ROOT_DIR}/files/defaults.yaml`, 'utf8')) as ZoweYamlType;
-  fs.writeFileSync(THIS_TEST_BASE_DEFAULTS_YAML, yaml.stringify(defaultsYaml));
+  fs.writeFileSync(THIS_TEST_BASE_DEFAULTS_YAML, yaml.stringify(defaultsYaml, { nullStr: '' }));
 }
 
 const jf = new JfrogClient({
@@ -315,35 +316,3 @@ module.exports = async () => {
     console.log('Remote server setup complete');
   }
 };
-
-async function createPds(pdsName: string, createOpts: Partial<files.ICreateDataSetOptions>) {
-  const defaultPdsOpts: files.ICreateDataSetOptions = {
-    lrecl: 80,
-    recfm: 'FB',
-    blksize: 32720,
-    alcunit: 'cyl',
-    primary: 10,
-    secondary: 2,
-    dsorg: 'PO',
-    dsntype: 'library',
-    volser: REMOTE_SYSTEM_INFO.volume,
-  };
-  const mergedOpts: Partial<files.ICreateDataSetOptions> = _.merge({}, defaultPdsOpts, createOpts);
-  console.log(`Creating ${pdsName}`);
-  await createDataset(pdsName, files.CreateDataSetTypeEnum.DATA_SET_PARTITIONED, mergedOpts);
-}
-
-async function createDataset(dsName: string, type: files.CreateDataSetTypeEnum, createOpts: Partial<files.ICreateDataSetOptions>) {
-  console.log(`Checking if ${dsName} exists...`);
-  const listPdsResp = await files.List.dataSet(zosmfSession, dsName, {
-    pattern: dsName,
-  });
-  console.log(JSON.stringify(listPdsResp));
-  const respItems: { [key: string]: string }[] = listPdsResp.apiResponse?.items;
-  if (respItems != null && respItems.find((item) => item.dsname === dsName) != null) {
-    console.log(`Pds exists, cleaning up...`);
-    await files.Delete.dataSet(zosmfSession, dsName, {});
-  }
-  console.log(`Creating ${dsName}`);
-  await files.Create.dataSet(zosmfSession, type, dsName, createOpts);
-}

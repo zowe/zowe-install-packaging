@@ -140,7 +140,7 @@ export class RemoteTestRunner {
 
   public async runZweTestWithDefaults(zoweYaml: ZoweYamlType, defaultYaml: ZoweYamlType, cwd: string = REMOTE_SYSTEM_INFO.ussTestDir) {
     const testName = expect.getState().currentTestName.replace(/\s/g, '_').substring(0, 40);
-    const stringDefaultYaml = YAML.stringify(defaultYaml);
+    const stringDefaultYaml = YAML.stringify(defaultYaml, { nullStr: '' });
     const yamlOutputDir = this.yamlOutputTemplate.replace('{{ testInstance }}', testName);
     await this.removeFileForTest('files/defaults.yaml');
     fs.writeFileSync(`${yamlOutputDir}/defaults.yaml.${testName}`, stringDefaultYaml);
@@ -171,7 +171,7 @@ export class RemoteTestRunner {
       command = command.replace(/zwe/, '');
     }
     const testName = expect.getState().currentTestName.replace(/\s/g, '_').substring(0, 40);
-    const stringZoweYaml = YAML.stringify(zoweYaml);
+    const stringZoweYaml = YAML.stringify(zoweYaml, { nullStr: '' });
     const yamlOutputDir = this.yamlOutputTemplate.replace('{{ testInstance }}', testName);
     fs.mkdirpSync(yamlOutputDir);
 

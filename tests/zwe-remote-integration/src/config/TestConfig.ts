@@ -35,6 +35,7 @@ const configFields: ConfigItem<unknown>[] = [
   new ConfigItem('zosmf_port', true),
   new ConfigItem('remote_test_dir', true),
   new ConfigItem('test_ds_hlq', true),
+  new ConfigItem('test_stgclass', true),
   new ConfigItem('test_volume', true),
   new ConfigItem('zosmf_reject_unauthorized', false, false),
   new ConfigItem('download_configmgr', false, true),
@@ -85,6 +86,7 @@ export const REMOTE_SYSTEM_INFO = {
   ussTestDir: configData.remote_test_dir,
   hostname: configData.zos_host,
   zosmfPort: configData.zosmf_port,
+  stgclass: configData.test_stgclass,
 };
 
 export const REMOTE_CONNECTION_CFG = {
@@ -115,6 +117,7 @@ type TestConfigData = {
   jfrog_user: string;
   jfrog_token: string;
   collect_test_spool: string;
+  test_stgclass: string;
   zowe_yaml_overrides: Partial<ZoweYamlType>;
 };
 

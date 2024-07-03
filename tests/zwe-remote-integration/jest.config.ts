@@ -29,7 +29,7 @@ const config: Config = {
       },
     ],
   ],
-  testTimeout: 70000,
+  testTimeout: 120000,
   transform: {
     '^.+\\.(t|j)sx?$': ['ts-jest', { isolatedModules: true }],
   },

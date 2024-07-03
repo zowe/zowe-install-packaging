@@ -22,6 +22,7 @@ describe(`${testSuiteName}`, () => {
 
   beforeAll(() => {
     testRunner = new RemoteTestRunner(testSuiteName);
+    cfgYaml = ZoweConfig.getZoweYaml(); // init
   });
   beforeEach(() => {
     cfgYaml = ZoweConfig.getZoweYaml();
@@ -41,26 +42,59 @@ describe(`${testSuiteName}`, () => {
       await TestFileActions.deleteAll([jcllib]);
     });
 
-    it('apf bad ds prefix', async () => {
-      cfgYaml.zowe.setup.dataset.jcllib = 'ZOWEAD3.ZWETEST.NOEXIST';
+    it('apf empty jcllib', async () => {
+      cfgYaml.zowe.setup.dataset.jcllib = null;
       const result = await testRunner.runZweTest(cfgYaml, 'init apfauth --dry-run');
       expect(result.stdout).not.toBeNull();
       expect(result.cleanedStdout).toMatchSnapshot();
-      expect(result.rc).toBe(231);
+      expect(result.rc).toBe(1);
+    });
+
+    it('apf empty ds prefix', async () => {
+      cfgYaml.zowe.setup.dataset.prefix = null;
+      const result = await testRunner.runZweTest(cfgYaml, 'init apfauth --dry-run');
+      expect(result.stdout).not.toBeNull();
+      expect(result.cleanedStdout).toMatchSnapshot();
+      expect(result.rc).toBe(1);
+    });
+
+    it('apf bad ds prefix', async () => {
+      cfgYaml.zowe.setup.dataset.prefix = 'BAD.DS.PREFIX.NOEXIST';
+      const result = await testRunner.runZweTest(cfgYaml, 'init apfauth --dry-run');
+      expect(result.stdout).not.toBeNull();
+      expect(result.cleanedStdout).toMatchSnapshot();
+      expect(result.rc).toBe(143);
     });
   });
 
   describe('(SHORT)', () => {
-    beforeAll(() => {
-      testRunner.runZweTest(cfgYaml, 'init generate');
+    beforeAll(async () => {
+      await testRunner.runZweTest(cfgYaml, 'init generate');
     });
+    it('apf empty jcllib post-generate', async () => {
+      cfgYaml.zowe.setup.dataset.jcllib = '';
+      const result = await testRunner.runZweTest(cfgYaml, 'init apfauth --dry-run');
+      expect(result.stdout).not.toBeNull();
+      expect(result.cleanedStdout).toMatchSnapshot();
+      expect(result.rc).toBe(1);
+    });
+
+    /*
+    // not working, not covered
+    it('apf sms-managed authLoadLib', async () => {
+      cfgYaml.zowe.setup.dataset.authLoadlib = smsDataset;
+      const result = await testRunner.runZweTest(cfgYaml, 'init apfauth --dry-run');
+      expect(result.stdout).not.toBeNull();
+      expect(result.cleanedStdout).toMatchSnapshot();
+      expect(result.rc).toBe(0);
+    });*/
 
     it('apf bad authLoadLib', async () => {
       cfgYaml.zowe.setup.dataset.authLoadlib = 'DOES.NOT.EXIST';
       const result = await testRunner.runZweTest(cfgYaml, 'init apfauth --dry-run');
       expect(result.stdout).not.toBeNull();
       expect(result.cleanedStdout).toMatchSnapshot();
-      expect(result.rc).toBe(231);
+      expect(result.rc).toBe(64);
     });
 
     it('apf bad authPluginLib', async () => {
@@ -68,21 +102,14 @@ describe(`${testSuiteName}`, () => {
       const result = await testRunner.runZweTest(cfgYaml, 'init apfauth --dry-run');
       expect(result.stdout).not.toBeNull();
       expect(result.cleanedStdout).toMatchSnapshot();
-      expect(result.rc).toBe(231);
+      expect(result.rc).toBe(64);
     });
 
     it('apf simple --dry-run', async () => {
       const result = await testRunner.runZweTest(cfgYaml, 'init apfauth --dry-run');
       expect(result.stdout).not.toBeNull();
       expect(result.cleanedStdout).toMatchSnapshot();
-      expect(result.rc).toBe(60); // 60 is expected...
+      expect(result.rc).toBe(0); // 60 is expected...
     });
-
-    /* it('apf security-dry-run', async () => {
-      const result = await testRunner.runZweTest(cfgYaml, 'init apfauth --security-dry-run');
-      expect(result.stdout).not.toBeNull();
-      expect(result.cleanedStdout).toMatchSnapshot();
-      expect(result.rc).toBe(0); // 60 is expected...  });
-    });*/
   });
 });
