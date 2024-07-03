@@ -52,11 +52,11 @@
       "artifact": "zss-2.16.0-rc-1127-20240502143903.pax"
     },
     "org.zowe.explorer.jobs.jobs-api-package": {
-      "version": "2.0.27",
+      "version": "2.0.29",
       "artifact": "jobs-api-package-*.zip"
     },
     "org.zowe.explorer.files.files-api-package": {
-      "version": "2.0.28",
+      "version": "2.0.29",
       "artifact": "files-api-package-*.zip"
     },
     "org.zowe.explorer-jes": {
@@ -294,14 +294,14 @@
       "componentGroup": "Zowe Explorer Data Sets REST Server",
       "entries": [{
         "repository": "data-sets",
-        "tag": "2.0.28",
+        "tag": "2.0.29",
         "destinations": ["Zowe PAX"]
       }]
     }, {
       "componentGroup": "Zowe Explorer Jobs REST Server",
       "entries": [{
         "repository": "jobs",
-        "tag": "2.0.27",
+        "tag": "2.0.29",
         "destinations": ["Zowe PAX"]
       }]
     },
