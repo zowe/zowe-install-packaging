@@ -178,7 +178,6 @@ zowe:
     # certificate:
     #   # Type of certificate storage. Valid values are: PKCS12, JCEKS, JCECCAKS, JCERACFKS, JCECCARACFKS, or JCEHYBRIDRACFKS
     #   type: JCERACFKS
-    #   createZosmfTrust: true
     #   keyring:
     #     # **COMMONLY_CUSTOMIZED**
     #     # keyring name
