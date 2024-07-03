@@ -71,7 +71,7 @@ function getVersion {
   module=$1
 
   currentVersion="$(getValue "${module}" "(tag|version)")"
-  [[ "${currentVersion}" =~ ^([0-9]+)\. ]]
+  [[ "${currentVersion}" =~ ^[^0-9]([0-9]+)\. ]]
   majorVersion="${BASH_REMATCH[1]}"
 
   [[ "$(getValue "${module}" "name")" =~ .*/(.*) ]]
