@@ -53,30 +53,26 @@
 //* 7) Update the SET ZOWESTC= statement to match the desired
 //*    Zowe started task name.
 //*
-//* 8) Update the SET ZLNCHSTC= statement to match the desired
-//*    Zowe launcher started task name. It is applicable if you
-//*    run Zowe for high availability.
-//*
-//* 9) Update the SET ZISSTC= statement to match the desired
+//* 8) Update the SET ZISSTC= statement to match the desired
 //*    ZIS started task name.
 //*
-//* 10) Update the SET AUXSTC= statement to match the desired
+//* 9) Update the SET AUXSTC= statement to match the desired
 //*    ZIS Auxiliary started task name.
 //*
-//* 11) Update the SET HLQ= statement to match the desired
+//* 10) Update the SET HLQ= statement to match the desired
 //*     Zowe data set high level qualifier.
 //*
-//* 12) Update the SET SYSPROG= statement to match the existing
+//* 11) Update the SET SYSPROG= statement to match the existing
 //*     user ID or group used by z/OS system programmers.
 //*
-//* 13) When not using AUTOUID and AUTOGID to assign z/OS UNIX UID
+//* 12) When not using AUTOUID and AUTOGID to assign z/OS UNIX UID
 //*     and GID values, update the SET *ID= statements to match the
 //*     desired UID and GID values.
 //*
-//* 14) When using Top Secret, update the Top Secret specific SET
+//* 13) When using Top Secret, update the Top Secret specific SET
 //*     statements.
 //*
-//* 15) Customize the commands in the DD statement that matches your
+//* 14) Customize the commands in the DD statement that matches your
 //*     security product so that they meet your system requirements.
 //*
 //* Note(s):
@@ -152,7 +148,6 @@
 //         SET ZOWEUSER=${ZOWEUSER}  * userid for Zowe started task
 //         SET  ZISUSER=${ZISUSER}   * userid for ZIS started task
 //         SET  ZOWESTC=${ZOWESTC}   * Zowe started task name
-//         SET ZLNCHSTC=${ZLNCHSTC}  * Zowe started task name for HA
 //         SET   ZISSTC=${ZISSTC}    * ZIS started task name
 //         SET   AUXSTC=${AUXSTC}    * ZIS AUX started task name
 //         SET      HLQ=${HLQ}       * data set high level qualifier
@@ -283,12 +278,6 @@
    STDATA(USER(&ZOWEUSER.) GROUP(&STCGRP.) TRUSTED(NO)) -
    DATA('ZOWE MAIN SERVER')
 
-/* started task for ZOWE Launcher in high availability               */
-  RLIST   STARTED &ZLNCHSTC..* ALL STDATA
-  RDEFINE STARTED &ZLNCHSTC..* -
-   STDATA(USER(&ZOWEUSER.) GROUP(&STCGRP.) TRUSTED(NO)) -
-   DATA('ZOWE LAUNCHER SERVER')
-
 /* started task for ZIS cross memory server                         */
   RLIST   STARTED &ZISSTC..* ALL STDATA
   RDEFINE STARTED &ZISSTC..* -
@@ -308,7 +297,6 @@
   LISTUSER &ZOWEUSER. OMVS
   LISTUSER &ZISUSER. OMVS
   RLIST STARTED &ZOWESTC..* ALL STDATA
-  RLIST STARTED &ZLNCHSTC..* ALL STDATA
   RLIST STARTED &ZISSTC..* ALL STDATA
   RLIST STARTED &AUXSTC..*  ALL STDATA
 
@@ -408,7 +396,8 @@
 
 /* general data set protection                                       */
   LISTDSD PREFIX(&HLQ.) ALL
-  ADDSD  '&HLQ..*.**' UACC(READ) DATA('Zowe')
+  ADDSD  '&HLQ..*.**' UACC(READ) -
+    DATA('Zowe')
   PERMIT '&HLQ..*.**' CLASS(DATASET) ACCESS(ALTER) ID(&SYSPROG.)
 
   SETROPTS GENERIC(DATASET) REFRESH
@@ -518,14 +507,6 @@ SET CONTROL(GSO)
 INSERT STC.&ZOWESTC. LOGONID(&ZOWEUSER.) +
 GROUP(&STCGRP.) +
 STCID(&ZOWESTC.)
-F ACF2,REFRESH(STC)
-*
-* started task for ZOWE Launcher in high availability
-*
-SET CONTROL(GSO)
-INSERT STC.&ZLNCHSTC. LOGONID(&ZOWEUSER.) +
-GROUP(&STCGRP.) +
-STCID(&ZLNCHSTC.)
 F ACF2,REFRESH(STC)
 *
 * started task for ZIS cross memory server
@@ -719,11 +700,6 @@ $$
 /* started task for ZOWE main server                                 */
   TSS LIST(STC) PROCNAME(&ZOWESTC.) PREFIX
   TSS ADD(STC) PROCNAME(&ZOWESTC.) ACID(&ZOWEUSER.)
-  TSS ADD(&ZOWEUSER.) FAC(STC)
-
-/* started task for ZOWE Launcher in high availability               */
-  TSS LIST(STC) PROCNAME(&ZLNCHSTC.) PREFIX
-  TSS ADD(STC) PROCNAME(&ZLNCHSTC.) ACID(&ZOWEUSER.)
   TSS ADD(&ZOWEUSER.) FAC(STC)
 
 /* started task for ZIS cross memory server                          */
