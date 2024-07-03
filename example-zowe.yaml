@@ -346,6 +346,28 @@ zowe:
   externalPort: 7554
 
   # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+  #
+  # In this section, behavior such as which TLS levels, ciphers should be used, and if native TLS versus AT-TLS should be used.
+  # See the schema for options.
+  # 
+  # This section applies to all components that support it.
+  # So far: "zss" and "app-server"
+  #
+  # This section can be overridden per-component by placing it
+  # Under a "zowe" subsection of a component, as in "components.zss.zowe.network"
+  network:
+    server:
+      tls:
+        attls: false
+        # TLS settings only apply when attls=false
+        # Else you must use AT-TLS configuration for TLS customization.
+        minTls: "TLSv1.2"
+        maxTls: "TLSv1.3"
+    client:
+      tls:
+        attls: false
+
+  # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   # You can un-comment and define any extra environment variables as key/value
   # pairs here.
   # environments:
@@ -497,7 +519,6 @@ components:
     enabled: true
     port: 7554
     debug: false
-
     apiml:
       security:
         auth:
@@ -594,7 +615,6 @@ components:
     enabled: true
     port: 7557
     crossMemoryServerName: ZWESIS_STD
-    tls: true
     agent:
       jwt:
         fallback: true
