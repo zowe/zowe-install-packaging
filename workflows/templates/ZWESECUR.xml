@@ -123,15 +123,6 @@
 		<description>Zowe started task name</description>
 		<category>General Security</category>
 		<string multiLine="false" valueMustBeChoice="false">
-			<default>#ZWESVSTC</default>
-		</string>
-	</variable>
-    <variable name="ZLNCHSTC" scope="instance" visibility="public">
-		<label>ZLNCHSTC</label>
-		<abstract>Zowe started task name for HA</abstract>
-		<description>Zowe started task name for HA</description>
-		<category>General Security</category>
-		<string multiLine="false" valueMustBeChoice="false">
 			<default>#ZWESLSTC</default>
 		</string>
 	</variable>
@@ -265,7 +256,6 @@
     	<variableValue name="STCGDEP" noPromptIfSet="false" required="false" scope="instance"/>
     	<variableValue name="STCUDEP" noPromptIfSet="false" required="false" scope="instance"/>
     	<variableValue name="FACACID" noPromptIfSet="false" required="false" scope="instance"/>
-      <variableValue name="ZLNCHSTC" noPromptIfSet="false" required="false" scope="instance"/>
 		<instructions substitution="false">Run this step to initialize variable values.&lt;br/&gt;
     Note(s):&lt;br/&gt;
        1. THE USER ID THAT RUNS THIS JOB MUST HAVE SUFFICIENT AUTHORITY &lt;br/&gt;
