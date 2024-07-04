@@ -682,6 +682,11 @@
             "alias": {
               "type": "string",
               "description": "Certificate alias name of defined in your PKCS#12 keystore"
+            },
+            "icsfHwKey": {
+              "type": "boolean",
+              "description": "Marks the keyring as ICSF hardware private key storage",
+              "default": false   
             }
           }
         },
