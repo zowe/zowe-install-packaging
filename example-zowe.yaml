@@ -429,6 +429,7 @@ zowe:
       password: password
       # alias is the name of your key/cert. When using keyrings, get the Case Sensitive, Space Sensitive value in a TSO list ring.
       alias: localhost
+      icsfHwKey: false
     truststore:
       # truststore usually has same values as keystore (minus alias), but can be different if desired.
       type: PKCS12

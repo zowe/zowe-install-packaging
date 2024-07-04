@@ -768,6 +768,11 @@
             "alias": {
               "type": "string",
               "description": "Certificate label of z/OS keyring. Case sensitivity and spaces matter."
+            },
+            "icsfHwKey": {
+              "type": "boolean",
+              "description": "Marks the keyring as ICSF hardware private key storage",
+              "default": false   
             }
           }
         },
