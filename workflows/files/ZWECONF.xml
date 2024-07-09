@@ -1147,6 +1147,19 @@ How we want to verify SSL certificates of services. Valid values are:
             <default>ZWESASTC</default>
         </string>
     </variable>
+    <variable name="zowe_setup_installStep_enabled" scope="instance" visibility="public">
+        <label>Install the MVS data sets</label>
+        <abstract>Only for convenience build, check this to enable to run optional step with zwe install command</abstract>
+        <description>Check this to enable optional workflow step with zwe install command. After Zowe convenience build was extracted, 
+            you can enable this flag to run the zwe install command to install MVS data sets within this workflow run. 
+        Only for convenience build, SMP/E installs the MVS data sets during install.</description>
+        <category>installMVSDatasets</category>
+        <boolean>
+            <!-- Put validation here -->
+            <!-- Specify choices here -->
+            <default>false</default>
+        </boolean>
+    </variable>
     <!--atCreate-->
     <!--steps-->
     <step name="define_variables" optional="false">
@@ -1219,6 +1232,7 @@ How we want to verify SSL certificates of services. Valid values are:
             <variableValue name="zowe_setup_security_stcs_zowe" scope="instance" noPromptIfSet="false" required="true"/>
             <variableValue name="zowe_setup_security_stcs_zis" scope="instance" noPromptIfSet="false" required="true"/>
             <variableValue name="zowe_setup_security_stcs_aux" scope="instance" noPromptIfSet="false" required="true"/>
+            <variableValue name="zowe_setup_installStep_enabled" scope="instance" noPromptIfSet="false" required="true"/>
             <instructions>Run this step to fill base variables.</instructions>
             <weight>1</weight>
             <skills>z/OS System Programmer</skills>
@@ -1408,7 +1422,7 @@ How we want to verify SSL certificates of services. Valid values are:
             <variableValue name="zowe_setup_vsam_mode" scope="instance" noPromptIfSet="false" required="true"/>
             <variableValue name="zowe_setup_vsam_volume" scope="instance" noPromptIfSet="false" required="false"/>
             <variableValue name="zowe_setup_vsam_storageClass" scope="instance" noPromptIfSet="false" required="false"/>
-            <variableValue name="components_caching_service_storage_vsam_name" scope="instance" noPromptIfSet="false" required="false"/>
+            <variableValue name="components_caching_service_storage_vsam_name" scope="instance" noPromptIfSet="false" required="true"/>
             <instructions substitution="false">Run this step to specify the variables for the Caching Service</instructions>
             <weight>1</weight>
             <skills>z/OS System Programmer</skills>
@@ -2410,10 +2424,22 @@ echo '#         enabled: false' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
     <step name="zowe_installation_steps" optional="false">
         <title>Zowe installation</title>
         <description>Zowe installation</description>
-        <step name="install_zowe" optional="false">
-            <title>Run the Zowe install</title>
-            <description>Configure the Zowe</description>
-            <prereqStep name="configure"/>
+        <step name="install_zowe" optional="true">
+            <title>Run the Zowe install (only for convenience build)</title>
+            <description>Configure the Zowe.</description>
+            <prereqStep name="main_variables"/>
+            <prereqStep name="configure"/>            
+            <condition>
+                <expression>1==1</expression>
+                <description>Always true</description>
+                <targetStateSet>
+                    <extendStateExpression>
+                        <description>Skips this step if Install the MVS data sets wasn't selected</description>
+                        <expression>!${instance-zowe_setup_installStep_enabled}</expression>
+                        <targetState>skipped</targetState>
+                    </extendStateExpression>
+                </targetStateSet>
+            </condition>
             <!-- condition -->
             <!--variableValues-->
             <instructions substitution="true"><![CDATA[
