@@ -83,7 +83,7 @@ require_java() {
   fi
 
   if [ -z "${JAVA_HOME}" ]; then
-    print_error_and_exit "Error ZWEL0122E: Cannot find java. Set the java.path value in the Zowe YAML, or include java in the PATH environment variable of any accounts that start or manage Zowe" "" 122
+    print_error_and_exit "Error ZWEL0122E: Cannot find java. Set the java.home value in the Zowe YAML, or include java in the PATH environment variable of any accounts that start or manage Zowe" "" 122
   fi
 
   ensure_java_is_on_path
