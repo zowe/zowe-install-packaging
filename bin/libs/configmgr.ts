@@ -249,7 +249,7 @@ function writeZoweConfigUpdate(updateObj: any, arrayMergeStrategy: number): numb
         rc = xplatform.storeFileUTF8(tempFilePath, xplatform.AUTO_DETECT, textOrNull);
         if (rc) { return rc; }        
           
-        const cpCommand=`cp -v "${tempFilePath}" "//'${destination}'"`;
+        const cpCommand=`cp -v "${tempFilePath}" "//'${stringlib.escapeDollar(destination)}'"`;
         console.log('Writing temp file for PARMLIB update. Command= '+cpCommand);
         rc = os.exec(['sh', '-c', cpCommand],
                      {block: true, usePath: true});

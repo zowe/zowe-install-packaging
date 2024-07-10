@@ -73,7 +73,7 @@ export function execute(dryRun?: boolean) {
         let endIndex = part.indexOf(')', memberIndex);
         let member = part.substring(memberIndex+1, endIndex);
         if (member.toUpperCase() != 'ZWEYAML') {
-          common.printErrorAndExit(`ZWEL0318E Configuration stored in PARMLIB must use member name ZWEYAML when using generate action.`, undefined, 318);
+          common.printErrorAndExit(`ZWEL0319E Configuration stored in PARMLIB must use member name ZWEYAML when using generate action.`, undefined, 319);
         }
       }
       configLines.push('PARMLIB ' + part.substring(0, part.indexOf('(')).replace(/[$]/g, '$$$$'));

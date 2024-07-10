@@ -1,4 +1,4 @@
 allow-overwrite,allow-overwritten||boolean|||||Allow overwritten existing MVS data set.
 update-config||boolean|||||Whether to update YAML configuration file with initialization result.
 ignore-security-failures||boolean|||||Whether to ignore security setup job failures.
-security-dry-run,dry-run||boolean|||||Generates and prints JCL but does not execute
+security-dry-run,dry-run||boolean|||||Generates and prints JCL but does not execute.

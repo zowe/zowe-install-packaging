@@ -11,6 +11,8 @@
 # Copyright Contributors to the Zowe Project.
 #######################################################################
 
+print_level1_message "Generate certificate"
+
 ###############################
 # validation
 require_zowe_yaml
@@ -19,6 +21,12 @@ if [ -n "${ZWE_PRIVATE_CONFIG_ORIG}" ]; then
 else
   CONFIG_TO_WRITE=${ZWE_CLI_PARAMETER_CONFIG}
 fi
+
+# Keytool is needed
+require_java
+
+# Node is needed for read_yaml
+require_node
 
 export ZWE_PRIVATE_TMP_MERGED_YAML_DIR=$(create_tmp_file)
 mkdir -p ${ZWE_PRIVATE_TMP_MERGED_YAML_DIR}

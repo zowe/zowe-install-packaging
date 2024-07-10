@@ -19,4 +19,4 @@ Expected outputs:
   * `SZWEAUTH` contains few Zowe load modules (++PROGRAM).
   * `SZWESAMP` contains several sample configurations.
   * `SZWEEXEC` contains few utilities used by Zowe.
-  * `SZWELOAD` contains config manager for rexx.
+  * `SZWELOAD` contains config manager for REXX.

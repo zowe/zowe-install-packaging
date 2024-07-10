@@ -10,6 +10,7 @@
 */
 
 import * as std from 'cm_std';
+import * as os from 'cm_os';
 import * as shell from '../../libs/shell';
 import * as zoslib from '../../libs/zos';
 import * as json from '../../libs/json';
@@ -62,7 +63,8 @@ export function execute(allowOverwrite?: boolean, dryRun?: boolean, ignoreSecuri
   // do we have zowe.runtimeDirectory defined in zowe.yaml?
   const configRuntimeDir = zoweConfig.zowe?.runtimeDirectory;
   if (configRuntimeDir) {
-    if (configRuntimeDir != std.getenv('ZWE_zowe_runtimeDirectory')) {
+    let realPathResult = os.realpath(configRuntimeDir);
+    if (realPathResult[1] != 0 || realPathResult[0] != std.getenv('ZWE_zowe_runtimeDirectory')) {
       common.printErrorAndExit(`Error ZWEL0105E: The Zowe YAML config file is associated to Zowe runtime "${configRuntimeDir}", which is not same as where zwe command is located.`, undefined, 105);
     }
   } else {
@@ -81,7 +83,7 @@ export function execute(allowOverwrite?: boolean, dryRun?: boolean, ignoreSecuri
       if (newZoweRuntimeDir) {
         updateObj.zowe = {runtimeDirectory: newZoweRuntimeDir};
       }
-      json.updateZoweYamlFromObj(std.getenv('ZOWE_CLI_PARAMETER_CONFIG'), updateObj);
+      json.updateZoweYamlFromObj(std.getenv('ZWE_CLI_PARAMETER_CONFIG'), updateObj);
 
       common.printLevel2Message(`Runtime directory, Java and/or node.js settings are updated successfully.`);
     } else {
@@ -100,7 +102,7 @@ export function execute(allowOverwrite?: boolean, dryRun?: boolean, ignoreSecuri
         common.printMessage(`  home: "${newJavaHome}"`);
       }
 
-      common.printLevel2Message(`Please manually update "${std.getenv('ZWE_CLI_PARAMETER_CONFIG')}" before you start Zowe.`);
+      common.printLevel2Message(`Please manually update "${std.getenv('ZWE_PRIVATE_CONFIG_ORIG')}" before you start Zowe.`);
     }
   } else {
     common.printLevel2Message(`No need to update runtime directory, Java and node.js settings.`);

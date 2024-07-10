@@ -1,2 +1,2 @@
 allow-overwrite,allow-overwritten||boolean|||||Allow overwritten existing MVS data set.
-dry-run||boolean|||||Generates and prints JCL but does not execute
+dry-run||boolean|||||Generates and prints JCL but does not execute.

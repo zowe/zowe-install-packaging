@@ -31,7 +31,7 @@ export function execute(allowOverwrite: boolean = false) {
   // constants
   const COMMAND_LIST = std.getenv('ZWE_CLI_COMMANDS_LIST');
   
-   let stcExistence: boolean;
+  let stcExistence: boolean;
   
   // validation
   common.requireZoweYaml();
@@ -68,13 +68,12 @@ export function execute(allowOverwrite: boolean = false) {
 
   [security_stcs_zowe, security_stcs_zis, security_stcsAux].forEach((mb: string) => {
     // STCs in target proclib
-    stcExistence=zosdataset.isDatasetExists(`${proclib}(${mb})`);
-    if (stcExistence == true) {
+    if (zosdataset.isDatasetExists(`${proclib}(${mb})`)) {
+      stcExistence = true;
       if (allowOverwrite) {
         // warning
         common.printMessage(`Warning ZWEL0300W: ${proclib}(${mb}) already exists. This data set member will be overwritten during configuration.`);
       } else {
-        // common.printErrorAndExit(`Error ZWEL0158E: ${proclib}(${mb}) already exists.`, undefined, 158);
         // warning
         common.printMessage(`Warning ZWEL0301W: ${proclib}(${mb}) already exists and will not be overwritten. For upgrades, you must use --allow-overwrite.`);
       }

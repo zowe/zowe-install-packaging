@@ -78,7 +78,7 @@ export function requireNode() {
     }
   }
   if (!std.getenv('NODE_HOME')) {
-    common.printErrorAndExit("Error ZWEL0121E: Cannot find node. Set the node.path value in the Zowe YAML, or include node in the PATH environment variable of any accounts that start or manage Zowe", undefined, 121);
+    common.printErrorAndExit("Error ZWEL0121E: Cannot find node. Set the node.home value in the Zowe YAML, or include node in the PATH environment variable of any accounts that start or manage Zowe", undefined, 121);
   }
 
   ensureNodeIsOnPath();
