@@ -177,22 +177,22 @@
                           "description": "Keystore directory"
                         },
                         "name": {
-                          "type": "string",
+                          "type": [ "string", "null" ],
                           "description": "Certificate alias name. Note: please use all lower cases as alias.",
                           "default": "localhost"
                         },
                         "password": {
-                          "type": "string",
+                          "type": [ "string", "null" ],
                           "description": "Keystore password",
                           "default": "password"
                         },
                         "caAlias": {
-                          "type": "string",
+                          "type": [ "string", "null" ],
                           "description": "Alias name of self-signed certificate authority. Note: please use all lower cases as alias.",
                           "default": "local_ca"
                         },
                         "caPassword": {
-                          "type": "string",
+                          "type": [ "string", "null" ],
                           "description": "Password of keystore stored self-signed certificate authority.",
                           "default": "local_ca_password"
                         },
