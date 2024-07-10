@@ -1,0 +1,266 @@
+//ZWEIKRR1 JOB
+//*
+//* This program and the accompanying materials are made available
+//* under the terms of the Eclipse Public License v2.0 which
+//* accompanies this distribution, and is available at
+//* https://www.eclipse.org/legal/epl-v20.html
+//*
+//* SPDX-License-Identifier: EPL-2.0
+//*
+//* Copyright Contributors to the Zowe Project. 2020, 2020
+//*
+//*********************************************************************
+//*
+//* This JCL can be used to define key ring and certificates for Zowe
+//*
+//* ATTENTION!
+//* Each ZWEIKR JCL is for different ESM and Keyring options.
+//* This one is for generating new certificates
+//* Signed by a Zowe-generated local certificate authority (CA)
+//*
+//*********************************************************************
+//*
+//* CAUTION: This is neither a JCL procedure nor a complete job.
+//* Before using this JCL, you will have to make the following
+//* modifications:
+//*
+//* 1) Add job name and job parameters to the JOB statement, to
+//*    meet your system requirements.
+//*
+//* 2) Update the SET IPADDRES= variable to match the IP address
+//*    where Zowe is to run.
+//*
+//* 3) If you have external certificate authorities for ITRMZWCA
+//*     and/or ROOTZWCA, set IFZOWECA to 1 to connect to Zowe keyring.
+//*
+//* 4) Update the SET ITRMZWCA= variable to match the intermediate
+//*     CA of the Zowe certificate. It is only applicable if Zowe
+//*     certificate signed by a recognized certificate authority (CA).
+//*
+//* 5) Update the SET ROOTZWCA= variable to match the root CA of the
+//*     Zowe certificate. It is only applicable if Zowe certificate
+//*     signed by a recognized certificate authority (CA).
+//*
+//* 6) If you set zowe.verifyCertificates to
+//*     STRICT or NONSTRICT, then set IFROZFCA to 1
+//*     to connect z/OSMF certificate authority to Zowe keyring.
+//*
+//* 7) Customize the commands in the DD statement that matches your
+//*     security product so that they meet your system requirements.
+//*
+//* Note(s):
+//*
+//* 1. The userid that runs this job must have sufficient authority
+//*    to alter security definitions
+//*
+//* 2. Assumption: signing CA chain of the Zowe external certificate is
+//*    added to the security database under the CERTAUTH userid.
+//*
+//* 3. This job WILL complete with return code 0.
+//*    The results of each command must be verified after completion.
+//*
+//*********************************************************************
+//         EXPORT SYMLIST=*
+//*
+//*      * IP address of the system where Zowe is to run
+//         SET IPADDRES=''
+//*      * If you have external certificate authorities for ITRMZWCA
+//*      * and/or ROOTZWCA, set IFZOWECA to 1 to connect to Zowe keyring.
+//         SET IFZOWECA=0
+//*      * Label of the intermediate CA of the Zowe certificate
+//*        if applicable
+//         SET ITRMZWCA=''
+//*      * Label of the root CA of the Zowe certificate if applicable
+//         SET ROOTZWCA=''
+//*      * If you enable VERIFY_CERTIFICATES or
+//*      * NONSTRICT_VERIFY_CERTIFICATES and define ROOTZFCA, set
+//*      * IFROZFCA to 1 to connect z/OSMF certificate authority to
+//*      * Zowe keyring. Otherwise set to 0.
+//         SET IFROZFCA=0
+//*******************************************************************
+//*
+//*      * You do NOT need to set USERNAME when running ZWEGENER.
+//*      * This is used to keep some lines under the column limit.
+//*
+//         SET USERNAME={zowe.setup.security.users.zowe}
+//*
+//*********************************************************************
+//*
+//* EXECUTE COMMANDS FOR SELECTED SECURITY PRODUCT
+//*
+//RUNRACF  EXEC PGM=IKJEFT01,REGION=0M
+//SYSTSPRT DD SYSOUT=*
+//SYSTSIN  DD DDNAME=RACF
+//RACF     DD DATA,DLM=$$,SYMBOLS=JCLONLY
+
+/* Create the keyring .............................................. */
+   RACDCERT ADDRING({zowe.setup.certificate.keyring.name}) +
+            ID({zowe.setup.security.users.zowe})
+   SETROPTS RACLIST(DIGTRING) REFRESH
+$$
+//RUNOPT1  EXEC PGM=IKJEFT01,REGION=0M
+//SYSTSPRT DD SYSOUT=*
+//SYSTSIN  DD DDNAME=RACF
+//RACF     DD DATA,DLM=$$,SYMBOLS=JCLONLY
+
+/* Option 1 - Default Option - BEGINNING ........................... */
+/* Create Zowe's local CA authority .................................*/
+   RACDCERT GENCERT CERTAUTH +
+            SUBJECTSDN( +
+              CN('{zowe.setup.certificate.dname.caCommonName}') +
+              OU('{zowe.setup.certificate.dname.orgUnit}') +
+              O('{zowe.setup.certificate.dname.org}') +
+              L('{zowe.setup.certificate.dname.locality}') +
+              SP('{zowe.setup.certificate.dname.state}') +
+              C('{zowe.setup.certificate.dname.country}')) +
+            SIZE(2048) +
+            NOTAFTER(DATE(2030-05-01)) +
+            WITHLABEL('{zowe.setup.certificate.keyring.caLabel}') +
+            KEYUSAGE(CERTSIGN)
+
+/* Connect Zowe's local CA authority to the keyring ................ */
+   RACDCERT CONNECT(CERTAUTH +
+            LABEL('{zowe.setup.certificate.keyring.caLabel}') +
+            RING({zowe.setup.certificate.keyring.name})) +
+            ID({zowe.setup.security.users.zowe})
+
+/* Create a certificate signed by local zowe's CA .................. */
+   RACDCERT GENCERT ID({zowe.setup.security.users.zowe}) +
+            SUBJECTSDN( +
+              CN('{zowe.setup.certificate.dname.commonName}') +
+              OU('{zowe.setup.certificate.dname.orgUnit}') +
+              O('{zowe.setup.certificate.dname.org}') +
+              L('{zowe.setup.certificate.dname.locality}') +
+              SP('{zowe.setup.certificate.dname.state}') +
+              C('{zowe.setup.certificate.dname.country}')) +
+            SIZE(2048) +
+            NOTAFTER(DATE(2030-05-01)) +
+            WITHLABEL('{zowe.setup.certificate.keyring.label}') +
+            KEYUSAGE(HANDSHAKE) +
+            ALTNAME(IP(&IPADDRES) +
+                DOMAIN('{zowe.externalDomains.0}')) +
+            SIGNWITH(CERTAUTH +
+                LABEL('{zowe.setup.certificate.keyring.caLabel}'))
+
+/* Connect a Zowe's certificate with the keyring ................... */
+   RACDCERT CONNECT(ID({zowe.setup.security.users.zowe}) +
+            LABEL('{zowe.setup.certificate.keyring.label}') +
+            RING({zowe.setup.certificate.keyring.name}) +
+            USAGE(PERSONAL) DEFAULT) +
+            ID({zowe.setup.security.users.zowe})
+
+   SETROPTS RACLIST(DIGTCERT,DIGTRING) REFRESH
+
+$$
+//*
+//IFZWCA   IF (&IFZOWECA EQ 1) THEN
+//RUNZWCA  EXEC PGM=IKJEFT01,REGION=0M
+//SYSTSPRT DD SYSOUT=*
+//SYSTSIN  DD DDNAME=RACF
+//RACF     DD DATA,DLM=$$,SYMBOLS=JCLONLY
+
+/* Connect all CAs of the Zowe certificate's signing chain with the  */
+/* keyring ......................................................... */
+   RACDCERT CONNECT(CERTAUTH +
+            LABEL('&ITRMZWCA.') +
+            RING({zowe.setup.certificate.keyring.name}) +
+            USAGE(CERTAUTH)) +
+            ID({zowe.setup.security.users.zowe})
+
+   RACDCERT CONNECT(CERTAUTH +
+            LABEL('&ROOTZWCA.') +
+            RING({zowe.setup.certificate.keyring.name}) +
+            USAGE(CERTAUTH)) +
+            ID({zowe.setup.security.users.zowe})
+
+   SETROPTS RACLIST(DIGTCERT,DIGTRING) REFRESH
+$$
+//IFZWCAED ENDIF
+//*
+//IFZFCA   IF (&IFROZFCA EQ 1) THEN
+//RUNZFCA  EXEC PGM=IKJEFT01,REGION=0M
+//SYSTSPRT DD SYSOUT=*
+//SYSTSIN  DD DDNAME=RACF
+//RACF     DD DATA,DLM=$$,SYMBOLS=JCLONLY
+
+/* Connect the z/OSMF root CA signed by a recognized certificate ... */
+/* authority (CA) with the keyring ................................. */
+   RACDCERT CONNECT(CERTAUTH +
+            LABEL('{zowe.setup.certificate.keyring.zOSMF.ca}') +
+            RING({zowe.setup.certificate.keyring.name}) +
+            USAGE(CERTAUTH)) +
+            ID({zowe.setup.security.users.zowe})
+
+   SETROPTS RACLIST(DIGTCERT,DIGTRING) REFRESH
+$$
+//IFZFCAED ENDIF
+//*
+//COMRACF  EXEC PGM=IKJEFT01,REGION=0M
+//SYSTSPRT DD SYSOUT=*
+//SYSTSIN  DD DDNAME=RACF
+//RACF     DD DATA,DLM=$$,SYMBOLS=JCLONLY
+
+/* A common part for all options - BEGINNING ....................... */
+
+/* Allow ZOWEUSER to access keyring ................................ */
+
+/* Activate RDATALIB class holding profiles that control ........... */
+/* certificate access  ............................................. */
+   SETROPTS CLASSACT(RDATALIB) RACLIST(RDATALIB)
+
+/* Define profiles that control certificate access ................. */
+   RDEFINE RDATALIB +
+   &USERNAME..{zowe.setup.certificate.keyring.name}.LST +
+   UACC(NONE)
+
+/* Permit server user ID to access key ring and related ............ */
+/* private keys. ................................................... */
+   PERMIT +
+   &USERNAME..{zowe.setup.certificate.keyring.name}.LST +
+   CLASS(RDATALIB) ID({zowe.setup.security.users.zowe}) +
+   ACCESS(CONTROL)
+
+/* Uncomment this command to allow other user to access key ring ... */
+/* PERMIT &USERNAME..{zowe.setup.certificate.keyring.name}.LST +    */
+/*   CLASS(RDATALIB) ID(<user>) +                                    */
+/*        ACCESS(READ)                                               */
+
+/* Refresh to dynamically activate the changes. .................... */
+   SETROPTS RACLIST(RDATALIB) REFRESH
+
+/* IRR.DIGTCERT logic pre-dates RDATALIB logic, and is not used when */
+/* the RDATALIB profile is used. The following PERMIT commands are . */
+/* present for customers who do not wish to use RDATALIB and want to */
+/* continue using their existing IRR.DIGTCERT setup. Note that the . */
+/* PERMIT commands will fail if the IRR.DIGTCERT profiles do not ... */
+/* already exist. .................................................. */
+   PERMIT IRR.DIGTCERT.LISTRING CLASS(FACILITY) +
+          ID({zowe.setup.security.users.zowe}) +
+          ACCESS(READ)
+   PERMIT IRR.DIGTCERT.LIST CLASS(FACILITY) +
+          ID({zowe.setup.security.users.zowe}) +
+          ACCESS(READ)
+
+/* Uncomment this command if SITE user owns the Zowe certificate ... */
+/*  PERMIT IRR.DIGTCERT.GENCERT CLASS(FACILITY)                      */
+/*         ID({zowe.setup.security.users.zowe}) +                   */
+/*         ACCESS(CONTROL)                                           */
+
+   SETROPTS RACLIST(FACILITY) REFRESH
+
+/* show results .................................................... */
+   RLIST  RDATALIB +
+   &USERNAME..{zowe.setup.certificate.keyring.name}.LST ALL
+   RLIST  FACILITY IRR.DIGTCERT.LISTRING ALL
+   RLIST  FACILITY IRR.DIGTCERT.LIST ALL
+   RLIST  FACILITY IRR.DIGTCERT.GENCERT ALL
+
+/* List the keyring ................................................ */
+   RACDCERT LISTRING({zowe.setup.certificate.keyring.name}) +
+   ID({zowe.setup.security.users.zowe})
+
+/* Common part - END ............................................... */
+/* only the last RC is returned, this command ensures it is a 0 .... */
+PROFILE
+$$
+//*
