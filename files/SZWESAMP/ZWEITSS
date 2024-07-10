@@ -99,7 +99,7 @@
 
 /* userid for ZOWE main server                                       */
   TSS LIST({zowe.setup.security.users.zowe}) SEGMENT(OMVS)
-  TSS CREATE({zowe.setup.security.users.zowe}) TYPE(USER) PASS(NOPW,0) +
+  TSS CREATE({zowe.setup.security.users.zowe}) TYPE(USER) PROTECTED +
    NAME('ZOWE MAIN SERVER') +
    DEPT(&STCUDEP.)
    TSS ADD({zowe.setup.security.users.zowe}) +
@@ -109,7 +109,7 @@
 
 /* userid for ZIS cross memory server                                */
   TSS LIST({zowe.setup.security.users.zis}) SEGMENT(OMVS)
-  TSS CREATE({zowe.setup.security.users.zis}) TYPE(USER) PASS(NOPW,0) +
+  TSS CREATE({zowe.setup.security.users.zis}) TYPE(USER) PROTECTED +
    NAME('ZOWE ZIS CROSS MEMORY SERVER') +
    DEPT(&STCUDEP.)
   TSS ADD({zowe.setup.security.users.zis}) +
