@@ -31,7 +31,7 @@ CONFIG_MGR.setTraceLevel(0);
 //these show the list of files used for zowe config prior to merging into a unified one.
 // ZWE_CLI_PARAMETER_CONFIG gets updated to point to the unified one once written.
 const parameterConfig = std.getenv('ZWE_CLI_PARAMETER_CONFIG');
-
+std.setenv('ZWE_PRIVATE_CONFIG_ORIG', parameterConfig);
 /*
   When using configmgr (--configmgr or zowe.useConfigmgr=true)
   the config property of Zowe can take a few shapes:
@@ -40,7 +40,9 @@ const parameterConfig = std.getenv('ZWE_CLI_PARAMETER_CONFIG');
   3. one or more parmlib paths with PARMLIB() syntax, ex PARMLIB(my.zowe(yaml)):PARMLIB(my.other.zowe(yaml)) ... note the member names must be the same for every PARMLIB mentioned!
   4. one or more of FILE and PARMLIB syntax combined, ex FILE(/my/1.yaml):FILE(/my2.yaml):PARMLIB(my.zowe(yaml)):PARMLIB(my.other.zowe(yaml))
  */
-const ZOWE_CONFIG_PATH = (parameterConfig && !parameterConfig.startsWith('FILE(') && !parameterConfig.startsWith('PARMLIB(')) ? `FILE(${parameterConfig})` : parameterConfig;
+const ZOWE_CONFIG_PATH = (parameterConfig && !parameterConfig.startsWith('FILE(') && !parameterConfig.startsWith('PARMLIB('))
+                          ? `FILE(${parameterConfig}):FILE(${std.getenv('ZWE_zowe_runtimeDirectory')}/files/defaults.yaml)`
+                          : parameterConfig + `:FILE(${std.getenv('ZWE_zowe_runtimeDirectory')}/files/defaults.yaml)`;
 let configLoaded = false;
 
 const COMMON_SCHEMA = `${std.getenv('ZWE_zowe_runtimeDirectory')}/schemas/server-common.json`;
@@ -103,7 +105,9 @@ function getTempMergedYamlDir(): string|number {
     const mkdirrc = fs.mkdirp(zwePrivateWorkspaceEnvDir, 0o700);
     if (mkdirrc) { return mkdirrc; }
 
-    console.log(`Temporary directory '${zwePrivateWorkspaceEnvDir}' created.\nZowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.`);
+    if (!std.getenv('ZWE_CLI_PARAMETER_SILENT')) {
+      console.log(`Temporary directory '${zwePrivateWorkspaceEnvDir}' created.\nZowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.`);
+    }
     return zwePrivateWorkspaceEnvDir;
   } else {
     return 0;
@@ -245,7 +249,7 @@ function writeZoweConfigUpdate(updateObj: any, arrayMergeStrategy: number): numb
         rc = xplatform.storeFileUTF8(tempFilePath, xplatform.AUTO_DETECT, textOrNull);
         if (rc) { return rc; }        
           
-        const cpCommand=`cp -v "${tempFilePath}" "//'${destination}'"`;
+        const cpCommand=`cp -v "${tempFilePath}" "//'${stringlib.escapeDollar(destination)}'"`;
         console.log('Writing temp file for PARMLIB update. Command= '+cpCommand);
         rc = os.exec(['sh', '-c', cpCommand],
                      {block: true, usePath: true});
@@ -270,9 +274,7 @@ export function cleanupTempDir() {
     }
     const rc = os.exec(['rm', '-rf', tmpDir],
                        {block: true, usePath: true});
-    if (rc == 0) {
-      console.log(`Temporary directory ${tmpDir} removed successfully.`);
-    } else {
+    if (rc != 0) {
       console.log(`Error: Temporary directory ${tmpDir} was not removed successfully, manual cleanup is needed. rc=${rc}`);
     }
   }
@@ -398,6 +400,7 @@ function getMemberNameFromConfigPath(configPath: string): string|undefined {
       const memberEnd = configPath.indexOf('))', memberStart+1);
       if (memberEnd == -1) {
         console.log(`Error: malformed PARMLIB syntax for ${configPath}. Must use syntax PARMLIB(dataset.name(member))`);
+        return undefined;
       }
       const thisMember = configPath.substring(memberStart+1, memberEnd);
       if (!member) {
