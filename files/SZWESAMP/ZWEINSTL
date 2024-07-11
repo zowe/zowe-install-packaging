@@ -47,8 +47,12 @@ cd '../../components/launcher/bin' &&
 cp zowe_launcher
    "//'{zowe.setup.dataset.prefix}.SZWEAUTH(ZWELNCH)'" &&
 cd '../../zss/SAMPLIB' &&
-cp ZWESASTC ZWESIP00 ZWESISTC ZWESISCH
+cp ZWESIP00 ZWESISCH
    "//'{zowe.setup.dataset.prefix}.SZWESAMP'" &&
+cp ZWESAUX
+   "//'{zowe.setup.dataset.prefix}.SZWESAMP(ZWESASTC)'" &&
+cp ZWESIS01
+   "//'{zowe.setup.dataset.prefix}.SZWESAMP(ZWESISTC)'" &&
 cd '../LOADLIB' &&
 cp ZWESIS01 ZWESAUX ZWESISDL
    "//'{zowe.setup.dataset.prefix}.SZWEAUTH'"
