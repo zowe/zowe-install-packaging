@@ -1351,7 +1351,7 @@ How we want to verify SSL certificates of services. Valid values are:
             <!--template-->
         </step>
         <step name="caching_service_vars" optional="false">
-        <title>Chaching Service variables</title>
+        <title>Caching Service variables</title>
         <description>Specify the variables for the Caching Service</description>
         <step name="caching_service_variables" optional="false">
             <title>Main variables for Caching Service</title>
