@@ -58,23 +58,23 @@
     },
     "org.zowe.apiml.api-catalog-package": {
       "version": "3.0.21-PR-3568-SNAPSHOT",
-      "artifact": "api-catalog-package-3.0.21-PR-3568-20240712.075948-1.zip"
+      "artifact": "api-catalog-package-3.0.21-PR-3568-20240712.145612-2.zip"
     },
     "org.zowe.apiml.discovery-package": {
       "version": "3.0.21-PR-3568-SNAPSHOT",
-      "artifact": "discovery-package-3.0.21-PR-3568-20240712.075948-1.zip"
+      "artifact": "discovery-package-3.0.21-PR-3568-20240712.145612-2.zip"
     },
     "org.zowe.apiml.gateway-package": {
       "version": "3.0.21-PR-3568-SNAPSHOT",
-      "artifact": "gateway-package-3.0.21-PR-3568-20240712.075948-1.zip"
+      "artifact": "gateway-package-3.0.21-PR-3568-20240712.145612-2.zip"
     },
     "org.zowe.apiml.caching-service-package": {
       "version": "3.0.21-PR-3568-SNAPSHOT",
-      "artifact": "caching-service-package-3.0.21-PR-3568-20240712.075948-1.zip"
+      "artifact": "caching-service-package-3.0.21-PR-3568-20240712.145612-2.zip"
     },
     "org.zowe.apiml.apiml-common-lib-package": {
       "version": "3.0.21-PR-3568-SNAPSHOT",
-      "artifact": "apiml-common-lib-package-3.0.21-PR-3568-20240712.075948-1.zip"
+      "artifact": "apiml-common-lib-package-3.0.21-PR-3568-20240712.145612-2.zip"
     },
     "org.zowe.apiml.sdk.common-java-lib-package": {
       "version": "^2.0.0-SNAPSHOT",
@@ -83,11 +83,11 @@
     },
     "org.zowe.apiml.sdk.apiml-sample-extension-package": {
       "version": "3.0.21-PR-3568-SNAPSHOT",
-      "artifact": "apiml-sample-extension-package-3.0.21-PR-3568-20240712.075948-1.zip"
+      "artifact": "apiml-sample-extension-package-3.0.21-PR-3568-20240712.145612-2.zip"
     },
     "org.zowe.apiml.zaas-package": {
       "version": "3.0.21-PR-3568-SNAPSHOT",
-      "artifact": "zaas-package-3.0.21-PR-3568-20240712.075948-1.zip"
+      "artifact": "zaas-package-3.0.21-PR-3568-20240712.145612-2.zip"
     },
     "org.zowe.getesm": {
       "version": "^3.0.0-V3.X-STAGING",
