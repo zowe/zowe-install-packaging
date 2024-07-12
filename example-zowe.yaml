@@ -493,6 +493,18 @@ zOSMF:
 components:
 
   # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+  gateway:
+    enabled: true
+    port: 7554
+    debug: false
+
+    # If we customize this to use different external certificate, than should also
+    # define "server.internal.ssl.certificate" and enable "server.internal.ssl.enabled".
+    # certificate:
+    #   keystore:
+    #     alias: ""
+
+  # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   zaas:
     enabled: true
     port: 7563
@@ -511,19 +523,6 @@ components:
           provider: ""
         x509:
           enabled: false
-
-    # If we customize this to use different external certificate, than should also
-    # define "server.internal.ssl.certificate" and enable "server.internal.ssl.enabled".
-    # certificate:
-    #   keystore:
-    #     alias: ""
-
-  # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-  gateway:
-    enabled: true
-    port: 7554
-    debug: false
-
   # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   api-catalog:
     enabled: true
