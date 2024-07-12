@@ -47,6 +47,7 @@ function setupBaseYaml() {
   zoweYaml.zowe.runtimeDirectory = REMOTE_SYSTEM_INFO.ussTestDir;
   zoweYaml.zowe.setup.dataset.prefix = REMOTE_SYSTEM_INFO.prefix;
   zoweYaml.zowe.setup.dataset.jcllib = REMOTE_SYSTEM_INFO.jcllib;
+  zoweYaml.zowe.setup.dataset.proclib = REMOTE_SYSTEM_INFO.proclib;
   zoweYaml.zowe.setup.vsam.name = REMOTE_SYSTEM_INFO.prefix + '.VSAM';
   zoweYaml.zowe.setup.vsam.volume = REMOTE_SYSTEM_INFO.volume;
   zoweYaml.zowe.setup.certificate.pkcs12.directory = REMOTE_SYSTEM_INFO.ussTestDir;
@@ -264,28 +265,38 @@ module.exports = async () => {
     await createPds(REMOTE_SYSTEM_INFO.szweexec, {
       primary: 5,
       secondary: 1,
+      volser: REMOTE_SYSTEM_INFO.volume,
     });
     await createPds(REMOTE_SYSTEM_INFO.szwesamp, {
       primary: 5,
       secondary: 1,
+      volser: REMOTE_SYSTEM_INFO.volume,
     });
     await createPds(REMOTE_SYSTEM_INFO.szweload, {
       primary: 5,
       recfm: 'U',
       lrecl: 0,
       secondary: 1,
+      volser: REMOTE_SYSTEM_INFO.volume,
+    });
+    await createPds(REMOTE_SYSTEM_INFO.proclib, {
+      primary: 5,
+      secondary: 1,
+      volser: REMOTE_SYSTEM_INFO.volume,
     });
     await createPds(REMOTE_SYSTEM_INFO.authLoadLib, {
       primary: 5,
       recfm: 'U',
       lrecl: 0,
       secondary: 1,
+      volser: REMOTE_SYSTEM_INFO.volume,
     });
     await createPds(REMOTE_SYSTEM_INFO.authPluginLib, {
       primary: 5,
       recfm: 'U',
       lrecl: 0,
       secondary: 1,
+      volser: REMOTE_SYSTEM_INFO.volume,
     });
 
     console.log(`Unpacking configmgr and placing it in bin/utils ...`);

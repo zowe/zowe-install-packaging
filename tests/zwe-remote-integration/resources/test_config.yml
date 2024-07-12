@@ -39,6 +39,8 @@ remote_teardown: true
 test_ds_hlq: 
 # All test suite and test case datasets use the volume specified below
 test_volume:
+# Storclas is used when tests require an SMS managed DS. If missing, SMS tests will be skipped.
+test_storclas:
 zosmf_reject_unauthorized: 
 # Download configmgr and zowe-install-packaging-tools using the manifest.json in this repo.
 ## If set to false, you can use a custom build of either artifact by placing them in the .build/ dir 

@@ -37,6 +37,10 @@ describe(`${testSuiteName}`, () => {
     cleanupDatasets = [];
   });
 
+  afterAll(() => {
+    testRunner.shutdown();
+  });
+
   describe('(LONG)', () => {
     beforeEach(async () => {
       // re-created in every `init` subcommand based on changes to zowe yaml command...
@@ -78,18 +82,30 @@ describe(`${testSuiteName}`, () => {
 
     it('unset ds prefix', async () => {
       cfgYaml.zowe.setup.dataset.prefix = null;
-      const result = await testRunner.runZweTest(cfgYaml, 'init vsam --dry-run');
+      let result = await testRunner.runZweTest(cfgYaml, 'init vsam --dry-run');
       expect(result.stdout).not.toBeNull();
       expect(result.cleanedStdout).toMatchSnapshot();
-      expect(result.rc).toBe(143);
+      expect(result.rc).toBe(1);
+
+      cfgYaml.zowe.setup.dataset.prefix = '';
+      result = await testRunner.runZweTest(cfgYaml, 'init vsam --dry-run');
+      expect(result.stdout).not.toBeNull();
+      expect(result.cleanedStdout).toMatchSnapshot();
+      expect(result.rc).toBe(1);
     });
 
     it('unset jcllib', async () => {
-      cfgYaml.zowe.setup.dataset.prefix = null;
-      const result = await testRunner.runZweTest(cfgYaml, 'init vsam --dry-run');
+      cfgYaml.zowe.setup.dataset.jcllib = null;
+      let result = await testRunner.runZweTest(cfgYaml, 'init vsam --dry-run');
       expect(result.stdout).not.toBeNull();
       expect(result.cleanedStdout).toMatchSnapshot();
-      expect(result.rc).toBe(143);
+      expect(result.rc).toBe(1);
+
+      cfgYaml.zowe.setup.dataset.jcllib = '';
+      result = await testRunner.runZweTest(cfgYaml, 'init vsam --dry-run');
+      expect(result.stdout).not.toBeNull();
+      expect(result.cleanedStdout).toMatchSnapshot();
+      expect(result.rc).toBe(1);
     });
 
     it('invalid NONRLS configurations', async () => {
@@ -225,14 +241,14 @@ describe(`${testSuiteName}`, () => {
       let result = await testRunner.runZweTest(cfgYaml, 'init vsam --dry-run');
       expect(result.stdout).not.toBeNull();
       expect(result.cleanedStdout).toMatchSnapshot();
-      expect(result.rc).toBe(143);
+      expect(result.rc).toBe(1);
 
       // @ts-expect-error forced schema error
       cfgYaml.zowe.setup.vsam.mode = '';
       result = await testRunner.runZweTest(cfgYaml, 'init vsam --dry-run');
       expect(result.stdout).not.toBeNull();
       expect(result.cleanedStdout).toMatchSnapshot();
-      expect(result.rc).toBe(143);
+      expect(result.rc).toBe(1);
     });
 
     it('simple --dry-run', async () => {

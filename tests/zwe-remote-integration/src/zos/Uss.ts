@@ -10,8 +10,9 @@
 
 import { REMOTE_CONNECTION_CFG } from '../config/TestConfig';
 import { Shell, SshSession } from '@zowe/zos-uss-for-zowe-sdk';
+import { SshResponse } from './SshResponse';
 
-export async function runCommand(command: string, cwd: string = '~') {
+export async function runCommand(command: string, cwd: string = '~'): Promise<SshResponse> {
   const session = new SshSession({
     hostname: REMOTE_CONNECTION_CFG.host,
     port: REMOTE_CONNECTION_CFG.ssh_port,
@@ -25,5 +26,5 @@ export async function runCommand(command: string, cwd: string = '~') {
       stdout += data;
     }
   });
-  return { data: stdout, rc: rc };
+  return { data: stdout, rc: rc, error: null };
 }

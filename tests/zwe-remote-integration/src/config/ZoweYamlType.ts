@@ -1018,10 +1018,22 @@ const zoweSchema = zoweYamlSchema as {
         };
       };
     };
-    tlsSettings: {
-      $anchor: 'tlsSettings';
+    nativeTlsSettings: {
+      $anchor: 'nativeTlsSettings';
       type: 'object';
+      additionalProperties: false;
       properties: {
+        attls: {
+          anyOf: [
+            {
+              type: 'string';
+              enum: ['', 'false'];
+            },
+            {
+              const: false;
+            },
+          ];
+        };
         ciphers: {
           type: 'array';
           description: 'Acceptable TLS cipher suites for network connections, in IANA format.';
@@ -1050,6 +1062,16 @@ const zoweSchema = zoweYamlSchema as {
         };
       };
     };
+    attlsSetting: {
+      type: 'object';
+      additionalProperties: false;
+      properties: {
+        attls: {
+          const: true;
+          description: 'Enables AT-TLS for client or server operations. AT-TLS should only be enabled in a z/OS host environment. Servers will be switched into HTTP mode to accomodate z/OS the specific AT-TLS feature which wraps network calls in TLS.';
+        };
+      };
+    };
     networkSettings: {
       type: 'object';
       $anchor: 'networkSettings';
@@ -1058,12 +1080,8 @@ const zoweSchema = zoweYamlSchema as {
       properties: {
         server: {
           type: 'object';
-          additionalProperties: false;
           description: 'Optional, advanced network configuration parameters for Zowe servers';
           properties: {
-            tls: {
-              $ref: '#/$defs/tlsSettings';
-            };
             listenAddresses: {
               type: 'array';
               description: 'The IP addresses which all of the Zowe servers will be binding on and listening to. Some servers may only support listening on the first element.';
@@ -1080,6 +1098,9 @@ const zoweSchema = zoweYamlSchema as {
               default: true;
               description: 'Whether or not to ensure that the port a server is about to use is available. Usually, servers will know this when they attempt to bind to a port, so this option allows you to disable the additional verification step.';
             };
+            tls: {
+              anyOf: [{ $ref: '#/$defs/attlsSetting' }, { $ref: '#/$defs/nativeTlsSettings' }];
+            };
           };
         };
         client: {
@@ -1088,7 +1109,7 @@ const zoweSchema = zoweYamlSchema as {
           description: 'Optional, advanced network configuration parameters for Zowe servers when sending requests as clients.';
           properties: {
             tls: {
-              $ref: '#/$defs/tlsSettings';
+              anyOf: [{ $ref: '#/$defs/attlsSetting' }, { $ref: '#/$defs/nativeTlsSettings' }];
             };
           };
         };

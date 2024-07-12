@@ -1,13 +1,9 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`canary run echo 1`] = `
-"
-$ hi"
-`;
+exports[`canary run echo 1`] = `"hi"`;
 
 exports[`canary run zwe help 1`] = `
-"
-$ zwe 
+"zwe 
 
 ------------------
 Synopsis
@@ -23,18 +19,25 @@ Description
 Global parameters
     --help|-h  (optional)
         Display this help. 
+
     --debug|--verbose|-v  (optional)
         Enable verbose mode. 
+
     --trace|-vv  (optional)
         Enable trace level debug mode. 
+
     --silent|-s  (optional)
         Do not display messages to standard output. 
+
     --log-dir|--log|-l string (optional)
         Write logs to this directory. 
+
     --config|-c string (optional)
         Path to Zowe configuration zowe.yaml file. 
+
     --configmgr  (optional)
         Enable use of configmgr capabilities. 
+
 ------------------
 Available sub-command(s)
     - certificate

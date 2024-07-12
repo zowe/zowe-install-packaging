@@ -18,7 +18,7 @@ const testSuiteName = 'init-cert';
 describe(`${testSuiteName}`, () => {
   let testRunner: RemoteTestRunner;
   let cfgYaml: ZoweYamlType;
-  const cleanupFiles: TestFile[] = []; // a list of datasets deleted after every test
+  let cleanupFiles: TestFile[] = []; // a list of datasets deleted after every test
 
   beforeAll(() => {
     testRunner = new RemoteTestRunner(testSuiteName);
@@ -29,8 +29,12 @@ describe(`${testSuiteName}`, () => {
 
   afterEach(async () => {
     await testRunner.postTest();
-    await TestFileActions.deleteAll(cleanupDatasets);
-    cleanupDatasets = [];
+    await TestFileActions.deleteAll(cleanupFiles);
+    cleanupFiles = [];
+  });
+
+  afterAll(() => {
+    testRunner.shutdown();
   });
 
   describe('(SHORT)', () => {
@@ -44,29 +48,6 @@ describe(`${testSuiteName}`, () => {
       expect(result.cleanedStdout).toMatchSnapshot();
       expect(result.rc).toBe(231); // 231 is expected error code...?
     });
-
-    /*
-    it('cert bad ds prefix', async () => {
-      cfgYaml.zowe.setup.dataset.prefix = 'ZOWEAD3.ZWETEST.NOEXIST';
-      const result = await testRunner.runZweTest(cfgYaml, 'init certificate --dry-run');
-      expect(result.stdout).not.toBeNull();
-      expect(result.cleanedStdout).toMatchSnapshot();
-      expect(result.rc).toBe(231);
-    });
-
-    it('cert simple --dry-run', async () => {
-      const result = await testRunner.runZweTest(cfgYaml, 'init certificate --dry-run');
-      expect(result.stdout).not.toBeNull();
-      expect(result.cleanedStdout).toMatchSnapshot();
-      expect(result.rc).toBe(0); // 60 is expected...
-    });
-
-    /* it('apf security-dry-run', async () => {
-      const result = await testRunner.runZweTest(cfgYaml, 'init apfauth --security-dry-run');
-      expect(result.stdout).not.toBeNull();
-      expect(result.cleanedStdout).toMatchSnapshot();
-      expect(result.rc).toBe(0); // 60 is expected...  });
-    });*/
   });
 
   describe('(LONG)', () => {

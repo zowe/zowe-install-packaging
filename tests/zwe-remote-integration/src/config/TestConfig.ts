@@ -37,6 +37,7 @@ const configFields: ConfigItem<unknown>[] = [
   new ConfigItem('test_ds_hlq', true),
   new ConfigItem('test_stgclass', true),
   new ConfigItem('test_volume', true),
+  new ConfigItem('test_storclas', false),
   new ConfigItem('zosmf_reject_unauthorized', false, false),
   new ConfigItem('download_configmgr', false, true),
   new ConfigItem('download_zowe_tools', false, true),
@@ -61,7 +62,6 @@ export const LINGERING_REMOTE_FILES_FILE = path.resolve(THIS_TEST_ROOT_DIR, '.bu
 export const TEST_JOBS_RUN_FILE = path.resolve(THIS_TEST_ROOT_DIR, '.build', 'jobs-run.txt');
 export const DOWNLOAD_ZOWE_TOOLS = yn(configData.download_zowe_tools, { default: true });
 export const DOWNLOAD_CONFIGMGR = yn(configData.download_configmgr, { default: true });
-export const TEST_DATASETS_HLQ = configData.test_ds_hlq || configData.zos_user + '.ZWETESTS';
 export const REMOTE_SETUP = yn(configData.remote_setup, { default: true });
 export const REMOTE_TEARDOWN = yn(configData.remote_teardown, { default: true });
 export const ZOWE_YAML_OVERRIDES = configData.zowe_yaml_overrides;
@@ -72,17 +72,20 @@ export const JFROG_CREDENTIALS = {
 };
 const ru = yn(configData.zosmf_reject_unauthorized, { default: false });
 
+const testPrefix = `${configData.test_ds_hlq}.ZWETEST`;
 export const REMOTE_SYSTEM_INFO = {
   zosJavaHome: configData.zos_java_home,
   zosNodeHome: configData.zos_node_home,
   volume: configData.test_volume,
-  prefix: configData.test_ds_hlq,
-  szweexec: `${configData.test_ds_hlq}.SZWEEXEC`,
-  szwesamp: `${configData.test_ds_hlq}.SZWESAMP`,
-  jcllib: `${configData.test_ds_hlq}.JCLLIB`,
-  szweload: `${configData.test_ds_hlq}.SZWELOAD`,
-  authLoadLib: `${configData.test_ds_hlq}.SZWELOAD`,
-  authPluginLib: `${configData.test_ds_hlq}.ZWESAPL`,
+  storclas: configData.test_storclas,
+  prefix: testPrefix,
+  szweexec: `${testPrefix}.SZWEEXEC`,
+  szwesamp: `${testPrefix}.SZWESAMP`,
+  jcllib: `${testPrefix}.JCLLIB`,
+  proclib: `${testPrefix}.TEST.PROCLIB`,
+  szweload: `${testPrefix}.SZWELOAD`,
+  authLoadLib: `${testPrefix}.SZWELOAD`,
+  authPluginLib: `${testPrefix}.ZWESAPL`,
   ussTestDir: configData.remote_test_dir,
   hostname: configData.zos_host,
   zosmfPort: configData.zosmf_port,
@@ -109,6 +112,7 @@ type TestConfigData = {
   remote_test_dir: string;
   test_ds_hlq: string;
   test_volume: string;
+  test_storclas: string;
   zosmf_reject_unauthorized: string;
   download_configmgr: string;
   download_zowe_tools: boolean;

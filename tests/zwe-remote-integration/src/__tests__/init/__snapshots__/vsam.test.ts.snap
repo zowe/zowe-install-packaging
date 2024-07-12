@@ -185,9 +185,76 @@ Job ZWECSVSM(JOB00000) completed with RC=0
 "
 `;
 
-exports[`init-vsam (SHORT) invalid NONRLS configurationsabc 1`] = `
-"
-$ Error: Validation of FILE(/test/dir/zowe.test.yaml):FILE(/test/dir/files/defaults.yaml) against schema /test/dir/schemas/zowe-yaml-schema.json:/test/dir/schemas/server-common.json found invalid JSON Schema data
+exports[`init-vsam (SHORT) invalid NONRLS configurations 1`] = `
+"Error: Validation of FILE(/test/dir/zowe.test.yaml):FILE(/test/dir/files/defaults.yaml) against schema /test/dir/schemas/zowe-yaml-schema.json:/test/dir/schemas/server-common.json found invalid JSON Schema data
+Validity Exceptions(s) with object at 
+  Validity Exceptions(s) with object at /zowe
+    Validity Exceptions(s) with object at /zowe/setup
+      Validity Exceptions(s) with object at /zowe/setup/vsam
+        type 'null' not permitted at /zowe/setup/vsam/volume; expecting type 'string'"
+`;
+
+exports[`init-vsam (SHORT) invalid NONRLS configurations 2`] = `
+"Temporary directory '/tmp/.zweenv-0000' created.
+Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
+bos extend currSize=0x0 dataSize=0x103b chunk=0x1000 extend=0x103b
+-------------------------------------------------------------------------------
+>> Initialize Zowe custom data sets
+
+ERROR: Error ZWEL0157E: VSAM parameter (zowe.setup.vsam.volume) is not defined in Zowe YAML configuration file."
+`;
+
+exports[`init-vsam (SHORT) invalid NONRLS configurations 3`] = `
+"Temporary directory '/tmp/.zweenv-0000' created.
+Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
+bos extend currSize=0x0 dataSize=0x1036 chunk=0x1000 extend=0x1036
+-------------------------------------------------------------------------------
+>> Initialize Zowe custom data sets
+
+ERROR: Error ZWEL0157E: VSAM parameter (zowe.setup.vsam.name) is not defined in Zowe YAML configuration file."
+`;
+
+exports[`init-vsam (SHORT) invalid NONRLS configurations 4`] = `
+"Temporary directory '/tmp/.zweenv-0000' created.
+Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
+bos extend currSize=0x0 dataSize=0x1034 chunk=0x1000 extend=0x1034
+-------------------------------------------------------------------------------
+>> Initialize Zowe custom data sets
+
+ERROR: Error ZWEL0157E: VSAM parameter (zowe.setup.vsam.name) is not defined in Zowe YAML configuration file."
+`;
+
+exports[`init-vsam (SHORT) invalid NONRLS configurations 5`] = `
+"Error: Validation of FILE(/test/dir/zowe.test.yaml):FILE(/test/dir/files/defaults.yaml) against schema /test/dir/schemas/zowe-yaml-schema.json:/test/dir/schemas/server-common.json found invalid JSON Schema data
+Validity Exceptions(s) with object at 
+  Validity Exceptions(s) with object at /zowe
+    Validity Exceptions(s) with object at /zowe/setup
+      Validity Exceptions(s) with object at /zowe/setup/vsam
+        type 'null' not permitted at /zowe/setup/vsam/volume; expecting type 'string'"
+`;
+
+exports[`init-vsam (SHORT) invalid NONRLS configurations 6`] = `
+"Temporary directory '/tmp/.zweenv-0000' created.
+Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
+bos extend currSize=0x0 dataSize=0x102d chunk=0x1000 extend=0x102d
+-------------------------------------------------------------------------------
+>> Initialize Zowe custom data sets
+
+ERROR: Error ZWEL0157E: VSAM parameter (zowe.setup.vsam.volume) is not defined in Zowe YAML configuration file."
+`;
+
+exports[`init-vsam (SHORT) invalid NONRLS configurations 7`] = `
+"Temporary directory '/tmp/.zweenv-0000' created.
+Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
+bos extend currSize=0x0 dataSize=0x103f chunk=0x1000 extend=0x103f
+-------------------------------------------------------------------------------
+>> Initialize Zowe custom data sets
+
+ERROR: Error ZWEL0157E: VSAM parameter (zowe.setup.vsam.volume) is not defined in Zowe YAML configuration file."
+`;
+
+exports[`init-vsam (SHORT) invalid RLS configurations 1`] = `
+"Error: Validation of FILE(/test/dir/zowe.test.yaml):FILE(/test/dir/files/defaults.yaml) against schema /test/dir/schemas/zowe-yaml-schema.json:/test/dir/schemas/server-common.json found invalid JSON Schema data
 Validity Exceptions(s) with object at 
   Validity Exceptions(s) with object at /zowe
     Validity Exceptions(s) with object at /zowe/setup
@@ -195,19 +262,18 @@ Validity Exceptions(s) with object at
         type 'null' not permitted at /zowe/setup/vsam/storageClass; expecting type 'string'"
 `;
 
-exports[`init-vsam (SHORT) invalid NONRLS configurationsabc 2`] = `
-"
-$ Temporary directory '/tmp/.zweenv-0000' created.
+exports[`init-vsam (SHORT) invalid RLS configurations 2`] = `
+"Temporary directory '/tmp/.zweenv-0000' created.
 Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
+bos extend currSize=0x0 dataSize=0x103e chunk=0x1000 extend=0x103e
 -------------------------------------------------------------------------------
 >> Initialize Zowe custom data sets
 
 ERROR: Error ZWEL0157E: VSAM parameter (zowe.setup.vsam.storageClass) is not defined in Zowe YAML configuration file."
 `;
 
-exports[`init-vsam (SHORT) invalid NONRLS configurationsabc 3`] = `
-"
-$ Error: Validation of FILE(/test/dir/zowe.test.yaml):FILE(/test/dir/files/defaults.yaml) against schema /test/dir/schemas/zowe-yaml-schema.json:/test/dir/schemas/server-common.json found invalid JSON Schema data
+exports[`init-vsam (SHORT) invalid RLS configurations 3`] = `
+"Error: Validation of FILE(/test/dir/zowe.test.yaml):FILE(/test/dir/files/defaults.yaml) against schema /test/dir/schemas/zowe-yaml-schema.json:/test/dir/schemas/server-common.json found invalid JSON Schema data
 Validity Exceptions(s) with object at 
   Validity Exceptions(s) with object at /zowe
     Validity Exceptions(s) with object at /zowe/setup
@@ -215,22 +281,327 @@ Validity Exceptions(s) with object at
         type 'null' not permitted at /zowe/setup/vsam/storageClass; expecting type 'string'"
 `;
 
-exports[`init-vsam (SHORT) invalid NONRLS configurationsabc 4`] = `
-"
-$ Temporary directory '/tmp/.zweenv-0000' created.
+exports[`init-vsam (SHORT) invalid RLS configurations 4`] = `
+"Temporary directory '/tmp/.zweenv-0000' created.
 Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
+bos extend currSize=0x0 dataSize=0x1030 chunk=0x1000 extend=0x1030
 -------------------------------------------------------------------------------
 >> Initialize Zowe custom data sets
 
 ERROR: Error ZWEL0157E: VSAM parameter (zowe.setup.vsam.storageClass) is not defined in Zowe YAML configuration file."
 `;
 
-exports[`init-vsam (SHORT) invalid NONRLS configurationsabc 5`] = `
-"
-$ Temporary directory '/tmp/.zweenv-0000' created.
+exports[`init-vsam (SHORT) invalid RLS configurations 5`] = `
+"Temporary directory '/tmp/.zweenv-0000' created.
 Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
+bos extend currSize=0x0 dataSize=0x103f chunk=0x1000 extend=0x103f
 -------------------------------------------------------------------------------
 >> Initialize Zowe custom data sets
 
 ERROR: Error ZWEL0157E: VSAM parameter (zowe.setup.vsam.storageClass) is not defined in Zowe YAML configuration file."
+`;
+
+exports[`init-vsam (SHORT) simple --dry-run 1`] = `
+"Temporary directory '/tmp/.zweenv-0000' created.
+Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
+bos extend currSize=0x0 dataSize=0x104b chunk=0x1000 extend=0x104b
+-------------------------------------------------------------------------------
+>> Initialize Zowe custom data sets
+
+Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWECSVSM) , Executable JCL: TEST.DATASET.PFX.JCLLIB(ZWECSVSM)
+--- JCL Content ---
+//ZWECSVSM JOB
+//*
+//* This program and the accompanying materials are made available
+//* under the terms of the Eclipse Public License v2.0 which
+//* accompanies this distribution, and is available at
+//* https://www.eclipse.org/legal/epl-v20.html
+//*
+//* SPDX-License-Identifier: EPL-2.0
+//*
+//* Copyright Contributors to the Zowe Project. 2020, 2020
+//*
+//*********************************************************************
+//*
+//* Zowe Open Source Project
+//* This JCL creates the VSAM data set for the Caching Service.
+//*
+//*
+//* CAUTION: This is neither a JCL procedure nor a complete job.
+//* Before using this JCL, you will have to make the following
+//* modifications:
+//*
+//* 1) Add job name and job parameters to the JOB statement, to
+//*    meet your system requirements.
+//*
+//* When using RLS, customize the definitions in the RLS DD:
+//*
+//* 2) Optionally, change LOG option NONE to UNDO or ALL to set the
+//*    desired recovery options for the RLS VSAM.
+//*
+//*
+//* Note(s):
+//*
+//* 1. This job should complete with return code 0.
+//*
+//********************************************************************
+//*
+//ALLOC    EXEC PGM=IDCAMS,REGION=0M
+//SYSPRINT DD SYSOUT=*
+//SYSIN    DD *
+  DEFINE CLUSTER -
+   (NAME(TEST.DATASET.PFX.VSAM) -
+//         DD DDNAME=NONRLS
+//         DD *
+    REC(80 20) -
+    INDEXED) -
+   DATA(NAME(TEST.DATASET.PFX.VSAM.DATA) -
+    RECSZ(4096 4096) -
+    UNIQUE -
+    KEYS(128 0)) -
+   INDEX(NAME(TEST.DATASET.PFX.VSAM.INDEX) -
+    UNIQUE)
+//RLS      DD *
+    STORCLAS() -
+    LOG(NONE) -
+//NONRLS   DD *
+    VOLUME(TSTVOL) -
+    SHAREOPTIONS(2 3) -
+//*
+--- End of JCL ---
+JCL not submitted, command run with "--dry-run" flag.
+To perform command, re-run command without "--dry-run" flag, or submit the JCL directly
+
+>> Command run successfully.
+
+
+>> Zowe Caching Service VSAM storage is created successfully."
+`;
+
+exports[`init-vsam (SHORT) skip non-vsam caching service 1`] = `
+"Temporary directory '/tmp/.zweenv-0000' created.
+Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
+bos extend currSize=0x0 dataSize=0x1051 chunk=0x1000 extend=0x1051
+-------------------------------------------------------------------------------
+>> Initialize Zowe custom data sets
+
+ERROR: Warning ZWEL0301W: Zowe Caching Service is not configured to use VSAM. Command skipped."
+`;
+
+exports[`init-vsam (SHORT) skip undefined caching service 1`] = `
+"Error: Validation of FILE(/test/dir/zowe.test.yaml):FILE(/test/dir/files/defaults.yaml) against schema /test/dir/schemas/zowe-yaml-schema.json:/test/dir/schemas/server-common.json found invalid JSON Schema data
+Validity Exceptions(s) with object at 
+  type 'null' not permitted at /components; expecting type 'object'"
+`;
+
+exports[`init-vsam (SHORT) unset ds prefix 1`] = `
+"Error: Validation of FILE(/test/dir/zowe.test.yaml):FILE(/test/dir/files/defaults.yaml) against schema /test/dir/schemas/zowe-yaml-schema.json:/test/dir/schemas/server-common.json found invalid JSON Schema data
+Validity Exceptions(s) with object at 
+  Validity Exceptions(s) with object at /zowe
+    Validity Exceptions(s) with object at /zowe/setup
+      Validity Exceptions(s) with object at /zowe/setup/dataset
+        type 'null' not permitted at /zowe/setup/dataset/prefix; expecting type 'string'"
+`;
+
+exports[`init-vsam (SHORT) unset ds prefix 2`] = `
+"Error: Validation of FILE(/test/dir/zowe.test.yaml):FILE(/test/dir/files/defaults.yaml) against schema /test/dir/schemas/zowe-yaml-schema.json:/test/dir/schemas/server-common.json found invalid JSON Schema data
+Validity Exceptions(s) with object at 
+  Validity Exceptions(s) with object at /zowe
+    Validity Exceptions(s) with object at /zowe/setup
+      Validity Exceptions(s) with object at /zowe/setup/dataset
+        Validity Exceptions(s) with string at /zowe/setup/dataset/prefix
+          string too short (len=0) '' 0 < MIN=3 at /zowe/setup/dataset/prefix
+          string pattern match fail s='', pat='^([A-Z\\$\\#\\@]){1}([A-Z0-9\\$\\#\\@\\-]){0,7}(\\.([A-Z\\$\\#\\@]){1}([A-Z0-9\\$\\#\\@\\-]){0,7}){0,11}$', at /zowe/setup/dataset/prefix"
+`;
+
+exports[`init-vsam (SHORT) unset jcllib 1`] = `
+"Error: Validation of FILE(/test/dir/zowe.test.yaml):FILE(/test/dir/files/defaults.yaml) against schema /test/dir/schemas/zowe-yaml-schema.json:/test/dir/schemas/server-common.json found invalid JSON Schema data
+Validity Exceptions(s) with object at 
+  Validity Exceptions(s) with object at /zowe
+    Validity Exceptions(s) with object at /zowe/setup
+      Validity Exceptions(s) with object at /zowe/setup/dataset
+        type 'null' not permitted at /zowe/setup/dataset/prefix; expecting type 'string'"
+`;
+
+exports[`init-vsam (SHORT) unset jcllib 2`] = `
+"Error: Validation of FILE(/test/dir/zowe.test.yaml):FILE(/test/dir/files/defaults.yaml) against schema /test/dir/schemas/zowe-yaml-schema.json:/test/dir/schemas/server-common.json found invalid JSON Schema data
+Validity Exceptions(s) with object at 
+  Validity Exceptions(s) with object at /zowe
+    Validity Exceptions(s) with object at /zowe/setup
+      Validity Exceptions(s) with object at /zowe/setup/dataset
+        Validity Exceptions(s) with string at /zowe/setup/dataset/prefix
+          string too short (len=0) '' 0 < MIN=3 at /zowe/setup/dataset/prefix
+          string pattern match fail s='', pat='^([A-Z\\$\\#\\@]){1}([A-Z0-9\\$\\#\\@\\-]){0,7}(\\.([A-Z\\$\\#\\@]){1}([A-Z0-9\\$\\#\\@\\-]){0,7}){0,11}$', at /zowe/setup/dataset/prefix"
+`;
+
+exports[`init-vsam (SHORT) unset vsam mode 1`] = `
+"Error: Validation of FILE(/test/dir/zowe.test.yaml):FILE(/test/dir/files/defaults.yaml) against schema /test/dir/schemas/zowe-yaml-schema.json:/test/dir/schemas/server-common.json found invalid JSON Schema data
+Validity Exceptions(s) with object at 
+  Validity Exceptions(s) with object at /zowe
+    Validity Exceptions(s) with object at /zowe/setup
+      Validity Exceptions(s) with object at /zowe/setup/vsam
+        no matching enum value at /zowe/setup/vsam/mode; expecting one of values '[NONRLS, RLS]' of type 'string'"
+`;
+
+exports[`init-vsam (SHORT) unset vsam mode 2`] = `
+"Error: Validation of FILE(/test/dir/zowe.test.yaml):FILE(/test/dir/files/defaults.yaml) against schema /test/dir/schemas/zowe-yaml-schema.json:/test/dir/schemas/server-common.json found invalid JSON Schema data
+Validity Exceptions(s) with object at 
+  Validity Exceptions(s) with object at /zowe
+    Validity Exceptions(s) with object at /zowe/setup
+      Validity Exceptions(s) with object at /zowe/setup/vsam
+        no matching enum value at /zowe/setup/vsam/mode; expecting one of values '[NONRLS, RLS]' of type 'string'"
+`;
+
+exports[`init-vsam (SHORT) valid NONRLS configurations 1`] = `
+"Temporary directory '/tmp/.zweenv-0000' created.
+Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
+bos extend currSize=0x0 dataSize=0x1041 chunk=0x1000 extend=0x1041
+-------------------------------------------------------------------------------
+>> Initialize Zowe custom data sets
+
+Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWECSVSM) , Executable JCL: TEST.DATASET.PFX.JCLLIB(ZWECSVSM)
+--- JCL Content ---
+//ZWECSVSM JOB
+//*
+//* This program and the accompanying materials are made available
+//* under the terms of the Eclipse Public License v2.0 which
+//* accompanies this distribution, and is available at
+//* https://www.eclipse.org/legal/epl-v20.html
+//*
+//* SPDX-License-Identifier: EPL-2.0
+//*
+//* Copyright Contributors to the Zowe Project. 2020, 2020
+//*
+//*********************************************************************
+//*
+//* Zowe Open Source Project
+//* This JCL creates the VSAM data set for the Caching Service.
+//*
+//*
+//* CAUTION: This is neither a JCL procedure nor a complete job.
+//* Before using this JCL, you will have to make the following
+//* modifications:
+//*
+//* 1) Add job name and job parameters to the JOB statement, to
+//*    meet your system requirements.
+//*
+//* When using RLS, customize the definitions in the RLS DD:
+//*
+//* 2) Optionally, change LOG option NONE to UNDO or ALL to set the
+//*    desired recovery options for the RLS VSAM.
+//*
+//*
+//* Note(s):
+//*
+//* 1. This job should complete with return code 0.
+//*
+//********************************************************************
+//*
+//ALLOC    EXEC PGM=IDCAMS,REGION=0M
+//SYSPRINT DD SYSOUT=*
+//SYSIN    DD *
+  DEFINE CLUSTER -
+   (NAME(TEST.DATASET.PFX.VSAM) -
+//         DD DDNAME=NONRLS
+//         DD *
+    REC(80 20) -
+    INDEXED) -
+   DATA(NAME(TEST.DATASET.PFX.VSAM.DATA) -
+    RECSZ(4096 4096) -
+    UNIQUE -
+    KEYS(128 0)) -
+   INDEX(NAME(TEST.DATASET.PFX.VSAM.INDEX) -
+    UNIQUE)
+//RLS      DD *
+    STORCLAS() -
+    LOG(NONE) -
+//NONRLS   DD *
+    VOLUME(TSTVOL) -
+    SHAREOPTIONS(2 3) -
+//*
+--- End of JCL ---
+JCL not submitted, command run with "--dry-run" flag.
+To perform command, re-run command without "--dry-run" flag, or submit the JCL directly
+
+>> Command run successfully.
+
+
+>> Zowe Caching Service VSAM storage is created successfully."
+`;
+
+exports[`init-vsam (SHORT) valid RLS configuration 1`] = `
+"Temporary directory '/tmp/.zweenv-0000' created.
+Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
+bos extend currSize=0x0 dataSize=0x1044 chunk=0x1000 extend=0x1044
+-------------------------------------------------------------------------------
+>> Initialize Zowe custom data sets
+
+Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWECSVSM) , Executable JCL: TEST.DATASET.PFX.JCLLIB(ZWECSVSM)
+--- JCL Content ---
+//ZWECSVSM JOB
+//*
+//* This program and the accompanying materials are made available
+//* under the terms of the Eclipse Public License v2.0 which
+//* accompanies this distribution, and is available at
+//* https://www.eclipse.org/legal/epl-v20.html
+//*
+//* SPDX-License-Identifier: EPL-2.0
+//*
+//* Copyright Contributors to the Zowe Project. 2020, 2020
+//*
+//*********************************************************************
+//*
+//* Zowe Open Source Project
+//* This JCL creates the VSAM data set for the Caching Service.
+//*
+//*
+//* CAUTION: This is neither a JCL procedure nor a complete job.
+//* Before using this JCL, you will have to make the following
+//* modifications:
+//*
+//* 1) Add job name and job parameters to the JOB statement, to
+//*    meet your system requirements.
+//*
+//* When using RLS, customize the definitions in the RLS DD:
+//*
+//* 2) Optionally, change LOG option NONE to UNDO or ALL to set the
+//*    desired recovery options for the RLS VSAM.
+//*
+//*
+//* Note(s):
+//*
+//* 1. This job should complete with return code 0.
+//*
+//********************************************************************
+//*
+//ALLOC    EXEC PGM=IDCAMS,REGION=0M
+//SYSPRINT DD SYSOUT=*
+//SYSIN    DD *
+  DEFINE CLUSTER -
+   (NAME(TEST.DATASET.PFX.VSAM) -
+//         DD DDNAME=NONRLS
+//         DD *
+    REC(80 20) -
+    INDEXED) -
+   DATA(NAME(TEST.DATASET.PFX.VSAM.DATA) -
+    RECSZ(4096 4096) -
+    UNIQUE -
+    KEYS(128 0)) -
+   INDEX(NAME(TEST.DATASET.PFX.VSAM.INDEX) -
+    UNIQUE)
+//RLS      DD *
+    STORCLAS() -
+    LOG(NONE) -
+//NONRLS   DD *
+    VOLUME(TSTVOL) -
+    SHAREOPTIONS(2 3) -
+//*
+--- End of JCL ---
+JCL not submitted, command run with "--dry-run" flag.
+To perform command, re-run command without "--dry-run" flag, or submit the JCL directly
+
+>> Command run successfully.
+
+
+>> Zowe Caching Service VSAM storage is created successfully."
 `;

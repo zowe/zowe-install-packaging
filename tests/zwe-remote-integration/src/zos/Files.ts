@@ -8,10 +8,24 @@
  * Copyright Contributors to the Zowe Project.
  */
 
-import { REMOTE_SYSTEM_INFO } from '../config/TestConfig';
 import * as files from '@zowe/zos-files-for-zowe-sdk';
 import { getSession } from './ZosmfSession';
 import _ from 'lodash';
+
+export async function uploadMember(pdsName: string, memberName: string, content: string) {
+  const listPdsResp = await files.List.dataSet(getSession(), pdsName, {
+    pattern: pdsName,
+  });
+  const respItems: { [key: string]: string }[] = listPdsResp.apiResponse?.items;
+  if (respItems?.find((item) => item.dsname === pdsName) == null) {
+    console.log(`Couldn't find dataset to upload member to, aborting...`);
+    throw new Error(`Uploading member to dataset which doesn't exist`);
+  }
+  const uplResp = await files.Upload.bufferToDataSet(getSession(), Buffer.from(content, 'utf-8'), `${pdsName}(${memberName})`);
+  if (!uplResp.success) {
+    throw new Error(`Failed to upload content to ${pdsName}(${memberName}), details: ${uplResp.apiResponse}`);
+  }
+}
 
 export async function createPds(pdsName: string, createOpts: Partial<files.ICreateDataSetOptions>) {
   const defaultPdsOpts: files.ICreateDataSetOptions = {
@@ -23,7 +37,6 @@ export async function createPds(pdsName: string, createOpts: Partial<files.ICrea
     secondary: 2,
     dsorg: 'PO',
     dsntype: 'library',
-    volser: REMOTE_SYSTEM_INFO.volume,
   };
   const mergedOpts: Partial<files.ICreateDataSetOptions> = _.merge({}, defaultPdsOpts, createOpts);
   console.log(`Creating ${pdsName}`);
@@ -39,7 +52,6 @@ export async function createDataset(
   const listPdsResp = await files.List.dataSet(getSession(), dsName, {
     pattern: dsName,
   });
-  console.log(JSON.stringify(listPdsResp));
   const respItems: { [key: string]: string }[] = listPdsResp.apiResponse?.items;
   if (respItems?.find((item) => item.dsname === dsName) != null) {
     console.log(`Pds exists, cleaning up...`);

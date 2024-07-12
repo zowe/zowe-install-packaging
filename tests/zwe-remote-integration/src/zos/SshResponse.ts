@@ -8,6 +8,8 @@
  * Copyright Contributors to the Zowe Project.
  */
 
-const testSuiteName = 'init-stc';
-describe(`${testSuiteName}`, () => {});
-export {}; // remove when tests are written
+export type SshResponse = {
+  rc: number;
+  error: string | undefined;
+  data: string | undefined;
+};

@@ -21,6 +21,10 @@ describe(testSuiteName, () => {
     testRunner = new RemoteTestRunner('canary');
   });
 
+  afterAll(() => {
+    testRunner.shutdown();
+  });
+
   it('run echo', async () => {
     const cfgYaml = ZoweConfig.getZoweYaml();
     cfgYaml.java.home = '/ZOWE/node/J21.0_64/';

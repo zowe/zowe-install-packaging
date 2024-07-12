@@ -40,6 +40,10 @@ describe(`${testSuiteName}`, () => {
     cleanupDatasets = [];
   });
 
+  afterAll(() => {
+    testRunner.shutdown();
+  });
+
   describe('(SHORT)', () => {
     it('disable cfgmgr', async () => {
       cfgYaml.zowe.useConfigmgr = false;
@@ -91,5 +95,13 @@ describe(`${testSuiteName}`, () => {
     });
   });
 
-  describe('(LONG)', () => {});
+  describe('(LONG)', () => {
+    it('missing proclib with valid stcs abc', async () => {
+      cfgYaml.zowe.setup.dataset.proclib = `${REMOTE_SYSTEM_INFO.prefix}.NOEXIST.PROC`;
+      const result = await testRunner.runZweTest(cfgYaml, 'init stc --dry-run');
+      expect(result.stdout).not.toBeNull();
+      expect(result.cleanedStdout).toMatchSnapshot();
+      expect(result.rc).toBe(1);
+    });
+  });
 });

@@ -10,6 +10,7 @@
 
 import { REMOTE_SYSTEM_INFO } from '../../config/TestConfig';
 import ZoweYamlType from '../../config/ZoweYamlType';
+import * as zosfiles from '../../zos/Files';
 import { RemoteTestRunner } from '../../zos/RemoteTestRunner';
 import { ZoweConfig } from '../../config/ZoweConfig';
 import { FileType, TestFileActions, TestFile } from '../../zos/TestFileActions';
@@ -32,6 +33,10 @@ describe(`${testSuiteName}`, () => {
     await testRunner.postTest();
     await TestFileActions.deleteAll(cleanupDatasets);
     cleanupDatasets = [];
+  });
+
+  afterAll(() => {
+    testRunner.shutdown();
   });
 
   describe('(LONG)', () => {
@@ -79,15 +84,54 @@ describe(`${testSuiteName}`, () => {
       expect(result.rc).toBe(1);
     });
 
-    /*
-    // not working, not covered
-    it('apf sms-managed authLoadLib', async () => {
-      cfgYaml.zowe.setup.dataset.authLoadlib = smsDataset;
-      const result = await testRunner.runZweTest(cfgYaml, 'init apfauth --dry-run');
-      expect(result.stdout).not.toBeNull();
-      expect(result.cleanedStdout).toMatchSnapshot();
-      expect(result.rc).toBe(0);
-    });*/
+    if (REMOTE_SYSTEM_INFO?.storclas.length > 0) {
+      it('apf sms-managed authLoadLib', async () => {
+        const smsDs = `${REMOTE_SYSTEM_INFO.prefix}.APF.LOADLIB`;
+        await zosfiles.createPds(smsDs, {
+          storclass: REMOTE_SYSTEM_INFO.storclas,
+        });
+        cleanupDatasets.push({ name: smsDs, type: FileType.DS_NON_CLUSTER });
+        cfgYaml.zowe.setup.dataset.authLoadlib = smsDs;
+        const result = await testRunner.runZweTest(cfgYaml, 'init apfauth --dry-run');
+        expect(result.stdout).not.toBeNull();
+        expect(result.cleanedStdout).toMatchSnapshot();
+        expect(result.rc).toBe(0);
+      });
+      it('apf sms-managed authPluginLib', async () => {
+        const smsDs = `${REMOTE_SYSTEM_INFO.prefix}.APF.PLUGLIB`;
+        await zosfiles.createPds(smsDs, {
+          storclass: REMOTE_SYSTEM_INFO.storclas,
+        });
+        cleanupDatasets.push({ name: smsDs, type: FileType.DS_NON_CLUSTER });
+        cfgYaml.zowe.setup.dataset.authPluginLib = smsDs;
+        const result = await testRunner.runZweTest(cfgYaml, 'init apfauth --dry-run');
+        expect(result.stdout).not.toBeNull();
+        expect(result.cleanedStdout).toMatchSnapshot();
+        expect(result.rc).toBe(0);
+      });
+      it('apf sms-managed authLoadLib and authPluginLib', async () => {
+        const loadSmsDs = `${REMOTE_SYSTEM_INFO.prefix}.APF.LOADLIB`;
+        const plugSmsDs = `${REMOTE_SYSTEM_INFO.prefix}.APF.PLUGLIB`;
+        await zosfiles.createPds(loadSmsDs, {
+          storclass: REMOTE_SYSTEM_INFO.storclas,
+        });
+        await zosfiles.createPds(plugSmsDs, {
+          storclass: REMOTE_SYSTEM_INFO.storclas,
+        });
+        cleanupDatasets.push({ name: loadSmsDs, type: FileType.DS_NON_CLUSTER });
+        cleanupDatasets.push({ name: plugSmsDs, type: FileType.DS_NON_CLUSTER });
+        cfgYaml.zowe.setup.dataset.authLoadlib = loadSmsDs;
+        cfgYaml.zowe.setup.dataset.authPluginLib = plugSmsDs;
+        const result = await testRunner.runZweTest(cfgYaml, 'init apfauth --dry-run');
+        expect(result.stdout).not.toBeNull();
+        expect(result.cleanedStdout).toMatchSnapshot();
+        expect(result.rc).toBe(0);
+      });
+    } else {
+      it.skip('apf sms-managed authLoadLib');
+      it.skip('apf sms-managed authPluginLib');
+      it.skip('apf sms-managed authLoadLib and authPluginLib');
+    }
 
     it('apf bad authLoadLib', async () => {
       cfgYaml.zowe.setup.dataset.authLoadlib = 'DOES.NOT.EXIST';

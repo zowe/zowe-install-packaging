@@ -10,7 +10,7 @@
 
 import { Session } from '@zowe/imperative';
 import { getSession } from './ZosmfSession';
-import * as uss from './Uss';
+import { UssSession } from './UssSession';
 import ZoweYamlType from '../config/ZoweYamlType';
 import { REMOTE_SYSTEM_INFO, TEST_COLLECT_SPOOL, TEST_JOBS_RUN_FILE, TEST_OUTPUT_DIR } from '../config/TestConfig';
 import * as files from '@zowe/zos-files-for-zowe-sdk';
@@ -35,16 +35,28 @@ export class RemoteTestRunner {
   private trackedFiles: TrackedFile[] = [];
   private trackedJobs: jobs.IDownloadAllSpoolContentParms[] = [];
   private cleanFns: ((stdout: string) => string)[] = [];
+  private readonly uss: UssSession;
+  private totalRuns: number = 0;
+  private totalRuntime: number = 0;
+  private maxRuntime: number = -1;
 
   constructor(testGroup: string) {
     this.session = getSession();
+    this.uss = UssSession.sharedSession();
     this.tmpDir = `${TEST_OUTPUT_DIR}/${testGroup}/tmp`;
     this.yamlOutputTemplate = `${TEST_OUTPUT_DIR}/${testGroup}/{{ testInstance }}/yaml`;
     this.spoolOutputTemplate = `${TEST_OUTPUT_DIR}/${testGroup}//{{ testInstance }}/spool`;
   }
 
+  public shutdown() {
+    console.log(`Total time spent in uss commands: ${this.totalRuntime / 1000} seconds`);
+    console.log(`Max time spent in a single uss command: ${this.maxRuntime / 1000} seconds`);
+    console.log(`Avg time spent per uss command: ${this.totalRuntime / this.totalRuns / 1000} seconds`);
+    this.uss.shutdown();
+  }
+
   public async runRaw(command: string, cwd: string = REMOTE_SYSTEM_INFO.ussTestDir): Promise<TestOutput> {
-    const output = await uss.runCommand(`${command}`, cwd);
+    const output = await this.uss.runCommand(`${command}`, cwd);
     // Any non-deterministic output should be cleaned up for test snapshots.
     const cleanedOutput = this.cleanOutput(output.data);
     return {
@@ -144,6 +156,7 @@ export class RemoteTestRunner {
     const yamlOutputDir = this.yamlOutputTemplate.replace('{{ testInstance }}', testName);
     await this.removeFileForTest('files/defaults.yaml');
     fs.writeFileSync(`${yamlOutputDir}/defaults.yaml.${testName}`, stringDefaultYaml);
+
     await files.Upload.fileToUssFile(
       this.session,
       `${yamlOutputDir}/defaults.yaml.${testName}`,
@@ -184,9 +197,13 @@ export class RemoteTestRunner {
         binary: false,
       },
     );
-
-    const output = await uss.runCommand(`./bin/zwe ${command} --config  ${REMOTE_SYSTEM_INFO.ussTestDir}/zowe.test.yaml`, cwd);
-
+    const start = performance.now();
+    const output = await this.uss.runCommand(`./bin/zwe ${command} --config  ${REMOTE_SYSTEM_INFO.ussTestDir}/zowe.test.yaml`, cwd);
+    const end = performance.now();
+    const duration = end - start;
+    this.totalRuntime += duration;
+    this.totalRuns++;
+    this.maxRuntime = Math.max(this.maxRuntime, duration);
     const matches = output.data.matchAll(/([A-Za-z0-9]{4,8})\((JOB[0-9]{1,5})\) completed with RC=(.*)$/gim);
 
     // for each match, 0=full matched string, 1=jobname, 2=jobid, 3=rc
