@@ -1149,10 +1149,10 @@ How we want to verify SSL certificates of services. Valid values are:
     </variable>
     <variable name="zowe_setup_installStep_enabled" scope="instance" visibility="public">
         <label>Install the MVS data sets</label>
-        <abstract>Only for convenience build, check this to enable to run optional step with zwe install command</abstract>
-        <description>Check this to enable optional workflow step with zwe install command. After Zowe convenience build was extracted, 
+        <abstract>This install option is only for convenience build. Check this option to enable this run step with the zwe install command.</abstract>
+        <description>Check this option to enable the optional workflow step with zwe install command. After Zowe convenience build is extracted, 
             you can enable this flag to run the zwe install command to install MVS data sets within this workflow run. 
-        Only for convenience build, SMP/E installs the MVS data sets during install.</description>
+        This option is for convenience build only. SMP/E installs the MVS data sets during installation.</description>
         <category>installMVSDatasets</category>
         <boolean>
             <!-- Put validation here -->
@@ -2426,7 +2426,7 @@ echo '#         enabled: false' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
         <description>Zowe installation</description>
         <step name="install_zowe" optional="true">
             <title>Run the Zowe install (only for convenience build)</title>
-            <description>Configure the Zowe.</description>
+            <description>Configure Zowe.</description>
             <prereqStep name="main_variables"/>
             <prereqStep name="configure"/>            
             <condition>
@@ -2434,7 +2434,7 @@ echo '#         enabled: false' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
                 <description>Always true</description>
                 <targetStateSet>
                     <extendStateExpression>
-                        <description>Skips this step if Install the MVS data sets wasn't selected</description>
+                        <description>Skips this step if Install the MVS data sets was not selected</description>
                         <expression>!${instance-zowe_setup_installStep_enabled}</expression>
                         <targetState>skipped</targetState>
                     </extendStateExpression>
