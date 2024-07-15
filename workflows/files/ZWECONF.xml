@@ -69,7 +69,7 @@
     <variable name="zowe_setup_dataset_loadlibPlugin" scope="instance" visibility="public">
         <label>Zowe setup Utilities and extensions library</label>
         <abstract>Load library where Zowe stores libraries for Utilities for use by Zowe and extensions</abstract>
-        <description>Load library for Utilities for use by Zowe and extensions</description>
+        <description>Load library for Utilities used by Zowe and extensions</description>
         <category>zowe</category>
         <string valueMustBeChoice="false" multiLine="false">
             <!-- Put validation here -->
@@ -142,7 +142,7 @@ It is used by ZWESLSTC or by the zwe command</description>
         <category>zowe</category>
         <string valueMustBeChoice="false" multiLine="false">
             <regularExpression>~?(\/[^\/]+)+</regularExpression>
-            <errorMessage>Please specify proper full USS path ending without a trailing slash.</errorMessage>
+            <errorMessage>Please specify the proper full USS path ending without a trailing slash.</errorMessage>
         </string>
     </variable>
     <variable name="zowe_logDirectory" scope="instance" visibility="public">
@@ -268,7 +268,11 @@ some use cases, like containerization, this port could be different.</descriptio
     </variable>
     <variable name="zowe_certificate_keystore_file" scope="instance" visibility="public">
         <label>Zowe certificate keystore file</label>
+<<<<<<< Updated upstream
         <abstract>Zowe certificate keystore file. In case of keyring, the format is "safkeyring://OWNER/KEYRING".</abstract>
+=======
+        <abstract>Zowe certificate keystore file. For keyring, the format is "safkeyring://OWNER/KEYRING".</abstract>
+>>>>>>> Stashed changes
         <description>Zowe certificate keystore file</description>
         <category>certificates</category>
         <string valueMustBeChoice="false" multiLine="false">
@@ -377,12 +381,12 @@ some use cases, like containerization, this port could be different.</descriptio
 How we want to verify SSL certificates of services. Valid values are:
 - STRICT:    will validate if the certificate is trusted in our trust store and
              if the certificate Command Name and Subject Alternative Name (SAN)
-             is validate. This is recommended for the best security.
+             are validated. This is recommended for the highest level of security.
 - NONSTRICT: will validate if the certificate is trusted in our trust store.
-             This mode does not validate certificate Common Name and Subject
+             This mode does not validate the certificate Common Name and Subject
              Alternative Name (SAN).
 - DISABLED:  disable certificate validation. This is NOT recommended for
-             security 
+             security. 
         ]]>        </description>
         <category>certificates</category>
         <string valueMustBeChoice="true" multiLine="false">
