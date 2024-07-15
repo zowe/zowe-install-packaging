@@ -5,7 +5,7 @@
     <workflowInfo>
         <workflowID scope="none">config_zowe_20</workflowID>
         <workflowDefaultName>Configuration of Zowe 2.0</workflowDefaultName>
-        <workflowDescription>Use this workflow to configure the Zowe 2.0</workflowDescription>
+        <workflowDescription>Use this workflow to configure Zowe 2.0</workflowDescription>
         <workflowVersion>###ZOWE_VERSION###</workflowVersion>
         <vendor>Zowe</vendor>
         <General/>
@@ -101,8 +101,8 @@
     </variable>
     <variable name="zowe_setup_vsam_mode" scope="instance" visibility="public">
         <label>Zowe setup VSAM mode</label>
-        <abstract>VSAM data set with Record-Level-Sharing enabled or not</abstract>
-        <description>VSAM data set with Record-Level-Sharing enabled or not</description>
+        <abstract>VSAM data set with Record-Level-Sharing enabled or disabled</abstract>
+        <description>VSAM data set with Record-Level-Sharing enabled or disabled</description>
         <category>components</category>
         <string valueMustBeChoice="false" multiLine="false">
             <!-- Put validation here -->
@@ -138,7 +138,7 @@
         <description>Existing Zowe runtime.&lt;br /&gt;
 If you created ZOWE via PSWI, &lt;br /&gt;
 zowe runtime is your Target Mount Point from PSWI deployment. &lt;br /&gt;
-It is used by ZWESLSTC or by zwe command</description>
+It is used by ZWESLSTC or by the zwe command</description>
         <category>zowe</category>
         <string valueMustBeChoice="false" multiLine="false">
             <regularExpression>~?(\/[^\/]+)+</regularExpression>
@@ -268,7 +268,7 @@ some use cases, like containerization, this port could be different.</descriptio
     </variable>
     <variable name="zowe_certificate_keystore_file" scope="instance" visibility="public">
         <label>Zowe certificate keystore file</label>
-        <abstract>Zowe certificate keystore file. In case of keyring the format is "safkeyring://OWNER/KEYRING".</abstract>
+        <abstract>Zowe certificate keystore file. In case of keyring, the format is "safkeyring://OWNER/KEYRING".</abstract>
         <description>Zowe certificate keystore file</description>
         <category>certificates</category>
         <string valueMustBeChoice="false" multiLine="false">
@@ -460,8 +460,8 @@ How we want to verify SSL certificates of services. Valid values are:
     </variable>
     <variable name="components_gateway_port" scope="instance" visibility="public">
         <label>Gateway port</label>
-        <abstract>Port for the APIML gateway</abstract>
-        <description>Port for the APIML gateway</description>
+        <abstract>Port for the API ML gateway</abstract>
+        <description>Port for the API ML gateway</description>
         <category>components</category>
         <integer>
             <!-- Put validation here -->
@@ -492,7 +492,7 @@ How we want to verify SSL certificates of services. Valid values are:
         </string>
     </variable>
     <variable name="components_gateway_apiml_security_auth_zosmf_jwtAutoconfiguration" scope="instance" visibility="public">
-        <label>Gateway APIML security auth z/OSMF jwtAutoconfiguration</label>
+        <label>Gateway API ML security auth z/OSMF jwtAutoconfiguration</label>
         <abstract>JWT auto configuration for gateway security auth</abstract>
         <description>JWT auto configuration for gateway security auth</description>
         <category>components</category>
@@ -503,7 +503,7 @@ How we want to verify SSL certificates of services. Valid values are:
         </string>
     </variable>
     <variable name="components_gateway_apiml_security_auth_zosmf_serviceId" scope="instance" visibility="public">
-        <label>Gateway APIML security auth z/OSMF serviceId</label>
+        <label>Gateway API ML security auth z/OSMF serviceId</label>
         <abstract>Service ID for gateway security auth</abstract>
         <description>Service ID for gateway security auth</description>
         <category>components</category>
@@ -514,7 +514,7 @@ How we want to verify SSL certificates of services. Valid values are:
         </string>
     </variable>
     <variable name="components_gateway_apiml_security_authorization_endpoint_enabled" scope="instance" visibility="public">
-        <label>Enable gateway APIML security authorization endpoint</label>
+        <label>Enable gateway API ML security authorization endpoint</label>
         <abstract>Use this to enable the security authorization endpoint</abstract>
         <description>Use this to enable the security authorization endpoint</description>
         <category>components</category>
@@ -525,7 +525,7 @@ How we want to verify SSL certificates of services. Valid values are:
         </boolean>
     </variable>
     <variable name="components_gateway_apiml_security_authorization_provider" scope="instance" visibility="public">
-        <label>Gateway APIML security authorization provider</label>
+        <label>Gateway API ML security authorization provider</label>
         <abstract>Security authorization provider for the gateway</abstract>
         <description>Security authorization provider for the gateway</description>
         <category>components</category>
@@ -535,7 +535,7 @@ How we want to verify SSL certificates of services. Valid values are:
         </string>
     </variable>
     <variable name="components_gateway_apiml_security_x509_enabled" scope="instance" visibility="public">
-        <label>Enable gateway APIML security x509</label>
+        <label>Enable gateway API ML security x509</label>
         <abstract>Check to enable the gateway security x509</abstract>
         <description>Check to enable the gateway security x509</description>
         <category>components</category>
@@ -646,8 +646,8 @@ How we want to verify SSL certificates of services. Valid values are:
     </variable>
     <variable name="components_api_catalog_enabled" scope="instance" visibility="public">
         <label>Enable API catalog</label>
-        <abstract>Use this option to enable the API catalog</abstract>
-        <description>Use this option to enable the API catalog</description>
+        <abstract>Use this option to enable the API Catalog</abstract>
+        <description>Use this option to enable the API Catalog</description>
         <category>components</category>
         <boolean>
             <!-- Put validation here -->
@@ -657,8 +657,8 @@ How we want to verify SSL certificates of services. Valid values are:
     </variable>
     <variable name="components_api_catalog_port" scope="instance" visibility="public">
         <label>API catalog port</label>
-        <abstract>Port on which the API catalog should be running.</abstract>
-        <description>Port on which the API catalog should be running.</description>
+        <abstract>Port on which the API Catalog should be running.</abstract>
+        <description>Port on which the API Catalog should be running.</description>
         <category>components</category>
         <integer>
             <!-- Put validation here -->
@@ -668,8 +668,8 @@ How we want to verify SSL certificates of services. Valid values are:
     </variable>
     <variable name="components_api_catalog_debug" scope="instance" visibility="public">
         <label>API catalog debug</label>
-        <abstract>Extra debugging information from API catalog.</abstract>
-        <description>Extra debugging information from API catalog.</description>
+        <abstract>Extra debugging information from API Catalog.</abstract>
+        <description>Extra debugging information from API Catalog.</description>
         <category>components</category>
         <boolean>
             <!-- Put validation here -->
@@ -711,9 +711,9 @@ How we want to verify SSL certificates of services. Valid values are:
         </boolean>
     </variable>
     <variable name="components_caching_service_enabled" scope="instance" visibility="public">
-        <label>Enable caching service</label>
-        <abstract>Check to enable the caching service</abstract>
-        <description>Check to enable the caching service</description>
+        <label>Enable Caching service</label>
+        <abstract>Check to enable the Caching service</abstract>
+        <description>Check to enable the Caching service</description>
         <category>components</category>
         <boolean>
             <!-- Put validation here -->
@@ -723,8 +723,8 @@ How we want to verify SSL certificates of services. Valid values are:
     </variable>
     <variable name="components_caching_service_port" scope="instance" visibility="public">
         <label>Caching service port</label>
-        <abstract>Port for the caching service</abstract>
-        <description>Port for the caching service</description>
+        <abstract>Port for the Caching service</abstract>
+        <description>Port for the Caching service</description>
         <category>components</category>
         <integer>
             <!-- Put validation here -->
@@ -758,8 +758,8 @@ How we want to verify SSL certificates of services. Valid values are:
     </variable>
     <variable name="components_caching_service_storage_mode" scope="instance" visibility="public">
         <label>Caching service storage mode</label>
-        <abstract>Specifies the components caching service storage mode</abstract>
-        <description>Specifies the components caching service storage mode</description>
+        <abstract>Specifies the components Caching service storage mode</abstract>
+        <description>Specifies the components Caching service storage mode</description>
         <category>components</category>
         <string valueMustBeChoice="true" multiLine="false">
             <!-- Put validation here -->
@@ -1455,7 +1455,7 @@ How we want to verify SSL certificates of services. Valid values are:
                 <description>Always true</description>
                 <targetStateSet>
                     <extendStateExpression>
-                        <description>Skipped if App Server wasn't selected</description>
+                        <description>Skipped if App Server was not selected</description>
                         <expression>!${instance-components_app_server_enabled}</expression>
                         <targetState>skipped</targetState>
                     </extendStateExpression>
@@ -1479,7 +1479,7 @@ How we want to verify SSL certificates of services. Valid values are:
                 <description>Always true</description>
                 <targetStateSet>
                     <extendStateExpression>
-                        <description>Skips the step if ZSS wasn't selected</description>
+                        <description>Skips the step if ZSS was not selected</description>
                         <expression>!${instance-components_zss_enabled}</expression>
                         <targetState>skipped</targetState>
                     </extendStateExpression>
@@ -1505,7 +1505,7 @@ How we want to verify SSL certificates of services. Valid values are:
                 <description>Always true</description>
                 <targetStateSet>
                     <extendStateExpression>
-                        <description>Skips if the Jobs API wasn't selected</description>
+                        <description>Skips if the Jobs API was not selected</description>
                         <expression>!${instance-components_jobs_api_enabled}</expression>
                         <targetState>skipped</targetState>
                     </extendStateExpression>
@@ -1529,7 +1529,7 @@ How we want to verify SSL certificates of services. Valid values are:
                 <description>Always true</description>
                 <targetStateSet>
                     <extendStateExpression>
-                        <description>Skips this step if the Files API wasn't selected</description>
+                        <description>Skips this step if the Files API was not selected</description>
                         <expression>!${instance-components_files_api_enabled}</expression>
                         <targetState>skipped</targetState>
                     </extendStateExpression>
