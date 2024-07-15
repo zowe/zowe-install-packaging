@@ -292,6 +292,7 @@
       "components.gateway.apiml.security.x509.enabled": "{{ zowe_apiml_security_x509_enabled|string|lower }}"
 
       # zaas configs
+      "components.zaas.apiml.security.x509.enabled": "{{ zowe_apiml_security_x509_enabled|string|lower }}"
       "components.zass.apiml.security.auth.provider": "{{ zowe_apiml_security_auth_provider|string|lower }}"
       "components.zaas.apiml.security.auth.zosmf.jwtAutoconfiguration": "{{ zowe_apiml_security_zosmf_jwt_autoconfiguration_mode }}"
       "components.zaas.apiml.security.oidc.enabled": "{{ zowe_apiml_security_oidc_enabled|string|lower }}"
