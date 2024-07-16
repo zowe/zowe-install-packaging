@@ -11,6 +11,7 @@
 const expect = require('chai').expect;
 const { HTTPRequest, APIMLAuth } = require('../http-helper');
 const { APIML_AUTH_COOKIE, ZOSMF_TOKEN } = require('../constants');
+const debug = require('debug')('zowe-sanity-test:apiml:api-mediation-zosmf-authentication');
 
 describe('test api mediation layer zosmf authentication', function() {
 
@@ -72,6 +73,7 @@ describe('test api mediation layer zosmf authentication', function() {
       });
 
       const ltpaCookie = hq.findCookieInResponse(loginResponse, ZOSMF_TOKEN);
+      debug('ltpa ' + ltpaCookie);
       const response = await hq.request({
         url: '/ibmzosmf/api/v1/zosmf/info',
         headers: {
