@@ -33,6 +33,7 @@ zowe_apiml_gateway_timeout_millis: 600000
 zowe_apiml_nonstrict_verify_certficates_of_services: true
 zowe_apiml_security_auth_provider: zosmf
 zowe_apiml_security_x509_enabled: false
+zowe_apiml_service_forwardClientCertEnabled: true
 zowe_apiml_security_oidc_enabled: false
 zowe_apiml_security_oidc_client_id:
 zowe_apiml_security_oidc_client_secret:

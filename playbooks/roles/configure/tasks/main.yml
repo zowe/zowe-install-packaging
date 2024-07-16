@@ -290,6 +290,7 @@
       # other gateway configs
       "components.gateway.apiml.gateway.timeoutMillis": "{{ zowe_apiml_gateway_timeout_millis }}"
       "components.gateway.apiml.security.x509.enabled": "{{ zowe_apiml_security_x509_enabled|string|lower }}"
+      "components.gateway.apiml.service.forwardClientCertEnabled": "{{ zowe_apiml_service_forwardClientCertEnabled|string|lower }}"
 
       # zaas configs
       "components.zaas.apiml.security.x509.enabled": "{{ zowe_apiml_security_x509_enabled|string|lower }}"
