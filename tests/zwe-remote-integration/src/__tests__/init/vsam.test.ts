@@ -60,7 +60,11 @@ describe(`${testSuiteName}`, () => {
 
   describe('(SHORT)', () => {
     beforeAll(async () => {
-      await testRunner.runZweTest(cfgYaml, 'init generate');
+      cfgYaml = ZoweConfig.getZoweYaml();
+      const result = await testRunner.runZweTest(cfgYaml, 'init generate --allow-overwrite');
+      expect(result.stdout).not.toBeNull();
+      expect(result.cleanedStdout).toMatchSnapshot('short-before-all-vsam');
+      expect(result.rc).toBe(0);
     });
 
     it('skip non-vsam caching service', async () => {
