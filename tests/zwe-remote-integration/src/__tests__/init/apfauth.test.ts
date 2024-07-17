@@ -74,7 +74,11 @@ describe(`${testSuiteName}`, () => {
 
   describe('(SHORT)', () => {
     beforeAll(async () => {
-      await testRunner.runZweTest(cfgYaml, 'init generate');
+      cfgYaml = ZoweConfig.getZoweYaml();
+      const result = await testRunner.runZweTest(cfgYaml, 'init generate --allow-overwrite');
+      expect(result.stdout).not.toBeNull();
+      expect(result.cleanedStdout).toMatchSnapshot('short-before-all-apf');
+      expect(result.rc).toBe(0);
     });
     it('apf empty jcllib post-generate', async () => {
       cfgYaml.zowe.setup.dataset.jcllib = '';
@@ -84,7 +88,7 @@ describe(`${testSuiteName}`, () => {
       expect(result.rc).toBe(1);
     });
 
-    if (REMOTE_SYSTEM_INFO?.storclas.length > 0) {
+    if (REMOTE_SYSTEM_INFO?.storclas?.length > 0) {
       it('apf sms-managed authLoadLib', async () => {
         const smsDs = `${REMOTE_SYSTEM_INFO.prefix}.APF.LOADLIB`;
         await zosfiles.createPds(smsDs, {
@@ -128,9 +132,9 @@ describe(`${testSuiteName}`, () => {
         expect(result.rc).toBe(0);
       });
     } else {
-      it.skip('apf sms-managed authLoadLib');
-      it.skip('apf sms-managed authPluginLib');
-      it.skip('apf sms-managed authLoadLib and authPluginLib');
+      it.skip('apf sms-managed authLoadLib', () => {});
+      it.skip('apf sms-managed authPluginLib', () => {});
+      it.skip('apf sms-managed authLoadLib and authPluginLib', () => {});
     }
 
     it('apf bad authLoadLib', async () => {
