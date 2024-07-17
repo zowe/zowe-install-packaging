@@ -89,6 +89,7 @@ describe(`${testSuiteName}`, () => {
 
   describe('(SHORT)', () => {
     beforeAll(async () => {
+      cfgYaml = ZoweConfig.getZoweYaml();
       const result = await testRunner.runZweTest(cfgYaml, 'init generate --allow-overwrite');
       expect(result.stdout).not.toBeNull();
       expect(result.cleanedStdout).toMatchSnapshot('short-before-all-stc');
