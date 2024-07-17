@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`init-stc (LONG) run setup with defaults abc 1`] = `
+exports[`init-stc (LONG) run setup with defaults 1`] = `
 "Temporary directory '/tmp/.zweenv-0000' created.
 Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
 bos extend currSize=0x0 dataSize=0x105b chunk=0x1000 extend=0x105b
@@ -112,8 +112,8 @@ noverbose -
 
 --- End of JCL ---
 Submitting Job ZWEGENER
-Job ZWEGENER(JOB00000) completed with RC=2
-Zowe JCL generated with errors, check job log. Job completion code=8, Job completion text=COMPLETED
+Job ZWEGENER(JOB00000) completed with RC=0
+Zowe JCL generated successfully
 Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWEISTC) , Executable JCL: TEST.DATASET.PFX.JCLLIB(ZWEISTC)
 --- JCL Content ---
 //ZWEISTC JOB
@@ -152,5 +152,930 @@ Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWEISTC) , Executable JCL: TEST.DATASET.
 //*
 --- End of JCL ---
 Submitting Job ZWEISTC
-ERROR: Error ZWEL0162E: Failed to find job JOB00000 result."
+Job ZWEISTC(JOB00000) completed with RC=0
+
+>> Zowe main started tasks are installed successfully."
+`;
+
+exports[`init-stc (LONG) run stc setup, then overwrite, then run again 1`] = `
+"Temporary directory '/tmp/.zweenv-0000' created.
+Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
+bos extend currSize=0x0 dataSize=0x105b chunk=0x1000 extend=0x105b
+-------------------------------------------------------------------------------
+>> Install Zowe main started task
+
+Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWEGENER)
+--- JCL content ---
+//ZWEGENER JOB
+//*
+//* This program and the accompanying materials are made available
+//* under the terms of the Eclipse Public License v2.0 which
+//* accompanies this distribution, and is available at
+//* https://www.eclipse.org/legal/epl-v20.html
+//*
+//* SPDX-License-Identifier: EPL-2.0
+//*
+//* Copyright Contributors to the Zowe Project. 2020, 2020
+//*
+//*********************************************************************
+//*
+//* This job is responsible for generating other jobs required
+//* to configure Zowe.
+//*
+//* The method of validating your configuration is using
+//* JSON Schema <https://json-schema.org>. Zowe provides
+//* the ConfigMgr to assist in this. This job will invoke
+//* the ConfigMgr to validate your current configuration
+//* before generating any jobs. If there are any values
+//* that are incorrect, you will be notified. You should
+//* fix the value and then run this job again. You can run
+//* this job as many times as you need.
+//*
+//* Configmgr documentation:
+//* https://docs.zowe.org/stable/user-guide/configmgr-using
+//*
+//* Note: Any string with braces has an associated yaml value
+//*       in one of the yaml definitions for Zowe.
+//*       You must find the value and substitute it.
+//*
+//*       {key} -> value
+//*
+//GENER    EXEC PGM=IKJEFT1B
+//ISPPROF  DD   DSN=,DISP=(NEW,DELETE),UNIT=,
+//   DCB=(RECFM=FB,LRECL=80,BLKSIZE=3120,DSORG=PO),
+//   SPACE=(3120,(20,5,10))
+//*
+//* Replace TEST.DATASET.PFX with the
+//* Value as seen in zowe.yaml
+//*
+//SYSPROC  DD DSN=TEST.DATASET.PFX.SZWEEXEC,DISP=SHR
+//*
+//* Replace TEST.DATASET.PFX with the
+//* Value as seen in zowe.yaml
+//*
+//STEPLIB  DD DSN=TEST.DATASET.PFX.SZWELOAD,DISP=SHR
+//ISPPLIB  DD DSN=ISP.SISPPENU,DISP=SHR
+//ISPMLIB  DD DSN=ISP.SISPMENU,DISP=SHR
+//ISPTLIB  DD DSN=ISP.SISPTENU,DISP=SHR
+//ISPSLIB  DD DSN=ISP.SISPSENU,DISP=SHR
+//*
+//* The order must be as follows.
+//*
+//* zowe-yaml-schema.json
+//* server-common.json
+//*
+//* Replace /test/dir with where your Zowe run time
+//* directory is, as seen in zowe.yaml
+//*
+//MYSCHEMA DD   *,DLM=$$
+FILE /test/dir/schemas/zowe-yaml-schema.json
+FILE /test/dir/schemas/server-common.json
+$$
+//*
+//* The DD below must include one or more FILE or PARMLIB
+//* Entries. The lower entries have their values
+//* Overridden by the higher entries.
+//* PARMLIB member must be named "ZWEYAML"
+//*
+//* Ex. PARMLIB MY.ZOWE.CUSTOM.PARMLIB
+//*     FILE /some/other/zowe.yaml
+//MYCONFIG DD   *,DLM=$$
+FILE /test/dir/zowe.test.yaml
+$$
+//CMGROUT  DD   SYSOUT=*
+//SYSPRINT DD   SYSOUT=*
+//SYSTSPRT DD   SYSOUT=*
+//*
+//* Change 'generate' to 'nogenerate' if you only
+//* want to validate your configuration. The default
+//* option, 'generate', will validate and then generate
+//* jobs based on your configuration.
+//*
+//*   - generate
+//*   - nogenerate
+//*
+//* Change 'noverbose' to 'verbose' below for
+//* advanced logging. This is not needed unless
+//* there is an error.
+//*
+//*   - verbose
+//*   - noverbose
+//*
+//SYSTSIN  DD   *
+ISPSTART CMD(%ZWEGEN00 -
+generate -
+noverbose -
+)
+
+--- End of JCL ---
+Submitting Job ZWEGENER
+Job ZWEGENER(JOB00000) completed with RC=0
+Zowe JCL generated successfully
+Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWEISTC) , Executable JCL: TEST.DATASET.PFX.JCLLIB(ZWEISTC)
+--- JCL Content ---
+//ZWEISTC JOB
+//*
+//* This program and the accompanying materials are made available
+//* under the terms of the Eclipse Public License v2.0 which
+//* accompanies this distribution, and is available at
+//* https://www.eclipse.org/legal/epl-v20.html
+//*
+//* SPDX-License-Identifier: EPL-2.0
+//*
+//* Copyright Contributors to the Zowe Project. 2020, 2020
+//*
+//*********************************************************************
+//*
+//* This job is used to add proclib members
+//* Used to start a Zowe "instance"
+//* Instances represent a configuration of Zowe, different from the
+//* "runtime" datasets that are created upon install of Zowe / SMPE.
+//*
+//*********************************************************************
+//*
+//MCOPY EXEC PGM=IEBCOPY
+//SYSPRINT DD SYSOUT=A
+//SYSUT1 DD DSN=TEST.DATASET.PFX.JCLLIB,DISP=SHR
+//SYSUT2 DD DSN=TEST.DATASET.PFX.TEST.PROCLIB,DISP=OLD
+//SYSIN DD *
+  COPY OUTDD=SYSUT2,INDD=SYSUT1
+  SELECT MEMBER=((ZWESLSTC,,R))
+
+  COPY OUTDD=SYSUT2,INDD=SYSUT1
+  SELECT MEMBER=((ZWESISTC,,R))
+
+  COPY OUTDD=SYSUT2,INDD=SYSUT1
+  SELECT MEMBER=((ZWESASTC,,R))
+//*
+--- End of JCL ---
+Submitting Job ZWEISTC
+Job ZWEISTC(JOB00000) completed with RC=0
+
+>> Zowe main started tasks are installed successfully."
+`;
+
+exports[`init-stc (LONG) run stc setup, then overwrite, then run again 2`] = `
+"Temporary directory '/tmp/.zweenv-0000' created.
+Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
+bos extend currSize=0x0 dataSize=0x105b chunk=0x1000 extend=0x105b
+-------------------------------------------------------------------------------
+>> Install Zowe main started task
+
+Warning ZWEL0300W: TEST.DATASET.PFX.TEST.PROCLIB(ZWESLSTC) already exists. This data set member will be overwritten during configuration.
+Warning ZWEL0300W: TEST.DATASET.PFX.TEST.PROCLIB(ZWESISTC) already exists. This data set member will be overwritten during configuration.
+Warning ZWEL0300W: TEST.DATASET.PFX.TEST.PROCLIB(ZWESASTC) already exists. This data set member will be overwritten during configuration.
+Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWERSTC) , Executable JCL: TEST.DATASET.PFX.JCLLIB(ZWERSTC)
+--- JCL Content ---
+//ZWERSTC JOB
+//*
+//* This program and the accompanying materials are made available
+//* under the terms of the Eclipse Public License v2.0 which
+//* accompanies this distribution, and is available at
+//* https://www.eclipse.org/legal/epl-v20.html
+//*
+//* SPDX-License-Identifier: EPL-2.0
+//*
+//* Copyright Contributors to the Zowe Project. 2020, 2020
+//*
+//*********************************************************************
+//*
+//* This job is used to remove proclib members
+//* Used to start a Zowe "instance"
+//* Instances represent a configuration of Zowe, different from the
+//* "runtime" datasets that are created upon install of Zowe / SMPE.
+//*
+//*********************************************************************
+//*
+//*      * You do NOT need to change PROCLIB when running ZWEGENER.
+//*      * This is used to keep some lines under the column limit.
+//*
+//       EXPORT SYMLIST=*
+//*
+//       SET PROCLIB=TEST.DATASET.PFX.TEST.PROCLIB
+//*
+//*********************************************************************
+//RMPROC   EXEC PGM=IKJEFT01
+//SYSTSPRT DD SYSOUT=A
+//SYSTSIN  DD *,SYMBOLS=JCLONLY
+DELETE ('&PROCLIB.(ZWESLSTC)', +
+        '&PROCLIB.(ZWESISTC)', +
+        '&PROCLIB.(ZWESASTC)') +
+       SCRATCH NONVSAM
+//*
+--- End of JCL ---
+Submitting Job ZWERSTC
+Job ZWERSTC(JOB00000) completed with RC=0
+Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWEISTC) , Executable JCL: TEST.DATASET.PFX.JCLLIB(ZWEISTC)
+--- JCL Content ---
+//ZWEISTC JOB
+//*
+//* This program and the accompanying materials are made available
+//* under the terms of the Eclipse Public License v2.0 which
+//* accompanies this distribution, and is available at
+//* https://www.eclipse.org/legal/epl-v20.html
+//*
+//* SPDX-License-Identifier: EPL-2.0
+//*
+//* Copyright Contributors to the Zowe Project. 2020, 2020
+//*
+//*********************************************************************
+//*
+//* This job is used to add proclib members
+//* Used to start a Zowe "instance"
+//* Instances represent a configuration of Zowe, different from the
+//* "runtime" datasets that are created upon install of Zowe / SMPE.
+//*
+//*********************************************************************
+//*
+//MCOPY EXEC PGM=IEBCOPY
+//SYSPRINT DD SYSOUT=A
+//SYSUT1 DD DSN=TEST.DATASET.PFX.JCLLIB,DISP=SHR
+//SYSUT2 DD DSN=TEST.DATASET.PFX.TEST.PROCLIB,DISP=OLD
+//SYSIN DD *
+  COPY OUTDD=SYSUT2,INDD=SYSUT1
+  SELECT MEMBER=((ZWESLSTC,,R))
+
+  COPY OUTDD=SYSUT2,INDD=SYSUT1
+  SELECT MEMBER=((ZWESISTC,,R))
+
+  COPY OUTDD=SYSUT2,INDD=SYSUT1
+  SELECT MEMBER=((ZWESASTC,,R))
+//*
+--- End of JCL ---
+Submitting Job ZWEISTC
+Job ZWEISTC(JOB00000) completed with RC=0
+
+>> Zowe main started tasks are installed successfully."
+`;
+
+exports[`init-stc (LONG) run stc setup, then overwrite, then run again 3`] = `
+"Temporary directory '/tmp/.zweenv-0000' created.
+Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
+bos extend currSize=0x0 dataSize=0x105b chunk=0x1000 extend=0x105b
+-------------------------------------------------------------------------------
+>> Install Zowe main started task
+
+Warning ZWEL0301W: TEST.DATASET.PFX.TEST.PROCLIB(ZWESLSTC) already exists and will not be overwritten. For upgrades, you must use --allow-overwrite.
+Warning ZWEL0301W: TEST.DATASET.PFX.TEST.PROCLIB(ZWESISTC) already exists and will not be overwritten. For upgrades, you must use --allow-overwrite.
+Warning ZWEL0301W: TEST.DATASET.PFX.TEST.PROCLIB(ZWESASTC) already exists and will not be overwritten. For upgrades, you must use --allow-overwrite.
+Skipped writing to TEST.DATASET.PFX.TEST.PROCLIB. To write, you must use --allow-overwrite."
+`;
+
+exports[`init-stc (LONG) run stc setup, then overwrite, then run again: short-before-all-stc 1`] = `
+"Temporary directory '/tmp/.zweenv-0000' created.
+Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
+bos extend currSize=0x0 dataSize=0x105b chunk=0x1000 extend=0x105b
+Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWEGENER)
+--- JCL content ---
+//ZWEGENER JOB
+//*
+//* This program and the accompanying materials are made available
+//* under the terms of the Eclipse Public License v2.0 which
+//* accompanies this distribution, and is available at
+//* https://www.eclipse.org/legal/epl-v20.html
+//*
+//* SPDX-License-Identifier: EPL-2.0
+//*
+//* Copyright Contributors to the Zowe Project. 2020, 2020
+//*
+//*********************************************************************
+//*
+//* This job is responsible for generating other jobs required
+//* to configure Zowe.
+//*
+//* The method of validating your configuration is using
+//* JSON Schema <https://json-schema.org>. Zowe provides
+//* the ConfigMgr to assist in this. This job will invoke
+//* the ConfigMgr to validate your current configuration
+//* before generating any jobs. If there are any values
+//* that are incorrect, you will be notified. You should
+//* fix the value and then run this job again. You can run
+//* this job as many times as you need.
+//*
+//* Configmgr documentation:
+//* https://docs.zowe.org/stable/user-guide/configmgr-using
+//*
+//* Note: Any string with braces has an associated yaml value
+//*       in one of the yaml definitions for Zowe.
+//*       You must find the value and substitute it.
+//*
+//*       {key} -> value
+//*
+//GENER    EXEC PGM=IKJEFT1B
+//ISPPROF  DD   DSN=,DISP=(NEW,DELETE),UNIT=,
+//   DCB=(RECFM=FB,LRECL=80,BLKSIZE=3120,DSORG=PO),
+//   SPACE=(3120,(20,5,10))
+//*
+//* Replace TEST.DATASET.PFX with the
+//* Value as seen in zowe.yaml
+//*
+//SYSPROC  DD DSN=TEST.DATASET.PFX.SZWEEXEC,DISP=SHR
+//*
+//* Replace TEST.DATASET.PFX with the
+//* Value as seen in zowe.yaml
+//*
+//STEPLIB  DD DSN=TEST.DATASET.PFX.SZWELOAD,DISP=SHR
+//ISPPLIB  DD DSN=ISP.SISPPENU,DISP=SHR
+//ISPMLIB  DD DSN=ISP.SISPMENU,DISP=SHR
+//ISPTLIB  DD DSN=ISP.SISPTENU,DISP=SHR
+//ISPSLIB  DD DSN=ISP.SISPSENU,DISP=SHR
+//*
+//* The order must be as follows.
+//*
+//* zowe-yaml-schema.json
+//* server-common.json
+//*
+//* Replace /test/dir with where your Zowe run time
+//* directory is, as seen in zowe.yaml
+//*
+//MYSCHEMA DD   *,DLM=$$
+FILE /test/dir/schemas/zowe-yaml-schema.json
+FILE /test/dir/schemas/server-common.json
+$$
+//*
+//* The DD below must include one or more FILE or PARMLIB
+//* Entries. The lower entries have their values
+//* Overridden by the higher entries.
+//* PARMLIB member must be named "ZWEYAML"
+//*
+//* Ex. PARMLIB MY.ZOWE.CUSTOM.PARMLIB
+//*     FILE /some/other/zowe.yaml
+//MYCONFIG DD   *,DLM=$$
+FILE /test/dir/zowe.test.yaml
+$$
+//CMGROUT  DD   SYSOUT=*
+//SYSPRINT DD   SYSOUT=*
+//SYSTSPRT DD   SYSOUT=*
+//*
+//* Change 'generate' to 'nogenerate' if you only
+//* want to validate your configuration. The default
+//* option, 'generate', will validate and then generate
+//* jobs based on your configuration.
+//*
+//*   - generate
+//*   - nogenerate
+//*
+//* Change 'noverbose' to 'verbose' below for
+//* advanced logging. This is not needed unless
+//* there is an error.
+//*
+//*   - verbose
+//*   - noverbose
+//*
+//SYSTSIN  DD   *
+ISPSTART CMD(%ZWEGEN00 -
+generate -
+noverbose -
+)
+
+--- End of JCL ---
+Submitting Job ZWEGENER
+Job ZWEGENER(JOB00000) completed with RC=0
+Zowe JCL generated successfully"
+`;
+
+exports[`init-stc (SHORT) aux stc exists 1`] = `
+"Temporary directory '/tmp/.zweenv-0000' created.
+Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
+bos extend currSize=0x0 dataSize=0x105b chunk=0x1000 extend=0x105b
+-------------------------------------------------------------------------------
+>> Install Zowe main started task
+
+Warning ZWEL0301W: TEST.DATASET.PFX.TEST.PROCLIB(ZWESASTC) already exists and will not be overwritten. For upgrades, you must use --allow-overwrite.
+Skipped writing to TEST.DATASET.PFX.TEST.PROCLIB. To write, you must use --allow-overwrite."
+`;
+
+exports[`init-stc (SHORT) aux stc exists 2`] = `
+"Temporary directory '/tmp/.zweenv-0000' created.
+Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
+bos extend currSize=0x0 dataSize=0x105b chunk=0x1000 extend=0x105b
+-------------------------------------------------------------------------------
+>> Install Zowe main started task
+
+Warning ZWEL0300W: TEST.DATASET.PFX.TEST.PROCLIB(ZWESASTC) already exists. This data set member will be overwritten during configuration.
+Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWERSTC) , Executable JCL: TEST.DATASET.PFX.JCLLIB(ZWERSTC)
+--- JCL Content ---
+//ZWERSTC JOB
+//*
+//* This program and the accompanying materials are made available
+//* under the terms of the Eclipse Public License v2.0 which
+//* accompanies this distribution, and is available at
+//* https://www.eclipse.org/legal/epl-v20.html
+//*
+//* SPDX-License-Identifier: EPL-2.0
+//*
+//* Copyright Contributors to the Zowe Project. 2020, 2020
+//*
+//*********************************************************************
+//*
+//* This job is used to remove proclib members
+//* Used to start a Zowe "instance"
+//* Instances represent a configuration of Zowe, different from the
+//* "runtime" datasets that are created upon install of Zowe / SMPE.
+//*
+//*********************************************************************
+//*
+//*      * You do NOT need to change PROCLIB when running ZWEGENER.
+//*      * This is used to keep some lines under the column limit.
+//*
+//       EXPORT SYMLIST=*
+//*
+//       SET PROCLIB=TEST.DATASET.PFX.TEST.PROCLIB
+//*
+//*********************************************************************
+//RMPROC   EXEC PGM=IKJEFT01
+//SYSTSPRT DD SYSOUT=A
+//SYSTSIN  DD *,SYMBOLS=JCLONLY
+DELETE ('&PROCLIB.(ZWESLSTC)', +
+        '&PROCLIB.(ZWESISTC)', +
+        '&PROCLIB.(ZWESASTC)') +
+       SCRATCH NONVSAM
+//*
+--- End of JCL ---
+JCL not submitted, command run with "--dry-run" flag.
+To perform command, re-run command without "--dry-run" flag, or submit the JCL directly
+
+>> Command run successfully.
+
+Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWEISTC) , Executable JCL: TEST.DATASET.PFX.JCLLIB(ZWEISTC)
+--- JCL Content ---
+//ZWEISTC JOB
+//*
+//* This program and the accompanying materials are made available
+//* under the terms of the Eclipse Public License v2.0 which
+//* accompanies this distribution, and is available at
+//* https://www.eclipse.org/legal/epl-v20.html
+//*
+//* SPDX-License-Identifier: EPL-2.0
+//*
+//* Copyright Contributors to the Zowe Project. 2020, 2020
+//*
+//*********************************************************************
+//*
+//* This job is used to add proclib members
+//* Used to start a Zowe "instance"
+//* Instances represent a configuration of Zowe, different from the
+//* "runtime" datasets that are created upon install of Zowe / SMPE.
+//*
+//*********************************************************************
+//*
+//MCOPY EXEC PGM=IEBCOPY
+//SYSPRINT DD SYSOUT=A
+//SYSUT1 DD DSN=TEST.DATASET.PFX.JCLLIB,DISP=SHR
+//SYSUT2 DD DSN=TEST.DATASET.PFX.TEST.PROCLIB,DISP=OLD
+//SYSIN DD *
+  COPY OUTDD=SYSUT2,INDD=SYSUT1
+  SELECT MEMBER=((ZWESLSTC,,R))
+
+  COPY OUTDD=SYSUT2,INDD=SYSUT1
+  SELECT MEMBER=((ZWESISTC,,R))
+
+  COPY OUTDD=SYSUT2,INDD=SYSUT1
+  SELECT MEMBER=((ZWESASTC,,R))
+//*
+--- End of JCL ---
+JCL not submitted, command run with "--dry-run" flag.
+To perform command, re-run command without "--dry-run" flag, or submit the JCL directly
+
+>> Command run successfully.
+
+
+>> Zowe main started tasks are installed successfully."
+`;
+
+exports[`init-stc (SHORT) invalid stc configurations 1`] = `
+"Error: Validation of FILE(/test/dir/zowe.test.yaml):FILE(/test/dir/files/defaults.yaml) against schema /test/dir/schemas/zowe-yaml-schema.json:/test/dir/schemas/server-common.json found invalid JSON Schema data
+Validity Exceptions(s) with object at 
+  Validity Exceptions(s) with object at /zowe
+    Validity Exceptions(s) with object at /zowe/setup
+      Validity Exceptions(s) with object at /zowe/setup/security
+        Validity Exceptions(s) with object at /zowe/setup/security/stcs
+          type 'null' not permitted at /zowe/setup/security/stcs/aux; expecting type 'string'"
+`;
+
+exports[`init-stc (SHORT) invalid stc configurations 2`] = `
+"Error: Validation of FILE(/test/dir/zowe.test.yaml):FILE(/test/dir/files/defaults.yaml) against schema /test/dir/schemas/zowe-yaml-schema.json:/test/dir/schemas/server-common.json found invalid JSON Schema data
+Validity Exceptions(s) with object at 
+  Validity Exceptions(s) with object at /zowe
+    Validity Exceptions(s) with object at /zowe/setup
+      Validity Exceptions(s) with object at /zowe/setup/security
+        Validity Exceptions(s) with object at /zowe/setup/security/stcs
+          Validity Exceptions(s) with string at /zowe/setup/security/stcs/aux
+            string too short (len=0) '' 0 < MIN=1 at /zowe/setup/security/stcs/aux
+            string pattern match fail s='', pat='^([A-Z\\$\\#\\@]){1}([A-Z0-9\\$\\#\\@]){0,7}$', at /zowe/setup/security/stcs/aux"
+`;
+
+exports[`init-stc (SHORT) invalid stc configurations 3`] = `
+"Error: Validation of FILE(/test/dir/zowe.test.yaml):FILE(/test/dir/files/defaults.yaml) against schema /test/dir/schemas/zowe-yaml-schema.json:/test/dir/schemas/server-common.json found invalid JSON Schema data
+Validity Exceptions(s) with object at 
+  Validity Exceptions(s) with object at /zowe
+    Validity Exceptions(s) with object at /zowe/setup
+      Validity Exceptions(s) with object at /zowe/setup/security
+        Validity Exceptions(s) with object at /zowe/setup/security/stcs
+          Validity Exceptions(s) with string at /zowe/setup/security/stcs/aux
+            string too long (len=10) 'TOOLONGTOO' 10 > MAX=8 at /zowe/setup/security/stcs/aux
+            string pattern match fail s='TOOLONGTOO', pat='^([A-Z\\$\\#\\@]){1}([A-Z0-9\\$\\#\\@]){0,7}$', at /zowe/setup/security/stcs/aux"
+`;
+
+exports[`init-stc (SHORT) invalid stc configurations 4`] = `
+"Error: Validation of FILE(/test/dir/zowe.test.yaml):FILE(/test/dir/files/defaults.yaml) against schema /test/dir/schemas/zowe-yaml-schema.json:/test/dir/schemas/server-common.json found invalid JSON Schema data
+Validity Exceptions(s) with object at 
+  Validity Exceptions(s) with object at /zowe
+    Validity Exceptions(s) with object at /zowe/setup
+      Validity Exceptions(s) with object at /zowe/setup/security
+        Validity Exceptions(s) with object at /zowe/setup/security/stcs
+          type 'null' not permitted at /zowe/setup/security/stcs/zis; expecting type 'string'
+          Validity Exceptions(s) with string at /zowe/setup/security/stcs/aux
+            string too long (len=10) 'TOOLONGTOO' 10 > MAX=8 at /zowe/setup/security/stcs/aux
+            string pattern match fail s='TOOLONGTOO', pat='^([A-Z\\$\\#\\@]){1}([A-Z0-9\\$\\#\\@]){0,7}$', at /zowe/setup/security/stcs/aux"
+`;
+
+exports[`init-stc (SHORT) invalid stc configurations 5`] = `
+"Error: Validation of FILE(/test/dir/zowe.test.yaml):FILE(/test/dir/files/defaults.yaml) against schema /test/dir/schemas/zowe-yaml-schema.json:/test/dir/schemas/server-common.json found invalid JSON Schema data
+Validity Exceptions(s) with object at 
+  Validity Exceptions(s) with object at /zowe
+    Validity Exceptions(s) with object at /zowe/setup
+      Validity Exceptions(s) with object at /zowe/setup/security
+        Validity Exceptions(s) with object at /zowe/setup/security/stcs
+          Validity Exceptions(s) with string at /zowe/setup/security/stcs/zis
+            string too short (len=0) '' 0 < MIN=1 at /zowe/setup/security/stcs/zis
+            string pattern match fail s='', pat='^([A-Z\\$\\#\\@]){1}([A-Z0-9\\$\\#\\@]){0,7}$', at /zowe/setup/security/stcs/zis
+          Validity Exceptions(s) with string at /zowe/setup/security/stcs/aux
+            string too long (len=10) 'TOOLONGTOO' 10 > MAX=8 at /zowe/setup/security/stcs/aux
+            string pattern match fail s='TOOLONGTOO', pat='^([A-Z\\$\\#\\@]){1}([A-Z0-9\\$\\#\\@]){0,7}$', at /zowe/setup/security/stcs/aux"
+`;
+
+exports[`init-stc (SHORT) invalid stc configurations 6`] = `
+"Error: Validation of FILE(/test/dir/zowe.test.yaml):FILE(/test/dir/files/defaults.yaml) against schema /test/dir/schemas/zowe-yaml-schema.json:/test/dir/schemas/server-common.json found invalid JSON Schema data
+Validity Exceptions(s) with object at 
+  Validity Exceptions(s) with object at /zowe
+    Validity Exceptions(s) with object at /zowe/setup
+      Validity Exceptions(s) with object at /zowe/setup/security
+        Validity Exceptions(s) with object at /zowe/setup/security/stcs
+          type 'null' not permitted at /zowe/setup/security/stcs/zowe; expecting type 'string'
+          Validity Exceptions(s) with string at /zowe/setup/security/stcs/zis
+            string too short (len=0) '' 0 < MIN=1 at /zowe/setup/security/stcs/zis
+            string pattern match fail s='', pat='^([A-Z\\$\\#\\@]){1}([A-Z0-9\\$\\#\\@]){0,7}$', at /zowe/setup/security/stcs/zis
+          Validity Exceptions(s) with string at /zowe/setup/security/stcs/aux
+            string too long (len=10) 'TOOLONGTOO' 10 > MAX=8 at /zowe/setup/security/stcs/aux
+            string pattern match fail s='TOOLONGTOO', pat='^([A-Z\\$\\#\\@]){1}([A-Z0-9\\$\\#\\@]){0,7}$', at /zowe/setup/security/stcs/aux"
+`;
+
+exports[`init-stc (SHORT) invalid stc configurations 7`] = `
+"Error: Validation of FILE(/test/dir/zowe.test.yaml):FILE(/test/dir/files/defaults.yaml) against schema /test/dir/schemas/zowe-yaml-schema.json:/test/dir/schemas/server-common.json found invalid JSON Schema data
+Validity Exceptions(s) with object at 
+  Validity Exceptions(s) with object at /zowe
+    Validity Exceptions(s) with object at /zowe/setup
+      Validity Exceptions(s) with object at /zowe/setup/security
+        Validity Exceptions(s) with object at /zowe/setup/security/stcs
+          Validity Exceptions(s) with string at /zowe/setup/security/stcs/zowe
+            string too short (len=0) '' 0 < MIN=1 at /zowe/setup/security/stcs/zowe
+            string pattern match fail s='', pat='^([A-Z\\$\\#\\@]){1}([A-Z0-9\\$\\#\\@]){0,7}$', at /zowe/setup/security/stcs/zowe
+          Validity Exceptions(s) with string at /zowe/setup/security/stcs/zis
+            string too short (len=0) '' 0 < MIN=1 at /zowe/setup/security/stcs/zis
+            string pattern match fail s='', pat='^([A-Z\\$\\#\\@]){1}([A-Z0-9\\$\\#\\@]){0,7}$', at /zowe/setup/security/stcs/zis
+          Validity Exceptions(s) with string at /zowe/setup/security/stcs/aux
+            string too long (len=10) 'TOOLONGTOO' 10 > MAX=8 at /zowe/setup/security/stcs/aux
+            string pattern match fail s='TOOLONGTOO', pat='^([A-Z\\$\\#\\@]){1}([A-Z0-9\\$\\#\\@]){0,7}$', at /zowe/setup/security/stcs/aux"
+`;
+
+exports[`init-stc (SHORT) valid config empty proclib 1`] = `
+"Temporary directory '/tmp/.zweenv-0000' created.
+Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
+bos extend currSize=0x0 dataSize=0x105b chunk=0x1000 extend=0x105b
+-------------------------------------------------------------------------------
+>> Install Zowe main started task
+
+Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWEISTC) , Executable JCL: TEST.DATASET.PFX.JCLLIB(ZWEISTC)
+--- JCL Content ---
+//ZWEISTC JOB
+//*
+//* This program and the accompanying materials are made available
+//* under the terms of the Eclipse Public License v2.0 which
+//* accompanies this distribution, and is available at
+//* https://www.eclipse.org/legal/epl-v20.html
+//*
+//* SPDX-License-Identifier: EPL-2.0
+//*
+//* Copyright Contributors to the Zowe Project. 2020, 2020
+//*
+//*********************************************************************
+//*
+//* This job is used to add proclib members
+//* Used to start a Zowe "instance"
+//* Instances represent a configuration of Zowe, different from the
+//* "runtime" datasets that are created upon install of Zowe / SMPE.
+//*
+//*********************************************************************
+//*
+//MCOPY EXEC PGM=IEBCOPY
+//SYSPRINT DD SYSOUT=A
+//SYSUT1 DD DSN=TEST.DATASET.PFX.JCLLIB,DISP=SHR
+//SYSUT2 DD DSN=TEST.DATASET.PFX.TEST.PROCLIB,DISP=OLD
+//SYSIN DD *
+  COPY OUTDD=SYSUT2,INDD=SYSUT1
+  SELECT MEMBER=((ZWESLSTC,,R))
+
+  COPY OUTDD=SYSUT2,INDD=SYSUT1
+  SELECT MEMBER=((ZWESISTC,,R))
+
+  COPY OUTDD=SYSUT2,INDD=SYSUT1
+  SELECT MEMBER=((ZWESASTC,,R))
+//*
+--- End of JCL ---
+JCL not submitted, command run with "--dry-run" flag.
+To perform command, re-run command without "--dry-run" flag, or submit the JCL directly
+
+>> Command run successfully.
+
+
+>> Zowe main started tasks are installed successfully."
+`;
+
+exports[`init-stc (SHORT) wrong ds prefix 1`] = `
+"Error: Validation of FILE(/test/dir/zowe.test.yaml):FILE(/test/dir/files/defaults.yaml) against schema /test/dir/schemas/zowe-yaml-schema.json:/test/dir/schemas/server-common.json found invalid JSON Schema data
+Validity Exceptions(s) with object at 
+  Validity Exceptions(s) with object at /zowe
+    Validity Exceptions(s) with object at /zowe/setup
+      Validity Exceptions(s) with object at /zowe/setup/dataset
+        type 'null' not permitted at /zowe/setup/dataset/prefix; expecting type 'string'"
+`;
+
+exports[`init-stc (SHORT) wrong ds prefix 2`] = `
+"Error: Validation of FILE(/test/dir/zowe.test.yaml):FILE(/test/dir/files/defaults.yaml) against schema /test/dir/schemas/zowe-yaml-schema.json:/test/dir/schemas/server-common.json found invalid JSON Schema data
+Validity Exceptions(s) with object at 
+  Validity Exceptions(s) with object at /zowe
+    Validity Exceptions(s) with object at /zowe/setup
+      Validity Exceptions(s) with object at /zowe/setup/dataset
+        Validity Exceptions(s) with string at /zowe/setup/dataset/prefix
+          string too short (len=0) '' 0 < MIN=3 at /zowe/setup/dataset/prefix
+          string pattern match fail s='', pat='^([A-Z\\$\\#\\@]){1}([A-Z0-9\\$\\#\\@\\-]){0,7}(\\.([A-Z\\$\\#\\@]){1}([A-Z0-9\\$\\#\\@\\-]){0,7}){0,11}$', at /zowe/setup/dataset/prefix"
+`;
+
+exports[`init-stc (SHORT) wrong jcllib 1`] = `
+"Error: Validation of FILE(/test/dir/zowe.test.yaml):FILE(/test/dir/files/defaults.yaml) against schema /test/dir/schemas/zowe-yaml-schema.json:/test/dir/schemas/server-common.json found invalid JSON Schema data
+Validity Exceptions(s) with object at 
+  Validity Exceptions(s) with object at /zowe
+    Validity Exceptions(s) with object at /zowe/setup
+      Validity Exceptions(s) with object at /zowe/setup/dataset
+        type 'null' not permitted at /zowe/setup/dataset/jcllib; expecting type 'string'"
+`;
+
+exports[`init-stc (SHORT) wrong jcllib 2`] = `
+"Error: Validation of FILE(/test/dir/zowe.test.yaml):FILE(/test/dir/files/defaults.yaml) against schema /test/dir/schemas/zowe-yaml-schema.json:/test/dir/schemas/server-common.json found invalid JSON Schema data
+Validity Exceptions(s) with object at 
+  Validity Exceptions(s) with object at /zowe
+    Validity Exceptions(s) with object at /zowe/setup
+      Validity Exceptions(s) with object at /zowe/setup/dataset
+        Validity Exceptions(s) with string at /zowe/setup/dataset/jcllib
+          string too short (len=0) '' 0 < MIN=3 at /zowe/setup/dataset/jcllib
+          string pattern match fail s='', pat='^([A-Z\\$\\#\\@]){1}([A-Z0-9\\$\\#\\@\\-]){0,7}(\\.([A-Z\\$\\#\\@]){1}([A-Z0-9\\$\\#\\@\\-]){0,7}){0,11}$', at /zowe/setup/dataset/jcllib"
+`;
+
+exports[`init-stc (SHORT) wrong proclib 1`] = `
+"Error: Validation of FILE(/test/dir/zowe.test.yaml):FILE(/test/dir/files/defaults.yaml) against schema /test/dir/schemas/zowe-yaml-schema.json:/test/dir/schemas/server-common.json found invalid JSON Schema data
+Validity Exceptions(s) with object at 
+  Validity Exceptions(s) with object at /zowe
+    Validity Exceptions(s) with object at /zowe/setup
+      Validity Exceptions(s) with object at /zowe/setup/dataset
+        type 'null' not permitted at /zowe/setup/dataset/proclib; expecting type 'string'"
+`;
+
+exports[`init-stc (SHORT) wrong proclib 2`] = `
+"Error: Validation of FILE(/test/dir/zowe.test.yaml):FILE(/test/dir/files/defaults.yaml) against schema /test/dir/schemas/zowe-yaml-schema.json:/test/dir/schemas/server-common.json found invalid JSON Schema data
+Validity Exceptions(s) with object at 
+  Validity Exceptions(s) with object at /zowe
+    Validity Exceptions(s) with object at /zowe/setup
+      Validity Exceptions(s) with object at /zowe/setup/dataset
+        Validity Exceptions(s) with string at /zowe/setup/dataset/proclib
+          string too short (len=0) '' 0 < MIN=3 at /zowe/setup/dataset/proclib
+          string pattern match fail s='', pat='^([A-Z\\$\\#\\@]){1}([A-Z0-9\\$\\#\\@\\-]){0,7}(\\.([A-Z\\$\\#\\@]){1}([A-Z0-9\\$\\#\\@\\-]){0,7}){0,11}$', at /zowe/setup/dataset/proclib"
+`;
+
+exports[`init-stc (SHORT) wrong proclib 3`] = `
+"Error: Validation of FILE(/test/dir/zowe.test.yaml):FILE(/test/dir/files/defaults.yaml) against schema /test/dir/schemas/zowe-yaml-schema.json:/test/dir/schemas/server-common.json found invalid JSON Schema data
+Validity Exceptions(s) with object at 
+  Validity Exceptions(s) with object at /zowe
+    Validity Exceptions(s) with object at /zowe/setup
+      Validity Exceptions(s) with object at /zowe/setup/dataset
+        Validity Exceptions(s) with string at /zowe/setup/dataset/proclib
+          string pattern match fail s='INVALID.PROCLIB.DEFINITION1', pat='^([A-Z\\$\\#\\@]){1}([A-Z0-9\\$\\#\\@\\-]){0,7}(\\.([A-Z\\$\\#\\@]){1}([A-Z0-9\\$\\#\\@\\-]){0,7}){0,11}$', at /zowe/setup/dataset/proclib"
+`;
+
+exports[`init-stc (SHORT) zis stc exists 1`] = `
+"Temporary directory '/tmp/.zweenv-0000' created.
+Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
+bos extend currSize=0x0 dataSize=0x105b chunk=0x1000 extend=0x105b
+-------------------------------------------------------------------------------
+>> Install Zowe main started task
+
+Warning ZWEL0301W: TEST.DATASET.PFX.TEST.PROCLIB(ZWESISTC) already exists and will not be overwritten. For upgrades, you must use --allow-overwrite.
+Skipped writing to TEST.DATASET.PFX.TEST.PROCLIB. To write, you must use --allow-overwrite."
+`;
+
+exports[`init-stc (SHORT) zis stc exists 2`] = `
+"Temporary directory '/tmp/.zweenv-0000' created.
+Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
+bos extend currSize=0x0 dataSize=0x105b chunk=0x1000 extend=0x105b
+-------------------------------------------------------------------------------
+>> Install Zowe main started task
+
+Warning ZWEL0300W: TEST.DATASET.PFX.TEST.PROCLIB(ZWESISTC) already exists. This data set member will be overwritten during configuration.
+Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWERSTC) , Executable JCL: TEST.DATASET.PFX.JCLLIB(ZWERSTC)
+--- JCL Content ---
+//ZWERSTC JOB
+//*
+//* This program and the accompanying materials are made available
+//* under the terms of the Eclipse Public License v2.0 which
+//* accompanies this distribution, and is available at
+//* https://www.eclipse.org/legal/epl-v20.html
+//*
+//* SPDX-License-Identifier: EPL-2.0
+//*
+//* Copyright Contributors to the Zowe Project. 2020, 2020
+//*
+//*********************************************************************
+//*
+//* This job is used to remove proclib members
+//* Used to start a Zowe "instance"
+//* Instances represent a configuration of Zowe, different from the
+//* "runtime" datasets that are created upon install of Zowe / SMPE.
+//*
+//*********************************************************************
+//*
+//*      * You do NOT need to change PROCLIB when running ZWEGENER.
+//*      * This is used to keep some lines under the column limit.
+//*
+//       EXPORT SYMLIST=*
+//*
+//       SET PROCLIB=TEST.DATASET.PFX.TEST.PROCLIB
+//*
+//*********************************************************************
+//RMPROC   EXEC PGM=IKJEFT01
+//SYSTSPRT DD SYSOUT=A
+//SYSTSIN  DD *,SYMBOLS=JCLONLY
+DELETE ('&PROCLIB.(ZWESLSTC)', +
+        '&PROCLIB.(ZWESISTC)', +
+        '&PROCLIB.(ZWESASTC)') +
+       SCRATCH NONVSAM
+//*
+--- End of JCL ---
+JCL not submitted, command run with "--dry-run" flag.
+To perform command, re-run command without "--dry-run" flag, or submit the JCL directly
+
+>> Command run successfully.
+
+Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWEISTC) , Executable JCL: TEST.DATASET.PFX.JCLLIB(ZWEISTC)
+--- JCL Content ---
+//ZWEISTC JOB
+//*
+//* This program and the accompanying materials are made available
+//* under the terms of the Eclipse Public License v2.0 which
+//* accompanies this distribution, and is available at
+//* https://www.eclipse.org/legal/epl-v20.html
+//*
+//* SPDX-License-Identifier: EPL-2.0
+//*
+//* Copyright Contributors to the Zowe Project. 2020, 2020
+//*
+//*********************************************************************
+//*
+//* This job is used to add proclib members
+//* Used to start a Zowe "instance"
+//* Instances represent a configuration of Zowe, different from the
+//* "runtime" datasets that are created upon install of Zowe / SMPE.
+//*
+//*********************************************************************
+//*
+//MCOPY EXEC PGM=IEBCOPY
+//SYSPRINT DD SYSOUT=A
+//SYSUT1 DD DSN=TEST.DATASET.PFX.JCLLIB,DISP=SHR
+//SYSUT2 DD DSN=TEST.DATASET.PFX.TEST.PROCLIB,DISP=OLD
+//SYSIN DD *
+  COPY OUTDD=SYSUT2,INDD=SYSUT1
+  SELECT MEMBER=((ZWESLSTC,,R))
+
+  COPY OUTDD=SYSUT2,INDD=SYSUT1
+  SELECT MEMBER=((ZWESISTC,,R))
+
+  COPY OUTDD=SYSUT2,INDD=SYSUT1
+  SELECT MEMBER=((ZWESASTC,,R))
+//*
+--- End of JCL ---
+JCL not submitted, command run with "--dry-run" flag.
+To perform command, re-run command without "--dry-run" flag, or submit the JCL directly
+
+>> Command run successfully.
+
+
+>> Zowe main started tasks are installed successfully."
+`;
+
+exports[`init-stc (SHORT) zos stc exists 1`] = `
+"Temporary directory '/tmp/.zweenv-0000' created.
+Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
+bos extend currSize=0x0 dataSize=0x105b chunk=0x1000 extend=0x105b
+-------------------------------------------------------------------------------
+>> Install Zowe main started task
+
+Warning ZWEL0301W: TEST.DATASET.PFX.TEST.PROCLIB(ZWESLSTC) already exists and will not be overwritten. For upgrades, you must use --allow-overwrite.
+Skipped writing to TEST.DATASET.PFX.TEST.PROCLIB. To write, you must use --allow-overwrite."
+`;
+
+exports[`init-stc (SHORT) zos stc exists 2`] = `
+"Temporary directory '/tmp/.zweenv-0000' created.
+Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
+bos extend currSize=0x0 dataSize=0x105b chunk=0x1000 extend=0x105b
+-------------------------------------------------------------------------------
+>> Install Zowe main started task
+
+Warning ZWEL0300W: TEST.DATASET.PFX.TEST.PROCLIB(ZWESLSTC) already exists. This data set member will be overwritten during configuration.
+Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWERSTC) , Executable JCL: TEST.DATASET.PFX.JCLLIB(ZWERSTC)
+--- JCL Content ---
+//ZWERSTC JOB
+//*
+//* This program and the accompanying materials are made available
+//* under the terms of the Eclipse Public License v2.0 which
+//* accompanies this distribution, and is available at
+//* https://www.eclipse.org/legal/epl-v20.html
+//*
+//* SPDX-License-Identifier: EPL-2.0
+//*
+//* Copyright Contributors to the Zowe Project. 2020, 2020
+//*
+//*********************************************************************
+//*
+//* This job is used to remove proclib members
+//* Used to start a Zowe "instance"
+//* Instances represent a configuration of Zowe, different from the
+//* "runtime" datasets that are created upon install of Zowe / SMPE.
+//*
+//*********************************************************************
+//*
+//*      * You do NOT need to change PROCLIB when running ZWEGENER.
+//*      * This is used to keep some lines under the column limit.
+//*
+//       EXPORT SYMLIST=*
+//*
+//       SET PROCLIB=TEST.DATASET.PFX.TEST.PROCLIB
+//*
+//*********************************************************************
+//RMPROC   EXEC PGM=IKJEFT01
+//SYSTSPRT DD SYSOUT=A
+//SYSTSIN  DD *,SYMBOLS=JCLONLY
+DELETE ('&PROCLIB.(ZWESLSTC)', +
+        '&PROCLIB.(ZWESISTC)', +
+        '&PROCLIB.(ZWESASTC)') +
+       SCRATCH NONVSAM
+//*
+--- End of JCL ---
+JCL not submitted, command run with "--dry-run" flag.
+To perform command, re-run command without "--dry-run" flag, or submit the JCL directly
+
+>> Command run successfully.
+
+Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWEISTC) , Executable JCL: TEST.DATASET.PFX.JCLLIB(ZWEISTC)
+--- JCL Content ---
+//ZWEISTC JOB
+//*
+//* This program and the accompanying materials are made available
+//* under the terms of the Eclipse Public License v2.0 which
+//* accompanies this distribution, and is available at
+//* https://www.eclipse.org/legal/epl-v20.html
+//*
+//* SPDX-License-Identifier: EPL-2.0
+//*
+//* Copyright Contributors to the Zowe Project. 2020, 2020
+//*
+//*********************************************************************
+//*
+//* This job is used to add proclib members
+//* Used to start a Zowe "instance"
+//* Instances represent a configuration of Zowe, different from the
+//* "runtime" datasets that are created upon install of Zowe / SMPE.
+//*
+//*********************************************************************
+//*
+//MCOPY EXEC PGM=IEBCOPY
+//SYSPRINT DD SYSOUT=A
+//SYSUT1 DD DSN=TEST.DATASET.PFX.JCLLIB,DISP=SHR
+//SYSUT2 DD DSN=TEST.DATASET.PFX.TEST.PROCLIB,DISP=OLD
+//SYSIN DD *
+  COPY OUTDD=SYSUT2,INDD=SYSUT1
+  SELECT MEMBER=((ZWESLSTC,,R))
+
+  COPY OUTDD=SYSUT2,INDD=SYSUT1
+  SELECT MEMBER=((ZWESISTC,,R))
+
+  COPY OUTDD=SYSUT2,INDD=SYSUT1
+  SELECT MEMBER=((ZWESASTC,,R))
+//*
+--- End of JCL ---
+JCL not submitted, command run with "--dry-run" flag.
+To perform command, re-run command without "--dry-run" flag, or submit the JCL directly
+
+>> Command run successfully.
+
+
+>> Zowe main started tasks are installed successfully."
 `;

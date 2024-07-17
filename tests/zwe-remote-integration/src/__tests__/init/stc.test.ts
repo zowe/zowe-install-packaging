@@ -50,7 +50,8 @@ describe(`${testSuiteName}`, () => {
       await TestFileActions.deleteAll([jcllib]);
     });
 
-    it('run setup with defaults abc', async () => {
+    // implicit 'init generate'
+    it('run setup with defaults', async () => {
       const proc: string = cfgYaml.zowe.setup.dataset.proclib as string;
       const stcs = cfgYaml.zowe.setup.security.stcs;
       cleanupDatasets.push({ name: `${proc}(${stcs.zowe})`, type: FileType.DS_NON_CLUSTER });
@@ -62,11 +63,12 @@ describe(`${testSuiteName}`, () => {
       expect(result.rc).toBe(0);
     });
 
-    it('run stc setup with overwrite', async () => {
+    it('run stc setup, then overwrite, then run again', async () => {
       const proc: string = cfgYaml.zowe.setup.dataset.proclib as string;
       const stcs = cfgYaml.zowe.setup.security.stcs;
-      await zosfiles.uploadMember(proc, stcs.zowe as string, 'DUMMY');
       cleanupDatasets.push({ name: `${proc}(${stcs.zowe})`, type: FileType.DS_NON_CLUSTER });
+      cleanupDatasets.push({ name: `${proc}(${stcs.aux})`, type: FileType.DS_NON_CLUSTER });
+      cleanupDatasets.push({ name: `${proc}(${stcs.zis})`, type: FileType.DS_NON_CLUSTER });
       let result = await testRunner.runZweTest(cfgYaml, 'init stc');
       expect(result.stdout).not.toBeNull();
       expect(result.cleanedStdout).toMatchSnapshot();
@@ -76,12 +78,21 @@ describe(`${testSuiteName}`, () => {
       expect(result.stdout).not.toBeNull();
       expect(result.cleanedStdout).toMatchSnapshot();
       expect(result.rc).toBe(0);
+
+      // this should fail or warn the user
+      result = await testRunner.runZweTest(cfgYaml, 'init stc');
+      expect(result.stdout).not.toBeNull();
+      expect(result.cleanedStdout).toMatchSnapshot();
+      expect(result.rc).toBe(0);
     });
   });
 
   describe('(SHORT)', () => {
     beforeAll(async () => {
-      await testRunner.runZweTest(cfgYaml, 'init generate');
+      const result = await testRunner.runZweTest(cfgYaml, 'init generate --allow-overwrite');
+      expect(result.stdout).not.toBeNull();
+      expect(result.cleanedStdout).toMatchSnapshot('short-before-all-stc');
+      expect(result.rc).toBe(0);
     });
 
     it('wrong ds prefix', async () => {

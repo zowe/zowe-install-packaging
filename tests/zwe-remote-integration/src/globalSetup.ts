@@ -26,6 +26,7 @@ import {
   THIS_TEST_ROOT_DIR,
   ZOWE_YAML_OVERRIDES,
   THIS_TEST_BASE_DEFAULTS_YAML,
+  DOWNLOAD_SZWESAMP,
 } from './config/TestConfig';
 import * as fs from 'fs-extra';
 import { getSession } from './zos/ZosmfSession';
@@ -131,6 +132,12 @@ module.exports = async () => {
       await downloadManifestDep('org.zowe.configmgr');
       await downloadManifestDep('org.zowe.configmgr-rexx');
     }
+
+    if (DOWNLOAD_SZWESAMP) {
+      await downloadManifestDep('org.zowe.launcher');
+      await downloadManifestDep('org.zowe.zss');
+    }
+
     if (DOWNLOAD_ZOWE_TOOLS) {
       await downloadManifestDep('org.zowe.utility-tools');
     }
@@ -143,6 +150,16 @@ module.exports = async () => {
     const configmgrRexxPax = fs.readdirSync(`${THIS_TEST_ROOT_DIR}/.build`).find((item) => /configmgr-rexx.*\.pax/g.test(item));
     if (configmgrRexxPax == null) {
       throw new Error('Could not locate a configmgr-rexx pax in the .build directory');
+    }
+
+    const zssPax = fs.readdirSync(`${THIS_TEST_ROOT_DIR}/.build`).find((item) => /zss-.*\.pax/g.test(item));
+    if (configmgrRexxPax == null) {
+      throw new Error('Could not locate a zss pax in the .build directory');
+    }
+
+    const launcherPax = fs.readdirSync(`${THIS_TEST_ROOT_DIR}/.build`).find((item) => /launcher.*\.pax/g.test(item));
+    if (configmgrRexxPax == null) {
+      throw new Error('Could not locate a launcher pax in the .build directory');
     }
 
     const zoweToolsZip = fs.readdirSync(`${THIS_TEST_ROOT_DIR}/.build`).find((item) => /zowe-utility-tools.*\.zip/g.test(item));
@@ -166,6 +183,22 @@ module.exports = async () => {
       zosmfSession,
       `${THIS_TEST_ROOT_DIR}/.build/${configmgrRexxPax}`,
       `${REMOTE_SYSTEM_INFO.ussTestDir}/configmgr-rexx.pax`,
+      { binary: true },
+    );
+
+    console.log(`Uploading ${zssPax} to ${REMOTE_SYSTEM_INFO.ussTestDir}/zss.pax ...`);
+    await files.Upload.fileToUssFile(
+      zosmfSession,
+      `${THIS_TEST_ROOT_DIR}/.build/${zssPax}`,
+      `${REMOTE_SYSTEM_INFO.ussTestDir}/zss.pax`,
+      { binary: true },
+    );
+
+    console.log(`Uploading ${launcherPax} to ${REMOTE_SYSTEM_INFO.ussTestDir}/launcher.pax ...`);
+    await files.Upload.fileToUssFile(
+      zosmfSession,
+      `${THIS_TEST_ROOT_DIR}/.build/${launcherPax}`,
+      `${REMOTE_SYSTEM_INFO.ussTestDir}/launcher.pax`,
       { binary: true },
     );
 
@@ -193,7 +226,7 @@ module.exports = async () => {
         binary: true,
       },
     );
-    await uss.runCommand(`tar -xf zwe.tar`, REMOTE_SYSTEM_INFO.ussTestDir);
+    await uss.runCommand(`tar -xfo zwe.tar`, REMOTE_SYSTEM_INFO.ussTestDir);
 
     // zowe-install-packaging-tools
     const utilsDir = path.resolve(THIS_TEST_ROOT_DIR, '.build', 'utility-tools');
@@ -306,6 +339,27 @@ module.exports = async () => {
     await uss.runCommand(`pax -ppx -rf configmgr-rexx.pax`, `${REMOTE_SYSTEM_INFO.ussTestDir}`);
     for (const pgm of ['ZWERXCFG', 'ZWECFG31', 'ZWECFG64']) {
       await uss.runCommand(`cp -X ${pgm} "//'${REMOTE_SYSTEM_INFO.szweload}(${pgm})'"`, `${REMOTE_SYSTEM_INFO.ussTestDir}`);
+    }
+
+    console.log(`Unpacking zss pax and placing SAMPLIB in ${REMOTE_SYSTEM_INFO.szwesamp} ...`);
+    await uss.runCommand(`pax -ppx -rf zss.pax`, `${REMOTE_SYSTEM_INFO.ussTestDir}`);
+    const zssPgms = [
+      { from: 'ZWESIP00', to: 'ZWESIP00' },
+      { from: 'ZWESISCH', to: 'ZWESISCH' },
+      { from: 'ZWESAUX', to: 'ZWESASTC' },
+      { from: 'ZWESIS01', to: 'ZWESISTC' },
+    ];
+    for (const pgm of zssPgms) {
+      await uss.runCommand(
+        `cp SAMPLIB/${pgm.from} "//'${REMOTE_SYSTEM_INFO.szwesamp}(${pgm.to})'"`,
+        `${REMOTE_SYSTEM_INFO.ussTestDir}`,
+      );
+    }
+
+    console.log(`Unpacking launcher pax and placing SAMPLIB in ${REMOTE_SYSTEM_INFO.szwesamp} ...`);
+    await uss.runCommand(`pax -ppx -rf launcher.pax`, `${REMOTE_SYSTEM_INFO.ussTestDir}`);
+    for (const pgm of ['ZWESLSTC']) {
+      await uss.runCommand(`cp samplib/${pgm} "//'${REMOTE_SYSTEM_INFO.szwesamp}(${pgm})'"`, `${REMOTE_SYSTEM_INFO.ussTestDir}`);
     }
 
     console.log(`Unpacking ncert.pax from zowe-install-packaging-tools and placing it in bin/utils/...`);

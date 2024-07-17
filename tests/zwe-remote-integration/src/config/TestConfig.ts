@@ -35,11 +35,11 @@ const configFields: ConfigItem<unknown>[] = [
   new ConfigItem('zosmf_port', true),
   new ConfigItem('remote_test_dir', true),
   new ConfigItem('test_ds_hlq', true),
-  new ConfigItem('test_stgclass', true),
   new ConfigItem('test_volume', true),
   new ConfigItem('test_storclas', false),
   new ConfigItem('zosmf_reject_unauthorized', false, false),
   new ConfigItem('download_configmgr', false, true),
+  new ConfigItem('download_szwesamp', false, true),
   new ConfigItem('download_zowe_tools', false, true),
   new ConfigItem('remote_setup', false),
   new ConfigItem('remote_teardown', false),
@@ -62,6 +62,7 @@ export const LINGERING_REMOTE_FILES_FILE = path.resolve(THIS_TEST_ROOT_DIR, '.bu
 export const TEST_JOBS_RUN_FILE = path.resolve(THIS_TEST_ROOT_DIR, '.build', 'jobs-run.txt');
 export const DOWNLOAD_ZOWE_TOOLS = yn(configData.download_zowe_tools, { default: true });
 export const DOWNLOAD_CONFIGMGR = yn(configData.download_configmgr, { default: true });
+export const DOWNLOAD_SZWESAMP = yn(configData.download_szwesamp, { default: true });
 export const REMOTE_SETUP = yn(configData.remote_setup, { default: true });
 export const REMOTE_TEARDOWN = yn(configData.remote_teardown, { default: true });
 export const ZOWE_YAML_OVERRIDES = configData.zowe_yaml_overrides;
@@ -89,7 +90,6 @@ export const REMOTE_SYSTEM_INFO = {
   ussTestDir: configData.remote_test_dir,
   hostname: configData.zos_host,
   zosmfPort: configData.zosmf_port,
-  stgclass: configData.test_stgclass,
 };
 
 export const REMOTE_CONNECTION_CFG = {
@@ -114,14 +114,14 @@ type TestConfigData = {
   test_volume: string;
   test_storclas: string;
   zosmf_reject_unauthorized: string;
-  download_configmgr: string;
+  download_configmgr: boolean;
+  download_szwesamp: boolean;
   download_zowe_tools: boolean;
   remote_setup: boolean;
   remote_teardown: boolean;
   jfrog_user: string;
   jfrog_token: string;
   collect_test_spool: string;
-  test_stgclass: string;
   zowe_yaml_overrides: Partial<ZoweYamlType>;
 };
 
