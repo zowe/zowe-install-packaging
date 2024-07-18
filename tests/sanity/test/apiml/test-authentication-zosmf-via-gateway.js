@@ -10,8 +10,7 @@
 
 const expect = require('chai').expect;
 const { HTTPRequest, APIMLAuth } = require('../http-helper');
-const { APIML_AUTH_COOKIE, ZOSMF_TOKEN } = require('../constants');
-const debug = require('debug')('zowe-sanity-test:apiml:api-mediation-zosmf-authentication');
+const { APIML_AUTH_COOKIE } = require('../constants');
 
 describe('test api mediation layer zosmf authentication', function() {
 
