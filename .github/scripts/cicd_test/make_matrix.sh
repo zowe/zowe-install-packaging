@@ -37,6 +37,10 @@ case $install_test_choice in
   test_force_system="zzow08"
   ;;
 
+"z/OS node v20")
+  test_file="$ZOS_NODE_V20_TESTFILE"
+  ;;
+
 "Non-strict Verify External Certificate")
   test_file="$NON_STRICT_VERIFY_EXTERNAL_CERTIFICATE_TESTFILE"
   ;;

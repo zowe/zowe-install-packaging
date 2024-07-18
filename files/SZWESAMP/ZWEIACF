@@ -1,0 +1,252 @@
+//ZWEIACF JOB
+//*
+//* This program and the accompanying materials are made available
+//* under the terms of the Eclipse Public License v2.0 which
+//* accompanies this distribution, and is available at
+//* https://www.eclipse.org/legal/epl-v20.html
+//*
+//* SPDX-License-Identifier: EPL-2.0
+//*
+//* Copyright Contributors to the Zowe Project. 2018, 2020
+//*
+//*********************************************************************
+//*
+//* This JCL can be used to define security permits for Zowe
+//*
+//*
+//* CAUTION: This is neither a JCL procedure nor a complete job.
+//* Before using this JCL, you will have to make the following
+//* modifications:
+//*
+//* 1) Add job name and job parameters to the JOB statement, to
+//*    meet your system requirements.
+//*
+//* 2) When not using AUTOUID and AUTOGID to assign z/OS UNIX UID
+//*     and GID values, update the SET *ID= statements to match the
+//*     desired UID and GID values.
+//*
+//* 3) Customize the commands in the DD statement that matches your
+//*     security product so that they meet your system requirements.
+//*
+//* Note(s):
+//*
+//* 1. THE USER ID THAT RUNS THIS JOB MUST HAVE SUFFICIENT AUTHORITY
+//*    TO ALTER SECURITY DEFINITONS
+//*
+//* 2. The sample ACF2 commands create ROLEs that match the group
+//*    names. Due to permits assigned to the &STCGRP ROLE, it is
+//*    advised to ensure this ROLE has a unique identifier.
+//*
+//* 3. The Zowe started task user ID 'zowe.setup.security.users.zowe'
+//*    Writes persistent data to 'zowe.workspaceDirectory'
+//*    This sample JCL makes the Zowe started task part of
+//*    the Zowe admin group 'zowe.setup.security.groups.admin'
+//*    to facilitate admin access to this directory.
+//*
+//* 4. This job WILL complete with return code 0.
+//*    The results of each command must be verified after completion.
+//*
+//*********************************************************************
+//         EXPORT SYMLIST=*
+//*
+//* The sample commands assume AUTOUID and AUTOGID are
+//* enabled. When this is not the case,
+//* provide appropriate (numeric) values to these SET commands.
+//         SET ADMINGID=             * Group ID for ZOWE administrators
+//         SET   STCGID=&ADMINGID.   * Group ID for ZOWE started tasks
+//         SET  ZOWEUID=             * UID for ZOWE started task User
+//         SET   ZISUID=             * UID for ZIS started task User
+//*
+//* If using AUTOUID and AUTOGID, an AUTOIDOM GSO Record must exist.
+//*
+//*********************************************************************
+//*
+//* EXECUTE COMMANDS FOR SELECTED SECURITY PRODUCT
+//*
+//RUN      EXEC PGM=IKJEFT01,REGION=0M
+//SYSTSPRT DD SYSOUT=*
+//SYSTSIN  DD DDNAME=ACF2
+//ACF2     DD DATA,DLM=$$,SYMBOLS=JCLONLY
+ACF
+*
+* DEFINE ADMINISTRATORS ...........................................
+*
+* group for administrators
+* replace AUTOGID with GID(&ADMINGID.) if AUTOGID is not enabled
+*
+SET PROFILE(GROUP) DIV(OMVS)
+INSERT {zowe.setup.security.groups.admin} AUTOGID
+F ACF2,REBUILD(GRP),CLASS(P)
+*
+* uncomment and customize to add an existing userid as administrator
+*
+* SET X(ROL)
+* INSERT {zowe.setup.security.groups.admin} INCLUDE(userid) ROLE
+* F ACF2,NEWXREF,TYPE(ROL)
+*
+* DEFINE STARTED TASK .............................................
+*
+* comment out if STCGRP matches ADMINGRP (default), expect
+*   warning messages otherwise
+* group for started tasks
+* replace AUTOGID with GID(&STCGID.) if AUTOGID is not enabled
+*
+SET PROFILE(GROUP) DIV(OMVS)
+INSERT {zowe.setup.security.groups.stc} AUTOGID
+F ACF2,REBUILD(GRP),CLASS(P)
+*
+*****
+*
+* userid for ZOWE main server
+* replace AUTOUID with UID(&ZOWEUID.) if AUTOUID is not enabled
+*
+SET LID
+INSERT {zowe.setup.security.users.zowe} +
+  STC GROUP({zowe.setup.security.groups.stc})
+SET PROFILE(USER) DIV(OMVS)
+INSERT {zowe.setup.security.users.zowe} +
+  AUTOUID HOME(/tmp) OMVSPGM(/bin/sh)
+F ACF2,REBUILD(USR),CLASS(P),DIVISION(OMVS)
+*
+* userid for ZIS cross memory server
+* replace AUTOUID with UID(&ZISUID.) if AUTOUID is not enabled
+*
+SET LID
+INSERT {zowe.setup.security.users.zis} +
+  STC GROUP({zowe.setup.security.groups.stc})
+SET PROFILE(USER) DIV(OMVS)
+INSERT {zowe.setup.security.users.zis} +
+  AUTOUID HOME(/tmp) OMVSPGM(/bin/sh)
+F ACF2,REBUILD(USR),CLASS(P),DIVISION(OMVS)
+*
+*****
+*
+* started task for ZOWE main server
+*
+SET CONTROL(GSO)
+INSERT STC.{zowe.setup.security.stcs.zowe} +
+  LOGONID({zowe.setup.security.users.zowe}) +
+GROUP({zowe.setup.security.groups.stc}) +
+STCID({zowe.setup.security.stcs.zowe})
+F ACF2,REFRESH(STC)
+*
+* started task for ZIS cross memory server
+*
+SET CONTROL(GSO)
+INSERT STC.{zowe.setup.security.stcs.zis} +
+  LOGONID({zowe.setup.security.users.zis}) +
+GROUP({zowe.setup.security.groups.stc}) +
+STCID({zowe.setup.security.stcs.zis})
+F ACF2,REFRESH(STC)
+*
+* started task for ZIS Auxiliary cross memory server
+*
+SET CONTROL(GSO)
+INSERT STC.{zowe.setup.security.stcs.aux} +
+  LOGONID({zowe.setup.security.users.zis}) +
+GROUP({zowe.setup.security.groups.stc}) +
+STCID({zowe.setup.security.stcs.aux})
+F ACF2,REFRESH(STC)
+*
+* DEFINE ZIS SECURITY RESOURCES ..................................
+*
+* define a role holding the permissions, add ZISUSER and
+* ZOWEUSER to it
+*
+SET X(ROL)
+INSERT {zowe.setup.security.groups.stc} +
+  INCLUDE({zowe.setup.security.users.zowe}) ROLE
+F ACF2,NEWXREF,TYPE(ROL)
+CHANGE {zowe.setup.security.groups.stc} +
+  INCLUDE({zowe.setup.security.users.zis}) ADD
+F ACF2,NEWXREF,TYPE(ROL)
+*
+* DEFINE STC SERVER PERMISIONS ....................................
+*
+* permit AUX and Zowe main server to use ZIS cross memory server
+*
+SET RESOURCE(FAC)
+RECKEY ZWES ADD(IS SERVICE(READ) +
+  ROLE({zowe.setup.security.groups.stc}) ALLOW)
+F ACF2,REBUILD(FAC)
+*
+* DEFINE ZOWE SERVER PERMISIONS ...................................
+*
+* permit Zowe main server to create a user's security environment
+* ATTENTION: Defining the BPX.DAEMON or BPX.SERVER profile makes
+*            z/OS UNIX switch to z/OS UNIX level security. This is
+*            more secure, but it can impact operation of existing
+*            applications. Test this thoroughly before activating
+*            it on a production system.
+*
+SET RESOURCE(FAC)
+RECKEY BPX ADD(DAEMON SERVICE(UPDATE) +
+  ROLE({zowe.setup.security.groups.stc}) ALLOW)
+RECKEY BPX ADD(SERVER SERVICE(UPDATE) +
+  ROLE({zowe.setup.security.groups.stc}) ALLOW)
+*
+* permit Zowe main server to create a user's security environment
+* comment out the following 3 lines if the OMVSAPPL is not defined
+* in your environment
+SET RESOURCE(APL)
+RECKEY OMVSAPPL ADD(SERVICE(READ) +
+  ROLE({zowe.setup.security.groups.stc}) ALLOW)
+F ACF2,REBUILD(APL)
+*
+* Allow STCGRP role access to BPX.JOBNAME
+RECKEY BPX ADD(JOBNAME SERVICE(READ) +
+  ROLE({zowe.setup.security.groups.stc}) ALLOW)
+F ACF2,REBUILD(FAC)
+
+* allow STCGRP role to use client certificate mapping service
+SET RESOURCE(FAC)
+RECKEY IRR ADD(RUSERMAP ROLE({zowe.setup.security.groups.stc}) +
+  SERVICE(READ) ALLOW)
+F ACF2,REBUILD(FAC)
+
+* allow STCGRP role to use distributed identity mapping service
+SET RESOURCE(FAC)
+RECKEY IRR ADD(IDIDMAP.QUERY +
+  ROLE({zowe.setup.security.groups.stc}) SERVICE(READ) ALLOW)
+F ACF2,REBUILD(FAC)
+
+* permit Zowe main server to cut SMF records
+SET RESOURCE(FAC)
+RECKEY IRR ADD(RAUDITX ROLE({zowe.setup.security.groups.stc}) +
+  SERVICE(READ) ALLOW)
+F ACF2,REBUILD(FAC)
+
+*
+* DEFINE ZOWE DATA SET PROTECTION .................................
+*
+* - HLQ..SZWEAUTH is an APF authorized data set. It is strongly
+*   advised to protect it against updates.
+*
+*  HLQ stub
+SET RULE
+*  general data set protection
+LIST {zowe.setup.dataset.prefix}
+RECKEY {zowe.setup.dataset.prefix} ADD(- UID(-) READ(A) EXEC(P))
+RECKEY {zowe.setup.dataset.prefix} +
+ADD(- UID({zowe.setup.security.groups.sysProg}) +
+  READ(A) EXEC(A) ALLOC(A) WRITE(A))
+*
+*  show results
+LIST {zowe.setup.dataset.prefix}
+*
+
+*
+* DEFINE ZOWE RESOURCE PROTECTION .................................
+*
+* - Defines resource APIML.SERVICES that controls access to
+*   detailed information about API services to Zowe users.
+
+* uncomment and replace "user" to permit Zowe users to access
+* the resource:
+* SET RESOURCE(ZWE)
+* RECKEY APIML ADD(SERVICES -
+* UID(user) SERVICE(READ) ALLOW)
+* F ACF2,REBUILD(ZWE)
+
+$$
+//*
