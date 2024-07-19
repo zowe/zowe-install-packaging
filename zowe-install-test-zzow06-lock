@@ -1,1 +1,15 @@
-""
+{
+  "lockAcquiredTime": "Fri Jul 19 2024 20:30:03 GMT+0000 (Coordinated Universal Time)",
+  "uid": "1721421003089017194",
+  "repository": {
+    "owner": "zowe",
+    "repo": "zowe-install-packaging"
+  },
+  "branch": "user/markackert/backport-master-to-staging",
+  "workflow": "Zowe CICD Integration Tests",
+  "job": "cicd-test",
+  "actor": "zowe-robot",
+  "runId": 10013942180,
+  "runNumber": 5073,
+  "link": "https://github.com/zowe/zowe-install-packaging/actions/runs/10013942180"
+}
