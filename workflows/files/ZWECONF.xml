@@ -481,7 +481,7 @@ How we want to verify SSL certificates of services. Valid values are:
         </boolean>
     </variable>
     <variable name="components_zaas_enabled" scope="instance" visibility="public">
-      <label>Enable gateway</label>
+      <label>Enable ZAAS</label>
       <abstract>Should the APIML ZAAS be enabled?</abstract>
       <description>Should the APIML ZAAS be enabled?</description>
       <category>components</category>
@@ -1173,7 +1173,7 @@ How we want to verify SSL certificates of services. Valid values are:
           </targetStateSet>
         </condition>
         <variableValue name="components_gateway_port" scope="instance" noPromptIfSet="false" required="true"/>
-        <variableValue name="components_gatewaye_debug" scope="instance" noPromptIfSet="false" required="true"/>
+        <variableValue name="components_gateway_debug" scope="instance" noPromptIfSet="false" required="true"/>
         <instructions substitution="false">Run this step to specify the cloud gateway variables</instructions>
         <weight>1</weight>
         <skills>z/OS System Programmer</skills>
@@ -2003,16 +2003,16 @@ echo '' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '    apiml:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '      security:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '        auth:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '          provider: "$!{instance-components_gateway_apiml_security_auth_provider}"' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '          provider: "$!{instance-components_zaas_apiml_security_auth_provider}"' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '          zosmf:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '            jwtAutoconfiguration: "$!{instance-components_gateway_apiml_security_auth_zosmf_jwtAutoconfiguration}"' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '            serviceId: "$!{instance-components_gateway_apiml_security_auth_zosmf_serviceId}"' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '            jwtAutoconfiguration: "$!{instance-components_zaas_apiml_security_auth_zosmf_jwtAutoconfiguration}"' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '            serviceId: "$!{instance-components_zaas_apiml_security_auth_zosmf_serviceId}"' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '        authorization:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '          endpoint:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '            enabled: ${instance-components_gateway_apiml_security_authorization_endpoint_enabled}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '          provider: "$!{instance-components_gateway_apiml_security_authorization_provider}"' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '            enabled: ${instance-components_zaas_apiml_security_authorization_endpoint_enabled}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '          provider: "$!{instance-components_zaas_apiml_security_authorization_provider}"' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '        x509:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '          enabled: ${instance-components_gateway_apiml_security_x509_enabled}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '          enabled: ${instance-components_zaas_apiml_security_x509_enabled}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 #end
 #if (${instance-components_zaas_enabled} == "false" )
 echo '  zaas:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
