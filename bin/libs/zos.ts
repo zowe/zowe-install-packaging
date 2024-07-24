@@ -16,7 +16,7 @@ import * as shell from './shell';
 import * as stringlib from './string';
 
 export function tsoCommand(...args:string[]): { rc: number, out: string } {
-  let message="tsocmd "+args.join(' ');
+  let message = "tsocmd " + '"' + args.join(' ') + '"';
   common.printDebug('- '+message);
   //we echo at the end to avoid a configmgr quirk where trying to read stdout when empty can hang waiting for bytes
   const result = shell.execOutSync('sh', '-c', `${message} 2>&1 && echo '.'`);
@@ -25,6 +25,7 @@ export function tsoCommand(...args:string[]): { rc: number, out: string } {
     common.printTrace(`  * Exit code: ${result.rc}`);
     common.printTrace("  * Output:");
     if (result.out) {
+      result.out = result.out.substring(0, result.out.length - 1);
       common.printTrace(stringlib.paddingLeft(result.out, "    "));
     }
   } else {
@@ -35,8 +36,7 @@ export function tsoCommand(...args:string[]): { rc: number, out: string } {
       common.printError(stringlib.paddingLeft(result.out, "    "));
     }
   }
-  //we strip the '.' we added above
-  return { rc: result.rc, out: result.out ? result.out.substring(0, result.out.length-1) : '' };
+  return { rc: result.rc, out: result.out ? result.out : '' };
 }
 
 export function operatorCommand(command: string): { rc: number, out: string } {

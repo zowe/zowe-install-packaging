@@ -17,7 +17,7 @@ if [ "${USE_CONFIGMGR}" = "true" ]; then
     # user-facing command, use tmpdir to not mess up workspace permissions
     export ZWE_PRIVATE_TMP_MERGED_YAML_DIR=1
   fi
-  _CEE_RUNOPTS="XPLINK(ON),HEAPPOOLS(OFF)" ${ZWE_zowe_runtimeDirectory}/bin/utils/configmgr -script "${ZWE_zowe_runtimeDirectory}/bin/commands/config/validate/cli.js"
+  _CEE_RUNOPTS="XPLINK(ON),HEAPPOOLS(OFF),HEAPPOOLS64(OFF)" ${ZWE_zowe_runtimeDirectory}/bin/utils/configmgr -script "${ZWE_zowe_runtimeDirectory}/bin/commands/config/validate/cli.js"
 else
   echo "This command is only available when zowe.useConfigmgr=true"
 fi

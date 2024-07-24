@@ -1,0 +1,129 @@
+name: Build ompzowe/zowecicd-node-java builder
+on:
+  # push:
+  # pull_request:
+  workflow_dispatch:
+    inputs:
+      release:
+        description: 'Set to "true" if we want to release the base images'
+        required: false
+        default: ''
+      RANDOM_DISPATCH_EVENT_ID:
+        description: 'random dispatch event id'
+        required: false
+        type: string
+env:
+  IMAGE_BASE_DIR: containers/server-bundle
+
+jobs:
+  display-dispatch-event-id:
+    if: github.event.inputs.RANDOM_DISPATCH_EVENT_ID != ''
+    runs-on: ubuntu-latest
+    steps:
+      - name: RANDOM_DISPATCH_EVENT_ID is ${{ github.event.inputs.RANDOM_DISPATCH_EVENT_ID }}
+        run: echo "prints random dispatch event id sent from workflow dispatch event"
+
+  build-ubuntu-amd64:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - uses: zowe-actions/shared-actions/prepare-workflow@main
+
+      - uses: zowe-actions/shared-actions/docker-prepare@main
+        with:
+          registry-user: ${{ secrets.ARTIFACTORY_X_USERNAME }}
+          registry-password: ${{ secrets.ARTIFACTORY_X_PASSWORD }}
+          release: ${{ github.event.inputs.release }}
+          base-directory: ${{ env.IMAGE_BASE_DIR }}
+          image-name: zowecicd-node-java
+          linux-distro: ubuntu
+          cpu-arch: amd64
+
+      - uses: zowe-actions/shared-actions/docker-build-local@main
+        with:
+          build-arg-list: NODE_CPU_ARCH=x64
+        timeout-minutes: 5
+
+      - name: Run Snyk to check Docker image for vulnerabilities
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        continue-on-error: true
+        uses: snyk/actions/docker@master
+        with:
+          image: ${{ env.IMAGE_NAME_FULL_REMOTE }}
+          args: --file=${{ env.IMAGE_DIRECTORY }}/Dockerfile.nodejava.amd64
+          command: test
+
+      - name: Upload result to GitHub Code Scanning
+        uses: github/codeql-action/upload-sarif@v1
+        if: hashFiles('snyk.sarif') != ''
+        with:
+          sarif_file: snyk.sarif
+
+  build-ubuntu-s390x:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - uses: zowe-actions/shared-actions/prepare-workflow@main
+
+      - uses: zowe-actions/shared-actions/docker-prepare@main
+        with:
+          registry-user: ${{ secrets.ARTIFACTORY_X_USERNAME }}
+          registry-password: ${{ secrets.ARTIFACTORY_X_PASSWORD }}
+          release: ${{ github.event.inputs.release }}
+          base-directory: ${{ env.IMAGE_BASE_DIR }}
+          image-name: zowecicd-node-java
+          linux-distro: ubuntu
+          cpu-arch: s390x
+
+      - uses: zowe-actions/shared-actions/docker-build-zlinux@main
+        with:
+          zlinux-host: ${{ secrets.ZLINUX_HOST }}
+          zlinux-ssh-user: ${{ secrets.ZLINUX_SSH_USER }}
+          zlinux-ssh-key: ${{ secrets.ZLINUX_SSH_KEY }}
+          zlinux-ssh-passphrase: ${{ secrets.ZLINUX_SSH_PASSPHRASE }}
+          build-arg-list: NODE_CPU_ARCH=s390x
+        timeout-minutes: 10
+
+      - name: Run Snyk to check Docker image for vulnerabilities
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        continue-on-error: true
+        uses: snyk/actions/docker@master
+        with:
+          image: ${{ env.IMAGE_NAME_FULL_REMOTE }}
+          args: --file=${{ env.IMAGE_DIRECTORY }}/Dockerfile.nodejava.s390x
+          command: test
+
+      - name: Upload result to GitHub Code Scanning
+        uses: github/codeql-action/upload-sarif@v1
+        if: hashFiles('snyk.sarif') != ''
+        with:
+          sarif_file: snyk.sarif
+
+  define-ubuntu-manifest:
+    needs:
+      - build-ubuntu-amd64
+      - build-ubuntu-s390x
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - uses: zowe-actions/shared-actions/prepare-workflow@main
+
+      - uses: zowe-actions/shared-actions/docker-prepare@main
+        with:
+          registry-user: ${{ secrets.ARTIFACTORY_X_USERNAME }}
+          registry-password: ${{ secrets.ARTIFACTORY_X_PASSWORD }}
+          release: ${{ github.event.inputs.release }}
+          base-directory: ${{ env.IMAGE_BASE_DIR }}
+          image-name: zowecicd-node-java
+          linux-distro: ubuntu
+
+      - uses: zowe-actions/shared-actions/docker-manifest@main
+        with:
+          linux-distro: ubuntu
+          cpu-arch-list: "amd64 s390x"
+        timeout-minutes: 2
