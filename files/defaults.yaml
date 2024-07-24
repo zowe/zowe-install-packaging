@@ -70,15 +70,15 @@ zowe:
 
       # Distinguished name for Zowe generated certificates.
       dname: 
-        caCommonName: "${{ (zowe.setup.certificate.pkcs12?.name || zowe.setup.certificate.keyring?.label) ? 'Zowe Development Instances CA' : null }}"
-        commonName: "${{ (zowe.setup.certificate.pkcs12?.name || zowe.setup.certificate.keyring?.label) ? 'Zowe Development Instances Certificate' : null }}"
-        orgUnit: "${{ (zowe.setup.certificate.pkcs12?.name || zowe.setup.certificate.keyring?.label) ? 'API Mediation Layer' : null }}"
-        org: "${{ (zowe.setup.certificate.pkcs12?.name || zowe.setup.certificate.keyring?.label) ? 'Zowe Sample' : null }}"
-        locality: "${{ (zowe.setup.certificate.pkcs12?.name || zowe.setup.certificate.keyring?.label) ? 'Prague' : null }}"
-        state: "${{ (zowe.setup.certificate.pkcs12?.name || zowe.setup.certificate.keyring?.label) ? 'Prague' : null }}"
-        country: "${{ (zowe.setup.certificate.pkcs12?.name || zowe.setup.certificate.keyring?.label) ? 'CZ' : null }}"
+        caCommonName: "${{ (zowe.setup.certificate.pkcs12?.name || zowe.setup.certificate.keyring?.name) ? 'Zowe Development Instances CA' : null }}"
+        commonName: "${{ (zowe.setup.certificate.pkcs12?.name || zowe.setup.certificate.keyring?.name) ? 'Zowe Development Instances Certificate' : null }}"
+        orgUnit: "${{ (zowe.setup.certificate.pkcs12?.name || zowe.setup.certificate.keyring?.name) ? 'API Mediation Layer' : null }}"
+        org: "${{ (zowe.setup.certificate.pkcs12?.name || zowe.setup.certificate.keyring?.name) ? 'Zowe Sample' : null }}"
+        locality: "${{ (zowe.setup.certificate.pkcs12?.name || zowe.setup.certificate.keyring?.name) ? 'Prague' : null }}"
+        state: "${{ (zowe.setup.certificate.pkcs12?.name || zowe.setup.certificate.keyring?.name) ? 'Prague' : null }}"
+        country: "${{ (zowe.setup.certificate.pkcs12?.name || zowe.setup.certificate.keyring?.name) ? 'CZ' : null }}"
       # Validity days for Zowe generated certificates
-      validity: "${{ (zowe.setup.certificate.pkcs12?.import || zowe.setup.certificate.keyring?.label) ? null : 3650 }}"
+      validity: "${{ (zowe.setup.certificate.pkcs12?.import || zowe.setup.certificate.keyring?.name) ? null : 3650 }}"
 
     vsam:
       # Default to caching service entry as it predates this one
