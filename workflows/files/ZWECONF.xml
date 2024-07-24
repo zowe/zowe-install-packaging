@@ -2085,9 +2085,9 @@ echo '      infinispan:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '        # this is required if storage mode is infinispan' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '        jgroups:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 #if (${instance-components_caching_service_storage_mode} == "infinispan" )
-echo '          port: 7600' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-#else
 echo '          port: ${instance-components_caching_service_storage_infinispan_jgroups_port}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+#else
+echo '          port: 7600' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 #end
 #end
 #if (${instance-components_caching_service_enabled} == "false" )
