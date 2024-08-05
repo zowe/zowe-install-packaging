@@ -61,17 +61,17 @@ spec:
               cpu: "700m"
           ports:
             - name: zaas-port
-              containerPort: 7554
+              containerPort: 7563
               protocol: TCP
           startupProbe:
             tcpSocket:
-              port: 7554
+              port: 7563
             # this should give 90 * periodSeconds(default to 10) seconds about 15 minutes to confirm it's ready
             periodSeconds: 10
             failureThreshold: 90
           livenessProbe:
             tcpSocket:
-              port: 7554
+              port: 7563
             # this should give 3 * periodSeconds(default to 10) seconds about 30 seconds to confirm it's offline
             periodSeconds: 10
             failureThreshold: 3
