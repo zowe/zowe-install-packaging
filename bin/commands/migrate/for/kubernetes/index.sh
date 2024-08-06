@@ -49,7 +49,7 @@ mkdir -p "${ZWE_PRIVATE_WORKSPACE_ENV_DIR}"
 generate_instance_env_from_yaml_config convert-for-k8s
 source_env "${ZWE_PRIVATE_WORKSPACE_ENV_DIR}/.instance-convert-for-k8s.env"
 # prepare full SAN list for k8s
-full_k8s_domain_list="${ZWE_CLI_PARAMETER_DOMAINS},localhost.localdomain,localhost,127.0.0.1,*.${ZWE_CLI_PARAMETER_K8S_NAMESPACE}.svc.${ZWE_CLI_PARAMETER_K8S_CLUSTER_NAME},*.${ZWE_CLI_PARAMETER_K8S_NAMESPACE}.pod.${ZWE_CLI_PARAMETER_K8S_CLUSTER_NAME},*.discovery-service.${ZWE_CLI_PARAMETER_K8S_NAMESPACE}.svc.${ZWE_CLI_PARAMETER_K8S_CLUSTER_NAME},*.gateway-service.${ZWE_CLI_PARAMETER_K8S_NAMESPACE}.svc.${ZWE_CLI_PARAMETER_K8S_CLUSTER_NAME}"
+full_k8s_domain_list="${ZWE_CLI_PARAMETER_DOMAINS},localhost.localdomain,localhost,127.0.0.1,*.${ZWE_CLI_PARAMETER_K8S_NAMESPACE}.svc.${ZWE_CLI_PARAMETER_K8S_CLUSTER_NAME},*.${ZWE_CLI_PARAMETER_K8S_NAMESPACE}.pod.${ZWE_CLI_PARAMETER_K8S_CLUSTER_NAME},*.discovery-service.${ZWE_CLI_PARAMETER_K8S_NAMESPACE}.svc.${ZWE_CLI_PARAMETER_K8S_CLUSTER_NAME},*.gateway-service.${ZWE_CLI_PARAMETER_K8S_NAMESPACE}.svc.${ZWE_CLI_PARAMETER_K8S_CLUSTER_NAME},*.zaas-service.${ZWE_CLI_PARAMETER_K8S_NAMESPACE}.svc.${ZWE_CLI_PARAMETER_K8S_CLUSTER_NAME}"
 original_zss_host="${ZWE_zowe_externalDomains_0}"
 original_zss_port="${ZWE_components_zss_port}"
 
@@ -77,9 +77,9 @@ if [[ "${ZWE_zowe_certificate_keystore_type}" == JCE*KS ]]; then
   ZWE_zowe_certificate_truststore_password="${ZWE_CLI_PARAMETER_PASSWORD}"
 
   keystore_content=$(pkeytool -list \
-                      -keystore "${ZWE_zowe_certificate_keystore_file}" \
-                      -storepass "${ZWE_zowe_certificate_keystore_password}" \
-                      -storetype "${ZWE_zowe_certificate_keystore_type}")
+    -keystore "${ZWE_zowe_certificate_keystore_file}" \
+    -storepass "${ZWE_zowe_certificate_keystore_password}" \
+    -storetype "${ZWE_zowe_certificate_keystore_type}")
 
   ZWE_zowe_certificate_keystore_alias=
   aliases=$(echo "${keystore_content}" | grep -i keyentry | awk -F, '{print $1}')
@@ -145,7 +145,7 @@ if [ "${ZWE_zowe_setup_certificate_type}" = "PKCS12" -a "${ZWE_zowe_verifyCertif
     print_error_and_exit "Error ZWEL0169E: Failed to create certificate \"${ZWE_zowe_setup_certificate_pkcs12_name}\"." "" 169
   fi
   if [ ! -f "${temp_dir}/keystore/${ZWE_zowe_setup_certificate_pkcs12_name}/${ZWE_zowe_setup_certificate_pkcs12_name}.keystore.p12" ]; then
-    >&2 echo "Error: failed to generate keystore for Kubernetes"
+    echo >&2 "Error: failed to generate keystore for Kubernetes"
     exit 1
   fi
 
@@ -204,12 +204,14 @@ done
 
 update_zowe_yaml "${temp_dir}/zowe.yaml" "zowe.externalPort" "${ZWE_CLI_PARAMETER_EXTERNAL_PORT}"
 update_zowe_yaml "${temp_dir}/zowe.yaml" "components.gateway.port" "7554"
+update_zowe_yaml "${temp_dir}/zowe.yaml" "components.zaas.port" "7563"
 update_zowe_yaml "${temp_dir}/zowe.yaml" "components.discovery.port" "7553"
 update_zowe_yaml "${temp_dir}/zowe.yaml" "components.api-catalog.port" "7552"
 update_zowe_yaml "${temp_dir}/zowe.yaml" "components.caching-service.port" "7555"
 update_zowe_yaml "${temp_dir}/zowe.yaml" "components.app-server.port" "7556"
 
 update_zowe_yaml "${temp_dir}/zowe.yaml" "components.gateway.enabled" "true"
+update_zowe_yaml "${temp_dir}/zowe.yaml" "components.zaas.enabled" "true"
 update_zowe_yaml "${temp_dir}/zowe.yaml" "components.discovery.enabled" "true"
 update_zowe_yaml "${temp_dir}/zowe.yaml" "components.api-catalog.enabled" "true"
 update_zowe_yaml "${temp_dir}/zowe.yaml" "components.caching-service.enabled" "true"
@@ -218,13 +220,13 @@ update_zowe_yaml "${temp_dir}/zowe.yaml" "components.explorer-jes.enabled" "true
 update_zowe_yaml "${temp_dir}/zowe.yaml" "components.explorer-mvs.enabled" "true"
 update_zowe_yaml "${temp_dir}/zowe.yaml" "components.explorer-uss.enabled" "true"
 
-update_zowe_yaml "${temp_dir}/zowe.yaml" "components.gateway.apiml.security.x509.externalMapperUrl" ""
-update_zowe_yaml "${temp_dir}/zowe.yaml" "components.gateway.apiml.security.authorization.endpoint.url" ""
-gateway_auth_provider=$(read_yaml "${temp_dir}/zowe.yaml" ".components.gateway.apiml.security.authorization.endpoint.provider")
-if [ "${gateway_auth_provider}" != "" ]; then
-  print_message "Zowe APIML Gateway authorization provider is suggested to be empty when running in Kubernetes. 'native' is not supported off Z platform."
+update_zowe_yaml "${temp_dir}/zowe.yaml" "components.zaas.apiml.security.x509.externalMapperUrl" ""
+update_zowe_yaml "${temp_dir}/zowe.yaml" "components.zaas.apiml.security.authorization.endpoint.url" ""
+zaas_auth_provider=$(read_yaml "${temp_dir}/zowe.yaml" ".components.zaas.apiml.security.authorization.endpoint.provider")
+if [ "${zaas_auth_provider}" != "" ]; then
+  print_message "Zowe APIML ZAAS authorization provider is suggested to be empty when running in Kubernetes. 'native' is not supported off Z platform."
 fi
-update_zowe_yaml "${temp_dir}/zowe.yaml" "components.gateway.apiml.security.authorization.endpoint.provider" ""
+update_zowe_yaml "${temp_dir}/zowe.yaml" "components.zaas.apiml.security.authorization.endpoint.provider" ""
 update_zowe_yaml "${temp_dir}/zowe.yaml" "components.discovery.replicas" "1"
 update_zowe_yaml "${temp_dir}/zowe.yaml" "components.caching-service.storage.mode" ""
 

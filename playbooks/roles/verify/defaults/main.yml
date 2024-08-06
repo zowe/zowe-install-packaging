@@ -27,5 +27,6 @@ zowe_job_prefix: ZWE
 zowe_proclib_membername: ZWESLSTC
 zowe_instance_id: 1
 # ports will be tested
+zowe_apiml_zaas_port: 7563
 zowe_apiml_gateway_port: 7554
 zowe_zlux_port: 7556

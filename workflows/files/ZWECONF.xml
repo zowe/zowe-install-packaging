@@ -480,10 +480,43 @@ How we want to verify SSL certificates of services. Valid values are:
             <default>false</default>
         </boolean>
     </variable>
-    <variable name="components_gateway_apiml_security_auth_provider" scope="instance" visibility="public">
-        <label>Gateway APIML security auth provider</label>
-        <abstract>Authorization provider for the gateway</abstract>
-        <description>Authorization provider for the gateway</description>
+    <variable name="components_zaas_enabled" scope="instance" visibility="public">
+      <label>Enable ZAAS</label>
+      <abstract>Should the APIML ZAAS be enabled?</abstract>
+      <description>Should the APIML ZAAS be enabled?</description>
+      <category>components</category>
+      <boolean>
+        <!-- Put validation here -->
+        <!-- Specify choices here -->
+        <default>true</default>
+      </boolean>
+    </variable>
+  <variable name="components_zaas_port" scope="instance" visibility="public">
+    <label>ZAAS port</label>
+    <abstract>Port for the APIML ZAAS</abstract>
+    <description>Port for the APIML ZAAS</description>
+    <category>components</category>
+    <integer>
+      <!-- Put validation here -->
+      <!-- Specify choices here -->
+      <default>7563</default>
+    </integer>
+  </variable>
+  <variable name="components_zaas_debug" scope="instance" visibility="public">
+    <label>ZAAS debug</label>
+    <abstract>Switch on the debug mode for the ZAAS</abstract>
+    <description>Switch on the debug mode for the ZAAS</description>
+    <category>components</category>
+    <boolean>
+      <!-- Put validation here -->
+      <!-- Specify choices here -->
+      <default>false</default>
+    </boolean>
+  </variable>
+    <variable name="components_zaas_apiml_security_auth_provider" scope="instance" visibility="public">
+        <label>ZAAS APIML security auth provider</label>
+        <abstract>Authorization provider for the ZAAS</abstract>
+        <description>Authorization provider for the ZAAS</description>
         <category>components</category>
         <string valueMustBeChoice="false" multiLine="false">
             <!-- Put validation here -->
@@ -491,8 +524,8 @@ How we want to verify SSL certificates of services. Valid values are:
             <default>zosmf</default>
         </string>
     </variable>
-    <variable name="components_gateway_apiml_security_auth_zosmf_jwtAutoconfiguration" scope="instance" visibility="public">
-        <label>Gateway APIML security auth z/OSMF jwtAutoconfiguration</label>
+    <variable name="components_zaas_apiml_security_auth_zosmf_jwtAutoconfiguration" scope="instance" visibility="public">
+        <label>ZAAS APIML security auth z/OSMF jwtAutoconfiguration</label>
         <abstract>JWT auto configuration for gateway security auth</abstract>
         <description>JWT auto configuration for gateway security auth</description>
         <category>components</category>
@@ -502,10 +535,10 @@ How we want to verify SSL certificates of services. Valid values are:
             <default>auto</default>
         </string>
     </variable>
-    <variable name="components_gateway_apiml_security_auth_zosmf_serviceId" scope="instance" visibility="public">
-        <label>Gateway APIML security auth z/OSMF serviceId</label>
-        <abstract>Service ID for gateway security auth</abstract>
-        <description>Service ID for gateway security auth</description>
+    <variable name="components_zaas_apiml_security_auth_zosmf_serviceId" scope="instance" visibility="public">
+        <label>ZAAS APIML security auth z/OSMF serviceId</label>
+        <abstract>Service ID for ZAAS security auth</abstract>
+        <description>Service ID for ZAAS security auth</description>
         <category>components</category>
         <string valueMustBeChoice="false" multiLine="false">
             <!-- Put validation here -->
@@ -513,8 +546,8 @@ How we want to verify SSL certificates of services. Valid values are:
             <default>zosmf</default>
         </string>
     </variable>
-    <variable name="components_gateway_apiml_security_authorization_endpoint_enabled" scope="instance" visibility="public">
-        <label>Enable gateway APIML security authorization endpoint</label>
+    <variable name="components_zaas_apiml_security_authorization_endpoint_enabled" scope="instance" visibility="public">
+        <label>Enable ZAAS APIML security authorization endpoint</label>
         <abstract>Use this to enable the security authorization endpoint</abstract>
         <description>Use this to enable the security authorization endpoint</description>
         <category>components</category>
@@ -524,119 +557,20 @@ How we want to verify SSL certificates of services. Valid values are:
             <default>false</default>
         </boolean>
     </variable>
-    <variable name="components_gateway_apiml_security_authorization_provider" scope="instance" visibility="public">
-        <label>Gateway APIML security authorization provider</label>
-        <abstract>Security authorization provider for the gateway</abstract>
-        <description>Security authorization provider for the gateway</description>
+    <variable name="components_zaas_apiml_security_authorization_provider" scope="instance" visibility="public">
+        <label>ZAAS APIML security authorization provider</label>
+        <abstract>Security authorization provider for the ZAAS</abstract>
+        <description>Security authorization provider for the ZAAS</description>
         <category>components</category>
         <string valueMustBeChoice="false" multiLine="false">
             <!-- Put validation here -->
             <!-- Specify choices here -->
         </string>
     </variable>
-    <variable name="components_gateway_apiml_security_x509_enabled" scope="instance" visibility="public">
-        <label>Enable gateway APIML security x509</label>
-        <abstract>Check to enable the gateway security x509</abstract>
-        <description>Check to enable the gateway security x509</description>
-        <category>components</category>
-        <boolean>
-            <!-- Put validation here -->
-            <!-- Specify choices here -->
-            <default>false</default>
-        </boolean>
-    </variable>
-    <variable name="components_gateway_server_internal_enabled" scope="instance" visibility="public">
-        <label>Enable gateway server internal connector</label>
-        <abstract>Enable gateway server internal connector</abstract>
-        <description>Enable gateway server internal connector</description>
-        <category>components</category>
-        <boolean>
-            <!-- Put validation here -->
-            <!-- Specify choices here -->
-            <default>false</default>
-        </boolean>
-    </variable>
-    <variable name="components_gateway_server_internal_port" scope="instance" visibility="public">
-        <label>Gateway server internal port</label>
-        <abstract>Gateway internal connector port</abstract>
-        <description>Gateway internal connector port</description>
-        <category>components</category>
-        <integer>
-            <!-- Put validation here -->
-            <!-- Specify choices here -->
-            <default>7550</default>
-        </integer>
-    </variable>
-    <variable name="components_gateway_server_internal_ssl_enabled" scope="instance" visibility="public">
-        <label>Enable gateway server internal SSL</label>
-        <abstract>Enable gateway internal connector SSL</abstract>
-        <description>Enable gateway internal connector SSL</description>
-        <category>components</category>
-        <boolean>
-            <!-- Put validation here -->
-            <!-- Specify choices here -->
-            <default>false</default>
-        </boolean>
-    </variable>
-    <variable name="components_metrics_service_enabled" scope="instance" visibility="public">
-        <label>Enable metrics service</label>
-        <abstract>Use this option to enable the metrics seervice</abstract>
-        <description>Use this option to enable the metrics seervice</description>
-        <category>components</category>
-        <boolean>
-            <!-- Put validation here -->
-            <!-- Specify choices here -->
-            <default>false</default>
-        </boolean>
-    </variable>
-    <variable name="components_metrics_service_port" scope="instance" visibility="public">
-        <label>Metrics service port</label>
-        <abstract>Port for the metrics service</abstract>
-        <description>Port for the metrics service</description>
-        <category>components</category>
-        <integer>
-            <!-- Put validation here -->
-            <!-- Specify choices here -->
-            <default>7551</default>
-        </integer>
-    </variable>
-    <variable name="components_metrics_service_debug" scope="instance" visibility="public">
-        <label>Metrics service debug</label>
-        <abstract>Check this value to get additional debugging</abstract>
-        <description>Check this value to get additional debugging</description>
-        <category>components</category>
-        <boolean>
-            <!-- Put validation here -->
-            <!-- Specify choices here -->
-            <default>false</default>
-        </boolean>
-    </variable>
-  <variable name="components_cloud_gateway_enabled" scope="instance" visibility="public">
-        <label>Enable cloud gateway</label>
-        <abstract>Use this option to enable the cloud gateway</abstract>
-        <description>Use this option to enable the cloud gateway</description>
-        <category>components</category>
-        <boolean>
-            <!-- Put validation here -->
-            <!-- Specify choices here -->
-            <default>false</default>
-        </boolean>
-    </variable>
-    <variable name="components_cloud_gateway_port" scope="instance" visibility="public">
-        <label>Cloud gateway port</label>
-        <abstract>Port for the cloud gateway</abstract>
-        <description>Port for the cloud gateway</description>
-        <category>components</category>
-        <integer>
-            <!-- Put validation here -->
-            <!-- Specify choices here -->
-            <default>7563</default>
-        </integer>
-    </variable>
-    <variable name="components_cloud_gatewaye_debug" scope="instance" visibility="public">
-        <label>Cloud gateway debug</label>
-        <abstract>Check this value to get additional debugging</abstract>
-        <description>Check this value to get additional debugging</description>
+    <variable name="components_zaas_apiml_security_x509_enabled" scope="instance" visibility="public">
+        <label>Enable ZAAS APIML security x509</label>
+        <abstract>Check to enable the ZAAS security x509</abstract>
+        <description>Check to enable the ZAAS security x509</description>
         <category>components</category>
         <boolean>
             <!-- Put validation here -->
@@ -1198,8 +1132,7 @@ How we want to verify SSL certificates of services. Valid values are:
             <variableValue name="useconfig_manager_enabled" scope="instance" noPromptIfSet="false" required="true"/>
             <variableValue name="config_manager_validation" scope="instance" noPromptIfSet="false" required="true"/>
             <variableValue name="components_gateway_enabled" scope="instance" noPromptIfSet="false" required="true"/>
-            <variableValue name="components_metrics_service_enabled" scope="instance" noPromptIfSet="false" required="true"/>
-            <variableValue name="components_cloud_gateway_enabled" scope="instance" noPromptIfSet="false" required="true"/>
+            <variableValue name="components_zaas_enabled" scope="instance" noPromptIfSet="false" required="true"/>
             <variableValue name="components_api_catalog_enabled" scope="instance" noPromptIfSet="false" required="true"/>
             <variableValue name="components_discovery_enabled" scope="instance" noPromptIfSet="false" required="true"/>
             <variableValue name="components_caching_service_enabled" scope="instance" noPromptIfSet="false" required="true"/>
@@ -1224,81 +1157,54 @@ How we want to verify SSL certificates of services. Valid values are:
             <canMarkAsFailed>false</canMarkAsFailed>
             <!--template-->
         </step>
-        <step name="gateway_components" optional="false">
-            <title>Gateway component variables</title>
-            <description>Define the gateway component variables here</description>
+      <step name="gateway_component" optional="false">
+        <title>Gateway variables</title>
+        <description>Specify the variables for the gateway component</description>
+        <prereqStep name="main_variables"/>
+        <condition>
+          <expression>1 == 1</expression>
+          <description>Always true</description>
+          <targetStateSet>
+            <extendStateExpression>
+              <description>Skipped if the gateway was not selected</description>
+              <expression>!${instance-components_gateway_enabled}</expression>
+              <targetState>skipped</targetState>
+            </extendStateExpression>
+          </targetStateSet>
+        </condition>
+        <variableValue name="components_gateway_port" scope="instance" noPromptIfSet="false" required="true"/>
+        <variableValue name="components_gateway_debug" scope="instance" noPromptIfSet="false" required="true"/>
+        <instructions substitution="false">Run this step to specify the cloud gateway variables</instructions>
+        <weight>1</weight>
+        <skills>z/OS System Programmer</skills>
+        <autoEnable>false</autoEnable>
+        <canMarkAsFailed>false</canMarkAsFailed>
+        <!--template-->
+      </step>
+        <step name="zaas_components" optional="false">
+            <title>ZAAS component variables</title>
+            <description>Define the ZAAS component variables here</description>
             <prereqStep name="main_variables"/>
             <condition>
                 <expression>1 == 1</expression>
                 <description>Always true</description>
                 <targetStateSet>
                     <extendStateExpression>
-                        <description>Skipped if gateway is not selected</description>
-                        <expression>!${instance-components_gateway_enabled}</expression>
+                        <description>Skipped if ZAAS is not selected</description>
+                        <expression>!${instance-components_zaas_enabled}</expression>
                         <targetState>skipped</targetState>
                     </extendStateExpression>
                 </targetStateSet>
             </condition>
-            <variableValue name="components_gateway_port" scope="instance" noPromptIfSet="false" required="true"/>
-            <variableValue name="components_gateway_debug" scope="instance" noPromptIfSet="false" required="true"/>
-            <variableValue name="components_gateway_apiml_security_auth_provider" scope="instance" noPromptIfSet="false" required="true"/>
-            <variableValue name="components_gateway_apiml_security_auth_zosmf_jwtAutoconfiguration" scope="instance" noPromptIfSet="false" required="true"/>
-            <variableValue name="components_gateway_apiml_security_auth_zosmf_serviceId" scope="instance" noPromptIfSet="false" required="true"/>
-            <variableValue name="components_gateway_apiml_security_authorization_endpoint_enabled" scope="instance" noPromptIfSet="false" required="true"/>
-            <variableValue name="components_gateway_apiml_security_authorization_provider" scope="instance" noPromptIfSet="false" required="false"/>
-            <variableValue name="components_gateway_apiml_security_x509_enabled" scope="instance" noPromptIfSet="false" required="true"/>
-            <variableValue name="components_gateway_server_internal_enabled" scope="instance" noPromptIfSet="false" required="true"/>
-            <variableValue name="components_gateway_server_internal_port" scope="instance" noPromptIfSet="false" required="true"/>
-            <variableValue name="components_gateway_server_internal_ssl_enabled" scope="instance" noPromptIfSet="false" required="true"/>
+            <variableValue name="components_zaas_port" scope="instance" noPromptIfSet="false" required="true"/>
+            <variableValue name="components_zaas_debug" scope="instance" noPromptIfSet="false" required="true"/>
+            <variableValue name="components_zaas_apiml_security_auth_provider" scope="instance" noPromptIfSet="false" required="true"/>
+            <variableValue name="components_zaas_apiml_security_auth_zosmf_jwtAutoconfiguration" scope="instance" noPromptIfSet="false" required="true"/>
+            <variableValue name="components_zaas_apiml_security_auth_zosmf_serviceId" scope="instance" noPromptIfSet="false" required="true"/>
+            <variableValue name="components_zaas_apiml_security_authorization_endpoint_enabled" scope="instance" noPromptIfSet="false" required="true"/>
+            <variableValue name="components_zaas_apiml_security_authorization_provider" scope="instance" noPromptIfSet="false" required="false"/>
+            <variableValue name="components_zaas_apiml_security_x509_enabled" scope="instance" noPromptIfSet="false" required="true"/>
             <instructions substitution="true">Run this step to fill gateway component variables.</instructions>
-            <weight>1</weight>
-            <skills>z/OS System Programmer</skills>
-            <autoEnable>false</autoEnable>
-            <canMarkAsFailed>false</canMarkAsFailed>
-            <!--template-->
-        </step>
-        <step name="metrics_component" optional="false">
-            <title>Metrics component variables</title>
-            <description>Specify the variables for the metrics component</description>
-            <prereqStep name="main_variables"/>
-            <condition>
-                <expression>1 == 1</expression>
-                <description>Always true</description>
-                <targetStateSet>
-                    <extendStateExpression>
-                        <description>Skipped if the metrics component was not selected</description>
-                        <expression>!${instance-components_metrics_service_enabled}</expression>
-                        <targetState>skipped</targetState>
-                    </extendStateExpression>
-                </targetStateSet>
-            </condition>
-            <variableValue name="components_metrics_service_port" scope="instance" noPromptIfSet="false" required="true"/>
-            <variableValue name="components_metrics_service_debug" scope="instance" noPromptIfSet="false" required="true"/>
-            <instructions substitution="false">Run this step to specify the metrics variables</instructions>
-            <weight>1</weight>
-            <skills>z/OS System Programmer</skills>
-            <autoEnable>false</autoEnable>
-            <canMarkAsFailed>false</canMarkAsFailed>
-            <!--template-->
-        </step>
-        <step name="cloud_gateway_component" optional="false">
-            <title>Cloud gateway variables</title>
-            <description>Specify the variables for the cloud gateway component</description>
-            <prereqStep name="main_variables"/>
-            <condition>
-                <expression>1 == 1</expression>
-                <description>Always true</description>
-                <targetStateSet>
-                    <extendStateExpression>
-                        <description>Skipped if the cloud gateway was not selected</description>
-                        <expression>!${instance-components_cloud_gateway_enabled}</expression>
-                        <targetState>skipped</targetState>
-                    </extendStateExpression>
-                </targetStateSet>
-            </condition>
-            <variableValue name="components_cloud_gateway_port" scope="instance" noPromptIfSet="false" required="true"/>
-            <variableValue name="components_cloud_gatewaye_debug" scope="instance" noPromptIfSet="false" required="true"/>
-            <instructions substitution="false">Run this step to specify the cloud gateway variables</instructions>
             <weight>1</weight>
             <skills>z/OS System Programmer</skills>
             <autoEnable>false</autoEnable>
@@ -2073,36 +1979,45 @@ echo '  gateway:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '    enabled: ${instance-components_gateway_enabled}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '    port: ${instance-components_gateway_port}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '    debug: ${instance-components_gateway_debug}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '    apiml:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '      security:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '        auth:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '          provider: "$!{instance-components_gateway_apiml_security_auth_provider}"' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '          zosmf:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '            jwtAutoconfiguration: "$!{instance-components_gateway_apiml_security_auth_zosmf_jwtAutoconfiguration}"' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '            serviceId: "$!{instance-components_gateway_apiml_security_auth_zosmf_serviceId}"' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '        authorization:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '          endpoint:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '            enabled: ${instance-components_gateway_apiml_security_authorization_endpoint_enabled}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '          provider: "$!{instance-components_gateway_apiml_security_authorization_provider}"' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '        x509:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '          enabled: ${instance-components_gateway_apiml_security_x509_enabled}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '    server:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '      internal:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '      # gateway supports internal connector' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '        enabled: ${instance-components_gateway_server_internal_enabled}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '        port: ${instance-components_gateway_server_internal_port}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '        ssl:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '          enabled: ${instance-components_gateway_server_internal_ssl_enabled}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '          # internal connector can use different certificate' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '          # certificate:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '          #   keystore:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '          #     alias: ""' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 #end
 #if (${instance-components_gateway_enabled} == "false" )
 echo '  gateway:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '    enabled: ${instance-components_gateway_enabled}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '    port: 7554' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '    debug: false' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+#end
+echo '' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '    # If we customize this to use different external certificate, than should also' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '    # define "server.internal.ssl.certificate" and enable "server.internal.ssl.enabled".' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '    # certificate:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '    #   keystore:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '    #     alias: ""' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '  # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+#if (${instance-components_zaas_enabled} == "true" )
+echo '  zaas:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '    enabled: ${instance-components_zaas_enabled}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '    port: ${instance-components_zaas_port}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '    debug: ${instance-components_zaas_debug}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '    apiml:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '      security:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '        auth:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '          provider: "$!{instance-components_zaas_apiml_security_auth_provider}"' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '          zosmf:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '            jwtAutoconfiguration: "$!{instance-components_zaas_apiml_security_auth_zosmf_jwtAutoconfiguration}"' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '            serviceId: "$!{instance-components_zaas_apiml_security_auth_zosmf_serviceId}"' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '        authorization:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '          endpoint:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '            enabled: ${instance-components_zaas_apiml_security_authorization_endpoint_enabled}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '          provider: "$!{instance-components_zaas_apiml_security_authorization_provider}"' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '        x509:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '          enabled: ${instance-components_zaas_apiml_security_x509_enabled}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+#end
+#if (${instance-components_zaas_enabled} == "false" )
+echo '  zaas:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '    enabled: ${instance-components_zaas_enabled}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '    port: 7563' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '    debug: false' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '    apiml:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
@@ -2118,51 +2033,6 @@ echo '            enabled: false' >> "${instance-zowe_runtimeDirectory}/zowe.yam
 echo '          provider: ""' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '        x509:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '          enabled: false' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '    server:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '      internal:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '      # gateway supports internal connector' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '        enabled: false' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '        port: 7550' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '        ssl:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '          enabled: false' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '          # internal connector can use different certificate' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '          # certificate:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '          #   keystore:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '          #     alias: ""' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-#end
-echo '' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '    # If we customize this to use different external certificate, than should also' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '    # define "server.internal.ssl.certificate" and enable "server.internal.ssl.enabled".' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '    # certificate:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '    #   keystore:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '    #     alias: ""' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '  # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-#if (${instance-components_metrics_service_enabled} == "true" )
-echo '  metrics-service:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '    enabled: ${instance-components_metrics_service_enabled}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '    port: ${instance-components_metrics_service_port}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '    debug: ${instance-components_metrics_service_debug}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-#end
-#if (${instance-components_metrics_service_enabled} == "false" )
-echo '  metrics-service:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '    enabled: ${instance-components_metrics_service_enabled}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '    port: 7551' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '    debug: false' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-#end
-echo '' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '  # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-#if (${instance-components_cloud_gateway_enabled} == "true" )
-echo '  cloud-gateway:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '    enabled: ${instance-components_cloud_gateway_enabled}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '    port: ${instance-components_cloud_gateway_port}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '    debug: ${instance-components_cloud_gatewaye_debug}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-#end
-#if (${instance-components_cloud_gateway_enabled} == "false" )
-echo '  cloud-gateway:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '    enabled: ${instance-components_cloud_gateway_enabled}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '    port: 7563' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '    debug: false' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 #end
 echo '' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '  # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
@@ -2214,7 +2084,11 @@ echo '        name: "$!{instance-components_caching_service_storage_vsam_name}"'
 echo '      infinispan:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '        # this is required if storage mode is infinispan' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '        jgroups:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+#if (${instance-components_caching_service_storage_mode} == "infinispan" )
 echo '          port: ${instance-components_caching_service_storage_infinispan_jgroups_port}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+#else
+echo '          port: 7600' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+#end
 #end
 #if (${instance-components_caching_service_enabled} == "false" )
 echo '  caching-service:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"

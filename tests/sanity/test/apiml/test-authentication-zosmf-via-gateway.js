@@ -10,7 +10,7 @@
 
 const expect = require('chai').expect;
 const { HTTPRequest, APIMLAuth } = require('../http-helper');
-const { APIML_AUTH_COOKIE, ZOSMF_TOKEN } = require('../constants');
+const { APIML_AUTH_COOKIE } = require('../constants');
 
 describe('test api mediation layer zosmf authentication', function() {
 
@@ -60,26 +60,6 @@ describe('test api mediation layer zosmf authentication', function() {
       });
 
       assertNotEmptyValidResponse(res);
-    });
-
-    it('with valid LTPA cookie', async function() {
-      const token = Buffer.from(`${username}:${password}`, 'utf8').toString('base64');
-      const loginResponse = await hq.request({
-        url: '/ibmzosmf/api/v1/zosmf/info',
-        headers: {
-          'Authorization': `Basic ${token}`,
-        }
-      });
-
-      const ltpaCookie = hq.findCookieInResponse(loginResponse, ZOSMF_TOKEN);
-      const response = await hq.request({
-        url: '/ibmzosmf/api/v1/zosmf/info',
-        headers: {
-          'Cookie': ltpaCookie,
-        }
-      });
-
-      assertNotEmptyValidResponse(response);
     });
 
     it('with valid JWT token via Bearer', async function() {

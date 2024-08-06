@@ -690,12 +690,77 @@ process_component_appfw_plugin() {
 #       and ensure_node_is_on_path should have been executed.
 #
 # @param string   component directory
+process_component_zaas_shared_libs() {
+  component_dir="${1}"
+
+  # make sure $ZWE_ZAAS_SHARED_LIBS exists
+  mkdir -p "${ZWE_ZAAS_SHARED_LIBS}"
+
+  all_succeed=true
+  iterator_index=0
+  plugin_name=
+  zaas_shared_libs_workspace_path=
+  zaas_shared_libs_path=$(read_component_manifest "${component_dir}" ".zaasSharedLibs[${iterator_index}]" 2>/dev/null)
+  while [ -n "${zaas_shared_libs_path}" ]; do
+    cd "${component_dir}"
+
+    if [ -z "${plugin_name}" ]; then
+      # prepare plugin directory
+      plugin_name=$(read_component_manifest "${component_dir}" ".name" 2>/dev/null)
+      if [ -z "${plugin_name}" ]; then
+        print_error "Cannot read name from the plugin ${component_dir}"
+        all_succeed=false
+        break
+      fi
+      zaas_shared_libs_workspace_path="${ZWE_ZAAS_SHARED_LIBS}/${plugin_name}"
+      mkdir -p "${zaas_shared_libs_workspace_path}"
+    fi
+
+    # copy manifest to workspace
+    component_manifest=$(get_component_manifest "${component_dir}")
+    if [ ! -z "${component_manifest}" -a -f "${component_manifest}" ]; then
+      cp "${component_manifest}" "${zaas_shared_libs_workspace_path}"
+    fi
+
+    # copy libraries to workspace/zaas/sharedLibs/<plugin-id>
+    # Due to limitation of how Java loading shared libraries, all jars are copied to plugin root directly.
+    if [ -f "${zaas_shared_libs_path}" ]; then
+      cp "${zaas_shared_libs_path}" "${zaas_shared_libs_workspace_path}"
+    elif [ -d "${zaas_shared_libs_path}" ]; then
+      find "${zaas_shared_libs_path}" -type f | xargs -I{} cp {} "${zaas_shared_libs_workspace_path}"
+    else
+      print_error "Zaas shared libs directory ${zaas_shared_libs_path} is not accessible"
+      all_succeed=false
+      break
+    fi
+
+    iterator_index=`expr $iterator_index + 1`
+    zaas_shared_libs_path=$(read_component_manifest "${component_dir}" ".zaasSharedLibs[${iterator_index}]" 2>/dev/null)
+  done
+
+  if [ "${all_succeed}" = "true" ]; then
+    return 0
+  else
+    # error message should have be echoed before this
+    return 1
+  fi
+}
+
+###############################
+# Parse and process manifest Gateway Shared Libs (gatewaySharedLibs) definitions
+#
+# The supported manifest entry is ".gatewaySharedLibs". All shared libs
+# defined will be passed to install-app.sh for proper installation.
+#
+# Note: this function requires node, which means NODE_HOME should have been defined,
+#       and ensure_node_is_on_path should have been executed.
+#
+# @param string   component directory
 process_component_gateway_shared_libs() {
   component_dir="${1}"
 
   # make sure $ZWE_GATEWAY_SHARED_LIBS exists
   mkdir -p "${ZWE_GATEWAY_SHARED_LIBS}"
-
   all_succeed=true
   iterator_index=0
   plugin_name=

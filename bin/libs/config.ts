@@ -275,6 +275,7 @@ export function loadEnvironmentVariables(componentId?: string) {
   std.setenv('ZWE_PRIVATE_WORKSPACE_ENV_DIR', zwePrivateWorkspaceEnvDir);
   std.setenv('ZWE_STATIC_DEFINITIONS_DIR', `${workspaceDirectory}/api-mediation/api-defs`);
   std.setenv('ZWE_GATEWAY_SHARED_LIBS', `${workspaceDirectory}/gateway/sharedLibs/`);
+  std.setenv('ZWE_ZAAS_SHARED_LIBS', `${workspaceDirectory}/zaas/sharedLibs/`);
   std.setenv('ZWE_DISCOVERY_SHARED_LIBS', `${workspaceDirectory}/discovery/sharedLibs/`);
 
   // now we can load all variables

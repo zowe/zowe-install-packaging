@@ -88,6 +88,11 @@ data:
         port: 7554
         debug: false
 
+      zaas:
+        enabled: true
+        port: 7563
+        debug: false
+
       discovery:
         enabled: true
         port: 7553
