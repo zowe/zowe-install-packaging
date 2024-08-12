@@ -1,0 +1,23 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`init-cert (LONG) cert bad hostname 1`] = `
+"
+$ -------------------------------------------------------------------------------
+>> Creating certificate authority "local_ca"
+
+Error ZWEL0158E: Keystore "/test/dir/local_ca/local_ca.keystore.p12" already exists."
+`;
+
+exports[`init-cert (LONG) cert bad hostname 2`] = `
+"
+$   * Output:
+    Error: error reading input file: ENOENT: no such file or directory, open '/tmp/zwe-16698/.zowe-merged.yaml'
+Error ZWEL0157E: Certificate type (zowe.setup.certificate.type) is not defined in Zowe YAML configuration file.
+rm: FSUM9195 cannot unlink entry "/tmp/zwe-16698/.zowe-merged.yaml": EDC5129I No such file or directory. (errno2=0x0594003D)"
+`;
+
+exports[`init-cert (SHORT) cert dry-run 1`] = `
+"
+$ Error ZWEL0319E: zowe.setup.dataset.jcllib does not exist, cannot run. Run 'zwe init', 'zwe init generate', or submit JCL TEST.DATASET.PFX.SZWESAMP(ZWEGENER) before running this command.
+rm: FSUM9195 cannot unlink entry "/tmp/zwe-26063/.zowe-merged.yaml": EDC5129I No such file or directory. (errno2=0x0594003D)"
+`;

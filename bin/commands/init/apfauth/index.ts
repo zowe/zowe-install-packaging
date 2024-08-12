@@ -49,6 +49,14 @@ export function execute() {
 
   let result1 = zosDs.isDatasetSmsManaged(ZOWE_CONFIG.zowe.setup.dataset.authLoadlib);
   let result2 = zosDs.isDatasetSmsManaged(ZOWE_CONFIG.zowe.setup.dataset.authPluginLib);
+
+  if (result1.rc != 0) {
+    common.printErrorAndExit(`Error ZWEL0320E: The dataset specified in 'zowe.setup.dataset.authLoadlib' does not exist.`, undefined, 320);
+  }
+  if (result2.rc != 0) {
+    common.printErrorAndExit(`Error ZWEL0320E: The dataset specified in 'zowe.setup.dataset.authPluginLib' does not exist.`, undefined, 320);
+  }
+
   if (!result1.smsManaged || !result2.smsManaged) {
     const COMMAND_LIST = std.getenv('ZWE_CLI_COMMANDS_LIST');
     const tmpfile = fs.createTmpFile(`zwe ${COMMAND_LIST}`.replace(new RegExp('\ ', 'g'), '-'));

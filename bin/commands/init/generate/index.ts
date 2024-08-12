@@ -101,7 +101,7 @@ export function execute(dryRun?: boolean) {
     const result = zosJes.waitForJob(jobid);
     os.remove(tempFile);
 
-    common.printMessage(`Job completed with RC=${result.rc}`);
+    common.printMessage(`Job ZWEGENER(${jobid}) completed with RC=${result.rc}`);
     if (result.rc == 0) {
       common.printMessage("Zowe JCL generated successfully");
     } else {

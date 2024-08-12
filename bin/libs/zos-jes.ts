@@ -239,6 +239,8 @@ export function printAndHandleJcl(jclLocationOrContent: string, jobName: string,
     }
     if (jobHasFailures) {
       common.printLevel2Message(`Job ended with some failures. Please check job log for details.`);
+    } else {
+      common.printMessage(`Job ${jobname}(${jobId}) completed with RC=${rc}`)
     }
     return 0
   } else {

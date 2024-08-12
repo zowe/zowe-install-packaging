@@ -1,0 +1,208 @@
+name: Zwe Remote Integration Tests
+
+permissions: read-all
+
+on:   
+  pull_request:
+    types: [opened, synchronize]
+  workflow_dispatch:
+    inputs:
+      test-server:
+        description: 'Choose Test Server'
+        type: choice
+        required: true
+        default: 'Any zzow servers'
+        options: 
+          - Any_zzow_servers
+          - zzow06
+          - zzow07
+          - zzow08
+      zwe-test:
+        description: 'Choose Zwe Test'
+        type: choice
+        required: true
+        default: CI Build
+        options:
+          - ZWE_CI_Build
+          - ZWE_Full_Tests
+      RANDOM_DISPATCH_EVENT_ID:
+        description: 'random dispatch event id'
+        required: false
+        type: string
+
+# create a new branch to overwrite following defaults if necessary
+env:
+  # constants
+  ZWE_TEST_PATH: tests/zwe-remote-integration
+
+jobs:
+  display-dispatch-event-id:
+    if: github.event.inputs.RANDOM_DISPATCH_EVENT_ID != ''
+    runs-on: ubuntu-latest
+    steps:
+      - name: RANDOM_DISPATCH_EVENT_ID is ${{ github.event.inputs.RANDOM_DISPATCH_EVENT_ID }}
+        run: echo "prints random dispatch event id sent from workflow dispatch event"
+
+  set-test-vars:
+    runs-on: ubuntu-latest
+    outputs:
+      test-suite: 
+      test-server: 
+    steps:
+      - name: 'Set vars for manually triggered workflow'
+        if: github.event_name == 'workflow_dispatch'
+        run: |
+          echo "test-suite=${{ github.event.inputs.zwe-test }}" >> $GITHUB_OUTPUT
+          echo "test-server=${{ github.event.inputs.test-server }}" >> $GITHUB_OUTPUT
+     
+      - name: 'Set vars for automated PR trigger'
+        if: github.event_name != 'workflow_dispatch'
+        run: |
+          echo "test-suite=ZWE_CI_Build" >> $GITHUB_OUTPUT
+          echo "test-server=Any_zzow_servers" >> $GITHUB_OUTPUT
+
+  check-permission:
+    runs-on: ubuntu-latest
+    steps:
+      # this action will fail the whole workflow if permission check fails
+      - name: check permission
+        uses: zowe-actions/shared-actions/permission-check@main
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+  make-matrix:
+    runs-on: ubuntu-latest
+    needs: [set-test-vars, check-permission]
+    steps:
+      - name: '[Prep 1] Checkout'
+        uses: actions/checkout@v2
+
+      - name: Make matrix
+        id: set-matrix
+        run: |
+          cd .github/scripts/cicd_test
+          chmod +x make_matrix.sh
+          source make_matrix.sh
+        env:
+          test_server: ${{ steps.set-test-vars.outputs.test-server }}
+          install_test_choice: ${{ steps.set-test-vars.outputs.test-suite }}
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
+
+  cicd-test:
+    runs-on: ubuntu-latest
+    needs: make-matrix
+    strategy:
+      matrix: ${{ fromJson(needs.make-matrix.outputs.matrix) }}
+      fail-fast: false
+    environment: ${{ matrix.server }}
+    steps:
+      - name: '[Prep 1] Checkout'
+        uses: actions/checkout@v2
+
+      - name: '[Prep 2] Setup Node'
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20'
+
+      - name: '[Prep 3] Cache node modules'
+        uses: actions/cache@v2
+        with:
+          # npm cache files are stored in `~/.npm` on Linux/macOS
+          path: |
+            ~/.npm
+            ~/.nvm/.cache
+            ~/.nvm/versions
+          key: ${{ runner.os }}-build-cache-node-modules-${{ hashFiles('tests/installation/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-build-cache-node-modules-
+
+      - name: '[Prep 4] Setup jFrog CLI'
+        uses: jfrog/setup-jfrog-cli@v2
+        env:
+          JF_ENV_1: ${{ secrets.JF_ARTIFACTORY_TOKEN }}
+
+      - name: '[Prep 5] Validate package.json'
+        uses: zowe-actions/shared-actions/validate-package-json@main
+
+      - name: '[Prep 6] Prepare workflow'
+        uses: zowe-actions/shared-actions/prepare-workflow@main
+
+      - name: '[Setup 1] Test Project Install'
+        working-directory: ${{ env.ZWE_TEST_PATH }}
+        run: |
+          npm ci
+
+      # Error on this step is likely a schema mismatch. See test README
+      - name: '[Setup 2] Test Project Build'
+        working-directory: ${{ env.ZWE_TEST_PATH }}
+        run: |
+          npm run build
+
+      - name: '[Lint 1] Lint 1'
+        timeout-minutes: 2
+        working-directory: ${{ env.ZWE_TEST_PATH }}
+        run: |
+          npm run lint
+
+      - name: '[LOCK] Lock marist servers'
+        uses: zowe-actions/shared-actions/lock-resource@main
+        with:
+          lock-repository: ${{ github.repository }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          lock-resource-name: zowe-zwe-system-test-${{ steps.more-test-prep.outputs.TEST_SERVER }}-lock
+          lock-avg-retry-interval: 60
+
+      - name: '[Test] Test starts from here'
+        if: ${{ github.event.inputs.zwe-test == 'ZWE CI Build' }}
+        timeout-minutes: 180
+        working-directory: ${{ env.ZWE_TEST_PATH }}
+        run: npm run test:ci
+        env:
+          ANSIBLE_FORCE_COLOR: true
+          TEST_SERVER: ${{ steps.more-test-prep.outputs.TEST_SERVER_NICKNAME }}
+          ZOS_HOST: ${{ secrets.SSH_HOST }}
+          SSH_PORT: ${{ secrets.SSH_PORT }}
+          ZOS_USER: ${{ secrets.SSH_USER }}
+          ZOS_PASSWORD: ${{ secrets.SSH_PASSWORD }}
+          ZOSMF_PORT: 10443
+          ZOS_JAVA_HOME: /ZOWE/node/J8.0_64
+          ZOS_NODE_HOME: /ZOWE/node/node-v18.16.0
+          REJECT_UNAUTHORIZED: false
+          REMOTE_TEST_DIR: /ZOWE/zwe-integration
+          TEST_VOLUME: ZOS003
+          JFROG_TOKEN: ${{ secrets.JF_ARTIFACTORY_TOKEN }}
+      
+      - name: '[Test] Test starts from here'
+        if: ${{ github.event.inputs.zwe-test == 'ZWE Full Tests' }}
+        timeout-minutes: 180
+        working-directory: ${{ env.ZWE_TEST_PATH }}
+        run: npm run test:extended
+        env:
+          ANSIBLE_FORCE_COLOR: true
+          TEST_SERVER: ${{ steps.more-test-prep.outputs.TEST_SERVER_NICKNAME }}
+          ZOS_HOST: ${{ secrets.SSH_HOST }}
+          SSH_PORT: ${{ secrets.SSH_PORT }}
+          ZOS_USER: ${{ secrets.SSH_USER }}
+          ZOS_PASSWORD: ${{ secrets.SSH_PASSWORD }}
+          ZOSMF_PORT: 10443
+          ZOS_JAVA_HOME: /ZOWE/node/J8.0_64
+          ZOS_NODE_HOME: /ZOWE/node/node-v18.16.0
+          REJECT_UNAUTHORIZED: false
+          REMOTE_TEST_DIR: /ZOWE/zwe-integration
+          TEST_VOLUME: ZOS003
+          JFROG_TOKEN: ${{ secrets.JF_ARTIFACTORY_TOKEN }}
+   
+      - name: '[After Test 1] Prepare to upload test report'
+        if: always()
+        working-directory: ${{ env.ZWE_TEST_PATH }}
+        run: | 
+          echo CURRENT_TIME=$(date +%s) >> $GITHUB_ENV
+          echo TEST_NAME=$(echo "${{ matrix.test }}" | sed 's#.*\/##g') >> $GITHUB_ENV
+
+      - name: '[After Test 2] Upload test report'
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: ZweTestReports-${{ env.TEST_NAME }}-${{ steps.more-test-prep.outputs.TEST_SERVER_NICKNAME }}-${{ github.run_id }}-${{ env.CURRENT_TIME }}
+          path: ${{ env.ZWE_TEST_PATH }}/reports/

@@ -12,6 +12,12 @@
 
 case $install_test_choice in
 
+"ZWE CI Build")
+  test_file="dummy_not_used"
+  ;;
+"ZWE Full Tests")
+  test_file="dummy_not_used"
+  ;;
 "Convenience Pax")
   test_file="$CONVENIENCE_PAX_TESTFILE"
   ;;
