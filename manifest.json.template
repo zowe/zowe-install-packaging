@@ -52,11 +52,11 @@
       "artifact": "zss-2.18.0-rc-1180-20240814142247.pax"
     },
     "org.zowe.explorer.jobs.jobs-api-package": {
-      "version": "2.0.29",
+      "version": "2.0.30",
       "artifact": "jobs-api-package-*.zip"
     },
     "org.zowe.explorer.files.files-api-package": {
-      "version": "2.0.29",
+      "version": "2.0.30",
       "artifact": "files-api-package-*.zip"
     },
     "org.zowe.explorer-jes": {
@@ -73,27 +73,27 @@
       "artifact": "explorer-ip*.pax"
     },
     "org.zowe.apiml.api-catalog-package": {
-      "version": "2.17.2",
+      "version": "2.18.0",
       "artifact": "api-catalog*.zip"
     },
     "org.zowe.apiml.discovery-package": {
-      "version": "2.17.2",
+      "version": "2.18.0",
       "artifact": "discovery*.zip"
     },
     "org.zowe.apiml.gateway-package": {
-      "version": "2.17.2",
+      "version": "2.18.0",
       "artifact": "gateway*.zip"
     },
     "org.zowe.apiml.caching-service-package": {
-      "version": "2.17.2",
+      "version": "2.18.0",
       "artifact": "caching-service*.zip"
     },
     "org.zowe.apiml.metrics-service-package": {
-      "version": "2.17.2",
+      "version": "2.18.0",
       "artifact": "metrics-service*.zip"
     },
     "org.zowe.apiml.apiml-common-lib-package": {
-      "version": "2.17.2",
+      "version": "2.18.0",
       "artifact": "apiml-common-lib-*.zip"
     },
     "org.zowe.apiml.sdk.common-java-lib-package": {
@@ -101,11 +101,11 @@
       "artifact": "common-java-lib-*.zip"
     },
     "org.zowe.apiml.sdk.apiml-sample-extension-package": {
-      "version": "2.17.2",
+      "version": "2.18.0",
       "artifact": "apiml-sample-extension-*.zip"
     },
     "org.zowe.apiml.cloud-gateway-package": {
-      "version": "2.17.2",
+      "version": "2.18.0",
       "artifact": "cloud-gateway-*.zip"
     },
     "org.zowe.configmgr-rexx": {
