@@ -52,11 +52,11 @@
       "artifact": "zss-2.18.0-rc-1180-20240814142247.pax"
     },
     "org.zowe.explorer.jobs.jobs-api-package": {
-      "version": "2.0.29",
+      "version": "2.0.30",
       "artifact": "jobs-api-package-*.zip"
     },
     "org.zowe.explorer.files.files-api-package": {
-      "version": "2.0.29",
+      "version": "2.0.30",
       "artifact": "files-api-package-*.zip"
     },
     "org.zowe.explorer-jes": {
@@ -452,12 +452,12 @@
     "files-api": {
       "registry": "zowe-docker-release.jfrog.io",
       "name": "ompzowe/files-api",
-      "tag" : "2.0.28-ubuntu"
+      "tag" : "2.0.30-ubuntu"
     },
     "jobs-api": {
       "registry": "zowe-docker-release.jfrog.io",
       "name": "ompzowe/jobs-api",
-      "tag" : "2.0.27-ubuntu"
+      "tag" : "2.0.30-ubuntu"
     },
     "base": {
       "registry": "zowe-docker-release.jfrog.io",
