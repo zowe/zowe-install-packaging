@@ -136,7 +136,7 @@
       "version": "2.0.3"
     },
     "org.zowe.licenses": {
-      "version": "2.16.0",
+      "version": "2.18.0",
       "artifact": "zowe_licenses_full.zip"
     }
   },
@@ -217,7 +217,7 @@
       "componentGroup": "Zowe CLI",
       "entries": [{
         "repository": "zowe-cli",
-        "tag": "v7.27.0",
+        "tag": "v7.29.0",
         "destinations": ["Zowe CLI Package"]
       }]
     }, {
@@ -372,7 +372,7 @@
       "componentGroup": "Zowe Visual Studio Code Extension",
       "entries": [{
         "repository": "zowe-explorer-vscode",
-        "tag": "v2.16.3",
+        "tag": "v2.17.0",
         "destinations": ["Visual Studio Code Marketplace"]
       }]
     },
