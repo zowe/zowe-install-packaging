@@ -16,28 +16,28 @@
       "artifact": "*.pax"
     },
     "org.zowe.zlux.sample-angular-app": {
-      "version": "^3.0.0-V3.X-STAGING",
-      "artifact": "*.pax"
+      "version": "3.0.0-PR-121",
+      "artifact": "sample-angular-app-3.0.0-20240819.150747.pax"
     },
     "org.zowe.zlux.sample-iframe-app": {
-      "version": "^3.0.0-V3.X-STAGING",
-      "artifact": "*.pax"
+      "version": "3.0.0-PR-43",
+      "artifact": "sample-iframe-app-3.0.0-20240819.150756.pax"
     },
     "org.zowe.zlux.sample-react-app": {
-      "version": "^3.0.0-V3.X-STAGING",
-      "artifact": "*.pax"
+      "version": "3.0.0-PR-106",
+      "artifact": "sample-react-app-3.0.0-20240819.150734.pax"
     },
     "org.zowe.zlux.tn3270-ng2": {
-      "version": "^3.0.0-V3.X-STAGING",
-      "artifact": "*.pax"
+      "version": "3.0.0-PR-86",
+      "artifact": "tn3270-ng2-3.0.0-20240819.150442.pax"
     },
     "org.zowe.zlux.vt-ng2": {
-      "version": "^3.0.0-V3.X-STAGING",
-      "artifact": "*.pax"
+      "version": "3.0.0-STRUGA0258-PATCH-2",
+      "artifact": "vt-ng2-3.0.0-20240819.144638.pax"
     },
     "org.zowe.zlux.zlux-editor": {
-      "version": "^3.0.0-V3.X-STAGING",
-      "artifact": "*.pax"
+      "version": "3.0.0-PR-343",
+      "artifact": "zlux-editor-3.0.0-20240819.151549.pax"
     },
     "org.zowe.zss": {
       "version": "^3.0.0-STAGING",
