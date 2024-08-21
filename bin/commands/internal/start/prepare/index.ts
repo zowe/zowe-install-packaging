@@ -172,6 +172,7 @@ function globalValidate(enabledComponents:string[]): void {
         privateErrors++;
         common.printFormattedError('ZWELS', "zwe-internal-start-prepare,globalValidate", "Zosmf validation failed");
       }
+    }
   }
   
   std.setenv('ZWE_PRIVATE_ERRORS_FOUND',''+privateErrors);
