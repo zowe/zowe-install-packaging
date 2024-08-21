@@ -145,8 +145,6 @@ global_validate() {
     if [[ ${ZWE_ENABLED_COMPONENTS} == *"discovery"* ]]; then
       validate_this "validate_zosmf_host_and_port \"${ZOSMF_HOST}\" \"${ZOSMF_PORT}\" 2>&1" "zwe-internal-start-prepare,global_validate:${LINENO}"
     fi
-  elif [ "${ZWE_components_zaas_apiml_security_auth_provider}" = "zosmf" ]; then
-    validate_this "validate_zosmf_as_auth_provider \"${ZOSMF_HOST}\" \"${ZOSMF_PORT}\" \"${ZWE_components_zaas_apiml_security_auth_provider}\" 2>&1" "zwe-internal-start-prepare,global_validate:${LINENO}"
   fi
 
   check_runtime_validation_result "zwe-internal-start-prepare,global_validate:${LINENO}"

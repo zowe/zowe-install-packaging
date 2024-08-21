@@ -47,7 +47,7 @@ const ZOWE_CONFIG=config.getZoweConfig();
 // - `commands.configureInstance` is deprecated in v2
 function prepareRunningInContainer() {
   // gracefully shutdown all processes
-  common.printFormattedDebug("ZWELS", "zwe-internal-start-prepare,prepare_running_in_container", "Register SIGTERM handler for graceful shutdown.");
+  common.printFormattedDebug("ZWELS", "zwe-internal-start-prepare,prepareRunningInContainer", "Register SIGTERM handler for graceful shutdown.");
   os.signal(os.SIGTERM, sys.gracefullyShutdown);
 
   // read ZWE_PRIVATE_CONTAINER_COMPONENT_ID from component manifest
@@ -62,7 +62,7 @@ function prepareRunningInContainer() {
     std.setenv('ZWE_PRIVATE_CONTAINER_COMPONENT_ID', componentId);
   }
 
-  common.printFormattedTrace("ZWELS", "zwe-internal-start-prepare,prepare_running_in_container:", `Prepare <runtime>/components/${componentId} directory.`);
+  common.printFormattedTrace("ZWELS", "zwe-internal-start-prepare,prepareRunningInContainer", `Prepare <runtime>/components/${componentId} directory.`);
   if (fs.directoryExists(`${runtimeDirectory}/components/${componentId}`)) {
     shell.execSync('rm', `-rf`, `"${runtimeDirectory}/components/${componentId}"`);
   }
@@ -75,7 +75,7 @@ function prepareLogDirectory() {
   if (logDir) {
     os.mkdir(logDir, 0o750);
     if (!fs.isDirectoryWritable(logDir)) {
-      common.printFormattedError("ZWELS", "zwe-internal-start-prepare,prepare_log_directory", `ZWEL0141E: User $(get_user_id) does not have write permission on ${logDir}.`);
+      common.printFormattedError("ZWELS", "zwe-internal-start-prepare,prepareLogDirectory", `ZWEL0141E: User '${user}' does not have write permission on ${logDir}.`);
       std.exit(141);
     }
   }
@@ -94,8 +94,8 @@ function prepareWorkspaceDirectory() {
 
   let rc = fs.mkdirp(workspaceDirectory, 0o770);
   if (rc != 0) {
-    common.printFormattedError("ZWELS", "zwe-internal-start-prepare,prepare_workspace_directory", `WARNING: Failed to set permission of some existing files or directories in ${workspaceDirectory}:`);
-    common.printFormattedError("ZWELS", "zwe-internal-start-prepare,prepare_workspace_directory" , ''+rc);
+    common.printFormattedError("ZWELS", "zwe-internal-start-prepare,prepareWorkspaceDirectory", `WARNING: Failed to set permission of some existing files or directories in ${workspaceDirectory}:`);
+    common.printFormattedError("ZWELS", "zwe-internal-start-prepare,prepareWorkspaceDirectory" , ''+rc);
   }
 
   // Create apiml dirs
@@ -110,18 +110,18 @@ function prepareWorkspaceDirectory() {
   fs.mkdirp(zwePrivateWorkspaceEnvDir, 0o700);
 
   const zweCliParameterHaInstance = std.getenv('ZWE_CLI_PARAMETER_HA_INSTANCE');
-  common.printFormattedDebug("ZWELS", "zwe-internal-start-prepare,prepare_workspace_directory", `initialize .instance-${zweCliParameterHaInstance}.env(s)`);
+  common.printFormattedDebug("ZWELS", "zwe-internal-start-prepare,prepareWorkspaceDirectory", `initialize .instance-${zweCliParameterHaInstance}.env(s)`);
   // TODO delete this or get this from configmgr instead.
   config.generateInstanceEnvFromYamlConfig(zweCliParameterHaInstance);
 }
 
 // Global validations
 function globalValidate(enabledComponents:string[]): void {
-  common.printFormattedInfo("ZWELS", "zwe-internal-start-prepare,global_validate", "process global validations ...");
+  common.printFormattedInfo("ZWELS", "zwe-internal-start-prepare,globalValidate", "process global validations ...");
 
   // validate_runtime_user
   if (user == "IZUSVR") {
-    common.printFormattedWarn("ZWELS", "zwe-internal-start-prepare,global_validate", "ZWEL0302W: You are running the Zowe process under user id IZUSVR. This is not recommended and may impact your z/OS MF server negatively.");
+    common.printFormattedWarn("ZWELS", "zwe-internal-start-prepare,globalValidate", "ZWEL0302W: You are running the Zowe process under user id IZUSVR. This is not recommended and may impact your z/OS MF server negatively.");
   }
 
   // reset error counter
@@ -131,7 +131,7 @@ function globalValidate(enabledComponents:string[]): void {
   let writable = fs.isDirectoryWritable(workspaceDirectory);
   if (!writable) {
     privateErrors++;
-    common.printFormattedError('ZWELS', "zwe-internal-start-prepare,global_validate", `Workspace directory ${workspaceDirectory} is not writable`);
+    common.printFormattedError('ZWELS', "zwe-internal-start-prepare,globalValidate", `Workspace directory ${workspaceDirectory} is not writable`);
   }
 
   if (runInContainer != 'true') {
@@ -141,7 +141,7 @@ function globalValidate(enabledComponents:string[]): void {
       let nodeOk = node.validateNodeHome();
       if (!nodeOk) {
         privateErrors++;
-        common.printFormattedError('ZWELS', "zwe-internal-start-prepare,global_validate", `Could not validate node home`);
+        common.printFormattedError('ZWELS', "zwe-internal-start-prepare,globalValidate", `Could not validate node home`);
       }
     }
 
@@ -151,7 +151,7 @@ function globalValidate(enabledComponents:string[]): void {
       let javaOk = java.validateJavaHome();
       if (!javaOk) {
         privateErrors++;
-        common.printFormattedError('ZWELS', "zwe-internal-start-prepare,global_validate", `Could not validate java home`);
+        common.printFormattedError('ZWELS', "zwe-internal-start-prepare,globalValidate", `Could not validate java home`);
       }
     }
   } else {
@@ -159,7 +159,7 @@ function globalValidate(enabledComponents:string[]): void {
       let isSet = varlib.isVariableSet("ZWE_PRIVATE_CONTAINER_COMPONENT_ID", "Cannot find name from the component image manifest file");
       if (!isSet) {
         privateErrors++;
-        common.printFormattedError('ZWELS', "zwe-internal-start-prepare,global_validate", "Cannot find name from the component image manifest file");
+        common.printFormattedError('ZWELS', "zwe-internal-start-prepare,globalValidate", "Cannot find name from the component image manifest file");
       }
     }
   }
@@ -170,21 +170,14 @@ function globalValidate(enabledComponents:string[]): void {
       let zosmfOk = zosmf.validateZosmfHostAndPort(zosmfHost, zosmfPort);
       if (!zosmfOk) {
         privateErrors++;
-        common.printFormattedError('ZWELS', "zwe-internal-start-prepare,global_validate", "Zosmf validation failed");
+        common.printFormattedError('ZWELS', "zwe-internal-start-prepare,globalValidate", "Zosmf validation failed");
       }
-    } else if (std.getenv('ZWE_components_zaas_apiml_security_auth_provider') == "zosmf") {
-      let zosmfOk = zosmf.validateZosmfAsAuthProvider(zosmfHost, zosmfPort, 'zosmf');
-      if (!zosmfOk) {
-        privateErrors++;
-        common.printFormattedError('ZWELS', "zwe-internal-start-prepare,global_validate", "Zosmf validation failed");
-      }
-    }
   }
   
   std.setenv('ZWE_PRIVATE_ERRORS_FOUND',''+privateErrors);
-  varlib.checkRuntimeValidationResult("zwe-internal-start-prepare,global_validate");
+  varlib.checkRuntimeValidationResult("zwe-internal-start-prepare,globalValidate");
 
-  common.printFormattedInfo("ZWELS", "zwe-internal-start-prepare,global_validate", "global validations are successful");
+  common.printFormattedInfo("ZWELS", "zwe-internal-start-prepare,globalValidate", "global validations are successful");
 }
 
 
@@ -192,7 +185,7 @@ function globalValidate(enabledComponents:string[]): void {
 
 // Validate component properties if script exists
 function validateComponents(enabledComponents:string[]): any {
-  common.printFormattedInfo("ZWELS", "zwe-internal-start-prepare,validate_components", "process component validations ...");
+  common.printFormattedInfo("ZWELS", "zwe-internal-start-prepare,validateComponents", "process component validations ...");
 
   const componentEnvironments = {};
   
@@ -200,9 +193,9 @@ function validateComponents(enabledComponents:string[]): any {
   let privateErrors = 0;
   std.setenv('ZWE_PRIVATE_ERRORS_FOUND','0');
   enabledComponents.forEach((componentId: string)=> {
-    common.printFormattedTrace("ZWELS", "zwe-internal-start-prepare,validate_components", `- checking ${componentId}`);
+    common.printFormattedTrace("ZWELS", "zwe-internal-start-prepare,validateComponents", `- checking ${componentId}`);
     const componentDir = component.findComponentDirectory(componentId);
-    common.printFormattedTrace("ZWELS", "zwe-internal-start-prepare,validate_components", `- in directory ${componentDir}`);
+    common.printFormattedTrace("ZWELS", "zwe-internal-start-prepare,validateComponents", `- in directory ${componentDir}`);
     if (componentDir) {
       const manifest = component.getManifest(componentDir);
 
@@ -214,11 +207,11 @@ function validateComponents(enabledComponents:string[]): any {
 
       // check validate script
       const validateScript = manifest.commands ? manifest.commands.validate : undefined;
-      common.printFormattedTrace("ZWELS", "zwe-internal-start-prepare,validate_components", `- commands.validate is ${validateScript}`);
+      common.printFormattedTrace("ZWELS", "zwe-internal-start-prepare,validateComponents", `- commands.validate is ${validateScript}`);
       if (validateScript) {
         let fullPath = `${componentDir}/${validateScript}`;
         if (fs.fileExists(fullPath)) {
-          common.printFormattedDebug("ZWELS", "zwe-internal-start-prepare,validate_components", `- process ${componentId} validate command ...`);
+          common.printFormattedDebug("ZWELS", "zwe-internal-start-prepare,validateComponents", `- process ${componentId} validate command ...`);
           const prevErrors = privateErrors;
           privateErrors = 0;
           //TODO verify that this returns things that we want, currently it just uses setenv
@@ -228,10 +221,10 @@ function validateComponents(enabledComponents:string[]): any {
           privateErrors=prevErrors;
           if (result.rc) {
             privateErrors++;
-            common.printFormattedError(`ZWELS`, "zwe-internal-start-prepare,validate_components", `Error: Component ${componentId} ended with nonzero rc=${result.rc}`);
+            common.printFormattedError(`ZWELS`, "zwe-internal-start-prepare,validateComponents", `Error: Component ${componentId} ended with nonzero rc=${result.rc}`);
           }
         } else {
-          common.printFormattedError("ZWELS", "zwe-internal-start-prepare,validate_components", `Error ZWEL0172E: Component ${componentId} has commands.validate defined but the file is missing.`);
+          common.printFormattedError("ZWELS", "zwe-internal-start-prepare,validateComponents", `Error ZWEL0172E: Component ${componentId} has commands.validate defined but the file is missing.`);
         }
       }
 
@@ -239,32 +232,32 @@ function validateComponents(enabledComponents:string[]): any {
       if (os.platform != 'zos') {
         const zosDeps = manifest.dependencies ? manifest.dependencies.zos : undefined;
         if (zosDeps) {
-          common.printFormattedWarn("ZWELS", "zwe-internal-start-prepare,validate_components", `- ${componentId} depends on z/OS service(s). This dependency may require additional setup, please refer to the component documentation`);
+          common.printFormattedWarn("ZWELS", "zwe-internal-start-prepare,validateComponents", `- ${componentId} depends on z/OS service(s). This dependency may require additional setup, please refer to the component documentation`);
         }
       }
     }
   });
   
   std.setenv('ZWE_PRIVATE_ERRORS_FOUND', ''+privateErrors);
-  varlib.checkRuntimeValidationResult("zwe-internal-start-prepare,validate_components");
+  varlib.checkRuntimeValidationResult("zwe-internal-start-prepare,validateComponents");
 
-  common.printFormattedDebug("ZWELS", "zwe-internal-start-prepare,validate_components", "component validations are successful");
+  common.printFormattedDebug("ZWELS", "zwe-internal-start-prepare,validateComponents", "component validations are successful");
   return componentEnvironments;
 }
 
 
 // Run setup/configure on components if script exists
 function configureComponents(componentEnvironments?: any, enabledComponents?:string[]) {
-  common.printFormattedInfo("ZWELS", "zwe-internal-start-prepare,configure_components", "process component configurations ...");
+  common.printFormattedInfo("ZWELS", "zwe-internal-start-prepare,configureComponents", "process component configurations ...");
 
   const zwePrivateWorkspaceEnvDir = std.getenv('ZWE_PRIVATE_WORKSPACE_ENV_DIR');
   const zweCliParameterHaInstance = std.getenv('ZWE_CLI_PARAMETER_HA_INSTANCE');
   
   
   enabledComponents.forEach((componentId: string)=> {
-    common.printFormattedTrace("ZWELS", "zwe-internal-start-prepare,configure_components", `- checking ${componentId}`);
+    common.printFormattedTrace("ZWELS", "zwe-internal-start-prepare,configureComponents", `- checking ${componentId}`);
     const componentDir = component.findComponentDirectory(componentId);
-    common.printFormattedTrace("ZWELS", "zwe-internal-start-prepare,validate_components", `- in directory ${componentDir}`);
+    common.printFormattedTrace("ZWELS", "zwe-internal-start-prepare,validateComponents", `- in directory ${componentDir}`);
     if (componentDir) {
       const manifestPath = component.getManifestPath(componentDir);
       const manifest = component.getManifest(componentDir);
@@ -277,17 +270,17 @@ function configureComponents(componentEnvironments?: any, enabledComponents?:str
       // copy manifest to workspace
       shell.execSync('cp', manifestPath, `${privateWorkspaceEnvDir}/`);
 
-      common.printFormattedDebug("ZWELS", "zwe-internal-start-prepare,configure_components", `- configure ${componentId}`);
+      common.printFormattedDebug("ZWELS", "zwe-internal-start-prepare,configureComponents", `- configure ${componentId}`);
 
       // check configure script
       // TODO if this is to force 1 component to configure before another, we should really just make a manifest declaration that 1 component needs to run before another. It's fine to run a simple dependency chain to determine order of execution without getting into the advanced realm of full blown package manager dependency management tier checks
       const preconfigureScript=manifest.commands ? manifest.commands.preConfigure : undefined;
-      common.printFormattedTrace("ZWELS", "zwe-internal-start-prepare,configure_components", `- commands.preConfigure is ${preconfigureScript}`);
+      common.printFormattedTrace("ZWELS", "zwe-internal-start-prepare,configureComponents", `- commands.preConfigure is ${preconfigureScript}`);
       let loadedEnvVars = false;
       if (preconfigureScript) {
         const preconfigurePath=`${componentDir}/${preconfigureScript}`;
         if (fs.fileExists(preconfigurePath)) {
-          common.printFormattedDebug("ZWELS", "zwe-internal-start-prepare,configure_components", `* process ${componentId} pre-configure command ...`);
+          common.printFormattedDebug("ZWELS", "zwe-internal-start-prepare,configureComponents", `* process ${componentId} pre-configure command ...`);
           // execute preconfigure step. preconfigure does NOT export env vars.
           if (componentEnvironments && componentEnvironments[componentName]) {
             config.applyEnviron(componentEnvironments[componentName]);
@@ -297,9 +290,9 @@ function configureComponents(componentEnvironments?: any, enabledComponents?:str
             loadedEnvVars = true;
           }
           const result = shell.execOutErrSync('sh', '-c', `. ${runtimeDirectory}/bin/libs/configmgr-index.sh && cd ${componentDir} && . ${preconfigurePath}`);
-          common.printFormattedDebug("ZWELS", "zwe-internal-start-prepare,configure_components", result.rc ? result.err : result.out);
+          common.printFormattedDebug("ZWELS", "zwe-internal-start-prepare,configureComponents", result.rc ? result.err : result.out);
         } else {
-          common.printFormattedError("ZWELS", "zwe-internal-start-prepare,configure_components", `Error ZWEL0172E: Component ${componentId} has commands.preConfigure defined but the file is missing.`);
+          common.printFormattedError("ZWELS", "zwe-internal-start-prepare,configureComponents", `Error ZWEL0172E: Component ${componentId} has commands.preConfigure defined but the file is missing.`);
         }
       }
 
@@ -307,24 +300,24 @@ function configureComponents(componentEnvironments?: any, enabledComponents?:str
       // - apiml static definitions
       let success=component.processComponentApimlStaticDefinitions(componentDir);
       if (success) {
-        common.printFormattedDebug("ZWELS", "zwe-internal-start-prepare,configure_components", `${componentName} processComponentApimlStaticDefinitions success`);
+        common.printFormattedDebug("ZWELS", "zwe-internal-start-prepare,configureComponents", `${componentName} processComponentApimlStaticDefinitions success`);
       } else {
-        common.printFormattedError("ZWELS", "zwe-internal-start-prepare,configure_components", `${componentName} processComponentApimlStaticDefinitions failure`);
+        common.printFormattedError("ZWELS", "zwe-internal-start-prepare,configureComponents", `${componentName} processComponentApimlStaticDefinitions failure`);
       }
       // - generic app framework plugin
       success=component.processComponentAppfwPlugin(componentDir);      
       if (success) {
-        common.printFormattedDebug("ZWELS", "zwe-internal-start-prepare,configure_components", `${componentName} processComponentAppfwPlugin success`);
+        common.printFormattedDebug("ZWELS", "zwe-internal-start-prepare,configureComponents", `${componentName} processComponentAppfwPlugin success`);
       } else {
-        common.printFormattedError("ZWELS", "zwe-internal-start-prepare,configure_components", `${componentName} processComponentAppfwPlugin failure`);
+        common.printFormattedError("ZWELS", "zwe-internal-start-prepare,configureComponents", `${componentName} processComponentAppfwPlugin failure`);
       }
 
       // zaas shared lib
       success=component.processComponentZaasSharedLibs(componentDir);
       if (success) {
-        common.printFormattedDebug("ZWELS", "zwe-internal-start-prepare,configure_components", `${componentName} processComponentZaasSharedLibs success`);
+        common.printFormattedDebug("ZWELS", "zwe-internal-start-prepare,configureComponents", `${componentName} processComponentZaasSharedLibs success`);
       } else {
-        common.printFormattedError("ZWELS", "zwe-internal-start-prepare,configure_components", `${componentName} processComponentZaasSharedLibs failure`);
+        common.printFormattedError("ZWELS", "zwe-internal-start-prepare,configureComponents", `${componentName} processComponentZaasSharedLibs failure`);
       }
                                     
       // - gateway shared lib
@@ -338,18 +331,18 @@ function configureComponents(componentEnvironments?: any, enabledComponents?:str
       // - discovery shared lib
       success=component.processComponentDiscoverySharedLibs(componentDir);
       if (success) {
-        common.printFormattedDebug("ZWELS", "zwe-internal-start-prepare,configure_components", `${componentName} processComponentDiscoverySharedLibs success`);
+        common.printFormattedDebug("ZWELS", "zwe-internal-start-prepare,configureComponents", `${componentName} processComponentDiscoverySharedLibs success`);
       } else {
-        common.printFormattedError("ZWELS", "zwe-internal-start-prepare,configure_components", `${componentName} processComponentDiscoverySharedLibs failure`);
+        common.printFormattedError("ZWELS", "zwe-internal-start-prepare,configureComponents", `${componentName} processComponentDiscoverySharedLibs failure`);
       }
 
       // check configure script
       const configureScript = manifest.commands ? manifest.commands.configure : undefined;
-      common.printFormattedTrace("ZWELS", "zwe-internal-start-prepare,configure_components", `- commands.configure is ${configureScript}`);
+      common.printFormattedTrace("ZWELS", "zwe-internal-start-prepare,configureComponents", `- commands.configure is ${configureScript}`);
       if (configureScript) {
         const fullPath = `${componentDir}/${configureScript}`;
         if (fs.fileExists(fullPath)) {
-          common.printFormattedDebug("ZWELS", "zwe-internal-start-prepare,configure_components", `* process ${componentId} configure command ...`);
+          common.printFormattedDebug("ZWELS", "zwe-internal-start-prepare,configureComponents", `* process ${componentId} configure command ...`);
           if (!loadedEnvVars) {
             if (componentEnvironments && componentEnvironments[componentName]) {
               config.applyEnviron(componentEnvironments[componentName]);
@@ -361,7 +354,7 @@ function configureComponents(componentEnvironments?: any, enabledComponents?:str
           // NOTE: env var list is not updated because it should not have changed between preconfigure step and now
           const result = shell.execOutSync('sh', '-c', `. ${runtimeDirectory}/bin/libs/configmgr-index.sh && cd ${componentDir} && . ${fullPath} ; export rc=$? ; export -p`);
 
-          common.printFormattedDebug("ZWELS", "zwe-internal-start-prepare,configure_components", `${componentName} configure ended with rc=${result.rc}`);
+          common.printFormattedDebug("ZWELS", "zwe-internal-start-prepare,configureComponents", `${componentName} configure ended with rc=${result.rc}`);
           
           if (result.rc==0) {
             const exportContent = varlib.getEnvironmentExports(result.out);
@@ -375,15 +368,15 @@ function configureComponents(componentEnvironments?: any, enabledComponents?:str
               }
             }
             const outLines = result.out.split('\n');
-            common.printFormattedInfo("ZWELS", "zwe-internal-start-prepare,configure_components", `- commands.configure output from ${componentId} is:`);
+            common.printFormattedInfo("ZWELS", "zwe-internal-start-prepare,configureComponents", `- commands.configure output from ${componentId} is:`);
             common.printMessage(outLines.filter(line => !line.startsWith('export ')).join('\n'));
-            common.printFormattedDebug("ZWELS", "zwe-internal-start-prepare,configure_components", outLines.filter(line => line.startsWith('export ')).join('\n'));
+            common.printFormattedDebug("ZWELS", "zwe-internal-start-prepare,configureComponents", outLines.filter(line => line.startsWith('export ')).join('\n'));
           } else {
             //not printformattederror because it makes silly long strings like "ERROR: 2022-12-07 20:00:47 <ZWELS:50791391> me ERROR (zwe-internal-start-prepare,configure_components) Error ZWEL0317E: Component app-server commands.configure ended with rc=22."
             common.printError(`Error ZWEL0317E: Component ${componentId} commands.configure ended with rc=${result.rc}.`);
             if (result.out) {
               const outLines = result.out.split('\n');
-              common.printFormattedInfo("ZWELS", "zwe-internal-start-prepare,configure_components", `- commands.configure output from ${componentId} is:`);
+              common.printFormattedInfo("ZWELS", "zwe-internal-start-prepare,configureComponents", `- commands.configure output from ${componentId} is:`);
               common.printMessage(outLines.filter(line => !line.startsWith('export ')).join('\n'));
             }
             if (ZOWE_CONFIG.zowe.launchScript?.onComponentConfigureFail == 'exit') {
@@ -391,7 +384,7 @@ function configureComponents(componentEnvironments?: any, enabledComponents?:str
             }
           }
         } else {
-          common.printFormattedError("ZWELS", "zwe-internal-start-prepare,configure_components", `Error ZWEL0172E: Component ${componentId} has commands.configure defined but the file is missing.`);
+          common.printFormattedError("ZWELS", "zwe-internal-start-prepare,configureComponents", `Error ZWEL0172E: Component ${componentId} has commands.configure defined but the file is missing.`);
         }
       }
     }
