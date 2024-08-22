@@ -173,8 +173,12 @@ function globalValidate(enabledComponents:string[]): void {
         common.printFormattedError('ZWELS', "zwe-internal-start-prepare,globalValidate", "Zosmf validation failed");
       }
     }
+    else if (std.getenv('ZWE_components_zaas_apiml_security_auth_provider') == "zosmf") {
+      privateErrors++;
+      common.printFormattedError('ZWELS', "zwe-internal-start-prepare,globalValidate", "Zosmf validation failed");
+    }
   }
-
+  
   std.setenv('ZWE_PRIVATE_ERRORS_FOUND',''+privateErrors);
   varlib.checkRuntimeValidationResult("zwe-internal-start-prepare,globalValidate");
 

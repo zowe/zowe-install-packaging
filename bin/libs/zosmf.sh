@@ -17,12 +17,12 @@ validate_zosmf_host_and_port() {
   zosmf_host="${1}"
   zosmf_port="${2}"
 
-  if [ -z "${zosmf_host}" ]; then 
+  if [ -z "${zosmf_host}" ]; then
     print_error "z/OSMF host is not set."
     return 1
   fi
 
-  if [ -z "${zosmf_port}" ]; then 
+  if [ -z "${zosmf_port}" ]; then
     print_error "z/OSMF port is not set."
     return 1
   fi
@@ -47,5 +47,18 @@ validate_zosmf_host_and_port() {
 
   if [ "${zosmf_check_passed}" = "true" ]; then
     print_message "Successfully checked z/OS MF is available on 'https://${zosmf_host}:${zosmf_port}/zosmf/info'"
+  fi
+}
+
+validate_zosmf_as_auth_provider() {
+  zosmf_host="${1}"
+  zosmf_port="${2}"
+  auth_provider="${3}"
+
+  if [ -n "${zosmf_host}" -a -n "${zosmf_port}" ]; then
+    if [ "${auth_provider}" = "zosmf" ]; then
+      print_error "z/OSMF is not configured. Using z/OSMF as authentication provider is not supported."
+      return 1
+    fi
   fi
 }
