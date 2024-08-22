@@ -207,7 +207,7 @@ const req = HTTP.request(options, (res) => {
 
 // handling errors
 req.on('error', (e) => {
-  const msg = `Request failed (${e.code}): ${e.message}\n` +
+  const msg = `bin/utils/curl.js: Request failed (${e.code}): ${e.message}\n` +
     (verbose ? e.stack + '\n' : '');
   exitWithError(2, msg);
 });
