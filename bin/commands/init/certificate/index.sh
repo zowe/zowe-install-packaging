@@ -31,8 +31,12 @@ require_node
 export ZWE_PRIVATE_TMP_MERGED_YAML_DIR=$(create_tmp_file)
 mkdir -p ${ZWE_PRIVATE_TMP_MERGED_YAML_DIR}
 _CEE_RUNOPTS="XPLINK(ON),HEAPPOOLS(OFF),HEAPPOOLS64(OFF)" ${ZWE_zowe_runtimeDirectory}/bin/utils/configmgr -script "${ZWE_zowe_runtimeDirectory}/bin/commands/internal/config/output/cli.js"
+if [ $? -eq 0 -a -f "${ZWE_PRIVATE_TMP_MERGED_YAML_DIR}/.zowe-merged.yaml" ]; then
 # use the yaml configmgr returns because it will contain defaults for the version we are using.
-ZWE_CLI_PARAMETER_CONFIG=${ZWE_PRIVATE_TMP_MERGED_YAML_DIR}/.zowe-merged.yaml
+  ZWE_CLI_PARAMETER_CONFIG=${ZWE_PRIVATE_TMP_MERGED_YAML_DIR}/.zowe-merged.yaml
+else
+  print_error_and_exit "Error ZWEL0201E: File '${ZWE_PRIVATE_TMP_MERGED_YAML_DIR}/.zowe-merged.yaml' does not exist." "" 201
+fi
 
 ###############################
 # read prefix and validate
@@ -482,6 +486,6 @@ if [ -n "${zosmf_host}" -a "${verify_certificates}" = "STRICT" ]; then
 fi
 
 # cleanup temp file made at top.
-if [ -n "$ZWE_PRIVATE_TMP_MERGED_YAML_DIR" ]; then
+if [ -f "${ZWE_PRIVATE_TMP_MERGED_YAML_DIR}/.zowe-merged.yaml" ]; then
   rm "${ZWE_PRIVATE_TMP_MERGED_YAML_DIR}/.zowe-merged.yaml"
 fi
