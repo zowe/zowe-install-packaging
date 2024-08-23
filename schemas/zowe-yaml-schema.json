@@ -197,7 +197,7 @@
                           "default": "local_ca_password"
                         },
                         "lock": {
-                          "type": [ "string", "null" ],
+                          "type": [ "boolean", "null" ],
                           "description": "Whether to restrict the permissions of the keystore after creation"
                         },
                         "import": {

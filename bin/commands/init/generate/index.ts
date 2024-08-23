@@ -15,7 +15,6 @@ import * as xplatform from "xplatform";
 import * as fs from '../../../libs/fs';
 import * as config from '../../../libs/config';
 import * as common from '../../../libs/common';
-import * as stringlib from '../../../libs/string';
 import * as zosFs from '../../../libs/zos-fs';
 import * as zosJes from '../../../libs/zos-jes';
 
@@ -33,6 +32,12 @@ export function execute(dryRun?: boolean) {
     common.printErrorAndExit(`Error ZWEL0157E: Zowe runtime directory (zowe.runtimeDirectory) is not defined in Zowe YAML configuration file.`, undefined, 157);
   }
   
+  let jclHeader = ZOWE_CONFIG.zowe.environments.jclHeader;
+  if (jclHeader.length > (71 - '//ZWEGENER JOB '.length)) {
+      common.printError(`Error ZWEL9999E: JOB statement too long: //ZWEGENER JOB ${jclHeader}`);
+      jclHeader = '';
+  }
+
   const tempFile = fs.createTmpFile();
   if (zosFs.copyMvsToUss(ZOWE_CONFIG.zowe.setup.dataset.prefix + '.SZWESAMP(ZWEGENER)', tempFile) !== 0) {
     common.printErrorAndExit(`ZWEL0143E Cannot find data set member '${ZOWE_CONFIG.zowe.setup.dataset.prefix + '.SZWESAMP(ZWEGENER)'}'. You may need to re-run zwe install.`, undefined, 143);
@@ -44,6 +49,7 @@ export function execute(dryRun?: boolean) {
   // $$ inserts a '$', replace(/[$]/g, '$$$$') => double each '$' occurence
   jclContents = jclContents.replace(/\{zowe\.setup\.dataset\.prefix\}/gi, prefix.replace(/[$]/g, '$$$$'));
   jclContents = jclContents.replace(/\{zowe\.runtimeDirectory\}/gi, runtimeDirectory.replace(/[$]/g, '$$$$'));
+  jclContents = jclContents.replace(/\{zowe\.environments\.jclHeader\}/i,jclHeader.replace(/[$]/g, '$$$$'));
   if (std.getenv('ZWE_PRIVATE_LOG_LEVEL_ZWELS') !== 'INFO') {
     jclContents = jclContents.replace('noverbose -', 'verbose -');
   }
