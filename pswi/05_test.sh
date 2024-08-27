@@ -73,8 +73,8 @@ echo " Running the deployment test for z/OSMF version 2.3"
 pip install requests
 python scripts/deploy_test_2_3.py
 
-echo "Mounting ${TEST_ZFS}"
-sh scripts/tmp_mounts.sh "${TEST_ZFS}" "${TEST_MOUNT}"
+echo "Mounting ${TEST_HLQ}.ZFS"
+sh scripts/tmp_mounts.sh "${TEST_HLQ}.ZFS" "${TEST_MOUNT}"
 if [ $? -gt 0 ];then exit -1;fi 
 
 echo "Registering/testing the configuration workflow ${TEST_HLQ}.WORKFLOW(ZWECONF)"
