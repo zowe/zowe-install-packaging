@@ -679,7 +679,7 @@ $$
 
 /* userid for ZOWE main server                                       */
   TSS LIST(&ZOWEUSER.) SEGMENT(OMVS)
-  TSS CREATE(&ZOWEUSER.) TYPE(USER) PASS(NOPW,0) +
+  TSS CREATE(&ZOWEUSER.) TYPE(USER) PROTECTED +
    NAME('ZOWE MAIN SERVER') +
    DEPT(&STCUDEP.)
    TSS ADD(&ZOWEUSER.) GROUP(&STCGRP.) +
@@ -688,7 +688,7 @@ $$
 
 /* userid for ZIS cross memory server                                */
   TSS LIST(&ZISUSER.) SEGMENT(OMVS)
-  TSS CREATE(&ZISUSER.) TYPE(USER) PASS(NOPW,0) +
+  TSS CREATE(&ZISUSER.) TYPE(USER) PROTECTED +
    NAME('ZOWE ZIS CROSS MEMORY SERVER') +
    DEPT(&STCUDEP.)
   TSS ADD(&ZISUSER.) GROUP(&STCGRP.) +
