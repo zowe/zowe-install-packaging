@@ -9,7 +9,7 @@ All notable changes to the Zowe Installer will be documented in this file.
 - `zowe.yaml` changed its default z/OSMF Service ID definition from `zosmf` to `ibmzosmf`, which may impact Zowe Clients. For more information on this change, please see the API Mediation Layer's 3.0.0 Breaking Changes.
 
 ### New features and enhancements
-- Enhancement: Added explanation to possible error message when checking z/OSMF setting. (#3956)
+- Enhancement: Added explanation to possible error message when checking z/OSMF setting. #3956
 
 <!--Add the PR or issue number to the entry if available.-->
 
