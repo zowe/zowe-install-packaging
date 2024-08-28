@@ -6,6 +6,7 @@ All notable changes to the Zowe Installer will be documented in this file.
 ## `2.17.0`
 
 ## New features and enhancements
+- Enhancement: `zwe components install` and `zwe components upgrade` now checks the schema validity of any application framework plugins present within a component, so that you will know better if a component is valid prior to running Zowe. [#3866](https://github.com/zowe/zowe-install-packaging/pull/3866) 
 - Enhancement: Added zowe.network.server.tls.attls and zowe.network.client.tls.attls as booleans for controlling global or per-component way to tell Zowe servers that they should operate in a mode compatible with an AT-TLS setup. [#3463](https://github.com/zowe/zowe-install-packaging/pull/3463)
 
 ## `2.16.0`
