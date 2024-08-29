@@ -8,7 +8,7 @@ run=$3
 
 echo ""
 echo ""
-echo "Script for testing workflow and if specified running with defaults as well..."
+echo "Script for testing workflow and if specified running with defaults/variable input file as well..."
 echo "Host                        :" $ZOSMF_URL
 echo "Port                        :" $ZOSMF_PORT
 echo "z/OSMF system               :" $ZOSMF_SYSTEM

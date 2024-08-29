@@ -95,8 +95,12 @@ echo "source=\"${ZOWE_MOUNT}files/workflows/ZWECONF.properties\";" >> JCL
 echo "runtime=\"${WORK_MOUNT}\";" >> JCL
 echo "sed 's|zowe_runtimeDirectory=|zowe_runtimeDirectory=\$runtime|g' \$source > _ZWECONF;" >> JCL                         
 echo "cp -T _ZWECONF \$source;" >> JCL
-echo "cat \$source | grep -o \'\"runtimeDirectory\"\';"
+echo "cat \$source | grep -o \'\"runtimeDirectory\"\';" >> JCL
 echo "/*" >> JCL
+# If this does not work, sed locally and upload input file
+sh scripts/submit_jcl.sh "`cat JCL`"
+if [ $? -gt 0 ];then exit -1;fi
+rm JCL
 
 echo "Testing the configuration workflow ${TEST_MOUNT}/files/workflows/ZWECONF.xml"
 sh scripts/wf_run_test.sh "${TEST_MOUNT}/files/workflows/ZWECONF.xml" "${TEST_MOUNT}/files/workflows/ZWECONF.properties" "run"
