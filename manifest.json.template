@@ -44,16 +44,19 @@
       "artifact": "*.pax"
     },
     "org.zowe.explorer-jes": {
-      "version": "~2.0.2-SNAPSHOT"
+      "version": "2.0.7-PR-386",
+      "artifact": "explorer-jes-2.0.7-pr-386-759-20240827171011.pax"
     },
     "org.zowe.explorer-mvs": {
-      "version": "~2.0.2-SNAPSHOT"
+      "version": "2.0.7-PR-262",
+      "artifact": "explorer-mvs-2.0.7-pr-262-295-20240827171253.pax"
     },
     "org.zowe.explorer-uss": {
-      "version": "~2.0.2-SNAPSHOT"
+      "version": "2.0.7-PR-195",
+      "artifact": "explorer-uss-2.0.7-pr-195-193-20240827140220.pax"
     },
     "org.zowe.explorer-ip": {
-      "version": "~3.0.0-SNAPSHOT",
+      "version": "3.0.0-PR-31",
       "artifact": "*.pax"
     },
     "org.zowe.apiml.api-catalog-package": {
