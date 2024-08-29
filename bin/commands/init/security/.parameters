@@ -1,2 +1,3 @@
 security-dry-run,dry-run||boolean|||||Generates and prints JCL but does not execute.
 ignore-security-failures||boolean|||||Whether to ignore security setup job failures.
+generate||boolean|||||Whether to force rebuild of JCL prior to submission. Use this when you've changed zowe.yaml and are re-submitting this command.

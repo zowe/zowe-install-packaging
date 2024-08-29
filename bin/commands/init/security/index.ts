@@ -9,11 +9,13 @@
   Copyright Contributors to the Zowe Project.
 */
 
+import * as std from 'cm_std';
 import * as zos from 'zos';
 import * as common from '../../../libs/common';
 import * as config from '../../../libs/config';
 import * as zoslib from '../../../libs/zos';
 import * as zosJes from '../../../libs/zos-jes';
+import * as initGenerate from '../generate/index';
 
 export function execute(dryRun?: boolean, ignoreSecurityFailures?: boolean) {
   common.printLevel1Message(`Run Zowe security configurations`);
@@ -27,6 +29,13 @@ export function execute(dryRun?: boolean, ignoreSecurityFailures?: boolean) {
   if (!prefix) {
     common.printErrorAndExit(`Error ZWEL0157E: Zowe dataset prefix (zowe.setup.dataset.prefix) is not defined in Zowe YAML configuration file.`, undefined, 157);
   }
+  
+  // check if user passed --generate
+  const forceGen = !!std.getenv('ZWE_CLI_PARAMETER_GENERATE') 
+  if (forceGen) {
+    initGenerate.execute();
+  }
+
   // read JCL library and validate
   const jcllib = zoslib.verifyGeneratedJcl(ZOWE_CONFIG);
   if (!jcllib) {
