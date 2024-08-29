@@ -93,8 +93,8 @@ echo "SH set -x;set -e;" >> JCL
 echo "cd ${WORK_MOUNT};" >> JCL
 echo "source=\"${ZOWE_MOUNT}files/workflows/ZWECONF.properties\";" >> JCL
 echo "runtime=\"${WORK_MOUNT}\";" >> JCL
-echo "sed 's|zowe_runtimeDirectory=|zowe_runtimeDirectory=\$runtime|g' \$source > _ZWECONF;" >> JCL                         
-echo "cp -T _ZWECONF \$source;" >> JCL
+echo "sed 's|runtimeDirectory=|runtimeDirectory=\$runtime|g' \$source > _ZWECONF;" >> JCL                         
+echo "mv _ZWECONF \$source;" >> JCL
 echo "cat \$source | grep -o \'\"runtimeDirectory\"\';" >> JCL
 echo "/*" >> JCL
 # If this does not work, sed locally and upload input file
