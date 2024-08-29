@@ -81,6 +81,26 @@ echo "Registering/testing the configuration workflow ${TEST_HLQ}.WORKFLOW(ZWECON
 sh scripts/wf_run_test.sh "${TEST_HLQ}.WORKFLOW(ZWECONF)"
 if [ $? -gt 0 ];then exit -1;fi
 
-echo "Registering/testing the configuration workflow ${TEST_MOUNT}/content/files/workflows/ZWECONF.xml"
-sh scripts/wf_run_test.sh "${TEST_MOUNT}/files/workflows/ZWECONF.xml"
+echo "Changing runtime path in ${TEST_MOUNT}/files/workflows/ZWECONF.properties."
+
+echo ${JOBST1} > JCL
+echo ${JOBST2} >> JCL
+echo "//COPYWRFS EXEC PGM=BPXBATCH" >> JCL
+echo "//STDOUT DD SYSOUT=*" >> JCL
+echo "//STDERR DD SYSOUT=*" >> JCL
+echo "//STDPARM  DD *" >> JCL
+echo "SH set -x;set -e;" >> JCL
+echo "cd ${WORK_MOUNT};" >> JCL
+echo "source=\"${ZOWE_MOUNT}files/workflows/ZWECONF.properties\";" >> JCL
+echo "runtime=\"${WORK_MOUNT}\";" >> JCL
+echo "sed 's|zowe_runtimeDirectory=|zowe_runtimeDirectory=\$runtime|g' \$source > _ZWECONF;" >> JCL                         
+echo "cp -T _ZWECONF \$source;" >> JCL
+echo "cat \$source | grep -o \'\"runtimeDirectory\"\';"
+echo "/*" >> JCL
+
+echo "Testing the configuration workflow ${TEST_MOUNT}/files/workflows/ZWECONF.xml"
+sh scripts/wf_run_test.sh "${TEST_MOUNT}/files/workflows/ZWECONF.xml" "${TEST_MOUNT}/files/workflows/ZWECONF.properties" "run"
 if [ $? -gt 0 ];then exit -1;fi
+
+#TODO: download yaml
+#TODO: locate local yaml

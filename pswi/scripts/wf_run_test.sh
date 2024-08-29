@@ -3,7 +3,8 @@
 
 export BASE_URL="${ZOSMF_URL}:${ZOSMF_PORT}"
 WF_DEF_FILE=$1
-run=$2
+INPUT_FILE=$2
+run=$3
 
 echo ""
 echo ""
@@ -19,13 +20,21 @@ CREATE_WF_URL="${BASE_URL}/zosmf/workflow/rest/1.0/workflows"
 WF_LIST_URL="${BASE_URL}/zosmf/workflow/rest/1.0/workflows?owner=${ZOSMF_USER}&workflowName=${WF_NAME}"
 
 # JSONs 
-
+if [ -n "$INPUT_FILE" ]
+then
+ADD_WORKFLOW_JSON='{"workflowName":"'$WF_NAME'",
+"workflowDefinitionFile":"'${WF_DEF_FILE}'",
+"variableInputFile":"'${INPUT_FILE}'",
+"system":"'$ZOSMF_SYSTEM'",
+"owner":"'$ZOSMF_USER'",
+"assignToOwner" :true}'
+else
 ADD_WORKFLOW_JSON='{"workflowName":"'$WF_NAME'",
 "workflowDefinitionFile":"'${WF_DEF_FILE}'",
 "system":"'$ZOSMF_SYSTEM'",
 "owner":"'$ZOSMF_USER'",
 "assignToOwner" :true}'
-
+fi
 # Get workflowKey for the workflow owned by user
 echo "Get workflowKey for the workflow if it exists."
 
