@@ -24,7 +24,7 @@ LABEL name="Zowe Base Image with JDK enabled" \
 ##################################
 # Install JDK
 RUN microdnf install --nodocs \
-  java-1.11.0-openjdk \
+  java-1.11.0-openjdk-headless \
   && microdnf clean all --enablerepo='*' \
   # smoke tests
   && java -version
