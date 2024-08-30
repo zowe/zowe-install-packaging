@@ -14,18 +14,18 @@ FROM zowe-docker-release.jfrog.io/ompzowe/base:latest-ubi
 ##################################
 # labels
 LABEL name="Zowe Base Image with JDK enabled" \
-      maintainer="jack-tiefeng.jia@ibm.com" \
-      vendor="Zowe" \
-      version="2.0.2" \
-      release="0" \
-      summary="Base image for Zowe components with JDK enabled" \
-      description="Base image for Zowe components with JDK enabled"
+  maintainer="mark.ackert@broadcom.com" \
+  vendor="Zowe" \
+  version="3.0.0" \
+  release="0" \
+  summary="Base image for Zowe components with JDK enabled" \
+  description="Base image for Zowe components with JDK enabled"
 
 ##################################
 # Install JDK
 RUN microdnf install --nodocs \
-      java-1.8.0-openjdk \
-    && microdnf clean all --enablerepo='*' \
-    # smoke tests
-    && java -version
-ENV JAVA_HOME=/usr/lib/jvm/jre-1.8.0
+  java-1.11.0-openjdk \
+  && microdnf clean all --enablerepo='*' \
+  # smoke tests
+  && java -version
+ENV JAVA_HOME=/usr/lib/jvm/jre-1.11.0
