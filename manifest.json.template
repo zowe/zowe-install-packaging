@@ -12,8 +12,8 @@
   },
   "binaryDependencies": {
     "org.zowe.zlux.zlux-core": {
-      "version": "3.0.0-938-v3.x-staging-zlux-build",
-      "artifact": "*.pax"
+      "version": "3.0.0-V3.X-STAGING-ZLUX-CORE",
+      "artifact": "zlux-core-3.0.0-20240830.131656.pax"
     },
     "org.zowe.zlux.sample-angular-app": {
       "version": "^3.0.0-V3.X-STAGING",
