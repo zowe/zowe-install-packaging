@@ -89,6 +89,9 @@ echo "Changing runtime path in ZWECONF.properties."
 
 cp ../workflows/files/ZWECONF.properties ./ZWECONF.properties
 sed "s|runtimeDirectory=|runtimeDirectory=${WORK_MOUNT}|g" ./ZWECONF.properties > _ZWECONF
+sed "s|java_home=|java_home=#delete_me#|g" _ZWECONF > ZWECONF
+sed "s|node_home=|node_home=#delete_me#|g" ZWECONF > _ZWECONF
+#TODO:delete java home and node home from the yaml because it is not set in the example-zowe.yml
 
 echo "Changing the configuration workflow to be fully automated."
 
