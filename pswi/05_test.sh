@@ -81,25 +81,16 @@ echo "Registering/testing the configuration workflow ${TEST_HLQ}.WORKFLOW(ZWECON
 sh scripts/wf_run_test.sh "${TEST_HLQ}.WORKFLOW(ZWECONF)"
 if [ $? -gt 0 ];then exit -1;fi
 
-echo "Changing runtime path in ${TEST_MOUNT}/files/workflows/ZWECONF.properties."
+echo "Changing runtime path in ZWECONF.properties."
 
-echo ${JOBST1} > JCL
-echo ${JOBST2} >> JCL
-echo "//COPYWRFS EXEC PGM=BPXBATCH" >> JCL
-echo "//STDOUT DD SYSOUT=*" >> JCL
-echo "//STDERR DD SYSOUT=*" >> JCL
-echo "//STDPARM  DD *" >> JCL
-echo "SH set -x;set -e;" >> JCL
-echo "cd ${WORK_MOUNT};" >> JCL
-echo "source=\"${TEST_MOUNT}/files/workflows/ZWECONF.properties\";" >> JCL
-echo "runtime=\"${WORK_MOUNT}\";" >> JCL
-echo "sed 's|runtimeDirectory=|runtimeDirectory=\$runtime|g' \$source > _ZWECONF;" >> JCL
-echo "cat _ZWECONF | grep -o \'\"runtimeDirectory\"\';" >> JCL
-echo "/*" >> JCL
-# If this does not work, sed locally and upload input file
-sh scripts/submit_jcl.sh "`cat JCL`"
-if [ $? -gt 0 ];then exit -1;fi
-rm JCL
+cp ../workflows/files/ZWECONF.properties ./ZWECONF.properties
+sed "s|runtimeDirectory=|runtimeDirectory=${WORK_MOUNT}|g" ./ZWECONF.properties > _ZWECONF
+cat _ZWECONF | grep -o 'runtimeDirectory'
+
+sshpass -p${ZOSMF_PASS} sftp -o HostKeyAlgorithms=+ssh-rsa -o BatchMode=no -o StrictHostKeyChecking=no -o PubkeyAuthentication=no -b - -P ${ZZOW_SSH_PORT} ${ZOSMF_USER}@${HOST} << EOF
+cd ${WORK_MOUNT}
+put _ZWECONF
+EOF
 
 echo "Testing the configuration workflow ${TEST_MOUNT}/files/workflows/ZWECONF.xml"
 sh scripts/wf_run_test.sh "${TEST_MOUNT}/files/workflows/ZWECONF.xml" "run" "${WORK_MOUNT}/_ZWECONF"
