@@ -3,8 +3,8 @@
 
 export BASE_URL="${ZOSMF_URL}:${ZOSMF_PORT}"
 WF_DEF_FILE=$1
-INPUT_FILE=$2
-run=$3
+run=$2
+INPUT_FILE=$3
 
 echo ""
 echo ""
@@ -13,6 +13,7 @@ echo "Host                        :" $ZOSMF_URL
 echo "Port                        :" $ZOSMF_PORT
 echo "z/OSMF system               :" $ZOSMF_SYSTEM
 echo "Workflow definition file    :" $WF_DEF_FILE
+echo "Variable Input file         :" $INPUT_FILE
 
 WF_NAME="Testing workflows"
 # URLs
@@ -60,7 +61,7 @@ if [ $? -gt 0 ];then exit -1;fi
 WFKEY=`echo $RESP | grep -o '"workflowKey":".*"' | cut -f4 -d\"`
 WORKFLOW_URL="${CREATE_WF_URL}/${WFKEY}"
 
-if [ -n "${run}" ]
+if [ "$run" = "run" ]
 then
 # Run workflow
 echo "Invoking REST API to start the workflow."
