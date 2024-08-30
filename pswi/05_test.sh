@@ -81,19 +81,29 @@ echo "Registering/testing the configuration workflow ${TEST_HLQ}.WORKFLOW(ZWECON
 sh scripts/wf_run_test.sh "${TEST_HLQ}.WORKFLOW(ZWECONF)"
 if [ $? -gt 0 ];then exit -1;fi
 
+echo "Registering/testing the configuration workflow ${TEST_MOUNT}/files/workflows/ZWECONF.xml"
+sh scripts/wf_run_test.sh "${TEST_MOUNT}/files/workflows/ZWECONF.xml" "run" "${WORK_MOUNT}/_ZWECONF"
+if [ $? -gt 0 ];then exit -1;fi
+
 echo "Changing runtime path in ZWECONF.properties."
 
 cp ../workflows/files/ZWECONF.properties ./ZWECONF.properties
 sed "s|runtimeDirectory=|runtimeDirectory=${WORK_MOUNT}|g" ./ZWECONF.properties > _ZWECONF
 cat _ZWECONF | grep -o 'runtimeDirectory'
 
+echo "Changing the configuration workflow to be fully automated."
+
+cp ../workflows/files/ZWECONF.xml ./ZWECONF.xml
+sed "s|<autoEnable>false|<autoEnable>true|g" ./ZWECONF.xml > ZWECONFX
+
 sshpass -p${ZOSMF_PASS} sftp -o HostKeyAlgorithms=+ssh-rsa -o BatchMode=no -o StrictHostKeyChecking=no -o PubkeyAuthentication=no -b - -P ${ZZOW_SSH_PORT} ${ZOSMF_USER}@${HOST} << EOF
 cd ${WORK_MOUNT}
 put _ZWECONF
+put ZWECONFX
 EOF
 
-echo "Testing the configuration workflow ${TEST_MOUNT}/files/workflows/ZWECONF.xml"
-sh scripts/wf_run_test.sh "${TEST_MOUNT}/files/workflows/ZWECONF.xml" "run" "${WORK_MOUNT}/_ZWECONF"
+echo "Testing the configuration workflow ${WORK_MOUNT}/ZWECONFX"
+sh scripts/wf_run_test.sh "${WORK_MOUNT}/ZWECONFX" "run" "${WORK_MOUNT}/_ZWECONF"
 if [ $? -gt 0 ];then exit -1;fi
 
 #TODO: download yaml
