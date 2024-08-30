@@ -91,7 +91,7 @@ echo "//STDERR DD SYSOUT=*" >> JCL
 echo "//STDPARM  DD *" >> JCL
 echo "SH set -x;set -e;" >> JCL
 echo "cd ${WORK_MOUNT};" >> JCL
-echo "source=\"${TEST_MOUNT}files/workflows/ZWECONF.properties\";" >> JCL
+echo "source=\"${TEST_MOUNT}/files/workflows/ZWECONF.properties\";" >> JCL
 echo "runtime=\"${WORK_MOUNT}\";" >> JCL
 echo "sed 's|runtimeDirectory=|runtimeDirectory=\$runtime|g' \$source > _ZWECONF;" >> JCL                         
 echo "mv _ZWECONF \$source;" >> JCL
