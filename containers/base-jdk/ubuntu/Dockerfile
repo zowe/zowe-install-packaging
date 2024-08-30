@@ -14,19 +14,23 @@ FROM zowe-docker-release.jfrog.io/ompzowe/base:latest-ubuntu
 ##################################
 # labels
 LABEL name="Zowe Base Image with JDK enabled" \
-      maintainer="jack-tiefeng.jia@ibm.com" \
-      vendor="Zowe" \
-      version="2.0.2" \
-      release="0" \
-      summary="Base image for Zowe components with JDK enabled" \
-      description="Base image for Zowe components with JDK enabled"
+  maintainer="mark.ackert@broadcom.com" \
+  vendor="Zowe" \
+  version="3.0.0" \
+  release="0" \
+  summary="Base image for Zowe components with JDK enabled" \
+  description="Base image for Zowe components with JDK enabled"
 
 ##################################
-# Install JDK
-RUN apt-get update \
-    && apt-get install -y \
-      openjdk-8-jre \
-    && rm -rf /var/lib/apt/lists/* \
-    # smoke tests
-    && java -version
-ENV JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64/jre
+
+# Install JDK. We manually add apt sources to avoid installing python, which is required for add-apt-repository.
+RUN CODENAME=$(cat /etc/os-release | grep UBUNTU_CODENAME | cut -d "=" -f 2) \
+  && echo deb [trusted=yes] https://ppa.launchpadcontent.net/openjdk-r/ppa/ubuntu "$CODENAME" main >> /etc/apt/sources.list \
+  && echo deb-src [trusted=yes] https://ppa.launchpadcontent.net/openjdk-r/ppa/ubuntu "$CODENAME" main >> /etc/apt/sources.list \
+  && apt-get update \
+  && apt-get install -y \
+  openjdk-11-jre \
+  && rm -rf /var/lib/apt/lists/* \
+  # smoke tests
+  && java -version
+ENV JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64/jre
