@@ -82,14 +82,13 @@ sh scripts/wf_run_test.sh "${TEST_HLQ}.WORKFLOW(ZWECONF)"
 if [ $? -gt 0 ];then exit -1;fi
 
 echo "Registering/testing the configuration workflow ${TEST_MOUNT}/files/workflows/ZWECONF.xml"
-sh scripts/wf_run_test.sh "${TEST_MOUNT}/files/workflows/ZWECONF.xml" "run" "${WORK_MOUNT}/_ZWECONF"
+sh scripts/wf_run_test.sh "${TEST_MOUNT}/files/workflows/ZWECONF.xml"
 if [ $? -gt 0 ];then exit -1;fi
 
 echo "Changing runtime path in ZWECONF.properties."
 
 cp ../workflows/files/ZWECONF.properties ./ZWECONF.properties
 sed "s|runtimeDirectory=|runtimeDirectory=${WORK_MOUNT}|g" ./ZWECONF.properties > _ZWECONF
-cat _ZWECONF | grep -o 'runtimeDirectory'
 
 echo "Changing the configuration workflow to be fully automated."
 
