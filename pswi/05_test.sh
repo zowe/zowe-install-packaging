@@ -91,6 +91,7 @@ cp ../workflows/files/ZWECONF.properties ./ZWECONF.properties
 sed "s|runtimeDirectory=|runtimeDirectory=${WORK_MOUNT}|g" ./ZWECONF.properties > _ZWECONF
 sed "s|java_home=|java_home=#delete_me#|g" _ZWECONF > ZWECONF
 sed "s|node_home=|node_home=#delete_me#|g" ZWECONF > _ZWECONF
+sed "s|storage_vsam_name=|storage_vsam_name=#delete_me#|g" _ZWECONF > ZWECONF
 #TODO:delete java home and node home from the yaml because it is not set in the example-zowe.yml
 
 echo "Changing the configuration workflow to be fully automated."
@@ -100,7 +101,7 @@ sed "s|<autoEnable>false|<autoEnable>true|g" ./ZWECONF.xml > ZWECONFX
 
 sshpass -p${ZOSMF_PASS} sftp -o HostKeyAlgorithms=+ssh-rsa -o BatchMode=no -o StrictHostKeyChecking=no -o PubkeyAuthentication=no -b - -P ${ZZOW_SSH_PORT} ${ZOSMF_USER}@${HOST} << EOF
 cd ${WORK_MOUNT}
-put _ZWECONF
+put ZWECONF
 put ZWECONFX
 EOF
 
@@ -108,5 +109,11 @@ echo "Testing the configuration workflow ${WORK_MOUNT}/ZWECONFX"
 sh scripts/wf_run_test.sh "${WORK_MOUNT}/ZWECONFX" "run" "${WORK_MOUNT}/_ZWECONF"
 if [ $? -gt 0 ];then exit -1;fi
 
+sshpass -p${ZOSMF_PASS} sftp -o HostKeyAlgorithms=+ssh-rsa -o BatchMode=no -o StrictHostKeyChecking=no -o PubkeyAuthentication=no -b - -P ${ZZOW_SSH_PORT} ${ZOSMF_USER}@${HOST} << EOF
+cd ${WORK_MOUNT}
+get zowe.yaml
+EOF
+
+cat zowe.yaml
 #TODO: download yaml
 #TODO: locate local yaml
