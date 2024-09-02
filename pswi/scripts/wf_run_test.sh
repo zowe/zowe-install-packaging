@@ -36,6 +36,8 @@ ADD_WORKFLOW_JSON='{"workflowName":"'$WF_NAME'",
 "owner":"'$ZOSMF_USER'",
 "assignToOwner" :true}'
 fi
+
+set -x
 # Get workflowKey for the workflow owned by user
 echo "Get workflowKey for the workflow if it exists."
 
@@ -51,7 +53,7 @@ RESP=`curl -s $WORKFLOW_URL -k -X "DELETE" -H "Content-Type: application/json" -
 sh scripts/check_response.sh "${RESP}" $?
 fi
 
-set -ex
+set -e
 # Create workflow with REST API
 echo 'Invoking REST API to create the workflow.'
 
