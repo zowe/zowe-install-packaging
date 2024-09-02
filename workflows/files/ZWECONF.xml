@@ -702,7 +702,7 @@ How we want to verify SSL certificates of services. Valid values are:
             <choice>redis</choice>
             <choice>infinispan</choice>
             <choice>VSAM</choice>
-            <default>VSAM</default>
+            <default>infinispan</default>
         </string>
     </variable>
     <variable name="components_caching_service_storage_size" scope="instance" visibility="public">
@@ -735,6 +735,17 @@ How we want to verify SSL certificates of services. Valid values are:
             <!-- Put validation here -->
             <!-- Specify choices here -->
             <default>7600</default>
+        </string>
+    </variable>
+  <variable name="components_caching_service_storage_infinispan_jgroups_keyExchange_port" scope="instance" visibility="public">
+        <label>Caching service storage jgroups keyExchange port</label>
+        <abstract>Port for jgroups key exchange</abstract>
+        <description>Port for jgroups key exchange. This is required if storage mode is infinispan.</description>
+        <category>components</category>
+        <string valueMustBeChoice="false" multiLine="false">
+            <!-- Put validation here -->
+            <!-- Specify choices here -->
+            <default>7601</default>
         </string>
     </variable>
     <variable name="components_app_server_enabled" scope="instance" visibility="public">
@@ -1303,7 +1314,7 @@ How we want to verify SSL certificates of services. Valid values are:
             <canMarkAsFailed>false</canMarkAsFailed>
             <!--template-->
         </step>
-        <step name="caching_service_vsam_variables" optional="false">
+        <step name="caching_service_vsam_variables" optional="true">
             <title>Variables for Caching Service - VSAM mode</title>
             <description>Specify the variables for the VSAM mode of Caching Service</description>
             <prereqStep name="caching_service_variables"/>
@@ -1323,10 +1334,10 @@ How we want to verify SSL certificates of services. Valid values are:
                     </extendStateExpression>
                 </targetStateSet>
             </condition>
-            <variableValue name="zowe_setup_vsam_mode" scope="instance" noPromptIfSet="false" required="true"/>
+            <variableValue name="zowe_setup_vsam_mode" scope="instance" noPromptIfSet="false" required="false"/>
             <variableValue name="zowe_setup_vsam_volume" scope="instance" noPromptIfSet="false" required="false"/>
             <variableValue name="zowe_setup_vsam_storageClass" scope="instance" noPromptIfSet="false" required="false"/>
-            <variableValue name="components_caching_service_storage_vsam_name" scope="instance" noPromptIfSet="false" required="true"/>
+            <variableValue name="components_caching_service_storage_vsam_name" scope="instance" noPromptIfSet="false" required="false"/>
             <instructions substitution="false">Run this step to specify the variables for the Caching Service</instructions>
             <weight>1</weight>
             <skills>z/OS System Programmer</skills>
@@ -1356,6 +1367,7 @@ How we want to verify SSL certificates of services. Valid values are:
                 </targetStateSet>
             </condition>
             <variableValue name="components_caching_service_storage_infinispan_jgroups_port" scope="instance" noPromptIfSet="false" required="false"/>
+            <variableValue name="components_caching_service_storage_infinispan_jgroups_keyExchange_port" scope="instance" noPromptIfSet="false" required="false"/>
             <instructions substitution="false">Run this step to specify the variables for the Caching Service</instructions>
             <weight>1</weight>
             <skills>z/OS System Programmer</skills>
@@ -2104,8 +2116,12 @@ echo '        # this is required if storage mode is infinispan' >> "${instance-z
 echo '        jgroups:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 #if (${instance-components_caching_service_storage_mode} == "infinispan" )
 echo '          port: ${instance-components_caching_service_storage_infinispan_jgroups_port}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '          keyExchange: ' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '            port: ${instance-components_caching_service_storage_infinispan_jgroups_keyExchange_port}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 #else
 echo '          port: 7600' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '          keyExchange: ' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '            port: 7601' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 #end
 #end
 #if (${instance-components_caching_service_enabled} == "false" )
