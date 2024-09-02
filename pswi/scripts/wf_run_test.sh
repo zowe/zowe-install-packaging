@@ -15,7 +15,7 @@ echo "z/OSMF system               :" $ZOSMF_SYSTEM
 echo "Workflow definition file    :" $WF_DEF_FILE
 echo "Variable Input file         :" $INPUT_FILE
 
-WF_NAME="Testing workflows"
+WF_NAME="Testing_workflows"
 # URLs
 CREATE_WF_URL="${BASE_URL}/zosmf/workflow/rest/1.0/workflows"
 WF_LIST_URL="${BASE_URL}/zosmf/workflow/rest/1.0/workflows?owner=${ZOSMF_USER}&workflowName=${WF_NAME}"
