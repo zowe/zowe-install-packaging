@@ -42,7 +42,7 @@ zowe_apiml_security_zosmf_applid: IZUDFLT
 zowe_apiml_security_zosmf_jwt_autoconfiguration_mode: AUTO
 zowe_apiml_verify_certficates_of_services: true
 zowe_auto_create_user_group: false
-zowe_caching_service_persistent: VSAM
+zowe_caching_service_persistent: infinispan
 zowe_caching_service_port: 7555
 zowe_caching_service_vsam_dsprefix: CACHE
 zowe_caching_vsam_storage_class:
