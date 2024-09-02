@@ -91,12 +91,12 @@ then
   if [ "$ZWECONF" = "ZWECONF" ]
   then
     STEP_NAME=`echo $RESP | grep -o '"currentStepName":".*"' | cut -f4 -d\"`
-    if [ "$STEPNAME" = "init_zowe" ]
+    if [ "$STEP_NAME" = "init_zowe" ]
     then
       echo "The workflow is ZWECONF and should end in step 'init_zowe'"
       STATUS="FINISHED"
     else
-      echo "The workflow is ZWECONF but ended in different step: '$STEPNAME'"
+      echo "The workflow is ZWECONF but ended in different step: '$STEP_NAME'"
       exit -1
     fi
   else
