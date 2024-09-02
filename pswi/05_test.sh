@@ -106,7 +106,7 @@ put ZWECONFX
 EOF
 
 echo "Testing the configuration workflow ${WORK_MOUNT}/ZWECONFX"
-sh scripts/wf_run_test.sh "${WORK_MOUNT}/ZWECONFX" "run" "${WORK_MOUNT}/ZWECONF"
+sh scripts/wf_run_test.sh "${WORK_MOUNT}/ZWECONFX" "run" "ZWECONF" "${WORK_MOUNT}/ZWECONF"
 if [ $? -gt 0 ];then exit -1;fi
 
 sshpass -p${ZOSMF_PASS} sftp -o HostKeyAlgorithms=+ssh-rsa -o BatchMode=no -o StrictHostKeyChecking=no -o PubkeyAuthentication=no -b - -P ${ZZOW_SSH_PORT} ${ZOSMF_USER}@${HOST} << EOF

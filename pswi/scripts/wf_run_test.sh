@@ -4,7 +4,8 @@
 export BASE_URL="${ZOSMF_URL}:${ZOSMF_PORT}"
 WF_DEF_FILE=$1
 run=$2
-INPUT_FILE=$3
+ZWECONF=$3
+INPUT_FILE=$4
 
 echo ""
 echo ""
@@ -86,7 +87,22 @@ if [ "$STATUS_NAME" = "in-progress" ]
 then
   echo "Workflow ended with an error."
   echo $RESP
-  exit -1
+  echo "Checking if the workflow is ZWECONF"
+  if [ "$ZWECONF" = "ZWECONF" ]
+  then
+    STEP_NAME=`echo $RESP | grep -o '"currentStepName":".*"' | cut -f4 -d\"`
+    if [ "$STEPNAME" = "init_zowe" ]
+    then
+      echo "The workflow is ZWECONF and should end in step 'init_zowe'"
+      STATUS="FINISHED"
+    else
+      echo "The workflow is ZWECONF but ended in different step: '$STEPNAME'"
+      exit -1
+    fi
+  else
+    echo "Workflow ended with an error and it is not ZWECONF."
+    exit -1
+  fi
 elif [ "$STATUS_NAME" = "complete" ]
 then
   echo "Workflow finished successfully."
