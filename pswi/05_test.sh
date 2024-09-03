@@ -111,10 +111,11 @@ if [ $? -gt 0 ];then exit -1;fi
 
 sshpass -p${ZOSMF_PASS} sftp -o HostKeyAlgorithms=+ssh-rsa -o BatchMode=no -o StrictHostKeyChecking=no -o PubkeyAuthentication=no -b - -P ${ZZOW_SSH_PORT} ${ZOSMF_USER}@${HOST} << EOF
 cd ${WORK_MOUNT}
-ascii
 get zowe.yaml
 EOF
 
-cat zowe.yaml
+iconv -f IBM-1047 -t ISO8859-1 zowe.yaml > zowe_.yaml
+
+cat zowe_.yaml
 #TODO: download yaml
 #TODO: locate local yaml
