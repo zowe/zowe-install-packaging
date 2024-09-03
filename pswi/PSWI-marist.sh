@@ -90,6 +90,17 @@ export WORKFLOW_DSN=${CSIHLQ}.WORKFLOW
 export ZOWE_ZFS="${CSIHLQ}.ZFS"
 export VERSION=$(cat ../manifest.json.template | grep -o '"version": ".*"' | head -1 | cut -f4 -d\")
 
+# Initialize variables
+presmpe=0
+smpe=0
+ptf=0
+create=0
+test=0
+
+# Just for now as I cant get to mainframe with zowead2 and I need clean up
+sh 07_smpe_cleanup.sh
+sh 08_presmpe_cleanup.sh
+
 # Upload and prepare all files
 sh 00_presmpe.sh
 presmpe=$?
@@ -141,6 +152,9 @@ if [ $presmpe -eq 0 ]; then
     # Clean RELFILEs and PTFs
     sh 08_presmpe_cleanup.sh
   fi
+else
+  # Clean RELFILEs and PTFs
+  sh 08_presmpe_cleanup.sh
 fi
 
 echo ""
