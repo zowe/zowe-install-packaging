@@ -121,7 +121,7 @@ echo "//SYSIN    DD *" >> JCL
 echo " DELETE ${WORK_ZFS}" >> JCL
 echo "/*" >> JCL
 
-sh scripts/submit_jcl.sh "`cat JCL`"
+#sh scripts/submit_jcl.sh "`cat JCL`"
 # Not checking results so the script doesn't fail
 rm JCL
 fi 
