@@ -4,7 +4,7 @@ All notable changes to the Zowe Installer will be documented in this file.
 <!--Add the PR or issue number to the entry if available.-->
 
 ## `2.18.1`
-- Bugfix: Error message `ZWEL0141E` did not print user ID
+- Bugfix: Error message `ZWEL0141E` did not print user ID. [#3971](https://github.com/zowe/zowe-install-packaging/pull/3971)
 
 ## `2.17.0`
 
