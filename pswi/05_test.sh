@@ -111,6 +111,7 @@ if [ $? -gt 0 ];then exit -1;fi
 
 sshpass -p${ZOSMF_PASS} sftp -o HostKeyAlgorithms=+ssh-rsa -o BatchMode=no -o StrictHostKeyChecking=no -o PubkeyAuthentication=no -b - -P ${ZZOW_SSH_PORT} ${ZOSMF_USER}@${HOST} << EOF
 cd ${WORK_MOUNT}
+ascii
 get zowe.yaml
 EOF
 
