@@ -15,6 +15,9 @@ import * as xplatform from "xplatform";
 import * as fs from '../../../libs/fs';
 import * as config from '../../../libs/config';
 import * as common from '../../../libs/common';
+import * as shell from '../../../libs/shell';
+import * as stringlib from '../../../libs/string';
+import * as zosDataset from '../../../libs/zos-dataset';
 import * as zosFs from '../../../libs/zos-fs';
 import * as zosJes from '../../../libs/zos-jes';
 
@@ -32,11 +35,12 @@ export function execute(dryRun?: boolean) {
     common.printErrorAndExit(`Error ZWEL0157E: Zowe runtime directory (zowe.runtimeDirectory) is not defined in Zowe YAML configuration file.`, undefined, 157);
   }
   
+  let jclPostProcessing = false;
   let jclHeader = ZOWE_CONFIG.zowe.environments.jclHeader;
-  if (jclHeader.length > (71 - '//ZWEGENER JOB '.length)) {
-      common.printError(`Error ZWEL9999E: JOB statement too long: //ZWEGENER JOB ${jclHeader}`);
-      jclHeader = '';
-  }
+    // Is it multiline jclHeader?
+    if (jclHeader && (jclHeader.match(/\n/g)||[]).length) {
+        jclPostProcessing = true;
+    }
 
   const tempFile = fs.createTmpFile();
   if (zosFs.copyMvsToUss(ZOWE_CONFIG.zowe.setup.dataset.prefix + '.SZWESAMP(ZWEGENER)', tempFile) !== 0) {
@@ -109,6 +113,19 @@ export function execute(dryRun?: boolean) {
 
     common.printMessage(`Job completed with RC=${result.rc}`);
     if (result.rc == 0) {
+      if (jclPostProcessing) {
+        const memList = zosDataset.listDatasetMembers(ZOWE_CONFIG.zowe.setup.dataset.jcllib);
+        common.printDebug(`  - Adding "${jclHeader}" to:`);
+        for (let m = 0; m < memList.length; m++) {
+            common.printDebug(`    - Member ${ZOWE_CONFIG.zowe.setup.dataset.jcllib}(${memList[m]})`);
+            let catResult = shell.execOutSync('sh', '-c', `cat "//'${stringlib.escapeDollar(ZOWE_CONFIG.zowe.setup.dataset.jcllib)}(${memList[m]})'"`);
+            if (catResult.rc == 0) {
+                jclContents = catResult.out.replace(/\{zowe\.environments\.jclHeader\}/i, jclHeader.replace(/[$]/g, '$$$$'));
+                xplatform.storeFileUTF8(tempFile, xplatform.AUTO_DETECT, jclContents);
+                shell.execSync('sh', '-c', `cp "${tempFile}" "//'${stringlib.escapeDollar(ZOWE_CONFIG.zowe.setup.dataset.jcllib)}(${memList[m]})'"`);
+            }
+        }
+      }
       common.printMessage("Zowe JCL generated successfully");
     } else {
       common.printMessage(`Zowe JCL generated with errors, check job log. Job completion code=${result.jobcccode}, Job completion text=${result.jobcctext}`);

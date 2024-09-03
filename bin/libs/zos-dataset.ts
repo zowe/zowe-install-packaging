@@ -181,3 +181,46 @@ export function isDatasetSmsManaged(dataset: string): { rc: number, smsManaged?:
     return { rc: 1 };
   }
 }
+
+export function listDatasetMembers(dsName: string): string[] {
+  // LISTDS 'ZOWE.JCLLIB' MEMBERS
+  // ZOWE.JCLLIB
+  // --RECFM-LRECL-BLKSIZE-DSORG
+  //   FB    80    27920   PO
+  // --VOLUMES--
+  //   VOL123
+  // --MEMBERS--
+  //   ZWECSRVS
+  //   ZWECSVSM
+  //   ZWEIAPF
+  //   ZWEIAPF2
+  const listDSCommand = `LISTDS '${stringlib.escapeDollar(dsName)}' MEMBERS`;
+  common.printTrace(`  * listDatasetMembers in: "${listDSCommand}"`);
+  const result = zoslib.tsoCommand(listDSCommand);
+  let listOfMembers = [];
+  if (result.rc == 0) {
+      common.printDebug("  * Succeeded");
+      common.printTrace(`  * Exit code: ${result.rc}`);
+      common.printTrace("  * Output:");
+      common.printTrace(stringlib.paddingLeft(result.out, "    "));
+      let validMemberName = false;
+      let output = result.out.split("\n");
+      for (let m = 0; m < output.length; m++) {
+          let member = output[m].trim();
+          if (member && validMemberName) {
+              listOfMembers.push(member);
+          }
+          if (member == '--MEMBERS--') {
+              validMemberName = true;
+          }
+      }
+  }
+  else {
+      common.printDebug("  * Failed");
+      common.printTrace(`  * Exit code: ${result.rc}`);
+      common.printTrace("  * Output:");
+      common.printError(stringlib.paddingLeft(result.out, "    "));
+  }
+  common.printTrace(`  * listDatasetMembers out: "${listOfMembers}"`);
+  return listOfMembers;
+}
