@@ -3,9 +3,9 @@
     <autoTakeOwnership>true</autoTakeOwnership>
     <!-- instance prefix settings -->
     <workflowInfo>
-        <workflowID scope="none">config_zowe_20</workflowID>
-        <workflowDefaultName>Configuration of Zowe 2.0</workflowDefaultName>
-        <workflowDescription>Use this workflow to configure the Zowe 2.0</workflowDescription>
+        <workflowID scope="none">config_zowe_30</workflowID>
+        <workflowDefaultName>Configuration of Zowe 3.0</workflowDefaultName>
+        <workflowDescription>Use this workflow to configure the Zowe 3.0</workflowDescription>
         <workflowVersion>###ZOWE_VERSION###</workflowVersion>
         <vendor>Zowe</vendor>
         <General/>
