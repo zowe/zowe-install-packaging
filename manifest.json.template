@@ -57,27 +57,27 @@
       "artifact": "*.pax"
     },
     "org.zowe.apiml.api-catalog-package": {
-      "version": "^3.0.22-PR-PR-3717-SNAPSHOT",
+      "version": "^3.0.3-SNAPSHOT",
       "artifact": "api-catalog-*.zip",
       "exclusions": ["*PR*.zip"]
     },
     "org.zowe.apiml.discovery-package": {
-      "version": "^3.0.22-PR-PR-3717-SNAPSHOT",
+      "version": "^3.0.3-SNAPSHOT",
       "artifact": "discovery-*.zip",
       "exclusions": ["*PR*.zip"]
     },
     "org.zowe.apiml.gateway-package": {
-      "version": "^3.0.22-PR-PR-3717-SNAPSHOT",
+      "version": "^3.0.3-SNAPSHOT",
       "artifact": "gateway-*.zip",
       "exclusions": ["*PR*.zip"]
     },
     "org.zowe.apiml.caching-service-package": {
-      "version": "^3.0.22-PR-PR-3717-SNAPSHOT",
+      "version": "^3.0.3-SNAPSHOT",
       "artifact": "caching-service-*.zip",
       "exclusions": ["*PR*.zip"]
     },
     "org.zowe.apiml.apiml-common-lib-package": {
-      "version": "^3.0.22-PR-PR-3717-SNAPSHOT",
+      "version": "^3.0.3-SNAPSHOT",
       "artifact": "apiml-common-lib-*.zip",
       "exclusions": ["*PR*.zip"]
     },
@@ -92,7 +92,7 @@
       "exclusions": ["*PR*.zip"]
     },
     "org.zowe.apiml.zaas-package": {
-      "version": "^3.0.22-PR-PR-3717-SNAPSHOT",
+      "version": "^3.0.3-SNAPSHOT",
       "artifact": "zaas-package-*.zip",
       "exclusions": ["*PR*.zip"]
     },
