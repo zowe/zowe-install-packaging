@@ -210,8 +210,10 @@ else # JCE* content
     fi
   fi    
 
-  if [ -z "${zosmf_ca}" -a "${security_product}" = "RACF" -a -n "${zosmf_host}" ]; then
-    zosmf_ca="_auto_"
+  if [ "${security_product}" = "RACF" -o "${security_product}" = "TSS" ]; then
+    if [ -z "${zosmf_ca}" -a -n "${zosmf_host}" ]; then
+      zosmf_ca="_auto_"
+    fi
   fi
 fi
 
