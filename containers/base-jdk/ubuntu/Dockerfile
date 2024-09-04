@@ -24,13 +24,10 @@ LABEL name="Zowe Base Image with JDK enabled" \
 ##################################
 
 # Install JDK. We manually add apt sources to avoid installing python, which is required for add-apt-repository.
-RUN CODENAME=$(cat /etc/os-release | grep UBUNTU_CODENAME | cut -d "=" -f 2) \
-  && echo deb [trusted=yes] https://ppa.launchpadcontent.net/openjdk-r/ppa/ubuntu "$CODENAME" main >> /etc/apt/sources.list \
-  && echo deb-src [trusted=yes] https://ppa.launchpadcontent.net/openjdk-r/ppa/ubuntu "$CODENAME" main >> /etc/apt/sources.list \
-  && apt-get update \
+RUN apt-get update \
   && apt-get install -y \
-  openjdk-11-jre \
+  openjdk-17-jre \
   && rm -rf /var/lib/apt/lists/* \
   # smoke tests
   && java -version
-ENV JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64/jre
+ENV JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64/jre
