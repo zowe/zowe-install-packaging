@@ -1,12 +1,10 @@
 name: Zowe CICD Integration Tests
-
 permissions:
   contents: write
   issues: write
   pull-requests: write
   statuses: write
-  
-on:   
+on:
   workflow_dispatch:
     inputs:
       test-server:
