@@ -742,12 +742,8 @@ How we want to verify SSL certificates of services. Valid values are:
         <abstract>Host for jgroups</abstract>
         <description>Host for jgroups. Default value is the same as Zowe host and it is used if storage mode is infinispan.</description>
         <category>components</category>
-        <string valueMustBeChoice="false" multiLine="false">
-            <!-- Put validation here -->
-            <!-- Specify choices here -->
-          <default>dvipa.my-company.com</default>
-        </string>
-    </variable>
+        <string valueMustBeChoice="false" multiLine="false"/>
+  </variable>
   <variable name="components_caching_service_storage_infinispan_jgroups_keyExchange_port" scope="instance" visibility="public">
         <label>Caching service storage jgroups keyExchange port</label>
         <abstract>Port for jgroups key exchange</abstract>
@@ -2133,6 +2129,7 @@ echo '          keyExchange: ' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '            port: ${instance-components_caching_service_storage_infinispan_jgroups_keyExchange_port}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 #else
 echo '          port: 7600' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '          host: ' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '          keyExchange: ' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '            port: 7601' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 #end
