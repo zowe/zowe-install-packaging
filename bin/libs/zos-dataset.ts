@@ -4,9 +4,9 @@
   under the terms of the Eclipse Public License v2.0 which
   accompanies this distribution, and is available at
   https://www.eclipse.org/legal/epl-v20.html
- 
+
   SPDX-License-Identifier: EPL-2.0
- 
+
   Copyright Contributors to the Zowe Project.
 */
 
@@ -115,7 +115,7 @@ export function isDatasetSmsManaged(dataset: string): { rc: number, smsManaged?:
   // listds 'IBMUSER.LOADLIB' label
   // IBMUSER.LOADLIB
   // --RECFM-LRECL-BLKSIZE-DSORG
-  //   U     **    6144    PO                                                                                          
+  //   U     **    6144    PO
   // --VOLUMES--
   //   VPMVSH
   // --FORMAT 1 DSCB--
@@ -197,12 +197,8 @@ export function listDatasetMembers(dsName: string): string[] {
   const listDSCommand = `LISTDS '${stringlib.escapeDollar(dsName)}' MEMBERS`;
   common.printTrace(`  * listDatasetMembers in: "${listDSCommand}"`);
   const result = zoslib.tsoCommand(listDSCommand);
-  let listOfMembers = [];
-  if (result.rc == 0) {
-      common.printDebug("  * Succeeded");
-      common.printTrace(`  * Exit code: ${result.rc}`);
-      common.printTrace("  * Output:");
-      common.printTrace(stringlib.paddingLeft(result.out, "    "));
+  let listOfMembers: string[] = [];
+  if (result.rc == 0 && result.out) {
       let validMemberName = false;
       let output = result.out.split("\n");
       for (let m = 0; m < output.length; m++) {
@@ -214,12 +210,6 @@ export function listDatasetMembers(dsName: string): string[] {
               validMemberName = true;
           }
       }
-  }
-  else {
-      common.printDebug("  * Failed");
-      common.printTrace(`  * Exit code: ${result.rc}`);
-      common.printTrace("  * Output:");
-      common.printError(stringlib.paddingLeft(result.out, "    "));
   }
   common.printTrace(`  * listDatasetMembers out: "${listOfMembers}"`);
   return listOfMembers;

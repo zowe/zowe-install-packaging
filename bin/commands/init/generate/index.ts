@@ -109,22 +109,26 @@ export function execute(dryRun?: boolean) {
     common.printMessage('Submitting Job ZWEGENER');
     const jobid = zosJes.submitJob(tempFile);
     const result = zosJes.waitForJob(jobid);
-    os.remove(tempFile);
-
+    if (!jclPostProcessing) {
+      os.remove(tempFile);
+    }
     common.printMessage(`Job completed with RC=${result.rc}`);
     if (result.rc == 0) {
       if (jclPostProcessing) {
         const memList = zosDataset.listDatasetMembers(ZOWE_CONFIG.zowe.setup.dataset.jcllib);
-        common.printDebug(`  - Adding "${jclHeader}" to:`);
-        for (let m = 0; m < memList.length; m++) {
+        if (!memList.length) {
+          common.printDebug(`  - Adding "${jclHeader}" to:`);
+          for (let m = 0; m < memList.length; m++) {
             common.printDebug(`    - Member ${ZOWE_CONFIG.zowe.setup.dataset.jcllib}(${memList[m]})`);
             let catResult = shell.execOutSync('sh', '-c', `cat "//'${stringlib.escapeDollar(ZOWE_CONFIG.zowe.setup.dataset.jcllib)}(${memList[m]})'"`);
-            if (catResult.rc == 0) {
+            if (catResult.rc == 0 && catResult.out) {
                 jclContents = catResult.out.replace(/\{zowe\.environments\.jclHeader\}/i, jclHeader.replace(/[$]/g, '$$$$'));
                 xplatform.storeFileUTF8(tempFile, xplatform.AUTO_DETECT, jclContents);
                 shell.execSync('sh', '-c', `cp "${tempFile}" "//'${stringlib.escapeDollar(ZOWE_CONFIG.zowe.setup.dataset.jcllib)}(${memList[m]})'"`);
             }
+          }
         }
+        os.remove(tempFile);
       }
       common.printMessage("Zowe JCL generated successfully");
     } else {
