@@ -109,13 +109,26 @@ echo "Testing the configuration workflow ${WORK_MOUNT}/ZWECONFX"
 sh scripts/wf_run_test.sh "${WORK_MOUNT}/ZWECONFX" "run" "ZWECONF" "${WORK_MOUNT}/ZWECONF"
 if [ $? -gt 0 ];then exit -1;fi
 
+echo "Converting zowe.yaml"
+
+echo ${JOBST1} > JCL
+echo ${JOBST2} >> JCL
+echo "//UNPAXDIR EXEC PGM=BPXBATCH" >> JCL
+echo "//STDOUT DD SYSOUT=*" >> JCL
+echo "//STDERR DD SYSOUT=*" >> JCL
+echo "//STDPARM  DD *" >> JCL
+echo "SH set -x;set -e;" >> JCL
+echo "cd ${WORK_MOUNT};" >> JCL
+echo "iconv -f IBM-1047 -t ISO8859-1 zowe.yaml > zowe_.yaml;" >> JCL
+echo "/*" >> JCL
+
 sshpass -p${ZOSMF_PASS} sftp -o HostKeyAlgorithms=+ssh-rsa -o BatchMode=no -o StrictHostKeyChecking=no -o PubkeyAuthentication=no -b - -P ${ZZOW_SSH_PORT} ${ZOSMF_USER}@${HOST} << EOF
 cd ${WORK_MOUNT}
-get zowe.yaml
+get zowe_.yaml
 EOF
 
-iconv -f IBM-1047 -t ISO8859-1 zowe.yaml > zowe_.yaml
-
 cat zowe_.yaml
+
+pwd
 #TODO: download yaml
 #TODO: locate local yaml

@@ -97,10 +97,6 @@ ptf=0
 create=0
 test=0
 
-# Just for now as I cant get to mainframe with zowead2 and I need clean up
-sh 07_smpe_cleanup.sh
-sh 08_presmpe_cleanup.sh
-
 # Upload and prepare all files
 sh 00_presmpe.sh
 presmpe=$?
