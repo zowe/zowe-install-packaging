@@ -57,7 +57,7 @@
       "artifact": "*.pax"
     },
     "org.zowe.apiml.api-catalog-package": {
-      "version": "^3.0.22.PR-3717-SNAPSHOT",
+      "version": "3.0.22.PR-3717-SNAPSHOT",
       "artifact": "api-catalog-*.zip",
       "exclusions": ["*PR*.zip"]
     },
