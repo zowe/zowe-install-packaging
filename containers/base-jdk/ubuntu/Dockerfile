@@ -23,7 +23,7 @@ LABEL name="Zowe Base Image with JDK enabled" \
 
 ##################################
 
-# Install JDK. We manually add apt sources to avoid installing python, which is required for add-apt-repository.
+# Install JDK. 
 RUN apt-get update \
   && apt-get install -y \
   openjdk-17-jre \
