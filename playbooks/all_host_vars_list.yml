@@ -39,7 +39,7 @@ zowe_apiml_security_oidc_client_id:
 zowe_apiml_security_oidc_client_secret:
 zowe_apiml_security_oidc_registry:
 zowe_apiml_security_zosmf_applid: IZUDFLT
-zowe_apiml_security_zosmf_jwt_autoconfiguration_mode: JWT
+zowe_apiml_security_zosmf_jwt_autoconfiguration_mode: LTPA
 zowe_apiml_verify_certficates_of_services: true
 zowe_auto_create_user_group: false
 zowe_caching_service_persistent: infinispan
