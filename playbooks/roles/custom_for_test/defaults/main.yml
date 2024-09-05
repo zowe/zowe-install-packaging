@@ -67,7 +67,7 @@ zowe_apiml_security_oidc_registry:
 zowe_apiml_security_oidc_jwks_uri:
 zowe_apiml_security_zosmf_applid: IZUDFLT
 zowe_apiml_security_auth_provider: zosmf
-zowe_apiml_security_zosmf_jwt_autoconfiguration_mode: AUTO
+zowe_apiml_security_zosmf_jwt_autoconfiguration_mode: LTPA
 # explorer APIs/plugins ports
 zowe_jobs_explorer_port: 7560
 zowe_mvs_explorer_port: 7561
