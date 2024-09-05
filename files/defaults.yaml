@@ -152,8 +152,8 @@ components:
         auth:
           provider: zosmf
           zosmf:
-            jwtAutoconfiguration: auto
-            serviceId: zosmf
+            jwtAutoconfiguration: jwt
+            serviceId: ibmzosmf
         authorization:
           endpoint:
             enabled: false
