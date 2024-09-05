@@ -36,15 +36,15 @@ export function execute(dryRun?: boolean) {
   }
   
   let jclPostProcessing = false;
-  let jclHeaderAsOneLine = '';
-  let jclHeader = ZOWE_CONFIG.zowe.environments.jclHeader;
+  let jclHeaderJoined = '';
+  const jclHeader = ZOWE_CONFIG.zowe.environments.jclHeader;
   if (Array.isArray(jclHeader)) {
     jclPostProcessing = true;
-    jclHeaderAsOneLine = jclHeader.join("\n");
+    jclHeaderJoined = jclHeader.join("\n");
   } else {
-    jclHeaderAsOneLine = jclHeader;
-    if (jclHeader && (jclHeader.match(/\n/g) || []).length) {
-        jclPostProcessing = true;
+    jclHeaderJoined = jclHeader.toString();
+    if (jclHeaderJoined && (jclHeaderJoined.match(/\n/g) || []).length) {
+      jclPostProcessing = true;
     }
   }
 
@@ -59,7 +59,7 @@ export function execute(dryRun?: boolean) {
   // $$ inserts a '$', replace(/[$]/g, '$$$$') => double each '$' occurence
   jclContents = jclContents.replace(/\{zowe\.setup\.dataset\.prefix\}/gi, prefix.replace(/[$]/g, '$$$$'));
   jclContents = jclContents.replace(/\{zowe\.runtimeDirectory\}/gi, runtimeDirectory.replace(/[$]/g, '$$$$'));
-  jclContents = jclContents.replace(/\{zowe\.environments\.jclHeader\}/i,jclHeaderAsOneLine.replace(/[$]/g, '$$$$'));
+  jclContents = jclContents.replace(/\{zowe\.environments\.jclHeader\}/i,jclHeaderJoined.replace(/[$]/g, '$$$$'));
   if (std.getenv('ZWE_PRIVATE_LOG_LEVEL_ZWELS') !== 'INFO') {
     jclContents = jclContents.replace('noverbose -', 'verbose -');
   }
@@ -122,21 +122,30 @@ export function execute(dryRun?: boolean) {
     if (result.rc == 0) {
       if (jclPostProcessing) {
         const memList = zosDataset.listDatasetMembers(ZOWE_CONFIG.zowe.setup.dataset.jcllib);
-        if (!memList.length) {
+        if (memList.length) {
           common.printDebug(`  - Adding "${jclHeaderAsOneLine}" to:`);
           for (let m = 0; m < memList.length; m++) {
-            common.printDebug(`    - Member ${ZOWE_CONFIG.zowe.setup.dataset.jcllib}(${memList[m]})`);
             let catResult = shell.execOutSync('sh', '-c', `cat "//'${stringlib.escapeDollar(ZOWE_CONFIG.zowe.setup.dataset.jcllib)}(${memList[m]})'"`);
             if (catResult.rc == 0 && catResult.out) {
-                jclContents = catResult.out.replace(/\{zowe\.environments\.jclHeader\}/i, jclHeaderAsOneLine.replace(/[$]/g, '$$$$'));
+              jclContents = null;
+              if (memList[m] == 'ZWESECUR') {
+                jclContents = catResult.out.replace(/^\/\/ZWESECUR JOB/i, '//ZWESECUR JOB ' + jclHeaderAsOneLine.replace(/[$]/g, '$$$$'));
+              } else {
+                if (catResult.out.match(/\{zowe\.environments\.jclHeader\}/i)) {
+                  jclContents = catResult.out.replace(/\{zowe\.environments\.jclHeader\}/i, jclHeaderAsOneLine.replace(/[$]/g, '$$$$'));
+                }
+              }
+              if (jclContents) {
                 xplatform.storeFileUTF8(tempFile, xplatform.AUTO_DETECT, jclContents);
                 shell.execSync('sh', '-c', `cp "${tempFile}" "//'${stringlib.escapeDollar(ZOWE_CONFIG.zowe.setup.dataset.jcllib)}(${memList[m]})'"`);
+                common.printDebug(`    - ${ZOWE_CONFIG.zowe.setup.dataset.jcllib}(${memList[m]})`);
+              }
             }
           }
         }
         os.remove(tempFile);
-      }
-      common.printMessage("Zowe JCL generated successfully");
+    }
+    common.printMessage("Zowe JCL generated successfully");
     } else {
       common.printMessage(`Zowe JCL generated with errors, check job log. Job completion code=${result.jobcccode}, Job completion text=${result.jobcctext}`);
     }
