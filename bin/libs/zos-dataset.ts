@@ -11,6 +11,7 @@
 */
 
 import * as std from 'cm_std';
+import * as xplatform from 'xplatform';
 
 import * as common from './common';
 import * as stringlib from './string';
@@ -213,4 +214,30 @@ export function listDatasetMembers(dsName: string): string[] {
   }
   common.printTrace(`  * listDatasetMembers out: "${listOfMembers}"`);
   return listOfMembers;
+}
+
+export function replaceInMember(member: string, tempFile: string, regexFind: string, replaceTo: string): number {
+  common.printTrace(`  * replaceInMember: ${member}, ${tempFile}, ${regexFind} -> ${replaceTo}`);
+  const catCommand = `cat "//'${stringlib.escapeDollar(member)}'"`;
+  const catResult = shell.execOutSync('sh', '-c', catCommand);
+  if (catResult.rc == 0 && catResult.out != undefined) {
+    if (catResult.out.match(regexFind)) {
+      const memberContents = catResult.out.replace(regexFind, replaceTo.replace(/[$]/g, '$$$$'));
+      let storeResult = xplatform.storeFileUTF8(tempFile, xplatform.AUTO_DETECT, memberContents);
+      if (storeResult) {
+        common.printTrace(`  * replaceInMember: xplatform.storeFileUTF8 failed with: ${storeResult}`);
+        return 2;
+      }
+      const cpCommand = `cp "${stringlib.escapeDollar(tempFile)}" "//'${stringlib.escapeDollar(member)}'"`
+      let cpResult = shell.execSync('sh', '-c', cpCommand);
+      if (cpResult.rc) {
+        common.printTrace(`  * replaceInMember: shell.execSync(${cpCommand}) failed with: ${cpResult.rc}`);
+        return 3;
+      }
+    }
+    return 0;
+  } else {
+    common.printTrace(`  * replaceInMember: shell.execOutSync(${catCommand}) failed with: ${catResult.rc}`);
+    return 1;
+  }
 }

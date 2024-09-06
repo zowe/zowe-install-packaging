@@ -37,7 +37,7 @@ export function execute(dryRun?: boolean) {
   
   let jclPostProcessing = false;
   let jclHeaderJoined = '';
-  const jclHeader = ZOWE_CONFIG.zowe.environments.jclHeader;
+  const jclHeader = ZOWE_CONFIG.zowe.environments.jclHeader == null ? '' : ZOWE_CONFIG.zowe.environments.jclHeader;
   if (Array.isArray(jclHeader)) {
     jclPostProcessing = true;
     jclHeaderJoined = jclHeader.join("\n");
@@ -120,32 +120,24 @@ export function execute(dryRun?: boolean) {
     }
     common.printMessage(`Job completed with RC=${result.rc}`);
     if (result.rc == 0) {
+      let jobHeaderResult = 0;
+      if (jclHeaderJoined != '') {
+        let replaceRC = zosDataset.replaceInMember(`${ZOWE_CONFIG.zowe.setup.dataset.jcllib}(ZWESECUR)`, tempFile, /^\/\/ZWESECUR JOB/i, '//ZWESECUR JOB ' + jclHeaderJoined);
+        jobHeaderResult += replaceRC;
+      }
       if (jclPostProcessing) {
         const memList = zosDataset.listDatasetMembers(ZOWE_CONFIG.zowe.setup.dataset.jcllib);
-        if (memList.length) {
-          common.printDebug(`  - Adding "${jclHeaderJoined}" to:`);
-          for (let m = 0; m < memList.length; m++) {
-            let catResult = shell.execOutSync('sh', '-c', `cat "//'${stringlib.escapeDollar(ZOWE_CONFIG.zowe.setup.dataset.jcllib)}(${memList[m]})'"`);
-            if (catResult.rc == 0 && catResult.out) {
-              jclContents = null;
-              if (memList[m] == 'ZWESECUR') {
-                jclContents = catResult.out.replace(/^\/\/ZWESECUR JOB/i, '//ZWESECUR JOB ' + jclHeaderJoined.replace(/[$]/g, '$$$$'));
-              } else {
-                if (catResult.out.match(/\{zowe\.environments\.jclHeader\}/i)) {
-                  jclContents = catResult.out.replace(/\{zowe\.environments\.jclHeader\}/i, jclHeaderJoined.replace(/[$]/g, '$$$$'));
-                }
-              }
-              if (jclContents) {
-                xplatform.storeFileUTF8(tempFile, xplatform.AUTO_DETECT, jclContents);
-                shell.execSync('sh', '-c', `cp "${tempFile}" "//'${stringlib.escapeDollar(ZOWE_CONFIG.zowe.setup.dataset.jcllib)}(${memList[m]})'"`);
-                common.printDebug(`    - ${ZOWE_CONFIG.zowe.setup.dataset.jcllib}(${memList[m]})`);
-              }
-            }
-          }
+        for (let m = 0; m < memList.length; m++) {
+          let replaceRC = zosDataset.replaceInMember(`${ZOWE_CONFIG.zowe.setup.dataset.jcllib}(${memList[m]})`, tempFile, /\{zowe\.environments\.jclHeader\}/i, jclHeaderJoined);
+          jobHeaderResult += replaceRC;
         }
-        os.remove(tempFile);
-    }
-    common.printMessage("Zowe JCL generated successfully");
+      os.remove(tempFile);
+      }
+      if (jobHeaderResult) {
+        common.printMessage("Zowe JCL JOB statement update failed. Review the JOBs before submitting.");
+      } else {
+        common.printMessage("Zowe JCL generated successfully");
+      }
     } else {
       common.printMessage(`Zowe JCL generated with errors, check job log. Job completion code=${result.jobcccode}, Job completion text=${result.jobcctext}`);
     }
