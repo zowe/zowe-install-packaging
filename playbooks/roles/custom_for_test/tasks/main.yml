@@ -151,7 +151,7 @@
 
 # ============================================================================
 # Enable disabled services
-- name: Update zowe.yaml zowe.setup.vsam
+- name: Update zowe.yaml
   import_role:
     name: zos
     tasks_from: update_zowe_yaml
