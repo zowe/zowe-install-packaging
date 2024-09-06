@@ -216,7 +216,7 @@ export function listDatasetMembers(dsName: string): string[] {
   return listOfMembers;
 }
 
-export function replaceInMember(member: string, tempFile: string, regexFind: string, replaceTo: string): number {
+export function replaceInMember(member: string, tempFile: string, regexFind: RegExp, replaceTo: string): number {
   common.printTrace(`  * replaceInMember: ${member}, ${tempFile}, ${regexFind} -> ${replaceTo}`);
   const catCommand = `cat "//'${stringlib.escapeDollar(member)}'"`;
   const catResult = shell.execOutSync('sh', '-c', catCommand);
