@@ -303,6 +303,23 @@ some use cases, like containerization, this port could be different.</descriptio
             <default>TLSv1.3</default>
         </string>
     </variable>
+    <variable name="zowe_certificate_keystore_type" scope="instance" visibility="public">
+        <label>Zowe certificate keystore type</label>
+        <abstract>Certificate keystore type (PKCS12, JCEKS, JCECCAKS, JCERACFKS, JCECCARACFKS, or JCEHYBRIDRACFKS)</abstract>
+        <description>Certificate keystore type (PKCS12, JCEKS, JCECCAKS, JCERACFKS, JCECCARACFKS, or JCEHYBRIDRACFKS)</description>
+        <category>certificates</category>
+        <string valueMustBeChoice="false" multiLine="false">
+            <!-- Put validation here -->
+            <!-- Specify choices here -->
+            <choice>PKCS12</choice>
+            <choice>JCEKS</choice>
+            <choice>JCECCAKS</choice>
+            <choice>JCERACFKS</choice>
+            <choice>JCECCARACFKS</choice>
+            <choice>JCEHYBRIDRACFKS</choice>
+            <default>PKCS12</default>
+        </string>
+    </variable>
     <variable name="zowe_certificate_keystore_file" scope="instance" visibility="public">
         <label>Zowe certificate keystore file</label>
         <abstract>Zowe certificate keystore file. For keyring, the format is "safkeyring://OWNER/KEYRING".</abstract>
