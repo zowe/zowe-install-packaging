@@ -249,21 +249,53 @@ some use cases, like containerization, this port could be different.</descriptio
             <default>warn</default>
         </string>
     </variable>
-    <variable name="zowe_certificate_keystore_type" scope="instance" visibility="public">
-        <label>Zowe certificate keystore type</label>
-        <abstract>Certificate keystore type (PKCS12, JCEKS, JCECCAKS, JCERACFKS, JCECCARACFKS, or JCEHYBRIDRACFKS)</abstract>
-        <description>Certificate keystore type (PKCS12, JCEKS, JCECCAKS, JCERACFKS, JCECCARACFKS, or JCEHYBRIDRACFKS)</description>
-        <category>certificates</category>
-        <string valueMustBeChoice="false" multiLine="false">
+    <variable name="zowe_network_server_attls" scope="instance" visibility="public">
+        <label>Application Transparent Transport Layer Security for inbound</label>
+        <abstract>Enable on AT-TLS on inbound calls</abstract>
+        <description>Enable aware mode of inbound AT-TLS rules of all Zowe components.</description>
+        <category>network</category>
+        <boolean>
             <!-- Put validation here -->
             <!-- Specify choices here -->
-            <choice>PKCS12</choice>
-            <choice>JCEKS</choice>
-            <choice>JCECCAKS</choice>
-            <choice>JCERACFKS</choice>
-            <choice>JCECCARACFKS</choice>
-            <choice>JCEHYBRIDRACFKS</choice>
-            <default>PKCS12</default>
+            <default>false</default>
+        </boolean>
+    </variable>
+    <variable name="zowe_network_client_attls" scope="instance" visibility="public">
+        <label>Application Transparent Transport Layer Security for outbound</label>
+        <abstract>Enable on AT-TLS on outbound calls</abstract>
+        <description>Enable aware mode of outbound AT-TLS rules of all Zowe components.</description>
+        <category>network</category>
+        <boolean>
+            <!-- Put validation here -->
+            <!-- Specify choices here -->
+            <default>false</default>
+        </boolean>
+    </variable>
+    <variable name="zowe_server_tls_min" scope="instance" visibility="public">
+        <label>Transport Layer Security maximum version</label>
+        <abstract>TLS mimimum version</abstract>
+        <description></description>
+        <category>network</category>
+        <string valueMustBeChoice="true" multiLine="false">
+            <!-- Put validation here -->
+            <choice>TLSv1.1</choice>
+            <choice>TLSv1.2</choice>
+            <choice>TLSv1.3</choice>            
+            <default>TLSv1.3</default>
+        </string>
+    </variable>
+    <variable name="zowe_server_tls_max" scope="instance" visibility="public">
+       <label>Transport Layer Security maximum version</label>
+        <abstract>TLS maximum version</abstract>
+        <description>TLS settings only apply when attls=false.
+          Else you must use AT-TLS configuration for TLS customization.</description>
+        <category>certificates</category>
+        <string valueMustBeChoice="true" multiLine="false">
+            <!-- Put validation here -->
+            <choice>TLSv1.1</choice>
+            <choice>TLSv1.2</choice>
+            <choice>TLSv1.3</choice>            
+            <default>TLSv1.3</default>
         </string>
     </variable>
     <variable name="zowe_certificate_keystore_file" scope="instance" visibility="public">
