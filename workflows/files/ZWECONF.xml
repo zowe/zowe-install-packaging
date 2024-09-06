@@ -271,24 +271,29 @@ some use cases, like containerization, this port could be different.</descriptio
             <default>false</default>
         </boolean>
     </variable>
-    <variable name="zowe_server_tls_min" scope="instance" visibility="public">
-        <label>Transport Layer Security maximum version</label>
-        <abstract>TLS mimimum version</abstract>
-        <description></description>
+    <variable name="zowe_network_server_tls_min" scope="instance" visibility="public">
+        <label>Transport Layer Security - min version</label>
+        <abstract>TLS minimum version</abstract>
+        <description>The default configuration of the minimal version of a security transport protocol for inbound calls.
+          TLS settings only apply when attls=false.
+          Else you must use AT-TLS configuration for TLS customization.
+        </description>
         <category>network</category>
         <string valueMustBeChoice="true" multiLine="false">
             <!-- Put validation here -->
             <choice>TLSv1.1</choice>
             <choice>TLSv1.2</choice>
             <choice>TLSv1.3</choice>            
-            <default>TLSv1.3</default>
+            <default>TLSv1.2</default>
         </string>
     </variable>
-    <variable name="zowe_server_tls_max" scope="instance" visibility="public">
-       <label>Transport Layer Security maximum version</label>
+    <variable name="zowe_network_server_tls_max" scope="instance" visibility="public">
+       <label>Transport Layer Security - max version</label>
         <abstract>TLS maximum version</abstract>
-        <description>TLS settings only apply when attls=false.
-          Else you must use AT-TLS configuration for TLS customization.</description>
+        <description>The default configuration of the maximum version of a security transport protocol for inbound calls.
+          TLS settings only apply when attls=false.
+          Else you must use AT-TLS configuration for TLS customization.
+        </description>
         <category>certificates</category>
         <string valueMustBeChoice="true" multiLine="false">
             <!-- Put validation here -->
@@ -1118,6 +1123,10 @@ How we want to verify SSL certificates of services. Valid values are:
             <variableValue name="zowe_job_prefix" scope="instance" noPromptIfSet="false" required="true"/>
             <variableValue name="zowe_externalDomains" scope="instance" noPromptIfSet="false" required="true"/>
             <variableValue name="zowe_externalPort" scope="instance" noPromptIfSet="false" required="true"/>
+            <variableValue name="zowe_network_server_attls" scope="instance" noPromptIfSet="false" required="false"/>
+            <variableValue name="zowe_network_server_tls_min" scope="instance" noPromptIfSet="false" required="false"/>
+            <variableValue name="zowe_network_server_tls_max" scope="instance" noPromptIfSet="false" required="false"/>
+            <variableValue name="zowe_network_client_attls" scope="instance" noPromptIfSet="false" required="false"/>
             <variableValue name="zowe_launchScript_logLevel" scope="instance" noPromptIfSet="false" required="false"/>
             <variableValue name="zowe_launchScript_CompConf" scope="instance" noPromptIfSet="false" required="false"/>
             <variableValue name="zowe_certificate_keystore_type" scope="instance" noPromptIfSet="false" required="true"/>
@@ -1793,6 +1802,28 @@ echo '  #' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '  # In many use cases, this should be same as `components.gateway.port`. But in' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '  # some use cases, like containerization, this port could be different.' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '  externalPort: ${instance-zowe_externalPort}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '  # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '  #' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '  # In this section, behavior such as which TLS levels, ciphers should be used, and if native TLS versus AT-TLS should be used.' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '  # See the schema for options.' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '  #' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '  # This section applies to all components that support it.' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '  # So far: "zss" and "app-server"' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '  #' >> "${instance-zowe_runtimeDirectory}/zowe.yaml" >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '  # This section can be overridden per-component by placing it' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '  # Under a "zowe" subsection of a component, as in "components.zss.zowe.network"' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '  network:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '    server:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '      tls:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '        attls: ${instance-zowe_network_server_attls}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '        # TLS settings only apply when attls=false' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '        # Else you must use AT-TLS configuration for TLS customization.' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '        minTls: "${instance-zowe_server_tls_min}"' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '        maxTls: "${instance-zowe_server_tls_max}"' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '    client:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '      tls:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '        attls: ${instance-zowe_network_client_attls}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '  # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '  # You can un-comment and define any extra environment variables as key/value' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
