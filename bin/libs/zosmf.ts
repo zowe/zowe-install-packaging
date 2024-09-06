@@ -31,7 +31,7 @@ export function validateZosmfHostAndPort(zosmfHost: string, zosmfPort: number): 
     common.printError(`Warning: Could not validate if z/OS MF is available on 'https://${zosmfHost}:${zosmfPort}/zosmf/info'. NODE_HOME is not defined.`);
     zosmfCheckPassed=false;
   } else {
-    let execReturn = shell.execOutSync(`${std.getenv('NODE_HOME')}/bin/node`, `${std.getenv('ZWE_zowe_runtimeDirectory')}/bin/utils/curl.js`, `"https://${zosmfHost}:${zosmfPort}/zosmf/info"`, `-k`, `-H`, `"X-CSRF-ZOSMF-HEADER: true"`, `--response-type`, `status`);
+    const execReturn = shell.execOutSync(`${std.getenv('NODE_HOME')}/bin/node`, `${std.getenv('ZWE_zowe_runtimeDirectory')}/bin/utils/curl.js`, `https://${zosmfHost}:${zosmfPort}/zosmf/info`, `-k`, `-H`, `X-CSRF-ZOSMF-HEADER: true`, `--response-type`, `status`);
     if (execReturn.rc || !execReturn.out) {
       common.printError(`Warning: Could not validate if z/OS MF is available on 'https://${zosmfHost}:${zosmfPort}/zosmf/info'. No response code from z/OSMF server.`);
       zosmfCheckPassed=false

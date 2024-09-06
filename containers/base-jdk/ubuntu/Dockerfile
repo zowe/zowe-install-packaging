@@ -9,24 +9,25 @@
 # Copyright Contributors to the Zowe Project.
 #######################################################################
 
-FROM zowe-docker-release.jfrog.io/ompzowe/base:latest-ubuntu
+FROM zowe-docker-release.jfrog.io/ompzowe/base:3-ubuntu
 
 ##################################
 # labels
 LABEL name="Zowe Base Image with JDK enabled" \
-      maintainer="jack-tiefeng.jia@ibm.com" \
-      vendor="Zowe" \
-      version="2.0.2" \
-      release="0" \
-      summary="Base image for Zowe components with JDK enabled" \
-      description="Base image for Zowe components with JDK enabled"
+  maintainer="mark.ackert@broadcom.com" \
+  vendor="Zowe" \
+  version="3.0.0" \
+  release="0" \
+  summary="Base image for Zowe components with JDK enabled" \
+  description="Base image for Zowe components with JDK enabled"
 
 ##################################
-# Install JDK
+
+# Install JDK. 
 RUN apt-get update \
-    && apt-get install -y \
-      openjdk-8-jre \
-    && rm -rf /var/lib/apt/lists/* \
-    # smoke tests
-    && java -version
-ENV JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64/jre
+  && apt-get install -y \
+  openjdk-17-jre \
+  && rm -rf /var/lib/apt/lists/* \
+  # smoke tests
+  && java -version
+ENV JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64/jre
