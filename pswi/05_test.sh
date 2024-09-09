@@ -136,4 +136,4 @@ pwd
 
 cp ../example-zowe.yaml example-zowe.yaml
 
-diff example-zowe.yaml zowe_.yaml
+diff --ed example-zowe.yaml zowe_.yaml > diff.txt
