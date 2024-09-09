@@ -130,10 +130,10 @@ cd ${WORK_MOUNT}
 get zowe_.yaml
 EOF
 
-cat zowe_.yaml
-
 pwd
 
 cp ../example-zowe.yaml example-zowe.yaml
 
-diff --ed example-zowe.yaml zowe_.yaml > diff.txt
+diff --ed example-zowe.yaml zowe_.yaml > diff.txt || true
+
+diff --ed diff.txt scripts/base_diff.txt
