@@ -10,19 +10,19 @@
 #######################################################################
 
 # base image tag
-ARG ZOWE_BASE_IMAGE=latest-ubuntu
+ARG ZOWE_BASE_IMAGE=3-ubuntu
 
 FROM zowe-docker-release.jfrog.io/ompzowe/base-node:${ZOWE_BASE_IMAGE}
 
 ##################################
 # labels
 LABEL name="Zowe Launch Script Image" \
-      maintainer="jack-tiefeng.jia@ibm.com" \
-      vendor="Zowe" \
-      version="0.0.0" \
-      release="0" \
-      summary="Base Launch Script for Zowe components" \
-      description="Base Launch Script for Zowe components"
+  maintainer="mark.ackert@broadcom.com" \
+  vendor="Zowe" \
+  version="0.0.0" \
+  release="0" \
+  summary="Base Launch Script for Zowe components" \
+  description="Base Launch Script for Zowe components"
 
 ##################################
 # switch context
