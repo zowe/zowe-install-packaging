@@ -760,17 +760,6 @@ How we want to verify SSL certificates of services. Valid values are:
             <default>infinispan</default>
         </string>
     </variable>
-    <variable name="components_caching_service_storage_size" scope="instance" visibility="public">
-        <label>Caching service storage size</label>
-        <abstract>Number of records before the eviction strategies kick in</abstract>
-        <description>Number of records before the eviction strategies kick in.</description>
-        <category>components</category>
-        <integer>
-            <!-- Put validation here -->
-            <!-- Specify choices here -->
-            <default>10000</default>
-        </integer>
-    </variable>
     <variable name="components_caching_service_storage_vsam_name" scope="instance" visibility="public">
         <label>Caching service storage VSAM name</label>
         <abstract>VSAM name of the storage</abstract>
@@ -1317,7 +1306,6 @@ How we want to verify SSL certificates of services. Valid values are:
             <variableValue name="components_caching_service_debug" scope="instance" noPromptIfSet="false" required="true"/>
             <variableValue name="components_caching_service_storage_evictionStrategy" scope="instance" noPromptIfSet="false" required="true"/>
             <variableValue name="components_caching_service_storage_mode" scope="instance" noPromptIfSet="false" required="true"/>
-            <variableValue name="components_caching_service_storage_size" scope="instance" noPromptIfSet="false" required="true"/>
             <instructions substitution="false">Run this step to specify the variables for the Caching Service</instructions>
             <weight>1</weight>
             <skills>z/OS System Programmer</skills>
@@ -2087,25 +2075,28 @@ echo '    debug: ${instance-components_caching_service_debug}' >> "${instance-zo
 echo '' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '    storage:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '      evictionStrategy: $!{instance-components_caching_service_storage_evictionStrategy}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '      # can be inMemory, VSAM, redis or infinispan' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '      # can be infinispan, inMemory, redis or VSAM(deprecated)' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '      mode: $!{instance-components_caching_service_storage_mode}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '      size: ${instance-components_caching_service_storage_size}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+#if (${instance-components_caching_service_storage_mode} == "VSAM" )
 echo '      vsam:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '        # your VSAM data set created by "zwe init vsam" command or ZWECSVSM JCL' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '        # this is required if storage mode is VSAM' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '        name: "$!{instance-components_caching_service_storage_vsam_name}"' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+#end
 echo '      infinispan:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '        # this is required if storage mode is infinispan' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '        jgroups:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 #if (${instance-components_caching_service_storage_mode} == "infinispan" )
 echo '          port: ${instance-components_caching_service_storage_infinispan_jgroups_port}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+#if ($!{instance-components_caching_service_storage_infinispan_jgroups_host} and ${instance-components_caching_service_storage_infinispan_jgroups_host} != "" )
 echo '          host: ${instance-components_caching_service_storage_infinispan_jgroups_host}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '          keyExchange: ' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+#end
+echo '          keyExchange:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '            port: ${instance-components_caching_service_storage_infinispan_jgroups_keyExchange_port}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 #else
 echo '          port: 7600' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '          host: ' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '          keyExchange: ' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '          host:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '          keyExchange:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '            port: 7601' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 #end
 #end
@@ -2128,6 +2119,9 @@ echo '      infinispan:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '        # this is required if storage mode is infinispan' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '        jgroups:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '          port: 7600' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '          host:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '          keyExchange:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '            port: 7601' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 #end
 echo '' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '  # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
@@ -2172,8 +2166,6 @@ echo '      jwt:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '        fallback: true' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '      64bit: true' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 #end
-echo '' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '  # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '  # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '  explorer-jes:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
