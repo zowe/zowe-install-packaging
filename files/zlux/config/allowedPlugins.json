@@ -53,6 +53,10 @@
       "versions": ["*"]
     },
     {
+      "identifier": "org.zowe.zlux.ivydesktop",
+      "versions": ["*"]
+    },
+    {
       "identifier": "org.zowe.zlux.ng2desktop.settings",
       "versions": ["*"]
     },
