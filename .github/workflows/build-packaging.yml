@@ -369,7 +369,7 @@ jobs:
           VERSION: ${{ env.P_VERSION }}
       - name: Store PSWI results
         uses: actions/upload-artifact@v4
-        if: ${{ steps.pswi.outcome != 'success' }}
+        if: steps.pswi.outputs.result != '' && failure()
         with:
           name: pswi-folder
           path: |
