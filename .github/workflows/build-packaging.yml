@@ -355,6 +355,7 @@ jobs:
 
 
       - name: '[SMPE Pax 4] Build PSWI'
+        id: pswi
         if: env.INPUTS_BUILD_PSWI == 'true'
         timeout-minutes: 60
         run: |
@@ -366,9 +367,9 @@ jobs:
           ZOSMF_PASS: ${{ secrets.ZOWE_PSWI_BUILD_PASSWD }}
           ZZOW_SSH_PORT: ${{ secrets.SSH_MARIST_ALLSYS_PORT }}
           VERSION: ${{ env.P_VERSION }}
-      - name: Store results
+      - name: Store PSWI results
         uses: actions/upload-artifact@v4
-        if: always()
+        if: ${{ steps.pswi.outcome != 'success' }}
         with:
           name: pswi-folder
           path: |
