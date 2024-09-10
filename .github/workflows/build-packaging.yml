@@ -375,7 +375,7 @@ jobs:
           echo "OUTCOME: $OUTCOME"
           echo "CONC: $CONC"
         env:
-          OUTPUT: ${{ steps.pswi.outputs }}
+          OUTPUT: ${{ steps.pswi.outputs.result }}
           OUTCOME: ${{ steps.pswi.outcome }}
           CONC: ${{ steps.pswi.conclusion }}  
       - name: Store PSWI results
