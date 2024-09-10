@@ -1,5 +1,5 @@
 {
   "identifier": "org.zowe.zlux.ng2desktop",
-  "pluginLocation": "zlux-app-manager/virtual-desktop",
+  "pluginLocation": "zlux-app-manager/virtual-desktop-v2",
   "relativeTo": "$ZLUX_ROOT_DIR"
 }
