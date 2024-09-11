@@ -371,16 +371,17 @@ jobs:
         if: always()
         shell: bash
         run: |
-          echo "OUTPUT: $OUTPUT"
-          echo "OUTCOME: $OUTCOME"
-          echo "CONC: $CONC"
+          echo "Equal failure: $OUTCOME"
+          echo "Not equal success: $CONC"
+          echo "fail: $FAIL"
+          env
         env:
-          OUTPUT: ${{ steps.pswi.outputs.result }}
-          OUTCOME: ${{ steps.pswi.outcome }}
-          CONC: ${{ steps.pswi.conclusion }}  
+          OUTCOME: ${{ steps.pswi.outcome == 'failure'}}
+          CONC: ${{ steps.pswi.outcome != 'success' }}
+          FAIL: ${{ steps.pswi.outcome != '' && failure() }}
       - name: Store PSWI results
         uses: actions/upload-artifact@v4
-        if: steps.pswi.outputs.result != 'success'
+        if: steps.pswi.outcome == 'failure'
         with:
           name: pswi-folder
           path: |
