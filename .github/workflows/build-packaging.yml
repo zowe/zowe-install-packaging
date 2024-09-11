@@ -378,7 +378,7 @@ jobs:
         env:
           OUTCOME: ${{ steps.pswi.outcome == 'failure'}}
           CONC: ${{ steps.pswi.outcome != 'success' }}
-          FAIL: ${{ steps.pswi.outcome != '' && failure() }}
+          FAIL: steps.pswi.outcome != '' && failure()
       - name: Store PSWI results
         uses: actions/upload-artifact@v4
         if: steps.pswi.outcome == 'failure'
