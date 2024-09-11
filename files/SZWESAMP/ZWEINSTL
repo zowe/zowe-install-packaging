@@ -11,7 +11,7 @@
 //*
 //*********************************************************************
 //*
-//MKPDSE EXEC PGM=IKJEFT01
+//MKPDSE EXEC PGM=IKJEFT01,DYNAMNBR=4
 //SYSTSPRT DD SYSOUT=A
 //SYSTSIN DD *
 ALLOC NEW DA('{zowe.setup.dataset.prefix}.SZWESAMP') +
@@ -47,14 +47,11 @@ cp * "//'$ZWE_TMP_PREFIX.SZWELOAD'" &&
 cd ../../components/launcher/bin &&
 cp zowe_launcher
    "//'$ZWE_TMP_PREFIX.SZWEAUTH(ZWELNCH)'" &&
+cd ../samplib/ &&
+cp * "//'$ZWE_TMP_PREFIX.SZWESAMP'" &&
 cd ../../zss/SAMPLIB &&
-cp ZWESIP00 ZWESISCH
+cp ZWESASTC ZWESIP00 ZWESISCH ZWESISTC
    "//'$ZWE_TMP_PREFIX.SZWESAMP'" &&
-cp ZWESAUX
-   "//'$ZWE_TMP_PREFIX.SZWESAMP(ZWESASTC)'" &&
-cp ZWESIS01
-   "//'$ZWE_TMP_PREFIX.SZWESAMP(ZWESISTC)'" &&
 cd ../LOADLIB &&
-cp ZWESIS01 ZWESAUX ZWESISDL
-   "//'$ZWE_TMP_PREFIX.SZWEAUTH'"
+cp * "//'$ZWE_TMP_PREFIX.SZWEAUTH'"
 /*
