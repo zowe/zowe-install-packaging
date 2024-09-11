@@ -1,4 +1,3 @@
-exit -1
 export ZOSMF_PORT=10443
 export ZOSMF_SYSTEM="S0W1"
 export DIR="/u/zowead2"
