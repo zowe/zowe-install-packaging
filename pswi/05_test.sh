@@ -137,5 +137,3 @@ cp ../example-zowe.yaml example-zowe.yaml
 diff --ed example-zowe.yaml zowe_.yaml > diff.txt || true
 
 diff --ed diff.txt scripts/base_diff.txt > final_diff.txt
-
-exit -1

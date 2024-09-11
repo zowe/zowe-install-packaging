@@ -367,21 +367,9 @@ jobs:
           ZOSMF_PASS: ${{ secrets.ZOWE_PSWI_BUILD_PASSWD }}
           ZZOW_SSH_PORT: ${{ secrets.SSH_MARIST_ALLSYS_PORT }}
           VERSION: ${{ env.P_VERSION }}
-      - name: '[SMPE Pax 4] Echo output'
-        if: always()
-        shell: bash
-        run: |
-          echo "Equal failure: $OUTCOME"
-          echo "Not equal success: $CONC"
-          echo "fail: $FAIL"
-          env
-        env:
-          OUTCOME: ${{ steps.pswi.outcome == 'failure'}}
-          CONC: ${{ steps.pswi.outcome != 'success' }}
-          FAIL: steps.pswi.outcome != '' && failure()
       - name: Store PSWI results
         uses: actions/upload-artifact@v4
-        if: ${{ steps.pswi.outcome != 'success' }}
+        if: env.INPUTS_BUILD_PSWI == 'true' && failure()
         with:
           name: pswi-folder
           path: |
