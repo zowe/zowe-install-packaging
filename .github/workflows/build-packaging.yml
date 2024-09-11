@@ -381,7 +381,7 @@ jobs:
           FAIL: steps.pswi.outcome != '' && failure()
       - name: Store PSWI results
         uses: actions/upload-artifact@v4
-        if: steps.pswi.outcome == 'failure'
+        if: ${{ steps.pswi.outcome != 'success' }}
         with:
           name: pswi-folder
           path: |
