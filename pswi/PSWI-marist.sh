@@ -1,3 +1,4 @@
+export ZOSMF_URL="https://zzow07.zowe.marist.cloud"
 export ZOSMF_PORT=10443
 export ZOSMF_SYSTEM="S0W1"
 export DIR="/u/zowead2"
