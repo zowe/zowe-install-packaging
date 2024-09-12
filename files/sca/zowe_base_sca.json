@@ -1,21 +1,21 @@
 {
-  "ServiceId": "AZWE001BASE0S",
+  "ServiceId": "AZWE003BASE0S",
   "ServiceName": "Zowe Configuration - Server",
   "MetaValidationItemVersion": 2.0,
   "Vendor": "OPEN MAINFRAME PROJECT",
   "SecurityValidationItems": [
     {
-      "ItemID": "AZWE001BASE0SI00001000",
+      "ItemID": "AZWE003BASE0SI00001000",
       "ItemType": "PROGRAMMABLE",
       "ItemCategory": "SERVER",
       "ResourceProfile": "ZWES.IS",
       "ResourceClass": "FACILITY",
       "WhoNeedsAccess": "ZWESVUSR",
       "LevelOfAccessRequired": "READ",
-      "ItemDescription": "To allow Zowe ZWESVSTC processes to access the Zowe ZIS cross memory server."
+      "ItemDescription": "To allow Zowe ZWESVSTC processes to access the Zowe ZIS cross-memory server."
     },
     {
-      "ItemID": "AZWE001BASE0SI00002000",
+      "ItemID": "AZWE003BASE0SI00002000",
       "ItemType": "PROGRAMMABLE",
       "ItemCategory": "SERVER",
       "ResourceProfile": "BPX.SERVER",
@@ -25,7 +25,7 @@
       "ItemDescription": "To allow the Zowe Desktop ZLUX server to run code on behalf of the API requester's TSO user ID."
     },
     {
-      "ItemID": "AZWE001BASE0SI00003000",
+      "ItemID": "AZWE003BASE0SI00003000",
       "ItemType": "PROGRAMMABLE",
       "ItemCategory": "SERVER",
       "ResourceProfile": "BPX.DAEMON",
@@ -35,7 +35,7 @@
       "ItemDescription": "To allow the Zowe Desktop ZLUX server to run code on behalf of the API requester's TSO user ID."
     },
     {
-      "ItemID": "AZWE001BASE0SI00004000",
+      "ItemID": "AZWE003BASE0SI00004000",
       "ItemType": "PROGRAMMABLE",
       "ItemCategory": "SERVER",
       "ResourceProfile": "BPX.JOBNAME",
@@ -45,7 +45,7 @@
       "ItemDescription": "To allow z/OS address spaces for unix processes to be renamed for ease of identification."
     },
     {
-      "ItemID": "AZWE001BASE0SI00005000",
+      "ItemID": "AZWE003BASE0SI00005000",
       "ItemType": "PROGRAMMABLE",
       "ItemCategory": "SERVER",
       "ResourceProfile": "CSFRNGL",
@@ -55,7 +55,7 @@
       "ItemDescription": "To generate symmetric keys using ICSF that is used by Zowe Desktop cookies."
     },
     {
-      "ItemID": "AZWE001BASE0SI00006000",
+      "ItemID": "AZWE003BASE0SI00006000",
       "ItemType": "PROGRAMMABLE",
       "ItemCategory": "SERVER",
       "ResourceProfile": "IRR.RAUDITX",
@@ -65,7 +65,7 @@
       "ItemDescription": "To allow Zowe Zowe main server to cut SMF records."
     },
     {
-      "ItemID": "AZWE001BASE0SI00007000",
+      "ItemID": "AZWE003BASE0SI00007000",
       "ItemType": "PROGRAMMABLE",
       "ItemCategory": "SERVER",
       "ResourceProfile": "IRR.RUSERMAP",
@@ -75,7 +75,7 @@
       "ItemDescription": "To allow Zowe to map an X.509 client certificate to a z/OS identity."
     },
     {
-      "ItemID": "AZWE001BASE0SI00008000",
+      "ItemID": "AZWE003BASE0SI00008000",
       "ItemType": "PROGRAMMABLE",
       "ItemCategory": "SERVER",
       "ResourceProfile": "IRR.RADMIN.LISTUSER",
@@ -85,7 +85,7 @@
       "ItemDescription": "To allow Zowe to obtain information about OMVS segment of the user profile using LISTUSER TSO command."
     },
     {
-      "ItemID": "AZWE001BASE0SI00009000",
+      "ItemID": "AZWE003BASE0SI00009000",
       "ItemType": "PROGRAMMABLE",
       "ItemCategory": "SERVER",
       "ResourceProfile": "OMVSAPPL",
@@ -95,7 +95,7 @@
       "ItemDescription": "To allow Zowe Desktop vendor extensions the ability to use single-sign on."
     },
     {
-      "ItemID": "AZWE001BASE0SI00010000",
+      "ItemID": "AZWE003BASE0SI00010000",
       "ItemType": "PROGRAMMABLE",
       "ItemCategory": "SERVER",
       "ResourceProfile": "SUPERUSER.FILESYS",
@@ -105,7 +105,7 @@
       "ItemDescription": "An alternative option to allow Zowe user ID to write persistent data in the Zowe directory structure."
     },
     {
-      "ItemID": "AZWE001BASE0SI00011000",
+      "ItemID": "AZWE003BASE0SI00011000",
       "ItemType": "PROGRAMMABLE",
       "ItemCategory": "CERTIFICATE",
       "ResourceProfile": "IRR.DIGTCERT.LISTRING",
@@ -115,7 +115,7 @@
       "ItemDescription": "Permit the Zowe SERVER ID to access the key ring."
     },
     {
-      "ItemID": "AZWE001BASE0SI00012000",
+      "ItemID": "AZWE003BASE0SI00012000",
       "ItemType": "PROGRAMMABLE",
       "ItemCategory": "CERTIFICATE",
       "ResourceProfile": "IRR.DIGTCERT.GENCERT",
@@ -125,7 +125,7 @@
       "ItemDescription": "Permit the Zowe SERVER ID to access the private key."
     },
     {
-      "ItemID": "AZWE001BASE0SI00013000",
+      "ItemID": "AZWE003BASE0SI00013000",
       "ItemType": "PROGRAMMABLE",
       "ItemCategory": "RDATALIB class",
       "ResourceProfile": "<KEYRING_OWNER_USERID>.<KEYRING_NAME>.LST",
@@ -135,7 +135,7 @@
       "ItemDescription": "To allow Zowe SERVER ID to access the key ring."
     },
     {
-      "ItemID": "AZWE001BASE0SI00014000",
+      "ItemID": "AZWE003BASE0SI00014000",
       "ItemType": "SEMI-PROGRAMMABLE",
       "ItemCategory": "PASS  TICKET",
       "ResourceProfile": "<applname>",
@@ -145,7 +145,7 @@
       "ItemDescription": "To allow Zowe APIML to evaluate passtickets for <applname> application. Used for SSO and client certificate authentication."
     },
     {
-      "ItemID": "AZWE001BASE0SI00015000",
+      "ItemID": "AZWE003BASE0SI00015000",
       "ItemType": "SEMI-PROGRAMMABLE",
       "ItemCategory": "SERVER",
       "ResourceProfile": "IRRPTAUTH.<applname>.ANYUSER",
@@ -155,7 +155,7 @@
       "ItemDescription": "To allow Zowe APIML to evaluate passtickets for <applname> application. Used for SSO and client certificate authentication."
     },
     {
-      "ItemID": "AZWE001BASE0SI00016000",
+      "ItemID": "AZWE003BASE0SI00016000",
       "ItemType": "PROGRAMMABLE",
       "ItemCategory": "USER",
       "ResourceProfile": "APIML.SERVICES",
