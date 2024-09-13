@@ -15,12 +15,12 @@ const addContext = require('mochawesome/addContext');
 const testName = path.basename(__filename, path.extname(__filename));
 
 const {
-  PRE_INSTALLED_APPS,
-  PRE_INSTALLED_APPS_DISABLED_FOR_DOCKER,
-  PRE_PINNED_APPS,
+// PRE_INSTALLED_APPS,
+// PRE_INSTALLED_APPS_DISABLED_FOR_DOCKER,
+// PRE_PINNED_APPS,
   DEFAULT_PAGE_LOADING_TIMEOUT,
   DEFAULT_ELEMENT_CHECK_INTERVAL,
-  getElements,
+  // getElements,
   getElement,
   getElementText,
   waitUntilElement,
@@ -269,8 +269,8 @@ describe('test MVD login page', function() {
     loginSuccessfully = true;
   });
   
-  const zosHost = process.env.ZOWE_ZOS_HOST || process.env.ZOWE_EXTERNAL_HOST;
-  const dockerTest = process.env.ZOWE_EXTERNAL_HOST !== zosHost;
+  // const zosHost = process.env.ZOWE_ZOS_HOST || process.env.ZOWE_EXTERNAL_HOST;
+  // const dockerTest = process.env.ZOWE_EXTERNAL_HOST !== zosHost;
 
   it('should be able to popup apps menu', async function() {
     if (!loginSuccessfully) {
@@ -297,9 +297,9 @@ describe('test MVD login page', function() {
     expect(popup).to.be.an('object');
 
     // check popup menu items
-    const menuItems = await getElements(popup, '.launch-widget-row > .app-label');
+    /* const menuItems = await getElements(popup, '.launch-widget-row > .app-label');
 
-   /* if (dockerTest) {
+    if (dockerTest) {
       // Docker scenario will not have IP Explorer, thus installed apps should be one less the total count
       expect(menuItems).to.be.an('array').that.have.lengthOf(PRE_INSTALLED_APPS.length-PRE_INSTALLED_APPS_DISABLED_FOR_DOCKER.length);
     }
