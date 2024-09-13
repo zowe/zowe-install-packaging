@@ -586,7 +586,9 @@ How we want to verify SSL certificates of services. Valid values are:
         <string valueMustBeChoice="false" multiLine="false">
             <!-- Put validation here -->
             <!-- Specify choices here -->
-            <default>auto</default>
+            <choice>jwt</choice>
+            <choice>ltpa</choice>
+            <default>jwt</default>
         </string>
     </variable>
     <variable name="components_zaas_apiml_security_auth_zosmf_serviceId" scope="instance" visibility="public">
