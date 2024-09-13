@@ -1,6 +1,3 @@
-538c
-            jwtAutoconfiguration: auto
-.
 483c
   home: "#delete_me#"
 .
