@@ -185,3 +185,4 @@ else
 fi
 
 echo "Testing pipeline fail" >> report.txt
+exit -1
