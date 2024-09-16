@@ -85,9 +85,9 @@ STATUS_NAME=`echo $RESP | grep -o '"statusName":".*"' | cut -f4 -d\"`
 
 if [ "$STATUS_NAME" = "in-progress" ]
 then
-  echo "Workflow ended with an error."
-  echo $RESP
-  echo "Checking if the workflow is ZWECONF"
+  echo "Workflow ended with an error." >> report.txt
+  echo $RESP >> report.txt
+  echo "Checking if the workflow is ZWECONF" >> report.txt
   if [ "$ZWECONF" = "ZWECONF" ]
   then
     STEP_NAME=`echo $RESP | grep -o '"currentStepName":".*"' | cut -f4 -d\"`
@@ -96,11 +96,12 @@ then
       echo "The workflow is ZWECONF and should end in step 'init_zowe'"
       STATUS="FINISHED"
     else
-      echo "The workflow is ZWECONF but ended in different step: '$STEP_NAME'"
+      echo "The workflow is ZWECONF but ended in different step: '$STEP_NAME'" >> report.txt
       exit -1
     fi
   else
-    echo "Workflow ended with an error and it is not ZWECONF."
+    echo "Workflow ended with an error and it is not ZWECONF." >> report.txt
+    echo $RESP >> report.txt
     exit -1
   fi
 elif [ "$STATUS_NAME" = "complete" ]
