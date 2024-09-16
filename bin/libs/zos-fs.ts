@@ -132,7 +132,7 @@ export function getFileSystemFlags(path: string): fileSystemFlagsReturn {
   const ST_NOSECURITY = 0x00000004
   let flags : fileSystemFlagsReturn = { rc: 1 };
   if (path) {
-    const result = zos.getStattvfs(path);
+    const result = zos.getStatvfs(path);
     if (result[1] == 0) {
         flags = {
           rc: 0,
