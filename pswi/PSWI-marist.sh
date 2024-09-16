@@ -134,9 +134,11 @@ if [ $presmpe -eq 0 ]; then
         sh 05_test.sh
         test=$?
         
-        #test the workflows
-        sh 051_test_workflows.sh
-        wf_test=$?
+        if [ $test -eq 0 ]; then
+          #test the workflows
+          sh 051_test_workflows.sh
+          wf_test=$?
+        fi
         
         # Cleanup after the test
         sh 06_test_cleanup.sh
@@ -161,7 +163,7 @@ fi
 echo ""
 echo ""
 
-if [ $smpe -ne 0 ] || [ $ptf -ne 0 ] || [ $create -ne 0 ] || [ $test -ne 0 ] || [ $presmpe -ne 0 ]; then
+if [ $smpe -ne 0 ] || [ $ptf -ne 0 ] || [ $create -ne 0 ] || [ $test -ne 0 ] || [ $presmpe -ne 0 ] || [ $wf_test -ne 0 ]; then
   echo "Build unsuccessful!" >> report.txt
   if [ $presmpe -ne 0 ]; then
     echo "Pre-SMP/E wasn't successful." >> report.txt
@@ -173,9 +175,13 @@ if [ $smpe -ne 0 ] || [ $ptf -ne 0 ] || [ $create -ne 0 ] || [ $test -ne 0 ] || 
     echo "Creation of PSWI wasn't successful." >> report.txt
   elif [ $test -ne 0 ]; then
     echo "Testing of PSWI wasn't successful." >> report.txt
+  elif [ $wf_test -ne 0 ]; then
+    echo "Workflow testing wasn't successful." >> report.txt
   fi
   exit -1
 else
   echo "Build successful!"
   exit 0
 fi
+
+echo "Testing pipeline fail" >> report.txt

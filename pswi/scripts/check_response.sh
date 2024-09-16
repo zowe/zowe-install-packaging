@@ -10,7 +10,7 @@ then
 fi 
 if [ $RESPCODE -ne 0 ]
 then
-  echo "REST API call failed."
+  echo "REST API call failed." >> report.txt
   echo $RESP >> report.txt
   exit -1
 else

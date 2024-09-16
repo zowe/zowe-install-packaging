@@ -367,13 +367,20 @@ jobs:
           ZOSMF_PASS: ${{ secrets.ZOWE_PSWI_BUILD_PASSWD }}
           ZZOW_SSH_PORT: ${{ secrets.SSH_MARIST_ALLSYS_PORT }}
           VERSION: ${{ env.P_VERSION }}
-      - name: Store PSWI results
+      - name: Store PSWI folder
         uses: actions/upload-artifact@v4
         if: env.INPUTS_BUILD_PSWI == 'true' && failure()
         with:
           name: pswi-folder
           path: |
             pswi/**
+      - name: Store PSWI-log results
+        uses: actions/upload-artifact@v4
+        if: env.INPUTS_BUILD_PSWI == 'true' && failure()
+        with:
+          name: pswi-folder
+          path: pswi/report.txt
+          compression-level: 0
       - name: '[K8S] Build Kubernetes'
         timeout-minutes: 10
         if: env.INPUTS_BUILD_KUBERNETES == 'true'
