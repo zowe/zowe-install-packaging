@@ -499,7 +499,7 @@ How we want to verify SSL certificates of services. Valid values are:
     <integer>
       <!-- Put validation here -->
       <!-- Specify choices here -->
-      <default>7563</default>
+      <default>7558</default>
     </integer>
   </variable>
   <variable name="components_zaas_debug" scope="instance" visibility="public">
@@ -2055,7 +2055,7 @@ echo '          enabled: ${instance-components_zaas_apiml_security_x509_enabled}
 #if (${instance-components_zaas_enabled} == "false" )
 echo '  zaas:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '    enabled: ${instance-components_zaas_enabled}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '    port: 7563' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '    port: 7558' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '    debug: false' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '    apiml:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"

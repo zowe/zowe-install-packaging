@@ -204,7 +204,7 @@ done
 
 update_zowe_yaml "${temp_dir}/zowe.yaml" "zowe.externalPort" "${ZWE_CLI_PARAMETER_EXTERNAL_PORT}"
 update_zowe_yaml "${temp_dir}/zowe.yaml" "components.gateway.port" "7554"
-update_zowe_yaml "${temp_dir}/zowe.yaml" "components.zaas.port" "7563"
+update_zowe_yaml "${temp_dir}/zowe.yaml" "components.zaas.port" "7558"
 update_zowe_yaml "${temp_dir}/zowe.yaml" "components.discovery.port" "7553"
 update_zowe_yaml "${temp_dir}/zowe.yaml" "components.api-catalog.port" "7552"
 update_zowe_yaml "${temp_dir}/zowe.yaml" "components.caching-service.port" "7555"

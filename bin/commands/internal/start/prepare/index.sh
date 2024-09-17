@@ -145,7 +145,7 @@ global_validate() {
     if [[ ${ZWE_ENABLED_COMPONENTS} == *"discovery"* ]]; then
       validate_this "validate_zosmf_host_and_port \"${ZOSMF_HOST}\" \"${ZOSMF_PORT}\" 2>&1" "zwe-internal-start-prepare,global_validate:${LINENO}"
     else
-      if [ "${ZWE_components_zaas_apiml_security_auth_provider}" = "zosmf" ]; then
+      if [ "${ZWE_components_gateway_apiml_security_auth_provider}" = "zosmf" ]; then
         let "ZWE_PRIVATE_ERRORS_FOUND=${ZWE_PRIVATE_OLD_ERRORS_FOUND}+1"
         print_error "Using z/OSMF as 'components.gateway.apiml.security.auth.provider' is not possible: discovery is disabled."
         print_formatted_info "ZWELS" "zwe-internal-start-prepare,global_validate:${LINENO}" "Zosmf validation failed"

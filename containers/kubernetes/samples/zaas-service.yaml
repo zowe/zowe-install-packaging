@@ -20,6 +20,6 @@ spec:
   ports:
     - name: zaas
       protocol: TCP
-      port: 7563
+      port: 7558
       targetPort: zaas-port
       appProtocol: https
