@@ -90,7 +90,7 @@ data:
 
       zaas:
         enabled: true
-        port: 7563
+        port: 7558
         debug: false
 
       discovery:
