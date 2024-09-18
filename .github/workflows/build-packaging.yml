@@ -374,13 +374,6 @@ jobs:
           name: pswi-folder
           path: |
             pswi/**
-      - name: Store PSWI-log results
-        uses: actions/upload-artifact@v4
-        if: env.INPUTS_BUILD_PSWI == 'true' && failure()
-        with:
-          name: report.txt
-          path: pswi/report.txt
-          compression-level: 0
       - name: '[K8S] Build Kubernetes'
         timeout-minutes: 10
         if: env.INPUTS_BUILD_KUBERNETES == 'true'

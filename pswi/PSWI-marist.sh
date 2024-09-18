@@ -1,3 +1,4 @@
+set -x
 export ZOSMF_URL="https://zzow07.zowe.marist.cloud"
 export ZOSMF_PORT=10443
 export ZOSMF_SYSTEM="S0W1"
@@ -181,8 +182,5 @@ if [ $smpe -ne 0 ] || [ $ptf -ne 0 ] || [ $create -ne 0 ] || [ $test -ne 0 ] || 
   exit -1
 else
   echo "Build successful!"
-  #exit 0
+  exit 0
 fi
-
-echo "Testing pipeline fail" >> report.txt
-exit -1
