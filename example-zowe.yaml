@@ -320,7 +320,7 @@ zowe:
   # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   # This is an ID you use to separate multiple Zowe installs when determining
   # resource names used in RBAC authorization checks such as dataservices with RBAC
-  # expects this ID in SAF resources 
+  # expects this ID in SAF resources
   rbacProfileIdentifier: "1"
 
   # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -336,7 +336,7 @@ zowe:
   externalDomains:
     # this should be the domain name to access Zowe APIML Gateway
     - sample-domain.com
-  
+
   # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   # This is the port you use to access Zowe Gateway from your web browser.
   #
@@ -378,8 +378,8 @@ zowe:
   #   ZWED_TN3270_PORT: 23
 
   # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-  # You can define any Zowe message portions to be checked for and the message added to the 
-  # system log upon its logging, truncated to 126 characters. 
+  # You can define any Zowe message portions to be checked for and the message added to the
+  # system log upon its logging, truncated to 126 characters.
   sysMessages:
   #   # Zowe starting
     - "ZWEL0021I"
@@ -449,7 +449,7 @@ zowe:
   #              This mode does not validate certificate Common Name and Subject
   #              Alternative Name (SAN).
   # - DISABLED:  disable certificate validation. This is NOT recommended for
-  #              security. 
+  #              security.
   verifyCertificates: STRICT
 
 
@@ -633,7 +633,7 @@ components:
 #     # This sysname will be used to route your JES command to target system.
 #     sysname: LPR1
 #     # for this HA instance, we did not customize "components", so it will use default value.
-  
+
 #   # HA instance ID, we will start 2 instances on LPAR2
 #   # **NOTE**, we can only start one gateway in same LPAR.
 #   lpar2a:
