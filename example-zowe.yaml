@@ -518,18 +518,6 @@ components:
     enabled: true
     port: 7554
     debug: false
-
-    # If we customize this to use different external certificate, than should also
-    # define "server.internal.ssl.certificate" and enable "server.internal.ssl.enabled".
-    # certificate:
-    #   keystore:
-    #     alias: ""
-
-  # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-  zaas:
-    enabled: true
-    port: 7563
-    debug: false
     apiml:
       security:
         auth:
@@ -543,6 +531,18 @@ components:
           provider: "native"
         x509:
           enabled: false
+
+    # If we customize this to use different external certificate, than should also
+    # define "server.internal.ssl.certificate" and enable "server.internal.ssl.enabled".
+    # certificate:
+    #   keystore:
+    #     alias: ""
+
+  # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+  zaas:
+    enabled: true
+    port: 7558
+    debug: false
   # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   api-catalog:
     enabled: true

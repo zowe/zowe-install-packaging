@@ -177,7 +177,7 @@ components:
   # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   cloud-gateway:
     enabled: false
-    port: 7563
+    port: 7558
     debug: false
 
   # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
