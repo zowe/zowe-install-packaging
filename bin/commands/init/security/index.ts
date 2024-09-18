@@ -76,6 +76,6 @@ export function execute(dryRun?: boolean, ignoreSecurityFailures?: boolean) {
   common.printMessage(``);
   common.printMessage(`WARNING: Due to the limitation of the ZWEI${securityPrefix} job, exit with 0 does not mean`);
   common.printMessage(`         the job is fully successful. Please check the job log to determine`);
-  common.printMessage(`         if there are any inline errors.`);
+  common.printMessage(`         if there are any messages indicating a problem.`);
   common.printMessage(``);
 }

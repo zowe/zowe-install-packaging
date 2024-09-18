@@ -205,6 +205,7 @@ zowe:
     #     country: "CZ"
     #   # Validity days for Zowe generated certificates
     #   validity: 3650
+    #   # **COMMONLY_CUSTOMIZED**
     #   # Domain names and IPs should be added into certificate SAN
     #   # If this field is not defined, `zwe init` command will use
     #   # `zowe.externalDomains`.
