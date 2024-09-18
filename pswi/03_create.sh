@@ -8,6 +8,7 @@ echo ""
 echo "Script for creating a Portable Software Instance..."
 echo "Host               :" $ZOSMF_URL
 echo "Port               :" $ZOSMF_PORT
+echo "SSH Port           :" $ZZOW_SSH_PORT
 echo "CSI HLQ            :" $CSIHLQ
 echo "SMP/E zone         :" $ZONE
 echo "z/OSMF system      :" $ZOSMF_SYSTEM
@@ -331,7 +332,7 @@ if [ $? -gt 0 ];then exit -1;fi
 rm JCL
 
 cd ../.pax
-sshpass -p${ZOSMF_PASS} sftp -o HostKeyAlgorithms=+ssh-rsa -o BatchMode=no -o StrictHostKeyChecking=no -o PubkeyAuthentication=no -b - -P 22 ${ZOSMF_USER}@${HOST} << EOF
+sshpass -p${ZOSMF_PASS} sftp -o HostKeyAlgorithms=+ssh-rsa -o BatchMode=no -o StrictHostKeyChecking=no -o PubkeyAuthentication=no -b - -P ${ZZOW_SSH_PORT} ${ZOSMF_USER}@${HOST} << EOF
 cd ${TMP_MOUNT}
 get ${SWI_NAME}.pax.Z
 EOF

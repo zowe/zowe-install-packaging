@@ -45,7 +45,7 @@ export function getNetstat(): string|undefined {
 export function isPortAvailable(port: number): boolean {
   const netstat=getNetstat();
 
-  const skipValidate = (std.getenv('ZWE_zowe_network_validatePortFree') ? std.getenv('ZWE_zowe_network_validatePortFree') : std.getenv('ZWE_zowe_environments_ZWE_NETWORK_VALIDATE_PORT_FREE')) == 'false';
+  const skipValidate = (std.getenv('ZWE_zowe_network_server_validatePortFree') ? std.getenv('ZWE_zowe_network_server_validatePortFree') : std.getenv('ZWE_zowe_environments_ZWE_NETWORK_VALIDATE_PORT_FREE')) == 'false';
   if (skipValidate) {
     common.printMessage("Port validation skipped due to zowe.network.validatePortFree=false");
     return true;
@@ -61,9 +61,9 @@ export function isPortAvailable(port: number): boolean {
   let lines;
   switch (os.platform) {
     case 'zos':
-    const vipaIp = std.getenv('ZWE_zowe_network_vipaIp') ? std.getenv('ZWE_zowe_network_vipaIp') : std.getenv('ZWE_zowe_environments_ZWE_NETWORK_VIPA_IP');
+    const vipaIp = std.getenv('ZWE_zowe_network_server_vipaIp') ? std.getenv('ZWE_zowe_network_server_vipaIp') : std.getenv('ZWE_zowe_environments_ZWE_NETWORK_VIPA_IP');
     if (vipaIp !== undefined) {
-      retVal=shell.execOutSync('sh', '-c', `${netstat} -B ${std.getenv('ZWE_zowe_network_vipaIp')}+${port} -c SERVER 2>&1`);
+      retVal=shell.execOutSync('sh', '-c', `${netstat} -B ${vipaIp}+${port} -c SERVER 2>&1`);
     } else {
       retVal=shell.execOutSync('sh', '-c', `${netstat} -c SERVER -P ${port} 2>&1`);
     }

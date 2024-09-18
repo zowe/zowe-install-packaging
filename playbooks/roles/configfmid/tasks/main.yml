@@ -33,6 +33,7 @@
     - zowe_apiml_gateway_port
     - zowe_apiml_gateway_timeout_millis
     - zowe_apiml_security_x509_enabled
+    - zowe_apiml_service_forwardClientCertEnabled
     - zowe_apiml_security_zosmf_applid
     - zowe_apiml_security_auth_provider
     - zowe_apiml_security_oidc_enabled
@@ -40,8 +41,6 @@
     - zowe_apiml_security_oidc_client_secret
     - zowe_apiml_security_oidc_registry
     - zowe_apiml_security_oidc_jwks_uri
-    - zowe_jobs_api_port
-    - zowe_mvs_api_port
     - zowe_jobs_explorer_port
     - zowe_mvs_explorer_port
     - zowe_uss_explorer_port
@@ -282,16 +281,15 @@
   vars:
     configs:
       "components.gateway.port": "{{ zowe_apiml_gateway_port }}"
-      "components.metrics-service.port": "{{ zowe_apiml_metrics_service_port }}"
       "components.api-catalog.port": "{{ zowe_apiml_catalog_port }}"
       "components.discovery.port": "{{ zowe_apiml_discovery_port }}"
       "components.caching-service.port": "{{ zowe_caching_service_port }}"
       "components.app-server.port": "{{ zowe_zlux_port }}"
       "components.zss.port": "{{ zowe_zss_port }}"
-      "components.jobs-api.port": "{{ zowe_jobs_api_port }}"
-      "components.files-api.port": "{{ zowe_mvs_api_port }}"
       # other gateway configs
       "components.gateway.apiml.gateway.timeoutMillis": "{{ zowe_apiml_gateway_timeout_millis }}"
+
+      # zaas settings
       "components.gateway.apiml.security.x509.enabled": "{{ zowe_apiml_security_x509_enabled|string|lower }}"
       "components.gateway.apiml.security.auth.provider": "{{ zowe_apiml_security_auth_provider|string|lower }}"
       "components.gateway.apiml.security.auth.zosmf.jwtAutoconfiguration": "{{ zowe_apiml_security_zosmf_jwt_autoconfiguration_mode }}"

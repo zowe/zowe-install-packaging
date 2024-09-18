@@ -44,7 +44,7 @@ fi
 if [ "$MOUNTED" = false ]
 then
   # Check if data set exists
-  echo "Checking if temporary zFS ${TMP_ZFS} exists."
+  echo "Checking if temporary zFS ${ZFS} exists."
   RESP=`curl -s "${BASE_URL}/zosmf/restfiles/ds?dslevel=${ZFS}" -k -X "GET" -H "Content-Type: application/json" -H "X-CSRF-ZOSMF-HEADER: A" --user $ZOSMF_USER:$ZOSMF_PASS`
   sh scripts/check_response.sh "${RESP}" $?
   if [ $? -gt 0 ];then exit -1;fi
@@ -61,7 +61,7 @@ then
     #TODO: also check the first dsname because it can be something that just has tmp_zfs as HLQ
     echo
   fi
-  # Mount zFS to TMP_MOUNT
+  # Mount zFS to MOUNT
   echo "Mounting zFS ${ZFS} to ${MOUNT} mount point with JCL because REST API doesn't allow AGGRGROW parm."
 
 echo ${JOBST1} > JCL

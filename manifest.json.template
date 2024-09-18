@@ -12,52 +12,36 @@
   },
   "binaryDependencies": {
     "org.zowe.zlux.zlux-core": {
-      "version": "2.18.0-RC",
-      "repository": "libs-snapshot-local",
-      "artifact": "zlux-core-2.18.0-20240821.193854.pax"
+      "version": "^3.0.0-V3.X-STAGING-ZLUX-CORE",
+      "artifact": "*.pax"
     },
     "org.zowe.zlux.sample-angular-app": {
-      "version": "2.18.0-V2.X-RC",
-      "repository": "libs-snapshot-local",
-      "artifact": "sample-angular-app-2.18.0-20240814.141709.pax"
+      "version": "^3.0.0-V3.X-STAGING",
+      "artifact": "*.pax"
     },
     "org.zowe.zlux.sample-iframe-app": {
-      "version": "2.18.0-V2.X-RC",
-      "repository": "libs-snapshot-local",
-      "artifact": "sample-iframe-app-2.18.0-20240814.141546.pax"
+      "version": "^3.0.0-V3.X-STAGING",
+      "artifact": "*.pax"
     },
     "org.zowe.zlux.sample-react-app": {
-      "version": "2.18.0-V2.X-RC",
-      "repository": "libs-snapshot-local",
-      "artifact": "sample-react-app-2.18.0-20240814.141704.pax"
+      "version": "^3.0.0-V3.X-STAGING",
+      "artifact": "*.pax"
     },
     "org.zowe.zlux.tn3270-ng2": {
-      "version": "2.18.0-V2.X-RC",
-      "repository": "libs-snapshot-local",
-      "artifact": "tn3270-ng2-2.18.0-20240814.141613.pax"
+      "version": "^3.0.0-V3.X-STAGING",
+      "artifact": "*.pax"
     },
     "org.zowe.zlux.vt-ng2": {
-      "version": "2.18.0-V2.X-RC",
-      "repository": "libs-snapshot-local",
-      "artifact": "vt-ng2-2.18.0-20240814.141621.pax"
+      "version": "^3.0.0-V3.X-STAGING",
+      "artifact": "*.pax"
     },
     "org.zowe.zlux.zlux-editor": {
-      "version": "2.18.0-V2.X-RC",
-      "repository": "libs-snapshot-local",
-      "artifact": "zlux-editor-2.18.0-20240814.141840.pax"
+      "version": "^3.0.0-V3.X-STAGING",
+      "artifact": "*.pax"
     },
     "org.zowe.zss": {
-      "version": "2.18.0-RC",
-      "repository": "libs-snapshot-local",
-      "artifact": "zss-2.18.0-rc-1180-20240814142247.pax"
-    },
-    "org.zowe.explorer.jobs.jobs-api-package": {
-      "version": "2.0.31",
-      "artifact": "jobs-api-package-*.zip"
-    },
-    "org.zowe.explorer.files.files-api-package": {
-      "version": "2.0.31",
-      "artifact": "files-api-package-*.zip"
+      "version": "^3.0.0-STAGING",
+      "artifact": "*.pax"
     },
     "org.zowe.explorer-jes": {
       "version": "2.0.7"
@@ -69,62 +53,63 @@
       "version": "2.0.9"
     },
     "org.zowe.explorer-ip": {
-      "version": "2.0.0",
-      "artifact": "explorer-ip*.pax"
+      "version": "~3.0.0-SNAPSHOT",
+      "artifact": "*.pax"
     },
     "org.zowe.apiml.api-catalog-package": {
-      "version": "2.18.1",
-      "artifact": "api-catalog*.zip"
+      "version": "^3.0.3-SNAPSHOT",
+      "artifact": "api-catalog-*.zip",
+      "exclusions": ["*PR*.zip"]
     },
     "org.zowe.apiml.discovery-package": {
-      "version": "2.18.1",
-      "artifact": "discovery*.zip"
+      "version": "^3.0.3-SNAPSHOT",
+      "artifact": "discovery-*.zip",
+      "exclusions": ["*PR*.zip"]
     },
     "org.zowe.apiml.gateway-package": {
-      "version": "2.18.1",
-      "artifact": "gateway*.zip"
+      "version": "^3.0.3-SNAPSHOT",
+      "artifact": "gateway-*.zip",
+      "exclusions": ["*PR*.zip"]
     },
     "org.zowe.apiml.caching-service-package": {
-      "version": "2.18.1",
-      "artifact": "caching-service*.zip"
-    },
-    "org.zowe.apiml.metrics-service-package": {
-      "version": "2.18.1",
-      "artifact": "metrics-service*.zip"
+      "version": "^3.0.3-SNAPSHOT",
+      "artifact": "caching-service-*.zip",
+      "exclusions": ["*PR*.zip"]
     },
     "org.zowe.apiml.apiml-common-lib-package": {
-      "version": "2.18.1",
-      "artifact": "apiml-common-lib-*.zip"
+      "version": "^3.0.3-SNAPSHOT",
+      "artifact": "apiml-common-lib-*.zip",
+      "exclusions": ["*PR*.zip"]
     },
     "org.zowe.apiml.sdk.common-java-lib-package": {
-      "version": "2.0.5",
-      "artifact": "common-java-lib-*.zip"
+      "version": "^2.0.0-SNAPSHOT",
+      "artifact": "common-java-lib-*.zip",
+      "exclusions": ["*PR*.zip"]
     },
     "org.zowe.apiml.sdk.apiml-sample-extension-package": {
-      "version": "2.18.1",
-      "artifact": "apiml-sample-extension-*.zip"
+      "version": "^3.0.3-SNAPSHOT",
+      "artifact": "apiml-sample-extension-*.zip",
+      "exclusions": ["*PR*.zip"]
     },
-    "org.zowe.apiml.cloud-gateway-package": {
-      "version": "2.18.1",
-      "artifact": "cloud-gateway-*.zip"
+    "org.zowe.apiml.zaas-package": {
+      "version": "^3.0.3-SNAPSHOT",
+      "artifact": "zaas-package-*.zip",
+      "exclusions": ["*PR*.zip"]
     },
-    "org.zowe.configmgr-rexx": {
-      "version": "2.18.0-V2.X-RC",
-      "repository": "libs-snapshot-local",
-      "artifact": "configmgr-rexx-2.18.0-2024081453.pax"
-    },
-	"org.zowe.getesm": {
-      "version": "2.18.0-V2.X-RC",
-      "repository": "libs-snapshot-local",
-      "artifact": "getesm-2.18.0-2024081447.pax"
+    "org.zowe.getesm": {
+      "version": "^3.0.0-V3.X-STAGING",
+      "artifact": "*.pax"
     },
     "org.zowe.configmgr": {
-      "version": "2.18.0-V2.X-RC",
-      "repository": "libs-snapshot-local",
-      "artifact": "configmgr-2.18.0-2024081448.pax"
+      "version": "^3.0.0-V3.X-STAGING",
+      "artifact": "*.pax"
+    },
+    "org.zowe.configmgr-rexx": {
+      "version": "^3.0.0-V3.X-STAGING",
+      "artifact": "*.pax"
     },
     "org.zowe.launcher": {
-      "version": "2.18.0"
+      "version": "^2.0.0-STAGING"
     },
     "org.zowe.keyring-utilities": {
       "version": "1.0.4",
@@ -141,11 +126,11 @@
     }
   },
   "sourceDependencies": [
-    {
+   {
       "componentGroup": "Zowe API Mediation Layer",
       "entries": [{
         "repository": "api-layer",
-        "tag": "v2.18.1",
+        "tag": "v3.x.x",
         "destinations": ["Zowe PAX"]
       }]
     }, {
@@ -159,12 +144,12 @@
       "componentGroup": "Zowe Application Framework",
       "entries": [{
           "repository": "zlux-app-manager",
-          "tag": "v2.18.0-RC1",
+          "tag": "v3.x/staging",
           "destinations": ["Zowe PAX"]
         },
         {
           "repository": "zlux-app-server",
-          "tag": "v2.18.0-RC1",
+          "tag": "v3.x/staging",
           "destinations": ["Zowe PAX"]
         },
         {
@@ -179,17 +164,17 @@
         },
         {
           "repository": "zlux-platform",
-          "tag": "v2.18.0-RC1",
+          "tag": "v3.x/staging",
           "destinations": ["Zowe PAX"]
         },
         {
           "repository": "zlux-server-framework",
-          "tag": "v2.18.0-RC1",
+          "tag": "v3.x/staging",
           "destinations": ["Zowe PAX"]
         },
         {
           "repository": "zlux-shared",
-          "tag": "v2.18.0-RC1",
+          "tag": "v3.x/staging",
           "destinations": ["Zowe PAX"]
         },
         {
@@ -199,17 +184,17 @@
         },
         {
           "repository": "zlux-build",
-          "tag": "v2.18.0-RC1",
+          "tag": "v3.x/staging",
           "destinations": ["Zowe PAX"]
         },
         {
           "repository": "zss",
-          "tag": "v2.18.0-RC1",
+          "tag": "v3.x/staging",
           "destinations": ["Zowe PAX"]
         },
         {
           "repository": "zowe-common-c",
-          "tag": "zss-v2.18.0-RC1",
+          "tag": "v3.x/staging",
           "destinations": ["Zowe PAX"]
         }
       ]
@@ -249,24 +234,17 @@
         "destinations": ["Zowe CLI Package"]
       }]
     }, {
-      "componentGroup": "IBM&reg IMS&reg Plug-in for Zowe CLI",
+      "componentGroup": "Zowe Desktop Data Sets UI Plugin",
       "entries": [{
-        "repository": "zowe-cli-ims-plugin",
-        "tag": "v3.0.1",
-        "destinations": ["Zowe CLI Package"]
+        "repository": "explorer-mvs",
+        "tag": "v2.x/master",
+        "destinations": ["Zowe PAX"]
       }]
     }, {
       "componentGroup": "Zowe Desktop Eclipse Orion-based React Editor",
       "entries": [{
         "repository": "orion-editor-component",
-        "tag": "v0.0.14",
-        "destinations": ["Zowe PAX"]
-      }]
-    }, {
-      "componentGroup": "Zowe Desktop Data Sets UI Plugin",
-      "entries": [{
-        "repository": "explorer-mvs",
-        "tag": "v2.0.9",
+        "tag": "v2.x/master",
         "destinations": ["Zowe PAX"]
       }]
     }, {
@@ -284,28 +262,6 @@
         "destinations": ["Zowe PAX"]
       }]
     }, {
-      "componentGroup": "Zowe Explorer Common REST Server",
-      "entries": [{
-        "repository": "explorer-api-common",
-        "tag": "2.0.35",
-        "destinations": ["Zowe PAX"]
-      }]
-    }, {
-      "componentGroup": "Zowe Explorer Data Sets REST Server",
-      "entries": [{
-        "repository": "data-sets",
-        "tag": "2.0.31",
-        "destinations": ["Zowe PAX"]
-      }]
-    }, {
-      "componentGroup": "Zowe Explorer Jobs REST Server",
-      "entries": [{
-        "repository": "jobs",
-        "tag": "2.0.31",
-        "destinations": ["Zowe PAX"]
-      }]
-    },
-    {
       "componentGroup": "Zowe Desktop TN3270 Emulator Plug-in",
       "entries": [{
         "repository": "tn3270-ng2",
@@ -372,7 +328,7 @@
       "componentGroup": "Zowe Visual Studio Code Extension",
       "entries": [{
         "repository": "zowe-explorer-vscode",
-        "tag": "v2.17.0",
+        "tag": "next",
         "destinations": ["Visual Studio Code Marketplace"]
       }]
     },
@@ -402,23 +358,28 @@
     "api-catalog": {
       "registry": "zowe-docker-release.jfrog.io",
       "name": "ompzowe/api-catalog-services",
-      "tag" : "2.18.1-ubuntu"
+      "tag" : "3.0.21-SNAPSHOT-ubuntu.v2-x-x"
+    },
+    "gateway": {
+      "registry": "zowe-docker-snapshot.jfrog.io",
+      "name": "ompzowe/gateway-service",
+      "tag" : "3.0.21-SNAPSHOT-ubuntu.v2-x-x"
     },
     "caching": {
       "registry": "zowe-docker-release.jfrog.io",
       "name": "ompzowe/caching-service",
-      "tag" : "2.18.1-ubuntu"
+      "tag" : "3.0.21-SNAPSHOT-ubuntu.v2-x-x"
     },
     "discovery": {
       "kind": "statefulset",
       "registry": "zowe-docker-release.jfrog.io",
       "name": "ompzowe/discovery-service",
-      "tag" : "2.18.1-ubuntu"
+      "tag" : "3.0.21-SNAPSHOT-ubuntu.v2-x-x"
     },
-    "gateway": {
-      "registry": "zowe-docker-release.jfrog.io",
-      "name": "ompzowe/gateway-service",
-      "tag" : "2.18.1-ubuntu"
+    "zaas": {
+        "registry": "zowe-docker-snapshot.jfrog.io",
+        "name": "ompzowe/zaas-service",
+        "tag" : "3.0.21-SNAPSHOT-ubuntu.v2-x-x"
     },
     "app-server": {
       "registry": "zowe-docker-release.jfrog.io",
@@ -449,30 +410,20 @@
       "name": "ompzowe/explorer-uss",
       "tag" : "2.0.9-ubuntu"
     },
-    "files-api": {
-      "registry": "zowe-docker-release.jfrog.io",
-      "name": "ompzowe/files-api",
-      "tag" : "2.0.31-ubuntu"
-    },
-    "jobs-api": {
-      "registry": "zowe-docker-release.jfrog.io",
-      "name": "ompzowe/jobs-api",
-      "tag" : "2.0.31-ubuntu"
-    },
     "base": {
-      "registry": "zowe-docker-release.jfrog.io",
-      "name": "ompzowe/base",
-      "tag" : "2.0.1-ubuntu"
+        "registry": "zowe-docker-release.jfrog.io",
+        "name": "ompzowe/base",
+        "tag" : "2-ubuntu"
     },
     "base-jdk": {
-      "registry": "zowe-docker-release.jfrog.io",
-      "name": "ompzowe/base-jdk",
-      "tag" : "2.0.1-ubuntu"
+        "registry": "zowe-docker-release.jfrog.io",
+        "name": "ompzowe/base-jdk",
+        "tag" : "2-ubuntu"
     },
     "base-node": {
-      "registry": "zowe-docker-release.jfrog.io",
-      "name": "ompzowe/base-node",
-      "tag" : "2.0.1-ubuntu"
+        "registry": "zowe-docker-release.jfrog.io",
+        "name": "ompzowe/base-node",
+        "tag" : "2-ubuntu"
     }
   },
   "dependencyDecisions": {

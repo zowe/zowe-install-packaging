@@ -161,208 +161,254 @@
               }
             },
             "certificate": {
-              "type": "object",
-              "additionalProperties": false,
-              "if": {
-                "properties": {
-                  "type": {
-                    "const": "PKCS12"
-                  }
-                }
-              },
-              "then": {
-                "required": ["pkcs12"]
-              },
-              "else": {
-                "required": ["keyring"]
-              },
-              "description": "Certificate related configurations",
-              "properties": {
-                "type": {
-                  "type": "string",
-                  "description": "Type of certificate storage method.",
-                  "enum": ["PKCS12", "JCEKS", "JCECCAKS", "JCERACFKS", "JCECCARACFKS", "JCEHYBRIDRACFKS"],
-                  "default": "PKCS12"
-                },
-                "pkcs12": {
+              "oneOf": [
+                {
                   "type": "object",
-                  "additionalProperties": false,
-                  "description": "PKCS#12 keystore settings",
+                  "required": [ "pkcs12" ],
                   "properties": {
-                    "directory": {
-                      "$ref": "/schemas/v2/server-common#zowePath",
-                      "description": "Keystore directory"
-                    },
-                    "name": {
-                      "type": "string",
-                      "description": "Certificate alias name. Note: please use all lower cases as alias.",
-                      "default": "localhost"
-                    },
-                    "password": {
-                      "type": "string",
-                      "description": "Keystore password",
-                      "default": "password"
-                    },
-                    "caAlias": {
-                      "type": "string",
-                      "description": "Alias name of self-signed certificate authority. Note: please use all lower cases as alias.",
-                      "default": "local_ca"
-                    },
-                    "caPassword": {
-                      "type": "string",
-                      "description": "Password of keystore stored self-signed certificate authority.",
-                      "default": "local_ca_password"
-                    },
-                    "lock": {
-                      "type": "boolean",
-                      "description": "Whether to restrict the permissions of the keystore after creation"
-                    },
-                    "import": {
+                    "type": { "const": "PKCS12" },
+                    "pkcs12": {
                       "type": "object",
                       "additionalProperties": false,
-                      "description": "Configure this section if you want to import certificate from another PKCS#12 keystore.",
+                      "description": "PKCS#12 keystore settings",
                       "properties": {
-                        "keystore": {
-                          "type": "string",
-                          "description": "Existing PKCS#12 keystore which holds the certificate issued by external CA."
+                        "directory": {
+                          "$ref": "/schemas/v2/server-common#zowePath",
+                          "description": "Keystore directory"
+                        },
+                        "name": {
+                          "type": [ "string", "null" ],
+                          "description": "Certificate alias name. Note: please use all lower cases as alias.",
+                          "default": "localhost"
                         },
                         "password": {
-                          "type": "string",
-                          "description": "Password of the above keystore"
+                          "type": [ "string", "null" ],
+                          "description": "Keystore password",
+                          "default": "password"
                         },
-                        "alias": {
-                          "type": "string",
-                          "description": "Certificate alias will be imported. Note: please use all lower cases as alias."
+                        "caAlias": {
+                          "type": [ "string", "null" ],
+                          "description": "Alias name of self-signed certificate authority. Note: please use all lower cases as alias.",
+                          "default": "local_ca"
+                        },
+                        "caPassword": {
+                          "type": [ "string", "null" ],
+                          "description": "Password of keystore stored self-signed certificate authority.",
+                          "default": "local_ca_password"
+                        },
+                        "lock": {
+                          "type": "boolean",
+                          "description": "Whether to restrict the permissions of the keystore after creation"
+                        },
+                        "import": {
+                          "type": "object",
+                          "additionalProperties": false,
+                          "description": "Configure this section if you want to import certificate from another PKCS#12 keystore.",
+                          "properties": {
+                            "keystore": {
+                              "type": "string",
+                              "description": "Existing PKCS#12 keystore which holds the certificate issued by external CA."
+                            },
+                            "password": {
+                              "type": "string",
+                              "description": "Password of the above keystore"
+                            },
+                            "alias": {
+                              "type": "string",
+                              "description": "Certificate alias will be imported. Note: please use all lower cases as alias."
+                            }
+                          }
                         }
                       }
-                    }
-                  }
-                },
-                "keyring": {
-                  "type": "object",
-                  "additionalProperties": false,
-                  "description": "Configure this section if you are using z/OS keyring",
-                  "properties": {
-                    "owner": {
-                      "type": "string",
-                      "description": "keyring owner. If this is empty, Zowe will use the user ID defined as zowe.setup.security.users.zowe."
                     },
-                    "name": {
-                      "type": "string",
-                      "description": "keyring name"
-                    },
-                    "label": {
-                      "type": "string",
-                      "description": "Label of Zowe certificate.",
-                      "default": "localhost"
-                    },
-                    "caLabel": {
-                      "type": "string",
-                      "description": "label of Zowe CA certificate.",
-                      "default": "localca"
-                    },
-                    "connect": {
+                    "dname": {
                       "type": "object",
                       "additionalProperties": false,
-                      "description": "Configure this section if you want to connect existing certificate in keyring to Zowe.",
+                      "description": "Certificate distinguish name",
                       "properties": {
-                        "user": {
+                        "caCommonName": {
+                          "type": [ "string", "null" ],
+                          "description": "Common name of certificate authority generated by Zowe."
+                        },
+                        "commonName": {
+                          "type": [ "string", "null" ],
+                          "description": "Common name of certificate generated by Zowe."
+                        },
+                        "orgUnit": {
+                          "type": [ "string", "null" ],
+                          "description": "Organization unit of certificate generated by Zowe."
+                        },
+                        "org": {
+                          "type": [ "string", "null" ],
+                          "description": "Organization of certificate generated by Zowe."
+                        },
+                        "locality": {
+                          "type": [ "string", "null" ],
+                          "description": "Locality of certificate generated by Zowe. This is usually the city name."
+                        },
+                        "state": {
+                          "type": [ "string", "null" ],
+                          "description": "State of certificate generated by Zowe. You can also put province name here."
+                        },
+                        "country": {
+                          "type": [ "string", "null" ],
+                          "description": "2 letters country code of certificate generated by Zowe."
+                        }
+                      }
+                    },
+                    "validity": {
+                      "type": [ "integer", "null" ],
+                      "description": "Validity days for Zowe generated certificates",
+                      "default": 3650
+                    },
+                    "san": {
+                      "type": "array",
+                      "description": "Domain names and IPs should be added into certificate SAN. If this field is not defined, `zwe init` command will use `zowe.externalDomains`.",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "importCertificateAuthorities": {
+                      "type": "array",
+                      "description": "PEM format certificate authorities will also be imported and trusted. If you have other certificate authorities want to be trusted in Zowe keyring, list the certificate labels here. **NOTE**, due to the limitation of RACDCERT command, this field should contain maximum 2 entries.",
+                      "items": {
+                        "type": "string"
+                      }
+                    }
+                  } 
+                },
+                {
+                  "type": "object",
+                  "required": [ "keyring" ],
+                  "properties": {
+                    "type": { "enum": ["JCEKS", "JCECCAKS", "JCERACFKS", "JCECCARACFKS", "JCEHYBRIDRACFKS"] },
+                    "keyring": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "description": "Configure this section if you are using z/OS keyring",
+                      "properties": {
+                        "owner": {
                           "type": "string",
-                          "description": "Current owner of the existing certificate, can be SITE or an user ID."
+                          "description": "keyring owner. If this is empty, Zowe will use the user ID defined as zowe.setup.security.users.zowe."
+                        },
+                        "name": {
+                          "type": "string",
+                          "description": "keyring name"
                         },
                         "label": {
                           "type": "string",
-                          "description": "Label of the existing certificate will be connected to Zowe keyring."
+                          "description": "Label of Zowe certificate.",
+                          "default": "localhost"
+                        },
+                        "caLabel": {
+                          "type": "string",
+                          "description": "label of Zowe CA certificate.",
+                          "default": "localca"
+                        },
+                        "connect": {
+                          "type": "object",
+                          "additionalProperties": false,
+                          "description": "Configure this section if you want to connect existing certificate in keyring to Zowe.",
+                          "properties": {
+                            "user": {
+                              "type": "string",
+                              "description": "Current owner of the existing certificate, can be SITE or an user ID."
+                            },
+                            "label": {
+                              "type": "string",
+                              "description": "Label of the existing certificate will be connected to Zowe keyring."
+                            }
+                          }
+                        },
+                        "import": {
+                          "type": "object",
+                          "additionalProperties": false,
+                          "description": "Configure this section if you want to import existing certificate stored in data set to Zowe.",
+                          "properties": {
+                            "dsName": {
+                              "type": "string",
+                              "description": "Name of the data set holds the certificate issued by other CA. This data set should be in PKCS12 format and contain private key."
+                            },
+                            "password": {
+                              "type": "string",
+                              "description": "Password for the PKCS12 data set."
+                            }
+                          }
+                        },
+                        "zOSMF": {
+                          "type": "object",
+                          "additionalProperties": false,
+                          "description": "Configure this section if you want to trust z/OSMF certificate authority in Zowe keyring.",
+                          "properties": {
+                            "ca": {
+                              "type": "string",
+                              "description": "z/OSMF certificate authority alias"
+                            },
+                            "user": {
+                              "type": "string",
+                              "description": "z/OSMF user. Zowe initialization utility can detect alias of z/OSMF CA for RACF security system. The automated detection requires this z/OSMF user as input."
+                            }
+                          }
                         }
                       }
                     },
-                    "import": {
+                    "dname": {
                       "type": "object",
                       "additionalProperties": false,
-                      "description": "Configure this section if you want to import existing certificate stored in data set to Zowe.",
+                      "description": "Certificate distinguish name",
                       "properties": {
-                        "dsName": {
+                        "caCommonName": {
                           "type": "string",
-                          "description": "Name of the data set holds the certificate issued by other CA. This data set should be in PKCS12 format and contain private key."
+                          "description": "Common name of certificate authority generated by Zowe."
                         },
-                        "password": {
+                        "commonName": {
                           "type": "string",
-                          "description": "Password for the PKCS12 data set."
+                          "description": "Common name of certificate generated by Zowe."
+                        },
+                        "orgUnit": {
+                          "type": "string",
+                          "description": "Organization unit of certificate generated by Zowe."
+                        },
+                        "org": {
+                          "type": "string",
+                          "description": "Organization of certificate generated by Zowe."
+                        },
+                        "locality": {
+                          "type": "string",
+                          "description": "Locality of certificate generated by Zowe. This is usually the city name."
+                        },
+                        "state": {
+                          "type": "string",
+                          "description": "State of certificate generated by Zowe. You can also put province name here."
+                        },
+                        "country": {
+                          "type": "string",
+                          "description": "2 letters country code of certificate generated by Zowe."
                         }
                       }
                     },
-                    "zOSMF": {
-                      "type": "object",
-                      "additionalProperties": false,
-                      "description": "Configure this section if you want to trust z/OSMF certificate authority in Zowe keyring.",
-                      "properties": {
-                        "ca": {
-                          "type": "string",
-                          "description": "z/OSMF certificate authority alias"
-                        },
-                        "user": {
-                          "type": "string",
-                          "description": "z/OSMF user. Zowe initialization utility can detect alias of z/OSMF CA for RACF security system. The automated detection requires this z/OSMF user as input."
-                        }
+                    "validity": {
+                      "type": [ "integer", "null" ],
+                      "description": "Validity days for Zowe generated certificates",
+                      "default": 3650
+                    },
+                    "san": {
+                      "type": "array",
+                      "description": "Domain names and IPs should be added into certificate SAN. If this field is not defined, `zwe init` command will use `zowe.externalDomains`.",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "importCertificateAuthorities": {
+                      "type": "array",
+                      "description": "PEM format certificate authorities will also be imported and trusted. If you have other certificate authorities want to be trusted in Zowe keyring, list the certificate labels here. **NOTE**, due to the limitation of RACDCERT command, this field should contain maximum 2 entries.",
+                      "items": {
+                        "type": "string"
                       }
                     }
-                  }
-                },
-                "dname": {
-                  "type": "object",
-                  "additionalProperties": false,
-                  "description": "Certificate distinguish name",
-                  "properties": {
-                    "caCommonName": {
-                      "type": "string",
-                      "description": "Common name of certificate authority generated by Zowe."
-                    },
-                    "commonName": {
-                      "type": "string",
-                      "description": "Common name of certificate generated by Zowe."
-                    },
-                    "orgUnit": {
-                      "type": "string",
-                      "description": "Organization unit of certificate generated by Zowe."
-                    },
-                    "org": {
-                      "type": "string",
-                      "description": "Organization of certificate generated by Zowe."
-                    },
-                    "locality": {
-                      "type": "string",
-                      "description": "Locality of certificate generated by Zowe. This is usually the city name."
-                    },
-                    "state": {
-                      "type": "string",
-                      "description": "State of certificate generated by Zowe. You can also put province name here."
-                    },
-                    "country": {
-                      "type": "string",
-                      "description": "2 letters country code of certificate generated by Zowe."
-                    }
-                  }
-                },
-                "validity": {
-                  "type": "integer",
-                  "description": "Validity days for Zowe generated certificates",
-                  "default": 3650
-                },
-                "san": {
-                  "type": "array",
-                  "description": "Domain names and IPs should be added into certificate SAN. If this field is not defined, `zwe init` command will use `zowe.externalDomains`.",
-                  "items": {
-                    "type": "string"
-                  }
-                },
-                "importCertificateAuthorities": {
-                  "type": "array",
-                  "description": "PEM format certificate authorities will also be imported and trusted. If you have other certificate authorities want to be trusted in Zowe keyring, list the certificate labels here. **NOTE**, due to the limitation of RACDCERT command, this field should contain maximum 2 entries.",
-                  "items": {
-                    "type": "string"
                   }
                 }
-              }
+              ]
             },
             "vsam": {
               "type": "object",
@@ -382,6 +428,16 @@
                 "storageClass": {
                   "type": "string",
                   "description": "Storage class name if you are using VSAM in RLS mode"
+                },
+                "name": {
+                  "anyOf": [
+                    { "type": "null" },
+                    { "type": "string", "maxLength": 0 },
+                    {
+                      "$ref": "/schemas/v2/server-common#zoweDatasetVsam",
+                      "description": "Data set name. Must match components.caching-service.storage.vsam.name"
+                    }
+                  ]
                 }
               }
             }
@@ -419,20 +475,7 @@
           }
         },
         "network": {
-          "type": "object",
-          "additionalProperties": false,
-          "description": "Optional, advanced network configuration parameters",
-          "properties": {
-            "vipaIp": {
-              "type": "string",
-              "description": "The IP address which all of the Zowe servers will be binding to. If you are using multiple DIPVA addresses, do not use this option."
-            },
-            "validatePortFree": {
-              "type": "boolean",
-              "default": true,
-              "description": "Whether or not to ensure that the port a server is about to use is available. Usually, servers will know this when they attempt to bind to a port, so this option allows you to disable the additional verification step."
-            }
-          }
+          "$ref": "#/$defs/networkSettings"
         },
         "extensionRegistry": {
           "type": "object",
@@ -591,6 +634,10 @@
           "$ref": "#/$defs/port",
           "description": "Port number of your z/OSMF instance."
         },
+        "scheme": {
+          "$ref" : "#/$defs/scheme",
+          "description": "Scheme used to connect to z/OSMF instance. Optional for outbout AT-TLS, defaults to https"
+        },
         "applId": {
           "type": "string",
           "description": "Appl ID of your z/OSMF instance."
@@ -639,6 +686,14 @@
       "type": "integer",
       "minimum": 0,
       "maximum": 65535
+    },
+    "scheme": {
+      "type": "string",
+      "enum": [
+        "http",
+        "https"
+      ],
+      "default": "https"
     },
     "certificate": {
       "oneOf": [
@@ -749,7 +804,7 @@
             "file": {
               "type": "string",
               "description": "Path of your z/OS keyring, including ring owner and ring name. Case sensitivity and spaces matter.",
-              "pattern": "^safkeyring:\/\/.*"
+              "pattern": "^safkeyring[a-z]*:\/\/.*"
             },
             "password": {
               "type": "string",
@@ -776,7 +831,7 @@
             "file": {
               "type": "string",
               "description": "Path of your z/OS keyring, including ring owner and ring name. Case sensitivity and spaces matter.",
-              "pattern": "^safkeyring:\/\/.*"
+              "pattern": "^safkeyring[a-z]*:\/\/.*"
             },
             "password": {
               "type": "string",
@@ -791,11 +846,11 @@
           "description": "Certificate in PEM format.",
           "properties": {
             "key": {
-              "type": "string",
+              "type": [ "string", "null" ],
               "description": "Path to the certificate private key stored in PEM format."
             },
             "certificate": {
-              "type": "string",
+              "type": [ "string", "null" ],
               "description": "Path to the certificate stored in PEM format."
             },
             "certificateAuthorities": {
@@ -852,6 +907,134 @@
               "description": "Determines which SHAREAS mode should be used when starting a component",
               "enum": ["no", "yes", "must", ""],
               "default": "yes"
+            }
+          }
+        },
+        "zowe": {
+          "type": "object",
+          "description": "Component level overrides for top level Zowe network configuration.",
+          "additionalProperties": true,
+          "properties": {
+            "network": {
+              "$ref": "#/$defs/networkSettings"
+            },
+            "job": {
+              "$ref": "#/$defs/componentJobSettings"
+            }
+          }
+        }
+      }
+    },
+    "componentJobSettings": {
+      "$anchor": "componentJobSettings",
+      "type": "object",
+      "description": "Component level overrides for job execution behavior",
+      "properties": {
+        "suffix": {
+          "type": "string",
+          "description": "Can be used by components to declare a jobname suffix to append to their job. This is not currently used by Zowe itself, it is up to components to use this value if desired. Zowe may use this value in the future."
+        }
+      }
+    },
+    "nativeTlsSettings": {
+     "$anchor": "nativeTlsSettings",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "attls": {
+          "anyOf": [
+            {
+              "type": "string",
+              "enum": [ "", "false" ]
+            },
+            {
+              "const": false
+            }
+          ]
+        },
+        "ciphers": {
+          "type": "array",
+          "description": "Acceptable TLS cipher suites for network connections, in IANA format.",
+          "items": {
+            "type": "string"
+          }
+        },
+        "curves": {
+          "type": "array",
+          "description": "Acceptable key exchange elliptic curves for network connections.",
+          "items": {
+            "type": "string"
+          }
+        },
+        "maxTls": {
+          "type": "string",
+          "enum": ["TLSv1.2", "TLSv1.3"],
+          "default": "TLSv1.3",
+          "description": "Maximum TLS version allowed for network connections."
+        },
+        "minTls": {
+          "type": "string",
+          "enum": ["TLSv1.2", "TLSv1.3"],
+          "default": "TLSv1.2",
+          "description": "Minimum TLS version allowed for network connections, and less than or equal to network.maxTls."
+        }
+      }
+    },
+    "attlsSetting": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "attls": {
+          "const": true,
+          "description": "Enables AT-TLS for client or server operations. AT-TLS should only be enabled in a z/OS host environment. Servers will be switched into HTTP mode to accomodate z/OS the specific AT-TLS feature which wraps network calls in TLS."
+        }
+      }
+    },
+    "networkSettings": {
+      "type": "object",
+      "$anchor": "networkSettings",
+      "additionalProperties": false,
+      "description": "Optional, advanced network configuration parameters",
+      "properties": {
+        "server": {
+          "type": "object",
+          "description": "Optional, advanced network configuration parameters for Zowe servers",
+          "properties": {
+            "listenAddresses": {
+              "type": "array",
+              "description": "The IP addresses which all of the Zowe servers will be binding on and listening to. Some servers may only support listening on the first element.",
+              "items": {
+                "$ref": "/schemas/v2/server-common#zoweIpv4"
+              }
+            },
+            "vipaIp": {
+              "type": "string",
+              "description": "The IP address which all of the Zowe servers will be binding to. If you are using multiple DIPVA addresses, do not use this option."
+            },
+            "validatePortFree": {
+              "type": "boolean",
+              "default": true,
+              "description": "Whether or not to ensure that the port a server is about to use is available. Usually, servers will know this when they attempt to bind to a port, so this option allows you to disable the additional verification step."
+            },
+            "tls": {
+              "anyOf": [
+                { "$ref": "#/$defs/attlsSetting" },
+                { "$ref": "#/$defs/nativeTlsSettings" }
+              ]
+            }
+          }
+
+        },
+        "client": {
+          "type": "object",
+          "additionalProperties": false,
+          "description": "Optional, advanced network configuration parameters for Zowe servers when sending requests as clients.",
+          "properties": {
+            "tls": {
+              "anyOf": [
+                { "$ref": "#/$defs/attlsSetting" },
+                { "$ref": "#/$defs/nativeTlsSettings" }
+              ]
             }
           }
         }

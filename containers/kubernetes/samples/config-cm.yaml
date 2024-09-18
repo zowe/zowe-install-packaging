@@ -88,6 +88,11 @@ data:
         port: 7554
         debug: false
 
+      zaas:
+        enabled: true
+        port: 7558
+        debug: false
+
       discovery:
         enabled: true
         port: 7553
@@ -121,14 +126,6 @@ data:
         port: 8542
         tls: true
         crossMemoryServerName: ZWESIS_STD
-
-      jobs-api:
-        enabled: true
-        port: 8545
-
-      files-api:
-        enabled: true
-        port: 8547
 
       explorer-jes:
         enabled: true
