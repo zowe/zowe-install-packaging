@@ -12,9 +12,9 @@
   },
   "binaryDependencies": {
     "org.zowe.zlux.zlux-core": {
-      "version": "2.18.0-RC",
+      "version": "3.0.0-RC",
       "repository": "libs-snapshot-local",
-      "artifact": "zlux-core-2.18.0-20240821.193854.pax"
+      "artifact": "zlux-core-3.0.0-20240917.191023.pax"
     },
     "org.zowe.zlux.sample-angular-app": {
       "version": "2.18.0-V2.X-RC",
@@ -47,9 +47,9 @@
       "artifact": "zlux-editor-2.18.0-20240814.141840.pax"
     },
     "org.zowe.zss": {
-      "version": "2.18.0-RC",
+      "version": "3.0.0-RC",
       "repository": "libs-snapshot-local",
-      "artifact": "zss-2.18.0-rc-1180-20240814142247.pax"
+      "artifact": "zss-3.0.0-rc-1199-20240918133828.pax"
     },
     "org.zowe.explorer.jobs.jobs-api-package": {
       "version": "2.0.31",
@@ -69,7 +69,7 @@
       "version": "2.0.9"
     },
     "org.zowe.explorer-ip": {
-      "version": "2.0.0",
+      "version": "3.0.0",
       "artifact": "explorer-ip*.pax"
     },
     "org.zowe.apiml.api-catalog-package": {
@@ -109,22 +109,22 @@
       "artifact": "cloud-gateway-*.zip"
     },
     "org.zowe.configmgr-rexx": {
-      "version": "2.18.0-V2.X-RC",
+      "version": "3.0.0-V3.X-RC",
       "repository": "libs-snapshot-local",
-      "artifact": "configmgr-rexx-2.18.0-2024081453.pax"
+      "artifact": "configmgr-rexx-3.0.0-2024091807.pax"
     },
 	"org.zowe.getesm": {
-      "version": "2.18.0-V2.X-RC",
+      "version": "3.0.0-V3.X-RC",
       "repository": "libs-snapshot-local",
-      "artifact": "getesm-2.18.0-2024081447.pax"
+      "artifact": "getesm-3.0.0-2024091859.pax"
     },
     "org.zowe.configmgr": {
-      "version": "2.18.0-V2.X-RC",
+      "version": "3.0.0-V3.X-RC",
       "repository": "libs-snapshot-local",
-      "artifact": "configmgr-2.18.0-2024081448.pax"
+      "artifact": "configmgr-3.0.0-2024091857.pax"
     },
     "org.zowe.launcher": {
-      "version": "2.18.0"
+      "version": "3.0.0"
     },
     "org.zowe.keyring-utilities": {
       "version": "1.0.4",
@@ -159,12 +159,12 @@
       "componentGroup": "Zowe Application Framework",
       "entries": [{
           "repository": "zlux-app-manager",
-          "tag": "v2.18.0-RC1",
+          "tag": "v3.0.0-RC1",
           "destinations": ["Zowe PAX"]
         },
         {
           "repository": "zlux-app-server",
-          "tag": "v2.18.0-RC1",
+          "tag": "v3.0.0-RC1",
           "destinations": ["Zowe PAX"]
         },
         {
@@ -179,17 +179,17 @@
         },
         {
           "repository": "zlux-platform",
-          "tag": "v2.18.0-RC1",
+          "tag": "v3.0.0-RC1",
           "destinations": ["Zowe PAX"]
         },
         {
           "repository": "zlux-server-framework",
-          "tag": "v2.18.0-RC1",
+          "tag": "v3.0.0-RC1",
           "destinations": ["Zowe PAX"]
         },
         {
           "repository": "zlux-shared",
-          "tag": "v2.18.0-RC1",
+          "tag": "v3.0.0-RC1",
           "destinations": ["Zowe PAX"]
         },
         {
@@ -199,17 +199,17 @@
         },
         {
           "repository": "zlux-build",
-          "tag": "v2.18.0-RC1",
+          "tag": "v3.0.0-RC1",
           "destinations": ["Zowe PAX"]
         },
         {
           "repository": "zss",
-          "tag": "v2.18.0-RC1",
+          "tag": "v3.0.0-RC1",
           "destinations": ["Zowe PAX"]
         },
         {
           "repository": "zowe-common-c",
-          "tag": "zss-v2.18.0-RC1",
+          "tag": "zss-v3.0.0-RC1",
           "destinations": ["Zowe PAX"]
         }
       ]
@@ -380,7 +380,7 @@
       "componentGroup": "Zowe Desktop IP Explorer Plug-in",
       "entries": [{
         "repository": "explorer-ip",
-        "tag": "v2.0.0",
+        "tag": "v3.0.0",
         "destinations": ["Zowe PAX"]
       }]
     },
@@ -388,7 +388,7 @@
       "componentGroup": "Configmgr",
       "entries": [{
         "repository": "zowe-common-c",
-        "tag": "configmgr-v2.18.0-RC1",
+        "tag": "configmgr-v3.0.0-RC1",
         "destinations": ["Zowe PAX"]
       }]
     }
