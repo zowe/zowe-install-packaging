@@ -16,8 +16,6 @@
     - zowe_job_prefix
     - zowe_zlux_port
     - zowe_apiml_gateway_port
-    - zowe_jobs_api_port
-    - zowe_mvs_api_port
 
 # ============================================================================
 - name: Delete old reports
@@ -50,7 +48,5 @@
     ZOWE_JOB_PREFIX: "{{ zowe_job_prefix }}"
     ZOWE_ZLUX_HTTPS_PORT: "{{ zowe_zlux_port }}"
     ZOWE_API_MEDIATION_GATEWAY_HTTP_PORT: "{{ zowe_apiml_gateway_port }}"
-    ZOWE_EXPLORER_JOBS_PORT: "{{ zowe_jobs_api_port }}"
-    ZOWE_EXPLORER_DATASETS_PORT: "{{ zowe_mvs_api_port }}"
     DEBUG: "{{ zowe_api_gen_debug_mode | default('') }}"
   delegate_to: localhost

@@ -11,8 +11,13 @@
 export type ZStat = {
     dev: number;
     ino: number;
+    mode: number;
+    nlink: number;
     uid: number;
     gid: number;
+    rdev: number;
+    size: number;
+    blocks: number;
     atime: number;
     mtime: number;
     ctime: number;
@@ -21,6 +26,8 @@ export type ZStat = {
     ccsid: number;
 };
 
+export function getEsm(): string;
+export function getZosVersion(): number;
 export function changeTag(path:string, ccsid:number):number;
 export function changeExtAttr(path: string, extattr:number, onOff:boolean):number;
 export function zstat(path:string):[ZStat, number];

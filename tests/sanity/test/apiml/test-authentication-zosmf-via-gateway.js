@@ -10,7 +10,7 @@
 
 const expect = require('chai').expect;
 const { HTTPRequest, APIMLAuth } = require('../http-helper');
-const { APIML_AUTH_COOKIE, ZOSMF_TOKEN } = require('../constants');
+const { APIML_AUTH_COOKIE } = require('../constants');
 
 describe('test api mediation layer zosmf authentication', function() {
 
@@ -41,7 +41,7 @@ describe('test api mediation layer zosmf authentication', function() {
     it('with valid basic header', async function() {
       const token = Buffer.from(`${username}:${password}`, 'utf8').toString('base64');
       const res = await hq.request({
-        url: '/zosmf/api/v1/restfiles/ds?dslevel=SYS1.PARMLIB*',
+        url: '/ibmzosmf/api/v1/zosmf/restfiles/ds?dslevel=SYS1.PARMLIB*',
         headers: {
           'Authorization': `Basic ${token}`,
         }
@@ -53,7 +53,7 @@ describe('test api mediation layer zosmf authentication', function() {
     it('with valid cookie', async function() {
       const token = await apiml.login();
       const res = await hq.request({
-        url: '/zosmf/api/v1/restfiles/ds?dslevel=SYS1.PARMLIB*',
+        url: '/ibmzosmf/api/v1/zosmf/restfiles/ds?dslevel=SYS1.PARMLIB*',
         headers: {
           Cookie: `${APIML_AUTH_COOKIE}=${token}`,
         }
@@ -62,30 +62,10 @@ describe('test api mediation layer zosmf authentication', function() {
       assertNotEmptyValidResponse(res);
     });
 
-    it('with valid LTPA cookie', async function() {
-      const token = Buffer.from(`${username}:${password}`, 'utf8').toString('base64');
-      const loginResponse = await hq.request({
-        url: '/zosmf/api/v1/info',
-        headers: {
-          'Authorization': `Basic ${token}`,
-        }
-      });
-
-      const ltpaCookie = hq.findCookieInResponse(loginResponse, ZOSMF_TOKEN);
-      const response = await hq.request({
-        url: '/zosmf/api/v1/info',
-        headers: {
-          'Cookie': ltpaCookie,
-        }
-      });
-
-      assertNotEmptyValidResponse(response);
-    });
-
     it('with valid JWT token via Bearer', async function() {
       const token = await apiml.login();
       const res = await hq.request({
-        url: '/zosmf/api/v1/restfiles/ds?dslevel=SYS1.PARMLIB*',
+        url: '/ibmzosmf/api/v1/zosmf/restfiles/ds?dslevel=SYS1.PARMLIB*',
         headers: {
           'Authorization': `Bearer ${token}`,
         }

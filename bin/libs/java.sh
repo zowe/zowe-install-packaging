@@ -57,12 +57,12 @@ detect_java_home() {
           break
         fi
       done
-    ) 
+    )
   fi
 
   # fall back to the most well-known java path
-  if [ -z "${java_home}" -a -f /usr/lpp/java/J8.0_64/bin/java ]; then
-    java_home=/usr/lpp/java/J8.0_64
+  if [ -z "${java_home}" -a -f /usr/lpp/java/J17.0_64/bin/java ]; then
+    java_home=/usr/lpp/java/J17.0_64
   fi
 
   if [ -n "${java_home}" ]; then
@@ -83,7 +83,7 @@ require_java() {
   fi
 
   if [ -z "${JAVA_HOME}" ]; then
-    print_error_and_exit "Error ZWEL0122E: Cannot find java. Please define JAVA_HOME environment variable." "" 122
+    print_error_and_exit "Error ZWEL0122E: Cannot find java. Set the java.home value in the Zowe YAML, or include java in the PATH environment variable of any accounts that start or manage Zowe" "" 122
   fi
 
   ensure_java_is_on_path
@@ -132,32 +132,3 @@ validate_java_home() {
 
   print_debug "Java check is successful."
 }
-
-get_java_pkcs12_keystore_flag() {
-  java_version=$("${JAVA_HOME}/bin/java" -version 2>&1) # Capture stderr to stdout, so we can print below if error
-
-
-  # As we know the java -version command works then strip out the line we need
-  java_version_short=$(echo "${java_version}" | grep ^"java version" | sed -e "s/java version //g"| sed -e "s/\"//g")
-  if [[ $java_version_short == "" ]]; then
-    java_version_short=$(echo "${java_version}" | grep ^"openjdk version" | sed -e "s/openjdk version //g"| sed -e "s/\"//g")
-  fi
-  java_major_version=$(echo "${java_version_short}" | cut -d '.' -f 1)
-  java_minor_version=$(echo "${java_version_short}" | cut -d '.' -f 2)
-  java_fix_version=$(echo "${java_version_short}" | cut -d '_' -f 2)
-
-  if [ ${java_major_version} -eq 1 -a ${java_minor_version} -eq 8 ]; then
-    if [ ${java_fix_version} -lt 341 ]; then
-      printf " "
-    elif [ ${java_fix_version} -lt 361 ]; then
-      printf " -J-Dkeystore.pkcs12.certProtectionAlgorithm=PBEWithSHAAnd40BitRC2 -J-Dkeystore.pkcs12.certPbeIterationCount=50000 -J-Dkeystore.pkcs12.keyProtectionAlgorithm=PBEWithSHAAnd3KeyTripleDES -J-Dkeystore.pkcs12.keyPbeIterationCount=50000 "
-    else
-      printf " -J-Dkeystore.pkcs12.legacy "
-    fi
-  elif [ ${java_major_version} -eq 1 -a ${java_minor_version} -gt 8 ]; then
-    printf " -J-Dkeystore.pkcs12.legacy "
-  else
-    printf " "  
-  fi
-}
-

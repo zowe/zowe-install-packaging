@@ -24,6 +24,7 @@ import * as shell from './shell';
 import * as configmgr from './configmgr';
 import * as varlib from './var';
 import * as fakejq from './fakejq';
+import * as configUtils from './config';
 
 const CONFIG_MGR=configmgr.CONFIG_MGR;
 const ZOWE_CONFIG=configmgr.ZOWE_CONFIG;
@@ -44,11 +45,13 @@ const PLUGIN_DEF_SCHEMA_ID = "https://zowe.org/schemas/v2/appfw-plugin-definitio
 const PLUGIN_DEF_SCHEMAS = `${runtimeDirectory}/components/app-server/schemas/plugindefinition-schema.json`;
 
 
-export function getEnabledComponents(): string[] {
-  let components = Object.keys(ZOWE_CONFIG.components);
-  let enabled:string[] = [];
-  components.forEach((key:string) => {
-    if (ZOWE_CONFIG.components[key].enabled == true) {
+export function getEnabledComponents() {
+  let haInstance = configUtils.sanitizeHaInstanceId();
+  let haConfig = configmgr.getZoweConfig(haInstance);
+  let components = Object.keys(haConfig.components);
+  let enabled: string[] = [];
+  components.forEach((key) => {
+    if (haConfig.components[key].enabled == true) {
       enabled.push(key);
     }
   });
@@ -111,47 +114,52 @@ function showExceptions(e: any,depth: number): void {
   }
 }
 
-export function getPluginDefinition(pluginRootPath:string) {
+export function getPluginDefinition(pluginRootPath:string, continueOnFailure?: boolean) {
   const pluginDefinitionPath = `${pluginRootPath}/pluginDefinition.json`;
+  const configId = `appfwPlugin:${pluginRootPath}`;
+
+  const printer = continueOnFailure ? common.printError : common.printErrorAndExit;
 
   if (fs.fileExists(pluginDefinitionPath)) {
     let status;
-    if ((status = CONFIG_MGR.addConfig(pluginRootPath))) {
-      common.printErrorAndExit(`Could not add config for ${pluginRootPath}, status=${status}`);
+    if ((status = CONFIG_MGR.addConfig(configId))) {
+      printer(`Could not add config for ${pluginRootPath}, status=${status}`);
       return null;
     }
     
-    if ((status = CONFIG_MGR.loadSchemas(pluginRootPath, PLUGIN_DEF_SCHEMAS))) {
-      common.printErrorAndExit(`Could not load schemas ${PLUGIN_DEF_SCHEMAS} for plugin ${pluginRootPath}, status=${status}`);
+    if ((status = CONFIG_MGR.loadSchemas(configId, PLUGIN_DEF_SCHEMAS))) {
+      printer(`Could not load schemas ${PLUGIN_DEF_SCHEMAS} for plugin ${pluginRootPath}, status=${status}`);
       return null;
     }
 
 
-    if ((status = CONFIG_MGR.setConfigPath(pluginRootPath, `FILE(${pluginDefinitionPath})`))) {
-      common.printErrorAndExit(`Could not set config path for ${pluginDefinitionPath}, status=${status}`);
+    if ((status = CONFIG_MGR.setConfigPath(configId, `FILE(${pluginDefinitionPath})`))) {
+      printer(`Could not set config path for ${pluginDefinitionPath}, status=${status}`);
       return null;
     }
-    if ((status = CONFIG_MGR.loadConfiguration(pluginRootPath))) {
-      common.printErrorAndExit(`Could not load config for ${pluginDefinitionPath}, status=${status}`);
+    if ((status = CONFIG_MGR.loadConfiguration(configId))) {
+      printer(`Could not load config for ${pluginDefinitionPath}, status=${status}`);
       return null;
     }
 
-    let validation = CONFIG_MGR.validate(pluginRootPath);
+    let validation = CONFIG_MGR.validate(configId);
     if (validation.ok){
       if (validation.exceptionTree){
         common.printError(`Validation of ${pluginDefinitionPath} against schema ${PLUGIN_DEF_SCHEMA_ID} found invalid JSON Schema data`);
         showExceptions(validation.exceptionTree, 0);
-        std.exit(1);
+        if (!continueOnFailure) {
+          std.exit(1);
+        }
         return null;
       } else {
-        return CONFIG_MGR.getConfigData(pluginRootPath);
+        return CONFIG_MGR.getConfigData(configId);
       }
     } else {
-      common.printErrorAndExit(`Error occurred on validation of ${pluginDefinitionPath} against schema ${PLUGIN_DEF_SCHEMA_ID} `);
+      printer(`Error occurred on validation of ${pluginDefinitionPath} against schema ${PLUGIN_DEF_SCHEMA_ID} `);
       return null;
     }
   } else {
-    common.printErrorAndExit(`Plugin at ${pluginRootPath} has no pluginDefinition.json`);
+    printer(`Plugin at ${pluginRootPath} has no pluginDefinition.json`);
     return null;
   }
 }
@@ -353,15 +361,7 @@ export function findAllEnabledComponents(): string {
 }
 
 export function findAllEnabledComponents2(): string[] {
-  let installedComponentsEnv=std.getenv('ZWE_INSTALLED_COMPONENTS');
-  let installedComponents = installedComponentsEnv ? installedComponentsEnv.split(',') : null;
-  if (!installedComponents) {
-    installedComponents = findAllInstalledComponents2();
-  }
-  return installedComponents.filter(function(component: string) {
-    let componentNameAsEnv=stringlib.sanitizeAlphanum(component);
-    return std.getenv(`ZWE_components_${componentNameAsEnv}_enabled`) == 'true';
-  });
+  return getEnabledComponents();
 }
 
 export function findAllLaunchComponents(): string {
@@ -672,7 +672,11 @@ export function zisPluginInstall(pluginPath: string, zisPluginlib: string, zisPa
   if (changed) {
     common.printDebug(`Parmlib modified, writing as \n${parmlibContents}`);
     xplatform.storeFileUTF8(parmlibMemberAsUnixFile, xplatform.AUTO_DETECT, parmlibContents);
-    zosdataset.copyToDataset(parmlibMemberAsUnixFile, `${zisParmlib}(${zisParmlibMember})`, "", true);
+    const rc = zosdataset.copyToDataset(parmlibMemberAsUnixFile, `${zisParmlib}(${zisParmlibMember})`, "", true);
+    if (rc != 0) {
+      common.printError(`Error ZWEL0200E: Failed to copy USS file ${parmlibMemberAsUnixFile} to MVS data set ${zisParmlib}.`);
+      return 200;
+    }
   }
   return 0;
 }
@@ -805,8 +809,57 @@ export function processComponentAppfwPlugin(componentDir: string): boolean {
 }
 
 /*
- Parse and process manifest Gateway Shared Libs (gatewaySharedLibs) definitions
+ Parse and process manifest Zaas Shared Libs (zaasSharedLibs) definitions
+ The supported manifest entry is ".zaasSharedLibs". All shared libs
+ defined will be passed to install-app.sh for proper installation.
+*/
+export function processComponentZaasSharedLibs(componentDir: string): boolean {
+  const zaasSharedLibs = std.getenv('ZWE_ZAAS_SHARED_LIBS');
+  fs.mkdirp(zaasSharedLibs, 0o770);
 
+  const manifest = getManifest(componentDir);
+  let pluginName;
+  let zaasSharedLibsWorkspacePath:string|undefined;
+  
+  if (manifest && manifest.zaasSharedLibs) {
+    for (let i = 0; i < manifest.zaasSharedLibs.length; i++) {
+      const zaasSharedLibsDef = manifest.zaasSharedLibs[i];
+      const fileOrDir=`${componentDir}/${zaasSharedLibsDef}`;
+      if (!pluginName) {
+        pluginName = manifest.name;
+        if (!pluginName) {
+          common.printError(`Cannot read name from the plugin ${componentDir}`);
+          return false;
+        }
+        zaasSharedLibsWorkspacePath = `${zaasSharedLibs}/${pluginName}`;
+        fs.mkdirp(zaasSharedLibsWorkspacePath, 0o770);
+      }
+
+      if (!zaasSharedLibsWorkspacePath){
+        common.printError("Unexpected error: did not find zaasSharedLibsWorkspacePath");
+        return false;
+      }
+
+      const manifestPath = getManifestPath(componentDir);
+      if (manifestPath){
+        fs.cp(manifestPath, zaasSharedLibsWorkspacePath);
+      }
+
+      if (fs.fileExists(fileOrDir)) {
+        fs.cp(fileOrDir, zaasSharedLibsWorkspacePath);
+      } else if (fs.directoryExists(fileOrDir)) {
+        fs.cp(`${fileOrDir}/\*`, zaasSharedLibsWorkspacePath);
+      } else {
+        common.printError(`Zaas shared libs directory ${fileOrDir} is not accessible`);
+        return false;
+      }
+    }
+  }
+  return true;
+}
+
+/*
+ Parse and process manifest Gateway Shared Libs (gatewaySharedLibs) definitions
  The supported manifest entry is ".gatewaySharedLibs". All shared libs
  defined will be passed to install-app.sh for proper installation.
 */

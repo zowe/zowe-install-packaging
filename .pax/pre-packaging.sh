@@ -190,9 +190,10 @@ BASE_DIR=$(
   pwd
 ) # <something>/.pax
 
-# use node v14 to build
-export NODE_HOME=/ZOWE/node/node-v14.21.3.1-os390-s390x
-
+# use node v16 to build
+export NODE_HOME=/ZOWE/node/node-v16.20.1-os390-s390x
+export JAVA_HOME=/ZOWE/node/J17.0_64
+export PATH=$JAVA_HOME/bin:$PATH
 ZOWE_ROOT_DIR="${BASE_DIR}/content"
 
 cd "${BASE_DIR}"
@@ -249,7 +250,14 @@ mv ./content/templates .
 chmod +x templates/*.rex
 
 mkdir -p "${ZOWE_ROOT_DIR}/bin/utils"
-configmgr=$(find "${ZOWE_ROOT_DIR}/files" -type f \( -name "configmgr-2*.pax" \) | head -n 1)
+getesm=$(find "${ZOWE_ROOT_DIR}/files" -type f \( -name "getesm*.pax" \) | head -n 1)
+echo "[$SCRIPT_NAME] extract getesm $getesm"
+cd "${ZOWE_ROOT_DIR}/bin/utils"
+pax -ppx -rf "${getesm}"
+rm "${getesm}"
+cd "${BASE_DIR}"
+
+configmgr=$(find "${ZOWE_ROOT_DIR}/files" -type f \( -name "configmgr-3*.pax" \) | head -n 1)
 echo "[$SCRIPT_NAME] extract configmgr $configmgr"
 cd "${ZOWE_ROOT_DIR}/bin/utils"
 pax -ppx -rf "${configmgr}"
@@ -274,7 +282,7 @@ EOT
 echo "[$SCRIPT_NAME] extract components"
 mkdir -p "${BASE_DIR}/logs"
 mkdir -p "${ZOWE_ROOT_DIR}/components"
-for component in launcher zlux-core zss apiml-common-lib common-java-lib apiml-sample-extension gateway cloud-gateway caching-service metrics-service discovery api-catalog jobs-api files-api explorer-jes explorer-mvs explorer-uss; do
+for component in launcher zlux-core zss apiml-common-lib common-java-lib apiml-sample-extension zaas gateway caching-service discovery api-catalog explorer-jes explorer-mvs explorer-uss; do
   echo "[$SCRIPT_NAME] - ${component}"
   component_file=$(find "${ZOWE_ROOT_DIR}/files" -type f \( -name "${component}*.pax" -o -name "${component}*.zip" \) | head -n 1)
   "${ZOWE_ROOT_DIR}/bin/zwe" \
@@ -288,7 +296,7 @@ done
 
 echo "[$SCRIPT_NAME] process commands.install hooks"
 # not all core components has commands.install
-for component in app-server; do
+for component in app-server common-java-lib; do
   echo "[$SCRIPT_NAME] - ${component}"
   # FIXME: these environment variables are changed in v2
   ZOWE_ROOT_DIR=${ZOWE_ROOT_DIR} \

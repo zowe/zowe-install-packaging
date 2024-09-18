@@ -1,0 +1,72 @@
+//ZWENOKRT JOB
+//*
+//* This program and the accompanying materials are made available
+//* under the terms of the Eclipse Public License v2.0 which
+//* accompanies this distribution, and is available at
+//* https://www.eclipse.org/legal/epl-v20.html
+//*
+//* SPDX-License-Identifier: EPL-2.0
+//*
+//* Copyright Contributors to the Zowe Project. 2020, 2020
+//*
+//*********************************************************************
+//*
+//* Zowe Open Source Project
+//* This JCL can be used to remove key ring and certificates for Zowe
+//*
+//*
+//* CAUTION: This is neither a JCL procedure nor a complete job.
+//* Before using this JCL, you will have to make the following
+//* modifications:
+//*
+//* 1) Add job name and job parameters to the JOB statement, to
+//*    meet your system requirements.
+//*
+//* Note(s):
+//*
+//* 1. THE USER ID THAT RUNS THIS JOB MUST HAVE SUFFICIENT AUTHORITY
+//*    TO ALTER SECURITY DEFINITIONS
+//*
+//* 2. This job WILL complete with return code 0.
+//*    The results of each command must be verified after completion.
+//*
+//*******************************************************************
+//         EXPORT SYMLIST=*
+//*
+//*********************************************************************
+//*
+//* EXECUTE COMMANDS FOR SELECTED SECURITY PRODUCT
+//*
+//RUN      EXEC PGM=IKJEFT01,REGION=0M
+//SYSTSPRT DD SYSOUT=*
+//SYSTSIN  DD DDNAME=TSS
+//*
+//*********************************************************************
+//*
+//* Top Secret ONLY, customize to meet your system requirements
+//*
+//TSS      DD DATA,DLM=$$,SYMBOLS=JCLONLY
+
+/* Remove permit to use SITE owned certificate's private key */
+   TSS REVOKE({zowe.setup.security.users.zowe}) +
+       IBMFAC(IRR.DIGTCERT.GENCERT) ACCESS(CONTROL)
+
+/* Remove permit to read keyring ................................... */
+   TSS REVOKE({zowe.setup.security.users.zowe}) +
+       IBMFAC(IRR.DIGTCERT.LISTRING) ACCESS(READ)
+
+/* Delete LABEL certificate ........................................*/
+   TSS REM({zowe.setup.security.users.zowe}) DIGICERT(ZOWECERT)
+
+/* Delete LOCALCA certificate ......................................*/
+   TSS REM(CERTAUTH) DIGICERT(ZOWECA)
+
+/* Delete keyring ...................................................*/
+   TSS REM({zowe.setup.security.users.zowe}) KEYRING(ZOWERING)
+
+/* ................................................................. */
+/* only the last RC is returned, this command ensures it is a 0      */
+PROFILE
+$$
+//*
+
