@@ -1,0 +1,25 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: zaas-service
+  namespace: zowe
+  labels:
+    app.kubernetes.io/name: zowe
+    app.kubernetes.io/instance: zowe
+    app.kubernetes.io/version: "2.1.0"
+    app.kubernetes.io/component: zaas
+    app.kubernetes.io/part-of: apiml
+    app.kubernetes.io/managed-by: manual
+spec:
+  type: ClusterIP
+  selector:
+    app.kubernetes.io/name: zowe
+    app.kubernetes.io/instance: zowe
+    app.kubernetes.io/component: zaas
+  ports:
+    - name: zaas
+      protocol: TCP
+      port: 7558
+      targetPort: zaas-port
+      appProtocol: https

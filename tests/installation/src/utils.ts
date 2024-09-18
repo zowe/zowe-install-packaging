@@ -96,6 +96,9 @@ export function importDefaultExtraVars(extraVars: {[key: string]: any}, serverId
     'zos_node_home'              : ['ZOS_NODE_HOME'],
     'zowe_sanity_test_debug_mode': ['SANITY_TEST_DEBUG'],
   };
+  const globalDefaults: { [key:string] : string } = {
+    'zos_java_home': '/ZOWE/node/J17.0_64'
+  }
   const serverIdSanitized = serverId.replace(/[^A-Za-z0-9]/g, '_').toUpperCase();
   defaultMapping['ansible_ssh_host'].push(`${serverIdSanitized}_SSH_HOST`);
   defaultMapping['ansible_port'].push(`${serverIdSanitized}_SSH_PORT`);
@@ -109,6 +112,13 @@ export function importDefaultExtraVars(extraVars: {[key: string]: any}, serverId
       }
     }
   });
+
+  Object.keys(globalDefaults).forEach((item) => {
+    if (extraVars[item] == null) {
+      extraVars[item] = globalDefaults[item];
+    }
+  })
+
 }
 
 type PlaybookResponse = {
@@ -206,6 +216,8 @@ async function installAndVerifyZowe(testcase: string, installPlaybook: string, s
   debug(`installAndVerifyZowe(${testcase}, ${installPlaybook}, ${serverId}, ${JSON.stringify(extraVars)})`);
 
   debug(`run ${installPlaybook} on ${serverId}`);
+
+
   const resultInstall = await runAnsiblePlaybook(
     testcase,
     installPlaybook,

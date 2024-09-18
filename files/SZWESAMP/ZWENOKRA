@@ -1,0 +1,79 @@
+//ZWENOKRA JOB
+//*
+//* This program and the accompanying materials are made available
+//* under the terms of the Eclipse Public License v2.0 which
+//* accompanies this distribution, and is available at
+//* https://www.eclipse.org/legal/epl-v20.html
+//*
+//* SPDX-License-Identifier: EPL-2.0
+//*
+//* Copyright Contributors to the Zowe Project. 2020, 2020
+//*
+//*********************************************************************
+//*
+//* Zowe Open Source Project
+//* This JCL can be used to remove key ring and certificates for Zowe
+//*
+//*
+//* CAUTION: This is neither a JCL procedure nor a complete job.
+//* Before using this JCL, you will have to make the following
+//* modifications:
+//*
+//* 1) Add job name and job parameters to the JOB statement, to
+//*    meet your system requirements.
+//*
+//* Note(s):
+//*
+//* 1. THE USER ID THAT RUNS THIS JOB MUST HAVE SUFFICIENT AUTHORITY
+//*    TO ALTER SECURITY DEFINITIONS
+//*
+//* 2. This job WILL complete with return code 0.
+//*    The results of each command must be verified after completion.
+//*
+//*******************************************************************
+//         EXPORT SYMLIST=*
+//*
+//*********************************************************************
+//*
+//* EXECUTE COMMANDS FOR SELECTED SECURITY PRODUCT
+//*
+//RUN      EXEC PGM=IKJEFT01,REGION=0M
+//SYSTSPRT DD SYSOUT=*
+//SYSTSIN  DD DDNAME=ACF2
+//*
+//*********************************************************************
+//*
+//* ACF2 ONLY, customize to meet your system requirements
+//*
+//ACF2     DD DATA,DLM=$$,SYMBOLS=JCLONLY
+ACF
+
+* Remove permit to use SITE owned certificate's private key
+  SET RESOURCE(FAC)
+  RECKEY IRR DEL(DIGTCERT.GENCERT +
+  ROLE({zowe.setup.security.groups.stc}) +
+  SERVICE(CONTROL) ALLOW)
+
+* Remove permit to read keyring ....................................*/
+  RECKEY IRR DEL(DIGTCERT.LISTRING +
+  ROLE({zowe.setup.security.groups.stc}) +
+  SERVICE(READ) ALLOW)
+
+  F ACF2,REBUILD(FAC)
+
+* Delete LABEL certificate ........................................*/
+  DELETE {zowe.setup.security.users.zowe}.ZOWECERT
+
+* Delete LOCALCA certificate ......................................*/
+  DELETE CERTAUTH.ZOWECA
+
+* Delete keyring ...................................................*/
+  SET PROFILE(USER) DIVISION(KEYRING)
+  DELETE {zowe.setup.security.users.zowe}.ZOWERING
+
+  F ACF2,REBUILD(USR),CLASS(P),DIVISION(KEYRING)
+
+END
+$$
+//*
+

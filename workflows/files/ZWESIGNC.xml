@@ -63,7 +63,7 @@
         <category>General</category>
         <string valueMustBeChoice="false" multiLine="false">
             <regularExpression>^\/.{0,50}[^\/]$</regularExpression>
-            <default>/sys/java64bt/v8r0m0/usr/lpp/java/J8.0_64</default>
+            <default>/sys/java64bt/v17r0m0/usr/lpp/java/J17.0_64</default>
         </string>
     </variable>
     <step name="define_variables" optional="false">

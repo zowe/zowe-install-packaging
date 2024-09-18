@@ -1,0 +1,990 @@
+/* REXX */
+
+/********************************************************************/
+/* This program and the accompanying materials are made available   */
+/* under the terms of the Eclipse Public License v2.0 which         */
+/* accompanies this distribution, and is available at               */
+/* https://www.eclipse.org/legal/epl-v20.html                       */
+/*                                                                  */
+/* SPDX-License-Identifier: EPL-2.0                                 */
+/*                                                                  */
+/* Copyright Contributors to the Zowe Project. 2023, 2023           */
+/********************************************************************/
+
+/*
+================================================================================
+    Functionality
+      1. Edit the jcl to reflect the current configuration.
+      2. Create a cache of the configuration for use outside Zowe context.
+
+    Notes
+      1. If a variable starts with an exclamation point, it is exposed in the
+         global scope.
+================================================================================
+*/
+
+parse arg operation verbosity
+
+VALID_OPERATIONS = '"generate" | "nogenerate"'
+VALID_VERBOSITY = '"verbose" | "noverbose"'
+
+if POS(verbosity, VALID_VERBOSITY) = 0 then do
+  say 'Error: "'verbosity'" is not a valid verbosity.'
+  say '       Valid verbosity levels are: '||VALID_VERBOSITY
+  ExitWithRC(8)
+end
+!verbose = COMPARE(verbosity, 'noverbose')
+
+/*
+================================================================================
+    ConfigMgr requires a concatenated list of json and yaml files as input.
+    Read the in-stream data sets to determine which files to include.
+================================================================================
+*/
+
+schemaChain = GetSchemaChain()
+
+runtime = GetRuntimeDirectory()
+defaultYaml = 'FILE('runtime'/files/defaults.yaml)'
+configChain = GetConfigChain()
+configChain = AddToChain(configChain, defaultYaml)
+
+/*
+================================================================================
+    Use ConfigMgr to validate the current configuration.
+================================================================================
+*/
+
+if Validate(schemaChain, configChain) > 0 then do
+  ExitWithRC(8)
+end
+
+if runtime = '' then do
+  say 'Runtime directory not found.'
+  ExitWithRC(8)
+end
+
+/*
+================================================================================
+    If we should generate jcl, then use ConfigMgr to get the configuration
+    values.
+================================================================================
+*/
+
+if POS(operation, VALID_OPERATIONS) = 0 then do
+  say 'Error: "'operation'" is not a valid operation.'
+  say '       Valid operations are: '||VALID_OPERATIONS
+  ExitWithRC(8)
+end
+
+if COMPARE(operation, 'nogenerate') = 0 then do
+  exit 0
+end
+else do
+  if GetConfiguration() > 0 then do
+    ExitWithRC(8)
+  end
+end
+
+/*
+================================================================================
+    Prepare header information ahead of time so that it gets substituted in
+    each member.
+================================================================================
+*/
+
+CFG.zwe.header.user = USERID()
+CFG.zwe.header.date = TRANSLATE(DATE(), '-', ' ')
+CFG.zwe.header.time = TIME()
+
+/*
+================================================================================
+    Create a data set with attributes like the original jcl library and copy
+    all the members of esm jcl.
+================================================================================
+*/
+
+jcl = CFG.zowe.setup.dataset.prefix'.SZWESAMP'
+jclCopy = CFG.zowe.setup.dataset.jcllib
+
+say 'Creating a fresh copy of 'jcl' named 'jclCopy'.'
+
+x = DeleteDataSet(jclCopy)
+
+if CreatePartitionedDataSet(jclCopy, 80, 'f,b') > 0 then do
+  ExitWithRC(8)
+end
+
+if AllocateDataSet(jclCopy, 'zweto') > 0 then do
+  ExitWithRC(8)
+end
+
+if AllocateDataSet(jcl, 'zwefrom') > 0 then do
+  ExitWithRC(8)
+end
+
+if GetDataIDFromDD('zwefrom') > 0 then do
+  ExitWithRC(8)
+end
+
+zwefrid = !dataid
+
+if GetDataIDFromDD('zweto') > 0 then do
+  ExitWithRC(8)
+end
+
+zwetoid = !dataid
+
+if CopyDataSetByDataID(zwefrid, zwetoid) > 0 then do
+  ExitWithRC(8)
+end
+
+if FreeDataID(zwefrid) > 0 then do
+  ExitWithRC(8)
+end
+
+if FreeDataID(zwetoid) > 0 then do
+  ExitWithRC(8)
+end
+
+if FreeByDD('zwefrom') > 0 then do
+  ExitWithRC(8)
+end
+
+if FreeByDD('zweto') > 0 then do
+  ExitWithRC(8)
+end
+
+
+/* members which are not JCL */
+x = DeleteDataSet(jclCopy'(ZWEGENER)')
+x = DeleteDataSet(jclCopy'(ZWESIP00)')
+x = DeleteDataSet(jclCopy'(ZWESIPRG)')
+x = DeleteDataSet(jclCopy'(ZWESISCH)')
+x = DeleteDataSet(jclCopy'(ZWESECKG)')
+x = DeleteDataSet(jclCopy'(ZWEINSTL)')
+
+
+/*
+================================================================================
+    Determine the external security manager on the system so that the correct
+    jcl templates can be used.
+================================================================================
+*/
+
+CVT_ADDR = C2X(STORAGE(D2X(16), 4))
+CVTRAC_ADDR = C2X(STORAGE(D2X(X2D(CVT_ADDR) + 992), 4))
+CVTRAC_VAL = STORAGE(CVTRAC_ADDR, 4)
+
+ringType = 0
+
+/* attempt to handle getting only 1 keyring jcl
+if WORDINDEX(CFG.zowe.setup.certificate.type, 'JCE') > 0 then do
+  if LENGTH(CFG.zowe.setup.certificate.keyring.connect) > 0 then do
+    say 'connect exists, it is 'CFG.zowe.setup.certificate.keyring.connect'.'
+    ringType = 2
+  end
+  if LENGTH(CFG.zowe.setup.certificate.keyring.import) > 0 then do
+    say 'import exists, it is 'CFG.zowe.setup.certificate.keyring.import'.'
+    ringType = 3
+  end
+  else do
+    say 'ring to be created'
+    ringType = 1
+  end
+else do
+  say 'pkcs12 to be used'
+end
+*/
+
+if COMPARE('RCVT', CVTRAC_VAL) = 0 then do
+  x = DeleteDataSet(jclCopy'(ZWEIKRA1)')
+  x = DeleteDataSet(jclCopy'(ZWEIKRA2)')
+  x = DeleteDataSet(jclCopy'(ZWEIKRA3)')
+  x = DeleteDataSet(jclCopy'(ZWEIKRT1)')
+  x = DeleteDataSet(jclCopy'(ZWEIKRT2)')
+  x = DeleteDataSet(jclCopy'(ZWEIKRT3)')
+  x = DeleteDataSet(jclCopy'(ZWEIACF)')
+  x = DeleteDataSet(jclCopy'(ZWEIACFZ)')
+  x = DeleteDataSet(jclCopy'(ZWEITSS)')
+  x = DeleteDataSet(jclCopy'(ZWEITSSZ)')
+  x = DeleteDataSet(jclCopy'(ZWENOKRA)')
+  x = DeleteDataSet(jclCopy'(ZWENOKRT)')
+end
+if COMPARE('RTSS', CVTRAC_VAL) = 0 then do
+  x = DeleteDataSet(jclCopy'(ZWEIKRA1)')
+  x = DeleteDataSet(jclCopy'(ZWEIKRA2)')
+  x = DeleteDataSet(jclCopy'(ZWEIKRA3)')
+  x = DeleteDataSet(jclCopy'(ZWEIKRR1)')
+  x = DeleteDataSet(jclCopy'(ZWEIKRR2)')
+  x = DeleteDataSet(jclCopy'(ZWEIKRR3)')
+  x = DeleteDataSet(jclCopy'(ZWEIACF)')
+  x = DeleteDataSet(jclCopy'(ZWEIACFZ)')
+  x = DeleteDataSet(jclCopy'(ZWEIRAC)')
+  x = DeleteDataSet(jclCopy'(ZWEIRACZ)')
+  x = DeleteDataSet(jclCopy'(ZWENOKRA)')
+  x = DeleteDataSet(jclCopy'(ZWENOKRR)')
+end
+if COMPARE('ACF2', CVTRAC_VAL) = 0 then do
+  x = DeleteDataSet(jclCopy'(ZWEIKRT1)')
+  x = DeleteDataSet(jclCopy'(ZWEIKRT2)')
+  x = DeleteDataSet(jclCopy'(ZWEIKRT3)')
+  x = DeleteDataSet(jclCopy'(ZWEIKRR1)')
+  x = DeleteDataSet(jclCopy'(ZWEIKRR2)')
+  x = DeleteDataSet(jclCopy'(ZWEIKRR3)')
+  x = DeleteDataSet(jclCopy'(ZWEIRAC)')
+  x = DeleteDataSet(jclCopy'(ZWEIRACZ)')
+  x = DeleteDataSet(jclCopy'(ZWEITSS)')
+  x = DeleteDataSet(jclCopy'(ZWEITSSZ)')
+  x = DeleteDataSet(jclCopy'(ZWENOKRT)')
+  x = DeleteDataSet(jclCopy'(ZWENOKRR)')
+end
+
+say jcl' has been copied to 'jclCopy'.'
+
+/*
+================================================================================
+    Get a list of all members in the data set.
+================================================================================
+*/
+
+say 'Recording a list of members in 'jclCopy'.'
+
+call outtrap 'output.','*'
+address tso 'listd '"'"jclCopy"'"' members'
+call outtrap 'off'
+
+members. = 0
+
+do i = output.0 to 1 by -1
+  output.i = strip(output.i)
+  if COMPARE(output.i, '--MEMBERS--') = 0 then do
+    leave
+  end
+  call Print 'member - 'output.i
+  j = members.0 + 1
+  members.j.name = output.i
+  members.j.substitutions.0 = 0
+  members.0 = j
+end
+
+say 'The 'output.0' members in 'jclCopy' have been recorded.'
+
+/*
+================================================================================
+    Read each member record by record and store the substitutions required
+    for use later when the edit macro is invoked.
+================================================================================
+*/
+
+say 'Finding the substitutions in each member.'
+
+do i = 1 to members.0
+  if AllocateDataSet(jclCopy'('members.i.name')', 'zwejcl') > 0 then do
+    ExitWithRC(8)
+  end
+  if ReadFromDataSet('zwejcl') > 0 then do
+    ExitWithRC(8)
+  end
+  if FreeByDD('zwejcl') > 0 then do
+    ExitWithRC(8)
+  end
+  do j = 1 to !contentToRead.0
+    firstChar = POS('{', !contentToRead.j) + 1
+    do while firstChar > 1
+      lastChar = POS('}', !contentToRead.j, firstChar) - 1
+      len = lastChar - firstChar + 1
+      if len > 0 then do
+        sub = SUBSTR(!contentToRead.j, firstChar, len)
+        if len = length(strip(sub)) then do
+          call Print 'Substitution found for' sub'.'
+          isFound = 0
+          do n = 1 to members.i.substitutions.0
+            if COMPARE(members.i.substitutions.n, sub) = 0 then do
+              call Print 'Substitution 'sub' already noted. Skipping.'
+              isFound = 1
+              leave
+            end
+          end
+          if isFound <> 1 then do
+            k = members.i.substitutions.0 + 1
+            members.i.substitutions.k = sub
+            members.i.substitutions.0 = k
+          end
+        end
+      end
+      if lastChar < 0 then do
+        leave
+      end
+      firstChar = POS('{', !contentToRead.j, lastChar) + 1
+    end
+  end
+end
+
+say 'All of the substitutions were found.'
+
+/*
+================================================================================
+    Invoke the edit macro on the substitutions for each member.
+    ZWECHG: change all word1 word2
+      word1 is expected to be {zowe.something}
+      word2 is anything, including spaces, single or double apostrophes
+================================================================================
+*/
+
+say 'Invoking the edit macro on each member.'
+
+do i = 1 to members.0
+  if members.i.substitutions.0 > 0 then do
+    do j = 1 to members.i.substitutions.0
+      d = jclCopy'('members.i.name')'
+      call Print 'Edit 'd'.'
+      old = '{'members.i.substitutions.j'}'
+      new = value('CFG.'members.i.substitutions.j)
+      apostrophes1 = "'"
+      apostrophes2 = "'"
+      if pos("'", new) > 0 & pos('"', new) = 0 then do
+        apostrophes1 = '"'
+        apostrophes2 = '"'
+      end
+      if pos("'", new) > 0 & pos('"', new) > 0 then do
+        apostrophes1 = "X'"
+        apostrophes2 = "'"
+        new = c2x(new)
+      end
+      changeCommand = 'change all 'old apostrophes1||new||apostrophes2
+      if length(changeCommand) > 255 then do
+        say 'Stopping at 'd'.'
+        say '  Command too long:'
+        say '  'changeCommand
+        ExitWithRC(8)
+      end
+      queue changeCommand
+      call Print changeCommand
+      cmd = 'edit dataset('"'"d"'"') macro(zwechg)'
+      call Print cmd
+      address ispexec cmd
+      if RC <= 4 then do
+        call Print 'Edit successful.'
+      end
+      else do
+        say 'Stopping at 'd'.'
+        ExitWithRC(8)
+      end
+    end
+  end
+end
+
+say 'The edit macro was invoked on each member.'
+
+/*
+================================================================================
+    Add the job card to each member if filled out.
+================================================================================
+*/
+
+card.0 = 0
+
+do i = 0 to 99
+  if COMPARE(SYMBOL('CFG.setup.jobCard.'i), 'VAR') = 0 then do
+    j = card.0 + 1
+    card.j = VALUE('CFG.setup.jobCard.'i)
+    card.0 = j
+  end
+  else do
+    leave
+  end
+end
+
+if card.0 > 0 then do
+  say 'The job card has 'card.0' lines.'
+  say 'Adding the job card to each member.'
+  do i = 1 to members.0
+    if AllocateDataSet(jclCopy'('members.i.name')', 'zwejcl') > 0 then do
+      ExitWithRC(8)
+    end
+    if ReadFromDataSet('zwejcl') > 0 then do
+      ExitWithRC(8)
+    end
+    !contentToWrite.0 = !contentToRead.0 + card.0 - 1
+    do j = 1 to card.0
+      !contentToWrite.j = card.j
+    end
+    j = card.0 + 1
+    do k = 2 to !contentToRead.0
+      !contentToWrite.j = !contentToRead.k
+      j = j + 1
+    end
+    if WriteToDataSet('zwejcl') > 0 then do
+      ExitWithRC(8)
+    end
+    if FreeByDD('zwejcl') > 0 then do
+      ExitWithRC(8)
+    end
+  end
+  say 'The job card was added to each member.'
+end
+
+
+
+say 'Checking the ZWESLSTC CONFIG entry'
+
+if AllocateDataSet(jclCopy'(ZWESLSTC)', 'zwejcl') > 0 then do
+  ExitWithRC(8)
+end
+if ReadFromDataSet('zwejcl') > 0 then do
+  ExitWithRC(8)
+end
+if FreeByDD('zwejcl') > 0 then do
+  ExitWithRC(8)
+end
+do j = 1 to !contentToRead.0
+  cmp1 = COMPARE(!contentToRead.j, 'CONFIG={ZWE_CLI_PARAMETER_CONFIG}')
+  cmp2 = COMPARE(!contentToRead.j, 'CONFIG=CFG.ZWE_CLI_PARAMETER_CONFIG')
+  if cmp1 = 0 | cmp2 = 0 then do
+    say 'Defining CONFIG entry for ZWESLSTC'
+    currentline = j
+    if ReadFromDataSet('myconfig') = 0 then do
+      do j = 1 to !contentToRead.0
+        type = WORD(!contentToRead.j, 1)
+        location = WORD(!contentToRead.j, 2)
+        element = type'('location')'
+        if COMPARE(type, 'PARMLIB') = 0 then do
+          element = 'PARMLIB('location'(ZWEYAML))'
+        end
+        if j = 1 then do
+          cmd = 'LINE 'currentline' = "CONFIG='element
+          if !contentToRead.0 > 1 then do
+            cmd = cmd':\"'
+          end
+          else do
+            cmd = cmd'"'
+          end
+          call Print '  'cmd
+          queue cmd
+        end
+        else do
+          if j > 2 then do
+            currentline = currentline + 1
+          end
+          cmd = 'LINE_AFTER 'currentline' = "'element
+          if !contentToRead.0 > j then do
+            cmd = cmd':\"'
+          end
+          else do
+            cmd = cmd'"'
+          end
+          call Print '  'cmd
+          queue cmd
+        end
+      end
+      cmd = 'edit dataset('"'"jclCopy'(ZWESLSTC)'"'"') macro(zweins)'
+      call Print cmd
+      address ispexec cmd
+      if RC <= 4 then do
+        call Print 'Insert successful.'
+      end
+      else do
+        say 'Defining CONFIG entry for ZWESLSTC failed.'
+        ExitWithRC(8)
+      end
+    end
+    leave
+  end
+end
+
+exit
+
+/*
+================================================================================
+  Validate(schema, yaml)
+================================================================================
+*/
+Validate:
+  procedure expose !verbose
+
+  if arg() <> 2 then do
+    return 1
+  end
+
+  say 'ConfigMgr is about to add a configuration.'
+  status = ZWECFG31('addConfig', 'MYCFG')
+  if status > 0 then do
+    say 'ConfigMgr could not add a configuration.'
+    say 'status = 'status
+    return 1
+  end
+  say 'ConfigMgr added a configuration.'
+
+  say 'ConfigMgr is about to set trace level to '!verbose'.'
+  status = ZWECFG31('setTraceLevel', !verbose)
+  if status > 0 then do
+    say 'ConfigMgr could not set trace level.'
+    say 'status = 'status
+    return 1
+  end
+  say 'ConfigMgr set trace level to '!verbose'.'
+
+  say 'ConfigMgr is about to load your schemas.'
+  status = ZWECFG31('loadSchemas', 'MYCFG', ARG(1))
+  if status > 0 then do
+    say 'ConfigMgr could not add load your schemas.'
+    say 'status = 'status
+    say 'SchemaChain - 'ARG(1)
+    return 1
+  end
+  say 'ConfigMgr loaded your schemas.'
+
+  say 'ConfigMgr is about to set the member name for parameter library.'
+  status = ZWECFG31('setParmlibMemberName', 'MYCFG', 'ZWEYAML')
+  if status > 0 then do
+    say 'ConfigMgr could not set member name for parameter library.'
+    say 'status = 'status
+    return 1
+  end
+  say 'ConfigMgr set the parameter library member name.'
+
+  say 'ConfigMgr is about to process your configuration.'
+  status = ZWECFG31('setConfigPath', 'MYCFG', ARG(2))
+  if status > 0 then do
+    say 'ConfigMgr could not process your configuration.'
+    say 'status = 'status
+    say 'ConfigChain - 'ARG(2)
+    return 1
+  end
+  say 'ConfigMgr has processed your configuration.'
+
+  say 'ConfigMgr is about to load your configuration.'
+  status = ZWECFG31('loadConfiguration', 'MYCFG')
+  if status > 0 then do
+    say 'ConfigMgr could not load your configuration.'
+    say 'status = 'status
+    return 1
+  end
+  say 'ConfigMgr has loaded your configuration.'
+
+  say 'ConfigMgr is about to validate your configuration.'
+  status = ZWECFG31('validate', 'MYCFG', 'STDOUT')
+  if status > 0 then do
+    say 'ConfigMgr could not validate your configuration.'
+    say 'status = 'status
+    return 1
+  end
+  say 'ConfigMgr has validated your configuration.'
+
+  return 0
+
+/*
+================================================================================
+  GetConfiguration()
+================================================================================
+*/
+GetConfiguration:
+  procedure expose CFG.
+
+  say 'ConfigMgr is about to get configuration data.'
+  status = ZWECFG31('getConfigData', 'MYCFG', 'CFG', '.')
+  if status > 0 then do
+    say 'ConfigMgr could not get configuration data.'
+    say 'status = 'status
+    return 1
+  end
+  say 'ConfigMgr got configuration data.'
+
+  return 0
+
+/*
+================================================================================
+  CopyDataSetByDataID('fromid', 'toid')
+================================================================================
+*/
+CopyDataSetByDataID:
+  procedure expose !verbose
+
+  if ARG() <> 2 then do
+    return 1
+  end
+
+  cmd = 'lmcopy'
+  cmd = cmd 'fromid('arg(1)')'
+  cmd = cmd 'frommem(*)'
+  cmd = cmd 'todataid('arg(2)')'
+  cmd = cmd 'replace trunc'
+  call Print cmd
+  address ispexec cmd
+
+  return rc
+
+/*
+================================================================================
+  FreeDataID('dataid')
+================================================================================
+*/
+FreeDataID:
+  procedure expose !verbose
+
+  if ARG() <> 1 then do
+    return 1
+  end
+
+  cmd = 'lmfree'
+  cmd = cmd 'dataid('ARG(1)')'
+  call Print cmd
+  address ispexec cmd
+
+  return rc
+
+/*
+================================================================================
+  GetDataIDFromDD('dd')
+================================================================================
+*/
+GetDataIDFromDD:
+  procedure expose !dataid !verbose
+
+  if ARG() <> 1 then do
+    return 1
+  end
+
+  drop !dataid
+
+  cmd = 'lminit'
+  cmd = cmd 'dataid(zwedid)'
+  cmd = cmd 'ddname('ARG(1)')'
+  cmd = cmd 'enq(shr)'
+  call Print cmd
+  address ispexec cmd
+
+  !dataid = zwedid
+
+  return rc
+
+/*
+================================================================================
+  WriteToDataSet('dd')
+================================================================================
+*/
+WriteToDataSet:
+  procedure expose !contentToWrite. !verbose
+
+  if ARG() <> 1 then do
+    return 1
+  end
+
+  cmd = 'execio * diskw'
+  cmd = cmd ARG(1)
+  cmd = cmd '(finis stem !contentToWrite.'
+  call Print cmd
+  address tso cmd
+
+  drop !contentToWrite.
+  !contentToWrite.0 = 0
+
+  return rc
+
+/*
+================================================================================
+  ReadFromDataSet('dd')
+================================================================================
+*/
+ReadFromDataSet:
+  procedure expose !contentToRead. !verbose
+
+  if ARG() <> 1 then do
+    return 1
+  end
+
+  drop !contentToRead.
+  !contentToRead.0 = 0
+
+  cmd = 'execio * diskr'
+  cmd = cmd ARG(1)
+  cmd = cmd '(finis stem !contentToRead.'
+  call Print cmd
+  address tso cmd
+
+  return rc
+
+/*
+================================================================================
+  CreateSequentialDataSet('dsn', 'lrecl', 'recfm')
+================================================================================
+*/
+CreateSequentialDataSet:
+  procedure expose !verbose
+
+  if ARG() <> 3 then do
+    return 1
+  end
+
+  cmd = 'alloc'
+  cmd = cmd 'da('"'"ARG(1)"'"')'
+  cmd = cmd 'dsorg(ps)'
+  cmd = cmd 'space(50,5)'
+  cmd = cmd 'tracks'
+  cmd = cmd 'lrecl('ARG(2)')'
+  cmd = cmd 'recfm('ARG(3)')'
+  cmd = cmd 'new'
+  call Print cmd
+  address tso cmd
+
+  return rc
+
+/*
+================================================================================
+  CreatePartitionedDataSet('dsn', 'lrecl', 'recfm')
+================================================================================
+*/
+CreatePartitionedDataSet:
+  procedure expose !verbose
+
+  if ARG() <> 3 then do
+    return 1
+  end
+
+  cmd = 'alloc'
+  cmd = cmd 'da('"'"ARG(1)"'"')'
+  cmd = cmd 'dsorg(po)'
+  cmd = cmd 'space(50,5)'
+  cmd = cmd 'tracks'
+  cmd = cmd 'lrecl('ARG(2)')'
+  cmd = cmd 'recfm('ARG(3)')'
+  cmd = cmd 'dir(10)'
+  cmd = cmd 'new'
+  call Print cmd
+  address tso cmd
+
+  return rc
+
+/*
+================================================================================
+  CreateDataSetLike('new', 'old', 'dd')
+================================================================================
+*/
+CreateDataSetLike:
+  procedure expose !verbose
+
+  if ARG() <> 3 then do
+    return 1
+  end
+
+  cmd = 'alloc'
+  cmd = cmd 'da('"'"ARG(1)"'"')'
+  cmd = cmd 'like('"'"ARG(2)"'"')'
+  cmd = cmd 'f('ARG(3)')'
+  call Print cmd
+  address tso cmd
+
+  return rc
+
+/*
+================================================================================
+  DeleteDataSet('dsn')
+================================================================================
+*/
+DeleteDataSet:
+  procedure expose !verbose
+
+  if ARG() <> 1 then do
+    return 1
+  end
+
+  cmd = 'delete'
+  cmd = cmd "'"ARG(1)"'"
+  call Print cmd
+  call outtrap 'output.',0
+  address tso cmd
+  call outtrap 'off'
+
+  return rc
+
+/*
+================================================================================
+  AllocateFile('path', 'dd')
+================================================================================
+*/
+AllocateFile:
+  procedure expose !verbose
+
+  if ARG() <> 2 then do
+    return 1
+  end
+
+  cmd = 'alloc'
+  cmd = cmd "path('"ARG(1)"')"
+  cmd = cmd 'f('ARG(2)')'
+  cmd = cmd 'pathopts(ordonly)'
+  call Print cmd
+  address tso cmd
+
+  return rc
+
+/*
+================================================================================
+  AllocateDataSet('dsn', 'dd')
+================================================================================
+*/
+AllocateDataSet:
+  procedure expose !verbose
+
+  if ARG() <> 2 then do
+    return 1
+  end
+
+  cmd = 'alloc'
+  cmd = cmd 'da('"'"ARG(1)"'"')'
+  cmd = cmd 'f('ARG(2)')'
+  cmd = cmd 'shr reuse'
+  call Print cmd
+  address tso cmd
+
+  return rc
+
+/*
+================================================================================
+  FreeByDD('dd')
+================================================================================
+*/
+FreeByDD:
+  procedure expose !verbose
+
+  if ARG() <> 1 then do
+    return 1
+  end
+
+  cmd = 'free'
+  cmd = cmd 'f('ARG(1)')'
+  call Print cmd
+  address tso cmd
+
+  return rc
+
+/*
+================================================================================
+  FreeByDSN('dsn')
+================================================================================
+*/
+FreeByDSN:
+  procedure expose !verbose
+
+  if ARG() <> 1 then do
+    return 1
+  end
+
+  cmd = 'free'
+  cmd = cmd 'da('ARG(1)')'
+  call Print cmd
+  address tso cmd
+
+  return rc
+
+/*
+================================================================================
+  GetConfigChain()
+================================================================================
+*/
+ GetConfigChain:
+  procedure expose !verbose
+
+  configChain = ''
+
+  if ReadFromDataSet('myconfig') = 0 then do
+    do j = 1 to !contentToRead.0
+      type = WORD(!contentToRead.j, 1)
+      location = WORD(!contentToRead.j, 2)
+      element = type'('location')'
+      configChain = AddToChain(configChain, element)
+    end
+  end
+
+  return configChain
+
+/*
+================================================================================
+  GetRuntimeDirectory()
+================================================================================
+*/
+GetRuntimeDirectory:
+
+  runtime = ''
+
+  if ReadFromDataSet('myschema') = 0 then do
+    type = WORD(!contentToRead.1, 1)
+    location = WORD(!contentToRead.1, 2)
+    offset = INDEX(location, '/schemas/zowe-yaml-schema.json')
+    runtime = SUBSTR(location, 1, offset)
+  end
+
+  return runtime
+
+/*
+================================================================================
+  GetSchemaChain()
+================================================================================
+*/
+GetSchemaChain:
+  procedure expose !verbose
+
+  schemaChain = ''
+
+  if ReadFromDataSet('myschema') = 0 then do
+    do j = 1 to !contentToRead.0
+      type = WORD(!contentToRead.j, 1)
+      location = WORD(!contentToRead.j, 2)
+      element = location
+      schemaChain = AddToChain(schemaChain, element)
+    end
+  end
+
+  return schemaChain
+
+/*
+================================================================================
+  AddToChain('chain', 'element')
+================================================================================
+*/
+AddToChain:
+  procedure expose !verbose
+
+  if ARG() <> 2 then do
+    return ''
+  end
+
+  chain = ARG(1)
+  element = ARG(2)
+
+  newChain = ''
+
+  if chain = '' then do
+    newChain = element
+  end
+  else do
+    newChain = chain':'element
+  end
+
+  return newChain
+
+/*
+================================================================================
+  Print('msg')
+================================================================================
+*/
+Print:
+  procedure expose !verbose
+
+  if !verbose = 1 then do
+    say ARG(1)
+  end
+
+  return 0
+
+/*
+================================================================================
+  ExitWithRC(exitCode)
+================================================================================
+*/
+ExitWithRC:
+  exitCode = ARG(1)
+  ZISPFRC = exitCode
+  ADDRESS "ISPEXEC" "VPUT (ZISPFRC) "
+  exit exitCode

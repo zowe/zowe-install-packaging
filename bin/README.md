@@ -56,6 +56,7 @@ Please be aware of using functions marked as `@experimental`. These functions ma
 
 - `bin/utils/opercmd.rex`: To issue operator command on z/OS. This script can only run on z/OS.
 - `bin/utils/curl.js`: This is node.js script works similar to popular Linux tool `curl`. It can make HTTP/HTTPS request and display response.
+- `bin/utils/getesm`: Executable to get the name of External Security Manager
 
 Please be aware of using utilities marked as `@experimental`. These utilities may be changed or improved in the future, and they may not be stable enough for extenders to use if they target to support multiple versions of Zowe.
 
@@ -79,6 +80,7 @@ These Zowe environment variables are created globally. Any Zowe components, exte
 - `ZWE_ENABLED_COMPONENTS` is a list of components will be started in current HA instance.
 - `ZWE_GATEWAY_HOST` contains domain name to access gateway internally.
 - `ZWE_GATEWAY_SHARED_LIBS` contains a directory where gateway shared libraries are installed.
+- `ZWE_ZAAS_SHARED_LIBS` contains a directory where zaas (Zowe Authentication and Authorization Service) libraries are installed.
 - `ZWE_INSTALLED_COMPONENTS` is a list of all installed components.
 - `ZWE_LAUNCH_COMPONENTS` is a list of enabled components for current HA instance and has start command defined.
 - `ZWE_POD_CLUSTERNAME` indicates the current Kubernetes cluster name Zowe is running. This variable is only applicable when Zowe is running in Kubernetes.

@@ -33,10 +33,9 @@
     # - zowe_apiml_gateway_port
     # - zowe_apiml_gateway_timeout_millis
     # - zowe_apiml_security_x509_enabled
+    # - zowe_apiml_service_forwardClientCertEnabled
     # - zowe_apiml_security_zosmf_applid
     # - zowe_apiml_security_auth_provider
-    # - zowe_jobs_api_port
-    # - zowe_mvs_api_port
     # - zowe_jobs_explorer_port
     # - zowe_mvs_explorer_port
     # - zowe_uss_explorer_port
@@ -152,14 +151,12 @@
 
 # ============================================================================
 # Enable disabled services
-- name: Update zowe.yaml zowe.setup.vsam
+- name: Update zowe.yaml
   import_role:
     name: zos
     tasks_from: update_zowe_yaml
   vars:
     configs:
-      "components.files-api.enabled": "true"
-      "components.jobs-api.enabled": "true"
       "components.apiml-sample-extension.enabled": "true"
       # debug mode for troubleshooting/profiling
       "zowe.launchScript.logLevel": "trace"
