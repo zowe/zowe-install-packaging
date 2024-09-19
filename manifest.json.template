@@ -331,7 +331,7 @@
       "componentGroup": "Zowe Visual Studio Code Extension",
       "entries": [{
         "repository": "zowe-explorer-vscode",
-        "tag": "next",
+        "tag": "v3.0.0-next.202409132122",
         "destinations": ["Visual Studio Code Marketplace"]
       }]
     },
