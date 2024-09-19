@@ -57,42 +57,42 @@
       "artifact": "*.pax"
     },
     "org.zowe.apiml.api-catalog-package": {
-      "version": "^3.0.3-SNAPSHOT",
+      "version": "3.0.22",
       "artifact": "api-catalog-*.zip",
       "exclusions": ["*PR*.zip"]
     },
     "org.zowe.apiml.discovery-package": {
-      "version": "^3.0.3-SNAPSHOT",
+      "version": "3.0.22",
       "artifact": "discovery-*.zip",
       "exclusions": ["*PR*.zip"]
     },
     "org.zowe.apiml.gateway-package": {
-      "version": "^3.0.3-SNAPSHOT",
+      "version": "3.0.22",
       "artifact": "gateway-*.zip",
       "exclusions": ["*PR*.zip"]
     },
     "org.zowe.apiml.caching-service-package": {
-      "version": "^3.0.3-SNAPSHOT",
+      "version": "3.0.22",
       "artifact": "caching-service-*.zip",
       "exclusions": ["*PR*.zip"]
     },
     "org.zowe.apiml.apiml-common-lib-package": {
-      "version": "^3.0.3-SNAPSHOT",
+      "version": "3.0.22",
       "artifact": "apiml-common-lib-*.zip",
       "exclusions": ["*PR*.zip"]
     },
     "org.zowe.apiml.sdk.common-java-lib-package": {
-      "version": "^2.0.0-SNAPSHOT",
+      "version": "3.0.22",
       "artifact": "common-java-lib-*.zip",
       "exclusions": ["*PR*.zip"]
     },
     "org.zowe.apiml.sdk.apiml-sample-extension-package": {
-      "version": "^3.0.3-SNAPSHOT",
+      "version": "3.0.22",
       "artifact": "apiml-sample-extension-*.zip",
       "exclusions": ["*PR*.zip"]
     },
     "org.zowe.apiml.zaas-package": {
-      "version": "^3.0.3-SNAPSHOT",
+      "version": "3.0.22",
       "artifact": "zaas-package-*.zip",
       "exclusions": ["*PR*.zip"]
     },
