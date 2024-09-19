@@ -1,15 +1,1 @@
-{
-  "lockAcquiredTime": "Thu Sep 19 2024 20:24:01 GMT+0000 (Coordinated Universal Time)",
-  "uid": "1726777441779235858",
-  "repository": {
-    "owner": "zowe",
-    "repo": "zowe-install-packaging"
-  },
-  "branch": "user/markackert/update-image-deps-rc",
-  "workflow": "Zowe CICD Integration Tests",
-  "job": "cicd-test",
-  "actor": "zowe-robot",
-  "runId": 10948327203,
-  "runNumber": 5432,
-  "link": "https://github.com/zowe/zowe-install-packaging/actions/runs/10948327203"
-}
+""
