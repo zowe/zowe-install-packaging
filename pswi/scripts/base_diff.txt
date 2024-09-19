@@ -4,9 +4,6 @@
 468c
   home: "#delete_me#"
 .
-281c
-  runtimeDirectory: "/u/zowead2/work"
-.
 106c
         # directory: 
 .

@@ -374,6 +374,24 @@ jobs:
           name: pswi-folder
           path: |
             pswi/**
+      - name: 'Test ZWECONF workflow'
+        id: zweconf
+        timeout-minutes: 30
+        run: |
+          cd pswi
+          ./ZWECONF_test.sh
+        env:
+          ZOSMF_USER: ${{ secrets.ZOWE_PSWI_BUILD_USR }}
+          ZOSMF_PASS: ${{ secrets.ZOWE_PSWI_BUILD_PASSWD }}
+          ZZOW_SSH_PORT: ${{ secrets.SSH_MARIST_ALLSYS_PORT }}
+      - name: Store test output
+        uses: actions/upload-artifact@v4
+        if: steps.zweconf.outcome != '' && failure()
+        with:
+          name: zweconf_test
+          path: |
+            pswi/**.txt
+            pswi/zowe.yaml
       - name: '[K8S] Build Kubernetes'
         timeout-minutes: 10
         if: env.INPUTS_BUILD_KUBERNETES == 'true'
