@@ -358,28 +358,28 @@
     "api-catalog": {
       "registry": "zowe-docker-release.jfrog.io",
       "name": "ompzowe/api-catalog-services",
-      "tag" : "3.0.21-SNAPSHOT-ubuntu.v2-x-x"
+      "tag" : "3.0.22-ubuntu"
     },
     "gateway": {
       "registry": "zowe-docker-snapshot.jfrog.io",
       "name": "ompzowe/gateway-service",
-      "tag" : "3.0.21-SNAPSHOT-ubuntu.v2-x-x"
+      "tag" : "3.0.22-ubuntu"
     },
     "caching": {
       "registry": "zowe-docker-release.jfrog.io",
       "name": "ompzowe/caching-service",
-      "tag" : "3.0.21-SNAPSHOT-ubuntu.v2-x-x"
+      "tag" : "3.0.22-ubuntu"
     },
     "discovery": {
       "kind": "statefulset",
       "registry": "zowe-docker-release.jfrog.io",
       "name": "ompzowe/discovery-service",
-      "tag" : "3.0.21-SNAPSHOT-ubuntu.v2-x-x"
+      "tag" : "3.0.22-ubuntu"
     },
     "zaas": {
         "registry": "zowe-docker-snapshot.jfrog.io",
         "name": "ompzowe/zaas-service",
-        "tag" : "3.0.21-SNAPSHOT-ubuntu.v2-x-x"
+        "tag" : "3.0.22-ubuntu"
     },
     "app-server": {
       "registry": "zowe-docker-release.jfrog.io",
