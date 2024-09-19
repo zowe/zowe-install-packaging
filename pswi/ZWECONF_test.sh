@@ -1,8 +1,7 @@
 export ZOSMF_URL="https://zzow07.zowe.marist.cloud"
 export ZOSMF_PORT=10443
 export ZOSMF_SYSTEM="S0W1"
-JOBST1="//ZWECONF1 JOB (1),'PSWI',MSGCLASS=A,REGION=0M"
-JOBST2="/*JOBPARM SYSAFF=(SOW1)"
+export JOBNAME="ZWECONF1"
 export HOST=${ZOSMF_URL#https:\/\/}
 export BASE_URL="${ZOSMF_URL}:${ZOSMF_PORT}"
 WORK_MOUNT="/u/${ZOSMF_USER}"
@@ -31,8 +30,8 @@ if [ $? -gt 0 ];then exit -1;fi
 
 echo "Converting zowe.yaml"
 
-echo ${JOBST1} > JCL
-echo ${JOBST2} >> JCL
+echo "//${ZOSMF_SYSTEM} JOB (1),'PSWI',MSGCLASS=A,REGION=0M" > JCL
+echo "/*JOBPARM SYSAFF=(${ZOSMF_SYSTEM})" >> JCL
 echo "//UNPAXDIR EXEC PGM=BPXBATCH" >> JCL
 echo "//STDOUT DD SYSOUT=*" >> JCL
 echo "//STDERR DD SYSOUT=*" >> JCL
