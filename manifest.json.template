@@ -51,14 +51,6 @@
       "repository": "libs-snapshot-local",
       "artifact": "zss-3.0.0-rc-1202-20240919131259.pax"
     },
-    "org.zowe.explorer.jobs.jobs-api-package": {
-      "version": "2.0.31",
-      "artifact": "jobs-api-package-*.zip"
-    },
-    "org.zowe.explorer.files.files-api-package": {
-      "version": "2.0.31",
-      "artifact": "files-api-package-*.zip"
-    },
     "org.zowe.explorer-jes": {
       "version": "2.0.7"
     },
@@ -66,7 +58,7 @@
       "version": "2.0.9"
     },
     "org.zowe.explorer-uss": {
-      "version": "2.0.9"
+      "version": "3.0.0"
     },
     "org.zowe.explorer-ip": {
       "version": "3.0.0",
@@ -448,16 +440,6 @@
       "registry": "zowe-docker-release.jfrog.io",
       "name": "ompzowe/explorer-uss",
       "tag" : "3.0.0-ubuntu"
-    },
-    "files-api": {
-      "registry": "zowe-docker-release.jfrog.io",
-      "name": "ompzowe/files-api",
-      "tag" : "2.0.31-ubuntu"
-    },
-    "jobs-api": {
-      "registry": "zowe-docker-release.jfrog.io",
-      "name": "ompzowe/jobs-api",
-      "tag" : "2.0.31-ubuntu"
     },
     "base": {
       "registry": "zowe-docker-release.jfrog.io",
