@@ -245,13 +245,6 @@
         "destinations": ["Zowe CLI Package"]
       }]
     }, {
-      "componentGroup": "IBM&reg IMS&reg Plug-in for Zowe CLI",
-      "entries": [{
-        "repository": "zowe-cli-ims-plugin",
-        "tag": "v3.0.1",
-        "destinations": ["Zowe CLI Package"]
-      }]
-    }, {
       "componentGroup": "Zowe Desktop Eclipse Orion-based React Editor",
       "entries": [{
         "repository": "orion-editor-component",
@@ -315,7 +308,7 @@
       "entries": [{
         "repository": "vt-ng2",
         "tag": "v3.0.0-RC1",
-		"destinations": ["Zowe PAX"]
+		    "destinations": ["Zowe PAX"]
       }]
     },
     {
