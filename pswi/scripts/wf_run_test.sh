@@ -54,7 +54,6 @@ RESP=`curl -s $WORKFLOW_URL -k -X "DELETE" -H "Content-Type: application/json" -
 sh scripts/check_response.sh "${RESP}" $?
 fi
 
-set -e
 # Create workflow with REST API
 echo 'Invoking REST API to create the workflow.'
 

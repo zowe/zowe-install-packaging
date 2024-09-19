@@ -1,5 +1,6 @@
-ZOSMF_URL="https://zzow07.zowe.marist.cloud"
-ZOSMF_PORT=10443
+export ZOSMF_URL="https://zzow07.zowe.marist.cloud"
+export ZOSMF_PORT=10443
+export ZOSMF_SYSTEM="S0W1"
 JOBST1="//ZWECONF1 JOB (1),'PSWI',MSGCLASS=A,REGION=0M"
 JOBST2="/*JOBPARM SYSAFF=(SOW1)"
 export HOST=${ZOSMF_URL#https:\/\/}
