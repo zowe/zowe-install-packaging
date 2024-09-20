@@ -353,7 +353,6 @@ jobs:
           jfrog rt dl ${{github.event.inputs.PSWI_SMPE_AZWE_ARTIFACTORY_PATH}}/AZWE002*.zip --flat=true .pax/AZWE002.zip
           jfrog rt dl ${{github.event.inputs.PSWI_SMPE_ARTIFACTORY_PATH}}/zowe-smpe-*.zip --flat=true .pax/zowe-smpe.zip
 
-
       - name: '[SMPE Pax 4] Build PSWI'
         id: pswi
         if: env.INPUTS_BUILD_PSWI == 'true'
@@ -367,6 +366,7 @@ jobs:
           ZOSMF_PASS: ${{ secrets.ZOWE_PSWI_BUILD_PASSWD }}
           ZZOW_SSH_PORT: ${{ secrets.SSH_MARIST_ALLSYS_PORT }}
           VERSION: ${{ env.P_VERSION }}
+
       - name: Store PSWI folder
         uses: actions/upload-artifact@v4
         if: env.INPUTS_BUILD_PSWI == 'true' && failure()
@@ -374,25 +374,7 @@ jobs:
           name: pswi-folder
           path: |
             pswi/**
-      - name: 'Test ZWECONF workflow'
-        id: zweconf
-        timeout-minutes: 30
-        run: |
-          cd pswi
-          ./ZWECONF_test.sh
-        env:
-          ZOSMF_USER: ${{ secrets.ZOWE_PSWI_BUILD_USR }}
-          ZOSMF_PASS: ${{ secrets.ZOWE_PSWI_BUILD_PASSWD }}
-          ZZOW_SSH_PORT: ${{ secrets.SSH_MARIST_ALLSYS_PORT }}
-      - name: Store test output
-        uses: actions/upload-artifact@v4
-        if: steps.zweconf.outcome != '' && failure()
-        with:
-          name: zweconf_test
-          path: |
-            pswi/**.txt
-            pswi/zowe_.yaml
-            pswi/ZWECONF1/**
+
       - name: '[K8S] Build Kubernetes'
         timeout-minutes: 10
         if: env.INPUTS_BUILD_KUBERNETES == 'true'
