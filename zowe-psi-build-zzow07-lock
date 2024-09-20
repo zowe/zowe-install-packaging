@@ -1,1 +1,15 @@
-""
+{
+  "lockAcquiredTime": "Fri Sep 20 2024 20:28:59 GMT+0000 (Coordinated Universal Time)",
+  "uid": "1726864139802907704",
+  "repository": {
+    "owner": "zowe",
+    "repo": "zowe-install-packaging"
+  },
+  "branch": "user/markackert/pswi-cicd-updates",
+  "workflow": "PSWI zowe.yaml sync check",
+  "job": "test-pswi-zowe-yaml",
+  "actor": "MarkAckert",
+  "runId": 10965853244,
+  "runNumber": 4,
+  "link": "https://github.com/zowe/zowe-install-packaging/actions/runs/10965853244"
+}
