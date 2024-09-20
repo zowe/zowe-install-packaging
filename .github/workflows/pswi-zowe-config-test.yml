@@ -22,6 +22,14 @@ jobs:
       - name: '[Prep 1] Checkout'
         uses: actions/checkout@v4
 
+      # Taken from shared-actions/prepare-workflow
+      - name: 'export github username and email'
+        run: |
+          git config --global user.name ${{ github.actor }}
+          echo ${{ github.actor }}
+          git config --global user.email dummy-email@email.com
+        shell: bash
+
       - name: '[PSI-LOCK] Lock marist servers to build PSWI'
         uses: zowe-actions/shared-actions/lock-resource@main
         with:
