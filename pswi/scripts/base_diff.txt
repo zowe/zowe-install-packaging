@@ -4,6 +4,9 @@
 468c
   home: "#delete_me#"
 .
+281c
+  runtimeDirectory: "/tmp"
+.
 106c
         # directory: 
 .
