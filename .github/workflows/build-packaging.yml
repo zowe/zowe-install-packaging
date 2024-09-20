@@ -392,6 +392,7 @@ jobs:
           path: |
             pswi/**.txt
             pswi/zowe.yaml
+            pswi/zowe_.yaml
             pswi/ZWECONF1/**
       - name: '[K8S] Build Kubernetes'
         timeout-minutes: 10
