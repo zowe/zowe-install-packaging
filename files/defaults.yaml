@@ -157,7 +157,7 @@ components:
         authorization:
           endpoint:
             enabled: false
-          provider: ""
+          provider: "native"
         x509:
           enabled: false
 
