@@ -4,7 +4,7 @@ export ZOSMF_SYSTEM="S0W1"
 export JOBNAME="ZWECONF1"
 export HOST=${ZOSMF_URL#https:\/\/}
 export BASE_URL="${ZOSMF_URL}:${ZOSMF_PORT}"
-WORK_MOUNT="/u/${ZOSMF_USER}"
+WORK_MOUNT="/tmp"
 
 echo "Changing runtime path in ZWECONF.properties."
 
@@ -55,9 +55,6 @@ pwd
 
 cp ../example-zowe.yaml example-zowe.yaml
 
-#delete runtimeDirectory=
-sed -i "/runtimeDirectory=/d" zowe_.yaml > zowe.yaml
-
-diff --ed example-zowe.yaml zowe.yaml > diff.txt || true
+diff --ed example-zowe.yaml zowe_.yaml > diff.txt || true
 
 diff --ed diff.txt scripts/base_diff.txt > final_diff.txt
