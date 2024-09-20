@@ -391,7 +391,6 @@ jobs:
           name: zweconf_test
           path: |
             pswi/**.txt
-            pswi/zowe.yaml
             pswi/zowe_.yaml
             pswi/ZWECONF1/**
       - name: '[K8S] Build Kubernetes'
