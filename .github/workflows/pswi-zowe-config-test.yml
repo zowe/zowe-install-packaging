@@ -1,0 +1,52 @@
+name: PSWI zowe.yaml sync check
+
+permissions:
+  id-token: write
+  issues: write
+  pull-requests: write
+  contents: write
+
+on:
+  push:
+    branches:
+      - v3.x/staging 
+  pull_request:
+    types: [opened, synchronize]
+  workflow_dispatch:
+
+jobs:
+  test-pswi-zowe-yaml:
+    runs-on: ubuntu-latest
+    steps:
+
+      - name: '[Prep 1] Checkout'
+        uses: actions/checkout@v4
+
+      - name: '[PSI-LOCK] Lock marist servers to build PSWI'
+        uses: zowe-actions/shared-actions/lock-resource@main
+        with:
+          lock-repository: ${{ github.repository }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          lock-resource-name: zowe-psi-build-zzow07-lock
+          lock-avg-retry-interval: 30
+
+      - name: 'Test ZWECONF workflow'
+        id: zweconf
+        timeout-minutes: 30
+        run: |
+          cd pswi
+          ./ZWECONF_test.sh
+        env:
+          ZOSMF_USER: ${{ secrets.ZOWE_PSWI_BUILD_USR }}
+          ZOSMF_PASS: ${{ secrets.ZOWE_PSWI_BUILD_PASSWD }}
+          ZZOW_SSH_PORT: ${{ secrets.SSH_MARIST_ALLSYS_PORT }}
+
+      - name: Store test output
+        uses: actions/upload-artifact@v4
+        if: steps.zweconf.outcome != '' && failure()
+        with:
+          name: zweconf_test
+          path: |
+            pswi/**.txt
+            pswi/zowe_.yaml
+            pswi/ZWECONF1/**

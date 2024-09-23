@@ -1,12 +1,13 @@
+set -x
 export ZOSMF_URL="https://zzow07.zowe.marist.cloud"
 export ZOSMF_PORT=10443
 export ZOSMF_SYSTEM="S0W1"
-export DIR="/u/zowead2"
-export SMPEHLQ="ZOWEAD2"
-export TMP_ZFS="ZOWEAD2.TMP.ZFS"
+export DIR="/u/${ZOSMF_USER,,}"
+export SMPEHLQ="${ZOSMF_USER}"
+export TMP_ZFS="${ZOSMF_USER}.TMP.ZFS"
 export ZOWE_MOUNT="/u/zwe/zowe-smpe/"
 export VOLUME="ZOS003"
-export TEST_HLQ="ZOWEAD2.PSWIT"
+export TEST_HLQ="${ZOSMF_USER}.PSWIT"
 export SYSAFF="(S0W1)"
 export ACCOUNT=1
 
@@ -29,7 +30,7 @@ export TMP_MOUNT="${DIR}/zowe-tmp"
 export TEST_MOUNT="${DIR}/test_mount"
 export EXPORT="${TMP_MOUNT}/export/"
 export WORK_MOUNT="${DIR}/work"
-export WORK_ZFS="ZOWEAD2.WORK.ZFS"
+export WORK_ZFS="${ZOSMF_USER}.WORK.ZFS"
 export ZOSMF_V="2.3"
 export SMPE_WF_NAME="ZOWE_SMPE_WF"
 export PTF_WF_NAME="ZOWE_PTF_WF"
@@ -41,7 +42,7 @@ if [ -f ../.pax/zowe-smpe.zip ]; then
   mkdir -p "unzipped"
   unzip ../.pax/zowe-smpe.zip -d unzipped
 else
-  echo "zowe-smpe file not found"
+  echo "zowe-smpe file not found" >> report.txt
   exit -1
 fi
 
@@ -73,7 +74,7 @@ else
   if [ -f ../.pax/${FMID}.zip ]; then
     unzip ../.pax/${FMID}.zip -d unzipped
   else
-    echo "File with FMID not found"
+    echo "File with FMID not found" >> report.txt
     exit -1
   fi
 fi
@@ -89,6 +90,14 @@ export EXPORT_DSN=${CSIHLQ}.EXPORT
 export WORKFLOW_DSN=${CSIHLQ}.WORKFLOW
 export ZOWE_ZFS="${CSIHLQ}.ZFS"
 export VERSION=$(cat ../manifest.json.template | grep -o '"version": ".*"' | head -1 | cut -f4 -d\")
+
+# Initialize variables
+presmpe=0
+smpe=0
+ptf=0
+create=0
+test=0
+wf_test=0
 
 # Upload and prepare all files
 sh 00_presmpe.sh
@@ -125,7 +134,13 @@ if [ $presmpe -eq 0 ]; then
         # Test PSWI
         sh 05_test.sh
         test=$?
-
+        
+        if [ $test -eq 0 ]; then
+          #test the workflows
+          sh 051_test_workflows.sh
+          wf_test=$?
+        fi
+        
         # Cleanup after the test
         sh 06_test_cleanup.sh
       fi
@@ -141,23 +156,28 @@ if [ $presmpe -eq 0 ]; then
     # Clean RELFILEs and PTFs
     sh 08_presmpe_cleanup.sh
   fi
+else
+  # Clean RELFILEs and PTFs
+  sh 08_presmpe_cleanup.sh
 fi
 
 echo ""
 echo ""
 
-if [ $smpe -ne 0 ] || [ $ptf -ne 0 ] || [ $create -ne 0 ] || [ $test -ne 0 ] || [ $presmpe -ne 0 ]; then
-  echo "Build unsuccessful!"
+if [ $smpe -ne 0 ] || [ $ptf -ne 0 ] || [ $create -ne 0 ] || [ $test -ne 0 ] || [ $presmpe -ne 0 ] || [ $wf_test -ne 0 ]; then
+  echo "Build unsuccessful!" >> report.txt
   if [ $presmpe -ne 0 ]; then
-    echo "Pre-SMP/E wasn't successful."
+    echo "Pre-SMP/E wasn't successful." >> report.txt
   elif [ $smpe -ne 0 ]; then
-    echo "SMP/E wasn't successful."
+    echo "SMP/E wasn't successful." >> report.txt
   elif [ $ptf -ne 0 ]; then
-    echo "Applying PTFs wasn't successful."
+    echo "Applying PTFs wasn't successful." >> report.txt
   elif [ $create -ne 0 ]; then
-    echo "Creation of PSWI wasn't successful."
+    echo "Creation of PSWI wasn't successful." >> report.txt
   elif [ $test -ne 0 ]; then
-    echo "Testing of PSWI wasn't successful."
+    echo "Testing of PSWI wasn't successful." >> report.txt
+  elif [ $wf_test -ne 0 ]; then
+    echo "Workflow testing wasn't successful." >> report.txt
   fi
   exit -1
 else
