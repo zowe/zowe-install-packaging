@@ -1,15 +1,1 @@
-{
-  "lockAcquiredTime": "Mon Sep 23 2024 09:30:05 GMT+0000 (Coordinated Universal Time)",
-  "uid": "1727083805678634358",
-  "repository": {
-    "owner": "zowe",
-    "repo": "zowe-install-packaging"
-  },
-  "branch": "v3.x/feature/checkFSforNOSUID",
-  "workflow": "Zowe CICD Integration Tests",
-  "job": "cicd-test",
-  "actor": "zowe-robot",
-  "runId": 10991445076,
-  "runNumber": 5454,
-  "link": "https://github.com/zowe/zowe-install-packaging/actions/runs/10991445076"
-}
+""
