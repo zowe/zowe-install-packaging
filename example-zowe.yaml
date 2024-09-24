@@ -379,7 +379,7 @@ zowe:
 
   # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   # You can define any Zowe message portions to be checked for and the message added to the
-  # system log upon its logging, truncated to 126 characters.
+  # system log upon its logging, truncated to 126 characters (wildcards are not supported).
   sysMessages:
   #   # Zowe starting
     - "ZWEL0021I"
