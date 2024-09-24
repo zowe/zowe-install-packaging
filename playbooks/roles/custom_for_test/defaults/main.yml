@@ -54,7 +54,7 @@ zos_zosmf_ca:
 zowe_apiml_catalog_port: 7552
 zowe_apiml_discovery_port: 7553
 zowe_apiml_gateway_port: 7554
-zowe_apiml_cloud_gateway_port: 7563
+zowe_apiml_zaas_port: 7558
 zowe_apiml_verify_certficates_of_services: true
 zowe_apiml_nonstrict_verify_certficates_of_services: true
 # APIML configuration properties
@@ -67,14 +67,14 @@ zowe_apiml_security_oidc_registry:
 zowe_apiml_security_oidc_jwks_uri:
 zowe_apiml_security_zosmf_applid: IZUDFLT
 zowe_apiml_security_auth_provider: zosmf
-zowe_apiml_security_zosmf_jwt_autoconfiguration_mode: AUTO
+zowe_apiml_security_zosmf_jwt_autoconfiguration_mode: LTPA
 # explorer APIs/plugins ports
 zowe_jobs_explorer_port: 7560
 zowe_mvs_explorer_port: 7561
 zowe_uss_explorer_port: 7562
 # caching service
 zowe_caching_service_port: 7555
-zowe_caching_service_persistent: VSAM
+zowe_caching_service_persistent: infinispan
 # the final data set name will be: {zowe_dataset_prefix}.{zowe_caching_service_vsam_dsprefix}{zowe_instance_id}
 # for example: IBMUSER.ZWE.CACHE1
 zowe_caching_service_vsam_dsprefix: CACHE
