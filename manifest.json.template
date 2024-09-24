@@ -44,10 +44,10 @@
       "artifact": "*.pax"
     },
     "org.zowe.explorer-jes": {
-      "version": "^3.0.0-SNAPSHOT"
+      "version": "^3.0.0-PR-389"
     },
     "org.zowe.explorer-mvs": {
-      "version": "^3.0.0-SNAPSHOT"
+      "version": "^3.0.0-PR-263"
     },
     "org.zowe.explorer-uss": {
       "version": "^3.0.0-SNAPSHOT"
