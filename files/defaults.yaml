@@ -157,20 +157,13 @@ components:
         authorization:
           endpoint:
             enabled: false
-          provider: ""
+          provider: "native"
         x509:
-          enabled: false
-    server:
-      internal:
-      # gateway supports internal connector
-        enabled: false
-        port: 7550
-        ssl:
           enabled: false
 
   # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   zaas:
-    enabled: false
+    enabled: true
     port: 7558
     debug: false
 
