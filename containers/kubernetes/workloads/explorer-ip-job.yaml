@@ -45,7 +45,7 @@ spec:
             claimName: zowe-workspace-pvc
       containers:
         - name: explorer-ip
-          image: zowe-docker-snapshot.jfrog.io/ompzowe/explorer-ip:3.0.0-ubuntu.v3-x-master
+          image: zowe-docker-snapshot.jfrog.io/ompzowe/explorer-ip:3.0.1-ubuntu.v3-x-master
           imagePullPolicy: Always
           resources:
             requests:
