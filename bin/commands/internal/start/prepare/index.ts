@@ -3,9 +3,9 @@
   under the terms of the Eclipse Public License v2.0 which
   accompanies this distribution, and is available at
   https://www.eclipse.org/legal/epl-v20.html
- 
+
   SPDX-License-Identifier: EPL-2.0
- 
+
   Copyright Contributors to the Zowe Project.
 */
 
@@ -75,7 +75,7 @@ function prepareLogDirectory() {
   if (logDir) {
     os.mkdir(logDir, 0o750);
     if (!fs.isDirectoryWritable(logDir)) {
-      common.printFormattedError("ZWELS", "zwe-internal-start-prepare,prepare_log_directory", `ZWEL0141E: User $(get_user_id) does not have write permission on ${logDir}.`);
+      common.printFormattedError("ZWELS", "zwe-internal-start-prepare,prepare_log_directory", `ZWEL0141E: User ${user} does not have write permission on ${logDir}.`);
       std.exit(141);
     }
   }
@@ -172,12 +172,10 @@ function globalValidate(enabledComponents:string[]): void {
         privateErrors++;
         common.printFormattedError('ZWELS', "zwe-internal-start-prepare,global_validate", "Zosmf validation failed");
       }
-    } else if (std.getenv('ZWE_components_zaas_apiml_security_auth_provider') == "zosmf") {
-      let zosmfOk = zosmf.validateZosmfAsAuthProvider(zosmfHost, zosmfPort, 'zosmf');
-      if (!zosmfOk) {
+    } else if (std.getenv('ZWE_components_gateway_apiml_security_auth_provider') == "zosmf") {
         privateErrors++;
+        common.printError("Using z/OSMF as 'components.gateway.apiml.security.auth.provider' is not possible: discovery is disabled.");
         common.printFormattedError('ZWELS', "zwe-internal-start-prepare,global_validate", "Zosmf validation failed");
-      }
     }
   }
   
@@ -195,7 +193,7 @@ function validateComponents(enabledComponents:string[]): any {
   common.printFormattedInfo("ZWELS", "zwe-internal-start-prepare,validate_components", "process component validations ...");
 
   const componentEnvironments = {};
-  
+
   // reset error counter
   let privateErrors = 0;
   std.setenv('ZWE_PRIVATE_ERRORS_FOUND','0');
@@ -244,7 +242,7 @@ function validateComponents(enabledComponents:string[]): any {
       }
     }
   });
-  
+
   std.setenv('ZWE_PRIVATE_ERRORS_FOUND', ''+privateErrors);
   varlib.checkRuntimeValidationResult("zwe-internal-start-prepare,validate_components");
 
@@ -259,8 +257,8 @@ function configureComponents(componentEnvironments?: any, enabledComponents?:str
 
   const zwePrivateWorkspaceEnvDir = std.getenv('ZWE_PRIVATE_WORKSPACE_ENV_DIR');
   const zweCliParameterHaInstance = std.getenv('ZWE_CLI_PARAMETER_HA_INSTANCE');
-  
-  
+
+
   enabledComponents.forEach((componentId: string)=> {
     common.printFormattedTrace("ZWELS", "zwe-internal-start-prepare,configure_components", `- checking ${componentId}`);
     const componentDir = component.findComponentDirectory(componentId);
@@ -312,7 +310,7 @@ function configureComponents(componentEnvironments?: any, enabledComponents?:str
         common.printFormattedError("ZWELS", "zwe-internal-start-prepare,configure_components", `${componentName} processComponentApimlStaticDefinitions failure`);
       }
       // - generic app framework plugin
-      success=component.processComponentAppfwPlugin(componentDir);      
+      success=component.processComponentAppfwPlugin(componentDir);
       if (success) {
         common.printFormattedDebug("ZWELS", "zwe-internal-start-prepare,configure_components", `${componentName} processComponentAppfwPlugin success`);
       } else {
@@ -326,7 +324,7 @@ function configureComponents(componentEnvironments?: any, enabledComponents?:str
       } else {
         common.printFormattedError("ZWELS", "zwe-internal-start-prepare,configure_components", `${componentName} processComponentZaasSharedLibs failure`);
       }
-                                    
+
       // - gateway shared lib
       success=component.processComponentGatewaySharedLibs(componentDir);
       if (success) {
@@ -362,13 +360,13 @@ function configureComponents(componentEnvironments?: any, enabledComponents?:str
           const result = shell.execOutSync('sh', '-c', `. ${runtimeDirectory}/bin/libs/configmgr-index.sh && cd ${componentDir} && . ${fullPath} ; export rc=$? ; export -p`);
 
           common.printFormattedDebug("ZWELS", "zwe-internal-start-prepare,configure_components", `${componentName} configure ended with rc=${result.rc}`);
-          
+
           if (result.rc==0) {
             const exportContent = varlib.getEnvironmentExports(result.out);
             if (exportContent) {
               const rc = xplatform.storeFileUTF8(`${zwePrivateWorkspaceEnvDir}/${componentName}/.${zweCliParameterHaInstance}.env`, xplatform.AUTO_DETECT, exportContent);
               if (!rc) {
-                
+
               } else {
                 // set permission for the component environment snapshot
                 shell.execSync('chmod', `700`, `"${zwePrivateWorkspaceEnvDir}/${componentName}/.${zweCliParameterHaInstance}.env"`);
@@ -396,7 +394,7 @@ function configureComponents(componentEnvironments?: any, enabledComponents?:str
       }
     }
   });
-                            
+
   common.printFormattedDebug("ZWELS", "zwe-internal-start-prepare,configure_components", "component configurations are successful");
 }
 
@@ -462,7 +460,7 @@ export function execute() {
   config.sanitizeHaInstanceId();
   common.printFormattedInfo("ZWELS", "zwe-internal-start-prepare", `starting Zowe instance ${std.getenv('ZWE_CLI_PARAMETER_HA_INSTANCE')} with ${cliParameterConfig} ...`);
 
-  // extra preparations for running in container 
+  // extra preparations for running in container
   // this is running in containers
   if (runInContainer == 'true') {
     prepareRunningInContainer();

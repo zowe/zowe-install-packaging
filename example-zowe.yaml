@@ -308,7 +308,7 @@ zowe:
   # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   # This is an ID you use to separate multiple Zowe installs when determining
   # resource names used in RBAC authorization checks such as dataservices with RBAC
-  # expects this ID in SAF resources 
+  # expects this ID in SAF resources
   rbacProfileIdentifier: "1"
 
   # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -324,7 +324,7 @@ zowe:
   externalDomains:
     # this should be the domain name to access Zowe APIML Gateway
     - sample-domain.com
-  
+
   # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   # This is the port you use to access Zowe Gateway from your web browser.
   #
@@ -366,8 +366,8 @@ zowe:
   #   ZWED_TN3270_PORT: 23
 
   # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-  # You can define any Zowe message portions to be checked for and the message added to the 
-  # system log upon its logging, truncated to 126 characters. 
+  # You can define any Zowe message portions to be checked for and the message added to the
+  # system log upon its logging, truncated to 126 characters.
   sysMessages:
   #   # Zowe starting
     - "ZWEL0021I"
@@ -437,7 +437,7 @@ zowe:
   #              This mode does not validate certificate Common Name and Subject
   #              Alternative Name (SAN).
   # - DISABLED:  disable certificate validation. This is NOT recommended for
-  #              security. 
+  #              security.
   verifyCertificates: STRICT
 
 
@@ -506,6 +506,19 @@ components:
     enabled: true
     port: 7554
     debug: false
+    apiml:
+      security:
+        auth:
+          provider: zosmf
+          zosmf:
+            jwtAutoconfiguration: jwt
+            serviceId: ibmzosmf
+        authorization:
+          endpoint:
+            enabled: false
+          provider: "native"
+        x509:
+          enabled: false
 
     # If we customize this to use different external certificate, than should also
     # define "server.internal.ssl.certificate" and enable "server.internal.ssl.enabled".
@@ -516,21 +529,8 @@ components:
   # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   zaas:
     enabled: true
-    port: 7563
+    port: 7558
     debug: false
-    apiml:
-      security:
-        auth:
-          provider: zosmf
-          zosmf:
-            jwtAutoconfiguration: auto
-            serviceId: ibmzosmf
-        authorization:
-          endpoint:
-            enabled: false
-          provider: "native"
-        x509:
-          enabled: false
   # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   api-catalog:
     enabled: true
@@ -553,17 +553,14 @@ components:
 
     storage:
       evictionStrategy: reject
-      # can be inMemory, VSAM, redis or infinispan
-      mode: VSAM
-      size: 10000
-      vsam:
-        # your VSAM data set created by "zwe init vsam" command or ZWECSVSM JCL
-        # this is required if storage mode is VSAM
-        name: ""
+      # can be infinispan, inMemory, redis or VSAM(deprecated)
+      mode: infinispan
       infinispan:
         # this is required if storage mode is infinispan
         jgroups:
           port: 7600
+          keyExchange:
+            port: 7601
 
   # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   app-server:
@@ -624,7 +621,7 @@ components:
 #     # This sysname will be used to route your JES command to target system.
 #     sysname: LPR1
 #     # for this HA instance, we did not customize "components", so it will use default value.
-  
+
 #   # HA instance ID, we will start 2 instances on LPAR2
 #   # **NOTE**, we can only start one gateway in same LPAR.
 #   lpar2a:

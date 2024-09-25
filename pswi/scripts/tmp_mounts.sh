@@ -20,8 +20,8 @@ then
     echo "${MOUNT} with zFS ${ZFS} mounted will be used as is."
     MOUNTED=true
   else
-    echo "The file system ${ZFS} exists but is mounted to different mount point(${MOUNTP})."
-    echo "Use different name of zFS or ${MOUNTP} for mount point."
+    echo "The file system ${ZFS} exists but is mounted to different mount point(${MOUNTP})." >> report.txt
+    echo "Use different name of zFS or ${MOUNTP} for mount point." >> report.txt
     exit -1
   fi
 else
@@ -33,9 +33,9 @@ else
   if [ -n "$MOUNTZFS" ]
   then
     # If zFS is not mounted to the mount point then this mount point has different zFS
-    echo "The mount point ${MOUNT} has different zFS (${MOUNTZFS}) mounted."
-    echo "Use different mount point (not ${MOUNT})."
-    echo "Or use ${MOUNTZFS} for zFS."
+    echo "The mount point ${MOUNT} has different zFS (${MOUNTZFS}) mounted." >> report.txt
+    echo "Use different mount point (not ${MOUNT})." >> report.txt
+    echo "Or use ${MOUNTZFS} for zFS." >> report.txt
     exit -1
   fi
 fi
