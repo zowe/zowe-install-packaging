@@ -14,7 +14,7 @@
     "org.zowe.zlux.zlux-core": {
       "version": "3.0.0-RC",
       "repository": "libs-snapshot-local",
-      "artifact": "zlux-core-3.0.0-20240924.215135.pax"
+      "artifact": "zlux-core-3.0.0-20240925.185019.pax"
     },
     "org.zowe.zlux.sample-angular-app": {
       "version": "2.18.0-V2.X-RC",
@@ -52,10 +52,10 @@
       "artifact": "zss-3.0.0-rc-1202-20240919131259.pax"
     },
     "org.zowe.explorer-jes": {
-      "version": "2.0.7"
+      "version": "3.0.0"
     },
     "org.zowe.explorer-mvs": {
-      "version": "2.0.9"
+      "version": "3.0.0"
     },
     "org.zowe.explorer-uss": {
       "version": "3.0.0"
@@ -247,14 +247,14 @@
       "componentGroup": "Zowe Desktop Data Sets UI Plugin",
       "entries": [{
         "repository": "explorer-mvs",
-        "tag": "v2.0.9",
+        "tag": "v3.0.0",
         "destinations": ["Zowe PAX"]
       }]
     }, {
       "componentGroup": "Zowe Desktop JES UI Plugin",
       "entries": [{
         "repository": "explorer-jes",
-        "tag": "v2.0.7",
+        "tag": "v3.0.0",
         "destinations": ["Zowe PAX"]
       }]
     }, {
