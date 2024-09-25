@@ -10,6 +10,7 @@ All notable changes to the Zowe Installer will be documented in this file.
 
 ### New features and enhancements
 - Enhancement: Added explanation to possible error message when checking z/OSMF setting. [#3956](https://github.com/zowe/zowe-install-packaging/pull/3956)
+- Enhancement: New plugin identifier added to list of plugins and `allowedPlugins.json` for the new V3 Desktop in Angular 18. [#3984](https://github.com/zowe/zowe-install-packaging/pull/3984)
 
 <!--Add the PR or issue number to the entry if available.-->
 
