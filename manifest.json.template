@@ -65,23 +65,23 @@
       "artifact": "explorer-ip*.pax"
     },
     "org.zowe.apiml.api-catalog-package": {
-      "version": "3.0.22",
+      "version": "3.0.36",
       "artifact": "api-catalog-*.zip"
     },
     "org.zowe.apiml.discovery-package": {
-      "version": "3.0.22",
+      "version": "3.0.36",
       "artifact": "discovery-*.zip"
     },
     "org.zowe.apiml.gateway-package": {
-      "version": "3.0.22",
+      "version": "3.0.36",
       "artifact": "gateway-*.zip"
     },
     "org.zowe.apiml.caching-service-package": {
-      "version": "3.0.22",
+      "version": "3.0.36",
       "artifact": "caching-service-*.zip"
     },
     "org.zowe.apiml.apiml-common-lib-package": {
-      "version": "3.0.22",
+      "version": "3.0.36",
       "artifact": "apiml-common-lib-*.zip"
     },
     "org.zowe.apiml.sdk.common-java-lib-package": {
@@ -89,11 +89,11 @@
       "artifact": "common-java-lib-*.zip"
     },
     "org.zowe.apiml.sdk.apiml-sample-extension-package": {
-      "version": "3.0.22",
+      "version": "3.0.36",
       "artifact": "apiml-sample-extension-*.zip"
     },
     "org.zowe.apiml.zaas-package": {
-      "version": "3.0.22",
+      "version": "3.0.36",
       "artifact": "zaas-package-*.zip"
 	},
 	"org.zowe.getesm": {
@@ -133,7 +133,7 @@
       "componentGroup": "Zowe API Mediation Layer",
       "entries": [{
         "repository": "api-layer",
-        "tag": "v3.0.22",
+        "tag": "v3.0.36",
         "destinations": ["Zowe PAX"]
       }]
     }, {
@@ -361,28 +361,28 @@
     "api-catalog": {
       "registry": "zowe-docker-release.jfrog.io",
       "name": "ompzowe/api-catalog-services",
-      "tag" : "3.0.22-ubuntu"
+      "tag" : "3.0.36-ubuntu"
     },
-	"gateway": {
+	  "gateway": {
       "registry": "zowe-docker-snapshot.jfrog.io",
       "name": "ompzowe/gateway-service",
-      "tag" : "3.0.22-ubuntu"
+      "tag" : "3.0.36-ubuntu"
     },
     "caching": {
       "registry": "zowe-docker-release.jfrog.io",
       "name": "ompzowe/caching-service",
-      "tag" : "3.0.22-ubuntu"
+      "tag" : "3.0.36-ubuntu"
     },
     "discovery": {
       "kind": "statefulset",
       "registry": "zowe-docker-release.jfrog.io",
       "name": "ompzowe/discovery-service",
-      "tag" : "3.0.22-ubuntu"
+      "tag" : "3.0.36-ubuntu"
     },
     "zaas": {
         "registry": "zowe-docker-snapshot.jfrog.io",
         "name": "ompzowe/zaas-service",
-        "tag" : "3.0.22-ubuntu"
+        "tag" : "3.0.36-ubuntu"
     },
     "app-server": {
       "registry": "zowe-docker-release.jfrog.io",
