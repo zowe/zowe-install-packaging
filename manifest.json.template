@@ -393,19 +393,19 @@
       "kind": "job",
       "registry": "zowe-docker-release.jfrog.io",
       "name": "ompzowe/explorer-ip",
-      "tag" : "3.0.0-ubuntu"
+      "tag" : "3.0.1-ubuntu"
     },
     "explorer-jes": {
       "kind": "job",
       "registry": "zowe-docker-release.jfrog.io",
       "name": "ompzowe/explorer-jes",
-      "tag" : "2.0.7-ubuntu"
+      "tag" : "3.0.0-ubuntu"
     },
     "explorer-mvs": {
       "kind": "job",
       "registry": "zowe-docker-release.jfrog.io",
       "name": "ompzowe/explorer-mvs",
-      "tag" : "2.0.10-ubuntu"
+      "tag" : "3.0.0-ubuntu"
     },
     "explorer-uss": {
       "kind": "job",
