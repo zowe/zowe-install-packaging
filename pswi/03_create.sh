@@ -161,6 +161,13 @@ echo "iconv -f ISO8859-1 -t IBM-1047 \$source > _ZWECONF;" >> JCL
 echo "sed 's|UTF-8|IBM-1047|g' _ZWECONF > ZWECONF;" >> JCL                         
 echo "cp -T ZWECONF \$target;" >> JCL
 echo "/*" >> JCL
+echo "//CHMODZWE EXEC PGM=BPXBATCH" >> JCL
+echo "//STDOUT DD SYSOUT=*" >> JCL
+echo "//STDERR DD SYSOUT=*" >> JCL
+echo "//STDPARM  DD *" >> JCL
+echo "SH set -x;set -e;" >> JCL
+echo "chmod -R 777 ${ZOWE_MOUNT};" >> JCL
+echo "/*" >> JCL
 
 sh scripts/submit_jcl.sh "`cat JCL`"
 if [ $? -gt 0 ];then exit -1;fi
