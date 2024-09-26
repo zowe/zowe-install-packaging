@@ -44,10 +44,10 @@
       "artifact": "*.pax"
     },
     "org.zowe.explorer-jes": {
-      "version": "^3.0.0-PR-389"
+      "version": "^3.0.0-SNAPSHOT"
     },
     "org.zowe.explorer-mvs": {
-      "version": "^3.0.0-PR-263"
+      "version": "^3.0.0-SNAPSHOT"
     },
     "org.zowe.explorer-uss": {
       "version": "^3.0.0-SNAPSHOT"
@@ -109,7 +109,7 @@
       "artifact": "*.pax"
     },
     "org.zowe.launcher": {
-      "version": "^2.0.0-STAGING"
+      "version": "^3.0.0-STAGING"
     },
     "org.zowe.keyring-utilities": {
       "version": "1.0.4",

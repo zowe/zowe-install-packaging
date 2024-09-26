@@ -40,27 +40,27 @@ zowe:
     dataset:
       # **COMMONLY_CUSTOMIZED**
       # where Zowe MVS data sets will be installed
-      prefix: IBMUSER.ZWEV2
+      prefix: IBMUSER.ZWEV3
       # **COMMONLY_CUSTOMIZED**
       # PROCLIB where Zowe STCs will be copied over
       proclib: USER.PROCLIB
       # **COMMONLY_CUSTOMIZED**
       # Zowe PARMLIB
-      parmlib: IBMUSER.ZWEV2.CUST.PARMLIB
+      parmlib: IBMUSER.ZWEV3.CUST.PARMLIB
       # Holds Zowe PARMLIB members for plugins
       parmlibMembers:
         # For ZIS plugins
         zis: ZWESIP00
       # **COMMONLY_CUSTOMIZED**
       # JCL library where Zowe will store temporary JCLs during initialization
-      jcllib: IBMUSER.ZWEV2.CUST.JCLLIB
+      jcllib: IBMUSER.ZWEV3.CUST.JCLLIB
       # Utilities for use by Zowe and extensions
-      loadlib: IBMUSER.ZWEV2.SZWELOAD
+      loadlib: IBMUSER.ZWEV3.SZWELOAD
       # APF authorized LOADLIB for Zowe
-      authLoadlib: IBMUSER.ZWEV2.SZWEAUTH
+      authLoadlib: IBMUSER.ZWEV3.SZWEAUTH
       # **COMMONLY_CUSTOMIZED**
       # APF authorized LOADLIB for Zowe ZIS Plugins
-      authPluginLib: IBMUSER.ZWEV2.CUST.ZWESAPL
+      authPluginLib: IBMUSER.ZWEV3.CUST.ZWESAPL
 
     # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
     # # Security related configurations. This setup is optional.
