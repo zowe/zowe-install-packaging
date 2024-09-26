@@ -157,26 +157,13 @@ components:
         authorization:
           endpoint:
             enabled: false
-          provider: ""
+          provider: "native"
         x509:
           enabled: false
-    server:
-      internal:
-      # gateway supports internal connector
-        enabled: false
-        port: 7550
-        ssl:
-          enabled: false
 
   # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-  metrics-service:
-    enabled: false
-    port: 7551
-    debug: false
-
-  # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-  cloud-gateway:
-    enabled: false
+  zaas:
+    enabled: true
     port: 7558
     debug: false
 
@@ -201,16 +188,13 @@ components:
     storage:
       evictionStrategy: reject
       # can be inMemory, VSAM, redis or infinispan
-      mode: VSAM
-      size: 10000
-      vsam:
-        # your VSAM data set created by "zwe init vsam" command or ZWECSVSM JCL
-        # this is required if storage mode is VSAM
-        name: ""
+      mode: infinispan
       infinispan:
         # this is required if storage mode is infinispan
         jgroups:
           port: 7600
+          keyExchange:
+            port: 7601
 
   # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   app-server:
