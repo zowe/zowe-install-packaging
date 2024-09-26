@@ -588,6 +588,7 @@ How we want to verify SSL certificates of services. Valid values are:
             <!-- Specify choices here -->
             <choice>jwt</choice>
             <choice>ltpa</choice>
+            <choice>auto</choice>
             <default>jwt</default>
         </string>
     </variable>
@@ -866,17 +867,6 @@ How we want to verify SSL certificates of services. Valid values are:
             <!-- Specify choices here -->
             <default>ZWESIS_STD</default>
         </string>
-    </variable>
-    <variable name="components_zss_tls" scope="instance" visibility="public">
-        <label>ZSS TLS</label>
-        <abstract>Check this to enable TLS on ZSS</abstract>
-        <description>Check this to enable TLS on ZSS</description>
-        <category>components</category>
-        <boolean>
-            <!-- Put validation here -->
-            <!-- Specify choices here -->
-            <default>true</default>
-        </boolean>
     </variable>
     <variable name="components_zss_agent_jwt_fallback" scope="instance" visibility="public">
         <label>ZSS JWT fallback</label>
@@ -1419,7 +1409,6 @@ How we want to verify SSL certificates of services. Valid values are:
             </condition>
             <variableValue name="components_zss_port" scope="instance" noPromptIfSet="false" required="true"/>
             <variableValue name="components_zss_crossMemoryServerName" scope="instance" noPromptIfSet="false" required="true"/>
-            <variableValue name="components_zss_tls" scope="instance" noPromptIfSet="false" required="true"/>
             <variableValue name="components_zss_agent_jwt_fallback" scope="instance" noPromptIfSet="false" required="true"/>
             <variableValue name="components_zss_agent_64bit" scope="instance" noPromptIfSet="false" required="true"/>
             <instructions substitution="false">Run this step to specify the values for the ZSS variables</instructions>
