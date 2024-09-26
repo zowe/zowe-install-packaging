@@ -588,7 +588,6 @@ How we want to verify SSL certificates of services. Valid values are:
             <!-- Specify choices here -->
             <choice>jwt</choice>
             <choice>ltpa</choice>
-            <choice>auto</choice>
             <default>jwt</default>
         </string>
     </variable>
@@ -1974,7 +1973,7 @@ echo '      security:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '        auth:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '          provider: zosmf' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '          zosmf:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '            jwtAutoconfiguration: auto' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '            jwtAutoconfiguration: jwt' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '            serviceId: ibmzosmf' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '        authorization:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '          endpoint:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
