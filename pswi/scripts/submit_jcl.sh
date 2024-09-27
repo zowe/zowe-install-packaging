@@ -11,7 +11,7 @@ sh scripts/check_response.sh "${RESP}" $?
 JOB_STATUS_URL=`echo $RESP |  grep -o '"url":".*"' | cut -f4 -d\" | tr -d '\' 2>/dev/null`
 if [ -z "$JOB_STATUS_URL" ]
 then
-  echo "No response from the REST API call."
+  echo "No response from the REST API call." >> report.txt
   exit -1
 fi
 JOBID=`echo $RESP |  grep -o '"jobid":".*"' | cut -f4 -d\"`
@@ -49,7 +49,7 @@ if [ "$RC" = "CC 0000" ]
 then
   echo "${JOBNAME} ${JOBID} was completed."
 else
-  echo "${JOBNAME} ${JOBID} failed."
-  cat $JOBNAME/$JOBID
+  echo "${JOBNAME} ${JOBID} failed." >> report.txt
+  cat $JOBNAME/$JOBID >> report.txt
   exit -1
 fi  

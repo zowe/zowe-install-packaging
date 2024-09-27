@@ -91,8 +91,8 @@ STATUS_NAME=`echo $RESP | grep -o '"statusName":".*"' | cut -f4 -d\"`
 
 if [ "$STATUS_NAME" = "in-progress" ]
 then
-  echo "Workflow ended with an error."
-  echo $RESP
+  echo "Workflow with SMP/E ended with an error." >> report.txt
+  echo $RESP >> report.txt
   exit -1
 elif [ "$STATUS_NAME" = "complete" ]
 then

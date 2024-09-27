@@ -40,27 +40,27 @@ zowe:
     dataset:
       # **COMMONLY_CUSTOMIZED**
       # where Zowe MVS data sets will be installed
-      prefix: IBMUSER.ZWEV2
+      prefix: IBMUSER.ZWEV3
       # **COMMONLY_CUSTOMIZED**
       # PROCLIB where Zowe STCs will be copied over
       proclib: USER.PROCLIB
       # **COMMONLY_CUSTOMIZED**
       # Zowe PARMLIB
-      parmlib: IBMUSER.ZWEV2.CUST.PARMLIB
+      parmlib: IBMUSER.ZWEV3.CUST.PARMLIB
       # Holds Zowe PARMLIB members for plugins
       parmlibMembers:
         # For ZIS plugins
         zis: ZWESIP00
       # **COMMONLY_CUSTOMIZED**
       # JCL library where Zowe will store temporary JCLs during initialization
-      jcllib: IBMUSER.ZWEV2.CUST.JCLLIB
+      jcllib: IBMUSER.ZWEV3.CUST.JCLLIB
       # Utilities for use by Zowe and extensions
-      loadlib: IBMUSER.ZWEV2.SZWELOAD
+      loadlib: IBMUSER.ZWEV3.SZWELOAD
       # APF authorized LOADLIB for Zowe
-      authLoadlib: IBMUSER.ZWEV2.SZWEAUTH
+      authLoadlib: IBMUSER.ZWEV3.SZWEAUTH
       # **COMMONLY_CUSTOMIZED**
       # APF authorized LOADLIB for Zowe ZIS Plugins
-      authPluginLib: IBMUSER.ZWEV2.CUST.ZWESAPL
+      authPluginLib: IBMUSER.ZWEV3.CUST.ZWESAPL
 
     # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
     # # Security related configurations. This setup is optional.
@@ -292,22 +292,10 @@ zowe:
   # Where extensions are installed
   extensionDirectory: /global/zowe/extensions
 
-  # **COMMONLY_CUSTOMIZED**
-  useConfigmgr: true
-  # Setting to true will enable:
-  # * schema-backed validation of zowe.yaml
-  # * should greatly improve startup time.
-  # * can supply multiple zowe.yaml as defaults & overrides in the format of
-  #   FILE(/my/customizations.yaml):PARMLIB(MYORG.ZOWE(YAML)):FILE(/zowe/defaults.yaml)
-  # * allows templating in zowe.yaml by putting references within ${{ }} blocks such as
-  #    rewriting the job section below as
-  #    job:
-  #      name: ${{ zowe.job.prefix }}SV
-  #      prefix: ZWE1
   configmgr:
     # STRICT=quit on any error, including missing schema
     # COMPONENT-COMPAT=if component missing schema, skip it with warning instead of quit
-    validation: "COMPONENT-COMPAT"
+    validation: "STRICT"
 
   # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   # runtime z/OS job name
@@ -320,7 +308,7 @@ zowe:
   # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   # This is an ID you use to separate multiple Zowe installs when determining
   # resource names used in RBAC authorization checks such as dataservices with RBAC
-  # expects this ID in SAF resources 
+  # expects this ID in SAF resources
   rbacProfileIdentifier: "1"
 
   # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -336,7 +324,7 @@ zowe:
   externalDomains:
     # this should be the domain name to access Zowe APIML Gateway
     - sample-domain.com
-  
+
   # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   # This is the port you use to access Zowe Gateway from your web browser.
   #
@@ -378,8 +366,8 @@ zowe:
   #   ZWED_TN3270_PORT: 23
 
   # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-  # You can define any Zowe message portions to be checked for and the message added to the 
-  # system log upon its logging, truncated to 126 characters. 
+  # You can define any Zowe message portions to be checked for and the message added to the
+  # system log upon its logging, truncated to 126 characters (wildcards are not supported).
   sysMessages:
   #   # Zowe starting
     - "ZWEL0021I"
@@ -449,7 +437,7 @@ zowe:
   #              This mode does not validate certificate Common Name and Subject
   #              Alternative Name (SAN).
   # - DISABLED:  disable certificate validation. This is NOT recommended for
-  #              security. 
+  #              security.
   verifyCertificates: STRICT
 
 
@@ -518,6 +506,19 @@ components:
     enabled: true
     port: 7554
     debug: false
+    apiml:
+      security:
+        auth:
+          provider: zosmf
+          zosmf:
+            jwtAutoconfiguration: jwt
+            serviceId: ibmzosmf
+        authorization:
+          endpoint:
+            enabled: false
+          provider: "native"
+        x509:
+          enabled: false
 
     # If we customize this to use different external certificate, than should also
     # define "server.internal.ssl.certificate" and enable "server.internal.ssl.enabled".
@@ -528,21 +529,8 @@ components:
   # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   zaas:
     enabled: true
-    port: 7563
+    port: 7558
     debug: false
-    apiml:
-      security:
-        auth:
-          provider: zosmf
-          zosmf:
-            jwtAutoconfiguration: auto
-            serviceId: ibmzosmf
-        authorization:
-          endpoint:
-            enabled: false
-          provider: "native"
-        x509:
-          enabled: false
   # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   api-catalog:
     enabled: true
@@ -565,17 +553,14 @@ components:
 
     storage:
       evictionStrategy: reject
-      # can be inMemory, VSAM, redis or infinispan
-      mode: VSAM
-      size: 10000
-      vsam:
-        # your VSAM data set created by "zwe init vsam" command or ZWECSVSM JCL
-        # this is required if storage mode is VSAM
-        name: ""
+      # can be infinispan, inMemory, redis or VSAM(deprecated)
+      mode: infinispan
       infinispan:
         # this is required if storage mode is infinispan
         jgroups:
           port: 7600
+          keyExchange:
+            port: 7601
 
   # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   app-server:
@@ -636,7 +621,7 @@ components:
 #     # This sysname will be used to route your JES command to target system.
 #     sysname: LPR1
 #     # for this HA instance, we did not customize "components", so it will use default value.
-  
+
 #   # HA instance ID, we will start 2 instances on LPAR2
 #   # **NOTE**, we can only start one gateway in same LPAR.
 #   lpar2a:
