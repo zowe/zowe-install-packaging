@@ -294,7 +294,7 @@ some use cases, like containerization, this port could be different.</descriptio
           TLS settings only apply when attls=false.
           Else you must use AT-TLS configuration for TLS customization.
         </description>
-        <category>certificates</category>
+        <category>network</category>
         <string valueMustBeChoice="true" multiLine="false">
             <!-- Put validation here -->
             <choice>TLSv1.1</choice>
