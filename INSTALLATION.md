@@ -144,7 +144,7 @@ zowe:
 
 <br>
 <details>
-<summary>If you would like Zowe to create a keyring instead, click here for options</summary>
+<summary><b>If you would like Zowe to create a keyring instead, click here for options</b></summary>
 
 |Keyring Setup Type|Description|Sample JCL|
 |---|---|---|
@@ -180,7 +180,7 @@ Before each command runs, it will print the JCL that it is submitting.
 Using `zwe init` is an alternative to using the JCL samples from the previous section.
 
 <details>
-<summary>Click here to read about configuring via zwe instead of JCL samples</summary>
+<summary><b>Click here to read about configuring via zwe instead of JCL samples</b></summary>
 
 Every `zwe init` command also has a `--dry-run` option which validates the configuration, prints the JCL, but does not submit it.
 This allows you to review the actions before performing them with the appropriate administrator.
@@ -222,7 +222,7 @@ zowe:
 
 <br>
 <details>
-<summary>To instead have Zowe create a keystore or keyring for you, click here for running `zwe init certificate`.</summary>
+<summary><b>To instead have Zowe create a keystore or keyring for you, click here for running `zwe init certificate`.</b></summary>
 
 |Certificate scenario|Description|
 |---|---|
