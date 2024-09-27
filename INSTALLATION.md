@@ -19,7 +19,6 @@ Table of contents:
         1. [Core Tasks](#core-tasks)
         2. [Keyring Tasks](#keyring-tasks)
     2. [Configuration by zwe](#configuration-by-zwe)
-        1. [Keystore or Keyring Configuration](#keystore-or-keyring-configuration)
 5. [Networking](#networking)
     1. [Ports](#ports)
     2. [IP Addresses](#ip-addresses)
@@ -143,14 +142,17 @@ zowe:
       password: "password" #literally "password". keyrings do not use passwords, so this is a placeholder.
 ```
 
-If you would like Zowe to create a keyring instead, you can do one of these three tasks:
+<br>
+<details>
+<summary>If you would like Zowe to create a keyring instead, click here for options</summary>
 
 |Keyring Setup Type|Description|Sample JCL|
 |---|---|---|
 |1|Zowe will create a keyring and populate it with a newly generated certificate and certificate authority. The certificate would be seen as "self-signed" by clients unless import of the CA to clients is performed|RACF: [ZWEIKRR1](https://github.com/zowe/zowe-install-packaging/tree/feature/v3/jcl/files/SZWESAMP/ZWEIKRR1)<br><br>TSS: [ZWEIKRT1](https://github.com/zowe/zowe-install-packaging/tree/feature/v3/jcl/files/SZWESAMP/ZWEIKRT1)<br><br>ACF2: [ZWEIKRA1](https://github.com/zowe/zowe-install-packaging/tree/feature/v3/jcl/files/SZWESAMP/ZWEIKRA1)|
 |2|Zowe will create a keyring and populate it by connecting pre-existing certificates and CAs that you specify.|RACF: [ZWEIKRR2](https://github.com/zowe/zowe-install-packaging/tree/feature/v3/jcl/files/SZWESAMP/ZWEIKRR2)<br><br>TSS: [ZWEIKRT2](https://github.com/zowe/zowe-install-packaging/tree/feature/v3/jcl/files/SZWESAMP/ZWEIKRT2)<br><br>ACF2: [ZWEIKRA2](https://github.com/zowe/zowe-install-packaging/tree/feature/v3/jcl/files/SZWESAMP/ZWEIKRA2)|
 |3|Zowe will create a keyring and populate it by importing PKCS12 content from a dataset that you specify.|RACF: [ZWEIKRR3](https://github.com/zowe/zowe-install-packaging/tree/feature/v3/jcl/files/SZWESAMP/ZWEIKRR3)<br><br>TSS: [ZWEIKRT3](https://github.com/zowe/zowe-install-packaging/tree/feature/v3/jcl/files/SZWESAMP/ZWEIKRT3)<br><br>ACF2: [ZWEIKRA3](https://github.com/zowe/zowe-install-packaging/tree/feature/v3/jcl/files/SZWESAMP/ZWEIKRA3)|
-
+</details>
+<br>
 
 JCL samples for removing Zowe configuration also exist.
 |Action|Sample JCL|
@@ -174,6 +176,11 @@ If you type `zwe init --help`, you will see each configuration command that is a
 Each command reads configuration properties from the Zowe YAML files, and combines that with the JCL samples from the SZWESAMP dataset.
 The commands resolve the JCL sample templates into usable JCL within the dataset defined by YAML value `zowe.setup.dataset.jcllib`.
 Before each command runs, it will print the JCL that it is submitting.
+
+Using `zwe init` is an alternative to using the JCL samples from the previous section.
+
+<details>
+<summary>Click here to read about configuring via zwe instead of JCL samples</summary>
 
 Every `zwe init` command also has a `--dry-run` option which validates the configuration, prints the JCL, but does not submit it.
 This allows you to review the actions before performing them with the appropriate administrator.
@@ -213,7 +220,9 @@ zowe:
       password: "password" #literally "password". keyrings do not use passwords, so this is a placeholder.
 ```
 
-To instead have Zowe create a keystore or keyring for you, run `zwe init certificate` for one of the options below.
+<br>
+<details>
+<summary>To instead have Zowe create a keystore or keyring for you, click here for running `zwe init certificate`.</summary>
 
 |Certificate scenario|Description|
 |---|---|
@@ -222,7 +231,8 @@ To instead have Zowe create a keystore or keyring for you, run `zwe init certifi
 |3|Zowe will create a keyring and populate it with a newly generated certificate and certificate authority. The certificate would be seen as "self-signed" by clients unless import of the CA to clients is performed|
 |4|Zowe will create a keyring and populate it by connecting pre-existing certificates and CAs that you specify.|
 |5|Zowe will create a keyring and populate it by importing PKCS12 content from a dataset that you specify.|
-
+</details>
+</details>
 
 <br>
 <br>
