@@ -239,7 +239,7 @@ some use cases, like containerization, this port could be different.</descriptio
           TLS settings only apply when attls=false.
           Else you must use AT-TLS configuration for TLS customization.
         </description>
-        <category>certificates</category>
+        <category>network</category>
         <string valueMustBeChoice="true" multiLine="false">
             <!-- Put validation here -->
             <choice>TLSv1.1</choice>
@@ -645,7 +645,94 @@ How we want to verify SSL certificates of services. Valid values are:
             <!-- Specify choices here -->
             <default>false</default>
         </boolean>
-    </variable>    
+    </variable> 
+    <variable name="components_caching_service_enabled" scope="instance" visibility="public">
+        <label>Enable the Caching service</label>
+        <abstract>Check this option to enable the Caching service</abstract>
+        <description>Check this option to enable the Caching service</description>
+        <category>components</category>
+        <boolean>
+            <!-- Put validation here -->
+            <!-- Specify choices here -->
+            <default>false</default>
+        </boolean>
+    </variable>  
+    <variable name="components_caching_service_port" scope="instance" visibility="public">
+        <label>Caching service port</label>
+        <abstract>Port for the caching service</abstract>
+        <description>Port for the caching service</description>
+        <category>components</category>
+        <integer>
+            <!-- Put validation here -->
+            <!-- Specify choices here -->
+            <default>7555</default>
+        </integer>
+    </variable>
+    <variable name="components_caching_service_debug" scope="instance" visibility="public">
+        <label>Caching service debug</label>
+        <abstract>Check to get extra debug information from the service</abstract>
+        <description>Check to get extra debug information from the service</description>
+        <category>components</category>
+        <boolean>
+            <!-- Put validation here -->
+            <!-- Specify choices here -->
+            <default>false</default>
+        </boolean>
+    </variable>
+    <variable name="components_caching_service_storage_evictionStrategy" scope="instance" visibility="public">
+        <label>Caching service storage eviction strategy</label>
+        <abstract>Specifies the eviction strategy when storage size is achieved</abstract>
+        <description>Specifies the eviction strategy when storage size is achieved.</description>
+        <category>components</category>
+        <string valueMustBeChoice="true" multiLine="false">
+            <!-- Put validation here -->
+            <!-- Specify choices here -->
+            <choice>reject</choice>
+            <choice>removeOldest</choice>
+            <default>reject</default>
+        </string>
+    </variable>
+    <variable name="components_caching_service_storage_mode" scope="instance" visibility="public">
+        <label>Caching service storage mode</label>
+        <abstract>Specifies the components caching service storage mode</abstract>
+        <description>Specifies the components caching service storage mode.</description>
+        <category>components</category>
+        <string valueMustBeChoice="true" multiLine="false">
+            <!-- Put validation here -->
+            <!-- Specify choices here -->            
+            <choice>infinispan</choice>            
+            <default>infinispan</default>
+        </string>
+    </variable> 
+    <variable name="components_caching_service_storage_infinispan_jgroups_port" scope="instance" visibility="public">
+        <label>Caching service storage jgroups port</label>
+        <abstract>Port for jgroups</abstract>
+        <description>Port for jgroups. This is required if storage mode is infinispan.</description>
+        <category>components</category>
+        <string valueMustBeChoice="false" multiLine="false">
+            <!-- Put validation here -->
+            <!-- Specify choices here -->
+            <default>7600</default>
+        </string>
+    </variable>
+  <variable name="components_caching_service_storage_infinispan_jgroups_host" scope="instance" visibility="public">
+        <label>Caching service storage jgroups host</label>
+        <abstract>Host for jgroups</abstract>
+        <description>Host for jgroups. Default value is the same as Zowe host and it is used if storage mode is infinispan.</description>
+        <category>components</category>
+        <string valueMustBeChoice="false" multiLine="false"/>
+  </variable>
+  <variable name="components_caching_service_storage_infinispan_jgroups_keyExchange_port" scope="instance" visibility="public">
+        <label>Caching service storage jgroups keyExchange port</label>
+        <abstract>Port for jgroups key exchange</abstract>
+        <description>Port for jgroups key exchange. This is required if storage mode is infinispan.</description>
+        <category>components</category>
+        <string valueMustBeChoice="false" multiLine="false">
+            <!-- Put validation here -->
+            <!-- Specify choices here -->
+            <default>7601</default>
+        </string>
+    </variable>
     <variable name="useconfig_manager_enabled" scope="instance" visibility="public">
         <label>Enable Zowe configuration manager</label>
         <abstract>Check this option to enable Zowe configuration manager</abstract>
@@ -858,6 +945,7 @@ How we want to verify SSL certificates of services. Valid values are:
             <variableValue name="components_zaas_enabled" scope="instance" noPromptIfSet="false" required="true"/>
             <variableValue name="components_api_catalog_enabled" scope="instance" noPromptIfSet="false" required="true"/>
             <variableValue name="components_discovery_enabled" scope="instance" noPromptIfSet="false" required="true"/>
+            <variableValue name="components_caching_service_enabled" scope="instance" noPromptIfSet="false" required="true"/>
             <variableValue name="zowe_setup_security_product" scope="instance" noPromptIfSet="false" required="true"/>
             <variableValue name="zowe_setup_security_groups_admin" scope="instance" noPromptIfSet="false" required="true"/>
             <variableValue name="zowe_setup_security_groups_stc" scope="instance" noPromptIfSet="false" required="true"/>
@@ -976,7 +1064,68 @@ How we want to verify SSL certificates of services. Valid values are:
             <autoEnable>false</autoEnable>
             <canMarkAsFailed>false</canMarkAsFailed>
             <!--template-->
-        </step>        
+        </step>   
+        <step name="caching_service_vars" optional="false">
+            <title>Caching Service variables</title>
+            <description>Specify the variables for the Caching Service</description>
+            <step name="caching_service_variables" optional="false">
+                <title>Main variables for Caching Service</title>
+                <description>Specify the main variables for the Caching Service</description>
+                <prereqStep name="main_variables"/>
+                <condition>
+                    <expression>1==1</expression>
+                    <description>Always true</description>
+                    <targetStateSet>
+                        <extendStateExpression>
+                            <description>Skipped if Caching Service was not selected</description>
+                            <expression>!${instance-components_caching_service_enabled}</expression>
+                            <targetState>skipped</targetState>
+                        </extendStateExpression>
+                    </targetStateSet>
+                </condition>
+                <variableValue name="components_caching_service_port" scope="instance" noPromptIfSet="false" required="true"/>
+                <variableValue name="components_caching_service_debug" scope="instance" noPromptIfSet="false" required="true"/>
+                <variableValue name="components_caching_service_storage_evictionStrategy" scope="instance" noPromptIfSet="false" required="true"/>
+                <variableValue name="components_caching_service_storage_mode" scope="instance" noPromptIfSet="false" required="true"/>
+                <instructions substitution="false">Run this step to specify the variables for the Caching Service</instructions>
+                <weight>1</weight>
+                <skills>z/OS System Programmer</skills>
+                <autoEnable>false</autoEnable>
+                <canMarkAsFailed>false</canMarkAsFailed>
+                <!--template-->
+            </step>            
+            <step name="caching_service_infinispan_variables" optional="false">
+                <title>Variables for Caching Service - infinispan mode</title>
+                <description>Specify the variables for the infinispan mode of Caching Service</description>
+                <prereqStep name="caching_service_variables"/>
+              <!-- shouldn't there be ALSO main_variables prereq, how are the conditions working now-->
+                <condition>
+                    <expression>1==1</expression>
+                    <description>Always true</description>
+                    <targetStateSet>
+                        <extendStateExpression>
+                            <description>Skipped if Caching Service was not selected</description>
+                            <expression>!${instance-components_caching_service_enabled}</expression>
+                            <targetState>skipped</targetState>
+                        </extendStateExpression>
+                        <extendStateExpression>
+                            <description>Skipped if infinispan was not selected</description>
+                            <expression>!(${instance-components_caching_service_storage_mode} == "infinispan")</expression>
+                            <targetState>skipped</targetState>
+                        </extendStateExpression>
+                    </targetStateSet>
+                </condition>
+                <variableValue name="components_caching_service_storage_infinispan_jgroups_port" scope="instance" noPromptIfSet="false" required="false"/>
+                <variableValue name="components_caching_service_storage_infinispan_jgroups_host" scope="instance" noPromptIfSet="false" required="false"/>
+                <variableValue name="components_caching_service_storage_infinispan_jgroups_keyExchange_port" scope="instance" noPromptIfSet="false" required="false"/>
+                <instructions substitution="false">Run this step to specify the variables for the Caching Service</instructions>
+                <weight>1</weight>
+                <skills>z/OS System Programmer</skills>
+                <autoEnable>false</autoEnable>
+                <canMarkAsFailed>false</canMarkAsFailed>
+                <!--template-->
+            </step>
+            </step>     
     </step>
     <step name="configure" optional="false">
         <title>Create configuration</title>
@@ -1615,8 +1764,31 @@ echo '    # Define this value to match your number of Discovery StatefulSet if y
 echo '    # replicas: 1' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '  # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+#if (${instance-components_caching_service_enabled} == "true" )
 echo '  caching-service:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '    enabled: false' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '    enabled: ${instance-components_caching_service_enabled}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '    port: ${instance-components_caching_service_port}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '    debug: ${instance-components_caching_service_debug}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '    storage:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '      evictionStrategy: $!{instance-components_caching_service_storage_evictionStrategy}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '      # can be infinispan, inMemory, redis or VSAM(deprecated)' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '      mode: $!{instance-components_caching_service_storage_mode}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '      infinispan:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '        # this is required if storage mode is infinispan' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '        jgroups:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+#if (${instance-components_caching_service_storage_mode} == "infinispan" )
+echo '          port: ${instance-components_caching_service_storage_infinispan_jgroups_port}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+#if ($!{instance-components_caching_service_storage_infinispan_jgroups_host} and ${instance-components_caching_service_storage_infinispan_jgroups_host} != "" )
+echo '          host: ${instance-components_caching_service_storage_infinispan_jgroups_host}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+#end
+echo '          keyExchange:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '            port: ${instance-components_caching_service_storage_infinispan_jgroups_keyExchange_port}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+#end
+#end
+#if (${instance-components_caching_service_enabled} == "false" )
+echo '  caching-service:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '    enabled: ${instance-components_caching_service_enabled}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '    port: 7555' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '    debug: false' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
@@ -1628,8 +1800,10 @@ echo '      infinispan:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '        # this is required if storage mode is infinispan' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '        jgroups:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '          port: 7600' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '          host:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '          keyExchange:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '            port: 7601' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+#end
 echo '' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '  # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '  app-server:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
