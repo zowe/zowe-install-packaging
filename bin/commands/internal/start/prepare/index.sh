@@ -17,7 +17,7 @@
 
 USE_CONFIGMGR=$(check_configmgr_enabled)
 if [ "${USE_CONFIGMGR}" = "true" ]; then
-  _CEE_RUNOPTS="XPLINK(ON),HEAPPOOLS(OFF)" ${ZWE_zowe_runtimeDirectory}/bin/utils/configmgr -script "${ZWE_zowe_runtimeDirectory}/bin/commands/internal/start/prepare/cli.js"
+  _CEE_RUNOPTS="XPLINK(ON),HEAPPOOLS(OFF),HEAPPOOLS64(OFF)" ${ZWE_zowe_runtimeDirectory}/bin/utils/configmgr -script "${ZWE_zowe_runtimeDirectory}/bin/commands/internal/start/prepare/cli.js"
 else
 
 
@@ -67,6 +67,7 @@ prepare_workspace_directory() {
   export ZWE_PRIVATE_WORKSPACE_ENV_DIR="${ZWE_zowe_workspaceDirectory}/.env"
   export ZWE_STATIC_DEFINITIONS_DIR="${ZWE_zowe_workspaceDirectory}/api-mediation/api-defs"
   export ZWE_GATEWAY_SHARED_LIBS="${ZWE_zowe_workspaceDirectory}/gateway/sharedLibs/"
+  export ZWE_ZAAS_SHARED_LIBS="${ZWE_zowe_workspaceDirectory}/zaas/sharedLibs/"
   export ZWE_DISCOVERY_SHARED_LIBS="${ZWE_zowe_workspaceDirectory}/discovery/sharedLibs/"
 
   mkdir -p "${ZWE_zowe_workspaceDirectory}"
@@ -88,9 +89,11 @@ prepare_workspace_directory() {
 
   # create apiml static defs directory
   mkdir -p "${ZWE_STATIC_DEFINITIONS_DIR}"
-  # create apiml gateway share library directory
+  # create apiml gateway shared libraries directory
   mkdir -p "${ZWE_GATEWAY_SHARED_LIBS}"
-  # create apiml discovery share library directory
+  # create apiml zaas shared libraries directory
+  mkdir -p "${ZWE_ZAAS_SHARED_LIBS}"
+  # create apiml discovery shared libraries directory
   mkdir -p "${ZWE_DISCOVERY_SHARED_LIBS}"
 
   # Copy Zowe manifest into WORKSPACE_DIR so we know the version for support enquiries/migration
@@ -128,7 +131,7 @@ global_validate() {
     validate_this "validate_node_home 2>&1" "zwe-internal-start-prepare,global_validate:${LINENO}"
 
     # validate java for some core components
-    if [[ ${ZWE_ENABLED_COMPONENTS} == *"gateway"* || ${ZWE_ENABLED_COMPONENTS} == *"cloud-gateway"* || ${ZWE_ENABLED_COMPONENTS} == *"discovery"* || ${ZWE_ENABLED_COMPONENTS} == *"api-catalog"* || ${ZWE_ENABLED_COMPONENTS} == *"caching-service"* || ${ZWE_ENABLED_COMPONENTS} == *"metrics-service"* || ${ZWE_ENABLED_COMPONENTS} == *"files-api"* || ${ZWE_ENABLED_COMPONENTS} == *"jobs-api"* ]]; then
+    if [[ ${ZWE_ENABLED_COMPONENTS} == *"gateway"* || ${ZWE_ENABLED_COMPONENTS} == *"zaas"* || ${ZWE_ENABLED_COMPONENTS} == *"discovery"* || ${ZWE_ENABLED_COMPONENTS} == *"api-catalog"* || ${ZWE_ENABLED_COMPONENTS} == *"caching-service"* ]]; then
       validate_this "validate_java_home 2>&1" "zwe-internal-start-prepare,global_validate:${LINENO}"
     fi
   else
@@ -139,11 +142,16 @@ global_validate() {
 
   # validate z/OSMF for some core components
   if [ -n "${ZOSMF_HOST}" -a -n "${ZOSMF_PORT}" ]; then
-    if [[ ${ZWE_ENABLED_COMPONENTS} == *"discovery"* || ${ZWE_ENABLED_COMPONENTS} == *"files-api"* || ${ZWE_ENABLED_COMPONENTS} == *"jobs-api"* ]]; then
+    if [[ ${ZWE_ENABLED_COMPONENTS} == *"discovery"* ]]; then
       validate_this "validate_zosmf_host_and_port \"${ZOSMF_HOST}\" \"${ZOSMF_PORT}\" 2>&1" "zwe-internal-start-prepare,global_validate:${LINENO}"
+    else
+      # check doesn't apply to container environments
+      if [ "${ZWE_components_gateway_apiml_security_auth_provider}" = "zosmf" -a "${ZWE_RUN_IN_CONTAINER}" != "true" ]; then 
+        let "ZWE_PRIVATE_ERRORS_FOUND=${ZWE_PRIVATE_OLD_ERRORS_FOUND}+1"
+        print_error "Using z/OSMF as 'components.gateway.apiml.security.auth.provider' is not possible: discovery is disabled."
+        print_formatted_info "ZWELS" "zwe-internal-start-prepare,global_validate:${LINENO}" "Zosmf validation failed"
+      fi
     fi
-  elif [ "${ZWE_components_gateway_apiml_security_auth_provider}" = "zosmf" ]; then
-    validate_this "validate_zosmf_as_auth_provider \"${ZOSMF_HOST}\" \"${ZOSMF_PORT}\" \"${ZWE_components_gateway_apiml_security_auth_provider}\" 2>&1" "zwe-internal-start-prepare,global_validate:${LINENO}"
   fi
 
   check_runtime_validation_result "zwe-internal-start-prepare,global_validate:${LINENO}"
@@ -257,6 +265,17 @@ configure_components() {
       fi
       # - generic app framework plugin
       result=$(process_component_appfw_plugin "${component_dir}" 2>&1)
+      retval=$?
+      if [ -n "${result}" ]; then
+        if [ "${retval}" = "0" ]; then
+          print_formatted_debug "ZWELS" "zwe-internal-start-prepare,configure_components:${LINENO}" "${result}"
+        else
+          print_formatted_error "ZWELS" "zwe-internal-start-prepare,configure_components:${LINENO}" "${result}"
+        fi
+      fi
+
+      # - zaas shared lib
+      result=$(process_component_zaas_shared_libs "${component_dir}" 2>&1)
       retval=$?
       if [ -n "${result}" ]; then
         if [ "${retval}" = "0" ]; then

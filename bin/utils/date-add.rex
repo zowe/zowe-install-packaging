@@ -56,7 +56,7 @@ target = today + days
 ISOTarget = Date("Standard", target, "Base")
 
 /* ISOTarget YYYYMMDD                                  */
-/*           12344578 => YYYY = 1234, MM = 56, DD = 78 */
+/*           12345678 => YYYY = 1234, MM = 56, DD = 78 */
 
 if pos("YYYY", dformat) = 0 then
   dformat = overlay("34", dformat, pos("YY", dformat))

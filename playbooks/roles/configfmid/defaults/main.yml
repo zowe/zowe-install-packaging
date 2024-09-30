@@ -5,16 +5,13 @@
 
 # full core components list, they should show up in components section in zowe.yaml
 zowe_core_components:
+- zaas
 - gateway
-- cloud-gateway
-- metrics-service
 - api-catalog
 - discovery
 - caching-service
 - app-server
 - zss
-- jobs-api
-- files-api
 - explorer-jes
 - explorer-mvs
 - explorer-uss
@@ -54,7 +51,6 @@ zos_zosmf_user: IZUSVR
 # default z/OSMF Certificate Authority
 zos_zosmf_ca:
 # APIML ports
-zowe_apiml_metrics_service_port: 7551
 zowe_apiml_catalog_port: 7552
 zowe_apiml_discovery_port: 7553
 zowe_apiml_gateway_port: 7554
@@ -65,15 +61,13 @@ zowe_apiml_gateway_timeout_millis: 600000
 zowe_apiml_security_x509_enabled: false
 zowe_apiml_security_zosmf_applid: IZUDFLT
 zowe_apiml_security_auth_provider: zosmf
-zowe_apiml_security_zosmf_jwt_autoconfiguration_mode: auto
+zowe_apiml_security_zosmf_jwt_autoconfiguration_mode: LTPA
 zowe_apiml_security_oidc_enabled: false
 zowe_apiml_security_oidc_client_id:
 zowe_apiml_security_oidc_client_secret:
 zowe_apiml_security_oidc_registry:
 zowe_apiml_security_oidc_jwks_uri:
 # explorer APIs/plugins ports
-zowe_jobs_api_port: 7558
-zowe_mvs_api_port: 7559
 zowe_jobs_explorer_port: 7560
 zowe_mvs_explorer_port: 7561
 zowe_uss_explorer_port: 7562

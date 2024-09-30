@@ -20,8 +20,8 @@ then
     echo "${MOUNT} with zFS ${ZFS} mounted will be used as is."
     MOUNTED=true
   else
-    echo "The file system ${ZFS} exists but is mounted to different mount point(${MOUNTP})."
-    echo "Use different name of zFS or ${MOUNTP} for mount point."
+    echo "The file system ${ZFS} exists but is mounted to different mount point(${MOUNTP})." >> report.txt
+    echo "Use different name of zFS or ${MOUNTP} for mount point." >> report.txt
     exit -1
   fi
 else
@@ -33,9 +33,9 @@ else
   if [ -n "$MOUNTZFS" ]
   then
     # If zFS is not mounted to the mount point then this mount point has different zFS
-    echo "The mount point ${MOUNT} has different zFS (${MOUNTZFS}) mounted."
-    echo "Use different mount point (not ${MOUNT})."
-    echo "Or use ${MOUNTZFS} for zFS."
+    echo "The mount point ${MOUNT} has different zFS (${MOUNTZFS}) mounted." >> report.txt
+    echo "Use different mount point (not ${MOUNT})." >> report.txt
+    echo "Or use ${MOUNTZFS} for zFS." >> report.txt
     exit -1
   fi
 fi
@@ -44,7 +44,7 @@ fi
 if [ "$MOUNTED" = false ]
 then
   # Check if data set exists
-  echo "Checking if temporary zFS ${TMP_ZFS} exists."
+  echo "Checking if temporary zFS ${ZFS} exists."
   RESP=`curl -s "${BASE_URL}/zosmf/restfiles/ds?dslevel=${ZFS}" -k -X "GET" -H "Content-Type: application/json" -H "X-CSRF-ZOSMF-HEADER: A" --user $ZOSMF_USER:$ZOSMF_PASS`
   sh scripts/check_response.sh "${RESP}" $?
   if [ $? -gt 0 ];then exit -1;fi
@@ -61,7 +61,7 @@ then
     #TODO: also check the first dsname because it can be something that just has tmp_zfs as HLQ
     echo
   fi
-  # Mount zFS to TMP_MOUNT
+  # Mount zFS to MOUNT
   echo "Mounting zFS ${ZFS} to ${MOUNT} mount point with JCL because REST API doesn't allow AGGRGROW parm."
 
 echo ${JOBST1} > JCL

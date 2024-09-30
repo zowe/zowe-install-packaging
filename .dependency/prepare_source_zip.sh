@@ -21,7 +21,7 @@ SCRIPT_NAME=$(basename "$0")
 SCRIPT_PWD=$(cd "$(dirname "$0")" && pwd)
 ROOT_PWD=$(cd "$SCRIPT_PWD" && cd .. && pwd)
 cd "$ROOT_PWD"
-WORK_BRANCH=v2.x/master
+WORK_BRANCH=v3.x/master
 ZOWE_MANIFEST="https://raw.githubusercontent.com/zowe/zowe-install-packaging/${WORK_BRANCH}/manifest.json.template"
 WORK_DIR=.release
 ZIP_DIR="${WORK_DIR}/source_zip"
@@ -51,7 +51,7 @@ echo
 
 ################################################################################
 echo "[${SCRIPT_NAME}] download manifest.json"
-/bin/sh -c "curl -s ${GITHUB_AUTH_HEADER} \"${ZOWE_MANIFEST}\"" > "${WORK_DIR}/manifest.json.template"
+/bin/sh -c "curl -s ${GITHUB_AUTH_HEADER} \"${ZOWE_MANIFEST}\"" >"${WORK_DIR}/manifest.json.template"
 if [ -f "${WORK_DIR}/manifest.json.template" ]; then
   echo "[${SCRIPT_NAME}] - ${WORK_DIR}/manifest.json.template downloaded"
 else
@@ -67,7 +67,7 @@ echo
 
 ################################################################################
 echo "[${SCRIPT_NAME}] write README.md"
-cat > "${ZIP_DIR}/README.md" << EOF
+cat >"${ZIP_DIR}/README.md" <<EOF
 # Source files for the Zowe project - version ${ZOWE_VERSION}
 
 Included in this zip file are the source files used to build the Zowe ${ZOWE_VERSION} Release.

@@ -18,9 +18,9 @@ import {TEST_TIMEOUT_CONVENIENCE_BUILD} from '../../../../constants';
 /**
  * Define this test should run in a specific worker
  *
- * @worker marist-4
+ * @worker marist-8
  */
-const testServer = 'marist-4';
+const testServer = 'marist-8';
 const testSuiteName = 'Test convenience build installation with RACF';
 describe(testSuiteName, () => {
   beforeAll(() => {
