@@ -973,8 +973,8 @@ How we want to verify SSL certificates of services. Valid values are:
               <description>Always true</description>
               <targetStateSet>
                 <extendStateExpression>
-                  <description>Skipped if demo certificate was not selected</description>
-                  <expression>!${instance-demo_certificate_enabled}</expression>
+                  <description>Skipped if demo certificate was selected</description>
+                  <expression>${instance-demo_certificate_enabled}</expression>
                   <targetState>skipped</targetState>
                 </extendStateExpression>
               </targetStateSet>
