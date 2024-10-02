@@ -1636,10 +1636,10 @@ echo '      type: $!{instance-zowe_certificate_keystore_type}' >> "${instance-zo
 echo '      # if keyrings, the format is safkeyring:////stcusername/KeyName' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 #if (${instance-demo_certificate_enabled} == "true" )
 echo '      file: /global/zowe/keystore/localhost/localhost.keystore.p12' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-end#
+#end
 #if (${instance-demo_certificate_enabled} == "false" )
 echo '      file: $!{instance-zowe_certificate_keystore_file}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-end#
+#end
 echo '      # "password" should either be the value you set when PKCS12, or literally "password" for keyrings.' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '      password: $!{instance-zowe_certificate_keystore_password}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '      # alias is the name of your key/cert. When using keyrings, get the Case Sensitive, Space Sensitive value in a TSO list ring.' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
