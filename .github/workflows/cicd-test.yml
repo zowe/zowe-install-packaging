@@ -1,4 +1,11 @@
 name: Zowe CICD Integration Tests
+
+permissions:
+  id-token: write
+  issues: write
+  pull-requests: write
+  contents: write
+  
 on:   
   workflow_dispatch:
     inputs:
