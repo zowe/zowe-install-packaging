@@ -256,7 +256,7 @@ some use cases, like containerization, this port could be different.</descriptio
         <boolean>
             <!-- Put validation here -->
             <!-- Specify choices here -->
-            <default>true</default>
+            <default>false</default>
         </boolean>
     </variable>
     <variable name="zowe_certificate_keystore_type" scope="instance" visibility="public">
@@ -659,7 +659,7 @@ How we want to verify SSL certificates of services. Valid values are:
     </variable> 
     <variable name="components_caching_service_enabled" scope="instance" visibility="public">
         <label>Enable the Caching service</label>
-        <abstract>Check this option to enable the Caching service</abstract>
+        <abstract>Service used for HA and Personal Access Token</abstract>
         <description>Check this option to enable the Caching service</description>
         <category>components</category>
         <boolean>
