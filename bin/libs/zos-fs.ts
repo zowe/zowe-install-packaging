@@ -116,3 +116,32 @@ export function ensureFileEncoding(file: string, expectedSample: string, expecte
     common.printTrace(`- Failed to detect encoding of ${file}.`);
   }
 }
+
+export type fileSystemFlagsReturn = {
+  rc: number,
+  exported?: boolean,
+  rdonly?: boolean,
+  nosuid?: boolean,
+  nosecurity?: boolean,
+};
+
+export function getFileSystemFlags(path: string): fileSystemFlagsReturn {
+  const ST_OEEXPORTED = 0x40000000
+  const ST_RDONLY     = 0x00000001
+  const ST_NOSUID     = 0x00000002
+  const ST_NOSECURITY = 0x00000004
+  let flags : fileSystemFlagsReturn = { rc: 1 };
+  if (path) {
+    const result = zos.getStatvfs(path);
+    if (result[1] == 0) {
+        flags = {
+          rc: 0,
+          exported: !!(result[0].flag & ST_OEEXPORTED),
+          rdonly: !!(result[0].flag & ST_RDONLY),
+          nosuid: !!(result[0].flag & ST_NOSUID),
+          nosecurity: !!(result[0].flag & ST_NOSECURITY)
+        }
+    }
+  }
+  return flags;
+}
