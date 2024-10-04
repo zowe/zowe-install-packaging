@@ -2,6 +2,9 @@
 
 All notable changes to the Zowe Installer will be documented in this file.
 
+## `3.0.1`
+- Enhancement: new javascript funtion `getStatvfs()` to obtain information about the file sysytem [#3994](https://github.com/zowe/zowe-install-packaging/pull/3994)
+
 ## `3.0.0`
 
 ### Breaking Changes
