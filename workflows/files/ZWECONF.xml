@@ -294,7 +294,7 @@ some use cases, like containerization, this port could be different.</descriptio
           TLS settings only apply when attls=false.
           Else you must use AT-TLS configuration for TLS customization.
         </description>
-        <category>certificates</category>
+        <category>network</category>
         <string valueMustBeChoice="true" multiLine="false">
             <!-- Put validation here -->
             <choice>TLSv1.1</choice>
@@ -867,17 +867,6 @@ How we want to verify SSL certificates of services. Valid values are:
             <default>ZWESIS_STD</default>
         </string>
     </variable>
-    <variable name="components_zss_tls" scope="instance" visibility="public">
-        <label>ZSS TLS</label>
-        <abstract>Check this to enable TLS on ZSS</abstract>
-        <description>Check this to enable TLS on ZSS</description>
-        <category>components</category>
-        <boolean>
-            <!-- Put validation here -->
-            <!-- Specify choices here -->
-            <default>true</default>
-        </boolean>
-    </variable>
     <variable name="components_zss_agent_jwt_fallback" scope="instance" visibility="public">
         <label>ZSS JWT fallback</label>
         <abstract>Check this to enable fallback</abstract>
@@ -933,17 +922,6 @@ How we want to verify SSL certificates of services. Valid values are:
             <default>true</default>
         </boolean>
     </variable>
-    <variable name="useconfig_manager_enabled" scope="instance" visibility="public">
-        <label>Enable Zowe configuration manager</label>
-        <abstract>Check this option to enable Zowe configuration manager</abstract>
-        <description>Check this option to enable Zowe configuration manager.</description>
-        <category>configManager</category>
-        <boolean>
-            <!-- Put validation here -->
-            <!-- Specify choices here -->
-            <default>true</default>
-        </boolean>
-    </variable>
     <variable name="config_manager_validation" scope="instance" visibility="public">
         <label>Zowe configuration manager validation type</label>
         <abstract>STRICT or COMPONENT-COMPAT validation type</abstract>
@@ -954,7 +932,7 @@ How we want to verify SSL certificates of services. Valid values are:
             <!-- Specify choices here -->
             <choice>COMPONENT-COMPAT</choice>
             <choice>STRICT</choice>            
-            <default>COMPONENT-COMPAT</default>
+            <default>STRICT</default>
         </string>
     </variable>
     <variable name="zowe_rbacProfileId" scope="instance" visibility="public">
@@ -1155,7 +1133,6 @@ How we want to verify SSL certificates of services. Valid values are:
             <variableValue name="zOSMF_host" scope="instance" noPromptIfSet="false" required="true"/>
             <variableValue name="zOSMF_port" scope="instance" noPromptIfSet="false" required="true"/>
             <variableValue name="zOSMF_applId" scope="instance" noPromptIfSet="false" required="true"/>
-            <variableValue name="useconfig_manager_enabled" scope="instance" noPromptIfSet="false" required="true"/>
             <variableValue name="config_manager_validation" scope="instance" noPromptIfSet="false" required="true"/>
             <variableValue name="components_gateway_enabled" scope="instance" noPromptIfSet="false" required="true"/>
             <variableValue name="components_zaas_enabled" scope="instance" noPromptIfSet="false" required="true"/>
@@ -1419,7 +1396,6 @@ How we want to verify SSL certificates of services. Valid values are:
             </condition>
             <variableValue name="components_zss_port" scope="instance" noPromptIfSet="false" required="true"/>
             <variableValue name="components_zss_crossMemoryServerName" scope="instance" noPromptIfSet="false" required="true"/>
-            <variableValue name="components_zss_tls" scope="instance" noPromptIfSet="false" required="true"/>
             <variableValue name="components_zss_agent_jwt_fallback" scope="instance" noPromptIfSet="false" required="true"/>
             <variableValue name="components_zss_agent_64bit" scope="instance" noPromptIfSet="false" required="true"/>
             <instructions substitution="false">Run this step to specify the values for the ZSS variables</instructions>
@@ -1756,18 +1732,6 @@ echo '  # **COMMONLY_CUSTOMIZED**' >> "${instance-zowe_runtimeDirectory}/zowe.ya
 echo '  # Where extensions are installed' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '  extensionDirectory: $!{instance-zowe_extensionDirectory}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '  # **COMMONLY_CUSTOMIZED**' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '  useConfigmgr: $!{instance-useconfig_manager_enabled}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '  # Setting to true will enable:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '  # * schema-backed validation of zowe.yaml' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '  # * should greatly improve startup time.' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '  # * can supply multiple zowe.yaml as defaults & overrides in the format of' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '  #   FILE(/my/customizations.yaml):PARMLIB(MYORG.ZOWE(YAML)):FILE(/zowe/defaults.yaml)' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '  # * allows templating in zowe.yaml by putting references within ${{ }} blocks such as' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '  #    rewriting the job section below as' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '  #    job:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '  #      name: ${{ zowe.job.prefix }}SV' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '  #      prefix: ZWE1' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '  configmgr:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '    # STRICT=quit on any error, including missing schema' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '    # COMPONENT-COMPAT=if component missing schema, skip it with warning instead of quit' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
@@ -2009,7 +1973,7 @@ echo '      security:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '        auth:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '          provider: zosmf' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '          zosmf:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '            jwtAutoconfiguration: auto' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '            jwtAutoconfiguration: jwt' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '            serviceId: ibmzosmf' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '        authorization:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '          endpoint:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"

@@ -9,10 +9,14 @@ All notable changes to the Zowe Installer will be documented in this file.
 
 ### Breaking Changes
 
-- `zowe.yaml` changed its default z/OSMF Service ID definition from `zosmf` to `ibmzosmf`, which may impact Zowe Clients. For more information on this change, please see the API Mediation Layer's 3.0.0 Breaking Changes.
+-	The Zowe YAML now requires the `zaas` component for the API Mediation Layer to work. See example-zowe.yaml for new component values.
+-	The Zowe YAML attribute `components.gateway.apiml.security.auth.zosmf.serviceId` for the “gateway” component has changed from “zosmf” to “ibmzosmf”. This may impact Zowe Clients. See example-zowe.yaml for new component values. For more information on this change, please see the API Mediation Layer's 3.0.0 Breaking Changes.
+-	The Zowe YAML parameter `components.gateway.apiml.security.auth.zosmf.jwtAutoconfiguration` for the “gateway” component has changed. The value “auto” is no longer allowed, and you must choose either the default of “jwt” or “ltpa” depending on if your z/OSMF is set up for JWT use as recommended See example-zowe.yaml for new component values. For more information on this change, please see the API Mediation Layer's 3.0.0 Breaking Changes.
+
 
 ### New features and enhancements
 - Enhancement: Added explanation to possible error message when checking z/OSMF setting. [#3956](https://github.com/zowe/zowe-install-packaging/pull/3956)
+- Enhancement: New plugin identifier added to list of plugins and `allowedPlugins.json` for the new V3 Desktop in Angular 18. [#3984](https://github.com/zowe/zowe-install-packaging/pull/3984)
 
 <!--Add the PR or issue number to the entry if available.-->
 
