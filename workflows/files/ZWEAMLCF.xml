@@ -196,7 +196,7 @@ some use cases, like containerization, this port could be different.</descriptio
     </variable>
     <variable name="zowe_network_server_attls" scope="instance" visibility="public">
         <label>Application Transparent Transport Layer Security for inbound</label>
-        <abstract>Enable on AT-TLS on inbound calls</abstract>
+        <abstract>Enable on AT-TLS on inbound calls (server)</abstract>
         <description>Enable aware mode of inbound AT-TLS rules of all Zowe components.</description>
         <category>network</category>
         <boolean>
@@ -207,7 +207,7 @@ some use cases, like containerization, this port could be different.</descriptio
     </variable>
     <variable name="zowe_network_client_attls" scope="instance" visibility="public">
         <label>Application Transparent Transport Layer Security for outbound</label>
-        <abstract>Enable on AT-TLS on outbound calls</abstract>
+        <abstract>Enable on AT-TLS on outbound calls (client)</abstract>
         <description>Enable aware mode of outbound AT-TLS rules of all Zowe components.</description>
         <category>network</category>
         <boolean>
