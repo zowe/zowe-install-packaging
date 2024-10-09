@@ -19,7 +19,7 @@
         <string valueMustBeChoice="false" multiLine="false">
             <!-- Put validation here -->
             <!-- Specify choices here -->
-            <default>IBMUSER.ZWEV2</default>
+            <default>IBMUSER.ZWEV3</default>
         </string>
     </variable>
     <variable name="zowe_setup_dataset_proclib" scope="instance" visibility="public">
@@ -41,7 +41,7 @@
         <string valueMustBeChoice="false" multiLine="false">
             <!-- Put validation here -->
             <!-- Specify choices here -->
-            <default>IBMUSER.ZWEV2.CUST.PARMLIB</default>
+            <default>IBMUSER.ZWEV3.CUST.PARMLIB</default>
         </string>
     </variable>
     <variable name="zowe_setup_dataset_libzis" scope="instance" visibility="public">
@@ -63,7 +63,7 @@
         <string valueMustBeChoice="false" multiLine="false">
             <!-- Put validation here -->
             <!-- Specify choices here -->
-            <default>IBMUSER.ZWEV2.CUST.JCLLIB</default>
+            <default>IBMUSER.ZWEV3.CUST.JCLLIB</default>
         </string>
     </variable>
     <variable name="zowe_setup_dataset_loadlibPlugin" scope="instance" visibility="public">
@@ -74,7 +74,7 @@
         <string valueMustBeChoice="false" multiLine="false">
             <!-- Put validation here -->
             <!-- Specify choices here -->
-            <default>IBMUSER.ZWEV2.SZWELOAD</default>
+            <default>IBMUSER.ZWEV3.SZWELOAD</default>
         </string>
     </variable>
     <variable name="zowe_setup_dataset_authLoadlib" scope="instance" visibility="public">
@@ -85,7 +85,7 @@
         <string valueMustBeChoice="false" multiLine="false">
             <!-- Put validation here -->
             <!-- Specify choices here -->
-            <default>IBMUSER.ZWEV2.SZWEAUTH</default>    
+            <default>IBMUSER.ZWEV3.SZWEAUTH</default>    
         </string>
     </variable>
     <variable name="zowe_setup_dataset_authPluginLib" scope="instance" visibility="public">
@@ -96,7 +96,7 @@
         <string valueMustBeChoice="false" multiLine="false">
             <!-- Put validation here -->
             <!-- Specify choices here -->
-            <default>IBMUSER.ZWEV2.CUST.ZWESAPL</default>
+            <default>IBMUSER.ZWEV3.CUST.ZWESAPL</default>
         </string>
     </variable>
     <variable name="zowe_setup_vsam_mode" scope="instance" visibility="public">
@@ -371,7 +371,7 @@ some use cases, like containerization, this port could be different.</descriptio
     </variable>
     <variable name="zowe_certificate_truststore_file" scope="instance" visibility="public">
         <label>Zowe certificate truststore file</label>
-        <abstract>File location for cert truststore. For keyring, the format is "safkeyring://OWNER/KEYRING"</abstract>
+        <abstract>File location for certificate truststore. For keyring, the format is "safkeyring://OWNER/KEYRING"</abstract>
         <description>File location for the certificate truststore</description>
         <category>certificates</category>
         <string valueMustBeChoice="false" multiLine="false">
