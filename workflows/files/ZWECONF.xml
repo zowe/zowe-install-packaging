@@ -1849,7 +1849,11 @@ echo '    # VSAM configurations if you are using VSAM as Caching Service storage
 echo '    vsam:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '      # VSAM data set with Record-Level-Sharing enabled or not' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '      # Valid values could be: NONRLS or RLS.' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+#if (${instance-zowe_setup_vsam_mode})
 echo '      mode: $!{instance-zowe_setup_vsam_mode}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+#else
+echo '      mode: NONRLS' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+#end
 echo '      # Volume name if you are using VSAM in NONRLS mode' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '      volume: "$!{instance-zowe_setup_vsam_volume}"' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '      # Storage class name if you are using VSAM in RLS mode' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
