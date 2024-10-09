@@ -15,8 +15,6 @@ import * as xplatform from "xplatform";
 import * as fs from '../../../libs/fs';
 import * as config from '../../../libs/config';
 import * as common from '../../../libs/common';
-import * as shell from '../../../libs/shell';
-import * as stringlib from '../../../libs/string';
 import * as zosDataset from '../../../libs/zos-dataset';
 import * as zosFs from '../../../libs/zos-fs';
 import * as zosJes from '../../../libs/zos-jes';
