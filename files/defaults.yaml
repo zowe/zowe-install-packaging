@@ -27,6 +27,8 @@ zowe:
   #-------------------------------------------------------------------------------
   # These configurations are used by "zwe install" or "zwe init" commands.
   #-------------------------------------------------------------------------------
+  environments:
+    jclHeader: ''
   setup:
     # MVS data set related configurations
     dataset:      

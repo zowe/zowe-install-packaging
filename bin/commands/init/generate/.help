@@ -2,6 +2,8 @@ Generate ready to execute JCL samples from zowe.yaml configuration values.
 
 This command executes the job ZWEGENER which copies the JCL templates from Zowe's SZWESAMP dataset, except those not valid for your system ESM, and creates resolved, ready to execute JCL content within the dataset defined by the zowe.yaml property `zowe.setup.dataset.jcllib` (such as `zowe.setup.dataset.prefix` + "CUST.JCLLIB")
 
+If you need to customize the JOB statements, set the zowe.yaml property `zowe.environments.jclHeader`. See examples at the end of this help.
+
 These JCL files can be run by any means desired afterward.
 The actions of `zwe init` will run them automatically if desired.
 Each `zwe init` action has a `--dry-run` command which will print the value of the particular JCL file used, but not submit it.
@@ -64,3 +66,31 @@ If you want to use a premade keyring with Zowe, do not run these. These are for 
 
 The above datasets can be run to set up a Zowe instance.
 You can also use `zwe init` or `zwe init` subcommands to have them run automatically.
+
+JCL JOB statement customization:
+- Each JOB statement is defined as `//ZWEnnnnn JOB {zowe.environments.jclHeader}`, where `nnnnn` identifies each job
+- Default setting is empty string causing no additional JOB fields will be used - if your site or External Security Manager does not require additional fields, you can skip this
+- Otherwise you can use `zwe init generate` to set additional JOB fields
+- Note: JCL syntax is not checked by `zwe init generate` command
+
+Accounting information only:
+```yaml
+zowe:
+  environments:
+    jclHeader: 123456
+```
+Additional fields as one string:
+```yaml
+zowe:
+  environments:
+    jclHeader: "123456,\n//       'Zowe User',\n//       NOTIFY=&SYSUID"
+```
+Additional fields as an array:
+```yaml
+zowe:
+  environments:
+    jclHeader:
+    - "123456,"
+    - "//       'Zowe User',"
+    - "//       NOTIFY=&SYSUID"
+```

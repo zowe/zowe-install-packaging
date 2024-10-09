@@ -15,7 +15,7 @@ import * as xplatform from "xplatform";
 import * as fs from '../../../libs/fs';
 import * as config from '../../../libs/config';
 import * as common from '../../../libs/common';
-import * as stringlib from '../../../libs/string';
+import * as zosDataset from '../../../libs/zos-dataset';
 import * as zosFs from '../../../libs/zos-fs';
 import * as zosJes from '../../../libs/zos-jes';
 
@@ -33,6 +33,19 @@ export function execute(dryRun?: boolean) {
     common.printErrorAndExit(`Error ZWEL0157E: Zowe runtime directory (zowe.runtimeDirectory) is not defined in Zowe YAML configuration file.`, undefined, 157);
   }
   
+  let jclPostProcessing = false;
+  let jclHeaderJoined = '';
+  const jclHeader = ZOWE_CONFIG.zowe.environments.jclHeader == null ? '' : ZOWE_CONFIG.zowe.environments.jclHeader;
+  if (Array.isArray(jclHeader)) {
+    jclPostProcessing = true;
+    jclHeaderJoined = jclHeader.join("\n");
+  } else {
+    jclHeaderJoined = jclHeader.toString();
+    if (jclHeaderJoined && (jclHeaderJoined.match(/\n/g) || []).length) {
+      jclPostProcessing = true;
+    }
+  }
+
   const tempFile = fs.createTmpFile();
   if (zosFs.copyMvsToUss(ZOWE_CONFIG.zowe.setup.dataset.prefix + '.SZWESAMP(ZWEGENER)', tempFile) !== 0) {
     common.printErrorAndExit(`ZWEL0143E Cannot find data set member '${ZOWE_CONFIG.zowe.setup.dataset.prefix + '.SZWESAMP(ZWEGENER)'}'. You may need to re-run zwe install.`, undefined, 143);
@@ -44,6 +57,7 @@ export function execute(dryRun?: boolean) {
   // $$ inserts a '$', replace(/[$]/g, '$$$$') => double each '$' occurence
   jclContents = jclContents.replace(/\{zowe\.setup\.dataset\.prefix\}/gi, prefix.replace(/[$]/g, '$$$$'));
   jclContents = jclContents.replace(/\{zowe\.runtimeDirectory\}/gi, runtimeDirectory.replace(/[$]/g, '$$$$'));
+  jclContents = jclContents.replace(/\{zowe\.environments\.jclHeader\}/i,jclHeaderJoined.replace(/[$]/g, '$$$$'));
   if (std.getenv('ZWE_PRIVATE_LOG_LEVEL_ZWELS') !== 'INFO') {
     jclContents = jclContents.replace('noverbose -', 'verbose -');
   }
@@ -99,11 +113,29 @@ export function execute(dryRun?: boolean) {
     common.printMessage('Submitting Job ZWEGENER');
     const jobid = zosJes.submitJob(tempFile);
     const result = zosJes.waitForJob(jobid);
-    os.remove(tempFile);
-
+    if (!jclPostProcessing) {
+      os.remove(tempFile);
+    }
     common.printMessage(`Job completed with RC=${result.rc}`);
     if (result.rc == 0) {
-      common.printMessage("Zowe JCL generated successfully");
+      let jobHeaderResult = 0;
+      if (jclHeaderJoined != '') {
+        let replaceRC = zosDataset.replaceInMember(`${ZOWE_CONFIG.zowe.setup.dataset.jcllib}(ZWESECUR)`, tempFile, /^\/\/ZWESECUR JOB/i, '//ZWESECUR JOB ' + jclHeaderJoined);
+        jobHeaderResult += replaceRC;
+      }
+      if (jclPostProcessing) {
+        const memList = zosDataset.listDatasetMembers(ZOWE_CONFIG.zowe.setup.dataset.jcllib);
+        for (let m = 0; m < memList.length; m++) {
+          let replaceRC = zosDataset.replaceInMember(`${ZOWE_CONFIG.zowe.setup.dataset.jcllib}(${memList[m]})`, tempFile, /\{zowe\.environments\.jclHeader\}/i, jclHeaderJoined);
+          jobHeaderResult += replaceRC;
+        }
+      os.remove(tempFile);
+      }
+      if (jobHeaderResult) {
+        common.printMessage("Zowe JCL JOB statement update failed. Review the JOBs before submitting.");
+      } else {
+        common.printMessage("Zowe JCL generated successfully");
+      }
     } else {
       common.printMessage(`Zowe JCL generated with errors, check job log. Job completion code=${result.jobcccode}, Job completion text=${result.jobcctext}`);
     }
