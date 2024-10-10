@@ -317,7 +317,7 @@ some use cases, like containerization, this port could be different.</descriptio
     </variable>
     <variable name="zowe_certificate_truststore_file" scope="instance" visibility="public">
         <label>Zowe certificate truststore file</label>
-        <abstract>File location for cert truststore. For keyring, the format is "safkeyring://OWNER/KEYRING"</abstract>
+        <abstract>File location for certificate truststore. For keyring, the format is "safkeyring://OWNER/KEYRING"</abstract>
         <description>File location for the certificate truststore</description>
         <category>certificates</category>
         <string valueMustBeChoice="false" multiLine="false">
