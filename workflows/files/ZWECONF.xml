@@ -469,6 +469,17 @@ How we want to verify SSL certificates of services. Valid values are:
             <default>7554</default>
         </integer>
     </variable>
+    <variable name="components_gateway_internalMapper" scope="instance" visibility="public">
+      <label>Enable Gateway internal mapper</label>
+      <abstract>Check this option to enable the Gateway internal ESM identity mapper</abstract>
+      <description>Check this option to enable Gateway internal ESM identity mapper</description>
+      <category>components</category>
+      <boolean>
+          <!-- Put validation here -->
+          <!-- Specify choices here -->
+          <default>false</default>
+      </boolean>
+  </variable>
     <variable name="components_gateway_debug" scope="instance" visibility="public">
         <label>Gateway debug</label>
         <abstract>Switch on the debug mode for the gateway</abstract>
@@ -1256,6 +1267,7 @@ How we want to verify SSL certificates of services. Valid values are:
                 </targetStateSet>
             </condition>
             <variableValue name="components_gateway_port" scope="instance" noPromptIfSet="false" required="true"/>
+            <variableValue name="components_gateway_internalMapper" scope="instance" noPromptIfSet="false" required="true"/>
             <variableValue name="components_gateway_debug" scope="instance" noPromptIfSet="false" required="true"/>
             <variableValue name="components_gateway_apiml_security_auth_provider" scope="instance" noPromptIfSet="false" required="true"/>
             <variableValue name="components_gateway_apiml_security_auth_zosmf_jwtAutoconfiguration" scope="instance" noPromptIfSet="false" required="true"/>
@@ -2096,6 +2108,7 @@ echo '    debug: ${instance-components_gateway_debug}' >> "${instance-zowe_runti
 echo '' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '    apiml:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '      security:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '        useInternalMapper: ${instance-components_gateway_internalMapper}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '        auth:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '          provider: "$!{instance-components_gateway_apiml_security_auth_provider}"' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '          zosmf:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
@@ -2127,6 +2140,7 @@ echo '    debug: false' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '    apiml:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '      security:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '        useInternalMapper: false' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '        auth:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '          provider: "zosmf"' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '          zosmf:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
