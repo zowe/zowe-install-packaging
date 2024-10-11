@@ -35,11 +35,12 @@ if [[ "$MATRIX_TEST" == *"install-ext"* ]]; then
         if [[ "$each_ext" == *"("* ]] && [[ "$each_ext" == *")"* ]] ; then
             # user provides custom artifactory pattern
             ext_name=$(echo "$each_ext" | cut -d "(" -f1)
-            ext_pattern=$(echo "$each_ext" | cut -d "(" -f2 | cut -d ")" -f1)
+            ext_version=$(echo "$each_ext" | cut -d "(" -f2 | cut -d ")" -f1)
+            ext_pattern=$(echo "$DEFAULT_ZOWE_EXT_ARTIFACTORY_PATTERN" | sed "s#{ext-name}#$ext_name#g" | sed "s#{ext-version}#$ext_version#g" )
         else
             # use default
             ext_name="$each_ext"
-            ext_pattern=$(echo "$DEFAULT_ZOWE_EXT_ARTIFACTORY_PATTERN" | sed "s#{ext-name}#$ext_name#g")
+            ext_pattern=$(echo "$DEFAULT_ZOWE_EXT_ARTIFACTORY_PATTERN" | sed "s#{ext-name}#$ext_name#g" | sed "s#{ext-version}#*#g" )
         fi
 
         echo "[Check 4 INFO] extension name is $ext_name"
