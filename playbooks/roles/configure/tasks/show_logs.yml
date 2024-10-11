@@ -37,9 +37,24 @@
   vars:
     show_jobs_name: "{{ job_name_to_show }}"
   loop:
-  - ZWESECUR
-  - ZWEKRING
-  - ZWENOKYR
+  - ZWEGENER
+  - ZWEIMVS
+  - ZWEIAPF2
+  - ZWEIACF
+  - ZWEIRAC
+  - ZWEITSS
+  - ZWEIKRR1
+  - ZWEIKRR2
+  - ZWEIKRR3
+  - ZWEIKRA1
+  - ZWEIKRA2
+  - ZWEIKRA3
+  - ZWEIKRT1
+  - ZWEIKRT2
+  - ZWEIKRT3
+  - ZWENOKRR
+  - ZWENOKRT
+  - ZWENOKRA
   - ZWECSVSM
   loop_control:
     loop_var: job_name_to_show

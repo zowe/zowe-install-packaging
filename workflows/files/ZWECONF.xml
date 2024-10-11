@@ -1577,9 +1577,10 @@ How we want to verify SSL certificates of services. Valid values are:
         <prereqStep name="define_variables"/>
         <!-- condition -->
         <!--variableValues-->
-        <instructions substitution="true"><![CDATA[Run this step to create the configuration file for Zowe. <br/>
+        <instructions substitution="true"><![CDATA[Run this step to create the configuration file for Zowe and the JCL used to install Zowe. <br/>
         Ensure that the values are correct. <br/>
-        <b>zowe.yaml</b> file is created in the: <b>${instance-zowe_runtimeDirectory}</b> directory<br/><br/>
+        <b>zowe.yaml</b> file is created in the: <b>${instance-zowe_runtimeDirectory}</b> directory<br/>
+        <b>${instance-zowe_setup_dataset_jcllib}</b> is created.<br/><br />
         <b>NOTE:</b> If you run this workflow outside of PSWI (SMP/E or convenience build), you might encounter a folder write permission issue.<br/>
         To solve the issue, run the following command in USS:<br/>
         <code>chmod 775 ${instance-zowe_runtimeDirectory} </code><br/>
@@ -2437,6 +2438,12 @@ echo '#       files-api:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '#         enabled: false' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '#       caching-service:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '#         enabled: false' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+
+export JAVA_HOME='${instance-java_home}'
+export NODE_HOME='${instance-node_home}'
+export PATH=$PATH:'${instance-zowe_runtimeDirectory}/bin'
+
+zwe init generate --allow-overwrite -c '${instance-zowe_runtimeDirectory}/zowe.yaml'
 ]]></inlineTemplate>
             <submitAs maxRc="0">shell-JCL</submitAs>
             <maxLrecl>1024</maxLrecl>

@@ -10,10 +10,12 @@
 */
 
 import * as std from 'cm_std';
-
+import * as os from 'cm_os';
 import * as common from './common';
 import * as shell from './shell';
 import * as stringlib from './string';
+import * as zosDataset from './zos-dataset';
+import * as initGenerate from '../commands/init/generate/index';
 
 export function tsoCommand(...args:string[]): { rc: number, out: string } {
   let message = "tsocmd " + '"' + args.join(' ') + '"';
@@ -63,4 +65,36 @@ export function operatorCommand(command: string): { rc: number, out: string } {
   }
   //we strip the '.' we added above
   return { rc: result.rc, out: result.out ? result.out.substring(0, result.out.length-1) : '' };
+}
+
+export function verifyGeneratedJcl(config:any): string {
+  const jcllib = config.zowe.setup.dataset.jcllib;
+  if (!jcllib) {
+    return undefined;
+  }
+  const expectedMember = jcllib+'(ZWEIMVS)';
+  // read JCL library and validate using expected member ZWEIMVS (init mvs command)
+  let doesJclExist: boolean = zosDataset.isDatasetExists(expectedMember);
+  if (!doesJclExist) {
+    initGenerate.execute();
+  }
+
+  // should be created, but may take time to discover.
+  if (!doesJclExist) {
+    const interval = [1,5,10,30];
+    for (let i = 0; i < interval.length; i++) {
+      let secs = interval[i];
+      doesJclExist=zosDataset.isDatasetExists(expectedMember);
+      if (!doesJclExist) {
+        os.sleep(secs*1000);
+      } else {
+        break;
+      }
+    }
+
+    if (!doesJclExist) {      
+      return undefined;
+    }
+  }
+  return jcllib;
 }

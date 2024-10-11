@@ -66,3 +66,31 @@ operator_command() {
 
   return ${code}
 }
+
+verify_generated_jcl() {
+  jcllib=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.dataset.jcllib")
+  # read JCL library and validate
+  does_jcl_exist=$(is_data_set_exists "${jcllib}")
+  if [ -z "${does_jcl_exist}" ]; then
+    result=$(zwecli_inline_execute_command init generate)
+  fi
+
+  # should be created, but may take time to discover.
+  if [ -z "${does_jcl_exist}" ]; then
+    does_jcl_exist=
+    for secs in 1 5 10 ; do
+      does_jcl_exist=$(is_data_set_exists "${jcllib}")
+      if [ -z "${does_jcl_exist}" ]; then
+        sleep ${secs}
+      else
+        break
+      fi
+    done
+
+    if [ -z "${does_jcl_exist}" ]; then
+      return 1
+    fi
+  fi
+  echo "${jcllib}"
+  return 0
+}

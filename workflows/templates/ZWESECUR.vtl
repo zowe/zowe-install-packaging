@@ -35,6 +35,7 @@
 //* 1) Add job name and job parameters to the JOB statement, to
 //*    meet your system requirements.
 //*
+#if($ibmTemplate != 'YES')
 //* 2) Update the SET PRODUCT= statement to match your security
 //*    product.
 //*
@@ -65,6 +66,7 @@
 //* 11) Update the SET SYSPROG= statement to match the existing
 //*     user ID or group used by z/OS system programmers.
 //*
+#end
 //* 12) When not using AUTOUID and AUTOGID to assign z/OS UNIX UID
 //*     and GID values, update the SET *ID= statements to match the
 //*     desired UID and GID values.
@@ -99,19 +101,16 @@
 #if($ibmTemplate == 'YES')
 //         EXPORT SYMLIST=*
 //*
-//         SET  PRODUCT=RACF         * RACF, ACF2, or TSS
-//*                     12345678
-//         SET ADMINGRP=ZWEADMIN     * group for Zowe administrators
-//         SET   STCGRP=&ADMINGRP.   * group for Zowe started tasks
-//         SET ZOWEUSER=ZWESVUSR     * userid for Zowe started task
-//         SET  ZISUSER=ZWESIUSR     * userid for ZIS started task
-//         SET  ZOWESTC=ZWESVSTC     * Zowe started task name
-//         SET ZLNCHSTC=ZWESLSTC     * Zowe started task name for HA
-//         SET   ZISSTC=ZWESISTC     * ZIS started task name
-//         SET   AUXSTC=ZWESASTC     * ZIS AUX started task name
-//         SET      HLQ=ZWE          * data set high level qualifier
-//         SET  SYSPROG=&ADMINGRP.   * system programmer user ID/group
-//*                     12345678
+//         SET  PRODUCT=#[[{zowe.setup.security.product}]]#
+//         SET ADMINGRP=#[[{zowe.setup.security.groups.admin}]]#
+//         SET   STCGRP=#[[{zowe.setup.security.groups.stc}]]#
+//         SET ZOWEUSER=#[[{zowe.setup.security.users.zowe}]]#
+//         SET  ZISUSER=#[[{zowe.setup.security.users.zis}]]#
+//         SET  ZOWESTC=#[[{zowe.setup.security.stcs.zowe}]]#
+//         SET   ZISSTC=#[[{zowe.setup.security.stcs.zis}]]#
+//         SET   AUXSTC=#[[{zowe.setup.security.stcs.aux}]]#
+//         SET      HLQ=#[[{zowe.setup.dataset.prefix}]]#
+//         SET  SYSPROG=#[[{zowe.setup.security.groups.sysProg}]]#
 //*
 //* The sample RACF and ACF2 commands assume AUTOUID and AUTOGID are
 //* enabled. When this is not the case, or you are using Top Secret,

@@ -123,6 +123,9 @@ print_error_and_exit() {
   exit_code=${3:-1}
 
   print_error "${message}" "${write_to}"
+  if [ -f "${ZWE_PRIVATE_TMP_MERGED_YAML_DIR}/.zowe-merged.yaml" ]; then
+    rm "${ZWE_PRIVATE_TMP_MERGED_YAML_DIR}/.zowe-merged.yaml"
+  fi
   exit ${exit_code}
 }
 

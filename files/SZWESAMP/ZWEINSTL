@@ -11,7 +11,7 @@
 //*
 //*********************************************************************
 //*
-//MKPDSE EXEC PGM=IKJEFT01
+//MKPDSE EXEC PGM=IKJEFT01,DYNAMNBR=4
 //SYSTSPRT DD SYSOUT=A
 //SYSTSIN DD *
 ALLOC NEW DA('{zowe.setup.dataset.prefix}.SZWESAMP') +
@@ -37,23 +37,21 @@ blksize(32760) unit(sysallda) space(30,15) tracks
 //STDERR   DD SYSOUT=*
 //STDPARM DD *
 SH cd '{zowe.runtimeDirectory}' &&
-cd 'files/SZWESAMP' &&
-cp * "//'{zowe.setup.dataset.prefix}.SZWESAMP'" &&
-cd '../SZWEEXEC' &&
-cp * "//'{zowe.setup.dataset.prefix}.SZWEEXEC'" &&
-cd '../SZWELOAD' &&
-cp * "//'{zowe.setup.dataset.prefix}.SZWELOAD'" &&
-cd '../../components/launcher/bin' &&
+ZWE_TMP_PREFIX='{zowe.setup.dataset.prefix}' &&
+cd files/SZWESAMP &&
+cp * "//'$ZWE_TMP_PREFIX.SZWESAMP'" &&
+cd ../SZWEEXEC &&
+cp * "//'$ZWE_TMP_PREFIX.SZWEEXEC'" &&
+cd ../SZWELOAD &&
+cp * "//'$ZWE_TMP_PREFIX.SZWELOAD'" &&
+cd ../../components/launcher/bin &&
 cp zowe_launcher
-   "//'{zowe.setup.dataset.prefix}.SZWEAUTH(ZWELNCH)'" &&
-cd '../../zss/SAMPLIB' &&
-cp ZWESIP00 ZWESISCH
-   "//'{zowe.setup.dataset.prefix}.SZWESAMP'" &&
-cp ZWESAUX
-   "//'{zowe.setup.dataset.prefix}.SZWESAMP(ZWESASTC)'" &&
-cp ZWESIS01
-   "//'{zowe.setup.dataset.prefix}.SZWESAMP(ZWESISTC)'" &&
-cd '../LOADLIB' &&
-cp ZWESIS01 ZWESAUX ZWESISDL
-   "//'{zowe.setup.dataset.prefix}.SZWEAUTH'"
+   "//'$ZWE_TMP_PREFIX.SZWEAUTH(ZWELNCH)'" &&
+cd ../samplib/ &&
+cp * "//'$ZWE_TMP_PREFIX.SZWESAMP'" &&
+cd ../../zss/SAMPLIB &&
+cp ZWESASTC ZWESIP00 ZWESISCH ZWESISTC
+   "//'$ZWE_TMP_PREFIX.SZWESAMP'" &&
+cd ../LOADLIB &&
+cp * "//'$ZWE_TMP_PREFIX.SZWEAUTH'"
 /*
