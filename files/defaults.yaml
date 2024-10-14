@@ -84,6 +84,31 @@ zowe:
       # Default to caching service entry as it predates this one
       name: "${{ ()=> { if (components['caching-service']?.storage?.vsam?.name) { return components['caching-service'].storage.vsam.name } else { return '' } }() }}"
 
+    sysMessages:
+  #   # Zowe starting
+    - "ZWEL0021I"
+  #   # Zowe started
+    - "ZWEL0018I"
+    - "ZWEL0006I"
+  #   # Zowe ready to use
+    - "ZWES1601I"
+  #   # Zowe stopping
+    - "ZWEL0008I"
+  #   # Zowe stopped
+    - "ZWEL0022I"
+  #   # Zowe components starting
+    - "ZWEL0001I"
+  #   # Zowe components stopped
+    - "ZWEL0002I"
+  #   # API ML components started
+    - "ZWEAM000I"
+  #   # API ML components ready
+    - "ZWEAM001I"
+  #   # App server ready
+    - "ZWED0031I"
+  #   # ZSS ready
+    - "ZWES1013I"
+
 
   configmgr:
     # STRICT=quit on any error, including missing schema
