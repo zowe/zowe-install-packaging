@@ -52,7 +52,7 @@ on:
         required: false
         # FIXME: too slow to test 2, temporarily only test 1
         # default: 'sample-node-api;sample-trial-app'
-        default: 'sample-node-api'
+        default: 'sample-node-api(3.0.0-SNAPSHOT)'
       RANDOM_DISPATCH_EVENT_ID:
         description: 'random dispatch event id'
         required: false
@@ -66,7 +66,7 @@ env:
   DEFAULT_ZOWE_PAX_ARTIFACTORY_PATTERN: libs-snapshot-local/org/zowe/*zowe*{branch-name}*.pax
   DEFAULT_ZOWE_SMPE_ARTIFACTORY_PATTERN: libs-snapshot-local/org/zowe/*zowe-smpe*{branch-name}*.zip
   DEFAULT_ZOWE_CLI_ARTIFACTORY_PATTERN: PLACE_HOLDER/org/zowe/cli/zowe-cli-package/*zowe-cli-package-2*.zip
-  DEFAULT_ZOWE_EXT_ARTIFACTORY_PATTERN: libs-snapshot-local/org/zowe/{ext-name}/*/{ext-name}-*.pax
+  DEFAULT_ZOWE_EXT_ARTIFACTORY_PATTERN: libs-snapshot-local/org/zowe/{ext-name}/{ext-version}/{ext-name}-*.pax
 
   # below block can be overwritten, adjusted by DevOps only
   # ZOS_NODE_VERSION more to choose from: v16.20.1,  v18.16.0
