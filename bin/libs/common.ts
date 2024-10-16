@@ -345,7 +345,7 @@ export function getZoweRuntimeManifest(): any|undefined {
   if (!runtimeManifest) {
     const manifestFileName = `${std.getenv('ZWE_zowe_runtimeDirectory')}/manifest.json`;
     const result = xplatform.loadFileUTF8(manifestFileName,xplatform.AUTO_DETECT);
-    if (result){
+    if (!result) {
       printError('Could not read runtime manifest in '+manifestFileName);
     } else {
       runtimeManifest=JSON.parse(result);
