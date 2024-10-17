@@ -122,6 +122,10 @@
         },
         "configure": {
           "type": "string",
+          "description": "This defines extra configuration steps before zwe startup code performs its own configuration steps. It is for runtime purpose, and will be automatically executed each time Zowe is started."
+        },
+        "configure": {
+          "type": "string",
           "description": "This defines extra configuration steps before starting the component. It is for runtime purpose, and will be automatically executed each time Zowe is started."
         },
         "start": {
