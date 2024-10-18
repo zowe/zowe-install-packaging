@@ -1,4 +1,4 @@
-export ZOSMF_URL="https://zzow07.zowe.marist.cloud"
+export ZOSMF_URL="https://zzow10.zowe.marist.cloud"
 export ZOSMF_PORT=10443
 export ZOSMF_SYSTEM="S0W1"
 export DIR="/u/zowead2"
@@ -41,7 +41,7 @@ if [ -f ../.pax/zowe-smpe.zip ]; then
   mkdir -p "unzipped"
   unzip ../.pax/zowe-smpe.zip -d unzipped
 else
-  echo "zowe-smpe file not found"
+  echo "zowe-smpe file not found" >>report.txt
   exit -1
 fi
 
@@ -73,7 +73,7 @@ else
   if [ -f ../.pax/${FMID}.zip ]; then
     unzip ../.pax/${FMID}.zip -d unzipped
   else
-    echo "File with FMID not found"
+    echo "File with FMID not found" >>report.txt
     exit -1
   fi
 fi
@@ -147,18 +147,17 @@ echo ""
 echo ""
 
 if [ $smpe -ne 0 ] || [ $ptf -ne 0 ] || [ $create -ne 0 ] || [ $test -ne 0 ] || [ $presmpe -ne 0 ]; then
-  echo "Build unsuccessful!"
+  echo "Build unsuccessful!" >>report.txt
   if [ $presmpe -ne 0 ]; then
-    echo "Pre-SMP/E wasn't successful."
+    echo "Pre-SMP/E wasn't successful." >>report.txt
   elif [ $smpe -ne 0 ]; then
-    echo "SMP/E wasn't successful."
+    echo "SMP/E wasn't successful." >>report.txt
   elif [ $ptf -ne 0 ]; then
-    echo "Applying PTFs wasn't successful."
+    echo "Applying PTFs wasn't successful." >>report.txt
   elif [ $create -ne 0 ]; then
-    echo "Creation of PSWI wasn't successful."
+    echo "Creation of PSWI wasn't successful." >>report.txt
   elif [ $test -ne 0 ]; then
-    echo "Testing of PSWI wasn't successful."
-  fi
+    echo "Testing of PSWI wasn't successful." >>report.txt
   exit -1
 else
   echo "Build successful!"
