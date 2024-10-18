@@ -11,10 +11,6 @@
 # Copyright Contributors to the Zowe Project.
 #######################################################################
   
-# zwe command allows to use parameter without value:
-#   zwe install --ds-prefix ---> ZWE_CLI_PARAMETER_DATASET_PREFIX=""
-# To go thru "DS Prefix" code, we have to use test -n ${var+foo}
-
 CEE_RO="XPLINK(ON),HEAPPOOLS(OFF),HEAPPOOLS64(OFF)"
 
 # https://www.ibm.com/docs/en/zos/3.1.0?topic=descriptions-sh-invoke-shell
