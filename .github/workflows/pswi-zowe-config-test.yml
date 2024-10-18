@@ -35,7 +35,7 @@ jobs:
         with:
           lock-repository: ${{ github.repository }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          lock-resource-name: zowe-psi-build-zzow07-lock
+          lock-resource-name: zowe-psi-build-zzow10-lock
           lock-avg-retry-interval: 30
 
       - name: 'Test ZWECONF workflow'
