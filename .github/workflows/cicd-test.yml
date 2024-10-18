@@ -16,10 +16,10 @@ on:
         default: 'Any zzow servers'
         options: 
           - Any zzow servers
-          - zzow06
-          - zzow07
-          - zzow08
-          - zzow06,zzow07,zzow08
+          - zzow09
+          - zzow10
+          - zzow11
+          - zzow09,zzow10,zzow11
       install-test:
         description: 'Choose Install Test'
         type: choice
@@ -90,7 +90,7 @@ env:
   CONFIG_MANAGER_TESTFILE: extended/config-manager/enable-config-manager.ts
   GENERAL_API_DOCUMENTATION_TESTFILE: basic/install-api-gen.ts
   ZOWE_NIGHTLY_TESTS_FULL: basic/install.ts(all);basic/install-fmid.ts(all)
-  ZOWE_RELEASE_TESTS_FULL: basic/install.ts(all);basic/install-fmid.ts(all);basic/install-ext.ts(any);extended/keyring.ts(all);extended/node-versions/node-v18.ts(zzow08):extended/certificates/nonstrict-verify-external-certificate.ts(any);extended/caching-storages/infinispan-storage.ts(any);extended/config-manager/enable-config-manager.ts(any)
+  ZOWE_RELEASE_TESTS_FULL: basic/install.ts(all);basic/install-fmid.ts(all);basic/install-ext.ts(any);extended/keyring.ts(all);extended/node-versions/node-v18.ts(zzow11):extended/certificates/nonstrict-verify-external-certificate.ts(any);extended/caching-storages/infinispan-storage.ts(any);extended/config-manager/enable-config-manager.ts(any)
 
 jobs:
   display-dispatch-event-id:
