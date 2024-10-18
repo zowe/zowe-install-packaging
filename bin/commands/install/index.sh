@@ -11,15 +11,7 @@
 # Copyright Contributors to the Zowe Project.
 #######################################################################
 
-print_level0_message "Install Zowe MVS data sets"
-
-###############################
-# constants
-# keep in sync with workflows/templates/smpe-install/ZWE3ALOC.vtl
-cust_ds_list="${ZWE_PRIVATE_DS_SZWESAMP}|Zowe sample library|dsntype(library) dsorg(po) recfm(f b) lrecl(80) unit(sysallda) space(30,15) tracks
-${ZWE_PRIVATE_DS_SZWEAUTH}|Zowe authorized load library|dsntype(library) dsorg(po) recfm(u) lrecl(0) blksize(32760) unit(sysallda) space(195,15) tracks
-${ZWE_PRIVATE_DS_SZWELOAD}|Zowe load library|dsntype(library) dsorg(po) recfm(u) lrecl(0) blksize(32760) unit(sysallda) space(150,15) tracks
-${ZWE_PRIVATE_DS_SZWEEXEC}|Zowe executable utilities library|dsntype(library) dsorg(po) recfm(f b) lrecl(80) unit(sysallda) space(15,15) tracks"
+CEE_RO="XPLINK(ON),HEAPPOOLS(OFF),HEAPPOOLS64(OFF)"
 
 ###############################
 # validation
@@ -42,7 +34,7 @@ while read -r line; do
   ds=$(echo "${line}" | awk -F"|" '{print $1}')
   name=$(echo "${line}" | awk -F"|" '{print $2}')
   spec=$(echo "${line}" | awk -F"|" '{print $3}')
-  
+
   # check existence
   ds_existence=$(is_data_set_exists "${prefix}.${ds}")
   if [ "${ds_existence}" = "true" ]; then
@@ -66,7 +58,7 @@ $(echo "${cust_ds_list}")
 EOF
 print_message
 
-if [ "${ds_existence}" = "true" ] &&  [ "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITE}" != "true" ]; then
+if [ "${ds_existence}" = "true" ] && [ "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITE}" != "true" ]; then
   print_level1_message "Zowe MVS data sets installation skipped."
 else
   ###############################
@@ -137,7 +129,6 @@ else
   # exit message
   print_level1_message "Zowe MVS data sets are installed successfully."
 fi
-
 
 print_message "Zowe installation completed. In order to use Zowe, you need to run \"zwe init\" command to initialize Zowe instance."
 print_message "- Type \"zwe init --help\" to get more information."
