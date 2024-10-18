@@ -1,2 +1,3 @@
 allow-overwrite,allow-overwritten||boolean|||||Allow overwritten existing MVS data set.
 dataset-prefix,ds-prefix||string|||||Install Zowe to this dataset prefix.\nIf you specify this value, --config is not required.
+dry-run||boolean|||||Prints out existing JCL templates but does not generate resolved JCL.
