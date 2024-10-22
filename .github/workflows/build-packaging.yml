@@ -344,7 +344,7 @@ jobs:
         with:
           lock-repository: ${{ github.repository }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          lock-resource-name: zowe-psi-build-zzow07-lock
+          lock-resource-name: zowe-psi-build-zzow10-lock
           lock-avg-retry-interval: 60
 
       - name: '[PSWI 0] PSWI pre-build check for existing smpe'
