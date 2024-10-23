@@ -1007,6 +1007,21 @@
                 "$ref": "/schemas/v2/server-common#zoweIpv4"
               }
             },
+            "dvipa": {
+              "type": "object",
+              "additionalProperties": false,
+              "description": "Optional, network configuration parameters for DVIPA environemnts.",
+              "properties":{
+                "enabled": {
+                  "default": false,
+                  "description": "Enable if using DVIPA. Indicates to servers which hostname to use in requests."
+                },
+                "vipa": {
+                  "description": "Dynamic virtual IP address (DVIPA) for which the Zowe servers are designated.",
+                  "$ref": "/schemas/v2/server-common#zoweIpv4"
+                }
+              }
+            },
             "vipaIp": {
               "type": "string",
               "description": "The IP address which all of the Zowe servers will be binding to. If you are using multiple DIPVA addresses, do not use this option."
