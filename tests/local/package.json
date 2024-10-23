@@ -1,0 +1,31 @@
+{
+  "name": "@zowe/local-test",
+  "version": "0.1.0",
+  "description": "Local, quick tests for Zowe",
+  "main": "index.js",
+  "license": "EPL-2.0",
+  "devDependencies": {
+    "ajv": "8.12.0",
+    "chai": "4.3.6",
+    "debug": "4.3.3",
+    "deep-object-diff": "1.1.9",
+    "eslint": "8.10.0",
+    "fs-extra": "11.2.0",
+    "gunzip-maybe": "^1.4.2",
+    "lodash": "4.17.21",
+    "mocha": "9.2.1",
+    "mocha-jenkins-reporter": "0.4.7",
+    "mocha-multi-reporters": "1.5.1",
+    "mochawesome": "7.1.2",
+    "node-ssh": "12.0.1",
+    "rimraf": "5.0.5",
+    "tar-fs": "3.0.5",
+    "urllib": "3.22.4",
+    "velocityjs": "2.0.6",
+    "yaml": "2.4.0"
+  },
+  "scripts": {
+    "test": "mocha",
+    "lint": "eslint ."
+  }
+}
