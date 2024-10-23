@@ -55,6 +55,17 @@ pwd
 
 cp ../example-zowe.yaml example-zowe.yaml
 
-diff --ed example-zowe.yaml zowe_.yaml > diff.txt || true
+diff example-zowe.yaml zowe_.yaml > diff.txt || true
 
-diff --ed diff.txt scripts/base_diff.txt > final_diff.txt
+diff diff.txt scripts/base_diff.txt > final_diff.txt || true
+
+concat=`cat final_diff.txt`
+
+if [ -n "$concat" ]
+then
+  echo "There are some discrepancies between the example-zowe.yaml and the zowe.yaml created by ZWECONF.xml workflow."
+  echo "Please add or delete the workflow so everything is there."
+  echo "First line is from the example and the line bellow is from the workflow."
+  echo $concat
+  exit -1
+fi
