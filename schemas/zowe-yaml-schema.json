@@ -465,11 +465,11 @@
           "description": "Customize your Zowe z/OS JES job.",
           "properties": {
             "name": {
-              "type": "string",
+              "$ref": "/schemas/v2/server-common#zoweJobname",
               "description": "Job name of Zowe primary ZWESLSTC started task."
             },
             "prefix": {
-              "type": "string",
+              "$ref": "/schemas/v2/server-common#zoweJobname",
               "description": "A short prefix to customize address spaces created by Zowe job."
             }
           }
