@@ -140,15 +140,15 @@ if [ $presmpe -eq 0 ]; then
           sh 051_test_workflows.sh
           wf_test=$?
         fi
-        
+        #
         # Cleanup after the test
-        sh 06_test_cleanup.sh
+        #sh 06_test_cleanup.sh
       fi
-    else
+    #else
       # Cleanup of SMP/E if PTF weren't successful - because the earlier cleanup runs only it it was success
-      sh 07_smpe_cleanup.sh
+      # sh 07_smpe_cleanup.sh
       # Clean RELFILEs and PTFs
-      sh 08_presmpe_cleanup.sh
+      #  sh 08_presmpe_cleanup.sh
     fi
   else
     # Cleanup of SMP/E if SMPE weren't successful - because the earlier cleanup runs only it it was success
