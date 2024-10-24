@@ -11,4 +11,4 @@
 # Copyright Contributors to the Zowe Project.
 #######################################################################
 
-${ZWE_zowe_runtimeDirectory}/bin/utils/configmgr -script "${ZWE_zowe_runtimeDirectory}/bin/commands/diagnose/cli.js"
+_CEE_RUNOPTS="XPLINK(ON)" ${ZWE_zowe_runtimeDirectory}/bin/utils/configmgr -script "${ZWE_zowe_runtimeDirectory}/bin/commands/diagnose/cli.js"
