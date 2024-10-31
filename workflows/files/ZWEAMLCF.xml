@@ -632,130 +632,7 @@ How we want to verify SSL certificates of services. Valid values are:
             <!-- Specify choices here -->
             <default>7601</default>
         </string>
-    </variable>
-    <variable name="components_app_server_enabled" scope="instance" visibility="public">
-        <label>Enable the app server</label>
-        <abstract>Check this option to enable the app server</abstract>
-        <description>Check this option to enable the app server.</description>
-        <category>components</category>
-        <boolean>
-            <!-- Put validation here -->
-            <!-- Specify choices here -->
-            <default>true</default>
-        </boolean>
-    </variable>    
-    <variable name="components_app_server_port" scope="instance" visibility="public">
-        <label>App server port</label>
-        <abstract>Port for the app server</abstract>
-        <description>Port for the app server</description>
-        <category>components</category>
-        <integer>
-            <!-- Put validation here -->
-            <!-- Specify choices here -->
-            <default>7556</default>
-        </integer>
-    </variable>
-    <variable name="components_zss_enabled" scope="instance" visibility="public">
-        <label>Enable ZSS</label>
-        <abstract>Check this option to enable ZSS</abstract>
-        <description>Check this option to enable ZSS</description>
-        <category>components</category>
-        <boolean>
-            <!-- Put validation here -->
-            <!-- Specify choices here -->
-            <default>true</default>
-        </boolean>
-    </variable>
-    <variable name="components_zss_port" scope="instance" visibility="public">
-        <label>ZSS port</label>
-        <abstract>Port which the ZSS component will use</abstract>
-        <description>Port which the ZSS component will use</description>
-        <category>components</category>
-        <integer>
-            <!-- Put validation here -->
-            <!-- Specify choices here -->
-            <default>7557</default>
-        </integer>
-    </variable>
-    <variable name="components_zss_crossMemoryServerName" scope="instance" visibility="public">
-        <label>ZSS cross memory server name</label>
-        <abstract>Name for the ZSS cross memory server</abstract>
-        <description>Name for the ZSS cross memory server</description>
-        <category>components</category>
-        <string valueMustBeChoice="false" multiLine="false">
-            <!-- Put validation here -->
-            <!-- Specify choices here -->
-            <default>ZWESIS_STD</default>
-        </string>
-    </variable>
-    <variable name="components_zss_agent_jwt_fallback" scope="instance" visibility="public">
-        <label>ZSS JWT fallback</label>
-        <abstract>Check this to enable fallback</abstract>
-        <description>If fallback is enabled, the agent issues and accepts cookies from itself in the event a JWT cannot be provided.</description>
-        <category>components</category>
-        <boolean>
-            <!-- Put validation here -->
-            <!-- Specify choices here -->
-            <default>true</default>
-        </boolean>
-    </variable>
-    <variable name="components_zss_agent_64bit" scope="instance" visibility="public">
-        <label>ZSS 64bit</label>
-        <abstract>Check this to enable 64bit mode</abstract>
-        <description>If 64bit mode is disabled 31bit mode will be used.</description>
-        <category>components</category>
-        <boolean>
-            <!-- Put validation here -->
-            <!-- Specify choices here -->
-            <default>true</default>
-        </boolean>
-    </variable>
-    <variable name="components_explorer_jes_enabled" scope="instance" visibility="public">
-        <label>Enable explorer JES</label>
-        <abstract>Check this option to enable the JES explorer</abstract>
-        <description>Check this option to enable the JES explorer.</description>
-        <category>components</category>
-        <boolean>
-            <!-- Put validation here -->
-            <!-- Specify choices here -->
-            <default>true</default>
-        </boolean>
-    </variable>
-    <variable name="components_explorer_mvs_enabled" scope="instance" visibility="public">
-        <label>Enable explorer MVS</label>
-        <abstract>Check this option to enable the MVS explorer</abstract>
-        <description>Check this option to enable the MVS explorer.</description>
-        <category>components</category>
-        <boolean>
-            <!-- Put validation here -->
-            <!-- Specify choices here -->
-            <default>true</default>
-        </boolean>
-    </variable>
-    <variable name="components_explorer_uss_enabled" scope="instance" visibility="public">
-        <label>Enable explorer USS</label>
-        <abstract>Check this option to enable the USS explorer</abstract>
-        <description>Check this option to enable the USS explorer.</description>
-        <category>components</category>
-        <boolean>
-            <!-- Put validation here -->
-            <!-- Specify choices here -->
-            <default>true</default>
-        </boolean>
-    </variable>
-    <variable name="config_manager_validation" scope="instance" visibility="public">
-        <label>Zowe configuration manager validation type</label>
-        <abstract>STRICT or COMPONENT-COMPAT validation type</abstract>
-        <description>STRICT=quit on any error, COMPONENT-COMPAT=if component missing schema, skip it with warning instead of quit</description>
-        <category>configManager</category>
-        <string valueMustBeChoice="false" multiLine="false">
-            <!-- Put validation here -->
-            <!-- Specify choices here -->
-            <choice>COMPONENT-COMPAT</choice>
-            <choice>STRICT</choice>            
-            <default>STRICT</default>
-        </string>
-    </variable>
+    </variable>      
     <variable name="zowe_rbacProfileId" scope="instance" visibility="public">
         <label>Zowe Profile Identifier</label>
         <abstract>ID you use to separate multiple Zowe installs</abstract>
@@ -888,20 +765,7 @@ How we want to verify SSL certificates of services. Valid values are:
             <!-- Specify choices here -->
             <default>ZWESASTC</default>
         </string>
-    </variable>
-    <variable name="zowe_setup_installStep_enabled" scope="instance" visibility="public">
-        <label>Install the MVS data sets</label>
-        <abstract>Check to enable this run step with the zwe install command. For convenience build only.</abstract>
-        <description>Check this option to enable the optional workflow step with zwe install command. After Zowe convenience build is extracted, 
-            you can enable this flag to run the zwe install command to install MVS data sets within this workflow run. 
-        This option is for convenience build only. SMP/E installs the MVS data sets during installation.</description>
-        <category>installMVSDatasets</category>
-        <boolean>
-            <!-- Put validation here -->
-            <!-- Specify choices here -->
-            <default>false</default>
-        </boolean>
-    </variable>
+    </variable>    
     <!--atCreate-->
     <!--steps-->
     <step name="define_variables" optional="false">
@@ -953,13 +817,7 @@ How we want to verify SSL certificates of services. Valid values are:
             <variableValue name="node_home" scope="instance" noPromptIfSet="false" required="true"/>
             <variableValue name="zOSMF_host" scope="instance" noPromptIfSet="false" required="true"/>
             <variableValue name="zOSMF_port" scope="instance" noPromptIfSet="false" required="true"/>
-            <variableValue name="zOSMF_applId" scope="instance" noPromptIfSet="false" required="true"/>
-            <variableValue name="config_manager_validation" scope="instance" noPromptIfSet="false" required="true"/>
-            <variableValue name="components_app_server_enabled" scope="instance" noPromptIfSet="false" required="true"/>
-            <variableValue name="components_zss_enabled" scope="instance" noPromptIfSet="false" required="true"/>
-            <variableValue name="components_explorer_jes_enabled" scope="instance" noPromptIfSet="false" required="true"/>
-            <variableValue name="components_explorer_mvs_enabled" scope="instance" noPromptIfSet="false" required="true"/>
-            <variableValue name="components_explorer_uss_enabled" scope="instance" noPromptIfSet="false" required="true"/>
+            <variableValue name="zOSMF_applId" scope="instance" noPromptIfSet="false" required="true"/>            
             <variableValue name="zowe_setup_security_product" scope="instance" noPromptIfSet="false" required="true"/>
             <variableValue name="zowe_setup_security_groups_admin" scope="instance" noPromptIfSet="false" required="true"/>
             <variableValue name="zowe_setup_security_groups_stc" scope="instance" noPromptIfSet="false" required="true"/>
@@ -969,7 +827,6 @@ How we want to verify SSL certificates of services. Valid values are:
             <variableValue name="zowe_setup_security_stcs_zowe" scope="instance" noPromptIfSet="false" required="true"/>
             <variableValue name="zowe_setup_security_stcs_zis" scope="instance" noPromptIfSet="false" required="true"/>
             <variableValue name="zowe_setup_security_stcs_aux" scope="instance" noPromptIfSet="false" required="true"/>
-            <variableValue name="zowe_setup_installStep_enabled" scope="instance" noPromptIfSet="false" required="true"/>
             <instructions>Run this step to fill base variables.</instructions>
             <weight>1</weight>
             <skills>z/OS System Programmer</skills>
@@ -1026,58 +883,7 @@ How we want to verify SSL certificates of services. Valid values are:
             <autoEnable>false</autoEnable>
             <canMarkAsFailed>false</canMarkAsFailed>
             <!--template-->
-        </step>       
-        <step name="app_server_variables" optional="false">
-            <title>App Server variables</title>
-            <description>Specify the variables for the App Server</description>
-            <prereqStep name="main_variables"/>
-            <prereqStep name="caching_service_infinispan_variables"/>
-            <condition>
-                <expression>1==1</expression>
-                <description>Always true</description>
-                <targetStateSet>
-                    <extendStateExpression>
-                        <description>Skipped if App Server wasn't selected</description>
-                        <expression>!${instance-components_app_server_enabled}</expression>
-                        <targetState>skipped</targetState>
-                    </extendStateExpression>
-                </targetStateSet>
-            </condition>    
-            <variableValue name="components_app_server_port" scope="instance" noPromptIfSet="false" required="true"/>
-            <instructions substitution="false">Run this step to specify the variables for the App Server.</instructions>
-            <weight>1</weight>
-            <skills>z/OS System Programmer</skills>
-            <autoEnable>false</autoEnable>
-            <canMarkAsFailed>false</canMarkAsFailed>
-            <!--template-->
-        </step>
-        <step name="zss_variables" optional="false">
-            <title>ZSS Variables</title>
-            <description>Specify the ZSS variables</description>
-            <prereqStep name="main_variables"/>
-            <prereqStep name="app_server_variables"/>
-            <condition>
-                <expression>1==1</expression>
-                <description>Always true</description>
-                <targetStateSet>
-                    <extendStateExpression>
-                        <description>Skips the step if ZSS wasn't selected</description>
-                        <expression>!${instance-components_zss_enabled}</expression>
-                        <targetState>skipped</targetState>
-                    </extendStateExpression>
-                </targetStateSet>
-            </condition>
-            <variableValue name="components_zss_port" scope="instance" noPromptIfSet="false" required="true"/>
-            <variableValue name="components_zss_crossMemoryServerName" scope="instance" noPromptIfSet="false" required="true"/>
-            <variableValue name="components_zss_agent_jwt_fallback" scope="instance" noPromptIfSet="false" required="true"/>
-            <variableValue name="components_zss_agent_64bit" scope="instance" noPromptIfSet="false" required="true"/>
-            <instructions substitution="false">Run this step to specify the values for the ZSS variables</instructions>
-            <weight>1</weight>
-            <skills>z/OS System Programmer</skills>
-            <autoEnable>false</autoEnable>
-            <canMarkAsFailed>false</canMarkAsFailed>
-            <!--template-->
-        </step>
+        </step>        
     </step>
     <step name="configure" optional="false">
         <title>Create configuration</title>
@@ -1406,7 +1212,7 @@ echo '' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '  configmgr:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '    # STRICT=quit on any error, including missing schema' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '    # COMPONENT-COMPAT=if component missing schema, skip it with warning instead of quit' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '    validation: "$!{instance-config_manager_validation}"' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '    validation: "COMPONENT-COMPAT"' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '  # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '  # runtime z/OS job name' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
@@ -1679,18 +1485,10 @@ echo '          keyExchange:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '            port: ${instance-components_caching_service_storage_infinispan_jgroups_keyExchange_port}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '  # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-#if (${instance-components_app_server_enabled} == "true" )
 echo '  app-server:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '    enabled: ${instance-components_app_server_enabled}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '    port: ${instance-components_app_server_port}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '    debug: false' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-#end
-#if (${instance-components_app_server_enabled} == "false" )
-echo '  app-server:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '    enabled: ${instance-components_app_server_enabled}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '    enabled: false' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '    port: 7556' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '    debug: false' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-#end
 echo '    # we can customize any component with custom certificate' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '    # the missing definitions will be picked from "zowe.certificate"' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '    # certificate:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
@@ -1702,36 +1500,25 @@ echo '    #     certificate: /global/zowe/keystore/localhost/localhost.keystore.
 echo '' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '  # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '  zss:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-#if (${instance-components_zss_enabled} == "true" )
-echo '    enabled: ${instance-components_zss_enabled}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '    port: ${instance-components_zss_port}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '    crossMemoryServerName: $!{instance-components_zss_crossMemoryServerName}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '    agent:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '      jwt:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '        fallback: ${instance-components_zss_agent_jwt_fallback}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '      64bit: ${instance-components_zss_agent_64bit}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-#end
-#if (${instance-components_zss_enabled} == "false" )
-echo '    enabled: ${instance-components_zss_enabled}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '    enabled: false' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '    port: 7557' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '    crossMemoryServerName: ZWESIS_STD' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '    agent:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '      jwt:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '        fallback: true' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '      64bit: true' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-#end
 echo '' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '  # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '  explorer-jes:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '    enabled: ${instance-components_explorer_jes_enabled}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '    enabled: false' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '  # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '  explorer-mvs:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '    enabled: ${instance-components_explorer_mvs_enabled}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '    enabled: false' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '  # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '  explorer-uss:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '    enabled: ${instance-components_explorer_uss_enabled}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '    enabled: false' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '  # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '  # Each extension can have dedicated definition similar to core components.' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
@@ -1812,51 +1599,11 @@ echo '#         enabled: false' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
     </step>
     <step name="zowe_installation_steps" optional="false">
         <title>Zowe installation</title>
-        <description>Zowe installation</description>
-        <step name="install_zowe" optional="true">
-            <title>Run the Zowe install (only for convenience build)</title>
-            <description>Configure Zowe.</description>
-            <prereqStep name="main_variables"/>
-            <prereqStep name="configure"/>            
-            <condition>
-                <expression>1==1</expression>
-                <description>Always true</description>
-                <targetStateSet>
-                    <extendStateExpression>
-                        <description>Skips this step if Install the MVS data sets was not selected</description>
-                        <expression>!${instance-zowe_setup_installStep_enabled}</expression>
-                        <targetState>skipped</targetState>
-                    </extendStateExpression>
-                </targetStateSet>
-            </condition>
-            <!-- condition -->
-            <!--variableValues-->
-            <instructions substitution="true"><![CDATA[
-            This step runs the command: <code>zwe install -c ${instance-zowe_runtimeDirectory}/zowe.yml</code>
-            ]]></instructions>
-            <weight>1</weight>
-            <skills>z/OS System Programmer</skills>
-            <autoEnable>false</autoEnable>
-            <canMarkAsFailed>false</canMarkAsFailed>
-            <template>
-                <inlineTemplate substitution="true">set -e
-set -x
-
-export JAVA_HOME='${instance-java_home}'
-export NODE_HOME='${instance-node_home}'
-
-export PATH=$PATH:'${instance-zowe_runtimeDirectory}/bin'
-
-zwe install -c '${instance-zowe_runtimeDirectory}/zowe.yaml' --allow-overwrite</inlineTemplate>
-                <submitAs maxRc="0">shell-JCL</submitAs>
-                <maxLrecl>1024</maxLrecl>
-                <!-- zosmfOutput -->
-            </template>
-        </step>
+        <description>Zowe installation</description>        
         <step name="init_zowe" optional="false">
             <title>Run the Zowe init</title>
             <description>Executes the Zowe initialization</description>
-            <prereqStep name="install_zowe"/>
+            <prereqStep name="configure"/>
             <!-- condition -->
             <!--variableValues-->
             <instructions substitution="true"><![CDATA[
@@ -1898,7 +1645,7 @@ zwe init stc -c '${instance-zowe_runtimeDirectory}/zowe.yaml' --allow-overwrite
         <step name="init_zowe_security" optional="false">
             <title>Run the Zowe init security</title>
             <description>Executes the Zowe initialization for security setup</description>
-            <prereqStep name="install_zowe"/>
+            <prereqStep name="configure"/>
             <!--variableValues-->
             <instructions substitution="true"><![CDATA[
             This step runs the commands: <br/>
