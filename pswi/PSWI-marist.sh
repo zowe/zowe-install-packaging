@@ -9,7 +9,9 @@ export VOLUME="ZOS003"
 export TEST_HLQ="ZOWEAD2.PSWIT"
 export SYSAFF="(S0W1)"
 export ACCOUNT=1
-
+CURR_TIME=$(date +%s)
+export LOG_DIR="logs/$CURR_TIME"
+mkdir -p $LOG_DIR
 # Variables for workflows
 # SMPE
 export TZONE="TZONE"
@@ -30,7 +32,7 @@ export TEST_MOUNT="${DIR}/test_mount"
 export EXPORT="${TMP_MOUNT}/export/"
 export WORK_MOUNT="${DIR}/work"
 export WORK_ZFS="ZOWEAD2.WORK.ZFS"
-export ZOSMF_V="2.3"
+export ZOSMF_V="3.1"
 export SMPE_WF_NAME="ZOWE_SMPE_WF"
 export PTF_WF_NAME="ZOWE_PTF_WF"
 export HOST=${ZOSMF_URL#https:\/\/}
@@ -41,7 +43,7 @@ if [ -f ../.pax/zowe-smpe.zip ]; then
   mkdir -p "unzipped"
   unzip ../.pax/zowe-smpe.zip -d unzipped
 else
-  echo "zowe-smpe file not found" >>report.txt
+  echo "zowe-smpe file not found" >>"$LOG_DIR/report.txt"
   exit -1
 fi
 
@@ -73,7 +75,7 @@ else
   if [ -f ../.pax/${FMID}.zip ]; then
     unzip ../.pax/${FMID}.zip -d unzipped
   else
-    echo "File with FMID not found" >>report.txt
+    echo "File with FMID not found" >>"$LOG_DIR/report.txt"
     exit -1
   fi
 fi
@@ -147,17 +149,18 @@ echo ""
 echo ""
 
 if [ $smpe -ne 0 ] || [ $ptf -ne 0 ] || [ $create -ne 0 ] || [ $test -ne 0 ] || [ $presmpe -ne 0 ]; then
-  echo "Build unsuccessful!" >>report.txt
+  echo "Build unsuccessful!" >>"$LOG_DIR/report.txt"
   if [ $presmpe -ne 0 ]; then
-    echo "Pre-SMP/E wasn't successful." >>report.txt
+    echo "Pre-SMP/E wasn't successful." >>"$LOG_DIR/report.txt"
   elif [ $smpe -ne 0 ]; then
-    echo "SMP/E wasn't successful." >>report.txt
+    echo "SMP/E wasn't successful." >>"$LOG_DIR/report.txt"
   elif [ $ptf -ne 0 ]; then
-    echo "Applying PTFs wasn't successful." >>report.txt
+    echo "Applying PTFs wasn't successful." >>"$LOG_DIR/report.txt"
   elif [ $create -ne 0 ]; then
-    echo "Creation of PSWI wasn't successful." >>report.txt
+    echo "Creation of PSWI wasn't successful." >>"$LOG_DIR/report.txt"
   elif [ $test -ne 0 ]; then
-    echo "Testing of PSWI wasn't successful." >>report.txt
+    echo "Testing of PSWI wasn't successful." >>"$LOG_DIR/report.txt"
+  fi
   exit -1
 else
   echo "Build successful!"
