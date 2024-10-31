@@ -14,6 +14,9 @@
 export ZWE_PRIVATE_LOG_FILE=
 
 prepare_log_file() {
+  if [ -f "${1}" ]; then
+    print_error_and_exit "Error ZWEL0102E: Invalid parameter --log-dir=${1} (not a directory)" "" 102
+  fi
   # use absolute path to make sure we can always write to correct location even
   # if other scripts changed current working directory
   log_dir=$(convert_to_absolute_path "${1}" | remove_trailing_slash)
