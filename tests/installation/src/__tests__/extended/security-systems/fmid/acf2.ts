@@ -18,10 +18,10 @@ import {TEST_TIMEOUT_SMPE_FMID} from '../../../../constants';
 /**
  * Define this test should run in a specific worker
  *
- * @worker marist-6
+ * @worker marist-9
  */
-// hard code to use marist-6 which we started with ACF2
-const testServer = 'marist-6';
+// hard code to use marist-9 which we started with ACF2
+const testServer = 'marist-9';
 const testSuiteName = 'Test SMPE FMID installation with ACF2';
 describe(testSuiteName, () => {
   beforeAll(() => {
