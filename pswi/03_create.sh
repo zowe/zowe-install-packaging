@@ -286,8 +286,8 @@ echo "Showing EXPORT JCL how it looks before the change"
 #else
 echo "Changing jobcard and adding SYSAFF"
 sed "s|//IZUD01EX JOB (ACCOUNT),'NAME'|$JOBST1\n$JOBST2|g" EXPORT >EXPJCL0
-sed "s|//.*gimzipInputFile.*,|<FILEDEF name=\"ZWE.PSWI.AZWE003.ZFS\"|g" EXPJCL0 >EXPJCL1
-sed "s|//         FILEDATA=TEXT|         archid=\"ZOS003.ZWE.PSWI.AZWE003.ZFS\"/>|g" EXPJCL1 >EXPJCL2
+sed "s|//.*gimzipInputFile.*,|<FILEDEF name=\"ZWE.PSWI.AZWE002.ZFS\"|g" EXPJCL0 >EXPJCL1
+sed "s|//         FILEDATA=TEXT|         archid=\"ZOS003.ZWE.PSWI.AZWE002.ZFS\"/>|g" EXPJCL1 >EXPJCL2
 sed "s|//         DD \*||g" EXPJCL2 >EXPJCL
 # sed "s|ZOS003.ZWE.PSWI.|ZWE.PSWI.|g" EXPJCL3 >EXPJCL
 
