@@ -109,6 +109,33 @@ read_yaml() {
   return ${code}
 }
 
+read_yaml_configmgr() {
+  file="${1}"
+  key=$(echo "${2}" | tr '.' '/')
+  ignore_null="${3:-true}"
+
+  print_trace "- read_yaml_configmgr process ${file} and extract '${2} -> ${key}'"
+
+  configmgr="${ZWE_zowe_runtimeDirectory}/bin/utils/configmgr"
+  schema="${ZWE_zowe_runtimeDirectory}/schemas/server-common.json:${ZWE_zowe_runtimeDirectory}/schemas/zowe-yaml-schema.json"
+
+  result=$(_CEE_RUNOPTS="XPLINK(ON)" "${configmgr}" -s "$schema" -p "FILE(${file})" extract "${key}" 2>&1);
+  code=$?
+
+  print_trace "  * Exit code: ${code}"
+  print_trace "  * Output:"
+  print_trace "$(padding_left "${result}" "    ")"
+
+  if [ ${code} -eq 0 ]; then
+    if [ "${ignore_null}" = "true" ]; then
+      if [ "${result}" = "null" -o "${result}" = "undefined" ]; then
+        result=
+      fi
+    fi
+    printf "${result}"
+  fi
+}
+
 read_json() {
   file="${1}"
   key="${2}"
