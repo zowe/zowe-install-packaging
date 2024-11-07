@@ -1,1 +1,15 @@
-""
+{
+  "lockAcquiredTime": "Thu Nov 07 2024 13:24:27 GMT+0000 (Coordinated Universal Time)",
+  "uid": "1730985867850415784",
+  "repository": {
+    "owner": "zowe",
+    "repo": "zowe-install-packaging"
+  },
+  "branch": "users/muzikovam/yamlCheck",
+  "workflow": "PSWI zowe.yaml sync check",
+  "job": "test-pswi-zowe-yaml",
+  "actor": "muzikovam",
+  "runId": 11723903661,
+  "runNumber": 112,
+  "link": "https://github.com/zowe/zowe-install-packaging/actions/runs/11723903661"
+}
