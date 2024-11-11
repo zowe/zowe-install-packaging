@@ -6,7 +6,7 @@
         <workflowID scope="none">config_apiml_zowe_30</workflowID>
         <workflowDefaultName>Configuration of APIML for Zowe 3.0</workflowDefaultName>
         <workflowDescription>Use this simplified workflow to configure APIML for Zowe 3.0</workflowDescription>
-        <workflowVersion>2</workflowVersion>
+        <workflowVersion>3</workflowVersion>
         <vendor>Zowe</vendor>
         <General/>
     </workflowInfo>
