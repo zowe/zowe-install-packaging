@@ -6,7 +6,7 @@
         <workflowID scope="none">config_apiml_zowe_30</workflowID>
         <workflowDefaultName>Configuration of APIML for Zowe 3.0</workflowDefaultName>
         <workflowDescription>Use this simplified workflow to configure APIML for Zowe 3.0</workflowDescription>
-        <workflowVersion>3</workflowVersion>
+        <workflowVersion>2</workflowVersion>
         <vendor>Zowe</vendor>
         <General/>
     </workflowInfo>
@@ -272,19 +272,15 @@ some use cases, like containerization, this port could be different.</descriptio
     </variable>
     <variable name="zowe_certificate_keystore_type" scope="instance" visibility="public">
         <label>Zowe certificate keystore type</label>
-        <abstract>Certificate keystore type (PKCS12, JCEKS, JCECCAKS, JCERACFKS, JCECCARACFKS, or JCEHYBRIDRACFKS)</abstract>
-        <description>Certificate keystore type (PKCS12, JCEKS, JCECCAKS, JCERACFKS, JCECCARACFKS, or JCEHYBRIDRACFKS)</description>
+        <abstract>Certificate keystore type (PKCS12, JCERACFKS)</abstract>
+        <description>Certificate keystore type (PKCS12, JCERACFKS)</description>
         <category>certificates</category>
         <string valueMustBeChoice="false" multiLine="false">
             <!-- Put validation here -->
             <!-- Specify choices here -->
-            <choice>PKCS12</choice>
-            <choice>JCEKS</choice>
-            <choice>JCECCAKS</choice>
-            <choice>JCERACFKS</choice>
-            <choice>JCECCARACFKS</choice>
-            <choice>JCEHYBRIDRACFKS</choice>
-            <default>PKCS12</default>
+            <choice>PKCS12</choice>            
+            <choice>JCERACFKS</choice>            
+            <default>JCERACFKS</default>
         </string>
     </variable>
     <variable name="zowe_certificate_keystore_file" scope="instance" visibility="public">
@@ -295,7 +291,7 @@ some use cases, like containerization, this port could be different.</descriptio
         <string valueMustBeChoice="false" multiLine="false">
             <!-- Put validation here -->
             <!-- Specify choices here -->
-            <default>/global/zowe/keystore/localhost/localhost.keystore.p12</default>
+            <default>safkeyring://OWNER/KEYRING</default>
         </string>
     </variable>
     <variable name="zowe_certificate_keystore_password" scope="instance" visibility="public">
@@ -327,13 +323,9 @@ some use cases, like containerization, this port could be different.</descriptio
         <string valueMustBeChoice="false" multiLine="false">
             <!-- Put validation here -->
             <!-- Specify choices here -->
-            <choice>PKCS12</choice>
-            <choice>JCEKS</choice>
-            <choice>JCECCAKS</choice>
-            <choice>JCERACFKS</choice>
-            <choice>JCECCARACFKS</choice>
-            <choice>JCEHYBRIDRACFKS</choice>
-            <default>PKCS12</default>
+            <choice>PKCS12</choice>            
+            <choice>JCERACFKS</choice>            
+            <default>JCERACFKS</default>
         </string>
     </variable>
     <variable name="zowe_certificate_truststore_file" scope="instance" visibility="public">
@@ -344,7 +336,7 @@ some use cases, like containerization, this port could be different.</descriptio
         <string valueMustBeChoice="false" multiLine="false">
             <!-- Put validation here -->
             <!-- Specify choices here -->
-            <default>/global/zowe/keystore/localhost/localhost.truststore.p12</default>
+            <default>safkeyring://OWNER/KEYRING</default>
         </string>
     </variable>
     <variable name="zowe_certificate_truststore_password" scope="instance" visibility="public">
@@ -357,64 +349,7 @@ some use cases, like containerization, this port could be different.</descriptio
             <!-- Specify choices here -->
             <default>password</default>
         </string>
-    </variable>
-    <variable name="zowe_certificate_pem_key" scope="instance" visibility="public">
-        <label>Zowe certificate PEM key</label>
-        <abstract>Path to the Zowe certificate PEM key</abstract>
-        <description>Path to the Zowe certificate PEM key</description>
-        <category>certificates</category>
-        <string valueMustBeChoice="false" multiLine="false">
-            <!-- Put validation here -->
-            <!-- Specify choices here -->
-            <default>/global/zowe/keystore/localhost/localhost.key</default>
-        </string>
-    </variable>
-    <variable name="zowe_certificate_pem_certificate" scope="instance" visibility="public">
-        <label>Zowe certificate PEM certificate</label>
-        <abstract>Path to the PEM certificate</abstract>
-        <description>Path to the PEM certificate</description>
-        <category>certificates</category>
-        <string valueMustBeChoice="false" multiLine="false">
-            <!-- Put validation here -->
-            <!-- Specify choices here -->
-            <default>/global/zowe/keystore/localhost/localhost.cer</default>
-        </string>
-    </variable>
-    <variable name="zowe_certificate_pem_certificateAuthorities" scope="instance" visibility="public">
-        <label>Zowe certificate PEM certificate authorities</label>
-        <abstract>zowe_certificate_pem_certificateAuthorities</abstract>
-        <description>zowe_certificate_pem_certificateAuthorities</description>
-        <category>certificates</category>
-        <string valueMustBeChoice="false" multiLine="false">
-            <!-- Put validation here -->
-            <!-- Specify choices here -->
-            <default>/global/zowe/keystore/local_ca/local_ca.cer</default>
-        </string>
-    </variable>
-    <variable name="zowe_verifyCertificates" scope="instance" visibility="public">
-        <label>Zowe verify certificates</label>
-        <abstract>Zowe certificate verification</abstract>
-        <description><![CDATA[
-How we want to verify SSL certificates of services. Valid values are:
-- STRICT:    will validate if the certificate is trusted in our trust store and
-             if the certificate Command Name and Subject Alternative Name (SAN)
-             is validate. This is recommended for the best security.
-- NONSTRICT: will validate if the certificate is trusted in our trust store.
-             This mode does not validate certificate Common Name and Subject
-             Alternative Name (SAN).
-- DISABLED:  disable certificate validation. This is NOT recommended for
-             security 
-        ]]>        </description>
-        <category>certificates</category>
-        <string valueMustBeChoice="true" multiLine="false">
-            <!-- Put validation here -->
-            <!-- Specify choices here -->
-            <choice>STRICT</choice>
-            <choice>NONSTRICT</choice>
-            <choice>DISABLED</choice>
-            <default>STRICT</default>
-        </string>
-    </variable>
+    </variable>    
     <variable name="java_home" scope="instance" visibility="public">
         <label>JAVA home</label>
         <abstract>Path to the JAVA home</abstract>
@@ -531,7 +466,7 @@ How we want to verify SSL certificates of services. Valid values are:
         <string valueMustBeChoice="false" multiLine="false">
             <!-- Put validation here -->
             <!-- Specify choices here -->
-            <default>7600</default>
+            <default>7559</default>
         </string>
     </variable>  
   <variable name="components_caching_service_storage_infinispan_jgroups_keyExchange_port" scope="instance" visibility="public">
@@ -542,7 +477,7 @@ How we want to verify SSL certificates of services. Valid values are:
         <string valueMustBeChoice="false" multiLine="false">
             <!-- Put validation here -->
             <!-- Specify choices here -->
-            <default>7601</default>
+            <default>7560</default>
         </string>
     </variable>      
     <variable name="zowe_rbacProfileId" scope="instance" visibility="public">
@@ -718,11 +653,7 @@ How we want to verify SSL certificates of services. Valid values are:
             <variableValue name="zowe_certificate_keystore_alias" scope="instance" noPromptIfSet="false" required="true"/>
             <variableValue name="zowe_certificate_truststore_type" scope="instance" noPromptIfSet="false" required="true"/>
             <variableValue name="zowe_certificate_truststore_file" scope="instance" noPromptIfSet="false" required="true"/>
-            <variableValue name="zowe_certificate_truststore_password" scope="instance" noPromptIfSet="false" required="true"/>
-            <variableValue name="zowe_certificate_pem_key" scope="instance" noPromptIfSet="false" required="true"/>
-            <variableValue name="zowe_certificate_pem_certificate" scope="instance" noPromptIfSet="false" required="true"/>
-            <variableValue name="zowe_certificate_pem_certificateAuthorities" scope="instance" noPromptIfSet="false" required="true"/>
-            <variableValue name="zowe_verifyCertificates" scope="instance" noPromptIfSet="false" required="true"/>
+            <variableValue name="zowe_certificate_truststore_password" scope="instance" noPromptIfSet="false" required="true"/>                 
             <variableValue name="zowe_rbacProfileId" scope="instance" noPromptIfSet="false" required="true"/>
             <variableValue name="zowe_cookieId" scope="instance" noPromptIfSet="false" required="true"/>
             <variableValue name="java_home" scope="instance" noPromptIfSet="false" required="true"/>
@@ -1222,10 +1153,10 @@ echo '      type: $!{instance-zowe_certificate_truststore_type}' >> "${instance-
 echo '      file: $!{instance-zowe_certificate_truststore_file}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '      password: $!{instance-zowe_certificate_truststore_password}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '    pem:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '      key: $!{instance-zowe_certificate_pem_key}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '      certificate: $!{instance-zowe_certificate_pem_certificate}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '      key: /global/zowe/keystore/localhost/localhost.key' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '      certificate: /global/zowe/keystore/localhost/localhost.cer' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '      #  if keyrings, the format is "safkeyring:////stcusername/KeyName&ca name"' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '      certificateAuthorities: $!{instance-zowe_certificate_pem_certificateAuthorities}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '      certificateAuthorities: /global/zowe/keystore/local_ca/local_ca.cer' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '  # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '  # How we want to verify SSL certificates of services. Valid values are:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
@@ -1237,7 +1168,7 @@ echo '  #              This mode does not validate certificate Common Name and S
 echo '  #              Alternative Name (SAN).' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '  # - DISABLED:  disable certificate validation. This is NOT recommended for' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '  #              security.' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '  verifyCertificates: $!{instance-zowe_verifyCertificates}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '  verifyCertificates: STRICT' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '#-------------------------------------------------------------------------------' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
