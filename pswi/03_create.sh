@@ -293,10 +293,10 @@ sed "s|//IZUD01EX JOB (ACCOUNT),'NAME'|$JOBST1\n$JOBST2|g" EXPORT >EXPJCL0
 
 #fi
 
-sh scripts/submit_jcl.sh "$(cat EXPJCL)"
+sh scripts/submit_jcl.sh "$(cat EXPJCL0)"
 if [ $? -gt 0 ]; then exit -1; fi
 
-rm ./EXPJCL
+rm ./EXPJCL0
 rm ./EXPORT
 
 # Pax the directory
