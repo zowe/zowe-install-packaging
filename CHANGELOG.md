@@ -3,7 +3,8 @@
 All notable changes to the Zowe Installer will be documented in this file.
 
 ## `3.0.1`
-- Bugfix: When `--log-dir` parameter for `zwe` command is a file, there might be an error "InternalError: stack overflow". [#40nn](https://github.com/zowe/zowe-install-packaging/pull/40nn)
+- Enhancement: command `zwe install` does not require NodeJS [#4069](https://github.com/zowe/zowe-install-packaging/pull/4069)
+- Bugfix: When `--log-dir` parameter for `zwe` command is a file, there might be an error "InternalError: stack overflow". [#4071](https://github.com/zowe/zowe-install-packaging/pull/4071)
 - Enhancement: new javascript funtion `getStatvfs()` to obtain information about the file sysytem [#3994](https://github.com/zowe/zowe-install-packaging/pull/3994)
 - Enhancement: schema validation update for `zowe.job.name` and `zowe.job.prefix` [#4060](https://github.com/zowe/zowe-install-packaging/pull/4060)
 
