@@ -122,6 +122,13 @@ read_yaml_configmgr() {
   result=$(_CEE_RUNOPTS="XPLINK(ON)" "${configmgr}" -s "$schema" -p "FILE(${file})" extract "${key}" 2>&1);
   code=$?
 
+  # When the item is not defined in config, configmgr returns
+  #   code 0 and
+  #   stdout = "error not found, reason=nnn"
+  if [[ "${result}" == "error not found, reason="* ]]; then
+    result=""
+  fi
+
   print_trace "  * Exit code: ${code}"
   print_trace "  * Output:"
   print_trace "$(padding_left "${result}" "    ")"
