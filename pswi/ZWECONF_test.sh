@@ -4,6 +4,9 @@ export ZOSMF_SYSTEM="S0W1"
 export JOBNAME="ZWECONF1"
 export HOST=${ZOSMF_URL#https:\/\/}
 export BASE_URL="${ZOSMF_URL}:${ZOSMF_PORT}"
+CURR_TIME=$(date +%s)
+export LOG_DIR="logs/$CURR_TIME"
+mkdir -p $LOG_DIR
 WORK_MOUNT="/tmp"
 
 echo "Changing runtime path in ZWECONF.properties."
@@ -55,6 +58,30 @@ pwd
 
 cp ../example-zowe.yaml example-zowe.yaml
 
-diff --ed example-zowe.yaml zowe_.yaml >diff.txt || true
+diff example-zowe.yaml zowe_.yaml >diff.txt || true
 
-diff --ed diff.txt scripts/base_diff.txt >final_diff.txt
+diff diff.txt scripts/base_diff.txt >final_diff.txt || true
+
+concat=$(cat final_diff.txt)
+
+if [ -n "$concat" ]
+then
+  echo "There are some discrepancies between the example-zowe.yaml and the zowe.yaml created by ZWECONF.xml workflow."
+  echo "Please add to or delete from the ZWECONF.xml workflow what needs or doesn't need to be there."
+  echo "E.g. if there is a new variable you need to add it first to the workflow variables, then add the variable to the" 
+  echo "'main_variables' step and then also to the step where the zowe.yaml is created."
+  echo "If there was added/deleted just a comment in the example-zowe.yaml please add it also to the workflow so"
+  echo "this step is not failing."
+  echo "Here is the output from the diff command:" # They will surely know what is diff cmd, right
+  while read -r line; do
+    if [[ "$line" =~ ^\< ]]; then
+      echo $line >> final_final_diff.txt
+    fi
+  done <final_diff.txt
+  cat final_final_diff.txt
+  echo "------------------------------------------------------------------------"
+  echo "First line is from the example-zowe.yaml and the line bellow is from the"
+  echo "zowe.yaml created by the ZWECONF.xm workflow."
+  cp final_final_diff.txt $LOG_DIR/diff_output.txt
+  exit -1
+fi

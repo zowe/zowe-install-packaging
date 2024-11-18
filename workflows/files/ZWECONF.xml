@@ -1809,7 +1809,7 @@ echo '  #   ZWED_TN3270_PORT: 23' >> "${instance-zowe_runtimeDirectory}/zowe.yam
 echo '' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '  # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '  # You can define any Zowe message portions to be checked for and the message added to the' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '  # system log upon its logging, truncated to 126 characters.' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '  # system log upon its logging, truncated to 126 characters (wildcards are not supported).' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '  sysMessages:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '  #   # Zowe starting' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '    - "ZWEL0021I"' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
