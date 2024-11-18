@@ -203,7 +203,7 @@ It is used by ZWESLSTC or by zwe command</description>
     <variable name="zowe_externalDomains" scope="instance" visibility="public">
         <label>Zowe external domains</label>
         <abstract>The list of external domains</abstract>
-        <description>Defines a list of external domains that will be used by the Zowe instance</description>
+        <description>Defines a list of external domains that will be used by the Zowe instance.</description>
         <category>zowe</category>
         <string valueMustBeChoice="false" multiLine="true">
             <!-- Put validation here -->
