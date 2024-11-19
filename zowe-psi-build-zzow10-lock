@@ -1,1 +1,15 @@
-""
+{
+  "lockAcquiredTime": "Tue Nov 19 2024 18:30:09 GMT+0000 (Coordinated Universal Time)",
+  "uid": "1732041009057871398",
+  "repository": {
+    "owner": "zowe",
+    "repo": "zowe-install-packaging"
+  },
+  "branch": "muzikovam-patch-2",
+  "workflow": "Zowe Build and Packaging",
+  "job": "regular-build",
+  "actor": "muzikovam",
+  "runId": 11917636201,
+  "runNumber": 6457,
+  "link": "https://github.com/zowe/zowe-install-packaging/actions/runs/11917636201"
+}
