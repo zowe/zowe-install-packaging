@@ -94,7 +94,7 @@ sh scripts/submit_jcl.sh "$(cat JCL)"
 # Not checking results so the script doesn't fail
 rm JCL
 
-if [ "$ZOSMF_V" = "2.3" ]; then
+
   # Unmount and delete
   echo "Unmounting and deleting zFS ${WORK_ZFS}."
 
@@ -116,7 +116,7 @@ if [ "$ZOSMF_V" = "2.3" ]; then
   sh scripts/submit_jcl.sh "$(cat JCL)"
   # Not checking results so the script doesn't fail
   rm JCL
-fi
+
 
 # Unmount and delete
 echo "Unmounting and deleting zFS ${TEST_HLQ}.ZFS."
