@@ -169,8 +169,8 @@ It is used by ZWESLSTC or by zwe command</description>
     </variable>
     <variable name="zowe_externalDomains" scope="instance" visibility="public">
         <label>Zowe external domains</label>
-        <abstract>The domain name of your Dynamic VIP Address (DVIPA)</abstract>
-        <description>The domain name of your Dynamic VIP Address (DVIPA)</description>
+        <abstract>The list of external domains</abstract>
+        <description>Defines a list of external domains that will be used by the Zowe instance.</description>
         <category>zowe</category>
         <string valueMustBeChoice="false" multiLine="true">
             <!-- Put validation here -->
@@ -361,10 +361,10 @@ some use cases, like containerization, this port could be different.</descriptio
         </string>
     </variable>
     <variable name="node_home" scope="instance" visibility="public">
-        <label>NodeJS home</label>
-        <abstract>Path to the NodeJS home</abstract>
-        <description>Path to the NodeJS home</description>
-        <category>node</category>
+        <label>Node.js home</label>
+        <abstract>Path to the Node.js home</abstract>
+        <description>Path to the Node.js home</description>
+        <category>Node.js</category>
         <string valueMustBeChoice="false" multiLine="false">
             <!-- Put validation here -->
             <!-- Specify choices here -->
@@ -405,8 +405,8 @@ some use cases, like containerization, this port could be different.</descriptio
     </variable>    
     <variable name="components_gateway_port" scope="instance" visibility="public">
         <label>Gateway port</label>
-        <abstract>Port for the API ML gateway</abstract>
-        <description>Port for the API ML gateway</description>
+        <abstract>Port for APIML Gateway</abstract>
+        <description>Port for APIML Gateway</description>
         <category>components</category>
         <integer>
             <!-- Put validation here -->
@@ -416,8 +416,8 @@ some use cases, like containerization, this port could be different.</descriptio
     </variable>    
   <variable name="components_zaas_port" scope="instance" visibility="public">
     <label>ZAAS port</label>
-    <abstract>Port for the APIML ZAAS</abstract>
-    <description>Port for the APIML ZAAS</description>
+    <abstract>Port for APIML ZAAS</abstract>
+    <description>Port for APIML ZAAS</description>
     <category>components</category>
     <integer>
       <!-- Put validation here -->
@@ -427,8 +427,8 @@ some use cases, like containerization, this port could be different.</descriptio
   </variable>     
     <variable name="components_api_catalog_port" scope="instance" visibility="public">
         <label>API catalog port</label>
-        <abstract>Port on which the API Catalog should be running.</abstract>
-        <description>Port on which the API Catalog should be running.</description>
+        <abstract>Port on which API Catalog should be running.</abstract>
+        <description>Port on which API Catalog should be running.</description>
         <category>components</category>
         <integer>
             <!-- Put validation here -->
@@ -438,8 +438,8 @@ some use cases, like containerization, this port could be different.</descriptio
     </variable>     
     <variable name="components_discovery_port" scope="instance" visibility="public">
         <label>Discovery port</label>
-        <abstract>Port on which the Discovery service should be running</abstract>
-        <description>Port on which the Discovery service should be running</description>
+        <abstract>Port on which Discovery service should be running</abstract>
+        <description>Port on which Discovery service should be running</description>
         <category>components</category>
         <integer>
             <!-- Put validation here -->
@@ -449,8 +449,8 @@ some use cases, like containerization, this port could be different.</descriptio
     </variable>    
     <variable name="components_caching_service_port" scope="instance" visibility="public">
         <label>Caching service port</label>
-        <abstract>Port for the caching service</abstract>
-        <description>Port for the caching service</description>
+        <abstract>Port for Caching service</abstract>
+        <description>Port for Caching service</description>
         <category>components</category>
         <integer>
             <!-- Put validation here -->
@@ -1187,17 +1187,17 @@ echo '  home: "$!{instance-java_home}"' >> "${instance-zowe_runtimeDirectory}/zo
 echo '' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '#-------------------------------------------------------------------------------' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '# node.js configuration' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '# Node.js configuration' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '#' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '# Some Zowe components requires node.js. Define the path where you have your' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '# node.js is installed.' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '# Some Zowe components requires Node.js. Define the path where you have your' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '# Node.js is installed.' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '#' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '# **NOTE**: this field can be updated automatically if you pass `--update-config`' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '# to `zwe init` command.' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '#-------------------------------------------------------------------------------' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo 'node:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '  # **COMMONLY_CUSTOMIZED**' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '  # Path to your node.js home directory' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '  # Path to your Node.js home directory' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '  home: "$!{instance-node_home}"' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
@@ -1353,7 +1353,7 @@ echo '#     sysname: LPR1' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '#     # for this HA instance, we did not customize "components", so it will use default value.' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '#   # HA instance ID, we will start 2 instances on LPAR2' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '#   # **NOTE**, we can only start one gateway in same LPAR.' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '#   # **NOTE**, we can only start one Gateway in same LPAR.' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '#   lpar2a:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '#     # hostname where this instance will be started' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '#     hostname: lpar2.my-company.com' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
@@ -1409,8 +1409,8 @@ echo '#         enabled: false' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
         <title>Zowe installation</title>
         <description>Zowe installation</description>        
         <step name="init_zowe" optional="false">
-            <title>Run the Zowe init</title>
-            <description>Executes the Zowe initialization</description>
+            <title>Run scripts for Zowe initialization</title>
+            <description>Executes scripts for Zowe initialization</description>
             <prereqStep name="configure"/>
             <!-- condition -->
             <!--variableValues-->
@@ -1423,9 +1423,6 @@ echo '#         enabled: false' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
             Each <b>zwe init</b> sub-command defines a configuration. 
 <ul>
 <li><b>mvs:</b> Copy the data sets provided with Zowe to custom data sets.</li>
-<li><b>security:</b> Create the user IDs and security manager settings.</li>
-<li><b>apfauth:</b> APF authorize the LOADLIB containing the modules that need to perform z/OS priviledged security calls.</li>
-<li><b>certificate:</b> Configure Zowe to use TLS certificates.</li>
 <li><b>stc:</b> Configure the system to launch the Zowe started task.</li>
 </ul>
             ]]></instructions>
