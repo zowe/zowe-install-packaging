@@ -202,8 +202,8 @@ It is used by ZWESLSTC or by zwe command</description>
     </variable>
     <variable name="zowe_externalDomains" scope="instance" visibility="public">
         <label>Zowe external domains</label>
-        <abstract>The domain name of your Dynamic VIP Address (DVIPA)</abstract>
-        <description>The domain name of your Dynamic VIP Address (DVIPA)</description>
+        <abstract>The list of external domains</abstract>
+        <description>Defines a list of external domains that will be used by the Zowe instance.</description>
         <category>zowe</category>
         <string valueMustBeChoice="false" multiLine="true">
             <!-- Put validation here -->
