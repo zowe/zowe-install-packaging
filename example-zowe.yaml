@@ -39,7 +39,7 @@ zowe:
     # MVS data set related configurations
     dataset:
       # **COMMONLY_CUSTOMIZED**
-      # where Zowe MVS data sets will be installed
+      # where are existing Zowe SZWEEXEC Target libraries
       prefix: IBMUSER.ZWEV2
       # **COMMONLY_CUSTOMIZED**
       # PROCLIB where Zowe STCs will be copied over

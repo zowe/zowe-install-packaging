@@ -12,9 +12,9 @@
     </workflowInfo>
     <!--variables-->
     <variable name="zowe_setup_dataset_prefix" scope="instance" visibility="public">
-        <label>Zowe setup MVS prefix</label>
-        <abstract>Where Zowe MVS data sets will be installed</abstract>
-        <description>Where Zowe MVS data sets will be installed</description>
+        <label>Prefix of existing Zowe SZWEEXEC Target libraries</label>
+        <abstract>Prefix of existing SZWEEXEC Target libraries created during PSWI or SMP/E</abstract>
+        <description>Prefix of existing SZWEEXEC Target libraries created during PSWI or SMP/E installation phase</description>
         <category>zowe</category>
         <string valueMustBeChoice="false" multiLine="false">
             <!-- Put validation here -->
@@ -1640,7 +1640,7 @@ echo '  setup:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '    # MVS data set related configurations' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '    dataset:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '      # **COMMONLY_CUSTOMIZED**' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '      # where Zowe MVS data sets will be installed' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '      # where are existing Zowe SZWEEXEC Target libraries' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '      prefix: $!{instance-zowe_setup_dataset_prefix}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '      # **COMMONLY_CUSTOMIZED**' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '      # PROCLIB where Zowe STCs will be copied over' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
