@@ -469,17 +469,17 @@ java:
 
 
 #-------------------------------------------------------------------------------
-# Node.js. configuration
+# Node.js configuration
 #
 # Some Zowe components requires Node.js. Define the path where you have your
-# Node.js. is installed.
+# Node.js is installed.
 #
 # **NOTE**: this field can be updated automatically if you pass `--update-config`
 # to `zwe init` command.
 #-------------------------------------------------------------------------------
 node:
   # **COMMONLY_CUSTOMIZED**
-  # Path to your Node.js. home directory
+  # Path to your Node.js home directory
   home: ""
 
 
