@@ -87,6 +87,7 @@ export const REMOTE_SYSTEM_INFO = {
   szweload: `${testPrefix}.SZWELOAD`,
   authLoadLib: `${testPrefix}.SZWELOAD`,
   authPluginLib: `${testPrefix}.ZWESAPL`,
+  parmlib: `${testPrefix}.PARMLIB`,
   ussTestDir: configData.remote_test_dir,
   hostname: configData.zos_host,
   zosmfPort: configData.zosmf_port,

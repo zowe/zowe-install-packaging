@@ -3,17 +3,135 @@
 exports[`init-apfauth (LONG) apf bad ds prefix 1`] = `
 "Temporary directory '/tmp/.zweenv-0000' created.
 Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
-bos extend currSize=0x0 dataSize=0x105d chunk=0x1000 extend=0x105d
+bos extend currSize=0x0 dataSize=0x105c chunk=0x1000 extend=0x105c
 -------------------------------------------------------------------------------
 >> APF authorize load libraries
 
 ERROR: ZWEL0143E Cannot find data set member 'BAD.DS.PREFIX.NOEXIST.SZWESAMP(ZWEGENER)'. You may need to re-run zwe install."
 `;
 
-exports[`init-apfauth (LONG) apf bad ds prefix: short-before-all-apf 1`] = `
+exports[`init-apfauth (LONG) apf empty ds prefix 1`] = `
+"Error: Validation of FILE(/test/dir/zowe.test.yaml):FILE(/test/dir/files/defaults.yaml) against schema /test/dir/schemas/zowe-yaml-schema.json:/test/dir/schemas/server-common.json found invalid JSON Schema data
+Validity Exceptions(s) with object at 
+  Validity Exceptions(s) with object at /zowe
+    Validity Exceptions(s) with object at /zowe/setup
+      Validity Exceptions(s) with object at /zowe/setup/dataset
+        type 'null' not permitted at /zowe/setup/dataset/prefix; expecting type 'string'"
+`;
+
+exports[`init-apfauth (LONG) apf empty jcllib 1`] = `
+"Error: Validation of FILE(/test/dir/zowe.test.yaml):FILE(/test/dir/files/defaults.yaml) against schema /test/dir/schemas/zowe-yaml-schema.json:/test/dir/schemas/server-common.json found invalid JSON Schema data
+Validity Exceptions(s) with object at 
+  Validity Exceptions(s) with object at /zowe
+    Validity Exceptions(s) with object at /zowe/setup
+      Validity Exceptions(s) with object at /zowe/setup/dataset
+        type 'null' not permitted at /zowe/setup/dataset/jcllib; expecting type 'string'"
+`;
+
+exports[`init-apfauth (SHORT) apf bad authLoadLib 1`] = `
 "Temporary directory '/tmp/.zweenv-0000' created.
 Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
-bos extend currSize=0x0 dataSize=0x1057 chunk=0x1000 extend=0x1057
+bos extend currSize=0x0 dataSize=0x104c chunk=0x1000 extend=0x104c
+-------------------------------------------------------------------------------
+>> APF authorize load libraries
+
+ERROR:   * Exit code: 8
+ERROR:   * Output:
+ERROR:     listds 'DOES.NOT.EXIST' label
+    DOES.NOT.EXIST
+    IKJ58503I DATA SET 'DOES.NOT.EXIST' NOT IN CATALOG
+ERROR: Error ZWEL0320E: The dataset specified in 'zowe.setup.dataset.authLoadlib' does not exist."
+`;
+
+exports[`init-apfauth (SHORT) apf bad authPluginLib 1`] = `
+"Temporary directory '/tmp/.zweenv-0000' created.
+Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
+bos extend currSize=0x0 dataSize=0x104d chunk=0x1000 extend=0x104d
+-------------------------------------------------------------------------------
+>> APF authorize load libraries
+
+ERROR:   * Exit code: 8
+ERROR:   * Output:
+ERROR:     listds 'DOES.NOT.EXIST' label
+    DOES.NOT.EXIST
+    IKJ58503I DATA SET 'DOES.NOT.EXIST' NOT IN CATALOG
+ERROR: Error ZWEL0320E: The dataset specified in 'zowe.setup.dataset.authPluginLib' does not exist."
+`;
+
+exports[`init-apfauth (SHORT) apf empty jcllib post-generate 1`] = `
+"Error: Validation of FILE(/test/dir/zowe.test.yaml):FILE(/test/dir/files/defaults.yaml) against schema /test/dir/schemas/zowe-yaml-schema.json:/test/dir/schemas/server-common.json found invalid JSON Schema data
+Validity Exceptions(s) with object at 
+  Validity Exceptions(s) with object at /zowe
+    Validity Exceptions(s) with object at /zowe/setup
+      Validity Exceptions(s) with object at /zowe/setup/dataset
+        Validity Exceptions(s) with string at /zowe/setup/dataset/jcllib
+          string too short (len=0) '' 0 < MIN=3 at /zowe/setup/dataset/jcllib
+          string pattern match fail s='', pat='^([A-Z\\$\\#\\@]){1}([A-Z0-9\\$\\#\\@\\-]){0,7}(\\.([A-Z\\$\\#\\@]){1}([A-Z0-9\\$\\#\\@\\-]){0,7}){0,11}$', at /zowe/setup/dataset/jcllib"
+`;
+
+exports[`init-apfauth (SHORT) apf simple --dry-run 1`] = `
+"Temporary directory '/tmp/.zweenv-0000' created.
+Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
+bos extend currSize=0x0 dataSize=0x1056 chunk=0x1000 extend=0x1056
+-------------------------------------------------------------------------------
+>> APF authorize load libraries
+
+Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWEIAPF2) , Executable JCL: TEST.DATASET.PFX.JCLLIB(ZWEIAPF2)
+--- JCL Content ---
+//ZWEIAPF2 JOB
+//*
+//* This program and the accompanying materials are made available
+//* under the terms of the Eclipse Public License v2.0 which
+//* accompanies this distribution, and is available at
+//* https://www.eclipse.org/legal/epl-v20.html
+//*
+//* SPDX-License-Identifier: EPL-2.0
+//*
+//* Copyright Contributors to the Zowe Project. 2020, 2020
+//*
+//*********************************************************************
+//*
+//*  This JCL is used to set APF for the two datasets of Zowe
+//*  Which need it. You can issue this, or use another
+//*  Way to accomplish the task.
+//*
+//*  The following variables are derived from the zowe YAML config:
+//*  LOADLIB: the dataset that holds the APF portion of Zowe
+//*  PLUGLIB: The dataset that holds the extensions for ZIS.
+//*
+//*********************************************************************
+//*
+//APFAUTH EXEC PGM=BPXBATCH
+//BPXPRINT DD SYSOUT=*
+//STDOUT   DD SYSOUT=*
+//STDERR   DD SYSOUT=*
+//STDPARM DD *
+SH cd '/test/dir' &&
+cd bin/utils &&
+export LOADLIB='TEST.DATASET.PFX.APF.LOADLIB' &&
+export LOADLOC="VOLUME=TSTVOL" &&
+export PLUGLIB='TEST.DATASET.PFX.ZWESAPL' &&
+export PLUGLOC="VOLUME=TSTVOL" &&
+./opercmd.rex "SETPROG APF,ADD,DSN=$LOADLIB,$LOADLOC" &&
+./opercmd.rex "SETPROG APF,ADD,DSN=$PLUGLIB,$PLUGLOC"
+//*
+--- End of JCL ---
+JCL not submitted, command run with "--dry-run" flag.
+To perform command, re-run command without "--dry-run" flag, or submit the JCL directly
+
+>> Command run successfully.
+
+
+>> Zowe load libraries are APF authorized successfully."
+`;
+
+exports[`init-apfauth (SHORT) apf sms-managed authLoadLib 1`] = `
+"Temporary directory '/tmp/.zweenv-0000' created.
+Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
+bos extend currSize=0x0 dataSize=0x1059 chunk=0x1000 extend=0x1059
+-------------------------------------------------------------------------------
+>> APF authorize load libraries
+
 Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWEGENER)
 --- JCL content ---
 //ZWEGENER JOB
@@ -120,72 +238,60 @@ noverbose -
 --- End of JCL ---
 Submitting Job ZWEGENER
 Job ZWEGENER(JOB00000) completed with RC=0
-Zowe JCL generated successfully"
+Zowe JCL generated successfully
+Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWEIAPF2) , Executable JCL: TEST.DATASET.PFX.JCLLIB(ZWEIAPF2)
+--- JCL Content ---
+//ZWEIAPF2 JOB
+//*
+//* This program and the accompanying materials are made available
+//* under the terms of the Eclipse Public License v2.0 which
+//* accompanies this distribution, and is available at
+//* https://www.eclipse.org/legal/epl-v20.html
+//*
+//* SPDX-License-Identifier: EPL-2.0
+//*
+//* Copyright Contributors to the Zowe Project. 2020, 2020
+//*
+//*********************************************************************
+//*
+//*  This JCL is used to set APF for the two datasets of Zowe
+//*  Which need it. You can issue this, or use another
+//*  Way to accomplish the task.
+//*
+//*  The following variables are derived from the zowe YAML config:
+//*  LOADLIB: the dataset that holds the APF portion of Zowe
+//*  PLUGLIB: The dataset that holds the extensions for ZIS.
+//*
+//*********************************************************************
+//*
+//APFAUTH EXEC PGM=BPXBATCH
+//BPXPRINT DD SYSOUT=*
+//STDOUT   DD SYSOUT=*
+//STDERR   DD SYSOUT=*
+//STDPARM DD *
+SH cd '/test/dir' &&
+cd bin/utils &&
+export LOADLIB='TEST.DATASET.PFX.APF.LOADLIB' &&
+export LOADLOC=SMS &&
+export PLUGLIB='TEST.DATASET.PFX.ZWESAPL' &&
+export PLUGLOC="VOLUME=TSTVOL" &&
+./opercmd.rex "SETPROG APF,ADD,DSN=$LOADLIB,$LOADLOC" &&
+./opercmd.rex "SETPROG APF,ADD,DSN=$PLUGLIB,$PLUGLOC"
+//*
+--- End of JCL ---
+JCL not submitted, command run with "--dry-run" flag.
+To perform command, re-run command without "--dry-run" flag, or submit the JCL directly
+
+>> Command run successfully.
+
+
+>> Zowe load libraries are APF authorized successfully."
 `;
 
-exports[`init-apfauth (LONG) apf empty ds prefix 1`] = `
-"Error: Validation of FILE(/test/dir/zowe.test.yaml):FILE(/test/dir/files/defaults.yaml) against schema /test/dir/schemas/zowe-yaml-schema.json:/test/dir/schemas/server-common.json found invalid JSON Schema data
-Validity Exceptions(s) with object at 
-  Validity Exceptions(s) with object at /zowe
-    Validity Exceptions(s) with object at /zowe/setup
-      Validity Exceptions(s) with object at /zowe/setup/dataset
-        type 'null' not permitted at /zowe/setup/dataset/prefix; expecting type 'string'"
-`;
-
-exports[`init-apfauth (LONG) apf empty jcllib 1`] = `
-"Error: Validation of FILE(/test/dir/zowe.test.yaml):FILE(/test/dir/files/defaults.yaml) against schema /test/dir/schemas/zowe-yaml-schema.json:/test/dir/schemas/server-common.json found invalid JSON Schema data
-Validity Exceptions(s) with object at 
-  Validity Exceptions(s) with object at /zowe
-    Validity Exceptions(s) with object at /zowe/setup
-      Validity Exceptions(s) with object at /zowe/setup/dataset
-        type 'null' not permitted at /zowe/setup/dataset/jcllib; expecting type 'string'"
-`;
-
-exports[`init-apfauth (SHORT) apf bad authLoadLib 1`] = `
+exports[`init-apfauth (SHORT) apf sms-managed authLoadLib and authPluginLib 1`] = `
 "Temporary directory '/tmp/.zweenv-0000' created.
 Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
-bos extend currSize=0x0 dataSize=0x104d chunk=0x1000 extend=0x104d
--------------------------------------------------------------------------------
->> APF authorize load libraries
-
-ERROR:   * Exit code: 8
-ERROR:   * Output:
-ERROR:     listds 'DOES.NOT.EXIST' label
-    DOES.NOT.EXIST
-    IKJ58503I DATA SET 'DOES.NOT.EXIST' NOT IN CATALOG
-ERROR: Error ZWEL0320E: The dataset specified in 'zowe.setup.dataset.authLoadlib' does not exist."
-`;
-
-exports[`init-apfauth (SHORT) apf bad authPluginLib 1`] = `
-"Temporary directory '/tmp/.zweenv-0000' created.
-Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
-bos extend currSize=0x0 dataSize=0x104e chunk=0x1000 extend=0x104e
--------------------------------------------------------------------------------
->> APF authorize load libraries
-
-ERROR:   * Exit code: 8
-ERROR:   * Output:
-ERROR:     listds 'DOES.NOT.EXIST' label
-    DOES.NOT.EXIST
-    IKJ58503I DATA SET 'DOES.NOT.EXIST' NOT IN CATALOG
-ERROR: Error ZWEL0320E: The dataset specified in 'zowe.setup.dataset.authPluginLib' does not exist."
-`;
-
-exports[`init-apfauth (SHORT) apf empty jcllib post-generate 1`] = `
-"Error: Validation of FILE(/test/dir/zowe.test.yaml):FILE(/test/dir/files/defaults.yaml) against schema /test/dir/schemas/zowe-yaml-schema.json:/test/dir/schemas/server-common.json found invalid JSON Schema data
-Validity Exceptions(s) with object at 
-  Validity Exceptions(s) with object at /zowe
-    Validity Exceptions(s) with object at /zowe/setup
-      Validity Exceptions(s) with object at /zowe/setup/dataset
-        Validity Exceptions(s) with string at /zowe/setup/dataset/jcllib
-          string too short (len=0) '' 0 < MIN=3 at /zowe/setup/dataset/jcllib
-          string pattern match fail s='', pat='^([A-Z\\$\\#\\@]){1}([A-Z0-9\\$\\#\\@\\-]){0,7}(\\.([A-Z\\$\\#\\@]){1}([A-Z0-9\\$\\#\\@\\-]){0,7}){0,11}$', at /zowe/setup/dataset/jcllib"
-`;
-
-exports[`init-apfauth (SHORT) apf simple --dry-run 1`] = `
-"Temporary directory '/tmp/.zweenv-0000' created.
-Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
-bos extend currSize=0x0 dataSize=0x1057 chunk=0x1000 extend=0x1057
+bos extend currSize=0x0 dataSize=0x105d chunk=0x1000 extend=0x105d
 -------------------------------------------------------------------------------
 >> APF authorize load libraries
 
@@ -221,10 +327,10 @@ Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWEIAPF2) , Executable JCL: TEST.DATASET
 //STDPARM DD *
 SH cd '/test/dir' &&
 cd bin/utils &&
-export LOADLIB='TEST.DATASET.PFX.SZWELOAD' &&
-export LOADLOC="VOLUME=TSTVOL" &&
+export LOADLIB='TEST.DATASET.PFX.APF.LOADLIB' &&
+export LOADLOC=SMS &&
 export PLUGLIB='TEST.DATASET.PFX.ZWESAPL' &&
-export PLUGLOC="VOLUME=TSTVOL" &&
+export PLUGLOC=SMS &&
 ./opercmd.rex "SETPROG APF,ADD,DSN=$LOADLIB,$LOADLOC" &&
 ./opercmd.rex "SETPROG APF,ADD,DSN=$PLUGLIB,$PLUGLOC"
 //*
@@ -238,7 +344,7 @@ To perform command, re-run command without "--dry-run" flag, or submit the JCL d
 >> Zowe load libraries are APF authorized successfully."
 `;
 
-exports[`init-apfauth (SHORT) apf sms-managed authLoadLib 1`] = `
+exports[`init-apfauth (SHORT) apf sms-managed authPluginLib 1`] = `
 "Temporary directory '/tmp/.zweenv-0000' created.
 Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
 bos extend currSize=0x0 dataSize=0x105a chunk=0x1000 extend=0x105a
@@ -277,119 +383,7 @@ Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWEIAPF2) , Executable JCL: TEST.DATASET
 //STDPARM DD *
 SH cd '/test/dir' &&
 cd bin/utils &&
-export LOADLIB='TEST.DATASET.PFX.SZWELOAD' &&
-export LOADLOC=SMS &&
-export PLUGLIB='TEST.DATASET.PFX.ZWESAPL' &&
-export PLUGLOC="VOLUME=TSTVOL" &&
-./opercmd.rex "SETPROG APF,ADD,DSN=$LOADLIB,$LOADLOC" &&
-./opercmd.rex "SETPROG APF,ADD,DSN=$PLUGLIB,$PLUGLOC"
-//*
---- End of JCL ---
-JCL not submitted, command run with "--dry-run" flag.
-To perform command, re-run command without "--dry-run" flag, or submit the JCL directly
-
->> Command run successfully.
-
-
->> Zowe load libraries are APF authorized successfully."
-`;
-
-exports[`init-apfauth (SHORT) apf sms-managed authLoadLib and authPluginLib 1`] = `
-"Temporary directory '/tmp/.zweenv-0000' created.
-Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
-bos extend currSize=0x0 dataSize=0x105e chunk=0x1000 extend=0x105e
--------------------------------------------------------------------------------
->> APF authorize load libraries
-
-Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWEIAPF2) , Executable JCL: TEST.DATASET.PFX.JCLLIB(ZWEIAPF2)
---- JCL Content ---
-//ZWEIAPF2 JOB
-//*
-//* This program and the accompanying materials are made available
-//* under the terms of the Eclipse Public License v2.0 which
-//* accompanies this distribution, and is available at
-//* https://www.eclipse.org/legal/epl-v20.html
-//*
-//* SPDX-License-Identifier: EPL-2.0
-//*
-//* Copyright Contributors to the Zowe Project. 2020, 2020
-//*
-//*********************************************************************
-//*
-//*  This JCL is used to set APF for the two datasets of Zowe
-//*  Which need it. You can issue this, or use another
-//*  Way to accomplish the task.
-//*
-//*  The following variables are derived from the zowe YAML config:
-//*  LOADLIB: the dataset that holds the APF portion of Zowe
-//*  PLUGLIB: The dataset that holds the extensions for ZIS.
-//*
-//*********************************************************************
-//*
-//APFAUTH EXEC PGM=BPXBATCH
-//BPXPRINT DD SYSOUT=*
-//STDOUT   DD SYSOUT=*
-//STDERR   DD SYSOUT=*
-//STDPARM DD *
-SH cd '/test/dir' &&
-cd bin/utils &&
-export LOADLIB='TEST.DATASET.PFX.SZWELOAD' &&
-export LOADLOC=SMS &&
-export PLUGLIB='TEST.DATASET.PFX.ZWESAPL' &&
-export PLUGLOC=SMS &&
-./opercmd.rex "SETPROG APF,ADD,DSN=$LOADLIB,$LOADLOC" &&
-./opercmd.rex "SETPROG APF,ADD,DSN=$PLUGLIB,$PLUGLOC"
-//*
---- End of JCL ---
-JCL not submitted, command run with "--dry-run" flag.
-To perform command, re-run command without "--dry-run" flag, or submit the JCL directly
-
->> Command run successfully.
-
-
->> Zowe load libraries are APF authorized successfully."
-`;
-
-exports[`init-apfauth (SHORT) apf sms-managed authPluginLib 1`] = `
-"Temporary directory '/tmp/.zweenv-0000' created.
-Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
-bos extend currSize=0x0 dataSize=0x105b chunk=0x1000 extend=0x105b
--------------------------------------------------------------------------------
->> APF authorize load libraries
-
-Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWEIAPF2) , Executable JCL: TEST.DATASET.PFX.JCLLIB(ZWEIAPF2)
---- JCL Content ---
-//ZWEIAPF2 JOB
-//*
-//* This program and the accompanying materials are made available
-//* under the terms of the Eclipse Public License v2.0 which
-//* accompanies this distribution, and is available at
-//* https://www.eclipse.org/legal/epl-v20.html
-//*
-//* SPDX-License-Identifier: EPL-2.0
-//*
-//* Copyright Contributors to the Zowe Project. 2020, 2020
-//*
-//*********************************************************************
-//*
-//*  This JCL is used to set APF for the two datasets of Zowe
-//*  Which need it. You can issue this, or use another
-//*  Way to accomplish the task.
-//*
-//*  The following variables are derived from the zowe YAML config:
-//*  LOADLIB: the dataset that holds the APF portion of Zowe
-//*  PLUGLIB: The dataset that holds the extensions for ZIS.
-//*
-//*********************************************************************
-//*
-//APFAUTH EXEC PGM=BPXBATCH
-//BPXPRINT DD SYSOUT=*
-//STDOUT   DD SYSOUT=*
-//STDERR   DD SYSOUT=*
-//STDPARM DD *
-SH cd '/test/dir' &&
-cd bin/utils &&
-export LOADLIB='TEST.DATASET.PFX.SZWELOAD' &&
+export LOADLIB='TEST.DATASET.PFX.APF.LOADLIB' &&
 export LOADLOC="VOLUME=TSTVOL" &&
 export PLUGLIB='TEST.DATASET.PFX.ZWESAPL' &&
 export PLUGLOC=SMS &&

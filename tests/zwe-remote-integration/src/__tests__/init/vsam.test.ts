@@ -20,10 +20,17 @@ describe(`${testSuiteName}`, () => {
   let cfgYaml: ZoweYamlType;
   let cleanupDatasets: TestFile[] = []; // a list of datasets deleted after every test
 
-  beforeAll(() => {
+  beforeAll(async () => {
     testRunner = new RemoteTestRunner(testSuiteName);
     cfgYaml = ZoweConfig.getZoweYaml();
+    expect.getState().currentTestName = 'before-all-vsam';
+    const result = await testRunner.runZweTest(cfgYaml, 'init generate --allow-overwrite');
+    expect(result.stdout).not.toBeNull();
+    expect(result.cleanedStdout).toMatchSnapshot('before-all-vsam');
+    expect(result.rc).toBe(0);
+    await testRunner.postTest();
   });
+
   beforeEach(() => {
     cfgYaml = ZoweConfig.getZoweYaml();
     // customizations for all vsam tests
@@ -59,14 +66,6 @@ describe(`${testSuiteName}`, () => {
   });
 
   describe('(SHORT)', () => {
-    beforeAll(async () => {
-      cfgYaml = ZoweConfig.getZoweYaml();
-      const result = await testRunner.runZweTest(cfgYaml, 'init generate --allow-overwrite');
-      expect(result.stdout).not.toBeNull();
-      expect(result.cleanedStdout).toMatchSnapshot('short-before-all-vsam');
-      expect(result.rc).toBe(0);
-    });
-
     it('skip non-vsam caching service', async () => {
       // @ts-expect-error dynamic property access not in schema
       cfgYaml.components['caching-service'].storage.mode = 'INFINISPAN';

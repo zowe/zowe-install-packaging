@@ -20,8 +20,15 @@ describe(`${testSuiteName}`, () => {
   let cfgYaml: ZoweYamlType;
   let cleanupFiles: TestFile[] = []; // a list of datasets deleted after every test
 
-  beforeAll(() => {
+  beforeAll(async () => {
     testRunner = new RemoteTestRunner(testSuiteName);
+    cfgYaml = ZoweConfig.getZoweYaml();
+    expect.getState().currentTestName = 'before-all-cert';
+    const result = await testRunner.runZweTest(cfgYaml, 'init generate --allow-overwrite');
+    expect(result.stdout).not.toBeNull();
+    expect(result.cleanedStdout).toMatchSnapshot('before-all-cert');
+    expect(result.rc).toBe(0);
+    await testRunner.postTest();
   });
   beforeEach(() => {
     cfgYaml = ZoweConfig.getZoweYaml();
@@ -38,10 +45,6 @@ describe(`${testSuiteName}`, () => {
   });
 
   describe('(SHORT)', () => {
-    beforeAll(() => {
-      testRunner.runZweTest(cfgYaml, 'init generate');
-    });
-
     it('cert dry-run', async () => {
       const result = await testRunner.runZweTest(cfgYaml, 'init certificate --dry-run');
       expect(result.stdout).not.toBeNull();

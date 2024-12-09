@@ -21,9 +21,15 @@ describe(`${testSuiteName}`, () => {
   let cfgYaml: ZoweYamlType;
   let cleanupDatasets: TestFile[] = []; // a list of datasets deleted after every test
 
-  beforeAll(() => {
+  beforeAll(async () => {
     testRunner = new RemoteTestRunner(testSuiteName);
     cfgYaml = ZoweConfig.getZoweYaml();
+    expect.getState().currentTestName = 'before-all-stc';
+    const result = await testRunner.runZweTest(cfgYaml, 'init generate --allow-overwrite');
+    expect(result.stdout).not.toBeNull();
+    expect(result.cleanedStdout).toMatchSnapshot('before-all-tc');
+    expect(result.rc).toBe(0);
+    await testRunner.postTest();
   });
   beforeEach(() => {
     cfgYaml = ZoweConfig.getZoweYaml();
@@ -88,14 +94,6 @@ describe(`${testSuiteName}`, () => {
   });
 
   describe('(SHORT)', () => {
-    beforeAll(async () => {
-      cfgYaml = ZoweConfig.getZoweYaml();
-      const result = await testRunner.runZweTest(cfgYaml, 'init generate --allow-overwrite');
-      expect(result.stdout).not.toBeNull();
-      expect(result.cleanedStdout).toMatchSnapshot('short-before-all-stc');
-      expect(result.rc).toBe(0);
-    });
-
     it('wrong ds prefix', async () => {
       cfgYaml.zowe.setup.dataset.prefix = null;
       let result = await testRunner.runZweTest(cfgYaml, 'init stc --dry-run');

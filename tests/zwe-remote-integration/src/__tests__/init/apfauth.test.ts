@@ -21,9 +21,15 @@ describe(`${testSuiteName}`, () => {
   let cfgYaml: ZoweYamlType;
   let cleanupDatasets: TestFile[] = []; // a list of datasets deleted after every test
 
-  beforeAll(() => {
+  beforeAll(async () => {
     testRunner = new RemoteTestRunner(testSuiteName);
-    cfgYaml = ZoweConfig.getZoweYaml(); // init
+    cfgYaml = ZoweConfig.getZoweYaml();
+    expect.getState().currentTestName = 'before-all-apfauth';
+    const result = await testRunner.runZweTest(cfgYaml, 'init generate --allow-overwrite');
+    expect(result.stdout).not.toBeNull();
+    expect(result.cleanedStdout).toMatchSnapshot('before-all-apfauth');
+    expect(result.rc).toBe(0);
+    await testRunner.postTest();
   });
   beforeEach(() => {
     cfgYaml = ZoweConfig.getZoweYaml();
@@ -73,13 +79,6 @@ describe(`${testSuiteName}`, () => {
   });
 
   describe('(SHORT)', () => {
-    beforeAll(async () => {
-      cfgYaml = ZoweConfig.getZoweYaml();
-      const result = await testRunner.runZweTest(cfgYaml, 'init generate --allow-overwrite');
-      expect(result.stdout).not.toBeNull();
-      expect(result.cleanedStdout).toMatchSnapshot('short-before-all-apf');
-      expect(result.rc).toBe(0);
-    });
     it('apf empty jcllib post-generate', async () => {
       cfgYaml.zowe.setup.dataset.jcllib = '';
       const result = await testRunner.runZweTest(cfgYaml, 'init apfauth --dry-run');

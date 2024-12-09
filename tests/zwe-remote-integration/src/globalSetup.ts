@@ -12,6 +12,7 @@ import * as uss from './zos/Uss';
 import * as _ from 'lodash';
 import * as path from 'path';
 import * as files from '@zowe/zos-files-for-zowe-sdk';
+import * as tar from 'tar';
 import {
   DOWNLOAD_CONFIGMGR,
   DOWNLOAD_ZOWE_TOOLS,
@@ -54,7 +55,8 @@ function setupBaseYaml() {
   zoweYaml.zowe.setup.certificate.pkcs12.directory = REMOTE_SYSTEM_INFO.ussTestDir;
   zoweYaml.zowe.setup.dataset.authLoadlib = REMOTE_SYSTEM_INFO.authLoadLib;
   zoweYaml.zowe.setup.dataset.authPluginLib = REMOTE_SYSTEM_INFO.authPluginLib;
-  // zoweYaml.zowe.setup.dataset.loadlib = REMOTE_SYSTEM_INFO.szweexec;
+  zoweYaml.zowe.setup.dataset.parmlib = REMOTE_SYSTEM_INFO.parmlib;
+  zoweYaml.zowe.setup.dataset.loadlib = REMOTE_SYSTEM_INFO.szweexec;
   // zoweYaml.node.home = systemDefaults.zos_node_home;
   // zoweYaml.zowe.runtimeDirectory = systemDefaults.
 
@@ -216,8 +218,9 @@ module.exports = async () => {
     );
 
     console.log(`Uploading ${REPO_ROOT_DIR}/bin to ${REMOTE_SYSTEM_INFO.ussTestDir}/bin...`);
+
     // archive without compression (issues on some backends)
-    execSync(`tar -cf ${THIS_TEST_ROOT_DIR}/.build/zwe.tar -C ${REPO_ROOT_DIR} bin`);
+    tar.c({ gzip: false, file: `${THIS_TEST_ROOT_DIR}/.build/zwe.tar`, sync: true, cwd: `${REPO_ROOT_DIR}` }, ['bin']);
     await files.Upload.fileToUssFile(
       zosmfSession,
       `${THIS_TEST_ROOT_DIR}/.build/zwe.tar`,
@@ -231,7 +234,6 @@ module.exports = async () => {
     // zowe-install-packaging-tools
     const utilsDir = path.resolve(THIS_TEST_ROOT_DIR, '.build', 'utility-tools');
     fs.mkdirpSync(`${utilsDir}`);
-    execSync(`unzip -o ${THIS_TEST_ROOT_DIR}/.build/${zoweToolsZip} -d ${utilsDir}`, { cwd: THIS_TEST_ROOT_DIR });
 
     for (const file of fs.readdirSync(utilsDir)) {
       const match = file.match(/zowe-(.*)-[0-9]?.*tgz/im);
@@ -241,7 +243,8 @@ module.exports = async () => {
 
         console.log(`Uploading ${pkgName} to ${REMOTE_SYSTEM_INFO.ussTestDir}/bin/utils...`);
         // re-archive without compression (issues on some backends)
-        execSync(`tar xzf ${fileName} && tar -cf ${pkgName}.tar package && rm -rf package`, { cwd: utilsDir });
+        tar.x({ cwd: utilsDir, file: `${utilsDir}/${fileName}`, sync: true });
+        tar.c({ gzip: false, file: `${pkgName}.tar`, cwd: utilsDir }, ['package']);
         await files.Upload.fileToUssFile(
           zosmfSession,
           `${utilsDir}/${pkgName}.tar`,
@@ -313,6 +316,11 @@ module.exports = async () => {
       volser: REMOTE_SYSTEM_INFO.volume,
     });
     await createPds(REMOTE_SYSTEM_INFO.proclib, {
+      primary: 5,
+      secondary: 1,
+      volser: REMOTE_SYSTEM_INFO.volume,
+    });
+    await createPds(REMOTE_SYSTEM_INFO.parmlib, {
       primary: 5,
       secondary: 1,
       volser: REMOTE_SYSTEM_INFO.volume,

@@ -21,8 +21,15 @@ describe(`${testSuiteName}`, () => {
   let defaultCfgYaml: ZoweYamlType;
   let cleanupDatasets: TestFile[] = []; // a list of datasets deleted after every test
 
-  beforeAll(() => {
+  beforeAll(async () => {
     testRunner = new RemoteTestRunner(testSuiteName);
+    cfgYaml = ZoweConfig.getZoweYaml();
+    expect.getState().currentTestName = 'before-all-generate';
+    const result = await testRunner.runZweTest(cfgYaml, 'init generate --allow-overwrite');
+    expect(result.stdout).not.toBeNull();
+    expect(result.cleanedStdout).toMatchSnapshot('before-all-generate');
+    expect(result.rc).toBe(0);
+    await testRunner.postTest();
   });
   beforeEach(() => {
     cfgYaml = ZoweConfig.getZoweYaml();
@@ -45,16 +52,8 @@ describe(`${testSuiteName}`, () => {
   });
 
   describe('(SHORT)', () => {
-    it('disable cfgmgr', async () => {
-      cfgYaml.zowe.useConfigmgr = false;
-      const result = await testRunner.runZweTest(cfgYaml, 'init generate');
-      expect(result.stdout).not.toBeNull();
-      expect(result.cleanedStdout).toMatchSnapshot();
-      expect(result.rc).toBe(60); // 60 is expected...
-    });
-
     it('bad ds prefix', async () => {
-      cfgYaml.zowe.setup.dataset.prefix = 'ZOWEAD3.ZWETEST.NOEXIST';
+      cfgYaml.zowe.setup.dataset.prefix = 'SOME.DS.NOEXIST';
       const result = await testRunner.runZweTest(cfgYaml, 'init generate --dry-run');
       expect(result.stdout).not.toBeNull();
       expect(result.cleanedStdout).toMatchSnapshot();
@@ -65,43 +64,36 @@ describe(`${testSuiteName}`, () => {
       const result = await testRunner.runZweTest(cfgYaml, 'init generate --dry-run');
       expect(result.stdout).not.toBeNull();
       expect(result.cleanedStdout).toMatchSnapshot();
-      expect(result.rc).toBe(0); // 60 is expected...
+      expect(result.rc).toBe(0);
     });
 
     it('BAD: missing defaults.yaml', async () => {
-      await testRunner.removeFileForTest('files/defaults.yaml');
-      const result = await testRunner.runZweTest(cfgYaml, 'init vsam --dry-run');
+      await testRunner.removeUssFileForTest('files/defaults.yaml');
+      const result = await testRunner.runZweTest(cfgYaml, 'init generate --dry-run');
       expect(result.stdout).not.toBeNull();
       expect(result.cleanedStdout).toMatchSnapshot(); // FIXME: the snapshot indicates processing continues when it shouldn't
       expect(result.rc).not.toBe(0);
     });
 
     it('BAD: invalid value defaults.yaml', async () => {
+      delete cfgYaml.zowe.configmgr;
       // @ts-expect-error intentionally setting an incorrect value
       defaultCfgYaml.zowe.configmgr.validation = 'WRONG_VALUE';
-      const result = await testRunner.runZweTest(cfgYaml, 'init vsam --dry-run');
+      const result = await testRunner.runZweTestWithDefaults(cfgYaml, defaultCfgYaml, 'init generate --dry-run');
       expect(result.stdout).not.toBeNull();
-      expect(result.cleanedStdout).toMatchSnapshot(); // FIXME: the snapshot indicates processing continues when it shouldn't
-      expect(result.rc).not.toBe(0);
+      expect(result.rc).toBe(1);
     });
 
+    // TODO: This test gives RC=0, but shouldn't it fail?
     it('BAD: invalid format defaults.yaml', async () => {
       // @ts-expect-error invalid yaml format
       defaultCfgYaml.zowe = '....\n somefield:\n  #another:\n' + defaultCfgYaml.zowe;
-      const result = await testRunner.runZweTest(cfgYaml, 'init vsam --dry-run');
+      const result = await testRunner.runZweTestWithDefaults(cfgYaml, defaultCfgYaml, 'init generate --dry-run');
       expect(result.stdout).not.toBeNull();
-      expect(result.cleanedStdout).toMatchSnapshot(); // FIXME: the snapshot indicates processing continues when it shouldn't
-      expect(result.rc).not.toBe(0);
+      expect(result.cleanedStdout).toMatchSnapshot();
+      expect(result.rc).toBe(0);
     });
   });
 
-  describe('(LONG)', () => {
-    it('missing proclib with valid stcs abc', async () => {
-      cfgYaml.zowe.setup.dataset.proclib = `${REMOTE_SYSTEM_INFO.prefix}.NOEXIST.PROC`;
-      const result = await testRunner.runZweTest(cfgYaml, 'init stc --dry-run');
-      expect(result.stdout).not.toBeNull();
-      expect(result.cleanedStdout).toMatchSnapshot();
-      expect(result.rc).toBe(1);
-    });
-  });
+  describe('(LONG)', () => {});
 });

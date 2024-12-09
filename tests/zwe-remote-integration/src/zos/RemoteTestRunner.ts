@@ -8,16 +8,23 @@
  * Copyright Contributors to the Zowe Project.
  */
 
-import { Session } from '@zowe/imperative';
+import { ImperativeError, Session } from '@zowe/imperative';
 import { getSession } from './ZosmfSession';
 import { UssSession } from './UssSession';
 import ZoweYamlType from '../config/ZoweYamlType';
-import { REMOTE_SYSTEM_INFO, TEST_COLLECT_SPOOL, TEST_JOBS_RUN_FILE, TEST_OUTPUT_DIR } from '../config/TestConfig';
+import {
+  REMOTE_SYSTEM_INFO,
+  TEST_COLLECT_SPOOL,
+  TEST_JOBS_RUN_FILE,
+  TEST_OUTPUT_DIR,
+  ZOWE_YAML_OVERRIDES,
+} from '../config/TestConfig';
 import * as files from '@zowe/zos-files-for-zowe-sdk';
 import * as fs from 'fs-extra';
 import * as YAML from 'yaml';
 import * as jobs from '@zowe/zos-jobs-for-zowe-sdk';
 import { basename } from 'path';
+import { FileType } from './TestFileActions';
 
 /**
  * RemoteTestRunner is a class which drives actions on the backend test environment and
@@ -111,18 +118,102 @@ export class RemoteTestRunner {
 
   public async restoreFiles() {
     for (const trackedFile of this.trackedFiles) {
-      await this.runRaw(`mv ${trackedFile.tmpFile} ${trackedFile.srcFile}`);
+      switch (trackedFile.type) {
+        case FileType.USS_FILE:
+        case FileType.USS_DIR:
+          await this.runRaw(`mv ${trackedFile.tmpFile} ${trackedFile.srcFile}`);
+          break;
+        case FileType.DS_NON_CLUSTER:
+          try {
+            await files.Delete.dataSet(this.session, trackedFile.srcFile, {});
+          } catch (error: unknown) {
+            // if we didn't find the dataset, it's safe to ignore the problem.
+            // The test could've failed to create a dataset for example.
+            if (!JSON.stringify(error).includes('status 404')) {
+              throw error;
+            }
+          }
+          if (trackedFile.tmpFile != null) {
+            await files.Rename.dataSet(this.session, trackedFile.tmpFile, trackedFile.srcFile);
+          }
+          break;
+        case FileType.DS_VSAM:
+        case FileType.DS_ZFS:
+          console.log(`Automation runner is trying to restore an unsupported file type. Details: ${JSON.stringify(trackedFile)}`);
+          break;
+      }
     }
     this.trackedFiles = [];
   }
 
-  public async removeFileForTest(filePath: string) {
+  /**
+   * Moves the datasets listed to a backup location.
+   *
+   * The datasets are restored with either the #postTest or #restore operations.
+   */
+  public async removeDatasetsForTest(datasets: string[]) {
+    for (const dataset of datasets) {
+      await this.removeDatasetForTest(dataset);
+    }
+  }
+
+  /**
+   * Moves a given dataset listed to a backup location.
+   *
+   * The dataset is restored with either the #postTest or #restore operations.
+   */
+  public async removeDatasetForTest(dataset: string) {
+    try {
+      const dsList = await files.List.dataSetsMatchingPattern(this.session, [dataset]);
+
+      console.log(JSON.stringify(dsList));
+      if (dsList.success) {
+        // cleanup old backups if they're on the system
+        const bkupDs = `${dataset}.TEST.BKUP`;
+        const bkupList = await files.List.dataSetsMatchingPattern(this.session, [bkupDs]);
+        if (bkupList.success) {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          const match = bkupList.apiResponse.find((ds: any) => ds.dsname === bkupDs);
+          if (match != null) {
+            await files.Delete.dataSet(this.session, bkupDs);
+          }
+        }
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const matchedItem = dsList.apiResponse.find((ds: any) => ds.dsname === dataset);
+        console.log(`Search: ${dataset} | Matched: ${matchedItem}`);
+        if (matchedItem == null) {
+          this.trackedFiles.push({
+            srcFile: dataset,
+            tmpFile: null, // null indicates there is no 'restore' op later
+            type: FileType.DS_NON_CLUSTER,
+          });
+        } else {
+          await files.Rename.dataSet(this.session, dataset, bkupDs, {});
+          this.trackedFiles.push({
+            srcFile: dataset,
+            tmpFile: bkupDs,
+            type: FileType.DS_NON_CLUSTER,
+          });
+        }
+      }
+    } catch (error) {
+      console.log('[TestRunner] Error trying to rename dataset. ' + error);
+      console.log(`[TestRunner] Input dataset: ${dataset}`);
+      console.log(
+        `[TestRunner] !!!IMPORTANT!!! Tests will continue to run so 
+        cleanup can be run post-test, but will likely have invalid results.`,
+      );
+    }
+  }
+
+  public async removeUssFileForTest(filePath: string) {
     const flattenedTmpName = filePath.replaceAll('/', '_');
     await this.runRaw(`mkdir -p ${this.REMOTE_TEST_TMP_DIR}`);
     await this.runRaw(`mv ${filePath} ${this.REMOTE_TEST_TMP_DIR}/${flattenedTmpName}`);
     this.trackedFiles.push({
       srcFile: filePath,
       tmpFile: `${this.REMOTE_TEST_TMP_DIR}/${flattenedTmpName}`,
+      type: FileType.USS_FILE,
     });
   }
 
@@ -136,6 +227,11 @@ export class RemoteTestRunner {
     this.cleanFns.forEach((fn) => {
       cleanedOutput = fn(cleanedOutput);
     });
+
+    if (ZOWE_YAML_OVERRIDES?.zOSMF?.host) {
+      cleanedOutput = cleanedOutput.replace(ZOWE_YAML_OVERRIDES.zOSMF.host, 'some.testhost.com');
+    }
+
     // built-in
     return cleanedOutput
       .replace(/(JOB[0-9]{5})/gim, 'JOB00000')
@@ -147,14 +243,20 @@ export class RemoteTestRunner {
       .replaceAll(REMOTE_SYSTEM_INFO.zosNodeHome, '/test/node/home')
       .replaceAll(REMOTE_SYSTEM_INFO.hostname, 'some.test.hostname')
       .replaceAll(REMOTE_SYSTEM_INFO.zosmfPort, '12321')
-      .replaceAll(REMOTE_SYSTEM_INFO.ussTestDir, '/test/dir');
+      .replaceAll(REMOTE_SYSTEM_INFO.ussTestDir, '/test/dir')
+      .replaceAll(REMOTE_SYSTEM_INFO.hostname, 'some.testhost.com');
   }
 
-  public async runZweTestWithDefaults(zoweYaml: ZoweYamlType, defaultYaml: ZoweYamlType, cwd: string = REMOTE_SYSTEM_INFO.ussTestDir) {
-    const testName = expect.getState().currentTestName.replace(/\s/g, '_').substring(0, 40);
+  public async runZweTestWithDefaults(
+    zoweYaml: ZoweYamlType,
+    defaultYaml: ZoweYamlType,
+    cwd: string = REMOTE_SYSTEM_INFO.ussTestDir,
+  ): Promise<TestOutput> {
+    const testName = expect.getState().currentTestName.replace(/\s/g, '_');
     const stringDefaultYaml = YAML.stringify(defaultYaml, { nullStr: '' });
     const yamlOutputDir = this.yamlOutputTemplate.replace('{{ testInstance }}', testName);
-    await this.removeFileForTest('files/defaults.yaml');
+    fs.mkdirpSync(yamlOutputDir);
+    await this.removeUssFileForTest('files/defaults.yaml');
     fs.writeFileSync(`${yamlOutputDir}/defaults.yaml.${testName}`, stringDefaultYaml);
 
     await files.Upload.fileToUssFile(
@@ -165,7 +267,7 @@ export class RemoteTestRunner {
         binary: false,
       },
     );
-    await this.runZweTest(zoweYaml, cwd);
+    return this.runZweTest(zoweYaml, cwd);
   }
 
   /**
@@ -183,7 +285,7 @@ export class RemoteTestRunner {
     if (command.startsWith('zwe')) {
       command = command.replace(/zwe/, '');
     }
-    const testName = expect.getState().currentTestName.replace(/\s/g, '_').substring(0, 40);
+    const testName = expect.getState().currentTestName.replace(/\s/g, '_');
     const stringZoweYaml = YAML.stringify(zoweYaml, { nullStr: '' });
     const yamlOutputDir = this.yamlOutputTemplate.replace('{{ testInstance }}', testName);
     fs.mkdirpSync(yamlOutputDir);
@@ -229,6 +331,7 @@ export class RemoteTestRunner {
 type TrackedFile = {
   srcFile: string;
   tmpFile: string;
+  type: FileType;
 };
 
 export type TestOutput = {
