@@ -72,7 +72,7 @@ export function requireJava() {
     } 
   }
   if (!std.getenv('JAVA_HOME')) {
-    common.printErrorAndExit("Error ZWEL0122E: Cannot find java. Please define JAVA_HOME environment variable.", undefined, 122);
+    common.printErrorAndExit("Error ZWEL0122E: Cannot find java. Set the java.home value in the Zowe YAML, or include java in the PATH environment variable of any accounts that start or manage Zowe", undefined, 122);
   }
 
   ensureJavaIsOnPath();

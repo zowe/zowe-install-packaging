@@ -1,0 +1,46 @@
+//ZWEIMVS2 JOB
+//*
+//* This program and the accompanying materials are made available
+//* under the terms of the Eclipse Public License v2.0 which
+//* accompanies this distribution, and is available at
+//* https://www.eclipse.org/legal/epl-v20.html
+//*
+//* SPDX-License-Identifier: EPL-2.0
+//*
+//* Copyright Contributors to the Zowe Project. 2020, 2020
+//*
+//*********************************************************************
+//*
+//* This job is used to create the APF load library for an instance
+//* Of Zowe. It is not needed if your choosen value of
+//* 'zowe.setup.dataset.authLoadlib' is equal to
+//* 'zowe.setup.prefix' + 'SZWELOAD'.
+//*
+//* When running this job, you should also run ZWEIMVS
+//*
+//*********************************************************************
+//MKPDSE EXEC PGM=IKJEFT01
+//SYSTSPRT DD SYSOUT=A
+//SYSTSIN DD *
+ALLOC NEW DA('{zowe.setup.dataset.authLoadlib}') +
+dsntype(library) dsorg(po) recfm(u) lrecl(0) +
+blksize(32760) unit(sysallda) space(30,15) tracks
+//*
+//AUTHCPY EXEC PGM=BPXBATCH
+//BPXPRINT DD SYSOUT=*
+//STDOUT   DD SYSOUT=*
+//STDERR   DD SYSOUT=*
+//STDPARM DD *
+SH cd '{zowe.runtimeDirectory}' &&
+cd components/zss &&
+ZWE_TMP_MVS2='{zowe.setup.dataset.authLoadlib}' &&
+cp -X LOADLIB/ZWESIS01
+"//'$ZWE_TMP_MVS2(ZWESIS01)'" &&
+cp -X LOADLIB/ZWESAUX
+"//'$ZWE_TMP_MVS2(ZWESAUX)'" &&
+cp -X LOADLIB/ZWESISDL
+"//'$ZWE_TMP_MVS2(ZWESISDL)'" &&
+cd ../launcher/bin &&
+cp -X zowe_launcher
+"//'$ZWE_TMP_MVS2(ZWELNCH)'"
+/*

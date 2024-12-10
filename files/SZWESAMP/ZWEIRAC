@@ -1,0 +1,293 @@
+//ZWEIRAC JOB
+//*
+//* This program and the accompanying materials are made available
+//* under the terms of the Eclipse Public License v2.0 which
+//* accompanies this distribution, and is available at
+//* https://www.eclipse.org/legal/epl-v20.html
+//*
+//* SPDX-License-Identifier: EPL-2.0
+//*
+//* Copyright Contributors to the Zowe Project. 2018, 2020
+//*
+//*********************************************************************
+//*
+//* This JCL can be used to define security permits for Zowe
+//*
+//*
+//* CAUTION: This is neither a JCL procedure nor a complete job.
+//* Before using this JCL, you will have to make the following
+//* modifications:
+//*
+//* 1) Add job name and job parameters to the JOB statement, to
+//*    meet your system requirements.
+//*
+//* 2) When not using AUTOUID and AUTOGID to assign z/OS UNIX UID
+//*     and GID values, update the SET *ID= statements to match the
+//*     desired UID and GID values.
+//*
+//* 3) Customize the commands in the DD statement that matches your
+//*     security product so that they meet your system requirements.
+//*
+//* Note(s):
+//*
+//* 1. THE USER ID THAT RUNS THIS JOB MUST HAVE SUFFICIENT AUTHORITY
+//*    TO ALTER SECURITY DEFINITONS
+//*
+//* 2. The Zowe started task user ID 'zowe.setup.security.users.zowe'
+//*    Writes persistent data to 'zowe.workspaceDirectory'
+//*    This sample JCL makes the Zowe started task part of
+//*    the Zowe admin group 'zowe.setup.security.groups.admin'
+//*    to facilitate admin access to this directory.
+//*
+//* 3. This job WILL complete with return code 0.
+//*    The results of each command must be verified after completion.
+//*
+//*********************************************************************
+//         EXPORT SYMLIST=*
+//*
+//* The sample commands assume AUTOUID and AUTOGID are
+//* enabled. When this is not the case,
+//* provide appropriate (numeric) values to these SET commands.
+//         SET ADMINGID=             * Group ID for ZOWE administrators
+//         SET   STCGID=&ADMINGID.   * Group ID for ZOWE started tasks
+//         SET  ZOWEUID=             * UID for ZOWE started task User
+//         SET   ZISUID=             * UID for ZIS started task User
+//*
+//* If using AUTOUID and AUTOGID, the RACF database must be
+//* at AIM 2 or higher, and BPX.NEXT.USER must exist.
+//*
+//*********************************************************************
+//*
+//RUN      EXEC PGM=IKJEFT01,REGION=0M
+//SYSTSPRT DD SYSOUT=*
+//SYSTSIN  DD DDNAME=RACF
+//RACF     DD DATA,DLM=$$,SYMBOLS=JCLONLY
+
+/* ACTIVATE REQUIRED RACF SETTINGS AND CLASSES ..................... */
+
+/* - Comment out the activation statements for the classes that are  */
+/*   already active.                                                 */
+
+/* display current settings                                          */
+/*SETROPTS LIST                                                      */
+
+/* activate FACILITY class for z/OS UNIX & Zowe ZIS profiles         */
+  SETROPTS GENERIC(FACILITY)
+  SETROPTS CLASSACT(FACILITY) RACLIST(FACILITY)
+
+/* activate started task class                                       */
+  SETROPTS GENERIC(STARTED)
+  SETROPTS CLASSACT(STARTED) RACLIST(STARTED)
+
+/* show results .................................................... */
+  SETROPTS LIST
+
+/* DEFINE ADMINISTRATORS ........................................... */
+
+/* - The sample commands assume automatic generation of GID is       */
+/*   enabled.                                                        */
+
+/* group for administrators                                          */
+/* replace AUTOGID with GID(&ADMINGID.) if AUTOGID not enabled       */
+  LISTGRP  {zowe.setup.security.groups.admin} OMVS
+  ADDGROUP {zowe.setup.security.groups.admin} OMVS(AUTOGID) -
+   DATA('ZOWE ADMINISTRATORS')
+
+/* uncomment to add existing user IDs to the ADMINGRP group          */
+/* CONNECT (userid,userid,...) -                                     */
+/* GROUP({zowe.setup.security.groups.admin}) AUTH(USE)              */
+
+/* DEFINE STARTED TASK ............................................. */
+
+/* - Ensure that user IDs are protected with the NOPASSWORD keyword. */
+/* - The sample commands assume automatic generation of UID and GID  */
+/*   is enabled.                                                     */
+
+/* comment out if STCGRP matches ADMINGRP (default), expect          */
+/*   warning messages otherwise                                      */
+/* group for started tasks                                           */
+/* replace AUTOGID with GID(&STCGID.) if AUTOGID not enabled */
+  LISTGRP  {zowe.setup.security.groups.stc} OMVS
+  ADDGROUP {zowe.setup.security.groups.stc} OMVS(AUTOGID) -
+   DATA('STARTED TASK GROUP WITH OMVS SEGMENT')
+
+/* */
+
+/* userid for ZOWE main server                                       */
+/* replace AUTOUID with UID(&ZOWEUID.) if AUTOUID not enabled */
+  LISTUSER {zowe.setup.security.users.zowe} OMVS
+  ADDUSER  {zowe.setup.security.users.zowe} -
+   NOPASSWORD -
+   DFLTGRP({zowe.setup.security.groups.stc}) -
+   OMVS(HOME(/tmp) PROGRAM(/bin/sh) AUTOUID) -
+   NAME('ZOWE SERVER') -
+   DATA('ZOWE MAIN SERVER')
+
+/* userid for ZIS cross memory server                                */
+/* replace AUTOUID with UID(&ZISUID.) if AUTOUID not enabled */
+  LISTUSER {zowe.setup.security.users.zis} OMVS
+  ADDUSER  {zowe.setup.security.users.zis} -
+   NOPASSWORD -
+   DFLTGRP({zowe.setup.security.groups.stc}) -
+   OMVS(HOME(/tmp) PROGRAM(/bin/sh) AUTOUID) -
+   NAME('ZOWE ZIS SERVER') -
+   DATA('ZOWE ZIS CROSS MEMORY SERVER')
+
+/* */
+
+/* started task for ZOWE main server                                 */
+  RLIST   STARTED {zowe.setup.security.stcs.zowe}* ALL STDATA
+  RDEFINE STARTED {zowe.setup.security.stcs.zowe}* -
+   STDATA(USER({zowe.setup.security.users.zowe}) -
+     GROUP({zowe.setup.security.groups.stc}) -
+   TRUSTED(NO)) DATA('ZOWE MAIN SERVER')
+
+/* started task for ZIS cross memory server                         */
+  RLIST   STARTED {zowe.setup.security.stcs.zis}* ALL STDATA
+  RDEFINE STARTED {zowe.setup.security.stcs.zis}* -
+   STDATA(USER({zowe.setup.security.users.zis}) -
+   GROUP({zowe.setup.security.groups.stc}) -
+   TRUSTED(NO)) DATA('ZOWE ZIS CROSS MEMORY SERVER')
+
+/* started task for ZIS Auxiliary cross memory server                */
+  RLIST   STARTED {zowe.setup.security.stcs.aux}* ALL STDATA
+  RDEFINE STARTED {zowe.setup.security.stcs.aux}* -
+   STDATA(USER({zowe.setup.security.users.zis}) -
+   GROUP({zowe.setup.security.groups.stc}) -
+   TRUSTED(NO)) DATA('ZOWE ZIS AUX CROSS MEMORY SERVER')
+
+  SETROPTS RACLIST(STARTED) REFRESH
+
+/* show results .................................................... */
+  LISTGRP  {zowe.setup.security.groups.stc} OMVS
+  LISTUSER {zowe.setup.security.users.zowe} OMVS
+  LISTUSER {zowe.setup.security.users.zis} OMVS
+  RLIST STARTED {zowe.setup.security.stcs.zowe}* ALL STDATA
+  RLIST STARTED {zowe.setup.security.stcs.zis}* ALL STDATA
+  RLIST STARTED {zowe.setup.security.stcs.aux}*  ALL STDATA
+
+/* DEFINE ZIS SECURITY RESOURCES ................................... */
+
+/* define ZIS security profile                                       */
+  RLIST   FACILITY ZWES.IS ALL
+  RDEFINE FACILITY ZWES.IS UACC(NONE)
+
+/* DEFINE AUX SERVER PERMISIONS .................................... */
+
+/* permit AUX STC to use ZIS cross memory server                     */
+  PERMIT ZWES.IS CLASS(FACILITY) ACCESS(READ) -
+    ID({zowe.setup.security.users.zis})
+  SETROPTS RACLIST(FACILITY) REFRESH
+
+/* DEFINE ZOWE SERVER PERMISIONS ................................... */
+
+/* permit Zowe main server to use ZIS cross memory server            */
+  PERMIT ZWES.IS CLASS(FACILITY) ACCESS(READ) -
+    ID({zowe.setup.security.users.zowe})
+  SETROPTS RACLIST(FACILITY) REFRESH
+
+/* permit Zowe main server to create a user's security environment   */
+/* ATTENTION: Defining the BPX.DAEMON or BPX.SERVER profile makes    */
+/*            z/OS UNIX switch to z/OS UNIX level security. This is  */
+/*            more secure, but it can impact operation of existing   */
+/*            applications. Test this thoroughly before activating   */
+/*            it on a production system.                             */
+  RLIST   FACILITY BPX.DAEMON ALL
+  RDEFINE FACILITY BPX.DAEMON UACC(NONE)
+  PERMIT BPX.DAEMON CLASS(FACILITY) ACCESS(UPDATE) 0
+    ID({zowe.setup.security.users.zowe})
+
+  RLIST   FACILITY BPX.SERVER ALL
+  RDEFINE FACILITY BPX.SERVER UACC(NONE)
+  PERMIT BPX.SERVER CLASS(FACILITY) ACCESS(UPDATE) -
+    ID({zowe.setup.security.users.zowe})
+
+/* permit Zowe main server to create a user's security environment   */
+/* comment out the following 2 lines if the OMVSAPPL is not defined  */
+/* in your environment                                               */
+  PERMIT OMVSAPPL CLASS(APPL) ID({zowe.setup.security.users.zowe}) -
+    ACCESS(READ)
+  SETROPTS RACLIST(APPL) REFRESH
+
+/* permit Zowe main server to set job name                           */
+  RLIST   FACILITY BPX.JOBNAME ALL
+  RDEFINE FACILITY BPX.JOBNAME UACC(NONE)
+  PERMIT BPX.JOBNAME CLASS(FACILITY) ACCESS(READ) -
+    ID({zowe.setup.security.users.zowe})
+
+  SETROPTS RACLIST(FACILITY) REFRESH
+
+/* permit Zowe main server to use client certificate mapping service */
+  RLIST   FACILITY IRR.RUSERMAP ALL
+  RDEFINE FACILITY IRR.RUSERMAP UACC(NONE)
+  PERMIT IRR.RUSERMAP CLASS(FACILITY) ACCESS(READ) -
+    ID({zowe.setup.security.users.zowe})
+
+/* permit Zowe main server to use distributed identity mapping       */
+/* service
+  RLIST   FACILITY IRR.IDIDMAP.QUERY ALL
+  RDEFINE FACILITY IRR.IDIDMAP.QUERY UACC(NONE)
+  PERMIT IRR.IDIDMAP.QUERY CLASS(FACILITY) ACCESS(READ) -
+   ID({zowe.setup.security.users.zowe})
+
+/* permit Zowe main server to cut SMF records                        */
+  RLIST   FACILITY IRR.RAUDITX ALL
+  RDEFINE FACILITY IRR.RAUDITX UACC(NONE)
+  PERMIT IRR.RAUDITX CLASS(FACILITY) ACCESS(READ) -
+    ID({zowe.setup.security.users.zowe})
+
+  SETROPTS RACLIST(FACILITY) REFRESH
+/* show results .................................................... */
+  RLIST   FACILITY ZWES.IS           ALL
+  RLIST   FACILITY BPX.DAEMON        ALL
+  RLIST   FACILITY BPX.SERVER        ALL
+  RLIST   FACILITY BPX.JOBNAME       ALL
+  RLIST   FACILITY IRR.RUSERMAP      ALL
+  RLIST   FACILITY IRR.RAUDITX       ALL
+
+/* DEFINE ZOWE DATA SET PROTECTION ................................. */
+
+/* - HLQ..SZWEAUTH is an APF authorized data set. It is strongly     */
+/*   advised to protect it against updates.                          */
+/* - The sample commands assume that EGN (Enhanced Generic Naming)   */
+/*   is active, which allows the usage of ** to represent any number */
+/*   of qualifiers in the DATASET class. Substitute *.** with * if   */
+/*   EGN is not active on your system.                               */
+
+/* HLQ stub                                                          */
+  LISTGRP  {zowe.setup.dataset.prefix}
+  ADDGROUP {zowe.setup.dataset.prefix} DATA('Zowe - HLQ STUB')
+
+/* general data set protection                                       */
+  LISTDSD PREFIX({zowe.setup.dataset.prefix}) ALL
+  ADDSD  '{zowe.setup.dataset.prefix}.*.**' UACC(READ) -
+    DATA('Zowe')
+  PERMIT '{zowe.setup.dataset.prefix}.*.**' CLASS(DATASET) -
+    ACCESS(ALTER) ID({zowe.setup.security.groups.sysProg})
+
+  SETROPTS GENERIC(DATASET) REFRESH
+
+/* show results .................................................... */
+  LISTGRP {zowe.setup.dataset.prefix}
+  LISTDSD PREFIX({zowe.setup.dataset.prefix}) ALL
+
+/* DEFINE ZOWE RESOURCE PROTECTION ................................. */
+
+/* - Defines resource APIML.SERVICES that controls access to         */
+/*   detailed information about API services to Zowe users.          */
+
+/* define resource for information about API services                */
+  RDEFINE ZOWE APIML.SERVICES UACC(NONE)
+
+/* uncomment and replace "user" to permit Zowe users to access       */
+/* the resource:                                                     */
+/* PERMIT APIML.SERVICES CLASS(ZOWE) ID(user) ACCESS(READ)           */
+
+/* show results                                                      */
+  RLIST ZOWE *
+
+/* ................................................................. */
+/* only the last RC is returned, this command ensures it is a 0      */
+PROFILE
+$$
+//*

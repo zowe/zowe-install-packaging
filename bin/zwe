@@ -69,7 +69,9 @@ while [ $# -gt 0 ]; do
       print_error_and_exit "Error ZWEL0103E: Invalid type of parameter ${arg}" "" 103
     fi
   fi
-  shift
+  if [ $# -gt 0 ]; then
+    shift
+  fi
 done
 
 # debug results

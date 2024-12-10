@@ -1,0 +1,185 @@
+//ZWEIKRA2 JOB
+//*
+//* This program and the accompanying materials are made available
+//* under the terms of the Eclipse Public License v2.0 which
+//* accompanies this distribution, and is available at
+//* https://www.eclipse.org/legal/epl-v20.html
+//*
+//* SPDX-License-Identifier: EPL-2.0
+//*
+//* Copyright Contributors to the Zowe Project. 2020, 2020
+//*
+//*********************************************************************
+//*
+//* This JCL can be used to define key ring and certificates for Zowe
+//*
+//* ATTENTION!
+//* Each ZWEIKR JCL is for different ESM and Keyring options.
+//* This one is for connecting a certificate already in the ESM DB.
+//*
+//*********************************************************************
+//*
+//* CAUTION: This is neither a JCL procedure nor a complete job.
+//* Before using this JCL, you will have to make the following
+//* modifications:
+//*
+//* 1) Add job name and job parameters to the JOB statement, to
+//*    meet your system requirements.
+//*
+//* 2) Update the SET IPADDRES= variable to match the IP address
+//*    where Zowe is to run.
+//*
+//* 3) If you have external certificate authorities for ITRMZWCA
+//*     and/or ROOTZWCA, set IFZOWECA to 1 to connect to Zowe keyring.
+//*
+//* 4) Update the SET ITRMZWCA= variable to match the intermediate
+//*     CA of the Zowe certificate. It is only applicable if Zowe
+//*     certificate signed by a recognized certificate authority (CA).
+//*
+//* 5) Update the SET ROOTZWCA= variable to match the root CA of the
+//*     Zowe certificate. It is only applicable if Zowe certificate
+//*     signed by a recognized certificate authority (CA).
+//*
+//* 6) If you set zowe.verifyCertificates to
+//*     STRICT or NONSTRICT, then set IFROZFCA to 1
+//*     to connect z/OSMF certificate authority to Zowe keyring.
+//*
+//* 7) Customize the commands in the DD statement that matches your
+//*     security product so that they meet your system requirements.
+//*
+//* Note(s):
+//*
+//* 1. The userid that runs this job must have sufficient authority
+//*    to alter security definitions
+//*
+//* 2. Assumption: signing CA chain of the Zowe external certificate is
+//*    added to the security database under the CERTAUTH userid.
+//*
+//* 3. This job WILL complete with return code 0.
+//*    The results of each command must be verified after completion.
+//*
+//*********************************************************************
+//         EXPORT SYMLIST=*
+//*
+//*      * IP address of the system where Zowe is to run
+//         SET IPADDRES=''
+//*      * If you have external certificate authorities for ITRMZWCA
+//*      * and/or ROOTZWCA, set IFZOWECA to 1 to connect to Zowe keyring.
+//         SET IFZOWECA=0
+//*      * Label of the intermediate CA of the Zowe certificate
+//*        if applicable
+//         SET ITRMZWCA=''
+//*      * Label of the root CA of the Zowe certificate if applicable
+//         SET ROOTZWCA=''
+//*      * If you enable VERIFY_CERTIFICATES or
+//*      * NONSTRICT_VERIFY_CERTIFICATES and define ROOTZFCA, set
+//*      * IFROZFCA to 1 to connect z/OSMF certificate authority to
+//*      * Zowe keyring. Otherwise set to 0.
+//         SET IFROZFCA=0
+//*******************************************************************
+//*
+//*      * You do NOT need to set USERNAME when running ZWEGENER.
+//*      * This is used to keep some lines under the column limit.
+//*
+//         SET USERNAME={zowe.setup.security.users.zowe}
+//*
+//*********************************************************************
+//*
+//* EXECUTE COMMANDS FOR SELECTED SECURITY PRODUCT
+//*
+//RUNACF2  EXEC PGM=IKJEFT01,REGION=0M
+//SYSTSPRT DD SYSOUT=*
+//SYSTSIN  DD DDNAME=ACF2
+//ACF2     DD DATA,DLM=$$,SYMBOLS=JCLONLY
+ACF
+//
+* Create the keyring .............................................. */
+  SET PROFILE(USER) DIVISION(KEYRING)
+  INSERT {zowe.setup.security.users.zowe}.ZOWERING +
+  RINGNAME({zowe.setup.certificate.keyring.name})
+  F ACF2,REBUILD(USR),CLASS(P),DIVISION(KEYRING)
+$$
+//*
+//RUNOPT2  EXEC PGM=IKJEFT01,REGION=0M
+//SYSTSPRT DD SYSOUT=*
+//SYSTSIN  DD DDNAME=ACF2
+//ACF2     DD DATA,DLM=$$,SYMBOLS=JCLONLY
+ACF
+//
+* Option 2 - BEGINNING ............................................ */
+* Connect a Zowe's certificate with the keyring ................... */
+   SET PROFILE(USER) DIVISION(CERTDATA)
+   CONNECT CERTDATA(SITECERT.digicert | userid.digicert) -
+   KEYRING({zowe.setup.security.users.zowe}.ZOWERING) -
+   USAGE(PERSONAL) DEFAULT
+   CHKCERT {zowe.setup.security.users.zowe}.ZOWECERT
+*
+* Option 2 - END .................................................. */
+$$
+//IFOPT2ED ENDIF
+//*
+//IFZWCA   IF (&IFZOWECA EQ 1) THEN
+//RUNZWCA  EXEC PGM=IKJEFT01,REGION=0M
+//SYSTSPRT DD SYSOUT=*
+//SYSTSIN  DD DDNAME=ACF2
+//ACF2     DD DATA,DLM=$$,SYMBOLS=JCLONLY
+ACF
+//
+* Connect all CAs of the Zowe certificate's signing chain with the  */
+* keyring ......................................................... */
+   SET PROFILE(USER) DIVISION(CERTDATA)
+   CONNECT CERTDATA(CERTAUTH.&ITRMZWCA.) -
+   RINGNAME({zowe.setup.certificate.keyring.name}) -
+   KEYRING({zowe.setup.security.users.zowe}.ZOWERING) USAGE(CERTAUTH)
+*
+   CONNECT CERTDATA(CERTAUTH.&ROOTZWCA.) -
+   RINGNAME({zowe.setup.certificate.keyring.name}) -
+   KEYRING({zowe.setup.security.users.zowe}.ZOWERING) USAGE(CERTAUTH)
+$$
+//IFZWCAED ENDIF
+//*
+//IFZFCA   IF (&IFROZFCA EQ 1) THEN
+//RUNZFCA  EXEC PGM=IKJEFT01,REGION=0M
+//SYSTSPRT DD SYSOUT=*
+//SYSTSIN  DD DDNAME=ACF2
+//ACF2     DD DATA,DLM=$$,SYMBOLS=JCLONLY
+ACF
+//
+* Connect the z/OSMF root CA signed by a recognized certificate ... */
+* authority (CA) with the keyring ................................. */
+   SET PROFILE(USER) DIVISION(CERTDATA)
+   CONNECT -
+     CERTDATA(CERTAUTH.{zowe.setup.certificate.keyring.zOSMF.ca}) -
+     RINGNAME({zowe.setup.certificate.keyring.name}) -
+     KEYRING({zowe.setup.security.users.zowe}.ZOWERING) -
+     USAGE(CERTAUTH)
+$$
+//IFZFCAED ENDIF
+//*
+//COMACF2  EXEC PGM=IKJEFT01,REGION=0M
+//SYSTSPRT DD SYSOUT=*
+//SYSTSIN  DD DDNAME=ACF2
+//ACF2     DD DATA,DLM=$$,SYMBOLS=JCLONLY
+ACF
+//
+* A common part for all options - BEGINNING ....................... */
+*
+* Allow ZOWEUSER to access keyring ................................ */
+  SET RESOURCE(FAC)
+  RECKEY IRR ADD(DIGTCERT.LISTRING -
+  ROLE({zowe.setup.security.groups.stc}) -
+  SERVICE(READ) ALLOW)
+*
+* Uncomment this command if SITE acid owns the Zowe certificate ... */
+*  RECKEY IRR ADD(DIGTCERT.GENCERT -
+*  ROLE({zowe.setup.security.groups.stc}) -
+*  SERVICE(CONTROL) ALLOW)
+*
+  F ACF2,REBUILD(FAC)
+*
+* List the keyring ................................................ */
+  SET PROFILE(USER) DIVISION(KEYRING)
+  LIST {zowe.setup.security.users.zowe}.ZOWERING
+* Common part - END ............................................... */
+$$
+//*

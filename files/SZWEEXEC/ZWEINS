@@ -1,0 +1,7 @@
+/* REXX */
+address isredit 'macro'
+do i = 1 to queued()
+  parse pull insertCmd
+  address isredit insertCmd
+end
+address isredit 'end'

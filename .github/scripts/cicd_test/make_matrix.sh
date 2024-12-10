@@ -32,17 +32,13 @@ case $install_test_choice in
   test_file="$KEYRING_TESTFILE"
   ;;
 
-"z/OS node v14")
-  test_file="$ZOS_NODE_V14_TESTFILE"
-  ;;
-
-"z/OS node v16")
-  test_file="$ZOS_NODE_V16_TESTFILE"
-  ;;
-
 "z/OS node v18")
   test_file="$ZOS_NODE_V18_TESTFILE"
-  test_force_system="zzow04"
+  test_force_system="zzow11"
+  ;;
+
+"z/OS node v20")
+  test_file="$ZOS_NODE_V20_TESTFILE"
   ;;
 
 "z/OS java 11 Pax")
@@ -107,17 +103,18 @@ if [[ ! -z "$test_force_system" ]]; then
 else
   if [[ -z "$dont_parse_test_server" ]]; then
     if [[ "$test_server" == "Any zzow servers" ]]; then
-      test_server="zzow0"$(echo $(($RANDOM % 3 + 2)))
+      test_server="zzow"$(printf %02d $(($RANDOM % 3 + 9)))
     fi
     TEST_FILE_SERVER="$test_file($test_server)"
   else
     any_occurrence=$(echo $test_file | grep -o "(any)" | wc -l)
     interim_test_file_server=$test_file
     for i in $(seq $any_occurrence); do
-      interim_test_file_server=$(echo $interim_test_file_server | sed "s#(any)#(zzow0$(echo $(($RANDOM % 3 + 2))))#")
+      # Generates zzow09, zzow10, zzow11
+      interim_test_file_server=$(echo $interim_test_file_server | sed "s#(any)#(zzow$(printf %02d $(($RANDOM % 3 + 9))))#")
     done
 
-    TEST_FILE_SERVER=$(echo $interim_test_file_server | sed "s#(all)#(zzow02,zzow03,zzow04)#g")
+    TEST_FILE_SERVER=$(echo $interim_test_file_server | sed "s#(all)#(zzow09,zzow10,zzow11)#g")
   fi
 fi
 

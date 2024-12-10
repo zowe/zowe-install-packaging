@@ -48,8 +48,8 @@
     <step name="MountZFS" optional="false">
         <title>Mount ZOWE zFS</title>
         <description>This step mounts ZOWE zFS on the mount point that was selected during the deployment.</description>
-        <instructions substitution="false">Make sure you have correct SYSAFF in the following JCL so the filesystem is
-         mounted correctly.
+        <instructions substitution="false">Make sure you have the correct SYSAFF in the following JCL so the filesystem is
+mounted correctly.
         </instructions>
         <weight>1</weight>
         <skills>z/OS system programmer</skills>
@@ -79,6 +79,36 @@ MOUNT FILESYSTEM('${zfsdsn}') +
 TYPE(ZFS) MODE(RDWR) +
 PARM('AGGRGROW') +
 MOUNTPOINT('${zfsmount}')
+/*</inlineTemplate>
+            <submitAs maxRc="8">JCL</submitAs>
+            <maxLrecl>80</maxLrecl>
+        </template>
+    </step>
+  <step name="chown" optional="false">
+        <title>Change ownership</title>
+        <description>This step changes the ownership and mode of the ZOWE USS directory so the zwe command can be called.</description>
+        <instructions substitution="false">Make sure you have the correct SYSAFF in the following JCL so the filesystem is
+mounted correctly.
+        </instructions>
+        <weight>1</weight>
+        <skills>z/OS system programmer</skills>
+        <autoEnable>true</autoEnable>
+        <canMarkAsFailed>false</canMarkAsFailed>
+        <template>
+            <inlineTemplate substitution="true">
+## Find ZFS dataset
+#foreach($ds in ${instance-izud-datasets})
+#if (${ds.izud-dstype} == "ZFS")
+#set ($zfsmount = ${ds.izud-mountpoint})
+#break
+#end
+#end
+//MKDIR  EXEC PGM=BPXBATCH
+//STDOUT DD SYSOUT=*
+//STDERR DD SYSOUT=*
+//STDPARM  DD *
+SH chown -R ${_step-stepOwnerUpper} ${zfsmount};
+chmod -R 775 ${zfsmount};
 /*</inlineTemplate>
             <submitAs maxRc="8">JCL</submitAs>
             <maxLrecl>80</maxLrecl>

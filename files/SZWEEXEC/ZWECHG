@@ -1,0 +1,5 @@
+/* REXX */
+parse pull changeCommand
+address isredit 'macro'
+address isredit changeCommand
+address isredit 'end'

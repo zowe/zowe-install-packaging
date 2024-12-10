@@ -17,7 +17,7 @@
 
 USE_CONFIGMGR=$(check_configmgr_enabled)
 if [ "${USE_CONFIGMGR}" = "true" ]; then
-  _CEE_RUNOPTS="XPLINK(ON),HEAPPOOLS(OFF)" ${ZWE_zowe_runtimeDirectory}/bin/utils/configmgr -script "${ZWE_zowe_runtimeDirectory}/bin/commands/internal/start/prepare/cli.js"
+  _CEE_RUNOPTS="XPLINK(ON),HEAPPOOLS(OFF),HEAPPOOLS64(OFF)" ${ZWE_zowe_runtimeDirectory}/bin/utils/configmgr -script "${ZWE_zowe_runtimeDirectory}/bin/commands/internal/start/prepare/cli.js"
 else
 
 
@@ -142,8 +142,11 @@ global_validate() {
     if [[ ${ZWE_ENABLED_COMPONENTS} == *"discovery"* || ${ZWE_ENABLED_COMPONENTS} == *"files-api"* || ${ZWE_ENABLED_COMPONENTS} == *"jobs-api"* ]]; then
       validate_this "validate_zosmf_host_and_port \"${ZOSMF_HOST}\" \"${ZOSMF_PORT}\" 2>&1" "zwe-internal-start-prepare,global_validate:${LINENO}"
     fi
-  elif [ "${ZWE_components_gateway_apiml_security_auth_provider}" = "zosmf" ]; then
-    validate_this "validate_zosmf_as_auth_provider \"${ZOSMF_HOST}\" \"${ZOSMF_PORT}\" \"${ZWE_components_gateway_apiml_security_auth_provider}\" 2>&1" "zwe-internal-start-prepare,global_validate:${LINENO}"
+    if [ "${ZWE_components_discovery_enabled}" = "false" -a "${ZWE_components_gateway_apiml_security_auth_provider}" = "zosmf" ]; then
+      let "ZWE_PRIVATE_ERRORS_FOUND=${ZWE_PRIVATE_OLD_ERRORS_FOUND}+1"
+      print_error "Using z/OSMF as 'components.gateway.apiml.security.auth.provider' is not possible: discovery is disabled."
+      print_formatted_info "ZWELS" "zwe-internal-start-prepare,global_validate:${LINENO}" "Zosmf validation failed"
+    fi
   fi
 
   check_runtime_validation_result "zwe-internal-start-prepare,global_validate:${LINENO}"
