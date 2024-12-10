@@ -124,9 +124,6 @@ Selected test running elapsed time:
 | Convenience Pax | 53m |
 | SMPE PTF | 68m |
 | Keyring | 53m |
-| z/OS node v14 | 45m |
-| z/OS node v16 | 45m |
-| z/OS node v18 | 45m |
 | z/OS node v20 | 45m |
 | z/OS java 11 Pax | 53m |
 | z/OS java 11 Keyring | 53m |
