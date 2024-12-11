@@ -31,13 +31,13 @@ describe('test api mediation layer zosmf api', function() {
     token = await apiml.login();
   });
 
-  it('should be able to get z/OS Info via the gateway port and endpoint (/api/v1/zosmf/info)', async function() {
+  it('should be able to get z/OS Info via the gateway port and endpoint (/ibmzosmf/api/v1/zosmf/info)', async function() {
     if (!token) {
       this.skip();
     }
 
     const res = await hq.request({
-      url: '/zosmf/api/v1/info',
+      url: '/ibmzosmf/api/v1/zosmf/info',
       method: 'get',
       headers: {
         Cookie: `${APIML_AUTH_COOKIE}=${token}`,

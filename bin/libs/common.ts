@@ -130,7 +130,6 @@ export function date(...args: string[]): string|undefined {
 
 let logExists = false;
 let logFile:std.File|null = null;
-
 export function finishLogFile() {
   if (logFile) {
     logFile.close();
@@ -140,32 +139,26 @@ export function finishLogFile() {
 
 function writeLog(message: string): boolean {
   const filename = std.getenv('ZWE_PRIVATE_LOG_FILE');
+  if (!filename) {
+      return false;
+  }
+  logExists = fs.fileExists(filename);
   if (!logExists) {
-    if (filename) {
+      fs.createFile(filename, 0o640, message);
       logExists = fs.fileExists(filename);
-      if (!logExists) {
-        fs.createFile(filename, 0o640, message);
-        logExists = fs.fileExists(filename);
+      let errObj = {errno:undefined};
+      logFile = std.open(filename, 'w', errObj);
+      if (errObj.errno) {
+        printError(`Error opening file ${filename}, errno=${errObj.errno}`);
+        logFile=null;
+        logExists=false;
+        return false;
       }
-      if (logExists) {
-        let errObj = {errno:undefined};
-        logFile = std.open(filename, 'w', errObj);
-        if (errObj.errno) {
-          printError(`Error opening file ${filename}, errno=${errObj.errno}`);
-          logFile=null;
-          logExists=false;
-          return false;
-        }
-      }
-    }
-  }
-  if (logFile===undefined || logFile===null) {
-    return false;
   } else {
-    //TODO this does utf8. should we flip it to 1047 on zos?
-    logFile.puts(message+'\n');
-    return true;
+      xplatform.appendFileUTF8(filename, xplatform.AUTO_DETECT, message);
+      return true;
   }
+  return logExists;
 }
 
 
@@ -353,7 +346,7 @@ export function getZoweRuntimeManifest(): any|undefined {
   if (!runtimeManifest) {
     const manifestFileName = `${std.getenv('ZWE_zowe_runtimeDirectory')}/manifest.json`;
     const result = xplatform.loadFileUTF8(manifestFileName,xplatform.AUTO_DETECT);
-    if (result){
+    if (!result) {
       printError('Could not read runtime manifest in '+manifestFileName);
     } else {
       runtimeManifest=JSON.parse(result);
@@ -382,6 +375,6 @@ std.setenv('ZWE_PRIVATE_DEFAULT_ZIS_USER', 'ZWESIUSR');
 std.setenv('ZWE_PRIVATE_DEFAULT_ZOWE_STC', 'ZWESLSTC');
 std.setenv('ZWE_PRIVATE_DEFAULT_ZIS_STC', 'ZWESISTC');
 std.setenv('ZWE_PRIVATE_DEFAULT_AUX_STC', 'ZWESASTC');
-std.setenv('ZWE_PRIVATE_CORE_COMPONENTS_REQUIRE_JAVA', 'gateway,cloud-gateway,discovery,api-catalog,caching-service,metrics-service,files-api,jobs-api');
+std.setenv('ZWE_PRIVATE_CORE_COMPONENTS_REQUIRE_JAVA', 'gateway,zaas,discovery,api-catalog,caching-service');
 
 std.setenv('ZWE_PRIVATE_CLI_LIBRARY_LOADED', 'true');

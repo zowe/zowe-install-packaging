@@ -22,7 +22,7 @@ import * as config from '../../../libs/config';
 import * as zoslib from '../../../libs/zos';
 import * as zosJes from '../../../libs/zos-jes';
 import * as zosdataset from '../../../libs/zos-dataset';
-
+import * as initGenerate from '../generate/index';
 
 export function execute(allowOverwrite: boolean = false) {
 
@@ -47,6 +47,13 @@ export function execute(allowOverwrite: boolean = false) {
   if (!proclib) {
     common.printErrorAndExit(`Error ZWEL0157E: PROCLIB (zowe.setup.dataset.proclib) is not defined in Zowe YAML configuration file.`, undefined, 157);
   }
+
+  // check if user passed --generate
+  const forceGen = !!std.getenv('ZWE_CLI_PARAMETER_GENERATE') 
+  if (forceGen) {
+    initGenerate.execute();
+  }
+
   // read JCL library and validate
   const jcllib = zoslib.verifyGeneratedJcl(ZOWE_CONFIG);
   if (!jcllib) {

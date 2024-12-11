@@ -153,6 +153,22 @@ site requirements.
 8. Contact documentation team to update the Program Directory
 9. Notify an IBM-employed build engineer to update the IBM processes
 
+Adding or removing Zowe components
+---------------------------
+When modifying Zowe components included in the PAX via manifest.json.template, 
+changes may be required to the SMPMCS.txt and smpe-split.sh scripts. The smpe-split.sh 
+script chunks the Zowe install into multiple PAX files, which are included in the SMPMCS.txt
+file as HFS definitions. For example:
+++HFS(ZWEPAX02)      SYSLIB(SZWEZFS ) DISTLIB(AZWEZFS ) RELFILE(4)
+
+In general, adding new components will continue to work with the SMP/e build,
+while removing components, either by renaming directories or deleting them outright, 
+will result in errors.
+
+See the smpe-split.sh script for additional inline documentation, and consult with an IBM SMP/e 
+engineer before finalizing any changes to the smpe-split.sh or SMPMCS.txt file.
+
+
 Add product member to build
 ---------------------------
 1. Add member to files/..., e.g. files/jcl/ZWENOSEC.jcl

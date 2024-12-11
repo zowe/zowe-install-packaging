@@ -63,7 +63,10 @@ print_message "- Calculate hashes of Zowe files"
 cust_hashes=$(create_tmp_file "${tmp_file_prefix}")
 result=$(java -cp "${ZWE_zowe_runtimeDirectory}/bin/utils/" HashFiles "${all_files}" | sort > "${cust_hashes}")
 code=$?
-if [ ${code} -eq 1 -o ! -f "${cust_hashes}" ]; then
+if [ -f "${cust_hashes}" ]; then
+  file_size_check=$(wc -l "${cust_hashes}" | awk '{print $1}')
+fi
+if [ "${code}" -eq 1 -o ! -f "${cust_hashes}" -o "${file_size_check}" -eq 0 ]; then
   print_error "  * Error ZWEL0151E: Failed to create temporary file ${cust_hashes}. Please check permission or volume free space."
   print_error "  * Exit code: ${code}"
   print_error "  * Output:"

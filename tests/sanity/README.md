@@ -50,7 +50,7 @@ The existing test cases are tested on Firefox v61.0.2 which is pre-installed in 
 Example command:
 
 ```
-ZOWE_ROOT_DIR=/path/to/zowe \
+  ZOWE_ROOT_DIR=/path/to/zowe \
   ZOWE_WORKSPACE_DIR=/path/to/zowe/workspaceDir \
   ZOWE_EXTERNAL_HOST=test-server \
   SSH_HOST=test-server \

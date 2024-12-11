@@ -19,6 +19,7 @@ import * as fs     from '../../../libs/fs';
 import * as shell  from '../../../libs/shell';
 import * as stringlib from '../../../libs/string';
 import * as xplatform from 'xplatform';
+import * as initGenerate from '../generate/index';
 
 export function execute() {
 
@@ -32,6 +33,12 @@ export function execute() {
   const prefix=ZOWE_CONFIG.zowe?.setup?.dataset?.prefix;
   if (!prefix) {
     common.printErrorAndExit(`Error ZWEL0157E: Zowe dataset prefix (zowe.setup.dataset.prefix) is not defined in Zowe YAML configuration file.`, undefined, 157);
+  }
+
+  // check if user passed --generate
+  const forceGen = !!std.getenv('ZWE_CLI_PARAMETER_GENERATE') 
+  if (forceGen) {
+    initGenerate.execute();
   }
 
   // read JCL library and validate

@@ -70,15 +70,15 @@ zowe:
 
       # Distinguished name for Zowe generated certificates.
       dname: 
-        caCommonName: "${{ (zowe.setup.certificate.pkcs12?.name || zowe.setup.certificate.keyring?.label) ? 'Zowe Development Instances CA' : null }}"
-        commonName: "${{ (zowe.setup.certificate.pkcs12?.name || zowe.setup.certificate.keyring?.label) ? 'Zowe Development Instances Certificate' : null }}"
-        orgUnit: "${{ (zowe.setup.certificate.pkcs12?.name || zowe.setup.certificate.keyring?.label) ? 'API Mediation Layer' : null }}"
-        org: "${{ (zowe.setup.certificate.pkcs12?.name || zowe.setup.certificate.keyring?.label) ? 'Zowe Sample' : null }}"
-        locality: "${{ (zowe.setup.certificate.pkcs12?.name || zowe.setup.certificate.keyring?.label) ? 'Prague' : null }}"
-        state: "${{ (zowe.setup.certificate.pkcs12?.name || zowe.setup.certificate.keyring?.label) ? 'Prague' : null }}"
-        country: "${{ (zowe.setup.certificate.pkcs12?.name || zowe.setup.certificate.keyring?.label) ? 'CZ' : null }}"
+        caCommonName: "${{ (zowe.setup.certificate.pkcs12?.name || zowe.setup.certificate.keyring?.name) ? 'Zowe Development Instances CA' : null }}"
+        commonName: "${{ (zowe.setup.certificate.pkcs12?.name || zowe.setup.certificate.keyring?.name) ? 'Zowe Development Instances Certificate' : null }}"
+        orgUnit: "${{ (zowe.setup.certificate.pkcs12?.name || zowe.setup.certificate.keyring?.name) ? 'API Mediation Layer' : null }}"
+        org: "${{ (zowe.setup.certificate.pkcs12?.name || zowe.setup.certificate.keyring?.name) ? 'Zowe Sample' : null }}"
+        locality: "${{ (zowe.setup.certificate.pkcs12?.name || zowe.setup.certificate.keyring?.name) ? 'Prague' : null }}"
+        state: "${{ (zowe.setup.certificate.pkcs12?.name || zowe.setup.certificate.keyring?.name) ? 'Prague' : null }}"
+        country: "${{ (zowe.setup.certificate.pkcs12?.name || zowe.setup.certificate.keyring?.name) ? 'CZ' : null }}"
       # Validity days for Zowe generated certificates
-      validity: "${{ (zowe.setup.certificate.pkcs12?.import || zowe.setup.certificate.keyring?.label) ? null : 3650 }}"
+      validity: "${{ (zowe.setup.certificate.pkcs12?.import || zowe.setup.certificate.keyring?.name) ? null : 3650 }}"
 
     vsam:
       # Default to caching service entry as it predates this one
@@ -88,7 +88,7 @@ zowe:
   configmgr:
     # STRICT=quit on any error, including missing schema
     # COMPONENT-COMPAT=if component missing schema, skip it with warning instead of quit
-    validation: "COMPONENT-COMPAT"
+    validation: "STRICT"
 
   # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   # runtime z/OS job name
@@ -152,32 +152,19 @@ components:
         auth:
           provider: zosmf
           zosmf:
-            jwtAutoconfiguration: auto
-            serviceId: zosmf
+            jwtAutoconfiguration: jwt
+            serviceId: ibmzosmf
         authorization:
           endpoint:
             enabled: false
-          provider: ""
+          provider: "native"
         x509:
           enabled: false
-    server:
-      internal:
-      # gateway supports internal connector
-        enabled: false
-        port: 7550
-        ssl:
-          enabled: false
 
   # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-  metrics-service:
-    enabled: false
-    port: 7551
-    debug: false
-
-  # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-  cloud-gateway:
-    enabled: false
-    port: 7563
+  zaas:
+    enabled: true
+    port: 7558
     debug: false
 
   # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -201,16 +188,13 @@ components:
     storage:
       evictionStrategy: reject
       # can be inMemory, VSAM, redis or infinispan
-      mode: VSAM
-      size: 10000
-      vsam:
-        # your VSAM data set created by "zwe init vsam" command or ZWECSVSM JCL
-        # this is required if storage mode is VSAM
-        name: ""
+      mode: infinispan
       infinispan:
         # this is required if storage mode is infinispan
         jgroups:
           port: 7600
+          keyExchange:
+            port: 7601
 
   # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   app-server:

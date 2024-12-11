@@ -1,1 +1,2 @@
 security-dry-run,dry-run||boolean|||||Whether to dry run security related setup.
+generate||boolean|||||Whether to force rebuild of JCL prior to submission. Use this when you've changed zowe.yaml and are re-submitting this command.

@@ -1,4 +1,4 @@
-# zowe-install-packaging
+# zowe-install-packaging 
 
 This repository includes Zowe installation script and pipelines to build Zowe.
 
@@ -135,14 +135,10 @@ For each Zowe component, we have point of contact(s) in case if we want to confi
     - zlux-editor
 - Explorer APIs / UI Plugins: Jordan Cain
   * Binary Dependencies
-    - org.zowe.explorer.data.sets
-    - org.zowe.explorer.jobs
     - org.zowe.explorer-jes
     - org.zowe.explorer-mvs
     - org.zowe.explorer-uss
   * Source Dependencies
-    - data-sets
-    - jobs
     - explorer-api-common
     - explorer-jes
     - explorer-mvs
@@ -159,7 +155,6 @@ For each Zowe component, we have point of contact(s) in case if we want to confi
     - zowe-cli-mq-plugin
     - zowe-cli-scs-plugin
     - zowe-cli-ftp-plugin
-    - zowe-cli-ims-plugin
 - Explorer (Visual Studio Code Extension): Fernando Rijo Cedeno, Mark Ackert
   * Source Dependencies
     - zowe-explorer-vscode
@@ -194,3 +189,10 @@ Please check details in [playbooks folder](playbooks/README.md).
 ## Quick Sanity Check on Your Zowe Instance
 
 Please check details in [sanity test folder](tests/sanity/README.md).
+
+<p>Hosting infrastructure for this project is supported by:</p>
+<p>
+  <a href="https://www.digitalocean.com/?refcode=77a4454d32a1&utm_campaign=Referral_Invite&utm_medium=Referral_Program&utm_source=badge">
+    <img src="https://opensource.nyc3.cdn.digitaloceanspaces.com/attribution/assets/SVG/DO_Logo_horizontal_blue.svg" width="201px">
+  </a>
+</p>

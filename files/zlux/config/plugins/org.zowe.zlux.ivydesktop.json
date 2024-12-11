@@ -1,0 +1,5 @@
+{
+  "identifier": "org.zowe.zlux.ivydesktop",
+  "pluginLocation": "zlux-app-manager/virtual-desktop",
+  "relativeTo": "$ZLUX_ROOT_DIR"
+}

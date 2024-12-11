@@ -22,7 +22,7 @@ export NODE_STDIN_CCSID=1047
 # Workaround Fix for node 8.16.1 that requires compatibility mode for untagged files
 export __UNTAGGED_READ_MODE=V6
 
-NODE_MIN=16
+NODE_MIN=18
 
 ensure_node_is_on_path() {
   if [[ ":${PATH}:" != *":${NODE_HOME}/bin:"* ]]; then
@@ -94,7 +94,7 @@ require_node() {
   fi
 
   if [ -z "${NODE_HOME}" ]; then
-    print_error_and_exit "Error ZWEL0121E: Cannot find node. Set the node.path value in the Zowe YAML, or include node in the PATH environment variable of any accounts that start or manage Zowe" "" 121
+    print_error_and_exit "Error ZWEL0121E: Cannot find node. Set the node.home value in the Zowe YAML, or include node in the PATH environment variable of any accounts that start or manage Zowe" "" 121
   fi
 
   ensure_node_is_on_path
