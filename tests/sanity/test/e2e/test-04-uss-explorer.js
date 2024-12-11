@@ -127,6 +127,7 @@ describe(`test ${APP_TO_TEST}`, function() {
     // save screenshot
     await saveScreenshotWithIframeAppContext(this, driver, testName, 'file-list-loaded', APP_TO_TEST, MVD_IFRAME_APP_CONTEXT);
     treeContent = await waitUntilElement(driver, MVD_EXPLORER_TREE_SECTION);
+    await driver.sleep(3000); // buffer sleep time; tree content appeared but wasn't done populating
 
     // load children of DIR_TO_TEST
     const items = await getElements(treeContent, 'ul li');

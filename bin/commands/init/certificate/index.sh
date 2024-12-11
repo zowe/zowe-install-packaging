@@ -15,24 +15,22 @@ print_level1_message "Generate certificate"
 
 ###############################
 # validation
-require_zowe_yaml
+require_zowe_yaml "skipnode"
+
+# Keytool is needed
+require_java
+
 if [ -n "${ZWE_PRIVATE_CONFIG_ORIG}" ]; then
   CONFIG_TO_WRITE=${ZWE_PRIVATE_CONFIG_ORIG}
 else
   CONFIG_TO_WRITE=${ZWE_CLI_PARAMETER_CONFIG}
 fi
 
-# Keytool is needed
-require_java
-
-# Node is needed for read_yaml
-require_node
-
 export ZWE_PRIVATE_TMP_MERGED_YAML_DIR=$(create_tmp_file)
 mkdir -p ${ZWE_PRIVATE_TMP_MERGED_YAML_DIR}
 _CEE_RUNOPTS="XPLINK(ON),HEAPPOOLS(OFF),HEAPPOOLS64(OFF)" ${ZWE_zowe_runtimeDirectory}/bin/utils/configmgr -script "${ZWE_zowe_runtimeDirectory}/bin/commands/internal/config/output/cli.js"
 if [ $? -eq 0 -a -f "${ZWE_PRIVATE_TMP_MERGED_YAML_DIR}/.zowe-merged.yaml" ]; then
-# use the yaml configmgr returns because it will contain defaults for the version we are using.
+  # use the yaml configmgr returns because it will contain defaults for the version we are using.
   ZWE_CLI_PARAMETER_CONFIG=${ZWE_PRIVATE_TMP_MERGED_YAML_DIR}/.zowe-merged.yaml
 else
   print_error_and_exit "Error ZWEL0201E: File '${ZWE_PRIVATE_TMP_MERGED_YAML_DIR}/.zowe-merged.yaml' does not exist." "" 201
@@ -40,18 +38,20 @@ fi
 
 ###############################
 # read prefix and validate
-prefix=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.dataset.prefix")
+prefix=$(read_yaml_configmgr "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.dataset.prefix")
 if [ -z "${prefix}" ]; then
   print_error_and_exit "Error ZWEL0157E: Zowe dataset prefix (zowe.setup.dataset.prefix) is not defined in Zowe YAML configuration file." "" 157
 fi
-
+# read JCL library and validate
 jcllib=$(verify_generated_jcl)
 if [ "$?" -eq 1 ]; then
   print_error_and_exit "Error ZWEL0319E: zowe.setup.dataset.jcllib does not exist, cannot run. Run 'zwe init', 'zwe init generate', or submit JCL ${prefix}.SZWESAMP(ZWEGENER) before running this command." "" 319
 fi
-
+security_product=$(read_yaml_configmgr "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.security.product")
+security_users_zowe=$(read_yaml_configmgr "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.security.users.zowe")
+security_groups_admin=$(read_yaml_configmgr "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.security.groups.admin")
 # read cert type and validate
-cert_type=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.certificate.type")
+cert_type=$(read_yaml_configmgr "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.certificate.type")
 if [ -z "${cert_type}" ]; then
   print_error_and_exit "Error ZWEL0157E: Certificate type (zowe.setup.certificate.type) is not defined in Zowe YAML configuration file." "" 157
 fi
@@ -60,12 +60,19 @@ fi
 if [ $? -ne 0 ]; then
   print_error_and_exit "Error ZWEL0164E: Value of certificate type (zowe.setup.certificate.type) defined in Zowe YAML configuration file is invalid. Valid values are PKCS12, JCEKS, JCECCAKS, JCERACFKS, JCECCARACFKS, or JCEHYBRIDRACFKS." "" 164
 fi
-
+# read cert dname
+for item in caCommonName commonName orgUnit org locality state country; do
+  var_name="dname_${item}"
+  var_val=$(read_yaml_configmgr "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.certificate.dname.${item}")
+  eval "${var_name}=\"${var_val}\""
+done
+# read cert validity
+cert_validity=$(read_yaml_configmgr "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.certificate.validity")
 if [ "${cert_type}" = "PKCS12" ]; then
   # read keystore info
   for item in directory lock name password; do
     var_name="pkcs12_${item}"
-    var_val=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.certificate.pkcs12.${item}")
+    var_val=$(read_yaml_configmgr "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.certificate.pkcs12.${item}")
     eval "${var_name}=\"${var_val}\""
   done
   if [ -z "${pkcs12_directory}" ]; then
@@ -76,13 +83,12 @@ if [ "${cert_type}" = "PKCS12" ]; then
 
 else # JCE* content
   security_product=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.security.product")
-
   keyring_option=1
   # read keyring info
   # TODO removed "owner" here because it wasnt being read in the JCL.
   for item in name label caLabel; do
     var_name="keyring_${item}"
-    var_val=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.certificate.keyring.${item}")
+    var_val=$(read_yaml_configmgr "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.certificate.keyring.${item}")
     eval "${var_name}=\"${var_val}\""
   done
   # FIXME: currently ZWEKRING jcl will import the cert and chain, CA will also be added to CERTAUTH, but the CA will not be connected to keyring.
@@ -91,8 +97,8 @@ else # JCE* content
   if [ -z "${keyring_name}" ]; then
     print_error_and_exit "Error ZWEL0157E: Zowe keyring name (zowe.setup.certificate.keyring.name) is not defined in Zowe YAML configuration file." "" 157
   fi
-
-  keyring_import_dsName=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.certificate.keyring.import.dsName")
+  keyring_import_dsName=$(read_yaml_configmgr "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.certificate.keyring.import.dsName")
+  keyring_import_password=$(read_yaml_configmgr "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.certificate.keyring.import.password")
   if [ -n "${keyring_import_dsName}" ]; then
     keyring_option=3
     keyring_import_password=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.certificate.keyring.import.password")
@@ -110,7 +116,6 @@ else # JCE* content
       yaml_keyring_label="${keyring_connect_label}"
     fi
   fi
-
   if [ "${keyring_option}" -eq 1 ]; then
     # validate parameters only needed for creation of certificate
     for item in caCommonName commonName orgUnit org locality state country; do
@@ -124,6 +129,7 @@ else # JCE* content
     if [ -z "${cert_validity}" ]; then
       print_error_and_exit "Error ZWEL0157E: Certificate creation parameter (zowe.setup.certificate.validity) is not defined in Zowe YAML configuration file." "" 157
     fi
+
   fi
 
   # read keyring-specific z/OSMF info
@@ -133,22 +139,25 @@ else # JCE* content
     eval "${var_name}=\"${var_val}\""
   done
 fi
-
+# Trace or debug information will be part of the output, let's turn it off for the inline zwe commands
+save_trace=$ZWE_PRIVATE_LOG_LEVEL_ZWELS
+ZWE_PRIVATE_LOG_LEVEL_ZWELS=
 # read keystore domains
-cert_import_CAs=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.certificate.importCertificateAuthorities" | tr '\n' ',')
+cert_import_CAs=$(zwecli_inline_execute_command internal config get --config "${ZWE_CLI_PARAMETER_CONFIG}" --path ".zowe.setup.certificate.importCertificateAuthorities" | tr '\n' ',' | awk '{ print substr( $0, 1, length($0)-1 ) }')
 # read keystore domains
-cert_domains=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.certificate.san" | tr '\n' ',')
+cert_domains=$(zwecli_inline_execute_command internal config get --config "${ZWE_CLI_PARAMETER_CONFIG}" --path ".zowe.setup.certificate.san" | tr '\n' ',' | awk '{ print substr( $0, 1, length($0)-1 ) }')
 if [ -z "${cert_domains}" ]; then
-  cert_domains=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.externalDomains" | tr '\n' ',')
+  cert_domains=$(zwecli_inline_execute_command internal config get --config "${ZWE_CLI_PARAMETER_CONFIG}" --path ".zowe.externalDomains" | tr '\n' ',' | awk '{ print substr( $0, 1, length($0)-1 ) }')
 fi
+ZWE_PRIVATE_LOG_LEVEL_ZWELS=$save_trace
 
 for item in host port; do
   var_name="zosmf_${item}"
-  var_val=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zOSMF.${item}")
+  var_val=$(read_yaml_configmgr "${ZWE_CLI_PARAMETER_CONFIG}" ".zOSMF.${item}")
   eval "${var_name}=\"${var_val}\""
 done
 keyring_trust_zosmf=0
-verify_certificates=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.verifyCertificates" | upper_case)
+verify_certificates=$(read_yaml_configmgr "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.verifyCertificates" | upper_case)
 if [ "${verify_certificates}" = "STRICT" -o "${verify_certificates}" = "NONSTRICT" ]; then
   keyring_trust_zosmf=1
 else
@@ -156,7 +165,6 @@ else
   zosmf_host=
   zosmf_port=
 fi
-
 
 ###############################
 # set default values or quit on missing ones
@@ -169,7 +177,6 @@ if [ "${cert_type}" = "PKCS12" ]; then
     print_error_and_exit "Error ZWEL0157E: (zowe.setup.certificate.pkcs12.password) is not defined in Zowe YAML configuration file." "" 157
   fi
 
- 
   if [ "$(lower_case "${pkcs12_lock}")" = "true" ]; then
     security_users_zowe=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.security.users.zowe")
     security_groups_admin=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.security.groups.admin")
@@ -208,7 +215,7 @@ else # JCE* content
     if [ -z "${security_groups_stc}" ]; then
       print_error_and_exit "Error ZWEL0157E: (zowe.setup.security.groups.stc) is not defined in Zowe YAML configuration file." "" 157
     fi
-  fi    
+  fi
 
   if [ "${security_product}" = "RACF" -o "${security_product}" = "TSS" ]; then
     if [ -z "${zosmf_ca}" -a -n "${zosmf_host}" ]; then
@@ -231,7 +238,7 @@ if [ "${cert_type}" = "PKCS12" ]; then
     if [ -z "${pkcs12_import_alias}" ]; then
       print_error_and_exit "Error ZWEL0157E: Certificate alias of import keystore (zowe.setup.certificate.pkcs12.import.alias) is not defined in Zowe YAML configuration file." "" 157
     fi
-        
+
     # import from another keystore
     zwecli_inline_execute_command \
       certificate pkcs12 import \
@@ -272,8 +279,8 @@ if [ "${cert_type}" = "PKCS12" ]; then
     # export CA cert in PEM format
     zwecli_inline_execute_command \
       certificate pkcs12 export \
-        --keystore "${pkcs12_directory}/${pkcs12_caAlias}/${pkcs12_caAlias}.keystore.p12" \
-        --password "${pkcs12_caPassword}"
+      --keystore "${pkcs12_directory}/${pkcs12_caAlias}/${pkcs12_caAlias}.keystore.p12" \
+      --password "${pkcs12_caPassword}"
 
     yaml_pem_cas="${pkcs12_directory}/${pkcs12_caAlias}/${pkcs12_caAlias_lc}.cer"
 
@@ -336,14 +343,14 @@ if [ "${cert_type}" = "PKCS12" ]; then
   # export all certs in PEM format
   zwecli_inline_execute_command \
     certificate pkcs12 export \
-      --keystore "${pkcs12_directory}/${pkcs12_name}/${pkcs12_name}.keystore.p12" \
-      --password "${pkcs12_password}" \
-      --private-keys "${pkcs12_name}"
+    --keystore "${pkcs12_directory}/${pkcs12_name}/${pkcs12_name}.keystore.p12" \
+    --password "${pkcs12_password}" \
+    --private-keys "${pkcs12_name}"
   zwecli_inline_execute_command \
     certificate pkcs12 export \
-      --keystore "${pkcs12_directory}/${pkcs12_name}/${pkcs12_name}.truststore.p12" \
-      --password "${pkcs12_password}" \
-      --private-keys ""
+    --keystore "${pkcs12_directory}/${pkcs12_name}/${pkcs12_name}.truststore.p12" \
+    --password "${pkcs12_password}" \
+    --private-keys ""
 
   # after we export truststore, the imported CAs will be exported as extca*.cer
   if [ -n "${cert_import_CAs}" ]; then
@@ -361,10 +368,10 @@ if [ "${cert_type}" = "PKCS12" ]; then
   if [ "$(lower_case "${pkcs12_lock}")" = "true" ]; then
     zwecli_inline_execute_command \
       certificate pkcs12 lock \
-        --keystore-dir "${pkcs12_directory}" \
-        --user "${security_users_zowe}" \
-        --group "${security_groups_admin}" \
-        --group-permission none
+      --keystore-dir "${pkcs12_directory}" \
+      --user "${security_users_zowe}" \
+      --group "${security_groups_admin}" \
+      --group-permission none
   fi
 
   pkcs12_name_lc=$(echo "${pkcs12_name}" | lower_case)
@@ -412,7 +419,7 @@ else # JCE* content
   # should we clean up before creating new
   if [ "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITE}" = "true" ]; then
     # warning
-    print_message "Warning ZWEL0300W: Keyring \"safkeyring:////${keyring_owner}/${keyring_name}\" will be overwritten during configuration."
+    print_message "Warning ZWEL0300W: Keyring \"safkeyring://${keyring_owner}/${keyring_name}\" will be overwritten during configuration."
 
     keyring_run_zwenokyr_jcl "${prefix}" "${jcllib}" "${security_product}"
   else
@@ -421,15 +428,15 @@ else # JCE* content
   fi
 
   keyring_run_zwekring_jcl "${prefix}" \
-                           "${jcllib}" \
-                           "${keyring_option}" \
-                           "${cert_domains}" \
-                           "${cert_import_CAs}" \
-                           "${keyring_trust_zosmf}" \
-                           "${zosmf_ca}" \
-                           "${cert_validity}" \
-                           "${security_product}"
-  
+    "${jcllib}" \
+    "${keyring_option}" \
+    "${cert_domains}" \
+    "${cert_import_CAs}" \
+    "${keyring_trust_zosmf}" \
+    "${zosmf_ca}" \
+    "${cert_validity}" \
+    "${security_product}"
+
   if [ $? -ne 0 ]; then
     job_has_failures=true
     if [ "${ZWE_CLI_PARAMETER_IGNORE_SECURITY_FAILURES}" = "true" ]; then
@@ -450,12 +457,12 @@ else # JCE* content
   if [ "${ZWE_CLI_PARAMETER_UPDATE_CONFIG}" = "true" ]; then
     print_level1_message "Update certificate configuration to ${ZWE_CLI_PARAMETER_CONFIG}"
     update_zowe_yaml "${ZWE_CLI_PARAMETER_CONFIG}" "zowe.certificate.keystore.type" "${cert_type}"
-    update_zowe_yaml "${ZWE_CLI_PARAMETER_CONFIG}" "zowe.certificate.keystore.file" "safkeyring:////${keyring_owner}/${keyring_name}"
+    update_zowe_yaml "${ZWE_CLI_PARAMETER_CONFIG}" "zowe.certificate.keystore.file" "safkeyring://${keyring_owner}/${keyring_name}"
     # we must set a dummy value here, other JDK will complain wrong parameter
     update_zowe_yaml "${ZWE_CLI_PARAMETER_CONFIG}" "zowe.certificate.keystore.password" "password"
     update_zowe_yaml "${ZWE_CLI_PARAMETER_CONFIG}" "zowe.certificate.keystore.alias" "${yaml_keyring_label}"
     update_zowe_yaml "${ZWE_CLI_PARAMETER_CONFIG}" "zowe.certificate.truststore.type" "${cert_type}"
-    update_zowe_yaml "${ZWE_CLI_PARAMETER_CONFIG}" "zowe.certificate.truststore.file" "safkeyring:////${keyring_owner}/${keyring_name}"
+    update_zowe_yaml "${ZWE_CLI_PARAMETER_CONFIG}" "zowe.certificate.truststore.file" "safkeyring://${keyring_owner}/${keyring_name}"
     # we must set a dummy value here, other JDK will complain wrong parameter
     update_zowe_yaml "${ZWE_CLI_PARAMETER_CONFIG}" "zowe.certificate.truststore.password" "password"
     print_level2_message "Zowe configuration is updated successfully."
@@ -467,12 +474,12 @@ else # JCE* content
     print_message "  certificate:"
     print_message "    keystore:"
     print_message "      type: ${cert_type}"
-    print_message "      file: \"safkeyring:////${keyring_owner}/${keyring_name}\""
+    print_message "      file: \"safkeyring://${keyring_owner}/${keyring_name}\""
     print_message "      password: \"password\""
     print_message "      alias: \"${yaml_keyring_label}\""
     print_message "    truststore:"
     print_message "      type: ${cert_type}"
-    print_message "      file: \"safkeyring:////${keyring_owner}/${keyring_name}\""
+    print_message "      file: \"safkeyring://${keyring_owner}/${keyring_name}\""
     print_message "      password: \"password\""
     print_level2_message "Zowe configuration requires manual updates."
   fi

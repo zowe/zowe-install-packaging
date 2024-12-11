@@ -30,6 +30,7 @@ describe(testSuiteName, () => {
       testSuiteName,
       process.env.TEST_SERVER,
       {
+        'zos_java_home': '/ZOWE/node/J17.0_64',
         'zowe_build_local': process.env['ZOWE_BUILD_LOCAL'],
         'zowe_custom_for_test': 'true',
         'zowe_lock_keystore': 'false',

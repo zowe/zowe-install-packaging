@@ -16,7 +16,7 @@ import * as common from './common';
 import * as shell from './shell';
 import * as config from './config';
 
-const JAVA_MIN_VERSION=8;
+const JAVA_MIN_VERSION=17;
 
 export function ensureJavaIsOnPath(): void {
   let path=std.getenv('PATH') || '/bin:.:/usr/bin';
@@ -48,8 +48,8 @@ export function detectJavaHome(): string|undefined {
     }
   }
 
-  if (!javaBinHome && fs.fileExists('/usr/lpp/java/J8.0_64/bin/java')) {
-    return '/usr/lpp/java/J8.0_64';
+  if (!javaBinHome && fs.fileExists('/usr/lpp/java/J17.0_64/bin/java')) {
+    return '/usr/lpp/java/J17.0_64';
   }
   return undefined;
 }

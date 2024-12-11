@@ -190,9 +190,10 @@ BASE_DIR=$(
   pwd
 ) # <something>/.pax
 
-# use node v16 to build
-export NODE_HOME=/ZOWE/node/node-v16.20.1-os390-s390x
-
+# use node v18 to build
+export NODE_HOME=/ZOWE/node/node-v18.16.0
+export JAVA_HOME=/ZOWE/node/J17.0_64
+export PATH=$JAVA_HOME/bin:$PATH
 ZOWE_ROOT_DIR="${BASE_DIR}/content"
 
 cd "${BASE_DIR}"
@@ -256,7 +257,7 @@ pax -ppx -rf "${getesm}"
 rm "${getesm}"
 cd "${BASE_DIR}"
 
-configmgr=$(find "${ZOWE_ROOT_DIR}/files" -type f \( -name "configmgr-2*.pax" \) | head -n 1)
+configmgr=$(find "${ZOWE_ROOT_DIR}/files" -type f \( -name "configmgr-3*.pax" \) | head -n 1)
 echo "[$SCRIPT_NAME] extract configmgr $configmgr"
 cd "${ZOWE_ROOT_DIR}/bin/utils"
 pax -ppx -rf "${configmgr}"
@@ -281,7 +282,7 @@ EOT
 echo "[$SCRIPT_NAME] extract components"
 mkdir -p "${BASE_DIR}/logs"
 mkdir -p "${ZOWE_ROOT_DIR}/components"
-for component in launcher zlux-core zss apiml-common-lib common-java-lib apiml-sample-extension gateway cloud-gateway caching-service metrics-service discovery api-catalog jobs-api files-api explorer-jes explorer-mvs explorer-uss; do
+for component in launcher zlux-core zss apiml-common-lib common-java-lib apiml-sample-extension zaas gateway caching-service discovery api-catalog explorer-jes explorer-mvs explorer-uss; do
   echo "[$SCRIPT_NAME] - ${component}"
   component_file=$(find "${ZOWE_ROOT_DIR}/files" -type f \( -name "${component}*.pax" -o -name "${component}*.zip" \) | head -n 1)
   "${ZOWE_ROOT_DIR}/bin/zwe" \

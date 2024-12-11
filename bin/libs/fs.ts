@@ -66,15 +66,17 @@ export function resolvePath(...parts:string[]): string {
 }
 
 export function mkdirp(path:string, mode?: number): number {
+  if (!path) {
+    return 1;
+  }
   let paths: string[] = [];
   let parts = path.split('/');
   let currentPath = '';
   parts.forEach((part:string)=> {
-    currentPath+='/'+part;
-    if (currentPath.startsWith('//')) {
-      currentPath = currentPath.substring(1);
+    if (part) {
+      currentPath += '/' + part;
+      paths.push(currentPath);
     }
-    paths.push(currentPath);
   });
 
   let firstMissingDir: number;
@@ -85,9 +87,9 @@ export function mkdirp(path:string, mode?: number): number {
     }
   }
 
-  common.printDebug('paths='+JSON.stringify(paths));
+  common.printDebug('fs.mkdir paths='+JSON.stringify(paths));
   if (firstMissingDir >= paths.length) { return 0; }
-  common.printDebug('firstMissingDir='+paths[firstMissingDir]);
+  common.printDebug('fs.mkdir firstMissingDir='+paths[firstMissingDir]);
 
   for (let i = firstMissingDir; i < paths.length; i++) {
     let rc = os.mkdir(paths[i], mode ? mode : 0o777);
