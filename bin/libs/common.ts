@@ -129,7 +129,7 @@ export function date(...args: string[]): string|undefined {
 
 
 let logExists = false;
-
+let logFile:std.File|null = null;
 export function finishLogFile() {
   if (logFile) {
     logFile.close();
@@ -146,6 +146,14 @@ function writeLog(message: string): boolean {
   if (!logExists) {
       fs.createFile(filename, 0o640, message);
       logExists = fs.fileExists(filename);
+      let errObj = {errno:undefined};
+      logFile = std.open(filename, 'w', errObj);
+      if (errObj.errno) {
+        printError(`Error opening file ${filename}, errno=${errObj.errno}`);
+        logFile=null;
+        logExists=false;
+        return false;
+      }
   } else {
       xplatform.appendFileUTF8(filename, xplatform.AUTO_DETECT, message);
       return true;
