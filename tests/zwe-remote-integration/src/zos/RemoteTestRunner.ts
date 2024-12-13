@@ -235,16 +235,15 @@ export class RemoteTestRunner {
     // built-in
     return cleanedOutput
       .replace(/(JOB[0-9]{5})/gim, 'JOB00000')
+      .replaceAll(REMOTE_SYSTEM_INFO.zosJavaHome, '/test/java/home')
+      .replaceAll(REMOTE_SYSTEM_INFO.zosNodeHome, '/test/node/home')
+      .replaceAll(REMOTE_SYSTEM_INFO.ussTestDir, '/test/dir')
       .replaceAll(`${REMOTE_SYSTEM_INFO.prefix}`, 'TEST.DATASET.PFX')
       .replaceAll(`${this.session.ISession.user}`, 'TESTUSR0')
       .replace(/\/tmp\/\.zweenv-[0-9]{3,5}/g, '/tmp/.zweenv-0000')
       .replaceAll(REMOTE_SYSTEM_INFO.volume, 'TSTVOL')
-      .replaceAll(REMOTE_SYSTEM_INFO.zosJavaHome, '/test/java/home')
-      .replaceAll(REMOTE_SYSTEM_INFO.zosNodeHome, '/test/node/home')
       .replaceAll(REMOTE_SYSTEM_INFO.hostname, 'some.test.hostname')
-      .replaceAll(REMOTE_SYSTEM_INFO.zosmfPort, '12321')
-      .replaceAll(REMOTE_SYSTEM_INFO.ussTestDir, '/test/dir')
-      .replaceAll(REMOTE_SYSTEM_INFO.hostname, 'some.testhost.com');
+      .replaceAll(REMOTE_SYSTEM_INFO.zosmfPort, '12321');
   }
 
   public async runZweTestWithDefaults(
