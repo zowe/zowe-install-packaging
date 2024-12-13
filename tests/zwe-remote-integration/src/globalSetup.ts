@@ -37,6 +37,7 @@ import { JfrogClient } from 'jfrog-client-js';
 import { processManifestVersion } from './utils';
 import { execSync } from 'child_process';
 import { createPds } from './zos/Files';
+import * as yauzl from 'yauzl';
 
 const zosmfSession = getSession();
 
@@ -169,6 +170,31 @@ module.exports = async () => {
       throw new Error('Could not locate zowe-utility-tools zip in the .build directory');
     }
 
+    // zowe-install-packaging-tools
+    const utilsDir = path.resolve(THIS_TEST_ROOT_DIR, '.build', 'utility-tools');
+    fs.mkdirpSync(`${utilsDir}`);
+
+    console.log(`Unzipping zowe-tools.zip on local machine`);
+    await yauzl.open(`${THIS_TEST_ROOT_DIR}/.build/${zoweToolsZip}`, { autoClose: true, lazyEntries: false }, (err, zipContents) => {
+      if (err) throw err;
+      zipContents.on('entry', async (entry) => {
+        // not a directory
+        if (!/\/$/.test(entry.fileName)) {
+          zipContents.openReadStream(entry, async (errZip, stream) => {
+            if (errZip) throw errZip;
+            console.log(`Unzipping ${entry.fileName}`);
+            const zipFilePath = `${utilsDir}/${entry.fileName}`;
+            if (fs.existsSync(zipFilePath)) {
+              fs.unlinkSync(zipFilePath);
+            }
+            fs.createFileSync(zipFilePath);
+            const zipFile = fs.createWriteStream(zipFilePath, { flags: 'as' });
+            stream.pipe(zipFile);
+          });
+        }
+      });
+    });
+
     console.log(`Setting up remote server on ${REMOTE_SYSTEM_INFO.hostname}...`);
     await uss.runCommand(`mkdir -p ${REMOTE_SYSTEM_INFO.ussTestDir}`);
 
@@ -231,10 +257,6 @@ module.exports = async () => {
     );
     await uss.runCommand(`tar -xfo zwe.tar`, REMOTE_SYSTEM_INFO.ussTestDir);
 
-    // zowe-install-packaging-tools
-    const utilsDir = path.resolve(THIS_TEST_ROOT_DIR, '.build', 'utility-tools');
-    fs.mkdirpSync(`${utilsDir}`);
-
     for (const file of fs.readdirSync(utilsDir)) {
       const match = file.match(/zowe-(.*)-[0-9]?.*tgz/im);
       if (match) {
@@ -244,7 +266,7 @@ module.exports = async () => {
         console.log(`Uploading ${pkgName} to ${REMOTE_SYSTEM_INFO.ussTestDir}/bin/utils...`);
         // re-archive without compression (issues on some backends)
         tar.x({ cwd: utilsDir, file: `${utilsDir}/${fileName}`, sync: true });
-        tar.c({ gzip: false, file: `${pkgName}.tar`, cwd: utilsDir }, ['package']);
+        tar.c({ gzip: false, file: `${utilsDir}/${pkgName}.tar`, cwd: utilsDir, sync: true }, ['package']);
         await files.Upload.fileToUssFile(
           zosmfSession,
           `${utilsDir}/${pkgName}.tar`,
@@ -259,20 +281,15 @@ module.exports = async () => {
     }
     let ncertPax = '';
     console.log(`Uploading ncert to ${REMOTE_SYSTEM_INFO.ussTestDir}/bin/utils...`);
-    fs.readdirSync(`${THIS_TEST_ROOT_DIR}/.build/utility-tools`).forEach((item) => {
+    fs.readdirSync(`${utilsDir}`).forEach((item) => {
       const match = item.match(/zowe-ncert-([0-9]?.*)\.pax/im);
       if (match && match[1]) {
         ncertPax = match[0];
       }
     });
-    await files.Upload.fileToUssFile(
-      zosmfSession,
-      `${THIS_TEST_ROOT_DIR}/.build/utility-tools/${ncertPax}`,
-      `${REMOTE_SYSTEM_INFO.ussTestDir}/ncert.pax`,
-      {
-        binary: true,
-      },
-    );
+    await files.Upload.fileToUssFile(zosmfSession, `${utilsDir}/${ncertPax}`, `${REMOTE_SYSTEM_INFO.ussTestDir}/ncert.pax`, {
+      binary: true,
+    });
 
     console.log(`Converting everything in ${REMOTE_SYSTEM_INFO.ussTestDir}/bin to EBCDIC...`);
     await uss.runCommand(`chmod +x convert_to_ebcdic.sh && ./convert_to_ebcdic.sh`, REMOTE_SYSTEM_INFO.ussTestDir);

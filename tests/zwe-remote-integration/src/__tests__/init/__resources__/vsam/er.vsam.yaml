@@ -1,0 +1,22 @@
+zowe:
+  setup:
+    dataset:
+      prefix: SOMEUSR.ZOWE.ZWEINIT
+      jcllib: ${{ zowe.setup.dataset.prefix }}.JCLLIB
+    vsam:
+      mode: NONRLS
+      volume: VOL001
+      storageClass: BADNA
+  useConfigmgr: true
+components:
+  caching-service:
+    storage:
+      # OK: checked in index.js
+      mode: VSAM
+      vsam:
+      # OK: no name is checked
+      #  name:
+        name:
+#        name: ${{ zowe.setup.dataset.prefix }}.CACHE.AAAAAAAAAAAAAAAAAAAAAAAAAAAA
+
+  

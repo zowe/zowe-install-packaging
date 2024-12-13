@@ -12,6 +12,7 @@ import * as yaml from 'yaml';
 import { THIS_TEST_BASE_DEFAULTS_YAML, THIS_TEST_BASE_ZOWE_YAML } from './TestConfig';
 import * as fs from 'fs-extra';
 import ZoweYamlType from './ZoweYamlType';
+import _ from 'lodash';
 
 export class ZoweConfig {
   /* public updateField(field: string, value: string) {
@@ -24,6 +25,7 @@ export class ZoweConfig {
    *
    * @returns ZoweYaml JSON Object
    */
+
   static getZoweYaml(): ZoweYamlType {
     const fileContents = fs.readFileSync(THIS_TEST_BASE_ZOWE_YAML, 'utf8');
     const zoweYaml = yaml.parse(fileContents);
@@ -34,5 +36,13 @@ export class ZoweConfig {
     const fileContents = fs.readFileSync(THIS_TEST_BASE_DEFAULTS_YAML, 'utf8');
     const defaultsYaml = yaml.parse(fileContents);
     return defaultsYaml as ZoweYamlType;
+  }
+
+  static overlayYaml(base: ZoweYamlType, overlay: unknown, moreOverlays?: unknown[]): ZoweYamlType {
+    let combined = _.merge(base, overlay);
+    if (moreOverlays && moreOverlays.length > 0) {
+      combined = _.merge(combined, ...moreOverlays);
+    }
+    return combined as ZoweYamlType;
   }
 }

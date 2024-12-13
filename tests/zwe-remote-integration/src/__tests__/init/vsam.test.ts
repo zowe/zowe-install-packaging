@@ -13,16 +13,39 @@ import ZoweYamlType from '../../config/ZoweYamlType';
 import { RemoteTestRunner } from '../../zos/RemoteTestRunner';
 import { ZoweConfig } from '../../config/ZoweConfig';
 import { FileType, TestFileActions, TestFile } from '../../zos/TestFileActions';
+import * as fs from 'fs-extra';
+import * as path from 'path';
+import * as yaml from 'yaml';
+import Mustache from 'mustache';
 
 const testSuiteName = 'init-vsam';
+
+function getResourceYaml(file: string, render: boolean = true): ZoweYamlType {
+  const resourceDir = path.resolve('src', '__tests__', 'init', '__resources__', 'vsam');
+  let yamlContent = fs.readFileSync(path.join(resourceDir, file), 'utf8');
+  if (render) {
+    yamlContent = Mustache.render(yamlContent, REMOTE_SYSTEM_INFO, {}, ['{@', '@}']);
+  }
+  return yaml.parse(yamlContent) as ZoweYamlType;
+}
+
 describe(`${testSuiteName}`, () => {
   let testRunner: RemoteTestRunner;
   let cfgYaml: ZoweYamlType;
   let cleanupDatasets: TestFile[] = []; // a list of datasets deleted after every test
 
+  function resetCfgYaml(): void {
+    cfgYaml = ZoweConfig.getZoweYaml();
+    // customizations for all vsam tests
+    // @ts-expect-error incomplete schema
+    cfgYaml.components['caching-service'].storage.mode = 'VSAM'; // in v3, default is infinispan
+    cfgYaml.zowe.setup.vsam.name = REMOTE_SYSTEM_INFO.prefix + '.VSAMTEST';
+    cfgYaml.zowe.setup.vsam.volume = REMOTE_SYSTEM_INFO.volume;
+  }
+
   beforeAll(async () => {
     testRunner = new RemoteTestRunner(testSuiteName);
-    cfgYaml = ZoweConfig.getZoweYaml();
+    resetCfgYaml();
     expect.getState().currentTestName = 'before-all-vsam';
     const result = await testRunner.runZweTest(cfgYaml, 'init generate --allow-overwrite');
     expect(result.stdout).not.toBeNull();
@@ -32,10 +55,7 @@ describe(`${testSuiteName}`, () => {
   });
 
   beforeEach(() => {
-    cfgYaml = ZoweConfig.getZoweYaml();
-    // customizations for all vsam tests
-    cfgYaml.zowe.setup.vsam.name = REMOTE_SYSTEM_INFO.prefix + '.VSAMTEST';
-    cfgYaml.zowe.setup.vsam.volume = REMOTE_SYSTEM_INFO.volume;
+    resetCfgYaml();
   });
 
   afterEach(async () => {
@@ -66,6 +86,14 @@ describe(`${testSuiteName}`, () => {
   });
 
   describe('(SHORT)', () => {
+    it('error yaml', async () => {
+      const testYml = ZoweConfig.overlayYaml(cfgYaml, getResourceYaml('ok.vsam.yaml'));
+      const result = await testRunner.runZweTest(testYml, 'init vsam --dry-run');
+      expect(result.stdout).not.toBeNull();
+      expect(result.cleanedStdout).toMatchSnapshot();
+      expect(result.rc).toBe(0);
+    });
+
     it('skip non-vsam caching service', async () => {
       // @ts-expect-error dynamic property access not in schema
       cfgYaml.components['caching-service'].storage.mode = 'INFINISPAN';
@@ -113,14 +141,13 @@ describe(`${testSuiteName}`, () => {
 
     it('invalid NONRLS configurations', async () => {
       cfgYaml.zowe.setup.vsam.mode = 'NONRLS';
-
       // null(empty) vol
       cfgYaml.zowe.setup.vsam.volume = null;
       cfgYaml.zowe.setup.vsam.name = 'SOME.VSAM.NAME';
       let result = await testRunner.runZweTest(cfgYaml, 'init vsam --dry-run');
       expect(result.stdout).not.toBeNull();
       expect(result.cleanedStdout).toMatchSnapshot();
-      expect(result.rc).toBe(1);
+      expect(result.rc).toBe(157);
 
       // empty(str) vol
       cfgYaml.zowe.setup.vsam.volume = '';
@@ -152,7 +179,7 @@ describe(`${testSuiteName}`, () => {
       result = await testRunner.runZweTest(cfgYaml, 'init vsam --dry-run');
       expect(result.stdout).not.toBeNull();
       expect(result.cleanedStdout).toMatchSnapshot();
-      expect(result.rc).toBe(1);
+      expect(result.rc).toBe(157);
 
       // empty(str) both
       cfgYaml.zowe.setup.vsam.volume = '';
@@ -191,7 +218,7 @@ describe(`${testSuiteName}`, () => {
       let result = await testRunner.runZweTest(cfgYaml, 'init vsam --dry-run');
       expect(result.stdout).not.toBeNull();
       expect(result.cleanedStdout).toMatchSnapshot();
-      expect(result.rc).toBe(1);
+      expect(result.rc).toBe(157);
 
       // empty(str) stgClass
       cfgYaml.zowe.setup.vsam.storageClass = '';
@@ -209,7 +236,7 @@ describe(`${testSuiteName}`, () => {
       result = await testRunner.runZweTest(cfgYaml, 'init vsam --dry-run');
       expect(result.stdout).not.toBeNull();
       expect(result.cleanedStdout).toMatchSnapshot();
-      expect(result.rc).toBe(1);
+      expect(result.rc).toBe(157);
 
       // empty(str) both
       cfgYaml.zowe.setup.vsam.storageClass = '';
