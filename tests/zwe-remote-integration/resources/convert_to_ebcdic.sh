@@ -13,6 +13,19 @@
 #
 # Used as part of globalSetup to ensure the `bin/` folder is in the right encoding
 
+# ------------------
+# $1: (input) file to check
+#
+# (output) the input file tag will be set to ebcdic if it is ISO8859-1.
+#          untagged files will remain untagged.
+function _correctEbcdicTags {
+  input=$1
+  TAG_VALUE=$(ls -T $input | awk '{ print $2 }')
+  if [[ "$TAG_VALUE" == "ISO8859-1" ]]; then
+    chtag -t -c IBM-1047 $input
+  fi
+} # _correctEbcdicTags
+
 # ---------------------------------------------------------------------
 # --- convert files to ascii
 # $1: (input) pattern to convert.
@@ -48,8 +61,10 @@ function _convertAsciiToEbcdic {
       dir_path=$(dirname $ascii_file)
       mkdir -p ${output_dir}/${dir_path}
       mv "${tmpfile}" "${output_dir}/${ascii_file}"
+      _correctEbcdicTags "${output_dir}/${ascii_file}"
     else
       mv "${tmpfile}" "${ascii_file}"
+      _correctEbcdicTags "${ascii_file}"
     fi
   done
 
