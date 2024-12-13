@@ -62,9 +62,8 @@
       "exclusions": ["*PR*.zip"]
     },
     "org.zowe.apiml.discovery-package": {
-      "version": "^3.0.3-SNAPSHOT",
-      "artifact": "discovery-*.zip",
-      "exclusions": ["*PR*.zip"]
+      "version": "3.0.49-PR-3930-SNAPSHOT",
+      "artifact": "discovery-*.zip"
     },
     "org.zowe.apiml.gateway-package": {
       "version": "^3.0.3-SNAPSHOT",
