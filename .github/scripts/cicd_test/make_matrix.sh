@@ -32,13 +32,12 @@ case $install_test_choice in
   test_file="$KEYRING_TESTFILE"
   ;;
 
-"z/OS node v18")
-  test_file="$ZOS_NODE_V18_TESTFILE"
-  test_force_system="zzow11"
-  ;;
-
 "z/OS node v20")
   test_file="$ZOS_NODE_V20_TESTFILE"
+  ;;
+
+"z/OS node v22")
+  test_file="$ZOS_NODE_V22_TESTFILE"
   ;;
 
 "Non-strict Verify External Certificate")
