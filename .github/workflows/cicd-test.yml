@@ -31,8 +31,8 @@ on:
           - SMPE PTF
           - Extensions
           - Keyring
-          - z/OS node v18
           - z/OS node v20
+          - z/OS node v22
           - z/OS java 11 Pax
           - z/OS java 11 Keyring
           - Non-strict Verify External Certificate
@@ -71,8 +71,8 @@ env:
   DEFAULT_ZOWE_EXT_ARTIFACTORY_PATTERN: libs-snapshot-local/org/zowe/{ext-name}/*/{ext-name}-*.pax
 
   # below block can be overwritten, adjusted by DevOps only
-  # ZOS_NODE_VERSION more to choose from: v16.20.1,  v18.16.0
-  ZOS_NODE_VERSION: v16.20.1
+  # ZOS_NODE_VERSION more to choose from: v18.16.0, v20.11.0
+  ZOS_NODE_VERSION: v18.16.0
   CLIENT_NODE_VERSION: v12.18.3
   INSTALL_TEST_DEBUG_INFORMATION: zowe-install-test:*
   SANITY_TEST_DEBUG_INFORMATION: zowe-sanity-test:*
@@ -84,6 +84,7 @@ env:
   EXTENSIONS_TESTFILE: basic/install-ext.ts
   KEYRING_TESTFILE: extended/keyring.ts
   ZOS_NODE_V20_TESTFILE: extended/node-versions/node-v20.ts
+  ZOS_NODE_V22_TESTFILE: extended/node-versions/node-v22.ts
   ZOS_JAVA_11_PAX_TESTFILE: extended/java-versions/java11/install-pax.ts
   ZOS_JAVA_11_KYRNG_TESTFILE: extended/java-versions/java11/install-keyring.ts
   NON_STRICT_VERIFY_EXTERNAL_CERTIFICATE_TESTFILE: extended/certificates/nonstrict-verify-external-certificate.ts
@@ -93,7 +94,7 @@ env:
   CONFIG_MANAGER_TESTFILE: extended/config-manager/enable-config-manager.ts
   GENERAL_API_DOCUMENTATION_TESTFILE: basic/install-api-gen.ts
   ZOWE_NIGHTLY_TESTS_FULL: basic/install.ts(all);basic/install-ptf.ts(all)
-  ZOWE_RELEASE_TESTS_FULL: basic/install.ts(all);basic/install-ptf.ts(all);basic/install-ext.ts(any);extended/keyring.ts(all);extended/node-versions/node-20.ts(any);extended/node-versions/node-v22.ts(any):extended/certificates/nonstrict-verify-external-certificate.ts(any);extended/caching-storages/infinispan-storage.ts(any);extended/config-manager/enable-config-manager.ts(any)
+  ZOWE_RELEASE_TESTS_FULL: basic/install.ts(all);basic/install-ptf.ts(all);basic/install-ext.ts(any);extended/keyring.ts(all);extended/node-versions/node-v20.ts(any);extended/node-versions/node-v22.ts(any);extended/certificates/nonstrict-verify-external-certificate.ts(any);extended/caching-storages/infinispan-storage.ts(any);extended/config-manager/enable-config-manager.ts(any)
 
 jobs:
   display-dispatch-event-id:
@@ -300,9 +301,6 @@ jobs:
                 break;
               case 'Keyring':
                 eta = 53
-                break;
-              case 'z/OS node v18':
-                eta = 45
                 break;
               case 'z/OS node v20':
                 eta = 45
