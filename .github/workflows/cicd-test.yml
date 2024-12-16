@@ -33,6 +33,8 @@ on:
           - Keyring
           - z/OS node v20
           - z/OS node v22
+          - z/OS java 11 Pax
+          - z/OS java 11 Keyring
           - Non-strict Verify External Certificate
           - Install PTF Twice
           - VSAM Caching Storage Method
@@ -83,6 +85,8 @@ env:
   KEYRING_TESTFILE: extended/keyring.ts
   ZOS_NODE_V20_TESTFILE: extended/node-versions/node-v20.ts
   ZOS_NODE_V22_TESTFILE: extended/node-versions/node-v22.ts
+  ZOS_JAVA_11_PAX_TESTFILE: extended/java-versions/java11/install-pax.ts
+  ZOS_JAVA_11_KYRNG_TESTFILE: extended/java-versions/java11/install-keyring.ts
   NON_STRICT_VERIFY_EXTERNAL_CERTIFICATE_TESTFILE: extended/certificates/nonstrict-verify-external-certificate.ts
   INSTALL_PTF_TWICE_TESTFILE: extended/install-ptf-two-times.ts
   VSAM_CACHING_STORAGE_METHOD_TESTFILE: extended/caching-storages/vsam-storage.ts
@@ -301,6 +305,12 @@ jobs:
               case 'z/OS node v20':
                 eta = 45
                 break;
+              case 'z/OS java 11 Pax':
+                eta = 53
+                break;
+              case 'z/OS java 11 Keyring':
+                eta = 53
+                break;q
               case 'Infinispan Caching Storage Method':
                 eta = 51
                 break;

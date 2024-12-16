@@ -36,6 +36,14 @@ case $install_test_choice in
   test_file="$ZOS_NODE_V20_TESTFILE"
   ;;
 
+"z/OS java 11 Pax")
+  test_file="$ZOS_JAVA_11_PAX_TESTFILE"
+  ;;
+
+"z/OS java 11 Keyring")
+  test_file="$ZOS_JAVA_11_KYRNG_TESTFILE"
+  ;;
+
 "z/OS node v22")
   test_file="$ZOS_NODE_V22_TESTFILE"
   ;;

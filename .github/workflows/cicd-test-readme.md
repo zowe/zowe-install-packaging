@@ -29,6 +29,8 @@ Workflow trigger is at [cicd-test](https://github.com/zowe/zowe-install-packagin
   - SMPE PTF
   - Extensions
   - Keyring
+  - z/OS java 11 Pax
+  - z/OS java 11 Keyring
   - z/OS node v20
   - Non-strict Verify External Certificate
   - Install PTF twice
@@ -121,7 +123,11 @@ Selected test running elapsed time:
 | ---- | ------------ |
 | Convenience Pax | 53m |
 | SMPE PTF | 68m |
+| Keyring | 53m |
 | z/OS node v20 | 45m |
+| z/OS node v22 | 45m |
+| z/OS java 11 Pax | 53m |
+| z/OS java 11 Keyring | 53m |
 | Keyring | 53m |
 | Non-strict Verify External Certificate | 51m |
 | Extensions | 67m
