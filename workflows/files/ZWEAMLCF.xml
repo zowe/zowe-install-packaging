@@ -98,40 +98,7 @@
             <!-- Specify choices here -->
             <default>IBMUSER.ZWEV2.CUST.ZWESAPL</default>
         </string>
-    </variable>
-    <variable name="zowe_setup_vsam_mode" scope="instance" visibility="public">
-        <label>Zowe setup VSAM mode</label>
-        <abstract>VSAM data set with Record-Level-Sharing enabled or disabled</abstract>
-        <description>VSAM data set with Record-Level-Sharing enabled or disabled</description>
-        <category>components</category>
-        <string valueMustBeChoice="false" multiLine="false">
-            <!-- Put validation here -->
-            <!-- Specify choices here -->
-            <choice>NONRLS</choice>
-            <choice>RLS</choice>
-            <default>NONRLS</default>
-        </string>
-    </variable>
-    <variable name="zowe_setup_vsam_volume" scope="instance" visibility="public">
-        <label>Zowe setup VSAM volume</label>
-        <abstract>Volume name if you are using VSAM in NONRLS mode</abstract>
-        <description>Volume name if you are using VSAM in NONRLS mode</description>
-        <category>components</category>
-        <string valueMustBeChoice="false" multiLine="false">
-            <!-- Put validation here -->
-            <!-- Specify choices here -->            
-        </string>
-    </variable>
-    <variable name="zowe_setup_vsam_storageClass" scope="instance" visibility="public">
-        <label>Zowe setup VSAM storage class</label>
-        <abstract>Storage class name if you are using VSAM in RLS mode</abstract>
-        <description>Storage class name if you are using VSAM in RLS mode</description>
-        <category>components</category>
-        <string valueMustBeChoice="false" multiLine="false">
-            <!-- Put validation here -->
-            <!-- Specify choices here -->
-        </string>
-    </variable>
+    </variable>    
     <variable name="zowe_runtimeDirectory" scope="instance" visibility="public">
         <label>Existing Zowe runtime directory</label>
         <abstract>Zowe runtime (root) directory with libraries</abstract>
@@ -251,19 +218,15 @@ some use cases, like containerization, this port could be different.</descriptio
     </variable>
     <variable name="zowe_certificate_keystore_type" scope="instance" visibility="public">
         <label>Zowe certificate keystore type</label>
-        <abstract>Certificate keystore type (PKCS12, JCEKS, JCECCAKS, JCERACFKS, JCECCARACFKS, or JCEHYBRIDRACFKS)</abstract>
-        <description>Certificate keystore type (PKCS12, JCEKS, JCECCAKS, JCERACFKS, JCECCARACFKS, or JCEHYBRIDRACFKS)</description>
+        <abstract>Certificate keystore type (PKCS12, JCERACFKS)</abstract>
+        <description>Certificate keystore type (PKCS12, JCERACFKS)</description>
         <category>certificates</category>
         <string valueMustBeChoice="false" multiLine="false">
             <!-- Put validation here -->
             <!-- Specify choices here -->
-            <choice>PKCS12</choice>
-            <choice>JCEKS</choice>
-            <choice>JCECCAKS</choice>
-            <choice>JCERACFKS</choice>
-            <choice>JCECCARACFKS</choice>
-            <choice>JCEHYBRIDRACFKS</choice>
-            <default>PKCS12</default>
+            <choice>PKCS12</choice>            
+            <choice>JCERACFKS</choice>            
+            <default>JCERACFKS</default>
         </string>
     </variable>
     <variable name="zowe_certificate_keystore_file" scope="instance" visibility="public">
@@ -274,7 +237,7 @@ some use cases, like containerization, this port could be different.</descriptio
         <string valueMustBeChoice="false" multiLine="false">
             <!-- Put validation here -->
             <!-- Specify choices here -->
-            <default>/global/zowe/keystore/localhost/localhost.keystore.p12</default>
+            <default>safkeyring://OWNER/KEYRING</default>
         </string>
     </variable>
     <variable name="zowe_certificate_keystore_password" scope="instance" visibility="public">
@@ -306,13 +269,9 @@ some use cases, like containerization, this port could be different.</descriptio
         <string valueMustBeChoice="false" multiLine="false">
             <!-- Put validation here -->
             <!-- Specify choices here -->
-            <choice>PKCS12</choice>
-            <choice>JCEKS</choice>
-            <choice>JCECCAKS</choice>
-            <choice>JCERACFKS</choice>
-            <choice>JCECCARACFKS</choice>
-            <choice>JCEHYBRIDRACFKS</choice>
-            <default>PKCS12</default>
+            <choice>PKCS12</choice>            
+            <choice>JCERACFKS</choice>            
+            <default>JCERACFKS</default>
         </string>
     </variable>
     <variable name="zowe_certificate_truststore_file" scope="instance" visibility="public">
@@ -323,7 +282,7 @@ some use cases, like containerization, this port could be different.</descriptio
         <string valueMustBeChoice="false" multiLine="false">
             <!-- Put validation here -->
             <!-- Specify choices here -->
-            <default>/global/zowe/keystore/localhost/localhost.truststore.p12</default>
+            <default>safkeyring://OWNER/KEYRING</default>
         </string>
     </variable>
     <variable name="zowe_certificate_truststore_password" scope="instance" visibility="public">
@@ -336,64 +295,7 @@ some use cases, like containerization, this port could be different.</descriptio
             <!-- Specify choices here -->
             <default>password</default>
         </string>
-    </variable>
-    <variable name="zowe_certificate_pem_key" scope="instance" visibility="public">
-        <label>Zowe certificate PEM key</label>
-        <abstract>Path to the Zowe certificate PEM key</abstract>
-        <description>Path to the Zowe certificate PEM key</description>
-        <category>certificates</category>
-        <string valueMustBeChoice="false" multiLine="false">
-            <!-- Put validation here -->
-            <!-- Specify choices here -->
-            <default>/global/zowe/keystore/localhost/localhost.key</default>
-        </string>
-    </variable>
-    <variable name="zowe_certificate_pem_certificate" scope="instance" visibility="public">
-        <label>Zowe certificate PEM certificate</label>
-        <abstract>Path to the PEM certificate</abstract>
-        <description>Path to the PEM certificate</description>
-        <category>certificates</category>
-        <string valueMustBeChoice="false" multiLine="false">
-            <!-- Put validation here -->
-            <!-- Specify choices here -->
-            <default>/global/zowe/keystore/localhost/localhost.cer</default>
-        </string>
-    </variable>
-    <variable name="zowe_certificate_pem_certificateAuthorities" scope="instance" visibility="public">
-        <label>Zowe certificate PEM certificate authorities</label>
-        <abstract>zowe_certificate_pem_certificateAuthorities</abstract>
-        <description>zowe_certificate_pem_certificateAuthorities</description>
-        <category>certificates</category>
-        <string valueMustBeChoice="false" multiLine="false">
-            <!-- Put validation here -->
-            <!-- Specify choices here -->
-            <default>/global/zowe/keystore/local_ca/local_ca.cer</default>
-        </string>
-    </variable>
-    <variable name="zowe_verifyCertificates" scope="instance" visibility="public">
-        <label>Zowe verify certificates</label>
-        <abstract>Zowe certificate verification</abstract>
-        <description><![CDATA[
-How we want to verify SSL certificates of services. Valid values are:
-- STRICT:    will validate if the certificate is trusted in our trust store and
-             if the certificate Command Name and Subject Alternative Name (SAN)
-             is validate. This is recommended for the best security.
-- NONSTRICT: will validate if the certificate is trusted in our trust store.
-             This mode does not validate certificate Common Name and Subject
-             Alternative Name (SAN).
-- DISABLED:  disable certificate validation. This is NOT recommended for
-             security 
-        ]]>        </description>
-        <category>certificates</category>
-        <string valueMustBeChoice="true" multiLine="false">
-            <!-- Put validation here -->
-            <!-- Specify choices here -->
-            <choice>STRICT</choice>
-            <choice>NONSTRICT</choice>
-            <choice>DISABLED</choice>
-            <default>STRICT</default>
-        </string>
-    </variable>
+    </variable>    
     <variable name="java_home" scope="instance" visibility="public">
         <label>JAVA home</label>
         <abstract>Path to the JAVA home</abstract>
@@ -460,8 +362,8 @@ How we want to verify SSL certificates of services. Valid values are:
     </variable>
     <variable name="components_gateway_port" scope="instance" visibility="public">
         <label>Gateway port</label>
-        <abstract>Port for the APIML Gateway</abstract>
-        <description>Port for the APIML Gateway</description>
+        <abstract>Port for APIML Gateway</abstract>
+        <description>Port for APIML Gateway</description>
         <category>components</category>
         <integer>
             <!-- Put validation here -->
@@ -479,82 +381,6 @@ How we want to verify SSL certificates of services. Valid values are:
           <!-- Specify choices here -->
           <default>false</default>
       </boolean>
-  </variable>
-    <variable name="components_gateway_debug" scope="instance" visibility="public">
-        <label>Gateway debug</label>
-        <abstract>Switch on the debug mode for Gateway</abstract>
-        <description>Switch on the debug mode for Gateway</description>
-        <category>components</category>
-        <boolean>
-            <!-- Put validation here -->
-            <!-- Specify choices here -->
-            <default>false</default>
-        </boolean>
-    </variable>
-    <variable name="components_gateway_apiml_security_auth_provider" scope="instance" visibility="public">
-        <label>Gateway APIML security auth provider</label>
-        <abstract>Authorization provider for the Gateway</abstract>
-        <description>Authorization provider for the Gateway</description>
-        <category>components</category>
-        <string valueMustBeChoice="false" multiLine="false">
-            <!-- Put validation here -->
-            <!-- Specify choices here -->
-            <default>zosmf</default>
-        </string>
-    </variable>
-    <variable name="components_gateway_apiml_security_auth_zosmf_jwtAutoconfiguration" scope="instance" visibility="public">
-        <label>Gateway APIML security auth z/OSMF jwtAutoconfiguration</label>
-        <abstract>JWT auto configuration for Gateway security auth</abstract>
-        <description>JWT auto configuration for Gateway security auth</description>
-        <category>components</category>
-        <string valueMustBeChoice="false" multiLine="false">
-            <!-- Put validation here -->
-            <!-- Specify choices here -->
-            <default>auto</default>
-        </string>
-    </variable>
-    <variable name="components_gateway_apiml_security_auth_zosmf_serviceId" scope="instance" visibility="public">
-        <label>Gateway APIML security auth z/OSMF serviceId</label>
-        <abstract>Service ID for Gateway security auth</abstract>
-        <description>Service ID for Gateway security auth</description>
-        <category>components</category>
-        <string valueMustBeChoice="false" multiLine="false">
-            <!-- Put validation here -->
-            <!-- Specify choices here -->
-            <default>zosmf</default>
-        </string>
-    </variable>
-    <variable name="components_gateway_apiml_security_authorization_endpoint_enabled" scope="instance" visibility="public">
-        <label>Enable gateway APIML security authorization endpoint</label>
-        <abstract>Check to enable the security authorization endpoint</abstract>
-        <description>Check to enable the security authorization endpoint</description>
-        <category>components</category>
-        <boolean>
-            <!-- Put validation here -->
-            <!-- Specify choices here -->
-            <default>false</default>
-        </boolean>
-    </variable>
-    <variable name="components_gateway_apiml_security_authorization_provider" scope="instance" visibility="public">
-        <label>Gateway APIML security authorization provider</label>
-        <abstract>Security authorization provider for the Gateway</abstract>
-        <description>Security authorization provider for the Gateway</description>
-        <category>components</category>
-        <string valueMustBeChoice="false" multiLine="false">
-            <!-- Put validation here -->
-            <!-- Specify choices here -->
-        </string>
-    </variable>
-    <variable name="components_gateway_apiml_security_x509_enabled" scope="instance" visibility="public">
-        <label>Enable gateway APIML security x509</label>
-        <abstract>Check to enable the Gateway security x509</abstract>
-        <description>Check to enable the Gateway security x509</description>
-        <category>components</category>
-        <boolean>
-            <!-- Put validation here -->
-            <!-- Specify choices here -->
-            <default>false</default>
-        </boolean>
     </variable>
     <variable name="components_gateway_server_internal_enabled" scope="instance" visibility="public">
         <label>Enable gateway server internal connector</label>
@@ -668,8 +494,8 @@ How we want to verify SSL certificates of services. Valid values are:
     </variable>
     <variable name="components_api_catalog_port" scope="instance" visibility="public">
         <label>API catalog port</label>
-        <abstract>Port on which the API Catalog should be running.</abstract>
-        <description>Port on which the API Catalog should be running.</description>
+        <abstract>Port on which API Catalog should be running.</abstract>
+        <description>Port on which API Catalog should be running.</description>
         <category>components</category>
         <integer>
             <!-- Put validation here -->
@@ -811,7 +637,7 @@ How we want to verify SSL certificates of services. Valid values are:
         <string valueMustBeChoice="false" multiLine="false">
             <!-- Put validation here -->
             <!-- Specify choices here -->
-            <default>7600</default>
+            <default>7559</default>
         </string>
     </variable>
     <variable name="components_app_server_enabled" scope="instance" visibility="public">
@@ -1157,20 +983,7 @@ How we want to verify SSL certificates of services. Valid values are:
             <!-- Specify choices here -->
             <default>ZWESASTC</default>
         </string>
-    </variable>
-    <variable name="zowe_setup_installStep_enabled" scope="instance" visibility="public">
-        <label>Install the MVS data sets</label>
-        <abstract>Check to enable this run step with the zwe install command. For convenience build only.</abstract>
-        <description>Check this option to enable the optional workflow step with zwe install command. After Zowe convenience build is extracted, 
-            you can enable this flag to run the zwe install command to install MVS data sets within this workflow run. 
-        This option is for convenience build only. SMP/E installs the MVS data sets during installation.</description>
-        <category>installMVSDatasets</category>
-        <boolean>
-            <!-- Put validation here -->
-            <!-- Specify choices here -->
-            <default>false</default>
-        </boolean>
-    </variable>
+    </variable>    
     <!--atCreate-->
     <!--steps-->
     <step name="define_variables" optional="false">
@@ -1207,11 +1020,7 @@ How we want to verify SSL certificates of services. Valid values are:
             <variableValue name="zowe_certificate_keystore_alias" scope="instance" noPromptIfSet="false" required="true"/>
             <variableValue name="zowe_certificate_truststore_type" scope="instance" noPromptIfSet="false" required="true"/>
             <variableValue name="zowe_certificate_truststore_file" scope="instance" noPromptIfSet="false" required="true"/>
-            <variableValue name="zowe_certificate_truststore_password" scope="instance" noPromptIfSet="false" required="true"/>
-            <variableValue name="zowe_certificate_pem_key" scope="instance" noPromptIfSet="false" required="true"/>
-            <variableValue name="zowe_certificate_pem_certificate" scope="instance" noPromptIfSet="false" required="true"/>
-            <variableValue name="zowe_certificate_pem_certificateAuthorities" scope="instance" noPromptIfSet="false" required="true"/>
-            <variableValue name="zowe_verifyCertificates" scope="instance" noPromptIfSet="false" required="true"/>
+            <variableValue name="zowe_certificate_truststore_password" scope="instance" noPromptIfSet="false" required="true"/>            
             <variableValue name="zowe_rbacProfileId" scope="instance" noPromptIfSet="false" required="true"/>
             <variableValue name="zowe_cookieId" scope="instance" noPromptIfSet="false" required="true"/>
             <variableValue name="java_home" scope="instance" noPromptIfSet="false" required="true"/>
@@ -1242,8 +1051,7 @@ How we want to verify SSL certificates of services. Valid values are:
             <variableValue name="zowe_setup_security_users_zis" scope="instance" noPromptIfSet="false" required="true"/>
             <variableValue name="zowe_setup_security_stcs_zowe" scope="instance" noPromptIfSet="false" required="true"/>
             <variableValue name="zowe_setup_security_stcs_zis" scope="instance" noPromptIfSet="false" required="true"/>
-            <variableValue name="zowe_setup_security_stcs_aux" scope="instance" noPromptIfSet="false" required="true"/>
-            <variableValue name="zowe_setup_installStep_enabled" scope="instance" noPromptIfSet="false" required="true"/>
+            <variableValue name="zowe_setup_security_stcs_aux" scope="instance" noPromptIfSet="false" required="true"/>            
             <instructions>Run this step to fill base variables.</instructions>
             <weight>1</weight>
             <skills>z/OS System Programmer</skills>
@@ -1251,6 +1059,22 @@ How we want to verify SSL certificates of services. Valid values are:
             <canMarkAsFailed>false</canMarkAsFailed>
             <!--template-->
         </step>
+        <step name="ports_setup" optional="false">
+            <title>Ports</title>
+            <description>Specify ports variables for components</description>
+            <prereqStep name="main_variables"/>                  
+            <variableValue name="components_gateway_port" scope="instance" noPromptIfSet="false" required="true"/>            
+            <variableValue name="components_api_catalog_port" scope="instance" noPromptIfSet="false" required="true"/>
+            <variableValue name="components_discovery_port" scope="instance" noPromptIfSet="false" required="true"/>
+            <variableValue name="components_caching_service_port" scope="instance" noPromptIfSet="false" required="true"/>
+            <variableValue name="components_caching_service_storage_infinispan_jgroups_port" scope="instance" noPromptIfSet="false" required="false"/>            
+            <instructions substitution="false">Run this step to specify ports variables for components</instructions>
+            <weight>1</weight>
+            <skills>z/OS System Programmer</skills>
+            <autoEnable>false</autoEnable>
+            <canMarkAsFailed>false</canMarkAsFailed>
+            <!--template-->
+          </step>
         <step name="gateway_components" optional="false">
             <title>Gateway component variables</title>
             <description>Define the gateway component variables here</description>
@@ -1266,18 +1090,10 @@ How we want to verify SSL certificates of services. Valid values are:
                     </extendStateExpression>
                 </targetStateSet>
             </condition>
-            <variableValue name="components_gateway_port" scope="instance" noPromptIfSet="false" required="true"/>
             <variableValue name="components_gateway_internalMapper" scope="instance" noPromptIfSet="false" required="true"/>
-            <variableValue name="components_gateway_debug" scope="instance" noPromptIfSet="false" required="true"/>
-            <variableValue name="components_gateway_apiml_security_auth_provider" scope="instance" noPromptIfSet="false" required="true"/>
-            <variableValue name="components_gateway_apiml_security_auth_zosmf_jwtAutoconfiguration" scope="instance" noPromptIfSet="false" required="true"/>
-            <variableValue name="components_gateway_apiml_security_auth_zosmf_serviceId" scope="instance" noPromptIfSet="false" required="true"/>
-            <variableValue name="components_gateway_apiml_security_authorization_endpoint_enabled" scope="instance" noPromptIfSet="false" required="true"/>
-            <variableValue name="components_gateway_apiml_security_authorization_provider" scope="instance" noPromptIfSet="false" required="false"/>
-            <variableValue name="components_gateway_apiml_security_x509_enabled" scope="instance" noPromptIfSet="false" required="true"/>
             <variableValue name="components_gateway_server_internal_enabled" scope="instance" noPromptIfSet="false" required="true"/>
             <variableValue name="components_gateway_server_internal_port" scope="instance" noPromptIfSet="false" required="true"/>
-            <variableValue name="components_gateway_server_internal_ssl_enabled" scope="instance" noPromptIfSet="false" required="true"/>
+            <variableValue name="components_gateway_server_internal_ssl_enabled" scope="instance" noPromptIfSet="false" required="true"/>             
             <instructions substitution="true">Run this step to fill gateway component variables.</instructions>
             <weight>1</weight>
             <skills>z/OS System Programmer</skills>
@@ -1430,10 +1246,7 @@ How we want to verify SSL certificates of services. Valid values are:
                         <targetState>skipped</targetState>
                     </extendStateExpression>
                 </targetStateSet>
-            </condition>
-            <variableValue name="zowe_setup_vsam_mode" scope="instance" noPromptIfSet="false" required="true"/>
-            <variableValue name="zowe_setup_vsam_volume" scope="instance" noPromptIfSet="false" required="false"/>
-            <variableValue name="zowe_setup_vsam_storageClass" scope="instance" noPromptIfSet="false" required="false"/>
+            </condition>                        
             <variableValue name="components_caching_service_storage_vsam_name" scope="instance" noPromptIfSet="false" required="true"/>
             <instructions substitution="false">Run this step to specify the variables for the Caching Service</instructions>
             <weight>1</weight>
@@ -1573,11 +1386,13 @@ How we want to verify SSL certificates of services. Valid values are:
     </step>
     <step name="configure" optional="false">
         <title>Create configuration</title>
-        <description>Creates the configuration for the Zowe</description>
+        <description>Creates the configuration for the Zowe (APIML)</description>
         <prereqStep name="define_variables"/>
         <!-- condition -->
         <!--variableValues-->
-        <instructions substitution="true"><![CDATA[Run this step to create the configuration file for Zowe. <br/>
+        <instructions substitution="true"><![CDATA[Run this step to create the configuration file for APIML for Zowe. <br/>
+        Generated yaml file is backward compatible with full Zowe, <br/>
+        this workflow is just simplified with focus on easier APIML configuration. <br/>
         Ensure that the values are correct. <br/>
         <b>zowe.yaml</b> file is created in the: <b>${instance-zowe_runtimeDirectory}</b> directory<br/><br/>
         <b>NOTE:</b> If you run this workflow outside of PSWI (SMP/E or convenience build), you might encounter a folder write permission issue.<br/>
@@ -1860,15 +1675,11 @@ echo '    # VSAM configurations if you are using VSAM as Caching Service storage
 echo '    vsam:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '      # VSAM data set with Record-Level-Sharing enabled or not' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '      # Valid values could be: NONRLS or RLS.' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-#if (${instance-zowe_setup_vsam_mode})
-echo '      mode: $!{instance-zowe_setup_vsam_mode}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-#else
 echo '      mode: NONRLS' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-#end
 echo '      # Volume name if you are using VSAM in NONRLS mode' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '      volume: "$!{instance-zowe_setup_vsam_volume}"' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '      volume: ""' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '      # Storage class name if you are using VSAM in RLS mode' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '      storageClass: "$!{instance-zowe_setup_vsam_storageClass}"' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '      storageClass: ""' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '  # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '  # **COMMONLY_CUSTOMIZED**' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
@@ -2021,10 +1832,10 @@ echo '      type: $!{instance-zowe_certificate_truststore_type}' >> "${instance-
 echo '      file: $!{instance-zowe_certificate_truststore_file}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '      password: $!{instance-zowe_certificate_truststore_password}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '    pem:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '      key: $!{instance-zowe_certificate_pem_key}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '      certificate: $!{instance-zowe_certificate_pem_certificate}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '      key: /global/zowe/keystore/localhost/localhost.key' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '      certificate: /global/zowe/keystore/localhost/localhost.cer' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '      #  if keyrings, the format is "safkeyring:////stcusername/KeyName&ca name"' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '      certificateAuthorities: $!{instance-zowe_certificate_pem_certificateAuthorities}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '      certificateAuthorities: /global/zowe/keystore/local_ca/local_ca.cer' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '  # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '  # How we want to verify SSL certificates of services. Valid values are:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
@@ -2036,7 +1847,7 @@ echo '  #              This mode does not validate certificate Common Name and S
 echo '  #              Alternative Name (SAN).' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '  # - DISABLED:  disable certificate validation. This is NOT recommended for' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '  #              security.' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '  verifyCertificates: $!{instance-zowe_verifyCertificates}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '  verifyCertificates: STRICT' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '#-------------------------------------------------------------------------------' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
@@ -2104,22 +1915,22 @@ echo '  # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>' >> "${instance-zowe_runtimeDire
 echo '  gateway:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '    enabled: ${instance-components_gateway_enabled}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '    port: ${instance-components_gateway_port}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '    debug: ${instance-components_gateway_debug}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '    debug: false' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '    apiml:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '      security:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '        useInternalMapper: ${instance-components_gateway_internalMapper}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '        auth:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '          provider: "$!{instance-components_gateway_apiml_security_auth_provider}"' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '          provider: zosmf' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '          zosmf:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '            jwtAutoconfiguration: "$!{instance-components_gateway_apiml_security_auth_zosmf_jwtAutoconfiguration}"' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '            serviceId: "$!{instance-components_gateway_apiml_security_auth_zosmf_serviceId}"' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '            jwtAutoconfiguration: jwt' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '            serviceId: ibmzosmf' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '        authorization:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '          endpoint:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '            enabled: ${instance-components_gateway_apiml_security_authorization_endpoint_enabled}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '          provider: "$!{instance-components_gateway_apiml_security_authorization_provider}"' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '            enabled: false' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '          provider: "native"' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '        x509:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '          enabled: ${instance-components_gateway_apiml_security_x509_enabled}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '          enabled: true' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '    server:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '      internal:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '      # gateway supports internal connector' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
@@ -2445,51 +2256,11 @@ echo '#         enabled: false' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
     </step>
     <step name="zowe_installation_steps" optional="false">
         <title>Zowe installation</title>
-        <description>Zowe installation</description>
-        <step name="install_zowe" optional="true">
-            <title>Run the Zowe install (only for convenience build)</title>
-            <description>Configure Zowe.</description>
-            <prereqStep name="main_variables"/>
-            <prereqStep name="configure"/>            
-            <condition>
-                <expression>1==1</expression>
-                <description>Always true</description>
-                <targetStateSet>
-                    <extendStateExpression>
-                        <description>Skips this step if Install the MVS data sets was not selected</description>
-                        <expression>!${instance-zowe_setup_installStep_enabled}</expression>
-                        <targetState>skipped</targetState>
-                    </extendStateExpression>
-                </targetStateSet>
-            </condition>
-            <!-- condition -->
-            <!--variableValues-->
-            <instructions substitution="true"><![CDATA[
-            This step runs the command: <code>zwe install -c ${instance-zowe_runtimeDirectory}/zowe.yml</code>
-            ]]></instructions>
-            <weight>1</weight>
-            <skills>z/OS System Programmer</skills>
-            <autoEnable>false</autoEnable>
-            <canMarkAsFailed>false</canMarkAsFailed>
-            <template>
-                <inlineTemplate substitution="true">set -e
-set -x
-
-export JAVA_HOME='${instance-java_home}'
-export NODE_HOME='${instance-node_home}'
-
-export PATH=$PATH:'${instance-zowe_runtimeDirectory}/bin'
-
-zwe install -c '${instance-zowe_runtimeDirectory}/zowe.yaml' --allow-overwrite</inlineTemplate>
-                <submitAs maxRc="0">shell-JCL</submitAs>
-                <maxLrecl>1024</maxLrecl>
-                <!-- zosmfOutput -->
-            </template>
-        </step>
+        <description>Zowe installation</description>        
         <step name="init_zowe" optional="false">
             <title>Run scripts for Zowe initialization</title>
             <description>Executes scripts for Zowe initialization</description>
-            <prereqStep name="install_zowe"/>
+            <prereqStep name="configure"/>
             <!-- condition -->
             <!--variableValues-->
             <instructions substitution="true"><![CDATA[
@@ -2532,43 +2303,6 @@ zwe init vsam -c '${instance-zowe_runtimeDirectory}/zowe.yaml' --allow-overwrite
                 <maxLrecl>1024</maxLrecl>
                 <!-- zosmfOutput -->
             </template>
-        </step>
-        <step name="init_zowe_security" optional="false">
-            <title>Run scripts for Zowe security initialization</title>
-            <description>Executes Zowe initialization scripts for security setup</description>
-            <prereqStep name="install_zowe"/>
-            <!--variableValues-->
-            <instructions substitution="true"><![CDATA[
-            This step runs the commands: <br/>
-            <code>zwe init security -c ${instance-zowe_runtimeDirectory}/zowe.yml --allow-overwrite</code> <br/>
-            <code>zwe init apfauth -c ${instance-zowe_runtimeDirectory}/zowe.yml</code> <br/>            
-            <br/>
-            <b>NOTE:</b>
-            Each <b>zwe init</b> sub-command defines a configuration. 
-<ul>
-<li><b>security:</b> Create the user IDs and security manager settings.</li>
-<li><b>apfauth:</b> APF authorize the LOADLIB containing the modules that need to perform z/OS priviledged security calls.</li>
-</ul>
-            ]]></instructions>
-            <weight>1</weight>
-            <skills>z/OS System Programmer</skills>
-            <autoEnable>false</autoEnable>
-            <canMarkAsFailed>false</canMarkAsFailed>
-            <template>
-                <inlineTemplate substitution="true">set -e
-set -x
-
-export JAVA_HOME='${instance-java_home}'
-export NODE_HOME='${instance-node_home}'
-
-export PATH=$PATH:'${instance-zowe_runtimeDirectory}/bin'
-
-zwe init security -c '${instance-zowe_runtimeDirectory}/zowe.yaml' --allow-overwrite
-zwe init apfauth -c '${instance-zowe_runtimeDirectory}/zowe.yaml'</inlineTemplate>
-                <submitAs maxRc="0">shell-JCL</submitAs>
-                <maxLrecl>1024</maxLrecl>
-                <!-- zosmfOutput -->
-            </template>
-        </step>
+        </step>        
     </step>
 </workflow>
