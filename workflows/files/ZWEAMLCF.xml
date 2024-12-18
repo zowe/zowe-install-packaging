@@ -793,7 +793,7 @@ some use cases, like containerization, this port could be different.</descriptio
             <variableValue name="zowe_setup_security_users_zis" scope="instance" noPromptIfSet="false" required="true"/>
             <variableValue name="zowe_setup_security_stcs_zowe" scope="instance" noPromptIfSet="false" required="true"/>
             <variableValue name="zowe_setup_security_stcs_zis" scope="instance" noPromptIfSet="false" required="true"/>
-            <variableValue name="zowe_setup_security_stcs_aux" scope="instance" noPromptIfSet="false" required="true"/>            
+            <variableValue name="zowe_setup_security_stcs_aux" scope="instance" noPromptIfSet="false" required="true"/> 
             <instructions>Run this step to fill base variables.</instructions>
             <weight>1</weight>
             <skills>z/OS System Programmer</skills>
