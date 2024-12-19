@@ -436,18 +436,7 @@ some use cases, like containerization, this port could be different.</descriptio
             <!-- Specify choices here -->
             <default>7551</default>
         </integer>
-    </variable>
-    <variable name="components_metrics_service_debug" scope="instance" visibility="public">
-        <label>Metrics service debug</label>
-        <abstract>Check this value to get additional debugging</abstract>
-        <description>Check this value to get additional debugging</description>
-        <category>components</category>
-        <boolean>
-            <!-- Put validation here -->
-            <!-- Specify choices here -->
-            <default>false</default>
-        </boolean>
-    </variable>
+    </variable>    
   <variable name="components_cloud_gateway_enabled" scope="instance" visibility="public">
         <label>Enable the Cloud gateway</label>
         <abstract>Check this option to enable the Cloud gateway</abstract>
@@ -469,18 +458,7 @@ some use cases, like containerization, this port could be different.</descriptio
             <!-- Specify choices here -->
             <default>7563</default>
         </integer>
-    </variable>
-    <variable name="components_cloud_gatewaye_debug" scope="instance" visibility="public">
-        <label>Cloud gateway debug</label>
-        <abstract>Check this value to get additional debugging</abstract>
-        <description>Check this value to get additional debugging</description>
-        <category>components</category>
-        <boolean>
-            <!-- Put validation here -->
-            <!-- Specify choices here -->
-            <default>false</default>
-        </boolean>
-    </variable>    
+    </variable>     
     <variable name="components_api_catalog_port" scope="instance" visibility="public">
         <label>API catalog port</label>
         <abstract>Port on which API Catalog should be running.</abstract>
@@ -535,18 +513,7 @@ some use cases, like containerization, this port could be different.</descriptio
             <!-- Specify choices here -->
             <default>false</default>
         </boolean>
-    </variable>
-    <variable name="components_jobs_api_debug" scope="instance" visibility="public">
-        <label>Jobs API debug</label>
-        <abstract>Check to get extra debug information from the service</abstract>
-        <description>Check to get extra debug information from the service.</description>
-        <category>components</category>
-        <boolean>
-            <!-- Put validation here -->
-            <!-- Specify choices here -->
-            <default>false</default>
-        </boolean>
-    </variable>
+    </variable>    
     <variable name="components_jobs_api_port" scope="instance" visibility="public">
         <label>Jobs API port</label>
         <abstract>Port for the Jobs API</abstract>
@@ -568,18 +535,7 @@ some use cases, like containerization, this port could be different.</descriptio
             <!-- Specify choices here -->
             <default>false</default>
         </boolean>
-    </variable>
-  <variable name="components_files_api_debug" scope="instance" visibility="public">
-        <label>Files API debug</label>
-        <abstract>Check to get extra debug information from the service</abstract>
-        <description>Check to get extra debug information from the service.</description>
-        <category>components</category>
-        <boolean>
-            <!-- Put validation here -->
-            <!-- Specify choices here -->
-            <default>false</default>
-        </boolean>
-    </variable>
+    </variable>  
     <variable name="components_files_api_port" scope="instance" visibility="public">
         <label>Files API port</label>
         <abstract>Port which will be used by the Files API</abstract>
@@ -858,8 +814,7 @@ some use cases, like containerization, this port could be different.</descriptio
                     </extendStateExpression>
                 </targetStateSet>
             </condition>
-            <variableValue name="components_metrics_service_port" scope="instance" noPromptIfSet="false" required="true"/>
-            <variableValue name="components_metrics_service_debug" scope="instance" noPromptIfSet="false" required="true"/>
+            <variableValue name="components_metrics_service_port" scope="instance" noPromptIfSet="false" required="true"/>            
             <instructions substitution="false">Run this step to specify the metrics variables</instructions>
             <weight>1</weight>
             <skills>z/OS System Programmer</skills>
@@ -882,8 +837,7 @@ some use cases, like containerization, this port could be different.</descriptio
                     </extendStateExpression>
                 </targetStateSet>
             </condition>
-            <variableValue name="components_cloud_gateway_port" scope="instance" noPromptIfSet="false" required="true"/>
-            <variableValue name="components_cloud_gatewaye_debug" scope="instance" noPromptIfSet="false" required="true"/>
+            <variableValue name="components_cloud_gateway_port" scope="instance" noPromptIfSet="false" required="true"/>            
             <instructions substitution="false">Run this step to specify the cloud gateway variables</instructions>
             <weight>1</weight>
             <skills>z/OS System Programmer</skills>
@@ -906,8 +860,7 @@ some use cases, like containerization, this port could be different.</descriptio
                     </extendStateExpression>
                 </targetStateSet>
             </condition>
-            <variableValue name="components_jobs_api_port" scope="instance" noPromptIfSet="false" required="true"/>
-            <variableValue name="components_jobs_api_debug" scope="instance" noPromptIfSet="false" required="true"/>
+            <variableValue name="components_jobs_api_port" scope="instance" noPromptIfSet="false" required="true"/>            
             <instructions substitution="false">Run this step to define the variables for the Jobs API</instructions>
             <weight>1</weight>
             <skills>z/OS System Programmer</skills>
@@ -930,8 +883,7 @@ some use cases, like containerization, this port could be different.</descriptio
                     </extendStateExpression>
                 </targetStateSet>
             </condition>
-            <variableValue name="components_files_api_port" scope="instance" noPromptIfSet="false" required="true"/>
-            <variableValue name="components_files_api_debug" scope="instance" noPromptIfSet="false" required="true"/>
+            <variableValue name="components_files_api_port" scope="instance" noPromptIfSet="false" required="true"/>           
             <instructions substitution="false">Run this step to specify the variables for the Files API</instructions>
             <weight>1</weight>
             <skills>z/OS System Programmer</skills>
@@ -1543,7 +1495,7 @@ echo '  # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>' >> "${instance-zowe_runtimeDire
 echo '  metrics-service:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '    enabled: ${instance-components_metrics_service_enabled}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '    port: ${instance-components_metrics_service_port}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '    debug: ${instance-components_metrics_service_debug}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '    debug: false' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 #end
 #if (${instance-components_metrics_service_enabled} == "false" )
 echo '  metrics-service:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
@@ -1557,7 +1509,7 @@ echo '  # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>' >> "${instance-zowe_runtimeDire
 echo '  cloud-gateway:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '    enabled: ${instance-components_cloud_gateway_enabled}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '    port: ${instance-components_cloud_gateway_port}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '    debug: ${instance-components_cloud_gatewaye_debug}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '    debug: false' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 #end
 #if (${instance-components_cloud_gateway_enabled} == "false" )
 echo '  cloud-gateway:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
@@ -1623,7 +1575,7 @@ echo '  # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>' >> "${instance-zowe_runtimeDire
 #if (${instance-components_jobs_api_enabled} == "true" )
 echo '  jobs-api:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '    enabled: ${instance-components_jobs_api_enabled}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '    debug: ${instance-components_jobs_api_debug}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '    debug: false' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '    port: ${instance-components_jobs_api_port}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 #end
 #if (${instance-components_jobs_api_enabled} == "false" )
@@ -1637,7 +1589,7 @@ echo '  # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>' >> "${instance-zowe_runtimeDire
 #if (${instance-components_files_api_enabled} == "true" )
 echo '  files-api:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '    enabled: ${instance-components_files_api_enabled}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '    debug: ${instance-components_files_api_debug}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '    debug: false' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '    port: ${instance-components_files_api_port}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 #end
 #if (${instance-components_files_api_enabled} == "false" )
