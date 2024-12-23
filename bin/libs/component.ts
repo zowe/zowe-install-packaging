@@ -418,6 +418,22 @@ export function processComponentApimlStaticDefinitions(componentDir: string): bo
 
         const contents = xplatform.loadFileUTF8(path,xplatform.AUTO_DETECT);
         if (contents) {
+          const zosmfScheme = std.getenv("ZOSMF_SCHEME");
+          const attls = std.getenv("ZWE_zowe_network_client_tls_attls"); 
+          const schemeEnv = std.getenv("ZWE_zOSMF_scheme");
+
+          let scheme = "https";
+          
+          if (zosmfScheme) {
+            scheme = zosmfScheme;
+          } else if (schemeEnv) {
+            scheme = schemeEnv;
+          } else if (attls) {
+            scheme = "http";
+          }
+          
+          std.setenv('ZOSMF_SCHEME', scheme);
+
           const resolvedContents = varlib.resolveShellTemplate(contents);
 
           const zweCliParameterHaInstance=std.getenv("ZWE_CLI_PARAMETER_HA_INSTANCE");
