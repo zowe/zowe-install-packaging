@@ -388,10 +388,10 @@ export function findAllLaunchComponents2(): string[] {
 }
 
 function isClientAttls() {
-  const clientGlobalAttls = std.getenv('ZWE_zowe_network_client_tls_attls');
-  const serverGlobalAttls = std.getenv('ZWE_zowe_network_server_tls_attls');
-  const clientLocalAttls = std.getenv('ZWE_components_zaas_zowe_network_client_tls_attls');
-  const serverLocalAttls = std.getenv('ZWE_components_zaas_zowe_network_server_tls_attls');
+  const clientGlobalAttls = std.getenv('ZWE_zowe_network_client_tls_attls') == 'true' ? true : false;
+  const serverGlobalAttls = std.getenv('ZWE_zowe_network_server_tls_attls') == 'true' ? true : false;
+  const clientLocalAttls = std.getenv('ZWE_components_zaas_zowe_network_client_tls_attls') == 'true' ? true : false;
+  const serverLocalAttls = std.getenv('ZWE_components_zaas_zowe_network_server_tls_attls') == 'true' ? true : false;
   const clientAttls = clientGlobalAttls || clientLocalAttls;
   if ((clientGlobalAttls !== false) && (clientLocalAttls !== false) && (!clientAttls)) {
     // If client attls not explicitly false OR truthy, have client follow server attls variable. it simplifies common case in which users want both.
