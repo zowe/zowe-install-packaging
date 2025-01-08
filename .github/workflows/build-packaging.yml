@@ -99,8 +99,9 @@ jobs:
           echo "run_build=${{ (github.event_name == 'workflow_dispatch' && github.event.inputs.ORIGIN_ISSUE_TRIGGER == 'false') || !contains(fromJson(steps.get-labels.outputs.result), 'Build: None') }}" >> $GITHUB_OUTPUT
       - id: check-test
         name: 'export conditional used to determine if we should run a test suite'
+        # run_test explanation: if we set "run_build" from the prior step and this is a PR, run unless "Test: None" label is present. If not initiated from a PR, only build.
         run: |
-          echo "run_test=${{ (steps.check-build.outputs.run_build == 'true' && !contains(fromJson(steps.get-labels.outputs.result), 'Test: None')) }}" >> $GITHUB_OUTPUT
+          echo "run_test=${{ (steps.check-build.outputs.run_build == 'true' && github.event_name != 'workflow_dispatch' && !contains(fromJson(steps.get-labels.outputs.result), 'Test: None')) }}" >> $GITHUB_OUTPUT
 
   display-dispatch-event-id:
     if: github.event.inputs.RANDOM_DISPATCH_EVENT_ID != ''
@@ -344,13 +345,13 @@ jobs:
         with:
           lock-repository: ${{ github.repository }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          lock-resource-name: zowe-psi-build-zzow07-lock
+          lock-resource-name: zowe-psi-build-zzow10-lock
           lock-avg-retry-interval: 60
 
       - name: '[PSWI 0] PSWI pre-build check for existing smpe'
         if: env.INPUTS_BUILD_PSWI == 'true' && github.event.inputs.PSWI_SMPE_ARTIFACTORY_PATH != '' && github.event.inputs.PSWI_SMPE_AZWE_ARTIFACTORY_PATH != ''
         run: |
-          jfrog rt dl ${{github.event.inputs.PSWI_SMPE_AZWE_ARTIFACTORY_PATH}}/AZWE002*.zip --flat=true .pax/AZWE002.zip
+          jfrog rt dl ${{github.event.inputs.PSWI_SMPE_AZWE_ARTIFACTORY_PATH}}/AZWE003*.zip --flat=true .pax/AZWE003.zip
           jfrog rt dl ${{github.event.inputs.PSWI_SMPE_ARTIFACTORY_PATH}}/zowe-smpe-*.zip --flat=true .pax/zowe-smpe.zip
 
       - name: '[SMPE Pax 4] Build PSWI'
@@ -373,7 +374,7 @@ jobs:
         with:
           name: pswi-folder
           path: |
-            pswi/**
+            pswi/logs/**
 
       - name: '[K8S] Build Kubernetes'
         timeout-minutes: 10

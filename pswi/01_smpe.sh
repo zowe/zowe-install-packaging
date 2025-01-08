@@ -18,7 +18,7 @@ echo "SMPE workflow name          :" $SMPE_WF_NAME
 CREATE_SMPE_WF_URL="${BASE_URL}/zosmf/workflow/rest/1.0/workflows"
 SMPE_WF_LIST_URL="${BASE_URL}/zosmf/workflow/rest/1.0/workflows?owner=${ZOSMF_USER}&workflowName=${SMPE_WF_NAME}"
 
-# JSONs 
+# JSONs
 
 ADD_WORKFLOW_JSON='{"workflowName":"'$SMPE_WF_NAME'",
 "workflowDefinitionFile":"'${DIR}'/SMPE20",
@@ -43,7 +43,7 @@ echo "Uploading workflow SMPE into ${DIR} directory thru SSH"
 
 cd workflows
 
-sshpass -p${ZOSMF_PASS} sftp -o HostKeyAlgorithms=+ssh-rsa -o BatchMode=no -o StrictHostKeyChecking=no -o PubkeyAuthentication=no -b - -P ${ZZOW_SSH_PORT} ${ZOSMF_USER}@${HOST} << EOF
+sshpass -p${ZOSMF_PASS} sftp -o HostKeyAlgorithms=+ssh-rsa -o BatchMode=no -o StrictHostKeyChecking=no -o PubkeyAuthentication=no -b - -P ${ZZOW_SSH_PORT} ${ZOSMF_USER}@${HOST} <<EOF
 cd ${DIR}
 put SMPE20
 EOF
@@ -52,52 +52,46 @@ cd ..
 # Get workflowKey for SMPE workflow owned by user
 echo "Get workflowKey for SMPE workflow if it exists."
 
-RESP=`curl -s $SMPE_WF_LIST_URL -k -X "GET" -H "Content-Type: application/json" -H "X-CSRF-ZOSMF-HEADER: A" --user $ZOSMF_USER:$ZOSMF_PASS`
-WFKEY=`echo $RESP | grep -o '"workflowKey":".*"' | cut -f4 -d\"`
-if [ -n "$WFKEY" ]
-then
-SMPE_WORKFLOW_URL="${CREATE_SMPE_WF_URL}/${WFKEY}"
+RESP=$(curl -s $SMPE_WF_LIST_URL -k -X "GET" -H "Content-Type: application/json" -H "X-CSRF-ZOSMF-HEADER: A" --user $ZOSMF_USER:$ZOSMF_PASS)
+WFKEY=$(echo $RESP | grep -o '"workflowKey":".*"' | cut -f4 -d\")
+if [ -n "$WFKEY" ]; then
+  SMPE_WORKFLOW_URL="${CREATE_SMPE_WF_URL}/${WFKEY}"
 
-echo "Deleting an SMPE workflow."
-RESP=`curl -s $SMPE_WORKFLOW_URL -k -X "DELETE" -H "Content-Type: application/json" -H "X-CSRF-ZOSMF-HEADER: A" --user $ZOSMF_USER:$ZOSMF_PASS`
-sh scripts/check_response.sh "${RESP}" $?
+  echo "Deleting an SMPE workflow."
+  RESP=$(curl -s $SMPE_WORKFLOW_URL -k -X "DELETE" -H "Content-Type: application/json" -H "X-CSRF-ZOSMF-HEADER: A" --user $ZOSMF_USER:$ZOSMF_PASS)
+  sh scripts/check_response.sh "${RESP}" $?
 fi
 
 # Create workflow with REST API
 echo 'Invoking REST API to create SMPE workflow.'
 
-RESP=`curl -s $CREATE_SMPE_WF_URL -k -X "POST" -d "$ADD_WORKFLOW_JSON" -H "Content-Type: application/json" -H "X-CSRF-ZOSMF-HEADER: A" --user $ZOSMF_USER:$ZOSMF_PASS`
+RESP=$(curl -s $CREATE_SMPE_WF_URL -k -X "POST" -d "$ADD_WORKFLOW_JSON" -H "Content-Type: application/json" -H "X-CSRF-ZOSMF-HEADER: A" --user $ZOSMF_USER:$ZOSMF_PASS)
 sh scripts/check_response.sh "${RESP}" $?
-if [ $? -gt 0 ];then exit -1;fi
-WFKEY=`echo $RESP | grep -o '"workflowKey":".*"' | cut -f4 -d\"`
+if [ $? -gt 0 ]; then exit -1; fi
+WFKEY=$(echo $RESP | grep -o '"workflowKey":".*"' | cut -f4 -d\")
 WORKFLOW_URL="${CREATE_SMPE_WF_URL}/${WFKEY}"
 
 # Run workflow
 echo "Invoking REST API to start a SMPE workflow."
 
-RESP=`curl -s ${WORKFLOW_URL}/operations/start -k -X "PUT" -d "{}" -H "Content-Type: application/json" -H "X-CSRF-ZOSMF-HEADER: A" --user $ZOSMF_USER:$ZOSMF_PASS`
+RESP=$(curl -s ${WORKFLOW_URL}/operations/start -k -X "PUT" -d "{}" -H "Content-Type: application/json" -H "X-CSRF-ZOSMF-HEADER: A" --user $ZOSMF_USER:$ZOSMF_PASS)
 sh scripts/check_response.sh "${RESP}" $?
-if [ $? -gt 0 ];then exit -1;fi
+if [ $? -gt 0 ]; then exit -1; fi
 STATUS=""
-until [ "$STATUS" = "FINISHED" ]
-do
-sleep 20
+until [ "$STATUS" = "FINISHED" ]; do
+  sleep 20
 
+  # Get the result of the workflow
+  RESP=$(curl -s ${WORKFLOW_URL} -k -X "GET" -H "Content-Type: application/json" -H "X-CSRF-ZOSMF-HEADER: A" --user $ZOSMF_USER:$ZOSMF_PASS)
+  if [ $? -gt 0 ]; then exit -1; fi
+  STATUS_NAME=$(echo $RESP | grep -o '"statusName":".*"' | cut -f4 -d\")
 
-# Get the result of the workflow
-RESP=`curl -s ${WORKFLOW_URL} -k -X "GET" -H "Content-Type: application/json" -H "X-CSRF-ZOSMF-HEADER: A" --user $ZOSMF_USER:$ZOSMF_PASS`
-if [ $? -gt 0 ];then exit -1;fi
-STATUS_NAME=`echo $RESP | grep -o '"statusName":".*"' | cut -f4 -d\"`
-
-if [ "$STATUS_NAME" = "in-progress" ]
-then
-  echo "Workflow with SMP/E ended with an error." >> report.txt
-  echo $RESP >> report.txt
-  exit -1
-elif [ "$STATUS_NAME" = "complete" ]
-then
-  echo "Workflow finished successfully."
-  STATUS="FINISHED"
-fi
+  if [ "$STATUS_NAME" = "in-progress" ]; then
+    echo "Workflow with SMP/E ended with an error." >>$LOG_DIR/report.txt
+    echo $RESP >>$LOG_DIR/report.txt
+    exit -1
+  elif [ "$STATUS_NAME" = "complete" ]; then
+    echo "Workflow finished successfully."
+    STATUS="FINISHED"
+  fi
 done
-
