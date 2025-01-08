@@ -205,21 +205,21 @@
       "componentGroup": "Zowe CLI",
       "entries": [{
         "repository": "zowe-cli",
-        "tag": "v8.0.0",
+        "tag": "v8.10.4",
         "destinations": ["Zowe CLI Package"]
       }]
     }, {
       "componentGroup": "IBM&reg CICS&reg Plug-in for Zowe CLI",
       "entries": [{
         "repository": "cics-for-zowe-client",
-        "tag": "v6.0.0",
+        "tag": "v6.2.4",
         "destinations": ["Zowe CLI Package"]
       }]
     }, {
       "componentGroup": "IBM&reg Db2&reg Plug-in for Zowe CLI",
       "entries": [{
         "repository": "zowe-cli-db2-plugin",
-        "tag": "v6.0.0",
+        "tag": "v6.1.0",
         "destinations": ["Zowe CLI Package"]
       }]
     }, {
@@ -355,7 +355,7 @@
       "entries": [{
         "repository": "zowe-client-python-sdk",
         "core": false,
-        "tag": "main",
+        "tag": "91366a0e5cd1f2680c0ccf87e8493d099d9e35f7",
         "destinations": ["Zowe Client Python SDK"]
       }]
     }
