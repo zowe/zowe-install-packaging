@@ -41,7 +41,7 @@ export function execute(allowOverwrite?: boolean, dryRun?: boolean, ignoreSecuri
   
   common.printLevel1Message(`Check if need to update runtime directory, Java and/or node.js settings in Zowe YAML configuration`);
   // node.home
-  let newNodeHome;
+  let newNodeHome: string;
   const configNodeHome=zoweConfig.node?.home;
   // only try to update if it's not defined
   if (!configNodeHome || configNodeHome == 'DETECT') {
@@ -50,7 +50,7 @@ export function execute(allowOverwrite?: boolean, dryRun?: boolean, ignoreSecuri
   }
 
   // java.home
-  let newJavaHome;
+  let newJavaHome: string;
   const configJavaHome=zoweConfig.java?.home;
   // only try to update if it's not defined
   if (!configJavaHome || configJavaHome == 'DETECT') {
@@ -59,7 +59,7 @@ export function execute(allowOverwrite?: boolean, dryRun?: boolean, ignoreSecuri
   }
 
   // zowe.runtimeDirectory
-  let newZoweRuntimeDir;
+  let newZoweRuntimeDir: string;
   // do we have zowe.runtimeDirectory defined in zowe.yaml?
   const configRuntimeDir = zoweConfig.zowe?.runtimeDirectory;
   if (configRuntimeDir) {
