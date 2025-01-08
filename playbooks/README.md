@@ -176,7 +176,7 @@ ansible-playbook -l <server> install-kubernetes.yml -e kubeconfig=<location_of_t
 
 You can install an extension by providing it's full url to the extension using the `zowe_ext_url` variable. This will download and install the extension onto the specified running Zowe instance:
 ```
-$ ansible-playbook -l <server> install-ext.yml -v --extra-vars "zowe_ext_url=https://zowe.jfrog.io/artifactory/libs-snapshot-local/org/zowe/sample-node-api/1.0.0-SNAPSHOT/sample-node-api-1.0.0-snapshot-6-20210126212259.pax"
+$ ansible-playbook -l <server> install-ext.yml -v --extra-vars "zowe_ext_url=https://zowe.jfrog.io/artifactory/libs-snapshot-local/org/zowe/sample-node-api/3.0.0-SNAPSHOT/sample-node-api-3.0.0-snapshot-66-20241002205335.pax"
 ```
 
 You can also install an extension that exists in your local directory by using the `zowe_ext_local` variable. This will transfer the file from your local to the remote server and install the extension:

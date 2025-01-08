@@ -2,11 +2,23 @@
 
 All notable changes to the Zowe Installer will be documented in this file.
 
+## `3.1.0`
+- Bugfix: When logging `zwe` command, sometimes the log has wrong file tag and the log is unreadable. [#4071](https://github.com/zowe/zowe-install-packaging/pull/4071)
+- Bugfix: When `--log-dir` parameter for `zwe` command is a file, there might be an error "InternalError: stack overflow". [#4064](https://github.com/zowe/zowe-install-packaging/pull/4064)
+- Enhancement: command `zwe init` does not require NodeJS [#4088](https://github.com/zowe/zowe-install-packaging/pull/4088)
+- Enhancement: command `zwe install` does not require NodeJS [#4069](https://github.com/zowe/zowe-install-packaging/pull/4069)
+- Enhancement: new javascript funtion `getStatvfs()` to obtain information about the file sysytem [#3994](https://github.com/zowe/zowe-install-packaging/pull/3994)
+- Enhancement: command `zwe diagnose` in javascript only [#4061](https://github.com/zowe/zowe-install-packaging/pull/4061)
+- Enhancement: schema validation update for `zowe.job.name` and `zowe.job.prefix` [#4060](https://github.com/zowe/zowe-install-packaging/pull/4060)
+
 ## `3.0.0`
 
 ### Breaking Changes
 
-- `zowe.yaml` changed its default z/OSMF Service ID definition from `zosmf` to `ibmzosmf`, which may impact Zowe Clients. For more information on this change, please see the API Mediation Layer's 3.0.0 Breaking Changes.
+-	The Zowe YAML now requires the `zaas` component for the API Mediation Layer to work. See example-zowe.yaml for new component values.
+-	The Zowe YAML attribute `components.gateway.apiml.security.auth.zosmf.serviceId` for the “gateway” component has changed from “zosmf” to “ibmzosmf”. This may impact Zowe Clients. See example-zowe.yaml for new component values. For more information on this change, please see the API Mediation Layer's 3.0.0 Breaking Changes.
+-	The Zowe YAML parameter `components.gateway.apiml.security.auth.zosmf.jwtAutoconfiguration` for the “gateway” component has changed. The value “auto” is no longer allowed, and you must choose either the default of “jwt” or “ltpa” depending on if your z/OSMF is set up for JWT use as recommended See example-zowe.yaml for new component values. For more information on this change, please see the API Mediation Layer's 3.0.0 Breaking Changes.
+
 
 ### New features and enhancements
 - Enhancement: Added explanation to possible error message when checking z/OSMF setting. [#3956](https://github.com/zowe/zowe-install-packaging/pull/3956)
