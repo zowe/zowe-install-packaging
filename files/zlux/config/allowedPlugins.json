@@ -29,14 +29,6 @@
       "versions": ["*"]
     },
     {
-      "identifier": "org.zowe.zlux.auth.zosmf",
-      "versions": ["*"]
-    },
-    {
-      "identifier": "org.zowe.zlux.auth.zss",
-      "versions": ["*"]
-    },
-    {
       "identifier": "org.zowe.zlux.auth.safsso",
       "versions": ["*"]
     },
@@ -61,10 +53,6 @@
       "versions": ["*"]
     },
     {
-      "identifier": "org.zowe.zlux.proxy.zosmf",
-      "versions": ["*"]
-    },
-    {
       "identifier": "org.zowe.zlux.sample.angular",
       "versions": ["*"]
     },
@@ -74,10 +62,6 @@
     },
     {
       "identifier": "org.zowe.zlux.sample.iframe",
-      "versions": ["*"]
-    },
-    {
-      "identifier": "org.zowe.zosmf.workflows",
       "versions": ["*"]
     },
     {

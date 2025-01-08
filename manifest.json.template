@@ -350,6 +350,14 @@
         "tag": "configmgr-v3.1.0-RC1",
         "destinations": ["Zowe PAX"]
       }]
+    }, {
+      "componentGroup": "Zowe Client Python SDK",
+      "entries": [{
+        "repository": "zowe-client-python-sdk",
+        "core": false,
+        "tag": "main",
+        "destinations": ["Zowe Client Python SDK"]
+      }]
     }
   ],
   "imageDependencies": {

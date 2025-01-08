@@ -22,7 +22,7 @@ export NODE_STDIN_CCSID=1047
 # Workaround Fix for node 8.16.1 that requires compatibility mode for untagged files
 export __UNTAGGED_READ_MODE=V6
 
-NODE_MIN=16
+NODE_MIN=18
 
 ensure_node_is_on_path() {
   if [[ ":${PATH}:" != *":${NODE_HOME}/bin:"* ]]; then
