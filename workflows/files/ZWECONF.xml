@@ -12,9 +12,9 @@
     </workflowInfo>
     <!--variables-->
     <variable name="zowe_setup_dataset_prefix" scope="instance" visibility="public">
-        <label>Zowe setup MVS prefix</label>
-        <abstract>Where Zowe MVS data sets will be installed</abstract>
-        <description>Where Zowe MVS data sets will be installed</description>
+        <label>Prefix of existing Zowe SZWEEXEC Target libraries</label>
+        <abstract>Prefix of existing SZWEEXEC Target libraries created during PSWI or SMP/E</abstract>
+        <description>Prefix of existing SZWEEXEC Target libraries created during PSWI or SMP/E installation phase</description>
         <category>zowe</category>
         <string valueMustBeChoice="false" multiLine="false">
             <!-- Put validation here -->
@@ -202,8 +202,8 @@ It is used by ZWESLSTC or by zwe command</description>
     </variable>
     <variable name="zowe_externalDomains" scope="instance" visibility="public">
         <label>Zowe external domains</label>
-        <abstract>The domain name of your Dynamic VIP Address (DVIPA)</abstract>
-        <description>The domain name of your Dynamic VIP Address (DVIPA)</description>
+        <abstract>The list of external domains</abstract>
+        <description>Defines a list of external domains that will be used by the Zowe instance.</description>
         <category>zowe</category>
         <string valueMustBeChoice="false" multiLine="true">
             <!-- Put validation here -->
@@ -459,10 +459,10 @@ How we want to verify SSL certificates of services. Valid values are:
         </string>
     </variable>
     <variable name="node_home" scope="instance" visibility="public">
-        <label>NodeJS home</label>
-        <abstract>Path to the NodeJS home</abstract>
-        <description>Path to the NodeJS home</description>
-        <category>node</category>
+        <label>Node.js home</label>
+        <abstract>Path to the Node.js home</abstract>
+        <description>Path to the Node.js home</description>
+        <category>Node.js</category>
         <string valueMustBeChoice="false" multiLine="false">
             <!-- Put validation here -->
             <!-- Specify choices here -->
@@ -502,9 +502,9 @@ How we want to verify SSL certificates of services. Valid values are:
         </string>
     </variable>
     <variable name="components_gateway_enabled" scope="instance" visibility="public">
-        <label>Enable the gateway</label>
-        <abstract>Check this option to enable the gateway</abstract>
-        <description>Check this option to enable the gateway</description>
+        <label>Enable Gateway</label>
+        <abstract>Check this option to enable Gateway</abstract>
+        <description>Check this option to enable Gateway</description>
         <category>components</category>
         <boolean>
             <!-- Put validation here -->
@@ -514,8 +514,8 @@ How we want to verify SSL certificates of services. Valid values are:
     </variable>
     <variable name="components_gateway_port" scope="instance" visibility="public">
         <label>Gateway port</label>
-        <abstract>Port for the API ML gateway</abstract>
-        <description>Port for the API ML gateway</description>
+        <abstract>Port for the APIML Gateway</abstract>
+        <description>Port for the APIML Gateway</description>
         <category>components</category>
         <integer>
             <!-- Put validation here -->
@@ -525,8 +525,8 @@ How we want to verify SSL certificates of services. Valid values are:
     </variable>
     <variable name="components_gateway_debug" scope="instance" visibility="public">
         <label>Gateway debug</label>
-        <abstract>Switch on the debug mode for the gateway</abstract>
-        <description>Switch on the debug mode for the gateway</description>
+        <abstract>Switch on the debug mode for Gateway</abstract>
+        <description>Switch on the debug mode for Gateway</description>
         <category>components</category>
         <boolean>
             <!-- Put validation here -->
@@ -535,9 +535,9 @@ How we want to verify SSL certificates of services. Valid values are:
         </boolean>
     </variable>
     <variable name="components_zaas_enabled" scope="instance" visibility="public">
-      <label>Enable ZAAS</label>
-      <abstract>Should the APIML ZAAS be enabled?</abstract>
-      <description>Should the APIML ZAAS be enabled?</description>
+      <label>Enable APIML ZAAS</label>
+      <abstract>Check this option to enable APIML ZAAS</abstract>
+      <description>Check this option to enable APIML ZAAS</description>
       <category>components</category>
       <boolean>
         <!-- Put validation here -->
@@ -547,8 +547,8 @@ How we want to verify SSL certificates of services. Valid values are:
     </variable>
   <variable name="components_zaas_port" scope="instance" visibility="public">
     <label>ZAAS port</label>
-    <abstract>Port for the APIML ZAAS</abstract>
-    <description>Port for the APIML ZAAS</description>
+    <abstract>Port for APIML ZAAS</abstract>
+    <description>Port for APIML ZAAS</description>
     <category>components</category>
     <integer>
       <!-- Put validation here -->
@@ -558,8 +558,8 @@ How we want to verify SSL certificates of services. Valid values are:
   </variable>
   <variable name="components_zaas_debug" scope="instance" visibility="public">
     <label>ZAAS debug</label>
-    <abstract>Switch on the debug mode for the ZAAS</abstract>
-    <description>Switch on the debug mode for the ZAAS</description>
+    <abstract>Switch on the debug mode for ZAAS</abstract>
+    <description>Switch on the debug mode for ZAAS</description>
     <category>components</category>
     <boolean>
       <!-- Put validation here -->
@@ -569,8 +569,8 @@ How we want to verify SSL certificates of services. Valid values are:
   </variable>
     <variable name="components_gateway_apiml_security_auth_provider" scope="instance" visibility="public">
         <label>APIML security auth provider</label>
-        <abstract>Authorization provider for the gateway</abstract>
-        <description>Authorization provider for the gateway</description>
+        <abstract>Authorization provider for the Gateway</abstract>
+        <description>Authorization provider for the Gateway</description>
         <category>components</category>
         <string valueMustBeChoice="false" multiLine="false">
             <!-- Put validation here -->
@@ -580,8 +580,8 @@ How we want to verify SSL certificates of services. Valid values are:
     </variable>
     <variable name="components_gateway_apiml_security_auth_zosmf_jwtAutoconfiguration" scope="instance" visibility="public">
         <label>APIML security auth z/OSMF jwtAutoconfiguration</label>
-        <abstract>JWT auto configuration for gateway security auth</abstract>
-        <description>JWT auto configuration for gateway security auth</description>
+        <abstract>JWT auto configuration for Gateway security auth</abstract>
+        <description>JWT auto configuration for Gateway security auth</description>
         <category>components</category>
         <string valueMustBeChoice="false" multiLine="false">
             <!-- Put validation here -->
@@ -593,8 +593,8 @@ How we want to verify SSL certificates of services. Valid values are:
     </variable>
     <variable name="components_gateway_apiml_security_auth_zosmf_serviceId" scope="instance" visibility="public">
         <label>APIML security auth z/OSMF serviceId</label>
-        <abstract>Service ID for gateway security auth</abstract>
-        <description>Service ID for gateway security auth</description>
+        <abstract>Service ID for Gateway security auth</abstract>
+        <description>Service ID for Gateway security auth</description>
         <category>components</category>
         <string valueMustBeChoice="false" multiLine="false">
             <!-- Put validation here -->
@@ -615,8 +615,8 @@ How we want to verify SSL certificates of services. Valid values are:
     </variable>
     <variable name="components_gateway_apiml_security_authorization_provider" scope="instance" visibility="public">
         <label>APIML security authorization provider</label>
-        <abstract>Security authorization provider for the gateway</abstract>
-        <description>Security authorization provider for the gateway</description>
+        <abstract>Security authorization provider for the Gateway</abstract>
+        <description>Security authorization provider for the Gateway</description>
         <category>components</category>
         <string valueMustBeChoice="false" multiLine="false">
             <!-- Put validation here -->
@@ -626,8 +626,8 @@ How we want to verify SSL certificates of services. Valid values are:
     </variable>
     <variable name="components_gateway_apiml_security_x509_enabled" scope="instance" visibility="public">
         <label>Enable APIML security x509</label>
-        <abstract>Check to enable the gateway security x509</abstract>
-        <description>Check to enable the gateway security x509</description>
+        <abstract>Check to enable the Gateway security x509</abstract>
+        <description>Check to enable the Gateway security x509</description>
         <category>components</category>
         <boolean>
             <!-- Put validation here -->
@@ -637,8 +637,8 @@ How we want to verify SSL certificates of services. Valid values are:
     </variable>
     <variable name="components_api_catalog_enabled" scope="instance" visibility="public">
         <label>Enable API Catalog</label>
-        <abstract>Check this option to enable the API Catalog</abstract>
-        <description>Check this option to enable the API Catalog</description>
+        <abstract>Check this option to enable API Catalog</abstract>
+        <description>Check this option to enable API Catalog</description>
         <category>components</category>
         <boolean>
             <!-- Put validation here -->
@@ -669,9 +669,9 @@ How we want to verify SSL certificates of services. Valid values are:
         </boolean>
     </variable>
     <variable name="components_discovery_enabled" scope="instance" visibility="public">
-        <label>Enable the Discovery service</label>
-        <abstract>Check this option to enable the Discovery service</abstract>
-        <description>Check this option to enable the Discovery service</description>
+        <label>Enable Discovery service</label>
+        <abstract>Check this option to enable Discovery service</abstract>
+        <description>Check this option to enable Discovery service</description>
         <category>components</category>
         <boolean>
             <!-- Put validation here -->
@@ -681,8 +681,8 @@ How we want to verify SSL certificates of services. Valid values are:
     </variable>
     <variable name="components_discovery_port" scope="instance" visibility="public">
         <label>Discovery port</label>
-        <abstract>Port on which the Discovery service should be running</abstract>
-        <description>Port on which the Discovery service should be running</description>
+        <abstract>Port on which Discovery service should be running</abstract>
+        <description>Port on which Discovery service should be running</description>
         <category>components</category>
         <integer>
             <!-- Put validation here -->
@@ -702,9 +702,9 @@ How we want to verify SSL certificates of services. Valid values are:
         </boolean>
     </variable>
     <variable name="components_caching_service_enabled" scope="instance" visibility="public">
-        <label>Enable the Caching service</label>
-        <abstract>Check this option to enable the Caching service</abstract>
-        <description>Check this option to enable the Caching service</description>
+        <label>Enable Caching service</label>
+        <abstract>Check this option to enable Caching service</abstract>
+        <description>Check this option to enable Caching service</description>
         <category>components</category>
         <boolean>
             <!-- Put validation here -->
@@ -714,8 +714,8 @@ How we want to verify SSL certificates of services. Valid values are:
     </variable>
     <variable name="components_caching_service_port" scope="instance" visibility="public">
         <label>Caching service port</label>
-        <abstract>Port for the caching service</abstract>
-        <description>Port for the caching service</description>
+        <abstract>Port for Caching service</abstract>
+        <description>Port for Caching service</description>
         <category>components</category>
         <integer>
             <!-- Put validation here -->
@@ -802,9 +802,9 @@ How we want to verify SSL certificates of services. Valid values are:
         </string>
     </variable>
     <variable name="components_app_server_enabled" scope="instance" visibility="public">
-        <label>Enable the app server</label>
-        <abstract>Check this option to enable the app server</abstract>
-        <description>Check this option to enable the app server.</description>
+        <label>Enable App server</label>
+        <abstract>Check this option to enable App server</abstract>
+        <description>Check this option to enable App server.</description>
         <category>components</category>
         <boolean>
             <!-- Put validation here -->
@@ -825,8 +825,8 @@ How we want to verify SSL certificates of services. Valid values are:
     </variable>
     <variable name="components_app_server_port" scope="instance" visibility="public">
         <label>App server port</label>
-        <abstract>Port for the app server</abstract>
-        <description>Port for the app server</description>
+        <abstract>Port for App server</abstract>
+        <description>Port for App server</description>
         <category>components</category>
         <integer>
             <!-- Put validation here -->
@@ -891,8 +891,8 @@ How we want to verify SSL certificates of services. Valid values are:
     </variable>
     <variable name="components_explorer_jes_enabled" scope="instance" visibility="public">
         <label>Enable explorer JES</label>
-        <abstract>Check this option to enable the JES explorer</abstract>
-        <description>Check this option to enable the JES explorer.</description>
+        <abstract>Check this option to enable JES explorer</abstract>
+        <description>Check this option to enable JES explorer.</description>
         <category>components</category>
         <boolean>
             <!-- Put validation here -->
@@ -902,8 +902,8 @@ How we want to verify SSL certificates of services. Valid values are:
     </variable>
     <variable name="components_explorer_mvs_enabled" scope="instance" visibility="public">
         <label>Enable explorer MVS</label>
-        <abstract>Check this option to enable the MVS explorer</abstract>
-        <description>Check this option to enable the MVS explorer.</description>
+        <abstract>Check this option to enable MVS explorer</abstract>
+        <description>Check this option to enable MVS explorer.</description>
         <category>components</category>
         <boolean>
             <!-- Put validation here -->
@@ -913,8 +913,8 @@ How we want to verify SSL certificates of services. Valid values are:
     </variable>
     <variable name="components_explorer_uss_enabled" scope="instance" visibility="public">
         <label>Enable explorer USS</label>
-        <abstract>Check this option to enable the USS explorer</abstract>
-        <description>Check this option to enable the USS explorer.</description>
+        <abstract>Check this option to enable USS explorer</abstract>
+        <description>Check this option to enable USS explorer.</description>
         <category>components</category>
         <boolean>
             <!-- Put validation here -->
@@ -1163,14 +1163,14 @@ How we want to verify SSL certificates of services. Valid values are:
         </step>
       <step name="gateway_component" optional="false">
         <title>Gateway variables</title>
-        <description>Specify the variables for the gateway component</description>
+        <description>Specify the variables for the Gateway component</description>
         <prereqStep name="main_variables"/>
         <condition>
           <expression>1 == 1</expression>
           <description>Always true</description>
           <targetStateSet>
             <extendStateExpression>
-              <description>Skipped if the gateway was not selected</description>
+              <description>Skipped if the Gateway was not selected</description>
               <expression>!${instance-components_gateway_enabled}</expression>
               <targetState>skipped</targetState>
             </extendStateExpression>
@@ -1184,7 +1184,7 @@ How we want to verify SSL certificates of services. Valid values are:
         <variableValue name="components_gateway_apiml_security_authorization_endpoint_enabled" scope="instance" noPromptIfSet="false" required="true"/>
         <variableValue name="components_gateway_apiml_security_authorization_provider" scope="instance" noPromptIfSet="false" required="false"/>
         <variableValue name="components_gateway_apiml_security_x509_enabled" scope="instance" noPromptIfSet="false" required="true"/>
-        <instructions substitution="false">Run this step to specify the cloud gateway variables</instructions>
+        <instructions substitution="false">Run this step to specify the Gateway variables</instructions>
         <weight>1</weight>
         <skills>z/OS System Programmer</skills>
         <autoEnable>false</autoEnable>
@@ -1208,7 +1208,7 @@ How we want to verify SSL certificates of services. Valid values are:
             </condition>
             <variableValue name="components_zaas_port" scope="instance" noPromptIfSet="false" required="true"/>
             <variableValue name="components_zaas_debug" scope="instance" noPromptIfSet="false" required="true"/>
-            <instructions substitution="true">Run this step to fill gateway component variables.</instructions>
+            <instructions substitution="true">Run this step to fill ZAAS component variables.</instructions>
             <weight>1</weight>
             <skills>z/OS System Programmer</skills>
             <autoEnable>false</autoEnable>
@@ -1475,7 +1475,7 @@ echo '  setup:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '    # MVS data set related configurations' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '    dataset:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '      # **COMMONLY_CUSTOMIZED**' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '      # where Zowe MVS data sets will be installed' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '      # where are existing Zowe SZWEEXEC Target libraries' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '      prefix: $!{instance-zowe_setup_dataset_prefix}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '      # **COMMONLY_CUSTOMIZED**' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '      # PROCLIB where Zowe STCs will be copied over' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
@@ -1809,7 +1809,7 @@ echo '  #   ZWED_TN3270_PORT: 23' >> "${instance-zowe_runtimeDirectory}/zowe.yam
 echo '' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '  # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '  # You can define any Zowe message portions to be checked for and the message added to the' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '  # system log upon its logging, truncated to 126 characters.' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '  # system log upon its logging, truncated to 126 characters (wildcards are not supported).' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '  sysMessages:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '  #   # Zowe starting' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '    - "ZWEL0021I"' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
@@ -1899,17 +1899,17 @@ echo '  home: "$!{instance-java_home}"' >> "${instance-zowe_runtimeDirectory}/zo
 echo '' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '#-------------------------------------------------------------------------------' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '# node.js configuration' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '# Node.js configuration' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '#' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '# Some Zowe components requires node.js. Define the path where you have your' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '# node.js is installed.' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '# Some Zowe components requires Node.js. Define the path where you have your' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '# Node.js is installed.' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '#' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '# **NOTE**: this field can be updated automatically if you pass `--update-config`' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '# to `zwe init` command.' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '#-------------------------------------------------------------------------------' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo 'node:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '  # **COMMONLY_CUSTOMIZED**' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '  # Path to your node.js home directory' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '  # Path to your Node.js home directory' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '  home: "$!{instance-node_home}"' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
@@ -2170,7 +2170,7 @@ echo '#     sysname: LPR1' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '#     # for this HA instance, we did not customize "components", so it will use default value.' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '#   # HA instance ID, we will start 2 instances on LPAR2' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '#   # **NOTE**, we can only start one gateway in same LPAR.' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '#   # **NOTE**, we can only start one Gateway in same LPAR.' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '#   lpar2a:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '#     # hostname where this instance will be started' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '#     hostname: lpar2.my-company.com' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
@@ -2266,8 +2266,8 @@ zwe install -c '${instance-zowe_runtimeDirectory}/zowe.yaml' --allow-overwrite</
             </template>
         </step>
         <step name="init_zowe" optional="false">
-            <title>Run the Zowe init</title>
-            <description>Executes the Zowe initialization</description>
+            <title>Run scripts for Zowe initialization</title>
+            <description>Executes scripts for Zowe initialization</description>
             <prereqStep name="install_zowe"/>
             <!-- condition -->
             <!--variableValues-->
@@ -2283,10 +2283,9 @@ zwe install -c '${instance-zowe_runtimeDirectory}/zowe.yaml' --allow-overwrite</
             Each <b>zwe init</b> sub-command defines a configuration. 
 <ul>
 <li><b>mvs:</b> Copy the data sets provided with Zowe to custom data sets.</li>
-<li><b>security:</b> Create the user IDs and security manager settings.</li>
-<li><b>apfauth:</b> APF authorize the LOADLIB containing the modules that need to perform z/OS priviledged security calls.</li>
-<li><b>certificate:</b> Configure Zowe to use TLS certificates.</li>
+#if (${instance-components_caching_service_storage_mode} == "VSAM" && ${instance-components_caching_service_enabled})
 <li><b>vsam:</b> Configure the VSAM files needed to run the Zowe caching service used for high availability (HA).</li>
+#end
 <li><b>stc:</b> Configure the system to launch the Zowe started task.</li>
 </ul>
             ]]></instructions>
@@ -2314,24 +2313,20 @@ zwe init vsam -c '${instance-zowe_runtimeDirectory}/zowe.yaml' --allow-overwrite
             </template>
         </step>
         <step name="init_zowe_security" optional="false">
-            <title>Run the Zowe init security</title>
-            <description>Executes the Zowe initialization for security setup</description>
+            <title>Run scripts for Zowe security initialization</title>
+            <description>Executes Zowe initialization scripts for security setup</description>
             <prereqStep name="install_zowe"/>
             <!--variableValues-->
             <instructions substitution="true"><![CDATA[
             This step runs the commands: <br/>
-            <code>zwe init apfauth -c ${instance-zowe_runtimeDirectory}/zowe.yml</code> <br/>
             <code>zwe init security -c ${instance-zowe_runtimeDirectory}/zowe.yml --allow-overwrite</code> <br/>
+            <code>zwe init apfauth -c ${instance-zowe_runtimeDirectory}/zowe.yml</code> <br/>            
             <br/>
             <b>NOTE:</b>
             Each <b>zwe init</b> sub-command defines a configuration. 
 <ul>
-<li><b>mvs:</b> Copy the data sets provided with Zowe to custom data sets.</li>
 <li><b>security:</b> Create the user IDs and security manager settings.</li>
 <li><b>apfauth:</b> APF authorize the LOADLIB containing the modules that need to perform z/OS priviledged security calls.</li>
-<li><b>certificate:</b> Configure Zowe to use TLS certificates.</li>
-<li><b>vsam:</b> Configure the VSAM files needed to run the Zowe caching service used for high availability (HA).</li>
-<li><b>stc:</b> Configure the system to launch the Zowe started task.</li>
 </ul>
             ]]></instructions>
             <weight>1</weight>
