@@ -19,10 +19,10 @@ auth_libs="authLoadlib authPluginLib"
 
 ###############################
 # validation
-require_zowe_yaml
+require_zowe_yaml "skipnode"
 
 # read prefix and validate
-prefix=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.dataset.prefix")
+prefix=$(read_yaml_configmgr "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.dataset.prefix")
 if [ -z "${prefix}" ]; then
   print_error_and_exit "Error ZWEL0157E: Zowe dataset prefix (zowe.setup.dataset.prefix) is not defined in Zowe YAML configuration file." "" 157
 fi
@@ -32,7 +32,7 @@ fi
 job_has_failures=
 for key in ${auth_libs}; do
   # read def and validate
-  ds=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.dataset.${key}")
+  ds=$(read_yaml_configmgr "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.dataset.${key}")
   if [ -z "${ds}" ]; then
     # authLoadlib can be empty
     if [ "${key}" = "authLoadlib" ]; then

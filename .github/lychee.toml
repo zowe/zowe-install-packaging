@@ -1,0 +1,12 @@
+# This lychee configuration tries to find dead links in zwe, pswi, and smpe files which may be displayed to the user.
+#   This does not focus on dead links for internal-facing documentation, e.g. README.md.
+
+# We're including language sources as well as document files since the language sources embed URLs
+#  which can be displayed to the user, e.g. 'zwe' shell script commands displaying help information.
+
+exclude_path = ['smpe/bld/service/_README_sample_sysmod_builds.docx']
+# This exclude list covers known urls which should be ignored, including ones which contained 
+#  templated values in typescript. The templates are covered by a wildcard.
+exclude = [ 'https://www.eclipse.org/legal/epl-v20.html', 'https://zowe.org/schemas/*', 'https://www.zowe.org/schemas/*', 'https://discovery', 'https://github.com/zowe/launcher/blob/*', 'https://myregistry/url$', 'https://your-zos-host-name/zosmf/*{1,60}', '^http://service.software.ibm.com/holdata/390holddata.html',  ]
+
+hidden = true
