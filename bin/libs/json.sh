@@ -87,7 +87,7 @@ read_yaml() {
     missing_id_check=$(echo "${ZWE_PRIVATE_YAML_CACHE}" | grep "FSUM7351" 2>&1)
     if [ -n "${missing_id_check}" ]; then
       print_error "Error ZWEL0319E: NodeJS required but not found. Errors such as ZWEL0157E may occur as a result."
-      print_error "The value 'node.home' in the Zowe YAML is not correct. Set it to the directory that contains 'bin/node' within."
+      print_error "The value 'node.home' in the Zowe YAML is not correct. Set it to the parent directory of 'bin/node'."
       print_error "For example, if NodeJS is at '/opt/nodejs/bin/node', then set 'node.home' to '/opt/nodejs'."
     fi
     print_error "  * Output:"
