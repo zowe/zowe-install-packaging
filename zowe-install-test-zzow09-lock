@@ -1,1 +1,15 @@
-""
+{
+  "lockAcquiredTime": "Thu Jan 09 2025 12:44:38 GMT+0000 (Coordinated Universal Time)",
+  "uid": "1736426678665921739",
+  "repository": {
+    "owner": "zowe",
+    "repo": "zowe-install-packaging"
+  },
+  "branch": "bugfix/v2/error-on-invalid-extension-package",
+  "workflow": "Zowe CICD Integration Tests",
+  "job": "cicd-test",
+  "actor": "zowe-robot",
+  "runId": 12690099204,
+  "runNumber": 5899,
+  "link": "https://github.com/zowe/zowe-install-packaging/actions/runs/12690099204"
+}
