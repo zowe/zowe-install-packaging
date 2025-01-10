@@ -1,11 +1,24 @@
 #!/bin/bash -e
 
+function getZoweMajorVersion {
+  while read -r line; do
+    if [[ "  \"version\": \"3.1.0\"," =~ \"version\".*:.*\"([0-9]+)\. ]]; then
+      echo ${BASH_REMATCH[-1]}
+      return
+    fi
+  done < manifest.json.template
+}
+
 function updateAll {
+  zoweVersion=$(getZoweMajorVersion)
+
   updateModule "apiml"
   updateModule "common-java"
-  updateModule "jobs"
-  updateModule "files"
-  updateModule "explorer-api-common"
+  if [[ "${zoweVersion}" == "2" ]]; then
+    updateModule "jobs"
+    updateModule "files"
+    updateModule "explorer-api-common"
+  fi
 }
 
 function getArtifactId {
@@ -71,7 +84,7 @@ function getVersion {
   module=$1
 
   currentVersion="$(getValue "${module}" "(tag|version)")"
-  [[ "${currentVersion}" =~ ^[^0-9]([0-9]+)\. ]]
+  [[ "${currentVersion}" =~ ^[^0-9]*([0-9]+)\. ]]
   majorVersion="${BASH_REMATCH[1]}"
 
   [[ "$(getValue "${module}" "name")" =~ .*/(.*) ]]
