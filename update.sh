@@ -43,7 +43,7 @@ function getComponentRegex {
   module=$1
   case "${module}" in
     apiml)
-      echo "api-catalog|caching|discovery|gateway|org.zowe.apiml.api-catalog-package|org.zowe.apiml.discovery-package|org.zowe.apiml.gateway-package|org.zowe.apiml.caching-service-package|org.zowe.apiml.metrics-service-package|org.zowe.apiml.apiml-common-lib-package|org.zowe.apiml.sdk.apiml-sample-extension-package|org.zowe.apiml.cloud-gateway-package|api-layer";;
+      echo "api-catalog|caching|discovery|gateway|zaas|org.zowe.apiml.api-catalog-package|org.zowe.apiml.discovery-package|org.zowe.apiml.gateway-package|org.zowe.apiml.caching-service-package|org.zowe.apiml.metrics-service-package|org.zowe.apiml.apiml-common-lib-package|org.zowe.apiml.sdk.apiml-sample-extension-package|org.zowe.apiml.cloud-gateway-package|org.zowe.apiml.zaas-package|api-layer";;
     common-java)
       echo "org.zowe.apiml.sdk.common-java-lib-package|common-java";;
     jobs)
