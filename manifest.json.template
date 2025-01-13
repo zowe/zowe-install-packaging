@@ -93,7 +93,7 @@
       "artifact": "apiml-sample-extension-*.zip"
     },
     "org.zowe.apiml.zaas-package": {
-      "version": "3.0.36",
+      "version": "3.1.0",
       "artifact": "zaas-package-*.zip"
 	},
 	"org.zowe.getesm": {
@@ -390,7 +390,7 @@
     "zaas": {
         "registry": "zowe-docker-release.jfrog.io",
         "name": "ompzowe/zaas-service",
-        "tag" : "3.0.36-ubuntu"
+        "tag" : "3.1.0-ubuntu"
     },
     "app-server": {
       "registry": "zowe-docker-release.jfrog.io",
