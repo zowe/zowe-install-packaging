@@ -395,7 +395,7 @@
     "app-server": {
       "registry": "zowe-docker-release.jfrog.io",
       "name": "ompzowe/app-server",
-      "tag" : "3.1.0-ubuntu"
+      "tag" : "3.0.0-ubuntu"
     },
     "explorer-ip": {
       "kind": "job",
