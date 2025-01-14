@@ -14,7 +14,7 @@
     "org.zowe.zlux.zlux-core": {
       "version": "3.1.0-RC",
       "repository": "libs-snapshot-local",
-      "artifact": "zlux-core-3.1.0-20250107.161516.pax"
+      "artifact": "zlux-core-3.1.0-20250114.140434.pax"
     },
     "org.zowe.zlux.sample-angular-app": {
       "version": "2.18.0-V2.X-RC",
