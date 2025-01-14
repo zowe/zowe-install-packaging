@@ -384,6 +384,21 @@ jobs:
           ./build/parse-manifest-to-deployment.sh
           zip -r zowe-containerization.zip kubernetes
 
+      - name: '[Attestation] Create Github Attestion'
+        id: github-attestation
+        timeout-minutes: 5
+        uses: actions/attest-build-provenance@v2
+        with: 
+          subject-path:
+            .pax/zowe.pax
+            .pax/zowe-smpe.zip
+            .pax/smpe-promote.tar
+            .pax/pd.htm
+            .pax/smpe-build-logs.pax.Z
+            .pax/AZWE*
+            .pax/zowe-PSWI*
+            containers/zowe-containerization.zip
+        
       - name: '[Upload] Upload everything to artifactory'
         id: publish
         timeout-minutes: 10
@@ -399,8 +414,11 @@ jobs:
             .pax/AZWE*
             .pax/zowe-PSWI*
             containers/zowe-containerization.zip
+            ${{ steps.github-attestation.outputs.bundle-path }}
         env:
           DEBUG: 'zowe-actions:shared-actions:publish'
+
+
 
       - name: '[Post Prep 7] Update PR comment to indicate build succeeded'
         uses: actions/github-script@v5
