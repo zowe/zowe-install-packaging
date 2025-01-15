@@ -348,18 +348,7 @@ some use cases, like containerization, this port could be different.</descriptio
             <!-- Specify choices here -->
             <default>IZUDFLT</default>
         </string>
-    </variable>
-    <variable name="components_gateway_enabled" scope="instance" visibility="public">
-        <label>Enable Gateway</label>
-        <abstract>Check this option to enable Gateway</abstract>
-        <description>Check this option to enable Gateway</description>
-        <category>components</category>
-        <boolean>
-            <!-- Put validation here -->
-            <!-- Specify choices here -->
-            <default>true</default>
-        </boolean>
-    </variable>
+    </variable>    
     <variable name="components_gateway_port" scope="instance" visibility="public">
         <label>Gateway port</label>
         <abstract>Port for APIML Gateway</abstract>
@@ -370,95 +359,7 @@ some use cases, like containerization, this port could be different.</descriptio
             <!-- Specify choices here -->
             <default>7554</default>
         </integer>
-    </variable>
-    <variable name="components_gateway_internalMapper" scope="instance" visibility="public">
-      <label>Enable Gateway internal mapper</label>
-      <abstract>Check this option to enable the Gateway internal ESM identity mapper</abstract>
-      <description>Check this option to enable Gateway internal ESM identity mapper</description>
-      <category>components</category>
-      <boolean>
-          <!-- Put validation here -->
-          <!-- Specify choices here -->
-          <default>false</default>
-      </boolean>
-    </variable>
-    <variable name="components_gateway_server_internal_enabled" scope="instance" visibility="public">
-        <label>Enable gateway server internal connector</label>
-        <abstract>Check this option to enable gateway server internal connector</abstract>
-        <description>Check this option to enable gateway server internal connector</description>
-        <category>components</category>
-        <boolean>
-            <!-- Put validation here -->
-            <!-- Specify choices here -->
-            <default>false</default>
-        </boolean>
-    </variable>
-    <variable name="components_gateway_server_internal_port" scope="instance" visibility="public">
-        <label>Gateway server internal port</label>
-        <abstract>Gateway internal connector port</abstract>
-        <description>Gateway internal connector port</description>
-        <category>components</category>
-        <integer>
-            <!-- Put validation here -->
-            <!-- Specify choices here -->
-            <default>7550</default>
-        </integer>
-    </variable>
-    <variable name="components_gateway_server_internal_ssl_enabled" scope="instance" visibility="public">
-        <label>Enable gateway server internal SSL</label>
-        <abstract>Enable gateway internal connector SSL</abstract>
-        <description>Enable gateway internal connector SSL</description>
-        <category>components</category>
-        <boolean>
-            <!-- Put validation here -->
-            <!-- Specify choices here -->
-            <default>false</default>
-        </boolean>
-    </variable>
-    <variable name="components_metrics_service_enabled" scope="instance" visibility="public">
-        <label>Enable the Metrics service</label>
-        <abstract>Check this option to enable the Metrics service</abstract>
-        <description>Check this option to enable the Metrics service</description>
-        <category>components</category>
-        <boolean>
-            <!-- Put validation here -->
-            <!-- Specify choices here -->
-            <default>false</default>
-        </boolean>
-    </variable>
-    <variable name="components_metrics_service_port" scope="instance" visibility="public">
-        <label>Metrics service port</label>
-        <abstract>Port for the metrics service</abstract>
-        <description>Port for the metrics service</description>
-        <category>components</category>
-        <integer>
-            <!-- Put validation here -->
-            <!-- Specify choices here -->
-            <default>7551</default>
-        </integer>
     </variable>    
-  <variable name="components_cloud_gateway_enabled" scope="instance" visibility="public">
-        <label>Enable the Cloud gateway</label>
-        <abstract>Check this option to enable the Cloud gateway</abstract>
-        <description>Check this option to enable the Cloud gateway</description>
-        <category>components</category>
-        <boolean>
-            <!-- Put validation here -->
-            <!-- Specify choices here -->
-            <default>false</default>
-        </boolean>
-    </variable>
-    <variable name="components_cloud_gateway_port" scope="instance" visibility="public">
-        <label>Cloud gateway port</label>
-        <abstract>Port for the cloud gateway</abstract>
-        <description>Port for the cloud gateway</description>
-        <category>components</category>
-        <integer>
-            <!-- Put validation here -->
-            <!-- Specify choices here -->
-            <default>7563</default>
-        </integer>
-    </variable>     
     <variable name="components_api_catalog_port" scope="instance" visibility="public">
         <label>API catalog port</label>
         <abstract>Port on which API Catalog should be running.</abstract>
@@ -502,61 +403,6 @@ some use cases, like containerization, this port could be different.</descriptio
             <!-- Specify choices here -->
             <default>7559</default>
         </string>
-    </variable>    
-    <variable name="components_jobs_api_enabled" scope="instance" visibility="public">
-        <label>Enable jobs API</label>
-        <abstract>Check this option to enable the jobs API</abstract>
-        <description>Check this option to enable the jobs API.</description>
-        <category>components</category>
-        <boolean>
-            <!-- Put validation here -->
-            <!-- Specify choices here -->
-            <default>false</default>
-        </boolean>
-    </variable>    
-    <variable name="components_jobs_api_port" scope="instance" visibility="public">
-        <label>Jobs API port</label>
-        <abstract>Port for the Jobs API</abstract>
-        <description>Port for the Jobs API</description>
-        <category>components</category>
-        <integer>
-            <!-- Put validation here -->
-            <!-- Specify choices here -->
-            <default>7558</default>
-        </integer>
-    </variable>
-    <variable name="components_files_api_enabled" scope="instance" visibility="public">
-        <label>Enable files API</label>
-        <abstract>Check this option to enable the files API</abstract>
-        <description>Check this option to enable the files API.</description>
-        <category>components</category>
-        <boolean>
-            <!-- Put validation here -->
-            <!-- Specify choices here -->
-            <default>false</default>
-        </boolean>
-    </variable>  
-    <variable name="components_files_api_port" scope="instance" visibility="public">
-        <label>Files API port</label>
-        <abstract>Port which will be used by the Files API</abstract>
-        <description>Port which will be used by the Files API</description>
-        <category>components</category>
-        <integer>
-            <!-- Put validation here -->
-            <!-- Specify choices here -->
-            <default>7559</default>
-        </integer>
-    </variable>    
-    <variable name="useconfig_manager_enabled" scope="instance" visibility="public">
-        <label>Enable Zowe configuration manager</label>
-        <abstract>Check this option to enable Zowe configuration manager</abstract>
-        <description>Check this option to enable Zowe configuration manager.</description>
-        <category>configManager</category>
-        <boolean>
-            <!-- Put validation here -->
-            <!-- Specify choices here -->
-            <default>true</default>
-        </boolean>
     </variable>    
     <variable name="zowe_rbacProfileId" scope="instance" visibility="public">
         <label>Zowe Profile Identifier</label>
@@ -734,13 +580,7 @@ some use cases, like containerization, this port could be different.</descriptio
             <variableValue name="node_home" scope="instance" noPromptIfSet="false" required="true"/>
             <variableValue name="zOSMF_host" scope="instance" noPromptIfSet="false" required="true"/>
             <variableValue name="zOSMF_port" scope="instance" noPromptIfSet="false" required="true"/>
-            <variableValue name="zOSMF_applId" scope="instance" noPromptIfSet="false" required="true"/>
-            <variableValue name="useconfig_manager_enabled" scope="instance" noPromptIfSet="false" required="true"/>            
-            <variableValue name="components_gateway_enabled" scope="instance" noPromptIfSet="false" required="true"/>
-            <variableValue name="components_metrics_service_enabled" scope="instance" noPromptIfSet="false" required="true"/>
-            <variableValue name="components_cloud_gateway_enabled" scope="instance" noPromptIfSet="false" required="true"/>                        
-            <variableValue name="components_jobs_api_enabled" scope="instance" noPromptIfSet="false" required="true"/>
-            <variableValue name="components_files_api_enabled" scope="instance" noPromptIfSet="false" required="true"/>             
+            <variableValue name="zOSMF_applId" scope="instance" noPromptIfSet="false" required="true"/>                                                                   
             <variableValue name="zowe_setup_security_product" scope="instance" noPromptIfSet="false" required="true"/>
             <variableValue name="zowe_setup_security_groups_admin" scope="instance" noPromptIfSet="false" required="true"/>
             <variableValue name="zowe_setup_security_groups_stc" scope="instance" noPromptIfSet="false" required="true"/>
@@ -772,125 +612,7 @@ some use cases, like containerization, this port could be different.</descriptio
             <autoEnable>false</autoEnable>
             <canMarkAsFailed>false</canMarkAsFailed>
             <!--template-->
-          </step>
-        <step name="gateway_components" optional="false">
-            <title>Gateway component variables</title>
-            <description>Define the gateway component variables here</description>
-            <prereqStep name="main_variables"/>
-            <condition>
-                <expression>1 == 1</expression>
-                <description>Always true</description>
-                <targetStateSet>
-                    <extendStateExpression>
-                        <description>Skipped if gateway is not selected</description>
-                        <expression>!${instance-components_gateway_enabled}</expression>
-                        <targetState>skipped</targetState>
-                    </extendStateExpression>
-                </targetStateSet>
-            </condition>
-            <variableValue name="components_gateway_internalMapper" scope="instance" noPromptIfSet="false" required="true"/>
-            <variableValue name="components_gateway_server_internal_enabled" scope="instance" noPromptIfSet="false" required="true"/>
-            <variableValue name="components_gateway_server_internal_port" scope="instance" noPromptIfSet="false" required="true"/>
-            <variableValue name="components_gateway_server_internal_ssl_enabled" scope="instance" noPromptIfSet="false" required="true"/>             
-            <instructions substitution="true">Run this step to fill gateway component variables.</instructions>
-            <weight>1</weight>
-            <skills>z/OS System Programmer</skills>
-            <autoEnable>false</autoEnable>
-            <canMarkAsFailed>false</canMarkAsFailed>
-            <!--template-->
-        </step>
-        <step name="metrics_component" optional="false">
-            <title>Metrics component variables</title>
-            <description>Specify the variables for the metrics component</description>
-            <prereqStep name="main_variables"/>
-            <condition>
-                <expression>1 == 1</expression>
-                <description>Always true</description>
-                <targetStateSet>
-                    <extendStateExpression>
-                        <description>Skipped if the metrics component was not selected</description>
-                        <expression>!${instance-components_metrics_service_enabled}</expression>
-                        <targetState>skipped</targetState>
-                    </extendStateExpression>
-                </targetStateSet>
-            </condition>
-            <variableValue name="components_metrics_service_port" scope="instance" noPromptIfSet="false" required="true"/>            
-            <instructions substitution="false">Run this step to specify the metrics variables</instructions>
-            <weight>1</weight>
-            <skills>z/OS System Programmer</skills>
-            <autoEnable>false</autoEnable>
-            <canMarkAsFailed>false</canMarkAsFailed>
-            <!--template-->
-        </step>
-        <step name="cloud_gateway_component" optional="false">
-            <title>Cloud gateway variables</title>
-            <description>Specify the variables for the cloud gateway component</description>
-            <prereqStep name="main_variables"/>
-            <condition>
-                <expression>1 == 1</expression>
-                <description>Always true</description>
-                <targetStateSet>
-                    <extendStateExpression>
-                        <description>Skipped if the cloud gateway was not selected</description>
-                        <expression>!${instance-components_cloud_gateway_enabled}</expression>
-                        <targetState>skipped</targetState>
-                    </extendStateExpression>
-                </targetStateSet>
-            </condition>
-            <variableValue name="components_cloud_gateway_port" scope="instance" noPromptIfSet="false" required="true"/>            
-            <instructions substitution="false">Run this step to specify the cloud gateway variables</instructions>
-            <weight>1</weight>
-            <skills>z/OS System Programmer</skills>
-            <autoEnable>false</autoEnable>
-            <canMarkAsFailed>false</canMarkAsFailed>
-            <!--template-->
-        </step> 
-        <step name="jobs_api_variables" optional="false">
-            <title>Jobs API Variables</title>
-            <description>Define variables for the Jobs API</description>
-            <prereqStep name="main_variables"/>
-            <condition>
-                <expression>1==1</expression>
-                <description>Always true</description>
-                <targetStateSet>
-                    <extendStateExpression>
-                        <description>Skips if the Jobs API wasn't selected</description>
-                        <expression>!${instance-components_jobs_api_enabled}</expression>
-                        <targetState>skipped</targetState>
-                    </extendStateExpression>
-                </targetStateSet>
-            </condition>
-            <variableValue name="components_jobs_api_port" scope="instance" noPromptIfSet="false" required="true"/>            
-            <instructions substitution="false">Run this step to define the variables for the Jobs API</instructions>
-            <weight>1</weight>
-            <skills>z/OS System Programmer</skills>
-            <autoEnable>false</autoEnable>
-            <canMarkAsFailed>false</canMarkAsFailed>
-            <!--template-->
-        </step>
-        <step name="files_api_variables" optional="false">
-            <title>Files API Variables</title>
-            <description>Specify the variables for Files API</description>
-            <prereqStep name="main_variables"/>
-            <condition>
-                <expression>1==1</expression>
-                <description>Always true</description>
-                <targetStateSet>
-                    <extendStateExpression>
-                        <description>Skips this step if the Files API wasn't selected</description>
-                        <expression>!${instance-components_files_api_enabled}</expression>
-                        <targetState>skipped</targetState>
-                    </extendStateExpression>
-                </targetStateSet>
-            </condition>
-            <variableValue name="components_files_api_port" scope="instance" noPromptIfSet="false" required="true"/>           
-            <instructions substitution="false">Run this step to specify the variables for the Files API</instructions>
-            <weight>1</weight>
-            <skills>z/OS System Programmer</skills>
-            <autoEnable>false</autoEnable>
-            <canMarkAsFailed>false</canMarkAsFailed>
-            <!--template-->
-        </step>
+          </step>        
     </step>
     <step name="configure" optional="false">
         <title>Create configuration</title>
@@ -1218,7 +940,7 @@ echo '  # Where extensions are installed' >> "${instance-zowe_runtimeDirectory}/
 echo '  extensionDirectory: $!{instance-zowe_extensionDirectory}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '  # **COMMONLY_CUSTOMIZED**' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '  useConfigmgr: $!{instance-useconfig_manager_enabled}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '  useConfigmgr: true' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '  # Setting to true will enable:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '  # * schema-backed validation of zowe.yaml' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '  # * should greatly improve startup time.' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
@@ -1419,15 +1141,14 @@ echo '#-------------------------------------------------------------------------
 echo 'components:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '  # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-#if (${instance-components_gateway_enabled} == "true" )
 echo '  gateway:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '    enabled: ${instance-components_gateway_enabled}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '    enabled: true' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '    port: ${instance-components_gateway_port}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '    debug: false' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '    apiml:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '      security:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '        useInternalMapper: ${instance-components_gateway_internalMapper}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '        useInternalMapper: true' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '        auth:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '          provider: zosmf' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '          zosmf:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
@@ -1442,38 +1163,6 @@ echo '          enabled: true' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '    server:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '      internal:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '      # gateway supports internal connector' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '        enabled: ${instance-components_gateway_server_internal_enabled}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '        port: ${instance-components_gateway_server_internal_port}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '        ssl:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '          enabled: ${instance-components_gateway_server_internal_ssl_enabled}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '          # internal connector can use different certificate' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '          # certificate:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '          #   keystore:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '          #     alias: ""' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-#end
-#if (${instance-components_gateway_enabled} == "false" )
-echo '  gateway:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '    enabled: ${instance-components_gateway_enabled}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '    port: 7554' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '    debug: false' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '    apiml:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '      security:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '        useInternalMapper: false' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '        auth:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '          provider: "zosmf"' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '          zosmf:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '            jwtAutoconfiguration: "auto"' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '            serviceId: "zosmf"' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '        authorization:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '          endpoint:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '            enabled: false' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '          provider: ""' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '        x509:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '          enabled: false' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '    server:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '      internal:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '      # gateway supports internal connector' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '        enabled: false' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '        port: 7550' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '        ssl:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
@@ -1482,7 +1171,6 @@ echo '          # internal connector can use different certificate' >> "${instan
 echo '          # certificate:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '          #   keystore:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '          #     alias: ""' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-#end
 echo '' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '    # If we customize this to use different external certificate, than should also' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '    # define "server.internal.ssl.certificate" and enable "server.internal.ssl.enabled".' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
@@ -1491,32 +1179,16 @@ echo '    #   keystore:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '    #     alias: ""' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '  # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-#if (${instance-components_metrics_service_enabled} == "true" )
 echo '  metrics-service:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '    enabled: ${instance-components_metrics_service_enabled}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '    port: ${instance-components_metrics_service_port}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '    debug: false' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-#end
-#if (${instance-components_metrics_service_enabled} == "false" )
-echo '  metrics-service:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '    enabled: ${instance-components_metrics_service_enabled}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '    enabled: false' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '    port: 7551' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '    debug: false' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-#end
 echo '' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '  # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-#if (${instance-components_cloud_gateway_enabled} == "true" )
 echo '  cloud-gateway:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '    enabled: ${instance-components_cloud_gateway_enabled}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '    port: ${instance-components_cloud_gateway_port}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '    debug: false' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-#end
-#if (${instance-components_cloud_gateway_enabled} == "false" )
-echo '  cloud-gateway:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '    enabled: ${instance-components_cloud_gateway_enabled}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '    enabled: false' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '    port: 7563' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '    debug: false' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-#end
 echo '' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '  # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '  api-catalog:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
@@ -1572,32 +1244,16 @@ echo '      jwt:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '        fallback: true' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '  # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-#if (${instance-components_jobs_api_enabled} == "true" )
 echo '  jobs-api:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '    enabled: ${instance-components_jobs_api_enabled}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '    debug: false' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '    port: ${instance-components_jobs_api_port}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-#end
-#if (${instance-components_jobs_api_enabled} == "false" )
-echo '  jobs-api:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '    enabled: ${instance-components_jobs_api_enabled}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '    enabled: false' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '    debug: false' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '    port: 7558' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-#end
 echo '' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '  # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-#if (${instance-components_files_api_enabled} == "true" )
 echo '  files-api:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '    enabled: ${instance-components_files_api_enabled}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '    debug: false' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '    port: ${instance-components_files_api_port}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-#end
-#if (${instance-components_files_api_enabled} == "false" )
-echo '  files-api:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '    enabled: ${instance-components_files_api_enabled}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '    enabled: false' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '    debug: false' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '    port: 7559' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-#end
 echo '' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '  # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '  explorer-jes:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
