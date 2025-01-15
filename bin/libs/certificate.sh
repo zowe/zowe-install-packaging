@@ -647,7 +647,7 @@ EOF
       fi
       if [ `uname` = "OS/390" ]; then
         # check if certificate is in EBCDIC before converting
-        if [[ "$(head -c 10 "${keystore_dir}/${alias_lc}.cer")" = "-----BEGIN" ]]; then
+        if [[ "$(head -c 10 \"${keystore_dir}/${alias_lc}.cer\")" = "-----BEGIN" ]]; then
           print_message ">>>> Certificate \"${keystore_dir}/${alias_lc}.cer is in EBCDIC."
         else
           print_message ">>>> Converting certificate \"${keystore_dir}/${alias_lc}.cer\" to EBCDIC."
