@@ -1,1 +1,15 @@
-""
+{
+  "lockAcquiredTime": "Thu Jan 16 2025 20:51:51 GMT+0000 (Coordinated Universal Time)",
+  "uid": "1737060711139190418",
+  "repository": {
+    "owner": "zowe",
+    "repo": "zowe-install-packaging"
+  },
+  "branch": "user/markackert/update-gha-uploads",
+  "workflow": "Zowe CICD Integration Tests",
+  "job": "cicd-test",
+  "actor": "zowe-robot",
+  "runId": 12817354474,
+  "runNumber": 5949,
+  "link": "https://github.com/zowe/zowe-install-packaging/actions/runs/12817354474"
+}
