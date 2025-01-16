@@ -34,7 +34,7 @@ jobs:
       - name: '[Build] Make diff'
         run: git diff ${{ env.FROM }} ${{ env.TO }} -- example-zowe.yaml > example-yaml.diff
       - name: '[Upload]'
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: example-yaml.diff
           path: example-yaml.diff
