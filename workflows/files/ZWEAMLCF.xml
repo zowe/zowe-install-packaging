@@ -601,9 +601,9 @@ some use cases, like containerization, this port could be different.</descriptio
             <title>Ports</title>
             <description>Specify ports variables for components</description>
             <prereqStep name="main_variables"/>                  
-            <variableValue name="components_gateway_port" scope="instance" noPromptIfSet="false" required="true"/>            
-            <variableValue name="components_api_catalog_port" scope="instance" noPromptIfSet="false" required="true"/>
-            <variableValue name="components_discovery_port" scope="instance" noPromptIfSet="false" required="true"/>
+            <variableValue name="components_gateway_port" scope="instance" noPromptIfSet="false" required="true"/>   
+            <variableValue name="components_discovery_port" scope="instance" noPromptIfSet="false" required="true"/>         
+            <variableValue name="components_api_catalog_port" scope="instance" noPromptIfSet="false" required="true"/>            
             <variableValue name="components_caching_service_port" scope="instance" noPromptIfSet="false" required="true"/>
             <variableValue name="components_caching_service_storage_infinispan_jgroups_port" scope="instance" noPromptIfSet="false" required="false"/>            
             <instructions substitution="false">Run this step to specify ports variables for components</instructions>
