@@ -10,6 +10,7 @@ on:
     branches: 
       - v3.x/staging
       - v2.x/staging
+      - user/markackert/holddata-automation
 
 jobs:
   check-manifest:
