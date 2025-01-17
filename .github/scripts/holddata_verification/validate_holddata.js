@@ -3,7 +3,8 @@
 
 const core = require('@actions/core');
 
-if (process.env['HOLDDATA_FILES'] == null) {
+if (process.env['HOLDDATA_FILES'] == null || 
+    process.env['HOLDDATA_FILES'].trim().length == 0) {
   core.setFailed('This script requires the HOLDDATA_FILES env to be set.');
   return;
 }
