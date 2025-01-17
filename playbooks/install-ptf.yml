@@ -74,6 +74,7 @@
   # Configure Zowe ?
   - import_role:
       name: configure
+    when: zowe_ptf_configure|default(True)
 
   # ============================================================================
   # Customize for testing

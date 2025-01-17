@@ -416,20 +416,25 @@ export async function installAndVerifyExtension(testcase: string, serverId: stri
  * @param  {Object}    extraFmidVars
  * @param  {Object}    extraPtfVars
  */
-export async function installAndVerifySmpePtf(testcase: string, serverId: string,  extraPtfVars: {[key: string]: any} = {}): Promise<void> {
-  debug(`installAndVerifySmpePtf(${testcase}, ${serverId}, ${JSON.stringify(extraPtfVars)})`);
+export async function installAndVerifySmpePtf(testcase: string, serverId: string, extraFmidVars: {[key: string]: any} = {}, extraPtfVars: {[key: string]: any} = {}): Promise<void> {
+  debug(`installAndVerifySmpePtf(${testcase}, ${serverId}, ${JSON.stringify(extraFmidVars)}, ${JSON.stringify(extraPtfVars)})`);
 
   debug(`run install-fmid.yml on ${serverId}`);
+  
+  const fmidVars = {
+    ...{
+      'zowe_build_remote': ZOWE_FMID,
+      'skip_start': 'true',
+      ...APIML_OIDC_VARS
+    },
+    ...extraFmidVars,
+  }
  
   const resultFmid = await runAnsiblePlaybook(
     testcase,
     'install-fmid.yml',
     serverId,
-    {
-      'zowe_build_remote': ZOWE_FMID,
-      'skip_start': 'true',
-      ...APIML_OIDC_VARS
-    }
+    fmidVars
   );
 
   expect(resultFmid.code).toBe(0);
