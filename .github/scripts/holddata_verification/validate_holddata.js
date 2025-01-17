@@ -12,7 +12,7 @@ if (process.env['HOLDDATA_FILES'] == null ||
 core.info(`Checking HOLDDATA: ${process.env.HOLDDATA_FILES}`);
 
 const errors = [];
-for (const holdDataFile of process.env.HOLDDATA_FILES.split(',')) {
+for (const holdDataFile of process.env.HOLDDATA_FILES.trim().split(' ')) {
 
   const fs = require('fs');
 
