@@ -52,7 +52,7 @@ jobs:
       - name: Check HOLDDATA is in a valid format
         if: ${{ steps.changed-files-yaml.outputs.hold_any_changed == 'true' }} 
         env:
-          HOLDDATA_FILES: ${{ steps.changed-files-yaml.outputs.hold_changed_files }}
+          HOLDDATA_FILES: ${{ steps.changed-files-yaml.outputs.hold_all_changed_files }}
         id: verify-holddata-format
         run: node .github/scripts/holddata_verification/validate_holddata.js
 
