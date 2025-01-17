@@ -1,0 +1,15 @@
+{
+  "name": "holddata_verification",
+  "version": "1.0.0",
+  "description": "Script to verify Zowe HOLDDATA syntax",
+  "main": "validate_holddata.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "EPL-2.0",
+  "dependencies": {
+    "@actions/core": "1.10.1",
+    "@actions/github": "6.0.0"
+  }
+}

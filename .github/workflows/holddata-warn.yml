@@ -9,16 +9,22 @@ on:
     types: [opened, synchronize]
     branches: 
       - v3.x/staging
+      - v3.x/rc
       - v2.x/staging
+      - v2.x/rc
       - user/markackert/holddata-automation
 
 jobs:
-  check-manifest:
+  check-holddata:
     runs-on: ubuntu-latest
     steps:
 
       - name: Checkout code
         uses: actions/checkout@v4
+
+      - name: Install Dependencies for verification script
+        run: npm install
+        working-directory: .github/scripts/holddata_verification
 
       - name: List changed files which are candidates for HOLDDATA
         id: changed-files-yaml
@@ -42,3 +48,12 @@ jobs:
           echo "This may require HOLDDATA to be created."
           echo "Files changed: $TEST_ALL_CHANGED_FILES"
           exit 1
+
+      - name: Check HOLDDATA is in a valid format
+        if: ${{ steps.changed-files-yaml.outputs.hold_any_changed == 'true' }} 
+        env:
+          HOLDDATA_FILES: ${{ steps.changed-files-yaml.outputs.hold_changed_files }}
+        id: verify-holddata-format
+        run: node .github/scripts/holddata_verification/validate_holddata.js
+
+            
