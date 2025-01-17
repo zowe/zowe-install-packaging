@@ -9,6 +9,8 @@ if (process.env['HOLDDATA_FILES'] == null ||
   return;
 }
 
+core.info(`Checking HOLDDATA: ${process.env.HOLDDATA_FILES}`);
+
 const errors = [];
 for (const holdDataFile of process.env.HOLDDATA_FILES.split(',')) {
 
@@ -54,4 +56,6 @@ for (const holdDataFile of process.env.HOLDDATA_FILES.split(',')) {
 if (errors.length > 0) {
   core.error(JSON.stringify(errors));
   core.setFailed(`HOLDDATA has errors. See above.`);
+} else {
+  core.info(`HOLDDATA has no errors.`);
 }
