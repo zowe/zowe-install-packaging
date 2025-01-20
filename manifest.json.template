@@ -122,7 +122,7 @@
       "version": "~2.0.0-SNAPSHOT"
     },
     "org.zowe.licenses": {
-      "version": "2.3.0",
+      "version": "3.0.0",
       "artifact": "zowe_licenses_full.zip"
     }
   },
@@ -346,6 +346,14 @@
         "repository": "explorer-ip",
         "tag": "v2.x/master",
         "destinations": ["Zowe PAX"]
+      }]
+    }, {
+      "componentGroup": "Zowe Client Python SDK",
+      "entries": [{
+        "repository": "zowe-client-python-sdk",
+        "core": false,
+        "tag": "main",
+        "destinations": ["Zowe Client Python SDK"]
       }]
     }
   ],

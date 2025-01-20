@@ -58,3 +58,4 @@ jobs:
             pswi/**.txt
             pswi/zowe_.yaml
             pswi/ZWECONF1/**
+            pswi/logs/**

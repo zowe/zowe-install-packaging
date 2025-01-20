@@ -5,7 +5,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  *
- * Copyright IBM Corporation 2022
+ * Copyright Zowe Contributors 2024
  */
 
 import {
@@ -15,9 +15,8 @@ import {
 } from '../../../utils';
 import { TEST_TIMEOUT_CONVENIENCE_BUILD } from '../../../constants';
 
-// Only runs on zzow11 at time of change (04.2023). See cicd-test.yml and make_matrix.sh.
 const testServer = process.env.TEST_SERVER;
-const testSuiteName = 'Test convenience build installation with node.js v18';
+const testSuiteName = 'Test convenience build installation with node.js v22';
 describe(testSuiteName, () => {
   beforeAll(() => {
     // validate variables
@@ -33,7 +32,7 @@ describe(testSuiteName, () => {
       {
         'zowe_build_local': process.env['ZOWE_BUILD_LOCAL'],
         'zowe_custom_for_test': 'true',
-        'zos_node_home': '/ZOWE/node/node-v18.16.0',
+        'zos_node_home': '/ZOWE/node/node-v22.10.0',
         'zowe_lock_keystore': 'false',
       }
     );
