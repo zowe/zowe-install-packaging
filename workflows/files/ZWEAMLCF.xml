@@ -6,7 +6,7 @@
         <workflowID scope="none">config_apiml_zowe_30</workflowID>
         <workflowDefaultName>Configuration of APIML for Zowe 3.0</workflowDefaultName>
         <workflowDescription>Use this simplified workflow to configure APIML for Zowe 3.0</workflowDescription>
-        <workflowVersion>2</workflowVersion>
+        <workflowVersion>###ZOWE_VERSION###</workflowVersion>
         <vendor>Zowe</vendor>
         <General/>
     </workflowInfo>
@@ -682,8 +682,8 @@ some use cases, like containerization, this port could be different.</descriptio
             <description>Specify ports variables for components</description>
             <prereqStep name="main_variables"/>                  
             <variableValue name="components_gateway_port" scope="instance" noPromptIfSet="false" required="true"/>
-            <variableValue name="components_zaas_port" scope="instance" noPromptIfSet="false" required="true"/>
             <variableValue name="components_api_catalog_port" scope="instance" noPromptIfSet="false" required="true"/>
+            <variableValue name="components_zaas_port" scope="instance" noPromptIfSet="false" required="true"/>            
             <variableValue name="components_discovery_port" scope="instance" noPromptIfSet="false" required="true"/>
             <variableValue name="components_caching_service_port" scope="instance" noPromptIfSet="false" required="true"/>
             <variableValue name="components_caching_service_storage_infinispan_jgroups_port" scope="instance" noPromptIfSet="false" required="false"/>
