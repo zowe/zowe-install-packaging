@@ -2,7 +2,7 @@
 
 function getZoweMajorVersion {
   while read -r line; do
-    if [[ "  \"version\": \"3.1.0\"," =~ \"version\".*:.*\"([0-9]+)\. ]]; then
+    if [[ "${line}" =~ \"version\".*:.*\"([0-9]+)\. ]]; then
       echo ${BASH_REMATCH[-1]}
       return
     fi
