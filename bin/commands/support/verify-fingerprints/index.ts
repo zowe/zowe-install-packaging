@@ -152,7 +152,7 @@ export function execute() {
   
   if (verifyFailed) {
     common.printMessage("");
-    common.printErrorAndExit('Error ZWEL0181E: Failed to verify Zowe file fingerprints.', undefined, 151);
+    common.printErrorAndExit('Error ZWEL0181E: Failed to verify Zowe file fingerprints.', undefined, 181);
   } else {
     common.printLevel1Message('Zowe file fingerprints verification passed.');
   }
