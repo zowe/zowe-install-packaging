@@ -29,15 +29,15 @@ function processCommResult(content: string, lines?: number): string {
     if (lines && lines > 0) {
       linesSplit = linesSplit.slice(0, lines);
     }
-    linesSplit.forEach(line => { 
+    linesSplit.forEach(line => {
       const oneLineSplit = line.split(' ');
-      returnedOutput += `${oneLineSplit[0]}\n` 
+      returnedOutput += `${oneLineSplit[0]}\n`
     })
   }
   return returnedOutput;
 }
 
-export function execute() {
+export function execute(doNotExit: Boolean): void {
 
   common.printLevel0Message('Verify Zowe file fingerprints');
 
@@ -146,13 +146,16 @@ export function execute() {
         }
     }
   });
-  
+
   fs.rmrf(allFiles);
   fs.rmrf(customHashes);
-  
+
   if (verifyFailed) {
     common.printMessage("");
-    common.printErrorAndExit('Error ZWEL0181E: Failed to verify Zowe file fingerprints.', undefined, 181);
+    common.printError('Error ZWEL0181E: Failed to verify Zowe file fingerprints.');
+    if (doNotExit != true) {
+      std.exit(181);
+    }
   } else {
     common.printLevel1Message('Zowe file fingerprints verification passed.');
   }

@@ -29,9 +29,9 @@ import * as shell from '../../libs/shell';
 import * as zoslib from '../../libs/zos';
 import * as zosfs from '../../libs/zos-fs';
 
-// import * as verifyFingerprints from './verify-fingerprints/index';
+import * as verifyFingerprints from './verify-fingerprints/index';
 
-export function execute() {
+export function execute(): void {
 
   common.printLevel0Message('Collect information for Zowe support');
   const isoDate = new Date().toISOString().replace(/T|t|:/g,'-').substring(0,19);
@@ -159,9 +159,7 @@ export function execute() {
   std.setenv('ZWE_PRIVATE_LOG_FILE', `${verifyFingerprintsFile}`);
   std.setenv('ZWE_PRIVATE_LOG_LEVEL_ZWELS', 'TRACE');
   fs.createFile(verifyFingerprintsFile, 0o700);
-  // ===========================================================
-  // verifyFingerprints.execute();
-  // ===========================================================
+  verifyFingerprints.execute(true);
   std.setenv('ZWE_PRIVATE_LOG_FILE',`${supportLogLevel}`);
   std.setenv('ZWE_PRIVATE_LOG_LEVEL_ZWELS', `${supportLogLevel}`);
   common.printMessage("");
