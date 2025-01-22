@@ -5,9 +5,11 @@ This command will collect these information:
 - Environment
   * z/OS version
   * Java version
+    * Java keytool TLS information
   * Node.js version
   * External Security Manager
   * CEE Runtime Options
+  * Filesystem flags
 - Zowe configurations
   * Zowe manifest.json
   * Zowe configuration file

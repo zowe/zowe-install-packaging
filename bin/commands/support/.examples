@@ -1,0 +1,3 @@
+zwe support -c /path/to/zowe.yaml
+
+zwe support -c /path/to/zowe.yaml --target-directory /path/to/save/support/results
