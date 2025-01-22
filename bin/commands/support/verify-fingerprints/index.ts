@@ -22,11 +22,11 @@ function requireJava() {
   return testJava.rc;
 }
 
-function processCommResult(content, lines) {
+function processCommResult(content: string, lines?: number): string {
   let returnedOutput = '';
   if (content) {
     let linesSplit = content.split("\n");
-    if (lines) {
+    if (lines && lines > 0) {
       linesSplit = linesSplit.slice(0, lines);
     }
     linesSplit.forEach(line => { 
