@@ -119,10 +119,10 @@ export function execute() {
     common.printMessage(`- Find ${commStepName} files`);
     const commResult = shell.execOutSync('sh', '-c', `cd '${zoweRuntime}' && comm -${commParameter} "${zoweRuntime}/fingerprint/RefRuntimeHash-${zoweVersion}.txt" "${customHashes}"`);
     if (commResult.rc) {
-      commom.printError(`  * Error ZWEL0151E: Failed to compare hashes of fingerprint/RefRuntimeHash-${zoweVersion}.txt and current.`);
-      commom.printError(`  * Exit code: ${commResult.rc}`);
+      common.printError(`  * Error ZWEL0151E: Failed to compare hashes of fingerprint/RefRuntimeHash-${zoweVersion}.txt and current.`);
+      common.printError(`  * Exit code: ${commResult.rc}`);
       if (commResult.out) {
-        commom.printError(`  * Output:`);
+        common.printError(`  * Output:`);
         common.printError(`${stringlib.paddingLeft(commResult.out, "    ")}`);
       }
       fs.rmrf(allFiles);
