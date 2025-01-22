@@ -17,6 +17,7 @@
 // REF: https://www.ibm.com/docs/en/zos/2.3.0?topic=ikj-ikj56328i
 
 import * as std from 'cm_std';
+import * as zos from 'zos';
 import * as xplatform from 'xplatform'
 
 import * as common from '../../libs/common';
