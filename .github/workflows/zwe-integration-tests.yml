@@ -98,15 +98,15 @@ jobs:
     environment: ${{ matrix.server }}
     steps:
       - name: '[Prep 1] Checkout'
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
       - name: '[Prep 2] Setup Node'
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: '20'
 
       - name: '[Prep 3] Cache node modules'
-        uses: actions/cache@v2
+        uses: actions/cache@v4
         with:
           # npm cache files are stored in `~/.npm` on Linux/macOS
           path: |
@@ -153,7 +153,11 @@ jobs:
           lock-resource-name: zowe-zwe-system-test-${{ steps.more-test-prep.outputs.TEST_SERVER }}-lock
           lock-avg-retry-interval: 60
       
-#     - name: '[Pre-Test]
+      - name: '[Pre-Test] Prepare configuration YAML'
+        run: echo "$ZWE_INTEGRATION_YAML" > ${{ env.ZWE_TEST_PATH }}/config.yaml
+        shell: bash
+        env:
+          ZWE_INTEGRATION_YAML: ${{ secrets.ZWE_INTEGRATION_YAML }}
 
       - name: '[Test] Test starts from here'
         if: ${{ github.event.inputs.zwe-test == 'ZWE_CI_Build' }}
@@ -163,16 +167,11 @@ jobs:
         env:
           ANSIBLE_FORCE_COLOR: true
           TEST_SERVER: ${{ steps.more-test-prep.outputs.TEST_SERVER_NICKNAME }}
+          TEST_CONFIG_FILE: ${{ env.ZWE_TEST_PATH }}/config.yaml
           ZOS_HOST: ${{ secrets.SSH_HOST }}
           SSH_PORT: ${{ secrets.SSH_PORT }}
           ZOS_USER: ${{ secrets.SSH_USER }}
           ZOS_PASSWORD: ${{ secrets.SSH_PASSWORD }}
-          ZOSMF_PORT: 10443
-          ZOS_JAVA_HOME: /ZOWE/node/J8.0_64
-          ZOS_NODE_HOME: /ZOWE/node/node-v18.16.0
-          REJECT_UNAUTHORIZED: false
-          REMOTE_TEST_DIR: /ZOWE/zwe-integration
-          TEST_VOLUME: ZOS003
           JFROG_TOKEN: ${{ secrets.JF_ARTIFACTORY_TOKEN }}
       
       - name: '[Test] Test starts from here'
@@ -204,7 +203,7 @@ jobs:
 
       - name: '[After Test 2] Upload test report'
         if: always()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: ZweTestReports-${{ env.TEST_NAME }}-${{ steps.more-test-prep.outputs.TEST_SERVER_NICKNAME }}-${{ github.run_id }}-${{ env.CURRENT_TIME }}
           path: ${{ env.ZWE_TEST_PATH }}/reports/
