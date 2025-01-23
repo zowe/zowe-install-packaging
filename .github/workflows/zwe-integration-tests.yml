@@ -48,20 +48,19 @@ jobs:
   set-test-vars:
     runs-on: ubuntu-latest
     outputs:
-      test-suite: ${{ steps.*.outputs.test-suite }}
-      test-server: ${{ steps.*.outputs.test-server }}
+      test-suite: ${{ steps.set-test-vars.outputs.test-suite }}
+      test-server: ${{ steps.set-test-vars.outputs.test-server }}
     steps:
-      - name: 'Set vars for manually triggered workflow'
-        if: github.event_name == 'workflow_dispatch'
+      - name: 'Set vars'
+        id: set-test-vars
         run: |
-          echo "test-suite=${{ github.event.inputs.zwe-test }}" >> $GITHUB_OUTPUT
-          echo "test-server=${{ github.event.inputs.test-server }}" >> $GITHUB_OUTPUT
-     
-      - name: 'Set vars for automated PR trigger'
-        if: github.event_name != 'workflow_dispatch'
-        run: |
-          echo "test-suite=ZWE_CI_Build" >> $GITHUB_OUTPUT
-          echo "test-server=Any zzow servers" >> $GITHUB_OUTPUT
+          if [[ ${{ github.event_name == 'workflow_dispatch'}} ]]; then
+            echo "test-suite=${{ github.event.inputs.zwe-test }}" >> $GITHUB_OUTPUT
+            echo "test-server=${{ github.event.inputs.test-server }}" >> $GITHUB_OUTPUT
+          else
+            echo "test-suite=ZWE_CI_Build" >> $GITHUB_OUTPUT
+            echo "test-server=Any zzow servers" >> $GITHUB_OUTPUT
+          fi
 
   check-permission:
     runs-on: ubuntu-latest
