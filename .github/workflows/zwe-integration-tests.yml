@@ -68,7 +68,7 @@ jobs:
           source make_matrix.sh
         env:
           test_server: ${{ github.event.inputs.test-server }}
-          install_test_choice: ${{ github.event.inputs.install-test }}
+          install_test_choice: ${{ github.event.inputs.zwe-test }}
     outputs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
 

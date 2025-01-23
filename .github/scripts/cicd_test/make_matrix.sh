@@ -12,10 +12,10 @@
 
 case $install_test_choice in
 
-"ZWE CI Build")
+"ZWE_CI_Build")
   test_file="dummy_not_used"
   ;;
-"ZWE Full Tests")
+"ZWE_Full_Tests")
   test_file="dummy_not_used"
   ;;
 "Convenience Pax")
