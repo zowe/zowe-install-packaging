@@ -77,7 +77,7 @@ export function execute(): void {
   node.optionalNode();
   const nodeHome = std.getenv('NODE_HOME');
   if (nodeHome) {
-    const nodeVersion = shell.execOutSync('sh', '-c', '${NODE_HOME} -v 2>&1 | head -n 1');
+    const nodeVersion = shell.execOutSync('sh', '-c', '${NODE_HOME}/bin/node -v 2>&1 | head -n 1');
     if (nodeVersion.rc == 0) {
       environment["node"] = `${nodeVersion.out}`;
     }
@@ -93,8 +93,6 @@ export function execute(): void {
     if (keytoolInfo.rc == 0 && keytoolInfo.out) {
       environment["keytool_showinfo_tls"] = keytoolInfo.out.split('\n');
     }
-  } else {
-    environment["java"] = 'not found';
   }
 
   environment["esm"] = `${zos.getEsm()}`;
