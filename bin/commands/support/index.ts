@@ -21,6 +21,7 @@ import * as zos from 'zos';
 import * as xplatform from 'xplatform'
 
 import * as common from '../../libs/common';
+import * as component from '../../libs/component';
 import * as config from '../../libs/config';
 import * as fs from '../../libs/fs';
 import * as java from '../../libs/java';
@@ -30,6 +31,15 @@ import * as zoslib from '../../libs/zos';
 import * as zosfs from '../../libs/zos-fs';
 
 import * as verifyFingerprints from './verify-fingerprints/index';
+
+function zssCheck(zssBinary: string): string {
+  if (fs.fileExists(zssBinary)) {
+      return `${zssBinary} = ${component.hasPCBit(zssBinary)}`
+  } else {
+      common.printError(`Error ZWEL0150E: Failed to find file "${zssBinary}". Zowe runtimeDirectory is invalid.`);
+      return `Missing file: ${zssBinary}`
+  }
+}
 
 export function execute(): void {
 
@@ -52,6 +62,7 @@ export function execute(): void {
   const tmpDir = fs.createTmpFile(tmpFilePrefix, targetDirectory);
 
   common.requireZoweYaml();
+  const ZOWE_CONFIG=config.getZoweConfig();
 
   common.printMessage(`Started at ${isoDate}`);
   fs.mkdirp(tmpDir, 0o700);
@@ -114,6 +125,15 @@ export function execute(): void {
     environment["fs_flags"] = (({ rc, ...others }) => others)(fsFlags);  // Do not include "rc"
   }
 
+  const zssEnabled = ZOWE_CONFIG.components?.zss?.enabled;
+  if (zssEnabled) {
+      const zssBinary = `${zoweRuntime}/components/zss/bin/zssServer`;
+      environment["zss_program_controlled"] = {
+          "31bit": `${zssCheck(zssBinary)}`,
+          "64bit": `${zssCheck(`${zssBinary}64`)}`
+      }
+  }
+
   common.printMessage(JSON.stringify(environment, null, 2));
   const saveEnvRc = xplatform.storeFileUTF8(environmentFile, xplatform.AUTO_DETECT, JSON.stringify(environment, null, 2));
   if (saveEnvRc) {
@@ -124,7 +144,6 @@ export function execute(): void {
   common.printMessage(`- manifest.json: ${zoweRuntime}/manifest.json`);
   fs.cp(`${zoweRuntime}/manifest.json`, tmpDir);
 
-  const ZOWE_CONFIG=config.getZoweConfig();
   const workspaceDirectory = ZOWE_CONFIG.zowe.workspaceDirectory;
 
   common.printMessage(`- configuration: ${workspaceDirectory}/.env/.zowe-merged.yaml`);
@@ -160,7 +179,7 @@ export function execute(): void {
   std.setenv('ZWE_PRIVATE_LOG_LEVEL_ZWELS', 'TRACE');
   fs.createFile(verifyFingerprintsFile, 0o700);
   verifyFingerprints.execute(true);
-  std.setenv('ZWE_PRIVATE_LOG_FILE',`${supportLogLevel}`);
+  std.setenv('ZWE_PRIVATE_LOG_FILE',`${supportLogFile}`);
   std.setenv('ZWE_PRIVATE_LOG_LEVEL_ZWELS', `${supportLogLevel}`);
   common.printMessage("");
 
