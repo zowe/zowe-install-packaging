@@ -190,13 +190,14 @@ export function execute(): void {
   common.printLevel1Message(`Collecting current process information based on the job prefix ${jobPrefix} and job name ${jobName}`);
 
   const psOutputFile = `${tmpDir}/ps_output`;
-  const processes = shell.execOutSync('sh', '-c', `ps -A -o pid,ppid,time,etime,user,jobname,args | grep -e "^[[:space:]]*PID" -e "${jobPrefix}" -e "${jobName}"`);
+  const grepCommand = `grep -i -e "^[[:space:]]*PID" -e "${jobPrefix}" -e "${jobName}"`;
+  const processes = shell.execOutSync('sh', '-c', `ps -A -o pid,ppid,time,etime,user,jobname,args | ${grepCommand}`);
   //   This process has the argument, which (surprise!) is found by grep, e.g:
-  //   1234   5678    00:00:00 00:00:00      ADMDIN USERID grep -e ^[[:space:]]*PID -e ZWE1 -e ZWE1SV
+  //   1234   5678    00:00:00 00:00:00      ADMDIN USERID grep -i -e ^[[:space:]]*PID -e ZWE1 -e ZWE2
   if (processes.rc == 0 && processes.out) {
     let processesSplit = processes.out.split("\n");
     for (let i = 0; i < processesSplit.length; i++) {
-      if (processesSplit[i].includes(`grep -e ^[[:space:]]*PID -e ${jobPrefix} -e ${jobName}`)) {
+      if (processesSplit[i].includes(grepCommand.replace(/\"/g, ''))) {
         processesSplit.splice(i, 1);
       }
     }
