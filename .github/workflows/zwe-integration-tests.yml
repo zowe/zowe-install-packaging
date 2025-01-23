@@ -1,6 +1,7 @@
 name: Zwe Remote Integration Tests
 
-permissions: read-all
+permissions: 
+  contents: write
 
 on:   
   pull_request:
