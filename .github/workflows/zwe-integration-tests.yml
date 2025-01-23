@@ -51,7 +51,7 @@ jobs:
       test-suite: ${{ steps.set-test-vars.outputs.test-suite }}
       test-server: ${{ steps.set-test-vars.outputs.test-server }}
     steps:
-      - name: 'Set vars'
+      - name: 'Set Test Vars'
         id: set-test-vars
         run: |
           if [[ ${{ github.event_name == 'workflow_dispatch'}} ]]; then
