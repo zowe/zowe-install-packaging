@@ -197,7 +197,7 @@ export function execute(): void {
     let processesSplit = processes.out.split("\n");
     for (let i = 0; i < processesSplit.length; i++) {
       if (processesSplit[i].includes(`grep -e ^[[:space:]]*PID -e ${jobPrefix} -e ${jobName}`)) {
-        processesSplit = processesSplit.splice(i, 1);
+        processesSplit.splice(i, 1);
       }
     }
     if (processesSplit.length > 1) {
