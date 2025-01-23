@@ -48,8 +48,8 @@ jobs:
   set-test-vars:
     runs-on: ubuntu-latest
     outputs:
-      test-suite: 
-      test-server: 
+      test-suite: ${{ steps.*.outputs.test-suite }}
+      test-server: ${{ steps.*.outputs.test-server }}
     steps:
       - name: 'Set vars for manually triggered workflow'
         if: github.event_name == 'workflow_dispatch'
