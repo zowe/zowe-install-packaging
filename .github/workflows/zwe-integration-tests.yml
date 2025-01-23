@@ -152,7 +152,7 @@ jobs:
         with:
           lock-repository: ${{ github.repository }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          lock-resource-name: zowe-zwe-system-test-${{ steps.more-test-prep.outputs.TEST_SERVER }}-lock
+          lock-resource-name: zowe-zwe-system-test-${{ matrix.server }}-lock
           lock-avg-retry-interval: 60
       
       - name: '[Pre-Test] Prepare configuration YAML'
@@ -162,13 +162,11 @@ jobs:
           ZWE_INTEGRATION_YAML: ${{ secrets.ZWE_INTEGRATION_YAML }}
 
       - name: '[Test] Test starts from here'
-        if: ${{ github.event.inputs.zwe-test == 'ZWE_CI_Build' }}
+        if: ${{ matrix.test == 'ZWE_CI_Build' }}
         timeout-minutes: 180
         working-directory: ${{ env.ZWE_TEST_PATH }}
         run: npm run test:ci
         env:
-          ANSIBLE_FORCE_COLOR: true
-          TEST_SERVER: ${{ steps.more-test-prep.outputs.TEST_SERVER_NICKNAME }}
           TEST_CONFIG_FILE: ${{ env.ZWE_TEST_PATH }}/config.yaml
           ZOS_HOST: ${{ secrets.SSH_HOST }}
           SSH_PORT: ${{ secrets.SSH_PORT }}
@@ -177,23 +175,16 @@ jobs:
           JFROG_TOKEN: ${{ secrets.JF_ARTIFACTORY_TOKEN }}
       
       - name: '[Test] Test starts from here'
-        if: ${{ github.event.inputs.zwe-test == 'ZWE_Full_Tests' }}
+        if: ${{ matrix.test == 'ZWE_Full_Tests' }}
         timeout-minutes: 180
         working-directory: ${{ env.ZWE_TEST_PATH }}
         run: npm run test:extended
         env:
-          ANSIBLE_FORCE_COLOR: true
-          TEST_SERVER: ${{ steps.more-test-prep.outputs.TEST_SERVER_NICKNAME }}
+          TEST_CONFIG_FILE: ${{ env.ZWE_TEST_PATH }}/config.yaml
           ZOS_HOST: ${{ secrets.SSH_HOST }}
           SSH_PORT: ${{ secrets.SSH_PORT }}
           ZOS_USER: ${{ secrets.SSH_USER }}
           ZOS_PASSWORD: ${{ secrets.SSH_PASSWORD }}
-          ZOSMF_PORT: 10443
-          ZOS_JAVA_HOME: /ZOWE/node/J8.0_64
-          ZOS_NODE_HOME: /ZOWE/node/node-v18.16.0
-          REJECT_UNAUTHORIZED: false
-          REMOTE_TEST_DIR: /ZOWE/zwe-integration
-          TEST_VOLUME: ZOS003
           JFROG_TOKEN: ${{ secrets.JF_ARTIFACTORY_TOKEN }}
    
       - name: '[After Test 1] Prepare to upload test report'
@@ -207,5 +198,5 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: ZweTestReports-${{ env.TEST_NAME }}-${{ steps.more-test-prep.outputs.TEST_SERVER_NICKNAME }}-${{ github.run_id }}-${{ env.CURRENT_TIME }}
+          name: ZweTestReports-${{ env.TEST_NAME }}-${{ matrix.server }}-${{ github.run_id }}-${{ env.CURRENT_TIME }}
           path: ${{ env.ZWE_TEST_PATH }}/reports/
