@@ -54,7 +54,7 @@ jobs:
       - name: 'Set Test Vars'
         id: set-test-vars
         run: |
-          if [[ ${{ github.event_name == 'workflow_dispatch'}} ]]; then
+          if [[ ${{ github.event_name }} == 'workflow_dispatch' ]]; then
             echo "test-suite=${{ github.event.inputs.zwe-test }}" >> $GITHUB_OUTPUT
             echo "test-server=${{ github.event.inputs.test-server }}" >> $GITHUB_OUTPUT
           else
