@@ -156,7 +156,8 @@ jobs:
           lock-avg-retry-interval: 60
       
       - name: '[Pre-Test] Prepare configuration YAML'
-        run: echo "$ZWE_INTEGRATION_YAML" > ${{ env.ZWE_TEST_PATH }}/config.yaml
+        working-directory: ${{ env.ZWE_TEST_PATH }}
+        run: echo "$ZWE_INTEGRATION_YAML" > config.yaml
         shell: bash
         env:
           ZWE_INTEGRATION_YAML: ${{ secrets.ZWE_INTEGRATION_YAML }}
@@ -167,7 +168,7 @@ jobs:
         working-directory: ${{ env.ZWE_TEST_PATH }}
         run: npm run test:ci
         env:
-          TEST_CONFIG_FILE: ${{ env.ZWE_TEST_PATH }}/config.yaml
+          TEST_CONFIG_FILE: config.yaml
           ZOS_HOST: ${{ secrets.SSH_HOST }}
           SSH_PORT: ${{ secrets.SSH_PORT }}
           ZOS_USER: ${{ secrets.SSH_USER }}
