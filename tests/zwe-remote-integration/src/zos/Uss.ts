@@ -26,5 +26,5 @@ export async function runCommand(command: string, cwd: string = '~'): Promise<Ss
       stdout += data;
     }
   });
-  return { data: stdout, rc: rc, error: null };
+  return { consoleLog: stdout, rc: rc, stdout: stdout, stderr: null };
 }

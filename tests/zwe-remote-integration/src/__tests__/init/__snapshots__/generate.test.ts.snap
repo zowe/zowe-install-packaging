@@ -3,7 +3,6 @@
 exports[`init-generate (SHORT) BAD: invalid format defaults.yaml 1`] = `
 "Temporary directory '/tmp/.zweenv-0000' created.
 Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
-bos extend currSize=0x0 dataSize=0x1028 chunk=0x1000 extend=0x1028
 Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWEGENER)
 --- JCL content ---
 //ZWEGENER JOB
@@ -112,19 +111,21 @@ JCL not submitted, command run with "--dry-run" flag.
 To perform command, re-run command without "--dry-run" flag, or submit the JCL directly."
 `;
 
-exports[`init-generate (SHORT) BAD: missing defaults.yaml 1`] = `"Error: Could not load config for FILE(/test/dir/zowe.test.yaml):FILE(/test/dir/files/defaults.yaml), status=7"`;
+exports[`init-generate (SHORT) BAD: missing defaults.yaml 1`] = `
+"Error: Could not load config for FILE(/test/dir/zowe.test.yaml):FILE(/test/dir/files/defaults.yaml), status=7
+ZWEL0318E - failed to read '/test/dir/files/defaults.yaml' - EDC5129I No such file or directory. (errno2=0x05620062)"
+`;
 
 exports[`init-generate (SHORT) bad ds prefix 1`] = `
-"Temporary directory '/tmp/.zweenv-0000' created.
+"cp: FSUM6258 cannot open file "//'SOME.DS.NOEXIST.SZWESAMP(ZWEGENER)'": EDC5049I The specified file name could not be located. (errno2=0xC00B0641)
+Temporary directory '/tmp/.zweenv-0000' created.
 Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
-bos extend currSize=0x0 dataSize=0x1056 chunk=0x1000 extend=0x1056
 ERROR: ZWEL0143E Cannot find data set member 'SOME.DS.NOEXIST.SZWESAMP(ZWEGENER)'. You may need to re-run zwe install."
 `;
 
 exports[`init-generate (SHORT) simple --dry-run 1`] = `
 "Temporary directory '/tmp/.zweenv-0000' created.
 Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
-bos extend currSize=0x0 dataSize=0x1056 chunk=0x1000 extend=0x1056
 Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWEGENER)
 --- JCL content ---
 //ZWEGENER JOB

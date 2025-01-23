@@ -14,14 +14,14 @@ on:
         default: 'Any zzow servers'
         options: 
           - Any_zzow_servers
-          - zzow06
-          - zzow07
-          - zzow08
+          - zzow09
+          - zzow10
+          - zzow11
       zwe-test:
         description: 'Choose Zwe Test'
         type: choice
         required: true
-        default: CI Build
+        default: ZWE_CI_Build
         options:
           - ZWE_CI_Build
           - ZWE_Full_Tests
@@ -128,7 +128,7 @@ jobs:
       - name: '[Prep 6] Prepare workflow'
         uses: zowe-actions/shared-actions/prepare-workflow@main
 
-      - name: '[Setup 1] Test Project Install'
+      - name: '[Setup 1] Test Project Dependencies'
         working-directory: ${{ env.ZWE_TEST_PATH }}
         run: |
           npm ci
@@ -152,9 +152,11 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           lock-resource-name: zowe-zwe-system-test-${{ steps.more-test-prep.outputs.TEST_SERVER }}-lock
           lock-avg-retry-interval: 60
+      
+#     - name: '[Pre-Test]
 
       - name: '[Test] Test starts from here'
-        if: ${{ github.event.inputs.zwe-test == 'ZWE CI Build' }}
+        if: ${{ github.event.inputs.zwe-test == 'ZWE_CI_Build' }}
         timeout-minutes: 180
         working-directory: ${{ env.ZWE_TEST_PATH }}
         run: npm run test:ci
@@ -174,7 +176,7 @@ jobs:
           JFROG_TOKEN: ${{ secrets.JF_ARTIFACTORY_TOKEN }}
       
       - name: '[Test] Test starts from here'
-        if: ${{ github.event.inputs.zwe-test == 'ZWE Full Tests' }}
+        if: ${{ github.event.inputs.zwe-test == 'ZWE_Full_Tests' }}
         timeout-minutes: 180
         working-directory: ${{ env.ZWE_TEST_PATH }}
         run: npm run test:extended

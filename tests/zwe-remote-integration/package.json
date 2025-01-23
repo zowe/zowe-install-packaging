@@ -55,8 +55,8 @@
   },
   "scripts": {
     "build": "tsc",
-    "test:ci": "jest --no-colors --runInBand --testNamePattern=\".*(CI).*\"",
-    "test:extended": "jest --no-colors --runInBand",
+    "test:ci": "jest --no-colors --runInBand --testNamePattern=\".*(SHORT).*\" --silent",
+    "test:extended": "jest --no-colors --runInBand --silent",
     "merge-reports": "node dist/merge-test-reports.js",
     "lint": "eslint ."
   }

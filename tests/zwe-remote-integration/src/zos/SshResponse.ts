@@ -10,6 +10,7 @@
 
 export type SshResponse = {
   rc: number;
-  error: string | undefined;
-  data: string | undefined;
+  stderr: string | undefined;
+  stdout: string | undefined;
+  consoleLog: string | undefined;
 };

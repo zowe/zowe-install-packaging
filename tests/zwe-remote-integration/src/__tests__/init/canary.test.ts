@@ -26,8 +26,6 @@ describe(testSuiteName, () => {
   });
 
   it('run echo', async () => {
-    const cfgYaml = ZoweConfig.getZoweYaml();
-    cfgYaml.java.home = '/ZOWE/node/J21.0_64/';
     const result = await testRunner.runRaw('echo "hi"');
     expect(result.rc).toBe(0);
     expect(result.stdout).not.toBeNull();
@@ -36,7 +34,6 @@ describe(testSuiteName, () => {
 
   it('run zwe help', async () => {
     const cfgYaml = ZoweConfig.getZoweYaml();
-    cfgYaml.java.home = '/ZOWE/node/J21.0_64/';
     const result = await testRunner.runZweTest(cfgYaml, '--help');
     expect(result.rc).toBe(100); // 100 is expected...
     expect(result.stdout).not.toBeNull();

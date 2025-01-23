@@ -53,6 +53,7 @@ function setupBaseYaml() {
   zoweYaml.zowe.setup.dataset.proclib = REMOTE_SYSTEM_INFO.proclib;
   zoweYaml.zowe.setup.vsam.name = REMOTE_SYSTEM_INFO.prefix + '.VSAM';
   zoweYaml.zowe.setup.vsam.volume = REMOTE_SYSTEM_INFO.volume;
+  // @ts-expect-error incomplete schema
   zoweYaml.zowe.setup.certificate.pkcs12.directory = REMOTE_SYSTEM_INFO.ussTestDir;
   zoweYaml.zowe.setup.dataset.authLoadlib = REMOTE_SYSTEM_INFO.authLoadLib;
   zoweYaml.zowe.setup.dataset.authPluginLib = REMOTE_SYSTEM_INFO.authPluginLib;

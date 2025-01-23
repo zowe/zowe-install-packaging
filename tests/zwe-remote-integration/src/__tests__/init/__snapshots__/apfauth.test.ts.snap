@@ -1,9 +1,9 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`init-apfauth (LONG) apf bad ds prefix 1`] = `
-"Temporary directory '/tmp/.zweenv-0000' created.
+"cp: FSUM6258 cannot open file "//'BAD.DS.PREFIX.NOEXIST.SZWESAMP(ZWEGENER)'": EDC5049I The specified file name could not be located. (errno2=0xC00B0641)
+Temporary directory '/tmp/.zweenv-0000' created.
 Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
-bos extend currSize=0x0 dataSize=0x105c chunk=0x1000 extend=0x105c
 -------------------------------------------------------------------------------
 >> APF authorize load libraries
 
@@ -16,7 +16,9 @@ Validity Exceptions(s) with object at
   Validity Exceptions(s) with object at /zowe
     Validity Exceptions(s) with object at /zowe/setup
       Validity Exceptions(s) with object at /zowe/setup/dataset
-        type 'null' not permitted at /zowe/setup/dataset/prefix; expecting type 'string'"
+        Validity Exceptions(s) with string at /zowe/setup/dataset/prefix
+          string too short (len=0) '' 0 < MIN=3 at /zowe/setup/dataset/prefix
+          string pattern match fail s='', pat='^([A-Z\\$\\#\\@]){1}([A-Z0-9\\$\\#\\@\\-]){0,7}(\\.([A-Z\\$\\#\\@]){1}([A-Z0-9\\$\\#\\@\\-]){0,7}){0,11}$', at /zowe/setup/dataset/prefix"
 `;
 
 exports[`init-apfauth (LONG) apf empty jcllib 1`] = `
@@ -25,13 +27,14 @@ Validity Exceptions(s) with object at
   Validity Exceptions(s) with object at /zowe
     Validity Exceptions(s) with object at /zowe/setup
       Validity Exceptions(s) with object at /zowe/setup/dataset
-        type 'null' not permitted at /zowe/setup/dataset/jcllib; expecting type 'string'"
+        Validity Exceptions(s) with string at /zowe/setup/dataset/jcllib
+          string too short (len=0) '' 0 < MIN=3 at /zowe/setup/dataset/jcllib
+          string pattern match fail s='', pat='^([A-Z\\$\\#\\@]){1}([A-Z0-9\\$\\#\\@\\-]){0,7}(\\.([A-Z\\$\\#\\@]){1}([A-Z0-9\\$\\#\\@\\-]){0,7}){0,11}$', at /zowe/setup/dataset/jcllib"
 `;
 
 exports[`init-apfauth (SHORT) apf bad authLoadLib 1`] = `
 "Temporary directory '/tmp/.zweenv-0000' created.
 Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
-bos extend currSize=0x0 dataSize=0x104c chunk=0x1000 extend=0x104c
 -------------------------------------------------------------------------------
 >> APF authorize load libraries
 
@@ -46,7 +49,6 @@ ERROR: Error ZWEL0320E: The dataset specified in 'zowe.setup.dataset.authLoadlib
 exports[`init-apfauth (SHORT) apf bad authPluginLib 1`] = `
 "Temporary directory '/tmp/.zweenv-0000' created.
 Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
-bos extend currSize=0x0 dataSize=0x104d chunk=0x1000 extend=0x104d
 -------------------------------------------------------------------------------
 >> APF authorize load libraries
 
@@ -72,7 +74,6 @@ Validity Exceptions(s) with object at
 exports[`init-apfauth (SHORT) apf simple --dry-run 1`] = `
 "Temporary directory '/tmp/.zweenv-0000' created.
 Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
-bos extend currSize=0x0 dataSize=0x1056 chunk=0x1000 extend=0x1056
 -------------------------------------------------------------------------------
 >> APF authorize load libraries
 
@@ -128,7 +129,6 @@ To perform command, re-run command without "--dry-run" flag, or submit the JCL d
 exports[`init-apfauth (SHORT) apf sms-managed authLoadLib 1`] = `
 "Temporary directory '/tmp/.zweenv-0000' created.
 Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
-bos extend currSize=0x0 dataSize=0x1059 chunk=0x1000 extend=0x1059
 -------------------------------------------------------------------------------
 >> APF authorize load libraries
 
@@ -291,7 +291,6 @@ To perform command, re-run command without "--dry-run" flag, or submit the JCL d
 exports[`init-apfauth (SHORT) apf sms-managed authLoadLib and authPluginLib 1`] = `
 "Temporary directory '/tmp/.zweenv-0000' created.
 Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
-bos extend currSize=0x0 dataSize=0x105d chunk=0x1000 extend=0x105d
 -------------------------------------------------------------------------------
 >> APF authorize load libraries
 
@@ -347,7 +346,6 @@ To perform command, re-run command without "--dry-run" flag, or submit the JCL d
 exports[`init-apfauth (SHORT) apf sms-managed authPluginLib 1`] = `
 "Temporary directory '/tmp/.zweenv-0000' created.
 Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
-bos extend currSize=0x0 dataSize=0x105a chunk=0x1000 extend=0x105a
 -------------------------------------------------------------------------------
 >> APF authorize load libraries
 

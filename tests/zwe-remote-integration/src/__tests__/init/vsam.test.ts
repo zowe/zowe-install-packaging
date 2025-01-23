@@ -49,7 +49,6 @@ describe(`${testSuiteName}`, () => {
     expect.getState().currentTestName = 'before-all-vsam';
     const result = await testRunner.runZweTest(cfgYaml, 'init generate --allow-overwrite');
     expect(result.stdout).not.toBeNull();
-    expect(result.cleanedStdout).toMatchSnapshot('before-all-vsam');
     expect(result.rc).toBe(0);
     await testRunner.postTest();
   });

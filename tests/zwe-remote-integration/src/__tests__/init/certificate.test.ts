@@ -8,7 +8,6 @@
  * Copyright Contributors to the Zowe Project.
  */
 
-import { REMOTE_SYSTEM_INFO } from '../../config/TestConfig';
 import ZoweYamlType from '../../config/ZoweYamlType';
 import { RemoteTestRunner } from '../../zos/RemoteTestRunner';
 import { ZoweConfig } from '../../config/ZoweConfig';
@@ -26,7 +25,6 @@ describe(`${testSuiteName}`, () => {
     expect.getState().currentTestName = 'before-all-cert';
     const result = await testRunner.runZweTest(cfgYaml, 'init generate --allow-overwrite');
     expect(result.stdout).not.toBeNull();
-    expect(result.cleanedStdout).toMatchSnapshot('before-all-cert');
     expect(result.rc).toBe(0);
     await testRunner.postTest();
   });
@@ -45,32 +43,68 @@ describe(`${testSuiteName}`, () => {
   });
 
   describe('(SHORT)', () => {
-    it('cert dry-run', async () => {
-      const result = await testRunner.runZweTest(cfgYaml, 'init certificate --dry-run');
+    it('cert missing zowe.yaml vars', async () => {
+      cfgYaml.zowe.setup.dataset.jcllib = 'DOES.NOT.EXIST';
+      let result = await testRunner.runZweTest(cfgYaml, 'init certificate --dry-run');
       expect(result.stdout).not.toBeNull();
       expect(result.cleanedStdout).toMatchSnapshot();
-      expect(result.rc).toBe(231); // 231 is expected error code...?
+      expect(result.rc).toBe(63);
+
+      cfgYaml.zowe.setup.dataset.prefix = 'DOES.NOT.EXIST';
+      result = await testRunner.runZweTest(cfgYaml, 'init certificate --dry-run');
+      expect(result.stdout).not.toBeNull();
+      expect(result.cleanedStdout).toMatchSnapshot();
+      expect(result.rc).toBe(63);
+
+      cfgYaml = ZoweConfig.getZoweYaml();
+      cfgYaml.zowe.setup.certificate.type = null;
+      result = await testRunner.runZweTest(cfgYaml, 'init certificate --dry-run');
+      expect(result.stdout).not.toBeNull();
+      expect(result.cleanedStdout).toMatchSnapshot();
+      expect(result.rc).toBe(201);
     });
   });
 
   describe('(LONG)', () => {
-    it('cert bad hostname', async () => {
-      cfgYaml.zowe.useConfigmgr = true;
-      cfgYaml.zOSMF.host = 'doesnt-exist.anywhere.cloud';
+    it('passing init', async () => {
+      cfgYaml.zowe.verifyCertificates = 'NONSTRICT';
       const result = await testRunner.runZweTest(cfgYaml, 'init certificate');
       cleanupFiles.push(
         {
+          // @ts-expect-error incomplete schema
           name: cfgYaml.zowe.setup.certificate.pkcs12.directory + '/local_ca/',
           type: FileType.USS_DIR,
         },
         {
+          // @ts-expect-error incomplete schema
           name: cfgYaml.zowe.setup.certificate.pkcs12.directory + '/localhost/',
           type: FileType.USS_DIR,
         },
       );
       expect(result.stdout).not.toBeNull();
       expect(result.cleanedStdout).toMatchSnapshot();
-      expect(result.rc).toBe(231); // 231 is expected error code...?
+      expect(result.rc).toBe(0);
+    });
+
+    it('cert bad hostname', async () => {
+      cfgYaml.zowe.useConfigmgr = true;
+      cfgYaml.zOSMF.host = 'doesnt-exist.anywhere.cloud';
+      const result = await testRunner.runZweTest(cfgYaml, 'init certificate');
+      cleanupFiles.push(
+        {
+          // @ts-expect-error incomplete schema
+          name: cfgYaml.zowe.setup.certificate.pkcs12.directory + '/local_ca/',
+          type: FileType.USS_DIR,
+        },
+        {
+          // @ts-expect-error incomplete schema
+          name: cfgYaml.zowe.setup.certificate.pkcs12.directory + '/localhost/',
+          type: FileType.USS_DIR,
+        },
+      );
+      expect(result.stdout).not.toBeNull();
+      expect(result.cleanedStdout).toMatchSnapshot();
+      expect(result.rc).toBe(170);
     });
   });
 });

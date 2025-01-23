@@ -3,7 +3,6 @@
 exports[`init-stc (LONG) run setup with defaults 1`] = `
 "Temporary directory '/tmp/.zweenv-0000' created.
 Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
-bos extend currSize=0x0 dataSize=0x105a chunk=0x1000 extend=0x105a
 -------------------------------------------------------------------------------
 >> Install Zowe main started task
 
@@ -160,7 +159,6 @@ Job ZWEISTC(JOB00000) completed with RC=0
 exports[`init-stc (LONG) run stc setup, then overwrite, then run again 1`] = `
 "Temporary directory '/tmp/.zweenv-0000' created.
 Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
-bos extend currSize=0x0 dataSize=0x105a chunk=0x1000 extend=0x105a
 -------------------------------------------------------------------------------
 >> Install Zowe main started task
 
@@ -317,7 +315,6 @@ Job ZWEISTC(JOB00000) completed with RC=0
 exports[`init-stc (LONG) run stc setup, then overwrite, then run again 2`] = `
 "Temporary directory '/tmp/.zweenv-0000' created.
 Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
-bos extend currSize=0x0 dataSize=0x105a chunk=0x1000 extend=0x105a
 -------------------------------------------------------------------------------
 >> Install Zowe main started task
 
@@ -411,7 +408,6 @@ Job ZWEISTC(JOB00000) completed with RC=0
 exports[`init-stc (LONG) run stc setup, then overwrite, then run again 3`] = `
 "Temporary directory '/tmp/.zweenv-0000' created.
 Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
-bos extend currSize=0x0 dataSize=0x105a chunk=0x1000 extend=0x105a
 -------------------------------------------------------------------------------
 >> Install Zowe main started task
 
@@ -424,7 +420,6 @@ Skipped writing to TEST.DATASET.PFX.TEST.PROCLIB. To write, you must use --allow
 exports[`init-stc (SHORT) aux stc exists 1`] = `
 "Temporary directory '/tmp/.zweenv-0000' created.
 Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
-bos extend currSize=0x0 dataSize=0x105a chunk=0x1000 extend=0x105a
 -------------------------------------------------------------------------------
 >> Install Zowe main started task
 
@@ -435,7 +430,6 @@ Skipped writing to TEST.DATASET.PFX.TEST.PROCLIB. To write, you must use --allow
 exports[`init-stc (SHORT) aux stc exists 2`] = `
 "Temporary directory '/tmp/.zweenv-0000' created.
 Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
-bos extend currSize=0x0 dataSize=0x105a chunk=0x1000 extend=0x105a
 -------------------------------------------------------------------------------
 >> Install Zowe main started task
 
@@ -537,7 +531,9 @@ Validity Exceptions(s) with object at
     Validity Exceptions(s) with object at /zowe/setup
       Validity Exceptions(s) with object at /zowe/setup/security
         Validity Exceptions(s) with object at /zowe/setup/security/stcs
-          type 'null' not permitted at /zowe/setup/security/stcs/aux; expecting type 'string'"
+          Validity Exceptions(s) with string at /zowe/setup/security/stcs/aux
+            string too short (len=0) '' 0 < MIN=1 at /zowe/setup/security/stcs/aux
+            string pattern match fail s='', pat='^([A-Z\\$\\#\\@]){1}([A-Z0-9\\$\\#\\@]){0,7}$', at /zowe/setup/security/stcs/aux"
 `;
 
 exports[`init-stc (SHORT) invalid stc configurations 2`] = `
@@ -571,7 +567,9 @@ Validity Exceptions(s) with object at
     Validity Exceptions(s) with object at /zowe/setup
       Validity Exceptions(s) with object at /zowe/setup/security
         Validity Exceptions(s) with object at /zowe/setup/security/stcs
-          type 'null' not permitted at /zowe/setup/security/stcs/zis; expecting type 'string'
+          Validity Exceptions(s) with string at /zowe/setup/security/stcs/zis
+            string too short (len=0) '' 0 < MIN=1 at /zowe/setup/security/stcs/zis
+            string pattern match fail s='', pat='^([A-Z\\$\\#\\@]){1}([A-Z0-9\\$\\#\\@]){0,7}$', at /zowe/setup/security/stcs/zis
           Validity Exceptions(s) with string at /zowe/setup/security/stcs/aux
             string too long (len=10) 'TOOLONGTOO' 10 > MAX=8 at /zowe/setup/security/stcs/aux
             string pattern match fail s='TOOLONGTOO', pat='^([A-Z\\$\\#\\@]){1}([A-Z0-9\\$\\#\\@]){0,7}$', at /zowe/setup/security/stcs/aux"
@@ -599,7 +597,9 @@ Validity Exceptions(s) with object at
     Validity Exceptions(s) with object at /zowe/setup
       Validity Exceptions(s) with object at /zowe/setup/security
         Validity Exceptions(s) with object at /zowe/setup/security/stcs
-          type 'null' not permitted at /zowe/setup/security/stcs/zowe; expecting type 'string'
+          Validity Exceptions(s) with string at /zowe/setup/security/stcs/zowe
+            string too short (len=0) '' 0 < MIN=1 at /zowe/setup/security/stcs/zowe
+            string pattern match fail s='', pat='^([A-Z\\$\\#\\@]){1}([A-Z0-9\\$\\#\\@]){0,7}$', at /zowe/setup/security/stcs/zowe
           Validity Exceptions(s) with string at /zowe/setup/security/stcs/zis
             string too short (len=0) '' 0 < MIN=1 at /zowe/setup/security/stcs/zis
             string pattern match fail s='', pat='^([A-Z\\$\\#\\@]){1}([A-Z0-9\\$\\#\\@]){0,7}$', at /zowe/setup/security/stcs/zis
@@ -629,7 +629,6 @@ Validity Exceptions(s) with object at
 exports[`init-stc (SHORT) valid config empty proclib 1`] = `
 "Temporary directory '/tmp/.zweenv-0000' created.
 Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
-bos extend currSize=0x0 dataSize=0x105a chunk=0x1000 extend=0x105a
 -------------------------------------------------------------------------------
 >> Install Zowe main started task
 
@@ -685,7 +684,9 @@ Validity Exceptions(s) with object at
   Validity Exceptions(s) with object at /zowe
     Validity Exceptions(s) with object at /zowe/setup
       Validity Exceptions(s) with object at /zowe/setup/dataset
-        type 'null' not permitted at /zowe/setup/dataset/prefix; expecting type 'string'"
+        Validity Exceptions(s) with string at /zowe/setup/dataset/prefix
+          string too short (len=0) '' 0 < MIN=3 at /zowe/setup/dataset/prefix
+          string pattern match fail s='', pat='^([A-Z\\$\\#\\@]){1}([A-Z0-9\\$\\#\\@\\-]){0,7}(\\.([A-Z\\$\\#\\@]){1}([A-Z0-9\\$\\#\\@\\-]){0,7}){0,11}$', at /zowe/setup/dataset/prefix"
 `;
 
 exports[`init-stc (SHORT) wrong ds prefix 2`] = `
@@ -705,7 +706,9 @@ Validity Exceptions(s) with object at
   Validity Exceptions(s) with object at /zowe
     Validity Exceptions(s) with object at /zowe/setup
       Validity Exceptions(s) with object at /zowe/setup/dataset
-        type 'null' not permitted at /zowe/setup/dataset/jcllib; expecting type 'string'"
+        Validity Exceptions(s) with string at /zowe/setup/dataset/jcllib
+          string too short (len=0) '' 0 < MIN=3 at /zowe/setup/dataset/jcllib
+          string pattern match fail s='', pat='^([A-Z\\$\\#\\@]){1}([A-Z0-9\\$\\#\\@\\-]){0,7}(\\.([A-Z\\$\\#\\@]){1}([A-Z0-9\\$\\#\\@\\-]){0,7}){0,11}$', at /zowe/setup/dataset/jcllib"
 `;
 
 exports[`init-stc (SHORT) wrong jcllib 2`] = `
@@ -725,7 +728,9 @@ Validity Exceptions(s) with object at
   Validity Exceptions(s) with object at /zowe
     Validity Exceptions(s) with object at /zowe/setup
       Validity Exceptions(s) with object at /zowe/setup/dataset
-        type 'null' not permitted at /zowe/setup/dataset/proclib; expecting type 'string'"
+        Validity Exceptions(s) with string at /zowe/setup/dataset/proclib
+          string too short (len=0) '' 0 < MIN=3 at /zowe/setup/dataset/proclib
+          string pattern match fail s='', pat='^([A-Z\\$\\#\\@]){1}([A-Z0-9\\$\\#\\@\\-]){0,7}(\\.([A-Z\\$\\#\\@]){1}([A-Z0-9\\$\\#\\@\\-]){0,7}){0,11}$', at /zowe/setup/dataset/proclib"
 `;
 
 exports[`init-stc (SHORT) wrong proclib 2`] = `
@@ -752,7 +757,6 @@ Validity Exceptions(s) with object at
 exports[`init-stc (SHORT) zis stc exists 1`] = `
 "Temporary directory '/tmp/.zweenv-0000' created.
 Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
-bos extend currSize=0x0 dataSize=0x105a chunk=0x1000 extend=0x105a
 -------------------------------------------------------------------------------
 >> Install Zowe main started task
 
@@ -763,7 +767,6 @@ Skipped writing to TEST.DATASET.PFX.TEST.PROCLIB. To write, you must use --allow
 exports[`init-stc (SHORT) zis stc exists 2`] = `
 "Temporary directory '/tmp/.zweenv-0000' created.
 Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
-bos extend currSize=0x0 dataSize=0x105a chunk=0x1000 extend=0x105a
 -------------------------------------------------------------------------------
 >> Install Zowe main started task
 
@@ -861,7 +864,6 @@ To perform command, re-run command without "--dry-run" flag, or submit the JCL d
 exports[`init-stc (SHORT) zos stc exists 1`] = `
 "Temporary directory '/tmp/.zweenv-0000' created.
 Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
-bos extend currSize=0x0 dataSize=0x105a chunk=0x1000 extend=0x105a
 -------------------------------------------------------------------------------
 >> Install Zowe main started task
 
@@ -872,7 +874,6 @@ Skipped writing to TEST.DATASET.PFX.TEST.PROCLIB. To write, you must use --allow
 exports[`init-stc (SHORT) zos stc exists 2`] = `
 "Temporary directory '/tmp/.zweenv-0000' created.
 Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
-bos extend currSize=0x0 dataSize=0x105a chunk=0x1000 extend=0x105a
 -------------------------------------------------------------------------------
 >> Install Zowe main started task
 

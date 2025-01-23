@@ -8,17 +8,11 @@
  * Copyright Contributors to the Zowe Project.
  */
 
-import { ImperativeError, Session } from '@zowe/imperative';
+import { Session } from '@zowe/imperative';
 import { getSession } from './ZosmfSession';
 import { UssSession } from './UssSession';
 import ZoweYamlType from '../config/ZoweYamlType';
-import {
-  REMOTE_SYSTEM_INFO,
-  TEST_COLLECT_SPOOL,
-  TEST_JOBS_RUN_FILE,
-  TEST_OUTPUT_DIR,
-  ZOWE_YAML_OVERRIDES,
-} from '../config/TestConfig';
+import { REMOTE_SYSTEM_INFO, TEST_COLLECT_SPOOL, TEST_JOBS_RUN_FILE, TEST_OUTPUT_DIR } from '../config/TestConfig';
 import * as files from '@zowe/zos-files-for-zowe-sdk';
 import * as fs from 'fs-extra';
 import * as YAML from 'yaml';
@@ -28,10 +22,12 @@ import { FileType } from './TestFileActions';
 
 /**
  * RemoteTestRunner is a class which drives actions on the backend test environment and
- *   contains utility functions which are helpful in context of those tests. Utility
- *   functions include collecting relevant spool, removing backend files and later restoring them,
- *   and cleaning output returned from the test system so it contains no environment-specific
- *   references.
+ *   contains utility functions which are helpful in context of those tests.
+ *
+ *  Most commonly called method are:
+ *  - runZweTest
+ *  - runZweTestWithDefaults
+ *  - postTest
  */
 export class RemoteTestRunner {
   private readonly REMOTE_TEST_TMP_DIR: string = `${REMOTE_SYSTEM_INFO.ussTestDir}/test_tmp`;
@@ -41,11 +37,12 @@ export class RemoteTestRunner {
   private readonly session: Session;
   private trackedFiles: TrackedFile[] = [];
   private trackedJobs: jobs.IDownloadAllSpoolContentParms[] = [];
-  private cleanFns: ((stdout: string) => string)[] = [];
+  private readonly cleanFns: ((stdout: string) => string)[] = [];
   private readonly uss: UssSession;
   private totalRuns: number = 0;
   private totalRuntime: number = 0;
   private maxRuntime: number = -1;
+  private readonly dummyHostname: string = 'some.test.hostname';
 
   constructor(testGroup: string) {
     this.session = getSession();
@@ -65,9 +62,9 @@ export class RemoteTestRunner {
   public async runRaw(command: string, cwd: string = REMOTE_SYSTEM_INFO.ussTestDir): Promise<TestOutput> {
     const output = await this.uss.runCommand(`${command}`, cwd);
     // Any non-deterministic output should be cleaned up for test snapshots.
-    const cleanedOutput = this.cleanOutput(output.data);
+    const cleanedOutput = this.cleanOutput(output.consoleLog);
     return {
-      stdout: output.data,
+      stdout: output.consoleLog,
       cleanedStdout: cleanedOutput,
       rc: output.rc,
     };
@@ -228,10 +225,14 @@ export class RemoteTestRunner {
       cleanedOutput = fn(cleanedOutput);
     });
 
-    if (ZOWE_YAML_OVERRIDES?.zOSMF?.host) {
-      cleanedOutput = cleanedOutput.replace(ZOWE_YAML_OVERRIDES.zOSMF.host, 'some.testhost.com');
+    // generic replacement of sensitive data based on user config
+    if (REMOTE_SYSTEM_INFO.sensitiveDataToMask != null && REMOTE_SYSTEM_INFO.sensitiveDataToMask.length > 0) {
+      REMOTE_SYSTEM_INFO.sensitiveDataToMask.forEach((data) => {
+        const maskTarget = data.key;
+        const maskValue = this.getMask(data.type);
+        cleanedOutput = cleanedOutput.replaceAll(maskTarget, maskValue);
+      });
     }
-
     // built-in
     return cleanedOutput
       .replace(/(JOB[0-9]{5})/gim, 'JOB00000')
@@ -240,15 +241,27 @@ export class RemoteTestRunner {
       .replaceAll(REMOTE_SYSTEM_INFO.ussTestDir, '/test/dir')
       .replaceAll(`${REMOTE_SYSTEM_INFO.prefix}`, 'TEST.DATASET.PFX')
       .replaceAll(`${this.session.ISession.user}`, 'TESTUSR0')
-      .replace(/\/tmp\/\.zweenv-[0-9]{1,5}/g, '/tmp/.zweenv-0000')
+      .replace(/\/tmp\/\.zweenv-\d{1,5}/g, '/tmp/.zweenv-0000')
+      .replace(/\/tmp\/zwe-\d{1,5}/g, '/tmp/zwe-0000')
       .replaceAll(REMOTE_SYSTEM_INFO.volume, 'TSTVOL')
-      .replaceAll(REMOTE_SYSTEM_INFO.hostname, 'some.test.hostname')
+      .replaceAll(REMOTE_SYSTEM_INFO.hostname, this.dummyHostname)
       .replaceAll(REMOTE_SYSTEM_INFO.zosmfPort, '12321');
+  }
+
+  public getMask(maskType: string): string {
+    switch (maskType) {
+      case 'hostname':
+      case 'host':
+        return this.dummyHostname;
+      default:
+        return '******';
+    }
   }
 
   public async runZweTestWithDefaults(
     zoweYaml: ZoweYamlType,
     defaultYaml: ZoweYamlType,
+    zweCommand: string,
     cwd: string = REMOTE_SYSTEM_INFO.ussTestDir,
   ): Promise<TestOutput> {
     const testName = expect.getState().currentTestName.replace(/\s/g, '_');
@@ -266,7 +279,7 @@ export class RemoteTestRunner {
         binary: false,
       },
     );
-    return this.runZweTest(zoweYaml, cwd);
+    return this.runZweTest(zoweYaml, zweCommand, cwd);
   }
 
   /**
@@ -300,12 +313,13 @@ export class RemoteTestRunner {
     );
     const start = performance.now();
     const output = await this.uss.runCommand(`./bin/zwe ${command} --config  ${REMOTE_SYSTEM_INFO.ussTestDir}/zowe.test.yaml`, cwd);
+    // default per-test should always be off. If you want tty, run this.useTty() in a beforeEach() block
     const end = performance.now();
     const duration = end - start;
     this.totalRuntime += duration;
     this.totalRuns++;
     this.maxRuntime = Math.max(this.maxRuntime, duration);
-    const matches = output.data.matchAll(/([A-Za-z0-9]{4,8})\((JOB[0-9]{1,5})\) completed with RC=(.*)$/gim);
+    const matches = output.consoleLog.matchAll(/([A-Za-z0-9]{4,8})\((JOB[0-9]{1,5})\) completed with RC=(.*)$/gim);
 
     // for each match, 0=full matched string, 1=jobname, 2=jobid, 3=rc
     for (const match of matches) {
@@ -317,10 +331,10 @@ export class RemoteTestRunner {
     }
 
     // Any non-deterministic output should be cleaned up for test snapshots.
-    const cleanedOutput = this.cleanOutput(output.data);
+    const cleanedOutput = this.cleanOutput(output.consoleLog);
 
     return {
-      stdout: output.data,
+      stdout: output.consoleLog,
       cleanedStdout: cleanedOutput,
       rc: output.rc,
     };

@@ -68,7 +68,13 @@ export class UssSession {
     if (!this.sessionInit) {
       console.log(`Could not run command, SSH session couldn't be established.`);
     }
-    const response = await this.ssh.execCommand(command, { cwd: cwd });
-    return { data: response.stdout, rc: response.code, error: response.stderr };
+    let consoleOut = '';
+    const response = await this.ssh.execCommand(command, {
+      cwd: cwd,
+      onStderr: (data) => (consoleOut += data),
+      onStdout: (data) => (consoleOut += data),
+    });
+    // consoleOut.trim() mirrors behavior of node-ssh library stdout/stderr
+    return { consoleLog: consoleOut.trim(), rc: response.code, stdout: response.stdout, stderr: response.stderr };
   }
 }

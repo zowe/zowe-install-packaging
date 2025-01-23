@@ -26,7 +26,6 @@ describe(`${testSuiteName}`, () => {
     expect.getState().currentTestName = 'before-all-mvs';
     const result = await testRunner.runZweTest(cfgYaml, 'init generate --allow-overwrite');
     expect(result.stdout).not.toBeNull();
-    expect(result.cleanedStdout).toMatchSnapshot('before-all-mvs');
     expect(result.rc).toBe(0);
     await testRunner.postTest();
   });

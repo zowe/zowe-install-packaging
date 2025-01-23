@@ -6,7 +6,9 @@ Validity Exceptions(s) with object at
   Validity Exceptions(s) with object at /zowe
     Validity Exceptions(s) with object at /zowe/setup
       Validity Exceptions(s) with object at /zowe/setup/dataset
-        type 'null' not permitted at /zowe/setup/dataset/authLoadlib; expecting type 'string'"
+        Validity Exceptions(s) with string at /zowe/setup/dataset/authLoadlib
+          string too short (len=0) '' 0 < MIN=3 at /zowe/setup/dataset/authLoadlib
+          string pattern match fail s='', pat='^([A-Z\\$\\#\\@]){1}([A-Z0-9\\$\\#\\@\\-]){0,7}(\\.([A-Z\\$\\#\\@]){1}([A-Z0-9\\$\\#\\@\\-]){0,7}){0,11}$', at /zowe/setup/dataset/authLoadlib"
 `;
 
 exports[`init-mvs (SHORT) authLoadLib negatives 2`] = `
@@ -23,7 +25,6 @@ Validity Exceptions(s) with object at
 exports[`init-mvs (SHORT) authLoadLib negatives 3`] = `
 "Temporary directory '/tmp/.zweenv-0000' created.
 Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
-bos extend currSize=0x0 dataSize=0x1050 chunk=0x1000 extend=0x1050
 -------------------------------------------------------------------------------
 >> Initialize Zowe custom data sets
 
@@ -38,7 +39,6 @@ Skipped writing to a dataset. To write, you must use --allow-overwrite.
 exports[`init-mvs (SHORT) authLoadLib negatives 4`] = `
 "Temporary directory '/tmp/.zweenv-0000' created.
 Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
-bos extend currSize=0x0 dataSize=0x1055 chunk=0x1000 extend=0x1055
 -------------------------------------------------------------------------------
 >> Initialize Zowe custom data sets
 
@@ -54,7 +54,6 @@ Skipped writing to a dataset. To write, you must use --allow-overwrite.
 exports[`init-mvs (SHORT) authLoadLib negatives 5`] = `
 "Temporary directory '/tmp/.zweenv-0000' created.
 Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
-bos extend currSize=0x0 dataSize=0x1056 chunk=0x1000 extend=0x1056
 -------------------------------------------------------------------------------
 >> Initialize Zowe custom data sets
 
@@ -69,7 +68,6 @@ Skipped writing to a dataset. To write, you must use --allow-overwrite.
 exports[`init-mvs (SHORT) authLoadLib negatives 6`] = `
 "Temporary directory '/tmp/.zweenv-0000' created.
 Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
-bos extend currSize=0x0 dataSize=0x1056 chunk=0x1000 extend=0x1056
 -------------------------------------------------------------------------------
 >> Initialize Zowe custom data sets
 
@@ -169,7 +167,6 @@ To perform command, re-run command without "--dry-run" flag, or submit the JCL d
 exports[`init-mvs (SHORT) authLoadLib negatives 7`] = `
 "Temporary directory '/tmp/.zweenv-0000' created.
 Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
-bos extend currSize=0x0 dataSize=0x104c chunk=0x1000 extend=0x104c
 -------------------------------------------------------------------------------
 >> Initialize Zowe custom data sets
 
@@ -323,7 +320,6 @@ To perform command, re-run command without "--dry-run" flag, or submit the JCL d
 exports[`init-mvs (SHORT) authLoadLib negatives 8`] = `
 "Temporary directory '/tmp/.zweenv-0000' created.
 Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
-bos extend currSize=0x0 dataSize=0x1056 chunk=0x1000 extend=0x1056
 -------------------------------------------------------------------------------
 >> Initialize Zowe custom data sets
 
@@ -515,7 +511,9 @@ Validity Exceptions(s) with object at
   Validity Exceptions(s) with object at /zowe
     Validity Exceptions(s) with object at /zowe/setup
       Validity Exceptions(s) with object at /zowe/setup/dataset
-        type 'null' not permitted at /zowe/setup/dataset/authPluginLib; expecting type 'string'"
+        Validity Exceptions(s) with string at /zowe/setup/dataset/authPluginLib
+          string too short (len=0) '' 0 < MIN=3 at /zowe/setup/dataset/authPluginLib
+          string pattern match fail s='', pat='^([A-Z\\$\\#\\@]){1}([A-Z0-9\\$\\#\\@\\-]){0,7}(\\.([A-Z\\$\\#\\@]){1}([A-Z0-9\\$\\#\\@\\-]){0,7}){0,11}$', at /zowe/setup/dataset/authPluginLib"
 `;
 
 exports[`init-mvs (SHORT) authPluginLib negatives  2`] = `
@@ -532,7 +530,6 @@ Validity Exceptions(s) with object at
 exports[`init-mvs (SHORT) authPluginLib negatives  3`] = `
 "Temporary directory '/tmp/.zweenv-0000' created.
 Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
-bos extend currSize=0x0 dataSize=0x1051 chunk=0x1000 extend=0x1051
 -------------------------------------------------------------------------------
 >> Initialize Zowe custom data sets
 
@@ -547,7 +544,6 @@ Skipped writing to a dataset. To write, you must use --allow-overwrite.
 exports[`init-mvs (SHORT) authPluginLib negatives  4`] = `
 "Temporary directory '/tmp/.zweenv-0000' created.
 Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
-bos extend currSize=0x0 dataSize=0x1056 chunk=0x1000 extend=0x1056
 -------------------------------------------------------------------------------
 >> Initialize Zowe custom data sets
 
@@ -563,7 +559,6 @@ Skipped writing to a dataset. To write, you must use --allow-overwrite.
 exports[`init-mvs (SHORT) authPluginLib negatives  5`] = `
 "Temporary directory '/tmp/.zweenv-0000' created.
 Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
-bos extend currSize=0x0 dataSize=0x104d chunk=0x1000 extend=0x104d
 -------------------------------------------------------------------------------
 >> Initialize Zowe custom data sets
 
@@ -751,7 +746,6 @@ To perform command, re-run command without "--dry-run" flag, or submit the JCL d
 exports[`init-mvs (SHORT) authPluginLib negatives  6`] = `
 "Temporary directory '/tmp/.zweenv-0000' created.
 Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
-bos extend currSize=0x0 dataSize=0x104e chunk=0x1000 extend=0x104e
 -------------------------------------------------------------------------------
 >> Initialize Zowe custom data sets
 
@@ -942,7 +936,9 @@ Validity Exceptions(s) with object at
   Validity Exceptions(s) with object at /zowe
     Validity Exceptions(s) with object at /zowe/setup
       Validity Exceptions(s) with object at /zowe/setup/dataset
-        type 'null' not permitted at /zowe/setup/dataset/prefix; expecting type 'string'"
+        Validity Exceptions(s) with string at /zowe/setup/dataset/prefix
+          string too short (len=0) '' 0 < MIN=3 at /zowe/setup/dataset/prefix
+          string pattern match fail s='', pat='^([A-Z\\$\\#\\@]){1}([A-Z0-9\\$\\#\\@\\-]){0,7}(\\.([A-Z\\$\\#\\@]){1}([A-Z0-9\\$\\#\\@\\-]){0,7}){0,11}$', at /zowe/setup/dataset/prefix"
 `;
 
 exports[`init-mvs (SHORT) bad ds prefix post-generate 2`] = `
@@ -962,7 +958,9 @@ Validity Exceptions(s) with object at
   Validity Exceptions(s) with object at /zowe
     Validity Exceptions(s) with object at /zowe/setup
       Validity Exceptions(s) with object at /zowe/setup/dataset
-        type 'null' not permitted at /zowe/setup/dataset/jcllib; expecting type 'string'"
+        Validity Exceptions(s) with string at /zowe/setup/dataset/jcllib
+          string too short (len=0) '' 0 < MIN=3 at /zowe/setup/dataset/jcllib
+          string pattern match fail s='', pat='^([A-Z\\$\\#\\@]){1}([A-Z0-9\\$\\#\\@\\-]){0,7}(\\.([A-Z\\$\\#\\@]){1}([A-Z0-9\\$\\#\\@\\-]){0,7}){0,11}$', at /zowe/setup/dataset/jcllib"
 `;
 
 exports[`init-mvs (SHORT) jcllib fails verification 2`] = `
@@ -982,7 +980,9 @@ Validity Exceptions(s) with object at
   Validity Exceptions(s) with object at /zowe
     Validity Exceptions(s) with object at /zowe/setup
       Validity Exceptions(s) with object at /zowe/setup/dataset
-        type 'null' not permitted at /zowe/setup/dataset/parmlib; expecting type 'string'"
+        Validity Exceptions(s) with string at /zowe/setup/dataset/parmlib
+          string too short (len=0) '' 0 < MIN=3 at /zowe/setup/dataset/parmlib
+          string pattern match fail s='', pat='^([A-Z\\$\\#\\@]){1}([A-Z0-9\\$\\#\\@\\-]){0,7}(\\.([A-Z\\$\\#\\@]){1}([A-Z0-9\\$\\#\\@\\-]){0,7}){0,11}$', at /zowe/setup/dataset/parmlib"
 `;
 
 exports[`init-mvs (SHORT) parmlib negatives  2`] = `
@@ -999,7 +999,6 @@ Validity Exceptions(s) with object at
 exports[`init-mvs (SHORT) parmlib negatives  3`] = `
 "Temporary directory '/tmp/.zweenv-0000' created.
 Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
-bos extend currSize=0x0 dataSize=0x1051 chunk=0x1000 extend=0x1051
 -------------------------------------------------------------------------------
 >> Initialize Zowe custom data sets
 
@@ -1014,7 +1013,6 @@ Skipped writing to a dataset. To write, you must use --allow-overwrite.
 exports[`init-mvs (SHORT) parmlib negatives  4`] = `
 "Temporary directory '/tmp/.zweenv-0000' created.
 Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
-bos extend currSize=0x0 dataSize=0x1056 chunk=0x1000 extend=0x1056
 -------------------------------------------------------------------------------
 >> Initialize Zowe custom data sets
 
@@ -1030,7 +1028,6 @@ Skipped writing to a dataset. To write, you must use --allow-overwrite.
 exports[`init-mvs (SHORT) parmlib negatives  5`] = `
 "Temporary directory '/tmp/.zweenv-0000' created.
 Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
-bos extend currSize=0x0 dataSize=0x104d chunk=0x1000 extend=0x104d
 -------------------------------------------------------------------------------
 >> Initialize Zowe custom data sets
 
@@ -1218,7 +1215,6 @@ To perform command, re-run command without "--dry-run" flag, or submit the JCL d
 exports[`init-mvs (SHORT) parmlib negatives  6`] = `
 "Temporary directory '/tmp/.zweenv-0000' created.
 Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
-bos extend currSize=0x0 dataSize=0x1057 chunk=0x1000 extend=0x1057
 -------------------------------------------------------------------------------
 >> Initialize Zowe custom data sets
 
@@ -1407,7 +1403,6 @@ To perform command, re-run command without "--dry-run" flag, or submit the JCL d
 exports[`init-mvs (SHORT) simple --dry-run 1`] = `
 "Temporary directory '/tmp/.zweenv-0000' created.
 Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
-bos extend currSize=0x0 dataSize=0x1056 chunk=0x1000 extend=0x1056
 -------------------------------------------------------------------------------
 >> Initialize Zowe custom data sets
 
@@ -1423,7 +1418,6 @@ Skipped writing to a dataset. To write, you must use --allow-overwrite.
 exports[`init-mvs (SHORT) zwesip00 customization  1`] = `
 "Temporary directory '/tmp/.zweenv-0000' created.
 Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
-bos extend currSize=0x0 dataSize=0x1056 chunk=0x1000 extend=0x1056
 -------------------------------------------------------------------------------
 >> Initialize Zowe custom data sets
 
