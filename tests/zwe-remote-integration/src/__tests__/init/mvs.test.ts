@@ -8,11 +8,10 @@
  * Copyright Contributors to the Zowe Project.
  */
 
-import { REMOTE_SYSTEM_INFO } from '../../config/TestConfig';
 import { ZoweConfig } from '../../config/ZoweConfig';
 import ZoweYamlType from '../../config/ZoweYamlType';
 import { RemoteTestRunner } from '../../zos/RemoteTestRunner';
-import { TestFile, TestFileActions, FileType } from '../../zos/TestFileActions';
+import { TestFile, TestFileActions } from '../../zos/TestFileActions';
 
 const testSuiteName = 'init-mvs';
 describe(`${testSuiteName}`, () => {
