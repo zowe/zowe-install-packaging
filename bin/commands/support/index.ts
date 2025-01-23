@@ -29,6 +29,7 @@ import * as node from '../../libs/node'
 import * as shell from '../../libs/shell';
 import * as zoslib from '../../libs/zos';
 import * as zosfs from '../../libs/zos-fs';
+import * as zosmf from '../../libs/zosmf';
 
 import * as verifyFingerprints from './verify-fingerprints/index';
 
@@ -78,8 +79,14 @@ export function execute(): void {
   const nodeHome = std.getenv('NODE_HOME');
   if (nodeHome) {
     const nodeVersion = shell.execOutSync('sh', '-c', '${NODE_HOME}/bin/node -v 2>&1 | head -n 1');
-    if (nodeVersion.rc == 0) {
+    if (nodeVersion.rc == 0 && nodeVersion.out) {
       environment["node"] = `${nodeVersion.out}`;
+      const discovery = ZOWE_CONFIG.components?.discovery?.enabled;
+      const zosmfHost = ZOWE_CONFIG.zOSMF?.host;
+      const zosmfPort = ZOWE_CONFIG.zOSMF?.port;
+      if (discovery && zosmfHost && zosmfPort) {
+        environment["zosmf_check"] = `'https://${zosmfHost}:${zosmfPort}/zosmf/info' => ${zosmf.validateZosmfHostAndPort(zosmfHost, zosmfPort)}`;
+      }
     }
   } else {
     environment["node"] = `not found`;
