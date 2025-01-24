@@ -170,6 +170,7 @@ jobs:
         env:
           TEST_CONFIG_FILE: config.yaml
           ZOS_HOST: ${{ secrets.SSH_HOST }}
+          ZOSMF_PORT: ${{ secrets.ZOSMF_PORT }}
           SSH_PORT: ${{ secrets.SSH_PORT }}
           ZOS_USER: ${{ secrets.SSH_USER }}
           ZOS_PASSWORD: ${{ secrets.SSH_PASSWORD }}
