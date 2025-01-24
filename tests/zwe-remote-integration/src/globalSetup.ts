@@ -101,7 +101,9 @@ async function downloadManifestDep(binaryName: string): Promise<string> {
     `.replace(/\s/g, ''),
     );
   if (searchResults.results == null || searchResults.results.length === 0) {
-    throw new Error(`Could not find a ${binaryDep} matching the manifest.json spec`);
+    throw new Error(
+      `Could not find in Artifactory the following binary dependency specified by manifest.json.\n ${JSON.stringify(binaryDep)}\n`,
+    );
   }
   const artifact = searchResults.results[0];
   const dlFile = `${THIS_TEST_ROOT_DIR}/.build/${artifact.name}`;
