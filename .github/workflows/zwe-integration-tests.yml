@@ -170,10 +170,11 @@ jobs:
         env:
           TEST_CONFIG_FILE: config.yaml
           ZOS_HOST: ${{ secrets.SSH_HOST }}
-          ZOSMF_PORT: ${{ secrets.ZOSMF_PORT }}
-          SSH_PORT: ${{ secrets.SSH_PORT }}
           ZOS_USER: ${{ secrets.SSH_USER }}
           ZOS_PASSWORD: ${{ secrets.SSH_PASSWORD }}
+          ZOSMF_PORT: ${{ secrets.ZOSMF_PORT }}
+          SSH_PORT: ${{ secrets.SSH_PORT }}
+          JFROG_USER: ${{ secrets.ARTIFACTORY_USERNAME }}
           JFROG_TOKEN: ${{ secrets.JF_ARTIFACTORY_TOKEN }}
       
       - name: '[Test] Test starts from here'
@@ -184,9 +185,11 @@ jobs:
         env:
           TEST_CONFIG_FILE: ${{ env.ZWE_TEST_PATH }}/config.yaml
           ZOS_HOST: ${{ secrets.SSH_HOST }}
-          SSH_PORT: ${{ secrets.SSH_PORT }}
           ZOS_USER: ${{ secrets.SSH_USER }}
           ZOS_PASSWORD: ${{ secrets.SSH_PASSWORD }}
+          ZOSMF_PORT: ${{ secrets.ZOSMF_PORT }}
+          SSH_PORT: ${{ secrets.SSH_PORT }}
+          JFROG_USER: ${{ secrets.ARTIFACTORY_USERNAME }}
           JFROG_TOKEN: ${{ secrets.JF_ARTIFACTORY_TOKEN }}
    
       - name: '[After Test 1] Prepare to upload test report'
