@@ -233,6 +233,13 @@ export class RemoteTestRunner {
         cleanedOutput = cleanedOutput.replaceAll(maskTarget, maskValue);
       });
     }
+
+    const LINES_TO_DELETE = [/(\n^\s*ACF0C038.*?$)$/gim];
+    // delete lines
+    LINES_TO_DELETE.forEach((pattern) => {
+      cleanedOutput = cleanedOutput.replace(pattern, '');
+    });
+
     // built-in
     return cleanedOutput
       .replace(/(JOB[0-9]{5})/gim, 'JOB00000')
