@@ -75,7 +75,10 @@ export function execute(): void {
 
   environment["zos-version"] = zoslib.formatZosVersion();
 
-  node.optionalNode();
+  const enabledComponents = component.getEnabledComponents();
+  if (enabledComponents.includes('app-server')) {
+    node.requireNode();
+  }
   const nodeHome = std.getenv('NODE_HOME');
   if (nodeHome) {
     const nodeVersion = shell.execOutSync('sh', '-c', '${NODE_HOME}/bin/node -v 2>&1 | head -n 1');

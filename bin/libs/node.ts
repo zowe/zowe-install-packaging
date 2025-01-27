@@ -3,9 +3,9 @@
   under the terms of the Eclipse Public License v2.0 which
   accompanies this distribution, and is available at
   https://www.eclipse.org/legal/epl-v20.html
-
+ 
   SPDX-License-Identifier: EPL-2.0
-
+ 
   Copyright Contributors to the Zowe Project.
 */
 
@@ -25,7 +25,7 @@ const NODE_MIN_VERSION=18;
 std.setenv('NODE_STDOUT_CCSID','1047');
 std.setenv('NODE_STDERR_CCSID','1047');
 std.setenv('NODE_STDIN_CCSID','1047');
-
+  
 // Workaround Fix for node 8.16.1 that requires compatibility mode for untagged files
 std.setenv('__UNTAGGED_READ_MODE','V6');
 
@@ -61,8 +61,7 @@ export function detectNodeHome(): string|undefined {
 }
 
 let _checkComplete = false;
-export function requireNode(required: Boolean | undefined = true): void {
-  // if undefined => true?
+export function requireNode() {
   if ((_checkComplete === true) && std.getenv('NODE_HOME')) {
     return;
   }
@@ -79,20 +78,11 @@ export function requireNode(required: Boolean | undefined = true): void {
     }
   }
   if (!std.getenv('NODE_HOME')) {
-    if (required == true) {
-      common.printErrorAndExit("Error ZWEL0121E: Cannot find node. Set the node.home value in the Zowe YAML, or include node in the PATH environment variable of any accounts that start or manage Zowe", undefined, 121);
-    } else {
-      _checkComplete = true;
-      return;
-    }
+    common.printErrorAndExit("Error ZWEL0121E: Cannot find node. Set the node.home value in the Zowe YAML, or include node in the PATH environment variable of any accounts that start or manage Zowe", undefined, 121);
   }
 
   ensureNodeIsOnPath();
   _checkComplete = true;
-}
-
-export function optionalNode(): void {
-  requireNode(false);
 }
 
 export function validateNodeHome(nodeHome:string|undefined=std.getenv("NODE_HOME")): boolean {
@@ -111,7 +101,7 @@ export function validateNodeHome(nodeHome:string|undefined=std.getenv("NODE_HOME
     common.printError(`Node version check failed with return code: ${shellReturn.rc}: ${version}`);
     return false;
   }
-
+ 
   try {
     if ((version as string).startsWith('v')) { // valid because rc check
       let parts = (version as string).split('.');
@@ -138,7 +128,7 @@ export function validateNodeHome(nodeHome:string|undefined=std.getenv("NODE_HOME
       }
 
       common.printDebug(`Node check is successful.`);
-
+      
       return true;
     } else {
       common.printError(`Cannot validate node version '${version}'. Unexpected format`);
