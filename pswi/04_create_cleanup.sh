@@ -100,7 +100,6 @@ sh scripts/submit_jcl.sh "$(cat JCL)"
 # Not checking results so the script doesn't fail
 rm JCL
 
-
 # Unmount and delete
 echo "Unmounting and deleting zFS ${WORK_ZFS}."
 

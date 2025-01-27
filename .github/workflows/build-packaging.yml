@@ -351,7 +351,7 @@ jobs:
       - name: '[PSWI 0] PSWI pre-build check for existing smpe'
         if: env.INPUTS_BUILD_PSWI == 'true' && github.event.inputs.PSWI_SMPE_ARTIFACTORY_PATH != '' && github.event.inputs.PSWI_SMPE_AZWE_ARTIFACTORY_PATH != ''
         run: |
-          jfrog rt dl ${{github.event.inputs.PSWI_SMPE_AZWE_ARTIFACTORY_PATH}}/AZWE002*.zip --flat=true .pax/AZWE002.zip
+          jfrog rt dl ${{github.event.inputs.PSWI_SMPE_AZWE_ARTIFACTORY_PATH}}/AZWE003*.zip --flat=true .pax/AZWE003.zip
           jfrog rt dl ${{github.event.inputs.PSWI_SMPE_ARTIFACTORY_PATH}}/zowe-smpe-*.zip --flat=true .pax/zowe-smpe.zip
 
       - name: '[SMPE Pax 4] Build PSWI'

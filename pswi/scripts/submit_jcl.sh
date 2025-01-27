@@ -51,6 +51,6 @@ if [ "$RC" = "CC 0000" ]; then
   echo "${JOBNAME} ${JOBID} was completed."
 else
   echo "${JOBNAME} ${JOBID} failed." >>$LOG_DIR/report.txt
-  cat $JOBNAME/$JOBID >>$LOG_DIR/report.txt
+  cat $LOG_DIR/jobs/output/$JOBNAME_$JOBID >>$LOG_DIR/report.txt
   exit -1
 fi

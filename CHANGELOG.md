@@ -2,6 +2,9 @@
 
 All notable changes to the Zowe Installer will be documented in this file.
 
+## `3.2.0`
+- Enhancement: Added new library function formatZosVersion() [#4134](https://github.com/zowe/zowe-install-packaging/pull/4134)
+
 ## `3.1.0`
 - Bugfix: When logging `zwe` command, sometimes the log has wrong file tag and the log is unreadable. [#4071](https://github.com/zowe/zowe-install-packaging/pull/4071)
 - Bugfix: When `--log-dir` parameter for `zwe` command is a file, there might be an error "InternalError: stack overflow". [#4064](https://github.com/zowe/zowe-install-packaging/pull/4064)

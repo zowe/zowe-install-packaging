@@ -38,7 +38,7 @@ export function ensureNodeIsOnPath(): void {
   }
 }
 
-export function shellReadYamlNodeHome(configList?: string, skipValidate?: boolean): string {
+export function readConfigNodeHome(configList?: string, skipValidate?: boolean): string {
   const zoweConfig = config.getZoweConfig();
   if (zoweConfig && zoweConfig.node && zoweConfig.node.home) {
     if (!skipValidate) {
@@ -66,7 +66,7 @@ export function requireNode() {
     return;
   }
   if (std.getenv('ZWE_CLI_PARAMETER_CONFIG')) {
-    const customNodeHome = shellReadYamlNodeHome();
+    const customNodeHome = readConfigNodeHome();
     if (customNodeHome) {
       std.setenv('NODE_HOME', customNodeHome);
     }

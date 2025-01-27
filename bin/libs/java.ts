@@ -26,7 +26,7 @@ export function ensureJavaIsOnPath(): void {
   }
 }
 
-export function shellReadYamlJavaHome(configList?: string, skipValidate?: boolean): string {
+export function readConfigJavaHome(configList?: string, skipValidate?: boolean): string {
   const zoweConfig = config.getZoweConfig();
   if (zoweConfig && zoweConfig.java && zoweConfig.java.home) {
     if (!skipValidate) {
@@ -60,7 +60,7 @@ export function requireJava() {
     return;
   }
   if (std.getenv('ZWE_CLI_PARAMETER_CONFIG')) {
-    const customJavaHome = shellReadYamlJavaHome();
+    const customJavaHome = readConfigJavaHome();
     if (customJavaHome) {
       std.setenv('JAVA_HOME', customJavaHome);
     }
