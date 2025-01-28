@@ -3,9 +3,9 @@
   under the terms of the Eclipse Public License v2.0 which
   accompanies this distribution, and is available at
   https://www.eclipse.org/legal/epl-v20.html
-  
+
   SPDX-License-Identifier: EPL-2.0
-  
+
   Copyright Contributors to the Zowe Project.
 */
 
@@ -56,13 +56,13 @@ export function execute(allowOverwrite?: boolean, dryRun?: boolean, ignoreSecuri
   const coreJavaComponents = std.getenv('ZWE_PRIVATE_CORE_COMPONENTS_REQUIRE_JAVA').split(',');
   // only try to update if it's not defined, but needed
   if (!configJavaHome) {
-    coreJavaComponents.every(coreJavaComponent => {
-      if (enabledComponents.includes(coreJavaComponent)) {
+    for (let i = 0; i < coreJavaComponents.length; i++) {
+      if (enabledComponents.includes(coreJavaComponents[i])) {
         java.requireJava();
         newJavaHome = std.getenv('JAVA_HOME');
-        return false;  // exit the loop, the first match is fine
+        break;
       }
-    });
+    }
   }
 
   // zowe.runtimeDirectory
