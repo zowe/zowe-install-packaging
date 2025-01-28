@@ -1,1 +1,15 @@
-""
+{
+  "lockAcquiredTime": "Tue Jan 28 2025 21:38:21 GMT+0000 (Coordinated Universal Time)",
+  "uid": "1738100301558451218",
+  "repository": {
+    "owner": "zowe",
+    "repo": "zowe-install-packaging"
+  },
+  "branch": "user/markackert/upgrade-fmid-to-current-test",
+  "workflow": "Zowe CICD Integration Tests",
+  "job": "cicd-test",
+  "actor": "zowe-robot",
+  "runId": 13020004800,
+  "runNumber": 6033,
+  "link": "https://github.com/zowe/zowe-install-packaging/actions/runs/13020004800"
+}
