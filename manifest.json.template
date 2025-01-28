@@ -72,9 +72,8 @@
       "exclusions": ["*PR*.zip"]
     },
     "org.zowe.apiml.caching-service-package": {
-      "version": "^3.0.3-SNAPSHOT",
-      "artifact": "caching-service-*.zip",
-      "exclusions": ["*PR*.zip"]
+      "version": "3.1.6-PR-3960-SNAPSHOT",
+      "artifact": "caching-service-*.zip"
     },
     "org.zowe.apiml.apiml-common-lib-package": {
       "version": "^3.0.3-SNAPSHOT",
