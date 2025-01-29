@@ -131,19 +131,19 @@ export function execute(doNotExit: Boolean): void {
     }
 
     if (commResult.out) {
-        const linesReturned =  commResult.out.split("\n").length;
-        common.printMessage(`  * Number of ${commStepName} files: ${linesReturned}`);
-        if (linesReturned) {
+      const linesReturned =  commResult.out.split("\n").length;
+      common.printMessage(`  * Number of ${commStepName} files: ${linesReturned}`);
+      if (linesReturned) {
         verifyFailed = true;
         if (logLevel == 'TRACE' ) {
-            common.printTrace(`  * All ${commStepName} files:`);
-            common.printTrace(processCommResult(commResult.out, undefined));
+          common.printTrace(`  * All ${commStepName} files:`);
+          common.printTrace(processCommResult(commResult.out, undefined));
         }
         if (logLevel == 'DEBUG') {
-            common.printDebug(`  * First 10 ${commStepName} files:`);
-            common.printDebug(stringlib.paddingLeft(processCommResult(commResult.out, 10),"    "));
+          common.printDebug(`  * First 10 ${commStepName} files:`);
+          common.printDebug(stringlib.paddingLeft(processCommResult(commResult.out, 10),"    "));
         }
-        }
+      }
     }
   });
 
