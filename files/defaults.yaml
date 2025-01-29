@@ -192,9 +192,9 @@ components:
       infinispan:
         # this is required if storage mode is infinispan
         jgroups:
-          port: 7600
+          port: 7098
           keyExchange:
-            port: 7601
+            port: 7099
 
   # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   app-server:
