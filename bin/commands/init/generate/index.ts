@@ -53,28 +53,24 @@ export function execute(dryRun?: boolean) {
     startingConfig = 'FILE('+originalConfig+')';
   }
 
-  let parts = startingConfig.split(/(FILE\(|PARMLIB\()/g).filter(item => item.length > 0);
+  // we are guaranteed to have FILE() or PARMLIB() formatted config concatenated with ':'
+  let parts = startingConfig.split(':').filter((part) => part.trim().length > 0);
+
   let configLines = [];
-  let state = '';
 
   for (let i = 0; i < parts.length; i++) {
-    let part = parts[i];
-    if (part == 'FILE(') {
-      state = part;
-    } else if (part == 'PARMLIB(') {
-      state = part;
-    } else if (state == 'FILE(') {
-      let filename = part.substring(0, part.indexOf(')'));
+    let part = parts[i].trim();
+    if (part.startsWith('FILE(')) {
+      let filename = part.substring(part.indexOf('(')+1, part.indexOf(')'));
       configLines.push('FILE ' + fs.convertToAbsolutePath(filename).replace(/[$]/g, '$$$$'));
-      state = null;
-    } else if (state == 'PARMLIB(') {
+    } else if (part.startsWith('PARMLIB(')) {
       const isValidParmlib = common.isValidZoweYamlParmlib(part);
       if (!isValidParmlib.ok) {
         common.printErrorAndExit(isValidParmlib.error.message, undefined, isValidParmlib.error.code);
       }
-      configLines.push('PARMLIB ' + part.substring(0, part.indexOf('(')).replace(/[$]/g, '$$$$'));
-      state = null;
-    }
+      const parmlib = part.substring(part.indexOf('(')+1, part.lastIndexOf(')'));
+      configLines.push('PARMLIB ' + parmlib.substring(0, parmlib.indexOf('(')).replace(/[$]/g, '$$$$'));
+    } 
   }
 
   jclContents = jclContents.replace('FILE <full path to zowe.yaml file>', configLines.join('\n'));
