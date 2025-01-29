@@ -4,8 +4,8 @@
     <!-- instance prefix settings -->
     <workflowInfo>
         <workflowID scope="none">config_apiml_zowe_30</workflowID>
-        <workflowDefaultName>Configuration of APIML for Zowe 3.0</workflowDefaultName>
-        <workflowDescription>Use this simplified workflow to configure APIML for Zowe 3.0</workflowDescription>
+        <workflowDefaultName>Configuration of API ML for Zowe 3.0</workflowDefaultName>
+        <workflowDescription>Use this simplified workflow to configure API ML for Zowe 3.0</workflowDescription>
         <workflowVersion>###ZOWE_VERSION###</workflowVersion>
         <vendor>Zowe</vendor>
         <General/>
@@ -405,8 +405,8 @@ some use cases, like containerization, this port could be different.</descriptio
     </variable>    
     <variable name="components_gateway_port" scope="instance" visibility="public">
         <label>Gateway port</label>
-        <abstract>Port for APIML Gateway</abstract>
-        <description>Port for APIML Gateway</description>
+        <abstract>Port for API ML Gateway</abstract>
+        <description>Port for API ML Gateway</description>
         <category>components</category>
         <integer>
             <!-- Put validation here -->
@@ -416,8 +416,8 @@ some use cases, like containerization, this port could be different.</descriptio
     </variable>    
   <variable name="components_zaas_port" scope="instance" visibility="public">
     <label>ZAAS port</label>
-    <abstract>Port for APIML ZAAS</abstract>
-    <description>Port for APIML ZAAS</description>
+    <abstract>Port for API ML ZAAS</abstract>
+    <description>Port for API ML ZAAS</description>
     <category>components</category>
     <integer>
       <!-- Put validation here -->
@@ -698,13 +698,13 @@ some use cases, like containerization, this port could be different.</descriptio
     </step>
     <step name="configure" optional="false">
         <title>Create configuration</title>
-        <description>Creates the configuration for the Zowe (APIML)</description>
+        <description>Creates the configuration for the Zowe (API ML)</description>
         <prereqStep name="define_variables"/>
         <!-- condition -->
         <!--variableValues-->
-        <instructions substitution="true"><![CDATA[Run this step to create the configuration file for APIML for Zowe. <br/>
+        <instructions substitution="true"><![CDATA[Run this step to create the configuration file for API ML for Zowe. <br/>
         Generated yaml file is backward compatible with full Zowe, <br/>
-        this workflow is just simplified with focus on easier APIML configuration. <br/>
+        this workflow is just simplified with focus on easier API ML configuration. <br/>
         Ensure that the values are correct. <br/>
         <b>zowe.yaml</b> file is created in the: <b>${instance-zowe_runtimeDirectory}</b> directory<br/><br/>
         <b>NOTE:</b> If you run this workflow outside of PSWI (SMP/E or convenience build), you might encounter a folder write permission issue.<br/>
