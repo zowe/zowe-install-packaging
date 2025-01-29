@@ -383,7 +383,7 @@ export function isValidZoweYamlParmlib(parmlib: string): {ok: boolean; error: { 
     const member = finalParmlib.substring(finalParmlib.indexOf('(')+1, finalParmlib.indexOf(')'));
     if (member.toUpperCase() != 'ZWEYAML') {
       return { ok: false, error: {
-        message: `ZWEL0319E Configuration stored in PARMLIB must use member name ZWEYAML when using generate action.`,
+        message: `ZWEL0319E Configuration stored in PARMLIB must use member name ZWEYAML.`,
         code: 319,
       }};
     }
