@@ -68,13 +68,9 @@ export function execute(dryRun?: boolean) {
       configLines.push('FILE ' + fs.convertToAbsolutePath(filename).replace(/[$]/g, '$$$$'));
       state = null;
     } else if (state == 'PARMLIB(') {
-      let memberIndex = part.indexOf('(');
-      if (memberIndex != -1) {
-        let endIndex = part.indexOf(')', memberIndex);
-        let member = part.substring(memberIndex+1, endIndex);
-        if (member.toUpperCase() != 'ZWEYAML') {
-          common.printErrorAndExit(`ZWEL0319E Configuration stored in PARMLIB must use member name ZWEYAML when using generate action.`, undefined, 319);
-        }
+      const isValidParmlib = common.isValidZoweYamlParmlib(part);
+      if (!isValidParmlib.ok) {
+        common.printErrorAndExit(isValidParmlib.error.message, undefined, isValidParmlib.error.code);
       }
       configLines.push('PARMLIB ' + part.substring(0, part.indexOf('(')).replace(/[$]/g, '$$$$'));
       state = null;

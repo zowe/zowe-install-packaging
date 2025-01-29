@@ -366,6 +366,34 @@ export function getZoweVersion(): string|undefined {
 }
 
 
+/**
+ * Checks if the zowe.yaml provided via "PARMLIB" syntax will be accepted by configmgr.
+ * 
+ * Accepts both PARMLIB(MY.PARM(MEMBER)) and MY.PARM(MEMBER)
+ * 
+ * @param parmlib 
+ * 
+ */
+export function isValidZoweYamlParmlib(parmlib: string): {ok: boolean; error: { message: string; code: number }} {
+  let finalParmlib = parmlib.trim();
+  if (finalParmlib.startsWith('PARMLIB(')) {
+    finalParmlib = parmlib.substring(8, parmlib.lastIndexOf(')')); // cover cases where a trailing colon may be present
+  }
+  if (finalParmlib.indexOf('(') != -1) {
+    const member = finalParmlib.substring(finalParmlib.indexOf('(')+1, finalParmlib.indexOf(')'));
+    if (member.toUpperCase() != 'ZWEYAML') {
+      return { ok: false, error: {
+        message: `ZWEL0319E Configuration stored in PARMLIB must use member name ZWEYAML when using generate action.`,
+        code: 319,
+      }};
+    }
+    return {ok: true, error: {message: '', code: 0}};
+  }
+
+  return {ok: false, error: { message: `ZWEL0320E Invalid PARMLIB format ${parmlib}.`, code: 320 } };
+}
+
+
 //From 'index.sh'
 std.setenv('ZWE_PRIVATE_DS_SZWESAMP', 'SZWESAMP');
 std.setenv('ZWE_PRIVATE_DS_SZWEEXEC', 'SZWEEXEC');
