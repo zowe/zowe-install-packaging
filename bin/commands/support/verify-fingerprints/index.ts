@@ -17,9 +17,75 @@ import * as fs from '../../../libs/fs';
 import * as shell from '../../../libs/shell';
 import * as stringlib from '../../../libs/string';
 
-function requireJava() {
-  const testJava = shell.execSync('sh', '-c', 'java -version 2>/dev/null 1>/dev/null');
-  return testJava.rc;
+// This function is a copy of existing ../../../libs/java(validateJavaHome)
+// The reason for such terrible approach is, this command could run standalone
+// without config: zwe support verify-fingerprints (no parms)
+// By importing java we will force to use a config.
+// Either:
+//   * Copy of a function and backward compatibility
+//   * Import of a function and braking change (config required)
+
+const JAVA_MIN_VERSION = 17;
+
+export function validateJavaHome(javaHome:string|undefined=std.getenv("JAVA_HOME")): boolean {
+  if (!javaHome) {
+    common.printError("Cannot find java. Please define JAVA_HOME environment variable.");
+    return false;
+  }
+  if (!fs.fileExists(fs.resolvePath(javaHome,`/bin/java`))) {
+    common.printError(`JAVA_HOME: ${javaHome}/bin does not point to a valid install of Java.`);
+    return false;
+  }
+
+  let execReturn = shell.execErrSync(fs.resolvePath(javaHome,`/bin/java`), `-version`);
+  const version = execReturn.err;
+  if (execReturn.rc != 0) {
+    common.printError(`Java version check failed with return code: ${execReturn.rc}: ${version}`);
+    return false;
+  }
+
+  try {
+    let index = 0;
+    let javaVersionShort;
+    let versionLines = (version as string).split('\n'); // valid because of above rc check
+    for (let i = 0; i < versionLines.length; i++) {
+      if ((index = versionLines[i].indexOf('java version')) != -1) {
+        //format of: java version "1.8.0_321" OR java version "17.0.10" 2024-01-02
+        javaVersionShort = versionLines[i].substring(index+('java version'.length)+2);
+        javaVersionShort = javaVersionShort.replace(/"/g, '');
+        break;
+      } else if ((index = versionLines[i].indexOf('openjdk version')) != -1) {
+        javaVersionShort=versionLines[i].substring(index+('openjdk version'.length)+2, versionLines[i].length-1);
+        break;
+      }
+    }
+    if (!javaVersionShort){
+      common.printError("could not find java version");
+      return false;
+    }
+    let versionParts = javaVersionShort.split('.');
+    const javaMajorVersion=Number(versionParts[0]);
+    const javaMinorVersion=Number(versionParts[1]);
+
+    let tooLow=false;
+    if (javaMajorVersion !== 1 && javaMajorVersion < JAVA_MIN_VERSION) {
+      tooLow=true;
+    }
+    if (javaMajorVersion === 1 && javaMinorVersion < JAVA_MIN_VERSION) {
+      tooLow=true;
+    }
+
+    if (tooLow) {
+      common.printError(`Java ${javaVersionShort} is less than the minimum level required of Java ${JAVA_MIN_VERSION}.`);
+      return false;
+    }
+
+    common.printDebug(`Java ${javaVersionShort} is supported.`);
+    common.printDebug(`Java check is successful.`);
+    return true;
+  } catch (e) {
+    return false;
+  }
 }
 
 function processCommResult(content: string, lines?: number): string {
@@ -41,8 +107,9 @@ export function execute(doNotExit: Boolean): void {
 
   common.printLevel0Message('Verify Zowe file fingerprints');
 
-  if (requireJava()) {
-      common.printErrorAndExit('No Java found', undefined, 999);
+  const validJava = validateJavaHome(std.getenv('JAVA_HOME'));
+  if (!validJava) {
+    common.printErrorAndExit('Error ZWEL0122E Cannot find java. Please define JAVA_HOME environment variable.', undefined, 122);
   }
 
   const tmpFilePrefix = 'zwe-support-verify-fingerprints';
