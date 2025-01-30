@@ -180,6 +180,12 @@ If your changes are in components, it may depend on how the Zowe build picks you
     },
   ```
 
+### Writing HOLDDATA
+
+If your changes require end-users to take action on their system beyond applying maintenance and recycling the Zowe address space, you will need to write HOLDDATA detailing what steps the user should take once the maintenance is applied. 
+
+HOLDDATA should be written in a `smpe/bld/service/current-hold-*.txt` file. More details on this file format can be found in [the SMP/e service doc](./smpe/bld/service/_README.txt).
+
 ## Automate Install / Uninstall of Zowe with Ansible
 
 Please check details in [playbooks folder](playbooks/README.md).
