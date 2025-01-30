@@ -1,1 +1,15 @@
-""
+{
+  "lockAcquiredTime": "Thu Jan 30 2025 08:06:41 GMT+0000 (Coordinated Universal Time)",
+  "uid": "1738224401164338176",
+  "repository": {
+    "owner": "zowe",
+    "repo": "zowe-install-packaging"
+  },
+  "branch": "hrishikesh-nalawade/GH3921/test-snapshot-for-logs-timezone",
+  "workflow": "Zowe CICD Integration Tests",
+  "job": "cicd-test",
+  "actor": "zowe-robot",
+  "runId": 13037420236,
+  "runNumber": 6042,
+  "link": "https://github.com/zowe/zowe-install-packaging/actions/runs/13037420236"
+}
