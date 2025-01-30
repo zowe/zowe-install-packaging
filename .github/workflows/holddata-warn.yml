@@ -1,0 +1,63 @@
+name: Discover HOLDDATA 
+
+permissions: read-all
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+    branches: 
+      - v3.x/staging
+      - v3.x/rc
+      - v2.x/staging
+      - v2.x/rc
+
+jobs:
+  check-holddata:
+    runs-on: ubuntu-latest
+    steps:
+
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install Dependencies for verification script
+        run: npm install
+        working-directory: .github/scripts/holddata_verification
+
+      - name: List changed files which are candidates for HOLDDATA
+        id: changed-files-yaml
+        uses: tj-actions/changed-files@v45
+        with:
+          files_yaml: |
+            hold:
+              - smpe/bld/service/current-hold-*.txt
+            src:
+              - example-zowe.yaml
+              - files/defaults.yaml
+              - files/sca/zowe_base_sca.json
+              - files/SZWEEXEC/**
+              - files/SZWESAMP/**
+              - schemas/**
+              - smpe/bld/SMPMCS.txt
+              - workflows/files/ZWEKRIN*
+              - workflows/templates/ZWESECU*
+
+      # If there's a change to SAMP or EXEC files and no matching holddata, fail workflow.
+      # We can't know if there must be HOLDDATA in this case, so this WF can never be a required check.
+      - name: Check for changed files without matching holddata
+        if: ${{ steps.changed-files-yaml.outputs.src_any_changed == 'true' && steps.changed-files-yaml.outputs.hold_any_changed == 'false' }} 
+        env:
+          TEST_ALL_CHANGED_FILES: ${{ steps.changed-files-yaml.outputs.src_all_changed_files }}
+        run: |
+          echo "One or more SAMP or EXEC file(s) have changed."
+          echo "This may require HOLDDATA to be created."
+          echo "Files changed: $TEST_ALL_CHANGED_FILES"
+          exit 1
+
+      - name: Check HOLDDATA is in a valid format
+        if: ${{ steps.changed-files-yaml.outputs.hold_any_changed == 'true' }} 
+        env:
+          HOLDDATA_FILES: ${{ steps.changed-files-yaml.outputs.hold_all_changed_files }}
+        id: verify-holddata-format
+        run: node .github/scripts/holddata_verification/validate_holddata.js
+
+            
