@@ -18,13 +18,16 @@ import * as javaCI from '../../../libs/java_ci';
 import * as shell from '../../../libs/shell';
 import * as stringlib from '../../../libs/string';
 
+// Originally in shell: "echo $result | head -n 10 | awk '{ print $1 }')"
 function processCommResult(content: string, lines?: number): string {
   let returnedOutput = '';
   if (content) {
     let linesSplit = content.split("\n");
+    // head -n lines
     if (lines && lines > 0) {
       linesSplit = linesSplit.slice(0, lines);
     }
+    // awk '{ print $1 }'
     linesSplit.forEach(line => {
       const oneLineSplit = line.split(' ');
       returnedOutput += `${oneLineSplit[0]}\n`
@@ -33,13 +36,16 @@ function processCommResult(content: string, lines?: number): string {
   return returnedOutput;
 }
 
-export function execute(doNotExit: Boolean): void {
+export function execute(doNotExit: Boolean, javaHome: string): void {
 
   common.printLevel0Message('Verify Zowe file fingerprints');
 
-  const validJava = javaCI.validateJavaHome(std.getenv('JAVA_HOME'));
-  if (!validJava) {
-    common.printErrorAndExit('Error ZWEL0122E Cannot find java. Please define JAVA_HOME environment variable.', undefined, 122);
+  if (!javaHome) {
+    javaHome = std.getenv('JAVA_HOME');
+    const validJava = javaCI.validateJavaHome(javaHome);
+    if (!validJava) {
+      common.printErrorAndExit('Error ZWEL0122E Cannot find java. Please define JAVA_HOME environment variable.', undefined, 122);
+    }
   }
 
   const tmpFilePrefix = 'zwe-support-verify-fingerprints';
@@ -82,7 +88,7 @@ export function execute(doNotExit: Boolean): void {
   common.printMessage('- Calculate hashes of Zowe files');
 
   const customHashes = fs.createTmpFile(tmpFilePrefix);
-  const javaHash = shell.execOutSync('sh', '-c', `cd '${zoweRuntime}' && java -cp "${zoweRuntime}/bin/utils/" HashFiles "${allFiles}" | sort > "${customHashes}"`);
+  const javaHash = shell.execOutSync('sh', '-c', `cd '${zoweRuntime}' && '${javaHome}/bin/java' -cp '${zoweRuntime}/bin/utils/' HashFiles '${allFiles}' | sort > '${customHashes}'`);
 
   if (javaHash.rc != 0 || !fs.fileExists(customHashes) || fs.fileSize(customHashes) < 1) {
     common.printError(`  * Error ZWEL0151E: Failed to create temporary file ${customHashes}. Please check permission or volume free space.`);

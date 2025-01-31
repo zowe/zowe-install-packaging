@@ -25,6 +25,7 @@ import * as component from '../../libs/component';
 import * as config from '../../libs/config';
 import * as fs from '../../libs/fs';
 import * as java from '../../libs/java';
+import * as javaCI from '../../libs/java_ci';
 import * as node from '../../libs/node'
 import * as shell from '../../libs/shell';
 import * as zoslib from '../../libs/zos';
@@ -96,6 +97,7 @@ export function execute(): void {
   }
 
   java.requireJava();
+  javaCI.validateJavaHome();
   const javaVersion = shell.execOutSync('sh', '-c', '${JAVA_HOME}/bin/java -version 2>&1 | head -n 1');
   if (javaVersion.rc == 0 && javaVersion.out) {
     environment["java"] = javaVersion.out.replace(/\"/g, '');
@@ -116,7 +118,6 @@ export function execute(): void {
   const ceeOptions = shell.execOutSync('sh', '-c', `tsocmd "OMVS RUNOPTS('RPTOPTS(ON)')" 2>&1`);
   if (ceeOptions.out) {
     const ceeOptionesLines = ceeOptions.out.split('\n');
-    let ceeIndex = 0;
     environment["cee_runtime"] = [];
     for (let line in ceeOptionesLines) {
       if (!(/^FSUM205[1|2]I/).test(ceeOptionesLines[line]) && !(/.*the alternate screen size is.*/i).test(ceeOptionesLines[line])) {
@@ -186,7 +187,7 @@ export function execute(): void {
   std.setenv('ZWE_PRIVATE_LOG_FILE', `${verifyFingerprintsFile}`);
   std.setenv('ZWE_PRIVATE_LOG_LEVEL_ZWELS', 'TRACE');
   fs.createFile(verifyFingerprintsFile, 0o700);
-  verifyFingerprints.execute(true);
+  verifyFingerprints.execute(true, std.getenv('JAVA_HOME'));
   std.setenv('ZWE_PRIVATE_LOG_FILE',`${supportLogFile}`);
   std.setenv('ZWE_PRIVATE_LOG_LEVEL_ZWELS', `${supportLogLevel}`);
   common.printMessage("");
