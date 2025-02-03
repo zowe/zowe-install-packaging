@@ -83,8 +83,8 @@ if [ "$run" = "run" ]; then
       echo "Checking if the workflow is ZWECONF" >>$LOG_DIR/report.txt
       if [ "$ZWECONF" = "ZWECONF" ]; then
         STEP_NAME=$(echo $RESP | grep -o '"currentStepName":".*"' | cut -f4 -d\")
-        if [ "$STEP_NAME" = "init_zowe" ]; then
-          echo "The workflow is ZWECONF and should end in step 'init_zowe'"
+        if [ "$STEP_NAME" = "install_zowe" ]; then
+          echo "The workflow is ZWECONF and should end in step 'install_zowe', first step of 'zowe_installation_steps'"
           STATUS="FINISHED"
         else
           echo "The workflow is ZWECONF but ended in different step: '$STEP_NAME'" >>$LOG_DIR/report.txt
