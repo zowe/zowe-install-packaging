@@ -457,17 +457,17 @@ java:
 
 
 #-------------------------------------------------------------------------------
-# node.js configuration
+# Node.js configuration
 #
-# Some Zowe components requires node.js. Define the path where you have your
-# node.js is installed.
+# Some Zowe components requires Node.js. Define the path where you have your
+# Node.js is installed.
 #
 # **NOTE**: this field can be updated automatically if you pass `--update-config`
 # to `zwe init` command.
 #-------------------------------------------------------------------------------
 node:
   # **COMMONLY_CUSTOMIZED**
-  # Path to your node.js home directory
+  # Path to your Node.js home directory
   home: ""
 
 
@@ -623,7 +623,7 @@ components:
 #     # for this HA instance, we did not customize "components", so it will use default value.
 
 #   # HA instance ID, we will start 2 instances on LPAR2
-#   # **NOTE**, we can only start one gateway in same LPAR.
+#   # **NOTE**, we can only start one Gateway in same LPAR.
 #   lpar2a:
 #     # hostname where this instance will be started
 #     hostname: lpar2.my-company.com

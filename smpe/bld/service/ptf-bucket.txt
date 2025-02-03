@@ -1,0 +1,9 @@
+#----------------------------------------------------------------------#
+# NOTE FOR PULL REQUEST APPROVER:                                      #
+# This file may only be updated when IBM provides more PTF numbers, or #
+# when a Release Candidate PTF is promoted. Reject ALL other updates.  #
+#----------------------------------------------------------------------#
+#
+# format: <ptf1> <ptf2> - <apar1> <apar2> [<sec/int apar>]
+UO90082 UO90083 - IO29468 IO29469  IO29470
+UO90084 UO90085 - IO29471 IO29472  IO29473

@@ -4,9 +4,9 @@ This guide will describe how you should input into Github Actions workflow input
 
 Currently we support three testing z/OS servers:
 
-- zzow06 (ACF2)
-- zzow07 (Top Secret/TSS)
-- zzow08 (RACF)
+- zzow09 (ACF2)
+- zzow10 (Top Secret/TSS)
+- zzow11 (RACF)
 
 Testing pipeline is running tests in parallel. The workflow will try to acquire the resource lock if available. If the resource lock is occupied, the workflow will wait until the lock is succesfully acquired.
 
@@ -17,7 +17,7 @@ Workflow trigger is at [cicd-test](https://github.com/zowe/zowe-install-packagin
 ### Choose Test Server
 
 - This input is a choice, and it's mandatory.  
-- You can choose from one of `zzow06`, `zzow07`, `zzow08`, `zzow06,zzow07,zzow08` (if you want to run the test on all zzow servers), or `Any zzow servers` (pick any zzow servers, potentially help reduce wait time)
+- You can choose from one of `zzow09`, `zzow10`, `zzow11`, `zzow09,zzow10,zzow11` (if you want to run the test on all zzow servers), or `Any zzow servers` (pick any zzow servers, potentially help reduce wait time)
 - Default is `Any zzow servers`
 
 ### Choose Install Test
@@ -29,7 +29,7 @@ Workflow trigger is at [cicd-test](https://github.com/zowe/zowe-install-packagin
   - SMPE PTF
   - Extensions
   - Keyring
-  - z/OS node v18
+  - z/OS node v20
   - Non-strict Verify External Certificate
   - Install PTF twice
   - VSAM Caching storage method
@@ -91,7 +91,7 @@ Background: CICD testing relies on a `zowe.pax` or `zowe-smpe.zip` (for SMPE ins
 
 - This input is pre-filled with `sample-node-api;sample-trial-app` to test [sample-node-api](https://github.com/zowe/sample-node-api) and [sample-trial-app](https://github.com/zowe/sample-trial-app) projects. In normal circumstances, you probably don't need to modify the pre-filled value here.
 - By default, the extension artifact search pattern is using format `libs-snapshot-local/org/zowe/{ext-name}/*/{ext-name}-*.pax` where `{ext-name}` will be processed and substituted from this input (as an example above, `sample-node-api`). Then the latest uploaded artifact will be used.
-- Optionally, you can customized your extension artifact path. Customized jfrog artifactory path should exist, be valid, and enclosed in brackets and put after the extension name, eg. `sample-node-api(my/new/path/sample-node-api-cus.pax)`. A pattern contains `*` is also supported, which the latest artifact will be picked up. If multiple extensions are included, make sure to separate them by semi-colon. In addition to the artifactory path/pattern, you can also put a full http URL to any other remote location that points to an extension pax here.
+- Optionally, you can customized your extension artifact version. Customized jfrog artifactory version should exist, be valid, and enclosed in brackets and put after the extension name, eg. `sample-node-api(3.0.0-SNAPSHOT)`. This example will create a search pattern like the following, where the latest artifact in the folder is picked up: `libs-snapshot-local/org/zowe/sample-node-api/3.0.0-SNAPSHOT/sample-node-api-*.pax`.  A pattern containing `*` is also supported, which will result in the latest artifact in the latest folder matching the pattern. For example: `sample-node-api(1.0.0-*)` will create this search pattern: `libs-snapshot-local/org/zowe/sample-node-api/1.0.0-*/sample-node-api-*.pax`, which could match folders `1.0.0-SNAPSHOT`, `1.0.0-MAIN`, `1.0.0-user-pr-build`, etc.
 - The following regular expression will be used to check against your input
 
   ```
@@ -109,7 +109,7 @@ Background: CICD testing relies on a `zowe.pax` or `zowe-smpe.zip` (for SMPE ins
 When running CICD integration tests during RC stage, the following string will be parsed into the Github Actions matrix. As a result, a total of 21 independent jobs will be spawned.
 
 ```
-basic/install.ts(zzow06,zzow07,zzow08);basic/install-ptf.ts(zzow06,zzow07,zzow08);basic/install-ext.ts(zzow07);extended/keyring.ts(zzow06,zzow07,zzow08);extended/node-versions/node-v18.ts(zzow06,zzow07,zzow08);extended/node-versions/node-v20.ts(zzow06,zzow07,zzow08);extended/certificates/nonstrict-verify-external-certificate.ts(zzow06)
+basic/install.ts(zzow09,zzow10,zzow11);basic/install-ptf.ts(zzow09,zzow10,zzow11);basic/install-ext.ts(zzow10);extended/keyring.ts(zzow09,zzow10,zzow11);extended/node-versions/node-v20.ts(zzow09,zzow10,zzow11);extended/node-versions/node-v20.ts(zzow09,zzow10,zzow11);extended/certificates/nonstrict-verify-external-certificate.ts(zzow09)
 ```
 
 Total elapsed time when running in parallel is approximately 3.5 hours on paper idealy if all parallel jobs are executing at the same time. In reality, from numerous tests performed, total elapsed time is around 4 hours.  
@@ -121,7 +121,6 @@ Selected test running elapsed time:
 | ---- | ------------ |
 | Convenience Pax | 53m |
 | SMPE PTF | 68m |
-| z/OS node v18 | 45m |
 | z/OS node v20 | 45m |
 | Keyring | 53m |
 | Non-strict Verify External Certificate | 51m |
