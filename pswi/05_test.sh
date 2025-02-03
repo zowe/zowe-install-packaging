@@ -68,7 +68,8 @@ sh scripts/tmp_mounts.sh "${WORK_ZFS}" "${WORK_MOUNT}"
 if [ $? -gt 0 ]; then exit -1; fi
 
 # Run the deployment test
-echo " Running the deployment test for z/OSMF version 2.3"
+echo " Running the deployment test for z/OSMF version ${ZOSMF_V}"
 
 pip install requests
+
 python scripts/deploy_test_2_3.py
