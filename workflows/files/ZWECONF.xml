@@ -12,9 +12,9 @@
     </workflowInfo>
     <!--variables-->
     <variable name="zowe_setup_dataset_prefix" scope="instance" visibility="public">
-        <label>Prefix of existing Zowe SZWEEXEC Target libraries</label>
-        <abstract>Prefix of existing SZWEEXEC Target libraries created during PSWI or SMP/E</abstract>
-        <description>Prefix of existing SZWEEXEC Target libraries created during PSWI or SMP/E installation phase</description>
+        <label>Prefix of Zowe setup MVS datasets</label>
+        <abstract>Prefix of datasets where remaining runtime datasets will be created</abstract>
+        <description>Prefix of datasets where remaining runtime libraries will be created within execution of Zowe install step (SZWEAUTH, SZWESAMP, SZWEEXEC, SZWELOAD)</description>
         <category>zowe</category>
         <string valueMustBeChoice="false" multiLine="false">
             <!-- Put validation here -->
@@ -514,8 +514,8 @@ How we want to verify SSL certificates of services. Valid values are:
     </variable>
     <variable name="components_gateway_port" scope="instance" visibility="public">
         <label>Gateway port</label>
-        <abstract>Port for the APIML Gateway</abstract>
-        <description>Port for the APIML Gateway</description>
+        <abstract>Port for the API ML Gateway</abstract>
+        <description>Port for the API ML Gateway</description>
         <category>components</category>
         <integer>
             <!-- Put validation here -->
@@ -535,9 +535,9 @@ How we want to verify SSL certificates of services. Valid values are:
         </boolean>
     </variable>
     <variable name="components_zaas_enabled" scope="instance" visibility="public">
-      <label>Enable APIML ZAAS</label>
-      <abstract>Check this option to enable APIML ZAAS</abstract>
-      <description>Check this option to enable APIML ZAAS</description>
+      <label>Enable API ML ZAAS</label>
+      <abstract>Check this option to enable API ML ZAAS</abstract>
+      <description>Check this option to enable API ML ZAAS</description>
       <category>components</category>
       <boolean>
         <!-- Put validation here -->
@@ -547,8 +547,8 @@ How we want to verify SSL certificates of services. Valid values are:
     </variable>
   <variable name="components_zaas_port" scope="instance" visibility="public">
     <label>ZAAS port</label>
-    <abstract>Port for APIML ZAAS</abstract>
-    <description>Port for APIML ZAAS</description>
+    <abstract>Port for API ML ZAAS</abstract>
+    <description>Port for API ML ZAAS</description>
     <category>components</category>
     <integer>
       <!-- Put validation here -->
@@ -568,7 +568,7 @@ How we want to verify SSL certificates of services. Valid values are:
     </boolean>
   </variable>
     <variable name="components_gateway_apiml_security_auth_provider" scope="instance" visibility="public">
-        <label>APIML security auth provider</label>
+        <label>API ML security auth provider</label>
         <abstract>Authorization provider for the Gateway</abstract>
         <description>Authorization provider for the Gateway</description>
         <category>components</category>
@@ -579,7 +579,7 @@ How we want to verify SSL certificates of services. Valid values are:
         </string>
     </variable>
     <variable name="components_gateway_apiml_security_auth_zosmf_jwtAutoconfiguration" scope="instance" visibility="public">
-        <label>APIML security auth z/OSMF jwtAutoconfiguration</label>
+        <label>API ML security auth z/OSMF jwtAutoconfiguration</label>
         <abstract>JWT auto configuration for Gateway security auth</abstract>
         <description>JWT auto configuration for Gateway security auth</description>
         <category>components</category>
@@ -592,7 +592,7 @@ How we want to verify SSL certificates of services. Valid values are:
         </string>
     </variable>
     <variable name="components_gateway_apiml_security_auth_zosmf_serviceId" scope="instance" visibility="public">
-        <label>APIML security auth z/OSMF serviceId</label>
+        <label>API ML security auth z/OSMF serviceId</label>
         <abstract>Service ID for Gateway security auth</abstract>
         <description>Service ID for Gateway security auth</description>
         <category>components</category>
@@ -603,7 +603,7 @@ How we want to verify SSL certificates of services. Valid values are:
         </string>
     </variable>
     <variable name="components_gateway_apiml_security_authorization_endpoint_enabled" scope="instance" visibility="public">
-        <label>Enable APIML security authorization endpoint</label>
+        <label>Enable API ML security authorization endpoint</label>
         <abstract>Use this to enable the security authorization endpoint</abstract>
         <description>Use this to enable the security authorization endpoint</description>
         <category>components</category>
@@ -614,7 +614,7 @@ How we want to verify SSL certificates of services. Valid values are:
         </boolean>
     </variable>
     <variable name="components_gateway_apiml_security_authorization_provider" scope="instance" visibility="public">
-        <label>APIML security authorization provider</label>
+        <label>API ML security authorization provider</label>
         <abstract>Security authorization provider for the Gateway</abstract>
         <description>Security authorization provider for the Gateway</description>
         <category>components</category>
@@ -625,7 +625,7 @@ How we want to verify SSL certificates of services. Valid values are:
         </string>
     </variable>
     <variable name="components_gateway_apiml_security_x509_enabled" scope="instance" visibility="public">
-        <label>Enable APIML security x509</label>
+        <label>Enable API ML security x509</label>
         <abstract>Check to enable the Gateway security x509</abstract>
         <description>Check to enable the Gateway security x509</description>
         <category>components</category>
@@ -1067,20 +1067,7 @@ How we want to verify SSL certificates of services. Valid values are:
             <!-- Specify choices here -->
             <default>ZWESASTC</default>
         </string>
-    </variable>
-    <variable name="zowe_setup_installStep_enabled" scope="instance" visibility="public">
-        <label>Install the MVS data sets</label>
-        <abstract>Check to enable this run step with the zwe install command. For convenience build only.</abstract>
-        <description>Check this option to enable the optional workflow step with zwe install command. After Zowe convenience build is extracted, 
-            you can enable this flag to run the zwe install command to install MVS data sets within this workflow run. 
-        This option is for convenience build only. SMP/E installs the MVS data sets during installation.</description>
-        <category>installMVSDatasets</category>
-        <boolean>
-            <!-- Put validation here -->
-            <!-- Specify choices here -->
-            <default>false</default>
-        </boolean>
-    </variable>
+    </variable>    
     <!--atCreate-->
     <!--steps-->
     <step name="define_variables" optional="false">
@@ -1152,8 +1139,7 @@ How we want to verify SSL certificates of services. Valid values are:
             <variableValue name="zowe_setup_security_users_zis" scope="instance" noPromptIfSet="false" required="true"/>
             <variableValue name="zowe_setup_security_stcs_zowe" scope="instance" noPromptIfSet="false" required="true"/>
             <variableValue name="zowe_setup_security_stcs_zis" scope="instance" noPromptIfSet="false" required="true"/>
-            <variableValue name="zowe_setup_security_stcs_aux" scope="instance" noPromptIfSet="false" required="true"/>
-            <variableValue name="zowe_setup_installStep_enabled" scope="instance" noPromptIfSet="false" required="true"/>
+            <variableValue name="zowe_setup_security_stcs_aux" scope="instance" noPromptIfSet="false" required="true"/>            
             <instructions>Run this step to fill base variables.</instructions>
             <weight>1</weight>
             <skills>z/OS System Programmer</skills>
@@ -1475,7 +1461,7 @@ echo '  setup:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '    # MVS data set related configurations' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '    dataset:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '      # **COMMONLY_CUSTOMIZED**' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '      # where are existing Zowe SZWEEXEC Target libraries' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '      # where Zowe MVS data sets will be installed' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '      prefix: $!{instance-zowe_setup_dataset_prefix}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '      # **COMMONLY_CUSTOMIZED**' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '      # PROCLIB where Zowe STCs will be copied over' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
@@ -2225,26 +2211,21 @@ echo '#         enabled: false' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
     <step name="zowe_installation_steps" optional="false">
         <title>Zowe installation</title>
         <description>Zowe installation</description>
-        <step name="install_zowe" optional="true">
-            <title>Run the Zowe install (only for convenience build)</title>
-            <description>Configure Zowe.</description>
+        <step name="install_zowe" optional="false">
+            <title>Run the Zowe install</title>
+            <description>Configure Zowe.</description>            
             <prereqStep name="main_variables"/>
             <prereqStep name="configure"/>            
-            <condition>
-                <expression>1==1</expression>
-                <description>Always true</description>
-                <targetStateSet>
-                    <extendStateExpression>
-                        <description>Skips this step if Install the MVS data sets was not selected</description>
-                        <expression>!${instance-zowe_setup_installStep_enabled}</expression>
-                        <targetState>skipped</targetState>
-                    </extendStateExpression>
-                </targetStateSet>
-            </condition>
             <!-- condition -->
             <!--variableValues-->
             <instructions substitution="true"><![CDATA[
-            This step runs the command: <code>zwe install -c ${instance-zowe_runtimeDirectory}/zowe.yml</code>
+            This step runs the command: <code>zwe install -c ${instance-zowe_runtimeDirectory}/zowe.yml</code><br/>
+            Will create remaining runtime data sets under zowe.setup.dataset.prefix definition,<br/>
+            i.e. under specified prefix ${instance-zowe_setup_dataset_prefix}:<br/>
+            SZWEAUTH contains few Zowe load modules (++PROGRAM).<br/>
+            SZWESAMP contains several sample configurations.<br/>
+            SZWEEXEC contains few utilities used by Zowe.<br/>
+            SZWELOAD contains config manager for REXX.<br/>
             ]]></instructions>
             <weight>1</weight>
             <skills>z/OS System Programmer</skills>
@@ -2264,7 +2245,7 @@ zwe install -c '${instance-zowe_runtimeDirectory}/zowe.yaml' --allow-overwrite</
                 <maxLrecl>1024</maxLrecl>
                 <!-- zosmfOutput -->
             </template>
-        </step>
+        </step>        
         <step name="init_zowe" optional="false">
             <title>Run scripts for Zowe initialization</title>
             <description>Executes scripts for Zowe initialization</description>
