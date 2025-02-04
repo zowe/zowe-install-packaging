@@ -69,7 +69,7 @@ for(const msgSpec of discoveredMsgs) {
   for(const msg of msgSpec.messages) {
     const errorDef = collectedMsgs.messages.find((item) => item.id === msg.messageId);
     // lets only examine message contents where we have more than a few characters cut off by a newline
-    if (errorDef && msg.message.length > 15 && !similarityExceptions.includes(msg.message)) {
+    if (errorDef?.message && msg.message.length > 15 && !similarityExceptions.includes(msg.message)) {
       const similarity = sc.default.levenshtein.similarity(msg.message, errorDef.message);
       if (similarity < 0.35) {
         console.log(`${msg.message} VERSUS ${errorDef.message} --- ${msg.messageId} VERSUS ${errorDef.id}`);     
@@ -77,9 +77,8 @@ for(const msgSpec of discoveredMsgs) {
     }
 
   }
-  console.log()
-
 }
+console.log()
 
 if (statusFailed) {
   process.exit(1);
