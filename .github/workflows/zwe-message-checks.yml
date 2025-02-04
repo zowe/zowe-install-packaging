@@ -10,8 +10,8 @@ env:
   ZWE_MESSAGE_CHECKS_DIR: .dependency/zwe_message_checks
 
 jobs:
-  update-zwe-documentation:
-    name: Update zwe documentation on docs-site
+  run-tests:
+    name: Run the ZWE Message Analysis
     runs-on: ubuntu-latest
 
     steps:
