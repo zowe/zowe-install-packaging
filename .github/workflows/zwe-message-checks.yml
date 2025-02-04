@@ -1,0 +1,39 @@
+name: Update zwe documentation
+
+on:
+
+  pull_request:
+    types: [opened, synchronize]
+  workflow_dispatch:
+
+env:
+  ZWE_MESSAGE_CHECKS_DIR: .dependency/zwe_message_checks
+
+jobs:
+  update-zwe-documentation:
+    name: Update zwe documentation on docs-site
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up git
+        run: |
+          git config --global user.email "zowe-robot@users.noreply.github.com"
+          git config --global user.name "Zowe Robot"
+          git config --global pull.rebase false # configure to merge in changes from remote branches
+
+      - name: Prepare node project
+        working-directory: ${{ env.ZWE_MESSAGE_CHECKS_DIR }}
+        run: npm install 
+
+      - name: Check zwe messages for issues and print them to the log
+        working-directory: ${{ env.ZWE_MESSAGE_CHECKS_DIR }}
+        id: duplicates
+        run: node ${{ env.ZWE_MESSAGE_CHECKS_DIR }}/index.js 
