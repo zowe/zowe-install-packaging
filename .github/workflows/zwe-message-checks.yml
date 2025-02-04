@@ -34,6 +34,5 @@ jobs:
         run: npm install 
 
       - name: Check zwe messages for issues and print them to the log
-        working-directory: ${{ env.ZWE_MESSAGE_CHECKS_DIR }}
         id: duplicates
         run: node ${{ env.ZWE_MESSAGE_CHECKS_DIR }}/index.js 
