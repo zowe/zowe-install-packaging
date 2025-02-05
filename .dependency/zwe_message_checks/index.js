@@ -28,6 +28,7 @@ for (const dir of dirs) {
 const collectedMsgs = collectMessageIds(rootDocNode);
 console.log('---- Duplicate Message Content or IDs defined in .errors ----\n');
 if (collectedMsgs?.errors?.length > 0) {
+  statusFailed = true;
   for (const error of collectedMsgs.errors) {
     console.log(error.message);
   }
@@ -55,7 +56,8 @@ console.log('')
 console.log('---- Unused Messages defined in .errors ----');
 for(const msgId of Object.keys(msgTally)) {
   if (msgTally[msgId].count === 0 && msgId !== 'ZWEL0103E') { // ZWEL0103E is in 'zwe', which isn't scanned
-    console.log('Unused message: ' + JSON.stringify(msgId));
+    const definition = collectedMsgs.messages.find((it) => it.id === msgId);
+    console.log(`Unused message: ${msgId} [${definition.source}]`);
     statusFailed = true;
   }
 }
@@ -72,7 +74,7 @@ for(const msgSpec of discoveredMsgs) {
     if (errorDef?.message && msg.message.length > 15 && !similarityExceptions.includes(msg.message)) {
       const similarity = sc.default.levenshtein.similarity(msg.message, errorDef.message);
       if (similarity < 0.35) {
-        console.log(`${msg.message} VERSUS ${errorDef.message} --- ${msg.messageId} VERSUS ${errorDef.id}`);     
+        console.log(`${msg.messageId}:${msg.message}[${msgSpec.src}] VERSUS ${errorDef.id}:${errorDef.message}[${errorDef.source}]`);     
       } 
     }
 
@@ -98,6 +100,7 @@ function collectMessageIds(docNode) {
   const errorsFile = docNode?.['.errors']
   if (errorsFile) {
     fs.readFileSync(errorsFile, 'utf8').split('\n').forEach((line) => {
+      const shortErrorsPath = errorsFile.split('zowe-install-packaging/')[1];
       const pieces = line.trim().split('|');
       if (pieces.length > 0 && pieces[0].trim().length > 0) {
         // check for duplicates
@@ -106,12 +109,12 @@ function collectMessageIds(docNode) {
         const matchingMsgId = messages.find((item) => item.id === pieces[0] && item.message !== originalMsg);
         const matchingMsgContent = messages.find((item) => item.message === pieces[2] && item.id !== pieces[0]);
         if (matchingMsgId) {
-          errors.push({ type: 'ID', message: `Dup ID: |${pieces[0]}:${originalMsg}| VERSUS |${matchingMsgId.id}:${matchingMsgId.message}|`});
+          errors.push({ type: 'ID', message: `Dup ID: |${pieces[0]}:${originalMsg}[${shortErrorsPath}]| VERSUS |${matchingMsgId.id}:${matchingMsgId.message}[${matchingMsgId.source}]|`});
         }
         if (matchingMsgContent) {
-          errors.push({ type: 'MSG', message: `Dup MSG: |${pieces[0]}:${originalMsg}| VERSUS |${matchingMsgContent.id}:${matchingMsgContent.message}|`})
+          errors.push({ type: 'MSG', message: `Dup MSG: |${pieces[0]}:${originalMsg}[${shortErrorsPath}]| VERSUS |${matchingMsgContent.id}:${matchingMsgContent.message}[${matchingMsgContent.source}]|`})
         }
-        messages.push({ id: pieces[0], message: originalMsg });
+        messages.push({ id: pieces[0], message: originalMsg, source: shortErrorsPath });
       }
     })
   }
@@ -135,6 +138,7 @@ function getMessagesUsedByImplementations(zweDir) {
     for(const src of srcFiles) {
       // find messages matching ZWELXXX
       const srcFile = path.join(zweDir, src);
+      const srcFileShort = srcFile.split('zowe-install-packaging/')[1];
       const content = fs.readFileSync(srcFile, 'utf8');
       const matches = content.matchAll(/(ZWEL\d{4}[EIDTW])(.*?)["'`]/gm);
   
@@ -142,11 +146,11 @@ function getMessagesUsedByImplementations(zweDir) {
         const message = match[2].replaceAll(/\${.*?}/gm,'%s');
         if (!messages.includes(message)) {
           const leafDir = path.basename(path.dirname(srcFile));
-          const existing = messages.find((item) => item.src === srcFile);
+          const existing = messages.find((item) => item.src === srcFileShort);
           if (existing) {
            existing.messages.push({messageId: match[1], message: message.substring(1).trim()});
           } else {
-            messages.push({ command: leafDir, src: srcFile, messages: [{messageId: match[1], message: message.substring(1).trim() }]});
+            messages.push({ command: leafDir, src: srcFileShort, messages: [{messageId: match[1], message: message.substring(1).trim() }]});
           }
         }
       }
