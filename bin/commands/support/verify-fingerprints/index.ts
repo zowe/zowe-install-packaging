@@ -147,6 +147,8 @@ export function execute(doNotExit: Boolean, javaHome: string): void {
           common.printDebug(stringlib.paddingLeft(processCommResult(commResult.out, 10),"    "));
         }
       }
+    } else {
+      common.printMessage(`   * Number of ${commStepName} files: 0`);
     }
   });
 
