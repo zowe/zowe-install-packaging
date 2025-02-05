@@ -49,7 +49,13 @@ export function operatorCommand(command: string): { rc: number, out: string } {
   let message=`- opercmd ${command}`;
   common.printDebug(message);
   //we echo at the end to avoid a configmgr quirk where trying to read stdout when empty can hang waiting for bytes
-  const result = shell.execOutSync('sh', '-c', `${opercmd} "${command}" 2>&1 && echo '.'`);
+  const result = shell.execOutSync('sh', '-c', `'${opercmd}' '${command}' 2>&1 && echo '.'`);
+  if (result.out) {
+    //we strip the '.' we added above
+    result.out = result.out.substring(0, result.out.length - 1);
+  } else {
+    result.out = '';
+  }
   if (result.rc == 0) {
     common.printDebug("  * Succeeded");
     common.printTrace(`  * Exit code: ${result.rc}`);
@@ -65,8 +71,7 @@ export function operatorCommand(command: string): { rc: number, out: string } {
       common.printError(stringlib.paddingLeft(result.out, "    "));
     }
   }
-  //we strip the '.' we added above
-  return { rc: result.rc, out: result.out ? result.out.substring(0, result.out.length-1) : '' };
+  return { rc: result.rc, out: result.out };
 }
 
 export function verifyGeneratedJcl(config:any): string | undefined {
