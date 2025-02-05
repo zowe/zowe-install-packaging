@@ -100,7 +100,7 @@ function collectMessageIds(docNode) {
   const errorsFile = docNode?.['.errors']
   if (errorsFile) {
     fs.readFileSync(errorsFile, 'utf8').split('\n').forEach((line) => {
-      const shortErrorsPath = errorsFile.split('zowe-install-packaging/')[1];
+      const shortErrorsPath = 'bin/'+errorsFile.split('bin/')[1];
       const pieces = line.trim().split('|');
       if (pieces.length > 0 && pieces[0].trim().length > 0) {
         // check for duplicates
@@ -138,7 +138,7 @@ function getMessagesUsedByImplementations(zweDir) {
     for(const src of srcFiles) {
       // find messages matching ZWELXXX
       const srcFile = path.join(zweDir, src);
-      const srcFileShort = srcFile.split('zowe-install-packaging/')[1];
+      const srcFileShort = 'bin/'+srcFile.split('bin/')[1];
       const content = fs.readFileSync(srcFile, 'utf8');
       const matches = content.matchAll(/(ZWEL\d{4}[EIDTW])(.*?)["'`]/gm);
   
