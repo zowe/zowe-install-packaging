@@ -10,6 +10,7 @@
 const fs = require('fs-extra');
 const path = require('path');
 const sc = require('string-comparison');
+const _ = require('lodash');
 const { getDocumentationTree } = require('../zwe_doc_generation/doc-tree');
 
 const zweRootDir = path.resolve(__dirname, '..','..', 'bin');
@@ -26,16 +27,17 @@ for (const dir of dirs) {
 
 // second, collect all message ids listed in .errors
 const collectedMsgs = collectMessageIds(rootDocNode);
+const dupErrors = findDuplicates(collectedMsgs);
 console.log('---- Duplicate Message Content or IDs defined in .errors ----\n');
-if (collectedMsgs?.errors?.length > 0) {
+if (dupErrors.length > 0) {
   statusFailed = true;
-  for (const error of collectedMsgs.errors) {
+  for (const error of dupErrors) {
     console.log(error.message);
   }
 }
 console.log('')
 
-const flatExpectedMessages = collectedMsgs.messages.map((msg) => msg.id);
+const flatExpectedMessages = collectedMsgs.map((msg) => msg.id);
 const msgTally = {};
 for (const msg of flatExpectedMessages) {
   msgTally[msg] = {count: 0};
@@ -56,7 +58,7 @@ console.log('')
 console.log('---- Unused Messages defined in .errors ----');
 for(const msgId of Object.keys(msgTally)) {
   if (msgTally[msgId].count === 0 && msgId !== 'ZWEL0103E') { // ZWEL0103E is in 'zwe', which isn't scanned
-    const definition = collectedMsgs.messages.find((it) => it.id === msgId);
+    const definition = collectedMsgs.find((it) => it.id === msgId);
     console.log(`Unused message: ${msgId} [${definition.source}]`);
     statusFailed = true;
   }
@@ -69,7 +71,7 @@ console.log('---- Experimental: Messages whose content differs from the definiti
 const similarityExceptions = ['The password for data set storing importing certificate (zowe.setup.certificate.keyring.import.password) is not defined in Zowe YAML configuration file.']
 for(const msgSpec of discoveredMsgs) {
   for(const msg of msgSpec.messages) {
-    const errorDef = collectedMsgs.messages.find((item) => item.id === msg.messageId);
+    const errorDef = collectedMsgs.find((item) => item.id === msg.messageId);
     // lets only examine message contents where we have more than a few characters cut off by a newline
     if (errorDef?.message && msg.message.length > 15 && !similarityExceptions.includes(msg.message)) {
       const similarity = sc.default.levenshtein.similarity(msg.message, errorDef.message);
@@ -86,39 +88,53 @@ if (statusFailed) {
   process.exit(1);
 }
 
+function findDuplicates(collectedMsgs) {
+  const errors = [];
+  // flatten and get unique IDs
+  const uniqIds = _.uniq(collectedMsgs.map((it) => it.id));
+  for (const id of uniqIds) {
+    const matchingIds = _.uniqBy(collectedMsgs.filter((it) => it.id === id), 'message')
+    //exclude the direct match
+    if (matchingIds.length > 1) {
+      const errorText = matchingIds.reduce((prev, curr) => prev + `|${curr.message}[${curr.source}]|`, '');
+      errors.push({type: 'ID', message: `Dup ID: ${id}, ${matchingIds.length} Locations: \n${errorText}`});
+    }
+  }
+  const uniqMsgs = _.uniq(collectedMsgs.map((it) => it.message));
+  for (const msg of uniqMsgs) {
+    const matchingMsgs =  _.uniqBy(collectedMsgs.filter((it) => it.message === msg), 'id')
+    if (matchingMsgs.length > 1) {
+      const errorText = matchingMsgs.reduce((prev, curr) => prev + `|${curr.id}[${curr.source}]`, '');
+      errors.push({type: 'MSG', message: `Dup MSG: ${msg}, ${matchingMsgs.length} Locations: \n${errorText}`});
+    }
+  }
+  return errors;
+}  
+
 function collectMessageIds(docNode) {
 
   const messages = [];
-  const errors = [];
   if (docNode?.children?.length > 0) {
     for (const child of docNode.children) {
         const recursedResult = collectMessageIds(child);
-        messages.push(...recursedResult.messages);
-        errors.push(...recursedResult.errors);
+        messages.push(...recursedResult);
     }
   }
   const errorsFile = docNode?.['.errors']
   if (errorsFile) {
-    fs.readFileSync(errorsFile, 'utf8').split('\n').forEach((line) => {
+    const lines = fs.readFileSync(errorsFile, 'utf8').split('\n')
+    for (const line of lines) {
       const shortErrorsPath = 'bin'+path.sep+errorsFile.split('bin'+path.sep)[1];
       const pieces = line.trim().split('|');
       if (pieces.length > 0 && pieces[0].trim().length > 0) {
         // check for duplicates
         // reconstruct full message string, in case it contained | characters
         const originalMsg = pieces.slice(2).join('|');
-        const matchingMsgId = messages.find((item) => item.id === pieces[0] && item.message !== originalMsg);
-        const matchingMsgContent = messages.find((item) => item.message === pieces[2] && item.id !== pieces[0]);
-        if (matchingMsgId) {
-          errors.push({ type: 'ID', message: `Dup ID: |${pieces[0]}:${originalMsg}[${shortErrorsPath}]| VERSUS |${matchingMsgId.id}:${matchingMsgId.message}[${matchingMsgId.source}]|`});
-        }
-        if (matchingMsgContent) {
-          errors.push({ type: 'MSG', message: `Dup MSG: |${pieces[0]}:${originalMsg}[${shortErrorsPath}]| VERSUS |${matchingMsgContent.id}:${matchingMsgContent.message}[${matchingMsgContent.source}]|`})
-        }
         messages.push({ id: pieces[0], message: originalMsg, source: shortErrorsPath });
       }
-    })
+    }
   }
-  return { messages: messages, errors: errors};
+  return messages;
 
 }
 
