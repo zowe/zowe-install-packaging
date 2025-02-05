@@ -2323,13 +2323,9 @@ zwe init vsam -c '${instance-zowe_runtimeDirectory}/zowe.yaml' --allow-overwrite
             <code>zwe init apfauth -c ${instance-zowe_runtimeDirectory}/zowe.yml</code> <br/>            
             <br/>
             <b>NOTE:</b>
-            Before submitting this step, review the instructions in the job ZWESECUR if any customizations are required. 
-            <br/>
-            <br/>
-            <b>NOTE:</b>
             Each <b>zwe init</b> sub-command defines a configuration. 
 <ul>
-<li><b>security:</b> Create the user IDs and security manager settings.</li>
+<li><b>security:</b> Create the user IDs and security manager settings. The command reads data from zowe.yaml and constructs a JCL member using .SZWESAMP(ZWESECUR) as a template which is then submitted. </li>
 <li><b>apfauth:</b> APF authorize the LOADLIB containing the modules that need to perform z/OS priviledged security calls.</li>
 </ul>
             ]]></instructions>
