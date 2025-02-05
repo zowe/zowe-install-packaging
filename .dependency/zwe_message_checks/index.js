@@ -96,7 +96,7 @@ function findDuplicates(collectedMsgs) {
     const matchingIds = _.uniqBy(collectedMsgs.filter((it) => it.id === id), 'message')
     //exclude the direct match
     if (matchingIds.length > 1) {
-      const errorText = matchingIds.reduce((prev, curr) => prev + `|${curr.message}[${curr.source}]|`, '');
+      const errorText = matchingIds.reduce((prev, curr) => prev + `|${curr.message}[${curr.source}]|\n`, '');
       errors.push({type: 'ID', message: `Dup ID: ${id}, ${matchingIds.length} Locations: \n${errorText}`});
     }
   }
@@ -104,7 +104,7 @@ function findDuplicates(collectedMsgs) {
   for (const msg of uniqMsgs) {
     const matchingMsgs =  _.uniqBy(collectedMsgs.filter((it) => it.message === msg), 'id')
     if (matchingMsgs.length > 1) {
-      const errorText = matchingMsgs.reduce((prev, curr) => prev + `|${curr.id}[${curr.source}]`, '');
+      const errorText = matchingMsgs.reduce((prev, curr) => prev + `|${curr.id}[${curr.source}]\n`, '');
       errors.push({type: 'MSG', message: `Dup MSG: ${msg}, ${matchingMsgs.length} Locations: \n${errorText}`});
     }
   }
