@@ -47,7 +47,7 @@ console.log('---- Messages Used and Not Defined in .errors ----');
 for(const msgSpec of discoveredMsgs) {
   for(const msg of msgSpec.messages) {
     if (!flatExpectedMessages.includes(msg.messageId)) {
-      console.log(`Missing message: ${JSON.stringify(msg)}`);
+      console.log(`|${msg.messageId}:${msg.message}[${msgSpec.src}]|\n`);
       statusFailed = true;
       continue;
     }
@@ -104,7 +104,7 @@ function findDuplicates(collectedMsgs) {
   for (const msg of uniqMsgs) {
     const matchingMsgs =  _.uniqBy(collectedMsgs.filter((it) => it.message === msg), 'id')
     if (matchingMsgs.length > 1) {
-      const errorText = matchingMsgs.reduce((prev, curr) => prev + `|${curr.id}[${curr.source}]\n`, '');
+      const errorText = matchingMsgs.reduce((prev, curr) => prev + `|${curr.id}[${curr.source}]|\n`, '');
       errors.push({type: 'MSG', message: `Dup MSG: ${msg}, ${matchingMsgs.length} Locations: \n${errorText}`});
     }
   }
