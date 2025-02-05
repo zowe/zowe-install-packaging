@@ -74,7 +74,7 @@ for(const msgSpec of discoveredMsgs) {
     if (errorDef?.message && msg.message.length > 15 && !similarityExceptions.includes(msg.message)) {
       const similarity = sc.default.levenshtein.similarity(msg.message, errorDef.message);
       if (similarity < 0.35) {
-        console.log(`${msg.messageId}:${msg.message}[${msgSpec.src}] VERSUS ${errorDef.id}:${errorDef.message}[${errorDef.source}]`);     
+        console.log(`${msg.messageId}:${msg.message}[${msgSpec.src}] VERSUS ${errorDef.id}:${errorDef.message}[${errorDef.source}]\n`);     
       } 
     }
 
