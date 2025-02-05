@@ -4,17 +4,17 @@
     <!-- instance prefix settings -->
     <workflowInfo>
         <workflowID scope="none">config_apiml_zowe_30</workflowID>
-        <workflowDefaultName>Configuration of APIML for Zowe 3.0</workflowDefaultName>
-        <workflowDescription>Use this simplified workflow to configure APIML for Zowe 3.0</workflowDescription>
+        <workflowDefaultName>Configuration of API ML for Zowe 3.0</workflowDefaultName>
+        <workflowDescription>Use this simplified workflow to configure API ML for Zowe 3.0</workflowDescription>
         <workflowVersion>###ZOWE_VERSION###</workflowVersion>
         <vendor>Zowe</vendor>
         <General/>
     </workflowInfo>
     <!--variables-->
     <variable name="zowe_setup_dataset_prefix" scope="instance" visibility="public">
-        <label>Prefix of existing Zowe SZWEEXEC Target libraries</label>
-        <abstract>Prefix of existing SZWEEXEC Target libraries created during PSWI or SMP/E</abstract>
-        <description>Prefix of existing SZWEEXEC Target libraries created during PSWI or SMP/E installation phase</description>
+        <label>Prefix of Zowe setup MVS datasets</label>
+        <abstract>Prefix of datasets where remaining runtime datasets will be created</abstract>
+        <description>Prefix of datasets where remaining runtime libraries will be created within execution of Zowe install step (SZWEAUTH, SZWESAMP, SZWEEXEC, SZWELOAD)</description>
         <category>zowe</category>
         <string valueMustBeChoice="false" multiLine="false">
             <!-- Put validation here -->
@@ -405,8 +405,8 @@ some use cases, like containerization, this port could be different.</descriptio
     </variable>    
     <variable name="components_gateway_port" scope="instance" visibility="public">
         <label>Gateway port</label>
-        <abstract>Port for APIML Gateway</abstract>
-        <description>Port for APIML Gateway</description>
+        <abstract>Port for API ML Gateway</abstract>
+        <description>Port for API ML Gateway</description>
         <category>components</category>
         <integer>
             <!-- Put validation here -->
@@ -416,8 +416,8 @@ some use cases, like containerization, this port could be different.</descriptio
     </variable>    
   <variable name="components_zaas_port" scope="instance" visibility="public">
     <label>ZAAS port</label>
-    <abstract>Port for APIML ZAAS</abstract>
-    <description>Port for APIML ZAAS</description>
+    <abstract>Port for API ML ZAAS</abstract>
+    <description>Port for API ML ZAAS</description>
     <category>components</category>
     <integer>
       <!-- Put validation here -->
@@ -698,13 +698,13 @@ some use cases, like containerization, this port could be different.</descriptio
     </step>
     <step name="configure" optional="false">
         <title>Create configuration</title>
-        <description>Creates the configuration for the Zowe (APIML)</description>
+        <description>Creates the configuration for the Zowe (API ML)</description>
         <prereqStep name="define_variables"/>
         <!-- condition -->
         <!--variableValues-->
-        <instructions substitution="true"><![CDATA[Run this step to create the configuration file for APIML for Zowe. <br/>
+        <instructions substitution="true"><![CDATA[Run this step to create the configuration file for API ML for Zowe. <br/>
         Generated yaml file is backward compatible with full Zowe, <br/>
-        this workflow is just simplified with focus on easier APIML configuration. <br/>
+        this workflow is just simplified with focus on easier API ML configuration. <br/>
         Ensure that the values are correct. <br/>
         <b>zowe.yaml</b> file is created in the: <b>${instance-zowe_runtimeDirectory}</b> directory<br/><br/>
         <b>NOTE:</b> If you run this workflow outside of PSWI (SMP/E or convenience build), you might encounter a folder write permission issue.<br/>
@@ -767,7 +767,7 @@ echo '  setup:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '    # MVS data set related configurations' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '    dataset:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '      # **COMMONLY_CUSTOMIZED**' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '      # where are existing Zowe SZWEEXEC Target libraries' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '      # where Zowe MVS data sets will be installed' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '      prefix: $!{instance-zowe_setup_dataset_prefix}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '      # **COMMONLY_CUSTOMIZED**' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '      # PROCLIB where Zowe STCs will be copied over' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
@@ -1407,11 +1407,46 @@ echo '#         enabled: false' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
     </step>
     <step name="zowe_installation_steps" optional="false">
         <title>Zowe installation</title>
-        <description>Zowe installation</description>        
+        <description>Zowe installation</description>  
+        <step name="install_zowe" optional="false">
+            <title>Run the Zowe install</title>
+            <description>Configure Zowe.</description>            
+            <prereqStep name="configure"/>            
+            <!-- condition -->
+            <!--variableValues-->
+            <instructions substitution="true"><![CDATA[
+            This step runs the command: <code>zwe install -c ${instance-zowe_runtimeDirectory}/zowe.yml</code><br/>
+            Will create remaining runtime data sets under zowe.setup.dataset.prefix definition,<br/>
+            i.e. under specified prefix ${instance-zowe_setup_dataset_prefix}:<br/>
+            SZWEAUTH contains few Zowe load modules (++PROGRAM).<br/>
+            SZWESAMP contains several sample configurations.<br/>
+            SZWEEXEC contains few utilities used by Zowe.<br/>
+            SZWELOAD contains config manager for REXX.<br/>
+            ]]></instructions>
+            <weight>1</weight>
+            <skills>z/OS System Programmer</skills>
+            <autoEnable>false</autoEnable>
+            <canMarkAsFailed>false</canMarkAsFailed>
+            <template>
+                <inlineTemplate substitution="true">set -e
+set -x
+
+export JAVA_HOME='${instance-java_home}'
+export NODE_HOME='${instance-node_home}'
+
+export PATH=$PATH:'${instance-zowe_runtimeDirectory}/bin'
+
+zwe install -c '${instance-zowe_runtimeDirectory}/zowe.yaml' --allow-overwrite</inlineTemplate>
+                <submitAs maxRc="0">shell-JCL</submitAs>
+                <maxLrecl>1024</maxLrecl>
+                <!-- zosmfOutput -->
+            </template>
+        </step>      
         <step name="init_zowe" optional="false">
             <title>Run scripts for Zowe initialization</title>
             <description>Executes scripts for Zowe initialization</description>
             <prereqStep name="configure"/>
+            <prereqStep name="install_zowe"/>
             <!-- condition -->
             <!--variableValues-->
             <instructions substitution="true"><![CDATA[
