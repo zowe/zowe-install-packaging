@@ -3,7 +3,9 @@
 All notable changes to the Zowe Installer will be documented in this file.
 
 ## `3.2.0`
+- Enhancement: `zwe support` command collecting more environment details [#4147](https://github.com/zowe/zowe-install-packaging/pull/4147)
 - Enhancement: Added new library function formatZosVersion() [#4134](https://github.com/zowe/zowe-install-packaging/pull/4134)
+- `zwe support verify-fingerprints` no longer requires a `zowe.yaml` to be passed as a command-line parameter. 
 
 ## `3.1.0`
 - Bugfix: When logging `zwe` command, sometimes the log has wrong file tag and the log is unreadable. [#4071](https://github.com/zowe/zowe-install-packaging/pull/4071)
