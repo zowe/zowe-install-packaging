@@ -178,7 +178,7 @@ module.exports = async () => {
     fs.mkdirpSync(`${utilsDir}`);
 
     console.log(`Unzipping zowe-tools.zip on local machine`);
-    await yauzl.open(`${THIS_TEST_ROOT_DIR}/.build/${zoweToolsZip}`, { autoClose: true, lazyEntries: false }, (err, zipContents) => {
+    yauzl.open(`${THIS_TEST_ROOT_DIR}/.build/${zoweToolsZip}`, { autoClose: true, lazyEntries: false }, (err, zipContents) => {
       if (err) throw err;
       zipContents.on('entry', async (entry) => {
         // not a directory
@@ -318,47 +318,15 @@ module.exports = async () => {
       },
     );
 
-    await createPds(REMOTE_SYSTEM_INFO.szweexec, {
-      primary: 5,
-      secondary: 1,
-      volser: REMOTE_SYSTEM_INFO.volume,
-    });
-    await createPds(REMOTE_SYSTEM_INFO.szwesamp, {
-      primary: 5,
-      secondary: 1,
-      volser: REMOTE_SYSTEM_INFO.volume,
-    });
-    await createPds(REMOTE_SYSTEM_INFO.szweload, {
-      primary: 5,
-      recfm: 'U',
-      lrecl: 0,
-      secondary: 1,
-      volser: REMOTE_SYSTEM_INFO.volume,
-    });
-    await createPds(REMOTE_SYSTEM_INFO.proclib, {
-      primary: 5,
-      secondary: 1,
-      volser: REMOTE_SYSTEM_INFO.volume,
-    });
-    await createPds(REMOTE_SYSTEM_INFO.parmlib, {
-      primary: 5,
-      secondary: 1,
-      volser: REMOTE_SYSTEM_INFO.volume,
-    });
-    await createPds(REMOTE_SYSTEM_INFO.authLoadLib, {
-      primary: 5,
-      recfm: 'U',
-      lrecl: 0,
-      secondary: 1,
-      volser: REMOTE_SYSTEM_INFO.volume,
-    });
-    await createPds(REMOTE_SYSTEM_INFO.authPluginLib, {
-      primary: 5,
-      recfm: 'U',
-      lrecl: 0,
-      secondary: 1,
-      volser: REMOTE_SYSTEM_INFO.volume,
-    });
+    const simplePdsParams = { primary: 5, secondary: 1, volser: REMOTE_SYSTEM_INFO.volume };
+    const loadlibParams = { primary: 5, recfm: 'U', lrecl: 0, secondary: 1, volser: REMOTE_SYSTEM_INFO.volume };
+    await createPds(REMOTE_SYSTEM_INFO.szweexec, simplePdsParams);
+    await createPds(REMOTE_SYSTEM_INFO.szwesamp, simplePdsParams);
+    await createPds(REMOTE_SYSTEM_INFO.szweload, loadlibParams);
+    await createPds(REMOTE_SYSTEM_INFO.proclib, simplePdsParams);
+    await createPds(REMOTE_SYSTEM_INFO.parmlib, simplePdsParams);
+    await createPds(REMOTE_SYSTEM_INFO.authLoadLib, loadlibParams);
+    await createPds(REMOTE_SYSTEM_INFO.authPluginLib, loadlibParams);
 
     console.log(`Unpacking configmgr and placing it in bin/utils ...`);
     await uss.runCommand(`pax -ppx -rf configmgr.pax && mv configmgr bin/utils/`, `${REMOTE_SYSTEM_INFO.ussTestDir}`);
