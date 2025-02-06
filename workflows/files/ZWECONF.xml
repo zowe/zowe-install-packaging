@@ -460,8 +460,8 @@ How we want to verify SSL certificates of services. Valid values are:
     </variable>
     <variable name="components_gateway_port" scope="instance" visibility="public">
         <label>Gateway port</label>
-        <abstract>Port for the APIML Gateway</abstract>
-        <description>Port for the APIML Gateway</description>
+        <abstract>Port for the API ML Gateway</abstract>
+        <description>Port for the API ML Gateway</description>
         <category>components</category>
         <integer>
             <!-- Put validation here -->
@@ -492,7 +492,7 @@ How we want to verify SSL certificates of services. Valid values are:
         </boolean>
     </variable>
     <variable name="components_gateway_apiml_security_auth_provider" scope="instance" visibility="public">
-        <label>Gateway APIML security auth provider</label>
+        <label>Gateway API ML security auth provider</label>
         <abstract>Authorization provider for the Gateway</abstract>
         <description>Authorization provider for the Gateway</description>
         <category>components</category>
@@ -503,7 +503,7 @@ How we want to verify SSL certificates of services. Valid values are:
         </string>
     </variable>
     <variable name="components_gateway_apiml_security_auth_zosmf_jwtAutoconfiguration" scope="instance" visibility="public">
-        <label>Gateway APIML security auth z/OSMF jwtAutoconfiguration</label>
+        <label>Gateway API ML security auth z/OSMF jwtAutoconfiguration</label>
         <abstract>JWT auto configuration for Gateway security auth</abstract>
         <description>JWT auto configuration for Gateway security auth</description>
         <category>components</category>
@@ -514,7 +514,7 @@ How we want to verify SSL certificates of services. Valid values are:
         </string>
     </variable>
     <variable name="components_gateway_apiml_security_auth_zosmf_serviceId" scope="instance" visibility="public">
-        <label>Gateway APIML security auth z/OSMF serviceId</label>
+        <label>Gateway API ML security auth z/OSMF serviceId</label>
         <abstract>Service ID for Gateway security auth</abstract>
         <description>Service ID for Gateway security auth</description>
         <category>components</category>
@@ -525,7 +525,7 @@ How we want to verify SSL certificates of services. Valid values are:
         </string>
     </variable>
     <variable name="components_gateway_apiml_security_authorization_endpoint_enabled" scope="instance" visibility="public">
-        <label>Enable gateway APIML security authorization endpoint</label>
+        <label>Enable gateway API ML security authorization endpoint</label>
         <abstract>Check to enable the security authorization endpoint</abstract>
         <description>Check to enable the security authorization endpoint</description>
         <category>components</category>
@@ -536,7 +536,7 @@ How we want to verify SSL certificates of services. Valid values are:
         </boolean>
     </variable>
     <variable name="components_gateway_apiml_security_authorization_provider" scope="instance" visibility="public">
-        <label>Gateway APIML security authorization provider</label>
+        <label>Gateway API ML security authorization provider</label>
         <abstract>Security authorization provider for the Gateway</abstract>
         <description>Security authorization provider for the Gateway</description>
         <category>components</category>
@@ -546,7 +546,7 @@ How we want to verify SSL certificates of services. Valid values are:
         </string>
     </variable>
     <variable name="components_gateway_apiml_security_x509_enabled" scope="instance" visibility="public">
-        <label>Enable gateway APIML security x509</label>
+        <label>Enable gateway API ML security x509</label>
         <abstract>Check to enable the Gateway security x509</abstract>
         <description>Check to enable the Gateway security x509</description>
         <category>components</category>
