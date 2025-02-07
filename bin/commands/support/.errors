@@ -1,0 +1,2 @@
+ZWEL0150E|150|Failed to find file %s. Zowe runtimeDirectory is invalid.
+ZWEL0151E|151|Failed to create temporary file %s. Please check permission or volume free space.
