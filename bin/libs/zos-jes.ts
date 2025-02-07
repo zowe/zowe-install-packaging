@@ -98,7 +98,7 @@ export function waitForJob(jobid: string): {jobcctext?: string, jobcccode?: stri
     common.printTrace(`  * Wait for ${secs} seconds`);
     os.sleep(secs*1000); 
     
-    let result=zoslib.operatorCommand(`\\$D ${jobid},CC`);
+    let result=zoslib.operatorCommand(`$D ${jobid},CC`);
     // if it's JES3, we receive this:
     // ...             ISF031I CONSOLE IBMUSER ACTIVATED
     // ...            -$D JOB00132,CC
