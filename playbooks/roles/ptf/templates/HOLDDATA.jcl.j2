@@ -1,24 +1,5 @@
-//SZWELOAD JOB
-//         EXPORT SYMLIST=(TZON,TRGT)
-//         SET TRGT={{ zowe_smpe_hlq_tzone }}
-//         SET SMPE={{ zowe_smpe_hlq_csi }}
-//         SET TZON=TZONE
-//UCLIN    EXEC PGM=GIMSMP,REGION=0M,COND=(4,LT)
-//SZWELOAD DD SPACE=(TRK,(30,15,15)),
-//            UNIT=SYSALLDA,
-//            DISP=(MOD,CATLG),
-//            DSNTYPE=LIBRARY,
-//            RECFM=U,
-//            LRECL=0,
-//            BLKSIZE=32760,
-//            DSN=&TRGT..SZWELOAD
-//SMPCSI   DD DISP=OLD,DSN={{ smpe_csi }}
-//SMPCNTL  DD *,SYMBOLS=JCLONLY
-   SET   BDY(&TZON).
-   UCLIN.
-   ADD DDDEF (SZWELOAD)
-       DATASET(&TRGT..SZWELOAD)
-       UNIT(SYSALLDA)
-       WAITFORDSN
-       SHR .
-   ENDUCL.
+//HOLDDATA JOB
+//* This job can be customized if holddata actions are added to Zowe PTFs
+//*  For example, adding a new load module to an SMP/e-managed dataset.
+//DUMMY EXEC PGM=IEFBR14
+//*

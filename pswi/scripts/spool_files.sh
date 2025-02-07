@@ -20,4 +20,4 @@ done <urls
 
 rm urls
 
-echo "Spool files can be found in the ${JOBNAME} directory."
+echo "Spool files can be found in the ${JOB_OUTPUT_DIR} directory."

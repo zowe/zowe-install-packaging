@@ -28,6 +28,6 @@ describe('cli version', function() {
     expect(result).to.have.property('stderr');
 
     expect(result.stderr).to.be.empty;
-    expect(result.stdout).to.match(/^7\./);
+    expect(result.stdout).to.match(/^CLI Version: 8\./);
   });
 });

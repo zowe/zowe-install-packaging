@@ -28,7 +28,8 @@ echo "z/OSMF version     :" $ZOSMF_V
 # JSONs
 ADD_SWI_JSON='{"name":"'${SWI_NAME}'","system":"'${ZOSMF_SYSTEM}'","description":"ZOWE v'${VERSION}' Portable Software Instance",
 "globalzone":"'${GLOBAL_ZONE}'","targetzones":["'${TZONE}'"],"workflows":[{"name":"ZOWE Mount Workflow","description":"This workflow performs mount action of ZOWE zFS.",
-"location": {"dsname":"'${WORKFLOW_DSN}'(ZWEWRF02)"}},{"name":"ZOWE Configuration of Zowe 3.0","description":"This workflow configures Zowe v3.0.",
+"location": {"dsname":"'${WORKFLOW_DSN}'(ZWEWRF02)"}},{"name":"Stand-alone Zowe API ML Configuration","description":"This workflow configures only API ML for Zowe 3.0.",
+"location": {"dsname":"'${WORKFLOW_DSN}'(ZWEAMLCF)"}},{"name":"Full Zowe server-side configuration for Zowe 3.0","description":"This workflow configures all Zowe server-side components for Zowe v3.0.",
 "location": {"dsname":"'${WORKFLOW_DSN}'(ZWECONF)"}},{"name":"ZOWE Creation of CSR request workflow","description":"This workflow creates a certificate sign request.",
 "location": {"dsname":"'${WORKFLOW_DSN}'(ZWECRECR)"}},{"name":"ZOWE Sign a CSR request","description":"This workflow signs the certificate sign request by a local CA.",
 "location": {"dsname":"'${WORKFLOW_DSN}'(ZWESIGNC)"}},{"name":"ZOWE Load Authentication Certificate into ESM","description":"This workflow loads a signed client authentication certificate to the ESM.",
@@ -145,6 +146,11 @@ echo "target=\"//'${WORKFLOW_DSN}(ZWESIGNC)'\";" >>JCL
 echo "iconv -f ISO8859-1 -t IBM-1047 \$source > _ZWESIGNC;" >>JCL
 echo "sed 's|UTF-8|IBM-1047|g' _ZWESIGNC > ZWESIGNC;" >>JCL
 echo "cp -T ZWESIGNC \$target;" >>JCL
+echo "source=\"${ZOWE_MOUNT}files/workflows/ZWEAMLCF.xml\";" >>JCL
+echo "target=\"//'${WORKFLOW_DSN}(ZWEAMLCF)'\";" >>JCL
+echo "iconv -f ISO8859-1 -t IBM-1047 \$source > _ZWEAMLCF;" >>JCL
+echo "sed 's|UTF-8|IBM-1047|g' _ZWEAMLCF > ZWEAMLCF;" >>JCL
+echo "cp -T ZWEAMLCF \$target;" >>JCL
 echo "source=\"${ZOWE_MOUNT}files/workflows/ZWECONF.xml\";" >>JCL
 echo "target=\"//'${WORKFLOW_DSN}(ZWECONF)'\";" >>JCL
 echo "iconv -f ISO8859-1 -t IBM-1047 \$source > _ZWECONF;" >>JCL
@@ -293,17 +299,17 @@ echo "Showing EXPORT JCL how it looks before the change"
 #else
 echo "Changing jobcard and adding SYSAFF"
 sed "s|//IZUD01EX JOB (ACCOUNT),'NAME'|$JOBST1\n$JOBST2|g" EXPORT >EXPJCL0
-sed "s|//.*gimzipInputFile.*,|<FILEDEF name=\"ZWE.PSWI.AZWE003.ZFS\"|g" EXPJCL0 >EXPJCL1
-sed "s|//         FILEDATA=TEXT|         archid=\"ZOS003.ZWE.PSWI.AZWE003.ZFS\"/>|g" EXPJCL1 >EXPJCL2
-sed "s|//         DD \*||g" EXPJCL2 >EXPJCL
+#sed "s|//.*gimzipInputFile.*,|<FILEDEF name=\"ZWE.PSWI.AZWE003.ZFS\"|g" EXPJCL0 >EXPJCL1
+#sed "s|//         FILEDATA=TEXT|         archid=\"ZOS003.ZWE.PSWI.AZWE003.ZFS\"/>|g" EXPJCL1 >EXPJCL2
+#sed "s|//         DD \*||g" EXPJCL2 >EXPJCL
 # sed "s|ZOS003.ZWE.PSWI.|ZWE.PSWI.|g" EXPJCL3 >EXPJCL
 
 #fi
 
-sh scripts/submit_jcl.sh "$(cat EXPJCL)"
+sh scripts/submit_jcl.sh "$(cat EXPJCL0)"
 if [ $? -gt 0 ]; then exit -1; fi
 
-rm ./EXPJCL
+rm ./EXPJCL0
 rm ./EXPORT
 
 # Pax the directory
@@ -333,5 +339,4 @@ get ${SWI_NAME}.pax.Z
 EOF
 cd ../pswi
 
-#TODO: redirect everything to $log/x ?
 #TODO: Check why there is name in mountpoints responses and it still doesn't show (although the mount points are different so it's good it is not doing anything)

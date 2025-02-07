@@ -26,7 +26,7 @@ export function ensureJavaIsOnPath(): void {
   }
 }
 
-export function shellReadYamlJavaHome(configList?: string, skipValidate?: boolean): string {
+export function readConfigJavaHome(configList?: string, skipValidate?: boolean): string {
   const zoweConfig = config.getZoweConfig();
   if (zoweConfig && zoweConfig.java && zoweConfig.java.home) {
     if (!skipValidate) {
@@ -60,7 +60,7 @@ export function requireJava() {
     return;
   }
   if (std.getenv('ZWE_CLI_PARAMETER_CONFIG')) {
-    const customJavaHome = shellReadYamlJavaHome();
+    const customJavaHome = readConfigJavaHome();
     if (customJavaHome) {
       std.setenv('JAVA_HOME', customJavaHome);
     }
@@ -102,8 +102,9 @@ export function validateJavaHome(javaHome:string|undefined=std.getenv("JAVA_HOME
     let versionLines = (version as string).split('\n'); // valid because of above rc check
     for (let i = 0; i < versionLines.length; i++) {
       if ((index = versionLines[i].indexOf('java version')) != -1) {
-        //format of: java version "1.8.0_321"
-        javaVersionShort=versionLines[i].substring(index+('java version'.length)+2, versionLines[i].length-1);
+        //format of: java version "1.8.0_321" OR java version "17.0.10" 2024-01-02
+        javaVersionShort = versionLines[i].substring(index+('java version'.length)+2);
+        javaVersionShort = javaVersionShort.replace(/"/g, '');
         break;
       } else if ((index = versionLines[i].indexOf('openjdk version')) != -1) {
         javaVersionShort=versionLines[i].substring(index+('openjdk version'.length)+2, versionLines[i].length-1);

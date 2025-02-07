@@ -3,9 +3,9 @@
   under the terms of the Eclipse Public License v2.0 which
   accompanies this distribution, and is available at
   https://www.eclipse.org/legal/epl-v20.html
-  
+
   SPDX-License-Identifier: EPL-2.0
-  
+
   Copyright Contributors to the Zowe Project.
 */
 
@@ -17,6 +17,7 @@ import * as json from '../../libs/json';
 import * as zosJes from '../../libs/zos-jes';
 import * as zosDataset from '../../libs/zos-dataset';
 import * as common from '../../libs/common';
+import * as component from '../../libs/component';
 import * as config from '../../libs/config';
 import * as node from '../../libs/node';
 import * as java from '../../libs/java';
@@ -37,25 +38,31 @@ export function execute(allowOverwrite?: boolean, dryRun?: boolean, ignoreSecuri
 
   // Read job name and validate
   const zoweConfig = config.getZoweConfig();
+  const enabledComponents = component.getEnabledComponents();
 
-  
   common.printLevel1Message(`Check if need to update runtime directory, Java and/or node.js settings in Zowe YAML configuration`);
   // node.home
   let newNodeHome;
   const configNodeHome=zoweConfig.node?.home;
-  // only try to update if it's not defined
-  if (!configNodeHome || configNodeHome == 'DETECT') {
+  // only try to update if it's not defined, but needed
+  if (!configNodeHome && enabledComponents.includes('app-server')) {
     node.requireNode();
-    newNodeHome=std.getenv('NODE_HOME');
+    newNodeHome = std.getenv('NODE_HOME');
   }
 
   // java.home
   let newJavaHome;
   const configJavaHome=zoweConfig.java?.home;
-  // only try to update if it's not defined
-  if (!configJavaHome || configJavaHome == 'DETECT') {
-    java.requireJava();
-    newJavaHome=std.getenv('JAVA_HOME');
+  const coreJavaComponents = std.getenv('ZWE_PRIVATE_CORE_COMPONENTS_REQUIRE_JAVA').split(',');
+  // only try to update if it's not defined, but needed
+  if (!configJavaHome) {
+    for (let i = 0; i < coreJavaComponents.length; i++) {
+      if (enabledComponents.includes(coreJavaComponents[i])) {
+        java.requireJava();
+        newJavaHome = std.getenv('JAVA_HOME');
+        break;
+      }
+    }
   }
 
   // zowe.runtimeDirectory

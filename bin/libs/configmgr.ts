@@ -15,7 +15,7 @@ import * as xplatform from 'xplatform';
 import { ConfigManager } from 'Configuration';
 import * as fs from './fs';
 import * as stringlib from './string';
-
+import { isValidZoweYamlParmlib, printErrorAndExit } from './common';
 import * as objUtils from '../utils/ObjUtils';
 
 declare namespace console {
@@ -207,8 +207,11 @@ function writeZoweConfigUpdate(updateObj: any, arrayMergeStrategy: number): numb
         return xplatform.storeFileUTF8(destination, xplatform.AUTO_DETECT, textOrNull);
 
       } else if (destination.startsWith('PARMLIB(')) {
+        const isValidParmlib = isValidZoweYamlParmlib(destination);
+        if (!isValidParmlib.ok) {
+          printErrorAndExit(isValidParmlib.error.message, undefined, isValidParmlib.error.code);
+        }
         destination = destination.substring(8, destination.length-1);
-
         let zwePrivateWorkspaceEnvDir: string;
         let dirResult = getTempMergedYamlDir();
         if (typeof dirResult == 'string') {
