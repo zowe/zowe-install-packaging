@@ -13,21 +13,10 @@ import ZoweYamlType from '../../config/ZoweYamlType';
 import { RemoteTestRunner } from '../../zos/RemoteTestRunner';
 import { ZoweConfig } from '../../config/ZoweConfig';
 import { FileType, TestFileActions, TestFile } from '../../zos/TestFileActions';
-import * as fs from 'fs-extra';
 import * as path from 'path';
-import * as yaml from 'yaml';
-import Mustache from 'mustache';
 
 const testSuiteName = 'init-vsam';
-
-function getResourceYaml(file: string, render: boolean = true): ZoweYamlType {
-  const resourceDir = path.resolve('src', '__tests__', 'init', '__resources__', 'vsam');
-  let yamlContent = fs.readFileSync(path.join(resourceDir, file), 'utf8');
-  if (render) {
-    yamlContent = Mustache.render(yamlContent, REMOTE_SYSTEM_INFO, {}, ['{@', '@}']);
-  }
-  return yaml.parse(yamlContent) as ZoweYamlType;
-}
+const yamlResourceDir = path.resolve('src', '__tests__', 'init', '__resources__', 'vsam');
 
 describe(`${testSuiteName}`, () => {
   let testRunner: RemoteTestRunner;
@@ -86,7 +75,7 @@ describe(`${testSuiteName}`, () => {
 
   describe('(SHORT)', () => {
     it('error yaml', async () => {
-      const testYml = ZoweConfig.overlayYaml(cfgYaml, getResourceYaml('ok.vsam.yaml'));
+      const testYml = ZoweConfig.loadAndOverlay(cfgYaml, yamlResourceDir, 'ok.vsam.yaml');
       const result = await testRunner.runZweTest(testYml, 'init vsam --dry-run');
       expect(result.stdout).not.toBeNull();
       expect(result.cleanedStdout).toMatchSnapshot();

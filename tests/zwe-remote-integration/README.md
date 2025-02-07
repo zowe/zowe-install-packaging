@@ -37,9 +37,9 @@ To run a custom subset of tests, e.g. only the `init-mvs` tests marked `(SHORT)`
 
 ## Testing Behaviors and Constructs
 
-These tests currently work by deploying a working `zwe` command line tool to a remote system, using the `zwe` component as-is from this repo; i.e. not from a pre-built PAX file. All of `zwe`'s dependencies will be set in place on the remote system as part of setup using this repository's manifest.json.template file. If you want to test `zwe` with a custom version of `configmgr`, for example, then update the [`manifest.json.template`](../../manifest.json.template) to point to a different version, and when the test suite runs, it will download and use that version.
+These tests currently work by deploying a working `zwe` command line environment to a remote system, using the `zwe` component as-is from this repo; i.e. not from a pre-built PAX file. All of `zwe`'s dependencies will be set in place on the remote system as part of setup using this repository's manifest.json.template file. If you want to test `zwe` with a custom version of any of it's dependencies outside this repo, e.g. `configmgr`, then update the [`manifest.json.template`](../../manifest.json.template) to point to a different binaryDependency version, and when the test suite runs, it will download and use that version of the dependency.
 
-Test cases are intended to be runnable on any backend system. Test cases rely on capturing `zwe` stdout, including JCL content, which may vary based on the system `zwe` is running on. To address this, all test commands are run through a custom [RemoteTestRunner class](./src/zos/RemoteTestRunner.ts), which handles the backend execution of a `zwe` command, the collection of stdout and stderr, the masking of sensitive or system-specific data which may appear in the output, and some additional utility functions in context of test execution.
+Test cases should be runnable on any backend system. Most cases rely on capturing `zwe` stdout, including JCL content, which can vary based on the backend system `zwe` is running on. To address this output with embedded backend-specific information, all test commands are run through a custom [RemoteTestRunner class](./src/zos/RemoteTestRunner.ts), which handles the execution of a `zwe` command, the collection of stdout and stderr, and the masking of sensitive or system-specific data which may appear in the output. The `RemoteTestRunner` additionally contains utility functions that are useful for developing test cases.
 
 The RemoteTestRunner should be initialized and scoped in a `beforeAll()` block, closed in an `afterAll()` block, and called within test suites. RemoteTestRunner has a `postTest()` action which should be called in `afterEach()` blocks to collect any applicable spool output. If you use any of the RemoteTestRunner's utility functions, like `removeUssFileForTest()`, then `postTest()` is also responsible for restoring the file at the end of a test block. The `RemoteTestRunner` returns a combined stream of stdout and stderr, as this is how data is presented to end-users invoking `zwe` in a USS environment.
 
@@ -132,7 +132,7 @@ Sample using `RemoteTestRunner#postTest()` to modify files pre-test and restore 
     await testRunner.removeUssFileForTest('files/defaults.yaml'); 
     const res = await testRunner.runZweTest(cfgYaml, 'init generate --dry-run'); // will fail RC!=0
     // ....assertions
-    // testRunner.restoreFiles() here will also work if you prefer it for clarity
+    // await testRunner.restoreFiles() here will also work if you prefer it for clarity
   })
 
 ```
@@ -151,19 +151,9 @@ cfgYaml.zOSMF.host = 'doesnt-exist.anywhere.cloud';
 cfgYaml.zowe.certificate.keystore.type = 'JCERACFKS';
 ```
 
-Overlaying the Zowe YAML with another YAML document is supported and useful for cases where large blocks of related changes are required and more easily managed in an external file. More work is required to simplify the process. TODO: expand on simplified process when its available.
+Overlaying the Zowe YAML with another YAML document is supported and useful for cases where large blocks of related changes are required and more easily managed in an external YAML file. There is template support available for these YAML files, with template values filled out by the `REMOTE_SYSTEM_INFORMATION` tracked within the test framework. This makes it simple to access fields such as `host`, `storclas`, `volume`, `dataset`, `ussTestDir`, and more, within external YAML files. A full list of supported variables can be found by reviewing `REMOTE_SYSTEM_INFORMATION` in the [TestConfig](./src/config/TestConfig.ts) class. Templated YAML requires use of `{@` and `@}` template brackets to avoid collision with template support in configmgr. 
 
-```typescript
-import * as yaml from 'yaml';
-let cfgYaml = ZoweConfig.getZoweYaml();
-const yamlDoc = yaml.parse(fs.readFileSync(path_to_custom_yaml, 'utf8'));
-const combinedYaml = ZoweYaml.overlayYaml(cfgYaml, yamlDoc);
-```
-
-There is some template support available for custom YAML files stored in resource directories. TODO: expand on this when support is better.
-
-Templated YAML requires use of `{@` and `@}` template brackets to avoid collision with template support in configmgr. Template fields are provided by `REMOTE_SYSTEM_INFO` in the test suite; a complete list of fields can be found there.
-
+Sample YAML with templates:
 ```yaml
 zowe:
   setup:
@@ -175,20 +165,48 @@ zowe:
       storageClass: {@ storclas @}
 ```
 
+Loading the YAML and overlaying it on top of the framework's base YAML:
 ```typescript
-let yamlContent = fs.readFileSync(path_to_custom_yaml, 'utf8');
-yamlContent = Mustache.render(yamlContent, REMOTE_SYSTEM_INFO, {}, ['{@', '@}']); // this will be under-the-hood later
-const combinedYaml = ZoweYaml.overlayYaml(cfgYaml, yamlDoc);
-// run test with combinedYaml...  testRunner.runZweTest(combinedYaml);
+const cfgYaml = ZoweConfig.getZoweYaml();
+const yamlDir = path.resolve('path', 'to', 'custom', 'yaml');
+const combinedYaml = ZoweConfig.loadAndOverlay(cfgYaml, yamlDir, 'my.custom.yaml'); // loads and renders
+// run test with combinedYaml...  await testRunner.runZweTest(combinedYaml, ...);
 ```
 
-TODO: defaults.yaml are
+The load and overlay steps can be separated:
+
+```typescript
+const cfgYaml = ZoweConfig.getZoweYaml();
+const yamlDir = path.resolve('path', 'to', 'custom', 'yaml');
+const customYaml = ZoweConfig.loadZoweYaml(yamlDir, 'my.custom.yaml', false); // don't render - any unquoted '{@ @}' will cause YAML load failures
+customYml.zowe.certificate.keystore.type = 'SOMETHINGELSE'; // the custom YAML object comes with type-checking
+const combinedYaml = ZoweConfig.overlayYaml(cfgYaml, customYaml); // overlay later
+// run test with combinedYaml... await testRunner.runZweTest(combinedYaml, ...);
+```
+
+Zowe ships a baked-in `defaults.yaml` which must exist for `zwe` commands to run successfully. This framework uses the repository's [defaults](../../files/defaults.yaml), but a custom `defaults.yaml` can be provided to the test runner, which handles the backend configuration changes and restoration automatically:
+
+```typescript
+const cfgYaml = ZoweConfig.getZoweYaml();
+const customDefaults = ZoweConfig.loadZoweYaml(yamlDir, 'custom.defaults.yaml', false); 
+const result = testRunner.runZweTestWithDefaults(cfgYaml, customDefaults, 'init stc --dry-run');
+// handle results
+// should restore state before running another test
+await testRunner.restoreFiles(); // postTest() will also work in the afterEach() block
+```
 
 ### Reviewing Test Output
 
-This integration framework tries to make it easy to review test output for a given test without polluting the information feed with unrelated information. 
+This integration framework tries to make it easy to review test output without overwhelming volumes of output containing unrelated information. 
 
-For every test run, along with every `testRunner.postTest()` action, a new directory is created with pertinent data from the backend system. These sub-directories are present under the `.build/output` directory [(link)](./.build/output/), are created on a per-test basis using a truncated test name, and each test sub-directory will have sub-directories containing spool content (if applicable as in `(LONG)` tests) as well as the final Zowe YAML used to run the test on the backend. 
+For every test run, along with every `testRunner.postTest()` action, a new sub-directory is created with pertinent output data captured from the backend system. These sub-directories are present under the `.build/output` directory [(link)](./.build/output/), are created on a per-test basis using a truncated test name, and each contain further sub-directories with spool content (if applicable as in `(LONG)` tests) as well as the final Zowe YAML used to run the test on the backend. The final Zowe YAML is especially helpful in debug scenarios, as the file can be re-uploaded manually to the backend system so zwe commands can be re-run exactly as they happen in the test cases.
 
-Console output from the tests are not currently captured in these output sub-directories, but is easily available in the test case itself as part of terminal output or snapshot comparisons and output.
+Console output from the tests are not currently captured in these output sub-directories, but that output is available in the test case itself as part of terminal output and snapshot data.
+
+i.e.: 
+
+```typescript
+const result = await testRunner.runZweTest(cfgYaml, 'init stc --dry-run');
+expect(result.cleanedOutput).toMatchSnapshot(); // cleanedOutput has stdout+stderr
+```
 

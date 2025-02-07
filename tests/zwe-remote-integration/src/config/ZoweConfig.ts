@@ -9,10 +9,12 @@
  */
 
 import * as yaml from 'yaml';
-import { THIS_TEST_BASE_DEFAULTS_YAML, THIS_TEST_BASE_ZOWE_YAML } from './TestConfig';
+import { REMOTE_SYSTEM_INFO, THIS_TEST_BASE_DEFAULTS_YAML, THIS_TEST_BASE_ZOWE_YAML } from './TestConfig';
 import * as fs from 'fs-extra';
 import ZoweYamlType from './ZoweYamlType';
 import _ from 'lodash';
+import path from 'path';
+import Mustache from 'mustache';
 
 export class ZoweConfig {
   /* public updateField(field: string, value: string) {
@@ -38,11 +40,33 @@ export class ZoweConfig {
     return defaultsYaml as ZoweYamlType;
   }
 
+  /**
+   * Loads a YAML resource from the specified directory and optionally renders it.
+   *
+   * @param {string} resourceDir - The directory where the YAML resource is located.
+   * @param {string} yamlFile - The name of the YAML file.
+   * @param {boolean} [render=true] - Whether to render the YAML content. Defaults to true.
+   * @return {ZoweYamlType} The parsed YAML content.
+   */
+  static loadZoweYaml(resourceDir: string, yamlFile: string, render: boolean = true): ZoweYamlType {
+    let yamlContent = fs.readFileSync(path.join(resourceDir, yamlFile), 'utf8');
+    if (render) {
+      yamlContent = Mustache.render(yamlContent, REMOTE_SYSTEM_INFO, {}, ['{@', '@}']);
+    }
+    const zoweYaml = yaml.parse(yamlContent);
+    return zoweYaml as ZoweYamlType;
+  }
+
+  static loadAndOverlay(base: ZoweYamlType, resourceDir: string, yamlName: string): ZoweYamlType {
+    const overlayYaml = this.loadZoweYaml(resourceDir, yamlName);
+    return this.overlayYaml(base, overlayYaml);
+  }
+
   static overlayYaml(base: ZoweYamlType, overlay: unknown, moreOverlays?: unknown[]): ZoweYamlType {
     let combined = _.merge(base, overlay);
     if (moreOverlays && moreOverlays.length > 0) {
       combined = _.merge(combined, ...moreOverlays);
     }
-    return combined as ZoweYamlType;
+    return combined;
   }
 }

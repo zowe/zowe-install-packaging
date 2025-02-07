@@ -162,7 +162,7 @@ jobs:
         env:
           ZWE_INTEGRATION_YAML: ${{ secrets.ZWE_INTEGRATION_YAML }}
 
-      - name: '[Test] Test starts from here'
+      - name: '[Test] CI Test Suite'
         if: ${{ matrix.test == 'ZWE_CI_Build' }}
         timeout-minutes: 180
         working-directory: ${{ env.ZWE_TEST_PATH }}
@@ -177,7 +177,7 @@ jobs:
           JFROG_USER: ${{ secrets.ZWE_TEST_RT_USER }}
           JFROG_TOKEN: ${{ secrets.ZWE_TEST_RT_TOKEN }}
       
-      - name: '[Test] Test starts from here'
+      - name: '[Test] Extended Test Suite'
         if: ${{ matrix.test == 'ZWE_Full_Tests' }}
         timeout-minutes: 180
         working-directory: ${{ env.ZWE_TEST_PATH }}

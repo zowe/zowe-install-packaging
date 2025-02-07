@@ -40,10 +40,12 @@ import { createPds } from './zos/Files';
 import * as yauzl from 'yauzl';
 
 const zosmfSession = getSession();
+const buildDir = path.resolve(THIS_TEST_ROOT_DIR, '.build');
+const downloadsDir = path.resolve(buildDir, 'downloads');
 
 function setupBaseYaml() {
   console.log(`Using example-zowe.yaml as base for future zowe.yaml modifications...`);
-  const zoweYaml: ZoweYamlType = yaml.parse(fs.readFileSync(`${REPO_ROOT_DIR}/example-zowe.yaml`, 'utf8')) as ZoweYamlType;
+  const zoweYaml: ZoweYamlType = yaml.parse(fs.readFileSync(path.resolve(REPO_ROOT_DIR, 'example-zowe.yaml'), 'utf8')) as ZoweYamlType;
 
   zoweYaml.java.home = REMOTE_SYSTEM_INFO.zosJavaHome;
   zoweYaml.node.home = REMOTE_SYSTEM_INFO.zosNodeHome;
@@ -68,7 +70,9 @@ function setupBaseYaml() {
   fs.writeFileSync(THIS_TEST_BASE_ZOWE_YAML, yaml.stringify(finalYaml, { nullStr: '' }));
 
   console.log(`Using files/defaults.yaml as base for future defaults.yaml modifications...`);
-  const defaultsYaml: ZoweYamlType = yaml.parse(fs.readFileSync(`${REPO_ROOT_DIR}/files/defaults.yaml`, 'utf8')) as ZoweYamlType;
+  const defaultsYaml: ZoweYamlType = yaml.parse(
+    fs.readFileSync(path.resolve(REPO_ROOT_DIR, 'files', 'defaults.yaml'), 'utf8'),
+  ) as ZoweYamlType;
   fs.writeFileSync(THIS_TEST_BASE_DEFAULTS_YAML, yaml.stringify(defaultsYaml, { nullStr: '' }));
 }
 
@@ -79,7 +83,7 @@ const jf = new JfrogClient({
 });
 
 async function downloadManifestDep(binaryName: string): Promise<string> {
-  const manifestJson = fs.readJSONSync(`${REPO_ROOT_DIR}/manifest.json.template`, 'utf8');
+  const manifestJson = fs.readJSONSync(path.resolve(REPO_ROOT_DIR, 'manifest.json.template'), 'utf8');
   const binaryDep = manifestJson['binaryDependencies'][binaryName];
   const dlSpec = processManifestVersion(binaryDep.version);
   const nameMatch = binaryDep?.artifact || '*';
@@ -106,7 +110,7 @@ async function downloadManifestDep(binaryName: string): Promise<string> {
     );
   }
   const artifact = searchResults.results[0];
-  const dlFile = `${THIS_TEST_ROOT_DIR}/.build/${artifact.name}`;
+  const dlFile = path.resolve(downloadsDir, artifact.name);
   await jf.artifactory().download().downloadArtifactToFile(`${artifact.repo}/${artifact.path}/${artifact.name}`, dlFile);
   return dlFile;
 }
@@ -123,10 +127,15 @@ async function cleanUssDir(dir: string) {
 
 module.exports = async () => {
   // check directories and configmgr look OK
-  if (!fs.existsSync(`${REPO_ROOT_DIR}/bin/zwe`)) {
+  const zwePath = path.resolve(REPO_ROOT_DIR, 'bin', 'zwe');
+  const zweBuildPath = path.resolve(REPO_ROOT_DIR, 'build', 'zwe');
+  if (!fs.existsSync(zwePath)) {
     throw new Error('Could not locate the zwe tool locally. Ensure you are running tests from the test project root');
   }
-  fs.mkdirpSync(`${THIS_TEST_ROOT_DIR}/.build`);
+
+  fs.mkdirpSync(buildDir);
+  fs.mkdirpSync(downloadsDir);
+
   setupBaseYaml();
   fs.rmSync(LINGERING_REMOTE_FILES_FILE, { force: true });
   fs.rmSync(TEST_JOBS_RUN_FILE, { force: true });
@@ -134,6 +143,11 @@ module.exports = async () => {
   fs.mkdirpSync(TEST_OUTPUT_DIR);
 
   if (REMOTE_SETUP) {
+    // we're downloading everything, so take the opportunity to clean up old files
+    if (DOWNLOAD_CONFIGMGR && DOWNLOAD_SZWESAMP && DOWNLOAD_ZOWE_TOOLS) {
+      fs.rmSync(downloadsDir, { force: true, recursive: true });
+      fs.mkdirSync(downloadsDir);
+    }
     if (DOWNLOAD_CONFIGMGR) {
       await downloadManifestDep('org.zowe.configmgr');
       await downloadManifestDep('org.zowe.configmgr-rexx');
@@ -148,37 +162,38 @@ module.exports = async () => {
       await downloadManifestDep('org.zowe.utility-tools');
     }
 
-    const configmgrPax = fs.readdirSync(`${THIS_TEST_ROOT_DIR}/.build`).find((item) => /configmgr.*\.pax/g.test(item));
+    const configmgrPax = fs.readdirSync(downloadsDir).find((item) => /configmgr.*\.pax/g.test(item));
     if (configmgrPax == null) {
       throw new Error('Could not locate a configmgr pax in the .build directory');
     }
 
-    const configmgrRexxPax = fs.readdirSync(`${THIS_TEST_ROOT_DIR}/.build`).find((item) => /configmgr-rexx.*\.pax/g.test(item));
+    const configmgrRexxPax = fs.readdirSync(downloadsDir).find((item) => /configmgr-rexx.*\.pax/g.test(item));
     if (configmgrRexxPax == null) {
       throw new Error('Could not locate a configmgr-rexx pax in the .build directory');
     }
 
-    const zssPax = fs.readdirSync(`${THIS_TEST_ROOT_DIR}/.build`).find((item) => /zss-.*\.pax/g.test(item));
+    const zssPax = fs.readdirSync(downloadsDir).find((item) => /zss-.*\.pax/g.test(item));
     if (configmgrRexxPax == null) {
       throw new Error('Could not locate a zss pax in the .build directory');
     }
 
-    const launcherPax = fs.readdirSync(`${THIS_TEST_ROOT_DIR}/.build`).find((item) => /launcher.*\.pax/g.test(item));
+    const launcherPax = fs.readdirSync(downloadsDir).find((item) => /launcher.*\.pax/g.test(item));
     if (configmgrRexxPax == null) {
       throw new Error('Could not locate a launcher pax in the .build directory');
     }
 
-    const zoweToolsZip = fs.readdirSync(`${THIS_TEST_ROOT_DIR}/.build`).find((item) => /zowe-utility-tools.*\.zip/g.test(item));
+    const zoweToolsZip = fs.readdirSync(downloadsDir).find((item) => /zowe-utility-tools.*\.zip/g.test(item));
     if (zoweToolsZip == null) {
       throw new Error('Could not locate zowe-utility-tools zip in the .build directory');
     }
 
     // zowe-install-packaging-tools
-    const utilsDir = path.resolve(THIS_TEST_ROOT_DIR, '.build', 'utility-tools');
+    const utilsDir = path.resolve(buildDir, 'utility-tools');
     fs.mkdirpSync(`${utilsDir}`);
 
     console.log(`Unzipping zowe-tools.zip on local machine`);
-    yauzl.open(`${THIS_TEST_ROOT_DIR}/.build/${zoweToolsZip}`, { autoClose: true, lazyEntries: false }, (err, zipContents) => {
+    const zipFile = path.resolve(downloadsDir, zoweToolsZip);
+    yauzl.open(zipFile, { autoClose: true, lazyEntries: false }, (err, zipContents) => {
       if (err) throw err;
       zipContents.on('entry', async (entry) => {
         // not a directory
@@ -204,7 +219,7 @@ module.exports = async () => {
     console.log(`Uploading ${configmgrPax} to ${REMOTE_SYSTEM_INFO.ussTestDir}/configmgr.pax ...`);
     await files.Upload.fileToUssFile(
       zosmfSession,
-      `${THIS_TEST_ROOT_DIR}/.build/${configmgrPax}`,
+      path.resolve(downloadsDir, configmgrPax),
       `${REMOTE_SYSTEM_INFO.ussTestDir}/configmgr.pax`,
       { binary: true },
     );
@@ -212,29 +227,26 @@ module.exports = async () => {
     console.log(`Uploading ${configmgrRexxPax} to ${REMOTE_SYSTEM_INFO.ussTestDir}/configmgr-rexx.pax ...`);
     await files.Upload.fileToUssFile(
       zosmfSession,
-      `${THIS_TEST_ROOT_DIR}/.build/${configmgrRexxPax}`,
+      path.resolve(downloadsDir, configmgrRexxPax),
       `${REMOTE_SYSTEM_INFO.ussTestDir}/configmgr-rexx.pax`,
       { binary: true },
     );
 
     console.log(`Uploading ${zssPax} to ${REMOTE_SYSTEM_INFO.ussTestDir}/zss.pax ...`);
-    await files.Upload.fileToUssFile(
-      zosmfSession,
-      `${THIS_TEST_ROOT_DIR}/.build/${zssPax}`,
-      `${REMOTE_SYSTEM_INFO.ussTestDir}/zss.pax`,
-      { binary: true },
-    );
+    await files.Upload.fileToUssFile(zosmfSession, path.resolve(downloadsDir, zssPax), `${REMOTE_SYSTEM_INFO.ussTestDir}/zss.pax`, {
+      binary: true,
+    });
 
     console.log(`Uploading ${launcherPax} to ${REMOTE_SYSTEM_INFO.ussTestDir}/launcher.pax ...`);
     await files.Upload.fileToUssFile(
       zosmfSession,
-      `${THIS_TEST_ROOT_DIR}/.build/${launcherPax}`,
+      path.resolve(downloadsDir, launcherPax),
       `${REMOTE_SYSTEM_INFO.ussTestDir}/launcher.pax`,
       { binary: true },
     );
 
     console.log(`Building zwe typescript...`);
-    execSync(`npm install && npm run prod`, { cwd: `${REPO_ROOT_DIR}/build/zwe` });
+    execSync(`npm install && npm run prod`, { cwd: zweBuildPath });
 
     await cleanUssDir(`${REMOTE_SYSTEM_INFO.ussTestDir}/bin`);
     await cleanUssDir(`${REMOTE_SYSTEM_INFO.ussTestDir}/schemas`);
@@ -242,22 +254,18 @@ module.exports = async () => {
     console.log(`Uploading conversion script...`);
     await files.Upload.fileToUssFile(
       zosmfSession,
-      `${THIS_TEST_ROOT_DIR}/resources/convert_to_ebcdic.sh`,
+      path.resolve(THIS_TEST_ROOT_DIR, 'resources', 'convert_to_ebcdic.sh'),
       `${REMOTE_SYSTEM_INFO.ussTestDir}/convert_to_ebcdic.sh`,
     );
 
     console.log(`Uploading ${REPO_ROOT_DIR}/bin to ${REMOTE_SYSTEM_INFO.ussTestDir}/bin...`);
 
     // archive without compression (issues on some backends)
-    tar.c({ gzip: false, file: `${THIS_TEST_ROOT_DIR}/.build/zwe.tar`, sync: true, cwd: `${REPO_ROOT_DIR}` }, ['bin']);
-    await files.Upload.fileToUssFile(
-      zosmfSession,
-      `${THIS_TEST_ROOT_DIR}/.build/zwe.tar`,
-      `${REMOTE_SYSTEM_INFO.ussTestDir}/zwe.tar`,
-      {
-        binary: true,
-      },
-    );
+    const tarFile = path.resolve(buildDir, 'zwe.tar');
+    tar.c({ gzip: false, file: tarFile, sync: true, cwd: REPO_ROOT_DIR }, ['bin']);
+    await files.Upload.fileToUssFile(zosmfSession, tarFile, `${REMOTE_SYSTEM_INFO.ussTestDir}/zwe.tar`, {
+      binary: true,
+    });
     await uss.runCommand(`tar -xfo zwe.tar`, REMOTE_SYSTEM_INFO.ussTestDir);
 
     for (const file of fs.readdirSync(utilsDir)) {
@@ -268,16 +276,12 @@ module.exports = async () => {
 
         console.log(`Uploading ${pkgName} to ${REMOTE_SYSTEM_INFO.ussTestDir}/bin/utils...`);
         // re-archive without compression (issues on some backends)
-        tar.x({ cwd: utilsDir, file: `${utilsDir}/${fileName}`, sync: true });
-        tar.c({ gzip: false, file: `${utilsDir}/${pkgName}.tar`, cwd: utilsDir, sync: true }, ['package']);
-        await files.Upload.fileToUssFile(
-          zosmfSession,
-          `${utilsDir}/${pkgName}.tar`,
-          `${REMOTE_SYSTEM_INFO.ussTestDir}/${pkgName}.tar`,
-          {
-            binary: true,
-          },
-        );
+        const finalPkg = path.resolve(utilsDir, `${pkgName}.tar`);
+        tar.x({ cwd: utilsDir, file: path.resolve(utilsDir, fileName), sync: true });
+        tar.c({ gzip: false, file: finalPkg, cwd: utilsDir, sync: true }, ['package']);
+        await files.Upload.fileToUssFile(zosmfSession, finalPkg, `${REMOTE_SYSTEM_INFO.ussTestDir}/${pkgName}.tar`, {
+          binary: true,
+        });
         await uss.runCommand(`tar xf ${pkgName}.tar`, REMOTE_SYSTEM_INFO.ussTestDir);
         await uss.runCommand(`mv package ./bin/utils/${pkgName}`, REMOTE_SYSTEM_INFO.ussTestDir);
       }
@@ -290,7 +294,7 @@ module.exports = async () => {
         ncertPax = match[0];
       }
     });
-    await files.Upload.fileToUssFile(zosmfSession, `${utilsDir}/${ncertPax}`, `${REMOTE_SYSTEM_INFO.ussTestDir}/ncert.pax`, {
+    await files.Upload.fileToUssFile(zosmfSession, path.resolve(utilsDir, ncertPax), `${REMOTE_SYSTEM_INFO.ussTestDir}/ncert.pax`, {
       binary: true,
     });
 
@@ -302,16 +306,21 @@ module.exports = async () => {
     );
 
     console.log(`Uploading ${REPO_ROOT_DIR}/schemas to ${REMOTE_SYSTEM_INFO.ussTestDir}/schemas...`);
-    await files.Upload.dirToUSSDirRecursive(zosmfSession, `${REPO_ROOT_DIR}/schemas`, `${REMOTE_SYSTEM_INFO.ussTestDir}/schemas/`, {
-      binary: false,
-      includeHidden: true,
-    });
+    await files.Upload.dirToUSSDirRecursive(
+      zosmfSession,
+      path.resolve(REPO_ROOT_DIR, 'schemas'),
+      `${REMOTE_SYSTEM_INFO.ussTestDir}/schemas/`,
+      {
+        binary: false,
+        includeHidden: true,
+      },
+    );
 
     console.log(`Uploading ${REPO_ROOT_DIR}/files/defaults.yaml to ${REMOTE_SYSTEM_INFO.ussTestDir}...`);
     await uss.runCommand(`mkdir -p ${REMOTE_SYSTEM_INFO.ussTestDir}/files`);
     await files.Upload.fileToUssFile(
       zosmfSession,
-      `${REPO_ROOT_DIR}/files/defaults.yaml`,
+      path.resolve(REPO_ROOT_DIR, 'files', 'defaults.yaml'),
       `${REMOTE_SYSTEM_INFO.ussTestDir}/files/defaults.yaml`,
       {
         binary: false,
@@ -365,12 +374,12 @@ module.exports = async () => {
     await uss.runCommand(`${REMOTE_SYSTEM_INFO.zosJavaHome}/bin/javac *.java`, `${REMOTE_SYSTEM_INFO.ussTestDir}/bin/utils`);
 
     console.log(`Uploading sample JCL from files/SZWESAMP to ${REMOTE_SYSTEM_INFO.szwesamp}...`);
-    await files.Upload.dirToPds(zosmfSession, `${REPO_ROOT_DIR}/files/SZWESAMP`, REMOTE_SYSTEM_INFO.szwesamp, {
+    await files.Upload.dirToPds(zosmfSession, path.resolve(REPO_ROOT_DIR, 'files', 'SZWESAMP'), REMOTE_SYSTEM_INFO.szwesamp, {
       binary: false,
     });
 
     console.log(`Uploading JCL from files/SZWEEXEC to ${REMOTE_SYSTEM_INFO.szweexec}...`);
-    await files.Upload.dirToPds(zosmfSession, `${REPO_ROOT_DIR}/files/SZWEEXEC`, REMOTE_SYSTEM_INFO.szweexec, {
+    await files.Upload.dirToPds(zosmfSession, path.resolve(REPO_ROOT_DIR, 'files', 'SZWEEXEC'), REMOTE_SYSTEM_INFO.szweexec, {
       binary: false,
     });
 

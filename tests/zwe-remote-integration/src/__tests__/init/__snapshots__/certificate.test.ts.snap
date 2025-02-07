@@ -133,12 +133,29 @@ zowe:
 "
 `;
 
+exports[`init-cert (LONG) passing init 2`] = `
+"-------------------------------------------------------------------------------
+>> Generate certificate
+
+Error: Validation of FILE(/test/dir/zowe.test.yaml):FILE(/test/dir/files/defaults.yaml) against schema /test/dir/schemas/zowe-yaml-schema.json:/test/dir/schemas/server-common.json found invalid JSON Schema data
+Validity Exceptions(s) with object at 
+  Validity Exceptions(s) with object at /zowe
+    Validity Exceptions(s) with object at /zowe/setup
+      Schema at '/zowe/setup/certificate' invalid
+        not oneOf schemas at '/zowe/setup/certificate' are valid, 0 are
+          Validity Exceptions(s) with object at /zowe/setup/certificate
+            unequal constant value at /zowe/setup/certificate/type; expecting value 'PKCS12' of type 'integer'
+          Validity Exceptions(s) with object at /zowe/setup/certificate
+            missing required property 'keyring' at '/zowe/setup/certificate'
+            no matching enum value at /zowe/setup/certificate/type; expecting one of values '[JCEKS, JCECCAKS, JCERACFKS, JCECCARACFKS, JCEHYBRIDRACFKno matching enum value at /zowe/setup/certificate/type; expecting one of values '[]' of type 'integer'
+Error ZWEL0201E: File '/tmp/zwe-0000/.zowe-merged.yaml' does not exist."
+`;
+
 exports[`init-cert (SHORT) cert missing zowe.yaml vars 1`] = `
 "-------------------------------------------------------------------------------
 >> Generate certificate
 
-Error ZWEL0319E: zowe.setup.dataset.jcllib does not exist, cannot run. Run 'zwe init', 'zwe init generate', or submit JCL TEST.DATASET.PFX.SZWESAMP(ZWEGENER) before running this command.
-"
+Error ZWEL0319E: zowe.setup.dataset.jcllib does not exist, cannot run. Run 'zwe init', 'zwe init generate', or submit JCL TEST.DATASET.PFX.SZWESAMP(ZWEGENER) before running this command."
 `;
 
 exports[`init-cert (SHORT) cert missing zowe.yaml vars 2`] = `
@@ -146,8 +163,7 @@ exports[`init-cert (SHORT) cert missing zowe.yaml vars 2`] = `
 >> Generate certificate
 
 cp: FSUM6258 cannot open file "//'DOES.NOT.EXIST.SZWESAMP(ZWEGENER)'": EDC5049I The specified file name could not be located. (errno2=0xC00B0641)
-Error ZWEL0319E: zowe.setup.dataset.jcllib does not exist, cannot run. Run 'zwe init', 'zwe init generate', or submit JCL DOES.NOT.EXIST.SZWESAMP(ZWEGENER) before running this command.
-"
+Error ZWEL0319E: zowe.setup.dataset.jcllib does not exist, cannot run. Run 'zwe init', 'zwe init generate', or submit JCL DOES.NOT.EXIST.SZWESAMP(ZWEGENER) before running this command."
 `;
 
 exports[`init-cert (SHORT) cert missing zowe.yaml vars 3`] = `
@@ -165,6 +181,5 @@ Validity Exceptions(s) with object at
           Validity Exceptions(s) with object at /zowe/setup/certificate
             missing required property 'keyring' at '/zowe/setup/certificate'
             no matching enum value at /zowe/setup/certificate/type; expecting one of values '[JCEKS, JCECCAKS, JCERACFKS, JCECCARACFKS, JCEHYBRIDRACFKno matching enum value at /zowe/setup/certificate/type; expecting one of values '[]' of type 'integer'
-Error ZWEL0201E: File '/tmp/zwe-0000/.zowe-merged.yaml' does not exist.
-"
+Error ZWEL0201E: File '/tmp/zwe-0000/.zowe-merged.yaml' does not exist."
 `;
