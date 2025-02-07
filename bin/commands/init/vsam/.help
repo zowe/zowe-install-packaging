@@ -33,7 +33,7 @@ components:
   This field is required if VSAM mode is `RLS`.
 - `zowe.setup.vsam.name` defines the VSAM data set name.
 - `components.caching-service.storage.mode` indicates what storage Zowe Caching
-  Service will use. Only if this value is `VSAM`, this command will try to
+  Service will be used. Only if this value is `VSAM`, this command will try to
   create VSAM data set.
 - `components.caching-service.storage.vsam.name` defines the VSAM data set name.
   This field can be omitted and automatically updated with parameter
