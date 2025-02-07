@@ -36,8 +36,7 @@ exports[`init-cert (LONG) cert bad hostname 1`] = `
 
 >>>> Getting certificates from service host
 Failed to get certificate of service instance https://doesnt-exist.anywhere.cloud:10443, exit code 1.
-Error ZWEL0170E: Failed to trust z/OSMF "doesnt-exist.anywhere.cloud:10443".
-"
+Error ZWEL0170E: Failed to trust z/OSMF "doesnt-exist.anywhere.cloud:10443"."
 `;
 
 exports[`init-cert (LONG) passing init 1`] = `
@@ -128,27 +127,7 @@ zowe:
       certificateAuthorities: "/test/dir/local_ca/local_ca.cer"
 
 
->> Zowe configuration requires manual updates.
-
-"
-`;
-
-exports[`init-cert (LONG) passing init 2`] = `
-"-------------------------------------------------------------------------------
->> Generate certificate
-
-Error: Validation of FILE(/test/dir/zowe.test.yaml):FILE(/test/dir/files/defaults.yaml) against schema /test/dir/schemas/zowe-yaml-schema.json:/test/dir/schemas/server-common.json found invalid JSON Schema data
-Validity Exceptions(s) with object at 
-  Validity Exceptions(s) with object at /zowe
-    Validity Exceptions(s) with object at /zowe/setup
-      Schema at '/zowe/setup/certificate' invalid
-        not oneOf schemas at '/zowe/setup/certificate' are valid, 0 are
-          Validity Exceptions(s) with object at /zowe/setup/certificate
-            unequal constant value at /zowe/setup/certificate/type; expecting value 'PKCS12' of type 'integer'
-          Validity Exceptions(s) with object at /zowe/setup/certificate
-            missing required property 'keyring' at '/zowe/setup/certificate'
-            no matching enum value at /zowe/setup/certificate/type; expecting one of values '[JCEKS, JCECCAKS, JCERACFKS, JCECCARACFKS, JCEHYBRIDRACFKno matching enum value at /zowe/setup/certificate/type; expecting one of values '[]' of type 'integer'
-Error ZWEL0201E: File '/tmp/zwe-0000/.zowe-merged.yaml' does not exist."
+>> Zowe configuration requires manual updates."
 `;
 
 exports[`init-cert (SHORT) cert missing zowe.yaml vars 1`] = `
