@@ -128,7 +128,7 @@ type PlaybookResponse = {
  * @param  {Object}    extraVars
  * @param  {String}    verbose
  */
-export function runAnsiblePlaybook(testcase: string, playbook: string, serverId: string, extraVars: {[key: string]: any} = {}, verbose = '-vvv'): Promise<PlaybookResponse> {
+export function runAnsiblePlaybook(testcase: string, playbook: string, serverId: string, extraVars: {[key: string]: any} = {}, verbose = '-v'): Promise<PlaybookResponse> {
   return new Promise((resolve, reject) => {
     const result: PlaybookResponse = {
       reportHash: calculateHash(testcase),
