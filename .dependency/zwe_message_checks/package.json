@@ -1,0 +1,16 @@
+{
+  "name": "zwe_message_checks",
+  "version": "0.0.1",
+  "description": "Analyzes uses of messages within ZWE, looking for duplicates, untracked, and unused message IDs.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "EPL-2.0",
+  "devDependencies": {
+    "fs-extra": "^11.3.0",
+    "lodash": "^4.17.21",
+    "string-comparison": "^1.3.0"
+  }
+}
