@@ -1,15 +1,1 @@
-{
-  "lockAcquiredTime": "Fri Feb 07 2025 19:22:45 GMT+0000 (Coordinated Universal Time)",
-  "uid": "1738956165581545033",
-  "repository": {
-    "owner": "zowe",
-    "repo": "zowe-install-packaging"
-  },
-  "branch": "refs/pull/3844/merge",
-  "workflow": "Zwe Remote Integration Tests",
-  "job": "cicd-test",
-  "actor": "MarkAckert",
-  "runId": 13206600979,
-  "runNumber": 32,
-  "link": "https://github.com/zowe/zowe-install-packaging/actions/runs/13206600979"
-}
+""
