@@ -135,7 +135,7 @@ export function runAnsiblePlaybook(testcase: string, playbook: string, serverId:
       code: null,
       stdout: '',
       stderr: '',
-    };
+    }; 
     // import default vars
     if (!extraVars) {
       extraVars = {};
