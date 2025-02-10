@@ -28,7 +28,8 @@ echo "z/OSMF version     :" $ZOSMF_V
 # JSONs
 ADD_SWI_JSON='{"name":"'${SWI_NAME}'","system":"'${ZOSMF_SYSTEM}'","description":"ZOWE v'${VERSION}' Portable Software Instance",
 "globalzone":"'${GLOBAL_ZONE}'","targetzones":["'${TZONE}'"],"workflows":[{"name":"ZOWE Mount Workflow","description":"This workflow performs mount action of ZOWE zFS.",
-"location": {"dsname":"'${WORKFLOW_DSN}'(ZWEWRF02)"}},{"name":"ZOWE Configuration of Zowe 2.0","description":"This workflow configures Zowe v2.0.",
+"location": {"dsname":"'${WORKFLOW_DSN}'(ZWEWRF02)"}},{"name":"Stand-alone Zowe API ML Configuration","description":"This workflow configures only API ML for Zowe 2.0.",
+"location": {"dsname":"'${WORKFLOW_DSN}'(ZWEAMLCF)"}},{"name":"Full Zowe server-side configuration for Zowe 2.0","description":"This workflow configures all Zowe server-side components for Zowe v2.0.",
 "location": {"dsname":"'${WORKFLOW_DSN}'(ZWECONF)"}},{"name":"ZOWE Creation of CSR request workflow","description":"This workflow creates a certificate sign request.",
 "location": {"dsname":"'${WORKFLOW_DSN}'(ZWECRECR)"}},{"name":"ZOWE Sign a CSR request","description":"This workflow signs the certificate sign request by a local CA.",
 "location": {"dsname":"'${WORKFLOW_DSN}'(ZWESIGNC)"}},{"name":"ZOWE Load Authentication Certificate into ESM","description":"This workflow loads a signed client authentication certificate to the ESM.",
@@ -145,6 +146,11 @@ echo "target=\"//'${WORKFLOW_DSN}(ZWESIGNC)'\";" >>JCL
 echo "iconv -f ISO8859-1 -t IBM-1047 \$source > _ZWESIGNC;" >>JCL
 echo "sed 's|UTF-8|IBM-1047|g' _ZWESIGNC > ZWESIGNC;" >>JCL
 echo "cp -T ZWESIGNC \$target;" >>JCL
+echo "source=\"${ZOWE_MOUNT}files/workflows/ZWEAMLCF.xml\";" >>JCL
+echo "target=\"//'${WORKFLOW_DSN}(ZWEAMLCF)'\";" >>JCL
+echo "iconv -f ISO8859-1 -t IBM-1047 \$source > _ZWEAMLCF;" >>JCL
+echo "sed 's|UTF-8|IBM-1047|g' _ZWEAMLCF > ZWEAMLCF;" >>JCL
+echo "cp -T ZWEAMLCF \$target;" >>JCL
 echo "source=\"${ZOWE_MOUNT}files/workflows/ZWECONF.xml\";" >>JCL
 echo "target=\"//'${WORKFLOW_DSN}(ZWECONF)'\";" >>JCL
 echo "iconv -f ISO8859-1 -t IBM-1047 \$source > _ZWECONF;" >>JCL
