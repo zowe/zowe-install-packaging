@@ -59,7 +59,11 @@ export function execute() {
   }
  
   let result1 = zosDs.isDatasetSmsManaged(ZOWE_CONFIG.zowe.setup.dataset.authLoadlib);
-  let result2 = zosDs.isDatasetSmsManaged(ZOWE_CONFIG.zowe.setup.dataset.authPluginLib);
+
+  let result2: {rc: number, smsManaged?: boolean | null } = {rc: 1, smsManaged: null}; // default used when shouldAuthPlugin=false
+  if (shouldAuthPluginLib) {
+    result2 = zosDs.isDatasetSmsManaged(ZOWE_CONFIG.zowe.setup.dataset.authPluginLib);
+  } 
 
   if (result1.rc != 0) {
     common.printErrorAndExit(`Error ZWEL0320E: The dataset specified in 'zowe.setup.dataset.authLoadlib' does not exist.`, undefined, 320);
@@ -94,8 +98,8 @@ export function execute() {
 
       if (!shouldAuthPluginLib) {
         // replace 2 export lines (33 and 34 in IAPF2 at time of writing)
-        jclContent.out = jclContent.out.replace(/\nexport PLUGLIB=.*\nexport PLUGLOC=SMS.*$/g, '');
-        jclContent.out = jclContent.out.replace(/\n\.\/opercmd\.rex.*?PLUGLOC.*$/g, '');
+        jclContent.out = jclContent.out.replace(/\nexport PLUGLIB=.*\nexport PLUGLOC=SMS.*$/gm, '');
+        jclContent.out = jclContent.out.replace(/\n\.\/opercmd\.rex.*?PLUGLOC.*$/gm, '');
       }
 
       xplatform.storeFileUTF8(tmpfile, xplatform.AUTO_DETECT, jclContent.out);
