@@ -15,9 +15,9 @@
 //* Instances represent a configuration of Zowe, different from the
 //* "runtime" datasets that are created upon install of Zowe / SMPE.
 //*
-//* If your choosen value of 'zowe.setup.dataset.authLoadlib' is not
-//* Equal to 'zowe.setup.prefix' + 'SZWELOAD',
-//* Then you must also run "ZWERMVS2".
+//* If your chosen value of 'zowe.setup.dataset.authLoadlib' is not
+//*  equal to 'zowe.setup.prefix' + 'SZWEAUTH',
+//*  then you must also run "ZWERMVS2".
 //*
 //*********************************************************************
 //RMPDSE EXEC PGM=IKJEFT01

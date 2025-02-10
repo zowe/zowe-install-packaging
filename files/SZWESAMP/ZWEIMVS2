@@ -12,9 +12,9 @@
 //*********************************************************************
 //*
 //* This job is used to create the APF load library for an instance
-//* Of Zowe. It is not needed if your choosen value of
+//*  of Zowe. It is not needed if your chosen value of
 //* 'zowe.setup.dataset.authLoadlib' is equal to
-//* 'zowe.setup.prefix' + 'SZWELOAD'.
+//* 'zowe.setup.prefix' + 'SZWEAUTH'.
 //*
 //* When running this job, you should also run ZWEIMVS
 //*
