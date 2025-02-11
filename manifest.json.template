@@ -396,7 +396,7 @@
       "entries": [{
         "repository": "zowe-client-python-sdk",
         "core": false,
-        "tag": "main",
+        "tag": "b62c4f8",
         "destinations": ["Zowe Client Python SDK"]
       }]
     }
