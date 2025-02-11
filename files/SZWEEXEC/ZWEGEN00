@@ -326,6 +326,7 @@ say 'All of the substitutions were found.'
 /*
 ================================================================================
     Invoke the edit macro on the substitutions for each member.
+    Skip zowe.environments.jclHeader if contains \n (x'15') or not initialized
     ZWECHG: change all word1 word2
       word1 is expected to be {zowe.something}
       word2 is anything, including spaces, single or double apostrophes
@@ -341,6 +342,12 @@ do i = 1 to members.0
       call Print 'Edit 'd'.'
       old = '{'members.i.substitutions.j'}'
       new = value('CFG.'members.i.substitutions.j)
+      if old = '{zowe.environments.jclHeader}' then do
+        if pos(x2c('15'), new) > 0 then
+          iterate j
+        if symbol('CFG.'members.i.substitutions.j) = 'LIT' then
+          iterate j
+      end
       apostrophes1 = "'"
       apostrophes2 = "'"
       if pos("'", new) > 0 & pos('"', new) = 0 then do

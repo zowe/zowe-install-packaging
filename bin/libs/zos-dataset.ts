@@ -4,13 +4,14 @@
   under the terms of the Eclipse Public License v2.0 which
   accompanies this distribution, and is available at
   https://www.eclipse.org/legal/epl-v20.html
- 
+
   SPDX-License-Identifier: EPL-2.0
- 
+
   Copyright Contributors to the Zowe Project.
 */
 
 import * as std from 'cm_std';
+import * as xplatform from 'xplatform';
 
 import * as common from './common';
 import * as stringlib from './string';
@@ -115,7 +116,7 @@ export function isDatasetSmsManaged(dataset: string): { rc: number, smsManaged?:
   // listds 'IBMUSER.LOADLIB' label
   // IBMUSER.LOADLIB
   // --RECFM-LRECL-BLKSIZE-DSORG
-  //   U     **    6144    PO                                                                                          
+  //   U     **    6144    PO
   // --VOLUMES--
   //   VPMVSH
   // --FORMAT 1 DSCB--
@@ -179,5 +180,64 @@ export function isDatasetSmsManaged(dataset: string): { rc: number, smsManaged?:
     }
   } else {
     return { rc: 1 };
+  }
+}
+
+export function listDatasetMembers(dsName: string): string[] {
+  // LISTDS 'ZOWE.JCLLIB' MEMBERS
+  // ZOWE.JCLLIB
+  // --RECFM-LRECL-BLKSIZE-DSORG
+  //   FB    80    27920   PO
+  // --VOLUMES--
+  //   VOL123
+  // --MEMBERS--
+  //   ZWECSRVS
+  //   ZWECSVSM
+  //   ZWEIAPF
+  //   ZWEIAPF2
+  const listDSCommand = `LISTDS '${stringlib.escapeDollar(dsName)}' MEMBERS`;
+  common.printTrace(`  * listDatasetMembers in: "${listDSCommand}"`);
+  const result = zoslib.tsoCommand(listDSCommand);
+  let listOfMembers: string[] = [];
+  if (result.rc == 0 && result.out) {
+      let validMemberName = false;
+      let output = result.out.split("\n");
+      for (let m = 0; m < output.length; m++) {
+          let member = output[m].trim();
+          if (member && validMemberName) {
+              listOfMembers.push(member);
+          }
+          if (member == '--MEMBERS--') {
+              validMemberName = true;
+          }
+      }
+  }
+  common.printTrace(`  * listDatasetMembers out: "${listOfMembers}"`);
+  return listOfMembers;
+}
+
+export function replaceInMember(member: string, tempFile: string, regexFind: RegExp, replaceTo: string): number {
+  common.printTrace(`  * replaceInMember: ${member}, ${tempFile}, ${regexFind} -> ${replaceTo}`);
+  const catCommand = `cat "//'${stringlib.escapeDollar(member)}'"`;
+  const catResult = shell.execOutSync('sh', '-c', catCommand);
+  if (catResult.rc == 0 && catResult.out != undefined) {
+    if (catResult.out.match(regexFind)) {
+      const memberContents = catResult.out.replace(regexFind, replaceTo.replace(/[$]/g, '$$$$'));
+      let storeResult = xplatform.storeFileUTF8(tempFile, xplatform.AUTO_DETECT, memberContents);
+      if (storeResult) {
+        common.printTrace(`  * replaceInMember: xplatform.storeFileUTF8 failed with: ${storeResult}`);
+        return 2;
+      }
+      const cpCommand = `cp "${stringlib.escapeDollar(tempFile)}" "//'${stringlib.escapeDollar(member)}'"`
+      let cpResult = shell.execSync('sh', '-c', cpCommand);
+      if (cpResult.rc) {
+        common.printTrace(`  * replaceInMember: shell.execSync(${cpCommand}) failed with: ${cpResult.rc}`);
+        return 3;
+      }
+    }
+    return 0;
+  } else {
+    common.printTrace(`  * replaceInMember: shell.execOutSync(${catCommand}) failed with: ${catResult.rc}`);
+    return 1;
   }
 }
