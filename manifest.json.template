@@ -24,7 +24,7 @@
     "org.zowe.zlux.sample-iframe-app": {
       "version": "2.18.1-V2.X-RC",
       "repository": "libs-snapshot-local",
-      "artifact": "sample-iframe-app-2.19.0-20250211.190924.pax"
+      "artifact": "sample-iframe-app-2.18.1-20250211.201841.pax"
     },
     "org.zowe.zlux.sample-react-app": {
       "version": "2.18.1-V2.X-RC",
