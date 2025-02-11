@@ -35,7 +35,7 @@ export function execute(dryRun?: boolean) {
   
   let jclPostProcessing = false;
   let jclHeaderJoined = '';
-  const jclHeader = ZOWE_CONFIG.zowe.environments.jclHeader == null ? '' : ZOWE_CONFIG.zowe.environments.jclHeader;
+  const jclHeader = ZOWE_CONFIG.zowe?.environments?.jclHeader == null ? '' : ZOWE_CONFIG.zowe.environments.jclHeader;
   if (Array.isArray(jclHeader)) {
     jclPostProcessing = true;
     jclHeaderJoined = jclHeader.join("\n");
