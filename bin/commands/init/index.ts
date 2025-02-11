@@ -42,7 +42,7 @@ export function execute(allowOverwrite?: boolean, dryRun?: boolean, ignoreSecuri
 
   common.printLevel1Message(`Check if need to update runtime directory, Java and/or node.js settings in Zowe YAML configuration`);
   // node.home
-  let newNodeHome;
+  let newNodeHome: string;
   const configNodeHome=zoweConfig.node?.home;
   // only try to update if it's not defined, but needed
   if (!configNodeHome && enabledComponents.includes('app-server')) {
@@ -51,7 +51,7 @@ export function execute(allowOverwrite?: boolean, dryRun?: boolean, ignoreSecuri
   }
 
   // java.home
-  let newJavaHome;
+  let newJavaHome: string;
   const configJavaHome=zoweConfig.java?.home;
   const coreJavaComponents = std.getenv('ZWE_PRIVATE_CORE_COMPONENTS_REQUIRE_JAVA').split(',');
   // only try to update if it's not defined, but needed
@@ -66,7 +66,7 @@ export function execute(allowOverwrite?: boolean, dryRun?: boolean, ignoreSecuri
   }
 
   // zowe.runtimeDirectory
-  let newZoweRuntimeDir;
+  let newZoweRuntimeDir: string;
   // do we have zowe.runtimeDirectory defined in zowe.yaml?
   const configRuntimeDir = zoweConfig.zowe?.runtimeDirectory;
   if (configRuntimeDir) {

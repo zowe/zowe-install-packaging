@@ -27,6 +27,8 @@ zowe:
   #-------------------------------------------------------------------------------
   # These configurations are used by "zwe install" or "zwe init" commands.
   #-------------------------------------------------------------------------------
+  environments:
+    jclHeader: ''
   setup:
     # MVS data set related configurations
     dataset: 
@@ -193,9 +195,9 @@ components:
       infinispan:
         # this is required if storage mode is infinispan
         jgroups:
-          port: 7098
+          port: 7600
           keyExchange:
-            port: 7099
+            port: 7601
 
   # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   app-server:
