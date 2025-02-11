@@ -128,6 +128,8 @@
     dest: "{{ work_dir_local }}/{{ inventory_hostname }}/HOLDDATA.jcl"
     newline_sequence: '\n'
     mode: 0700
+  vars:
+    smpe_csi: "{{ zowe_smpe_hlq_csi }}.CSI"
   delegate_to: localhost
 
 - name: Upload HOLDDATA.jcl to server
