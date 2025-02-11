@@ -98,6 +98,8 @@ export function execute(componentFile: string, autoEncoding?: string, upgrade?: 
       result = shell.execSync('sh', '-c', `cd ${tmpDir} && jar xf ${componentFile}`);
     } else if (componentFile.endsWith('.tar')) {
       result = shell.execSync('sh', '-c', `_CEE_RUNOPTS="FILETAG() POSIX(ON)" cd ${tmpDir} && pax -x tar -rf "${componentFile}"`);
+    } else {
+      common.printErrorAndExit(`Error ZWEL0318E File extension invalid. Supported file extensions: .pax, .tar, .zip`, undefined, 318);
     }
     if (result.rc) {
       common.printError(`Extract completed with rc=${result.rc}`);
@@ -106,7 +108,7 @@ export function execute(componentFile: string, autoEncoding?: string, upgrade?: 
     result = shell.execOutSync('sh', '-c', `cd ${tmpDir} && ls -la 2>&1`);
     common.printTrace(stringlib.paddingLeft(result.out, "    "));
   } else {
-    common.printErrorAndExit(`Error ZWEL0313E: Cannot file component file ${componentFile}.`, undefined, 313);
+    common.printErrorAndExit(`Error ZWEL0313E: Cannot find component file ${componentFile}.`, undefined, 313);
   }
 
   // automatically tag files
