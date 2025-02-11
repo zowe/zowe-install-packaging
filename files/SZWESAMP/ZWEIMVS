@@ -16,7 +16,7 @@
 //* "runtime" datasets that are created upon install of Zowe / SMPE.
 //*
 //* If your chosen value of 'zowe.setup.dataset.authLoadlib' is not
-//*  equal to 'zowe.setup.prefix' + 'SZWEAUTH',
+//*  equal to 'zowe.setup.dataset.prefix' + 'SZWEAUTH',
 //*  then you must also run "ZWEIMVS2".
 //*
 //*********************************************************************
