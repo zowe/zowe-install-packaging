@@ -14,10 +14,12 @@ For example, if you run `zwe init generate --dry-run`, a dry run of the operatio
 The following JCL will be created into the jcllib, using the content of the same name from within the SZWESAMP dataset:
 
 Instance dataset creation:
-- ZWEIMVS: Creates Zowe instance datasets
-- ZWERMVS: Removes these datasets
-- ZWEIMVS2: Creates the `zowe.setup.dataset.authLoadLib` dataset if you have customized its name. This is not recommended, it is best to leave it as default.
-- ZWERMVS2: Removes the above customized dataset.
+- ZWEIMVSP: Creates Zowe instance Parmlib dataset
+- ZWERMVSP: Removes this dataset
+- ZWEIMVSZ: Creates Zowe instance ZIS Plugins dataset
+- ZWERMVSZ: Removes this dataset
+- ZWEIMVSA: Creates the `zowe.setup.dataset.authLoadLib` dataset if you have customized its name. This is not recommended, it is best to leave it as default.
+- ZWERMVSA: Removes the above customized dataset.
 
 VSAM for caching service creation:
 - ZWECSVSM: Creates a VSAM for the caching service

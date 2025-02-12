@@ -19,10 +19,10 @@ review what Zowe would do before doing it.
 The following are the JCL submitted by each command as needed
 
 - `zwe init mvs`
-    - ZWEIMVS
-    - (If `--allow-overwrite` specified and old datasets exist) ZWERMVS
-    - (If `zowe.setup.dataset.authLoadLib` is not named prefix + ZWELOAD) ZWEIMVS2
-    - (If above is true, and the dataset exists, and `--allow-overwrite` is set) ZWERMVS2
+    - ZWEIMVSA, ZWEIMVSP, ZWEIMVSZ
+    - (If `--allow-overwrite` specified and old datasets exist) ZWERMVSP, ZWERMVSZ
+    - (If `zowe.setup.dataset.authLoadLib` is not named prefix + ZWELOAD) ZWEIMVSA
+    - (If above is true, and the dataset exists, and `--allow-overwrite` is set) ZWERMVSA
 - `zwe init vsam`
     - ZWECSVSM
     - (If `--allow-overwrite` specified and old datasets exist) ZWECSRVS
