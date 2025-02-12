@@ -1,4 +1,4 @@
-//ZWEIMVS JOB {zowe.environments.jclHeader}
+//ZWERMVSP JOB {zowe.environments.jclHeader}
 //*
 //* This program and the accompanying materials are made available
 //* under the terms of the Eclipse Public License v2.0 which
@@ -11,31 +11,18 @@
 //*
 //*********************************************************************
 //*
-//* This job is used to create datasets used by a Zowe "instance"
+//* This job is used to remove datasets used by a Zowe "instance"
 //* Instances represent a configuration of Zowe, different from the
 //* "runtime" datasets that are created upon install of Zowe / SMPE.
 //*
 //* If your chosen value of 'zowe.setup.dataset.authLoadlib' is not
 //*  equal to 'zowe.setup.dataset.prefix' + 'SZWEAUTH',
-//*  then you must also run "ZWEIMVS2".
+//*  then you must also run ZWERMVSA.
 //*
 //*********************************************************************
-//MKPDSE EXEC PGM=IKJEFT01
+//RMPDSE EXEC PGM=IKJEFT01
 //SYSTSPRT DD SYSOUT=A
 //SYSTSIN DD *
-ALLOC NEW DA('{zowe.setup.dataset.parmlib}') +
-dsntype(library) dsorg(po) recfm(f b) lrecl(80) +
-unit(sysallda) space(15,15) tracks
-
-ALLOC NEW DA('{zowe.setup.dataset.authPluginLib}') +
-dsntype(library) dsorg(po) recfm(u) lrecl(0) +
-blksize(32760) unit(sysallda) space(30,15) tracks
-//*
-//MEMBCPY EXEC PGM=IEBCOPY
-//SYSPRINT DD SYSOUT=A
-//SYSUT1 DD DSN={zowe.setup.dataset.prefix}.SZWESAMP,DISP=SHR
-//SYSUT2 DD DSN={zowe.setup.dataset.parmlib},DISP=OLD
-//SYSIN DD *
-  COPY OUTDD=SYSUT2,INDD=SYSUT1
-  SELECT MEMBER=((ZWESIP00,,R))
-//*
+DELETE '{zowe.setup.dataset.parmlib}' +
+       SCRATCH NONVSAM
+/*
