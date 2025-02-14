@@ -13,6 +13,8 @@ import ZoweYamlType from '../../config/ZoweYamlType';
 import { RemoteTestRunner } from '../../zos/RemoteTestRunner';
 import { ZoweConfig } from '../../config/ZoweConfig';
 import { FileType, TestFileActions, TestFile } from '../../zos/TestFileActions';
+import * as fs from 'fs-extra';
+import path from 'path';
 
 const testSuiteName = 'init-generate';
 describe(`${testSuiteName}`, () => {
@@ -51,6 +53,81 @@ describe(`${testSuiteName}`, () => {
   });
 
   describe('(SHORT)', () => {
+    it('jcl header single line', async () => {
+      // eslint-disable-next-line
+      cfgYaml.zowe.environments = {jclHeader: "'SOMEJOB',(0000000000)" };
+      const result = await testRunner.runZweTest(cfgYaml, 'init generate --dry-run');
+      expect(result.stdout).not.toBeNull();
+      expect(result.cleanedStdout).toMatchSnapshot();
+      expect(result.rc).toBe(0);
+    });
+
+    it('jcl header multi line', async () => {
+      // eslint-disable-next-line
+      const longString = "LONGFIELD1,LONGFIELD2,LONGFIELD3,ANOTHER,FIELD,GOING,WAY,PAST,EIGHTY,CHARACTERS,INCLUDING,THIS";
+      let jclLines = [`'SOMEJOB'`, `// (0000000000)`, longString, 'SYSAFF=SYS1'];
+      cfgYaml.zowe.environments = { jclHeader: jclLines };
+      let result = await testRunner.runZweTest(cfgYaml, 'init generate --dry-run');
+      expect(result.stdout).not.toBeNull();
+      expect(result.cleanedStdout).toMatchSnapshot();
+      expect(result.rc).toBe(142);
+
+      // this is technically not valid JCL, but fits in 80 chars
+      jclLines = [`'SOMEJOB'`, `(0000000000)`, longString.slice(0, 79), 'SYSAFF=SYS1'];
+      cfgYaml.zowe.environments = { jclHeader: jclLines };
+      result = await testRunner.runZweTest(cfgYaml, 'init generate --dry-run');
+      expect(result.stdout).not.toBeNull();
+      expect(result.cleanedStdout).toMatchSnapshot();
+      expect(result.rc).toBe(0);
+
+      // with idx 0, the slice is invalid for first line
+      jclLines = [longString.slice(0, 79), `(0000000000)`, 'SOMEJOB', 'SYSAFF=SYS1'];
+      cfgYaml.zowe.environments = { jclHeader: jclLines };
+      result = await testRunner.runZweTest(cfgYaml, 'init generate --dry-run');
+      expect(result.stdout).not.toBeNull();
+      expect(result.cleanedStdout).toMatchSnapshot();
+      expect(result.rc).toBe(142);
+
+      // this is the right max width
+      jclLines = [longString.slice(0, 80 - ('//ABCABCDE JOB '.length + 1)), `// (0000000000),`, `// 'SOMEJOB',`, '// SYSAFF=SYS1'];
+      cfgYaml.zowe.environments = { jclHeader: jclLines };
+      result = await testRunner.runZweTest(cfgYaml, 'init generate --dry-run');
+      expect(result.stdout).not.toBeNull();
+      expect(result.cleanedStdout).toMatchSnapshot();
+      expect(result.rc).toBe(0);
+    });
+
+    it('jcl header single line length', async () => {
+      // eslint-disable-next-line
+      const longString = "'SOMEJOB',(0000000000),ANOTHER,FIELD,GOING,WAY,PAST,EIGHTY,CHARACTERS,INCLUDING,THIS";
+      // error - line > 100 chars
+      cfgYaml.zowe.environments = { jclHeader: longString };
+      let result = await testRunner.runZweTest(cfgYaml, 'init generate --dry-run');
+      expect(result.stdout).not.toBeNull();
+      expect(result.cleanedStdout).toMatchSnapshot();
+      expect(result.rc).toBe(142);
+
+      // error - 81 char line
+      cfgYaml.zowe.environments = {
+        // eslint-disable-next-line
+        jclHeader: longString.slice(0, 80-'//ABCABCDE JOB '.length),
+      };
+      result = await testRunner.runZweTest(cfgYaml, 'init generate --dry-run');
+      expect(result.stdout).not.toBeNull();
+      expect(result.cleanedStdout).toMatchSnapshot();
+      expect(result.rc).toBe(142);
+
+      // OK - 80 char line
+      cfgYaml.zowe.environments = {
+        // eslint-disable-next-line
+        jclHeader: longString.slice(0, 80-('//ABCABCDE JOB '.length+1)),
+      };
+      result = await testRunner.runZweTest(cfgYaml, 'init generate --dry-run');
+      expect(result.stdout).not.toBeNull();
+      expect(result.cleanedStdout).toMatchSnapshot();
+      expect(result.rc).toBe(0);
+    });
+
     it('bad ds prefix', async () => {
       cfgYaml.zowe.setup.dataset.prefix = 'SOME.DS.NOEXIST';
       const result = await testRunner.runZweTest(cfgYaml, 'init generate --dry-run');
@@ -94,5 +171,56 @@ describe(`${testSuiteName}`, () => {
     });
   });
 
-  describe('(LONG)', () => {});
+  describe('(LONG)', () => {
+    it('jcllib updates: jcl header single line', async () => {
+      const header = `'SOMEJOB',REGION=0M`;
+      // eslint-disable-next-line
+      cfgYaml.zowe.environments = {jclHeader: header };
+      const result = await testRunner.runZweTest(cfgYaml, 'init generate');
+      expect(result.stdout).not.toBeNull();
+      expect(result.cleanedStdout).toMatchSnapshot();
+      expect(result.rc).toBe(0);
+
+      // the jcl generated in JCLLIB should have the headers
+      const localPdsPath = await TestFileActions.downloadPds(cfgYaml.zowe.setup.dataset.jcllib as string);
+      const members = fs.readdirSync(localPdsPath);
+      for (const member of members) {
+        if (/zweslstc/i.test(member)) {
+          // skip Zowe STC, this shouldn't have the headers
+          continue;
+        }
+        const jclFile = path.join(localPdsPath, member);
+        const jclFileContent = fs.readFileSync(jclFile, 'utf8');
+        testRunner.collectTestFile(jclFile);
+        expect(jclFileContent).toContain(header);
+      }
+      // cleanup the downloaded pds
+      fs.rmdirSync(localPdsPath, { recursive: true });
+    });
+
+    it('jcllib updates: jcl header multi line', async () => {
+      const jclLines = [`'SOMEJOB',`, `// REGION=0M`, `//* atestcomment`, '//* secondtestcomment'];
+      cfgYaml.zowe.environments = { jclHeader: jclLines };
+      const result = await testRunner.runZweTest(cfgYaml, 'init generate');
+      expect(result.stdout).not.toBeNull();
+      expect(result.cleanedStdout).toMatchSnapshot();
+      expect(result.rc).toBe(0);
+
+      // the jcl generated in JCLLIB should have the headers
+      const localPdsPath = await TestFileActions.downloadPds(cfgYaml.zowe.setup.dataset.jcllib as string);
+      const members = fs.readdirSync(localPdsPath);
+      for (const member of members) {
+        if (/zweslstc/i.test(member)) {
+          // skip Zowe STC, this shouldn't have the headers
+          continue;
+        }
+        const jclFile = path.join(localPdsPath, member);
+        const jclFileContent = fs.readFileSync(jclFile, 'utf8');
+        testRunner.collectTestFile(jclFile);
+        expect(jclFileContent).toContain(jclLines.join('\n'));
+      }
+      // cleanup the downloaded pds
+      fs.rmdirSync(localPdsPath, { recursive: true });
+    });
+  });
 });

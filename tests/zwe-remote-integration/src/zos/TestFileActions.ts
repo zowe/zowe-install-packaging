@@ -11,11 +11,33 @@
 import * as fs from 'fs-extra';
 import { getSession } from './ZosmfSession';
 import * as files from '@zowe/zos-files-for-zowe-sdk';
-import { LINGERING_REMOTE_FILES_FILE } from '../config/TestConfig';
+import * as _ from 'lodash';
+import * as path from 'path';
+import { LINGERING_REMOTE_FILES_FILE, TEST_OUTPUT_DIR } from '../config/TestConfig';
 export class TestFileActions {
   private static readonly session = getSession();
 
   constructor() {}
+
+  /**
+   * Downloads pds members to a temporary directory and returns the absolute path to the
+   * temporary directory.
+   *
+   * @param {string} pdsName The PDS to download.
+   * @param {files.IDownloadOptions} [options] Options for the download.
+   * @returns {Promise<string>} The path to the downloaded pds members.
+   *
+   * @throws {Error} If the download fails.
+   */
+  public static async downloadPds(pdsName: string, options: files.IDownloadOptions = {}): string {
+    const dlDir = path.resolve(TEST_OUTPUT_DIR, '.tmp');
+    const finalOpts = _.merge(options, { directory: dlDir });
+    const downloadPdsResp = await files.Download.allMembers(this.session, pdsName, finalOpts);
+    if (!downloadPdsResp.success) {
+      throw new Error(`Failed to download dataset ${pdsName}, details: ${downloadPdsResp.apiResponse}`);
+    }
+    return dlDir;
+  }
 
   public static async deleteAll(datasets: TestFile[]) {
     const deleteOps: DeleteFile[] = [];
@@ -57,6 +79,11 @@ export class TestFileActions {
     }
   }
 }
+
+type DownloadPdsResponse = {
+  localDir: string;
+  success: boolean;
+};
 
 type DeleteFile = {
   file: TestFile;

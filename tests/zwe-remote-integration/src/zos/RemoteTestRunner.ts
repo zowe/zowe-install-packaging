@@ -34,6 +34,7 @@ export class RemoteTestRunner {
   private readonly yamlOutputTemplate: string;
   private readonly tmpDir: string;
   private readonly spoolOutputTemplate: string;
+  private readonly otherOutputTemplate: string;
   private readonly session: Session;
   private trackedFiles: TrackedFile[] = [];
   private trackedJobs: jobs.IDownloadAllSpoolContentParms[] = [];
@@ -48,8 +49,10 @@ export class RemoteTestRunner {
     this.session = getSession();
     this.uss = UssSession.sharedSession();
     this.tmpDir = `${TEST_OUTPUT_DIR}/${testGroup}/tmp`;
-    this.yamlOutputTemplate = `${TEST_OUTPUT_DIR}/${testGroup}/{{ testInstance }}/yaml`;
-    this.spoolOutputTemplate = `${TEST_OUTPUT_DIR}/${testGroup}//{{ testInstance }}/spool`;
+    const baseOutputDir = `${TEST_OUTPUT_DIR}/${testGroup}/{{ testInstance }}`;
+    this.yamlOutputTemplate = `${baseOutputDir}/yaml`;
+    this.spoolOutputTemplate = `${baseOutputDir}/spool`;
+    this.otherOutputTemplate = `${baseOutputDir}/other`;
   }
 
   public shutdown() {
@@ -68,6 +71,23 @@ export class RemoteTestRunner {
       cleanedStdout: cleanedOutput,
       rc: output.rc,
     };
+  }
+
+  /**
+   * Collects a local file into the test output directory.
+   * Use this to collect files that are not tracked by the test runner but useful to review.
+   *
+   * @param {string} filePath - The path of the file to copy.
+   */
+  public collectTestFile(filePath: string) {
+    if (!fs.existsSync(filePath)) {
+      console.log('warn: testrunner could not find the local file to collect: ' + filePath);
+      return;
+    }
+    const testName = expect.getState().currentTestName.replace(/\s/g, '_');
+    const outputDir = this.otherOutputTemplate.replace('{{ testInstance }}', testName);
+    fs.mkdirpSync(outputDir);
+    fs.copySync(filePath, `${outputDir}/${basename(filePath)}`);
   }
 
   /**
