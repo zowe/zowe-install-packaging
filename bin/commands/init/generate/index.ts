@@ -38,7 +38,7 @@ export function execute(dryRun?: boolean) {
   const jclHeader = ZOWE_CONFIG.zowe?.environments?.jclHeader == null ? '' : ZOWE_CONFIG.zowe.environments.jclHeader;
   if (Array.isArray(jclHeader)) {
     jclPostProcessing = true;
-    jclHeaderJoined = jclHeader.join("\n// ");
+    jclHeaderJoined = jclHeader.join("\n");
   } else {
     jclHeaderJoined = jclHeader.toString();
     if (jclHeaderJoined && (jclHeaderJoined.match(/\n/g) || []).length) {
@@ -48,7 +48,6 @@ export function execute(dryRun?: boolean) {
   // check header lengths
   const headerLines = jclHeaderJoined.split('\n');
   for (let i = 0; i < headerLines.length; i++) {
-    // for lines 1..n, we added '// ' already
     const maxLen = 80 - ((i==0) ? '//ZWEGENER JOB '.length : 0);
     if (headerLines[i].length >= maxLen) {
       common.printErrorAndExit(`ZWEL0142E JCL header line ${i+1} will be longer than 80 characters. Please split this line into multiple lines.\n${headerLines[i]}\n`, undefined, 142);
