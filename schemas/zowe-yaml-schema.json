@@ -58,16 +58,8 @@
                   "default": "<hlq>.SZWEAUTH"
                 },
                 "authPluginLib": {
-                  "oneOf": [{
-                      "$ref": "/schemas/v2/server-common#zoweDataset",
-                      "description": "APF authorized LOADLIB for Zowe ZIS Plugins"
-                    }, {
-                      "type": "string",
-                      "minLength": 0,
-                      "maxLength": 0,
-                      "required": "false"
-                    }
-                  ]
+                  "$ref": "/schemas/v2/server-common#zoweDataset",
+                  "description": "APF authorized LOADLIB for Zowe ZIS Plugins"
                 }
               }
             },
