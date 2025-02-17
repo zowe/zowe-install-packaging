@@ -54,17 +54,17 @@ export function execute(allowOverwrite?: boolean) {
   let actions = {
     parmlib: {
       ds: parmlib,
-      jclSuffix: 'P',
+      jclSuffix: '',
       exist: false, create: false, delete: false
     },
     authloadlib: {
       ds: authLoadlibDefaults == authLoadlibConfig ? undefined : authLoadlibConfig,
-      jclSuffix: 'A',
+      jclSuffix: '2',
       exist: false, create: false, delete: false
     },
     authpluginlib: {
       ds: ZOWE_CONFIG.zowe.setup?.dataset ? ZOWE_CONFIG.zowe.setup.dataset.authPluginLib : undefined,
-      jclSuffix: 'Z',
+      jclSuffix: '1',
       exist: false, create: false, delete: false
     }
   }

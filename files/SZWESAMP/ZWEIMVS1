@@ -1,4 +1,4 @@
-//ZWEIMVSP JOB {zowe.environments.jclHeader}
+//ZWEIMVS1 JOB {zowe.environments.jclHeader}
 //*
 //* This program and the accompanying materials are made available
 //* under the terms of the Eclipse Public License v2.0 which
@@ -16,28 +16,18 @@
 //* "runtime" datasets that are created upon install of Zowe / SMPE.
 //*
 //* Consider if the Zowe Cross Memory Server
-//*  - is used: run this and consider to run ZWEIMVSZ
+//*  - is used: run this and ZWEIMVS
 //*  - not used: you can skip this JCL
 //*
 //* If your chosen value of 'zowe.setup.dataset.authLoadlib' is not
 //*  equal to 'zowe.setup.dataset.prefix' + 'SZWEAUTH',
-//*  then you must also run ZWEIMVSA.
-//*
+//*  then you must also run ZWEIMVS2.
+//* 
 //*********************************************************************
 //MKPDSE EXEC PGM=IKJEFT01
 //SYSTSPRT DD SYSOUT=A
 //SYSTSIN DD *
-ALLOC NEW DA('{zowe.setup.dataset.parmlib}') +
-dsntype(library) dsorg(po) recfm(f b) lrecl(80) +
-unit(sysallda) space(15,15) tracks
+ALLOC NEW DA('{zowe.setup.dataset.authPluginLib}') +
+dsntype(library) dsorg(po) recfm(u) lrecl(0) +
+blksize(32760) unit(sysallda) space(30,15) tracks
 /*
-//MEMBCPY EXEC PGM=IDCAMS
-//  SET OUTPARM={zowe.setup.dataset.parmlibMembers.zis}
-//SYSPRINT DD  SYSOUT=*
-//PARMIN  DD DISP=SHR,
-//  DSN={zowe.setup.dataset.prefix}.SZWESAMP(ZWESIP00)
-//PARMOUT DD DISP=OLD,
-//  DSN={zowe.setup.dataset.parmlib}(&OUTPARM)
-//SYSIN DD *
-  REPRO INFILE(PARMIN) OUTFILE(PARMOUT)
-//*

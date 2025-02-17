@@ -38,8 +38,8 @@
     show_jobs_name: "{{ job_name_to_show }}"
   loop:
   - ZWEGENER
-  - ZWEIMVSP
-  - ZWEIMVSZ
+  - ZWEIMVS
+  - ZWEIMVS1
   - ZWEIAPF2
   - ZWEIACF
   - ZWEIRAC
