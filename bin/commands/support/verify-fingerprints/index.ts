@@ -57,7 +57,8 @@ export function execute(doNotExit: Boolean, javaHome: string): void {
   if (fs.fileExists(manifest)) {
       manifestContent = xplatform.loadFileUTF8(manifest, xplatform.AUTO_DETECT);
   } else {
-      common.printErrorAndExit(`Error ZWEL0150E: Failed to find file "${manifest}". Zowe runtimeDirectory is invalid.`, undefined, 150);
+      let missingFile = manifest;
+      common.printErrorAndExit(`Error ZWEL0150E: Failed to find file "${missingFile}". Zowe runtimeDirectory is invalid.`, undefined, 150);
   }
   if (manifestContent) {
       manifestJson = JSON.parse(manifestContent);
@@ -68,11 +69,13 @@ export function execute(doNotExit: Boolean, javaHome: string): void {
   const zoweVersion = manifestJson.version;
 
   if (!fs.fileExists(`${zoweRuntime}/bin/utils/HashFiles.class`)) {
-      common.printErrorAndExit(`Error ZWEL0150E: Failed to find file "${zoweRuntime}/bin/utils/HashFiles.class". Zowe runtimeDirectory is invalid.`, undefined, 150);
+      let missingFile = `${zoweRuntime}/bin/utils/HashFiles.class`;
+      common.printErrorAndExit(`Error ZWEL0150E: Failed to find file "${missingFile}". Zowe runtimeDirectory is invalid.`, undefined, 150);
   }
 
   if (!fs.fileExists(`${zoweRuntime}/fingerprint/RefRuntimeHash-${zoweVersion}.txt`)) {
-      common.printErrorAndExit(`Error ZWEL0150E: Failed to find file "${zoweRuntime}/fingerprint/RefRuntimeHash-${zoweVersion}.txt". Zowe runtimeDirectory is invalid.`, undefined, 150);
+      let missingFile = `${zoweRuntime}/fingerprint/RefRuntimeHash-${zoweVersion}.txt`;
+      common.printErrorAndExit(`Error ZWEL0150E: Failed to find file "${missingFile}". Zowe runtimeDirectory is invalid.`, undefined, 150);
   }
 
   common.printMessage('- Create Zowe directory file list');
@@ -91,7 +94,7 @@ export function execute(doNotExit: Boolean, javaHome: string): void {
   const javaHash = shell.execOutSync('sh', '-c', `cd '${zoweRuntime}' && '${javaHome}/bin/java' -cp '${zoweRuntime}/bin/utils/' HashFiles '${allFiles}' | sort > '${customHashes}'`);
 
   if (javaHash.rc != 0 || !fs.fileExists(customHashes) || fs.fileSize(customHashes) < 1) {
-    common.printError(`  * Error ZWEL0151E: Failed to create temporary file ${customHashes}. Please check permission or volume free space.`);
+    common.printError(`  * Error ZWEL0151E: Failed to create temporary file "${customHashes}". Please check permission or volume free space.`);
     common.printError(`  * Exit code: java error code=${javaHash.rc}`)
     common.printError(`  *            file exists=${fs.fileExists(customHashes)}`);
     if (fs.fileExists(customHashes)) {
