@@ -58,7 +58,7 @@ export function execute(doNotExit: Boolean, javaHome: string): void {
       manifestContent = xplatform.loadFileUTF8(manifest, xplatform.AUTO_DETECT);
   } else {
       let missingFile = manifest;
-      common.printErrorAndExit(`Error ZWEL0150E: Failed to find file "${missingFile}". Zowe runtimeDirectory is invalid.`, undefined, 150);
+      common.printErrorAndExit(`Error ZWEL0150E: Failed to find file ${missingFile}. Zowe runtimeDirectory is invalid.`, undefined, 150);
   }
   if (manifestContent) {
       manifestJson = JSON.parse(manifestContent);
@@ -70,12 +70,12 @@ export function execute(doNotExit: Boolean, javaHome: string): void {
 
   if (!fs.fileExists(`${zoweRuntime}/bin/utils/HashFiles.class`)) {
       let missingFile = `${zoweRuntime}/bin/utils/HashFiles.class`;
-      common.printErrorAndExit(`Error ZWEL0150E: Failed to find file "${missingFile}". Zowe runtimeDirectory is invalid.`, undefined, 150);
+      common.printErrorAndExit(`Error ZWEL0150E: Failed to find file ${missingFile}. Zowe runtimeDirectory is invalid.`, undefined, 150);
   }
 
   if (!fs.fileExists(`${zoweRuntime}/fingerprint/RefRuntimeHash-${zoweVersion}.txt`)) {
       let missingFile = `${zoweRuntime}/fingerprint/RefRuntimeHash-${zoweVersion}.txt`;
-      common.printErrorAndExit(`Error ZWEL0150E: Failed to find file "${missingFile}". Zowe runtimeDirectory is invalid.`, undefined, 150);
+      common.printErrorAndExit(`Error ZWEL0150E: Failed to find file ${missingFile}. Zowe runtimeDirectory is invalid.`, undefined, 150);
   }
 
   common.printMessage('- Create Zowe directory file list');
