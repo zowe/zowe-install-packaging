@@ -126,7 +126,7 @@ export function execute(doNotExit: Boolean, javaHome: string): void {
     const commResult = shell.execOutSync('sh', '-c', `cd '${zoweRuntime}' && comm -${commParameter} "${zoweRuntime}/fingerprint/RefRuntimeHash-${zoweVersion}.txt" "${customHashes}"`);
     if (commResult.rc) {
       let hashFile = `fingerprint/RefRuntimeHash-${zoweVersion}.txt`;
-      common.printError(`  * Error ZWEL0318E: Failed to compare hashes of ${hashFile} and current.`);
+      common.printError(`  * Error ZWEL0319E: Failed to compare hashes of ${hashFile} and current.`);
       common.printError(`  * Exit code: ${commResult.rc}`);
       if (commResult.out) {
         common.printError(`  * Output:`);
