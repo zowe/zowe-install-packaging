@@ -82,7 +82,7 @@ export function execute(doNotExit: Boolean, javaHome: string): void {
   const allFiles = fs.createTmpFile(tmpFilePrefix);
   shell.execOutSync('sh', '-c', `cd '${zoweRuntime}' && find . -name ./SMPE -prune -o -name "./ZWE*" -prune -o -name ./fingerprint -prune -o -type f -print > "${allFiles}"`);
   if (!fs.fileExists(allFiles)) {
-    common.printErrorAndExit(`Error ZWEL0151E: Failed to create temporary file "${allFiles}". Please check permission or volume free space.`, undefined, 151);
+    common.printErrorAndExit(`Error ZWEL0151E: Failed to create temporary file ${allFiles}. Please check permission or volume free space.`, undefined, 151);
   }
 
   common.printDebug(`  * File list created as ${allFiles}`);
@@ -94,7 +94,7 @@ export function execute(doNotExit: Boolean, javaHome: string): void {
   const javaHash = shell.execOutSync('sh', '-c', `cd '${zoweRuntime}' && '${javaHome}/bin/java' -cp '${zoweRuntime}/bin/utils/' HashFiles '${allFiles}' | sort > '${customHashes}'`);
 
   if (javaHash.rc != 0 || !fs.fileExists(customHashes) || fs.fileSize(customHashes) < 1) {
-    common.printError(`  * Error ZWEL0151E: Failed to create temporary file "${customHashes}". Please check permission or volume free space.`);
+    common.printError(`  * Error ZWEL0151E: Failed to create temporary file ${customHashes}. Please check permission or volume free space.`);
     common.printError(`  * Exit code: java error code=${javaHash.rc}`)
     common.printError(`  *            file exists=${fs.fileExists(customHashes)}`);
     if (fs.fileExists(customHashes)) {
@@ -125,7 +125,8 @@ export function execute(doNotExit: Boolean, javaHome: string): void {
     common.printMessage(`- Find ${commStepName} files`);
     const commResult = shell.execOutSync('sh', '-c', `cd '${zoweRuntime}' && comm -${commParameter} "${zoweRuntime}/fingerprint/RefRuntimeHash-${zoweVersion}.txt" "${customHashes}"`);
     if (commResult.rc) {
-      common.printError(`  * Error ZWEL0151E: Failed to compare hashes of fingerprint/RefRuntimeHash-${zoweVersion}.txt and current.`);
+      let hashFile = `fingerprint/RefRuntimeHash-${zoweVersion}.txt`;
+      common.printError(`  * Error ZWEL0318E: Failed to compare hashes of ${hashFile} and current.`);
       common.printError(`  * Exit code: ${commResult.rc}`);
       if (commResult.out) {
         common.printError(`  * Output:`);
