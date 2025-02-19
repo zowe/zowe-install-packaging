@@ -57,7 +57,7 @@ export function execute(doNotExit: Boolean, javaHome: string): void {
   if (fs.fileExists(manifest)) {
       manifestContent = xplatform.loadFileUTF8(manifest, xplatform.AUTO_DETECT);
   } else {
-      let missingFile = manifest;
+      const missingFile = manifest;
       common.printErrorAndExit(`Error ZWEL0150E: Failed to find file ${missingFile}. Zowe runtimeDirectory is invalid.`, undefined, 150);
   }
   if (manifestContent) {
@@ -69,12 +69,12 @@ export function execute(doNotExit: Boolean, javaHome: string): void {
   const zoweVersion = manifestJson.version;
 
   if (!fs.fileExists(`${zoweRuntime}/bin/utils/HashFiles.class`)) {
-      let missingFile = `${zoweRuntime}/bin/utils/HashFiles.class`;
+      const missingFile = `${zoweRuntime}/bin/utils/HashFiles.class`;
       common.printErrorAndExit(`Error ZWEL0150E: Failed to find file ${missingFile}. Zowe runtimeDirectory is invalid.`, undefined, 150);
   }
 
   if (!fs.fileExists(`${zoweRuntime}/fingerprint/RefRuntimeHash-${zoweVersion}.txt`)) {
-      let missingFile = `${zoweRuntime}/fingerprint/RefRuntimeHash-${zoweVersion}.txt`;
+      const missingFile = `${zoweRuntime}/fingerprint/RefRuntimeHash-${zoweVersion}.txt`;
       common.printErrorAndExit(`Error ZWEL0150E: Failed to find file ${missingFile}. Zowe runtimeDirectory is invalid.`, undefined, 150);
   }
 
@@ -125,7 +125,7 @@ export function execute(doNotExit: Boolean, javaHome: string): void {
     common.printMessage(`- Find ${commStepName} files`);
     const commResult = shell.execOutSync('sh', '-c', `cd '${zoweRuntime}' && comm -${commParameter} "${zoweRuntime}/fingerprint/RefRuntimeHash-${zoweVersion}.txt" "${customHashes}"`);
     if (commResult.rc) {
-      let hashFile = `fingerprint/RefRuntimeHash-${zoweVersion}.txt`;
+      const hashFile = `fingerprint/RefRuntimeHash-${zoweVersion}.txt`;
       common.printError(`  * Error ZWEL0319E: Failed to compare hashes of ${hashFile} and current.`);
       common.printError(`  * Exit code: ${commResult.rc}`);
       if (commResult.out) {
