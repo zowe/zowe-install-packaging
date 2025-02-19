@@ -1,1 +1,15 @@
-""
+{
+  "lockAcquiredTime": "Wed Feb 19 2025 19:21:38 GMT+0000 (Coordinated Universal Time)",
+  "uid": "1739992898750896821",
+  "repository": {
+    "owner": "zowe",
+    "repo": "zowe-install-packaging"
+  },
+  "branch": "Martin-Zeithaml-patch-ZWEISTC",
+  "workflow": "Zowe CICD Integration Tests",
+  "job": "cicd-test",
+  "actor": "zowe-robot",
+  "runId": 13420621946,
+  "runNumber": 6153,
+  "link": "https://github.com/zowe/zowe-install-packaging/actions/runs/13420621946"
+}
