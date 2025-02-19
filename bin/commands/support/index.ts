@@ -56,7 +56,7 @@ export function execute(): void {
   }
 
   if (!fs.directoryExists(targetDirectory, true)) {
-    common.printErrorAndExit(`Error ZWEL0321E: ${targetDirectory} is not a valid directory.`, undefined, 325);
+    common.printErrorAndExit(`Error ZWEL0321E: ${targetDirectory} is not a valid directory.`, undefined, 321);
   }
 
   const tmpFilePrefix = 'zwe-support';
