@@ -216,7 +216,7 @@ if [ -z "${zlux_tar}" ]; then
 fi
 echo "    - artifact found: ${zlux_tar}"
 echo "    - download and extract"
-curl -s ${JFROG_URL}${zlux_tar} --output zlux-core.tar
+curl -sL ${JFROG_URL}${zlux_tar} --output zlux-core.tar
 mkdir -p "${BASE_DIR}/${WORK_DIR}/components/app-server/share"
 cd "${BASE_DIR}/${WORK_DIR}/components/app-server/share"
 tar xf "${REPO_ROOT_DIR}/zlux-core.tar"
