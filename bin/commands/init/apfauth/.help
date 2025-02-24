@@ -18,4 +18,4 @@ zowe:
   optional. If it's not defined, `SZWEAUTH` from `zowe.setup.dataset.prefix` data
   set will be APF authorized.
 - `zowe.setup.dataset.authPluginLib` is the user custom APF PLUGINLIB.
-  You can install Zowe ZIS plugins into this load library.
+  You can install Zowe ZIS plugins into this load library. This field is optional.
