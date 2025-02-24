@@ -32,7 +32,6 @@ zowe:
   setup:
     # MVS data set related configurations
     dataset: 
-      authLoadlib: ${{ zowe.setup.dataset.prefix }}.SZWEAUTH
       parmlibMembers:
         # For ZIS plugins
         zis: ZWESIP00
