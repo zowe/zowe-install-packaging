@@ -45,6 +45,14 @@ export function execute(dryRun?: boolean) {
       jclPostProcessing = true;
     }
   }
+  // check header lengths
+  const headerLines = jclHeaderJoined.split('\n');
+  for (let i = 0; i < headerLines.length; i++) {
+    const maxLen = 80 - ((i==0) ? '//ZWEGENER JOB '.length : 0);
+    if (headerLines[i].length >= maxLen) {
+      common.printErrorAndExit(`ZWEL0142E JCL header line ${i+1} will be longer than 80 characters. Please split this line into multiple lines.\n${headerLines[i]}\n`, undefined, 142);
+    }
+  }
 
   const tempFile = fs.createTmpFile();
   if (zosFs.copyMvsToUss(ZOWE_CONFIG.zowe.setup.dataset.prefix + '.SZWESAMP(ZWEGENER)', tempFile) !== 0) {
