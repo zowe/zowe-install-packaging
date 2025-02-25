@@ -8,7 +8,7 @@ Zowe will remove it on success, but if zwe exits with a non-zero code manual cle
 
 Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWEGENER)
 --- JCL content ---
-//ZWEGENER JOB
+//ZWEGENER JOB 
 //*
 //* This program and the accompanying materials are made available
 //* under the terms of the Eclipse Public License v2.0 which
@@ -133,21 +133,33 @@ Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWEISTC) , Executable JCL: TEST.DATASET.
 //* Instances represent a configuration of Zowe, different from the
 //* "runtime" datasets that are created upon install of Zowe / SMPE.
 //*
+//* If you plan NOT to use Zowe Cross Memory Server, consider to
+//* copy Zowe Launcher STC only (ZWESLSTC).
+//*
 //*********************************************************************
 //*
-//MCOPY EXEC PGM=IEBCOPY
-//SYSPRINT DD SYSOUT=A
-//SYSUT1 DD DSN=TEST.DATASET.PFX.JCLLIB,DISP=SHR
-//SYSUT2 DD DSN=TEST.DATASET.PFX.TEST.PROCLIB,DISP=OLD
-//SYSIN DD *
-  COPY OUTDD=SYSUT2,INDD=SYSUT1
-  SELECT MEMBER=((ZWESLSTC,,R))
+//MCOPY EXEC PGM=IKJEFT01
+//SYSTSPRT DD SYSOUT=A
+//  SET PROCLIB=TEST.DATASET.PFX.TEST.PROCLIB
+//STCZOWE DD DISP=SHR,
+// DSN=&PROCLIB.(ZWESLSTC)
+//STCZIS DD DISP=SHR,
+// DSN=&PROCLIB.(ZWESISTC)
+//STCAUX DD DISP=SHR,
+// DSN=&PROCLIB.(ZWESASTC)
+//*
+//SYSTSIN DD *
+REPRO +
+INDATASET('TEST.DATASET.PFX.JCLLIB(ZWESLSTC)') +
+OUTFILE(STCZOWE)
 
-  COPY OUTDD=SYSUT2,INDD=SYSUT1
-  SELECT MEMBER=((ZWESISTC,,R))
+REPRO +
+INDATASET('TEST.DATASET.PFX.JCLLIB(ZWESISTC)') +
+OUTFILE(STCZIS)
 
-  COPY OUTDD=SYSUT2,INDD=SYSUT1
-  SELECT MEMBER=((ZWESASTC,,R))
+REPRO +
+INDATASET('TEST.DATASET.PFX.JCLLIB(ZWESASTC)') +
+OUTFILE(STCAUX)
 //*
 --- End of JCL ---
 Submitting Job ZWEISTC
@@ -164,7 +176,7 @@ Zowe will remove it on success, but if zwe exits with a non-zero code manual cle
 
 Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWEGENER)
 --- JCL content ---
-//ZWEGENER JOB
+//ZWEGENER JOB 
 //*
 //* This program and the accompanying materials are made available
 //* under the terms of the Eclipse Public License v2.0 which
@@ -289,21 +301,33 @@ Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWEISTC) , Executable JCL: TEST.DATASET.
 //* Instances represent a configuration of Zowe, different from the
 //* "runtime" datasets that are created upon install of Zowe / SMPE.
 //*
+//* If you plan NOT to use Zowe Cross Memory Server, consider to
+//* copy Zowe Launcher STC only (ZWESLSTC).
+//*
 //*********************************************************************
 //*
-//MCOPY EXEC PGM=IEBCOPY
-//SYSPRINT DD SYSOUT=A
-//SYSUT1 DD DSN=TEST.DATASET.PFX.JCLLIB,DISP=SHR
-//SYSUT2 DD DSN=TEST.DATASET.PFX.TEST.PROCLIB,DISP=OLD
-//SYSIN DD *
-  COPY OUTDD=SYSUT2,INDD=SYSUT1
-  SELECT MEMBER=((ZWESLSTC,,R))
+//MCOPY EXEC PGM=IKJEFT01
+//SYSTSPRT DD SYSOUT=A
+//  SET PROCLIB=TEST.DATASET.PFX.TEST.PROCLIB
+//STCZOWE DD DISP=SHR,
+// DSN=&PROCLIB.(ZWESLSTC)
+//STCZIS DD DISP=SHR,
+// DSN=&PROCLIB.(ZWESISTC)
+//STCAUX DD DISP=SHR,
+// DSN=&PROCLIB.(ZWESASTC)
+//*
+//SYSTSIN DD *
+REPRO +
+INDATASET('TEST.DATASET.PFX.JCLLIB(ZWESLSTC)') +
+OUTFILE(STCZOWE)
 
-  COPY OUTDD=SYSUT2,INDD=SYSUT1
-  SELECT MEMBER=((ZWESISTC,,R))
+REPRO +
+INDATASET('TEST.DATASET.PFX.JCLLIB(ZWESISTC)') +
+OUTFILE(STCZIS)
 
-  COPY OUTDD=SYSUT2,INDD=SYSUT1
-  SELECT MEMBER=((ZWESASTC,,R))
+REPRO +
+INDATASET('TEST.DATASET.PFX.JCLLIB(ZWESASTC)') +
+OUTFILE(STCAUX)
 //*
 --- End of JCL ---
 Submitting Job ZWEISTC
@@ -382,21 +406,33 @@ Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWEISTC) , Executable JCL: TEST.DATASET.
 //* Instances represent a configuration of Zowe, different from the
 //* "runtime" datasets that are created upon install of Zowe / SMPE.
 //*
+//* If you plan NOT to use Zowe Cross Memory Server, consider to
+//* copy Zowe Launcher STC only (ZWESLSTC).
+//*
 //*********************************************************************
 //*
-//MCOPY EXEC PGM=IEBCOPY
-//SYSPRINT DD SYSOUT=A
-//SYSUT1 DD DSN=TEST.DATASET.PFX.JCLLIB,DISP=SHR
-//SYSUT2 DD DSN=TEST.DATASET.PFX.TEST.PROCLIB,DISP=OLD
-//SYSIN DD *
-  COPY OUTDD=SYSUT2,INDD=SYSUT1
-  SELECT MEMBER=((ZWESLSTC,,R))
+//MCOPY EXEC PGM=IKJEFT01
+//SYSTSPRT DD SYSOUT=A
+//  SET PROCLIB=TEST.DATASET.PFX.TEST.PROCLIB
+//STCZOWE DD DISP=SHR,
+// DSN=&PROCLIB.(ZWESLSTC)
+//STCZIS DD DISP=SHR,
+// DSN=&PROCLIB.(ZWESISTC)
+//STCAUX DD DISP=SHR,
+// DSN=&PROCLIB.(ZWESASTC)
+//*
+//SYSTSIN DD *
+REPRO +
+INDATASET('TEST.DATASET.PFX.JCLLIB(ZWESLSTC)') +
+OUTFILE(STCZOWE)
 
-  COPY OUTDD=SYSUT2,INDD=SYSUT1
-  SELECT MEMBER=((ZWESISTC,,R))
+REPRO +
+INDATASET('TEST.DATASET.PFX.JCLLIB(ZWESISTC)') +
+OUTFILE(STCZIS)
 
-  COPY OUTDD=SYSUT2,INDD=SYSUT1
-  SELECT MEMBER=((ZWESASTC,,R))
+REPRO +
+INDATASET('TEST.DATASET.PFX.JCLLIB(ZWESASTC)') +
+OUTFILE(STCAUX)
 //*
 --- End of JCL ---
 Submitting Job ZWEISTC
@@ -498,21 +534,33 @@ Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWEISTC) , Executable JCL: TEST.DATASET.
 //* Instances represent a configuration of Zowe, different from the
 //* "runtime" datasets that are created upon install of Zowe / SMPE.
 //*
+//* If you plan NOT to use Zowe Cross Memory Server, consider to
+//* copy Zowe Launcher STC only (ZWESLSTC).
+//*
 //*********************************************************************
 //*
-//MCOPY EXEC PGM=IEBCOPY
-//SYSPRINT DD SYSOUT=A
-//SYSUT1 DD DSN=TEST.DATASET.PFX.JCLLIB,DISP=SHR
-//SYSUT2 DD DSN=TEST.DATASET.PFX.TEST.PROCLIB,DISP=OLD
-//SYSIN DD *
-  COPY OUTDD=SYSUT2,INDD=SYSUT1
-  SELECT MEMBER=((ZWESLSTC,,R))
+//MCOPY EXEC PGM=IKJEFT01
+//SYSTSPRT DD SYSOUT=A
+//  SET PROCLIB=TEST.DATASET.PFX.TEST.PROCLIB
+//STCZOWE DD DISP=SHR,
+// DSN=&PROCLIB.(ZWESLSTC)
+//STCZIS DD DISP=SHR,
+// DSN=&PROCLIB.(ZWESISTC)
+//STCAUX DD DISP=SHR,
+// DSN=&PROCLIB.(ZWESASTC)
+//*
+//SYSTSIN DD *
+REPRO +
+INDATASET('TEST.DATASET.PFX.JCLLIB(ZWESLSTC)') +
+OUTFILE(STCZOWE)
 
-  COPY OUTDD=SYSUT2,INDD=SYSUT1
-  SELECT MEMBER=((ZWESISTC,,R))
+REPRO +
+INDATASET('TEST.DATASET.PFX.JCLLIB(ZWESISTC)') +
+OUTFILE(STCZIS)
 
-  COPY OUTDD=SYSUT2,INDD=SYSUT1
-  SELECT MEMBER=((ZWESASTC,,R))
+REPRO +
+INDATASET('TEST.DATASET.PFX.JCLLIB(ZWESASTC)') +
+OUTFILE(STCAUX)
 //*
 --- End of JCL ---
 JCL not submitted, command run with "--dry-run" flag.
@@ -652,21 +700,33 @@ Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWEISTC) , Executable JCL: TEST.DATASET.
 //* Instances represent a configuration of Zowe, different from the
 //* "runtime" datasets that are created upon install of Zowe / SMPE.
 //*
+//* If you plan NOT to use Zowe Cross Memory Server, consider to
+//* copy Zowe Launcher STC only (ZWESLSTC).
+//*
 //*********************************************************************
 //*
-//MCOPY EXEC PGM=IEBCOPY
-//SYSPRINT DD SYSOUT=A
-//SYSUT1 DD DSN=TEST.DATASET.PFX.JCLLIB,DISP=SHR
-//SYSUT2 DD DSN=TEST.DATASET.PFX.TEST.PROCLIB,DISP=OLD
-//SYSIN DD *
-  COPY OUTDD=SYSUT2,INDD=SYSUT1
-  SELECT MEMBER=((ZWESLSTC,,R))
+//MCOPY EXEC PGM=IKJEFT01
+//SYSTSPRT DD SYSOUT=A
+//  SET PROCLIB=TEST.DATASET.PFX.TEST.PROCLIB
+//STCZOWE DD DISP=SHR,
+// DSN=&PROCLIB.(ZWESLSTC)
+//STCZIS DD DISP=SHR,
+// DSN=&PROCLIB.(ZWESISTC)
+//STCAUX DD DISP=SHR,
+// DSN=&PROCLIB.(ZWESASTC)
+//*
+//SYSTSIN DD *
+REPRO +
+INDATASET('TEST.DATASET.PFX.JCLLIB(ZWESLSTC)') +
+OUTFILE(STCZOWE)
 
-  COPY OUTDD=SYSUT2,INDD=SYSUT1
-  SELECT MEMBER=((ZWESISTC,,R))
+REPRO +
+INDATASET('TEST.DATASET.PFX.JCLLIB(ZWESISTC)') +
+OUTFILE(STCZIS)
 
-  COPY OUTDD=SYSUT2,INDD=SYSUT1
-  SELECT MEMBER=((ZWESASTC,,R))
+REPRO +
+INDATASET('TEST.DATASET.PFX.JCLLIB(ZWESASTC)') +
+OUTFILE(STCAUX)
 //*
 --- End of JCL ---
 JCL not submitted, command run with "--dry-run" flag.
@@ -835,21 +895,33 @@ Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWEISTC) , Executable JCL: TEST.DATASET.
 //* Instances represent a configuration of Zowe, different from the
 //* "runtime" datasets that are created upon install of Zowe / SMPE.
 //*
+//* If you plan NOT to use Zowe Cross Memory Server, consider to
+//* copy Zowe Launcher STC only (ZWESLSTC).
+//*
 //*********************************************************************
 //*
-//MCOPY EXEC PGM=IEBCOPY
-//SYSPRINT DD SYSOUT=A
-//SYSUT1 DD DSN=TEST.DATASET.PFX.JCLLIB,DISP=SHR
-//SYSUT2 DD DSN=TEST.DATASET.PFX.TEST.PROCLIB,DISP=OLD
-//SYSIN DD *
-  COPY OUTDD=SYSUT2,INDD=SYSUT1
-  SELECT MEMBER=((ZWESLSTC,,R))
+//MCOPY EXEC PGM=IKJEFT01
+//SYSTSPRT DD SYSOUT=A
+//  SET PROCLIB=TEST.DATASET.PFX.TEST.PROCLIB
+//STCZOWE DD DISP=SHR,
+// DSN=&PROCLIB.(ZWESLSTC)
+//STCZIS DD DISP=SHR,
+// DSN=&PROCLIB.(ZWESISTC)
+//STCAUX DD DISP=SHR,
+// DSN=&PROCLIB.(ZWESASTC)
+//*
+//SYSTSIN DD *
+REPRO +
+INDATASET('TEST.DATASET.PFX.JCLLIB(ZWESLSTC)') +
+OUTFILE(STCZOWE)
 
-  COPY OUTDD=SYSUT2,INDD=SYSUT1
-  SELECT MEMBER=((ZWESISTC,,R))
+REPRO +
+INDATASET('TEST.DATASET.PFX.JCLLIB(ZWESISTC)') +
+OUTFILE(STCZIS)
 
-  COPY OUTDD=SYSUT2,INDD=SYSUT1
-  SELECT MEMBER=((ZWESASTC,,R))
+REPRO +
+INDATASET('TEST.DATASET.PFX.JCLLIB(ZWESASTC)') +
+OUTFILE(STCAUX)
 //*
 --- End of JCL ---
 JCL not submitted, command run with "--dry-run" flag.
@@ -942,21 +1014,33 @@ Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWEISTC) , Executable JCL: TEST.DATASET.
 //* Instances represent a configuration of Zowe, different from the
 //* "runtime" datasets that are created upon install of Zowe / SMPE.
 //*
+//* If you plan NOT to use Zowe Cross Memory Server, consider to
+//* copy Zowe Launcher STC only (ZWESLSTC).
+//*
 //*********************************************************************
 //*
-//MCOPY EXEC PGM=IEBCOPY
-//SYSPRINT DD SYSOUT=A
-//SYSUT1 DD DSN=TEST.DATASET.PFX.JCLLIB,DISP=SHR
-//SYSUT2 DD DSN=TEST.DATASET.PFX.TEST.PROCLIB,DISP=OLD
-//SYSIN DD *
-  COPY OUTDD=SYSUT2,INDD=SYSUT1
-  SELECT MEMBER=((ZWESLSTC,,R))
+//MCOPY EXEC PGM=IKJEFT01
+//SYSTSPRT DD SYSOUT=A
+//  SET PROCLIB=TEST.DATASET.PFX.TEST.PROCLIB
+//STCZOWE DD DISP=SHR,
+// DSN=&PROCLIB.(ZWESLSTC)
+//STCZIS DD DISP=SHR,
+// DSN=&PROCLIB.(ZWESISTC)
+//STCAUX DD DISP=SHR,
+// DSN=&PROCLIB.(ZWESASTC)
+//*
+//SYSTSIN DD *
+REPRO +
+INDATASET('TEST.DATASET.PFX.JCLLIB(ZWESLSTC)') +
+OUTFILE(STCZOWE)
 
-  COPY OUTDD=SYSUT2,INDD=SYSUT1
-  SELECT MEMBER=((ZWESISTC,,R))
+REPRO +
+INDATASET('TEST.DATASET.PFX.JCLLIB(ZWESISTC)') +
+OUTFILE(STCZIS)
 
-  COPY OUTDD=SYSUT2,INDD=SYSUT1
-  SELECT MEMBER=((ZWESASTC,,R))
+REPRO +
+INDATASET('TEST.DATASET.PFX.JCLLIB(ZWESASTC)') +
+OUTFILE(STCAUX)
 //*
 --- End of JCL ---
 JCL not submitted, command run with "--dry-run" flag.

@@ -351,14 +351,17 @@ module.exports = async () => {
     const zssPgms = [
       { from: 'ZWESIP00', to: 'ZWESIP00' },
       { from: 'ZWESISCH', to: 'ZWESISCH' },
-      { from: 'ZWESAUX', to: 'ZWESASTC' },
-      { from: 'ZWESIS01', to: 'ZWESISTC' },
+      { from: 'ZWESASTC', to: 'ZWESASTC' },
+      { from: 'ZWESISTC', to: 'ZWESISTC' },
     ];
     for (const pgm of zssPgms) {
-      await uss.runCommand(
+      const resp = await uss.runCommand(
         `cp SAMPLIB/${pgm.from} "//'${REMOTE_SYSTEM_INFO.szwesamp}(${pgm.to})'"`,
         `${REMOTE_SYSTEM_INFO.ussTestDir}`,
       );
+      if (resp.rc !== 0) {
+        throw new Error(`Failed to copy ${pgm.from} to ${pgm.to}`);
+      }
     }
 
     console.log(`Unpacking launcher pax and placing SAMPLIB in ${REMOTE_SYSTEM_INFO.szwesamp} ...`);
