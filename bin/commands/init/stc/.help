@@ -1,7 +1,7 @@
 This command will copy Zowe started tasks `ZWESLSTC`, `ZWESISTC`, `ZWESASTC` to
 your target procedure library.
 
-NOTE: You require proper permission to write to target procedure library.
+NOTE: You require proper permission to write to the target procedure library.
 
 These Zowe YAML configurations showing with sample values are used:
 
@@ -29,7 +29,7 @@ zowe:
   started tasks here before putting into target procedure library.
 - `zowe.setup.dataset.authLoadlib` is the user custom APF LOADLIB. This field is
   optional. If this is not defined, `SZWEAUTH` from `zowe.setup.dataset.prefix`
-  data set will be used as STEPLIB in STCs.
+  dataset will be used as STEPLIB in STCs.
 - `zowe.setup.security.stcs.zowe` is Zowe started task name.
   This configuration is optional. Default value is `ZWESLSTC`.
 - `zowe.setup.security.stcs.zis` is ZIS started task name.
