@@ -19,4 +19,3 @@ zowe:
   set will be APF authorized.
 - `zowe.setup.dataset.authPluginLib` is the user custom APF PLUGINLIB.
   You can install Zowe ZIS plugins into this load library. This field is optional.
-  
