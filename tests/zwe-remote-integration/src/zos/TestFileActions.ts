@@ -29,7 +29,7 @@ export class TestFileActions {
    *
    * @throws {Error} If the download fails.
    */
-  public static async downloadPds(pdsName: string, options: files.IDownloadOptions = {}): string {
+  public static async downloadPds(pdsName: string, options: files.IDownloadOptions = {}): Promise<string> {
     const dlDir = path.resolve(TEST_OUTPUT_DIR, '.tmp');
     const finalOpts = _.merge(options, { directory: dlDir });
     const downloadPdsResp = await files.Download.allMembers(this.session, pdsName, finalOpts);
