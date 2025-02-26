@@ -133,11 +133,11 @@
         </string>
     </variable>
     <variable name="zowe_runtimeDirectory" scope="instance" visibility="public">
-        <label>Existing Zowe runtime directory</label>
-        <abstract>Zowe runtime (root) directory with libraries</abstract>
-        <description>Existing Zowe runtime.&lt;br /&gt;
+        <label>Existing Zowe Launcher runtime directory</label>
+        <abstract>Zowe Launcher runtime (root) directory with libraries</abstract>
+        <description>Existing Zowe Launcher runtime.&lt;br /&gt;
 If you created ZOWE via PSWI, &lt;br /&gt;
-zowe runtime is your Target Mount Point from PSWI deployment. &lt;br /&gt;
+Zowe Launcher runtime is your Target Mount Point from PSWI deployment. &lt;br /&gt;
 It is used by ZWESLSTC or by zwe command</description>
         <category>zowe</category>
         <string valueMustBeChoice="false" multiLine="false">
