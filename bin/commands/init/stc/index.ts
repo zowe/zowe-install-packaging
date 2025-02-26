@@ -81,7 +81,7 @@ export function execute(allowOverwrite: boolean = false) {
     if (stcExistence == true) {
       zosJes.printAndHandleJcl(`//'${jcllib}(ZWERSTC)'`, `ZWERSTC`, jcllib, prefix, false, true);
     }
-    // We need to update STCs, if any of following was not set or is different comparing to defauls
+    // We need to update STCs, if any of following was not set or is different comparing to defaults
     if (!authLoadlib || !authPluginLib || zisSuffix != '00' || cmsName != 'ZWESIS_STD') {
       [ 'ZWESASTC', 'ZWESISTC' ].forEach((mb) => {
         let jclContent = zosdataset.readMember(`${jcllib}(${mb})`);
@@ -103,7 +103,7 @@ export function execute(allowOverwrite: boolean = false) {
             let jclContentArray = jclContent.split('\n');
             let indexOfPluginLib = -1;
             for (let i = 0; i < jclContentArray.length; i++) {
-              if (/.*CFG\.ZOWE\.SETUP\.DATASET\.AUTHPLUGINLIB/i.test(jclContentArray[i]) == true) {
+              if (/.*CFG\.ZOWE\.SETUP\.DATASET\.AUTHPLUGINLIB/.test(jclContentArray[i]) == true) {
                 indexOfPluginLib = i;
                 break;
               }
