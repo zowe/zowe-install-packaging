@@ -48,7 +48,12 @@ module.exports = async () => {
       const jobName = jobPieces[0];
       const jobId = jobPieces[1];
       console.log('Purging ' + job);
-      await jobs.DeleteJobs.deleteJob(getSession(), jobName, jobId);
+      try {
+        await jobs.DeleteJobs.deleteJob(getSession(), jobName, jobId);
+      } catch (e) {
+        console.log('Error purging ' + job);
+        console.log(e);
+      }
     }
   }
 
