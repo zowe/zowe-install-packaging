@@ -17,8 +17,8 @@
       <description>These additional JOB statement parameters are optional, and by default empty. These are separate from z/OSMF JOB statements.</description>
       <category>zowe</category>
       <string multiLine="true" valueMustBeChoice="false">
-        <default></default>
-      </string>
+        <default>MSGCLASS=X</default>
+    </string>
     </variable>
     <variable name="zowe_setup_dataset_prefix" scope="instance" visibility="public">
         <label>Prefix of Zowe setup MVS datasets</label>
@@ -1795,10 +1795,10 @@ echo '' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '  # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '  # You can un-comment and define any extra environment variables as key/value' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '  # pairs here.' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-#if (${global-zowe_setup_job_stmt_parms} == "true")
+#if (${global-zowe_setup_job_stmt_parms.trim().length()} > 0 )
 echo '  environments:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '    jclHeaders:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-  #foreach($line in ${global-zowe_setup_job_stmt_parms}.split("\n"))
+  #foreach($line in ${global-zowe_setup_job_stmt_parms.split("\n")})
 echo '     - // ${line}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
   #end
 # 
