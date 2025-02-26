@@ -23,7 +23,7 @@ describe(`${testSuiteName}`, () => {
   let cfgYaml: ZoweYamlType;
   let cleanupDatasets: TestFile[] = []; // a list of datasets deleted after every test
 
-  function resetCfgYaml(): void {
+  async function resetCfgYaml() {
     cfgYaml = ZoweConfig.getZoweYaml();
     // customizations for all vsam tests
     // @ts-expect-error incomplete schema
@@ -34,7 +34,7 @@ describe(`${testSuiteName}`, () => {
 
   beforeAll(async () => {
     testRunner = new RemoteTestRunner(testSuiteName);
-    resetCfgYaml();
+    await resetCfgYaml();
     expect.getState().currentTestName = 'before-all-vsam';
     const result = await testRunner.runZweTest(cfgYaml, 'init generate --allow-overwrite');
     expect(result.stdout).not.toBeNull();
@@ -42,8 +42,8 @@ describe(`${testSuiteName}`, () => {
     await testRunner.postTest();
   });
 
-  beforeEach(() => {
-    resetCfgYaml();
+  beforeEach(async () => {
+    await resetCfgYaml();
   });
 
   afterEach(async () => {

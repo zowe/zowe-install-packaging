@@ -185,7 +185,7 @@ describe(`${testSuiteName}`, () => {
       const localPdsPath = await TestFileActions.downloadPds(cfgYaml.zowe.setup.dataset.jcllib as string);
       const members = fs.readdirSync(localPdsPath);
       for (const member of members) {
-        if (/zweslstc/i.test(member)) {
+        if (/zwe.*?stc/i.test(member)) {
           // skip Zowe STC, this shouldn't have the headers
           continue;
         }
@@ -210,7 +210,7 @@ describe(`${testSuiteName}`, () => {
       const localPdsPath = await TestFileActions.downloadPds(cfgYaml.zowe.setup.dataset.jcllib as string);
       const members = fs.readdirSync(localPdsPath);
       for (const member of members) {
-        if (/zweslstc/i.test(member)) {
+        if (/zwe.*?stc/i.test(member)) {
           // skip Zowe STC, this shouldn't have the headers
           continue;
         }

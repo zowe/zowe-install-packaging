@@ -25,7 +25,7 @@ export class TestFileActions {
    *
    * @param {string} pdsName The PDS to download.
    * @param {files.IDownloadOptions} [options] Options for the download.
-   * @returns {Promise<string>} The path to the downloaded pds members.
+   * @returns {Promise<string>} The local absolute directory containing the downloaded pds members.
    *
    * @throws {Error} If the download fails.
    */
@@ -79,11 +79,6 @@ export class TestFileActions {
     }
   }
 }
-
-type DownloadPdsResponse = {
-  localDir: string;
-  success: boolean;
-};
 
 type DeleteFile = {
   file: TestFile;

@@ -506,15 +506,14 @@ To perform command, re-run command without "--dry-run" flag, or submit the JCL d
 `;
 
 exports[`init-mvs (SHORT) authPluginLib negatives  1`] = `
-"Temporary directory '/tmp/.zweenv-0000' created.
-Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
--------------------------------------------------------------------------------
->> Initialize Zowe custom data sets
-
-Create data sets if they do not exist
-Warning ZWEL0301W: TEST.DATASET.PFX.PARMLIB already exists and will not be overwritten. For upgrades, you must use --allow-overwrite.
-Warning ZWEL0301W: TEST.DATASET.PFX.SZWELOAD already exists and will not be overwritten. For upgrades, you must use --allow-overwrite.
-ERROR: Error ZWEL0157E: authPluginLib (zowe.setup.dataset.authPluginLib) is not defined in Zowe YAML configuration file."
+"Error: Validation of FILE(/test/dir/zowe.test.yaml):FILE(/test/dir/files/defaults.yaml) against schema /test/dir/schemas/zowe-yaml-schema.json:/test/dir/schemas/server-common.json found invalid JSON Schema data
+Validity Exceptions(s) with object at 
+  Validity Exceptions(s) with object at /zowe
+    Validity Exceptions(s) with object at /zowe/setup
+      Validity Exceptions(s) with object at /zowe/setup/dataset
+        Validity Exceptions(s) with string at /zowe/setup/dataset/authPluginLib
+          string too short (len=0) '' 0 < MIN=3 at /zowe/setup/dataset/authPluginLib
+          string pattern match fail s='', pat='^([A-Z\\$\\#\\@]){1}([A-Z0-9\\$\\#\\@\\-]){0,7}(\\.([A-Z\\$\\#\\@]){1}([A-Z0-9\\$\\#\\@\\-]){0,7}){0,11}$', at /zowe/setup/dataset/authPluginLib"
 `;
 
 exports[`init-mvs (SHORT) authPluginLib negatives  2`] = `
@@ -584,9 +583,9 @@ Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWERMVS) , Executable JCL: TEST.DATASET.
 //* Instances represent a configuration of Zowe, different from the
 //* "runtime" datasets that are created upon install of Zowe / SMPE.
 //*
-//* If your choosen value of 'zowe.setup.dataset.authLoadlib' is not
-//* Equal to 'zowe.setup.prefix' + 'SZWELOAD',
-//* Then you must also run "ZWERMVS2".
+//* If your chosen value of 'zowe.setup.dataset.authLoadlib' is not
+//*  equal to 'zowe.setup.dataset.prefix' + 'SZWEAUTH',
+//*  then you must also run "ZWERMVS2".
 //*
 //*********************************************************************
 //RMPDSE EXEC PGM=IKJEFT01
@@ -618,9 +617,9 @@ Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWERMVS2) , Executable JCL: TEST.DATASET
 //*********************************************************************
 //*
 //* This job is used to remove the APF load library for an instance
-//* Of Zowe. It is not needed if your choosen value of
+//*  of Zowe. It is not needed if your chosen value of
 //* 'zowe.setup.dataset.authLoadlib' is equal to
-//* 'zowe.setup.prefix' + 'SZWELOAD'.
+//* 'zowe.setup.dataset.prefix' + 'SZWEAUTH'.
 //*
 //* When running this job, you should also run ZWERMVS
 //*
@@ -656,9 +655,9 @@ Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWEIMVS) , Executable JCL: TEST.DATASET.
 //* Instances represent a configuration of Zowe, different from the
 //* "runtime" datasets that are created upon install of Zowe / SMPE.
 //*
-//* If your choosen value of 'zowe.setup.dataset.authLoadlib' is not
-//* Equal to 'zowe.setup.prefix' + 'SZWELOAD',
-//* Then you must also run "ZWEIMVS2".
+//* If your chosen value of 'zowe.setup.dataset.authLoadlib' is not
+//*  equal to 'zowe.setup.dataset.prefix' + 'SZWEAUTH',
+//*  then you must also run "ZWEIMVS2".
 //*
 //*********************************************************************
 //MKPDSE EXEC PGM=IKJEFT01
@@ -702,9 +701,9 @@ Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWEIMVS2) , Executable JCL: TEST.DATASET
 //*********************************************************************
 //*
 //* This job is used to create the APF load library for an instance
-//* Of Zowe. It is not needed if your choosen value of
+//*  of Zowe. It is not needed if your chosen value of
 //* 'zowe.setup.dataset.authLoadlib' is equal to
-//* 'zowe.setup.prefix' + 'SZWELOAD'.
+//* 'zowe.setup.dataset.prefix' + 'SZWEAUTH'.
 //*
 //* When running this job, you should also run ZWEIMVS
 //*
@@ -771,9 +770,9 @@ Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWERMVS) , Executable JCL: TEST.DATASET.
 //* Instances represent a configuration of Zowe, different from the
 //* "runtime" datasets that are created upon install of Zowe / SMPE.
 //*
-//* If your choosen value of 'zowe.setup.dataset.authLoadlib' is not
-//* Equal to 'zowe.setup.prefix' + 'SZWELOAD',
-//* Then you must also run "ZWERMVS2".
+//* If your chosen value of 'zowe.setup.dataset.authLoadlib' is not
+//*  equal to 'zowe.setup.dataset.prefix' + 'SZWEAUTH',
+//*  then you must also run "ZWERMVS2".
 //*
 //*********************************************************************
 //RMPDSE EXEC PGM=IKJEFT01
@@ -805,9 +804,9 @@ Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWERMVS2) , Executable JCL: TEST.DATASET
 //*********************************************************************
 //*
 //* This job is used to remove the APF load library for an instance
-//* Of Zowe. It is not needed if your choosen value of
+//*  of Zowe. It is not needed if your chosen value of
 //* 'zowe.setup.dataset.authLoadlib' is equal to
-//* 'zowe.setup.prefix' + 'SZWELOAD'.
+//* 'zowe.setup.dataset.prefix' + 'SZWEAUTH'.
 //*
 //* When running this job, you should also run ZWERMVS
 //*
@@ -843,9 +842,9 @@ Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWEIMVS) , Executable JCL: TEST.DATASET.
 //* Instances represent a configuration of Zowe, different from the
 //* "runtime" datasets that are created upon install of Zowe / SMPE.
 //*
-//* If your choosen value of 'zowe.setup.dataset.authLoadlib' is not
-//* Equal to 'zowe.setup.prefix' + 'SZWELOAD',
-//* Then you must also run "ZWEIMVS2".
+//* If your chosen value of 'zowe.setup.dataset.authLoadlib' is not
+//*  equal to 'zowe.setup.dataset.prefix' + 'SZWEAUTH',
+//*  then you must also run "ZWEIMVS2".
 //*
 //*********************************************************************
 //MKPDSE EXEC PGM=IKJEFT01
@@ -889,9 +888,9 @@ Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWEIMVS2) , Executable JCL: TEST.DATASET
 //*********************************************************************
 //*
 //* This job is used to create the APF load library for an instance
-//* Of Zowe. It is not needed if your choosen value of
+//*  of Zowe. It is not needed if your chosen value of
 //* 'zowe.setup.dataset.authLoadlib' is equal to
-//* 'zowe.setup.prefix' + 'SZWELOAD'.
+//* 'zowe.setup.dataset.prefix' + 'SZWEAUTH'.
 //*
 //* When running this job, you should also run ZWEIMVS
 //*
