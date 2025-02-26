@@ -11,9 +11,11 @@
 */
 
 import * as std from 'cm_std';
+import * as os from 'cm_os';
 import * as xplatform from 'xplatform';
 
 import * as common from './common';
+import * as fs from './fs';
 import * as stringlib from './string';
 import * as shell from './shell';
 import * as zoslib from './zos';
@@ -216,28 +218,68 @@ export function listDatasetMembers(dsName: string): string[] {
   return listOfMembers;
 }
 
+export function readMember(member: string): string | undefined {
+  common.printTrace(`  * readMember: ${member}`);
+  const jclContent = shell.execOutSync('sh', '-c', `cat "//'${stringlib.escapeDollar(member)}'" 2>&1`);
+  if (jclContent.rc == 0 && jclContent.out != undefined) {
+      common.printDebug(`  * Succeeded`);
+      common.printTrace(`  * Output:`);
+      common.printTrace(stringlib.paddingLeft(jclContent.out, "    "));
+  } else {
+      common.printDebug(`  * Failed`);
+      common.printError(`  * Exit code: ${jclContent.rc}`);
+      common.printError(`  * Output:`);
+      if (jclContent.out) {
+          common.printError(stringlib.paddingLeft(jclContent.out, "    "));
+      }
+  }
+  return jclContent.out;
+}
+
 export function replaceInMember(member: string, tempFile: string, regexFind: RegExp, replaceTo: string): number {
   common.printTrace(`  * replaceInMember: ${member}, ${tempFile}, ${regexFind} -> ${replaceTo}`);
-  const catCommand = `cat "//'${stringlib.escapeDollar(member)}'"`;
-  const catResult = shell.execOutSync('sh', '-c', catCommand);
-  if (catResult.rc == 0 && catResult.out != undefined) {
-    if (catResult.out.match(regexFind)) {
-      const memberContents = catResult.out.replace(regexFind, replaceTo.replace(/[$]/g, '$$$$'));
-      let storeResult = xplatform.storeFileUTF8(tempFile, xplatform.AUTO_DETECT, memberContents);
+  let memberContent = readMember(member);
+  if (memberContent) {
+      memberContent = memberContent.replace(regexFind, replaceTo.replace(/[$]/g, '$$$$'));
+      let storeResult = xplatform.storeFileUTF8(tempFile, xplatform.AUTO_DETECT, memberContent);
       if (storeResult) {
-        common.printTrace(`  * replaceInMember: xplatform.storeFileUTF8 failed with: ${storeResult}`);
-        return 2;
+          common.printTrace(`  * replaceInMember: xplatform.storeFileUTF8 failed with: ${storeResult}`);
+          return 2;
       }
-      const cpCommand = `cp "${stringlib.escapeDollar(tempFile)}" "//'${stringlib.escapeDollar(member)}'"`
+      const cpCommand = `cp "${stringlib.escapeDollar(tempFile)}" "//'${stringlib.escapeDollar(member)}'" 2>&1`;
       let cpResult = shell.execSync('sh', '-c', cpCommand);
       if (cpResult.rc) {
-        common.printTrace(`  * replaceInMember: shell.execSync(${cpCommand}) failed with: ${cpResult.rc}`);
-        return 3;
+          common.printTrace(`  * replaceInMember: shell.execSync(${cpCommand}) failed with: ${cpResult.rc}`);
+          return 3;
       }
-    }
-    return 0;
-  } else {
-    common.printTrace(`  * replaceInMember: shell.execOutSync(${catCommand}) failed with: ${catResult.rc}`);
-    return 1;
+      return 0;
   }
+  else {
+      return 1;
+  }
+}
+
+export function updateMember(member: string, newContent: string, tempFile?: string, ): number {
+  common.printTrace(`  * updateMember: ${member}, content of length=${newContent.length}`);
+  let tempName: string;
+  if (!tempFile) {
+    let commandList = std.getenv('ZWE_CLI_COMMANDS_LIST');
+    if (!commandList) {
+      commandList = 'update-member';
+    }
+    tempName = fs.createTmpFile(`zwe ${commandList}`.replace(new RegExp('\ ', 'g'), '-'));
+  } else {
+    tempName = tempFile;
+  }
+  xplatform.storeFileUTF8(tempName, xplatform.AUTO_DETECT, newContent);
+  common.printTrace(`  * Stored:`);
+  common.printTrace(stringlib.paddingLeft(newContent, "    "));
+  shell.execSync('chmod', '700', tempName);
+  const cpCommand = `cp "${stringlib.escapeDollar(tempName)}" "//'${stringlib.escapeDollar(member)}'" 2>&1`;
+  let cpResult = shell.execSync('sh', '-c', cpCommand);
+  if (cpResult.rc) {
+      common.printTrace(`  * updateMember: shell.execSync(${cpCommand}) failed with: ${cpResult.rc}`);
+  }
+  os.remove(tempName);
+  return cpResult.rc;
 }
