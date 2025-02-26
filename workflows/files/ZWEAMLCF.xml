@@ -11,6 +11,15 @@
         <General/>
     </workflowInfo>
     <!--variables-->
+    <variable name="zowe_setup_job_stmt_parms" scope="global" visibility="public">
+      <label>JOB statement parameters used by Zowe during installation and configuration.</label>
+      <abstract>JOB statement parameters used by Zowe during installation and configuration.</abstract>
+      <description>These additional JOB statement parameters are optional, and by default empty. These are separate from z/OSMF JOB statements.</description>
+      <category>zowe</category>
+      <string multiLine="true" valueMustBeChoice="false">
+        <default></default>
+      </string>
+    </variable>
     <variable name="zowe_setup_dataset_prefix" scope="instance" visibility="public">
         <label>Prefix of Zowe setup MVS datasets</label>
         <abstract>Prefix of datasets where remaining runtime datasets will be created</abstract>
@@ -625,6 +634,7 @@ some use cases, like containerization, this port could be different.</descriptio
             <!-- pre-requisite step -->
             <!-- condition -->
             <!--variableValues-->
+            <variableValue name="zowe_setup_job_stmt_parms" scope="global" noPromptIfSet="false" required="true" />
             <variableValue name="zowe_setup_dataset_prefix" scope="instance" noPromptIfSet="false" required="true"/>
             <variableValue name="zowe_setup_dataset_proclib" scope="instance" noPromptIfSet="false" required="true"/>
             <variableValue name="zowe_setup_dataset_parmlib" scope="instance" noPromptIfSet="false" required="true"/>
@@ -1087,7 +1097,16 @@ echo '' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '  # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '  # You can un-comment and define any extra environment variables as key/value' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '  # pairs here.' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+#if (${global-zowe_setup_job_stmt_parms} == "true")
+echo '  environments:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '    jclHeaders:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+  #foreach($line in ${global-zowe_setup_job_stmt_parms}.split("\n"))
+echo '     - // ${line}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+  #end
+# 
+#else
 echo '  # environments:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+#end
 echo '  #   # Example of a global environment variable for all components' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '  #   MY_ENV_VAR: my_env_val' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
