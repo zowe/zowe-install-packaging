@@ -73,7 +73,7 @@ export function execute(allowOverwrite: boolean = false) {
   const authPluginLib = ZOWE_CONFIG.zowe?.setup?.dataset?.authPluginLib;
   // zis member and cmsName are in defaults
   const zisSuffix = ZOWE_CONFIG.zowe.setup.dataset.parmlibMembers.zis.substring(6);
-  const cmsName = ZOWE_CONFIG.components.zss.crossMemoryServerName;
+  const cmsName = ZOWE_CONFIG.components.zss.crossMemoryServerName.substring(0, 16);
 
   if (stcExistence == true && !allowOverwrite) {
     common.printMessage(`Skipped writing to ${proclib}. To write, you must use --allow-overwrite.`);
@@ -89,48 +89,38 @@ export function execute(allowOverwrite: boolean = false) {
           // Only for ZWESISTC to possibly change suffix or cross memory server name
           if (mb == 'ZWESISTC') {
             if (zisSuffix != '00' || cmsName != 'ZWESIS_STD') {
-              if (cmsName.length < 34) {
-                // Original line fit
-                jclContent = jclContent.replace(/NAME='ZWESIS_STD',MEM=00,RGN=0M/, `NAME='${cmsName}',MEM=${zisSuffix},RGN=0M`);
-              } else if (cmsName.length < 47 ) {
-                // MEM + RGN new line
-                jclContent = jclContent.replace(/NAME='ZWESIS_STD',MEM=00,RGN=0M/, `NAME='${cmsName}',\n//  MEM=${zisSuffix},RGN=0M`);
-              } else {
-                // jcl string parameter must continue on next line, column 16
-                const jclStringContinuation = `//${' '.repeat(13)}`
-                const replaceTo = `  NAME='${cmsName.substring(0,46)}+\n${jclStringContinuation}${cmsName.substring(46)}',MEM=${zisSuffix},RGN=0M`
-                jclContent = jclContent.replace(/NAME='ZWESIS_STD',MEM=00,RGN=0M/, replaceTo);
-              }
+              // Original line fit
+              jclContent = jclContent.replace(/NAME='ZWESIS_STD',MEM=00,RGN=0M/, `NAME='${cmsName}',MEM=${zisSuffix},RGN=0M`);
             }
           }
-          // Common for both STCs
-          // authLoadlib not defined, replace by default prefix + SZWEAUTH
-          if (!authLoadlib) {
-            jclContent = jclContent.replace(/CFG\.ZOWE\.SETUP\.DATASET\.AUTHLOADLIB/i, `${prefix}.SZWEAUTH`);
-          }
-          // authPluginLib not defined, remove 2 lines (DD + next line DISP)
-          if (!authPluginLib) {
-            let jclContentArray = jclContent.split('\n');
-            let indexOfPluginLib = -1;
-            for (let i = 0; i < jclContentArray.length; i++) {
-              if (/.*CFG\.ZOWE\.SETUP\.DATASET\.AUTHPLUGINLIB/i.test(jclContentArray[i]) == true) {
-                indexOfPluginLib = i;
-                break;
-              }
-            }
-            if (indexOfPluginLib != -1) {
-              jclContentArray.splice(indexOfPluginLib, 2);
-              jclContent = jclContentArray.join('\n');
-            }
-          }
-          if (!std.getenv('ZWE_CLI_PARAMETER_DRY_RUN') && !std.getenv('ZWE_CLI_PARAMETER_SECURITY_DRY_RUN')) {
-            zosdataset.updateMember(`${jcllib}(${mb})`, jclContent);
-          }
-          common.printMessage(`Template JCL: ${prefix}.SZWESAMP(${mb}) , Executable JCL: ${jcllib}(${mb})`);
-          common.printMessage(`--- Modified JCL Content ---`);
-          common.printMessage(jclContent);
-          common.printMessage(`--- End of JCL ---`);
         }
+        // Common for both STCs
+        // authLoadlib not defined, replace by default prefix + SZWEAUTH
+        if (!authLoadlib) {
+          jclContent = jclContent.replace(/CFG\.ZOWE\.SETUP\.DATASET\.AUTHLOADLIB/i, `${prefix}.SZWEAUTH`);
+        }
+        // authPluginLib not defined, remove 2 lines (DD + next line DISP)
+        if (!authPluginLib) {
+          let jclContentArray = jclContent.split('\n');
+          let indexOfPluginLib = -1;
+          for (let i = 0; i < jclContentArray.length; i++) {
+            if (/.*CFG\.ZOWE\.SETUP\.DATASET\.AUTHPLUGINLIB/i.test(jclContentArray[i]) == true) {
+              indexOfPluginLib = i;
+              break;
+            }
+          }
+          if (indexOfPluginLib != -1) {
+            jclContentArray.splice(indexOfPluginLib, 2);
+            jclContent = jclContentArray.join('\n');
+          }
+        }
+        if (!std.getenv('ZWE_CLI_PARAMETER_DRY_RUN') && !std.getenv('ZWE_CLI_PARAMETER_SECURITY_DRY_RUN')) {
+          zosdataset.updateMember(`${jcllib}(${mb})`, jclContent);
+        }
+        common.printMessage(`Template JCL: ${prefix}.SZWESAMP(${mb}) , Executable JCL: ${jcllib}(${mb})`);
+        common.printMessage(`--- Modified JCL Content ---`);
+        common.printMessage(jclContent);
+        common.printMessage(`--- End of JCL ---`);
       })
     }
     zosJes.printAndHandleJcl(`//'${jcllib}(ZWEISTC)'`, `ZWEISTC`, jcllib, prefix, false, true);
