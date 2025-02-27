@@ -71,10 +71,13 @@ export function execute(allowOverwrite: boolean = false) {
 
   const authLoadlib = ZOWE_CONFIG.zowe?.setup?.dataset?.authLoadlib;
   const authPluginLib = ZOWE_CONFIG.zowe?.setup?.dataset?.authPluginLib;
-  // zis member and cmsName are in defaults
+  const DEFAULT_SUFFIX = '00';
+  const DEFAULT_CMS_NAME = 'ZWESIS_STD'
+  // zis and crossMemoryServerName are in defaults
   const zisSuffix = ZOWE_CONFIG.zowe.setup.dataset.parmlibMembers.zis.substring(6);
-  const cmsName = ZOWE_CONFIG.components.zss.crossMemoryServerName.substring(0, 16);
-
+  // There is no schema validation (at this point) for crossMemoryServerName as it is in components
+  // Check and take string or use defaults
+  const cmsName = typeof ZOWE_CONFIG.components.zss.crossMemoryServerName === "string" ? ZOWE_CONFIG.components.zss.crossMemoryServerName.substring(0, 16) : DEFAULT_CMS_NAME;
   if (stcExistence == true && !allowOverwrite) {
     common.printMessage(`Skipped writing to ${proclib}. To write, you must use --allow-overwrite.`);
   } else {
@@ -82,13 +85,13 @@ export function execute(allowOverwrite: boolean = false) {
       zosJes.printAndHandleJcl(`//'${jcllib}(ZWERSTC)'`, `ZWERSTC`, jcllib, prefix, false, true);
     }
     // We need to update STCs, if any of following was not set or is different comparing to defaults
-    if (!authLoadlib || !authPluginLib || zisSuffix != '00' || cmsName != 'ZWESIS_STD') {
+    if (!authLoadlib || !authPluginLib || zisSuffix != DEFAULT_SUFFIX || cmsName != DEFAULT_CMS_NAME) {
       [ 'ZWESASTC', 'ZWESISTC' ].forEach((mb) => {
         let jclContent = zosdataset.readMember(`${jcllib}(${mb})`);
         if (jclContent) {
           // Only for ZWESISTC to possibly change suffix or cross memory server name
           if (mb == 'ZWESISTC') {
-            if (zisSuffix != '00' || cmsName != 'ZWESIS_STD') {
+            if (zisSuffix != DEFAULT_SUFFIX || cmsName != DEFAULT_CMS_NAME) {
               // Original line fit
               jclContent = jclContent.replace(/NAME='ZWESIS_STD',MEM=00,RGN=0M/, `NAME='${cmsName}',MEM=${zisSuffix},RGN=0M`);
             }
