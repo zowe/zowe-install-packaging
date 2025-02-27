@@ -48,7 +48,7 @@ export function execute() {
 
   let authLoadlib = ZOWE_CONFIG.zowe?.setup?.dataset?.authLoadlib;
   if (!authLoadlib) {
-    common.printMessage(`ZWEL0158I: zowe.setup.dataset.authLoadlib is not defined in Zowe YAML configuration file. Using the defualt value.`);
+    common.printMessage(`ZWEL0158I: zowe.setup.dataset.authLoadlib is not defined in Zowe YAML configuration file. Using the default value.`);
     authLoadlib = `${ZOWE_CONFIG.zowe.setup.dataset.prefix}.SZWEAUTH`;
   }
 
