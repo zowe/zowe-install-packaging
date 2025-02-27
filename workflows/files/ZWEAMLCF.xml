@@ -12,12 +12,11 @@
     </workflowInfo>
     <!--variables-->
     <variable name="zowe_setup_job_stmt_parms" scope="global" visibility="public">
-      <label>JOB statement parameters used by Zowe during installation and configuration.</label>
-      <abstract>JOB statement parameters used by Zowe during installation and configuration.</abstract>
-      <description>These additional JOB statement parameters are optional, and by default empty. These are separate from z/OSMF JOB statements.</description>
+      <label>JOB statement positional parameters and keywords used by Zowe during installation and configuration.</label>
+      <abstract>JOB statement positional parameters and keywords used by Zowe during installation and configuration.</abstract>
+      <description>These parameters and keywords are optional, and by default empty. These are used separately from z/OSMF defined JOB cards. Each line should be less than 70 characters, use commas for end-of-line continuation, and omit identifier statements such as "//", "/*", etc.</description>
       <category>zowe</category>
       <string multiLine="true" valueMustBeChoice="false">
-        <default>MSGCLASS=X</default>
       </string>
     </variable>
     <variable name="zowe_setup_dataset_prefix" scope="instance" visibility="public">
@@ -634,7 +633,7 @@ some use cases, like containerization, this port could be different.</descriptio
             <!-- pre-requisite step -->
             <!-- condition -->
             <!--variableValues-->
-            <variableValue name="zowe_setup_job_stmt_parms" scope="global" noPromptIfSet="false" required="true" />
+            <variableValue name="zowe_setup_job_stmt_parms" scope="global" noPromptIfSet="false" required="false" />
             <variableValue name="zowe_setup_dataset_prefix" scope="instance" noPromptIfSet="false" required="true"/>
             <variableValue name="zowe_setup_dataset_proclib" scope="instance" noPromptIfSet="false" required="true"/>
             <variableValue name="zowe_setup_dataset_parmlib" scope="instance" noPromptIfSet="false" required="true"/>
@@ -1099,11 +1098,14 @@ echo '  # You can un-comment and define any extra environment variables as key/v
 echo '  # pairs here.' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 #if (${global-zowe_setup_job_stmt_parms.trim().length()} > 0 )
 echo '  environments:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '    jclHeaders:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '    jclHeader:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
   #foreach($line in ${global-zowe_setup_job_stmt_parms.split("\n")})
-echo '     - // ${line}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+    #if (${foreach.index} == 0) 
+echo '     - ${line}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+    #else
+echo '     - //    ${line}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+    #end
   #end
-# 
 #else
 echo '  # environments:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 #end
