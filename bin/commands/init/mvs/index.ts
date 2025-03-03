@@ -50,6 +50,13 @@ export function execute(allowOverwrite?: boolean) {
   // This dataset will be kept (allow-overwrite has no effect)
   const authLoadlibDefaults = `${prefix}.SZWEAUTH`
   const authLoadlibConfig = ZOWE_CONFIG.zowe.setup?.dataset ? ZOWE_CONFIG.zowe.setup.dataset.authLoadlib : undefined;
+  let authPluginLib = ZOWE_CONFIG.zowe.setup?.dataset ? ZOWE_CONFIG.zowe.setup.dataset.authPluginLib : undefined;
+  // If authPluginLib defined, it must be different from defaults and authLoadlib
+  if (authPluginLib) {
+    if (authPluginLib == authLoadlibDefaults || authPluginLib == authLoadlibConfig) {
+      authPluginLib = undefined;
+    }
+  }
 
   let actions = {
     parmlib: {
@@ -63,7 +70,7 @@ export function execute(allowOverwrite?: boolean) {
       exist: false, create: false, delete: false
     },
     authpluginlib: {
-      ds: ZOWE_CONFIG.zowe.setup?.dataset ? ZOWE_CONFIG.zowe.setup.dataset.authPluginLib : undefined,
+      ds: authPluginLib,
       jclSuffix: '1',
       exist: false, create: false, delete: false
     }
