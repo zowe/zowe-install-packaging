@@ -1,1 +1,15 @@
-""
+{
+  "lockAcquiredTime": "Tue Mar 04 2025 15:21:34 GMT+0000 (Coordinated Universal Time)",
+  "uid": "1741101694244523974",
+  "repository": {
+    "owner": "zowe",
+    "repo": "zowe-install-packaging"
+  },
+  "branch": "user/markackert/update-wf-action-versions",
+  "workflow": "Zowe CICD Integration Tests",
+  "job": "cicd-test",
+  "actor": "zowe-robot",
+  "runId": 13656938164,
+  "runNumber": 6202,
+  "link": "https://github.com/zowe/zowe-install-packaging/actions/runs/13656938164"
+}
