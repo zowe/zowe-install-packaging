@@ -25,7 +25,7 @@ jobs:
   setup-matrix:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       - name: Setup image list matrix
         id: setup-image-matrix
         run: |
@@ -46,7 +46,7 @@ jobs:
     strategy:
       matrix: ${{ fromJson(needs.setup-matrix.outputs.image-matrix) }}
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4
 
     - name: Run Snyk to check Docker image for vulnerabilities
       env:
