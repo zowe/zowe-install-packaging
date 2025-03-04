@@ -14,7 +14,7 @@
     "org.zowe.zlux.zlux-core": {
       "version": "2.18.1-RC",
       "repository": "libs-snapshot-local",
-      "artifact": "zlux-core-2.18.1-20250211.192706.pax"
+      "artifact": "zlux-core-2.18.1-20250304.164350.pax"
     },
     "org.zowe.zlux.sample-angular-app": {
       "version": "2.18.1-V2.X-RC",
@@ -49,7 +49,7 @@
     "org.zowe.zss": {
       "version": "2.18.1-RC",
       "repository": "libs-snapshot-local",
-      "artifact": "zss-2.18.1-rc-1264-20250211164129.pax"
+      "artifact": "zss-2.18.1-rc-1270-20250304134859.pax"
     },
     "org.zowe.explorer.jobs.jobs-api-package": {
       "version": "2.0.37",
