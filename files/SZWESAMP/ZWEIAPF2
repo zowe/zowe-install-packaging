@@ -34,14 +34,9 @@
 SH cd '{zowe.runtimeDirectory}' &&
 cd bin/utils &&
 LOADLIB='{zowe.setup.dataset.authLoadlib}' &&
-if [ "$LOADLIB" = "CFG.ZOWE.SETUP.DATASET.AUTHLOADLIB" ]; then
-  LOADLIB='{zowe.setup.dataset.prefix}.SZWEAUTH';
-fi &&
 LOADLOC=SMS &&
 ./opercmd.rex "SETPROG APF,ADD,DSN=$LOADLIB,$LOADLOC" &&
 PLUGLIB='{zowe.setup.dataset.authPluginLib}' &&
-if [ "$PLUGLIB" != "CFG.ZOWE.SETUP.DATASET.AUTHPLUGINLIB" ]; then
-  PLUGLOC=SMS &&
-  ./opercmd.rex "SETPROG APF,ADD,DSN=$PLUGLIB,$PLUGLOC";
-fi
+PLUGLOC=SMS &&
+./opercmd.rex "SETPROG APF,ADD,DSN=$PLUGLIB,$PLUGLOC"
 //*

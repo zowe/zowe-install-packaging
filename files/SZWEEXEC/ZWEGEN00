@@ -345,9 +345,9 @@ do i = 1 to members.0
       if old = '{zowe.environments.jclHeader}' then do
         if pos(x2c('15'), new) > 0 then
           iterate j
-        if symbol('CFG.'members.i.substitutions.j) = 'LIT' then
-          iterate j
       end
+      if symbol('CFG.'members.i.substitutions.j) = 'LIT' then
+        iterate j
       apostrophes1 = "'"
       apostrophes2 = "'"
       if pos("'", new) > 0 & pos('"', new) = 0 then do

@@ -46,9 +46,10 @@ export function execute() {
     return common.printErrorAndExit(`Error ZWEL0319E: zowe.setup.dataset.jcllib does not exist, cannot run. Run 'zwe init', 'zwe init generate', or submit JCL ${prefix}.SZWESAMP(ZWEGENER) before running this command.`, undefined, 319);
   }
 
+  let needUpdate = false;
   let authLoadlib = ZOWE_CONFIG.zowe?.setup?.dataset?.authLoadlib;
   if (!authLoadlib) {
-    common.printMessage(`ZWEL0158I: zowe.setup.dataset.authLoadlib is not defined in Zowe YAML configuration file. Using the default value.`);
+    common.printMessage(`ZWEL0158I: zowe.setup.dataset.authLoadlib is not defined in Zowe YAML configuration file. Using the default value ${ZOWE_CONFIG.zowe.setup.dataset.prefix}.SZWEAUTH.`);
     authLoadlib = `${ZOWE_CONFIG.zowe.setup.dataset.prefix}.SZWEAUTH`;
   }
 
@@ -56,41 +57,41 @@ export function execute() {
   if (!zosDs.isDatasetExists(authLoadlib)) {
     common.printErrorAndExit(`Error ZWEL0320E: The dataset specified in 'zowe.setup.dataset.authLoadlib' does not exist.`, undefined, 320);
   }
-
-  const authPluginLib = ZOWE_CONFIG.zowe?.setup?.dataset?.authPluginLib;
+  let authPluginLib = ZOWE_CONFIG.zowe?.setup?.dataset?.authPluginLib;
   if (!authPluginLib) {
     //TODO: is there a better message?
     common.printMessage('ZWEL0158I: zowe.setup.dataset.authPluginLib is not defined in Zowe YAML configuration file. Skipping.');
+    needUpdate = true;
+  } else {
+    if (authLoadlib == authPluginLib) {
+      // Skip APF command for the same dataset
+      authPluginLib = undefined;
+      needUpdate = true;
+    }
   }
   // AuthPluginLib must exist only if defined by user
   if (authPluginLib && !zosDs.isDatasetExists(authPluginLib)) {
-      common.printErrorAndExit(`Error ZWEL0320E: The dataset specified in 'zowe.setup.dataset.authPluginLib' does not exist.`, undefined, 320);
+    common.printErrorAndExit(`Error ZWEL0320E: The dataset specified in 'zowe.setup.dataset.authPluginLib' does not exist.`, undefined, 320);
   }
 
   const authSMS = zosDs.isDatasetSmsManaged(authLoadlib).smsManaged;
-  let auth = {
-    sms: authSMS,
-    volume: authSMS == true ? undefined : zosDs.getDatasetVolume(authLoadlib).volume,
-    replacer: ''
+  let authLocation = `LOADLOC=SMS`;
+  if (!authSMS) {
+    needUpdate = true;
+    authLocation = `LOADLOC="VOLUME=${zosDs.getDatasetVolume(authLoadlib).volume}"`;
   }
+
   const plugSMS = authPluginLib ? zosDs.isDatasetSmsManaged(authPluginLib).smsManaged : undefined;
-  let plug = {
-    sms: plugSMS,
-    volume: plugSMS == true ? undefined : (authPluginLib ? zosDs.getDatasetVolume(authPluginLib).volume : undefined),
-    replacer: ''
+  let plugLocation = `PLUGLOC=SMS`;
+  if (plugSMS == false) {
+    needUpdate = true;
+    plugLocation = `PLUGLOC="VOLUME=${zosDs.getDatasetVolume(authPluginLib).volume}"`
   }
 
-  if (!auth.sms && auth.volume) {
-    auth.replacer = `LOADLOC="VOLUME=${auth.volume}"`
-  }
-
-  if (!plug.sms && plug.volume) {
-    plug.replacer = `PLUGLOC="VOLUME=${plug.volume}"`
-  }
-
-  if (!auth.replacer && !plug.replacer) {
+  if (!needUpdate) {
     zosJes.printAndHandleJcl(`//'${jcllib}(ZWEIAPF2)'`, `ZWEIAPF2`, jcllib, prefix);
-  } else {
+  }
+  else {
     const COMMAND_LIST = std.getenv('ZWE_CLI_COMMANDS_LIST');
     const tmpfile = fs.createTmpFile(`zwe ${COMMAND_LIST}`.replace(new RegExp('\ ', 'g'), '-'));
     common.printDebug(`- Copy ${jcllib}(ZWEIAPF2) to ${tmpfile}`);
@@ -99,12 +100,18 @@ export function execute() {
       common.printDebug(`  * Succeeded`);
       common.printTrace(`  * Output:`);
       common.printTrace(stringlib.paddingLeft(jclContent.out, "    "));
-      if (auth.replacer) {
-        jclContent.out = jclContent.out.replace("LOADLOC=SMS", auth.replacer);
+      // Remove the shell after 'cd bin/utils &&'
+      const BIN_UTILS = 'cd bin/utils &&';
+      jclContent.out = jclContent.out.substring(0, jclContent.out.indexOf(BIN_UTILS) + BIN_UTILS.length + 1);
+      jclContent.out = jclContent.out.concat(`LOADLIB='${authLoadlib}' &&\n`);
+      jclContent.out = jclContent.out.concat(`${authLocation} &&\n`);
+      jclContent.out = jclContent.out.concat(`./opercmd.rex "SETPROG APF,ADD,DSN=$LOADLIB,$LOADLOC"${authPluginLib ? ' &&' : ''}\n`);
+      if (authPluginLib) {
+        jclContent.out = jclContent.out.concat(`PLUGLIB='${authPluginLib}' &&\n`);
+        jclContent.out = jclContent.out.concat(`${plugLocation} &&\n`);
+        jclContent.out = jclContent.out.concat(`./opercmd.rex "SETPROG APF,ADD,DSN=$PLUGLIB,$PLUGLOC"\n`);
       }
-      if (plug.replacer) {
-        jclContent.out = jclContent.out.replace("PLUGLOC=SMS", plug.replacer);
-      }
+      jclContent.out = jclContent.out.concat(`//*\n`);
       xplatform.storeFileUTF8(tmpfile, xplatform.AUTO_DETECT, jclContent.out);
       common.printTrace(`  * Stored:`);
       common.printTrace(stringlib.paddingLeft(jclContent.out, "    "));
@@ -112,7 +119,7 @@ export function execute() {
       if (!fs.fileExists(tmpfile)) {
         common.printErrorAndExit(`Error ZWEL0159E: Failed to prepare ZWEIAPF2`, undefined, 159);
       }
-        zosJes.printAndHandleJcl(tmpfile, `ZWEIAPF2`, jcllib, prefix, true);
+      zosJes.printAndHandleJcl(tmpfile, `ZWEIAPF2`, jcllib, prefix, true);
     }
   }
   common.printLevel2Message(`Zowe load libraries are APF authorized successfully.`);
