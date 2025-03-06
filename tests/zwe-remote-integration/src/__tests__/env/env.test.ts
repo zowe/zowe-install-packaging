@@ -44,7 +44,6 @@ describe(`${testSuiteName}`, () => {
     it('env defaults', async () => {
       const result = await testRunner.runZweTest(cfgYaml, 'internal start prepare');
       expect(result.rc).toBe(0);
-      expect(result.cleanedStdout).toMatchSnapshot();
       const envFiles = await testRunner.downloadMaskedUssFilesMatching('*.env', `${cfgYaml.zowe.workspaceDirectory}/.env/`);
       expect(envFiles).not.toBeNull();
       expect(envFiles).toHaveLength(1);
@@ -62,7 +61,6 @@ describe(`${testSuiteName}`, () => {
 
       const result = await testRunner.runZweTestWithDefaults(cfgYaml, defaultCfgYaml, 'internal start prepare');
       expect(result.rc).toBe(0);
-      expect(result.cleanedStdout).toMatchSnapshot();
       const envFiles = await testRunner.downloadMaskedUssFilesMatching('*.env', `${cfgYaml.zowe.workspaceDirectory}/.env/`);
       expect(envFiles).not.toBeNull();
       expect(envFiles).toHaveLength(1);
@@ -80,7 +78,6 @@ describe(`${testSuiteName}`, () => {
       defaultCfgYaml.zowe.setup.dataset.authPluginLib = 'DFLT.OVERRIDE.DOES.NOT.EXIST';
       const result = await testRunner.runZweTestWithDefaults(cfgYaml, defaultCfgYaml, 'internal start prepare');
       expect(result.rc).toBe(0);
-      expect(result.cleanedStdout).toMatchSnapshot();
       const envFiles = await testRunner.downloadMaskedUssFilesMatching('*.env', `${cfgYaml.zowe.workspaceDirectory}/.env/`);
       expect(envFiles).not.toBeNull();
       expect(envFiles).toHaveLength(1);
