@@ -6,13 +6,12 @@ Temporary directory '/tmp/.zweenv-0000' created.
 Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
 -------------------------------------------------------------------------------
 >> APF authorize load libraries
-
 ERROR: ZWEL0143E Cannot find data set member 'BAD.DS.PREFIX.NOEXIST.SZWESAMP(ZWEGENER)'. You may need to re-run zwe install."
 `;
 
 exports[`init-apfauth (LONG) apf empty ds prefix 1`] = `
 "Error: Validation of FILE(/test/dir/zowe.test.yaml):FILE(/test/dir/files/defaults.yaml) against schema /test/dir/schemas/zowe-yaml-schema.json:/test/dir/schemas/server-common.json found invalid JSON Schema data
-Validity Exceptions(s) with object at 
+Validity Exceptions(s) with object at
   Validity Exceptions(s) with object at /zowe
     Validity Exceptions(s) with object at /zowe/setup
       Validity Exceptions(s) with object at /zowe/setup/dataset
@@ -23,7 +22,7 @@ Validity Exceptions(s) with object at
 
 exports[`init-apfauth (LONG) apf empty jcllib 1`] = `
 "Error: Validation of FILE(/test/dir/zowe.test.yaml):FILE(/test/dir/files/defaults.yaml) against schema /test/dir/schemas/zowe-yaml-schema.json:/test/dir/schemas/server-common.json found invalid JSON Schema data
-Validity Exceptions(s) with object at 
+Validity Exceptions(s) with object at
   Validity Exceptions(s) with object at /zowe
     Validity Exceptions(s) with object at /zowe/setup
       Validity Exceptions(s) with object at /zowe/setup/dataset
@@ -37,7 +36,6 @@ exports[`init-apfauth (SHORT) apf bad authLoadLib 1`] = `
 Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
 -------------------------------------------------------------------------------
 >> APF authorize load libraries
-
 ERROR:   * Exit code: 8
 ERROR:   * Output:
 ERROR:     listds 'DOES.NOT.EXIST' label
@@ -51,7 +49,6 @@ exports[`init-apfauth (SHORT) apf bad authPluginLib 1`] = `
 Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
 -------------------------------------------------------------------------------
 >> APF authorize load libraries
-
 ERROR:   * Exit code: 8
 ERROR:   * Output:
 ERROR:     listds 'DOES.NOT.EXIST' label
@@ -62,7 +59,7 @@ ERROR: Error ZWEL0320E: The dataset specified in 'zowe.setup.dataset.authPluginL
 
 exports[`init-apfauth (SHORT) apf empty jcllib post-generate 1`] = `
 "Error: Validation of FILE(/test/dir/zowe.test.yaml):FILE(/test/dir/files/defaults.yaml) against schema /test/dir/schemas/zowe-yaml-schema.json:/test/dir/schemas/server-common.json found invalid JSON Schema data
-Validity Exceptions(s) with object at 
+Validity Exceptions(s) with object at
   Validity Exceptions(s) with object at /zowe
     Validity Exceptions(s) with object at /zowe/setup
       Validity Exceptions(s) with object at /zowe/setup/dataset
@@ -73,7 +70,7 @@ Validity Exceptions(s) with object at
 
 exports[`init-apfauth (SHORT) apf empty pluginlib 1`] = `
 "Error: Validation of FILE(/test/dir/zowe.test.yaml):FILE(/test/dir/files/defaults.yaml) against schema /test/dir/schemas/zowe-yaml-schema.json:/test/dir/schemas/server-common.json found invalid JSON Schema data
-Validity Exceptions(s) with object at 
+Validity Exceptions(s) with object at
   Validity Exceptions(s) with object at /zowe
     Validity Exceptions(s) with object at /zowe/setup
       Validity Exceptions(s) with object at /zowe/setup/dataset
@@ -87,10 +84,9 @@ exports[`init-apfauth (SHORT) apf empty pluginlib 2`] = `
 Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
 -------------------------------------------------------------------------------
 >> APF authorize load libraries
-
 Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWEGENER)
 --- JCL content ---
-//ZWEGENER JOB 
+//ZWEGENER JOB
 //*
 //* This program and the accompanying materials are made available
 //* under the terms of the Eclipse Public License v2.0 which
@@ -192,7 +188,6 @@ ISPSTART CMD(%ZWEGEN00 -
 generate -
 noverbose -
 )
-
 --- End of JCL ---
 Submitting Job ZWEGENER
 Job ZWEGENER(JOB00000) completed with RC=0
@@ -237,10 +232,7 @@ export LOADLOC="VOLUME=TSTVOL" &&
 --- End of JCL ---
 JCL not submitted, command run with "--dry-run" flag.
 To perform command, re-run command without "--dry-run" flag, or submit the JCL directly
-
 >> Command run successfully.
-
-
 >> Zowe load libraries are APF authorized successfully."
 `;
 
@@ -249,7 +241,6 @@ exports[`init-apfauth (SHORT) apf simple --dry-run 1`] = `
 Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
 -------------------------------------------------------------------------------
 >> APF authorize load libraries
-
 Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWEIAPF2) , Executable JCL: TEST.DATASET.PFX.JCLLIB(ZWEIAPF2)
 --- JCL Content ---
 //ZWEIAPF2 JOB
@@ -292,10 +283,7 @@ export PLUGLOC="VOLUME=TSTVOL" &&
 --- End of JCL ---
 JCL not submitted, command run with "--dry-run" flag.
 To perform command, re-run command without "--dry-run" flag, or submit the JCL directly
-
 >> Command run successfully.
-
-
 >> Zowe load libraries are APF authorized successfully."
 `;
 
@@ -304,7 +292,6 @@ exports[`init-apfauth (SHORT) apf sms-managed authLoadLib 1`] = `
 Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
 -------------------------------------------------------------------------------
 >> APF authorize load libraries
-
 Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWEIAPF2) , Executable JCL: TEST.DATASET.PFX.JCLLIB(ZWEIAPF2)
 --- JCL Content ---
 //ZWEIAPF2 JOB
@@ -347,10 +334,7 @@ export PLUGLOC="VOLUME=TSTVOL" &&
 --- End of JCL ---
 JCL not submitted, command run with "--dry-run" flag.
 To perform command, re-run command without "--dry-run" flag, or submit the JCL directly
-
 >> Command run successfully.
-
-
 >> Zowe load libraries are APF authorized successfully."
 `;
 
@@ -359,7 +343,6 @@ exports[`init-apfauth (SHORT) apf sms-managed authLoadLib and authPluginLib 1`] 
 Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
 -------------------------------------------------------------------------------
 >> APF authorize load libraries
-
 Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWEIAPF2) , Executable JCL: TEST.DATASET.PFX.JCLLIB(ZWEIAPF2)
 --- JCL Content ---
 //ZWEIAPF2 JOB
@@ -402,10 +385,7 @@ export PLUGLOC=SMS &&
 --- End of JCL ---
 JCL not submitted, command run with "--dry-run" flag.
 To perform command, re-run command without "--dry-run" flag, or submit the JCL directly
-
 >> Command run successfully.
-
-
 >> Zowe load libraries are APF authorized successfully."
 `;
 
@@ -414,7 +394,6 @@ exports[`init-apfauth (SHORT) apf sms-managed authPluginLib 1`] = `
 Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
 -------------------------------------------------------------------------------
 >> APF authorize load libraries
-
 Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWEIAPF2) , Executable JCL: TEST.DATASET.PFX.JCLLIB(ZWEIAPF2)
 --- JCL Content ---
 //ZWEIAPF2 JOB
@@ -457,9 +436,6 @@ export PLUGLOC=SMS &&
 --- End of JCL ---
 JCL not submitted, command run with "--dry-run" flag.
 To perform command, re-run command without "--dry-run" flag, or submit the JCL directly
-
 >> Command run successfully.
-
-
 >> Zowe load libraries are APF authorized successfully."
 `;
