@@ -18,8 +18,11 @@ import * as fs from '../../../libs/fs';
 import * as config from '../../../libs/config';
 import * as componentlib from '../../../libs/component';
 import { HandlerCaller, getHandler, getRegistry } from '../handlerutils';
+import * as xplatform from 'xplatform';
+import * as zosdataset from '../../../libs/zos-dataset';
+import * as zosfs from '../../../libs/zos-fs';
 
-export function execute(componentFile: string, autoEncoding?:string, skipEnable?:boolean, handler?: string, registry?: string, dryRun?: boolean, upgrade?: boolean) {
+export function execute(componentFile: string, autoEncoding?:string, skipEnable?:boolean, handler?: string, registry?: string, dryRun?: boolean, upgrade?: boolean, stepLibs?: string) {
   if (!fs.fileExists(componentFile) && !fs.directoryExists(componentFile)) {
     common.requireZoweYaml();
     if (componentFile && !upgrade) {
@@ -62,9 +65,138 @@ export function execute(componentFile: string, autoEncoding?:string, skipEnable?
         if (!skipEnable) {
           componentEnable.execute(componentName);
         }
+
+        // Adding new entries to the steplib sections of zis & aux stcs
+        if (stepLibs) {
+          updateSTCS(stepLibs);
+        }
       }
     }
   });
+}
+function updateSTCS(stepLibs: string)
+{
+  const ZOWE_CONFIG=config.getZoweConfig();
+  const proclib = ZOWE_CONFIG.zowe.setup?.dataset?.proclib;
+  const zisMember = ZOWE_CONFIG.zowe.setup?.security?.stcs?.zis;
+  const auxMember = ZOWE_CONFIG.zowe.setup?.security?.stcs?.aux;
+
+  // process step arguements with multiple checks, eg Regex, duplicates etc
+  const stepLibEntries = processSteplibArgs(stepLibs);
+
+  // Update the ZIS STC
+  if (zosdataset.isDatasetExists(`${proclib}(${zisMember})`)) {
+    updateStcSteplibEntries(proclib, zisMember, stepLibEntries);
+  }
+  // Update the AUX STC
+  if (zosdataset.isDatasetExists(`${proclib}(${auxMember})`)) {
+    updateStcSteplibEntries(proclib, auxMember, stepLibEntries);
+  }
+}
+
+function updateStcSteplibEntries(proclib: string, member: string, stepLibEntries: string[]): boolean {
+  const ZOWE_CONFIG=config.getZoweConfig();
+  const jclLib = ZOWE_CONFIG.zowe.setup.dataset.jcllib;
+  const prefix = ZOWE_CONFIG.zowe.setup.dataset.prefix;
+  let update = false;
+
+  // 1. create temporary Unix file
+  const proclibMemberAsUnixFile = fs.createTmpFile(`${proclib}`);
+  zosfs.copyMvsToUss(`${proclib}(${member})`, proclibMemberAsUnixFile);
+
+  // 2. Get the updated content
+  const updatedContent = updateStepLib(proclibMemberAsUnixFile, stepLibEntries);
+  //common.printMessage(`GKP:updated content`);
+  //common.printMessage(updatedContent);
+
+  // 3. store the updated content in the same temporary Unix file
+  let rc = xplatform.storeFileUTF8(proclibMemberAsUnixFile, xplatform.AUTO_DETECT, updatedContent);
+  if(!rc) {
+    // 4. Copy the contents from the temporary file into a temporary dataset
+    const tmpDataset = zosdataset.createDatasetTmpMember(jclLib);
+    rc = zosdataset.copyToDataset(proclibMemberAsUnixFile, `${jclLib}(${tmpDataset})`, "", true);
+    if (rc) {
+      common.printError(`Error ZWEL0200E: Failed to copy USS file ${proclibMemberAsUnixFile} to MVS data set ${tmpDataset}.`);
+    }
+    else {
+      // 5. Copy the dataset using PREFIX.SZWEEXEC(ZWEMCOPY)
+      rc = zosdataset.datasetCopyToDataset(prefix, `${jclLib}(${tmpDataset})`, `${proclib}(${member})`, true);
+      if (rc) {
+        common.printError(`Copy of temporary to dataset to ${proclib}(${member}) did not happen`);
+      }
+      else {
+        update = true;
+        common.printMessage(`${proclib}(${member}) updated successfully with new stepLib entries`);
+      }
+    }
+  }
+  else {
+    common.printError(`Error: Could not store updated contents in tmp unix file ${proclibMemberAsUnixFile}.`);
+  }
+  return update;
+}
+
+function processSteplibArgs(inputArgs: string): string[] {
+  return Array.from(
+    new Set(
+      inputArgs
+        .split(",")
+        .map(word => word.trim())
+        .map(word => word.toUpperCase())
+        .filter(word => word !== "")
+        .filter(word => regexCheck(word) && word.length <= 44)
+        .filter(word => zosdataset.isDatasetExists(word))
+    )
+  );
+}
+
+const regexCheck = (word: string): boolean => {
+  const datasetRegex = /^([A-Z\$\#\@]){1}([A-Z0-9\$\#\@\-]){0,7}(\.([A-Z\$\#\@]){1}([A-Z0-9\$\#\@\-]){0,7}){0,11}$/
+  return datasetRegex.test(word);
+}
+
+// Goes through the steplib section and adds entries, skipping blank lines and commented lines. However if an entry is commented and is
+// part of new list of entries, then we uncomment that entry/line.
+function updateStepLib(procLibfile: string, newStepLibEntries:  string[]) : any {
+  let procJcl = xplatform.loadFileUTF8(procLibfile, xplatform.AUTO_DETECT);
+  let lines = procJcl.split("\n");
+
+  // find index of start of STEPLIB section
+  let stepLibIndex = lines.findIndex((line => line.trim().startsWith('//STEPLIB')));
+  let i = stepLibIndex+1;
+  // go through the STEPLIB section
+  while(i < lines.length)
+  {
+    let line = lines[i].trim();
+    if (line.startsWith('//') && !line.startsWith('// ') && !line.startsWith('//*')) {
+          // end of STEPLIB section, break and add remaining entries
+          break;
+    }
+    else {
+        // extract the existing STEPLIB entry and check if it is in the new list, if so remove it from the list to avoid duplicates
+        // or if it is commented then uncomment it
+        let dsnString =  line.match(/DSNAME=([\w.@#$-]+)/);
+        if(dsnString) {
+          let removeIndex = newStepLibEntries.indexOf(dsnString[1]);
+          if (removeIndex !== -1) {
+            // Check to see if it is commented
+            if (line.startsWith('//*')) {
+              lines.splice(i, 1); // remove the line
+              lines.splice(i, 0, `//         DD   DSNAME=${dsnString[1]},DISP=SHR`); // add the uncommented version
+            }
+            // remove entry to avoid duplicates
+            newStepLibEntries.splice(removeIndex, 1);
+          }
+        }
+    }
+    i++;
+  }
+  // adding the remaining of entries at the end of STEPLIB section
+  newStepLibEntries.reverse().forEach((newEntry) => {
+    lines.splice(i, 0, `//         DD   DSNAME=${newEntry},DISP=SHR`);
+  });
+
+  return lines.join("\n");
 }
 
 function handlerInstall(component: string, handler?: string, registry?: string, dryRun?: boolean, upgrade?: boolean): string {
