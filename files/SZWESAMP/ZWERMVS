@@ -17,13 +17,12 @@
 //*
 //* If your chosen value of 'zowe.setup.dataset.authLoadlib' is not
 //*  equal to 'zowe.setup.dataset.prefix' + 'SZWEAUTH',
-//*  then you must also run "ZWERMVS2".
+//*  then you must also run ZWERMVS2.
 //*
 //*********************************************************************
 //RMPDSE EXEC PGM=IKJEFT01
 //SYSTSPRT DD SYSOUT=A
 //SYSTSIN DD *
-DELETE ('{zowe.setup.dataset.parmlib}', +
-        '{zowe.setup.dataset.authPluginLib}') +
+DELETE '{zowe.setup.dataset.parmlib}' +
        SCRATCH NONVSAM
-//*
+/*

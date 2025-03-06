@@ -79,8 +79,8 @@ export function verifyGeneratedJcl(config:any): string | undefined {
   if (!jcllib) {
     return undefined;
   }
-  const expectedMember = jcllib+'(ZWEIMVS)';
-  // read JCL library and validate using expected member ZWEIMVS (init mvs command)
+  const expectedMember = jcllib+'(ZWEIMVS2)';
+  // read JCL library and validate using expected member ZWEIMVS2 (init mvs command)
   let doesJclExist: boolean = zosDataset.isDatasetExists(expectedMember);
   if (!doesJclExist) {
     initGenerate.execute();

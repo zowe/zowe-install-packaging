@@ -3,26 +3,25 @@
   under the terms of the Eclipse Public License v2.0 which
   accompanies this distribution, and is available at
   https://www.eclipse.org/legal/epl-v20.html
- 
+
   SPDX-License-Identifier: EPL-2.0
- 
+
   Copyright Contributors to the Zowe Project.
 */
-
 import * as std from 'cm_std';
-import * as zosJes from '../../../libs/zos-jes';
-import * as zosDs  from '../../../libs/zos-dataset';
-import * as zoslib from '../../../libs/zos';
+import * as xplatform from 'xplatform';
+
 import * as common from '../../../libs/common';
 import * as config from '../../../libs/config';
-import * as fs     from '../../../libs/fs';
-import * as shell  from '../../../libs/shell';
-import * as stringlib from '../../../libs/string';
-import * as xplatform from 'xplatform';
+import * as fs from '../../../libs/fs';
 import * as initGenerate from '../generate/index';
+import * as shell from '../../../libs/shell';
+import * as stringlib from '../../../libs/string';
+import * as zosDs from '../../../libs/zos-dataset';
+import * as zosJes from '../../../libs/zos-jes';
+import * as zoslib from '../../../libs/zos';
 
 export function execute() {
-
   common.printLevel1Message(`APF authorize load libraries`);
 
   // Validation
@@ -30,13 +29,13 @@ export function execute() {
   const ZOWE_CONFIG = config.getZoweConfig();
 
   // read prefix and validate
-  const prefix=ZOWE_CONFIG.zowe?.setup?.dataset?.prefix;
+  const prefix = ZOWE_CONFIG.zowe?.setup?.dataset?.prefix;
   if (!prefix) {
     common.printErrorAndExit(`Error ZWEL0157E: Zowe dataset prefix (zowe.setup.dataset.prefix) is not defined in Zowe YAML configuration file.`, undefined, 157);
   }
 
   // check if user passed --generate
-  const forceGen = !!std.getenv('ZWE_CLI_PARAMETER_GENERATE') 
+  const forceGen = !!std.getenv('ZWE_CLI_PARAMETER_GENERATE');
   if (forceGen) {
     initGenerate.execute();
   }
@@ -47,33 +46,53 @@ export function execute() {
     return common.printErrorAndExit(`Error ZWEL0319E: zowe.setup.dataset.jcllib does not exist, cannot run. Run 'zwe init', 'zwe init generate', or submit JCL ${prefix}.SZWESAMP(ZWEGENER) before running this command.`, undefined, 319);
   }
 
-  let shouldAuthPluginLib = true;
-
-  if (!ZOWE_CONFIG.zowe?.setup?.dataset?.authLoadlib) {
-    common.printErrorAndExit(`Error ZWEL0157E: zowe.setup.dataset.authLoadlib is not defined in Zowe YAML configuration file.`, undefined, 157);
+  let needUpdate = false;
+  let authLoadlib = ZOWE_CONFIG.zowe?.setup?.dataset?.authLoadlib;
+  if (!authLoadlib) {
+    common.printMessage(`ZWEL0158I: zowe.setup.dataset.authLoadlib is not defined in Zowe YAML configuration file. Using the default value ${ZOWE_CONFIG.zowe.setup.dataset.prefix}.SZWEAUTH.`);
+    needUpdate = true;
+    authLoadlib = `${ZOWE_CONFIG.zowe.setup.dataset.prefix}.SZWEAUTH`;
   }
-  if (!ZOWE_CONFIG.zowe?.setup?.dataset?.authPluginLib) {
-    //TODO: is there a better message?
-    common.printMessage('ZWEL0158I: zowe.setup.dataset.authPluginLib is not defined in Zowe YAML configuration file. Skipping.', undefined);
-    shouldAuthPluginLib = false;
-  }
- 
-  let result1 = zosDs.isDatasetSmsManaged(ZOWE_CONFIG.zowe.setup.dataset.authLoadlib);
 
-  let result2: {rc: number, smsManaged?: boolean | null } = {rc: 1, smsManaged: null}; // default used when shouldAuthPlugin=false
-  if (shouldAuthPluginLib) {
-    result2 = zosDs.isDatasetSmsManaged(ZOWE_CONFIG.zowe.setup.dataset.authPluginLib);
-  } 
-
-  if (result1.rc != 0) {
+  // Authloadlib must exist, either user defined or default "zowe.setup.dataset.prefix.SZWEAUTH"
+  if (!zosDs.isDatasetExists(authLoadlib)) {
     common.printErrorAndExit(`Error ZWEL0320E: The dataset specified in 'zowe.setup.dataset.authLoadlib' does not exist.`, undefined, 320);
   }
-  if (result2.rc != 0 && shouldAuthPluginLib) {
+  let authPluginLib = ZOWE_CONFIG.zowe?.setup?.dataset?.authPluginLib;
+  if (!authPluginLib) {
+    //TODO: is there a better message?
+    common.printMessage('ZWEL0158I: zowe.setup.dataset.authPluginLib is not defined in Zowe YAML configuration file. Skipping.');
+    needUpdate = true;
+  } else {
+    if (authLoadlib == authPluginLib) {
+      // Skip APF command for the same dataset
+      authPluginLib = undefined;
+      needUpdate = true;
+    }
+  }
+  // AuthPluginLib must exist only if defined by user
+  if (authPluginLib && !zosDs.isDatasetExists(authPluginLib)) {
     common.printErrorAndExit(`Error ZWEL0320E: The dataset specified in 'zowe.setup.dataset.authPluginLib' does not exist.`, undefined, 320);
   }
 
-  // if neither ds is sms managed, or we're not apf authorizing pluginlib, then we need to modify IAPF2
-  if (!result1.smsManaged || !result2.smsManaged || !shouldAuthPluginLib) {
+  const authSMS = zosDs.isDatasetSmsManaged(authLoadlib).smsManaged;
+  let authLocation = `LOADLOC=SMS`;
+  if (!authSMS) {
+    needUpdate = true;
+    authLocation = `LOADLOC="VOLUME=${zosDs.getDatasetVolume(authLoadlib).volume}"`;
+  }
+
+  const plugSMS = authPluginLib ? zosDs.isDatasetSmsManaged(authPluginLib).smsManaged : undefined;
+  let plugLocation = `PLUGLOC=SMS`;
+  if (plugSMS == false) {
+    needUpdate = true;
+    plugLocation = `PLUGLOC="VOLUME=${zosDs.getDatasetVolume(authPluginLib).volume}"`
+  }
+
+  if (!needUpdate) {
+    zosJes.printAndHandleJcl(`//'${jcllib}(ZWEIAPF2)'`, `ZWEIAPF2`, jcllib, prefix);
+  }
+  else {
     const COMMAND_LIST = std.getenv('ZWE_CLI_COMMANDS_LIST');
     const tmpfile = fs.createTmpFile(`zwe ${COMMAND_LIST}`.replace(new RegExp('\ ', 'g'), '-'));
     common.printDebug(`- Copy ${jcllib}(ZWEIAPF2) to ${tmpfile}`);
@@ -82,47 +101,27 @@ export function execute() {
       common.printDebug(`  * Succeeded`);
       common.printTrace(`  * Output:`);
       common.printTrace(stringlib.paddingLeft(jclContent.out, "    "));
-      
-      if (result1.rc === 0 && !result1.smsManaged) {
-        let result3 = zosDs.getDatasetVolume(ZOWE_CONFIG.zowe.setup.dataset.authLoadlib);
-        if (result3.volume) {
-          jclContent.out = jclContent.out.replace("export LOADLOC=SMS", `export LOADLOC="VOLUME=${result3.volume}"`);
-        }
+      // Remove the shell after 'cd bin/utils &&'
+      const BIN_UTILS = 'cd bin/utils &&';
+      jclContent.out = jclContent.out.substring(0, jclContent.out.indexOf(BIN_UTILS) + BIN_UTILS.length + 1);
+      jclContent.out = jclContent.out.concat(`LOADLIB='${authLoadlib}' &&\n`);
+      jclContent.out = jclContent.out.concat(`${authLocation} &&\n`);
+      jclContent.out = jclContent.out.concat(`./opercmd.rex "SETPROG APF,ADD,DSN=$LOADLIB,$LOADLOC"${authPluginLib ? ' &&' : ''}\n`);
+      if (authPluginLib) {
+        jclContent.out = jclContent.out.concat(`PLUGLIB='${authPluginLib}' &&\n`);
+        jclContent.out = jclContent.out.concat(`${plugLocation} &&\n`);
+        jclContent.out = jclContent.out.concat(`./opercmd.rex "SETPROG APF,ADD,DSN=$PLUGLIB,$PLUGLOC"\n`);
       }
-      if (shouldAuthPluginLib && result2.rc === 0 && !result2.smsManaged) {
-        let result4 = zosDs.getDatasetVolume(ZOWE_CONFIG.zowe.setup.dataset.authPluginLib);
-        if (result4.volume) {
-          jclContent.out = jclContent.out.replace("export PLUGLOC=SMS", `export PLUGLOC="VOLUME=${result4.volume}"`);
-        }
-      }
-
-      if (!shouldAuthPluginLib) {
-        // replace 2 export lines (33 and 34 in IAPF2 at time of writing)
-        jclContent.out = jclContent.out.replace(/\nexport PLUGLIB=.*\nexport PLUGLOC=SMS.*$/gm, '');
-        jclContent.out = jclContent.out.replace(/\n\.\/opercmd\.rex.*?PLUGLOC.*$/gm, '');
-      }
-
+      jclContent.out = jclContent.out.concat(`//*\n`);
       xplatform.storeFileUTF8(tmpfile, xplatform.AUTO_DETECT, jclContent.out);
       common.printTrace(`  * Stored:`);
       common.printTrace(stringlib.paddingLeft(jclContent.out, "    "));
-
       shell.execSync('chmod', '700', tmpfile);
       if (!fs.fileExists(tmpfile)) {
         common.printErrorAndExit(`Error ZWEL0159E: Failed to prepare ZWEIAPF2`, undefined, 159);
       }
-      
       zosJes.printAndHandleJcl(tmpfile, `ZWEIAPF2`, jcllib, prefix, true);
-    } else {
-      common.printDebug(`  * Failed`);
-      common.printError(`  * Exit code: ${jclContent.rc}`);
-      common.printError(`  * Output:`);
-      if (jclContent.out) {
-        common.printError(stringlib.paddingLeft(jclContent.out, "    "));
-      }
-      std.exit(1);
     }
-  } else {
-    zosJes.printAndHandleJcl(`//'${jcllib}(ZWEIAPF2)'`, `ZWEIAPF2`, jcllib, prefix);      
   }
   common.printLevel2Message(`Zowe load libraries are APF authorized successfully.`);
 }

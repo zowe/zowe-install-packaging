@@ -16,7 +16,8 @@
 //* 'zowe.setup.dataset.authLoadlib' is equal to
 //* 'zowe.setup.dataset.prefix' + 'SZWEAUTH'.
 //*
-//* When running this job, you should also run ZWERMVS
+//* When running this job, you should also consider
+//* to run ZWERMVS and ZWERMVS1.
 //*
 //*********************************************************************
 //RMPDSE EXEC PGM=IKJEFT01
@@ -24,4 +25,4 @@
 //SYSTSIN DD *
 DELETE '{zowe.setup.dataset.authLoadlib}' +
        SCRATCH NONVSAM
-//*
+/*
