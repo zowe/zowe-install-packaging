@@ -1,1 +1,15 @@
-""
+{
+  "lockAcquiredTime": "Thu Mar 06 2025 20:51:27 GMT+0000 (Coordinated Universal Time)",
+  "uid": "1741294287149044727",
+  "repository": {
+    "owner": "zowe",
+    "repo": "zowe-install-packaging"
+  },
+  "branch": "user/markackert/add-retries-to-jfrog-cli",
+  "workflow": "Zowe CICD Integration Tests",
+  "job": "cicd-test",
+  "actor": "zowe-robot",
+  "runId": 13707892428,
+  "runNumber": 6220,
+  "link": "https://github.com/zowe/zowe-install-packaging/actions/runs/13707892428"
+}
