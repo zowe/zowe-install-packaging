@@ -8,11 +8,11 @@
  * Copyright Contributors to the Zowe Project.
  */
 
-import { ConnectionPropsForSessCfg, Session } from '@zowe/imperative';
+import { ConnectionPropsForSessCfg, ISession, Session } from '@zowe/imperative';
 import { REMOTE_CONNECTION_CFG } from '../config/TestConfig';
 
 export function getSession(): Session {
-  const sessCfg: unknown = {
+  const sessCfg: ISession = {
     hostname: REMOTE_CONNECTION_CFG.host,
     port: REMOTE_CONNECTION_CFG.zosmf_port,
     user: REMOTE_CONNECTION_CFG.user,
@@ -21,6 +21,6 @@ export function getSession(): Session {
     protocol: 'https',
   };
 
-  ConnectionPropsForSessCfg.resolveSessCfgProps(sessCfg, { $0: '', _: [] }, {});
+  ConnectionPropsForSessCfg.addPropsOrPrompt(sessCfg, { $0: '', _: [] }, {});
   return new Session(sessCfg);
 }

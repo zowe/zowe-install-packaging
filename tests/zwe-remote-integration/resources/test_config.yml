@@ -55,6 +55,21 @@ jfrog_token:
 # Collects spool after every test and downloads it to the .build/output/<testcase>/spool dir.
 collect_test_spool: true
 
+# custom_jcl_parameters is used when your test system requires specific JCL positional 
+#   or keyword parameters to run zwe JCLs.
+## Each field is defined individually so the test framework can manage this in combination with parameters passed
+##  by individual test cases. If a test case defines a jclHeader section, all of these parameters will be ignored.
+##  In general, test cases which specify jclHeader are dry-run tests which won't require these parameters.
+## These fields will be stripped out of the final snapshot results from tests.
+# custom_jcl_parameters:
+#   positional:
+#     - (*)
+#     - MYZUSER
+#   keywords:
+#     - MSGCLASS=X
+#     - NOTIFY=USER
+#     - SYSAFF=SYS1
+
 # zowe_yaml_overrides is primarily for debug or environment specific purposes. 
 #  Be cautious; this may invalidate test case snapshot results
 ###  Always overrides any computed values in globalSetup.

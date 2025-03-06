@@ -46,6 +46,7 @@ const configFields: ConfigItem<unknown>[] = [
   new ConfigItem('jfrog_user', false),
   new ConfigItem('jfrog_token', false),
   new ConfigItem('collect_test_spool', false, true),
+  new ConfigItem('custom_jcl_parameters', false),
   new ConfigItem('zowe_yaml_overrides', false),
   new ConfigItem('sensitive_data', false),
 ];
@@ -90,9 +91,12 @@ export const REMOTE_SYSTEM_INFO = {
   authPluginLib: `${testPrefix}.ZWESAPL`,
   parmlib: `${testPrefix}.PARMLIB`,
   ussTestDir: configData.remote_test_dir,
+  zweLogDir: `${configData.remote_test_dir}/logs`,
+  zweWorkspaceDir: `${configData.remote_test_dir}/workspace`,
   hostname: configData.zos_host,
   zosmfPort: configData.zosmf_port,
-  sensitiveDataToMask: configData.sensitive_data,
+  sensitiveDataToMask: configData.sensitive_data || [],
+  customJclParms: configData.custom_jcl_parameters,
 };
 
 export const REMOTE_CONNECTION_CFG = {
@@ -125,9 +129,12 @@ type TestConfigData = {
   jfrog_user: string;
   jfrog_token: string;
   collect_test_spool: string;
+  custom_jcl_parameters: CustomJclParametersType;
   zowe_yaml_overrides: Partial<ZoweYamlType>;
   sensitive_data: SensitiveDataMask[] | undefined;
 };
+
+type CustomJclParametersType = { positional: string[]; keywords: string[] };
 
 type SensitiveDataMask = { key: string; type: string };
 

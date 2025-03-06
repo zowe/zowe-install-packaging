@@ -50,6 +50,8 @@ function setupBaseYaml() {
   zoweYaml.java.home = REMOTE_SYSTEM_INFO.zosJavaHome;
   zoweYaml.node.home = REMOTE_SYSTEM_INFO.zosNodeHome;
   zoweYaml.zowe.runtimeDirectory = REMOTE_SYSTEM_INFO.ussTestDir;
+  zoweYaml.zowe.logDirectory = REMOTE_SYSTEM_INFO.zweLogDir;
+  zoweYaml.zowe.workspaceDirectory = REMOTE_SYSTEM_INFO.zweWorkspaceDir;
   zoweYaml.zowe.setup.dataset.prefix = REMOTE_SYSTEM_INFO.prefix;
   zoweYaml.zowe.setup.dataset.jcllib = REMOTE_SYSTEM_INFO.jcllib;
   zoweYaml.zowe.setup.dataset.proclib = REMOTE_SYSTEM_INFO.proclib;
@@ -385,6 +387,9 @@ module.exports = async () => {
     await files.Upload.dirToPds(zosmfSession, path.resolve(REPO_ROOT_DIR, 'files', 'SZWEEXEC'), REMOTE_SYSTEM_INFO.szweexec, {
       binary: false,
     });
+
+    console.log(`Uploading manifest.json.template to manifest.json...`);
+    await files.Upload.fileToUssFile(zosmfSession, path.resolve(REPO_ROOT_DIR, 'manifest.json.template'), 'manifest.json');
 
     console.log('Remote server setup complete');
   }

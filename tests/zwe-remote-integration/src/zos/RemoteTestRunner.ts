@@ -8,6 +8,9 @@
  * Copyright Contributors to the Zowe Project.
  */
 
+import * as _ from 'lodash';
+import * as minimatch from 'minimatch';
+import escapeStringRegexp from 'escape-string-regexp';
 import { Session } from '@zowe/imperative';
 import { getSession } from './ZosmfSession';
 import { UssSession } from './UssSession';
@@ -17,7 +20,7 @@ import * as files from '@zowe/zos-files-for-zowe-sdk';
 import * as fs from 'fs-extra';
 import * as YAML from 'yaml';
 import * as jobs from '@zowe/zos-jobs-for-zowe-sdk';
-import { basename } from 'path';
+import path, { basename } from 'path';
 import { FileType } from './TestFileActions';
 
 /**
@@ -53,19 +56,59 @@ export class RemoteTestRunner {
     this.yamlOutputTemplate = `${baseOutputDir}/yaml`;
     this.spoolOutputTemplate = `${baseOutputDir}/spool`;
     this.otherOutputTemplate = `${baseOutputDir}/other`;
+    this.getSysName();
+  }
+
+  private async getSysName() {
+    const sysname = await this.uss.runCommand('sysvar SYSNAME');
+    REMOTE_SYSTEM_INFO.sensitiveDataToMask.push({ key: sysname.stdout.trim(), type: 'sysname' });
+    console.log(REMOTE_SYSTEM_INFO.sensitiveDataToMask);
   }
 
   public shutdown() {
     console.log(`Total time spent in uss commands: ${this.totalRuntime / 1000} seconds`);
     console.log(`Max time spent in a single uss command: ${this.maxRuntime / 1000} seconds`);
     console.log(`Avg time spent per uss command: ${this.totalRuntime / this.totalRuns / 1000} seconds`);
+    this.cleanFns.length = 0; // reset cleanFns
     this.uss.shutdown();
+  }
+
+  public async downloadMaskedUssFilesMatching(
+    filePattern: string,
+    remoteDir: string = REMOTE_SYSTEM_INFO.ussTestDir,
+  ): Promise<string[]> {
+    const normalizedRemote = remoteDir.endsWith('/') ? remoteDir.slice(0, -1) : remoteDir;
+    const localMaskedFiles: string[] = [];
+    const fileList = await files.List.fileList(this.session, `${normalizedRemote}`);
+
+    if (fileList.apiResponse.items.length === 0) {
+      console.log(`No files found in ${normalizedRemote}. API Response was ${fileList.success}.`);
+      return localMaskedFiles;
+    }
+    const matchedFiles: string[] = minimatch.match(
+      fileList.apiResponse.items.map((item: { name: string }) => item.name),
+      filePattern,
+      { dot: true },
+    );
+    for (const file of matchedFiles) {
+      fs.mkdirpSync(this.tmpDir);
+      const tmpFile = `${this.tmpDir}/${basename(file)}`;
+      // const writeStream = fs.createWriteStream(tmpFile, { autoClose: true, mode: 0o775 });
+      await files.Download.ussFile(this.session, `${normalizedRemote}/${file}`, {
+        file: tmpFile,
+      });
+      const fileContents = fs.readFileSync(tmpFile).toString();
+      const cleanedContents = this.cleanOutput(fileContents, []);
+      fs.writeFileSync(tmpFile, cleanedContents);
+      localMaskedFiles.push(path.resolve(tmpFile));
+    }
+    return localMaskedFiles;
   }
 
   public async runRaw(command: string, cwd: string = REMOTE_SYSTEM_INFO.ussTestDir): Promise<TestOutput> {
     const output = await this.uss.runCommand(`${command}`, cwd);
     // Any non-deterministic output should be cleaned up for test snapshots.
-    const cleanedOutput = this.cleanOutput(output.consoleLog);
+    const cleanedOutput = this.cleanOutput(output.consoleLog, []);
     return {
       stdout: output.consoleLog,
       cleanedStdout: cleanedOutput,
@@ -238,7 +281,7 @@ export class RemoteTestRunner {
     this.cleanFns.push(replaceFn);
   }
 
-  private cleanOutput(stdout: string): string {
+  private cleanOutput(stdout: string, customJobHeaders: string[]): string {
     let cleanedOutput = stdout;
     // user-supplied
     this.cleanFns.forEach((fn) => {
@@ -250,7 +293,7 @@ export class RemoteTestRunner {
       REMOTE_SYSTEM_INFO.sensitiveDataToMask.forEach((data) => {
         const maskTarget = data.key;
         const maskValue = this.getMask(data.type);
-        cleanedOutput = cleanedOutput.replaceAll(maskTarget, maskValue);
+        cleanedOutput = cleanedOutput.replaceAll(new RegExp(maskTarget, 'gi'), maskValue);
       });
     }
 
@@ -259,6 +302,14 @@ export class RemoteTestRunner {
     LINES_TO_DELETE.forEach((pattern) => {
       cleanedOutput = cleanedOutput.replace(pattern, '');
     });
+
+    // custom job headers
+    for (let i = 0; i < customJobHeaders.length; i++) {
+      const header = customJobHeaders[i];
+      const replacePattern = i === 0 ? '\n' : '';
+      const HEADER_REMOVAL_PATTERN = new RegExp(`(//|)\\s*${escapeStringRegexp(header)}\\s*\n`, 'gm');
+      cleanedOutput = cleanedOutput.replaceAll(HEADER_REMOVAL_PATTERN, replacePattern);
+    }
 
     // built-in
     return cleanedOutput
@@ -280,6 +331,8 @@ export class RemoteTestRunner {
       case 'hostname':
       case 'host':
         return this.dummyHostname;
+      case 'sysname':
+        return 'SYS0';
       default:
         return '******';
     }
@@ -325,7 +378,8 @@ export class RemoteTestRunner {
       command = command.replace(/zwe/, '');
     }
     const testName = expect.getState().currentTestName.replace(/\s/g, '_');
-    const stringZoweYaml = YAML.stringify(zoweYaml, { nullStr: '' });
+    const finalZwe = this.addAnyCustomJobStatements(zoweYaml);
+    const stringZoweYaml = YAML.stringify(finalZwe.yaml, { nullStr: '' });
     const yamlOutputDir = this.yamlOutputTemplate.replace('{{ testInstance }}', testName);
     fs.mkdirpSync(yamlOutputDir);
 
@@ -356,15 +410,58 @@ export class RemoteTestRunner {
         jobid: match[2],
       });
     }
-
-    // Any non-deterministic output should be cleaned up for test snapshots.
-    const cleanedOutput = this.cleanOutput(output.consoleLog);
+    const cleanedOutput = this.cleanOutput(output.consoleLog, finalZwe.headers);
 
     return {
       stdout: output.consoleLog,
       cleanedStdout: cleanedOutput,
       rc: output.rc,
     };
+  }
+
+  private addAnyCustomJobStatements(zoweYaml: ZoweYamlType): { yaml: ZoweYamlType; headers: string[] } {
+    const jclHeader = zoweYaml.zowe?.environments?.jclHeader;
+    // jclHeader is either an array or string, so .length works in both cases
+    // @ts-expect-error incomplete schema
+    if (jclHeader != null && jclHeader.length > 0) {
+      return { yaml: zoweYaml, headers: [] };
+    }
+    const positionals = REMOTE_SYSTEM_INFO.customJclParms?.positional;
+    const keywords = REMOTE_SYSTEM_INFO.customJclParms?.keywords;
+    const cloneYaml = _.cloneDeep(zoweYaml);
+    let fullParams = '';
+    if (positionals != null && positionals.length > 0) {
+      fullParams += positionals.join(',');
+    }
+
+    if (keywords != null && keywords.length > 0) {
+      if (fullParams.length > 0) {
+        fullParams += ',';
+      }
+      fullParams += keywords.join(',');
+    }
+
+    const jclLines = this.convertParamsToLines(fullParams);
+    if (cloneYaml.zowe?.environments == null) {
+      cloneYaml.zowe.environments = {};
+    }
+    cloneYaml.zowe.environments.jclHeader = jclLines;
+    return { yaml: cloneYaml, headers: jclLines };
+  }
+
+  private convertParamsToLines(params: string): string[] {
+    const jclLines = [];
+    if (params.length > 70) {
+      const lastComma = params.substring(0, 70).lastIndexOf(',');
+      const first = params.substring(0, lastComma + 1);
+      const secondary = params.substring(lastComma + 1);
+      jclLines.push(first);
+      jclLines.push(...this.convertParamsToLines(secondary));
+    } else {
+      jclLines.push(params);
+    }
+
+    return jclLines;
   }
 }
 

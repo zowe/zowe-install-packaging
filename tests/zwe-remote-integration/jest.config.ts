@@ -16,6 +16,10 @@ const config: Config = {
   globalTeardown: '<rootDir>/src/globalTeardown.ts',
   preset: 'ts-jest',
   testRegex: '__tests__.*\\.*?\\.(spec|test)\\.ts$',
+  testEnvironmentOptions: {
+    ZOWE_IMPERATIVE_LOG_LEVEL: 'OFF',
+    ZOWE_APP_LOG_LEVEL: 'OFF',
+  },
   // maxWorkers: 1,
   reporters: [
     'default',

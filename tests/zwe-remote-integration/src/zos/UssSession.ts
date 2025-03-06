@@ -39,6 +39,9 @@ export class UssSession {
   }
 
   public shutdown() {
+    if (this.ssh.isConnected()) {
+      this.ssh.connection.destroy();
+    }
     this.ssh.dispose();
   }
 

@@ -1,8 +1,7 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`init-generate (LONG) jcllib updates: jcl header multi line 1`] = `
-"cat: //'TEST.DATASET.PFX.JCLLIB(ZWESECUR)': EDC5067I An attempt was made to open a nonexistent file for read. (errno2=0xC00B03B6)
-Temporary directory '/tmp/.zweenv-0000' created.
+"Temporary directory '/tmp/.zweenv-0000' created.
 Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
 Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWEGENER)
 --- JCL content ---
@@ -114,13 +113,12 @@ noverbose -
 
 --- End of JCL ---
 Submitting Job ZWEGENER
-Job ZWEGENER(JOB00000) completed with RC=0
-Zowe JCL JOB statement update failed. Review the JOBs before submitting."
+Job ZWEGENER(JOB00000) completed with RC=2
+Zowe JCL generated with errors, check job log. Job completion code=undefined, Job completion text=SECURITY_FAILURE"
 `;
 
 exports[`init-generate (LONG) jcllib updates: jcl header single line 1`] = `
-"cat: //'TEST.DATASET.PFX.JCLLIB(ZWESECUR)': EDC5067I An attempt was made to open a nonexistent file for read. (errno2=0xC00B03B6)
-Temporary directory '/tmp/.zweenv-0000' created.
+"Temporary directory '/tmp/.zweenv-0000' created.
 Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
 Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWEGENER)
 --- JCL content ---
@@ -229,8 +227,8 @@ noverbose -
 
 --- End of JCL ---
 Submitting Job ZWEGENER
-Job ZWEGENER(JOB00000) completed with RC=0
-Zowe JCL JOB statement update failed. Review the JOBs before submitting."
+Job ZWEGENER(JOB00000) completed with RC=2
+Zowe JCL generated with errors, check job log. Job completion code=undefined, Job completion text=SECURITY_FAILURE"
 `;
 
 exports[`init-generate (SHORT) BAD: invalid format defaults.yaml 1`] = `
@@ -238,7 +236,7 @@ exports[`init-generate (SHORT) BAD: invalid format defaults.yaml 1`] = `
 Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
 Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWEGENER)
 --- JCL content ---
-//ZWEGENER JOB 
+//ZWEGENER JOB
 //*
 //* This program and the accompanying materials are made available
 //* under the terms of the Eclipse Public License v2.0 which
@@ -849,7 +847,7 @@ exports[`init-generate (SHORT) simple --dry-run 1`] = `
 Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
 Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWEGENER)
 --- JCL content ---
-//ZWEGENER JOB 
+//ZWEGENER JOB
 //*
 //* This program and the accompanying materials are made available
 //* under the terms of the Eclipse Public License v2.0 which
