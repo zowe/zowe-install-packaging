@@ -33,8 +33,7 @@ export class UssSession {
         },
       })
       .then(() => {
-        console.log('uss session connected');
-        this.sessionInit = true;
+\        this.sessionInit = true;
       });
   }
 

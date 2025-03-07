@@ -62,7 +62,6 @@ export class RemoteTestRunner {
   private async getSysName() {
     const sysname = await this.uss.runCommand('sysvar SYSNAME');
     REMOTE_SYSTEM_INFO.sensitiveDataToMask.push({ key: sysname.stdout.trim(), type: 'sysname' });
-    console.log(REMOTE_SYSTEM_INFO.sensitiveDataToMask);
   }
 
   public shutdown() {
