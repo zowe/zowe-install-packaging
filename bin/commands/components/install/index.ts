@@ -106,8 +106,6 @@ function updateStcSteplibEntries(proclib: string, member: string, stepLibEntries
 
   // 2. Get the updated content
   const updatedContent = updateStepLib(proclibMemberAsUnixFile, stepLibEntries);
-  //common.printMessage(`GKP:updated content`);
-  //common.printMessage(updatedContent);
 
   // 3. store the updated content in the same temporary Unix file
   let rc = xplatform.storeFileUTF8(proclibMemberAsUnixFile, xplatform.AUTO_DETECT, updatedContent);
