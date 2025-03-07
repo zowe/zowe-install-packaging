@@ -92,7 +92,7 @@ export class RemoteTestRunner {
     );
     for (const file of matchedFiles) {
       fs.mkdirpSync(this.tmpDir);
-      const tmpFile = `${this.tmpDir}/${basename(file)}`;
+      const tmpFile = `${this.tmpDir}/${basename(file)}-${Date.now()}`;
       // const writeStream = fs.createWriteStream(tmpFile, { autoClose: true, mode: 0o775 });
       await files.Download.ussFile(this.session, `${normalizedRemote}/${file}`, {
         file: tmpFile,
@@ -130,7 +130,14 @@ export class RemoteTestRunner {
     const testName = expect.getState().currentTestName.replace(/\s/g, '_');
     const outputDir = this.otherOutputTemplate.replace('{{ testInstance }}', testName);
     fs.mkdirpSync(outputDir);
-    fs.copySync(filePath, `${outputDir}/${basename(filePath)}`);
+    // cover cases where a single test saves multiple files with the same name
+    let destFile = `${outputDir}/${basename(filePath)}`;
+    let iter = 1;
+    while (fs.existsSync(destFile) && iter < 100) {
+      destFile = `${destFile}.${iter}`;
+      iter++;
+    }
+    fs.copySync(filePath, destFile);
   }
 
   /**
@@ -338,28 +345,52 @@ export class RemoteTestRunner {
     }
   }
 
+  private writeRedundant(path: string, content: string) {
+    let tgtFile = path;
+    const iter = 0;
+    while (fs.existsSync(tgtFile) && iter < 100) {
+      tgtFile = `${tgtFile}.${iter}`;
+    }
+    fs.writeFileSync(tgtFile, content);
+  }
+
   public async runZweTestWithDefaults(
     zoweYaml: ZoweYamlType,
     defaultYaml: ZoweYamlType,
     zweCommand: string,
     cwd: string = REMOTE_SYSTEM_INFO.ussTestDir,
   ): Promise<TestOutput> {
+    await this.uploadDefaultsYaml(defaultYaml);
+    return this.runZweTest(zoweYaml, zweCommand, cwd);
+  }
+
+  public async uploadDefaultsYaml(defaultsYaml: ZoweYamlType): Promise<string> {
     const testName = expect.getState().currentTestName.replace(/\s/g, '_');
-    const stringDefaultYaml = YAML.stringify(defaultYaml, { nullStr: '' });
+    const yamlUploadPath = `${REMOTE_SYSTEM_INFO.ussTestDir}/files/defaults.yaml`;
+    const stringDefaultYaml = YAML.stringify(defaultsYaml, { nullStr: '' });
     const yamlOutputDir = this.yamlOutputTemplate.replace('{{ testInstance }}', testName);
     fs.mkdirpSync(yamlOutputDir);
     await this.removeUssFileForTest('files/defaults.yaml');
-    fs.writeFileSync(`${yamlOutputDir}/defaults.yaml.${testName}`, stringDefaultYaml);
+    this.writeRedundant(`${yamlOutputDir}/defaults.yaml.${testName}`, stringDefaultYaml);
+    await files.Upload.fileToUssFile(this.session, `${yamlOutputDir}/defaults.yaml.${testName}`, yamlUploadPath, {
+      binary: false,
+    });
+    return yamlUploadPath;
+  }
 
-    await files.Upload.fileToUssFile(
-      this.session,
-      `${yamlOutputDir}/defaults.yaml.${testName}`,
-      `${REMOTE_SYSTEM_INFO.ussTestDir}/files/defaults.yaml`,
-      {
-        binary: false,
-      },
-    );
-    return this.runZweTest(zoweYaml, zweCommand, cwd);
+  public async uploadZoweYaml(zoweYaml: ZoweYamlType, cwd: string = REMOTE_SYSTEM_INFO.ussTestDir): Promise<string> {
+    const finalZwe = this.addAnyCustomJobStatements(zoweYaml);
+    const testName = expect.getState().currentTestName.replace(/\s/g, '_');
+    const stringZoweYaml = YAML.stringify(finalZwe.yaml, { nullStr: '' });
+    const uploadPath = `${cwd}/zowe.test.yaml`;
+    const yamlOutputDir = this.yamlOutputTemplate.replace('{{ testInstance }}', testName);
+    fs.mkdirpSync(yamlOutputDir);
+
+    this.writeRedundant(`${yamlOutputDir}/zowe.yaml.${testName}`, stringZoweYaml);
+    await files.Upload.fileToUssFile(this.session, `${yamlOutputDir}/zowe.yaml.${testName}`, uploadPath, {
+      binary: false,
+    });
+    return uploadPath;
   }
 
   /**
@@ -377,21 +408,8 @@ export class RemoteTestRunner {
     if (command.startsWith('zwe')) {
       command = command.replace(/zwe/, '');
     }
-    const testName = expect.getState().currentTestName.replace(/\s/g, '_');
     const finalZwe = this.addAnyCustomJobStatements(zoweYaml);
-    const stringZoweYaml = YAML.stringify(finalZwe.yaml, { nullStr: '' });
-    const yamlOutputDir = this.yamlOutputTemplate.replace('{{ testInstance }}', testName);
-    fs.mkdirpSync(yamlOutputDir);
-
-    fs.writeFileSync(`${yamlOutputDir}/zowe.yaml.${testName}`, stringZoweYaml);
-    await files.Upload.fileToUssFile(
-      this.session,
-      `${yamlOutputDir}/zowe.yaml.${testName}`,
-      `${REMOTE_SYSTEM_INFO.ussTestDir}/zowe.test.yaml`,
-      {
-        binary: false,
-      },
-    );
+    await this.uploadZoweYaml(finalZwe.yaml, cwd);
     const start = performance.now();
     const output = await this.uss.runCommand(`./bin/zwe ${command} --config  ${REMOTE_SYSTEM_INFO.ussTestDir}/zowe.test.yaml`, cwd);
     // default per-test should always be off. If you want tty, run this.useTty() in a beforeEach() block

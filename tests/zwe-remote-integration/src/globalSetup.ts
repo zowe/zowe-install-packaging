@@ -164,6 +164,11 @@ module.exports = async () => {
       await downloadManifestDep('org.zowe.utility-tools');
     }
 
+    const launcherPax = fs.readdirSync(downloadsDir).find((item) => /launcher.*\.pax/g.test(item));
+    if (launcherPax == null) {
+      throw new Error('Could not locate a launcher pax in the .build directory');
+    }
+
     const configmgrPax = fs.readdirSync(downloadsDir).find((item) => /configmgr.*\.pax/g.test(item));
     if (configmgrPax == null) {
       throw new Error('Could not locate a configmgr pax in the .build directory');
@@ -175,13 +180,8 @@ module.exports = async () => {
     }
 
     const zssPax = fs.readdirSync(downloadsDir).find((item) => /zss-.*\.pax/g.test(item));
-    if (configmgrRexxPax == null) {
+    if (zssPax == null) {
       throw new Error('Could not locate a zss pax in the .build directory');
-    }
-
-    const launcherPax = fs.readdirSync(downloadsDir).find((item) => /launcher.*\.pax/g.test(item));
-    if (configmgrRexxPax == null) {
-      throw new Error('Could not locate a launcher pax in the .build directory');
     }
 
     const zoweToolsZip = fs.readdirSync(downloadsDir).find((item) => /zowe-utility-tools.*\.zip/g.test(item));
