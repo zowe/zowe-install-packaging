@@ -82,7 +82,6 @@ describe(`${testSuiteName}`, () => {
 
       // try to extract json from launcher stdout
       const regex = /INFO ZWEL0018I.*?(\{.*\}).*?mkey='/gims;
-      fs.writeFileSync(`./debug_stdout`, launcherRes.cleanedStdout);
       const matches = regex.exec(launcherRes.cleanedStdout);
       expect(matches.length).toBe(2);
       const jsonGroup = matches[1];
