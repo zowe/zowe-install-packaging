@@ -33,7 +33,7 @@ export class UssSession {
         },
       })
       .then(() => {
-\        this.sessionInit = true;
+        this.sessionInit = true;
       });
   }
 
