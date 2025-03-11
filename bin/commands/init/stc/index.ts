@@ -87,6 +87,7 @@ export function execute(allowOverwrite: boolean = false) {
     }
     let auxStc = false;
     let zisStc = false;
+    let launcherStc = authLoadlib === undefined ? true : false;
     // Member suffix or crossMemoryServeName different, update ZIS
     if (zisSuffix != DEFAULT_SUFFIX || cmsName != DEFAULT_CMS_NAME) {
       zisStc = true;
@@ -99,6 +100,7 @@ export function execute(allowOverwrite: boolean = false) {
     let membersToChange: string[] = [];
     auxStc && membersToChange.push('ZWESASTC');
     zisStc && membersToChange.push('ZWESISTC');
+    launcherStc && membersToChange.push('ZWESLSTC');
     membersToChange.forEach((mb) => {
       let jclContent = zosdataset.readMember(`${jcllib}(${mb})`);
       if (jclContent) {
@@ -109,11 +111,11 @@ export function execute(allowOverwrite: boolean = false) {
             jclContent = jclContent.replace(/NAME='ZWESIS_STD',MEM=00,RGN=0M/, `NAME='${cmsName}',MEM=${zisSuffix},RGN=0M`);
           }
         }
-        // Common for both STCs: authLoadlib not defined, replace by default prefix + SZWEAUTH
+        // Common for all STCs: authLoadlib not defined, replace by default prefix + SZWEAUTH
         if (!authLoadlib) {
-          jclContent = jclContent.replace(/CFG\.ZOWE\.SETUP\.DATASET\.AUTHLOADLIB/i, `${prefix}.SZWEAUTH`);
+          jclContent = jclContent.replace(/\{zowe\.setup\.dataset\.authLoadlib\}/i, `${prefix}.SZWEAUTH`);
         }
-        // // Common for both STCs: delete DD for authPluginLib, if not defined or same as authLoadlib
+        // // Common for zis & aux STCs: delete DD for authPluginLib, if not defined or same as authLoadlib
         let pluginRegex: any = undefined;
         if (!authPluginLib || authPluginLib == authLoadlib || authPluginLib == `${prefix}.SZWEAUTH`) {
           // Regex for DD statement with no label
