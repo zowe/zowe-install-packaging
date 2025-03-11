@@ -1,0 +1,159 @@
+common:
+  certificates: &common_certificate
+    source_options:
+      - zwe-generated
+      - bring-your-own
+      - to-be-determined
+    storage_options:
+      - uss-pkcs12-keystore
+      - keyring
+    dependencies:
+      sdsf:
+        init-certificate:
+          when: ${{ certificates.source == 'zwe-generated' }}
+          description: 'SDSF is used by the `zwe init certificate` command.'
+          instruction: 'Sysview or EJES can be used instead without any user action. If you do not have SDSF, Sysview, or EJES, then you cannot run the `zwe init certificate` command and instead should bring your own certificates.'
+
+  zos: &common_zos
+    version_options:
+      - 2.5
+      - 3.1
+    dependencies: 
+      sdsf:
+        start-stop:
+          description: "SDSF is used by zwe's start and stop commands."
+          required: false
+          instruction: 'Sysview or EJES can be used instead without any user action. If you do not have SDSF, Sysview, or EJES, then you should not use zwe start and stop commands and instead use operator commands. See Zowe Docs for more information.'
+      zosmf:
+        jwt:
+          description: 'z/OSMF JWT Support. This is recommended, but not required. This will be required with Zowe v4.'
+          instruction: Install the required PTF and ensure JWT tokens are enabled per z/OSMF documentation at the below link.
+            https://www.ibm.com/docs/en/zos/3.1.0?topic=configurations-enabling-json-web-token-support. 
+          required: false
+          ptfs:
+            - PH12143
+  lts_node_zos: &lts_node_zos
+    version_options: 
+      - 18
+      - 20 
+      - 22
+    dependencies:
+      icsf:
+        icsf-running:
+          description: 'ICSF must be enabled for all Node.JS SDK versions.'
+          required: true
+          instruction: "View IBM's ICSF System's Programmers Guide and ensure ICSF is enabled."
+      maintenance:
+        node-18-zos-2.5:
+          when: ${{ zos.version == 2.5 && node.version == 18 }}
+          description: 'Required maintenance to run Node 18 on z/OS 2.5.'
+          required: true
+          ptfs:
+            - UI78912
+            - UI81095
+            - UI80156
+            - UI83424
+        node-20-zos-2.5:
+          when: ${{ zos.version == 2.5 && node.version == 20 }}
+          description: 'Required maintenance to run Node 20 on z/OS 2.5.'
+          required: true
+          ptfs:
+            - UI78912
+            - UI81095
+            - UI80156
+            - UI83424
+        node-22-zos-2.5:
+          when: ${{ zos.version == 2.5 && node.version == 22 }}
+          description: 'Required maintenance to run Node 22 on z/OS 2.5.'
+          required: true
+          ptfs:
+            - UI78912
+            - UI81095
+            - UI80156
+            - UI83424
+        node-all-zos-3.1:
+          when: ${{ zos.version == 3.1 }}
+          description: 'No maintenance required to run Node <=22 on z/OS 3.1.'
+  lts_java_zos: &lts_java_zos
+    version_options:
+      - 17
+      - 21
+  lts_node_nonzos: &lts_node_nonzos
+    versions:
+      - 18
+      - 20
+      - 22
+  lts_java_nonzos: &lts_java_nonzos
+    versions:
+      - 11
+      - 17
+      - 21
+
+components:
+  apiml:
+    designation: core
+    deployment: server
+    required:
+      java:
+        <<: *lts_java_zos
+      zos: 
+        <<: *common_zos
+      certificates:
+        <<: *common_certificate
+    optional:
+      zosmf-jwt:
+        description: 'If you want to use JWT tokens with APIML, which is the default in Zowe v3.0 or later'
+  app-framework:
+    designation: core
+    deployment: server
+    required:
+      node: 
+        <<: *lts_node_zos
+      zos: 
+        <<: *common_zos
+      zowe:
+        - apiml
+  jobs:
+    designation: core
+    deployment: server
+    required:
+      zowe:
+        - apiml
+  jes-explorer:
+    designation: core
+    deployment: server
+    required:
+      zowe: 
+        - apiml
+        - app-framework
+  zss:
+    designation: core
+    deployment: server
+    required:
+      zos: *common_zos
+      zowe: 
+        - apiml
+  intellij-explorer:
+    designation: core
+    deployment: client
+    required:
+      # do we need to matrix these given choice of platform
+      intellij:
+        - ...intellij versions supported
+      java: *lts_java_nonzos
+      platforms:
+        - ...mac,windows,linux, etc.
+  vscode-explorer:
+    designation: core
+    deployment: client
+    required:
+      node: *lts_node_nonzos
+      # same process as intellij-explorer?
+
+  cli:
+    designation: core
+    deployment: client
+    required:
+      environment:
+        node: *lts_node_nonzos
+
