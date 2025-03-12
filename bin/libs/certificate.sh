@@ -733,7 +733,7 @@ pkcs12_delete_cert() {
 compare_domain_with_wildcards() {
   pattern=$(echo "$1" | lower_case)
   domain=$(echo "$2" | lower_case)
-  
+
   if [ "${pattern}" = "${domain}" ] || [[ ${domain} == ${pattern} ]]; then
     echo "true"
   fi
@@ -883,8 +883,9 @@ EOF
   print_debug ">>>> Prepare ${member_name}"
   print_debug "- Create temp file"
   tmpfile=$(create_tmp_file $(echo "zwe ${ZWE_CLI_COMMANDS_LIST}" | sed "s# #-#g"))
-  print_debug "  > data set member: ${jcllib}(tmpdsm)"
+  print_debug "  > data set member: ${jcllib}(${member_name})"
   print_debug "- Copy ${jcllib}(${member_name}) to ${tmpfile}"
+  # result = modified JCL
   result=$(cat "//'${jcllib}(${member_name})'" | \
           sed "s/^\/\/ \+SET \+IPADDRES=.*\$/\/\/         SET  IPADDRES='${ip_address}'/" | \
           sed "s/^\/\/ \+SET \+IFZOWECA=.*\$/\/\/         SET  IFZOWECA=${import_ext_ca}/" | \
@@ -893,10 +894,14 @@ EOF
           sed "s/^\/\/ \+SET \+IFROZFCA=.*\$/\/\/         SET  IFROZFCA=${trust_zosmf}/" | \
           sed "s/^\/\/ \+SET \+ROOTZFCA=.*\$/\/\/         SET  ROOTZFCA='${zosmf_root_ca}'/" | \
           sed  "s/2030-05-01/${validity_ymd}/g" | \
-          sed  "s#05/01/30#${validity_mdy}#g" \
-          > "${tmpfile}")
-  code=$?
-  chmod 700 "${tmpfile}"
+          sed  "s#05/01/30#${validity_mdy}#g")
+  # code = no result or error writing to tmpfile
+  if [ -n "${result}" ]; then
+    echo "${result}" > "${tmpfile}"
+    code=$?
+  else
+    code=1
+  fi
   if [ ${code} -eq 0 ]; then
     print_debug "  * Succeeded"
     print_trace "  * Exit code: ${code}"
@@ -916,6 +921,7 @@ EOF
     print_error "Error ZWEL0159E: Failed to modify ${jcllib}(${member_name})"
     return 159
   fi
+  chmod 700 "${tmpfile}"
 
   jcl_contents=$(cat "${tmpfile}")
 
@@ -923,19 +929,15 @@ EOF
   print_message "--- JCL Content ---"
   print_message "$jcl_contents"
   print_message "--- End of JCL ---"
-  
+
   if [ "${ZWE_CLI_PARAMETER_SECURITY_DRY_RUN}" = "true" ]; then
     print_message "JCL not submitted, command run with dry run flag."
     print_message "To perform command, re-run command without dry run flag, or submit the JCL directly"
     print_trace "- Delete ${tmpfile}"
     rm "${tmpfile}"
   else
-    if [ ${code} -ne 0 ]; then
-      print_error "Error ZWEL0160E: Failed to write to ${jcllib}(${tmpdsm}). Please check if target data set is opened by others."
-      return 160
-    fi
     print_debug "    - ${jcllib}(${member_name}) is prepared"
-  
+
     ###############################
     # submit job
     print_message "Submitting Job ${member_name}"
@@ -999,7 +1001,7 @@ keyring_run_zwenokyr_jcl() {
   print_message "--- JCL Content ---"
   print_message "$jcl_contents"
   print_message "--- End of JCL ---"
-               
+
   ###############################
   # submit job
   if [ "${ZWE_CLI_PARAMETER_SECURITY_DRY_RUN}" = "true" ]; then
@@ -1066,7 +1068,7 @@ keyring_show_info_node() {
   elif [ "${output}" = "owner" ]; then
     opts="${opts} --owner-only"
   fi
-  
+
   print_debug ">>>> Show certificate information of safkeyring:////${keyring_owner}/${keyring_name}&${label}"
   result=$(ncert_utility keyring info "${keyring_owner}" "${keyring_name}" ${opts})
   if [ $? -ne 0 ]; then
