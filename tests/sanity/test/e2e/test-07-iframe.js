@@ -47,7 +47,7 @@ describe.skip(`test ${APP_TO_TEST}`, function() {
     // load MVD login page
     await loginMVD(
       driver,
-      `https://${process.env.ZOWE_EXTERNAL_HOST}:${process.env.ZOWE_ZLUX_HTTPS_PORT}/`,
+      `https://${process.env.ZOWE_EXTERNAL_HOST}:${process.env.ZOWE_API_MEDIATION_GATEWAY_HTTP_PORT}/zlux/ui/v1/ZLUX/plugins/org.zowe.zlux.bootstrap/web/`,
       process.env.SSH_USER,
       process.env.SSH_PASSWD
     );

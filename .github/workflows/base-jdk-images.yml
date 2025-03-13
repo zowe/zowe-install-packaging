@@ -26,7 +26,7 @@ jobs:
   build-ubuntu-amd64:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
 
       - uses: zowe-actions/shared-actions/prepare-workflow@main
 
@@ -61,7 +61,7 @@ jobs:
   build-ubuntu-s390x:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
 
       - uses: zowe-actions/shared-actions/prepare-workflow@main
 
@@ -104,7 +104,7 @@ jobs:
       - build-ubuntu-s390x
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
 
       - uses: zowe-actions/shared-actions/prepare-workflow@main
 
@@ -125,7 +125,7 @@ jobs:
   build-ubi-amd64:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
 
       - uses: zowe-actions/shared-actions/prepare-workflow@main
 
@@ -163,7 +163,7 @@ jobs:
   build-ubi-s390x:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
 
       - uses: zowe-actions/shared-actions/prepare-workflow@main
 
@@ -209,7 +209,7 @@ jobs:
       - build-ubi-s390x
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
 
       - uses: zowe-actions/shared-actions/prepare-workflow@main
 

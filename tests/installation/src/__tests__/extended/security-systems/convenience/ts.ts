@@ -18,10 +18,10 @@ import {TEST_TIMEOUT_CONVENIENCE_BUILD} from '../../../../constants';
 /**
  * Define this test should run in a specific worker
  *
- * @worker marist-7
+ * @worker marist-10
  */
-// hard code to use marist-7 which we started with Top Secret
-const testServer = 'marist-7';
+// hard code to use marist-10 which we started with Top Secret
+const testServer = 'marist-10';
 const testSuiteName = 'Test convenience build installation with Top Secret';
 describe(testSuiteName, () => {
   beforeAll(() => {

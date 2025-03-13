@@ -192,7 +192,7 @@
             <![CDATA[
 	<p>Use this step to define the variables for RACF.</p>
 	<p>For more information about security system setup and it's variables, please open via right-click in new tab or window and refer to security documentation here
-	<a href="https://techdocs.broadcom.com/us/en/ca-mainframe-software/traditional-management/mainframe-common-maintenance-procedures/1-0/configure-ca-smp-e-internet-service-retrieval/configure-ibm-racf-security.html">configure RACF security certificates</a>
+	<a href="a href="https://techdocs.broadcom.com/us/en/ca-mainframe-software/traditional-management/mainframe-common-maintenance-procedures/1-0/configure-ca-smp-e-internet-service-retrieval/obtain-the-certificates-for-ca-smp-e-internet-service-retrieval/configure-ibm-racf-security.html">configure RACF security certificates</a>
     or there <a href="https://www.ibm.com/docs/en/zos/2.2.0?topic=syntax-racdcert-add-add-certificate">RACDCERT ADD (Add certificate) command</a>.</p>
 	]]></instructions>
             <weight>1</weight>
@@ -252,7 +252,7 @@
             <instructions substitution="false"><![CDATA[
 	<p>Use this step to define the variables for ACF2.</p>
 	<p>For more information about security system setup and it's variables, please open via right-click in new tab or window and refer to security documentation 
-	<a href="https://techdocs.broadcom.com/us/en/ca-mainframe-software/security/ca-acf2-for-z-os/16-0/administrating/digital-certificate-support/process-digital-certificates-with-ca-acf2.html#concept.dita_742faf19321a7e7286b7e3f9b1c1a66acb9562f7_INSERTSubcommand">configure ACF2 security certificates</a>.</p>
+	<a href="https://techdocs.broadcom.com/us/en/ca-mainframe-software/security/ca-acf2-for-z-os/16-0/administrating/digital-certificate-support/process-digital-certificates-with-acf2/insert-certificates.html">configure ACF2 security certificates</a>.</p>
 	]]></instructions>
             <weight>1</weight>
             <skills>Security Administrator</skills>
@@ -367,7 +367,7 @@
             <instructions substitution="true"><![CDATA[
 	<p>This step will load signed client authentication certificate from the ${instance-output_dataset} into ESM</p>
 	<p>For more information about security system setup and it's variables, please open via right-click in new tab or window and refer to security documentation here
-	<a href="https://techdocs.broadcom.com/us/en/ca-mainframe-software/traditional-management/mainframe-common-maintenance-procedures/1-0/configure-ca-smp-e-internet-service-retrieval/configure-ibm-racf-security.html">configure RACF security certificates</a> <br/>
+	<a href="a href="https://techdocs.broadcom.com/us/en/ca-mainframe-software/traditional-management/mainframe-common-maintenance-procedures/1-0/configure-ca-smp-e-internet-service-retrieval/obtain-the-certificates-for-ca-smp-e-internet-service-retrieval/configure-ibm-racf-security.html">configure RACF security certificates</a> <br/>
     or there <a href="https://www.ibm.com/docs/en/zos/2.2.0?topic=syntax-racdcert-add-add-certificate">RACDCERT ADD (Add certificate) command</a>.</p>
 	]]></instructions>
             <weight>1</weight>
@@ -452,7 +452,7 @@ DCDSN(${instance-output_dataset}) TRUST
             <instructions substitution="true"><![CDATA[
 	<p>This step will load signed client authentication certificate from the ${instance-output_dataset} into ESM</p>
 	<p>For more information about security system setup and it's variables, please open via right-click in new tab or window and refer to security documentation 
-	<a href="https://techdocs.broadcom.com/us/en/ca-mainframe-software/security/ca-acf2-for-z-os/16-0/administrating/digital-certificate-support/process-digital-certificates-with-ca-acf2.html#concept.dita_742faf19321a7e7286b7e3f9b1c1a66acb9562f7_INSERTSubcommand">configure ACF2 security certificates</a>.</p>
+	<a href="https://techdocs.broadcom.com/us/en/ca-mainframe-software/security/ca-acf2-for-z-os/16-0/administrating/digital-certificate-support/process-digital-certificates-with-acf2/insert-certificates.html">configure ACF2 security certificates</a>.</p>
 	]]></instructions>
             <weight>1</weight>
             <skills>Security Administrator</skills>
