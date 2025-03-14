@@ -3,3 +3,4 @@ skip-security-setup||boolean|||||Whether to skip security related setup.
 security-dry-run,dry-run||boolean|||||Whether to dry run security related setup.
 ignore-security-failures||boolean|||||Whether to ignore security setup job failures.
 update-config||boolean|||||Whether to update YAML configuration file with initialization result.
+create-certificate||boolean|||||Whether to use the contents of zowe.setup.certificate to create Zowe's TLS certificates.

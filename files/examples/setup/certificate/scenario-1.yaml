@@ -1,0 +1,71 @@
+################################################################################
+# This program and the accompanying materials are made available under the terms of the
+# Eclipse Public License v2.0 which accompanies this distribution, and is available at
+# https://www.eclipse.org/legal/epl-v20.html
+#
+# SPDX-License-Identifier: EPL-2.0
+#
+# Copyright Contributors to the Zowe Project.
+################################################################################
+
+# >>>> Certificate creation scenario 1
+# PKCS12 (keystore) with Zowe generate certificates.
+#
+# This example is for use with the command "zwe init certificate"
+# If you plan to use "zwe init --create-certificate" instead,
+# Then add the "zowe.setup.certificate" section contents into your main YAML 
+
+
+# You must define the location of Java to use "zwe init certificate"
+java:
+  # If Java is installed to /usr/lpp/java/bin/java
+  # Then put "/usr/lpp/java" here, excluding "/bin/java".
+  home: ""
+
+zowe:
+  setup:
+    security:
+      # This can be RACF, TSS, or ACF2
+      product: RACF
+      # Provide the user and group that will own the certificates and directory
+      users:
+        zowe: ZWESVUSR
+      groups:
+        admin: ZWEADMIN
+
+    certificate:
+      type: PKCS12
+      pkcs12:
+        directory: /var/zowe/keystore
+        # # Lock the keystore directory to only accessible by Zowe runtime user and group.
+        # lock: true
+        # # Certificate alias name. Optional, default value is localhost.
+        # # Note: please use all lower cases as alias.
+        # name: localhost
+        # # Keystore password. Optional, default value is password.
+        # password: password
+        # # Alias name of self-signed certificate authority. Optional, default value is local_ca.
+        # # Note: please use all lower cases as alias.
+        # caAlias: local_ca
+        # # Password of keystore stored self-signed certificate authority. Optional, default value is local_ca_password.
+        # caPassword: local_ca_password
+      # # Distinguished name for Zowe generated certificates. All optional.
+      # dname:
+      #   caCommonName: ""
+      #   commonName: ""
+      #   orgUnit: ""
+      #   org: ""
+      #   locality: ""
+      #   state: ""
+      #   country: ""
+      # # Validity days for Zowe generated certificates
+      # validity: 3650
+      # # Domain names and IPs should be added into certificate SAN
+      # # If this field is not defined, `zwe init` command will use
+      # # `zowe.externalDomains`.
+      # san:
+      #   # sample domain name
+      #   - dvipa.my-company.com
+      #   # sample IP address
+      #   - 12.34.56.78
+

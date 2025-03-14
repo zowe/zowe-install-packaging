@@ -1,0 +1,56 @@
+################################################################################
+# This program and the accompanying materials are made available under the terms of the
+# Eclipse Public License v2.0 which accompanies this distribution, and is available at
+# https://www.eclipse.org/legal/epl-v20.html
+#
+# SPDX-License-Identifier: EPL-2.0
+#
+# Copyright Contributors to the Zowe Project.
+################################################################################
+
+# >>>> Certificate setup scenario 4
+# Zowe generated z/OS Keyring and connect to existing certificate
+#
+# This example is for use with the command "zwe init certificate"
+# If you plan to use "zwe init --create-certificate" instead,
+# Then add the "zowe.setup.certificate" section contents into your main YAML 
+
+
+# You must define the location of Java to use "zwe init certificate"
+java:
+  # If Java is installed to /usr/lpp/java/bin/java
+  # Then put "/usr/lpp/java" here, excluding "/bin/java".
+  home: ""
+
+zowe:
+  setup:
+    dataset:
+      # The prefix where datasets such as SZWESAMP can be found.
+      prefix: IBMUSER.ZWEV3
+      # JCL library where Zowe will store temporary JCLs during initialization
+      jcllib: IBMUSER.ZWEV3.CUST.JCLLIB
+
+    security:
+      # This can be RACF, TSS, or ACF2
+      product: RACF
+      # Provide the user and group that will own the keyring
+      users:
+        zowe: ZWESVUSR
+      groups:
+        admin: ZWEADMIN
+
+    certificate:
+      type: JCERACFKS
+      keyring:
+        name: ZoweKeyring
+        connect:
+          # Current owner of the existing certificate, can be SITE or an user ID.
+          user: IBMUSER
+          # Label of the existing certificate will be connected to Zowe keyring.
+          label: ""
+      # If you have other certificate authorities want to be trusted in Zowe keyring,
+      # list the certificate labels here.
+      # **NOTE**, due to the limitation of RACDCERT command, this field should
+      #           contain maximum 2 entries.
+      importCertificateAuthorities:
+        - ""
