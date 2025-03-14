@@ -27,11 +27,6 @@
 # Configuration and runtime parameters unique to a component or extension
 # Will be located in the "components" section instead.
 #-------------------------------------------------------------------------------
-
-`zwe install` and
-# `zwe init` command, as well as default configurations for Zowe runtime.
-# If you modify any settings listed in "zwe init --help" command, you may need to
-# re-run the "zwe init" command to make them take effect.
 zowe:
 
   #-------------------------------------------------------------------------------
