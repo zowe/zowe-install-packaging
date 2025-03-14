@@ -100,7 +100,7 @@ zowe:
     #
     # (Recommended)
     # If you already have a Keyring (z/OS) or PKCS12 files (z/OS, Containers)
-    # Then you can provide them in the section below,
+    # Then you can provide them in the section after the end of "zowe.setup"
     # As long as they meet Zowe's requirements
     # Requirements: https://docs.zowe.org/stable/user-guide/configure-certificates/#zowe-certificate-requirements
     #
@@ -111,10 +111,13 @@ zowe:
     # Within, you will find 5 scenarios that you can edit
     # To create certificates, edit the scenario that suits you
     # And then run "zwe init certificate -c <path_to_yaml> --update-config"
+  #-------------------------------------------------------------------------------
+  # End of "zowe.setup" section
+  #-------------------------------------------------------------------------------
 
 
   # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-  # Zowe certificate
+  # Zowe certificate (zowe.certificate) section
   #
   # This section defines the certificate & certificate authorities used by Zowe
   # Do not confuse this with "zowe.setup.certificate"
