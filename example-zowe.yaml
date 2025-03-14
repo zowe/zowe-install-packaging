@@ -411,7 +411,7 @@ zowe:
 # to `zwe init` command.
 #-------------------------------------------------------------------------------
 java:
-  # If Java is isntalled to /usr/lpp/java/bin/java
+  # If Java is installed to /usr/lpp/java/bin/java
   # Then put "/usr/lpp/java" here, excluding "/bin/java".
   home: ""
 
@@ -427,7 +427,7 @@ java:
 # to `zwe init` command.
 #-------------------------------------------------------------------------------
 node:
-  # If Node.JS is isntalled to /usr/lpp/IBM/cnj/bin/node
+  # If Node.JS is installed to /usr/lpp/IBM/cnj/bin/node
   # Then put "/usr/lpp/IBM/cnj" here, excluding "/bin/node".
   home: ""
 
