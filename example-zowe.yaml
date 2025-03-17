@@ -31,10 +31,9 @@ zowe:
 
   #-------------------------------------------------------------------------------
   # The setup section is used during setup only.
-  # It can be used by in any of the setup options available, such as
-  # * The JCL samples within Zowe's SZWESAMP data set.
-  # * The z/OSMF workflows.
-  # * The "zwe install" and "zwe init" commands.
+  # It can be used by a variety of install & configure options,
+  # As seen in the documentation:
+  # https://docs.zowe.org/stable/user-guide/zos-components-installation-checklist
   #-------------------------------------------------------------------------------
   setup:
     # MVS data set related configurations
