@@ -126,7 +126,7 @@ zowe:
     keystore:
       # Type of certificate storage. Valid values are: PKCS12, JCERACFKS. APIML additionally supports: JCEKS, JCECCAKS, JCECCARACFKS, or JCEHYBRIDRACFKS
       type: JCERACFKS
-      # if keyrings, the format is safkeyring:////stcusername/KeyName
+      # if keyrings, the format is safkeyring://stcusername/KeyName
       # for PKCS12, it is instead the path to the PKCS12 file.
       file: safkeyring://<stc_username>/<keyring_name>
       # "password" should either be the value you set when PKCS12, or literally "password" for keyrings.
