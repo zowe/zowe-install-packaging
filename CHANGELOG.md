@@ -15,6 +15,7 @@ All notable changes to the Zowe Installer will be documented in this file.
 - Enhancement: new javascript funtion `getStatvfs()` to obtain information about the file sysytem [#3994](https://github.com/zowe/zowe-install-packaging/pull/3994)
 - Enhancement: command `zwe diagnose` in javascript only [#4061](https://github.com/zowe/zowe-install-packaging/pull/4061)
 - Enhancement: schema validation update for `zowe.job.name` and `zowe.job.prefix` [#4060](https://github.com/zowe/zowe-install-packaging/pull/4060)
+- Enhancement: PEM certificates are no longer created by default when creating PKCS12 keystores with `zwe init`. You can use `zwe init --create-pem` instead. [#???](https://github.com/zowe/zowe-install-packaging/pull/???)
 
 ## `3.0.0`
 
