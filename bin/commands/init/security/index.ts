@@ -24,8 +24,8 @@ export function execute(dryRun?: boolean, ignoreSecurityFailures?: boolean) {
   common.requireZoweYaml();
   const ZOWE_CONFIG = config.getZoweConfig();
 
-  // read prefix and validate
-   const prefix=ZOWE_CONFIG.zowe.setup?.dataset?.prefix;
+  // read prefix and validate (zowe.setup.dataset in defaults)
+  const prefix=ZOWE_CONFIG.zowe.setup.dataset.prefix;
   if (!prefix) {
     common.printErrorAndExit(`Error ZWEL0157E: Zowe dataset prefix (zowe.setup.dataset.prefix) is not defined in Zowe YAML configuration file.`, undefined, 157);
   }
@@ -44,27 +44,11 @@ export function execute(dryRun?: boolean, ignoreSecurityFailures?: boolean) {
 
   let securityProduct = zos.getEsm();
   if (!securityProduct || securityProduct == 'NONE') {
-    securityProduct = ZOWE_CONFIG.zowe.setup?.security?.product;
+    securityProduct = ZOWE_CONFIG.zowe.setup.security.product;
     if (!securityProduct) {
       common.printErrorAndExit(`Error ZWEL0157E: Zowe dataset prefix (zowe.setup.dataset.prefix) is not defined in Zowe YAML configuration file.`, undefined, 157);
     }
   }
-
-  ['admin', 'stc', 'sysProg'].forEach((key)=> {
-    if (!ZOWE_CONFIG.zowe.setup?.security?.groups || !ZOWE_CONFIG.zowe.setup?.security?.groups[key]) {
-      common.printErrorAndExit(`Error ZWEL0157E: (zowe.setup.dataset.groups.${key}) is not defined in Zowe YAML configuration file.`, undefined, 157);
-    }
-  });
-  ['zowe', 'zis'].forEach((key)=> {
-    if (!ZOWE_CONFIG.zowe.setup?.security?.users || !ZOWE_CONFIG.zowe.setup?.security?.users[key]) {
-      common.printErrorAndExit(`Error ZWEL0157E: (zowe.setup.dataset.users.${key}) is not defined in Zowe YAML configuration file.`, undefined, 157);
-    }
-  });
-  ['zowe', 'zis', 'aux'].forEach((key)=> {
-    if (!ZOWE_CONFIG.zowe.setup?.security?.stcs || !ZOWE_CONFIG.zowe.setup?.security?.stcs[key]) {
-      common.printErrorAndExit(`Error ZWEL0157E: (zowe.setup.dataset.stcs.${key}) is not defined in Zowe YAML configuration file.`, undefined, 157);
-    }
-  });
 
   const securityPrefix = securityProduct.substring(0,3);
 
