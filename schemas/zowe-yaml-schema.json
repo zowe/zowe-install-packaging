@@ -441,37 +441,56 @@
                 }
               }
             },
-            "infinispan": {
+            "infinispan":{
               "type": "object",
-              "additionalProperties": false,
-              "description": "VSAM configurations if you are using VSAM as Caching Service storage",
+              "description": "Use Infinispan as the selected storage solution",
               "properties": {
-                "mode": {
-                  "type": "string",
-                  "description": "VSAM data set with Record-Level-Sharing enabled or not",
-                  "enum": ["NONRLS", "RLS"],
-                  "default": "NONRLS"
-                },
-                "volume": {
-                  "type": "string",
-                  "description": "Volume name if you are using VSAM in NONRLS mode"
-                },
-                "storageClass": {
-                  "type": "string",
-                  "description": "Storage class name if you are using VSAM in RLS mode"
-                },
-                "name": {
-                  "anyOf": [
-                    { "type": "null" },
-                    { "type": "string", "maxLength": 0 },
-                    {
-                      "$ref": "/schemas/v2/server-common#zoweDatasetVsam",
-                      "description": "Data set name. Must match components.caching-service.storage.vsam.name"
-                    }
-                  ]
-                }
+                  "jgroups": {
+                      "type": "object",
+                      "description": "Data synchronization between Caching instances.",
+                      "properties": {
+                          "port": {
+                              "type": "integer",
+                              "description": "TCP port number",
+                              "default": 7600
+                          },
+                          "host": {
+                              "type": "string",
+                              "description": "TCP hostname"
+                          },
+                          "keyExchange": {
+                              "type": "object",
+                              "description": "Data encryption key exchange.",
+                              "properties": {
+                                  "port": {
+                                      "type": "integer",
+                                      "description": "TCP port number",
+                                      "default": 7601
+                                  }
+                              }
+                          }
+                      }
+                  },
+                  "persistence": {
+                      "type": "object",
+                      "description": "Where to persistently store caching data.",
+                      "properties": {
+                          "dataLocation": {
+                              "type": "string",
+                              "description": "File location where to store data."
+                          },
+                          "indexLocation": {
+                              "type": "string",
+                              "description": "File location where to store index."
+                          }
+                      }
+                  },
+                  "initialHosts": {
+                      "type": "string",
+                      "description": "Address of the other Caching services. Consists of jgroups port and host in the form of 'host[port]'."
+                  }
               }
-            }
+          }
           }
         },
         "runtimeDirectory": {
