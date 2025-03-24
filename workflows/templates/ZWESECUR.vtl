@@ -101,16 +101,16 @@
 #if($ibmTemplate == 'YES')
 //         EXPORT SYMLIST=*
 //*
-//         SET  PRODUCT=#[[{zowe.setup.security.product}]]#
-//         SET ADMINGRP=#[[{zowe.setup.security.groups.admin}]]#
-//         SET   STCGRP=#[[{zowe.setup.security.groups.stc}]]#
-//         SET ZOWEUSER=#[[{zowe.setup.security.users.zowe}]]#
-//         SET  ZISUSER=#[[{zowe.setup.security.users.zis}]]#
-//         SET  ZOWESTC=#[[{zowe.setup.security.stcs.zowe}]]#
-//         SET   ZISSTC=#[[{zowe.setup.security.stcs.zis}]]#
-//         SET   AUXSTC=#[[{zowe.setup.security.stcs.aux}]]#
-//         SET      HLQ=#[[{zowe.setup.dataset.prefix}]]#
-//         SET  SYSPROG=#[[{zowe.setup.security.groups.sysProg}]]#
+//         SET  PRODUCT={zowe.setup.security.product}
+//         SET ADMINGRP={zowe.setup.security.groups.admin}
+//         SET   STCGRP={zowe.setup.security.groups.stc}
+//         SET ZOWEUSER={zowe.setup.security.users.zowe}
+//         SET  ZISUSER={zowe.setup.security.users.zis}
+//         SET  ZOWESTC={zowe.setup.security.stcs.zowe}
+//         SET   ZISSTC={zowe.setup.security.stcs.zis}
+//         SET   AUXSTC={zowe.setup.security.stcs.aux}
+//         SET      HLQ={zowe.setup.dataset.prefix}
+//         SET  SYSPROG={zowe.setup.security.groups.sysProg}
 //*
 //* The sample RACF and ACF2 commands assume AUTOUID and AUTOGID are
 //* enabled. When this is not the case, or you are using Top Secret,
