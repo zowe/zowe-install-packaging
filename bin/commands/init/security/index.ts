@@ -43,17 +43,14 @@ export function execute(dryRun?: boolean, ignoreSecurityFailures?: boolean) {
   }
 
   let securityProduct: string;
+  let esmWarning = false;
   const securityProductReal = zos.getEsm();
   // zowe.setup.security.product in defaults
   const securityProductConfig = ZOWE_CONFIG.zowe.setup.security.product;
   if (securityProductReal && securityProductReal != 'NONE') {
       securityProduct = securityProductReal;
       if (securityProductReal != securityProductConfig) {
-          common.printMessage(``);
-          common.printMessage(`WARNING: External Security Manager detected: ${securityProductReal}`);
-          common.printMessage(`         Defined in Zowe YAML configuration file: zowe.setup.security.product=${securityProductConfig}`);
-          common.printMessage(`         Continue with ${securityProductReal}`);
-          common.printMessage(``);
+        esmWarning = true;
       }
   } else {
       securityProduct = securityProductConfig;
@@ -70,5 +67,10 @@ export function execute(dryRun?: boolean, ignoreSecurityFailures?: boolean) {
   common.printMessage(`WARNING: Due to the limitation of the ZWEI${securityPrefix} job, exit with 0 does not mean`);
   common.printMessage(`         the job is fully successful. Please check the job log to determine`);
   common.printMessage(`         if there are any messages indicating a problem.`);
+  if (esmWarning) {
+    common.printMessage(``);
+    common.printMessage(`         External Security Manager detected: ${securityProductReal}`);
+    common.printMessage(`         Defined in Zowe YAML configuration file: zowe.setup.security.product=${securityProductConfig}`);
+  }
   common.printMessage(``);
 }
