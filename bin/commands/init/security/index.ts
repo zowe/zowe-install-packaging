@@ -3,9 +3,9 @@
   under the terms of the Eclipse Public License v2.0 which
   accompanies this distribution, and is available at
   https://www.eclipse.org/legal/epl-v20.html
- 
+
   SPDX-License-Identifier: EPL-2.0
- 
+
   Copyright Contributors to the Zowe Project.
 */
 
@@ -29,9 +29,9 @@ export function execute(dryRun?: boolean, ignoreSecurityFailures?: boolean) {
   if (!prefix) {
     common.printErrorAndExit(`Error ZWEL0157E: Zowe dataset prefix (zowe.setup.dataset.prefix) is not defined in Zowe YAML configuration file.`, undefined, 157);
   }
-  
+
   // check if user passed --generate
-  const forceGen = !!std.getenv('ZWE_CLI_PARAMETER_GENERATE') 
+  const forceGen = !!std.getenv('ZWE_CLI_PARAMETER_GENERATE')
   if (forceGen) {
     initGenerate.execute();
   }
@@ -42,12 +42,21 @@ export function execute(dryRun?: boolean, ignoreSecurityFailures?: boolean) {
     return common.printErrorAndExit(`Error ZWEL0319E: zowe.setup.dataset.jcllib does not exist, cannot run. Run 'zwe init', 'zwe init generate', or submit JCL ${prefix}.SZWESAMP(ZWEGENER) before running this command.`, undefined, 319);
   }
 
-  let securityProduct = zos.getEsm();
-  if (!securityProduct || securityProduct == 'NONE') {
-    securityProduct = ZOWE_CONFIG.zowe.setup.security.product;
-    if (!securityProduct) {
-      common.printErrorAndExit(`Error ZWEL0157E: Zowe dataset prefix (zowe.setup.dataset.prefix) is not defined in Zowe YAML configuration file.`, undefined, 157);
-    }
+  let securityProduct: string;
+  const securityProductReal = zos.getEsm();
+  // zowe.setup.security.product in defaults
+  const securityProductConfig = ZOWE_CONFIG.zowe.setup.security.product;
+  if (securityProductReal && securityProductReal != 'NONE') {
+      securityProduct = securityProductReal;
+      if (securityProductReal != securityProductConfig) {
+          common.printMessage(``);
+          common.printMessage(`WARNING: External Security Manager detected: ${securityProductReal}`);
+          common.printMessage(`         Defined in Zowe YAML configuration file: zowe.setup.security.product=${securityProductConfig}`);
+          common.printMessage(`         Continue with ${securityProductReal}`);
+          common.printMessage(``);
+      }
+  } else {
+      securityProduct = securityProductConfig;
   }
 
   const securityPrefix = securityProduct.substring(0,3);
