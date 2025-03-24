@@ -1,4 +1,4 @@
-This command will run jcl based on the security product:
+This command will run JCL based on the security product:
   - (If RACF) ZWEIRAC
   - (If RACF and z/OS 2.4) ZWEIRACZ
   - (If TSS) ZWEITSS
