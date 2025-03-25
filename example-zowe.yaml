@@ -279,7 +279,7 @@ zowe:
 
   # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   # You can list your external domains on how you want to access Zowe.
-  # This should be the domain list you would like to put into your web browser's
+  # This should be the domain list you would like to put into your web browser
   # address bar.
   externalDomains:
     # this should be the domain name to access Zowe APIML Gateway
@@ -350,7 +350,7 @@ zowe:
   #   # ZSS ready
     - "ZWES1013I"
 
-  #   # Not limited to Zowe message ID's, you can specify your own string for example:
+  #   # Not limited to Zowe message IDs, you can specify your own string for example:
   #   - "ERROR"
 
   # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -358,7 +358,7 @@ zowe:
   launchScript:
     # Set to "debug" or "trace" to display extra debug information
     logLevel: "info"
-    # Set to "exit" if you'd like startup to exit if any component has an error in the configure stage, otherwise zwe will warn but continue.
+    # Set to "exit" if you would like startup to exit if any component has an error in the configure stage, otherwise zwe will warn but continue.
     onComponentConfigureFail: "warn"
 
   # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
