@@ -1,0 +1,45 @@
+TTLSRule ZoweServerRule
+{
+  LocalAddr All
+  RemoteAddr All
+  LocalPortRange 7551-7665 # Range covers all Zowe services
+  Jobname ZWE1* # Jobname according to zowe.job.prefix in zowe.yaml
+  Direction Inbound
+  TTLSGroupActionRef ServerGroupAction
+  TTLSEnvironmentActionRef ZoweServerEnvironmentAction
+  TTLSConnectionActionRef ZoweServerConnectionAction
+}
+
+TTLSGroupAction ServerGroupAction
+{
+  TTLSEnabled On
+}
+
+TTLSEnvironmentAction ZoweServerEnvironmentAction
+{
+  HandshakeRole ServerWithClientAuth
+  EnvironmentUserInstance 0
+  TTLSEnvironmentAdvancedParmsRef ServerEnvironmentAdvParms
+  TTLSKeyringParmsRef ZoweKeyring
+}
+
+TTLSConnectionAction ZoweServerConnectionAction
+{
+  HandshakeRole ServerWithClientAuth
+  TTLSCipherParmsRef CipherParms
+  TTLSConnectionAdvancedParmsRef ZoweConnectionAdvParms
+}
+
+TTLSConnectionAdvancedParms ZoweConnectionAdvParms
+{
+  ApplicationControlled Off
+  ServerCertificateLabel apimlcert # Specify the personal server certificate 
+  CertificateLabel apimlcert # Specify the personal server certificate
+  SecondaryMap Off
+}
+
+# Keyring, used for TLS, will be used also to load trusted certificates
+TTLSKeyringParms ZoweKeyring
+{
+  Keyring ZWEATTLS
+}

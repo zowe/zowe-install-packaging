@@ -51,6 +51,7 @@
     - zowe_zlux_terminal_telnet_port
     - zos_security_system
     - zowe_lock_keystore
+    - zowe_attls_policy_file
 - name: Show value of zowe_root_dir
   debug:
     msg: zowe_root_dir is {{ zowe_root_dir }}
@@ -327,6 +328,11 @@
       configs:
         "components.{{ item }}.enabled": "true"
     with_items: "{{ zowe_launch_components.split(',') }}"
+
+- name: Update AT-TLS zowe configuration
+  include_role: 
+    name: configure
+    tasks_from: configure_attls
 
 # ============================================================================
 - name: Show zowe.yaml before zwe init

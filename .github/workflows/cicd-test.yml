@@ -31,6 +31,7 @@ on:
           - SMPE PTF
           - Extensions
           - Keyring
+          - ATTLS
           - z/OS node v20
           - z/OS node v22
           - Non-strict Verify External Certificate
@@ -80,6 +81,7 @@ env:
   SMPE_FMID_TESTFILE: basic/install-fmid.ts
   SMPE_PTF_TESTFILE: basic/install-ptf.ts
   EXTENSIONS_TESTFILE: basic/install-ext.ts
+  ATTLS_TESTFILE: extended/at-tls/basic-install.ts
   KEYRING_TESTFILE: extended/keyring.ts
   ZOS_NODE_V20_TESTFILE: extended/node-versions/node-v20.ts
   ZOS_NODE_V22_TESTFILE: extended/node-versions/node-v22.ts
@@ -89,8 +91,8 @@ env:
   INFINISPAN_CACHING_STORAGE_METHOD_TESTFILE: extended/caching-storages/infinispan-storage.ts
   CONFIG_MANAGER_TESTFILE: extended/config-manager/enable-config-manager.ts
   GENERAL_API_DOCUMENTATION_TESTFILE: basic/install-api-gen.ts
-  ZOWE_NIGHTLY_TESTS_FULL: basic/install.ts(all);basic/install-ptf.ts(all)
-  ZOWE_RELEASE_TESTS_FULL: basic/install.ts(all);basic/install-ptf.ts(all);basic/install-ext.ts(any);extended/keyring.ts(all);extended/node-versions/node-v20.ts(any);extended/node-versions/node-v22.ts(any);extended/certificates/nonstrict-verify-external-certificate.ts(any);extended/caching-storages/infinispan-storage.ts(any);extended/config-manager/enable-config-manager.ts(any)
+  ZOWE_NIGHTLY_TESTS_FULL: basic/install.ts(all);basic/install-ptf.ts(all);extended/at-tls/basic-install.ts(any)
+  ZOWE_RELEASE_TESTS_FULL: basic/install.ts(all);basic/install-ptf.ts(all);basic/install-ext.ts(any);extended/keyring.ts(all);extended/node-versions/node-v20.ts(any);extended/node-versions/node-v22.ts(any);extended/certificates/nonstrict-verify-external-certificate.ts(any);extended/caching-storages/infinispan-storage.ts(any);extended/config-manager/enable-config-manager.ts(any);extended/at-tls/basic-install.ts(any)
 
 jobs:
   display-dispatch-event-id:
@@ -355,6 +357,7 @@ jobs:
         env:
           ANSIBLE_FORCE_COLOR: true
           TEST_SERVER: ${{ steps.more-test-prep.outputs.TEST_SERVER_NICKNAME }}
+          ZOWE_ATTLS_POLICY_FILE: ${{ secrets.ATTLS_POLICY_FILE }}
           ZOWE_BUILD_LOCAL: "${{ runner.temp }}/zowe/${{ steps.more-test-prep.outputs.ZOWE_ARTIFACTORY_FINAL_FILENAME }}"
           ZOWE_DOCKER_URL: ${{ steps.more-test-prep.outputs.ZOWE_TP_DOCKER_ARTIFACTORY_URL }}
           EXTENSIONS_LIST: ${{ steps.more-test-prep.outputs.EXTENSION_LIST }}

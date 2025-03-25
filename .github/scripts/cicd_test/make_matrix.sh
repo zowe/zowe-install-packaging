@@ -32,6 +32,10 @@ case $install_test_choice in
   test_file="$KEYRING_TESTFILE"
   ;;
 
+"ATTLS")
+  test_file=$ATTLS_TESTFILE
+  ;;
+
 "z/OS node v20")
   test_file="$ZOS_NODE_V20_TESTFILE"
   ;;
