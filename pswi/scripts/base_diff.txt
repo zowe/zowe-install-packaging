@@ -5,11 +5,8 @@
 <     #   product: RACF
 <     #   # security group name
 <     #   groups:
-<     #     # Zowe admin user group
 <     #     admin: ZWEADMIN
-<     #     # Zowe STC group
 <     #     stc: ZWEADMIN
-<     #     # Zowe SysProg group
 <     #     sysProg: ZWEADMIN
 <     #   # security user name
 <     #   users:
@@ -32,11 +29,8 @@
 >       product: RACF
 >       # security group name
 >       groups:
->         # Zowe admin user group
 >         admin: ZWEADMIN
->         # Zowe STC group
 >         stc: ZWEADMIN
->         # Zowe SysProg group
 >         sysProg: ZWEADMIN
 >       # security user name
 >       users:
