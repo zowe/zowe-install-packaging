@@ -57,14 +57,12 @@
 <       # Type of certificate storage. Valid values are: PKCS12, JCERACFKS. APIML additionally supports: JCEKS, JCECCAKS, JCECCARACFKS, or JCEHYBRIDRACFKS
 <       type: PKCS12
 <       pkcs12:
+<         directory: /var/zowe/keystore
 ---
 >     # certificate:
 >       # Type of certificate storage. Valid values are: PKCS12, JCEKS, JCECCAKS, JCERACFKS, JCECCARACFKS, or JCEHYBRIDRACFKS
 >       # type: 
 >       # pkcs12:
-106c106
-<         directory: /var/zowe/keystore
----
 >         # directory: 
 245c245
 <   runtimeDirectory: ""
