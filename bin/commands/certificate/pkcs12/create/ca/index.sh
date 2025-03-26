@@ -22,7 +22,7 @@ keystore="${ZWE_CLI_PARAMETER_KEYSTORE_DIR}/${ZWE_CLI_PARAMETER_ALIAS}/${ZWE_CLI
 if [ -f "${keystore}" ]; then
   if [ "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITE}" = "true" ]; then
     # warning
-    print_message "Warning ZWEL0300W: Keystore \"${keystore}\" already exists. This keystore will be overwritten during configuration."
+    print_message "Warning ZWEL0300W: Keystore \"${keystore}\" already exists. This keystore will be overwritten."
     rm -fr "${ZWE_CLI_PARAMETER_KEYSTORE_DIR}/${ZWE_CLI_PARAMETER_ALIAS}"
   else
     # error
