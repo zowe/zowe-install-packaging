@@ -1,15 +1,1 @@
-{
-  "lockAcquiredTime": "Wed Mar 26 2025 20:51:19 GMT+0000 (Coordinated Universal Time)",
-  "uid": "1743022279127599281",
-  "repository": {
-    "owner": "zowe",
-    "repo": "zowe-install-packaging"
-  },
-  "branch": "user/markackert/jfrog-rt-updates",
-  "workflow": "Zowe CICD Integration Tests",
-  "job": "cicd-test",
-  "actor": "zowe-robot",
-  "runId": 14093197884,
-  "runNumber": 6310,
-  "link": "https://github.com/zowe/zowe-install-packaging/actions/runs/14093197884"
-}
+""
