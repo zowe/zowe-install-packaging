@@ -57,7 +57,8 @@ export function execute(doNotExit: Boolean, javaHome: string): void {
   if (fs.fileExists(manifest)) {
       manifestContent = xplatform.loadFileUTF8(manifest, xplatform.AUTO_DETECT);
   } else {
-      common.printErrorAndExit(`Error ZWEL0150E: Failed to find file "${manifest}". Zowe runtimeDirectory is invalid.`, undefined, 150);
+      const missingFile = manifest;
+      common.printErrorAndExit(`Error ZWEL0150E: Failed to find file ${missingFile}. Zowe runtimeDirectory is invalid.`, undefined, 150);
   }
   if (manifestContent) {
       manifestJson = JSON.parse(manifestContent);
@@ -68,18 +69,20 @@ export function execute(doNotExit: Boolean, javaHome: string): void {
   const zoweVersion = manifestJson.version;
 
   if (!fs.fileExists(`${zoweRuntime}/bin/utils/HashFiles.class`)) {
-      common.printErrorAndExit(`Error ZWEL0150E: Failed to find file "${zoweRuntime}/bin/utils/HashFiles.class". Zowe runtimeDirectory is invalid.`, undefined, 150);
+      const missingFile = `${zoweRuntime}/bin/utils/HashFiles.class`;
+      common.printErrorAndExit(`Error ZWEL0150E: Failed to find file ${missingFile}. Zowe runtimeDirectory is invalid.`, undefined, 150);
   }
 
   if (!fs.fileExists(`${zoweRuntime}/fingerprint/RefRuntimeHash-${zoweVersion}.txt`)) {
-      common.printErrorAndExit(`Error ZWEL0150E: Failed to find file "${zoweRuntime}/fingerprint/RefRuntimeHash-${zoweVersion}.txt". Zowe runtimeDirectory is invalid.`, undefined, 150);
+      const missingFile = `${zoweRuntime}/fingerprint/RefRuntimeHash-${zoweVersion}.txt`;
+      common.printErrorAndExit(`Error ZWEL0150E: Failed to find file ${missingFile}. Zowe runtimeDirectory is invalid.`, undefined, 150);
   }
 
   common.printMessage('- Create Zowe directory file list');
   const allFiles = fs.createTmpFile(tmpFilePrefix);
   shell.execOutSync('sh', '-c', `cd '${zoweRuntime}' && find . -name ./SMPE -prune -o -name "./ZWE*" -prune -o -name ./fingerprint -prune -o -type f -print > "${allFiles}"`);
   if (!fs.fileExists(allFiles)) {
-    common.printErrorAndExit(`Error ZWEL0151E: Failed to create temporary file "${allFiles}". Please check permission or volume free space.`, undefined, 151);
+    common.printErrorAndExit(`Error ZWEL0151E: Failed to create temporary file ${allFiles}. Please check permission or volume free space.`, undefined, 151);
   }
 
   common.printDebug(`  * File list created as ${allFiles}`);
@@ -122,7 +125,8 @@ export function execute(doNotExit: Boolean, javaHome: string): void {
     common.printMessage(`- Find ${commStepName} files`);
     const commResult = shell.execOutSync('sh', '-c', `cd '${zoweRuntime}' && comm -${commParameter} "${zoweRuntime}/fingerprint/RefRuntimeHash-${zoweVersion}.txt" "${customHashes}"`);
     if (commResult.rc) {
-      common.printError(`  * Error ZWEL0151E: Failed to compare hashes of fingerprint/RefRuntimeHash-${zoweVersion}.txt and current.`);
+      const hashFile = `fingerprint/RefRuntimeHash-${zoweVersion}.txt`;
+      common.printError(`  * Error ZWEL0320E: Failed to compare hashes of ${hashFile} and current.`);
       common.printError(`  * Exit code: ${commResult.rc}`);
       if (commResult.out) {
         common.printError(`  * Output:`);
