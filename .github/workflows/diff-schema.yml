@@ -34,7 +34,7 @@ jobs:
       - name: '[Build] Make diff'
         run: git diff ${{ env.FROM }} ${{ env.TO }} -- schemas > schemas.diff
       - name: '[Upload]'
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: schemas.diff
           path: schemas.diff

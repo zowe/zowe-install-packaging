@@ -32,6 +32,11 @@ All notable changes to the Zowe Installer will be documented in this file.
 
 #### Minor enhancements/defect fixes
 
+## `2.18.1`
+- Bugfix: When logging `zwe` command, sometimes the log has wrong file tag and the log is unreadable. [#4068](https://github.com/zowe/zowe-install-packaging/pull/4068)
+- Bugfix: When `--log-dir` parameter for `zwe` command is a file, there might be an error "InternalError: stack overflow". [#4063](https://github.com/zowe/zowe-install-packaging/pull/4063)
+- Bugfix: Error message `ZWEL0141E` did not print user ID. [#3971](https://github.com/zowe/zowe-install-packaging/pull/3971)
+
 ## `2.17.0`
 
 ## New features and enhancements

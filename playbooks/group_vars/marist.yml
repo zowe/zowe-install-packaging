@@ -9,6 +9,7 @@ zowe_keystore_dir: /ZOWE/tmp/keystore
 zowe_install_logs_dir: /ZOWE/tmp/logs
 zowe_dataset_prefix: ZOWEAD3.ZWE
 zowe_apiml_verify_certficates_of_services: false
+zos_java_home: /ZOWE/node/J8.0_64
 # enable Non-Strict verify certificates by default
 zowe_apiml_nonstrict_verify_certficates_of_services: true
 zowe_jcllib: ZOWEAD3.ZWE.JCLLIB

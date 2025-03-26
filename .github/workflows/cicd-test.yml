@@ -1,4 +1,11 @@
 name: Zowe CICD Integration Tests
+
+permissions:
+  contents: write
+  issues: write
+  pull-requests: write
+  statuses: write
+  
 on:   
   workflow_dispatch:
     inputs:
@@ -9,10 +16,10 @@ on:
         default: 'Any zzow servers'
         options: 
           - Any zzow servers
-          - zzow06
-          - zzow07
-          - zzow08
-          - zzow06,zzow07,zzow08
+          - zzow09
+          - zzow10
+          - zzow11
+          - zzow09,zzow10,zzow11
       install-test:
         description: 'Choose Install Test'
         type: choice
@@ -24,8 +31,10 @@ on:
           - SMPE PTF
           - Extensions
           - Keyring
-          - z/OS node v18
           - z/OS node v20
+          - z/OS node v22
+          - z/OS java 11 Pax
+          - z/OS java 11 Keyring
           - Non-strict Verify External Certificate
           - Install PTF Twice
           - VSAM Caching Storage Method
@@ -62,8 +71,8 @@ env:
   DEFAULT_ZOWE_EXT_ARTIFACTORY_PATTERN: libs-snapshot-local/org/zowe/{ext-name}/*/{ext-name}-*.pax
 
   # below block can be overwritten, adjusted by DevOps only
-  # ZOS_NODE_VERSION more to choose from: v16.20.1,  v18.16.0
-  ZOS_NODE_VERSION: v16.20.1
+  # ZOS_NODE_VERSION more to choose from: v18.16.0, v20.11.0
+  ZOS_NODE_VERSION: v18.16.0
   CLIENT_NODE_VERSION: v12.18.3
   INSTALL_TEST_DEBUG_INFORMATION: zowe-install-test:*
   SANITY_TEST_DEBUG_INFORMATION: zowe-sanity-test:*
@@ -74,8 +83,10 @@ env:
   SMPE_PTF_TESTFILE: basic/install-ptf.ts
   EXTENSIONS_TESTFILE: basic/install-ext.ts
   KEYRING_TESTFILE: extended/keyring.ts
-  ZOS_NODE_V18_TESTFILE: extended/node-versions/node-v18.ts
   ZOS_NODE_V20_TESTFILE: extended/node-versions/node-v20.ts
+  ZOS_NODE_V22_TESTFILE: extended/node-versions/node-v22.ts
+  ZOS_JAVA_11_PAX_TESTFILE: extended/java-versions/java11/install-pax.ts
+  ZOS_JAVA_11_KYRNG_TESTFILE: extended/java-versions/java11/install-keyring.ts
   NON_STRICT_VERIFY_EXTERNAL_CERTIFICATE_TESTFILE: extended/certificates/nonstrict-verify-external-certificate.ts
   INSTALL_PTF_TWICE_TESTFILE: extended/install-ptf-two-times.ts
   VSAM_CACHING_STORAGE_METHOD_TESTFILE: extended/caching-storages/vsam-storage.ts
@@ -83,7 +94,7 @@ env:
   CONFIG_MANAGER_TESTFILE: extended/config-manager/enable-config-manager.ts
   GENERAL_API_DOCUMENTATION_TESTFILE: basic/install-api-gen.ts
   ZOWE_NIGHTLY_TESTS_FULL: basic/install.ts(all);basic/install-ptf.ts(all)
-  ZOWE_RELEASE_TESTS_FULL: basic/install.ts(all);basic/install-ptf.ts(all);basic/install-ext.ts(any);extended/keyring.ts(all);extended/node-versions/node-v18.ts(zzow08);extended/node-versions/node-v20.ts(any);extended/certificates/nonstrict-verify-external-certificate.ts(any);extended/caching-storages/infinispan-storage.ts(any);extended/config-manager/enable-config-manager.ts(any)
+  ZOWE_RELEASE_TESTS_FULL: basic/install.ts(all);basic/install-ptf.ts(all);basic/install-ext.ts(any);extended/keyring.ts(all);extended/node-versions/node-v20.ts(any);extended/node-versions/node-v22.ts(any);extended/certificates/nonstrict-verify-external-certificate.ts(any);extended/caching-storages/infinispan-storage.ts(any);extended/config-manager/enable-config-manager.ts(any)
 
 jobs:
   display-dispatch-event-id:
@@ -138,7 +149,7 @@ jobs:
           node-version: '18'
 
       - name: '[Prep 3] Cache node modules'
-        uses: actions/cache@v2
+        uses: actions/cache@v4
         with:
           # npm cache files are stored in `~/.npm` on Linux/macOS
           path: |
@@ -291,12 +302,15 @@ jobs:
               case 'Keyring':
                 eta = 53
                 break;
-              case 'z/OS node v18':
-                eta = 45
-                break;
               case 'z/OS node v20':
                 eta = 45
                 break;
+              case 'z/OS java 11 Pax':
+                eta = 53
+                break;
+              case 'z/OS java 11 Keyring':
+                eta = 53
+                break;q
               case 'Infinispan Caching Storage Method':
                 eta = 51
                 break;
@@ -378,7 +392,7 @@ jobs:
 
       - name: '[After Test 2] Upload test report'
         if: always()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: InstallTestReports-${{ env.TEST_NAME }}-${{ steps.more-test-prep.outputs.TEST_SERVER_NICKNAME }}-${{ github.run_id }}-${{ env.CURRENT_TIME }}
           path: ${{ env.INSTALL_TEST_PATH }}/reports/
