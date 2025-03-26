@@ -1115,7 +1115,6 @@ echo '    # remove the "pem" section if using keyrings.' >> "${instance-zowe_run
 echo '    pem:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '      key: /global/zowe/keystore/localhost/localhost.key' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '      certificate: /global/zowe/keystore/localhost/localhost.cer' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '      #  if keyrings, the format is "safkeyring://stcusername/KeyName&ca name"' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '      certificateAuthorities: /global/zowe/keystore/local_ca/local_ca.cer' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '  # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
