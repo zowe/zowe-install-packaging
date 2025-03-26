@@ -18,7 +18,7 @@ import {
   KEYSTORE_MODE_KEYRING,
 } from '../../../constants';
 
-const testServer = 'marist-7';
+const testServer = 'marist-10';
 const testSuiteName = 'Test convenience build installation with keystore pointing to a TSS keyring';
 describe(testSuiteName, () => {
   beforeAll(() => {

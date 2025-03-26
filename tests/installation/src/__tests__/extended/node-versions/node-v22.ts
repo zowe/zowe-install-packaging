@@ -5,24 +5,18 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  *
- * Copyright IBM Corporation 2020
+ * Copyright Zowe Contributors 2024
  */
 
 import {
   checkMandatoryEnvironmentVariables,
   installAndVerifyConvenienceBuild,
   showZoweRuntimeLogs,
-} from '../../../../utils';
-import {TEST_TIMEOUT_CONVENIENCE_BUILD} from '../../../../constants';
+} from '../../../utils';
+import { TEST_TIMEOUT_CONVENIENCE_BUILD } from '../../../constants';
 
-/**
- * Define this test should run in a specific worker
- *
- * @worker marist-9
- */
-// hard code to use marist-9 which we started with ACF2
-const testServer = 'marist-9';
-const testSuiteName = 'Test convenience build installation with ACF2';
+const testServer = process.env.TEST_SERVER;
+const testSuiteName = 'Test convenience build installation with node.js v22';
 describe(testSuiteName, () => {
   beforeAll(() => {
     // validate variables
@@ -38,6 +32,7 @@ describe(testSuiteName, () => {
       {
         'zowe_build_local': process.env['ZOWE_BUILD_LOCAL'],
         'zowe_custom_for_test': 'true',
+        'zos_node_home': '/ZOWE/node/node-v22.10.0',
         'zowe_lock_keystore': 'false',
       }
     );

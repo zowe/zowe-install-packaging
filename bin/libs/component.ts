@@ -387,6 +387,32 @@ export function findAllLaunchComponents2(): string[] {
   });
 }
 
+function getBooleanEnv(variableName) {
+  const value = std.getenv(`${variableName}`);
+  if (value === "true") {
+      return true
+  }
+  if (value === "false") {
+      return false
+  }
+  return undefined
+}
+
+
+function isClientAttls() {
+  const clientGlobalAttls = getBooleanEnv('ZWE_zowe_network_client_tls_attls');
+  const serverGlobalAttls = getBooleanEnv('ZWE_zowe_network_server_tls_attls');
+  const clientLocalAttls = getBooleanEnv('ZWE_components_zaas_zowe_network_client_tls_attls');
+  const serverLocalAttls = getBooleanEnv('ZWE_components_zaas_zowe_network_server_tls_attls');
+  const clientAttls = clientGlobalAttls || clientLocalAttls;
+  if ((clientGlobalAttls !== false) && (clientLocalAttls !== false) && (!clientAttls)) {
+    // If client attls not explicitly false OR truthy, have client follow server attls variable. it simplifies common case in which users want both.
+    return serverGlobalAttls || serverLocalAttls;
+  } else {
+    return clientAttls;
+  }
+}
+
 export function processComponentApimlStaticDefinitions(componentDir: string): boolean {
   const STATIC_DEF_DIR=std.getenv('ZWE_STATIC_DEFINITIONS_DIR');
   if (!STATIC_DEF_DIR) {
@@ -418,6 +444,22 @@ export function processComponentApimlStaticDefinitions(componentDir: string): bo
 
         const contents = xplatform.loadFileUTF8(path,xplatform.AUTO_DETECT);
         if (contents) {
+          const zosmfScheme = std.getenv("ZOSMF_SCHEME");
+          const attls = isClientAttls()
+          const schemeEnv = std.getenv("ZWE_zOSMF_scheme");
+
+          let scheme = "https";
+          
+          if (zosmfScheme) {
+            scheme = zosmfScheme;
+          } else if (schemeEnv) {
+            scheme = schemeEnv;
+          } else if (attls) {
+            scheme = "http";
+          }
+          
+          std.setenv('ZOSMF_SCHEME', scheme);
+
           const resolvedContents = varlib.resolveShellTemplate(contents);
 
           const zweCliParameterHaInstance=std.getenv("ZWE_CLI_PARAMETER_HA_INSTANCE");

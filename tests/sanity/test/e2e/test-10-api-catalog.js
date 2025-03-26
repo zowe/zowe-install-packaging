@@ -45,7 +45,7 @@ describe(`test ${APP_TO_TEST}`, function() {
     // load MVD login page
     await loginMVD(
       driver,
-      `https://${process.env.ZOWE_EXTERNAL_HOST}:${process.env.ZOWE_ZLUX_HTTPS_PORT}/`,
+      `https://${process.env.ZOWE_EXTERNAL_HOST}:${process.env.ZOWE_API_MEDIATION_GATEWAY_HTTP_PORT}/zlux/ui/v1/ZLUX/plugins/org.zowe.zlux.bootstrap/web/`,
       process.env.SSH_USER,
       process.env.SSH_PASSWD
     );
@@ -79,6 +79,8 @@ describe(`test ${APP_TO_TEST}`, function() {
     try {
       const searchBox = await waitUntilElement(driver, '.search-bar');
       expect(searchBox).to.be.an('object');
+      await saveScreenshotWithIframeAppContext(this, driver, testName, 'login-pre-success', APP_TO_TEST, MVD_IFRAME_APP_CONTENT);
+
     } catch (e) {
       // try to save screenshot for debug purpose
       await saveScreenshotWithIframeAppContext(this, driver, testName, 'login-failed', APP_TO_TEST, MVD_IFRAME_APP_CONTENT);

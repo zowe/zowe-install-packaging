@@ -1,0 +1,49 @@
+# This link checker focuses on covering end-user facing links, not developer documentation.
+#   This means we cover the smp/e, pswi, and zwe content.
+# The lychee toml files are set to ignore links which popped up in comments or variables.
+permissions: read-all
+
+name: Link Check CI
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+  push:
+    branches:
+    - 'v3.x/staging'
+    - 'v2.x/staging'
+  workflow_dispatch:
+
+jobs:
+  lychee-link-check:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+    - name: Link Checker
+      id: lychee
+      uses: lycheeverse/lychee-action@f81112d0d2814ded911bd23e3beaa9dda9093915 # v2.1.0
+      with:
+        fail: true
+        format: json
+        output: lychee_output.json
+        args: --config ./.github/lychee.toml --no-progress --verbose --max-retries 10 'bin/**/*' 'smpe/**/*' 'workflows/**/*'
+
+    - name: Output failed links in console
+      id: quick-output
+      if: always()
+      run: |
+        if [[ -f "lychee_output.json" ]]; then
+          jq .fail_map lychee_output.json
+        else
+          echo "lychee command failed and didn't produce output"
+        fi
+
+    - name: Publish Output
+      id: publish
+      if: always()
+      uses: actions/upload-artifact@b4b15b8c7c6ac21ea08fcf65892d2ee8f75cf882
+      with: 
+        name: lychee_results.json
+        path: lychee_output.json

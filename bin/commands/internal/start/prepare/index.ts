@@ -75,7 +75,7 @@ function prepareLogDirectory() {
   if (logDir) {
     os.mkdir(logDir, 0o750);
     if (!fs.isDirectoryWritable(logDir)) {
-      common.printFormattedError("ZWELS", "zwe-internal-start-prepare,prepare_log_directory", `ZWEL0141E: User $(get_user_id) does not have write permission on ${logDir}.`);
+      common.printFormattedError("ZWELS", "zwe-internal-start-prepare,prepare_log_directory", `ZWEL0141E: User ${user} does not have write permission on ${logDir}.`);
       std.exit(141);
     }
   }
@@ -172,12 +172,11 @@ function globalValidate(enabledComponents:string[]): void {
         privateErrors++;
         common.printFormattedError('ZWELS', "zwe-internal-start-prepare,global_validate", "Zosmf validation failed");
       }
-    } else if (std.getenv('ZWE_components_gateway_apiml_security_auth_provider') == "zosmf") {
-      let zosmfOk = zosmf.validateZosmfAsAuthProvider(zosmfHost, zosmfPort, 'zosmf');
-      if (!zosmfOk) {
-        privateErrors++;
-        common.printFormattedError('ZWELS', "zwe-internal-start-prepare,global_validate", "Zosmf validation failed");
-      }
+    }
+    if (!enabledComponents.includes('discovery') && std.getenv('ZWE_components_gateway_apiml_security_auth_provider') == "zosmf") {
+      privateErrors++;
+      common.printError("Using z/OSMF as 'components.gateway.apiml.security.auth.provider' is not possible: discovery is disabled.");
+      common.printFormattedError('ZWELS', "zwe-internal-start-prepare,global_validate", "Zosmf validation failed");
     }
   }
   

@@ -47,14 +47,3 @@ export function validateZosmfHostAndPort(zosmfHost: string, zosmfPort: number): 
   }
   return zosmfCheckPassed;
 }
-
-//TODO isnt this completely backwards?
-export function validateZosmfAsAuthProvider(zosmfHost: string, zosmfPort: number, authProvider: string): boolean {
-  if (zosmfHost && zosmfPort) {
-    if (authProvider == 'zosmf') {
-      common.printError("z/OSMF is not configured. Using z/OSMF as authentication provider is not supported.");
-      return true;
-    }
-  }
-  return false;
-}
