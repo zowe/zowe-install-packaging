@@ -13,6 +13,7 @@ import * as std from 'cm_std';
 import * as zos from 'zos';
 import * as common from '../../../libs/common';
 import * as config from '../../../libs/config';
+import * as json from '../../../libs/json';
 import * as zoslib from '../../../libs/zos';
 import * as zosJes from '../../../libs/zos-jes';
 import * as initGenerate from '../generate/index';
@@ -69,8 +70,19 @@ export function execute(dryRun?: boolean, ignoreSecurityFailures?: boolean) {
   common.printMessage(`         if there are any messages indicating a problem.`);
   if (esmWarning) {
     common.printMessage(``);
-    common.printMessage(`         External Security Manager detected: ${securityProductReal}`);
-    common.printMessage(`         Defined in Zowe YAML configuration file: zowe.setup.security.product=${securityProductConfig}`);
-  }
+    const updateConfig = !!std.getenv('ZWE_CLI_PARAMETER_UPDATE_CONFIG');
+    const configOrig = std.getenv('ZWE_PRIVATE_CONFIG_ORIG');
+    common.printLevel1Message(`Update security configuration to ${configOrig}`);
+    if (!updateConfig) {
+      common.printMessage(`Please manually update to these values:`);
+      common.printMessage('zowe:');
+      common.printMessage('  setup:');
+      common.printMessage('    security');
+      common.printMessage(`      product: ${securityProductReal}`);
+    } else {
+      json.updateZoweYaml(configOrig, '.zowe.setup.security.product', securityProductReal);
+      common.printLevel2Message(`Zowe configuration is updated successfully.`);
+    }
+}
   common.printMessage(``);
 }
