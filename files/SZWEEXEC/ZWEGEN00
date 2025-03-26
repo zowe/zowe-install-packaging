@@ -198,6 +198,7 @@ end
 */
 
 if COMPARE('RCVT', CVTRAC_VAL) = 0 then do
+  CFG.zowe.setup.security.product = 'RACF'
   x = DeleteDataSet(jclCopy'(ZWEIKRA1)')
   x = DeleteDataSet(jclCopy'(ZWEIKRA2)')
   x = DeleteDataSet(jclCopy'(ZWEIKRA3)')
@@ -212,6 +213,7 @@ if COMPARE('RCVT', CVTRAC_VAL) = 0 then do
   x = DeleteDataSet(jclCopy'(ZWENOKRT)')
 end
 if COMPARE('RTSS', CVTRAC_VAL) = 0 then do
+  CFG.zowe.setup.security.product = 'TSS'
   x = DeleteDataSet(jclCopy'(ZWEIKRA1)')
   x = DeleteDataSet(jclCopy'(ZWEIKRA2)')
   x = DeleteDataSet(jclCopy'(ZWEIKRA3)')
@@ -226,6 +228,7 @@ if COMPARE('RTSS', CVTRAC_VAL) = 0 then do
   x = DeleteDataSet(jclCopy'(ZWENOKRR)')
 end
 if COMPARE('ACF2', CVTRAC_VAL) = 0 then do
+  CFG.zowe.setup.security.product = 'ACF2'
   x = DeleteDataSet(jclCopy'(ZWEIKRT1)')
   x = DeleteDataSet(jclCopy'(ZWEIKRT2)')
   x = DeleteDataSet(jclCopy'(ZWEIKRT3)')
