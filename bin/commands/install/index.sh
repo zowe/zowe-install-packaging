@@ -48,7 +48,7 @@ while read -r line; do
   if [ "${ds_existence}" = "true" ]; then
     if [ "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITE}" = "true" ]; then
       # warning
-      print_message "Warning ZWEL0300W: ${prefix}.${ds} already exists. Members in this data set will be overwritten."
+      print_message "Warning ZWEL0300W: ${prefix}.${ds} already exists. This dataset will be overwritten."
     else
       # print_error_and_exit "Error ZWEL0158E: ${prefix}.${ds} already exists." "" 158
       # warning
