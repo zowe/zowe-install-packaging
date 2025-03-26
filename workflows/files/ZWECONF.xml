@@ -1809,6 +1809,7 @@ echo '      # truststore usually has same values as keystore (minus alias), but 
 echo '      type: $!{instance-zowe_certificate_truststore_type}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '      file: $!{instance-zowe_certificate_truststore_file}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '      password: $!{instance-zowe_certificate_truststore_password}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '    # remove the "pem" section if using keyrings.' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '    pem:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '      key: $!{instance-zowe_certificate_pem_key}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '      certificate: $!{instance-zowe_certificate_pem_certificate}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
