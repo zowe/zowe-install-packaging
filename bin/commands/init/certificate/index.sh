@@ -481,6 +481,7 @@ else # JCE* content
     print_message "      type: ${cert_type}"
     print_message "      file: \"safkeyring://${keyring_owner}/${keyring_name}\""
     print_message "      password: \"password\""
+    print_message ""
     print_level2_message "Zowe configuration requires manual updates."
   fi
 fi
