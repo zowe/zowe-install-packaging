@@ -996,6 +996,10 @@
       "additionalProperties": false,
       "description": "Optional, advanced network configuration parameters",
       "properties": {
+        "proxyType": {
+          "type": "string",
+          "description": "This is a variable derived from gateway's ATTLS state to be used by servers proxied through it in eureka or static definitions"
+        },
         "server": {
           "type": "object",
           "description": "Optional, advanced network configuration parameters for Zowe servers",
