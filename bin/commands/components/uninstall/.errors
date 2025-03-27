@@ -3,4 +3,3 @@ ZWEL0307E|307|Component %s cannot be uninstalled, because it is a core component
 ZWEL0308W|308|Component directory %s could not be removed, rc=%s.
 ZWEL0309W|309|Skipping removal of component %s because it is a core component.
 ZWEL0312W|312|Component %s marked for removal but is not installed.
-ZWEL????E|???|Command requires zowe.useConfigmgr=true to use.
