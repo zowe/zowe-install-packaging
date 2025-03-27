@@ -1009,7 +1009,7 @@
             },
             "vipaIp": {
               "type": "string",
-              "description": "The IP address which all of the Zowe servers will be binding to. If you are using multiple DIPVA addresses, do not use this option."
+              "description": "The IP address which all of the Zowe servers will be binding to. If you are using multiple DVIPA addresses, do not use this option."
             },
             "validatePortFree": {
               "type": "boolean",

@@ -419,7 +419,7 @@ else # JCE* content
   # should we clean up before creating new
   if [ "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITE}" = "true" ]; then
     # warning
-    print_message "Warning ZWEL0300W: Keyring \"safkeyring://${keyring_owner}/${keyring_name}\" will be overwritten during configuration."
+    print_message "Warning ZWEL0300W: Keyring \"safkeyring://${keyring_owner}/${keyring_name}\" already exists. This keyring will be overwritten."
 
     keyring_run_zwenokyr_jcl "${prefix}" "${jcllib}" "${security_product}"
   else
