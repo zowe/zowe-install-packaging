@@ -1,1 +1,15 @@
-""
+{
+  "lockAcquiredTime": "Thu Mar 27 2025 14:48:31 GMT+0000 (Coordinated Universal Time)",
+  "uid": "1743086911139218623",
+  "repository": {
+    "owner": "zowe",
+    "repo": "zowe-install-packaging"
+  },
+  "branch": "bugfix/v3/remove-pem-from-keyring",
+  "workflow": "Zowe CICD Integration Tests",
+  "job": "cicd-test",
+  "actor": "zowe-robot",
+  "runId": 14109521458,
+  "runNumber": 6325,
+  "link": "https://github.com/zowe/zowe-install-packaging/actions/runs/14109521458"
+}
