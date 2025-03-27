@@ -28,7 +28,7 @@
 //* Note(s):
 //*
 //* 1. THE USER ID THAT RUNS THIS JOB MUST HAVE SUFFICIENT AUTHORITY
-//*    TO ALTER SECURITY DEFINITONS
+//*    TO ALTER SECURITY DEFINITIONS
 //*
 //* 2. Remove users from the Zowe administrator group before removing
 //*    the group itself.
@@ -69,14 +69,14 @@
 /*   EGN is not active on your system.                               */
 
 /* remove general data set protection                                */
-  LISTDSD PREFIX({zowe.setup.datasets.prefix}) ALL
-  PERMIT '{zowe.setup.datasets.prefix}.*.**' CLASS(DATASET) +
+  LISTDSD PREFIX({zowe.setup.dataset.prefix}) ALL
+  PERMIT '{zowe.setup.dataset.prefix}.*.**' CLASS(DATASET) +
          DELETE ID({zowe.setup.security.groups.sysProg})
-  DELDSD '{zowe.setup.datasets.prefix}.*.**'
+  DELDSD '{zowe.setup.dataset.prefix}.*.**'
 
 /* remove HLQ stub                                                   */
-  LISTGRP  {zowe.setup.datasets.prefix}.
-  DELGROUP {zowe.setup.datasets.prefix}.
+  LISTGRP  {zowe.setup.dataset.prefix}.
+  DELGROUP {zowe.setup.dataset.prefix}.
 
   SETROPTS GENERIC(DATASET) REFRESH
 
@@ -298,8 +298,8 @@ F ACF2,REBUILD(FAC)
 
 *  Remove  data set protection
 SET RULE
-LIST {zowe.setup.datasets.prefix}.
-DELETE {zowe.setup.datasets.prefix}.
+LIST {zowe.setup.dataset.prefix}.
+DELETE {zowe.setup.dataset.prefix}.
 *
 
 * Remove ZOWE resource class
@@ -322,12 +322,12 @@ $$
 //TSS      DD DATA,DLM=$$,SYMBOLS=JCLONLY
 
 /* REMOVE ZOWE DATA SET PROTECTION ................................. */
-/* removE general data set protection                                */
-TSS WHOHAS DATASET({zowe.setup.datasets.prefix})
-TSS REVOKE(ALL) DATASET({zowe.setup.datasets.prefix})
+/* remove general data set protection                                */
+TSS WHOHAS DATASET({zowe.setup.dataset.prefix})
+TSS REVOKE(ALL) DATASET({zowe.setup.dataset.prefix})
 TSS REVOKE({zowe.setup.security.groups.sysProg}) +
-    DATASET({zowe.setup.datasets.prefix})
-TSS REMOVE(&ADMINDEP) DATASET({zowe.setup.datasets.prefix})
+    DATASET({zowe.setup.dataset.prefix})
+TSS REMOVE(&ADMINDEP) DATASET({zowe.setup.dataset.prefix})
 
 /* REMOVE ZOWE SERVER PERMISIONS ................................... */
 

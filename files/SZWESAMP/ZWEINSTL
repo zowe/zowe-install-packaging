@@ -11,6 +11,16 @@
 //*
 //*********************************************************************
 //*
+//* This job is used to create the MVS data sets under the
+//* zowe.setup.dataset.prefix definition:
+//*   - SZWEAUTH - Zowe load modules (++PROGRAM)
+//*   - SZWESAMP - sample configurations
+//*   - SZWEEXEC - utilities used by Zowe
+//*   - SZWELOAD - config manager for REXX
+//*
+//* The following step will copy required members.
+//*
+//*********************************************************************
 //MKPDSE EXEC PGM=IKJEFT01,DYNAMNBR=4
 //SYSTSPRT DD SYSOUT=A
 //SYSTSIN DD *

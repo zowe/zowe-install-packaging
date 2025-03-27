@@ -33,11 +33,8 @@ You can read https://docs.zowe.org/stable/user-guide/apf-authorize-load-library 
 
 SAF permission setup:
 - ZWEIRAC: Sets up SAF permissions for RACF
-- ZWEIRACZ: Sets up the Zowe class for RACF if on z/OS 2.4 or older
 - ZWEITSS: Sets up SAF permissions for TSS
-- ZWEITSSZ: Sets up the Zowe class for TSS if on z/OS 2.4 or older
 - ZWEIACF: Sets up SAF permissions for ACF2
-- ZWEIACFZ: Sets up the Zowe class for ACF2 if on z/OS 2.4 or older
 
 SAF permission removal:
 - ZWENOSEC: Removes SAF permissions. Has RACF, TSS, ACF2 sections.

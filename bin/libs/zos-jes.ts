@@ -180,18 +180,6 @@ export function printAndHandleJcl(jclLocationOrContent: string, jobName: string,
   common.printMessage(jclContents);
   common.printMessage(`--- End of JCL ---`);
 
-  common.printTrace('  * zos-jes.printAndHanleJcl');
-  common.printTrace('    * JCL Lines Length');
-  const jclContentsSplit = jclContents.split("\n");
-  for (let jclLine in jclContentsSplit) {
-      const tracePad = 6;
-      common.printTrace(`${jclContentsSplit[jclLine].length.toString().padStart(tracePad, ' ')}: ${jclContentsSplit[jclLine]}`);
-      if (jclContentsSplit[jclLine].length > 71) {
-          common.printTrace(`${' '.repeat(tracePad + 2)}${'^'.repeat(jclContentsSplit[jclLine].length)}`);
-      }
-  }
-  common.printTrace('    * JCL Lines Length');
-
   let removeRc: number;
 
   let jobId: string|undefined;

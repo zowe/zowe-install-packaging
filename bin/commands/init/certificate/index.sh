@@ -419,12 +419,12 @@ else # JCE* content
   # should we clean up before creating new
   if [ "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITE}" = "true" ]; then
     # warning
-    print_message "Warning ZWEL0300W: Keyring \"safkeyring://${keyring_owner}/${keyring_name}\" will be overwritten during configuration."
+    print_message "Warning ZWEL0300W: Keyring \"safkeyring://${keyring_owner}/${keyring_name}\" already exists. This keyring will be overwritten."
 
     keyring_run_zwenokyr_jcl "${prefix}" "${jcllib}" "${security_product}"
   else
     # error
-    # print_error_and_exit "Error ZWEL0158E: Keyring \"safkeyring:////${keyring_owner}/${keyring_name}\" already exists." "" 158
+    # print_error_and_exit "Error ZWEL0158E: Keyring \"safkeyring://${keyring_owner}/${keyring_name}\" already exists." "" 158
   fi
 
   keyring_run_zwekring_jcl "${prefix}" \
@@ -440,9 +440,9 @@ else # JCE* content
   if [ $? -ne 0 ]; then
     job_has_failures=true
     if [ "${ZWE_CLI_PARAMETER_IGNORE_SECURITY_FAILURES}" = "true" ]; then
-      print_error "Error ZWEL0174E: Failed to generate certificate in Zowe keyring \"${ZWE_CLI_PARAMETER_KEYRING_OWNER}/${ZWE_CLI_PARAMETER_KEYRING_NAME}\"."
+      print_error "Error ZWEL0174E: Failed to generate certificate in Zowe keyring \"${keyring_owner}/${keyring_name}\"."
     else
-      print_error_and_exit "Error ZWEL0174E: Failed to generate certificate in Zowe keyring \"${ZWE_CLI_PARAMETER_KEYRING_OWNER}/${ZWE_CLI_PARAMETER_KEYRING_NAME}\"." "" 174
+      print_error_and_exit "Error ZWEL0174E: Failed to generate certificate in Zowe keyring \"${keyring_owner}/${keyring_name}\"." "" 174
     fi
   fi
 
@@ -481,6 +481,7 @@ else # JCE* content
     print_message "      type: ${cert_type}"
     print_message "      file: \"safkeyring://${keyring_owner}/${keyring_name}\""
     print_message "      password: \"password\""
+    print_message ""
     print_level2_message "Zowe configuration requires manual updates."
   fi
 fi

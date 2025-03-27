@@ -23,16 +23,22 @@ export function execute(dryRun?: boolean) {
   common.requireZoweYaml();
   const ZOWE_CONFIG=config.getZoweConfig();
 
-  const prefix=ZOWE_CONFIG.zowe.setup?.dataset?.prefix;
+  // zowe.setup.dataset defined in defaults
+  const prefix = ZOWE_CONFIG.zowe.setup.dataset.prefix;
   if (!prefix) {
     common.printErrorAndExit(`Error ZWEL0157E: Zowe dataset prefix (zowe.setup.dataset.prefix) is not defined in Zowe YAML configuration file.`, undefined, 157);
   }
 
-  const runtimeDirectory=ZOWE_CONFIG.zowe.runtimeDirectory;
+  const jcllib = ZOWE_CONFIG.zowe.setup.dataset.jcllib;
+  if (!jcllib) {
+    common.printErrorAndExit(`Error ZWEL0157E: Zowe dataset jcllib (zowe.setup.dataset.jcllib) is not defined in Zowe YAML configuration file.`, undefined, 157);
+  }
+
+  const runtimeDirectory = ZOWE_CONFIG.zowe.runtimeDirectory;
   if (!runtimeDirectory) {
     common.printErrorAndExit(`Error ZWEL0157E: Zowe runtime directory (zowe.runtimeDirectory) is not defined in Zowe YAML configuration file.`, undefined, 157);
   }
-  
+
   let jclPostProcessing = false;
   let jclHeaderJoined = '';
   const jclHeader = ZOWE_CONFIG.zowe?.environments?.jclHeader == null ? '' : ZOWE_CONFIG.zowe.environments.jclHeader;
@@ -92,24 +98,24 @@ export function execute(dryRun?: boolean) {
       }
       const parmlib = part.substring(part.indexOf('(')+1, part.lastIndexOf(')'));
       configLines.push('PARMLIB ' + parmlib.substring(0, parmlib.indexOf('(')).replace(/[$]/g, '$$$$'));
-    } 
+    }
   }
 
   jclContents = jclContents.replace('FILE <full path to zowe.yaml file>', configLines.join('\n'));
 
   xplatform.storeFileUTF8(tempFile, xplatform.AUTO_DETECT, jclContents);
-  
+
   common.printMessage(`Template JCL: ${ZOWE_CONFIG.zowe.setup.dataset.prefix + '.SZWESAMP(ZWEGENER)'}`);
   common.printMessage('--- JCL content ---');
   common.printMessage(jclContents);
   common.printMessage('--- End of JCL ---');
-  
+
   if (dryRun) {
     common.printMessage('JCL not submitted, command run with "--dry-run" flag.');
     common.printMessage('To perform command, re-run command without "--dry-run" flag, or submit the JCL directly.');
     os.remove(tempFile);
 
-  } else { //TODO can we generate just for one step, or no reason?    
+  } else { //TODO can we generate just for one step, or no reason?
     common.printMessage('Submitting Job ZWEGENER');
     const jobid = zosJes.submitJob(tempFile);
     const result = zosJes.waitForJob(jobid);

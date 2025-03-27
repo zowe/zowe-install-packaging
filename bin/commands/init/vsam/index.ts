@@ -68,7 +68,7 @@ export function execute(allowOverwrite?: boolean, dryRun?: boolean, updateConfig
 
   zosJes.printAndHandleJcl(`//'${jcllib}(ZWECSVSM)'`, `ZWECSVSM`, jcllib, prefix);
   if (!dryRun && updateConfig) {
-    json.updateZoweYaml(std.getenv('ZWE_CLI_PARAMETER_CONFIG_ORIG'), '.components.caching-service.storage.vsam.name', name);
+    json.updateZoweYaml(std.getenv('ZWE_PRIVATE_CONFIG_ORIG'), '.components.caching-service.storage.vsam.name', name);
     common.printLevel2Message(`Zowe configuration is updated successfully.`);
   }
   
