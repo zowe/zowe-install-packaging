@@ -1,10 +1,7 @@
 This command will run JCL based on the security product:
   - (If RACF) ZWEIRAC
-  - (If RACF and z/OS 2.4) ZWEIRACZ
   - (If TSS) ZWEITSS
-  - (If TSS and z/OS 2.4) ZWEITSSZ
   - (If ACF2) ZWEIACF
-  - (If ACF2 and z/OS 2.4) ZWEIACFZ
 
 NOTE: You require proper permission to run security configuration.
 
