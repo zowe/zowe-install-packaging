@@ -142,6 +142,10 @@ zowe:
 components:
 
   # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+  apiml:
+    enabled: true # If this is enabled, code in install packaging needs to "force"-disable gateway and discovery
+
+  # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   gateway:
     enabled: true
     port: 7554

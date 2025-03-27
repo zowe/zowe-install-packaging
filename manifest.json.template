@@ -56,6 +56,11 @@
       "version": "^3.0.0-SNAPSHOT",
       "artifact": "*.pax"
     },
+    "org.zowe.apiml.apiml-package": {
+      "version": "^3.0.3-SNAPSHOT",
+      "artifact": "apiml-*.zip",
+      "exclusions": ["*PR*.zip"]
+    },
     "org.zowe.apiml.api-catalog-package": {
       "version": "^3.0.3-SNAPSHOT",
       "artifact": "api-catalog-*.zip",
@@ -362,6 +367,11 @@
       "registry": "zowe-docker-snapshot.jfrog.io",
       "name": "ompzowe/zowe-launch-scripts",
       "tag" : "2.1.0-ubuntu.v2-x-staging"
+    },
+    "api-catalog": {
+      "registry": "zowe-docker-snapshot.jfrog.io",
+      "name": "ompzowe/apiml",
+      "tag" : "3.0.21-SNAPSHOT-ubuntu.v2-x-x"
     },
     "api-catalog": {
       "registry": "zowe-docker-snapshot.jfrog.io",

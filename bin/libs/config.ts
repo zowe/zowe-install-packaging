@@ -40,7 +40,17 @@ const runtimeDirectory=configmgr.ZOWE_CONFIG.zowe.runtimeDirectory;
 const workspaceDirectory=configmgr.ZOWE_CONFIG.zowe.workspaceDirectory;
 
 export function getZoweConfig(): any {
-  return configmgr.ZOWE_CONFIG;
+  let config = configmgr.ZOWE_CONFIG;
+
+  const defaultEnabledComponents = component.getEnabledComponents();
+  
+  if (defaultEnabledComponents.includes('apiml')) {
+    // Update enabled components if API ML modulith transition is in place
+    config.components['gateway'].enabled = false;
+    config.components['discovery'].enabled = false;
+  }
+
+  return config;
 }
 
 export function updateZoweConfig(updateObj: any, writeUpdate: boolean, arrayMergeStrategy: number): any {
