@@ -159,8 +159,8 @@ function createMdTable(rawContent, docFileTableSyntax) {
 
     docContent += rawContent.split(DOT_FILE_TABLE_ROW_DELIMITER).map(line => line.trim().split(DOT_FILE_TABLE_ENTRY_DELIMITER) // transform table entries
         .map((segment, index) => {
-            if (docFileTableSyntax.orderedSegments[index] && docFileTableSyntax.orderedSegments[index].transform) {
-                return docFileTableSyntax.orderedSegments[index].transform(segment);
+            if (filteredSegments[index] && filteredSegments[index].transform) {
+                return filteredSegments[index].transform(segment);
             }
             return segment;
         })
@@ -169,6 +169,7 @@ function createMdTable(rawContent, docFileTableSyntax) {
 
     return docContent;
 }
+
 
 function getRelativeFilePathForChild(child, curCommandFileName) {
     if (curCommandFileName) {
