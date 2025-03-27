@@ -103,17 +103,17 @@
                   "description": "security group name",
                   "properties": {
                     "admin": {
-                      "type": "string",
+                      "$ref": "/schemas/v2/server-common#zoweUser",
                       "description": "Zowe admin user group",
                       "default": "ZWEADMIN"
                     },
                     "stc": {
-                      "type": "string",
+                      "$ref": "/schemas/v2/server-common#zoweUser",
                       "description": "Zowe STC group",
                       "default": "ZWEADMIN"
                     },
                     "sysProg": {
-                      "type": "string",
+                      "$ref": "/schemas/v2/server-common#zoweUser",
                       "description": "Zowe SysProg group",
                       "default": "ZWEADMIN"
                     }
@@ -125,12 +125,12 @@
                   "description": "security user name",
                   "properties": {
                     "zowe": {
-                      "type": "string",
+                      "$ref": "/schemas/v2/server-common#zoweUser",
                       "description": "Zowe runtime user name of main service",
                       "default": "ZWESVUSR"
                     },
                     "zis": {
-                      "type": "string",
+                      "$ref": "/schemas/v2/server-common#zoweUser",
                       "description": "Zowe runtime user name of ZIS",
                       "default": "ZWESIUSR"
                     }

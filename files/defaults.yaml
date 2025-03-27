@@ -39,7 +39,7 @@ zowe:
     # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
     security:
       # security product name. Can be RACF, ACF2 or TSS
-      product: RACF
+      product: "${{ [ 'RACF', 'ACF2', 'TSS' ].includes(zos.getEsm()) ? zos.getEsm() : 'RACF' }}"
       groups:
         admin: ZWEADMIN
         stc: ZWEADMIN

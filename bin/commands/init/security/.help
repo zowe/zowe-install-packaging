@@ -1,7 +1,7 @@
-This command will run jcl based on the security product:
-- `ZWEIACF` for ACF2
-- `ZWEIRAC` for RACF
-- `ZWEITSS` for Top Secret
+This command will run JCL based on the security product:
+  - (If RACF) ZWEIRAC
+  - (If TSS) ZWEITSS
+  - (If ACF2) ZWEIACF
 
 NOTE: You require proper permission to run security configuration.
 
