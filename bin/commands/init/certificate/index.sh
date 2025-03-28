@@ -42,24 +42,38 @@ prefix=$(read_yaml_configmgr "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.dataset.
 if [ -z "${prefix}" ]; then
   print_error_and_exit "Error ZWEL0157E: Zowe dataset prefix (zowe.setup.dataset.prefix) is not defined in Zowe YAML configuration file." "" 157
 fi
-# read JCL library and validate
-jcllib=$(verify_generated_jcl)
-if [ "$?" -eq 1 ]; then
-  print_error_and_exit "Error ZWEL0319E: zowe.setup.dataset.jcllib does not exist, cannot run. Run 'zwe init', 'zwe init generate', or submit JCL ${prefix}.SZWESAMP(ZWEGENER) before running this command." "" 319
-fi
-security_product=$(read_yaml_configmgr "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.security.product")
-security_users_zowe=$(read_yaml_configmgr "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.security.users.zowe")
-security_groups_admin=$(read_yaml_configmgr "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.security.groups.admin")
+
 # read cert type and validate
 cert_type=$(read_yaml_configmgr "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.certificate.type")
 if [ -z "${cert_type}" ]; then
   print_error_and_exit "Error ZWEL0157E: Certificate type (zowe.setup.certificate.type) is not defined in Zowe YAML configuration file." "" 157
 fi
-
 [[ "$cert_type" == "PKCS12" || "$cert_type" == JCE*KS ]]
 if [ $? -ne 0 ]; then
   print_error_and_exit "Error ZWEL0164E: Value of certificate type (zowe.setup.certificate.type) defined in Zowe YAML configuration file is invalid. Valid values are PKCS12, JCEKS, JCECCAKS, JCERACFKS, JCECCARACFKS, or JCEHYBRIDRACFKS." "" 164
 fi
+
+# read JCL library and validate for keyrings only (JCE*KS)
+if [ "${cert_type}" != "PKCS12" ]; then
+  jcllib=$(verify_generated_jcl)
+  if [ "$?" -eq 1 ]; then
+    print_error_and_exit "Error ZWEL0319E: zowe.setup.dataset.jcllib does not exist, cannot run. Run 'zwe init', 'zwe init generate', or submit JCL ${prefix}.SZWESAMP(ZWEGENER) before running this command." "" 319
+  fi
+fi
+
+# read ESM and compare with detected one
+security_update=
+security_product=$(read_yaml_configmgr "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.security.product")
+security_product_detected=$("${ZWE_zowe_runtimeDirectory}"/bin/utils/getesm)
+if [ $? -eq 0 -a "${security_product_detected}" != "NONE" ]; then
+  if [ "${security_product}" != "${security_product_detected}" ]; then
+    security_update="zowe.setup.security.product ${security_product_detected}"
+    security_product="${security_product_detected}"
+  fi
+fi
+security_users_zowe=$(read_yaml_configmgr "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.security.users.zowe")
+security_groups_admin=$(read_yaml_configmgr "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.security.groups.admin")
+
 # read cert dname
 for item in caCommonName commonName orgUnit org locality state country; do
   var_name="dname_${item}"
@@ -82,7 +96,6 @@ if [ "${cert_type}" = "PKCS12" ]; then
   pkcs12_import_keystore=$(read_yaml_configmgr "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.certificate.pkcs12.import.keystore")
 
 else # JCE* content
-  security_product=$(read_yaml_configmgr "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.security.product")
   keyring_option=1
   # read keyring info
   # TODO removed "owner" here because it wasnt being read in the JCL.
@@ -380,6 +393,9 @@ if [ "${cert_type}" = "PKCS12" ]; then
   # update zowe.yaml
   if [ "${ZWE_CLI_PARAMETER_UPDATE_CONFIG}" = "true" ]; then
     print_level1_message "Update certificate configuration to ${ZWE_CLI_PARAMETER_CONFIG}"
+    if [ ! -z "${$security_update}" ]; then
+      update_zowe_yaml "${ZWE_CLI_PARAMETER_CONFIG}" $security_update
+    fi
     update_zowe_yaml "${ZWE_CLI_PARAMETER_CONFIG}" "zowe.certificate.keystore.type" "PKCS12"
     update_zowe_yaml "${ZWE_CLI_PARAMETER_CONFIG}" "zowe.certificate.keystore.file" "${pkcs12_directory}/${pkcs12_name}/${pkcs12_name}.keystore.p12"
     update_zowe_yaml "${ZWE_CLI_PARAMETER_CONFIG}" "zowe.certificate.keystore.password" "${pkcs12_password}"
@@ -396,6 +412,11 @@ if [ "${cert_type}" = "PKCS12" ]; then
     print_message "Please manually update to these values:"
     print_message ""
     print_message "zowe:"
+    if [ ! -z "${$security_update}" ]; then
+      print_message "  setup:"
+      print_message "    security:"
+      print_message "      product: ${security_product}"
+    fi
     print_message "  certificate:"
     print_message "    keystore:"
     print_message "      type: PKCS12"
@@ -456,6 +477,9 @@ else # JCE* content
   # update zowe.yaml
   if [ "${ZWE_CLI_PARAMETER_UPDATE_CONFIG}" = "true" ]; then
     print_level1_message "Update certificate configuration to ${ZWE_CLI_PARAMETER_CONFIG}"
+    if [ ! -z "${$security_update}" ]; then
+      update_zowe_yaml "${ZWE_CLI_PARAMETER_CONFIG}" $security_update
+    fi
     update_zowe_yaml "${ZWE_CLI_PARAMETER_CONFIG}" "zowe.certificate.keystore.type" "${cert_type}"
     update_zowe_yaml "${ZWE_CLI_PARAMETER_CONFIG}" "zowe.certificate.keystore.file" "safkeyring://${keyring_owner}/${keyring_name}"
     # we must set a dummy value here, other JDK will complain wrong parameter
@@ -471,6 +495,11 @@ else # JCE* content
     print_message "Please manually update to these values:"
     print_message ""
     print_message "zowe:"
+    if [ ! -z "${$security_update}" ]; then
+      print_message "  setup:"
+      print_message "    security:"
+      print_message "      product: ${security_product}"
+    fi
     print_message "  certificate:"
     print_message "    keystore:"
     print_message "      type: ${cert_type}"
