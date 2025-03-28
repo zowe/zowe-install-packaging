@@ -10,6 +10,7 @@
 
 import { ConnectionPropsForSessCfg, ISession, Session } from '@zowe/imperative';
 import { REMOTE_CONNECTION_CFG } from '../config/TestConfig';
+import { AUTH_TYPE_BASIC } from '@zowe/imperative/lib/rest/src/session/SessConstants';
 
 export function getSession(): Session {
   const sessCfg: ISession = {
@@ -21,6 +22,6 @@ export function getSession(): Session {
     protocol: 'https',
   };
 
-  ConnectionPropsForSessCfg.addPropsOrPrompt(sessCfg, { $0: '', _: [] }, {});
+  ConnectionPropsForSessCfg.resolveSessCfgProps(sessCfg, { $0: '', _: [] }, { supportedAuthTypes: [AUTH_TYPE_BASIC] });
   return new Session(sessCfg);
 }

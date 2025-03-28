@@ -2,7 +2,7 @@
 
 exports[`init-mvs (SHORT) authLoadLib negatives 1`] = `
 "Error: Validation of FILE(/test/dir/zowe.test.yaml):FILE(/test/dir/files/defaults.yaml) against schema /test/dir/schemas/zowe-yaml-schema.json:/test/dir/schemas/server-common.json found invalid JSON Schema data
-Validity Exceptions(s) with object at 
+Validity Exceptions(s) with object at
   Validity Exceptions(s) with object at /zowe
     Validity Exceptions(s) with object at /zowe/setup
       Validity Exceptions(s) with object at /zowe/setup/dataset
@@ -13,7 +13,7 @@ Validity Exceptions(s) with object at
 
 exports[`init-mvs (SHORT) authLoadLib negatives 2`] = `
 "Error: Validation of FILE(/test/dir/zowe.test.yaml):FILE(/test/dir/files/defaults.yaml) against schema /test/dir/schemas/zowe-yaml-schema.json:/test/dir/schemas/server-common.json found invalid JSON Schema data
-Validity Exceptions(s) with object at 
+Validity Exceptions(s) with object at
   Validity Exceptions(s) with object at /zowe
     Validity Exceptions(s) with object at /zowe/setup
       Validity Exceptions(s) with object at /zowe/setup/dataset
@@ -27,12 +27,10 @@ exports[`init-mvs (SHORT) authLoadLib negatives 3`] = `
 Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
 -------------------------------------------------------------------------------
 >> Initialize Zowe custom data sets
-
 Create data sets if they do not exist
 Warning ZWEL0301W: TEST.DATASET.PFX.PARMLIB already exists and will not be overwritten. For upgrades, you must use --allow-overwrite.
 Warning ZWEL0301W: TEST.DATASET.PFX.ZWESAPL already exists and will not be overwritten. For upgrades, you must use --allow-overwrite.
 Skipped writing to a dataset. To write, you must use --allow-overwrite.
-
 >> Zowe custom data sets are initialized successfully."
 `;
 
@@ -41,13 +39,10 @@ exports[`init-mvs (SHORT) authLoadLib negatives 4`] = `
 Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
 -------------------------------------------------------------------------------
 >> Initialize Zowe custom data sets
-
 Create data sets if they do not exist
 Warning ZWEL0301W: TEST.DATASET.PFX.PARMLIB already exists and will not be overwritten. For upgrades, you must use --allow-overwrite.
 Warning ZWEL0301W: TEST.DATASET.PFX.ZWESAPL already exists and will not be overwritten. For upgrades, you must use --allow-overwrite.
-Warning ZWEL0301W: TEST.DATASET.PFX.ZWESAPL already exists and will not be overwritten. For upgrades, you must use --allow-overwrite.
 Skipped writing to a dataset. To write, you must use --allow-overwrite.
-
 >> Zowe custom data sets are initialized successfully."
 `;
 
@@ -56,12 +51,10 @@ exports[`init-mvs (SHORT) authLoadLib negatives 5`] = `
 Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
 -------------------------------------------------------------------------------
 >> Initialize Zowe custom data sets
-
 Create data sets if they do not exist
 Warning ZWEL0301W: TEST.DATASET.PFX.PARMLIB already exists and will not be overwritten. For upgrades, you must use --allow-overwrite.
 Warning ZWEL0301W: TEST.DATASET.PFX.ZWESAPL already exists and will not be overwritten. For upgrades, you must use --allow-overwrite.
 Skipped writing to a dataset. To write, you must use --allow-overwrite.
-
 >> Zowe custom data sets are initialized successfully."
 `;
 
@@ -70,7 +63,6 @@ exports[`init-mvs (SHORT) authLoadLib negatives 6`] = `
 Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
 -------------------------------------------------------------------------------
 >> Initialize Zowe custom data sets
-
 Create data sets if they do not exist
 Warning ZWEL0300W: TEST.DATASET.PFX.PARMLIB already exists. Members in this data set will be overwritten.
 Warning ZWEL0300W: TEST.DATASET.PFX.ZWESAPL already exists. Members in this data set will be overwritten.
@@ -95,22 +87,19 @@ Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWERMVS) , Executable JCL: TEST.DATASET.
 //*
 //* If your chosen value of 'zowe.setup.dataset.authLoadlib' is not
 //*  equal to 'zowe.setup.dataset.prefix' + 'SZWEAUTH',
-//*  then you must also run "ZWERMVS2".
+//*  then you must also run ZWERMVS2.
 //*
 //*********************************************************************
 //RMPDSE EXEC PGM=IKJEFT01
 //SYSTSPRT DD SYSOUT=A
 //SYSTSIN DD *
-DELETE ('TEST.DATASET.PFX.PARMLIB', +
-        'TEST.DATASET.PFX.ZWESAPL') +
+DELETE 'TEST.DATASET.PFX.PARMLIB' +
        SCRATCH NONVSAM
-//*
+/*
 --- End of JCL ---
 JCL not submitted, command run with "--dry-run" flag.
 To perform command, re-run command without "--dry-run" flag, or submit the JCL directly
-
 >> Command run successfully.
-
 Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWEIMVS) , Executable JCL: TEST.DATASET.PFX.JCLLIB(ZWEIMVS)
 --- JCL Content ---
 //ZWEIMVS JOB
@@ -130,9 +119,13 @@ Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWEIMVS) , Executable JCL: TEST.DATASET.
 //* Instances represent a configuration of Zowe, different from the
 //* "runtime" datasets that are created upon install of Zowe / SMPE.
 //*
+//* Consider if the Zowe Cross Memory Server
+//*  - is used: run this and consider to run ZWEIMVS1
+//*  - not used: you can skip this JCL
+//*
 //* If your chosen value of 'zowe.setup.dataset.authLoadlib' is not
 //*  equal to 'zowe.setup.dataset.prefix' + 'SZWEAUTH',
-//*  then you must also run "ZWEIMVS2".
+//*  then you must also run ZWEIMVS2.
 //*
 //*********************************************************************
 //MKPDSE EXEC PGM=IKJEFT01
@@ -141,26 +134,94 @@ Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWEIMVS) , Executable JCL: TEST.DATASET.
 ALLOC NEW DA('TEST.DATASET.PFX.PARMLIB') +
 dsntype(library) dsorg(po) recfm(f b) lrecl(80) +
 unit(sysallda) space(15,15) tracks
-
-ALLOC NEW DA('TEST.DATASET.PFX.ZWESAPL') +
-dsntype(library) dsorg(po) recfm(u) lrecl(0) +
-blksize(32760) unit(sysallda) space(30,15) tracks
-//*
-//MEMBCPY EXEC PGM=IEBCOPY
-//SYSPRINT DD SYSOUT=A
-//SYSUT1 DD DSN=TEST.DATASET.PFX.SZWESAMP,DISP=SHR
-//SYSUT2 DD DSN=TEST.DATASET.PFX.PARMLIB,DISP=OLD
-//SYSIN DD *
-  COPY OUTDD=SYSUT2,INDD=SYSUT1
-  SELECT MEMBER=((ZWESIP00,,R))
+/*
+//MEMBCPY EXEC PGM=IKJEFT01
+//  SET OUTPARM=ZWESIP00
+//SYSTSPRT DD SYSOUT=A
+//PARMIN  DD DISP=SHR,
+//  DSN=TEST.DATASET.PFX.SZWESAMP(ZWESIP00)
+//PARMOUT DD DISP=SHR,
+//  DSN=TEST.DATASET.PFX.PARMLIB(&OUTPARM)
+//SYSTSIN DD *
+  REPRO INFILE(PARMIN) OUTFILE(PARMOUT)
 //*
 --- End of JCL ---
 JCL not submitted, command run with "--dry-run" flag.
 To perform command, re-run command without "--dry-run" flag, or submit the JCL directly
-
 >> Command run successfully.
-
-
+Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWERMVS1) , Executable JCL: TEST.DATASET.PFX.JCLLIB(ZWERMVS1)
+--- JCL Content ---
+//ZWERMVS1 JOB
+//*
+//* This program and the accompanying materials are made available
+//* under the terms of the Eclipse Public License v2.0 which
+//* accompanies this distribution, and is available at
+//* https://www.eclipse.org/legal/epl-v20.html
+//*
+//* SPDX-License-Identifier: EPL-2.0
+//*
+//* Copyright Contributors to the Zowe Project. 2020, 2020
+//*
+//*********************************************************************
+//*
+//* This job is used to remove datasets used by a Zowe "instance"
+//* Instances represent a configuration of Zowe, different from the
+//* "runtime" datasets that are created upon install of Zowe / SMPE.
+//*
+//* If your chosen value of 'zowe.setup.dataset.authLoadlib' is not
+//*  equal to 'zowe.setup.dataset.prefix' + 'SZWEAUTH',
+//*  then you must also run ZWERMVS2.
+//*
+//*********************************************************************
+//RMPDSE EXEC PGM=IKJEFT01
+//SYSTSPRT DD SYSOUT=A
+//SYSTSIN DD *
+DELETE 'TEST.DATASET.PFX.ZWESAPL' +
+       SCRATCH NONVSAM
+/*
+--- End of JCL ---
+JCL not submitted, command run with "--dry-run" flag.
+To perform command, re-run command without "--dry-run" flag, or submit the JCL directly
+>> Command run successfully.
+Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWEIMVS1) , Executable JCL: TEST.DATASET.PFX.JCLLIB(ZWEIMVS1)
+--- JCL Content ---
+//ZWEIMVS1 JOB
+//*
+//* This program and the accompanying materials are made available
+//* under the terms of the Eclipse Public License v2.0 which
+//* accompanies this distribution, and is available at
+//* https://www.eclipse.org/legal/epl-v20.html
+//*
+//* SPDX-License-Identifier: EPL-2.0
+//*
+//* Copyright Contributors to the Zowe Project. 2020, 2020
+//*
+//*********************************************************************
+//*
+//* This job is used to create datasets used by a Zowe "instance"
+//* Instances represent a configuration of Zowe, different from the
+//* "runtime" datasets that are created upon install of Zowe / SMPE.
+//*
+//* Consider if the Zowe Cross Memory Server
+//*  - is used: run this and ZWEIMVS
+//*  - not used: you can skip this JCL
+//*
+//* If your chosen value of 'zowe.setup.dataset.authLoadlib' is not
+//*  equal to 'zowe.setup.dataset.prefix' + 'SZWEAUTH',
+//*  then you must also run ZWEIMVS2.
+//*
+//*********************************************************************
+//MKPDSE EXEC PGM=IKJEFT01
+//SYSTSPRT DD SYSOUT=A
+//SYSTSIN DD *
+ALLOC NEW DA('TEST.DATASET.PFX.ZWESAPL') +
+dsntype(library) dsorg(po) recfm(u) lrecl(0) +
+blksize(32760) unit(sysallda) space(30,15) tracks
+/*
+--- End of JCL ---
+JCL not submitted, command run with "--dry-run" flag.
+To perform command, re-run command without "--dry-run" flag, or submit the JCL directly
+>> Command run successfully.
 >> Zowe custom data sets are initialized successfully."
 `;
 
@@ -169,7 +230,6 @@ exports[`init-mvs (SHORT) authLoadLib negatives 7`] = `
 Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
 -------------------------------------------------------------------------------
 >> Initialize Zowe custom data sets
-
 Create data sets if they do not exist
 Warning ZWEL0300W: TEST.DATASET.PFX.PARMLIB already exists. Members in this data set will be overwritten.
 Warning ZWEL0300W: TEST.DATASET.PFX.ZWESAPL already exists. Members in this data set will be overwritten.
@@ -194,22 +254,19 @@ Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWERMVS) , Executable JCL: TEST.DATASET.
 //*
 //* If your chosen value of 'zowe.setup.dataset.authLoadlib' is not
 //*  equal to 'zowe.setup.dataset.prefix' + 'SZWEAUTH',
-//*  then you must also run "ZWERMVS2".
+//*  then you must also run ZWERMVS2.
 //*
 //*********************************************************************
 //RMPDSE EXEC PGM=IKJEFT01
 //SYSTSPRT DD SYSOUT=A
 //SYSTSIN DD *
-DELETE ('TEST.DATASET.PFX.PARMLIB', +
-        'TEST.DATASET.PFX.ZWESAPL') +
+DELETE 'TEST.DATASET.PFX.PARMLIB' +
        SCRATCH NONVSAM
-//*
+/*
 --- End of JCL ---
 JCL not submitted, command run with "--dry-run" flag.
 To perform command, re-run command without "--dry-run" flag, or submit the JCL directly
-
 >> Command run successfully.
-
 Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWEIMVS) , Executable JCL: TEST.DATASET.PFX.JCLLIB(ZWEIMVS)
 --- JCL Content ---
 //ZWEIMVS JOB
@@ -229,9 +286,13 @@ Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWEIMVS) , Executable JCL: TEST.DATASET.
 //* Instances represent a configuration of Zowe, different from the
 //* "runtime" datasets that are created upon install of Zowe / SMPE.
 //*
+//* Consider if the Zowe Cross Memory Server
+//*  - is used: run this and consider to run ZWEIMVS1
+//*  - not used: you can skip this JCL
+//*
 //* If your chosen value of 'zowe.setup.dataset.authLoadlib' is not
 //*  equal to 'zowe.setup.dataset.prefix' + 'SZWEAUTH',
-//*  then you must also run "ZWEIMVS2".
+//*  then you must also run ZWEIMVS2.
 //*
 //*********************************************************************
 //MKPDSE EXEC PGM=IKJEFT01
@@ -240,25 +301,21 @@ Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWEIMVS) , Executable JCL: TEST.DATASET.
 ALLOC NEW DA('TEST.DATASET.PFX.PARMLIB') +
 dsntype(library) dsorg(po) recfm(f b) lrecl(80) +
 unit(sysallda) space(15,15) tracks
-
-ALLOC NEW DA('TEST.DATASET.PFX.ZWESAPL') +
-dsntype(library) dsorg(po) recfm(u) lrecl(0) +
-blksize(32760) unit(sysallda) space(30,15) tracks
-//*
-//MEMBCPY EXEC PGM=IEBCOPY
-//SYSPRINT DD SYSOUT=A
-//SYSUT1 DD DSN=TEST.DATASET.PFX.SZWESAMP,DISP=SHR
-//SYSUT2 DD DSN=TEST.DATASET.PFX.PARMLIB,DISP=OLD
-//SYSIN DD *
-  COPY OUTDD=SYSUT2,INDD=SYSUT1
-  SELECT MEMBER=((ZWESIP00,,R))
+/*
+//MEMBCPY EXEC PGM=IKJEFT01
+//  SET OUTPARM=ZWESIP00
+//SYSTSPRT DD SYSOUT=A
+//PARMIN  DD DISP=SHR,
+//  DSN=TEST.DATASET.PFX.SZWESAMP(ZWESIP00)
+//PARMOUT DD DISP=SHR,
+//  DSN=TEST.DATASET.PFX.PARMLIB(&OUTPARM)
+//SYSTSIN DD *
+  REPRO INFILE(PARMIN) OUTFILE(PARMOUT)
 //*
 --- End of JCL ---
 JCL not submitted, command run with "--dry-run" flag.
 To perform command, re-run command without "--dry-run" flag, or submit the JCL directly
-
 >> Command run successfully.
-
 Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWEIMVS2) , Executable JCL: TEST.DATASET.PFX.JCLLIB(ZWEIMVS2)
 --- JCL Content ---
 //ZWEIMVS2 JOB
@@ -279,7 +336,8 @@ Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWEIMVS2) , Executable JCL: TEST.DATASET
 //* 'zowe.setup.dataset.authLoadlib' is equal to
 //* 'zowe.setup.dataset.prefix' + 'SZWEAUTH'.
 //*
-//* When running this job, you should also run ZWEIMVS
+//* When running this job, you should also consider
+//* to run ZWEIMVS and ZWEIMVS1.
 //*
 //*********************************************************************
 //MKPDSE EXEC PGM=IKJEFT01
@@ -288,7 +346,7 @@ Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWEIMVS2) , Executable JCL: TEST.DATASET
 ALLOC NEW DA('TEST.DATASET.PFX.SZWELOAD') +
 dsntype(library) dsorg(po) recfm(u) lrecl(0) +
 blksize(32760) unit(sysallda) space(30,15) tracks
-//*
+/*
 //AUTHCPY EXEC PGM=BPXBATCH
 //BPXPRINT DD SYSOUT=*
 //STDOUT   DD SYSOUT=*
@@ -310,10 +368,80 @@ cp -X zowe_launcher
 --- End of JCL ---
 JCL not submitted, command run with "--dry-run" flag.
 To perform command, re-run command without "--dry-run" flag, or submit the JCL directly
-
 >> Command run successfully.
-
-
+Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWERMVS1) , Executable JCL: TEST.DATASET.PFX.JCLLIB(ZWERMVS1)
+--- JCL Content ---
+//ZWERMVS1 JOB
+//*
+//* This program and the accompanying materials are made available
+//* under the terms of the Eclipse Public License v2.0 which
+//* accompanies this distribution, and is available at
+//* https://www.eclipse.org/legal/epl-v20.html
+//*
+//* SPDX-License-Identifier: EPL-2.0
+//*
+//* Copyright Contributors to the Zowe Project. 2020, 2020
+//*
+//*********************************************************************
+//*
+//* This job is used to remove datasets used by a Zowe "instance"
+//* Instances represent a configuration of Zowe, different from the
+//* "runtime" datasets that are created upon install of Zowe / SMPE.
+//*
+//* If your chosen value of 'zowe.setup.dataset.authLoadlib' is not
+//*  equal to 'zowe.setup.dataset.prefix' + 'SZWEAUTH',
+//*  then you must also run ZWERMVS2.
+//*
+//*********************************************************************
+//RMPDSE EXEC PGM=IKJEFT01
+//SYSTSPRT DD SYSOUT=A
+//SYSTSIN DD *
+DELETE 'TEST.DATASET.PFX.ZWESAPL' +
+       SCRATCH NONVSAM
+/*
+--- End of JCL ---
+JCL not submitted, command run with "--dry-run" flag.
+To perform command, re-run command without "--dry-run" flag, or submit the JCL directly
+>> Command run successfully.
+Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWEIMVS1) , Executable JCL: TEST.DATASET.PFX.JCLLIB(ZWEIMVS1)
+--- JCL Content ---
+//ZWEIMVS1 JOB
+//*
+//* This program and the accompanying materials are made available
+//* under the terms of the Eclipse Public License v2.0 which
+//* accompanies this distribution, and is available at
+//* https://www.eclipse.org/legal/epl-v20.html
+//*
+//* SPDX-License-Identifier: EPL-2.0
+//*
+//* Copyright Contributors to the Zowe Project. 2020, 2020
+//*
+//*********************************************************************
+//*
+//* This job is used to create datasets used by a Zowe "instance"
+//* Instances represent a configuration of Zowe, different from the
+//* "runtime" datasets that are created upon install of Zowe / SMPE.
+//*
+//* Consider if the Zowe Cross Memory Server
+//*  - is used: run this and ZWEIMVS
+//*  - not used: you can skip this JCL
+//*
+//* If your chosen value of 'zowe.setup.dataset.authLoadlib' is not
+//*  equal to 'zowe.setup.dataset.prefix' + 'SZWEAUTH',
+//*  then you must also run ZWEIMVS2.
+//*
+//*********************************************************************
+//MKPDSE EXEC PGM=IKJEFT01
+//SYSTSPRT DD SYSOUT=A
+//SYSTSIN DD *
+ALLOC NEW DA('TEST.DATASET.PFX.ZWESAPL') +
+dsntype(library) dsorg(po) recfm(u) lrecl(0) +
+blksize(32760) unit(sysallda) space(30,15) tracks
+/*
+--- End of JCL ---
+JCL not submitted, command run with "--dry-run" flag.
+To perform command, re-run command without "--dry-run" flag, or submit the JCL directly
+>> Command run successfully.
 >> Zowe custom data sets are initialized successfully."
 `;
 
@@ -322,9 +450,9 @@ exports[`init-mvs (SHORT) authLoadLib negatives 8`] = `
 Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
 -------------------------------------------------------------------------------
 >> Initialize Zowe custom data sets
-
 Create data sets if they do not exist
 Warning ZWEL0300W: TEST.DATASET.PFX.PARMLIB already exists. Members in this data set will be overwritten.
+Warning ZWEL0300W: TEST.DATASET.PFX.SZWELOAD already exists. Members in this data set will be overwritten.
 Warning ZWEL0300W: TEST.DATASET.PFX.ZWESAPL already exists. Members in this data set will be overwritten.
 Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWERMVS) , Executable JCL: TEST.DATASET.PFX.JCLLIB(ZWERMVS)
 --- JCL Content ---
@@ -347,22 +475,68 @@ Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWERMVS) , Executable JCL: TEST.DATASET.
 //*
 //* If your chosen value of 'zowe.setup.dataset.authLoadlib' is not
 //*  equal to 'zowe.setup.dataset.prefix' + 'SZWEAUTH',
-//*  then you must also run "ZWERMVS2".
+//*  then you must also run ZWERMVS2.
 //*
 //*********************************************************************
 //RMPDSE EXEC PGM=IKJEFT01
 //SYSTSPRT DD SYSOUT=A
 //SYSTSIN DD *
-DELETE ('TEST.DATASET.PFX.PARMLIB', +
-        'TEST.DATASET.PFX.ZWESAPL') +
+DELETE 'TEST.DATASET.PFX.PARMLIB' +
        SCRATCH NONVSAM
+/*
+--- End of JCL ---
+JCL not submitted, command run with "--dry-run" flag.
+To perform command, re-run command without "--dry-run" flag, or submit the JCL directly
+>> Command run successfully.
+Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWEIMVS) , Executable JCL: TEST.DATASET.PFX.JCLLIB(ZWEIMVS)
+--- JCL Content ---
+//ZWEIMVS JOB
+//*
+//* This program and the accompanying materials are made available
+//* under the terms of the Eclipse Public License v2.0 which
+//* accompanies this distribution, and is available at
+//* https://www.eclipse.org/legal/epl-v20.html
+//*
+//* SPDX-License-Identifier: EPL-2.0
+//*
+//* Copyright Contributors to the Zowe Project. 2020, 2020
+//*
+//*********************************************************************
+//*
+//* This job is used to create datasets used by a Zowe "instance"
+//* Instances represent a configuration of Zowe, different from the
+//* "runtime" datasets that are created upon install of Zowe / SMPE.
+//*
+//* Consider if the Zowe Cross Memory Server
+//*  - is used: run this and consider to run ZWEIMVS1
+//*  - not used: you can skip this JCL
+//*
+//* If your chosen value of 'zowe.setup.dataset.authLoadlib' is not
+//*  equal to 'zowe.setup.dataset.prefix' + 'SZWEAUTH',
+//*  then you must also run ZWEIMVS2.
+//*
+//*********************************************************************
+//MKPDSE EXEC PGM=IKJEFT01
+//SYSTSPRT DD SYSOUT=A
+//SYSTSIN DD *
+ALLOC NEW DA('TEST.DATASET.PFX.PARMLIB') +
+dsntype(library) dsorg(po) recfm(f b) lrecl(80) +
+unit(sysallda) space(15,15) tracks
+/*
+//MEMBCPY EXEC PGM=IKJEFT01
+//  SET OUTPARM=ZWESIP00
+//SYSTSPRT DD SYSOUT=A
+//PARMIN  DD DISP=SHR,
+//  DSN=TEST.DATASET.PFX.SZWESAMP(ZWESIP00)
+//PARMOUT DD DISP=SHR,
+//  DSN=TEST.DATASET.PFX.PARMLIB(&OUTPARM)
+//SYSTSIN DD *
+  REPRO INFILE(PARMIN) OUTFILE(PARMOUT)
 //*
 --- End of JCL ---
 JCL not submitted, command run with "--dry-run" flag.
 To perform command, re-run command without "--dry-run" flag, or submit the JCL directly
-
 >> Command run successfully.
-
 Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWERMVS2) , Executable JCL: TEST.DATASET.PFX.JCLLIB(ZWERMVS2)
 --- JCL Content ---
 //ZWERMVS2 JOB
@@ -383,7 +557,8 @@ Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWERMVS2) , Executable JCL: TEST.DATASET
 //* 'zowe.setup.dataset.authLoadlib' is equal to
 //* 'zowe.setup.dataset.prefix' + 'SZWEAUTH'.
 //*
-//* When running this job, you should also run ZWERMVS
+//* When running this job, you should also consider
+//* to run ZWERMVS and ZWERMVS1.
 //*
 //*********************************************************************
 //RMPDSE EXEC PGM=IKJEFT01
@@ -391,62 +566,11 @@ Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWERMVS2) , Executable JCL: TEST.DATASET
 //SYSTSIN DD *
 DELETE 'TEST.DATASET.PFX.SZWELOAD' +
        SCRATCH NONVSAM
-//*
+/*
 --- End of JCL ---
 JCL not submitted, command run with "--dry-run" flag.
 To perform command, re-run command without "--dry-run" flag, or submit the JCL directly
-
 >> Command run successfully.
-
-Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWEIMVS) , Executable JCL: TEST.DATASET.PFX.JCLLIB(ZWEIMVS)
---- JCL Content ---
-//ZWEIMVS JOB
-//*
-//* This program and the accompanying materials are made available
-//* under the terms of the Eclipse Public License v2.0 which
-//* accompanies this distribution, and is available at
-//* https://www.eclipse.org/legal/epl-v20.html
-//*
-//* SPDX-License-Identifier: EPL-2.0
-//*
-//* Copyright Contributors to the Zowe Project. 2020, 2020
-//*
-//*********************************************************************
-//*
-//* This job is used to create datasets used by a Zowe "instance"
-//* Instances represent a configuration of Zowe, different from the
-//* "runtime" datasets that are created upon install of Zowe / SMPE.
-//*
-//* If your chosen value of 'zowe.setup.dataset.authLoadlib' is not
-//*  equal to 'zowe.setup.dataset.prefix' + 'SZWEAUTH',
-//*  then you must also run "ZWEIMVS2".
-//*
-//*********************************************************************
-//MKPDSE EXEC PGM=IKJEFT01
-//SYSTSPRT DD SYSOUT=A
-//SYSTSIN DD *
-ALLOC NEW DA('TEST.DATASET.PFX.PARMLIB') +
-dsntype(library) dsorg(po) recfm(f b) lrecl(80) +
-unit(sysallda) space(15,15) tracks
-
-ALLOC NEW DA('TEST.DATASET.PFX.ZWESAPL') +
-dsntype(library) dsorg(po) recfm(u) lrecl(0) +
-blksize(32760) unit(sysallda) space(30,15) tracks
-//*
-//MEMBCPY EXEC PGM=IEBCOPY
-//SYSPRINT DD SYSOUT=A
-//SYSUT1 DD DSN=TEST.DATASET.PFX.SZWESAMP,DISP=SHR
-//SYSUT2 DD DSN=TEST.DATASET.PFX.PARMLIB,DISP=OLD
-//SYSIN DD *
-  COPY OUTDD=SYSUT2,INDD=SYSUT1
-  SELECT MEMBER=((ZWESIP00,,R))
-//*
---- End of JCL ---
-JCL not submitted, command run with "--dry-run" flag.
-To perform command, re-run command without "--dry-run" flag, or submit the JCL directly
-
->> Command run successfully.
-
 Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWEIMVS2) , Executable JCL: TEST.DATASET.PFX.JCLLIB(ZWEIMVS2)
 --- JCL Content ---
 //ZWEIMVS2 JOB
@@ -467,7 +591,8 @@ Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWEIMVS2) , Executable JCL: TEST.DATASET
 //* 'zowe.setup.dataset.authLoadlib' is equal to
 //* 'zowe.setup.dataset.prefix' + 'SZWEAUTH'.
 //*
-//* When running this job, you should also run ZWEIMVS
+//* When running this job, you should also consider
+//* to run ZWEIMVS and ZWEIMVS1.
 //*
 //*********************************************************************
 //MKPDSE EXEC PGM=IKJEFT01
@@ -476,7 +601,7 @@ Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWEIMVS2) , Executable JCL: TEST.DATASET
 ALLOC NEW DA('TEST.DATASET.PFX.SZWELOAD') +
 dsntype(library) dsorg(po) recfm(u) lrecl(0) +
 blksize(32760) unit(sysallda) space(30,15) tracks
-//*
+/*
 //AUTHCPY EXEC PGM=BPXBATCH
 //BPXPRINT DD SYSOUT=*
 //STDOUT   DD SYSOUT=*
@@ -498,16 +623,86 @@ cp -X zowe_launcher
 --- End of JCL ---
 JCL not submitted, command run with "--dry-run" flag.
 To perform command, re-run command without "--dry-run" flag, or submit the JCL directly
-
 >> Command run successfully.
-
-
+Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWERMVS1) , Executable JCL: TEST.DATASET.PFX.JCLLIB(ZWERMVS1)
+--- JCL Content ---
+//ZWERMVS1 JOB
+//*
+//* This program and the accompanying materials are made available
+//* under the terms of the Eclipse Public License v2.0 which
+//* accompanies this distribution, and is available at
+//* https://www.eclipse.org/legal/epl-v20.html
+//*
+//* SPDX-License-Identifier: EPL-2.0
+//*
+//* Copyright Contributors to the Zowe Project. 2020, 2020
+//*
+//*********************************************************************
+//*
+//* This job is used to remove datasets used by a Zowe "instance"
+//* Instances represent a configuration of Zowe, different from the
+//* "runtime" datasets that are created upon install of Zowe / SMPE.
+//*
+//* If your chosen value of 'zowe.setup.dataset.authLoadlib' is not
+//*  equal to 'zowe.setup.dataset.prefix' + 'SZWEAUTH',
+//*  then you must also run ZWERMVS2.
+//*
+//*********************************************************************
+//RMPDSE EXEC PGM=IKJEFT01
+//SYSTSPRT DD SYSOUT=A
+//SYSTSIN DD *
+DELETE 'TEST.DATASET.PFX.ZWESAPL' +
+       SCRATCH NONVSAM
+/*
+--- End of JCL ---
+JCL not submitted, command run with "--dry-run" flag.
+To perform command, re-run command without "--dry-run" flag, or submit the JCL directly
+>> Command run successfully.
+Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWEIMVS1) , Executable JCL: TEST.DATASET.PFX.JCLLIB(ZWEIMVS1)
+--- JCL Content ---
+//ZWEIMVS1 JOB
+//*
+//* This program and the accompanying materials are made available
+//* under the terms of the Eclipse Public License v2.0 which
+//* accompanies this distribution, and is available at
+//* https://www.eclipse.org/legal/epl-v20.html
+//*
+//* SPDX-License-Identifier: EPL-2.0
+//*
+//* Copyright Contributors to the Zowe Project. 2020, 2020
+//*
+//*********************************************************************
+//*
+//* This job is used to create datasets used by a Zowe "instance"
+//* Instances represent a configuration of Zowe, different from the
+//* "runtime" datasets that are created upon install of Zowe / SMPE.
+//*
+//* Consider if the Zowe Cross Memory Server
+//*  - is used: run this and ZWEIMVS
+//*  - not used: you can skip this JCL
+//*
+//* If your chosen value of 'zowe.setup.dataset.authLoadlib' is not
+//*  equal to 'zowe.setup.dataset.prefix' + 'SZWEAUTH',
+//*  then you must also run ZWEIMVS2.
+//*
+//*********************************************************************
+//MKPDSE EXEC PGM=IKJEFT01
+//SYSTSPRT DD SYSOUT=A
+//SYSTSIN DD *
+ALLOC NEW DA('TEST.DATASET.PFX.ZWESAPL') +
+dsntype(library) dsorg(po) recfm(u) lrecl(0) +
+blksize(32760) unit(sysallda) space(30,15) tracks
+/*
+--- End of JCL ---
+JCL not submitted, command run with "--dry-run" flag.
+To perform command, re-run command without "--dry-run" flag, or submit the JCL directly
+>> Command run successfully.
 >> Zowe custom data sets are initialized successfully."
 `;
 
 exports[`init-mvs (SHORT) authPluginLib negatives  1`] = `
 "Error: Validation of FILE(/test/dir/zowe.test.yaml):FILE(/test/dir/files/defaults.yaml) against schema /test/dir/schemas/zowe-yaml-schema.json:/test/dir/schemas/server-common.json found invalid JSON Schema data
-Validity Exceptions(s) with object at 
+Validity Exceptions(s) with object at
   Validity Exceptions(s) with object at /zowe
     Validity Exceptions(s) with object at /zowe/setup
       Validity Exceptions(s) with object at /zowe/setup/dataset
@@ -518,7 +713,7 @@ Validity Exceptions(s) with object at
 
 exports[`init-mvs (SHORT) authPluginLib negatives  2`] = `
 "Error: Validation of FILE(/test/dir/zowe.test.yaml):FILE(/test/dir/files/defaults.yaml) against schema /test/dir/schemas/zowe-yaml-schema.json:/test/dir/schemas/server-common.json found invalid JSON Schema data
-Validity Exceptions(s) with object at 
+Validity Exceptions(s) with object at
   Validity Exceptions(s) with object at /zowe
     Validity Exceptions(s) with object at /zowe/setup
       Validity Exceptions(s) with object at /zowe/setup/dataset
@@ -532,12 +727,10 @@ exports[`init-mvs (SHORT) authPluginLib negatives  3`] = `
 Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
 -------------------------------------------------------------------------------
 >> Initialize Zowe custom data sets
-
 Create data sets if they do not exist
 Warning ZWEL0301W: TEST.DATASET.PFX.PARMLIB already exists and will not be overwritten. For upgrades, you must use --allow-overwrite.
 Warning ZWEL0301W: TEST.DATASET.PFX.SZWELOAD already exists and will not be overwritten. For upgrades, you must use --allow-overwrite.
 Skipped writing to a dataset. To write, you must use --allow-overwrite.
-
 >> Zowe custom data sets are initialized successfully."
 `;
 
@@ -546,13 +739,11 @@ exports[`init-mvs (SHORT) authPluginLib negatives  4`] = `
 Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
 -------------------------------------------------------------------------------
 >> Initialize Zowe custom data sets
-
 Create data sets if they do not exist
 Warning ZWEL0301W: TEST.DATASET.PFX.PARMLIB already exists and will not be overwritten. For upgrades, you must use --allow-overwrite.
 Warning ZWEL0301W: TEST.DATASET.PFX.SZWELOAD already exists and will not be overwritten. For upgrades, you must use --allow-overwrite.
 Warning ZWEL0301W: TEST.DATASET.PFX.PARMLIB already exists and will not be overwritten. For upgrades, you must use --allow-overwrite.
 Skipped writing to a dataset. To write, you must use --allow-overwrite.
-
 >> Zowe custom data sets are initialized successfully."
 `;
 
@@ -561,195 +752,8 @@ exports[`init-mvs (SHORT) authPluginLib negatives  5`] = `
 Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
 -------------------------------------------------------------------------------
 >> Initialize Zowe custom data sets
-
 Create data sets if they do not exist
 Warning ZWEL0300W: TEST.DATASET.PFX.PARMLIB already exists. Members in this data set will be overwritten.
-Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWERMVS) , Executable JCL: TEST.DATASET.PFX.JCLLIB(ZWERMVS)
---- JCL Content ---
-//ZWERMVS JOB
-//*
-//* This program and the accompanying materials are made available
-//* under the terms of the Eclipse Public License v2.0 which
-//* accompanies this distribution, and is available at
-//* https://www.eclipse.org/legal/epl-v20.html
-//*
-//* SPDX-License-Identifier: EPL-2.0
-//*
-//* Copyright Contributors to the Zowe Project. 2020, 2020
-//*
-//*********************************************************************
-//*
-//* This job is used to remove datasets used by a Zowe "instance"
-//* Instances represent a configuration of Zowe, different from the
-//* "runtime" datasets that are created upon install of Zowe / SMPE.
-//*
-//* If your chosen value of 'zowe.setup.dataset.authLoadlib' is not
-//*  equal to 'zowe.setup.dataset.prefix' + 'SZWEAUTH',
-//*  then you must also run "ZWERMVS2".
-//*
-//*********************************************************************
-//RMPDSE EXEC PGM=IKJEFT01
-//SYSTSPRT DD SYSOUT=A
-//SYSTSIN DD *
-DELETE ('TEST.DATASET.PFX.PARMLIB', +
-        'TEST.DATASET.PFX.ZWESAPL') +
-       SCRATCH NONVSAM
-//*
---- End of JCL ---
-JCL not submitted, command run with "--dry-run" flag.
-To perform command, re-run command without "--dry-run" flag, or submit the JCL directly
-
->> Command run successfully.
-
-Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWERMVS2) , Executable JCL: TEST.DATASET.PFX.JCLLIB(ZWERMVS2)
---- JCL Content ---
-//ZWERMVS2 JOB
-//*
-//* This program and the accompanying materials are made available
-//* under the terms of the Eclipse Public License v2.0 which
-//* accompanies this distribution, and is available at
-//* https://www.eclipse.org/legal/epl-v20.html
-//*
-//* SPDX-License-Identifier: EPL-2.0
-//*
-//* Copyright Contributors to the Zowe Project. 2020, 2020
-//*
-//*********************************************************************
-//*
-//* This job is used to remove the APF load library for an instance
-//*  of Zowe. It is not needed if your chosen value of
-//* 'zowe.setup.dataset.authLoadlib' is equal to
-//* 'zowe.setup.dataset.prefix' + 'SZWEAUTH'.
-//*
-//* When running this job, you should also run ZWERMVS
-//*
-//*********************************************************************
-//RMPDSE EXEC PGM=IKJEFT01
-//SYSTSPRT DD SYSOUT=A
-//SYSTSIN DD *
-DELETE 'TEST.DATASET.PFX.SZWELOAD' +
-       SCRATCH NONVSAM
-//*
---- End of JCL ---
-JCL not submitted, command run with "--dry-run" flag.
-To perform command, re-run command without "--dry-run" flag, or submit the JCL directly
-
->> Command run successfully.
-
-Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWEIMVS) , Executable JCL: TEST.DATASET.PFX.JCLLIB(ZWEIMVS)
---- JCL Content ---
-//ZWEIMVS JOB
-//*
-//* This program and the accompanying materials are made available
-//* under the terms of the Eclipse Public License v2.0 which
-//* accompanies this distribution, and is available at
-//* https://www.eclipse.org/legal/epl-v20.html
-//*
-//* SPDX-License-Identifier: EPL-2.0
-//*
-//* Copyright Contributors to the Zowe Project. 2020, 2020
-//*
-//*********************************************************************
-//*
-//* This job is used to create datasets used by a Zowe "instance"
-//* Instances represent a configuration of Zowe, different from the
-//* "runtime" datasets that are created upon install of Zowe / SMPE.
-//*
-//* If your chosen value of 'zowe.setup.dataset.authLoadlib' is not
-//*  equal to 'zowe.setup.dataset.prefix' + 'SZWEAUTH',
-//*  then you must also run "ZWEIMVS2".
-//*
-//*********************************************************************
-//MKPDSE EXEC PGM=IKJEFT01
-//SYSTSPRT DD SYSOUT=A
-//SYSTSIN DD *
-ALLOC NEW DA('TEST.DATASET.PFX.PARMLIB') +
-dsntype(library) dsorg(po) recfm(f b) lrecl(80) +
-unit(sysallda) space(15,15) tracks
-
-ALLOC NEW DA('TEST.DATASET.PFX.ZWESAPL') +
-dsntype(library) dsorg(po) recfm(u) lrecl(0) +
-blksize(32760) unit(sysallda) space(30,15) tracks
-//*
-//MEMBCPY EXEC PGM=IEBCOPY
-//SYSPRINT DD SYSOUT=A
-//SYSUT1 DD DSN=TEST.DATASET.PFX.SZWESAMP,DISP=SHR
-//SYSUT2 DD DSN=TEST.DATASET.PFX.PARMLIB,DISP=OLD
-//SYSIN DD *
-  COPY OUTDD=SYSUT2,INDD=SYSUT1
-  SELECT MEMBER=((ZWESIP00,,R))
-//*
---- End of JCL ---
-JCL not submitted, command run with "--dry-run" flag.
-To perform command, re-run command without "--dry-run" flag, or submit the JCL directly
-
->> Command run successfully.
-
-Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWEIMVS2) , Executable JCL: TEST.DATASET.PFX.JCLLIB(ZWEIMVS2)
---- JCL Content ---
-//ZWEIMVS2 JOB
-//*
-//* This program and the accompanying materials are made available
-//* under the terms of the Eclipse Public License v2.0 which
-//* accompanies this distribution, and is available at
-//* https://www.eclipse.org/legal/epl-v20.html
-//*
-//* SPDX-License-Identifier: EPL-2.0
-//*
-//* Copyright Contributors to the Zowe Project. 2020, 2020
-//*
-//*********************************************************************
-//*
-//* This job is used to create the APF load library for an instance
-//*  of Zowe. It is not needed if your chosen value of
-//* 'zowe.setup.dataset.authLoadlib' is equal to
-//* 'zowe.setup.dataset.prefix' + 'SZWEAUTH'.
-//*
-//* When running this job, you should also run ZWEIMVS
-//*
-//*********************************************************************
-//MKPDSE EXEC PGM=IKJEFT01
-//SYSTSPRT DD SYSOUT=A
-//SYSTSIN DD *
-ALLOC NEW DA('TEST.DATASET.PFX.SZWELOAD') +
-dsntype(library) dsorg(po) recfm(u) lrecl(0) +
-blksize(32760) unit(sysallda) space(30,15) tracks
-//*
-//AUTHCPY EXEC PGM=BPXBATCH
-//BPXPRINT DD SYSOUT=*
-//STDOUT   DD SYSOUT=*
-//STDERR   DD SYSOUT=*
-//STDPARM DD *
-SH cd '/test/dir' &&
-cd components/zss &&
-ZWE_TMP_MVS2='TEST.DATASET.PFX.SZWELOAD' &&
-cp -X LOADLIB/ZWESIS01
-"//'$ZWE_TMP_MVS2(ZWESIS01)'" &&
-cp -X LOADLIB/ZWESAUX
-"//'$ZWE_TMP_MVS2(ZWESAUX)'" &&
-cp -X LOADLIB/ZWESISDL
-"//'$ZWE_TMP_MVS2(ZWESISDL)'" &&
-cd ../launcher/bin &&
-cp -X zowe_launcher
-"//'$ZWE_TMP_MVS2(ZWELNCH)'"
-/*
---- End of JCL ---
-JCL not submitted, command run with "--dry-run" flag.
-To perform command, re-run command without "--dry-run" flag, or submit the JCL directly
-
->> Command run successfully.
-
-
->> Zowe custom data sets are initialized successfully."
-`;
-
-exports[`init-mvs (SHORT) authPluginLib negatives  6`] = `
-"Temporary directory '/tmp/.zweenv-0000' created.
-Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
--------------------------------------------------------------------------------
->> Initialize Zowe custom data sets
-
-Create data sets if they do not exist
 Warning ZWEL0300W: TEST.DATASET.PFX.SZWELOAD already exists. Members in this data set will be overwritten.
 Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWERMVS) , Executable JCL: TEST.DATASET.PFX.JCLLIB(ZWERMVS)
 --- JCL Content ---
@@ -772,22 +776,68 @@ Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWERMVS) , Executable JCL: TEST.DATASET.
 //*
 //* If your chosen value of 'zowe.setup.dataset.authLoadlib' is not
 //*  equal to 'zowe.setup.dataset.prefix' + 'SZWEAUTH',
-//*  then you must also run "ZWERMVS2".
+//*  then you must also run ZWERMVS2.
 //*
 //*********************************************************************
 //RMPDSE EXEC PGM=IKJEFT01
 //SYSTSPRT DD SYSOUT=A
 //SYSTSIN DD *
-DELETE ('TEST.DATASET.PFX.PARMLIB', +
-        'TEST.DATASET.PFX.ZWESAPL') +
+DELETE 'TEST.DATASET.PFX.PARMLIB' +
        SCRATCH NONVSAM
+/*
+--- End of JCL ---
+JCL not submitted, command run with "--dry-run" flag.
+To perform command, re-run command without "--dry-run" flag, or submit the JCL directly
+>> Command run successfully.
+Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWEIMVS) , Executable JCL: TEST.DATASET.PFX.JCLLIB(ZWEIMVS)
+--- JCL Content ---
+//ZWEIMVS JOB
+//*
+//* This program and the accompanying materials are made available
+//* under the terms of the Eclipse Public License v2.0 which
+//* accompanies this distribution, and is available at
+//* https://www.eclipse.org/legal/epl-v20.html
+//*
+//* SPDX-License-Identifier: EPL-2.0
+//*
+//* Copyright Contributors to the Zowe Project. 2020, 2020
+//*
+//*********************************************************************
+//*
+//* This job is used to create datasets used by a Zowe "instance"
+//* Instances represent a configuration of Zowe, different from the
+//* "runtime" datasets that are created upon install of Zowe / SMPE.
+//*
+//* Consider if the Zowe Cross Memory Server
+//*  - is used: run this and consider to run ZWEIMVS1
+//*  - not used: you can skip this JCL
+//*
+//* If your chosen value of 'zowe.setup.dataset.authLoadlib' is not
+//*  equal to 'zowe.setup.dataset.prefix' + 'SZWEAUTH',
+//*  then you must also run ZWEIMVS2.
+//*
+//*********************************************************************
+//MKPDSE EXEC PGM=IKJEFT01
+//SYSTSPRT DD SYSOUT=A
+//SYSTSIN DD *
+ALLOC NEW DA('TEST.DATASET.PFX.PARMLIB') +
+dsntype(library) dsorg(po) recfm(f b) lrecl(80) +
+unit(sysallda) space(15,15) tracks
+/*
+//MEMBCPY EXEC PGM=IKJEFT01
+//  SET OUTPARM=ZWESIP00
+//SYSTSPRT DD SYSOUT=A
+//PARMIN  DD DISP=SHR,
+//  DSN=TEST.DATASET.PFX.SZWESAMP(ZWESIP00)
+//PARMOUT DD DISP=SHR,
+//  DSN=TEST.DATASET.PFX.PARMLIB(&OUTPARM)
+//SYSTSIN DD *
+  REPRO INFILE(PARMIN) OUTFILE(PARMOUT)
 //*
 --- End of JCL ---
 JCL not submitted, command run with "--dry-run" flag.
 To perform command, re-run command without "--dry-run" flag, or submit the JCL directly
-
 >> Command run successfully.
-
 Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWERMVS2) , Executable JCL: TEST.DATASET.PFX.JCLLIB(ZWERMVS2)
 --- JCL Content ---
 //ZWERMVS2 JOB
@@ -808,7 +858,8 @@ Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWERMVS2) , Executable JCL: TEST.DATASET
 //* 'zowe.setup.dataset.authLoadlib' is equal to
 //* 'zowe.setup.dataset.prefix' + 'SZWEAUTH'.
 //*
-//* When running this job, you should also run ZWERMVS
+//* When running this job, you should also consider
+//* to run ZWERMVS and ZWERMVS1.
 //*
 //*********************************************************************
 //RMPDSE EXEC PGM=IKJEFT01
@@ -816,62 +867,11 @@ Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWERMVS2) , Executable JCL: TEST.DATASET
 //SYSTSIN DD *
 DELETE 'TEST.DATASET.PFX.SZWELOAD' +
        SCRATCH NONVSAM
-//*
+/*
 --- End of JCL ---
 JCL not submitted, command run with "--dry-run" flag.
 To perform command, re-run command without "--dry-run" flag, or submit the JCL directly
-
 >> Command run successfully.
-
-Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWEIMVS) , Executable JCL: TEST.DATASET.PFX.JCLLIB(ZWEIMVS)
---- JCL Content ---
-//ZWEIMVS JOB
-//*
-//* This program and the accompanying materials are made available
-//* under the terms of the Eclipse Public License v2.0 which
-//* accompanies this distribution, and is available at
-//* https://www.eclipse.org/legal/epl-v20.html
-//*
-//* SPDX-License-Identifier: EPL-2.0
-//*
-//* Copyright Contributors to the Zowe Project. 2020, 2020
-//*
-//*********************************************************************
-//*
-//* This job is used to create datasets used by a Zowe "instance"
-//* Instances represent a configuration of Zowe, different from the
-//* "runtime" datasets that are created upon install of Zowe / SMPE.
-//*
-//* If your chosen value of 'zowe.setup.dataset.authLoadlib' is not
-//*  equal to 'zowe.setup.dataset.prefix' + 'SZWEAUTH',
-//*  then you must also run "ZWEIMVS2".
-//*
-//*********************************************************************
-//MKPDSE EXEC PGM=IKJEFT01
-//SYSTSPRT DD SYSOUT=A
-//SYSTSIN DD *
-ALLOC NEW DA('TEST.DATASET.PFX.PARMLIB') +
-dsntype(library) dsorg(po) recfm(f b) lrecl(80) +
-unit(sysallda) space(15,15) tracks
-
-ALLOC NEW DA('TEST.DATASET.PFX.ZWESAPL') +
-dsntype(library) dsorg(po) recfm(u) lrecl(0) +
-blksize(32760) unit(sysallda) space(30,15) tracks
-//*
-//MEMBCPY EXEC PGM=IEBCOPY
-//SYSPRINT DD SYSOUT=A
-//SYSUT1 DD DSN=TEST.DATASET.PFX.SZWESAMP,DISP=SHR
-//SYSUT2 DD DSN=TEST.DATASET.PFX.PARMLIB,DISP=OLD
-//SYSIN DD *
-  COPY OUTDD=SYSUT2,INDD=SYSUT1
-  SELECT MEMBER=((ZWESIP00,,R))
-//*
---- End of JCL ---
-JCL not submitted, command run with "--dry-run" flag.
-To perform command, re-run command without "--dry-run" flag, or submit the JCL directly
-
->> Command run successfully.
-
 Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWEIMVS2) , Executable JCL: TEST.DATASET.PFX.JCLLIB(ZWEIMVS2)
 --- JCL Content ---
 //ZWEIMVS2 JOB
@@ -892,7 +892,8 @@ Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWEIMVS2) , Executable JCL: TEST.DATASET
 //* 'zowe.setup.dataset.authLoadlib' is equal to
 //* 'zowe.setup.dataset.prefix' + 'SZWEAUTH'.
 //*
-//* When running this job, you should also run ZWEIMVS
+//* When running this job, you should also consider
+//* to run ZWEIMVS and ZWEIMVS1.
 //*
 //*********************************************************************
 //MKPDSE EXEC PGM=IKJEFT01
@@ -901,7 +902,7 @@ Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWEIMVS2) , Executable JCL: TEST.DATASET
 ALLOC NEW DA('TEST.DATASET.PFX.SZWELOAD') +
 dsntype(library) dsorg(po) recfm(u) lrecl(0) +
 blksize(32760) unit(sysallda) space(30,15) tracks
-//*
+/*
 //AUTHCPY EXEC PGM=BPXBATCH
 //BPXPRINT DD SYSOUT=*
 //STDOUT   DD SYSOUT=*
@@ -923,16 +924,272 @@ cp -X zowe_launcher
 --- End of JCL ---
 JCL not submitted, command run with "--dry-run" flag.
 To perform command, re-run command without "--dry-run" flag, or submit the JCL directly
-
 >> Command run successfully.
+Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWEIMVS1) , Executable JCL: TEST.DATASET.PFX.JCLLIB(ZWEIMVS1)
+--- JCL Content ---
+//ZWEIMVS1 JOB
+//*
+//* This program and the accompanying materials are made available
+//* under the terms of the Eclipse Public License v2.0 which
+//* accompanies this distribution, and is available at
+//* https://www.eclipse.org/legal/epl-v20.html
+//*
+//* SPDX-License-Identifier: EPL-2.0
+//*
+//* Copyright Contributors to the Zowe Project. 2020, 2020
+//*
+//*********************************************************************
+//*
+//* This job is used to create datasets used by a Zowe "instance"
+//* Instances represent a configuration of Zowe, different from the
+//* "runtime" datasets that are created upon install of Zowe / SMPE.
+//*
+//* Consider if the Zowe Cross Memory Server
+//*  - is used: run this and ZWEIMVS
+//*  - not used: you can skip this JCL
+//*
+//* If your chosen value of 'zowe.setup.dataset.authLoadlib' is not
+//*  equal to 'zowe.setup.dataset.prefix' + 'SZWEAUTH',
+//*  then you must also run ZWEIMVS2.
+//*
+//*********************************************************************
+//MKPDSE EXEC PGM=IKJEFT01
+//SYSTSPRT DD SYSOUT=A
+//SYSTSIN DD *
+ALLOC NEW DA('TEST.DATASET.PFX.ZWESAPL') +
+dsntype(library) dsorg(po) recfm(u) lrecl(0) +
+blksize(32760) unit(sysallda) space(30,15) tracks
+/*
+--- End of JCL ---
+JCL not submitted, command run with "--dry-run" flag.
+To perform command, re-run command without "--dry-run" flag, or submit the JCL directly
+>> Command run successfully.
+>> Zowe custom data sets are initialized successfully."
+`;
 
-
+exports[`init-mvs (SHORT) authPluginLib negatives  6`] = `
+"Temporary directory '/tmp/.zweenv-0000' created.
+Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
+-------------------------------------------------------------------------------
+>> Initialize Zowe custom data sets
+Create data sets if they do not exist
+Warning ZWEL0300W: TEST.DATASET.PFX.SZWELOAD already exists. Members in this data set will be overwritten.
+Warning ZWEL0300W: TEST.DATASET.PFX.SZWELOAD already exists. Members in this data set will be overwritten.
+Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWERMVS) , Executable JCL: TEST.DATASET.PFX.JCLLIB(ZWERMVS)
+--- JCL Content ---
+//ZWERMVS JOB
+//*
+//* This program and the accompanying materials are made available
+//* under the terms of the Eclipse Public License v2.0 which
+//* accompanies this distribution, and is available at
+//* https://www.eclipse.org/legal/epl-v20.html
+//*
+//* SPDX-License-Identifier: EPL-2.0
+//*
+//* Copyright Contributors to the Zowe Project. 2020, 2020
+//*
+//*********************************************************************
+//*
+//* This job is used to remove datasets used by a Zowe "instance"
+//* Instances represent a configuration of Zowe, different from the
+//* "runtime" datasets that are created upon install of Zowe / SMPE.
+//*
+//* If your chosen value of 'zowe.setup.dataset.authLoadlib' is not
+//*  equal to 'zowe.setup.dataset.prefix' + 'SZWEAUTH',
+//*  then you must also run ZWERMVS2.
+//*
+//*********************************************************************
+//RMPDSE EXEC PGM=IKJEFT01
+//SYSTSPRT DD SYSOUT=A
+//SYSTSIN DD *
+DELETE 'TEST.DATASET.PFX.PARMLIB' +
+       SCRATCH NONVSAM
+/*
+--- End of JCL ---
+JCL not submitted, command run with "--dry-run" flag.
+To perform command, re-run command without "--dry-run" flag, or submit the JCL directly
+>> Command run successfully.
+Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWEIMVS) , Executable JCL: TEST.DATASET.PFX.JCLLIB(ZWEIMVS)
+--- JCL Content ---
+//ZWEIMVS JOB
+//*
+//* This program and the accompanying materials are made available
+//* under the terms of the Eclipse Public License v2.0 which
+//* accompanies this distribution, and is available at
+//* https://www.eclipse.org/legal/epl-v20.html
+//*
+//* SPDX-License-Identifier: EPL-2.0
+//*
+//* Copyright Contributors to the Zowe Project. 2020, 2020
+//*
+//*********************************************************************
+//*
+//* This job is used to create datasets used by a Zowe "instance"
+//* Instances represent a configuration of Zowe, different from the
+//* "runtime" datasets that are created upon install of Zowe / SMPE.
+//*
+//* Consider if the Zowe Cross Memory Server
+//*  - is used: run this and consider to run ZWEIMVS1
+//*  - not used: you can skip this JCL
+//*
+//* If your chosen value of 'zowe.setup.dataset.authLoadlib' is not
+//*  equal to 'zowe.setup.dataset.prefix' + 'SZWEAUTH',
+//*  then you must also run ZWEIMVS2.
+//*
+//*********************************************************************
+//MKPDSE EXEC PGM=IKJEFT01
+//SYSTSPRT DD SYSOUT=A
+//SYSTSIN DD *
+ALLOC NEW DA('TEST.DATASET.PFX.PARMLIB') +
+dsntype(library) dsorg(po) recfm(f b) lrecl(80) +
+unit(sysallda) space(15,15) tracks
+/*
+//MEMBCPY EXEC PGM=IKJEFT01
+//  SET OUTPARM=ZWESIP00
+//SYSTSPRT DD SYSOUT=A
+//PARMIN  DD DISP=SHR,
+//  DSN=TEST.DATASET.PFX.SZWESAMP(ZWESIP00)
+//PARMOUT DD DISP=SHR,
+//  DSN=TEST.DATASET.PFX.PARMLIB(&OUTPARM)
+//SYSTSIN DD *
+  REPRO INFILE(PARMIN) OUTFILE(PARMOUT)
+//*
+--- End of JCL ---
+JCL not submitted, command run with "--dry-run" flag.
+To perform command, re-run command without "--dry-run" flag, or submit the JCL directly
+>> Command run successfully.
+Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWERMVS2) , Executable JCL: TEST.DATASET.PFX.JCLLIB(ZWERMVS2)
+--- JCL Content ---
+//ZWERMVS2 JOB
+//*
+//* This program and the accompanying materials are made available
+//* under the terms of the Eclipse Public License v2.0 which
+//* accompanies this distribution, and is available at
+//* https://www.eclipse.org/legal/epl-v20.html
+//*
+//* SPDX-License-Identifier: EPL-2.0
+//*
+//* Copyright Contributors to the Zowe Project. 2020, 2020
+//*
+//*********************************************************************
+//*
+//* This job is used to remove the APF load library for an instance
+//*  of Zowe. It is not needed if your chosen value of
+//* 'zowe.setup.dataset.authLoadlib' is equal to
+//* 'zowe.setup.dataset.prefix' + 'SZWEAUTH'.
+//*
+//* When running this job, you should also consider
+//* to run ZWERMVS and ZWERMVS1.
+//*
+//*********************************************************************
+//RMPDSE EXEC PGM=IKJEFT01
+//SYSTSPRT DD SYSOUT=A
+//SYSTSIN DD *
+DELETE 'TEST.DATASET.PFX.SZWELOAD' +
+       SCRATCH NONVSAM
+/*
+--- End of JCL ---
+JCL not submitted, command run with "--dry-run" flag.
+To perform command, re-run command without "--dry-run" flag, or submit the JCL directly
+>> Command run successfully.
+Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWEIMVS2) , Executable JCL: TEST.DATASET.PFX.JCLLIB(ZWEIMVS2)
+--- JCL Content ---
+//ZWEIMVS2 JOB
+//*
+//* This program and the accompanying materials are made available
+//* under the terms of the Eclipse Public License v2.0 which
+//* accompanies this distribution, and is available at
+//* https://www.eclipse.org/legal/epl-v20.html
+//*
+//* SPDX-License-Identifier: EPL-2.0
+//*
+//* Copyright Contributors to the Zowe Project. 2020, 2020
+//*
+//*********************************************************************
+//*
+//* This job is used to create the APF load library for an instance
+//*  of Zowe. It is not needed if your chosen value of
+//* 'zowe.setup.dataset.authLoadlib' is equal to
+//* 'zowe.setup.dataset.prefix' + 'SZWEAUTH'.
+//*
+//* When running this job, you should also consider
+//* to run ZWEIMVS and ZWEIMVS1.
+//*
+//*********************************************************************
+//MKPDSE EXEC PGM=IKJEFT01
+//SYSTSPRT DD SYSOUT=A
+//SYSTSIN DD *
+ALLOC NEW DA('TEST.DATASET.PFX.SZWELOAD') +
+dsntype(library) dsorg(po) recfm(u) lrecl(0) +
+blksize(32760) unit(sysallda) space(30,15) tracks
+/*
+//AUTHCPY EXEC PGM=BPXBATCH
+//BPXPRINT DD SYSOUT=*
+//STDOUT   DD SYSOUT=*
+//STDERR   DD SYSOUT=*
+//STDPARM DD *
+SH cd '/test/dir' &&
+cd components/zss &&
+ZWE_TMP_MVS2='TEST.DATASET.PFX.SZWELOAD' &&
+cp -X LOADLIB/ZWESIS01
+"//'$ZWE_TMP_MVS2(ZWESIS01)'" &&
+cp -X LOADLIB/ZWESAUX
+"//'$ZWE_TMP_MVS2(ZWESAUX)'" &&
+cp -X LOADLIB/ZWESISDL
+"//'$ZWE_TMP_MVS2(ZWESISDL)'" &&
+cd ../launcher/bin &&
+cp -X zowe_launcher
+"//'$ZWE_TMP_MVS2(ZWELNCH)'"
+/*
+--- End of JCL ---
+JCL not submitted, command run with "--dry-run" flag.
+To perform command, re-run command without "--dry-run" flag, or submit the JCL directly
+>> Command run successfully.
+Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWEIMVS1) , Executable JCL: TEST.DATASET.PFX.JCLLIB(ZWEIMVS1)
+--- JCL Content ---
+//ZWEIMVS1 JOB
+//*
+//* This program and the accompanying materials are made available
+//* under the terms of the Eclipse Public License v2.0 which
+//* accompanies this distribution, and is available at
+//* https://www.eclipse.org/legal/epl-v20.html
+//*
+//* SPDX-License-Identifier: EPL-2.0
+//*
+//* Copyright Contributors to the Zowe Project. 2020, 2020
+//*
+//*********************************************************************
+//*
+//* This job is used to create datasets used by a Zowe "instance"
+//* Instances represent a configuration of Zowe, different from the
+//* "runtime" datasets that are created upon install of Zowe / SMPE.
+//*
+//* Consider if the Zowe Cross Memory Server
+//*  - is used: run this and ZWEIMVS
+//*  - not used: you can skip this JCL
+//*
+//* If your chosen value of 'zowe.setup.dataset.authLoadlib' is not
+//*  equal to 'zowe.setup.dataset.prefix' + 'SZWEAUTH',
+//*  then you must also run ZWEIMVS2.
+//*
+//*********************************************************************
+//MKPDSE EXEC PGM=IKJEFT01
+//SYSTSPRT DD SYSOUT=A
+//SYSTSIN DD *
+ALLOC NEW DA('TEST.DATASET.PFX.ZWESAPL') +
+dsntype(library) dsorg(po) recfm(u) lrecl(0) +
+blksize(32760) unit(sysallda) space(30,15) tracks
+/*
+--- End of JCL ---
+JCL not submitted, command run with "--dry-run" flag.
+To perform command, re-run command without "--dry-run" flag, or submit the JCL directly
+>> Command run successfully.
 >> Zowe custom data sets are initialized successfully."
 `;
 
 exports[`init-mvs (SHORT) bad ds prefix post-generate 1`] = `
 "Error: Validation of FILE(/test/dir/zowe.test.yaml):FILE(/test/dir/files/defaults.yaml) against schema /test/dir/schemas/zowe-yaml-schema.json:/test/dir/schemas/server-common.json found invalid JSON Schema data
-Validity Exceptions(s) with object at 
+Validity Exceptions(s) with object at
   Validity Exceptions(s) with object at /zowe
     Validity Exceptions(s) with object at /zowe/setup
       Validity Exceptions(s) with object at /zowe/setup/dataset
@@ -943,7 +1200,7 @@ Validity Exceptions(s) with object at
 
 exports[`init-mvs (SHORT) bad ds prefix post-generate 2`] = `
 "Error: Validation of FILE(/test/dir/zowe.test.yaml):FILE(/test/dir/files/defaults.yaml) against schema /test/dir/schemas/zowe-yaml-schema.json:/test/dir/schemas/server-common.json found invalid JSON Schema data
-Validity Exceptions(s) with object at 
+Validity Exceptions(s) with object at
   Validity Exceptions(s) with object at /zowe
     Validity Exceptions(s) with object at /zowe/setup
       Validity Exceptions(s) with object at /zowe/setup/dataset
@@ -954,7 +1211,7 @@ Validity Exceptions(s) with object at
 
 exports[`init-mvs (SHORT) jcllib fails verification 1`] = `
 "Error: Validation of FILE(/test/dir/zowe.test.yaml):FILE(/test/dir/files/defaults.yaml) against schema /test/dir/schemas/zowe-yaml-schema.json:/test/dir/schemas/server-common.json found invalid JSON Schema data
-Validity Exceptions(s) with object at 
+Validity Exceptions(s) with object at
   Validity Exceptions(s) with object at /zowe
     Validity Exceptions(s) with object at /zowe/setup
       Validity Exceptions(s) with object at /zowe/setup/dataset
@@ -965,7 +1222,7 @@ Validity Exceptions(s) with object at
 
 exports[`init-mvs (SHORT) jcllib fails verification 2`] = `
 "Error: Validation of FILE(/test/dir/zowe.test.yaml):FILE(/test/dir/files/defaults.yaml) against schema /test/dir/schemas/zowe-yaml-schema.json:/test/dir/schemas/server-common.json found invalid JSON Schema data
-Validity Exceptions(s) with object at 
+Validity Exceptions(s) with object at
   Validity Exceptions(s) with object at /zowe
     Validity Exceptions(s) with object at /zowe/setup
       Validity Exceptions(s) with object at /zowe/setup/dataset
@@ -976,7 +1233,7 @@ Validity Exceptions(s) with object at
 
 exports[`init-mvs (SHORT) parmlib negatives  1`] = `
 "Error: Validation of FILE(/test/dir/zowe.test.yaml):FILE(/test/dir/files/defaults.yaml) against schema /test/dir/schemas/zowe-yaml-schema.json:/test/dir/schemas/server-common.json found invalid JSON Schema data
-Validity Exceptions(s) with object at 
+Validity Exceptions(s) with object at
   Validity Exceptions(s) with object at /zowe
     Validity Exceptions(s) with object at /zowe/setup
       Validity Exceptions(s) with object at /zowe/setup/dataset
@@ -987,7 +1244,7 @@ Validity Exceptions(s) with object at
 
 exports[`init-mvs (SHORT) parmlib negatives  2`] = `
 "Error: Validation of FILE(/test/dir/zowe.test.yaml):FILE(/test/dir/files/defaults.yaml) against schema /test/dir/schemas/zowe-yaml-schema.json:/test/dir/schemas/server-common.json found invalid JSON Schema data
-Validity Exceptions(s) with object at 
+Validity Exceptions(s) with object at
   Validity Exceptions(s) with object at /zowe
     Validity Exceptions(s) with object at /zowe/setup
       Validity Exceptions(s) with object at /zowe/setup/dataset
@@ -1001,12 +1258,10 @@ exports[`init-mvs (SHORT) parmlib negatives  3`] = `
 Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
 -------------------------------------------------------------------------------
 >> Initialize Zowe custom data sets
-
 Create data sets if they do not exist
 Warning ZWEL0301W: TEST.DATASET.PFX.SZWELOAD already exists and will not be overwritten. For upgrades, you must use --allow-overwrite.
 Warning ZWEL0301W: TEST.DATASET.PFX.ZWESAPL already exists and will not be overwritten. For upgrades, you must use --allow-overwrite.
 Skipped writing to a dataset. To write, you must use --allow-overwrite.
-
 >> Zowe custom data sets are initialized successfully."
 `;
 
@@ -1015,13 +1270,11 @@ exports[`init-mvs (SHORT) parmlib negatives  4`] = `
 Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
 -------------------------------------------------------------------------------
 >> Initialize Zowe custom data sets
-
 Create data sets if they do not exist
 Warning ZWEL0301W: TEST.DATASET.PFX.ZWESAPL already exists and will not be overwritten. For upgrades, you must use --allow-overwrite.
 Warning ZWEL0301W: TEST.DATASET.PFX.SZWELOAD already exists and will not be overwritten. For upgrades, you must use --allow-overwrite.
 Warning ZWEL0301W: TEST.DATASET.PFX.ZWESAPL already exists and will not be overwritten. For upgrades, you must use --allow-overwrite.
 Skipped writing to a dataset. To write, you must use --allow-overwrite.
-
 >> Zowe custom data sets are initialized successfully."
 `;
 
@@ -1030,12 +1283,12 @@ exports[`init-mvs (SHORT) parmlib negatives  5`] = `
 Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
 -------------------------------------------------------------------------------
 >> Initialize Zowe custom data sets
-
 Create data sets if they do not exist
+Warning ZWEL0300W: TEST.DATASET.PFX.SZWELOAD already exists. Members in this data set will be overwritten.
 Warning ZWEL0300W: TEST.DATASET.PFX.ZWESAPL already exists. Members in this data set will be overwritten.
-Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWERMVS) , Executable JCL: TEST.DATASET.PFX.JCLLIB(ZWERMVS)
+Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWEIMVS) , Executable JCL: TEST.DATASET.PFX.JCLLIB(ZWEIMVS)
 --- JCL Content ---
-//ZWERMVS JOB
+//ZWEIMVS JOB
 //*
 //* This program and the accompanying materials are made available
 //* under the terms of the Eclipse Public License v2.0 which
@@ -1048,28 +1301,40 @@ Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWERMVS) , Executable JCL: TEST.DATASET.
 //*
 //*********************************************************************
 //*
-//* This job is used to remove datasets used by a Zowe "instance"
+//* This job is used to create datasets used by a Zowe "instance"
 //* Instances represent a configuration of Zowe, different from the
 //* "runtime" datasets that are created upon install of Zowe / SMPE.
 //*
+//* Consider if the Zowe Cross Memory Server
+//*  - is used: run this and consider to run ZWEIMVS1
+//*  - not used: you can skip this JCL
+//*
 //* If your chosen value of 'zowe.setup.dataset.authLoadlib' is not
 //*  equal to 'zowe.setup.dataset.prefix' + 'SZWEAUTH',
-//*  then you must also run "ZWERMVS2".
+//*  then you must also run ZWEIMVS2.
 //*
 //*********************************************************************
-//RMPDSE EXEC PGM=IKJEFT01
+//MKPDSE EXEC PGM=IKJEFT01
 //SYSTSPRT DD SYSOUT=A
 //SYSTSIN DD *
-DELETE ('TEST.DATASET.PFX.PARMLIB', +
-        'TEST.DATASET.PFX.ZWESAPL') +
-       SCRATCH NONVSAM
+ALLOC NEW DA('TEST.DATASET.PFX.PARMLIB') +
+dsntype(library) dsorg(po) recfm(f b) lrecl(80) +
+unit(sysallda) space(15,15) tracks
+/*
+//MEMBCPY EXEC PGM=IKJEFT01
+//  SET OUTPARM=ZWESIP00
+//SYSTSPRT DD SYSOUT=A
+//PARMIN  DD DISP=SHR,
+//  DSN=TEST.DATASET.PFX.SZWESAMP(ZWESIP00)
+//PARMOUT DD DISP=SHR,
+//  DSN=TEST.DATASET.PFX.PARMLIB(&OUTPARM)
+//SYSTSIN DD *
+  REPRO INFILE(PARMIN) OUTFILE(PARMOUT)
 //*
 --- End of JCL ---
 JCL not submitted, command run with "--dry-run" flag.
 To perform command, re-run command without "--dry-run" flag, or submit the JCL directly
-
 >> Command run successfully.
-
 Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWERMVS2) , Executable JCL: TEST.DATASET.PFX.JCLLIB(ZWERMVS2)
 --- JCL Content ---
 //ZWERMVS2 JOB
@@ -1090,7 +1355,8 @@ Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWERMVS2) , Executable JCL: TEST.DATASET
 //* 'zowe.setup.dataset.authLoadlib' is equal to
 //* 'zowe.setup.dataset.prefix' + 'SZWEAUTH'.
 //*
-//* When running this job, you should also run ZWERMVS
+//* When running this job, you should also consider
+//* to run ZWERMVS and ZWERMVS1.
 //*
 //*********************************************************************
 //RMPDSE EXEC PGM=IKJEFT01
@@ -1098,62 +1364,11 @@ Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWERMVS2) , Executable JCL: TEST.DATASET
 //SYSTSIN DD *
 DELETE 'TEST.DATASET.PFX.SZWELOAD' +
        SCRATCH NONVSAM
-//*
+/*
 --- End of JCL ---
 JCL not submitted, command run with "--dry-run" flag.
 To perform command, re-run command without "--dry-run" flag, or submit the JCL directly
-
 >> Command run successfully.
-
-Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWEIMVS) , Executable JCL: TEST.DATASET.PFX.JCLLIB(ZWEIMVS)
---- JCL Content ---
-//ZWEIMVS JOB
-//*
-//* This program and the accompanying materials are made available
-//* under the terms of the Eclipse Public License v2.0 which
-//* accompanies this distribution, and is available at
-//* https://www.eclipse.org/legal/epl-v20.html
-//*
-//* SPDX-License-Identifier: EPL-2.0
-//*
-//* Copyright Contributors to the Zowe Project. 2020, 2020
-//*
-//*********************************************************************
-//*
-//* This job is used to create datasets used by a Zowe "instance"
-//* Instances represent a configuration of Zowe, different from the
-//* "runtime" datasets that are created upon install of Zowe / SMPE.
-//*
-//* If your chosen value of 'zowe.setup.dataset.authLoadlib' is not
-//*  equal to 'zowe.setup.dataset.prefix' + 'SZWEAUTH',
-//*  then you must also run "ZWEIMVS2".
-//*
-//*********************************************************************
-//MKPDSE EXEC PGM=IKJEFT01
-//SYSTSPRT DD SYSOUT=A
-//SYSTSIN DD *
-ALLOC NEW DA('TEST.DATASET.PFX.PARMLIB') +
-dsntype(library) dsorg(po) recfm(f b) lrecl(80) +
-unit(sysallda) space(15,15) tracks
-
-ALLOC NEW DA('TEST.DATASET.PFX.ZWESAPL') +
-dsntype(library) dsorg(po) recfm(u) lrecl(0) +
-blksize(32760) unit(sysallda) space(30,15) tracks
-//*
-//MEMBCPY EXEC PGM=IEBCOPY
-//SYSPRINT DD SYSOUT=A
-//SYSUT1 DD DSN=TEST.DATASET.PFX.SZWESAMP,DISP=SHR
-//SYSUT2 DD DSN=TEST.DATASET.PFX.PARMLIB,DISP=OLD
-//SYSIN DD *
-  COPY OUTDD=SYSUT2,INDD=SYSUT1
-  SELECT MEMBER=((ZWESIP00,,R))
-//*
---- End of JCL ---
-JCL not submitted, command run with "--dry-run" flag.
-To perform command, re-run command without "--dry-run" flag, or submit the JCL directly
-
->> Command run successfully.
-
 Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWEIMVS2) , Executable JCL: TEST.DATASET.PFX.JCLLIB(ZWEIMVS2)
 --- JCL Content ---
 //ZWEIMVS2 JOB
@@ -1174,7 +1389,8 @@ Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWEIMVS2) , Executable JCL: TEST.DATASET
 //* 'zowe.setup.dataset.authLoadlib' is equal to
 //* 'zowe.setup.dataset.prefix' + 'SZWEAUTH'.
 //*
-//* When running this job, you should also run ZWEIMVS
+//* When running this job, you should also consider
+//* to run ZWEIMVS and ZWEIMVS1.
 //*
 //*********************************************************************
 //MKPDSE EXEC PGM=IKJEFT01
@@ -1183,7 +1399,7 @@ Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWEIMVS2) , Executable JCL: TEST.DATASET
 ALLOC NEW DA('TEST.DATASET.PFX.SZWELOAD') +
 dsntype(library) dsorg(po) recfm(u) lrecl(0) +
 blksize(32760) unit(sysallda) space(30,15) tracks
-//*
+/*
 //AUTHCPY EXEC PGM=BPXBATCH
 //BPXPRINT DD SYSOUT=*
 //STDOUT   DD SYSOUT=*
@@ -1205,10 +1421,80 @@ cp -X zowe_launcher
 --- End of JCL ---
 JCL not submitted, command run with "--dry-run" flag.
 To perform command, re-run command without "--dry-run" flag, or submit the JCL directly
-
 >> Command run successfully.
-
-
+Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWERMVS1) , Executable JCL: TEST.DATASET.PFX.JCLLIB(ZWERMVS1)
+--- JCL Content ---
+//ZWERMVS1 JOB
+//*
+//* This program and the accompanying materials are made available
+//* under the terms of the Eclipse Public License v2.0 which
+//* accompanies this distribution, and is available at
+//* https://www.eclipse.org/legal/epl-v20.html
+//*
+//* SPDX-License-Identifier: EPL-2.0
+//*
+//* Copyright Contributors to the Zowe Project. 2020, 2020
+//*
+//*********************************************************************
+//*
+//* This job is used to remove datasets used by a Zowe "instance"
+//* Instances represent a configuration of Zowe, different from the
+//* "runtime" datasets that are created upon install of Zowe / SMPE.
+//*
+//* If your chosen value of 'zowe.setup.dataset.authLoadlib' is not
+//*  equal to 'zowe.setup.dataset.prefix' + 'SZWEAUTH',
+//*  then you must also run ZWERMVS2.
+//*
+//*********************************************************************
+//RMPDSE EXEC PGM=IKJEFT01
+//SYSTSPRT DD SYSOUT=A
+//SYSTSIN DD *
+DELETE 'TEST.DATASET.PFX.ZWESAPL' +
+       SCRATCH NONVSAM
+/*
+--- End of JCL ---
+JCL not submitted, command run with "--dry-run" flag.
+To perform command, re-run command without "--dry-run" flag, or submit the JCL directly
+>> Command run successfully.
+Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWEIMVS1) , Executable JCL: TEST.DATASET.PFX.JCLLIB(ZWEIMVS1)
+--- JCL Content ---
+//ZWEIMVS1 JOB
+//*
+//* This program and the accompanying materials are made available
+//* under the terms of the Eclipse Public License v2.0 which
+//* accompanies this distribution, and is available at
+//* https://www.eclipse.org/legal/epl-v20.html
+//*
+//* SPDX-License-Identifier: EPL-2.0
+//*
+//* Copyright Contributors to the Zowe Project. 2020, 2020
+//*
+//*********************************************************************
+//*
+//* This job is used to create datasets used by a Zowe "instance"
+//* Instances represent a configuration of Zowe, different from the
+//* "runtime" datasets that are created upon install of Zowe / SMPE.
+//*
+//* Consider if the Zowe Cross Memory Server
+//*  - is used: run this and ZWEIMVS
+//*  - not used: you can skip this JCL
+//*
+//* If your chosen value of 'zowe.setup.dataset.authLoadlib' is not
+//*  equal to 'zowe.setup.dataset.prefix' + 'SZWEAUTH',
+//*  then you must also run ZWEIMVS2.
+//*
+//*********************************************************************
+//MKPDSE EXEC PGM=IKJEFT01
+//SYSTSPRT DD SYSOUT=A
+//SYSTSIN DD *
+ALLOC NEW DA('TEST.DATASET.PFX.ZWESAPL') +
+dsntype(library) dsorg(po) recfm(u) lrecl(0) +
+blksize(32760) unit(sysallda) space(30,15) tracks
+/*
+--- End of JCL ---
+JCL not submitted, command run with "--dry-run" flag.
+To perform command, re-run command without "--dry-run" flag, or submit the JCL directly
+>> Command run successfully.
 >> Zowe custom data sets are initialized successfully."
 `;
 
@@ -1217,8 +1503,8 @@ exports[`init-mvs (SHORT) parmlib negatives  6`] = `
 Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
 -------------------------------------------------------------------------------
 >> Initialize Zowe custom data sets
-
 Create data sets if they do not exist
+Warning ZWEL0300W: TEST.DATASET.PFX.SZWELOAD already exists. Members in this data set will be overwritten.
 Warning ZWEL0300W: TEST.DATASET.PFX.SZWELOAD already exists. Members in this data set will be overwritten.
 Warning ZWEL0300W: TEST.DATASET.PFX.ZWESAPL already exists. Members in this data set will be overwritten.
 Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWERMVS) , Executable JCL: TEST.DATASET.PFX.JCLLIB(ZWERMVS)
@@ -1242,22 +1528,68 @@ Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWERMVS) , Executable JCL: TEST.DATASET.
 //*
 //* If your chosen value of 'zowe.setup.dataset.authLoadlib' is not
 //*  equal to 'zowe.setup.dataset.prefix' + 'SZWEAUTH',
-//*  then you must also run "ZWERMVS2".
+//*  then you must also run ZWERMVS2.
 //*
 //*********************************************************************
 //RMPDSE EXEC PGM=IKJEFT01
 //SYSTSPRT DD SYSOUT=A
 //SYSTSIN DD *
-DELETE ('TEST.DATASET.PFX.PARMLIB', +
-        'TEST.DATASET.PFX.ZWESAPL') +
+DELETE 'TEST.DATASET.PFX.PARMLIB' +
        SCRATCH NONVSAM
+/*
+--- End of JCL ---
+JCL not submitted, command run with "--dry-run" flag.
+To perform command, re-run command without "--dry-run" flag, or submit the JCL directly
+>> Command run successfully.
+Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWEIMVS) , Executable JCL: TEST.DATASET.PFX.JCLLIB(ZWEIMVS)
+--- JCL Content ---
+//ZWEIMVS JOB
+//*
+//* This program and the accompanying materials are made available
+//* under the terms of the Eclipse Public License v2.0 which
+//* accompanies this distribution, and is available at
+//* https://www.eclipse.org/legal/epl-v20.html
+//*
+//* SPDX-License-Identifier: EPL-2.0
+//*
+//* Copyright Contributors to the Zowe Project. 2020, 2020
+//*
+//*********************************************************************
+//*
+//* This job is used to create datasets used by a Zowe "instance"
+//* Instances represent a configuration of Zowe, different from the
+//* "runtime" datasets that are created upon install of Zowe / SMPE.
+//*
+//* Consider if the Zowe Cross Memory Server
+//*  - is used: run this and consider to run ZWEIMVS1
+//*  - not used: you can skip this JCL
+//*
+//* If your chosen value of 'zowe.setup.dataset.authLoadlib' is not
+//*  equal to 'zowe.setup.dataset.prefix' + 'SZWEAUTH',
+//*  then you must also run ZWEIMVS2.
+//*
+//*********************************************************************
+//MKPDSE EXEC PGM=IKJEFT01
+//SYSTSPRT DD SYSOUT=A
+//SYSTSIN DD *
+ALLOC NEW DA('TEST.DATASET.PFX.PARMLIB') +
+dsntype(library) dsorg(po) recfm(f b) lrecl(80) +
+unit(sysallda) space(15,15) tracks
+/*
+//MEMBCPY EXEC PGM=IKJEFT01
+//  SET OUTPARM=ZWESIP00
+//SYSTSPRT DD SYSOUT=A
+//PARMIN  DD DISP=SHR,
+//  DSN=TEST.DATASET.PFX.SZWESAMP(ZWESIP00)
+//PARMOUT DD DISP=SHR,
+//  DSN=TEST.DATASET.PFX.PARMLIB(&OUTPARM)
+//SYSTSIN DD *
+  REPRO INFILE(PARMIN) OUTFILE(PARMOUT)
 //*
 --- End of JCL ---
 JCL not submitted, command run with "--dry-run" flag.
 To perform command, re-run command without "--dry-run" flag, or submit the JCL directly
-
 >> Command run successfully.
-
 Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWERMVS2) , Executable JCL: TEST.DATASET.PFX.JCLLIB(ZWERMVS2)
 --- JCL Content ---
 //ZWERMVS2 JOB
@@ -1278,7 +1610,8 @@ Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWERMVS2) , Executable JCL: TEST.DATASET
 //* 'zowe.setup.dataset.authLoadlib' is equal to
 //* 'zowe.setup.dataset.prefix' + 'SZWEAUTH'.
 //*
-//* When running this job, you should also run ZWERMVS
+//* When running this job, you should also consider
+//* to run ZWERMVS and ZWERMVS1.
 //*
 //*********************************************************************
 //RMPDSE EXEC PGM=IKJEFT01
@@ -1286,62 +1619,11 @@ Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWERMVS2) , Executable JCL: TEST.DATASET
 //SYSTSIN DD *
 DELETE 'TEST.DATASET.PFX.SZWELOAD' +
        SCRATCH NONVSAM
-//*
+/*
 --- End of JCL ---
 JCL not submitted, command run with "--dry-run" flag.
 To perform command, re-run command without "--dry-run" flag, or submit the JCL directly
-
 >> Command run successfully.
-
-Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWEIMVS) , Executable JCL: TEST.DATASET.PFX.JCLLIB(ZWEIMVS)
---- JCL Content ---
-//ZWEIMVS JOB
-//*
-//* This program and the accompanying materials are made available
-//* under the terms of the Eclipse Public License v2.0 which
-//* accompanies this distribution, and is available at
-//* https://www.eclipse.org/legal/epl-v20.html
-//*
-//* SPDX-License-Identifier: EPL-2.0
-//*
-//* Copyright Contributors to the Zowe Project. 2020, 2020
-//*
-//*********************************************************************
-//*
-//* This job is used to create datasets used by a Zowe "instance"
-//* Instances represent a configuration of Zowe, different from the
-//* "runtime" datasets that are created upon install of Zowe / SMPE.
-//*
-//* If your chosen value of 'zowe.setup.dataset.authLoadlib' is not
-//*  equal to 'zowe.setup.dataset.prefix' + 'SZWEAUTH',
-//*  then you must also run "ZWEIMVS2".
-//*
-//*********************************************************************
-//MKPDSE EXEC PGM=IKJEFT01
-//SYSTSPRT DD SYSOUT=A
-//SYSTSIN DD *
-ALLOC NEW DA('TEST.DATASET.PFX.PARMLIB') +
-dsntype(library) dsorg(po) recfm(f b) lrecl(80) +
-unit(sysallda) space(15,15) tracks
-
-ALLOC NEW DA('TEST.DATASET.PFX.ZWESAPL') +
-dsntype(library) dsorg(po) recfm(u) lrecl(0) +
-blksize(32760) unit(sysallda) space(30,15) tracks
-//*
-//MEMBCPY EXEC PGM=IEBCOPY
-//SYSPRINT DD SYSOUT=A
-//SYSUT1 DD DSN=TEST.DATASET.PFX.SZWESAMP,DISP=SHR
-//SYSUT2 DD DSN=TEST.DATASET.PFX.PARMLIB,DISP=OLD
-//SYSIN DD *
-  COPY OUTDD=SYSUT2,INDD=SYSUT1
-  SELECT MEMBER=((ZWESIP00,,R))
-//*
---- End of JCL ---
-JCL not submitted, command run with "--dry-run" flag.
-To perform command, re-run command without "--dry-run" flag, or submit the JCL directly
-
->> Command run successfully.
-
 Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWEIMVS2) , Executable JCL: TEST.DATASET.PFX.JCLLIB(ZWEIMVS2)
 --- JCL Content ---
 //ZWEIMVS2 JOB
@@ -1362,7 +1644,8 @@ Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWEIMVS2) , Executable JCL: TEST.DATASET
 //* 'zowe.setup.dataset.authLoadlib' is equal to
 //* 'zowe.setup.dataset.prefix' + 'SZWEAUTH'.
 //*
-//* When running this job, you should also run ZWEIMVS
+//* When running this job, you should also consider
+//* to run ZWEIMVS and ZWEIMVS1.
 //*
 //*********************************************************************
 //MKPDSE EXEC PGM=IKJEFT01
@@ -1371,7 +1654,7 @@ Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWEIMVS2) , Executable JCL: TEST.DATASET
 ALLOC NEW DA('TEST.DATASET.PFX.SZWELOAD') +
 dsntype(library) dsorg(po) recfm(u) lrecl(0) +
 blksize(32760) unit(sysallda) space(30,15) tracks
-//*
+/*
 //AUTHCPY EXEC PGM=BPXBATCH
 //BPXPRINT DD SYSOUT=*
 //STDOUT   DD SYSOUT=*
@@ -1393,10 +1676,80 @@ cp -X zowe_launcher
 --- End of JCL ---
 JCL not submitted, command run with "--dry-run" flag.
 To perform command, re-run command without "--dry-run" flag, or submit the JCL directly
-
 >> Command run successfully.
-
-
+Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWERMVS1) , Executable JCL: TEST.DATASET.PFX.JCLLIB(ZWERMVS1)
+--- JCL Content ---
+//ZWERMVS1 JOB
+//*
+//* This program and the accompanying materials are made available
+//* under the terms of the Eclipse Public License v2.0 which
+//* accompanies this distribution, and is available at
+//* https://www.eclipse.org/legal/epl-v20.html
+//*
+//* SPDX-License-Identifier: EPL-2.0
+//*
+//* Copyright Contributors to the Zowe Project. 2020, 2020
+//*
+//*********************************************************************
+//*
+//* This job is used to remove datasets used by a Zowe "instance"
+//* Instances represent a configuration of Zowe, different from the
+//* "runtime" datasets that are created upon install of Zowe / SMPE.
+//*
+//* If your chosen value of 'zowe.setup.dataset.authLoadlib' is not
+//*  equal to 'zowe.setup.dataset.prefix' + 'SZWEAUTH',
+//*  then you must also run ZWERMVS2.
+//*
+//*********************************************************************
+//RMPDSE EXEC PGM=IKJEFT01
+//SYSTSPRT DD SYSOUT=A
+//SYSTSIN DD *
+DELETE 'TEST.DATASET.PFX.ZWESAPL' +
+       SCRATCH NONVSAM
+/*
+--- End of JCL ---
+JCL not submitted, command run with "--dry-run" flag.
+To perform command, re-run command without "--dry-run" flag, or submit the JCL directly
+>> Command run successfully.
+Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWEIMVS1) , Executable JCL: TEST.DATASET.PFX.JCLLIB(ZWEIMVS1)
+--- JCL Content ---
+//ZWEIMVS1 JOB
+//*
+//* This program and the accompanying materials are made available
+//* under the terms of the Eclipse Public License v2.0 which
+//* accompanies this distribution, and is available at
+//* https://www.eclipse.org/legal/epl-v20.html
+//*
+//* SPDX-License-Identifier: EPL-2.0
+//*
+//* Copyright Contributors to the Zowe Project. 2020, 2020
+//*
+//*********************************************************************
+//*
+//* This job is used to create datasets used by a Zowe "instance"
+//* Instances represent a configuration of Zowe, different from the
+//* "runtime" datasets that are created upon install of Zowe / SMPE.
+//*
+//* Consider if the Zowe Cross Memory Server
+//*  - is used: run this and ZWEIMVS
+//*  - not used: you can skip this JCL
+//*
+//* If your chosen value of 'zowe.setup.dataset.authLoadlib' is not
+//*  equal to 'zowe.setup.dataset.prefix' + 'SZWEAUTH',
+//*  then you must also run ZWEIMVS2.
+//*
+//*********************************************************************
+//MKPDSE EXEC PGM=IKJEFT01
+//SYSTSPRT DD SYSOUT=A
+//SYSTSIN DD *
+ALLOC NEW DA('TEST.DATASET.PFX.ZWESAPL') +
+dsntype(library) dsorg(po) recfm(u) lrecl(0) +
+blksize(32760) unit(sysallda) space(30,15) tracks
+/*
+--- End of JCL ---
+JCL not submitted, command run with "--dry-run" flag.
+To perform command, re-run command without "--dry-run" flag, or submit the JCL directly
+>> Command run successfully.
 >> Zowe custom data sets are initialized successfully."
 `;
 
@@ -1405,13 +1758,11 @@ exports[`init-mvs (SHORT) simple --dry-run 1`] = `
 Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
 -------------------------------------------------------------------------------
 >> Initialize Zowe custom data sets
-
 Create data sets if they do not exist
 Warning ZWEL0301W: TEST.DATASET.PFX.PARMLIB already exists and will not be overwritten. For upgrades, you must use --allow-overwrite.
 Warning ZWEL0301W: TEST.DATASET.PFX.SZWELOAD already exists and will not be overwritten. For upgrades, you must use --allow-overwrite.
 Warning ZWEL0301W: TEST.DATASET.PFX.ZWESAPL already exists and will not be overwritten. For upgrades, you must use --allow-overwrite.
 Skipped writing to a dataset. To write, you must use --allow-overwrite.
-
 >> Zowe custom data sets are initialized successfully."
 `;
 
@@ -1420,9 +1771,9 @@ exports[`init-mvs (SHORT) zwesip00 customization  1`] = `
 Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
 -------------------------------------------------------------------------------
 >> Initialize Zowe custom data sets
-
 Create data sets if they do not exist
 Warning ZWEL0300W: TEST.DATASET.PFX.PARMLIB already exists. Members in this data set will be overwritten.
+Warning ZWEL0300W: TEST.DATASET.PFX.SZWELOAD already exists. Members in this data set will be overwritten.
 Warning ZWEL0300W: TEST.DATASET.PFX.ZWESAPL already exists. Members in this data set will be overwritten.
 Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWERMVS) , Executable JCL: TEST.DATASET.PFX.JCLLIB(ZWERMVS)
 --- JCL Content ---
@@ -1445,22 +1796,68 @@ Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWERMVS) , Executable JCL: TEST.DATASET.
 //*
 //* If your chosen value of 'zowe.setup.dataset.authLoadlib' is not
 //*  equal to 'zowe.setup.dataset.prefix' + 'SZWEAUTH',
-//*  then you must also run "ZWERMVS2".
+//*  then you must also run ZWERMVS2.
 //*
 //*********************************************************************
 //RMPDSE EXEC PGM=IKJEFT01
 //SYSTSPRT DD SYSOUT=A
 //SYSTSIN DD *
-DELETE ('TEST.DATASET.PFX.PARMLIB', +
-        'TEST.DATASET.PFX.ZWESAPL') +
+DELETE 'TEST.DATASET.PFX.PARMLIB' +
        SCRATCH NONVSAM
+/*
+--- End of JCL ---
+JCL not submitted, command run with "--dry-run" flag.
+To perform command, re-run command without "--dry-run" flag, or submit the JCL directly
+>> Command run successfully.
+Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWEIMVS) , Executable JCL: TEST.DATASET.PFX.JCLLIB(ZWEIMVS)
+--- JCL Content ---
+//ZWEIMVS JOB
+//*
+//* This program and the accompanying materials are made available
+//* under the terms of the Eclipse Public License v2.0 which
+//* accompanies this distribution, and is available at
+//* https://www.eclipse.org/legal/epl-v20.html
+//*
+//* SPDX-License-Identifier: EPL-2.0
+//*
+//* Copyright Contributors to the Zowe Project. 2020, 2020
+//*
+//*********************************************************************
+//*
+//* This job is used to create datasets used by a Zowe "instance"
+//* Instances represent a configuration of Zowe, different from the
+//* "runtime" datasets that are created upon install of Zowe / SMPE.
+//*
+//* Consider if the Zowe Cross Memory Server
+//*  - is used: run this and consider to run ZWEIMVS1
+//*  - not used: you can skip this JCL
+//*
+//* If your chosen value of 'zowe.setup.dataset.authLoadlib' is not
+//*  equal to 'zowe.setup.dataset.prefix' + 'SZWEAUTH',
+//*  then you must also run ZWEIMVS2.
+//*
+//*********************************************************************
+//MKPDSE EXEC PGM=IKJEFT01
+//SYSTSPRT DD SYSOUT=A
+//SYSTSIN DD *
+ALLOC NEW DA('TEST.DATASET.PFX.PARMLIB') +
+dsntype(library) dsorg(po) recfm(f b) lrecl(80) +
+unit(sysallda) space(15,15) tracks
+/*
+//MEMBCPY EXEC PGM=IKJEFT01
+//  SET OUTPARM=ZWESIP00
+//SYSTSPRT DD SYSOUT=A
+//PARMIN  DD DISP=SHR,
+//  DSN=TEST.DATASET.PFX.SZWESAMP(ZWESIP00)
+//PARMOUT DD DISP=SHR,
+//  DSN=TEST.DATASET.PFX.PARMLIB(&OUTPARM)
+//SYSTSIN DD *
+  REPRO INFILE(PARMIN) OUTFILE(PARMOUT)
 //*
 --- End of JCL ---
 JCL not submitted, command run with "--dry-run" flag.
 To perform command, re-run command without "--dry-run" flag, or submit the JCL directly
-
 >> Command run successfully.
-
 Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWERMVS2) , Executable JCL: TEST.DATASET.PFX.JCLLIB(ZWERMVS2)
 --- JCL Content ---
 //ZWERMVS2 JOB
@@ -1481,7 +1878,8 @@ Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWERMVS2) , Executable JCL: TEST.DATASET
 //* 'zowe.setup.dataset.authLoadlib' is equal to
 //* 'zowe.setup.dataset.prefix' + 'SZWEAUTH'.
 //*
-//* When running this job, you should also run ZWERMVS
+//* When running this job, you should also consider
+//* to run ZWERMVS and ZWERMVS1.
 //*
 //*********************************************************************
 //RMPDSE EXEC PGM=IKJEFT01
@@ -1489,62 +1887,11 @@ Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWERMVS2) , Executable JCL: TEST.DATASET
 //SYSTSIN DD *
 DELETE 'TEST.DATASET.PFX.SZWELOAD' +
        SCRATCH NONVSAM
-//*
+/*
 --- End of JCL ---
 JCL not submitted, command run with "--dry-run" flag.
 To perform command, re-run command without "--dry-run" flag, or submit the JCL directly
-
 >> Command run successfully.
-
-Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWEIMVS) , Executable JCL: TEST.DATASET.PFX.JCLLIB(ZWEIMVS)
---- JCL Content ---
-//ZWEIMVS JOB
-//*
-//* This program and the accompanying materials are made available
-//* under the terms of the Eclipse Public License v2.0 which
-//* accompanies this distribution, and is available at
-//* https://www.eclipse.org/legal/epl-v20.html
-//*
-//* SPDX-License-Identifier: EPL-2.0
-//*
-//* Copyright Contributors to the Zowe Project. 2020, 2020
-//*
-//*********************************************************************
-//*
-//* This job is used to create datasets used by a Zowe "instance"
-//* Instances represent a configuration of Zowe, different from the
-//* "runtime" datasets that are created upon install of Zowe / SMPE.
-//*
-//* If your chosen value of 'zowe.setup.dataset.authLoadlib' is not
-//*  equal to 'zowe.setup.dataset.prefix' + 'SZWEAUTH',
-//*  then you must also run "ZWEIMVS2".
-//*
-//*********************************************************************
-//MKPDSE EXEC PGM=IKJEFT01
-//SYSTSPRT DD SYSOUT=A
-//SYSTSIN DD *
-ALLOC NEW DA('TEST.DATASET.PFX.PARMLIB') +
-dsntype(library) dsorg(po) recfm(f b) lrecl(80) +
-unit(sysallda) space(15,15) tracks
-
-ALLOC NEW DA('TEST.DATASET.PFX.ZWESAPL') +
-dsntype(library) dsorg(po) recfm(u) lrecl(0) +
-blksize(32760) unit(sysallda) space(30,15) tracks
-//*
-//MEMBCPY EXEC PGM=IEBCOPY
-//SYSPRINT DD SYSOUT=A
-//SYSUT1 DD DSN=TEST.DATASET.PFX.SZWESAMP,DISP=SHR
-//SYSUT2 DD DSN=TEST.DATASET.PFX.PARMLIB,DISP=OLD
-//SYSIN DD *
-  COPY OUTDD=SYSUT2,INDD=SYSUT1
-  SELECT MEMBER=((ZWESIP00,ZWESIP11,R))
-//*
---- End of JCL ---
-JCL not submitted, command run with "--dry-run" flag.
-To perform command, re-run command without "--dry-run" flag, or submit the JCL directly
-
->> Command run successfully.
-
 Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWEIMVS2) , Executable JCL: TEST.DATASET.PFX.JCLLIB(ZWEIMVS2)
 --- JCL Content ---
 //ZWEIMVS2 JOB
@@ -1565,7 +1912,8 @@ Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWEIMVS2) , Executable JCL: TEST.DATASET
 //* 'zowe.setup.dataset.authLoadlib' is equal to
 //* 'zowe.setup.dataset.prefix' + 'SZWEAUTH'.
 //*
-//* When running this job, you should also run ZWEIMVS
+//* When running this job, you should also consider
+//* to run ZWEIMVS and ZWEIMVS1.
 //*
 //*********************************************************************
 //MKPDSE EXEC PGM=IKJEFT01
@@ -1574,7 +1922,7 @@ Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWEIMVS2) , Executable JCL: TEST.DATASET
 ALLOC NEW DA('TEST.DATASET.PFX.SZWELOAD') +
 dsntype(library) dsorg(po) recfm(u) lrecl(0) +
 blksize(32760) unit(sysallda) space(30,15) tracks
-//*
+/*
 //AUTHCPY EXEC PGM=BPXBATCH
 //BPXPRINT DD SYSOUT=*
 //STDOUT   DD SYSOUT=*
@@ -1596,9 +1944,79 @@ cp -X zowe_launcher
 --- End of JCL ---
 JCL not submitted, command run with "--dry-run" flag.
 To perform command, re-run command without "--dry-run" flag, or submit the JCL directly
-
 >> Command run successfully.
-
-
+Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWERMVS1) , Executable JCL: TEST.DATASET.PFX.JCLLIB(ZWERMVS1)
+--- JCL Content ---
+//ZWERMVS1 JOB
+//*
+//* This program and the accompanying materials are made available
+//* under the terms of the Eclipse Public License v2.0 which
+//* accompanies this distribution, and is available at
+//* https://www.eclipse.org/legal/epl-v20.html
+//*
+//* SPDX-License-Identifier: EPL-2.0
+//*
+//* Copyright Contributors to the Zowe Project. 2020, 2020
+//*
+//*********************************************************************
+//*
+//* This job is used to remove datasets used by a Zowe "instance"
+//* Instances represent a configuration of Zowe, different from the
+//* "runtime" datasets that are created upon install of Zowe / SMPE.
+//*
+//* If your chosen value of 'zowe.setup.dataset.authLoadlib' is not
+//*  equal to 'zowe.setup.dataset.prefix' + 'SZWEAUTH',
+//*  then you must also run ZWERMVS2.
+//*
+//*********************************************************************
+//RMPDSE EXEC PGM=IKJEFT01
+//SYSTSPRT DD SYSOUT=A
+//SYSTSIN DD *
+DELETE 'TEST.DATASET.PFX.ZWESAPL' +
+       SCRATCH NONVSAM
+/*
+--- End of JCL ---
+JCL not submitted, command run with "--dry-run" flag.
+To perform command, re-run command without "--dry-run" flag, or submit the JCL directly
+>> Command run successfully.
+Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWEIMVS1) , Executable JCL: TEST.DATASET.PFX.JCLLIB(ZWEIMVS1)
+--- JCL Content ---
+//ZWEIMVS1 JOB
+//*
+//* This program and the accompanying materials are made available
+//* under the terms of the Eclipse Public License v2.0 which
+//* accompanies this distribution, and is available at
+//* https://www.eclipse.org/legal/epl-v20.html
+//*
+//* SPDX-License-Identifier: EPL-2.0
+//*
+//* Copyright Contributors to the Zowe Project. 2020, 2020
+//*
+//*********************************************************************
+//*
+//* This job is used to create datasets used by a Zowe "instance"
+//* Instances represent a configuration of Zowe, different from the
+//* "runtime" datasets that are created upon install of Zowe / SMPE.
+//*
+//* Consider if the Zowe Cross Memory Server
+//*  - is used: run this and ZWEIMVS
+//*  - not used: you can skip this JCL
+//*
+//* If your chosen value of 'zowe.setup.dataset.authLoadlib' is not
+//*  equal to 'zowe.setup.dataset.prefix' + 'SZWEAUTH',
+//*  then you must also run ZWEIMVS2.
+//*
+//*********************************************************************
+//MKPDSE EXEC PGM=IKJEFT01
+//SYSTSPRT DD SYSOUT=A
+//SYSTSIN DD *
+ALLOC NEW DA('TEST.DATASET.PFX.ZWESAPL') +
+dsntype(library) dsorg(po) recfm(u) lrecl(0) +
+blksize(32760) unit(sysallda) space(30,15) tracks
+/*
+--- End of JCL ---
+JCL not submitted, command run with "--dry-run" flag.
+To perform command, re-run command without "--dry-run" flag, or submit the JCL directly
+>> Command run successfully.
 >> Zowe custom data sets are initialized successfully."
 `;

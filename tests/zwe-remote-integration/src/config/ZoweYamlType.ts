@@ -173,7 +173,7 @@ const zoweSchema = zoweYamlSchema as {
                   description: 'Holds Zowe PARMLIB members for plugins';
                   properties: {
                     zis: {
-                      $ref: '/schemas/v2/server-common#zisParmlibMember';
+                      $ref: '/schemas/v2/server-common#zoweDatasetZISMember';
                       description: 'PARMLIB member used by ZIS';
                     };
                   };
@@ -235,17 +235,17 @@ const zoweSchema = zoweYamlSchema as {
                   description: 'security group name';
                   properties: {
                     admin: {
-                      type: 'string';
+                      $ref: '/schemas/v2/server-common#zoweUser';
                       description: 'Zowe admin user group';
                       default: 'ZWEADMIN';
                     };
                     stc: {
-                      type: 'string';
+                      $ref: '/schemas/v2/server-common#zoweUser';
                       description: 'Zowe STC group';
                       default: 'ZWEADMIN';
                     };
                     sysProg: {
-                      type: 'string';
+                      $ref: '/schemas/v2/server-common#zoweUser';
                       description: 'Zowe SysProg group';
                       default: 'ZWEADMIN';
                     };
@@ -257,12 +257,12 @@ const zoweSchema = zoweYamlSchema as {
                   description: 'security user name';
                   properties: {
                     zowe: {
-                      type: 'string';
+                      $ref: '/schemas/v2/server-common#zoweUser';
                       description: 'Zowe runtime user name of main service';
                       default: 'ZWESVUSR';
                     };
                     zis: {
-                      type: 'string';
+                      $ref: '/schemas/v2/server-common#zoweUser';
                       description: 'Zowe runtime user name of ZIS';
                       default: 'ZWESIUSR';
                     };
@@ -1124,6 +1124,10 @@ const zoweSchema = zoweYamlSchema as {
       additionalProperties: false;
       description: 'Optional, advanced network configuration parameters';
       properties: {
+        proxyType: {
+          type: 'string';
+          description: "This is a variable derived from gateway's ATTLS state to be used by servers proxied through it in eureka or static definitions";
+        };
         server: {
           type: 'object';
           description: 'Optional, advanced network configuration parameters for Zowe servers';
@@ -1137,7 +1141,7 @@ const zoweSchema = zoweYamlSchema as {
             };
             vipaIp: {
               type: 'string';
-              description: 'The IP address which all of the Zowe servers will be binding to. If you are using multiple DIPVA addresses, do not use this option.';
+              description: 'The IP address which all of the Zowe servers will be binding to. If you are using multiple DVIPA addresses, do not use this option.';
             };
             validatePortFree: {
               type: 'boolean';

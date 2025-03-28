@@ -19,11 +19,14 @@ const testSuiteName = 'init-stc';
 describe(`${testSuiteName}`, () => {
   let testRunner: RemoteTestRunner;
   let cfgYaml: ZoweYamlType;
+  let defaultsYaml: ZoweYamlType;
   let cleanupDatasets: TestFile[] = []; // a list of datasets deleted after every test
 
   beforeAll(async () => {
     testRunner = new RemoteTestRunner(testSuiteName);
     cfgYaml = ZoweConfig.getZoweYaml();
+    // @ts-expect-error the security: block is by default commented out in zowe.yaml, set in defaults.
+    cfgYaml.zowe.setup.security = { stcs: {} };
     expect.getState().currentTestName = 'before-all-stc';
     const result = await testRunner.runZweTest(cfgYaml, 'init generate --allow-overwrite');
     expect(result.stdout).not.toBeNull();
@@ -32,6 +35,9 @@ describe(`${testSuiteName}`, () => {
   });
   beforeEach(() => {
     cfgYaml = ZoweConfig.getZoweYaml();
+    defaultsYaml = ZoweConfig.getDefaultsYaml();
+    // @ts-expect-error the security: block is by default commented out in zowe.yaml, set in defaults.
+    cfgYaml.zowe.setup.security = { stcs: {} };
     // customizations for all vsam tests
     cfgYaml.zowe.setup.vsam.name = REMOTE_SYSTEM_INFO.prefix + '.VSAMTEST';
     cfgYaml.zowe.setup.vsam.volume = REMOTE_SYSTEM_INFO.volume;
@@ -58,7 +64,7 @@ describe(`${testSuiteName}`, () => {
     // implicit 'init generate'
     it('run setup with defaults', async () => {
       const proc: string = cfgYaml.zowe.setup.dataset.proclib as string;
-      const stcs = cfgYaml.zowe.setup.security.stcs;
+      const stcs = defaultsYaml.zowe.setup.security.stcs;
       cleanupDatasets.push({ name: `${proc}(${stcs.zowe})`, type: FileType.DS_NON_CLUSTER });
       cleanupDatasets.push({ name: `${proc}(${stcs.aux})`, type: FileType.DS_NON_CLUSTER });
       cleanupDatasets.push({ name: `${proc}(${stcs.zis})`, type: FileType.DS_NON_CLUSTER });
@@ -70,7 +76,7 @@ describe(`${testSuiteName}`, () => {
 
     it('run stc setup, then overwrite, then run again', async () => {
       const proc: string = cfgYaml.zowe.setup.dataset.proclib as string;
-      const stcs = cfgYaml.zowe.setup.security.stcs;
+      const stcs = defaultsYaml.zowe.setup.security.stcs;
       cleanupDatasets.push({ name: `${proc}(${stcs.zowe})`, type: FileType.DS_NON_CLUSTER });
       cleanupDatasets.push({ name: `${proc}(${stcs.aux})`, type: FileType.DS_NON_CLUSTER });
       cleanupDatasets.push({ name: `${proc}(${stcs.zis})`, type: FileType.DS_NON_CLUSTER });
@@ -187,7 +193,7 @@ describe(`${testSuiteName}`, () => {
 
     it('zos stc exists', async () => {
       const proc: string = cfgYaml.zowe.setup.dataset.proclib as string;
-      const stcs = cfgYaml.zowe.setup.security.stcs;
+      const stcs = defaultsYaml.zowe.setup.security.stcs;
       await zosfiles.uploadMember(proc, stcs.zowe as string, 'DUMMY');
       cleanupDatasets.push({ name: `${proc}(${stcs.zowe})`, type: FileType.DS_NON_CLUSTER });
       let result = await testRunner.runZweTest(cfgYaml, 'init stc --dry-run');
@@ -203,7 +209,7 @@ describe(`${testSuiteName}`, () => {
 
     it('zis stc exists', async () => {
       const proc: string = cfgYaml.zowe.setup.dataset.proclib as string;
-      const stcs = cfgYaml.zowe.setup.security.stcs;
+      const stcs = defaultsYaml.zowe.setup.security.stcs;
       await zosfiles.uploadMember(proc, stcs.zis as string, 'DUMMY');
       cleanupDatasets.push({ name: `${proc}(${stcs.zis})`, type: FileType.DS_NON_CLUSTER });
       let result = await testRunner.runZweTest(cfgYaml, 'init stc --dry-run');
@@ -219,7 +225,7 @@ describe(`${testSuiteName}`, () => {
 
     it('aux stc exists', async () => {
       const proc: string = cfgYaml.zowe.setup.dataset.proclib as string;
-      const stcs = cfgYaml.zowe.setup.security.stcs;
+      const stcs = defaultsYaml.zowe.setup.security.stcs;
       await zosfiles.uploadMember(proc, stcs.aux as string, 'DUMMY');
       cleanupDatasets.push({ name: `${proc}(${stcs.aux})`, type: FileType.DS_NON_CLUSTER });
       let result = await testRunner.runZweTest(cfgYaml, 'init stc --dry-run');

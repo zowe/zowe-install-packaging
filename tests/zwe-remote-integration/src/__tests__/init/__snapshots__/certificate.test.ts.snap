@@ -3,37 +3,26 @@
 exports[`init-cert (LONG) cert bad hostname 1`] = `
 "-------------------------------------------------------------------------------
 >> Generate certificate
-
 -------------------------------------------------------------------------------
 >> Creating certificate authority "local_ca"
-
 >>>> Generate PKCS12 format local CA with alias local_ca:
-
 >> Certificate authority local_ca is created successfully.
-
 -------------------------------------------------------------------------------
 >> Export keystore /test/dir/local_ca/local_ca.keystore.p12
-
 >>>> List content of keystore "/test/dir/local_ca/local_ca.keystore.p12":
 >>>> Export certificate "local_ca" to PEM format
-
 >> Keystore /test/dir/local_ca/local_ca.keystore.p12 is exported successfully.
-
 -------------------------------------------------------------------------------
 >> Creating certificate "some.test.hostname"
-
 >>>> Generate certificate "some.test.hostname" in the keystore some.test.hostname:
 >>>> Generate CSR for the certificate "some.test.hostname" in the keystore "some.test.hostname":
 >>>> Sign the CSR using the Certificate Authority "local_ca":
 >>>> Import the Certificate Authority "local_ca" to the keystore "some.test.hostname":
 >>>> Import the Certificate Authority "local_ca" to the truststore "some.test.hostname":
 >>>> Import the signed CSR to the keystore "some.test.hostname":
-
 >> Certificate some.test.hostname is created successfully.
-
 -------------------------------------------------------------------------------
 >> Trust z/OSMF "doesnt-exist.anywhere.cloud:10443"
-
 >>>> Getting certificates from service host
 Failed to get certificate of service instance https://doesnt-exist.anywhere.cloud:10443, exit code 1.
 Error ZWEL0170E: Failed to trust z/OSMF "doesnt-exist.anywhere.cloud:10443"."
@@ -42,74 +31,50 @@ Error ZWEL0170E: Failed to trust z/OSMF "doesnt-exist.anywhere.cloud:10443"."
 exports[`init-cert (LONG) passing init 1`] = `
 "-------------------------------------------------------------------------------
 >> Generate certificate
-
 -------------------------------------------------------------------------------
 >> Creating certificate authority "local_ca"
-
 >>>> Generate PKCS12 format local CA with alias local_ca:
-
 >> Certificate authority local_ca is created successfully.
-
 -------------------------------------------------------------------------------
 >> Export keystore /test/dir/local_ca/local_ca.keystore.p12
-
 >>>> List content of keystore "/test/dir/local_ca/local_ca.keystore.p12":
 >>>> Export certificate "local_ca" to PEM format
-
 >> Keystore /test/dir/local_ca/local_ca.keystore.p12 is exported successfully.
-
 -------------------------------------------------------------------------------
 >> Creating certificate "some.test.hostname"
-
 >>>> Generate certificate "some.test.hostname" in the keystore some.test.hostname:
 >>>> Generate CSR for the certificate "some.test.hostname" in the keystore "some.test.hostname":
 >>>> Sign the CSR using the Certificate Authority "local_ca":
 >>>> Import the Certificate Authority "local_ca" to the keystore "some.test.hostname":
 >>>> Import the Certificate Authority "local_ca" to the truststore "some.test.hostname":
 >>>> Import the signed CSR to the keystore "some.test.hostname":
-
 >> Certificate some.test.hostname is created successfully.
-
 -------------------------------------------------------------------------------
 >> Trust z/OSMF "some.test.hostname:10443"
-
 >>>> Getting certificates from service host
 >>>> Import a certificate "zosmf00" to the truststore:
 >>>> Import a certificate "zosmf01" to the truststore:
-
 >> Certificate zosmf is added to truststore successfully.
-
 -------------------------------------------------------------------------------
 >> Export keystore /test/dir/some.test.hostname/some.test.hostname.keystore.p12
-
 >>>> List content of keystore "/test/dir/some.test.hostname/some.test.hostname.keystore.p12":
 >>>> Export certificate "some.test.hostname" to PEM format
 >>>> Export certificate "local_ca" to PEM format
 >>>> Exporting certificate "some.test.hostname" private key
-
 >> Keystore /test/dir/some.test.hostname/some.test.hostname.keystore.p12 is exported successfully.
-
 -------------------------------------------------------------------------------
 >> Export keystore /test/dir/some.test.hostname/some.test.hostname.truststore.p12
-
 >>>> List content of keystore "/test/dir/some.test.hostname/some.test.hostname.truststore.p12":
 >>>> Export certificate "local_ca" to PEM format
 >>>> Export certificate "zosmf00" to PEM format
 >>>> Export certificate "zosmf01" to PEM format
-
 >> Keystore /test/dir/some.test.hostname/some.test.hostname.truststore.p12 is exported successfully.
-
 -------------------------------------------------------------------------------
 >> Lock keystore directory /test/dir
-
-
 >> Keystore directory /test/dir is locked.
-
 -------------------------------------------------------------------------------
 >> Update certificate configuration to /test/dir/zowe.test.yaml
-
 Please manually update to these values:
-
 zowe:
   certificate:
     keystore:
@@ -125,22 +90,18 @@ zowe:
       key: "/test/dir/some.test.hostname/some.test.hostname.key"
       certificate: "/test/dir/some.test.hostname/some.test.hostname.cer"
       certificateAuthorities: "/test/dir/local_ca/local_ca.cer"
-
-
 >> Zowe configuration requires manual updates."
 `;
 
 exports[`init-cert (SHORT) cert missing zowe.yaml vars 1`] = `
 "-------------------------------------------------------------------------------
 >> Generate certificate
-
 Error ZWEL0319E: zowe.setup.dataset.jcllib does not exist, cannot run. Run 'zwe init', 'zwe init generate', or submit JCL TEST.DATASET.PFX.SZWESAMP(ZWEGENER) before running this command."
 `;
 
 exports[`init-cert (SHORT) cert missing zowe.yaml vars 2`] = `
 "-------------------------------------------------------------------------------
 >> Generate certificate
-
 cp: FSUM6258 cannot open file "//'DOES.NOT.EXIST.SZWESAMP(ZWEGENER)'": EDC5049I The specified file name could not be located. (errno2=0xC00B0641)
 Error ZWEL0319E: zowe.setup.dataset.jcllib does not exist, cannot run. Run 'zwe init', 'zwe init generate', or submit JCL DOES.NOT.EXIST.SZWESAMP(ZWEGENER) before running this command."
 `;
@@ -148,9 +109,8 @@ Error ZWEL0319E: zowe.setup.dataset.jcllib does not exist, cannot run. Run 'zwe 
 exports[`init-cert (SHORT) cert missing zowe.yaml vars 3`] = `
 "-------------------------------------------------------------------------------
 >> Generate certificate
-
 Error: Validation of FILE(/test/dir/zowe.test.yaml):FILE(/test/dir/files/defaults.yaml) against schema /test/dir/schemas/zowe-yaml-schema.json:/test/dir/schemas/server-common.json found invalid JSON Schema data
-Validity Exceptions(s) with object at 
+Validity Exceptions(s) with object at
   Validity Exceptions(s) with object at /zowe
     Validity Exceptions(s) with object at /zowe/setup
       Schema at '/zowe/setup/certificate' invalid

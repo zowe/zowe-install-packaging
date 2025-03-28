@@ -344,13 +344,24 @@ export class RemoteTestRunner {
     }
   }
 
-  private writeRedundant(path: string, content: string) {
-    let tgtFile = path;
+  /**
+   * If the file at filePath already exists, this will write a copy with an index attached.
+   *  e.g. myfile.txt, myfile.txt.0, myfile.txt.1.
+   *
+   * Returns the final write destination.
+   *
+   * @param filePath
+   * @param content
+   * @returns
+   */
+  private writeRedundant(filePath: string, content: string): string {
+    let tgtFile = filePath;
     const iter = 0;
-    while (fs.existsSync(tgtFile) && iter < 100) {
+    while (fs.existsSync(tgtFile) && iter < 1000) {
       tgtFile = `${tgtFile}.${iter}`;
     }
     fs.writeFileSync(tgtFile, content);
+    return tgtFile;
   }
 
   public async runZweTestWithDefaults(
@@ -370,23 +381,22 @@ export class RemoteTestRunner {
     const yamlOutputDir = this.yamlOutputTemplate.replace('{{ testInstance }}', testName);
     fs.mkdirpSync(yamlOutputDir);
     await this.removeUssFileForTest('files/defaults.yaml');
-    this.writeRedundant(`${yamlOutputDir}/defaults.yaml.${testName}`, stringDefaultYaml);
-    await files.Upload.fileToUssFile(this.session, `${yamlOutputDir}/defaults.yaml.${testName}`, yamlUploadPath, {
+    const redundantFilePath = this.writeRedundant(`${yamlOutputDir}/defaults.yaml.${testName}`, stringDefaultYaml);
+    await files.Upload.fileToUssFile(this.session, redundantFilePath, yamlUploadPath, {
       binary: false,
     });
     return yamlUploadPath;
   }
 
   public async uploadZoweYaml(zoweYaml: ZoweYamlType, cwd: string = REMOTE_SYSTEM_INFO.ussTestDir): Promise<string> {
-    const finalZwe = this.addAnyCustomJobStatements(zoweYaml);
     const testName = expect.getState().currentTestName.replace(/\s/g, '_');
-    const stringZoweYaml = YAML.stringify(finalZwe.yaml, { nullStr: '' });
+    const stringZoweYaml = YAML.stringify(zoweYaml, { nullStr: '' });
     const uploadPath = `${cwd}/zowe.test.yaml`;
     const yamlOutputDir = this.yamlOutputTemplate.replace('{{ testInstance }}', testName);
     fs.mkdirpSync(yamlOutputDir);
 
-    this.writeRedundant(`${yamlOutputDir}/zowe.yaml.${testName}`, stringZoweYaml);
-    await files.Upload.fileToUssFile(this.session, `${yamlOutputDir}/zowe.yaml.${testName}`, uploadPath, {
+    const redundantFilePath = this.writeRedundant(`${yamlOutputDir}/zowe.yaml.${testName}`, stringZoweYaml);
+    await files.Upload.fileToUssFile(this.session, redundantFilePath, uploadPath, {
       binary: false,
     });
     return uploadPath;

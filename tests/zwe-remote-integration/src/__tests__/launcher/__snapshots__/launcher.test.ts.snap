@@ -53,6 +53,16 @@ zowe:
       mode: "NONRLS"
       volume: "TSTVOL"
       storageClass: ""
+  network:
+    proxyType: "https"
+    server:
+      tls:
+        attls: false
+        minTls: "TLSv1.2"
+        maxTls: "TLSv1.3"
+    client:
+      tls:
+        attls: false
   configmgr:
     validation: "STRICT"
   job:
@@ -71,15 +81,6 @@ zowe:
   extensionDirectory: "/global/zowe/extensions"
   externalDomains:
   - "sample-domain.com"
-  network:
-    server:
-      tls:
-        attls: false
-        minTls: "TLSv1.2"
-        maxTls: "TLSv1.3"
-    client:
-      tls:
-        attls: false
   sysMessages:
   - "ZWEL0021I"
   - "ZWEL0018I"
@@ -239,6 +240,16 @@ zowe:
       mode: "NONRLS"
       volume: "TSTVOL"
       storageClass: ""
+  network:
+    proxyType: "https"
+    server:
+      tls:
+        attls: false
+        minTls: "TLSv1.2"
+        maxTls: "TLSv1.3"
+    client:
+      tls:
+        attls: false
   configmgr:
     validation: "STRICT"
   job:
@@ -257,15 +268,6 @@ zowe:
   extensionDirectory: "/global/zowe/extensions"
   externalDomains:
   - "sample-domain.com"
-  network:
-    server:
-      tls:
-        attls: false
-        minTls: "TLSv1.2"
-        maxTls: "TLSv1.3"
-    client:
-      tls:
-        attls: false
   sysMessages:
   - "ZWEL0021I"
   - "ZWEL0018I"

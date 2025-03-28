@@ -52,10 +52,12 @@ module.exports = async () => {
         await jobs.DeleteJobs.deleteJob(getSession(), jobName, jobId);
       } catch (e) {
         console.log('Error purging ' + job);
-        console.log(e);
+        if (e?.mDetails?.errorCode === 400) {
+          console.log('No job found for ' + job);
+        } else {
+          console.log(e);
+        }
       }
     }
   }
-
-  // fs.rmdirSync(TEST_YAML_DIR);
 };

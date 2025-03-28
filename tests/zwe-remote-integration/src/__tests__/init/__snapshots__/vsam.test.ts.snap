@@ -5,10 +5,9 @@ exports[`init-vsam (LONG) creates vsam 1`] = `
 Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
 -------------------------------------------------------------------------------
 >> Initialize Zowe custom data sets
-
 Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWEGENER)
 --- JCL content ---
-//ZWEGENER JOB 
+//ZWEGENER JOB
 //*
 //* This program and the accompanying materials are made available
 //* under the terms of the Eclipse Public License v2.0 which
@@ -110,7 +109,6 @@ ISPSTART CMD(%ZWEGEN00 -
 generate -
 noverbose -
 )
-
 --- End of JCL ---
 Submitting Job ZWEGENER
 Job ZWEGENER(JOB00000) completed with RC=0
@@ -178,7 +176,6 @@ Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWECSVSM) , Executable JCL: TEST.DATASET
 --- End of JCL ---
 Submitting Job ZWECSVSM
 Job ZWECSVSM(JOB00000) completed with RC=0
-
 >> Zowe Caching Service VSAM storage is created successfully."
 `;
 
@@ -187,7 +184,6 @@ exports[`init-vsam (SHORT) error yaml 1`] = `
 Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
 -------------------------------------------------------------------------------
 >> Initialize Zowe custom data sets
-
 Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWECSVSM) , Executable JCL: TEST.DATASET.PFX.JCLLIB(ZWECSVSM)
 --- JCL Content ---
 //ZWECSVSM JOB
@@ -251,10 +247,7 @@ Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWECSVSM) , Executable JCL: TEST.DATASET
 --- End of JCL ---
 JCL not submitted, command run with "--dry-run" flag.
 To perform command, re-run command without "--dry-run" flag, or submit the JCL directly
-
 >> Command run successfully.
-
-
 >> Zowe Caching Service VSAM storage is created successfully."
 `;
 
@@ -263,7 +256,6 @@ exports[`init-vsam (SHORT) invalid NONRLS configurations 1`] = `
 Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
 -------------------------------------------------------------------------------
 >> Initialize Zowe custom data sets
-
 ERROR: Error ZWEL0157E: VSAM parameter (zowe.setup.vsam.volume) is not defined in Zowe YAML configuration file."
 `;
 
@@ -272,7 +264,6 @@ exports[`init-vsam (SHORT) invalid NONRLS configurations 2`] = `
 Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
 -------------------------------------------------------------------------------
 >> Initialize Zowe custom data sets
-
 ERROR: Error ZWEL0157E: VSAM parameter (zowe.setup.vsam.volume) is not defined in Zowe YAML configuration file."
 `;
 
@@ -281,7 +272,6 @@ exports[`init-vsam (SHORT) invalid NONRLS configurations 3`] = `
 Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
 -------------------------------------------------------------------------------
 >> Initialize Zowe custom data sets
-
 ERROR: Error ZWEL0157E: VSAM parameter (zowe.setup.vsam.name) is not defined in Zowe YAML configuration file."
 `;
 
@@ -290,7 +280,6 @@ exports[`init-vsam (SHORT) invalid NONRLS configurations 4`] = `
 Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
 -------------------------------------------------------------------------------
 >> Initialize Zowe custom data sets
-
 ERROR: Error ZWEL0157E: VSAM parameter (zowe.setup.vsam.name) is not defined in Zowe YAML configuration file."
 `;
 
@@ -299,7 +288,6 @@ exports[`init-vsam (SHORT) invalid NONRLS configurations 5`] = `
 Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
 -------------------------------------------------------------------------------
 >> Initialize Zowe custom data sets
-
 ERROR: Error ZWEL0157E: VSAM parameter (zowe.setup.vsam.volume) is not defined in Zowe YAML configuration file."
 `;
 
@@ -308,7 +296,6 @@ exports[`init-vsam (SHORT) invalid NONRLS configurations 6`] = `
 Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
 -------------------------------------------------------------------------------
 >> Initialize Zowe custom data sets
-
 ERROR: Error ZWEL0157E: VSAM parameter (zowe.setup.vsam.volume) is not defined in Zowe YAML configuration file."
 `;
 
@@ -317,7 +304,6 @@ exports[`init-vsam (SHORT) invalid NONRLS configurations 7`] = `
 Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
 -------------------------------------------------------------------------------
 >> Initialize Zowe custom data sets
-
 ERROR: Error ZWEL0157E: VSAM parameter (zowe.setup.vsam.volume) is not defined in Zowe YAML configuration file."
 `;
 
@@ -326,7 +312,6 @@ exports[`init-vsam (SHORT) invalid RLS configurations 1`] = `
 Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
 -------------------------------------------------------------------------------
 >> Initialize Zowe custom data sets
-
 ERROR: Error ZWEL0157E: VSAM parameter (zowe.setup.vsam.storageClass) is not defined in Zowe YAML configuration file."
 `;
 
@@ -335,7 +320,6 @@ exports[`init-vsam (SHORT) invalid RLS configurations 2`] = `
 Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
 -------------------------------------------------------------------------------
 >> Initialize Zowe custom data sets
-
 ERROR: Error ZWEL0157E: VSAM parameter (zowe.setup.vsam.storageClass) is not defined in Zowe YAML configuration file."
 `;
 
@@ -344,7 +328,6 @@ exports[`init-vsam (SHORT) invalid RLS configurations 3`] = `
 Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
 -------------------------------------------------------------------------------
 >> Initialize Zowe custom data sets
-
 ERROR: Error ZWEL0157E: VSAM parameter (zowe.setup.vsam.storageClass) is not defined in Zowe YAML configuration file."
 `;
 
@@ -353,7 +336,6 @@ exports[`init-vsam (SHORT) invalid RLS configurations 4`] = `
 Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
 -------------------------------------------------------------------------------
 >> Initialize Zowe custom data sets
-
 ERROR: Error ZWEL0157E: VSAM parameter (zowe.setup.vsam.storageClass) is not defined in Zowe YAML configuration file."
 `;
 
@@ -362,7 +344,6 @@ exports[`init-vsam (SHORT) invalid RLS configurations 5`] = `
 Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
 -------------------------------------------------------------------------------
 >> Initialize Zowe custom data sets
-
 ERROR: Error ZWEL0157E: VSAM parameter (zowe.setup.vsam.storageClass) is not defined in Zowe YAML configuration file."
 `;
 
@@ -371,7 +352,6 @@ exports[`init-vsam (SHORT) simple --dry-run 1`] = `
 Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
 -------------------------------------------------------------------------------
 >> Initialize Zowe custom data sets
-
 Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWECSVSM) , Executable JCL: TEST.DATASET.PFX.JCLLIB(ZWECSVSM)
 --- JCL Content ---
 //ZWECSVSM JOB
@@ -435,10 +415,7 @@ Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWECSVSM) , Executable JCL: TEST.DATASET
 --- End of JCL ---
 JCL not submitted, command run with "--dry-run" flag.
 To perform command, re-run command without "--dry-run" flag, or submit the JCL directly
-
 >> Command run successfully.
-
-
 >> Zowe Caching Service VSAM storage is created successfully."
 `;
 
@@ -447,19 +424,24 @@ exports[`init-vsam (SHORT) skip non-vsam caching service 1`] = `
 Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
 -------------------------------------------------------------------------------
 >> Initialize Zowe custom data sets
-
 ERROR: Warning ZWEL0301W: Zowe Caching Service is not configured to use VSAM. Command skipped."
 `;
 
 exports[`init-vsam (SHORT) skip undefined caching service 1`] = `
-"Error: Validation of FILE(/test/dir/zowe.test.yaml):FILE(/test/dir/files/defaults.yaml) against schema /test/dir/schemas/zowe-yaml-schema.json:/test/dir/schemas/server-common.json found invalid JSON Schema data
-Validity Exceptions(s) with object at 
+"TypeError: cannot read property 'gateway' of null
+    at <eval> (<embedded>)
+failed to evaluate ' components.gateway?.zowe?.network?.server?.tls?.attls == true ? 'http' : zowe.network?.server?.tls?.attls == true ? 'http' : 'https' ', status=-1
+Error: Validation of FILE(/test/dir/zowe.test.yaml):FILE(/test/dir/files/defaults.yaml) against schema /test/dir/schemas/zowe-yaml-schema.json:/test/dir/schemas/server-common.json found invalid JSON Schema data
+Validity Exceptions(s) with object at
+  Validity Exceptions(s) with object at /zowe
+    Validity Exceptions(s) with object at /zowe/network
+      type 'object' not permitted at /zowe/network/proxyType; expecting type 'string'
   string cannot be null for /components"
 `;
 
 exports[`init-vsam (SHORT) unset ds prefix 1`] = `
 "Error: Validation of FILE(/test/dir/zowe.test.yaml):FILE(/test/dir/files/defaults.yaml) against schema /test/dir/schemas/zowe-yaml-schema.json:/test/dir/schemas/server-common.json found invalid JSON Schema data
-Validity Exceptions(s) with object at 
+Validity Exceptions(s) with object at
   Validity Exceptions(s) with object at /zowe
     Validity Exceptions(s) with object at /zowe/setup
       Validity Exceptions(s) with object at /zowe/setup/dataset
@@ -470,7 +452,7 @@ Validity Exceptions(s) with object at
 
 exports[`init-vsam (SHORT) unset ds prefix 2`] = `
 "Error: Validation of FILE(/test/dir/zowe.test.yaml):FILE(/test/dir/files/defaults.yaml) against schema /test/dir/schemas/zowe-yaml-schema.json:/test/dir/schemas/server-common.json found invalid JSON Schema data
-Validity Exceptions(s) with object at 
+Validity Exceptions(s) with object at
   Validity Exceptions(s) with object at /zowe
     Validity Exceptions(s) with object at /zowe/setup
       Validity Exceptions(s) with object at /zowe/setup/dataset
@@ -481,7 +463,7 @@ Validity Exceptions(s) with object at
 
 exports[`init-vsam (SHORT) unset jcllib 1`] = `
 "Error: Validation of FILE(/test/dir/zowe.test.yaml):FILE(/test/dir/files/defaults.yaml) against schema /test/dir/schemas/zowe-yaml-schema.json:/test/dir/schemas/server-common.json found invalid JSON Schema data
-Validity Exceptions(s) with object at 
+Validity Exceptions(s) with object at
   Validity Exceptions(s) with object at /zowe
     Validity Exceptions(s) with object at /zowe/setup
       Validity Exceptions(s) with object at /zowe/setup/dataset
@@ -492,7 +474,7 @@ Validity Exceptions(s) with object at
 
 exports[`init-vsam (SHORT) unset jcllib 2`] = `
 "Error: Validation of FILE(/test/dir/zowe.test.yaml):FILE(/test/dir/files/defaults.yaml) against schema /test/dir/schemas/zowe-yaml-schema.json:/test/dir/schemas/server-common.json found invalid JSON Schema data
-Validity Exceptions(s) with object at 
+Validity Exceptions(s) with object at
   Validity Exceptions(s) with object at /zowe
     Validity Exceptions(s) with object at /zowe/setup
       Validity Exceptions(s) with object at /zowe/setup/dataset
@@ -503,7 +485,7 @@ Validity Exceptions(s) with object at
 
 exports[`init-vsam (SHORT) unset vsam mode 1`] = `
 "Error: Validation of FILE(/test/dir/zowe.test.yaml):FILE(/test/dir/files/defaults.yaml) against schema /test/dir/schemas/zowe-yaml-schema.json:/test/dir/schemas/server-common.json found invalid JSON Schema data
-Validity Exceptions(s) with object at 
+Validity Exceptions(s) with object at
   Validity Exceptions(s) with object at /zowe
     Validity Exceptions(s) with object at /zowe/setup
       Validity Exceptions(s) with object at /zowe/setup/vsam
@@ -512,7 +494,7 @@ Validity Exceptions(s) with object at
 
 exports[`init-vsam (SHORT) unset vsam mode 2`] = `
 "Error: Validation of FILE(/test/dir/zowe.test.yaml):FILE(/test/dir/files/defaults.yaml) against schema /test/dir/schemas/zowe-yaml-schema.json:/test/dir/schemas/server-common.json found invalid JSON Schema data
-Validity Exceptions(s) with object at 
+Validity Exceptions(s) with object at
   Validity Exceptions(s) with object at /zowe
     Validity Exceptions(s) with object at /zowe/setup
       Validity Exceptions(s) with object at /zowe/setup/vsam
@@ -524,7 +506,6 @@ exports[`init-vsam (SHORT) valid NONRLS configurations 1`] = `
 Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
 -------------------------------------------------------------------------------
 >> Initialize Zowe custom data sets
-
 Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWECSVSM) , Executable JCL: TEST.DATASET.PFX.JCLLIB(ZWECSVSM)
 --- JCL Content ---
 //ZWECSVSM JOB
@@ -588,10 +569,7 @@ Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWECSVSM) , Executable JCL: TEST.DATASET
 --- End of JCL ---
 JCL not submitted, command run with "--dry-run" flag.
 To perform command, re-run command without "--dry-run" flag, or submit the JCL directly
-
 >> Command run successfully.
-
-
 >> Zowe Caching Service VSAM storage is created successfully."
 `;
 
@@ -600,7 +578,6 @@ exports[`init-vsam (SHORT) valid RLS configuration 1`] = `
 Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
 -------------------------------------------------------------------------------
 >> Initialize Zowe custom data sets
-
 Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWECSVSM) , Executable JCL: TEST.DATASET.PFX.JCLLIB(ZWECSVSM)
 --- JCL Content ---
 //ZWECSVSM JOB
@@ -664,9 +641,6 @@ Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWECSVSM) , Executable JCL: TEST.DATASET
 --- End of JCL ---
 JCL not submitted, command run with "--dry-run" flag.
 To perform command, re-run command without "--dry-run" flag, or submit the JCL directly
-
 >> Command run successfully.
-
-
 >> Zowe Caching Service VSAM storage is created successfully."
 `;

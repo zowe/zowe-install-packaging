@@ -195,7 +195,7 @@ describe(`${testSuiteName}`, () => {
         expect(jclFileContent).toContain(header);
       }
       // cleanup the downloaded pds
-      fs.rmdirSync(localPdsPath, { recursive: true });
+      fs.rmSync(localPdsPath, { recursive: true });
     });
 
     it('jcllib updates: jcl header multi line', async () => {
@@ -220,7 +220,7 @@ describe(`${testSuiteName}`, () => {
         expect(jclFileContent).toContain(jclLines.join('\n'));
       }
       // cleanup the downloaded pds
-      fs.rmdirSync(localPdsPath, { recursive: true });
+      fs.rmSync(localPdsPath, { recursive: true });
     });
   });
 });

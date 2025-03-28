@@ -113,8 +113,8 @@ noverbose -
 
 --- End of JCL ---
 Submitting Job ZWEGENER
-Job ZWEGENER(JOB00000) completed with RC=2
-Zowe JCL generated with errors, check job log. Job completion code=undefined, Job completion text=SECURITY_FAILURE"
+Job ZWEGENER(JOB00000) completed with RC=0
+Zowe JCL generated successfully"
 `;
 
 exports[`init-generate (LONG) jcllib updates: jcl header single line 1`] = `
@@ -227,8 +227,8 @@ noverbose -
 
 --- End of JCL ---
 Submitting Job ZWEGENER
-Job ZWEGENER(JOB00000) completed with RC=2
-Zowe JCL generated with errors, check job log. Job completion code=undefined, Job completion text=SECURITY_FAILURE"
+Job ZWEGENER(JOB00000) completed with RC=0
+Zowe JCL generated successfully"
 `;
 
 exports[`init-generate (SHORT) BAD: invalid format defaults.yaml 1`] = `
@@ -338,7 +338,6 @@ ISPSTART CMD(%ZWEGEN00 -
 generate -
 noverbose -
 )
-
 --- End of JCL ---
 JCL not submitted, command run with "--dry-run" flag.
 To perform command, re-run command without "--dry-run" flag, or submit the JCL directly."
@@ -949,7 +948,6 @@ ISPSTART CMD(%ZWEGEN00 -
 generate -
 noverbose -
 )
-
 --- End of JCL ---
 JCL not submitted, command run with "--dry-run" flag.
 To perform command, re-run command without "--dry-run" flag, or submit the JCL directly."

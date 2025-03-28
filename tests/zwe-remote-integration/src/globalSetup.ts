@@ -84,6 +84,31 @@ const jf = new JfrogClient({
   accessToken: JFROG_CREDENTIALS.token,
 });
 
+async function downloadArtifact(repo: string, artifactPath: string, artifactName: string): Promise<string> {
+  const searchResults = await jf
+    .artifactory()
+    .search()
+    .aqlSearch(
+      `
+    items.find({
+      "repo": "${repo}",
+      "path": {"$match": "${artifactPath}"},
+      "name": {"$match": "${artifactName}" }
+    }).sort({"$desc" : ["created"]}).limit(1)
+    
+  `.replace(/\s/g, ''),
+    );
+  if (searchResults.results == null || searchResults.results.length === 0) {
+    throw new Error(
+      `Could not find in Artifactory the following binary dependency specified by manifest.json.\n ${repo}:${path}:${artifactName}\n`,
+    );
+  }
+  const artifact = searchResults.results[0];
+  const dlFile = path.resolve(downloadsDir, artifact.name);
+  await jf.artifactory().download().downloadArtifactToFile(`${artifact.repo}/${artifact.path}/${artifact.name}`, dlFile);
+  return dlFile;
+}
+
 async function downloadManifestDep(binaryName: string): Promise<string> {
   const manifestJson = fs.readJSONSync(path.resolve(REPO_ROOT_DIR, 'manifest.json.template'), 'utf8');
   const binaryDep = manifestJson['binaryDependencies'][binaryName];
@@ -131,6 +156,7 @@ module.exports = async () => {
   // check directories and configmgr look OK
   const zwePath = path.resolve(REPO_ROOT_DIR, 'bin', 'zwe');
   const zweBuildPath = path.resolve(REPO_ROOT_DIR, 'build', 'zwe');
+
   if (!fs.existsSync(zwePath)) {
     throw new Error('Could not locate the zwe tool locally. Ensure you are running tests from the test project root');
   }
@@ -164,34 +190,57 @@ module.exports = async () => {
       await downloadManifestDep('org.zowe.utility-tools');
     }
 
-    const launcherPax = fs.readdirSync(downloadsDir).find((item) => /launcher.*\.pax/g.test(item));
+    await downloadArtifact('libs-snapshot-local', 'org/zowe/vtl-cli/zowe-cli-package/1.0.7-SNAPSHOT', 'vtl.tar.gz');
+
+    const downloadsDirContents = fs.readdirSync(downloadsDir);
+
+    const launcherPax = downloadsDirContents.find((item) => /launcher.*\.pax/g.test(item));
     if (launcherPax == null) {
       throw new Error('Could not locate a launcher pax in the .build directory');
     }
 
-    const configmgrPax = fs.readdirSync(downloadsDir).find((item) => /configmgr.*\.pax/g.test(item));
+    const configmgrPax = downloadsDirContents.find((item) => /configmgr.*\.pax/g.test(item));
     if (configmgrPax == null) {
       throw new Error('Could not locate a configmgr pax in the .build directory');
     }
 
-    const configmgrRexxPax = fs.readdirSync(downloadsDir).find((item) => /configmgr-rexx.*\.pax/g.test(item));
+    const configmgrRexxPax = downloadsDirContents.find((item) => /configmgr-rexx.*\.pax/g.test(item));
     if (configmgrRexxPax == null) {
       throw new Error('Could not locate a configmgr-rexx pax in the .build directory');
     }
 
-    const zssPax = fs.readdirSync(downloadsDir).find((item) => /zss-.*\.pax/g.test(item));
+    const zssPax = downloadsDirContents.find((item) => /zss-.*\.pax/g.test(item));
     if (zssPax == null) {
       throw new Error('Could not locate a zss pax in the .build directory');
     }
 
-    const zoweToolsZip = fs.readdirSync(downloadsDir).find((item) => /zowe-utility-tools.*\.zip/g.test(item));
+    const zoweToolsZip = downloadsDirContents.find((item) => /zowe-utility-tools.*\.zip/g.test(item));
     if (zoweToolsZip == null) {
       throw new Error('Could not locate zowe-utility-tools zip in the .build directory');
     }
 
-    // zowe-install-packaging-tools
+    const vtlArchive = downloadsDirContents.find((item) => /vtl.tar.gz/g.test(item));
+    if (vtlArchive == null) {
+      throw new Error('Could not locate zowe-utility-tools zip in the .build directory');
+    }
+
+    console.log(`Setting up remote server on ${REMOTE_SYSTEM_INFO.hostname}...`);
+    await uss.runCommand(`mkdir -p ${REMOTE_SYSTEM_INFO.ussTestDir}`);
+
+    // zowe-install-packaging-tools and vtl-cli
     const utilsDir = path.resolve(buildDir, 'utility-tools');
     fs.mkdirpSync(`${utilsDir}`);
+
+    console.log(`Repacking vtl-cli....`);
+    tar.x({ f: path.resolve(downloadsDir, vtlArchive), C: utilsDir, sync: true }, []);
+    const finalVtlPkg = path.resolve(utilsDir, 'vtl-cli.tar');
+    // Re-pack without compression which can cause issues on backend
+    tar.c({ gzip: false, file: finalVtlPkg, cwd: utilsDir, sync: true }, ['vtl', 'vtl-cli.jar', 'zos']);
+
+    console.log(`Uploading ${finalVtlPkg} to ${REMOTE_SYSTEM_INFO.ussTestDir}/${path.basename(finalVtlPkg)}...`);
+    await files.Upload.fileToUssFile(zosmfSession, finalVtlPkg, `${REMOTE_SYSTEM_INFO.ussTestDir}/${path.basename(finalVtlPkg)}`, {
+      binary: true,
+    });
 
     console.log(`Unzipping zowe-tools.zip on local machine`);
     const zipFile = path.resolve(downloadsDir, zoweToolsZip);
@@ -214,9 +263,6 @@ module.exports = async () => {
         }
       });
     });
-
-    console.log(`Setting up remote server on ${REMOTE_SYSTEM_INFO.hostname}...`);
-    await uss.runCommand(`mkdir -p ${REMOTE_SYSTEM_INFO.ussTestDir}`);
 
     console.log(`Uploading ${configmgrPax} to ${REMOTE_SYSTEM_INFO.ussTestDir}/configmgr.pax ...`);
     await files.Upload.fileToUssFile(
@@ -269,6 +315,8 @@ module.exports = async () => {
       binary: true,
     });
     await uss.runCommand(`tar -xfo zwe.tar`, REMOTE_SYSTEM_INFO.ussTestDir);
+
+    console.log(`Uploading vtl-cli to the remote system...`);
 
     for (const file of fs.readdirSync(utilsDir)) {
       const match = file.match(/zowe-(.*)-[0-9]?.*tgz/im);
@@ -328,6 +376,26 @@ module.exports = async () => {
         binary: false,
       },
     );
+    const remoteTmp = `${REMOTE_SYSTEM_INFO.ussTestDir}/tmp`;
+    console.log(`Uploading ${REPO_ROOT_DIR}/workflows/templates/ZWESECUR.vtl and ZWESECUR.properties to ${remoteTmp}...`);
+    await uss.runCommand(`mkdir -p ${REMOTE_SYSTEM_INFO.ussTestDir}/tmp`);
+    await files.Upload.fileToUssFile(
+      zosmfSession,
+      path.resolve(REPO_ROOT_DIR, 'workflows', 'templates', 'ZWESECUR.vtl'),
+      `${remoteTmp}/ZWESECUR.vtl`,
+      {
+        binary: false,
+      },
+    );
+
+    await files.Upload.fileToUssFile(
+      zosmfSession,
+      path.resolve(REPO_ROOT_DIR, 'workflows', 'templates', 'ZWESECUR.properties'),
+      `${remoteTmp}/ZWESECUR.properties`,
+      {
+        binary: false,
+      },
+    );
 
     const simplePdsParams = { primary: 5, secondary: 1, volser: REMOTE_SYSTEM_INFO.volume };
     const loadlibParams = { primary: 5, recfm: 'U', lrecl: 0, secondary: 1, volser: REMOTE_SYSTEM_INFO.volume };
@@ -375,6 +443,19 @@ module.exports = async () => {
     console.log(`Unpacking ncert.pax from zowe-install-packaging-tools and placing it in bin/utils/...`);
     await uss.runCommand(`pax -ppx -rf ncert.pax -s#^#./bin/utils/ncert/#g`, `${REMOTE_SYSTEM_INFO.ussTestDir}`);
 
+    console.log(`Unpacking vtl-cli, generating ZWESECUR, and copying it to SZWESAMP`);
+    await uss.runCommand(
+      `tar -xf vtl-cli.tar && mkdir -p vtl-cli && mv vtl vtl-cli.jar zos ${remoteTmp}`,
+      REMOTE_SYSTEM_INFO.ussTestDir,
+    );
+    await uss.runCommand(
+      `${REMOTE_SYSTEM_INFO.zosJavaHome}/bin/java -jar ${REMOTE_SYSTEM_INFO.ussTestDir}/vtl-cli/vtl-cli.jar -ie Cp1140 --yaml-context ZWESECUR.properties ZWESECUR.vtl -oe Cp1140`,
+      REMOTE_SYSTEM_INFO.ussTestDir,
+    );
+    await uss.runCommand(
+      `cp ${remoteTmp}/ZWESECUR.jcl "//'${REMOTE_SYSTEM_INFO.szwesamp}(ZWESECUR)'"`,
+      `${REMOTE_SYSTEM_INFO.ussTestDir}`,
+    );
     console.log(`Compiling Java utilities in bin/utils using ${REMOTE_SYSTEM_INFO.zosJavaHome}...`);
     await uss.runCommand(`${REMOTE_SYSTEM_INFO.zosJavaHome}/bin/javac *.java`, `${REMOTE_SYSTEM_INFO.ussTestDir}/bin/utils`);
 

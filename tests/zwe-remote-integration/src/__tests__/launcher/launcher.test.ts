@@ -25,7 +25,7 @@ describe(`${testSuiteName}`, () => {
     cfgYaml = ZoweConfig.getZoweYaml();
     defaultCfgYaml = ZoweConfig.getDefaultsYaml();
     const cleanSecurityManager = (input: string) => {
-      return input.replaceAll(new RegExp(cfgYaml.zowe.setup.security.product, 'gi'), 'ESMT'); // ESM TEST
+      return input.replaceAll(/TSS|ACF2|RACF/gi, 'ESMT'); // ESM TEST
     };
     testRunner.addCleanFn(cleanSecurityManager);
   });

@@ -36,11 +36,6 @@ exports[`init-apfauth (SHORT) apf bad authLoadLib 1`] = `
 Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
 -------------------------------------------------------------------------------
 >> APF authorize load libraries
-ERROR:   * Exit code: 8
-ERROR:   * Output:
-ERROR:     listds 'DOES.NOT.EXIST' label
-    DOES.NOT.EXIST
-    IKJ58503I DATA SET 'DOES.NOT.EXIST' NOT IN CATALOG
 ERROR: Error ZWEL0320E: The dataset specified in 'zowe.setup.dataset.authLoadlib' does not exist."
 `;
 
@@ -49,11 +44,6 @@ exports[`init-apfauth (SHORT) apf bad authPluginLib 1`] = `
 Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
 -------------------------------------------------------------------------------
 >> APF authorize load libraries
-ERROR:   * Exit code: 8
-ERROR:   * Output:
-ERROR:     listds 'DOES.NOT.EXIST' label
-    DOES.NOT.EXIST
-    IKJ58503I DATA SET 'DOES.NOT.EXIST' NOT IN CATALOG
 ERROR: Error ZWEL0320E: The dataset specified in 'zowe.setup.dataset.authPluginLib' does not exist."
 `;
 
@@ -209,12 +199,17 @@ Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWEIAPF2) , Executable JCL: TEST.DATASET
 //*********************************************************************
 //*
 //*  This JCL is used to set APF for the two datasets of Zowe
-//*  Which need it. You can issue this, or use another
-//*  Way to accomplish the task.
+//*  which need it. You can issue this, or use another
+//*  way to accomplish the task.
 //*
 //*  The following variables are derived from the zowe YAML config:
-//*  LOADLIB: the dataset that holds the APF portion of Zowe
-//*  PLUGLIB: The dataset that holds the extensions for ZIS.
+//*  LOADLIB: the dataset that holds the APF portion of Zowe.
+//*    If not set, zowe.setup.dataset.prefix + SZWEAUTH is used.
+//*  PLUGLIB: the dataset that holds the extensions for ZIS.
+//*    If not set, no PLUGLIB authorization is done.
+//*
+//*  Note: if you plan NOT to use Zowe Cross Memory Server at all,
+//*    you can skip this step.
 //*
 //*********************************************************************
 //*
@@ -225,9 +220,9 @@ Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWEIAPF2) , Executable JCL: TEST.DATASET
 //STDPARM DD *
 SH cd '/test/dir' &&
 cd bin/utils &&
-export LOADLIB='TEST.DATASET.PFX.SZWELOAD' &&
-export LOADLOC="VOLUME=TSTVOL" &&
-./opercmd.rex "SETPROG APF,ADD,DSN=$LOADLIB,$LOADLOC" &&
+LOADLIB='TEST.DATASET.PFX.SZWELOAD' &&
+LOADLOC="VOLUME=TSTVOL" &&
+./opercmd.rex "SETPROG APF,ADD,DSN=$LOADLIB,$LOADLOC"
 //*
 --- End of JCL ---
 JCL not submitted, command run with "--dry-run" flag.
@@ -271,13 +266,13 @@ Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWEIAPF2) , Executable JCL: TEST.DATASET
 //STDOUT   DD SYSOUT=*
 //STDERR   DD SYSOUT=*
 //STDPARM DD *
-SH cd '/test/dir' &&
+SH cd '/ZOWE/zwe-integration' &&
 cd bin/utils &&
-export LOADLIB='TEST.DATASET.PFX.SZWELOAD' &&
-export LOADLOC="VOLUME=TSTVOL" &&
-export PLUGLIB='CFG.ZOWE.SETUP.DATASET.AUTHPLUGINLIB' &&
-export PLUGLOC="VOLUME=TSTVOL" &&
+LOADLIB='TEST.DATASET.PFX.SZWELOAD' &&
+LOADLOC="VOLUME=TSTVOL" &&
 ./opercmd.rex "SETPROG APF,ADD,DSN=$LOADLIB,$LOADLOC" &&
+PLUGLIB='TEST.DATASET.PFX.ZWESAPL' &&
+PLUGLOC="VOLUME=TSTVOL" &&
 ./opercmd.rex "SETPROG APF,ADD,DSN=$PLUGLIB,$PLUGLOC"
 //*
 --- End of JCL ---
@@ -322,13 +317,13 @@ Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWEIAPF2) , Executable JCL: TEST.DATASET
 //STDOUT   DD SYSOUT=*
 //STDERR   DD SYSOUT=*
 //STDPARM DD *
-SH cd '/test/dir' &&
+SH cd '/ZOWE/zwe-integration' &&
 cd bin/utils &&
-export LOADLIB='TEST.DATASET.PFX.SZWELOAD' &&
-export LOADLOC=SMS &&
-export PLUGLIB='CFG.ZOWE.SETUP.DATASET.AUTHPLUGINLIB' &&
-export PLUGLOC="VOLUME=TSTVOL" &&
+LOADLIB='TEST.DATASET.PFX.APF.LOADLIB' &&
+LOADLOC=SMS &&
 ./opercmd.rex "SETPROG APF,ADD,DSN=$LOADLIB,$LOADLOC" &&
+PLUGLIB='TEST.DATASET.PFX.ZWESAPL' &&
+PLUGLOC="VOLUME=TSTVOL" &&
 ./opercmd.rex "SETPROG APF,ADD,DSN=$PLUGLIB,$PLUGLOC"
 //*
 --- End of JCL ---
@@ -373,11 +368,11 @@ Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWEIAPF2) , Executable JCL: TEST.DATASET
 //STDOUT   DD SYSOUT=*
 //STDERR   DD SYSOUT=*
 //STDPARM DD *
-SH cd '/test/dir' &&
+SH cd '/ZOWE/zwe-integration' &&
 cd bin/utils &&
 export LOADLIB='TEST.DATASET.PFX.SZWELOAD' &&
 export LOADLOC=SMS &&
-export PLUGLIB='CFG.ZOWE.SETUP.DATASET.AUTHPLUGINLIB' &&
+export PLUGLIB='TEST.DATASET.PFX.ZWESAPL' &&
 export PLUGLOC=SMS &&
 ./opercmd.rex "SETPROG APF,ADD,DSN=$LOADLIB,$LOADLOC" &&
 ./opercmd.rex "SETPROG APF,ADD,DSN=$PLUGLIB,$PLUGLOC"
@@ -424,13 +419,13 @@ Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWEIAPF2) , Executable JCL: TEST.DATASET
 //STDOUT   DD SYSOUT=*
 //STDERR   DD SYSOUT=*
 //STDPARM DD *
-SH cd '/test/dir' &&
+SH cd '/ZOWE/zwe-integration' &&
 cd bin/utils &&
-export LOADLIB='TEST.DATASET.PFX.SZWELOAD' &&
-export LOADLOC="VOLUME=TSTVOL" &&
-export PLUGLIB='CFG.ZOWE.SETUP.DATASET.AUTHPLUGINLIB' &&
-export PLUGLOC=SMS &&
+LOADLIB='TEST.DATASET.PFX.SZWELOAD' &&
+LOADLOC="VOLUME=TSTVOL" &&
 ./opercmd.rex "SETPROG APF,ADD,DSN=$LOADLIB,$LOADLOC" &&
+PLUGLIB='TEST.DATASET.PFX.APF.PLUGLIB' &&
+PLUGLOC=SMS &&
 ./opercmd.rex "SETPROG APF,ADD,DSN=$PLUGLIB,$PLUGLOC"
 //*
 --- End of JCL ---
