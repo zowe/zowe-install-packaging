@@ -1,1 +1,15 @@
-""
+{
+  "lockAcquiredTime": "Fri Mar 28 2025 11:06:30 GMT+0000 (Coordinated Universal Time)",
+  "uid": "1743159990106385013",
+  "repository": {
+    "owner": "zowe",
+    "repo": "zowe-install-packaging"
+  },
+  "branch": "reboot/fix/patch-PR4044-for-apiml-v3.1",
+  "workflow": "Zowe CICD Integration Tests",
+  "job": "cicd-test",
+  "actor": "zowe-robot",
+  "runId": 14127549498,
+  "runNumber": 6335,
+  "link": "https://github.com/zowe/zowe-install-packaging/actions/runs/14127549498"
+}
