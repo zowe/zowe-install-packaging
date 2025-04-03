@@ -12,6 +12,7 @@ import * as uss from './zos/Uss';
 import * as _ from 'lodash';
 import * as path from 'path';
 import * as files from '@zowe/zos-files-for-zowe-sdk';
+import EBCDIC from 'ebcdic-ascii';
 import * as tar from 'tar';
 import {
   DOWNLOAD_CONFIGMGR,
@@ -299,18 +300,14 @@ module.exports = async () => {
     await cleanUssDir(`${REMOTE_SYSTEM_INFO.ussTestDir}/bin`);
     await cleanUssDir(`${REMOTE_SYSTEM_INFO.ussTestDir}/schemas`);
 
-    console.log(`Uploading conversion script...`);
-    await files.Upload.fileToUssFile(
-      zosmfSession,
-      path.resolve(THIS_TEST_ROOT_DIR, 'resources', 'convert_to_ebcdic.sh'),
-      `${REMOTE_SYSTEM_INFO.ussTestDir}/convert_to_ebcdic.sh`,
-    );
-
     console.log(`Uploading ${REPO_ROOT_DIR}/bin to ${REMOTE_SYSTEM_INFO.ussTestDir}/bin...`);
 
     // archive without compression (issues on some backends)
     const tarFile = path.resolve(buildDir, 'zwe.tar');
-    tar.c({ gzip: false, file: tarFile, sync: true, cwd: REPO_ROOT_DIR }, ['bin']);
+    fs.cpSync(path.resolve(REPO_ROOT_DIR, 'bin'), path.resolve(buildDir, 'bin'), { force: true, recursive: true });
+    console.log('Converting bin to ebcdic locally, then uploading and unpacking...');
+    convertDirToEbcdicInPlace(path.resolve(buildDir, 'bin'));
+    tar.c({ gzip: false, file: tarFile, sync: true, cwd: buildDir }, ['bin']);
     await files.Upload.fileToUssFile(zosmfSession, tarFile, `${REMOTE_SYSTEM_INFO.ussTestDir}/zwe.tar`, {
       binary: true,
     });
@@ -348,8 +345,6 @@ module.exports = async () => {
       binary: true,
     });
 
-    console.log(`Converting everything in ${REMOTE_SYSTEM_INFO.ussTestDir}/bin to EBCDIC...`);
-    await uss.runCommand(`chmod +x convert_to_ebcdic.sh && ./convert_to_ebcdic.sh`, REMOTE_SYSTEM_INFO.ussTestDir);
     await uss.runCommand(
       `chmod 755 ${REMOTE_SYSTEM_INFO.ussTestDir}/bin/zwe && ` + `chmod 755 ${REMOTE_SYSTEM_INFO.ussTestDir}/bin/utils/opercmd.rex `,
       REMOTE_SYSTEM_INFO.ussTestDir,
@@ -475,3 +470,28 @@ module.exports = async () => {
     console.log('Remote server setup complete');
   }
 };
+
+function convertDirToEbcdicInPlace(dir: string) {
+  const dirContents = fs.readdirSync(dir, { recursive: true });
+  const converter = new EBCDIC('1047');
+  for (const entry of dirContents) {
+    const filePath = path.resolve(dir, entry.toString());
+    const file = fs.lstatSync(filePath);
+    if (file.isFile()) {
+      const asHex = fs.readFileSync(filePath).toString('hex');
+      const asciiChars = converter.splitHex(asHex).map((a) => a.toUpperCase());
+      const asEbcdic = asciiChars
+        .map((code: string) => {
+          // Replace line feeds with new line, ignore carriage returns.
+          // Both ascii characters ignored by converter out of the box.
+          if (code === '0A') {
+            return '15';
+          } else {
+            return converter.charToEBCDIC(code);
+          }
+        })
+        .join('');
+      fs.writeFileSync(filePath, Buffer.from(asEbcdic, 'hex'));
+    }
+  }
+}

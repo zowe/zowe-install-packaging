@@ -12,6 +12,8 @@
 # Taken as-is from .pax/pre-packaging.sh, swapped encodings
 #
 # Used as part of globalSetup to ensure the `bin/` folder is in the right encoding
+#
+# Note 04/2025 - removed from globalSetup, retained in case it's needed later as a reference
 
 # ------------------
 # $1: (input) file to check

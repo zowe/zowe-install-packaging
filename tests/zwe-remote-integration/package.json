@@ -27,6 +27,7 @@
     "@zowe/zos-jobs-for-zowe-sdk": "8.16.0",
     "@zowe/zos-uss-for-zowe-sdk": "8.16.0",
     "debug": "4.3.4",
+    "ebcdic-ascii": "1.1.6",
     "escape-string-regexp": "4.0.0",
     "eslint": "8.56.0",
     "eslint-config-google": "0.14.0",

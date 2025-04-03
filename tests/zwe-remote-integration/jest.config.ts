@@ -15,6 +15,7 @@ const config: Config = {
   globalSetup: '<rootDir>/src/globalSetup.ts',
   globalTeardown: '<rootDir>/src/globalTeardown.ts',
   preset: 'ts-jest',
+  modulePathIgnorePatterns: ['<rootDir>/.build'],
   testRegex: '__tests__.*\\.*?\\.(spec|test)\\.ts$',
   testEnvironmentOptions: {
     ZOWE_IMPERATIVE_LOG_LEVEL: 'OFF',
