@@ -388,14 +388,21 @@ export class RemoteTestRunner {
     return yamlUploadPath;
   }
 
-  public async uploadZoweYaml(zoweYaml: ZoweYamlType, cwd: string = REMOTE_SYSTEM_INFO.ussTestDir): Promise<string> {
+  public async uploadZoweYaml(
+    zoweYaml: ZoweYamlType,
+    addCustomJobHeaders: boolean = true,
+    cwd: string = REMOTE_SYSTEM_INFO.ussTestDir,
+  ): Promise<string> {
     const testName = expect.getState().currentTestName.replace(/\s/g, '_');
-    const stringZoweYaml = YAML.stringify(zoweYaml, { nullStr: '' });
+    let finalZoweYaml = zoweYaml;
+    if (addCustomJobHeaders) {
+      finalZoweYaml = this.addAnyCustomJobStatements(zoweYaml).yaml;
+    }
+    const stringZoweYaml = YAML.stringify(finalZoweYaml, { nullStr: '' });
     const uploadPath = `${cwd}/zowe.test.yaml`;
     const yamlOutputDir = this.yamlOutputTemplate.replace('{{ testInstance }}', testName);
     fs.mkdirpSync(yamlOutputDir);
-
-    const redundantFilePath = this.writeRedundant(`${yamlOutputDir}/zowe.yaml.${testName}`, stringZoweYaml);
+    const redundantFilePath = this.writeRedundant(`${yamlOutputDir}/zowe.yaml`, stringZoweYaml);
     await files.Upload.fileToUssFile(this.session, redundantFilePath, uploadPath, {
       binary: false,
     });
@@ -418,7 +425,7 @@ export class RemoteTestRunner {
       command = command.replace(/zwe/, '');
     }
     const finalZwe = this.addAnyCustomJobStatements(zoweYaml);
-    await this.uploadZoweYaml(finalZwe.yaml, cwd);
+    await this.uploadZoweYaml(finalZwe.yaml, false, cwd);
     const start = performance.now();
     const output = await this.uss.runCommand(`./bin/zwe ${command} --config  ${REMOTE_SYSTEM_INFO.ussTestDir}/zowe.test.yaml`, cwd);
     // default per-test should always be off. If you want tty, run this.useTty() in a beforeEach() block

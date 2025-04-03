@@ -33,7 +33,7 @@ zowe:
     certificate:
       type: "PKCS12"
       pkcs12:
-        directory: "/test/dir"
+        directory: "/test/dir/pkcs12"
         lock: true
         name: "some.test.hostname"
         password: "password"
@@ -220,7 +220,7 @@ zowe:
     certificate:
       type: "PKCS12"
       pkcs12:
-        directory: "/test/dir"
+        directory: "/test/dir/pkcs12"
         lock: true
         name: "some.test.hostname"
         password: "password"

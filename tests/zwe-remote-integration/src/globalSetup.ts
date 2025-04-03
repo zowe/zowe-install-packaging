@@ -59,7 +59,7 @@ function setupBaseYaml() {
   zoweYaml.zowe.setup.vsam.name = REMOTE_SYSTEM_INFO.prefix + '.VSAM';
   zoweYaml.zowe.setup.vsam.volume = REMOTE_SYSTEM_INFO.volume;
   // @ts-expect-error incomplete schema
-  zoweYaml.zowe.setup.certificate.pkcs12.directory = REMOTE_SYSTEM_INFO.ussTestDir;
+  zoweYaml.zowe.setup.certificate.pkcs12.directory = `${REMOTE_SYSTEM_INFO.ussTestDir}/pkcs12`;
   zoweYaml.zowe.setup.dataset.authLoadlib = REMOTE_SYSTEM_INFO.authLoadLib;
   zoweYaml.zowe.setup.dataset.authPluginLib = REMOTE_SYSTEM_INFO.authPluginLib;
   zoweYaml.zowe.setup.dataset.parmlib = REMOTE_SYSTEM_INFO.parmlib;
@@ -148,7 +148,7 @@ async function cleanUssDir(dir: string) {
   const lsOut = await uss.runCommand(`ls ${dir}`);
   if (lsOut.rc === 0) {
     // already exists
-    console.log(`Cleaning up old ${dir}...`);
+    console.log(`-->Cleaning up old ${dir}...`);
     await uss.runCommand(`rm -rf ${dir}`);
   }
 }

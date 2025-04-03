@@ -54,7 +54,7 @@ export async function createDataset(
   });
   const respItems: { [key: string]: string }[] = listPdsResp.apiResponse?.items;
   if (respItems?.find((item) => item.dsname === dsName) != null) {
-    console.log(`Pds exists, cleaning up...`);
+    console.log(`--> Pds exists, cleaning up...`);
     await files.Delete.dataSet(getSession(), dsName, {});
   }
   console.log(`Creating ${dsName}`);
