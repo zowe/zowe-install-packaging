@@ -25,13 +25,8 @@ describe(`${testSuiteName}`, () => {
 
   beforeAll(async () => {
     testRunner = new RemoteTestRunner(testSuiteName);
-    cfgYaml = ZoweConfig.getZoweYaml();
-    expect.getState().currentTestName = 'before-all-apfauth';
-    const result = await testRunner.runZweTest(cfgYaml, 'init generate --allow-overwrite');
-    expect(result.stdout).not.toBeNull();
-    expect(result.rc).toBe(0);
-    await testRunner.postTest();
   });
+
   beforeEach(() => {
     cfgYaml = ZoweConfig.getZoweYaml();
   });
@@ -80,6 +75,15 @@ describe(`${testSuiteName}`, () => {
   });
 
   describe('(SHORT)', () => {
+    beforeAll(async () => {
+      cfgYaml = ZoweConfig.getZoweYaml();
+      expect.getState().currentTestName = 'before-all-apfauth';
+      const result = await testRunner.runZweTest(cfgYaml, 'init generate --allow-overwrite');
+      expect(result.stdout).not.toBeNull();
+      expect(result.rc).toBe(0);
+      await testRunner.postTest();
+    });
+
     it('apf empty jcllib post-generate', async () => {
       cfgYaml.zowe.setup.dataset.jcllib = '';
       const result = await testRunner.runZweTest(cfgYaml, 'init apfauth --dry-run');

@@ -428,15 +428,15 @@ ERROR: Warning ZWEL0301W: Zowe Caching Service is not configured to use VSAM. Co
 `;
 
 exports[`init-vsam (SHORT) skip undefined caching service 1`] = `
-"TypeError: cannot read property 'gateway' of null
-    at <eval> (<embedded>)
-failed to evaluate ' components.gateway?.zowe?.network?.server?.tls?.attls == true ? 'http' : zowe.network?.server?.tls?.attls == true ? 'http' : 'https' ', status=-1
+"failed to evaluate ' components.gateway?.zowe?.network?.server?.tls?.attls == true ? 'http' : zowe.network?.server?.tls?.attls == true ? 'http' : 'https' ', status=-1
 Error: Validation of FILE(/test/dir/zowe.test.yaml):FILE(/test/dir/files/defaults.yaml) against schema /test/dir/schemas/zowe-yaml-schema.json:/test/dir/schemas/server-common.json found invalid JSON Schema data
 Validity Exceptions(s) with object at
   Validity Exceptions(s) with object at /zowe
     Validity Exceptions(s) with object at /zowe/network
       type 'object' not permitted at /zowe/network/proxyType; expecting type 'string'
-  string cannot be null for /components"
+  string cannot be null for /components
+TypeError: cannot read property 'gateway' of null
+    at <eval> (<embedded>)"
 `;
 
 exports[`init-vsam (SHORT) unset ds prefix 1`] = `
