@@ -13,19 +13,19 @@ exports[`init-cert (LONG) cert bad hostname 1`] = `
 >>>> Export certificate "local_ca" to PEM format
 >> Keystore /test/dir/pkcs12/local_ca/local_ca.keystore.p12 is exported successfully.
 -------------------------------------------------------------------------------
->> Creating certificate "some.test.hostname"
->>>> Generate certificate "some.test.hostname" in the keystore some.test.hostname:
->>>> Generate CSR for the certificate "some.test.hostname" in the keystore "some.test.hostname":
+>> Creating certificate "localhost"
+>>>> Generate certificate "localhost" in the keystore localhost:
+>>>> Generate CSR for the certificate "localhost" in the keystore "localhost":
 >>>> Sign the CSR using the Certificate Authority "local_ca":
->>>> Import the Certificate Authority "local_ca" to the keystore "some.test.hostname":
->>>> Import the Certificate Authority "local_ca" to the truststore "some.test.hostname":
->>>> Import the signed CSR to the keystore "some.test.hostname":
->> Certificate some.test.hostname is created successfully.
+>>>> Import the Certificate Authority "local_ca" to the keystore "localhost":
+>>>> Import the Certificate Authority "local_ca" to the truststore "localhost":
+>>>> Import the signed CSR to the keystore "localhost":
+>> Certificate localhost is created successfully.
 -------------------------------------------------------------------------------
->> Trust z/OSMF "doesnt-exist.anywhere.cloud:10443"
+>> Trust z/OSMF "doesnt-exist.anywhere.cloud:12321"
 >>>> Getting certificates from service host
-Failed to get certificate of service instance https://doesnt-exist.anywhere.cloud:10443, exit code 1.
-Error ZWEL0170E: Failed to trust z/OSMF "doesnt-exist.anywhere.cloud:10443"."
+Failed to get certificate of service instance https://doesnt-exist.anywhere.cloud:12321, exit code 1.
+Error ZWEL0170E: Failed to trust z/OSMF "doesnt-exist.anywhere.cloud:12321"."
 `;
 
 exports[`init-cert (LONG) passing init 1`] = `
@@ -41,34 +41,34 @@ exports[`init-cert (LONG) passing init 1`] = `
 >>>> Export certificate "local_ca" to PEM format
 >> Keystore /test/dir/pkcs12/local_ca/local_ca.keystore.p12 is exported successfully.
 -------------------------------------------------------------------------------
->> Creating certificate "some.test.hostname"
->>>> Generate certificate "some.test.hostname" in the keystore some.test.hostname:
->>>> Generate CSR for the certificate "some.test.hostname" in the keystore "some.test.hostname":
+>> Creating certificate "localhost"
+>>>> Generate certificate "localhost" in the keystore localhost:
+>>>> Generate CSR for the certificate "localhost" in the keystore "localhost":
 >>>> Sign the CSR using the Certificate Authority "local_ca":
->>>> Import the Certificate Authority "local_ca" to the keystore "some.test.hostname":
->>>> Import the Certificate Authority "local_ca" to the truststore "some.test.hostname":
->>>> Import the signed CSR to the keystore "some.test.hostname":
->> Certificate some.test.hostname is created successfully.
+>>>> Import the Certificate Authority "local_ca" to the keystore "localhost":
+>>>> Import the Certificate Authority "local_ca" to the truststore "localhost":
+>>>> Import the signed CSR to the keystore "localhost":
+>> Certificate localhost is created successfully.
 -------------------------------------------------------------------------------
->> Trust z/OSMF "some.test.hostname:10443"
+>> Trust z/OSMF "some.test.hostname:12321"
 >>>> Getting certificates from service host
 >>>> Import a certificate "zosmf00" to the truststore:
 >>>> Import a certificate "zosmf01" to the truststore:
 >> Certificate zosmf is added to truststore successfully.
 -------------------------------------------------------------------------------
->> Export keystore /test/dir/pkcs12/some.test.hostname/some.test.hostname.keystore.p12
->>>> List content of keystore "/test/dir/pkcs12/some.test.hostname/some.test.hostname.keystore.p12":
->>>> Export certificate "some.test.hostname" to PEM format
+>> Export keystore /test/dir/pkcs12/localhost/localhost.keystore.p12
+>>>> List content of keystore "/test/dir/pkcs12/localhost/localhost.keystore.p12":
+>>>> Export certificate "localhost" to PEM format
 >>>> Export certificate "local_ca" to PEM format
->>>> Exporting certificate "some.test.hostname" private key
->> Keystore /test/dir/pkcs12/some.test.hostname/some.test.hostname.keystore.p12 is exported successfully.
+>>>> Exporting certificate "localhost" private key
+>> Keystore /test/dir/pkcs12/localhost/localhost.keystore.p12 is exported successfully.
 -------------------------------------------------------------------------------
->> Export keystore /test/dir/pkcs12/some.test.hostname/some.test.hostname.truststore.p12
->>>> List content of keystore "/test/dir/pkcs12/some.test.hostname/some.test.hostname.truststore.p12":
+>> Export keystore /test/dir/pkcs12/localhost/localhost.truststore.p12
+>>>> List content of keystore "/test/dir/pkcs12/localhost/localhost.truststore.p12":
 >>>> Export certificate "local_ca" to PEM format
 >>>> Export certificate "zosmf00" to PEM format
 >>>> Export certificate "zosmf01" to PEM format
->> Keystore /test/dir/pkcs12/some.test.hostname/some.test.hostname.truststore.p12 is exported successfully.
+>> Keystore /test/dir/pkcs12/localhost/localhost.truststore.p12 is exported successfully.
 -------------------------------------------------------------------------------
 >> Lock keystore directory /test/dir/pkcs12
 >> Keystore directory /test/dir/pkcs12 is locked.
@@ -79,16 +79,16 @@ zowe:
   certificate:
     keystore:
       type: PKCS12
-      file: "/test/dir/pkcs12/some.test.hostname/some.test.hostname.keystore.p12"
+      file: "/test/dir/pkcs12/localhost/localhost.keystore.p12"
       password: "password"
-      alias: "some.test.hostname"
+      alias: "localhost"
     truststore:
       type: PKCS12
-      file: "/test/dir/pkcs12/some.test.hostname/some.test.hostname.truststore.p12"
+      file: "/test/dir/pkcs12/localhost/localhost.truststore.p12"
       password: "password"
     pem:
-      key: "/test/dir/pkcs12/some.test.hostname/some.test.hostname.key"
-      certificate: "/test/dir/pkcs12/some.test.hostname/some.test.hostname.cer"
+      key: "/test/dir/pkcs12/localhost/localhost.key"
+      certificate: "/test/dir/pkcs12/localhost/localhost.cer"
       certificateAuthorities: "/test/dir/pkcs12/local_ca/local_ca.cer"
 >> Zowe configuration requires manual updates."
 `;

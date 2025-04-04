@@ -25,12 +25,6 @@ describe(`${testSuiteName}`, () => {
 
   beforeAll(async () => {
     testRunner = new RemoteTestRunner(testSuiteName);
-    cfgYaml = ZoweConfig.getZoweYaml();
-    expect.getState().currentTestName = 'before-all-generate';
-    const result = await testRunner.runZweTest(cfgYaml, 'init generate --allow-overwrite');
-    expect(result.stdout).not.toBeNull();
-    expect(result.rc).toBe(0);
-    await testRunner.postTest();
   });
   beforeEach(() => {
     cfgYaml = ZoweConfig.getZoweYaml();
@@ -53,6 +47,15 @@ describe(`${testSuiteName}`, () => {
   });
 
   describe('(SHORT)', () => {
+    beforeAll(async () => {
+      cfgYaml = ZoweConfig.getZoweYaml();
+      expect.getState().currentTestName = 'before-all-generate-short';
+      const result = await testRunner.runZweTest(cfgYaml, 'init generate --allow-overwrite');
+      expect(result.stdout).not.toBeNull();
+      expect(result.rc).toBe(0);
+      await testRunner.postTest();
+    });
+
     it('jcl header single line', async () => {
       // eslint-disable-next-line
       cfgYaml.zowe.environments = {jclHeader: "'SOMEJOB',(0000000000)" };

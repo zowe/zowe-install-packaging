@@ -35,7 +35,7 @@ zowe:
       pkcs12:
         directory: "/test/dir/pkcs12"
         lock: true
-        name: "some.test.hostname"
+        name: "localhost"
         password: "password"
         caAlias: "local_ca"
         caPassword: "local_ca_password"
@@ -96,16 +96,16 @@ zowe:
   certificate:
     keystore:
       type: "PKCS12"
-      file: "/global/zowe/keystore/some.test.hostname/some.test.hostname.keystore.p12"
+      file: "/global/zowe/keystore/localhost/localhost.keystore.p12"
       password: "password"
-      alias: "some.test.hostname"
+      alias: "localhost"
     truststore:
       type: "PKCS12"
-      file: "/global/zowe/keystore/some.test.hostname/some.test.hostname.truststore.p12"
+      file: "/global/zowe/keystore/localhost/localhost.truststore.p12"
       password: "password"
     pem:
-      key: "/global/zowe/keystore/some.test.hostname/some.test.hostname.key"
-      certificate: "/global/zowe/keystore/some.test.hostname/some.test.hostname.cer"
+      key: "/global/zowe/keystore/localhost/localhost.key"
+      certificate: "/global/zowe/keystore/localhost/localhost.cer"
       certificateAuthorities: "/global/zowe/keystore/local_ca/local_ca.cer"
 components:
   gateway:
@@ -181,7 +181,7 @@ node:
   home: "/test/node/home"
 zOSMF:
   host: "some.test.hostname"
-  port: 10443
+  port: 12321
   applId: "IZUDFLT"
 ...
 "
@@ -222,7 +222,7 @@ zowe:
       pkcs12:
         directory: "/test/dir/pkcs12"
         lock: true
-        name: "some.test.hostname"
+        name: "localhost"
         password: "password"
         caAlias: "local_ca"
         caPassword: "local_ca_password"
@@ -283,16 +283,16 @@ zowe:
   certificate:
     keystore:
       type: "PKCS12"
-      file: "/global/zowe/keystore/some.test.hostname/some.test.hostname.keystore.p12"
+      file: "/global/zowe/keystore/localhost/localhost.keystore.p12"
       password: "password"
-      alias: "some.test.hostname"
+      alias: "localhost"
     truststore:
       type: "PKCS12"
-      file: "/global/zowe/keystore/some.test.hostname/some.test.hostname.truststore.p12"
+      file: "/global/zowe/keystore/localhost/localhost.truststore.p12"
       password: "password"
     pem:
-      key: "/global/zowe/keystore/some.test.hostname/some.test.hostname.key"
-      certificate: "/global/zowe/keystore/some.test.hostname/some.test.hostname.cer"
+      key: "/global/zowe/keystore/localhost/localhost.key"
+      certificate: "/global/zowe/keystore/localhost/localhost.cer"
       certificateAuthorities: "/global/zowe/keystore/local_ca/local_ca.cer"
 components:
   gateway:
@@ -368,7 +368,7 @@ node:
   home: "/test/node/home"
 zOSMF:
   host: "some.test.hostname"
-  port: 10443
+  port: 12321
   applId: "IZUDFLT"
 ...
 "

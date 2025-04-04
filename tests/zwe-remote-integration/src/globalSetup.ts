@@ -313,8 +313,6 @@ module.exports = async () => {
     });
     await uss.runCommand(`tar -xfo zwe.tar`, REMOTE_SYSTEM_INFO.ussTestDir);
 
-    console.log(`Uploading vtl-cli to the remote system...`);
-
     for (const file of fs.readdirSync(utilsDir)) {
       const match = file.match(/zowe-(.*)-[0-9]?.*tgz/im);
       if (match) {
@@ -439,13 +437,10 @@ module.exports = async () => {
     await uss.runCommand(`pax -ppx -rf ncert.pax -s#^#./bin/utils/ncert/#g`, `${REMOTE_SYSTEM_INFO.ussTestDir}`);
 
     console.log(`Unpacking vtl-cli, generating ZWESECUR, and copying it to SZWESAMP`);
+    await uss.runCommand(`tar -xf vtl-cli.tar && mkdir -p vtl-cli && mv vtl vtl-cli.jar zos vtl-cli`, REMOTE_SYSTEM_INFO.ussTestDir);
     await uss.runCommand(
-      `tar -xf vtl-cli.tar && mkdir -p vtl-cli && mv vtl vtl-cli.jar zos ${remoteTmp}`,
-      REMOTE_SYSTEM_INFO.ussTestDir,
-    );
-    await uss.runCommand(
-      `${REMOTE_SYSTEM_INFO.zosJavaHome}/bin/java -jar ${REMOTE_SYSTEM_INFO.ussTestDir}/vtl-cli/vtl-cli.jar -ie Cp1140 --yaml-context ZWESECUR.properties ZWESECUR.vtl -oe Cp1140`,
-      REMOTE_SYSTEM_INFO.ussTestDir,
+      `${REMOTE_SYSTEM_INFO.zosJavaHome}/bin/java -jar ${REMOTE_SYSTEM_INFO.ussTestDir}/vtl-cli/vtl-cli.jar -ie Cp1140 --yaml-context ZWESECUR.properties ZWESECUR.vtl -oe Cp1140 > ZWESECUR.jcl`,
+      remoteTmp,
     );
     await uss.runCommand(
       `cp ${remoteTmp}/ZWESECUR.jcl "//'${REMOTE_SYSTEM_INFO.szwesamp}(ZWESECUR)'"`,
