@@ -440,7 +440,6 @@ if (zoweVersion) {
 export function execute() {
   common.printFormattedInfo("ZWELS", "zwe-internal-start-prepare", `Zowe version: v${zoweVersion}`);
   common.printFormattedInfo("ZWELS", "zwe-internal-start-prepare", `build and hash: ${runtimeManifest.build.branch}#${runtimeManifest.build.number} (${runtimeManifest.build.commitHash})`);
-  common.printFormattedInfo("ZWELS", "zwe-internal-start-prepare", `z/OS Version: ${zos.getZosVersion()}`);
   common.printFormattedInfo("ZWELS", "zwe-internal-start-prepare", `ESM: ${zos.getEsm()}`);
 
   // validation
