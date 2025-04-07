@@ -59,7 +59,7 @@ jobs:
             echo "test-server=${{ github.event.inputs.test-server }}" >> $GITHUB_OUTPUT
           else
             echo "test-suite=ZWE_CI_Build" >> $GITHUB_OUTPUT
-            echo "test-server=Any zzow servers" >> $GITHUB_OUTPUT
+            echo "test-server=Any(zzow10,zzow11)" >> $GITHUB_OUTPUT
           fi
 
   check-permission:
