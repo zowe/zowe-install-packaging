@@ -12,13 +12,12 @@ on:
         description: 'Choose Test Server'
         type: choice
         required: true
-        default: 'Any zzow servers'
+        default: 'Any(zzow10,zzow11)'
         options: 
-          - Any zzow servers
-          - zzow09
+          - Any(zzow10,zzow11)
           - zzow10
           - zzow11
-          - zzow09,zzow10,zzow11
+          - zzow10,zzow11
       zwe-test:
         description: 'Choose Zwe Test'
         type: choice

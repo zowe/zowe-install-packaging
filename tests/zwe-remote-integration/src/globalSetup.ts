@@ -58,6 +58,8 @@ function setupBaseYaml() {
   zoweYaml.zowe.setup.dataset.proclib = REMOTE_SYSTEM_INFO.proclib;
   zoweYaml.zowe.setup.vsam.name = REMOTE_SYSTEM_INFO.prefix + '.VSAM';
   zoweYaml.zowe.setup.vsam.volume = REMOTE_SYSTEM_INFO.volume;
+  zoweYaml.zOSMF.host = REMOTE_SYSTEM_INFO.hostname;
+  zoweYaml.zOSMF.port = Number(REMOTE_SYSTEM_INFO.zosmfPort);
   // @ts-expect-error incomplete schema
   zoweYaml.zowe.setup.certificate.pkcs12.directory = `${REMOTE_SYSTEM_INFO.ussTestDir}/pkcs12`;
   zoweYaml.zowe.setup.dataset.authLoadlib = REMOTE_SYSTEM_INFO.authLoadLib;
@@ -437,7 +439,10 @@ module.exports = async () => {
     await uss.runCommand(`pax -ppx -rf ncert.pax -s#^#./bin/utils/ncert/#g`, `${REMOTE_SYSTEM_INFO.ussTestDir}`);
 
     console.log(`Unpacking vtl-cli, generating ZWESECUR, and copying it to SZWESAMP`);
-    await uss.runCommand(`tar -xf vtl-cli.tar && mkdir -p vtl-cli && mv vtl vtl-cli.jar zos vtl-cli`, REMOTE_SYSTEM_INFO.ussTestDir);
+    await uss.runCommand(
+      `tar -xf vtl-cli.tar && rm -rf vtl-cli && mkdir -p vtl-cli && mv vtl vtl-cli.jar zos vtl-cli`,
+      REMOTE_SYSTEM_INFO.ussTestDir,
+    );
     await uss.runCommand(
       `${REMOTE_SYSTEM_INFO.zosJavaHome}/bin/java -jar ${REMOTE_SYSTEM_INFO.ussTestDir}/vtl-cli/vtl-cli.jar -ie Cp1140 --yaml-context ZWESECUR.properties ZWESECUR.vtl -oe Cp1140 > ZWESECUR.jcl`,
       remoteTmp,
