@@ -87,7 +87,7 @@ fi
 
 # try to know if this SMPE artifact comes from latest or older build
 if [[ "$ZOWE_ARTIFACTORY_FINAL" == *"zowe-smpe"*zip ]]; then
-    smpe_out=$(jfrog rt search "$ZOWE_ARTIFACTORY_FINAL")
+    smpe_out=$(jfrog rt search --retries 10 --retry-wait-time 5s "$ZOWE_ARTIFACTORY_FINAL")
     smpe_bld_name=$(echo "$smpe_out" | jq -r '.[].props."build.name"[]')
     smpe_bld_num=$(echo "$smpe_out" | jq -r '.[].props."build.number"[]')
 
