@@ -61,7 +61,7 @@ export function execute(allowOverwrite: boolean = false) {
       stcExistence = true;
       if (allowOverwrite) {
         // warning
-        common.printMessage(`Warning ZWEL0300W: ${proclib}(${mb}) already exists. This data set member will be overwritten during configuration.`);
+        common.printMessage(`Warning ZWEL0300W: ${proclib}(${mb}) already exists. This data set member will be overwritten.`);
       } else {
         // warning
         common.printMessage(`Warning ZWEL0301W: ${proclib}(${mb}) already exists and will not be overwritten. For upgrades, you must use --allow-overwrite.`);

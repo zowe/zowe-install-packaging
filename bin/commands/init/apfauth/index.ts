@@ -61,7 +61,7 @@ export function execute() {
   let authPluginLib = ZOWE_CONFIG.zowe?.setup?.dataset?.authPluginLib;
   if (!authPluginLib) {
     //TODO: is there a better message?
-    common.printMessage('ZWEL0158I: zowe.setup.dataset.authPluginLib is not defined in Zowe YAML configuration file. Skipping.');
+    common.printMessage('ZWEL0159I: zowe.setup.dataset.authPluginLib is not defined in Zowe YAML configuration file. Skipping.');
     needUpdate = true;
   } else {
     if (authLoadlib == authPluginLib) {
