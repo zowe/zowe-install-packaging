@@ -87,8 +87,7 @@
     },
     "org.zowe.apiml.sdk.apiml-sample-extension-package": {
       "version": "3.1.16-PR-4051-SNAPSHOT",
-      "artifact": "apiml-sample-extension-*.zip",
-      "exclusions": ["*PR*.zip"]
+      "artifact": "apiml-sample-extension-*.zip"
     },
     "org.zowe.apiml.zaas-package": {
       "version": "3.1.16-PR-4051-SNAPSHOT",
