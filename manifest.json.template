@@ -124,7 +124,7 @@
       "version": "2.0.3"
     },
     "org.zowe.licenses": {
-      "version": "3.1.0",
+      "version": "3.2.0",
       "artifact": "zowe_licenses_full.zip"
     }
   },
@@ -205,14 +205,14 @@
       "componentGroup": "Zowe CLI",
       "entries": [{
         "repository": "zowe-cli",
-        "tag": "v8.10.4",
+        "tag": "v8.18.1",
         "destinations": ["Zowe CLI Package"]
       }]
     }, {
       "componentGroup": "IBM&reg CICS&reg Plug-in for Zowe CLI",
       "entries": [{
         "repository": "cics-for-zowe-client",
-        "tag": "v6.2.4",
+        "tag": "v6.5.0",
         "destinations": ["Zowe CLI Package"]
       }]
     }, {

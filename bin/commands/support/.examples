@@ -1,0 +1,5 @@
+zwe support -c /path/to/zowe.yaml
+
+zwe support -c /path/to/zowe.yaml --target-dir /path/to/save/support/results
+
+zwe support --config 'FILE(/path/to/zowe.yaml):PARMLIB(ZOWE.PARMLIB(ZWEYAML))'
