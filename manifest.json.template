@@ -172,7 +172,7 @@
         },
         {
           "repository": "zlux-server-framework",
-          "tag": "v3.2.0-RC2",
+          "tag": "v3.2.0-RC1",
           "destinations": ["Zowe PAX"]
         },
         {
