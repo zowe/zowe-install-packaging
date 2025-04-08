@@ -485,7 +485,7 @@ jobs:
           workflow-filename: cicd-test.yml
           branch-name: ${{ env.BRANCH_NAME }}
           poll-frequency: 3
-          inputs-json-string: '{"custom-zowe-artifactory-pattern-or-build-number":"${{ github.run_number }}", "install-test": "${{ steps.get-test-suite.outputs.TEST_SUITE }}", "origin-labels" : "${{ github.event_name }}"}'
+          inputs-json-string: '{"custom-zowe-artifactory-pattern-or-build-number":"${{ github.run_number }}", "install-test": "${{ steps.get-test-suite.outputs.TEST_SUITE }}", "origin-event" : "${{ github.event_name }}"}'
         # env:
         #   DEBUG: 'workflow-remote-call-wait'
       
