@@ -393,7 +393,7 @@ if [ "${cert_type}" = "PKCS12" ]; then
   # update zowe.yaml
   if [ "${ZWE_CLI_PARAMETER_UPDATE_CONFIG}" = "true" ]; then
     print_level1_message "Update certificate configuration to ${ZWE_CLI_PARAMETER_CONFIG}"
-    if [ ! -z "${$security_update}" ]; then
+    if [ ! -z "${security_update}" ]; then
       update_zowe_yaml "${ZWE_CLI_PARAMETER_CONFIG}" $security_update
     fi
     update_zowe_yaml "${ZWE_CLI_PARAMETER_CONFIG}" "zowe.certificate.keystore.type" "PKCS12"
@@ -412,7 +412,7 @@ if [ "${cert_type}" = "PKCS12" ]; then
     print_message "Please manually update to these values:"
     print_message ""
     print_message "zowe:"
-    if [ ! -z "${$security_update}" ]; then
+    if [ ! -z "${security_update}" ]; then
       print_message "  setup:"
       print_message "    security:"
       print_message "      product: ${security_product}"
@@ -477,7 +477,7 @@ else # JCE* content
   # update zowe.yaml
   if [ "${ZWE_CLI_PARAMETER_UPDATE_CONFIG}" = "true" ]; then
     print_level1_message "Update certificate configuration to ${ZWE_CLI_PARAMETER_CONFIG}"
-    if [ ! -z "${$security_update}" ]; then
+    if [ ! -z "${security_update}" ]; then
       update_zowe_yaml "${ZWE_CLI_PARAMETER_CONFIG}" $security_update
     fi
     update_zowe_yaml "${ZWE_CLI_PARAMETER_CONFIG}" "zowe.certificate.keystore.type" "${cert_type}"
@@ -495,7 +495,7 @@ else # JCE* content
     print_message "Please manually update to these values:"
     print_message ""
     print_message "zowe:"
-    if [ ! -z "${$security_update}" ]; then
+    if [ ! -z "${security_update}" ]; then
       print_message "  setup:"
       print_message "    security:"
       print_message "      product: ${security_product}"
