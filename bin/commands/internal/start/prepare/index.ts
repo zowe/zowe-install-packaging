@@ -27,6 +27,7 @@ import * as java from '../../../../libs/java';
 import * as javaCI from '../../../../libs/java_ci';
 import * as node from '../../../../libs/node';
 import * as zosmf from '../../../../libs/zosmf';
+import * as zoslib from '../../../../libs/zos';
 
 //# This command prepares everything needed to start Zowe.
 const cliParameterConfig = std.getenv('ZWE_CLI_PARAMETER_CONFIG');
@@ -440,6 +441,7 @@ if (zoweVersion) {
 export function execute() {
   common.printFormattedInfo("ZWELS", "zwe-internal-start-prepare", `Zowe version: v${zoweVersion}`);
   common.printFormattedInfo("ZWELS", "zwe-internal-start-prepare", `build and hash: ${runtimeManifest.build.branch}#${runtimeManifest.build.number} (${runtimeManifest.build.commitHash})`);
+  common.printFormattedInfo("ZWELS", "zwe-internal-start-prepare", `z/OS Version: ${zoslib.formatZosVersion('{major}.{minor}')}`);
   common.printFormattedInfo("ZWELS", "zwe-internal-start-prepare", `ESM: ${zos.getEsm()}`);
 
   // validation
