@@ -38,7 +38,7 @@ export function ensureNodeIsOnPath(): void {
   }
 }
 
-export function shellReadYamlNodeHome(configList?: string, skipValidate?: boolean): string {
+export function readConfigNodeHome(configList?: string, skipValidate?: boolean): string {
   const zoweConfig = config.getZoweConfig();
   if (zoweConfig && zoweConfig.node && zoweConfig.node.home) {
     if (!skipValidate) {
@@ -66,7 +66,7 @@ export function requireNode() {
     return;
   }
   if (std.getenv('ZWE_CLI_PARAMETER_CONFIG')) {
-    const customNodeHome = shellReadYamlNodeHome();
+    const customNodeHome = readConfigNodeHome();
     if (customNodeHome) {
       std.setenv('NODE_HOME', customNodeHome);
     }
@@ -108,7 +108,7 @@ export function validateNodeHome(nodeHome:string|undefined=std.getenv("NODE_HOME
       const nodeMajorVersion = Number(parts[0].substring(1));
       //const nodeMinorVersion = Number(parts[1]);
       //const nodePatchVersion = Number(parts[2]);
-
+      common.printFormattedInfo('ZWELS', 'validateNodeHome', 'NodeJS version: '+ version);
       if (version == 'v18.12.1') {
         common.printError(`Node ${version} specifically is not compatible with Zowe. Please use a different version. See https://github.com/ibmruntimes/node-zos/issues/21 for more details.`);
         return false;

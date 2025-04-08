@@ -43,7 +43,12 @@ describe('verify installed files', function() {
   it('fingerprint should match', async function() {
     // IMPORT: After 'source' the profile, JAVA_HOME environment variable must exist
     // note the --config <zowe_yaml_path> assumes the instance dir, which is set in ansible playbooks
-    const fingerprintStdout = await sshHelper.executeCommandWithNoError(`touch ~/.profile && . ~/.profile && ${process.env.ZOWE_ROOT_DIR}/bin/zwe support verify-fingerprints --config /ZOWE/tmp/.zowe/zowe.yaml`);
+    // if we have ZOWE_JAVA_HOME in our env, just use that.
+    let OPTIONAL_JAVA_HOME = '';
+    if (process.env.ZOWE_JAVA_HOME) {
+      OPTIONAL_JAVA_HOME = `JAVA_HOME=${process.env.ZOWE_JAVA_HOME} `;
+    }
+    const fingerprintStdout = await sshHelper.executeCommandWithNoError(`touch ~/.profile && . ~/.profile && ${OPTIONAL_JAVA_HOME} ${process.env.ZOWE_ROOT_DIR}/bin/zwe support verify-fingerprints`);
     debug('fingerprint show result:', fingerprintStdout);
     addContext(this, {
       title: 'fingerprint show result',

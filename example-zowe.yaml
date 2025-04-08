@@ -15,50 +15,45 @@
 # To learn more about YAML specifications, please check https://yaml.org/.
 #
 # To learn more details about the content of this file, please check https://docs.zowe.org/.
-#
-# For first time users, or for the most common use cases, please pay more
-# attention to the entries marked with "**COMMONLY_CUSTOMIZED**". A "directory" refers
-# to a directory in z/OS Unix.
-#
-# If you modify any settings listed in "zwe init --help" command, you may need to
-# re-run the "zwe init" command to make them take effect.
 #===============================================================================
 
 #-------------------------------------------------------------------------------
 # Zowe global configurations
 #
-# This section includes Zowe setup information used by `zwe install` and
-# `zwe init` command, as well as default configurations for Zowe runtime.
+# This section includes Zowe setup information used by
+# Zowe installation, configuration, and runtime.
+# It includes settings shared to all components and extensions.
+#
+# Configuration and runtime parameters unique to a component or extension
+# Will be located in the "components" section instead.
 #-------------------------------------------------------------------------------
 zowe:
 
   #-------------------------------------------------------------------------------
-  # These configurations are used by "zwe install" or "zwe init" commands.
+  # The setup section is used during setup only.
+  # It can be used by a variety of install & configure options,
+  # As seen in the documentation:
+  # https://docs.zowe.org/stable/user-guide/zos-components-installation-checklist
   #-------------------------------------------------------------------------------
   setup:
     # MVS data set related configurations
     dataset:
-      # **COMMONLY_CUSTOMIZED**
       # where Zowe MVS data sets will be installed
       prefix: IBMUSER.ZWEV3
-      # **COMMONLY_CUSTOMIZED**
       # PROCLIB where Zowe STCs will be copied over
       proclib: USER.PROCLIB
-      # **COMMONLY_CUSTOMIZED**
       # Zowe PARMLIB
       parmlib: IBMUSER.ZWEV3.CUST.PARMLIB
       # Holds Zowe PARMLIB members for plugins
       parmlibMembers:
         # For ZIS plugins
         zis: ZWESIP00
-      # **COMMONLY_CUSTOMIZED**
       # JCL library where Zowe will store temporary JCLs during initialization
       jcllib: IBMUSER.ZWEV3.CUST.JCLLIB
       # Utilities for use by Zowe and extensions
       loadlib: IBMUSER.ZWEV3.SZWELOAD
       # APF authorized LOADLIB for Zowe
       authLoadlib: IBMUSER.ZWEV3.SZWEAUTH
-      # **COMMONLY_CUSTOMIZED**
       # APF authorized LOADLIB for Zowe ZIS Plugins
       authPluginLib: IBMUSER.ZWEV3.CUST.ZWESAPL
 
@@ -69,11 +64,8 @@ zowe:
     #   product: RACF
     #   # security group name
     #   groups:
-    #     # Zowe admin user group
     #     admin: ZWEADMIN
-    #     # Zowe STC group
     #     stc: ZWEADMIN
-    #     # Zowe SysProg group
     #     sysProg: ZWEADMIN
     #   # security user name
     #   users:
@@ -101,23 +93,17 @@ zowe:
       # Type of certificate storage. Valid values are: PKCS12, JCERACFKS. APIML additionally supports: JCEKS, JCECCAKS, JCECCARACFKS, or JCEHYBRIDRACFKS
       type: PKCS12
       pkcs12:
-        # **COMMONLY_CUSTOMIZED**
-        # Keystore directory
         directory: /var/zowe/keystore
         # # Lock the keystore directory to only accessible by Zowe runtime user and group.
         # lock: true
-        # **COMMONLY_CUSTOMIZED**
         # # Certificate alias name. Optional, default value is localhost.
         # # Note: please use all lower cases as alias.
         # name: localhost
-        # **COMMONLY_CUSTOMIZED**
         # # Keystore password. Optional, default value is password.
         # password: password
-        # **COMMONLY_CUSTOMIZED**
         # # Alias name of self-signed certificate authority. Optional, default value is local_ca.
         # # Note: please use all lower cases as alias.
         # caAlias: local_ca
-        # **COMMONLY_CUSTOMIZED**
         # # Password of keystore stored self-signed certificate authority. Optional, default value is local_ca_password.
         # caPassword: local_ca_password
       # # Distinguished name for Zowe generated certificates. All optional.
@@ -146,8 +132,6 @@ zowe:
     #   # Type of certificate storage. Valid values are: PKCS12, JCERACFKS. APIML additionally supports: JCEKS, JCECCAKS, JCECCARACFKS, or JCEHYBRIDRACFKS
     #   type: PKCS12
     #   pkcs12:
-    #     # **COMMONLY_CUSTOMIZED**
-    #     # Keystore directory
     #     directory: /var/zowe/keystore
     #     # Lock the keystore directory to only accessible by Zowe runtime user and group.
     #     lock: true
@@ -157,17 +141,13 @@ zowe:
     #     # # Keystore password. Optional, default value is password.
     #     # password: password
     #     import:
-    #       # **COMMONLY_CUSTOMIZED**
     #       # Existing PKCS12 keystore which holds the certificate issued by external CA.
     #       keystore: ""
-    #       # **COMMONLY_CUSTOMIZED**
     #       # Password of the above keystore
     #       password: ""
-    #       # **COMMONLY_CUSTOMIZED**
     #       # Certificate alias will be imported
     #       # Note: please use all lower cases as alias.
     #       alias: ""
-    #   # **COMMONLY_CUSTOMIZED**
     #   # PEM format certificate authorities will also be imported and trusted.
     #   importCertificateAuthorities:
     #     # Path to the certificate authority signed the certificate will be imported.
@@ -179,13 +159,9 @@ zowe:
     #   # Type of certificate storage. Valid values are: PKCS12, JCERACFKS. APIML additionally supports: JCEKS, JCECCAKS, JCECCARACFKS, or JCEHYBRIDRACFKS
     #   type: JCERACFKS
     #   keyring:
-    #     # **COMMONLY_CUSTOMIZED**
-    #     # keyring name
     #     name: ZoweKeyring
-    #     # **COMMONLY_CUSTOMIZED**
     #     # # Label of Zowe certificate. Optional, default value is localhost.
     #     # label: localhost
-    #     # **COMMONLY_CUSTOMIZED**
     #     # # label of Zowe CA certificate. Optional, default value is localca.
     #     # caLabel: localca
     #   # # Distinguished name for Zowe generated certificates. All optional.
@@ -214,17 +190,12 @@ zowe:
     #   # Type of certificate storage. Valid values are: PKCS12, JCERACFKS. APIML additionally supports: JCEKS, JCECCAKS, JCECCARACFKS, or JCEHYBRIDRACFKS
     #   type: JCERACFKS
     #   keyring:
-    #     # **COMMONLY_CUSTOMIZED**
-    #     # keyring name
     #     name: ZoweKeyring
     #     connect:
-    #       # **COMMONLY_CUSTOMIZED**
     #       # Current owner of the existing certificate, can be SITE or an user ID.
     #       user: IBMUSER
-    #       # **COMMONLY_CUSTOMIZED**
     #       # Label of the existing certificate will be connected to Zowe keyring.
     #       label: ""
-    #   # **COMMONLY_CUSTOMIZED**
     #   # If you have other certificate authorities want to be trusted in Zowe keyring,
     #   # list the certificate labels here.
     #   # **NOTE**, due to the limitation of RACDCERT command, this field should
@@ -238,19 +209,13 @@ zowe:
     #   # Type of certificate storage. Valid values are: PKCS12, JCERACFKS. APIML additionally supports: JCEKS, JCECCAKS, JCECCARACFKS, or JCEHYBRIDRACFKS
     #   type: JCERACFKS
     #   keyring:
-    #     # **COMMONLY_CUSTOMIZED**
-    #     # keyring name
     #     name: ZoweKeyring
-    #     # **COMMONLY_CUSTOMIZED**
     #     # # Label of Zowe certificate. Optional, default value is localhost.
     #     # label: localhost
     #     import:
-    #       # **COMMONLY_CUSTOMIZED**
     #       # Name of the data set holds the certificate issued by other CA.
     #       # This data set should be in PKCS12 format and contain private key.
     #       dsName: ""
-    #       # **COMMONLY_CUSTOMIZED**
-    #       # Password for the PKCS12 data set.
     #       password: ""
 
     # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -265,7 +230,6 @@ zowe:
       storageClass: ""
 
   # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-  # **COMMONLY_CUSTOMIZED**
   # Zowe runtime (root) directory
   #
   # **NOTE**: 
@@ -280,15 +244,12 @@ zowe:
   # This value is required by ZWESLSTC to know where is Zowe runtime.
   runtimeDirectory: ""
 
-  # **COMMONLY_CUSTOMIZED**
   # Where to store runtime logs
   logDirectory: /global/zowe/logs
 
-  # **COMMONLY_CUSTOMIZED**
   # Zowe runtime workspace directory
   workspaceDirectory: /global/zowe/workspace
 
-  # **COMMONLY_CUSTOMIZED**
   # Where extensions are installed
   extensionDirectory: /global/zowe/extensions
 
@@ -317,9 +278,8 @@ zowe:
   cookieIdentifier: "1"
 
   # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-  # **COMMONLY_CUSTOMIZED**
   # You can list your external domains on how you want to access Zowe.
-  # This should be the domain list you would like to put into your web browser's
+  # This should be the domain list you would like to put into your web browser
   # address bar.
   externalDomains:
     # this should be the domain name to access Zowe APIML Gateway
@@ -338,7 +298,6 @@ zowe:
   # See the schema for options.
   #
   # This section applies to all components that support it.
-  # So far: "zss" and "app-server"
   #
   # This section can be overridden per-component by placing it
   # Under a "zowe" subsection of a component, as in "components.zss.zowe.network"
@@ -391,7 +350,7 @@ zowe:
   #   # ZSS ready
     - "ZWES1013I"
 
-  #   # Not limited to Zowe message ID's, you can specify your own string for example:
+  #   # Not limited to Zowe message IDs, you can specify your own string for example:
   #   - "ERROR"
 
   # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -399,19 +358,19 @@ zowe:
   launchScript:
     # Set to "debug" or "trace" to display extra debug information
     logLevel: "info"
-    # Set to "exit" if you'd like startup to exit if any component has an error in the configure stage, otherwise zwe will warn but continue.
+    # Set to "exit" if you would like startup to exit if any component has an error in the configure stage, otherwise zwe will warn but continue.
     onComponentConfigureFail: "warn"
 
   # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-  # Default Zowe certificate
+  # Zowe certificate
   #
-  # **NOTE**: these fields can be updated automatically if you pass
-  # `--update-config` to `zwe init` command. The generated value will base on
-  # your setup in `zowe.setup.certificate` section.
+  # This section defines the certificate & certificate authorities used by Zowe
+  # Do not confuse this with "zowe.setup.certificate"
+  # That is for creation of certificates, this is for stating which Zowe should use.
   certificate:
     keystore:
       type: PKCS12
-      # if keyrings, the format is safkeyring:////stcusername/KeyName
+      # if keyrings, the format is safkeyring://stcusername/KeyName
       file: /global/zowe/keystore/localhost/localhost.keystore.p12
       # "password" should either be the value you set when PKCS12, or literally "password" for keyrings.
       password: password
@@ -422,10 +381,10 @@ zowe:
       type: PKCS12
       file: /global/zowe/keystore/localhost/localhost.truststore.p12
       password: password
+    # remove the "pem" section if using keyrings.
     pem:
       key: /global/zowe/keystore/localhost/localhost.key
       certificate: /global/zowe/keystore/localhost/localhost.cer
-      #  if keyrings, the format is "safkeyring:////stcusername/KeyName&ca name"
       certificateAuthorities: /global/zowe/keystore/local_ca/local_ca.cer
 
   # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -451,23 +410,24 @@ zowe:
 # to `zwe init` command.
 #-------------------------------------------------------------------------------
 java:
-  # **COMMONLY_CUSTOMIZED**
-  # Path to your Java home directory
+  # If Java is installed to /usr/lpp/java/bin/java
+  # Then put "/usr/lpp/java" here, excluding "/bin/java".
   home: ""
 
 
 #-------------------------------------------------------------------------------
 # Node.js configuration
 #
-# Some Zowe components requires Node.js. Define the path where you have your
-# Node.js is installed.
+# The app-server component requires Node.JS.
+# If you are not using the app-server or an extension requiring Node.JS
+# Then you do not need to edit this section.
 #
 # **NOTE**: this field can be updated automatically if you pass `--update-config`
 # to `zwe init` command.
 #-------------------------------------------------------------------------------
 node:
-  # **COMMONLY_CUSTOMIZED**
-  # Path to your Node.js home directory
+  # If Node.JS is installed to /usr/lpp/IBM/cnj/bin/node
+  # Then put "/usr/lpp/IBM/cnj" here, excluding "/bin/node".
   home: ""
 
 
@@ -478,10 +438,8 @@ node:
 # features. You need to define how to access your z/OSMF instance.
 #-------------------------------------------------------------------------------
 zOSMF:
-  # **COMMONLY_CUSTOMIZED**
   # Host name of your z/OSMF instance
   host: dvipa.my-company.com
-  # **COMMONLY_CUSTOMIZED**
   port: 443
   applId: IZUDFLT
 
