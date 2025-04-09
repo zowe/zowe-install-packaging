@@ -25,7 +25,7 @@ export function execute(allowOverwrite?: boolean, dryRun?: boolean, updateConfig
   
   const cachingStorage = ZOWE_CONFIG.components !== undefined ? ZOWE_CONFIG.components['caching-service']?.storage?.mode : undefined;
   if (!cachingStorage || (cachingStorage.toUpperCase() != 'VSAM')) {
-    common.printError(`Warning ZWEL0301W: Zowe Caching Service is not configured to use VSAM. Command skipped.`);
+    common.printError(`Warning ZWEL0304W: Zowe Caching Service is not configured to use VSAM. Command skipped.`);
     return;
   }
 

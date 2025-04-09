@@ -390,7 +390,7 @@ export function isValidZoweYamlParmlib(parmlib: string): {ok: boolean; error: { 
     return {ok: true, error: {message: '', code: 0}};
   }
 
-  return {ok: false, error: { message: `ZWEL0320E Invalid PARMLIB format ${parmlib}.`, code: 320 } };
+  return {ok: false, error: { message: `ZWEL0316E Invalid PARMLIB format ${parmlib}.`, code: 316 } };
 }
 
 

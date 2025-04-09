@@ -68,7 +68,7 @@ console.log()
 // toggling the similarity threshold greatly impacts output... setting the threshold lower (closer to 0) suppresses
 //   output volume, while setting it higher (closer to 1) will display more messages in the log
 console.log('---- Experimental: Messages whose content differs from the definition in .errors ----');
-const similarityExceptions = ['The password for data set storing importing certificate (zowe.setup.certificate.keyring.import.password) is not defined in Zowe YAML configuration file.']
+const similarityExceptions = ['The password for data set storing importing certificate (zowe.setup.certificate.keyring.import.password) is not defined in Zowe YAML configuration file.', 'zowe.setup.dataset.jcllib does not exist, cannot run. Run']
 for(const msgSpec of discoveredMsgs) {
   for(const msg of msgSpec.messages) {
     const errorDef = collectedMsgs.find((item) => item.id === msg.messageId);
@@ -157,7 +157,6 @@ function getMessagesUsedByImplementations(zweDir) {
       const srcFileShort = 'bin'+path.sep+srcFile.split('bin'+path.sep)[1];
       const content = fs.readFileSync(srcFile, 'utf8');
       const matches = content.matchAll(/(ZWEL\d{4}[EIDTW])(.*?)["'`]/gm);
-  
       for (const match of matches) {
         const message = match[2].replaceAll(/\${.*?}/gm,'%s');
         if (!messages.includes(message)) {

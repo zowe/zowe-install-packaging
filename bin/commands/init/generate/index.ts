@@ -56,7 +56,7 @@ export function execute(dryRun?: boolean) {
   for (let i = 0; i < headerLines.length; i++) {
     const maxLen = 80 - ((i==0) ? '//ZWEGENER JOB '.length : 0);
     if (headerLines[i].length >= maxLen) {
-      common.printErrorAndExit(`ZWEL0142E JCL header line ${i+1} will be longer than 80 characters. Please split this line into multiple lines.\n${headerLines[i]}\n`, undefined, 142);
+      common.printErrorAndExit(`ZWEL0326E JCL header line ${i+1} will be longer than 80 characters. Please split this line into multiple lines.\n${headerLines[i]}\n`, undefined, 326);
     }
   }
 
