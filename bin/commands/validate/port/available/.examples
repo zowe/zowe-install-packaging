@@ -1,0 +1,3 @@
+zwe validate port available -c /path/to/zowe.yaml
+zwe validate port available -c FILE(/customizations/zowe.yaml):FILE(/defaults/zowe.yaml) --all
+zwe validate port available -c 'FILE(/path/to/zowe.yaml):PARMLIB(ZOWE.PARMLIB(YAML))'

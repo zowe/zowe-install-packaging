@@ -1,0 +1,2 @@
+Validates whether required Zowe directories exist and meet Zowe's requirements.
+This command can be used to prove that Zowe directories are correct before starting zowe.

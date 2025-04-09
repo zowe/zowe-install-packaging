@@ -19,6 +19,7 @@ import * as config from './config';
 import { PathAPI as pathoid } from './pathoid';
 
 const NODE_MIN_VERSION=18;
+const NODE_TESTED_VERSION=22;
 
 // enforce encoding of stdio/stdout/stderr
 // sometimes /dev/tty* ($SSH_TTY) are not configured properly, for example tagged as binary or wrong encoding
@@ -118,7 +119,12 @@ export function validateNodeHome(nodeHome:string|undefined=std.getenv("NODE_HOME
         common.printError(`Node ${version} is less than the minimum level required of v${NODE_MIN_VERSION}.`);
         return false;
       }
-      common.printDebug(`Node ${version} is supported.`)
+      
+      if (nodeMajorVersion < NODE_TESTED_VERSION) {
+        common.printMessage(`WARNING: Node ${version} is higher than the latest known working version for Zowe, v${NODE_TESTED_VERSION}.`);
+      } else {
+        common.printDebug(`Node ${version} is supported.`)
+      }
 
       shellReturn = shell.execOutSync(fs.resolvePath(nodeHome,`/bin/node`), `-e`, "const process = require('process'); console.log('ok'); process.exit(0);");
       const ok = shellReturn.out;

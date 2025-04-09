@@ -1,0 +1,2 @@
+Checks for the existence of Zowe's dependencies, and that they are a compatible version.
+The dependencies that are checked depends upon the components enabled in the YAML provided.

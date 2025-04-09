@@ -15,6 +15,7 @@ import * as common from './common';
 import * as shell from './shell';
 
 const JAVA_MIN_VERSION=17;
+const JAVA_TESTED_VERSION=21;
 
 export function validateJavaHome(javaHome:string|undefined=std.getenv("JAVA_HOME")): boolean {
   if (!javaHome) {
@@ -58,19 +59,29 @@ export function validateJavaHome(javaHome:string|undefined=std.getenv("JAVA_HOME
     const javaMinorVersion=Number(versionParts[1]);
 
     let tooLow=false;
+    let tooHigh=false;
     if (javaMajorVersion !== 1 && javaMajorVersion < JAVA_MIN_VERSION) {
       tooLow=true;
     }
     if (javaMajorVersion === 1 && javaMinorVersion < JAVA_MIN_VERSION) {
       tooLow=true;
     }
+    if (javaMajorVersion !== 1 && javaMajorVersion > JAVA_TESTED_VERSION) {
+      tooHigh=true;
+    }
+    if (javaMajorVersion === 1 && javaMinorVersion > JAVA_TESTED_VERSION) {
+      tooHigh=true;
+    }
 
     if (tooLow) {
       common.printError(`Java ${javaVersionShort} is less than the minimum level required of Java ${JAVA_MIN_VERSION}.`);
       return false;
     }
-
-    common.printDebug(`Java ${javaVersionShort} is supported.`);
+    if (tooHigh) {
+      common.printMessage(`WARNING: Java ${javaVersionShort} is higher than the latest known working version for Zowe, v${JAVA_TESTED_VERSION}.`);
+    } else {
+      common.printDebug(`Java ${javaVersionShort} is supported.`);
+    }
     common.printDebug(`Java check is successful.`);
     return true;
   } catch (e) {
