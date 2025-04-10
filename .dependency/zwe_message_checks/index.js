@@ -89,7 +89,7 @@ for(const msgSpec of discoveredMsgs.filter((item) => !commandsIgnored.includes(i
     }
     for(const msg of msgSpec.messages) {
       if (!flattenedErrorMsgs.includes(msg.messageId)) {
-        console.log(`|${msg.messageId}:${msg.message}[${msgSpec.src}]|\n`);
+        console.log(`|${msg.messageId}:${msg.message}[${msgSpec.src}]|`);
         statusFailed = true;
       } else {
         let errCmd = localCmdMsgTally[msg.messageId].find((item) => item.command == cmdGroup);
@@ -103,6 +103,7 @@ for(const msgSpec of discoveredMsgs.filter((item) => !commandsIgnored.includes(i
     noErrorsFiles.push(cmdGroup);
   }
 }
+console.log('*****')
 for (const errMsg of noErrorsFiles) {
   console.log('No .errors found for ' + errMsg);
 }
