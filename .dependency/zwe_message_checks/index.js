@@ -38,12 +38,14 @@ if (dupErrors.length > 0) {
 console.log('')
 
 const flatExpectedMessages = collectedMsgs.map((msg) => msg.id);
-const msgTally = {};
+const globalMsgTally = {};
+const localCmdMsgTally = {};
 for (const msg of flatExpectedMessages) {
-  msgTally[msg] = {count: 0};
+  globalMsgTally[msg] = {count: 0};
+  localCmdMsgTally[msg] = [];
 }
 
-console.log('---- Messages Used and Not Defined in .errors ----');
+console.log('---- Messages Used and Not Defined in any .errors ----');
 for(const msgSpec of discoveredMsgs) {
   for(const msg of msgSpec.messages) {
     if (!flatExpectedMessages.includes(msg.messageId)) {
@@ -51,19 +53,72 @@ for(const msgSpec of discoveredMsgs) {
       statusFailed = true;
       continue;
     }
-   msgTally[msg.messageId].count++
+   globalMsgTally[msg.messageId].count++
   }
 }
 console.log('')
-console.log('---- Unused Messages defined in .errors ----');
-for(const msgId of Object.keys(msgTally)) {
-  if (msgTally[msgId].count === 0 && msgId !== 'ZWEL0103E') { // ZWEL0103E is in 'zwe', which isn't scanned
+console.log('---- Unused Messages defined across any .errors ----');
+for(const msgId of Object.keys(globalMsgTally)) {
+  if (globalMsgTally[msgId].count === 0 && msgId !== 'ZWEL0103E') { // ZWEL0103E is in 'zwe', which isn't scanned
     const definition = collectedMsgs.find((it) => it.id === msgId);
     console.log(`Unused message: ${msgId} [${definition.source}]`);
     statusFailed = true;
   }
 }
 console.log()
+console.log(`---- Messages used and not defined in the command's .errors ----`)
+const commandsIgnored = [
+  'libs', // not a command
+]
+const noErrorsFiles = [];
+for(const msgSpec of discoveredMsgs.filter((item) => !commandsIgnored.includes(item.command))) {
+  const cmdGroup = msgSpec.commandGroup;
+  const cmdErrors =cmdGroup+'.errors'; // path.sep in commandGroup
+  const filteredErrors = collectedMsgs.filter((item) => {
+    return item.source == cmdErrors
+   }
+  );
+  if (filteredErrors.length > 0) {
+    const flattenedErrorMsgs = filteredErrors.map((msg) => msg.id);
+    for (const errMsg of flattenedErrorMsgs) {
+      let errCmd = localCmdMsgTally[errMsg].find((item) => item.command == cmdGroup);
+      if (errCmd == undefined){
+        errCmd = {command: cmdGroup, count: 0};
+        localCmdMsgTally[errMsg].push(errCmd);
+      }
+    }
+    for(const msg of msgSpec.messages) {
+      if (!flattenedErrorMsgs.includes(msg.messageId)) {
+        console.log(`|${msg.messageId}:${msg.message}[${msgSpec.src}]|\n`);
+        statusFailed = true;
+      } else {
+        let errCmd = localCmdMsgTally[msg.messageId].find((item) => item.command == cmdGroup);
+        if (errCmd != undefined){
+          errCmd.count +=1;
+        }
+      }
+    
+    }
+  } else {
+    noErrorsFiles.push(cmdGroup);
+  }
+}
+for (const errMsg of noErrorsFiles) {
+  console.log('No .errors found for ' + errMsg);
+}
+console.log();
+// This won't set statusFailed. Too many false positives, but the information can still be useful
+console.log(`---- Unused Messages defined within a command's .errors ----`)
+console.log(`** Note this does not track messages from imports **`);
+for(const msgId of Object.keys(localCmdMsgTally)) {
+  if (msgId !== 'ZWEL0103E') {
+    const unusedGroups = localCmdMsgTally[msgId].filter((item) => item.count == 0 )
+    for (const cmdGroup of unusedGroups) {
+        console.log(`Unused message: ${msgId} [${cmdGroup.command}]`);
+    }
+  }
+}
+console.log();
 // this will not set 'statusFailed' since the results may not be accurate.
 // toggling the similarity threshold greatly impacts output... setting the threshold lower (closer to 0) suppresses
 //   output volume, while setting it higher (closer to 1) will display more messages in the log
@@ -82,6 +137,7 @@ for(const msgSpec of discoveredMsgs) {
 
   }
 }
+
 console.log()
 
 if (statusFailed) {
@@ -165,7 +221,8 @@ function getMessagesUsedByImplementations(zweDir) {
           if (existing) {
            existing.messages.push({messageId: match[1], message: message.substring(1).trim()});
           } else {
-            messages.push({ command: leafDir, src: srcFileShort, messages: [{messageId: match[1], message: message.substring(1).trim() }]});
+            const commandGroup = srcFileShort.replace(path.basename(srcFile), '')
+            messages.push({commandGroup: commandGroup, command: leafDir, src: srcFileShort, messages: [{messageId: match[1], message: message.substring(1).trim() }]});
           }
         }
       }
