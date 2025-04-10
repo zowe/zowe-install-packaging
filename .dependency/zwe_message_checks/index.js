@@ -67,20 +67,22 @@ for(const msgId of Object.keys(globalMsgTally)) {
 }
 console.log()
 console.log(`---- Messages used and not defined in the command's .errors ----`)
-const commandsIgnored = [
-  'libs', // not a command
-]
+
 const noErrorsFiles = [];
-for(const msgSpec of discoveredMsgs.filter((item) => !commandsIgnored.includes(item.command))) {
+const commonErrors = collectedMsgs.filter((item) => {
+  return item.source == 'bin/commands/.errors';
+})
+const flattenedCommonErrors = commonErrors.map((msg) => msg.id);
+for(const msgSpec of discoveredMsgs) {
   const cmdGroup = msgSpec.commandGroup;
   const cmdErrors =cmdGroup+'.errors'; // path.sep in commandGroup
-  const filteredErrors = collectedMsgs.filter((item) => {
-    return item.source == cmdErrors
+  const commandGroupErrors = collectedMsgs.filter((item) => {
+    return item.source == cmdErrors  
    }
   );
-  if (filteredErrors.length > 0) {
-    const flattenedErrorMsgs = filteredErrors.map((msg) => msg.id);
-    for (const errMsg of flattenedErrorMsgs) {
+  if (commandGroupErrors.length > 0) {
+    const flattendCmdErrors = commandGroupErrors.map((msg) => msg.id);
+    for (const errMsg of flattendCmdErrors) {
       let errCmd = localCmdMsgTally[errMsg].find((item) => item.command == cmdGroup);
       if (errCmd == undefined){
         errCmd = {command: cmdGroup, count: 0};
@@ -88,7 +90,7 @@ for(const msgSpec of discoveredMsgs.filter((item) => !commandsIgnored.includes(i
       }
     }
     for(const msg of msgSpec.messages) {
-      if (!flattenedErrorMsgs.includes(msg.messageId)) {
+      if (!flattendCmdErrors.includes(msg.messageId) && !flattenedCommonErrors.includes(msg.messageId)) {
         console.log(`|${msg.messageId}:${msg.message}[${msgSpec.src}]|`);
         statusFailed = true;
       } else {
@@ -103,10 +105,7 @@ for(const msgSpec of discoveredMsgs.filter((item) => !commandsIgnored.includes(i
     noErrorsFiles.push(cmdGroup);
   }
 }
-console.log('*****')
-for (const errMsg of noErrorsFiles) {
-  console.log('No .errors found for ' + errMsg);
-}
+
 console.log();
 // This won't set statusFailed. Too many false positives, but the information can still be useful
 console.log(`---- Unused Messages defined within a command's .errors ----`)
@@ -140,6 +139,10 @@ for(const msgSpec of discoveredMsgs) {
 }
 
 console.log()
+console.log('***** Informational *****')
+for (const errMsg of noErrorsFiles) {
+  console.log('No .errors found for ' + errMsg);
+}
 
 if (statusFailed) {
   process.exit(1);
