@@ -65,10 +65,11 @@ for(const msgId of Object.keys(globalMsgTally)) {
     statusFailed = true;
   }
 }
-console.log()
-console.log(`---- Messages used and not defined in the command's .errors ----`)
-
+console.log();
+console.log(`---- Messages used and not defined in the command's .errors ----`);
+console.log(`****** bin/libs errors should go to common errors in bin/commands/.errors`);
 const noErrorsFiles = [];
+const forceCommonErrors = ['bin/libs/'];
 const commonErrors = collectedMsgs.filter((item) => {
   return item.source == 'bin/commands/.errors';
 })
@@ -76,10 +77,15 @@ const flattenedCommonErrors = commonErrors.map((msg) => msg.id);
 for(const msgSpec of discoveredMsgs) {
   const cmdGroup = msgSpec.commandGroup;
   const cmdErrors =cmdGroup+'.errors'; // path.sep in commandGroup
-  const commandGroupErrors = collectedMsgs.filter((item) => {
-    return item.source == cmdErrors  
-   }
-  );
+  let commandGroupErrors 
+  if (forceCommonErrors.includes(cmdGroup)){ 
+    commandGroupErrors = commonErrors;
+  } else {
+    commandGroupErrors = collectedMsgs.filter((item) => {
+      return item.source == cmdErrors 
+    });
+  }
+  
   if (commandGroupErrors.length > 0) {
     const flattendCmdErrors = commandGroupErrors.map((msg) => msg.id);
     for (const errMsg of flattendCmdErrors) {
@@ -109,12 +115,16 @@ for(const msgSpec of discoveredMsgs) {
 console.log();
 // This won't set statusFailed. Too many false positives, but the information can still be useful
 console.log(`---- Unused Messages defined within a command's .errors ----`)
-console.log(`** Note this does not track messages from imports **`);
+const flattenLibMsgs = discoveredMsgs.filter((item) => item.commandGroup == 'bin/libs/').flatMap((it) => it.messages.flatMap((msg) => msg.messageId));
 for(const msgId of Object.keys(localCmdMsgTally)) {
-  if (msgId !== 'ZWEL0103E') {
+  if (msgId !== 'ZWEL0103E' && !flattenLibMsgs.includes(msgId)) {
     const unusedGroups = localCmdMsgTally[msgId].filter((item) => item.count == 0 )
     for (const cmdGroup of unusedGroups) {
-        console.log(`Unused message: ${msgId} [${cmdGroup.command}]`);
+      // skip libs
+      if (cmdGroup.command == 'bin/libs/') {
+        continue;
+      }
+      console.log(`Unused message: ${msgId} [${cmdGroup.command}]`);
     }
   }
 }
