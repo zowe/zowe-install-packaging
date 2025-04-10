@@ -214,7 +214,7 @@ export function printAndHandleJcl(jclLocationOrContent: string, jobName: string,
     
       jobHasFailures=true
       if (continueOnFailure) {
-        common.printError(`Warning ZWEL0163W: Job ${jobname}(${jobId}) ends with code ${jobcccode} (${jobcctext}).`);
+        common.printError(`Warning ZWEL0164W: Job ${jobname}(${jobId}) ends with code ${jobcccode} (${jobcctext}).`);
       } else {
         if (removeJclOnFinish) {
           removeRc = os.remove(jclLocationOrContent);
