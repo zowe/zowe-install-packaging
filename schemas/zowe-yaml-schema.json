@@ -587,15 +587,15 @@
         },
         "logDirectory": {
           "$ref": "/schemas/v2/server-common#zowePath",
-          "description": "Path to where you want to store Zowe log files."
+          "description": "Path to where you want to store Zowe log files. This cannot reside within the runtime directory."
         },
         "workspaceDirectory": {
           "$ref": "/schemas/v2/server-common#zowePath",
-          "description": "Path to where you want to store Zowe workspace files. Zowe workspace are used by Zowe component runtime to store temporary files."
+          "description": "Path to where you want to store Zowe workspace files. Zowe workspace are used by Zowe component runtime to store temporary files. This cannot reside within the runtime directory."
         },
         "extensionDirectory": {
           "$ref": "/schemas/v2/server-common#zowePath",
-          "description": "Path to where you want to store Zowe extensions. \"zwe components install\" will install new extensions into this directory."
+          "description": "Path to where you want to store Zowe extensions. \"zwe components install\" will install new extensions into this directory. This cannot reside within the runtime directory."
         },
         "job": {
           "type": "object",
@@ -692,6 +692,7 @@
         "launchScript": {
           "type": "object",
           "description": "Customize Zowe launch scripts (zwe commands) behavior.",
+          "additionalProperties": false,
           "properties": {
             "logLevel": {
               "type": "string",
@@ -703,6 +704,33 @@
               "description": "Chooses how 'zwe start' behaves if a component configure script fails",
               "enum": ["warn", "exit"],
               "default": "warn"
+            },
+            "startupChecks": {
+              "bypassAll": {
+                "type": "boolean",
+                "default": false,
+                "description": "Skips all startup checks listed within the zowe.launchScript.startupChecks section"
+              },
+              "certificates": {
+                "type": "boolean",
+                "default": true,
+                "description": "Checks properties of certificates to verify that they are valid for use by Zowe"
+              },
+              "depedencies": {
+                "type": "boolean",
+                "default": true,
+                "description": "Checks known dependencies of enabled components to see if they are met by the environment and Zowe configuration"
+              },
+              "directories": {
+                "type": "boolean",
+                "default": true,
+                "description": "Checks the Zowe instance's directories to ensure they exist, are accessible, and do not reside in reserved locations"
+              },
+              "ports": {
+                "type": "boolean",
+                "default": true,
+                "description": "Checks the port for each enabled component to ensure Zowe can bind to it and that it is not already occupied by some other program"
+              }
             }
           }
         },
