@@ -11,7 +11,7 @@
 
 import * as common from '../../../libs/common';
 import * as component from '../../../libs/component';
-import * as javaCI from '../../../libs/java_ci';
+import * as java from '../../../libs/java';
 import * as node from '../../../libs/node';
 import * as zoslib from '../../../libs/zos';
 
@@ -22,7 +22,7 @@ export function execute(quitOnError?: boolean) {
   const enabledComponents=component.getEnabledComponents();
   let hasErrors = false;
   if (enabledComponents.includes('app-server')) {
-    let nodeOk = node.validateNodeHome();
+    let nodeOk = node.readConfigNodeHome();
     if (!nodeOk) {
       hasErrors = true;
       common.printFormattedError('ZWELS', "zwe-validate-dependencies", `NodeJS validation failed.`);
@@ -31,7 +31,7 @@ export function execute(quitOnError?: boolean) {
 
   //TODO this should be a manifest parameter that you require java, not a hardcoded list. What if extensions require it?
   if (enabledComponents.includes('gateway') || enabledComponents.includes('zaas') || enabledComponents.includes('discovery') || enabledComponents.includes('api-catalog') || enabledComponents.includes('caching-service')) {
-    let javaOk = javaCI.validateJavaHome();
+    let javaOk = java.readConfigJavaHome();
     if (!javaOk) {
       hasErrors = true;
       common.printFormattedError('ZWELS', "zwe-validate-dependencies", `Java validation failed.`);

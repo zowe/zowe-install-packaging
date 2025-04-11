@@ -135,7 +135,7 @@ export function which(command: string): path|undefined {
   //TODO not windows
   let pathParts = (std.getenv('PATH') || "").split(':');
   for (let i = 0; i < pathParts.length; i++) {
-    let files:string[] = fs.getFilesInDirectory(pathParts[i]) || [];
+    let files:string[] = fs.getFilesInDirectory(pathParts[i], true) || [];
     if (files.indexOf(command) != -1) {
       return `${pathParts[i]}/${command}`;
     }

@@ -171,7 +171,7 @@ export function createFileFromBuffer(path: string, mode: number, buff?: Uint8Arr
   return true;
 }
 
-export function getFilesInDirectory(path: string): string[]|undefined {
+export function getFilesInDirectory(path: string, hideNotFoundError?: boolean): string[]|undefined {
   let returnArray = os.readdir(path);
   let files:string[] = [];
   if (!returnArray[1]) { //no error
@@ -182,7 +182,9 @@ export function getFilesInDirectory(path: string): string[]|undefined {
     });
     return files;
   } else {
-    common.printError(`getFilesInDirectory path=${path}, err=`+returnArray[1]);
+    if (returnArray[1] != 129 || hideNotFoundError == false) {
+      common.printError(`getFilesInDirectory path=${path}, err=`+returnArray[1]);
+    }
     return undefined;
   }  
 }

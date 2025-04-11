@@ -32,7 +32,7 @@ export function execute(quitOnError?: boolean) {
     if (!path) {
       common.printError(`Error: "zowe.${directory}" is not set. You must set it to ${purpose}.`);
       hasErrors = true;
-    } else if (fs.directoryExists(path, false)) {
+    } else if (!fs.directoryExists(path, false)) {
       common.printError(`Error: "zowe.${directory}" does not exist or cannot be accessed by the current user.`);
       hasErrors = true;
     } else if (directory != 'runtimeDirectory') {

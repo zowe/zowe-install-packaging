@@ -120,7 +120,7 @@ export function validateNodeHome(nodeHome:string|undefined=std.getenv("NODE_HOME
         return false;
       }
       
-      if (nodeMajorVersion < NODE_TESTED_VERSION) {
+      if (nodeMajorVersion > NODE_TESTED_VERSION) {
         common.printMessage(`WARNING: Node ${version} is higher than the latest known working version for Zowe, v${NODE_TESTED_VERSION}.`);
       } else {
         common.printDebug(`Node ${version} is supported.`)

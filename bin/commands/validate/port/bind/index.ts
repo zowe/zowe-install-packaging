@@ -34,7 +34,7 @@ export function execute(quitOnError?: boolean) {
         common.printFormattedInfo(`ZWELS`, `zwe-validate-port-available`, `${component} port ${port} available.`);
         let listenAddress = '0.0.0.0';
         if (ZOWE_CONFIG.components[component].zowe?.network?.server?.listenAddresses) {
-          listenAddress = ZOWE_CONFIG.components[component].zowe.network.server.listenAddresses;
+          listenAddress = ZOWE_CONFIG.components[component].zowe.network.server.listenAddresses[0];
         } else if (ZOWE_CONFIG.zowe?.network?.server?.listenAddresses) {
           listenAddress = ZOWE_CONFIG.zowe.network.server.listenAddresses[0];
         }
