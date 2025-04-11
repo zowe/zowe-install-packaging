@@ -146,7 +146,7 @@ components:
 
   # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   apiml:
-    enabled: false # If this is enabled, code in install packaging needs to "force"-disable gateway and discovery
+    enabled: true # If this is enabled, code in install packaging needs to "force"-disable gateway and discovery
 
   # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   gateway:
