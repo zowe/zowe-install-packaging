@@ -15,9 +15,6 @@
         <label>Prefix of Zowe setup MVS datasets</label>
         <abstract>Prefix of datasets where remaining runtime datasets will be created</abstract>
         <description>Prefix of datasets where remaining runtime libraries will be created within execution of Zowe install step (SZWEAUTH, SZWESAMP, SZWEEXEC, SZWELOAD)</description>
-        <label>Prefix of Zowe setup MVS datasets</label>
-        <abstract>Prefix of datasets where remaining runtime datasets will be created</abstract>
-        <description>Prefix of datasets where remaining runtime libraries will be created within execution of Zowe install step (SZWEAUTH, SZWESAMP, SZWEEXEC, SZWELOAD)</description>
         <category>zowe</category>
         <string valueMustBeChoice="false" multiLine="false">
             <!-- Put validation here -->
