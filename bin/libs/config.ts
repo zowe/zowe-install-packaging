@@ -47,17 +47,15 @@ export function getZoweConfig(): any {
     // Update enabled components if API ML modulith transition is in place
 
     const updateObj = {
-      config: {
-        components: {
-          gateway: {
-            enabled: false
-          },
-          discovery: {
-            enabled: false
-          },
-          apiml: {
-            port: config.components['gateway'].port
-          }
+      components: {
+        gateway: {
+          enabled: false
+        },
+        discovery: {
+          enabled: false
+        },
+        apiml: {
+          port: config.components['gateway'].port
         }
       }
     }
