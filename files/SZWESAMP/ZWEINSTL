@@ -24,11 +24,11 @@ unit(sysallda) space(15,15) tracks
 
 ALLOC NEW DA('{zowe.setup.dataset.prefix}.SZWEAUTH') +
 dsntype(library) dsorg(po) recfm(u) lrecl(0) +
-blksize(32760) unit(sysallda) space(150,15) tracks
+blksize(32760) unit(sysallda) space(195,15) tracks
 
 ALLOC NEW DA('{zowe.setup.dataset.prefix}.SZWELOAD') +
 dsntype(library) dsorg(po) recfm(u) lrecl(0) +
-blksize(32760) unit(sysallda) space(105,15) tracks
+blksize(32760) unit(sysallda) space(150,15) tracks
 //*
 //*
 //AUTHCPY EXEC PGM=BPXBATCH
