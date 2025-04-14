@@ -45,11 +45,24 @@ export function getZoweConfig(): any {
   const defaultEnabledComponents = component.getEnabledComponents();
   if (defaultEnabledComponents.includes('apiml') || config.components['apiml'].enabled) {
     // Update enabled components if API ML modulith transition is in place
-    config.components['gateway'].enabled = false;
-    config.components['discovery'].enabled = false;
-    config.components['apiml'].port = config.components['gateway'].port;
 
-    updateZoweConfig(config, false, 1);
+    const updateObj = {
+      config: {
+        components: {
+          gateway: {
+            enabled: false
+          },
+          discovery: {
+            enabled: false
+          },
+          apiml: {
+            port: config.components['gateway'].port
+          }
+        }
+      }
+    }
+
+    updateZoweConfig(updateObj, false, 1);
   } else {
     console.log("API ML Modulith mode not enabled");
   }
