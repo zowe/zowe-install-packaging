@@ -101,7 +101,7 @@
       "artifact": "*.pax"
     },
     "org.zowe.configmgr": {
-      "version": "^3.0.0-V3.X-STAGING",
+      "version": "^3.2.0-FEATURE-V3-CONFIGMGR-MULTI-MEMBER-PARMLIBS",
       "artifact": "*.pax"
     },
     "org.zowe.configmgr-rexx": {
@@ -109,7 +109,7 @@
       "artifact": "*.pax"
     },
     "org.zowe.launcher": {
-      "version": "^3.0.0-STAGING"
+      "version": "^3.3.0-PR-146"
     },
     "org.zowe.keyring-utilities": {
       "version": "1.0.4",
