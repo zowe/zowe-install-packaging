@@ -33,7 +33,7 @@ import { FileType } from './TestFileActions';
  *  - postTest
  */
 export class RemoteTestRunner {
-  private readonly REMOTE_TEST_TMP_DIR: string = `${REMOTE_SYSTEM_INFO.ussTestDir}/test_tmp`;
+  private readonly REMOTE_TEST_TMP_DIR: string = `${REMOTE_SYSTEM_INFO.ussTestDir}/.test_tmp`;
   private readonly yamlOutputTemplate: string;
   private readonly tmpDir: string;
   private readonly spoolOutputTemplate: string;
