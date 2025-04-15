@@ -160,7 +160,7 @@ print_and_handle_jcl() {
     if [ ${code} -ne 0 ]; then
       job_has_failures=true
       if [ "${continue_on_failure}" = "true" ]; then
-        print_error "Warning ZWEL0161W: Failed to run JCL ${jcllib}(${job_name})"
+        print_error "Warning ZWEL0160W: Failed to run JCL ${jcllib}(${job_name})"
         jobid=
       else
         if [ "${remove_jcl_on_finish}" = "true" ]; then
@@ -176,7 +176,7 @@ print_and_handle_jcl() {
     if [ ${code} -eq 1 ]; then
       job_has_failures=true
       if [ "${continue_on_failure}" = "true" ]; then
-        print_error "Warning ZWEL0162W: Failed to find job ${jobid} result."
+        print_error "Warning ZWEL0158W: Failed to find job ${jobid} result."
       else
         if [ "${remove_jcl_on_finish}" = "true" ]; then
           rm "${jcl_location}"

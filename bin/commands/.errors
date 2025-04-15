@@ -30,10 +30,10 @@ ZWEL0140E|140|Failed to translate Zowe configuration (%s).
 ZWEL0142E|142|Failed to refresh APIML static registrations.
 ZWEL0151E|151|Failed to create temporary file %s. Please check permission or volume free space.
 ZWEL0157E|157|%s (%s) is not defined in Zowe YAML configuration file.
+ZWEL0158W||Failed to find job %s result.
 ZWEL0159E|159|Failed to modify %s.
+ZWEL0160W||Failed to run JCL %s.
 ZWEL0161E|161|Failed to run JCL %s.
-ZWEL0161W||Failed to run JCL %s.
-ZWEL0162W||Failed to find job %s result.
 ZWEL0162E|162|Failed to find job %s result.
 ZWEL0163E|163|Job %s ends with code %s.
 ZWEL0164W||Job %s(%s) ends with code %s (%s).

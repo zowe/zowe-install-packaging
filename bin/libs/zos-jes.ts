@@ -189,7 +189,7 @@ export function printAndHandleJcl(jclLocationOrContent: string, jobName: string,
     if (!jobId) {
       jobHasFailures=true;
       if (continueOnFailure) {
-        common.printError(`Warning ZWEL0161W: Failed to run JCL ${jcllib}(${jobName})`);
+        common.printError(`Warning ZWEL0160W: Failed to run JCL ${jcllib}(${jobName})`);
         jobId=undefined;
       } else {
         if (removeJclOnFinish) {
@@ -204,7 +204,7 @@ export function printAndHandleJcl(jclLocationOrContent: string, jobName: string,
     if (rc) {
       jobHasFailures=true;
       if (continueOnFailure) {
-        common.printError(`Warning ZWEL0162W: Failed to find job ${jobId} result.`);
+        common.printError(`Warning ZWEL0158W: Failed to find job ${jobId} result.`);
       } else {
         if (removeJclOnFinish) {
           removeRc = os.remove(jclLocationOrContent);

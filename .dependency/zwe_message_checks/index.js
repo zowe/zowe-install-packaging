@@ -12,6 +12,7 @@ const path = require('path');
 const sc = require('string-comparison');
 const _ = require('lodash');
 const { getDocumentationTree } = require('../zwe_doc_generation/doc-tree');
+const { match } = require('assert');
 
 const zweRootDir = path.resolve(__dirname, '..','..', 'bin');
 const rootDocNode = getDocumentationTree({ dir: path.join(zweRootDir, 'commands'), command: 'zwe' });
@@ -27,12 +28,20 @@ for (const dir of dirs) {
 
 // second, collect all message ids listed in .errors
 const collectedMsgs = collectMessageIds(rootDocNode);
-const dupErrors = findDuplicates(collectedMsgs);
+const dupInfo = findDuplicates(collectedMsgs);
+const dupErrors = dupInfo.errors;
+const dupWarnings = dupInfo.warnings;
 console.log('---- Duplicate Message Content or IDs defined in .errors ----\n');
 if (dupErrors.length > 0) {
   statusFailed = true;
   for (const error of dupErrors) {
     console.log(error.message);
+  }
+}
+if (dupWarnings.length > 0) {
+  console.log(' --> Warnings <--\n')
+  for (const warning of dupWarnings) {
+    console.log(warning.message);
   }
 }
 console.log('')
@@ -160,6 +169,7 @@ if (statusFailed) {
 
 function findDuplicates(collectedMsgs) {
   const errors = [];
+  const warnings = [];
   // flatten and get unique IDs
   const uniqIds = _.uniq(collectedMsgs.map((it) => it.id));
   for (const id of uniqIds) {
@@ -173,12 +183,20 @@ function findDuplicates(collectedMsgs) {
   const uniqMsgs = _.uniq(collectedMsgs.map((it) => it.message));
   for (const msg of uniqMsgs) {
     const matchingMsgs =  _.uniqBy(collectedMsgs.filter((it) => it.message === msg), 'id')
+    // get the unique count of error types present in the matching messages. 
+    //   If every message has a unique type; warn instead of error in the final automation output 
+    const msgTypes = matchingMsgs.reduce((prev, curr) => _.uniq([...prev, curr.id[curr.id.length-1]]), [])
+    console.log(msgTypes);
     if (matchingMsgs.length > 1) {
       const errorText = matchingMsgs.reduce((prev, curr) => prev + `|${curr.id}[${curr.source}]|\n`, '');
-      errors.push({type: 'MSG', message: `Dup MSG: ${msg}, ${matchingMsgs.length} Locations: \n${errorText}`});
+      if (msgTypes.length != matchingMsgs.length) {
+        errors.push({type: 'MSG', message: `Dup MSG: ${msg}, ${matchingMsgs.length} Locations: \n${errorText}`});
+      } else {
+        warnings.push({type: 'MSG', message: `Dup MSG: ${msg}, ${matchingMsgs.length} Locations: \n${errorText}`})
+      }
     }
   }
-  return errors;
+  return { errors: errors, warnings: warnings};
 }  
 
 function collectMessageIds(docNode) {
