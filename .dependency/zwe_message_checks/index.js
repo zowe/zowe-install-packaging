@@ -186,7 +186,6 @@ function findDuplicates(collectedMsgs) {
     // get the unique count of error types present in the matching messages. 
     //   If every message has a unique type; warn instead of error in the final automation output 
     const msgTypes = matchingMsgs.reduce((prev, curr) => _.uniq([...prev, curr.id[curr.id.length-1]]), [])
-    console.log(msgTypes);
     if (matchingMsgs.length > 1) {
       const errorText = matchingMsgs.reduce((prev, curr) => prev + `|${curr.id}[${curr.source}]|\n`, '');
       if (msgTypes.length != matchingMsgs.length) {
