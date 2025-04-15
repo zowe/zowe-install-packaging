@@ -50,7 +50,7 @@ exports[`init-cert (LONG) passing init 1`] = `
 >>>> Import the signed CSR to the keystore "localhost":
 >> Certificate localhost is created successfully.
 -------------------------------------------------------------------------------
->> Trust z/OSMF "some.test.hostname:12321"
+>> Trust z/OSMF "localhost:12321"
 >>>> Getting certificates from service host
 >>>> Import a certificate "zosmf00" to the truststore:
 >>>> Import a certificate "zosmf01" to the truststore:
@@ -102,8 +102,7 @@ Error ZWEL0319E: zowe.setup.dataset.jcllib does not exist, cannot run. Run 'zwe 
 exports[`init-cert (SHORT) cert missing zowe.yaml vars 2`] = `
 "-------------------------------------------------------------------------------
 >> Generate certificate
-cp: FSUM6258 cannot open file "//'DOES.NOT.EXIST.SZWESAMP(ZWEGENER)'": EDC5049I The specified file name could not be located. (errno2=0xC00B0641)
-Error ZWEL0319E: zowe.setup.dataset.jcllib does not exist, cannot run. Run 'zwe init', 'zwe init generate', or submit JCL DOES.NOT.EXIST.SZWESAMP(ZWEGENER) before running this command."
+Error ZWEL0157E: Zowe dataset prefix (zowe.setup.dataset.prefix) is not defined in Zowe YAML configuration file."
 `;
 
 exports[`init-cert (SHORT) cert missing zowe.yaml vars 3`] = `
