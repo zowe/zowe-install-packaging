@@ -36,7 +36,7 @@ exports[`init-apfauth (SHORT) apf bad authLoadLib 1`] = `
 Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
 -------------------------------------------------------------------------------
 >> APF authorize load libraries
-ERROR: Error ZWEL0320E: The dataset specified in 'zowe.setup.dataset.authLoadlib' does not exist."
+ERROR: ZWEL0324E: The dataset specified in 'zowe.setup.dataset.authLoadlib' does not exist."
 `;
 
 exports[`init-apfauth (SHORT) apf bad authPluginLib 1`] = `
@@ -44,7 +44,7 @@ exports[`init-apfauth (SHORT) apf bad authPluginLib 1`] = `
 Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
 -------------------------------------------------------------------------------
 >> APF authorize load libraries
-ERROR: Error ZWEL0320E: The dataset specified in 'zowe.setup.dataset.authPluginLib' does not exist."
+ERROR: ZWEL0324E: The dataset specified in 'zowe.setup.dataset.authPluginLib' does not exist."
 `;
 
 exports[`init-apfauth (SHORT) apf empty jcllib post-generate 1`] = `
@@ -74,7 +74,7 @@ exports[`init-apfauth (SHORT) apf empty pluginlib 2`] = `
 Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
 -------------------------------------------------------------------------------
 >> APF authorize load libraries
-ZWEL0158I: zowe.setup.dataset.authPluginLib is not defined in Zowe YAML configuration file. Skipping.
+ZWEL0159I: zowe.setup.dataset.authPluginLib is not defined in Zowe YAML configuration file. Skipping.
 Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWEIAPF2) , Executable JCL: TEST.DATASET.PFX.JCLLIB(ZWEIAPF2)
 --- JCL Content ---
 //ZWEIAPF2 JOB
