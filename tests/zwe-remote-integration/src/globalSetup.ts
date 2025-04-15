@@ -460,7 +460,11 @@ module.exports = async () => {
     });
 
     console.log(`Uploading manifest.json.template to manifest.json...`);
-    await files.Upload.fileToUssFile(zosmfSession, path.resolve(REPO_ROOT_DIR, 'manifest.json.template'), 'manifest.json');
+    await files.Upload.fileToUssFile(
+      zosmfSession,
+      path.resolve(REPO_ROOT_DIR, 'manifest.json.template'),
+      `${REMOTE_SYSTEM_INFO.ussTestDir}/manifest.json`,
+    );
 
     console.log('Remote server setup complete');
   }
