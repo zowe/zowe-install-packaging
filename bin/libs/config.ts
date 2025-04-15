@@ -60,7 +60,11 @@ export function getZoweConfig(): any {
       }
     }
 
-    updateZoweConfig(updateObj, false, 1);
+    updateZoweConfig(updateObj, true, 1);
+
+    std.setenv('ZWE_INSTALLED_COMPONENTS', component.findAllInstalledComponents());
+    std.setenv('ZWE_ENABLED_COMPONENTS', component.findAllEnabledComponents());
+    std.setenv('ZWE_LAUNCH_COMPONENTS', component.findAllLaunchComponents());
   } else {
     console.log("API ML Modulith mode not enabled");
   }
