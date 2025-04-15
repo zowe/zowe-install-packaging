@@ -7,7 +7,7 @@
  *
  * Copyright IBM Corporation 2018, 2019
  */
-/*
+
 const path = require('path');
 const expect = require('chai').expect;
 const debug = require('debug')('zowe-sanity-test:e2e:api-catalog');
@@ -111,4 +111,3 @@ describe(`test ${APP_TO_TEST}`, function() {
     }
   });
 });
-*/
