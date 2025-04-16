@@ -39,37 +39,45 @@ const runtimeDirectory=configmgr.ZOWE_CONFIG.zowe.runtimeDirectory;
 //const extensionDirectory=ZOWE_CONFIG.zowe.extensionDirectory;
 const workspaceDirectory=configmgr.ZOWE_CONFIG.zowe.workspaceDirectory;
 
-export function getZoweConfig(): any {
-  let config = configmgr.ZOWE_CONFIG;
-
+function isApimlEnabled(): boolean {
+  const config = configmgr.ZOWE_CONFIG;
   const defaultEnabledComponents = component.getEnabledComponents();
-  if (defaultEnabledComponents.includes('apiml') || config.components['apiml'].enabled) {
-    // Update enabled components if API ML modulith transition is in place
+  const componentEnabled = defaultEnabledComponents.includes('apiml') || config.components['apiml'].enabled;
+  return componentEnabled 
+  && config.components['gateway'].enabled == false
+  && config.components['discovery'].enabled == false
+  && config.components['apiml'].port == config.components['gateway'].port
+}
 
-    const updateObj = {
-      components: {
-        gateway: {
-          enabled: false
-        },
-        discovery: {
-          enabled: false
-        },
-        apiml: {
-          port: config.components['gateway'].port
-        }
+function enableApiml() {
+  const config = configmgr.ZOWE_CONFIG;
+  const updateObj = {
+    components: {
+      gateway: {
+        enabled: false
+      },
+      discovery: {
+        enabled: false
+      },
+      apiml: {
+        port: config.components['gateway'].port
       }
     }
-
-    updateZoweConfig(updateObj, true, 1);
-
-    std.setenv('ZWE_INSTALLED_COMPONENTS', component.findAllInstalledComponents());
-    std.setenv('ZWE_ENABLED_COMPONENTS', component.findAllEnabledComponents());
-    std.setenv('ZWE_LAUNCH_COMPONENTS', component.findAllLaunchComponents());
-  } else {
-    console.log("API ML Modulith mode not enabled");
   }
 
-  return config;
+  updateZoweConfig(updateObj, true, 1);
+
+  std.setenv('ZWE_INSTALLED_COMPONENTS', component.findAllInstalledComponents());
+  std.setenv('ZWE_ENABLED_COMPONENTS', component.findAllEnabledComponents());
+  std.setenv('ZWE_LAUNCH_COMPONENTS', component.findAllLaunchComponents());
+}
+
+export function getZoweConfig(): any {
+  if (!isApimlEnabled()) {
+    enableApiml();
+  }
+
+  return configmgr.ZOWE_CONFIG;
 }
 
 export function updateZoweConfig(updateObj: any, writeUpdate: boolean, arrayMergeStrategy: number): any {
