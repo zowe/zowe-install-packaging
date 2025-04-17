@@ -360,6 +360,7 @@ export class RemoteTestRunner {
   private writeRedundant(filePath: string, content: string): string {
     let tgtFile = filePath;
     const iter = 0;
+    // TODO: replace with single readDir, find highest idx, write to idx+1
     while (fs.existsSync(tgtFile) && iter < 1000) {
       tgtFile = `${tgtFile}.${iter}`;
     }
@@ -384,7 +385,7 @@ export class RemoteTestRunner {
     const yamlOutputDir = this.yamlOutputTemplate.replace('{{ testInstance }}', testName);
     fs.mkdirpSync(yamlOutputDir);
     await this.removeUssFileForTest('files/defaults.yaml');
-    const redundantFilePath = this.writeRedundant(`${yamlOutputDir}/defaults.yaml.${testName}`, stringDefaultYaml);
+    const redundantFilePath = this.writeRedundant(`${yamlOutputDir}/defaults.yaml`, stringDefaultYaml);
     await files.Upload.fileToUssFile(this.session, redundantFilePath, yamlUploadPath, {
       binary: false,
     });
