@@ -345,6 +345,31 @@ exports[`init-generate (SHORT) BAD: missing defaults.yaml 1`] = `
 ZWEL0318E - failed to read '/test/dir/files/defaults.yaml' - EDC5129I No such file or directory. (errno2=0x05620062)"
 `;
 
+exports[`init-generate (SHORT) PARMLIB negatives 1`] = `
+"Error: malformed PARMLIB syntax for PARMLIB(ZOWE.PR4285(A):FILE(/test/dir/files/defaults.yaml). Must use syntax PARMLIB(dataset.name(member))
+Error: Cannot continue due to missing or mixed member names for PARMLIB entries in PARMLIB(ZOWE.PR4285(A):FILE(/test/dir/files/defaults.yaml)"
+`;
+
+exports[`init-generate (SHORT) PARMLIB negatives 2`] = `
+"Error: malformed PARMLIB syntax for PARMLIB(ZOWE.PR4285(A:FILE(/test/dir/files/defaults.yaml). Must use syntax PARMLIB(dataset.name(member))
+Error: Cannot continue due to missing or mixed member names for PARMLIB entries in PARMLIB(ZOWE.PR4285(A:FILE(/test/dir/files/defaults.yaml)"
+`;
+
+exports[`init-generate (SHORT) PARMLIB negatives 3`] = `
+"Error: malformed PARMLIB syntax for PARMLIB(ZOWE.PR4285(A)):PARMLIB(ZOWE.PR4285(A):FILE(/test/dir/files/defaults.yaml). Must use syntax PARMLIB(dataset.name(member))
+Error: Cannot continue due to missing or mixed member names for PARMLIB entries in PARMLIB(ZOWE.PR4285(A)):PARMLIB(ZOWE.PR4285(A):FILE(/test/dir/files/defaults.yaml)"
+`;
+
+exports[`init-generate (SHORT) PARMLIB negatives 4`] = `
+"Error: configmgr does not yet support different member names for PARMLIB. You must use the same member names for all datasets mentioned
+Error: Cannot continue due to missing or mixed member names for PARMLIB entries in PARMLIB(ZOWE.PR4285(A)):PARMLIB(ZOWE.PR4285(A):PARMLIB(ZOWE.PR4285(A)):PARMLIB(ZOWE.PR4285(A):FILE(/test/dir/files/defaults.yaml)"
+`;
+
+exports[`init-generate (SHORT) PARMLIB negatives 5`] = `
+"Error: malformed PARMLIB syntax for PARMLIB(ZOWE.PR4285B)):FILE(defaults.yaml):FILE(/test/dir/files/defaults.yaml). Must use syntax PARMLIB(dataset.name(member))
+Error: Cannot continue due to missing or mixed member names for PARMLIB entries in PARMLIB(ZOWE.PR4285B)):FILE(defaults.yaml):FILE(/test/dir/files/defaults.yaml)"
+`;
+
 exports[`init-generate (SHORT) bad ds prefix 1`] = `
 "cp: FSUM6258 cannot open file "//'SOME.DS.NOEXIST.SZWESAMP(ZWEGENER)'": EDC5049I The specified file name could not be located. (errno2=0xC00B0641)
 Temporary directory '/tmp/.zweenv-0000' created.

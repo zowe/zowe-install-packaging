@@ -56,6 +56,25 @@ describe(`${testSuiteName}`, () => {
       await testRunner.postTest();
     });
 
+    // Cover configmgr PARMLIB validation: easy access from 'init generate' to common.isValidZoweYamlParmlib()
+    it('PARMLIB negatives', async () => {
+      let result;
+      const cases = [
+        '"PARMLIB(ZOWE.PR4285(A)"',
+        '"PARMLIB(ZOWE.PR4285(A"',
+        '"PARMLIB(ZOWE.PR4285(A)):PARMLIB(ZOWE.PR4285(A)"',
+        '"PARMLIB(ZOWE.PR4285(A)):PARMLIB(ZOWE.PR4285(A):PARMLIB(ZOWE.PR4285(A)):PARMLIB(ZOWE.PR4285(A)"',
+        '"PARMLIB(ZOWE.PR4285B)):FILE(defaults.yaml)"',
+      ];
+
+      for (const tcase of cases) {
+        result = await testRunner.runZweTest(cfgYaml, `init generate --dry-run -c ${tcase}`);
+        expect(result.stdout).not.toBeNull();
+        expect(result.cleanedStdout).toMatchSnapshot();
+        expect(result.rc).toBe(1);
+      }
+    });
+
     it('jcl header single line', async () => {
       // eslint-disable-next-line
       cfgYaml.zowe.environments = {jclHeader: "'SOMEJOB',(0000000000)" };
