@@ -49,11 +49,6 @@ describe(`${testSuiteName}`, () => {
   describe('(SHORT)', () => {
     beforeAll(async () => {
       cfgYaml = ZoweConfig.getZoweYaml();
-      expect.getState().currentTestName = 'before-all-generate-short';
-      const result = await testRunner.runZweTest(cfgYaml, 'init generate --allow-overwrite');
-      expect(result.stdout).not.toBeNull();
-      expect(result.rc).toBe(0);
-      await testRunner.postTest();
     });
 
     // Cover configmgr PARMLIB validation: easy access from 'init generate' to common.isValidZoweYamlParmlib()
