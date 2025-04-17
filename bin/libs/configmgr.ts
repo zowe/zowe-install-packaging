@@ -15,6 +15,7 @@ import * as xplatform from 'xplatform';
 import { ConfigManager } from 'Configuration';
 import * as fs from './fs';
 import * as stringlib from './string';
+import * as common from './common';
 
 import * as objUtils from '../utils/ObjUtils';
 
@@ -394,15 +395,15 @@ function getConfig(configName: string, configPath: string, schemas: string): any
   }
 
   if (configPath) {
-    let index = configPath.indexOf('PARMLIB(');
-    while(index != -1) {
-      //In the form of PARMLIB(my.zowe(yaml)):PARMLIB(my.other.zowe(yaml))
-      let rParenIndex = configPath.indexOf('))', index);
-      if (rParenIndex == -1) {
-        console.log(`Error: Cannot continue due to missing member name for PARMLIB entry in ${configPath}`);
-        std.exit(1);
+    let parts = configPath.split(':').filter((part) => part.trim().length > 0);
+    for (let i = 0; i < parts.length; i++) {
+      const part = parts[i].trim();
+      if (part.startsWith('PARMLIB(')) {
+        const isValidParmlib = common.isValidZoweYamlParmlib(part);
+        if (!isValidParmlib.ok) {
+          common.printErrorAndExit(isValidParmlib.error.message, undefined, isValidParmlib.error.code);
+        }
       }
-      index = configPath.indexOf('PARMLIB(', rParenIndex);
     }
     
     let status;
