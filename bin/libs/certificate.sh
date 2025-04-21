@@ -625,6 +625,11 @@ pkcs12_export_pem() {
       if [ $? -ne 0 ]; then
         return 1
       fi
+      if [ `uname` = "OS/390" ]; then
+        iconv -f ISO8859-1 -t IBM-1047 "${keystore_dir}/${alias_lc}.cer" > "${keystore_dir}/${alias_lc}.cer-ebcdic"
+        mv "${keystore_dir}/${alias_lc}.cer-ebcdic" "${keystore_dir}/${alias_lc}.cer"
+        ensure_file_encoding "${keystore_dir}/${alias_lc}.cer" "CERTIFICATE"
+      fi
     fi
   done <<EOF
 $(echo "${aliases}")
