@@ -141,7 +141,7 @@ zowe:
 
   # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   # To determine whether to trim ths syslog message inorder to print from message-id, disabled by default
-  sysTrimMessage: false
+  sysMessageTrim: false
 
 #-------------------------------------------------------------------------------
 # Zowe components default configurations
