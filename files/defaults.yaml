@@ -80,7 +80,7 @@ zowe:
         state: "${{ (zowe.setup.certificate.pkcs12?.name || zowe.setup.certificate.keyring?.name) ? 'Prague' : null }}"
         country: "${{ (zowe.setup.certificate.pkcs12?.name || zowe.setup.certificate.keyring?.name) ? 'CZ' : null }}"
       # Validity days for Zowe generated certificates
-      validity: "${{ (zowe.setup.certificate.pkcs12?.import || zowe.setup.certificate.keyring?.name) ? null : 3650 }}"
+      validity: 3650
 
     vsam:
       # Default to caching service entry as it predates this one
