@@ -373,8 +373,8 @@ export function isValidZoweYamlParmlib(parmlib: string): {ok: boolean; error: { 
       return {ok: false, error: errorContent}
     }
     const member = finalParmlib.substring(finalParmlib.indexOf('(')+1, finalParmlib.indexOf(')'));
-    // TODO: better member validation? Do we need to here or does schema cover this? (This was previously checking hard-coded ZWEYAML)
-    if (member.length > 8) {
+    // This regex ported from server-common.json#zoweDatasetMember
+    if (/^([A-Z$#@])([A-Z0-9$#@]){0,7}$/gi.test(member) === false) {
       return { ok: false, error: errorContent};
     }
     return {ok: true, error: {message: '', code: 0}};
