@@ -156,7 +156,7 @@ describe(`${testSuiteName}`, () => {
       const result = await testRunner.runZweTest(cfgYaml, 'init apfauth --dry-run');
       expect(result.stdout).not.toBeNull();
       expect(result.cleanedStdout).toMatchSnapshot();
-      expect(result.rc).toBe(64);
+      expect(result.rc).toBe(68);
     });
 
     it('apf bad authPluginLib', async () => {
@@ -164,7 +164,7 @@ describe(`${testSuiteName}`, () => {
       const result = await testRunner.runZweTest(cfgYaml, 'init apfauth --dry-run');
       expect(result.stdout).not.toBeNull();
       expect(result.cleanedStdout).toMatchSnapshot();
-      expect(result.rc).toBe(64);
+      expect(result.rc).toBe(68);
     });
 
     it('apf simple --dry-run', async () => {

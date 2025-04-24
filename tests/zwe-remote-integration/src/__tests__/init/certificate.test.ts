@@ -44,17 +44,20 @@ describe(`${testSuiteName}`, () => {
 
   describe('(SHORT)', () => {
     it('cert missing zowe.yaml vars', async () => {
-      cfgYaml.zowe.setup.dataset.jcllib = 'DOES.NOT.EXIST';
+      cfgYaml.zowe.setup.certificate.type = 'JCERACFKS';
+      cfgYaml.zowe.setup.certificate.keyring = { name: 'safkeyring://some.keyring' };
+      cfgYaml.zowe.setup.dataset.jcllib = 'DOES.NOT.EXIST'; // only an error when !pkcs12
       let result = await testRunner.runZweTest(cfgYaml, 'init certificate --dry-run');
       expect(result.stdout).not.toBeNull();
       expect(result.cleanedStdout).toMatchSnapshot();
       expect(result.rc).toBe(63);
 
-      cfgYaml.zowe.setup.dataset.prefix = 'DOES.NOT.EXIST';
+      cfgYaml = ZoweConfig.getZoweYaml(); // reset
+      delete cfgYaml.zowe.setup.dataset.prefix;
       result = await testRunner.runZweTest(cfgYaml, 'init certificate --dry-run');
       expect(result.stdout).not.toBeNull();
       expect(result.cleanedStdout).toMatchSnapshot();
-      expect(result.rc).toBe(63);
+      expect(result.rc).toBe(157);
 
       cfgYaml = ZoweConfig.getZoweYaml();
       cfgYaml.zowe.setup.certificate.type = null;

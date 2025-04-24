@@ -73,7 +73,7 @@ describe(`${testSuiteName}`, () => {
       let result = await testRunner.runZweTest(cfgYaml, 'init generate --dry-run');
       expect(result.stdout).not.toBeNull();
       expect(result.cleanedStdout).toMatchSnapshot();
-      expect(result.rc).toBe(142);
+      expect(result.rc).toBe(70);
 
       // this is technically not valid JCL, but fits in 80 chars
       jclLines = [`'SOMEJOB'`, `(0000000000)`, longString.slice(0, 79), 'SYSAFF=SYS1'];
@@ -89,7 +89,7 @@ describe(`${testSuiteName}`, () => {
       result = await testRunner.runZweTest(cfgYaml, 'init generate --dry-run');
       expect(result.stdout).not.toBeNull();
       expect(result.cleanedStdout).toMatchSnapshot();
-      expect(result.rc).toBe(142);
+      expect(result.rc).toBe(70);
 
       // this is the right max width
       jclLines = [longString.slice(0, 80 - ('//ABCABCDE JOB '.length + 1)), `// (0000000000),`, `// 'SOMEJOB',`, '// SYSAFF=SYS1'];
@@ -108,7 +108,7 @@ describe(`${testSuiteName}`, () => {
       let result = await testRunner.runZweTest(cfgYaml, 'init generate --dry-run');
       expect(result.stdout).not.toBeNull();
       expect(result.cleanedStdout).toMatchSnapshot();
-      expect(result.rc).toBe(142);
+      expect(result.rc).toBe(70);
 
       // error - 81 char line
       cfgYaml.zowe.environments = {
@@ -118,7 +118,7 @@ describe(`${testSuiteName}`, () => {
       result = await testRunner.runZweTest(cfgYaml, 'init generate --dry-run');
       expect(result.stdout).not.toBeNull();
       expect(result.cleanedStdout).toMatchSnapshot();
-      expect(result.rc).toBe(142);
+      expect(result.rc).toBe(70);
 
       // OK - 80 char line
       cfgYaml.zowe.environments = {

@@ -445,7 +445,7 @@ else # JCE* content
     keyring_run_zwenokyr_jcl "${prefix}" "${jcllib}" "${security_product}"
   else
     # error
-    # print_error_and_exit "Error ZWEL0158E: Keyring \"safkeyring://${keyring_owner}/${keyring_name}\" already exists." "" 158
+    # print_error_and_exit "Error 158: Keyring \"safkeyring://${keyring_owner}/${keyring_name}\" already exists." "" 158
   fi
 
   keyring_run_zwekring_jcl "${prefix}" \

@@ -335,9 +335,9 @@ exports[`init-stc (LONG) run stc setup, then overwrite, then run again 2`] = `
 Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
 -------------------------------------------------------------------------------
 >> Install Zowe main started task
-Warning ZWEL0300W: TEST.DATASET.PFX.TEST.PROCLIB(ZWESLSTC) already exists. This data set member will be overwritten during configuration.
-Warning ZWEL0300W: TEST.DATASET.PFX.TEST.PROCLIB(ZWESISTC) already exists. This data set member will be overwritten during configuration.
-Warning ZWEL0300W: TEST.DATASET.PFX.TEST.PROCLIB(ZWESASTC) already exists. This data set member will be overwritten during configuration.
+Warning ZWEL0300W: TEST.DATASET.PFX.TEST.PROCLIB(ZWESLSTC) already exists. This data set member will be overwritten.
+Warning ZWEL0300W: TEST.DATASET.PFX.TEST.PROCLIB(ZWESISTC) already exists. This data set member will be overwritten.
+Warning ZWEL0300W: TEST.DATASET.PFX.TEST.PROCLIB(ZWESASTC) already exists. This data set member will be overwritten.
 Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWERSTC) , Executable JCL: TEST.DATASET.PFX.JCLLIB(ZWERSTC)
 --- JCL Content ---
 //ZWERSTC JOB
@@ -456,7 +456,7 @@ exports[`init-stc (SHORT) aux stc exists 2`] = `
 Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
 -------------------------------------------------------------------------------
 >> Install Zowe main started task
-Warning ZWEL0300W: TEST.DATASET.PFX.TEST.PROCLIB(ZWESASTC) already exists. This data set member will be overwritten during configuration.
+Warning ZWEL0300W: TEST.DATASET.PFX.TEST.PROCLIB(ZWESASTC) already exists. This data set member will be overwritten.
 Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWERSTC) , Executable JCL: TEST.DATASET.PFX.JCLLIB(ZWERSTC)
 --- JCL Content ---
 //ZWERSTC JOB
@@ -734,17 +734,6 @@ Validity Exceptions(s) with object at
           string pattern match fail s='', pat='^([A-Z\\$\\#\\@]){1}([A-Z0-9\\$\\#\\@\\-]){0,7}(\\.([A-Z\\$\\#\\@]){1}([A-Z0-9\\$\\#\\@\\-]){0,7}){0,11}$', at /zowe/setup/dataset/prefix"
 `;
 
-exports[`init-stc (SHORT) wrong ds prefix 3`] = `
-"Error: Validation of FILE(/test/dir/zowe.test.yaml):FILE(/test/dir/files/defaults.yaml) against schema /test/dir/schemas/zowe-yaml-schema.json:/test/dir/schemas/server-common.json found invalid JSON Schema data
-Validity Exceptions(s) with object at
-  Validity Exceptions(s) with object at /zowe
-    Validity Exceptions(s) with object at /zowe/setup
-      Validity Exceptions(s) with object at /zowe/setup/dataset
-        Validity Exceptions(s) with string at /zowe/setup/dataset/prefix
-          string too short (len=0) '' 0 < MIN=3 at /zowe/setup/dataset/prefix
-          string pattern match fail s='', pat='^([A-Z\\$\\#\\@]){1}([A-Z0-9\\$\\#\\@\\-]){0,7}(\\.([A-Z\\$\\#\\@]){1}([A-Z0-9\\$\\#\\@\\-]){0,7}){0,11}$', at /zowe/setup/dataset/prefix"
-`;
-
 exports[`init-stc (SHORT) wrong jcllib 1`] = `
 "Error: Validation of FILE(/test/dir/zowe.test.yaml):FILE(/test/dir/files/defaults.yaml) against schema /test/dir/schemas/zowe-yaml-schema.json:/test/dir/schemas/server-common.json found invalid JSON Schema data
 Validity Exceptions(s) with object at
@@ -813,7 +802,7 @@ exports[`init-stc (SHORT) zis stc exists 2`] = `
 Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
 -------------------------------------------------------------------------------
 >> Install Zowe main started task
-Warning ZWEL0300W: TEST.DATASET.PFX.TEST.PROCLIB(ZWESISTC) already exists. This data set member will be overwritten during configuration.
+Warning ZWEL0300W: TEST.DATASET.PFX.TEST.PROCLIB(ZWESISTC) already exists. This data set member will be overwritten.
 Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWERSTC) , Executable JCL: TEST.DATASET.PFX.JCLLIB(ZWERSTC)
 --- JCL Content ---
 //ZWERSTC JOB
@@ -923,16 +912,7 @@ exports[`init-stc (SHORT) zos stc exists 2`] = `
 Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
 -------------------------------------------------------------------------------
 >> Install Zowe main started task
-Warning ZWEL0301W: TEST.DATASET.PFX.TEST.PROCLIB(ZWESLSTC) already exists and will not be overwritten. For upgrades, you must use --allow-overwrite.
-Skipped writing to TEST.DATASET.PFX.TEST.PROCLIB. To write, you must use --allow-overwrite."
-`;
-
-exports[`init-stc (SHORT) zos stc exists 3`] = `
-"Temporary directory '/tmp/.zweenv-0000' created.
-Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
--------------------------------------------------------------------------------
->> Install Zowe main started task
-Warning ZWEL0300W: TEST.DATASET.PFX.TEST.PROCLIB(ZWESLSTC) already exists. This data set member will be overwritten during configuration.
+Warning ZWEL0300W: TEST.DATASET.PFX.TEST.PROCLIB(ZWESLSTC) already exists. This data set member will be overwritten.
 Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWERSTC) , Executable JCL: TEST.DATASET.PFX.JCLLIB(ZWERSTC)
 --- JCL Content ---
 //ZWERSTC JOB

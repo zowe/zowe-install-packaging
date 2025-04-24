@@ -424,7 +424,7 @@ exports[`init-vsam (SHORT) skip non-vsam caching service 1`] = `
 Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
 -------------------------------------------------------------------------------
 >> Initialize Zowe custom data sets
-ERROR: Warning ZWEL0301W: Zowe Caching Service is not configured to use VSAM. Command skipped."
+ERROR: Warning ZWEL0304W: Zowe Caching Service is not configured to use VSAM. Command skipped."
 `;
 
 exports[`init-vsam (SHORT) skip undefined caching service 1`] = `

@@ -31,7 +31,7 @@ export function execute() {
   // read prefix and validate
   const prefix = ZOWE_CONFIG.zowe?.setup?.dataset?.prefix;
   if (!prefix) {
-    common.printErrorAndExit(`Error ZWEL0157E: Zowe dataset prefix (zowe.setup.dataset.prefix) is not defined in Zowe YAML configuration file.`, undefined, 157);
+    common.printErrorAndExit(`ZWEL0157E: Zowe dataset prefix (zowe.setup.dataset.prefix) is not defined in Zowe YAML configuration file.`, undefined, 157);
   }
 
   // check if user passed --generate
@@ -43,7 +43,7 @@ export function execute() {
   // read JCL library and validate
   const jcllib = zoslib.verifyGeneratedJcl(ZOWE_CONFIG);
   if (!jcllib) {
-    return common.printErrorAndExit(`Error ZWEL0319E: zowe.setup.dataset.jcllib does not exist, cannot run. Run 'zwe init', 'zwe init generate', or submit JCL ${prefix}.SZWESAMP(ZWEGENER) before running this command.`, undefined, 319);
+    return common.printErrorAndExit(`ZWEL0319E: zowe.setup.dataset.jcllib does not exist, cannot run. Run 'zwe init', 'zwe init generate', or submit JCL ${prefix}.SZWESAMP(ZWEGENER) before running this command.`, undefined, 319);
   }
 
   let needUpdate = false;
@@ -56,7 +56,7 @@ export function execute() {
 
   // Authloadlib must exist, either user defined or default "zowe.setup.dataset.prefix.SZWEAUTH"
   if (!zosDs.isDatasetExists(authLoadlib)) {
-    common.printErrorAndExit(`Error ZWEL0320E: The dataset specified in 'zowe.setup.dataset.authLoadlib' does not exist.`, undefined, 320);
+    common.printErrorAndExit(`ZWEL0324E: The dataset specified in 'zowe.setup.dataset.authLoadlib' does not exist.`, undefined, 324);
   }
   let authPluginLib = ZOWE_CONFIG.zowe?.setup?.dataset?.authPluginLib;
   if (!authPluginLib) {
@@ -72,7 +72,7 @@ export function execute() {
   }
   // AuthPluginLib must exist only if defined by user
   if (authPluginLib && !zosDs.isDatasetExists(authPluginLib)) {
-    common.printErrorAndExit(`Error ZWEL0320E: The dataset specified in 'zowe.setup.dataset.authPluginLib' does not exist.`, undefined, 320);
+    common.printErrorAndExit(`ZWEL0324E: The dataset specified in 'zowe.setup.dataset.authPluginLib' does not exist.`, undefined, 324);
   }
 
   const authSMS = zosDs.isDatasetSmsManaged(authLoadlib).smsManaged;
@@ -118,7 +118,7 @@ export function execute() {
       common.printTrace(stringlib.paddingLeft(jclContent.out, "    "));
       shell.execSync('chmod', '700', tmpfile);
       if (!fs.fileExists(tmpfile)) {
-        common.printErrorAndExit(`Error ZWEL0159E: Failed to prepare ZWEIAPF2`, undefined, 159);
+        common.printErrorAndExit(`ZWEL0325E: Failed to prepare ZWEIAPF2`, undefined, 325);
       }
       zosJes.printAndHandleJcl(tmpfile, `ZWEIAPF2`, jcllib, prefix, true);
     }

@@ -81,7 +81,7 @@ wait_for_job() {
 
   print_debug "- Wait for job ${jobid} completed, starting at $(date)."
   # wait for job to finish
-  for secs in 1 5 10 30 100 300 500 ; do
+  for secs in 1 5 10 30 100 300 500; do
     print_trace "  * Wait for ${secs} seconds"
     sleep ${secs}
     result=$(operator_command "\$D ${jobid},CC")
@@ -160,7 +160,7 @@ print_and_handle_jcl() {
     if [ ${code} -ne 0 ]; then
       job_has_failures=true
       if [ "${continue_on_failure}" = "true" ]; then
-        print_error "Warning ZWEL0161W: Failed to run JCL ${jcllib}(${job_name})"
+        print_error "Warning ZWEL0160W: Failed to run JCL ${jcllib}(${job_name})"
         jobid=
       else
         if [ "${remove_jcl_on_finish}" = "true" ]; then
@@ -176,7 +176,7 @@ print_and_handle_jcl() {
     if [ ${code} -eq 1 ]; then
       job_has_failures=true
       if [ "${continue_on_failure}" = "true" ]; then
-        print_error "Warning ZWEL0162W: Failed to find job ${jobid} result."
+        print_error "Warning ZWEL0158W: Failed to find job ${jobid} result."
       else
         if [ "${remove_jcl_on_finish}" = "true" ]; then
           rm "${jcl_location}"
@@ -192,7 +192,7 @@ print_and_handle_jcl() {
     else
       job_has_failures=true
       if [ "${continue_on_failure}" = "true" ]; then
-        print_error "Warning ZWEL0163W: Job ${jobname}(${jobid}) ends with code ${jobcccode} (${jobcctext})."
+        print_error "Warning ZWEL0164W: Job ${jobname}(${jobid}) ends with code ${jobcccode} (${jobcctext})."
       else
         if [ "${remove_jcl_on_finish}" = "true" ]; then
           rm "${jcl_location}"

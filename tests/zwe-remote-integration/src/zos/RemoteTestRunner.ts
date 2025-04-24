@@ -33,7 +33,7 @@ import { FileType } from './TestFileActions';
  *  - postTest
  */
 export class RemoteTestRunner {
-  private readonly REMOTE_TEST_TMP_DIR: string = `${REMOTE_SYSTEM_INFO.ussTestDir}/test_tmp`;
+  private readonly REMOTE_TEST_TMP_DIR: string = `${REMOTE_SYSTEM_INFO.ussTestDir}/.test_tmp`;
   private readonly yamlOutputTemplate: string;
   private readonly tmpDir: string;
   private readonly spoolOutputTemplate: string;
@@ -47,6 +47,7 @@ export class RemoteTestRunner {
   private totalRuntime: number = 0;
   private maxRuntime: number = -1;
   private readonly dummyHostname: string = 'some.test.hostname';
+  private readonly dummyPort: string = '12321';
 
   constructor(testGroup: string) {
     this.session = getSession();
@@ -329,7 +330,7 @@ export class RemoteTestRunner {
       .replace(/\/tmp\/zwe-\d{1,5}/g, '/tmp/zwe-0000')
       .replaceAll(REMOTE_SYSTEM_INFO.volume, 'TSTVOL')
       .replaceAll(REMOTE_SYSTEM_INFO.hostname, this.dummyHostname)
-      .replaceAll(REMOTE_SYSTEM_INFO.zosmfPort, '12321');
+      .replaceAll(REMOTE_SYSTEM_INFO.zosmfPort, this.dummyPort);
   }
 
   public getMask(maskType: string): string {
@@ -339,6 +340,8 @@ export class RemoteTestRunner {
         return this.dummyHostname;
       case 'sysname':
         return 'SYS0';
+      case 'port':
+        return this.dummyPort;
       default:
         return '******';
     }
@@ -357,6 +360,7 @@ export class RemoteTestRunner {
   private writeRedundant(filePath: string, content: string): string {
     let tgtFile = filePath;
     const iter = 0;
+    // TODO: replace with single readDir, find highest idx, write to idx+1
     while (fs.existsSync(tgtFile) && iter < 1000) {
       tgtFile = `${tgtFile}.${iter}`;
     }
@@ -381,7 +385,7 @@ export class RemoteTestRunner {
     const yamlOutputDir = this.yamlOutputTemplate.replace('{{ testInstance }}', testName);
     fs.mkdirpSync(yamlOutputDir);
     await this.removeUssFileForTest('files/defaults.yaml');
-    const redundantFilePath = this.writeRedundant(`${yamlOutputDir}/defaults.yaml.${testName}`, stringDefaultYaml);
+    const redundantFilePath = this.writeRedundant(`${yamlOutputDir}/defaults.yaml`, stringDefaultYaml);
     await files.Upload.fileToUssFile(this.session, redundantFilePath, yamlUploadPath, {
       binary: false,
     });
