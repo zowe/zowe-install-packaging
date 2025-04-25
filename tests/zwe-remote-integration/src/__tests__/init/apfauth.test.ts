@@ -98,7 +98,7 @@ describe(`${testSuiteName}`, () => {
       expect(result.stdout).not.toBeNull();
       expect(result.cleanedStdout).toMatchSnapshot();
       expect(result.rc).toBe(1);
-      e;
+
       delete cfgYaml.zowe.setup.dataset.authPluginLib;
       result = await testRunner.runZweTest(cfgYaml, 'init apfauth --dry-run');
       expect(result.stdout).not.toBeNull();
