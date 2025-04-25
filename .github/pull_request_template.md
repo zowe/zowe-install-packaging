@@ -27,6 +27,13 @@ Fixes <!-- Issue number -->
 - [ ] Yes
 - [ ] No
 
+#### Does this PR add or change a YAML parameter?
+<!--If so, be sure to update the schema, defaults.yaml, and example-zowe.yaml as needed. -->
+
+- [ ] Yes
+- [ ] No
+
+
 <!-- If yes, please describe the impact and migration path below.-->
 
 #### Does this PR do something the person installing Zowe should know about?
