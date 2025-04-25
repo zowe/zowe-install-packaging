@@ -1,15 +1,1 @@
-{
-  "lockAcquiredTime": "Fri Apr 25 2025 17:10:52 GMT+0000 (Coordinated Universal Time)",
-  "uid": "1745601052258767900",
-  "repository": {
-    "owner": "zowe",
-    "repo": "zowe-install-packaging"
-  },
-  "branch": "user/markackert/fix-pswi-install",
-  "workflow": "Zowe CICD Integration Tests",
-  "job": "cicd-test",
-  "actor": "zowe-robot",
-  "runId": 14669810292,
-  "runNumber": 6505,
-  "link": "https://github.com/zowe/zowe-install-packaging/actions/runs/14669810292"
-}
+""
