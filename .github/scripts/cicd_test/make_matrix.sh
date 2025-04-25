@@ -32,6 +32,14 @@ case $install_test_choice in
   test_file="$KEYRING_TESTFILE"
   ;;
 
+"Java 21")
+  test_file="$JAVA_V21_TESTFILE"
+  ;;
+
+"Java 21 Keyring")
+  test_file="$JAVA_V21_KEYRING_TESTFILE"
+  ;;
+
 "z/OS node v20")
   test_file="$ZOS_NODE_V20_TESTFILE"
   ;;
