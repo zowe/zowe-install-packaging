@@ -29,6 +29,8 @@ ZWE_PRIVATE_DEFAULT_CERTIFICATE_KEY_USAGE="keyEncipherment,digitalSignature,nonR
 ZWE_PRIVATE_DEFAULT_CERTIFICATE_EXTENDED_KEY_USAGE="clientAuth,serverAuth"
 
 JAVA_KEYTOOL_FLAG=" -J-Dkeystore.pkcs12.legacy "
+# COMPAT uses native.encoding, required for Java 21 which defaults to utf-8 instead of ebcdic
+JAVA_KEYTOOL_ENCODING=" -J-Dfile.encoding=COMPAT " 
 
 #######################################################################
 # Notes: some keyring related functions, like ncert, are using R_datalib behind the scene. It requires proper
@@ -615,7 +617,7 @@ pkcs12_export_pem() {
     if [ -n "${alias}" ]; then
       alias_lc=$(echo "${alias}" | lower_case)
       print_message ">>>> Export certificate \"${alias}\" to PEM format"
-      result=$(pkeytool -exportcert -v \
+      result=$(pkeytool ${JAVA_KEYTOOL_ENCODING} -exportcert -v \
                 -alias "${alias}" \
                 -keystore "${keystore_file}" \
                 -storepass "${password}" \
@@ -624,11 +626,6 @@ pkcs12_export_pem() {
                 -file "${keystore_dir}/${alias_lc}.cer")
       if [ $? -ne 0 ]; then
         return 1
-      fi
-      if [ `uname` = "OS/390" ]; then
-        iconv -f ISO8859-1 -t IBM-1047 "${keystore_dir}/${alias_lc}.cer" > "${keystore_dir}/${alias_lc}.cer-ebcdic"
-        mv "${keystore_dir}/${alias_lc}.cer-ebcdic" "${keystore_dir}/${alias_lc}.cer"
-        ensure_file_encoding "${keystore_dir}/${alias_lc}.cer" "CERTIFICATE"
       fi
     fi
   done <<EOF
