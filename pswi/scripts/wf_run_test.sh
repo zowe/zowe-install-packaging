@@ -77,7 +77,7 @@ if [ "$run" = "run" ]; then
     if [ $? -gt 0 ]; then exit -1; fi
     STATUS_NAME=$(echo $RESP | grep -o '"statusName":".*"' | cut -f4 -d\")
 
-    if [ "$STATUS_NAME" = "in-progress" ]; then
+    if [ "$STATUS_NAME" = "configure" ]; then
       echo "Workflow ended with an error." >>$LOG_DIR/report.txt
       echo $RESP >>$LOG_DIR/report.txt
       echo "Checking if the workflow is ZWECONF" >>$LOG_DIR/report.txt
