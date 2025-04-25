@@ -549,8 +549,6 @@ components:
     port: 7557
     crossMemoryServerName: ZWESIS_STD
     agent:
-      jwt:
-        fallback: true
       64bit: true
 
   # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>

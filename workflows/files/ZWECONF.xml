@@ -2085,8 +2085,10 @@ echo '    enabled: ${instance-components_zss_enabled}' >> "${instance-zowe_runti
 echo '    port: ${instance-components_zss_port}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '    crossMemoryServerName: $!{instance-components_zss_crossMemoryServerName}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '    agent:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+#if (${instance-components_zss_agent_jwt_fallback} == "false")
 echo '      jwt:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '        fallback: ${instance-components_zss_agent_jwt_fallback}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+#end
 echo '      64bit: ${instance-components_zss_agent_64bit}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 #end
 #if (${instance-components_zss_enabled} == "false" )
@@ -2094,8 +2096,6 @@ echo '    enabled: ${instance-components_zss_enabled}' >> "${instance-zowe_runti
 echo '    port: 7557' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '    crossMemoryServerName: ZWESIS_STD' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '    agent:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '      jwt:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '        fallback: true' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '      64bit: true' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 #end
 echo '' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
