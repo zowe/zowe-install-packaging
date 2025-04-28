@@ -1,1 +1,15 @@
-""
+{
+  "lockAcquiredTime": "Mon Apr 28 2025 17:04:54 GMT+0000 (Coordinated Universal Time)",
+  "uid": "1745859894172213284",
+  "repository": {
+    "owner": "zowe",
+    "repo": "zowe-install-packaging"
+  },
+  "branch": "hrishikesh-nalawade/GH4035/v2-2-test-snapshot-for-hsts-header-issue",
+  "workflow": "Zowe CICD Integration Tests",
+  "job": "cicd-test",
+  "actor": "zowe-robot",
+  "runId": 14713483377,
+  "runNumber": 6524,
+  "link": "https://github.com/zowe/zowe-install-packaging/actions/runs/14713483377"
+}
