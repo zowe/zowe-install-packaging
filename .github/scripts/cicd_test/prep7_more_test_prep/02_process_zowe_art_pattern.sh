@@ -54,7 +54,7 @@ else
 fi
 
 if [[ -n "$use_defaut" ]]; then
-    if [[ "$MATRIX_TEST" == *install-fmid.ts ]] || [[ "$MATRIX_TEST" == *install-ptf.ts ]]; then
+    if [[ "$MATRIX_TEST" == *install-fmid.ts ]] || [[ "$MATRIX_TEST" == *install-ptf.ts ]] || [[ "$MATRIX_TEST" == *install-base-then-upgrade.ts ]]; then
         zowe_artifactory_pattern_interim="$DEFAULT_ZOWE_SMPE_ARTIFACTORY_PATTERN"
     else
         zowe_artifactory_pattern_interim="$DEFAULT_ZOWE_PAX_ARTIFACTORY_PATTERN"
