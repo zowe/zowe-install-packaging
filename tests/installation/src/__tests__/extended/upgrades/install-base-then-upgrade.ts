@@ -30,12 +30,12 @@ describe(testSuiteName, () => {
       testSuiteName,
       process.env.TEST_SERVER,
       {
-        'skip_start': 'false',
+        'zowe_custom_for_test': 'true'
       },
       {
         'zowe_build_local': process.env['ZOWE_BUILD_LOCAL'],
-        'zowe_custom_for_test': 'true',
-        'zowe_ptf_configure': 'false',
+        'zowe_custom_for_test': 'false',
+        'zowe_ptf_configure': false,
         'zowe_lock_keystore': 'false',
       }
     );
