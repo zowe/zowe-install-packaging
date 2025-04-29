@@ -423,11 +423,13 @@ if (fs.fileExists(`${workspaceDirectory}/.init-for-container`)) {
 
 // Fix node.js piles up in IPC message queue
 // run this before any node command we start
-if (os.platform == 'zos') {
-  common.printFormattedTrace("ZWELS", "zwe-internal-start-prepare", "Clean up IPC message queue before using node.js.");
-  shell.execSync('sh', `${runtimeDirectory}/bin/utils/cleanup-ipc-mq.sh`);
+const cleanupIpc = shell.execSync('sh', '-c', `. ${runtimeDirectory}/bin/commands/internal/utils/cleanup-ipcmq/index.sh`);
+if (cleanupIpc.rc > 0) {
+  // Only log the problem; cleanup happens through launcher as well and is not a fatal error
+  common.printDebug(`Cleanup IPC Error:\n ${cleanupIpc.err}\nOutput: ${cleanupIpc.out}\n, RC: ${cleanupIpc.rc}\n`);
+  common.printDebug('Cleanup IPC Message Queues failed. Continuing.')
 }
-
+common.printDebug(`Cleanup IPC completed.`);
 
 // display starting information
 let manifestReturn = shell.execOutSync('cat', `${runtimeDirectory}/manifest.json`);
