@@ -34,7 +34,7 @@ describe(testSuiteName, () => {
       },
       {
         'zowe_build_local': process.env['ZOWE_BUILD_LOCAL'],
-        'zowe_custom_for_test': 'false',
+        'zowe_custom_for_test': false,
         'zowe_ptf_configure': false,
         'zowe_lock_keystore': 'false',
       }
