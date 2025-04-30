@@ -10,7 +10,6 @@
 # Copyright IBM Corporation 2020
 ################################################################################
 
-
 # node.js instance is not fully cleaned up when exits. As time going, the message
 # queue will be full and any node.js command will generate this error:
 #
@@ -27,19 +26,25 @@
 # This is proper way to cleanup IPC message queues.
 
 id=$(id -nu)
-for s in $(ipcs -a | awk 'match($1,"q|m|s") && $5 == "'${id}'" {print $1","$2":"$16}'); do
-    x=${s%%:*}
-    pid=${s##*:}
-    type=${x%%,*}
-    num=${x##*,}
-    if [[ $pid -gt 0 ]]; then
-        kill -0 "$pid" 1>/dev/null 2>&1
-        if [ $? -eq 0 ]; then
-            true
-        else
-            ipcrm -$type $num
-        fi
+# Trying to capture columns T, ID, and second to last column, which for q=LSPID, m=CPID
+for s in $(cat $ipcs_dump | awk 'match($1,"q|m") && $5 == "'${id}'" {print $1","$2":"$(NF-1)}'); do
+  x=${s%%:*}
+  pid=${s##*:}
+  type=${x%%,*}
+  num=${x##*,}
+  if [[ $pid -gt 0 ]]; then
+    kill -0 "$pid" 1>/dev/null 2>&1
+    if [ $? -eq 0 ]; then
+      true
     else
-        ipcrm -$type $num
+      ipcrm -$type $num
     fi
+  fi
+done
+
+# Trying to capture columns T, ID. Type=S has no PID to capture
+for s in $(cat $ipcs_dump | awk 'match($1,"s") && $5 == "'${id}'" {print $1","$2}'); do
+  type=${s%%,*}
+  num=${s##*,}
+  ipcrm -$type $num
 done
