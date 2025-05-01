@@ -421,16 +421,6 @@ if (fs.fileExists(`${workspaceDirectory}/.init-for-container`)) {
   std.setenv('ZWE_RUN_IN_CONTAINER', 'true');
 }
 
-// Fix node.js piles up in IPC message queue
-// run this before any node command we start
-const cleanupIpc = shell.execSync('sh', '-c', `. ${runtimeDirectory}/bin/commands/internal/utils/cleanup-ipcmq/index.sh`);
-if (cleanupIpc.rc > 0) {
-  // Only log the problem; cleanup happens through launcher as well and is not a fatal error
-  common.printDebug(`Cleanup IPC Error:\n ${cleanupIpc.err}\nOutput: ${cleanupIpc.out}\n, RC: ${cleanupIpc.rc}\n`);
-  common.printDebug('Cleanup IPC Message Queues failed. Continuing.')
-}
-common.printDebug(`Cleanup IPC completed.`);
-
 // display starting information
 let manifestReturn = shell.execOutSync('cat', `${runtimeDirectory}/manifest.json`);
 
