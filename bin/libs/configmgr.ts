@@ -364,6 +364,7 @@ function updateConfig(configName: string, updateObj: any, arrayMergeStrategy: nu
       if (validation.exceptionTree) {
         console.log(`Error: Validation of update to ${configName} found invalid JSON Schema data`);
         showExceptions(validation.exceptionTree, 0);
+        return 1;
       } else {
         CONFIG_REVISIONS[configName]=revision;
         return status;

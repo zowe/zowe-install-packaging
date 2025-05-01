@@ -43,13 +43,13 @@ init_missing_yaml_properties() {
     if [ -n "${update_node_home}" -o -n "${update_java_home}" -o -n "${update_zowe_runtime_dir}" ]; then
       if [ "${ZWE_CLI_PARAMETER_UPDATE_CONFIG}" = "true" ]; then
         if [ -n "${update_node_home}" ]; then
-          update_zowe_yaml "${ZWE_CLI_PARAMETER_CONFIG}" "node.home" "${update_node_home}"
+          update_zowe_yaml_configmgr "${ZWE_CLI_PARAMETER_CONFIG}" "node.home" "${update_node_home}"
         fi
         if [ -n "${update_java_home}" ]; then
-          update_zowe_yaml "${ZWE_CLI_PARAMETER_CONFIG}" "java.home" "${update_java_home}"
+          update_zowe_yaml_configmgr "${ZWE_CLI_PARAMETER_CONFIG}" "java.home" "${update_java_home}"
         fi
         if [ -n "${update_zowe_runtime_dir}" ]; then
-          update_zowe_yaml "${ZWE_CLI_PARAMETER_CONFIG}" "zowe.runtimeDirectory" "${update_zowe_runtime_dir}"
+          update_zowe_yaml_configmgr "${ZWE_CLI_PARAMETER_CONFIG}" "zowe.runtimeDirectory" "${update_zowe_runtime_dir}"
         fi
 
         print_level2_message "Runtime directory, Java and/or node.js settings are updated successfully."
@@ -135,51 +135,34 @@ shell_read_yaml_config() {
   fi
 }
 
-read_yaml() {
+update_yaml_configmgr() {
   file="${1}"
   key="${2}"
-  ignore_null="${3:-true}"
+  val="${3}"
+  expected_sample="${4}"
 
-  utils_dir="${ZWE_zowe_runtimeDirectory}/bin/utils"
-  fconv="${utils_dir}/fconv/src/index.js"
-  jq="${utils_dir}/njq/src/index.js"
+  configmgr="${ZWE_zowe_runtimeDirectory}/bin/utils/configmgr"
+  updateYaml="${ZWE_zowe_runtimeDirectory}/bin/utils/UpdateYaml.js"
 
-  print_trace "- read_yaml load content from ${file}"
-  ZWE_PRIVATE_YAML_CACHE=$(node "${fconv}" --input-format=yaml "${file}" 2>&1)
+  print_message "- update \"${key}\" with value: ${val}"
+  result=$(_CEE_RUNOPTS="XPLINK(ON)" "${configmgr}" -script "$updateYaml" "$file" "$key" "$val" 2>&1)
   code=$?
-  print_trace "  * Exit code: ${code}"
-  if [ ${code} -ne 0 ]; then
-    # Check for "node ... FSUM7351 not found". Common user error that we can solve more quickly by providing advice below.
-    missing_id_check=$(echo "${ZWE_PRIVATE_YAML_CACHE}" | grep "FSUM7351" 2>&1)
-    if [ -n "${missing_id_check}" ]; then
-      print_error "Error ZWEL0323E: NodeJS required but not found. Errors such as ZWEL0157E may occur as a result."
-      print_error "The value 'node.home' in the Zowe YAML is not correct. Set it to the parent directory of 'bin/node'."
-      print_error "For example, if NodeJS is at '/opt/nodejs/bin/node', then set 'node.home' to '/opt/nodejs'."
-    fi
-    print_error "  * Output:"
-    print_error "$(padding_left "${ZWE_PRIVATE_YAML_CACHE}" "    ")"
-    return ${code}
-  fi
-
-  print_trace "- read_yaml ${key} from yaml content"
-  result=$(echo "${ZWE_PRIVATE_YAML_CACHE}" | node "${jq}" -r "${key}" 2>&1)
-  code=$?
-  print_trace "  * Exit code: ${code}"
-  print_trace "  * Output:"
-  if [ -n "${result}" ]; then
-    print_trace "$(padding_left "${result}" "    ")"
-  fi
-
   if [ ${code} -eq 0 ]; then
-    if [ "${ignore_null}" = "true" ]; then
-      if [ "${result}" = "null" -o "${result}" = "undefined" ]; then
-        result=
-      fi
+    print_trace "  * Exit code: ${code}"
+    print_trace "  * Output:"
+    if [ -n "${result}" ]; then
+      print_trace "$(padding_left "${result}" "    ")"
     fi
-    printf "${result}"
+  else
+    print_error "  * Exit code: ${code}"
+    print_error "  * Output:"
+    if [ -n "${result}" ]; then
+      print_error "$(padding_left "${result}" "    ")"
+    fi
+    print_error_and_exit "Error ZWEL0138E: Failed to update key ${key} of file ${file}." "" 138
   fi
 
-  return ${code}
+  ensure_file_encoding "${file}" "${expected_sample}"
 }
 
 read_yaml_configmgr() {
@@ -258,38 +241,8 @@ read_json_string() {
   return ${code}
 }
 
-update_yaml() {
-  file="${1}"
-  key="${2}"
-  val="${3}"
-  expected_sample="${4}"
-
-  utils_dir="${ZWE_zowe_runtimeDirectory}/bin/utils"
-  config_converter="${utils_dir}/config-converter/src/cli.js"
-
-  print_message "- update ${f} \"${key}\" with value: ${val}"
-  result=$(node "${config_converter}" yaml update "${file}" "${key}" "${val}")
-  code=$?
-  if [ ${code} -eq 0 ]; then
-    print_trace "  * Exit code: ${code}"
-    print_trace "  * Output:"
-    if [ -n "${result}" ]; then
-      print_trace "$(padding_left "${result}" "    ")"
-    fi
-  else
-    print_error "  * Exit code: ${code}"
-    print_error "  * Output:"
-    if [ -n "${result}" ]; then
-      print_error "$(padding_left "${result}" "    ")"
-    fi
-    print_error_and_exit "Error ZWEL0138E: Failed to update key ${key} of file ${file}." "" 138
-  fi
-
-  ensure_file_encoding "${file}" "${expected_sample}"
-}
-
-update_zowe_yaml() {
-  update_yaml "${1}" "${2}" "${3}" "zowe:"
+update_zowe_yaml_configmgr() {
+  update_yaml_configmgr "${1}" "${2}" "${3}" "zowe:"
 }
 
 delete_yaml() {

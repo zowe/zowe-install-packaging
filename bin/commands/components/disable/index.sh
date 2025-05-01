@@ -20,19 +20,19 @@ if [ "${USE_CONFIGMGR}" = "true" ]; then
   _CEE_RUNOPTS="XPLINK(ON),HEAPPOOLS(OFF),HEAPPOOLS64(OFF)" ${ZWE_zowe_runtimeDirectory}/bin/utils/configmgr -script "${ZWE_zowe_runtimeDirectory}/bin/commands/components/disable/cli.js"
 else
 
-require_node
-require_zowe_yaml
+  require_node
+  require_zowe_yaml
 
-component_dir=$(find_component_directory "${ZWE_CLI_PARAMETER_COMPONENT_NAME}")
-if [ -z "${component_dir}" ]; then
-  print_error_and_exit "Error ZWEL0152E: Cannot find component ${ZWE_CLI_PARAMETER_COMPONENT_NAME}." "" 152
-fi
-componentCfgPath=
-if [ -n "${ZWE_CLI_PARAMETER_HA_INSTANCE}" ]; then
-  componentCfgPath="haInstances.${ZWE_CLI_PARAMETER_HA_INSTANCE}.components.${ZWE_CLI_PARAMETER_COMPONENT_NAME}"
-else
-  componentCfgPath="components.${ZWE_CLI_PARAMETER_COMPONENT_NAME}"
-fi
-update_zowe_yaml "${ZWE_CLI_PARAMETER_CONFIG}" "${componentCfgPath}.enabled" "false"
+  component_dir=$(find_component_directory "${ZWE_CLI_PARAMETER_COMPONENT_NAME}")
+  if [ -z "${component_dir}" ]; then
+    print_error_and_exit "Error ZWEL0152E: Cannot find component ${ZWE_CLI_PARAMETER_COMPONENT_NAME}." "" 152
+  fi
+  componentCfgPath=
+  if [ -n "${ZWE_CLI_PARAMETER_HA_INSTANCE}" ]; then
+    componentCfgPath="haInstances.${ZWE_CLI_PARAMETER_HA_INSTANCE}.components.${ZWE_CLI_PARAMETER_COMPONENT_NAME}"
+  else
+    componentCfgPath="components.${ZWE_CLI_PARAMETER_COMPONENT_NAME}"
+  fi
+  update_zowe_yaml_configmgr "${ZWE_CLI_PARAMETER_CONFIG}" "${componentCfgPath}.enabled" "false"
 
 fi

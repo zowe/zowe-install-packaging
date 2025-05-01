@@ -38,7 +38,6 @@ export function validateZosmfHostAndPort(zosmfHost: string, zosmfPort: number): 
     } else if (execReturn.out != '200') {
       common.printError(`Could not contact z/OS MF on 'https://${zosmfHost}:${zosmfPort}/zosmf/info' - ${execReturn.out}`);
       zosmfCheckPassed=false
-      return false;
     }
   }
 

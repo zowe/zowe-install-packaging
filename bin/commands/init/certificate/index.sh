@@ -395,18 +395,18 @@ if [ "${cert_type}" = "PKCS12" ]; then
   if [ "${ZWE_CLI_PARAMETER_UPDATE_CONFIG}" = "true" ]; then
     print_level1_message "Update certificate configuration to ${ZWE_CLI_PARAMETER_CONFIG}"
     if [ ! -z "${security_update}" ]; then
-      update_zowe_yaml "${ZWE_CLI_PARAMETER_CONFIG}" $security_update
+      update_zowe_yaml_configmgr "${ZWE_CLI_PARAMETER_CONFIG}" $security_update
     fi
-    update_zowe_yaml "${ZWE_CLI_PARAMETER_CONFIG}" "zowe.certificate.keystore.type" "PKCS12"
-    update_zowe_yaml "${ZWE_CLI_PARAMETER_CONFIG}" "zowe.certificate.keystore.file" "${pkcs12_directory}/${pkcs12_name}/${pkcs12_name}.keystore.p12"
-    update_zowe_yaml "${ZWE_CLI_PARAMETER_CONFIG}" "zowe.certificate.keystore.password" "${pkcs12_password}"
-    update_zowe_yaml "${ZWE_CLI_PARAMETER_CONFIG}" "zowe.certificate.keystore.alias" "${pkcs12_name_lc}"
-    update_zowe_yaml "${ZWE_CLI_PARAMETER_CONFIG}" "zowe.certificate.truststore.type" "PKCS12"
-    update_zowe_yaml "${ZWE_CLI_PARAMETER_CONFIG}" "zowe.certificate.truststore.file" "${pkcs12_directory}/${pkcs12_name}/${pkcs12_name}.truststore.p12"
-    update_zowe_yaml "${ZWE_CLI_PARAMETER_CONFIG}" "zowe.certificate.truststore.password" "${pkcs12_password}"
-    update_zowe_yaml "${ZWE_CLI_PARAMETER_CONFIG}" "zowe.certificate.pem.key" "${pkcs12_directory}/${pkcs12_name}/${pkcs12_name_lc}.key"
-    update_zowe_yaml "${ZWE_CLI_PARAMETER_CONFIG}" "zowe.certificate.pem.certificate" "${pkcs12_directory}/${pkcs12_name}/${pkcs12_name_lc}.cer"
-    update_zowe_yaml "${ZWE_CLI_PARAMETER_CONFIG}" "zowe.certificate.pem.certificateAuthorities" "${yaml_pem_cas}"
+    update_zowe_yaml_configmgr "${ZWE_CLI_PARAMETER_CONFIG}" "zowe.certificate.keystore.type" "PKCS12"
+    update_zowe_yaml_configmgr "${ZWE_CLI_PARAMETER_CONFIG}" "zowe.certificate.keystore.file" "${pkcs12_directory}/${pkcs12_name}/${pkcs12_name}.keystore.p12"
+    update_zowe_yaml_configmgr "${ZWE_CLI_PARAMETER_CONFIG}" "zowe.certificate.keystore.password" "${pkcs12_password}"
+    update_zowe_yaml_configmgr "${ZWE_CLI_PARAMETER_CONFIG}" "zowe.certificate.keystore.alias" "${pkcs12_name_lc}"
+    update_zowe_yaml_configmgr "${ZWE_CLI_PARAMETER_CONFIG}" "zowe.certificate.truststore.type" "PKCS12"
+    update_zowe_yaml_configmgr "${ZWE_CLI_PARAMETER_CONFIG}" "zowe.certificate.truststore.file" "${pkcs12_directory}/${pkcs12_name}/${pkcs12_name}.truststore.p12"
+    update_zowe_yaml_configmgr "${ZWE_CLI_PARAMETER_CONFIG}" "zowe.certificate.truststore.password" "${pkcs12_password}"
+    update_zowe_yaml_configmgr "${ZWE_CLI_PARAMETER_CONFIG}" "zowe.certificate.pem.key" "${pkcs12_directory}/${pkcs12_name}/${pkcs12_name_lc}.key"
+    update_zowe_yaml_configmgr "${ZWE_CLI_PARAMETER_CONFIG}" "zowe.certificate.pem.certificate" "${pkcs12_directory}/${pkcs12_name}/${pkcs12_name_lc}.cer"
+    update_zowe_yaml_configmgr "${ZWE_CLI_PARAMETER_CONFIG}" "zowe.certificate.pem.certificateAuthorities" "${yaml_pem_cas}"
     print_level2_message "Zowe configuration is updated successfully."
   else
     print_level1_message "Update certificate configuration to ${ZWE_CLI_PARAMETER_CONFIG}"
@@ -479,17 +479,17 @@ else # JCE* content
   if [ "${ZWE_CLI_PARAMETER_UPDATE_CONFIG}" = "true" ]; then
     print_level1_message "Update certificate configuration to ${ZWE_CLI_PARAMETER_CONFIG}"
     if [ ! -z "${security_update}" ]; then
-      update_zowe_yaml "${ZWE_CLI_PARAMETER_CONFIG}" $security_update
+      update_zowe_yaml_configmgr "${ZWE_CLI_PARAMETER_CONFIG}" $security_update
     fi
-    update_zowe_yaml "${ZWE_CLI_PARAMETER_CONFIG}" "zowe.certificate.keystore.type" "${cert_type}"
-    update_zowe_yaml "${ZWE_CLI_PARAMETER_CONFIG}" "zowe.certificate.keystore.file" "safkeyring://${keyring_owner}/${keyring_name}"
+    update_zowe_yaml_configmgr "${ZWE_CLI_PARAMETER_CONFIG}" "zowe.certificate.keystore.type" "${cert_type}"
+    update_zowe_yaml_configmgr "${ZWE_CLI_PARAMETER_CONFIG}" "zowe.certificate.keystore.file" "safkeyring://${keyring_owner}/${keyring_name}"
     # we must set a dummy value here, other JDK will complain wrong parameter
-    update_zowe_yaml "${ZWE_CLI_PARAMETER_CONFIG}" "zowe.certificate.keystore.password" "password"
-    update_zowe_yaml "${ZWE_CLI_PARAMETER_CONFIG}" "zowe.certificate.keystore.alias" "${yaml_keyring_label}"
-    update_zowe_yaml "${ZWE_CLI_PARAMETER_CONFIG}" "zowe.certificate.truststore.type" "${cert_type}"
-    update_zowe_yaml "${ZWE_CLI_PARAMETER_CONFIG}" "zowe.certificate.truststore.file" "safkeyring://${keyring_owner}/${keyring_name}"
+    update_zowe_yaml_configmgr "${ZWE_CLI_PARAMETER_CONFIG}" "zowe.certificate.keystore.password" "password"
+    update_zowe_yaml_configmgr "${ZWE_CLI_PARAMETER_CONFIG}" "zowe.certificate.keystore.alias" "${yaml_keyring_label}"
+    update_zowe_yaml_configmgr "${ZWE_CLI_PARAMETER_CONFIG}" "zowe.certificate.truststore.type" "${cert_type}"
+    update_zowe_yaml_configmgr "${ZWE_CLI_PARAMETER_CONFIG}" "zowe.certificate.truststore.file" "safkeyring://${keyring_owner}/${keyring_name}"
     # we must set a dummy value here, other JDK will complain wrong parameter
-    update_zowe_yaml "${ZWE_CLI_PARAMETER_CONFIG}" "zowe.certificate.truststore.password" "password"
+    update_zowe_yaml_configmgr "${ZWE_CLI_PARAMETER_CONFIG}" "zowe.certificate.truststore.password" "password"
     print_level2_message "Zowe configuration is updated successfully."
   else
     print_level1_message "Update certificate configuration to ${ZWE_CLI_PARAMETER_CONFIG}"
