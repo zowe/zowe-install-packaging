@@ -27,7 +27,7 @@
 
 id=$(id -nu)
 # Trying to capture columns T, ID, and second to last column, which for q=LSPID, m=CPID
-for s in $(cat $ipcs_dump | awk 'match($1,"q|m") && $5 == "'${id}'" {print $1","$2":"$(NF-1)}'); do
+for s in $(ipcs -a | awk 'match($1,"q|m") && $5 == "'${id}'" {print $1","$2":"$(NF-1)}'); do
   x=${s%%:*}
   pid=${s##*:}
   type=${x%%,*}
@@ -43,7 +43,7 @@ for s in $(cat $ipcs_dump | awk 'match($1,"q|m") && $5 == "'${id}'" {print $1","
 done
 
 # Trying to capture columns T, ID. Type=S has no PID to capture
-for s in $(cat $ipcs_dump | awk 'match($1,"s") && $5 == "'${id}'" {print $1","$2}'); do
+for s in $(ipcs -a | awk 'match($1,"s") && $5 == "'${id}'" {print $1","$2}'); do
   type=${s%%,*}
   num=${s##*,}
   ipcrm -$type $num
