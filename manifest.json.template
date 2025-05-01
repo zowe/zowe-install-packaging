@@ -109,7 +109,7 @@
       "artifact": "*.pax"
     },
     "org.zowe.launcher": {
-      "version": "^3.3.0-PR-148"
+      "version": "^3.0.0-STAGING"
     },
     "org.zowe.keyring-utilities": {
       "version": "1.0.4",
