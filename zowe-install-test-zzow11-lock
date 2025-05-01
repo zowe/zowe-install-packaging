@@ -1,1 +1,15 @@
-""
+{
+  "lockAcquiredTime": "Thu May 01 2025 15:43:43 GMT+0000 (Coordinated Universal Time)",
+  "uid": "1746114223569744350",
+  "repository": {
+    "owner": "zowe",
+    "repo": "zowe-install-packaging"
+  },
+  "branch": "user/markackert/ipc-cleanup",
+  "workflow": "Zowe CICD Integration Tests",
+  "job": "cicd-test",
+  "actor": "zowe-robot",
+  "runId": 14778315529,
+  "runNumber": 6543,
+  "link": "https://github.com/zowe/zowe-install-packaging/actions/runs/14778315529"
+}
