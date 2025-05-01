@@ -16,21 +16,21 @@ if [ "${USE_CONFIGMGR}" = "true" ]; then
   _CEE_RUNOPTS="XPLINK(ON),HEAPPOOLS(OFF),HEAPPOOLS64(OFF)" ${ZWE_zowe_runtimeDirectory}/bin/utils/configmgr -script "${ZWE_zowe_runtimeDirectory}/bin/commands/internal/config/set/cli.js"
 else
 
-###############################
-# validation
-require_zowe_yaml
+  ###############################
+  # validation
+  require_zowe_yaml
 
-###############################
-if [ -n "${ZWE_CLI_PARAMETER_HA_INSTANCE}" ]; then
-  # check and sanitize ZWE_CLI_PARAMETER_HA_INSTANCE
-  sanitize_ha_instance_id
-  if [[ "${ZWE_CLI_PARAMETER_PATH}" != "haInstances.${ZWE_CLI_PARAMETER_HA_INSTANCE}."* ]]; then
-    update_zowe_yaml "${ZWE_CLI_PARAMETER_CONFIG}" "haInstances.${ZWE_CLI_PARAMETER_HA_INSTANCE}.${ZWE_CLI_PARAMETER_PATH}" "${ZWE_CLI_PARAMETER_VALUE}"
+  ###############################
+  if [ -n "${ZWE_CLI_PARAMETER_HA_INSTANCE}" ]; then
+    # check and sanitize ZWE_CLI_PARAMETER_HA_INSTANCE
+    sanitize_ha_instance_id
+    if [[ "${ZWE_CLI_PARAMETER_PATH}" != "haInstances.${ZWE_CLI_PARAMETER_HA_INSTANCE}."* ]]; then
+      update_zowe_yaml_configmgr "${ZWE_CLI_PARAMETER_CONFIG}" "haInstances.${ZWE_CLI_PARAMETER_HA_INSTANCE}.${ZWE_CLI_PARAMETER_PATH}" "${ZWE_CLI_PARAMETER_VALUE}"
+    else
+      update_zowe_yaml_configmgr "${ZWE_CLI_PARAMETER_CONFIG}" "${ZWE_CLI_PARAMETER_PATH}" "${ZWE_CLI_PARAMETER_VALUE}"
+    fi
   else
-    update_zowe_yaml "${ZWE_CLI_PARAMETER_CONFIG}" "${ZWE_CLI_PARAMETER_PATH}" "${ZWE_CLI_PARAMETER_VALUE}"
+    update_zowe_yaml_configmgr "${ZWE_CLI_PARAMETER_CONFIG}" "${ZWE_CLI_PARAMETER_PATH}" "${ZWE_CLI_PARAMETER_VALUE}"
   fi
-else
-  update_zowe_yaml "${ZWE_CLI_PARAMETER_CONFIG}" "${ZWE_CLI_PARAMETER_PATH}" "${ZWE_CLI_PARAMETER_VALUE}"
-fi
 
 fi

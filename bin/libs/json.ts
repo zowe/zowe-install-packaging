@@ -70,15 +70,17 @@ export function readJsonString(input: string, key: string): any {
   return fakejq.jqget(JSON.parse(input), key);
 }
 
-export function updateZoweYaml(file: string, key: string, val: any) {
+export function updateZoweYaml(file: string, key: string, val: any): number {
   common.printMessage(`- update zowe config ${file}, key: "${key}" with value: ${val}`);
   let [ success, updateObj ] = fakejq.jqset({}, key, val);
   
   if (success) {
     common.printMessage(`  * Success`);
-    config.updateZoweConfig(updateObj, true, 1); //TODO externalize array merge strategy = 1
+    const updateResult = config.updateZoweConfig(updateObj, true, 1); //TODO externalize array merge strategy = 1
+    return updateResult[0];
   } else {
     common.printError(`  * Error`); 
+    return -1;
   }
 }
 
