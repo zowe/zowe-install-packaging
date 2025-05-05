@@ -106,7 +106,7 @@ function getTempMergedYamlDir(): string|number {
     const mkdirrc = fs.mkdirp(zwePrivateWorkspaceEnvDir, 0o700);
     if (mkdirrc) { return mkdirrc; }
 
-    if (!std.getenv('ZWE_CLI_PARAMETER_SILENT')) {
+    if (!std.getenv('ZWE_CLI_PARAMETER_SILENT') && std.getenv('ZWE_PRIVATE_LOG_LEVEL_ZWELS')) {
       console.log(`Temporary directory '${zwePrivateWorkspaceEnvDir}' created.\nZowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.`);
     }
     return zwePrivateWorkspaceEnvDir;
