@@ -43,6 +43,14 @@ export function getZoweConfig(): any {
   return configmgr.ZOWE_CONFIG;
 }
 
+export function deleteFromZoweCfgFile(file: string, deleteKey: string): any {
+  return configmgr.deleteFromZoweCfgFile(file, deleteKey);
+}
+
+export function updateZoweCfgFile(file: string, updateObj: any, arrayMergeStrategy): any {
+  return configmgr.updateZoweCfgFile(file, updateObj, arrayMergeStrategy);
+}
+
 export function updateZoweConfig(updateObj: any, writeUpdate: boolean, arrayMergeStrategy: number): any {
   return configmgr.updateZoweConfig(updateObj, writeUpdate, arrayMergeStrategy);
 }

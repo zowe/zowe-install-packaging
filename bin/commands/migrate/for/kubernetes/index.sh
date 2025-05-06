@@ -186,10 +186,10 @@ fi
 # update zowe.yaml suitable for k8s
 print_level1_message "Update zowe.yaml configuration for Kubernetes"
 
-delete_zowe_yaml "${temp_dir}/zowe.yaml" "java.home"
-delete_zowe_yaml "${temp_dir}/zowe.yaml" "node.home"
-delete_zowe_yaml "${temp_dir}/zowe.yaml" "haInstances"
-delete_zowe_yaml "${temp_dir}/zowe.yaml" "zowe.externalDomains"
+delete_zowe_yaml_configmgr "${temp_dir}/zowe.yaml" "java.home"
+delete_zowe_yaml_configmgr "${temp_dir}/zowe.yaml" "node.home"
+delete_zowe_yaml_configmgr "${temp_dir}/zowe.yaml" "haInstances"
+delete_zowe_yaml_configmgr "${temp_dir}/zowe.yaml" "zowe.externalDomains"
 
 update_zowe_yaml_configmgr "${temp_dir}/zowe.yaml" "zowe.useConfigmgr" "false"
 update_zowe_yaml_configmgr "${temp_dir}/zowe.yaml" "zowe.runtimeDirectory" "${ZWE_PRIVATE_CONTAINER_RUNTIME_DIRECTORY}"

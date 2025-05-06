@@ -70,13 +70,37 @@ export function readJsonString(input: string, key: string): any {
   return fakejq.jqget(JSON.parse(input), key);
 }
 
+/**
+ * Deletes the YAML key in the zowe.yaml file passed by the caller. Always overwrites on-disk.
+ * 
+ * Example: `deleteZoweYaml('/path/to/zowe.yaml', 'components.zss.enabled');
+ * 
+ * @param file 
+ * @param key 
+ * @returns 
+ */
+export function deleteZoweYaml(file: string, key: string): number {
+  common.printMessage(`- delete zowe config ${file}, key: ${key}`);
+  const deleteResult = config.deleteFromZoweCfgFile(file, key);
+  return deleteResult[0];
+}
+
+/**
+ * Updates the YAML key in the zowe.yaml passed by the caller with val. Always overwrites on-disk.
+ * 
+ * Example: `updateZoweYaml('/path/to/zowe.yaml', 'components.zss.enabled', true);
+ * 
+ * @param file 
+ * @param key 
+ * @param val 
+ * @returns 
+ */
 export function updateZoweYaml(file: string, key: string, val: any): number {
   common.printMessage(`- update zowe config ${file}, key: "${key}" with value: ${val}`);
   let [ success, updateObj ] = fakejq.jqset({}, key, val);
-  
   if (success) {
     common.printMessage(`  * Success`);
-    const updateResult = config.updateZoweConfig(updateObj, true, 1); //TODO externalize array merge strategy = 1
+    const updateResult = config.updateZoweCfgFile(file, updateObj, 1);
     return updateResult[0];
   } else {
     common.printError(`  * Error`); 
@@ -84,7 +108,12 @@ export function updateZoweYaml(file: string, key: string, val: any): number {
   }
 }
 
-export function updateZoweYamlFromObj(file: string, updateObj: any) {
-  common.printMessage(`- update zowe config ${file} with obj=${JSON.stringify(updateObj, null, 2)}`);
+/**
+ * Updates the in-use zowe.yaml provided via ZWE_CLI_PARAMETER_CONFIG with the contents of `updateObj`
+ * 
+ * @param updateObj 
+ */
+export function updateZoweYamlFromObj(updateObj: any) {
+  common.printMessage(`- update zowe config ${std.getenv('ZWE_CLI_PARAMETER_CONFIG')} with obj=${JSON.stringify(updateObj, null, 2)}`);
   config.updateZoweConfig(updateObj, true, 1); //TODO externalize array merge strategy = 1
 }

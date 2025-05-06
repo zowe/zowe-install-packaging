@@ -142,10 +142,10 @@ update_yaml_configmgr() {
   expected_sample="${4}"
 
   configmgr="${ZWE_zowe_runtimeDirectory}/bin/utils/configmgr"
-  updateYaml="${ZWE_zowe_runtimeDirectory}/bin/utils/UpdateYaml.js"
+  updateYaml="${ZWE_zowe_runtimeDirectory}/bin/utils/ModifyZoweYaml.js"
 
   print_message "- update \"${key}\" with value: ${val}"
-  result=$(_CEE_RUNOPTS="XPLINK(ON)" "${configmgr}" -script "$updateYaml" "$file" "$key" "$val" 2>&1)
+  result=$(_CEE_RUNOPTS="XPLINK(ON)" "${configmgr}" -script "$updateYaml" update "$file" "$key" "$val" 2>&1)
   code=$?
   if [ ${code} -eq 0 ]; then
     print_trace "  * Exit code: ${code}"
@@ -245,16 +245,17 @@ update_zowe_yaml_configmgr() {
   update_yaml_configmgr "${1}" "${2}" "${3}" "zowe:"
 }
 
-delete_yaml() {
+delete_yaml_configmgr() {
   file="${1}"
   key="${2}"
-  expected_sample="${3}"
+  val="${3}"
+  expected_sample="${4}"
 
-  utils_dir="${ZWE_zowe_runtimeDirectory}/bin/utils"
-  config_converter="${utils_dir}/config-converter/src/cli.js"
+  configmgr="${ZWE_zowe_runtimeDirectory}/bin/utils/configmgr"
+  updateYaml="${ZWE_zowe_runtimeDirectory}/bin/utils/ModifyZoweYaml.js"
 
   print_message "- delete \"${key}\""
-  result=$(node "${config_converter}" yaml delete "${file}" "${key}")
+  result=$(_CEE_RUNOPTS="XPLINK(ON)" "${configmgr}" -script "$updateYaml" delete "$file" "$key" 2>&1)
   code=$?
   if [ ${code} -eq 0 ]; then
     print_trace "  * Exit code: ${code}"
@@ -274,6 +275,6 @@ delete_yaml() {
   ensure_file_encoding "${file}" "${expected_sample}"
 }
 
-delete_zowe_yaml() {
-  delete_yaml "${1}" "${2}" "zowe:"
+delete_zowe_yaml_configmgr() {
+  delete_yaml_configmgr "${1}" "${2}" "zowe:"
 }
