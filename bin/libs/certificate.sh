@@ -918,57 +918,30 @@ EOF
   tmpdsm=$(create_data_set_tmp_member "${jcllib}" "ZW$(date +%H%M)")
   print_debug "  > data set member: ${jcllib}(tmpdsm)"
   print_debug "- Copy ${prefix}.${ZWE_PRIVATE_DS_SZWESAMP}(ZWEKRING) to ${tmpfile}"
-  result=$(cat "//'${prefix}.${ZWE_PRIVATE_DS_SZWESAMP}(ZWEKRING)'" | \
-          sed  "s/^\/\/ \+SET \+PRODUCT=.*\$/\/\/         SET  PRODUCT=${security_product}/" | \
-          sed "s/^\/\/ \+SET \+ZOWEUSER=.*\$/\/\/         SET  ZOWEUSER=${keyring_owner:-${ZWE_PRIVATE_DEFAULT_ZOWE_USER}}/" | \
-          sed "s/^\/\/ \+SET \+ZOWERING=.*\$/\/\/         SET  ZOWERING='${keyring_name}'/" | \
-          sed   "s/^\/\/ \+SET \+OPTION=.*\$/\/\/         SET  OPTION=${jcloption}/" | \
-          sed    "s/^\/\/ \+SET \+LABEL=.*\$/\/\/         SET  LABEL='${alias}'/" | \
-          sed  "s/^\/\/ \+SET \+LOCALCA=.*\$/\/\/         SET  LOCALCA='${ca_alias}'/" | \
-          sed       "s/^\/\/ \+SET \+CN=.*\$/\/\/         SET  CN='${ZWE_PRIVATE_CERTIFICATE_COMMON_NAME:-${ZWE_PRIVATE_DEFAULT_CERTIFICATE_COMMON_NAME}}'/" | \
-          sed       "s/^\/\/ \+SET \+OU=.*\$/\/\/         SET  OU='${ZWE_PRIVATE_CERTIFICATE_ORG_UNIT:-${ZWE_PRIVATE_DEFAULT_CERTIFICATE_ORG_UNIT}}'/" | \
-          sed        "s/^\/\/ \+SET \+O=.*\$/\/\/         SET  O='${ZWE_PRIVATE_CERTIFICATE_ORG:-${ZWE_PRIVATE_DEFAULT_CERTIFICATE_ORG}}'/" | \
-          sed        "s/^\/\/ \+SET \+L=.*\$/\/\/         SET  L='${ZWE_PRIVATE_CERTIFICATE_LOCALITY:-${ZWE_PRIVATE_DEFAULT_CERTIFICATE_LOCALITY}}'/" | \
-          sed       "s/^\/\/ \+SET \+SP=.*\$/\/\/         SET  SP='${ZWE_PRIVATE_CERTIFICATE_STATE:-${ZWE_PRIVATE_DEFAULT_CERTIFICATE_STATE}}'/" | \
-          sed        "s/^\/\/ \+SET \+C=.*\$/\/\/         SET  C='${ZWE_PRIVATE_CERTIFICATE_COUNTRY:-${ZWE_PRIVATE_DEFAULT_CERTIFICATE_COUNTRY}}'/" | \
-          sed "s/^\/\/ \+SET \+HOSTNAME=.*\$/\/\/         SET  HOSTNAME='${domain_name}'/" | \
-          sed "s/^\/\/ \+SET \+IPADDRES=.*\$/\/\/         SET  IPADDRES='${ip_address}'/" | \
-          sed   "s/^\/\/ \+SET \+DSNAME=.*\$/\/\/         SET  DSNAME=${import_ds_name}/" | \
-          sed "s/^\/\/ \+SET \+PKCSPASS=.*\$/\/\/         SET  PKCSPASS='${import_ds_password}'/" | \
-          sed "s/^\/\/ \+SET \+IFZOWECA=.*\$/\/\/         SET  IFZOWECA=${import_ext_ca}/" | \
-          sed "s/^\/\/ \+SET \+ITRMZWCA=.*\$/\/\/         SET  ITRMZWCA='${import_ext_intermediate_ca_label}'/" | \
-          sed "s/^\/\/ \+SET \+ROOTZWCA=.*\$/\/\/         SET  ROOTZWCA='${import_ext_root_ca_label}'/" | \
-          sed "s/^\/\/ \+SET \+IFROZFCA=.*\$/\/\/         SET  IFROZFCA=${trust_zosmf}/" | \
-          sed "s/^\/\/ \+SET \+ROOTZFCA=.*\$/\/\/         SET  ROOTZFCA='${zosmf_root_ca}'/" | \
-          sed   "s/^\/\/ \+SET \+STCGRP=.*\$/\/\/         SET  STCGRP=${stc_group}/" | \
-          sed "${racf_connect1}" | \
-          sed "${racf_connect2}" | \
-          sed "${acf2_connect}" | \
-          sed "${tss_connect}" | \
-          sed  "s/2030-05-01/${validity_ymd}/g" | \
-          sed  "s#05/01/30#${validity_mdy}#g" \
-          > "${tmpfile}")
-  code=$?
-  chmod 700 "${tmpfile}"
-  if [ ${code} -eq 0 ]; then
-    print_debug "  * Succeeded"
-    print_trace "  * Exit code: ${code}"
-    print_trace "  * Output:"
-    if [ -n "${result}" ]; then
-      print_trace "$(padding_left "${result}" "    ")"
-    fi
-  else
-    print_debug "  * Failed"
-    print_error "  * Exit code: ${code}"
-    print_error "  * Output:"
-    if [ -n "${result}" ]; then
-      print_error "$(padding_left "${result}" "    ")"
-    fi
-  fi
-  if [ ! -f "${tmpfile}" ]; then
-    print_error "Error ZWEL0159E: Failed to modify ${prefix}.${ZWE_PRIVATE_DS_SZWESAMP}(ZWEKRING)"
-    return 159
-  fi
+cat "//'${prefix}.${ZWE_PRIVATE_DS_SZWESAMP}(ZWEKRING)'" | \
+  sed "s/^\/\/ \+SET \+PRODUCT=.*/\/\/         SET  PRODUCT=${security_product}/" | \
+  ... (all other sed lines) ... \
+  > "${tmpfile}"
+
+code=$?
+chmod 700 "${tmpfile}"
+
+if [ ${code} -eq 0 ]; then
+  print_debug "  * Succeeded"
+  print_trace "  * Exit code: ${code}"
+  print_trace "  * Output:"
+  print_trace "$(padding_left "$(cat "${tmpfile}")" "    ")"
+else
+  print_debug "  * Failed"
+  print_error "  * Exit code: ${code}"
+  print_error "  * Output:"
+  print_error "$(padding_left "$(cat "${tmpfile}")" "    ")"
+fi
+
+if [ ! -f "${tmpfile}" ]; then
+  print_error "Error ZWEL0159E: Failed to modify ${prefix}.${ZWE_PRIVATE_DS_SZWESAMP}(ZWEKRING)"
+  return 159
+fi
   print_trace "- Ensure ${tmpfile} encoding before copying into data set"
   ensure_file_encoding "${tmpfile}" "SPDX-License-Identifier"
   print_trace "- ${tmpfile} created, copy to ${jcllib}(${tmpdsm})"
