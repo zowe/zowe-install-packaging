@@ -106,11 +106,11 @@
       "artifact": "*.pax"
     },
     "org.zowe.configmgr": {
-      "version": "^3.0.0-V3.X-STAGING",
+      "version": "^3.2.0-USER-MARKACKERT-DELETEJSONAPI",
       "artifact": "*.pax"
     },
     "org.zowe.configmgr-rexx": {
-      "version": "^3.0.0-V3.X-STAGING",
+      "version": "^3.2.0-USER-MARKACKERT-DELETEJSONAPI",
       "artifact": "*.pax"
     },
     "org.zowe.launcher": {

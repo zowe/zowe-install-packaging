@@ -3,3 +3,6 @@ config-converter/
 fconv/
 ncert/
 njq/
+ObjUtils.js
+ModifyZoweYaml.js
+ConfigConverter.js
