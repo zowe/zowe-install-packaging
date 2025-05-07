@@ -39,6 +39,10 @@ const runtimeDirectory=configmgr.ZOWE_CONFIG.zowe.runtimeDirectory;
 //const extensionDirectory=ZOWE_CONFIG.zowe.extensionDirectory;
 const workspaceDirectory=configmgr.ZOWE_CONFIG.zowe.workspaceDirectory;
 
+export function getZoweConfigFromFile(file: string): any {
+  return configmgr.loadConfig(file, `FILE(${file})`, configmgr.getZoweBaseSchemas());
+}
+
 export function getZoweConfig(): any {
   return configmgr.ZOWE_CONFIG;
 }

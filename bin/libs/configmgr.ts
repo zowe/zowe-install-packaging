@@ -460,6 +460,47 @@ export function updateZoweConfig(updateObj: any, writeUpdate: boolean, arrayMerg
   return [ rc, ZOWE_CONFIG ];
 }
 
+function getMemberNameFromConfigPath(configPath: string): string|undefined {
+  let indexParm = 0;
+  let member = undefined;
+  while (indexParm != -1) {
+    indexParm = configPath.indexOf('PARMLIB(', indexParm);
+    if (indexParm != -1) {
+      const memberStart = configPath.indexOf('(', indexParm+8);
+      if (memberStart == -1) {
+        console.log(`Error: malformed PARMLIB syntax for ${configPath}. Must use syntax PARMLIB(dataset.name(member))`);
+        return undefined;
+      }
+      const memberEnd = configPath.indexOf('))', memberStart+1);
+      if (memberEnd == -1) {
+        console.log(`Error: malformed PARMLIB syntax for ${configPath}. Must use syntax PARMLIB(dataset.name(member))`);
+        return undefined;
+      }
+      const thisMember = configPath.substring(memberStart+1, memberEnd);
+      if (!member) {
+        member = thisMember;
+      } else if (thisMember != member) {
+        console.log(`Error: configmgr does not yet support different member names for PARMLIB. You must use the same member names for all datasets mentioned`);
+        return undefined;
+      }
+      //skip over )):
+      indexParm = memberEnd+3; 
+    }
+  }
+  return member;
+}
+
+function stripMemberName(configPath: string, memberName: string): string {
+  //Turn PARMLIB(my.zowe(yaml)):PARMLIB(my.other.zowe(yaml))
+  //Into PARMLIB(my.zowe):FILE(/some/path.yaml):PARMLIB(my.other.zowe)
+  const replacer = new RegExp('\\('+stringlib.escapeDollar(memberName)+'\\)\\)', 'gi');
+  return configPath.replace(replacer, ")");
+}
+
+export function loadConfig(configName: string, configPath: string, schemas: string) : any {
+  return getConfig(configName, configPath, schemas);
+}
+  
 function getConfig(configName: string, configPath: string, schemas: string): any {
   let configRevisionName = getConfigRevisionName(configName);
   if (Number.isInteger(CONFIG_REVISIONS[configName])) {
