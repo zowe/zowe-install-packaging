@@ -85,6 +85,28 @@ export function deleteZoweYaml(file: string, key: string): number {
   return deleteResult[0];
 }
 
+function buildUpdateObjWithArrays(zoweConfig: any, key: string): any {
+  let updateObj = {};
+    // we have array indices to handle. we'll build out the entire array and set the value with jqset.
+    // Merge strategy: 4 = take overrides.
+    const jqParts = key.split('.');
+    let currObj = updateObj;
+    let currZoweCfg = zoweConfig;
+    for (const part of jqParts) {
+      const matches = /^(.+?)(\[\d+\])*$/.exec(part);
+      const matchKey = matches[1];
+      const matchArrIdx = matches[2];
+      if (matchArrIdx) {
+          currObj[matchKey] = currZoweCfg[matchKey];
+      } else {
+          currObj[matchKey] = {};
+      }
+      currObj = currObj[matchKey];
+      currZoweCfg = currZoweCfg[matchKey];
+    }
+    return updateObj;
+}
+
 /**
  * Updates the YAML key in the zowe.yaml passed by the caller with val. Always overwrites on-disk.
  * 
@@ -97,10 +119,15 @@ export function deleteZoweYaml(file: string, key: string): number {
  */
 export function updateZoweYaml(file: string, key: string, val: any): number {
   common.printMessage(`- update zowe config ${file}, key: "${key}" with value: ${val}`);
-  let [ success, updateObj ] = fakejq.jqset({}, key, val);
+  let mergeObj = {};
+  if (/\[\d+\]/.test(key)) {
+    const zoweConfig = config.getZoweConfigFromFile(file);
+    mergeObj = buildUpdateObjWithArrays(zoweConfig, key)
+  }
+  let [ success, updateObj ] = fakejq.jqset(mergeObj, key, val);
   if (success) {
     common.printMessage(`  * Success`);
-    const updateResult = config.updateZoweCfgFile(file, updateObj, 1);
+    const updateResult = config.updateZoweCfgFile(file, updateObj, 4);
     return updateResult[0];
   } else {
     common.printError(`  * Error`); 
