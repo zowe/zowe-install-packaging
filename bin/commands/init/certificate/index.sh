@@ -129,28 +129,11 @@ else # JCE* content
       yaml_keyring_label="${keyring_connect_label}"
     fi
   fi
-  if [ "${keyring_option}" -eq 1 ]; then
-    # validate parameters only needed for creation of certificate
-    for item in caCommonName commonName orgUnit org locality state country; do
-      var_val=$(read_yaml_configmgr "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.certificate.dname.${item}")
-      if [ -z "${var_val}" ]; then
-        print_error_and_exit "Error ZWEL0157E: Certificate creation parameter (zowe.setup.certificate.dname.${item}) is not defined in Zowe YAML configuration file." "" 157
-      fi
-    done
-    # read cert validity
-    cert_validity=$(read_yaml_configmgr "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.certificate.validity")
-    if [ -z "${cert_validity}" ]; then
-      print_error_and_exit "Error ZWEL0157E: Certificate creation parameter (zowe.setup.certificate.validity) is not defined in Zowe YAML configuration file." "" 157
-    fi
-
+  keyring_connect_user=$(read_yaml_configmgr "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.certificate.keyring.connect.user")
+  keyring_connect_label=$(read_yaml_configmgr "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.certificate.keyring.connect.label")
+  if [ -n "${keyring_connect_label}" ]; then
+    keyring_option=2
   fi
-
-  # read keyring-specific z/OSMF info
-  for item in user ca; do
-    var_name="zosmf_${item}"
-    var_val=$(read_yaml_configmgr "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.certificate.keyring.zOSMF.${item}")
-    eval "${var_name}=\"${var_val}\""
-  done
 fi
 # read keystore CAs
 cert_import_CAs=$(read_yaml_configmgr "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.certificate.importCertificateAuthorities" | tr '\n' ',')
