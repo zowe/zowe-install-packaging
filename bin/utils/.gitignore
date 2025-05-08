@@ -6,3 +6,4 @@ njq/
 ObjUtils.js
 ModifyZoweYaml.js
 ConfigConverter.js
+GenerateInstanceEnv.js
