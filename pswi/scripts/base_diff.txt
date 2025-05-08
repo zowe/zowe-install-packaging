@@ -62,11 +62,11 @@
 <   runtimeDirectory: ""
 ---
 >   runtimeDirectory: "/tmp"
-422c422
+417c417
 <   home: ""
 ---
 >   home: "#delete_me#"
-438c438
+433c433
 <   home: ""
 ---
 >   home: "#delete_me#"
