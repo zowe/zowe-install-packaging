@@ -11,16 +11,9 @@
 # Copyright Contributors to the Zowe Project.
 #######################################################################
 
-if [ -f "${ZWE_zowe_runtimeDirectory}/manifest.json" ]; then
-  manifest="${ZWE_zowe_runtimeDirectory}/manifest.json"
-elif [ -f "${ZWE_zowe_runtimeDirectory}/manifest.json.template" ]; then
-  manifest="${ZWE_zowe_runtimeDirectory}/manifest.json.template"
-else
-  print_error_and_exit "Error ZWEL0150E: Failed to find Zowe manifest.json. Zowe runtimeDirectory is invalid." "" 150
-fi
+if [ -z "${ZWE_PRIVATE_TMP_MERGED_YAML_DIR}" ]; then
 
-ZOWE_VERSION=$(shell_read_json_config "${manifest}" version version)
-# $(shell_read_json_config ${ROOT_DIR}/manifest.json 'version' 'version')
-print_message "Zowe v${ZOWE_VERSION}"
-print_debug "build and hash: $(shell_read_json_config "${manifest}" 'build' 'branch')#$(shell_read_json_config "${manifest}" 'build' 'number') ($(shell_read_json_config "${manifest}" 'build' 'commitHash'))"
-print_trace "Zowe directory: ${ZWE_zowe_runtimeDirectory}"
+  # user-facing command, use tmpdir to not mess up workspace permissions
+  export ZWE_PRIVATE_TMP_MERGED_YAML_DIR=1
+fi
+_CEE_RUNOPTS="XPLINK(ON),HEAPPOOLS(OFF),HEAPPOOLS64(OFF)" ${ZWE_zowe_runtimeDirectory}/bin/utils/configmgr -script "${ZWE_zowe_runtimeDirectory}/bin/commands/version/cli.js"
