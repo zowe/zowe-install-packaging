@@ -1,1 +1,15 @@
-""
+{
+  "lockAcquiredTime": "Fri May 09 2025 13:38:19 GMT+0000 (Coordinated Universal Time)",
+  "uid": "1746797899886321750",
+  "repository": {
+    "owner": "zowe",
+    "repo": "zowe-install-packaging"
+  },
+  "branch": "cleanup/v3/remove-configmgr-flag-use",
+  "workflow": "Zowe CICD Integration Tests",
+  "job": "cicd-test",
+  "actor": "zowe-robot",
+  "runId": 14930182076,
+  "runNumber": 6594,
+  "link": "https://github.com/zowe/zowe-install-packaging/actions/runs/14930182076"
+}
