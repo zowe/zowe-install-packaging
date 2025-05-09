@@ -83,6 +83,13 @@ read_yaml() {
   code=$?
   print_trace "  * Exit code: ${code}"
   if [ ${code} -ne 0 ]; then
+    # Check for "node ... FSUM7351 not found". Common user error that we can solve more quickly by providing advice below.
+    missing_id_check=$(echo "${ZWE_PRIVATE_YAML_CACHE}" | grep "FSUM7351" 2>&1)
+    if [ -n "${missing_id_check}" ]; then
+      print_error "Error ZWEL0319E: NodeJS required but not found. Errors such as ZWEL0157E may occur as a result."
+      print_error "The value 'node.home' in the Zowe YAML is not correct. Set it to the parent directory of 'bin/node'."
+      print_error "For example, if NodeJS is at '/opt/nodejs/bin/node', then set 'node.home' to '/opt/nodejs'."
+    fi
     print_error "  * Output:"
     print_error "$(padding_left "${ZWE_PRIVATE_YAML_CACHE}" "    ")"
     return ${code}
@@ -119,7 +126,7 @@ read_yaml_configmgr() {
   configmgr="${ZWE_zowe_runtimeDirectory}/bin/utils/configmgr"
   schema="${ZWE_zowe_runtimeDirectory}/schemas/server-common.json:${ZWE_zowe_runtimeDirectory}/schemas/zowe-yaml-schema.json"
 
-  result=$(_CEE_RUNOPTS="XPLINK(ON)" "${configmgr}" -s "$schema" -p "FILE(${file})" extract "${key}" 2>&1);
+  result=$(_CEE_RUNOPTS="XPLINK(ON)" "${configmgr}" -s "$schema" -p "FILE(${file})" extract "${key}" 2>&1)
   code=$?
 
   # When the item is not defined in config, configmgr returns
@@ -170,26 +177,26 @@ read_json() {
   return ${code}
 }
 
-read_json_string() {	
-  string="${1}"	
-  key="${2}"	
-  ignore_null="${3:-true}"	
-  utils_dir="${ZWE_zowe_runtimeDirectory}/bin/utils"	
-  jq="${utils_dir}/njq/src/index.js"	
-  result=$(echo "${string}" | node "${jq}" -r "${key}" 2>&1)	
-  code=$?	
-  print_trace "  * Exit code: ${code}"	
-  print_trace "  * Output:"	
-  if [ -n "${result}" ]; then	
-    print_trace "$(padding_left "${result}" "    ")"	
-  fi	
-  if [ ${code} -eq 0 ]; then	
-    if [ "${ignore_null}" = "true" -a "${result}" = "null" ]; then	
-      result=	
-    fi	
-    printf "${result}"	
-  fi	
-  return ${code}	
+read_json_string() {
+  string="${1}"
+  key="${2}"
+  ignore_null="${3:-true}"
+  utils_dir="${ZWE_zowe_runtimeDirectory}/bin/utils"
+  jq="${utils_dir}/njq/src/index.js"
+  result=$(echo "${string}" | node "${jq}" -r "${key}" 2>&1)
+  code=$?
+  print_trace "  * Exit code: ${code}"
+  print_trace "  * Output:"
+  if [ -n "${result}" ]; then
+    print_trace "$(padding_left "${result}" "    ")"
+  fi
+  if [ ${code} -eq 0 ]; then
+    if [ "${ignore_null}" = "true" -a "${result}" = "null" ]; then
+      result=
+    fi
+    printf "${result}"
+  fi
+  return ${code}
 }
 
 update_yaml() {
@@ -200,8 +207,8 @@ update_yaml() {
 
   utils_dir="${ZWE_zowe_runtimeDirectory}/bin/utils"
   config_converter="${utils_dir}/config-converter/src/cli.js"
-  
-  print_message "- update \"${key}\" with value: ${val}"
+
+  print_message "- update ${f} \"${key}\" with value: ${val}"
   result=$(node "${config_converter}" yaml update "${file}" "${key}" "${val}")
   code=$?
   if [ ${code} -eq 0 ]; then

@@ -22,7 +22,7 @@ require_zowe_yaml "skipnode"
 
 caching_storage=$(read_yaml_configmgr "${ZWE_CLI_PARAMETER_CONFIG}" ".components.caching-service.storage.mode" | upper_case)
 if [ "${caching_storage}" != "VSAM" ]; then
-  print_error "Warning ZWEL0301W: Zowe Caching Service is not configured to use VSAM. Command skipped."
+  print_error "Warning ZWEL0321W: Zowe Caching Service is not configured to use VSAM. Command skipped."
   return 0
 fi
 
@@ -63,7 +63,7 @@ jcl_existence=$(is_data_set_exists "${jcllib}(ZWECSVSM)")
 if [ "${jcl_existence}" = "true" ]; then
   if [ "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITE}" = "true" ]; then
     # warning
-    print_message "Warning ZWEL0300W: ${jcllib}(ZWECSVSM) already exists. This data set member will be overwritten during configuration."
+    print_message "Warning ZWEL0300W: ${jcllib}(ZWECSVSM) already exists. This member will be overwritten."
   else
     # print_error_and_exit "Error ZWEL0158E: ${jcllib}(ZWECSVSM) already exists." "" 158
     # warning

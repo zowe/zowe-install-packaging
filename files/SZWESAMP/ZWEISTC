@@ -21,7 +21,7 @@
 //MCOPY EXEC PGM=IEBCOPY
 //SYSPRINT DD SYSOUT=A
 //SYSUT1 DD DSN={zowe.setup.dataset.jcllib},DISP=SHR
-//SYSUT2 DD DSN={zowe.setup.dataset.proclib},DISP=OLD
+//SYSUT2 DD DSN={zowe.setup.dataset.proclib},DISP=SHR
 //SYSIN DD *
   COPY OUTDD=SYSUT2,INDD=SYSUT1
   SELECT MEMBER=((ZWESLSTC,{zowe.setup.security.stcs.zowe},R))

@@ -5,9 +5,13 @@ This command will collect these information:
 - Environment
   * z/OS version
   * Java version
+    * Java keytool TLS information
   * Node.js version
+  * zOSMF status
   * External Security Manager
   * CEE Runtime Options
+  * Filesystem flags
+  * ZSS Program Controlled extended attribute
 - Zowe configurations
   * Zowe manifest.json
   * Zowe configuration file
@@ -17,5 +21,4 @@ This command will collect these information:
   * Zowe APIML static registration files under "`zowe.workspaceDirectory`/api-mediation/api-defs"
 - Zowe runtime
   * Active running Zowe processes
-  * Zowe job log
 - Zowe fingerprints and validation result

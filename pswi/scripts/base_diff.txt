@@ -1,15 +1,12 @@
-66,91c66,91
+61,83c61,83
 <     # # Security related configurations. This setup is optional.
 <     # security:
 <     #   # security product name. Can be RACF, ACF2 or TSS
 <     #   product: RACF
 <     #   # security group name
 <     #   groups:
-<     #     # Zowe admin user group
 <     #     admin: ZWEADMIN
-<     #     # Zowe STC group
 <     #     stc: ZWEADMIN
-<     #     # Zowe SysProg group
 <     #     sysProg: ZWEADMIN
 <     #   # security user name
 <     #   users:
@@ -32,11 +29,8 @@
 >       product: RACF
 >       # security group name
 >       groups:
->         # Zowe admin user group
 >         admin: ZWEADMIN
->         # Zowe STC group
 >         stc: ZWEADMIN
->         # Zowe SysProg group
 >         sysProg: ZWEADMIN
 >       # security user name
 >       users:
@@ -52,29 +46,27 @@
 >         zis: ZWESISTC
 >         # STC name of Zowe ZIS Auxiliary Server
 >         aux: ZWESASTC
-100,103c100,103
+92,96c92,96
 <     certificate:
 <       # Type of certificate storage. Valid values are: PKCS12, JCERACFKS. APIML additionally supports: JCEKS, JCECCAKS, JCECCARACFKS, or JCEHYBRIDRACFKS
 <       type: PKCS12
 <       pkcs12:
+<         directory: /var/zowe/keystore
 ---
 >     # certificate:
 >       # Type of certificate storage. Valid values are: PKCS12, JCEKS, JCECCAKS, JCERACFKS, JCECCARACFKS, or JCEHYBRIDRACFKS
 >       # type: 
 >       # pkcs12:
-106c106
-<         directory: /var/zowe/keystore
----
 >         # directory: 
-281c281
+245c245
 <   runtimeDirectory: ""
 ---
 >   runtimeDirectory: "/tmp"
-456c456
+415c415
 <   home: ""
 ---
 >   home: "#delete_me#"
-471c471
+431c431
 <   home: ""
 ---
 >   home: "#delete_me#"

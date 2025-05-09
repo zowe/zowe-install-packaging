@@ -79,7 +79,7 @@ for mb in ${target_proclibs}; do
   if [ "${jcl_existence}" = "true" ]; then
     if [ "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITE}" = "true" ]; then
       # warning
-      print_message "Warning ZWEL0300W: ${jcllib}(${mb}) already exists. This data set member will be overwritten during configuration."
+      print_message "Warning ZWEL0300W: ${jcllib}(${mb}) already exists. This member will be overwritten."
     else
       # print_error_and_exit "Error ZWEL0158E: ${jcllib}(${mb}) already exists." "" 158
       # warning
@@ -92,7 +92,7 @@ for mb in ${target_proclibs}; do
   if [ "${stc_existence}" = "true" ]; then
     if [ "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITE}" = "true" ]; then
       # warning
-      print_message "Warning ZWEL0300W: ${proclib}(${mb}) already exists. This data set member will be overwritten during configuration."
+      print_message "Warning ZWEL0300W: ${proclib}(${mb}) already exists. This member will be overwritten."
     else
       # print_error_and_exit "Error ZWEL0158E: ${proclib}(${mb}) already exists." "" 158
       # warning

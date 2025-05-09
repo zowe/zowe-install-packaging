@@ -49,7 +49,7 @@ describe(`test ${APP_TO_TEST}`, function() {
     );
   });
 
-/*
+
   it('should launch app correctly', async function() {
     // load app
     await launchApp(driver, APP_TO_TEST);
@@ -95,8 +95,8 @@ describe(`test ${APP_TO_TEST}`, function() {
     // const errorLabel = await getElement(viewport, 'com-rs-mvd-vt .vt-parent .toolbar .error-label', true);
     // expect(errorLabel).to.not.be.an('object');
   });
-*/
-/*
+
+
   after('quit webdriver', async function() {
     // quit webdriver
     if (driver) {
@@ -104,4 +104,5 @@ describe(`test ${APP_TO_TEST}`, function() {
     }
   });
 });
+
 */
