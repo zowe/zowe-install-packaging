@@ -14,8 +14,10 @@ import * as std from 'cm_std';
 import * as os from 'cm_os';
 import * as configmgr from '../../../libs/configmgr';
 
-const upgrade = false; //would be true for upgrade.ts
+export function execute() {
+  const upgrade = false; //would be true for upgrade.ts
 
-index.execute(std.getenv('ZWE_CLI_PARAMETER_COMPONENT_FILE'), std.getenv('ZWE_CLI_PARAMETER_AUTO_ENCODING'), (std.getenv('ZWE_CLI_PARAMETER_SKIP_ENABLE') === 'true'), std.getenv('ZWE_CLI_PARAMETER_HANDLER'), std.getenv('ZWE_CLI_PARAMETER_REGISTRY'), (std.getenv('ZWE_CLI_PARAMETER_DRY_RUN') === 'true'), upgrade);
+  index.execute(std.getenv('ZWE_CLI_PARAMETER_COMPONENT_FILE'), std.getenv('ZWE_CLI_PARAMETER_AUTO_ENCODING'), (std.getenv('ZWE_CLI_PARAMETER_SKIP_ENABLE') === 'true'), std.getenv('ZWE_CLI_PARAMETER_HANDLER'), std.getenv('ZWE_CLI_PARAMETER_REGISTRY'), (std.getenv('ZWE_CLI_PARAMETER_DRY_RUN') === 'true'), upgrade);
 
-configmgr.cleanupTempDir();
+  configmgr.cleanupTempDir();
+}

@@ -10,4 +10,6 @@
 */
 
 import * as index from './index';
-index.execute();
+export function execute() {
+  index.execute();
+}
