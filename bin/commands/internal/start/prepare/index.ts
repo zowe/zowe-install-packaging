@@ -36,13 +36,12 @@ const containerComponentId = std.getenv('ZWE_PRIVATE_CONTAINER_COMPONENT_ID');
 //const installedComponentsEnv=std.getenv('ZWE_INSTALLED_COMPONENTS');
 //const installedComponents = installedComponentsEnv ? installedComponentsEnv.split(',') : null;
 
-const zosmfHost = std.getenv('ZOSMF_HOST');
-const zosmfPort = Number(std.getenv('ZOSMF_PORT'));
-
-
 const user = std.getenv('USER');
 
 const ZOWE_CONFIG=config.getZoweConfig();
+
+const zosmfHost = ZOWE_CONFIG.zOSMF.host;
+const zosmfPort = ZOWE_CONFIG.zOSMF.port;
 
 // Extra preparations for running in container
 // - link component runtime under zowe <runtime>/components
