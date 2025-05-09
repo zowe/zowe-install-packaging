@@ -40,6 +40,14 @@
       "minLength": 1,
       "maxLength": 8
     },
+    "datasetZISMember": {
+      "$anchor": "zoweDatasetZISMember",
+      "type": "string",
+      "description": "A 'ZWESIP' prefix followed by 2 characters",
+      "pattern": "^ZWESIP([0-9A-Z\\$\\#\\@]){2}$",
+      "minLength": 8,
+      "maxLength": 8
+    },
     "jobname": {
       "$anchor": "zoweJobname",
       "type": "string",

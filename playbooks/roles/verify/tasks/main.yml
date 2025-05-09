@@ -53,6 +53,7 @@
     ZOWE_INSTANCE_ID: "{{ zowe_instance_id }}"
     ZOWE_ZLUX_HTTPS_PORT: "{{ zowe_zlux_port }}"
     ZOWE_API_MEDIATION_GATEWAY_HTTP_PORT: "{{ zowe_apiml_gateway_port }}"
+    ZOWE_JAVA_HOME: "{{ zos_java_home }}"
     DEBUG: "{{ zowe_sanity_test_debug_mode | default('') }}"
     # # this should be commented out for live tests
     # NODE_DEBUG: "http,https"

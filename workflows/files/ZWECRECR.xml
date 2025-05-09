@@ -277,7 +277,7 @@ TSS GENREQ(${instance-tss_acid}) +
             </condition>
             <!--variableValues-->
             <instructions substitution="true"><![CDATA[This step will generate the CSR request into the ${instance-output_dataset}
-<p>This step uses ACF2 command <a href="https://techdocs.broadcom.com/us/en/ca-mainframe-software/security/ca-acf2-for-z-os/16-0/administrating/digital-certificate-support/process-digital-certificates-with-acf2/genreq-subcommand.html">GENREQ</a></p>]]></instructions>
+<p>This step uses ACF2 command <a href="https://techdocs.broadcom.com/us/en/ca-mainframe-software/security/ca-acf2-for-z-os/16-0/administrating/digital-certificate-support/process-digital-certificates-with-acf2/generate-a-certificate-request-to-send-to-a-certificate-authority--genreq-.html">GENREQ</a></p>]]></instructions>
             <weight>1</weight>
             <skills>Security Administrator</skills>
             <autoEnable>true</autoEnable>

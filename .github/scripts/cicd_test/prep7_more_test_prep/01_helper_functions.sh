@@ -16,7 +16,7 @@ function jfrog_search_latest {
         echo -e "${RED}In jfrog search latest function, search pattern is not provided" > /dev/stderr
         exit 1
     fi
-    out=$(jfrog rt search --sort-by=created --sort-order=desc --limit=1 "$search_pattern" | jq -r '.[].path')
+    out=$(jfrog rt search --retries 10 --retry-wait-time 5s --sort-by=created --sort-order=desc --limit=1 "$search_pattern" | jq -r '.[].path')
     if [[ -z "$out" ]]; then
         echo -e "${RED}Cannot find latest artifact in pattern: $search_pattern" > /dev/stderr
         exit 1
@@ -40,7 +40,7 @@ function jfrog_search_build {
         echo -e "${RED}In jfrog_search_build function, build number is not provided" > /dev/stderr
         exit 1
     fi
-    out=$(jfrog rt search --build="$build_name/$bld_num" "$search_pattern" | jq -r '.[-1].path')
+    out=$(jfrog rt search --retries 10 --retry-wait-time 5s --build="$build_name/$bld_num" "$search_pattern" | jq -r '.[-1].path')
     if [[ "$out" == "null" ]]; then
         echo -e "${RED}Cannot find the artifact in pattern: $search_pattern associated with $bld_num of $build_name" > /dev/stderr
         exit 1
