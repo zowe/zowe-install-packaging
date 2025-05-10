@@ -17,6 +17,24 @@ import * as strftime from './strftime';
 import * as stringlib from './string';
 import * as fs from './fs';
 
+
+import * as zwe_components_disable from '../commands/components/disable/cli.js';
+import * as zwe_components_enable from '../commands/components/enable/cli.js';
+import * as zwe_components_install from '../commands/components/install/cli.js';
+import * as zwe_components_search from '../commands/components/search/cli.js';
+import * as zwe_components_uninstall from '../commands/components/uninstall/cli.js';
+import * as zwe_components_upgrade from '../commands/components/upgrade/cli.js';
+
+import * as zwe_config_get from '../commands/config/get/cli.js';
+import * as zwe_config_validate from '../commands/config/validate/cli.js';
+
+import * as zwe_diagnose from '../commands/diagnose/cli.js';
+import * as zwe_stop from '../commands/stop/cli.js';
+import * as zwe_start from '../commands/start/cli.js';
+
+import * as zwe_support from '../commands/support/cli.js';
+import * as zwe_support_verify_fingerprints from '../commands/support/verify-fingerprints/cli.js';
+
 // Global variables
 std.setenv('ZWE_PRIVATE_LOG_LEVEL_ZWELS','INFO');
 
@@ -24,8 +42,8 @@ function zwecli_append_parameters_definition(command_path: string, parameters: s
   if (fs.directoryExists(command_path)) {
     let parameterPath = command_path+'/.parameters'
     if (fs.fileExists(parameterPath)) {
-      const contents:string[] = xplatform.loadFileUTF8(parameterPath,xplatform.AUTO_DETECT).split('\n');
-      parameters.concat(contents);
+      const contents:string[] = xplatform.loadFileUTF8(parameterPath,xplatform.AUTO_DETECT).split('\n').filter(line => line.indexOf('|') != -1);
+      parameters = parameters.concat(contents);
     }
   } else {
     let commands = command_path.substring((std.getenv('ZWE_zowe_runtimeDirectory') +'/bin/commands').length);
@@ -42,8 +60,8 @@ function zwecli_append_exclusive_parameters_definition(command_path: string, par
   if (fs.directoryExists(command_path)) {
     let parameterPath = command_path+'/.exclusive-parameters'
     if (fs.fileExists(parameterPath)) {
-      const contents = xplatform.loadFileUTF8(parameterPath,xplatform.AUTO_DETECT).split('\n');
-      parameters.concat(contents);
+      const contents = xplatform.loadFileUTF8(parameterPath,xplatform.AUTO_DETECT).split('\n').filter(line => line.indexOf('|') != -1);
+      parameters = parameters.concat(contents);
     }
   } else {
     let commands = command_path.substring((std.getenv('ZWE_zowe_runtimeDirectory') +'/bin/commands').length);
@@ -59,9 +77,12 @@ function zwecli_append_exclusive_parameters_definition(command_path: string, par
 export function zwecli_load_parameters_definition(commands: string[]): {[key: string]: ZweParameter} {
   let currentCommandPath = std.getenv('ZWE_zowe_runtimeDirectory') +'/bin/commands';
   let parameterStrings: string[] = [];
+  //global first
+  parameterStrings = zwecli_append_parameters_definition(currentCommandPath, parameterStrings);
+
   commands.forEach((command)=> {    
-    parameterStrings = zwecli_append_parameters_definition(currentCommandPath, parameterStrings);
     currentCommandPath+='/'+command;
+    parameterStrings = zwecli_append_parameters_definition(currentCommandPath, parameterStrings);
   });
   parameterStrings = zwecli_append_exclusive_parameters_definition(currentCommandPath, parameterStrings);
   return zwecli_generate_parameters_map(parameterStrings);
@@ -89,7 +110,7 @@ function zwecli_generate_parameters_map(parameters: string[]): {[key: string]: Z
 }
 
 export function zwecli_get_parameter_env_name(parameter: ZweParameter): string {
-  return 'ZWE_CLI_PARAMETER'+stringlib.sanitizeAlphanum(parameter.longNames[0].toUpperCase());
+  return 'ZWE_CLI_PARAMETER_'+stringlib.sanitizeAlphanum(parameter.longNames[0].toUpperCase());
 }
 
 export function zwecli_get_parameter_value(longName: string, parameters: {[key: string]: ZweParameter}): string|number|boolean|undefined {
@@ -153,7 +174,7 @@ export function zwecli_process_logfile(parameters: {[key: string]: ZweParameter}
 }
 
 function zwecli_display_parameters_help(filename: string) {
-  const parameters = xplatform.loadFileUTF8(filename,xplatform.AUTO_DETECT).split('\n');
+  const parameters = xplatform.loadFileUTF8(filename,xplatform.AUTO_DETECT).split('\n').filter(line => line.indexOf('|') != -1);
   parameters.forEach((parameter)=> {
     let parts = parameter.split('|');
     let zweParameter: ZweParameter = {
@@ -176,6 +197,8 @@ function zwecli_display_parameters_help(filename: string) {
     } else {
       line+= ' (optional)';
     }
+
+    console.log(line);
     console.log(stringlib.paddingLeft(zweParameter.description, "        "));
     console.log();
   });
@@ -189,7 +212,7 @@ export function zwecli_process_help(ZWE_CLI_COMMANDS_LIST: string[]) {
 
   // Display synopsis (command format)
   //    zwe  [sub-command [sub-command]...] [parameter [parameter]...]
-  let subdirectories: string[] = fs.getSubdirectories(command_path_full);
+  let subdirectories: string[] = fs.getSubdirectories(command_path_full).filter(name => !name.startsWith('.'));
   let sub_command_level='';
   if (subdirectories && subdirectories.length > 0) {
     sub_command_level="[sub-command]"
@@ -243,14 +266,14 @@ export function zwecli_process_help(ZWE_CLI_COMMANDS_LIST: string[]) {
     command_tree+=' '+command;
     command_path+='/'+command;
     if (fs.fileExists(command_path+'/.experimental')) {
-      console.log(`WARNING: command "${command_tree}" is for experimental purpose.`);
+      console.log(`WARNING: command "${command_tree.trim()}" is for experimental purpose.`);
       console.log();
     }
     let parametersExists = fs.fileExists(command_path+'/.parameters');
     let exclusiveExists = fs.fileExists(command_path+'/.exclusive-parameters');
     if (parametersExists || exclusiveExists) {      
       console.log("------------------");
-      console.log(`Parameters for command "${command_tree}"`);
+      console.log(`Parameters for command "${command_tree.trim()}"`);
       if (parametersExists) {
         zwecli_display_parameters_help(command_path+'/.parameters');
       }
@@ -261,8 +284,7 @@ export function zwecli_process_help(ZWE_CLI_COMMANDS_LIST: string[]) {
   });
   
   // find sub-commands
-  command_path=std.getenv('ZWE_zowe_runtimeDirectory') +'/bin/commands';
-  subdirectories = fs.getSubdirectories(command_path);
+  subdirectories = fs.getSubdirectories(command_path_full).filter((subdirectory)=> !subdirectory.startsWith('.'));
   if (subdirectories && subdirectories.length > 0) {
     console.log("------------------");
     console.log("Available sub-command(s)");
@@ -273,10 +295,10 @@ export function zwecli_process_help(ZWE_CLI_COMMANDS_LIST: string[]) {
   }
 
   // display example(s)
-  if (fs.fileExists(command_path+'/.examples')) {
+  if (fs.fileExists(command_path_full+'/.examples')) {
     console.log("------------------");
     console.log("Example(s)");
-    const contents = xplatform.loadFileUTF8(command_path+'/.examples',xplatform.AUTO_DETECT);
+    const contents = xplatform.loadFileUTF8(command_path_full+'/.examples',xplatform.AUTO_DETECT);
     console.log(stringlib.paddingLeft(contents, "    "));
     console.log();
   }
@@ -304,14 +326,39 @@ export function zwecli_validate_parameters(parameters: {[key: string]: ZweParame
   });
 }
 
-export async function zwecli_process_command(command_path?: string, commands?: string[]) {
-  if (fs.fileExists(command_path+'/cli.js')) {
-    const cli = await import(command_path+'/cli.js');
-    cli.execute();
-  } else {
-    if (commands) {
-      common.printError(`Error ZWEL0107E: No handler defined for command "${commands.join(' ')}".`);
+export function zwecli_process_command(commands?: string[]) {
+  if (commands) {
+    let commandJoin = commands.join(' ');
+    if (commandJoin == 'components disable') {
+      zwe_components_disable.execute();
+    } else if (commandJoin == 'components enable') {
+      zwe_components_enable.execute();
+    } else if (commandJoin == 'components install') {
+      zwe_components_install.execute();
+    } else if (commandJoin == 'components search') {
+      zwe_components_search.execute();
+    } else if (commandJoin == 'components uninstall') {
+      zwe_components_uninstall.execute();
+    } else if (commandJoin == 'components upgrade') {
+      zwe_components_upgrade.execute();
+    } else if (commandJoin == 'config get') {
+      zwe_config_get.execute();
+    } else if (commandJoin == 'config validate') {
+      zwe_config_validate.execute();
+    } else if (commandJoin == 'diagnose') {
+      zwe_diagnose.execute();
+    } else if (commandJoin == 'stop') {
+      zwe_stop.execute();
+    } else if (commandJoin == 'start') {
+      zwe_start.execute();
+    } else if (commandJoin == 'support') {
+      zwe_support.execute();
+    } else if (commandJoin == 'support verify fingerprints') {
+      zwe_support_verify_fingerprints.execute();
+    } else {
+      common.printError(`Error ZWEL0107E: No handler defined for command "${commandJoin}".`);
     }
+  } else {
     common.printErrorAndExit("Try --help to get information about how to use this command.", ["console"], 107);
   }
 }

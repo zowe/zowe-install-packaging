@@ -28,18 +28,18 @@ export ZWE_zowe_runtimeDirectory
 
 export ZWE_RUN_ON_ZOS=$(test `uname` = "OS/390" && echo "true")
 ZWE_CLI_INTERNAL_USE_CONFIGMGR_ZWE=$ZWE_RUN_ON_ZOS
-if [ "${ZWE_RUN_ON_ZOS}" == "true" ]; then
-  if [ "${1}" == "internal" ]; then
+if [ "${ZWE_RUN_ON_ZOS}" = "true" ]; then
+  if [ "${1}" = "internal" ]; then
     ZWE_CLI_INTERNAL_USE_CONFIGMGR_ZWE=false
   fi
 fi
 
-if [ "${ZWE_CLI_INTERNAL_USE_CONFIGMGR_ZWE}" == "true" ]; then
+if [ "${ZWE_CLI_INTERNAL_USE_CONFIGMGR_ZWE}" = "true" ]; then
   if [ -z "${ZWE_PRIVATE_TMP_MERGED_YAML_DIR}" ]; then
     # user-facing command, use tmpdir to not mess up workspace permissions
     export ZWE_PRIVATE_TMP_MERGED_YAML_DIR=1
   fi
-  _CEE_RUNOPTS="XPLINK(ON),HEAPPOOLS(OFF),HEAPPOOLS64(OFF)" ${ZWE_zowe_runtimeDirectory}/bin/utils/configmgr -script "${ZWE_zowe_runtimeDirectory}/bin/zwe.js"
+  _CEE_RUNOPTS="XPLINK(ON),HEAPPOOLS(OFF),HEAPPOOLS64(OFF)" ${ZWE_zowe_runtimeDirectory}/bin/utils/configmgr -script "${ZWE_zowe_runtimeDirectory}/bin/zwe.js" $@
 else
     
 #######################################################################

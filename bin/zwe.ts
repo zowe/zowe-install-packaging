@@ -13,8 +13,8 @@ import * as std from 'cm_std';
 import * as zwecli from './libs/zwecli';
 import * as common from './libs/common';
 
-//arguments minus command name
-let ZWE_TS_CLI_ARGUMENTS = (globalThis.scriptArgs as any).slice(1);
+//arguments minus command name, configmgr, -script, zwe.js
+let ZWE_TS_CLI_ARGUMENTS = (globalThis.scriptArgs as any).slice(3);
 
 let ZWE_zowe_runtimeDirectory = std.getenv('ZWE_zowe_runtimeDirectory');
 
@@ -74,4 +74,4 @@ zwecli.zwecli_process_logfile(parmDefs, ZWE_TS_COMMAND_WORDS);
 // validate parameter before execute command
 zwecli.zwecli_validate_parameters(parmDefs);
 // handle command
-await zwecli.zwecli_process_command();
+zwecli.zwecli_process_command(ZWE_TS_COMMAND_WORDS);
