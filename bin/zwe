@@ -29,10 +29,36 @@ export ZWE_zowe_runtimeDirectory
 export ZWE_RUN_ON_ZOS=$(test `uname` = "OS/390" && echo "true")
 ZWE_CLI_INTERNAL_USE_CONFIGMGR_ZWE=$ZWE_RUN_ON_ZOS
 if [ "${ZWE_RUN_ON_ZOS}" = "true" ]; then
+  ZWE_CLI_INTERNAL_USE_CONFIGMGR_ZWE=false
+
+  config_item=false
+
+  for item in $@; do
+    if [ "${item}" = "-c" ]; then
+      ZWE_CLI_INTERNAL_USE_CONFIGMGR_ZWE=true
+      config_item=true
+    elif [ "${item}" = "--config" ]; then 
+      ZWE_CLI_INTERNAL_USE_CONFIGMGR_ZWE=true
+      config_item=true
+    elif [ "${item}" = "-h" ]; then
+      ZWE_CLI_INTERNAL_TS_HELP=true
+    elif [ "${item}" = "--help" ]; then
+      ZWE_CLI_INTERNAL_TS_HELP=true
+    elif [ "${config_item}" = "true" ]; then
+      export ZWE_CLI_PARAMETER_CONFIG=$item
+      config_item=false
+    fi
+  done
+
   if [ "${1}" = "internal" ]; then
     ZWE_CLI_INTERNAL_USE_CONFIGMGR_ZWE=false
   fi
+
+  if [ "$ZWE_CLI_INTERNAL_TS_HELP" = "true" ]; then
+    ZWE_CLI_INTERNAL_USE_CONFIGMGR_ZWE=true
+  fi
 fi
+
 
 if [ "${ZWE_CLI_INTERNAL_USE_CONFIGMGR_ZWE}" = "true" ]; then
   if [ -z "${ZWE_PRIVATE_TMP_MERGED_YAML_DIR}" ]; then
