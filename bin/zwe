@@ -25,12 +25,8 @@ if [ -z "${ZWE_zowe_runtimeDirectory}" ]; then
 fi
 export ZWE_zowe_runtimeDirectory
 
-
 export ZWE_RUN_ON_ZOS=$(test `uname` = "OS/390" && echo "true")
-ZWE_CLI_INTERNAL_USE_CONFIGMGR_ZWE=$ZWE_RUN_ON_ZOS
 if [ "${ZWE_RUN_ON_ZOS}" = "true" ]; then
-  ZWE_CLI_INTERNAL_USE_CONFIGMGR_ZWE=false
-
   config_item=false
 
   for item in $@; do
@@ -49,21 +45,41 @@ if [ "${ZWE_RUN_ON_ZOS}" = "true" ]; then
       config_item=false
     fi
   done
+fi
 
-  if [ "${1}" = "internal" ]; then
-    ZWE_CLI_INTERNAL_USE_CONFIGMGR_ZWE=false
-  fi
-
-  if [ "$ZWE_CLI_INTERNAL_TS_HELP" = "true" ]; then
+if [ "$ZWE_CLI_INTERNAL_TS_HELP" = "true" ]; then
     ZWE_CLI_INTERNAL_USE_CONFIGMGR_ZWE=true
+elif [ "$ZWE_CLI_INTERNAL_USE_CONFIGMGR_ZWE" = "true"]; then
+  ZWE_CLI_INTERNAL_COMMAND_NEEDS_TMP_DIR=true
+  if [ "${1}" = "internal" ]; then
+    ZWE_CLI_INTERNAL_COMMAND_NEEDS_TMP_DIR=false    
+  elif [ "${1}" = "install" ]; then
+    ZWE_CLI_INTERNAL_USE_CONFIGMGR_ZWE=false
+  elif [ "${1}" = "migrate" ]; then
+    ZWE_CLI_INTERNAL_USE_CONFIGMGR_ZWE=false
+  elif [ "${1}" = "sample" ]; then
+    ZWE_CLI_INTERNAL_USE_CONFIGMGR_ZWE=false
+  elif [ "${1}" = "init" ]; then
+    ZWE_CLI_INTERNAL_USE_CONFIGMGR_ZWE=false
+  elif [ "${1}" = "certificate" ]; then
+      ZWE_CLI_INTERNAL_USE_CONFIGMGR_ZWE=false
+  elif [ "${1}" = "version" ]; then
+      ZWE_CLI_INTERNAL_USE_CONFIGMGR_ZWE=false
+  elif [ -z "${ZWE_CLI_PARAMETER_CONFIG}" ]; then
+    # these commands dont need config, but the import loading does, so give dummy config
+    if [ "${1}" = "diagnose" ]; then          
+      export ZWE_CLI_PARAMETER_CONFIG="${ZWE_zowe_runtimeDirectory}/files/defaults.yaml"
+    fi
   fi
 fi
 
 
 if [ "${ZWE_CLI_INTERNAL_USE_CONFIGMGR_ZWE}" = "true" ]; then
-  if [ -z "${ZWE_PRIVATE_TMP_MERGED_YAML_DIR}" ]; then
-    # user-facing command, use tmpdir to not mess up workspace permissions
-    export ZWE_PRIVATE_TMP_MERGED_YAML_DIR=1
+  if [ "${ZWE_CLI_INTERNAL_COMMAND_NEEDS_TMP_DIR}" = "true" ]; then
+    if [ -z "${ZWE_PRIVATE_TMP_MERGED_YAML_DIR}" ]; then
+      # user-facing command, use tmpdir to not mess up workspace permissions
+      export ZWE_PRIVATE_TMP_MERGED_YAML_DIR=1
+    fi
   fi
   _CEE_RUNOPTS="XPLINK(ON),HEAPPOOLS(OFF),HEAPPOOLS64(OFF)" ${ZWE_zowe_runtimeDirectory}/bin/utils/configmgr -script "${ZWE_zowe_runtimeDirectory}/bin/zwe.js" $@
 else
