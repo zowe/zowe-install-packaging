@@ -49,7 +49,7 @@ fi
 
 if [ "$ZWE_CLI_INTERNAL_TS_HELP" = "true" ]; then
     ZWE_CLI_INTERNAL_USE_CONFIGMGR_ZWE=true
-elif [ "$ZWE_CLI_INTERNAL_USE_CONFIGMGR_ZWE" = "true"]; then
+elif [ "$ZWE_CLI_INTERNAL_USE_CONFIGMGR_ZWE" = "true" ]; then
   ZWE_CLI_INTERNAL_COMMAND_NEEDS_TMP_DIR=true
   if [ "${1}" = "internal" ]; then
     ZWE_CLI_INTERNAL_COMMAND_NEEDS_TMP_DIR=false    
