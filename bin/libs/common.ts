@@ -365,6 +365,39 @@ export function getZoweVersion(): string|undefined {
   return std.getenv('ZWE_VERSION');
 }
 
+/**
+ * Checks if the zowe.yaml provided via "PARMLIB" syntax will be accepted by configmgr.
+ * 
+ * Accepts both PARMLIB(MY.PARM(MEMBER)) and MY.PARM(MEMBER)
+ * 
+ * @param parmlib 
+ * 
+ */
+export function isValidZoweYamlParmlib(parmlib: string): {ok: boolean; error: { message: string; code: number }} {
+  let finalParmlib = parmlib.trim();
+  const errorContent = {message: `ZWEL0316E Invalid PARMLIB format ${parmlib}.`, code: 316}
+  if (finalParmlib.startsWith('PARMLIB(')) {
+    // unbalanced paren, PARMLIB(A.B.C
+    if (finalParmlib.slice(-1) != ')') {
+      return {ok: false, error: errorContent}
+    }
+    finalParmlib = parmlib.substring(8, parmlib.lastIndexOf(')')); // cover cases where a trailing colon may be present
+  }
+  if (finalParmlib.indexOf('(') != -1) {
+    // Case where PARMLIB is A.B.C(D, which covers unbalanced paren e.g. PARMLIB(A.B.C(D) 
+    if (finalParmlib.slice(-1) != ')') {
+      return {ok: false, error: errorContent}
+    }
+    const member = finalParmlib.substring(finalParmlib.indexOf('(')+1, finalParmlib.indexOf(')'));
+    // This regex ported from server-common.json#zoweDatasetMember
+    if (/^([A-Z$#@])([A-Z0-9$#@]){0,7}$/gi.test(member) === false) {
+      return { ok: false, error: errorContent};
+    }
+    return {ok: true, error: {message: '', code: 0}};
+  }
+
+  return {ok: false, error: errorContent};
+}
 
 /**
  * Checks if the zowe.yaml provided via "PARMLIB" syntax will be accepted by configmgr.

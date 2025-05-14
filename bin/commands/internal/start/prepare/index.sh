@@ -352,27 +352,20 @@ else
     export ZWE_RUN_IN_CONTAINER=true
   fi
 
-  # Fix node.js piles up in IPC message queue
-  # run this before any node command we start
-  if [ "${ZWE_RUN_ON_ZOS}" = "true" -a "${ZWE_PRIVATE_CLEANUP_IPC_MQ}" = "true" ]; then
-    print_formatted_trace "ZWELS" "zwe-internal-start-prepare:${LINENO}" "Clean up IPC message queue before using node.js."
-    ${ZWE_zowe_runtimeDirectory}/bin/utils/cleanup-ipc-mq.sh
-  fi
+###############################
+# display starting information
+export ZWE_VERSION=$(shell_read_json_config "${ZWE_zowe_runtimeDirectory}/manifest.json" 'version' 'version')
+print_formatted_info "ZWELS" "zwe-internal-start-prepare:${LINENO}" "Zowe version: v${ZWE_VERSION}"
+print_formatted_info "ZWELS" "zwe-internal-start-prepare:${LINENO}" "build and hash: $(shell_read_json_config ${ZWE_zowe_runtimeDirectory}/manifest.json 'build' 'branch')#$(shell_read_json_config ${ZWE_zowe_runtimeDirectory}/manifest.json 'build' 'number') ($(shell_read_json_config ${ZWE_zowe_runtimeDirectory}/manifest.json 'build' 'commitHash'))"
 
-  ###############################
-  # display starting information
-  export ZWE_VERSION=$(shell_read_json_config "${ZWE_zowe_runtimeDirectory}/manifest.json" 'version' 'version')
-  print_formatted_info "ZWELS" "zwe-internal-start-prepare:${LINENO}" "Zowe version: v${ZWE_VERSION}"
-  print_formatted_info "ZWELS" "zwe-internal-start-prepare:${LINENO}" "build and hash: $(shell_read_json_config ${ZWE_zowe_runtimeDirectory}/manifest.json 'build' 'branch')#$(shell_read_json_config ${ZWE_zowe_runtimeDirectory}/manifest.json 'build' 'number') ($(shell_read_json_config ${ZWE_zowe_runtimeDirectory}/manifest.json 'build' 'commitHash'))"
-
-  ###############################
-  # validation
-  if [ "$(item_in_list "${ZWE_PRIVATE_CORE_COMPONENTS_REQUIRE_JAVA}" "${ZWE_CLI_PARAMETER_COMPONENT}")" = "true" ]; then
-    # other extensions need to specify `require_java` in their validate.sh
-    require_java
-  fi
-  require_node
-  require_zowe_yaml
+###############################
+# validation
+if [ "$(item_in_list "${ZWE_PRIVATE_CORE_COMPONENTS_REQUIRE_JAVA}" "${ZWE_CLI_PARAMETER_COMPONENT}")" = "true" ]; then
+  # other extensions need to specify `require_java` in their validate.sh
+  require_java
+fi
+require_node
+require_zowe_yaml
 
   # overwrite ZWE_PRIVATE_LOG_LEVEL_ZWELS with zowe.launchScript.logLevel config in YAML
   ZWE_PRIVATE_LOG_LEVEL_ZWELS="$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.launchScript.logLevel" | upper_case)"

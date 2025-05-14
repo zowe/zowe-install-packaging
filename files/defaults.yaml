@@ -141,6 +141,10 @@ zowe:
   #              security.
   verifyCertificates: STRICT
 
+  # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+  # To determine whether to trim ths syslog message inorder to print from message-id, disabled by default
+  sysMessageTrim: false
+
 #-------------------------------------------------------------------------------
 # Zowe components default configurations
 #-------------------------------------------------------------------------------
