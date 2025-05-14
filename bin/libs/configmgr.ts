@@ -402,9 +402,9 @@ function getConfig(configName: string, configPath: string, schemas: string): any
     for (let i = 0; i < parts.length; i++) {
       const part = parts[i].trim();
       if (part.startsWith('PARMLIB(')) {
-        const isValidParmlib = common.isValidZoweYamlParmlib(part);
+        const isValidParmlib = isValidZoweYamlParmlib(part);
         if (!isValidParmlib.ok) {
-          common.printErrorAndExit(isValidParmlib.error.message, undefined, isValidParmlib.error.code);
+          printErrorAndExit(isValidParmlib.error.message, undefined, isValidParmlib.error.code);
         }
       }
     }
