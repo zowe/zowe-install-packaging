@@ -1,1 +1,15 @@
-""
+{
+  "lockAcquiredTime": "Wed May 14 2025 09:20:46 GMT+0000 (Coordinated Universal Time)",
+  "uid": "1747214446470339489",
+  "repository": {
+    "owner": "zowe",
+    "repo": "zowe-install-packaging"
+  },
+  "branch": "hrishikesh-nalawade/GH4006/gateway-endlessly-spamming",
+  "workflow": "Zowe CICD Integration Tests",
+  "job": "cicd-test",
+  "actor": "zowe-robot",
+  "runId": 15016984945,
+  "runNumber": 6614,
+  "link": "https://github.com/zowe/zowe-install-packaging/actions/runs/15016984945"
+}
