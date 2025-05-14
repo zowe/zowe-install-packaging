@@ -420,14 +420,6 @@ if (fs.fileExists(`${workspaceDirectory}/.init-for-container`)) {
   std.setenv('ZWE_RUN_IN_CONTAINER', 'true');
 }
 
-// Fix node.js piles up in IPC message queue
-// run this before any node command we start
-if (os.platform == 'zos') {
-  common.printFormattedTrace("ZWELS", "zwe-internal-start-prepare", "Clean up IPC message queue before using node.js.");
-  shell.execSync('sh', `${runtimeDirectory}/bin/utils/cleanup-ipc-mq.sh`);
-}
-
-
 // display starting information
 let manifestReturn = shell.execOutSync('cat', `${runtimeDirectory}/manifest.json`);
 
