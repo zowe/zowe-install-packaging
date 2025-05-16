@@ -103,7 +103,7 @@ CFG.zwe.header.time = TIME()
     all the members of esm jcl.
     FIXME:
       1) check if zowe.setup.dataset.prefix is defined
-      2) check if jcllib != prefix.SZWESAMP
+      2) check that jcllib != prefix.SZWESAMP
 ================================================================================
 */
 
