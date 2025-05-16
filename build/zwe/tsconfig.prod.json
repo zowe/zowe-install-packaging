@@ -26,6 +26,7 @@
 	  }
   },
   "include": [
+    "../../bin/*",
     "../../bin/libs/*",
     "../../bin/commands/**/*",
     "../../bin/utils/*"
