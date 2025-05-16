@@ -131,8 +131,7 @@ if [ "${ZWE_zowe_setup_certificate_type}" = "PKCS12" -a "${ZWE_zowe_verifyCertif
   cp -r "${ZWE_zowe_setup_certificate_pkcs12_directory}/${ZWE_zowe_setup_certificate_pkcs12_caAlias}" "${temp_dir}/keystore"
 
   # create new certificate
-  # we use node utility to generate certificate because keytool doesn't support * in SAN
-  pkcs12_create_certificate_and_sign_with_node \
+  pkcs12_create_certificate_and_sign \
     "${temp_dir}/keystore" \
     "${ZWE_zowe_setup_certificate_pkcs12_name}" \
     "${ZWE_zowe_setup_certificate_pkcs12_name}" \

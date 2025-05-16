@@ -49,8 +49,8 @@ _customizeWorkflow () {
     test -d "$wf_from/$wf_file" && continue
     # fill in Zowe version in the workflow file
     sed -e "s/###ZOWE_VERSION###/${ZOWE_VERSION}/g" \
-        -e "s/encoding=\"utf-8\"/encoding=\"ibm-1047\"/g" \
-        "$wf_from/$wf_file" \
+      -e "s/encoding=\"utf-8\"/encoding=\"ibm-1047\"/g" \
+      "$wf_from/$wf_file" \
         > "$wf_to/$wf_file"
     # remove raw workflow file if requested
     test -n "$1" && rm "$wf_from/$wf_file"
@@ -144,26 +144,15 @@ echo "[${SCRIPT_NAME}] copy license file ..."
 mv "${PAX_BINARY_DEPENDENCIES}/zowe_licenses_full.zip" "${CONTENT_DIR}/licenses"
 
 # extract packaging utility tools to bin/utils
-echo "[${SCRIPT_NAME}] prepare utility tools ..."
+echo "[${SCRIPT_NAME}] prepare curl and keyring-util ..."
 cd "${ROOT_DIR}" && cd "${CONTENT_DIR}/bin/utils"
-echo "[${SCRIPT_NAME}] extract zowe-utility-tools.zip ..."
-jar -xf "${PAX_BINARY_DEPENDENCIES}"/zowe-utility-tools*.zip
-# we should get 2 tgz files as npm packages
-echo "[${SCRIPT_NAME}] extract zowe-fconv ..."
-tar zxf zowe-fconv-*.tgz
-mv package fconv
-rm zowe-fconv-*.tgz
-echo "[${SCRIPT_NAME}] extract zowe-njq ..."
-tar zxf zowe-njq-*.tgz
-mv package njq
-rm zowe-njq-*.tgz
-echo "[${SCRIPT_NAME}] extract zowe-config-converter ..."
-tar zxf zowe-config-converter-*.tgz
-mv package config-converter
-rm zowe-config-converter-*.tgz
-# zowe-ncert.pax will be extracted on z/OS side
+echo "[${SCRIPT_NAME}] extract curl-*.pax.z ..."
+pax -ppx -rf "${PAX_BINARY_DEPENDENCIES}"/curl*.pax.Z
+mv curl-*/bin/curl ./curl
+rm -rf curl-*
+chmod +x curl
 cd "${ROOT_DIR}"
-rm -f "${PAX_BINARY_DEPENDENCIES}"/zowe-utility-tools*.zip
+rm -f "${PAX_BINARY_DEPENDENCIES}"curl*.pax.Z
 
 # put text files into ascii folder (recursive & verbose)
 echo "[${SCRIPT_NAME}] move ASCII files out of CONTENT directory for encoding conversion ..."
@@ -182,7 +171,9 @@ rsync -rv \
 echo "[${SCRIPT_NAME}] copy keyring_utils"
 cd "${ROOT_DIR}" && cd "${CONTENT_DIR}/bin/utils"
 mkdir -p keyring-util
-mv "${PAX_BINARY_DEPENDENCIES}"/keyring-util-* keyring-util/keyring-util
+mv "${PAX_BINARY_DEPENDENCIES}"/keyring-util-* keyring-util/keyring-util.pax
+pax -ppx -rf keyring-util/keyring-util.pax
+rm keyring-util/keyring-util.pax
 
 # move binary dependencies and prepare to extract on z/OS
 echo "[${SCRIPT_NAME}] move binary dependencies ..."

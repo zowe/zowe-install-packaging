@@ -15,6 +15,7 @@
 */
 import * as common from '../libs/common';
 import * as std from 'cm_std';
+import * as sys from '../libs/sys';
 import * as config from '../libs/config';
 
 // scriptArgs is a quickJS global equivalent to node's process.argv
