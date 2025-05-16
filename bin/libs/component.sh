@@ -897,13 +897,12 @@ refresh_static_registration() {
   utils_dir="${ZWE_zowe_runtimeDirectory}/bin/utils"
 
   print_trace "- calling API Catalog /static-api/refresh to refresh static registrations"
-  result=$("${NODE_HOME}/bin/node" \
-            "${utils_dir}/curl.js" \
-            "https://${apicatalog_host}:${apicatalog_port}/apicatalog/static-api/refresh" \
-            -X POST \
-            --key "${auth_key}" \
-            --cert "${auth_cert}" \
-            --cacert "${ca_cert}")
+  result=$("${utils_dir}/curl" \
+    "https://${apicatalog_host}:${apicatalog_port}/apicatalog/static-api/refresh" \
+    -X POST \
+    --key "${auth_key}" \
+    --cert "${auth_cert}" \
+    --cacert "${ca_cert}")
   code=$?
   if [ ${code} -eq 0 ]; then
     print_trace "  * Exit code: ${code}"
