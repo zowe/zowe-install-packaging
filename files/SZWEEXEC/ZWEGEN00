@@ -101,6 +101,9 @@ CFG.zwe.header.time = TIME()
 ================================================================================
     Create a data set with attributes like the original jcl library and copy
     all the members of esm jcl.
+    FIXME:
+      1) check if zowe.setup.dataset.prefix is defined
+      2) check if jcllib != prefix.SZWESAMP
 ================================================================================
 */
 
