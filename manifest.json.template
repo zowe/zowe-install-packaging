@@ -117,18 +117,12 @@
       "version": "^3.0.0-STAGING"
     },
     "org.zowe.keyring-utilities": {
-      "version": "3.0.0-USER-MARKACKERT-REMOVE-NCERT",
-      "artifact": "keyring-util-*",
-      "explode": "false",
-      "flat": "true",
-      "exclusions": ["*PR*"]
+      "version": "^3.0.0-USER-MARKACKERT-REMOVE-NCERT",
+      "artifact": "*.pax"
     },
-    "org.zopencommunity.curlport": {
-      "version": "8.13.0",
-      "artifact": "curl-*",
-      "explode": "false",
-      "flat": "true",
-      "exclusions": ["*PR*"]
+    "org.zopencommunity.curl": {
+      "version": "^8.13.0",
+      "artifact": "*.pax.Z"
     },
     "org.zowe.utility-tools": {
       "version": "~2.0.0-SNAPSHOT"
