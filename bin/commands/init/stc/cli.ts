@@ -14,7 +14,10 @@ import * as index from './index';
 import * as configmgr from '../../../libs/configmgr';
 import * as common from '../../../libs/common';
 
-index.execute(std.getenv('ZWE_CLI_PARAMETER_ALLOW_OVERWRITE') == 'true');
 
-configmgr.cleanupTempDir();
-common.finishLogFile();
+export function execute() {
+  index.execute(std.getenv('ZWE_CLI_PARAMETER_ALLOW_OVERWRITE') == 'true');
+
+  configmgr.cleanupTempDir();
+  common.finishLogFile();
+}
