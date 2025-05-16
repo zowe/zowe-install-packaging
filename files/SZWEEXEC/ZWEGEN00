@@ -449,9 +449,6 @@ do j = 1 to !contentToRead.0
         type = WORD(!contentToRead.j, 1)
         location = WORD(!contentToRead.j, 2)
         element = type'('location')'
-        if COMPARE(type, 'PARMLIB') = 0 then do
-          element = 'PARMLIB('location'(ZWEYAML))'
-        end
         if j = 1 then do
           cmd = 'LINE 'currentline' = "CONFIG='element
           if !contentToRead.0 > 1 then do
@@ -534,15 +531,6 @@ Validate:
     return 1
   end
   say 'ConfigMgr loaded your schemas.'
-
-  say 'ConfigMgr is about to set the member name for parameter library.'
-  status = ZWECFG31('setParmlibMemberName', 'MYCFG', 'ZWEYAML')
-  if status > 0 then do
-    say 'ConfigMgr could not set member name for parameter library.'
-    say 'status = 'status
-    return 1
-  end
-  say 'ConfigMgr set the parameter library member name.'
 
   say 'ConfigMgr is about to process your configuration.'
   status = ZWECFG31('setConfigPath', 'MYCFG', ARG(2))
