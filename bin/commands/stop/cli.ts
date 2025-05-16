@@ -12,6 +12,8 @@
 import * as index from './index';
 import * as configmgr from '../../libs/configmgr';
 
-index.execute();
+export function execute() {
+  index.execute();
 
-configmgr.cleanupTempDir();
+  configmgr.cleanupTempDir();
+}

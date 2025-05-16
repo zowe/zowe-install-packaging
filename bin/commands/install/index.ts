@@ -36,7 +36,7 @@ export function execute(): void {
     common.printLevel1Message("Install Zowe MVS data sets");
 
     const dsPrefix = std.getenv("ZWE_CLI_PARAMETER_DATASET_PREFIX");
-=    if (dsPrefix != null) {
+    if (dsPrefix != null) {
       console.log(' no zowe yaml loaded');
       // ...go from here 
     }
