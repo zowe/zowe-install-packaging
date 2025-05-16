@@ -121,6 +121,14 @@ async function downloadManifestDep(binaryName: string): Promise<string> {
   // get folders so we can regex against
   const pathMatch = `${binaryName.replace(/\./g, '/')}/${dlSpec.versionPattern}`;
 
+  console.log(`
+    items.find({
+      "repo": "${dlSpec.repository}",
+      "path": {"$match": "${pathMatch}"},
+      "name": {"$match": "${nameMatch}" }
+    }).sort({"$desc" : ["created"]}).limit(1)
+    
+  `);
   const searchResults = await jf
     .artifactory()
     .search()
@@ -192,7 +200,7 @@ module.exports = async () => {
 
     if (DOWNLOAD_ZOWE_TOOLS) {
       await downloadManifestDep('org.zowe.keyring-utilities');
-      await downloadManifestDep('org.zowe.curlport');
+      await downloadManifestDep('org.zopencommunity.curl');
       await downloadManifestDep('org.zowe.getesm');
     }
 
@@ -220,14 +228,19 @@ module.exports = async () => {
       throw new Error('Could not locate a zss pax in the .build directory');
     }
 
-    const zoweToolsZip = downloadsDirContents.find((item) => /zowe-utility-tools.*\.zip/g.test(item));
-    if (zoweToolsZip == null) {
-      throw new Error('Could not locate zowe-utility-tools zip in the .build directory');
+    const curlPax = downloadsDirContents.find((item) => /curl.*\.pax.Z/g.test(item));
+    if (curlPax == null) {
+      throw new Error('Could not locate the curl pax in the .build directory');
+    }
+
+    const keyringUtilPax = downloadsDirContents.find((item) => /keyring-util.*\.pax/g.test(item));
+    if (keyringUtilPax == null) {
+      throw new Error('Could not locate keyring-utilities pax in the .build directory');
     }
 
     const vtlArchive = downloadsDirContents.find((item) => /vtl.tar.gz/g.test(item));
     if (vtlArchive == null) {
-      throw new Error('Could not locate zowe-utility-tools zip in the .build directory');
+      throw new Error('Could not locate vtl archive in the .build directory');
     }
 
     const getEsmArchive = downloadsDirContents.find((item) => /getesm.*.pax/g.test(item));
@@ -239,7 +252,7 @@ module.exports = async () => {
     await uss.runCommand(`mkdir -p ${REMOTE_SYSTEM_INFO.ussTestDir} && mkdir -p ${ussWorkDir}`);
 
     // zowe-install-packaging-tools and vtl-cli
-    const utilsDir = path.resolve(buildDir, 'utility-tools');
+    const utilsDir = path.resolve(buildDir, 'utils');
     fs.mkdirpSync(`${utilsDir}`);
 
     console.log(`Repacking vtl-cli....`);
@@ -251,28 +264,6 @@ module.exports = async () => {
     console.log(`Uploading ${finalVtlPkg} to ${ussWorkDir}/${path.basename(finalVtlPkg)}...`);
     await files.Upload.fileToUssFile(zosmfSession, finalVtlPkg, `${ussWorkDir}/${path.basename(finalVtlPkg)}`, {
       binary: true,
-    });
-
-    console.log(`Unzipping zowe-tools.zip on local machine`);
-    const zipFile = path.resolve(downloadsDir, zoweToolsZip);
-    yauzl.open(zipFile, { autoClose: true, lazyEntries: false }, (err, zipContents) => {
-      if (err) throw err;
-      zipContents.on('entry', async (entry) => {
-        // not a directory
-        if (!/\/$/.test(entry.fileName)) {
-          zipContents.openReadStream(entry, async (errZip, stream) => {
-            if (errZip) throw errZip;
-            console.log(`Unzipping ${entry.fileName}`);
-            const zipFilePath = `${utilsDir}/${entry.fileName}`;
-            if (fs.existsSync(zipFilePath)) {
-              fs.unlinkSync(zipFilePath);
-            }
-            fs.createFileSync(zipFilePath);
-            const zipFile = fs.createWriteStream(zipFilePath, { flags: 'as' });
-            stream.pipe(zipFile);
-          });
-        }
-      });
     });
 
     console.log(`Uploading ${configmgrPax} to ${ussWorkDir}/configmgr.pax ...`);
@@ -291,7 +282,17 @@ module.exports = async () => {
     });
 
     console.log(`Uploading ${launcherPax} to ${ussWorkDir}/launcher.pax ...`);
-    await files.Upload.fileToUssFile(zosmfSession, path.resolve(downloadsDir, launcherPax), `${ussWorkDir}/launcher.pax`, {
+    await files.Upload.fileToUssFile(zosmfSession, path.resolve(downloadsDir, launcherPax), `${ussWorkDir}/${launcherPax}`, {
+      binary: true,
+    });
+
+    console.log(`Uploading ${curlPax} to ${ussWorkDir}/curl.pax.Z ...`);
+    await files.Upload.fileToUssFile(zosmfSession, path.resolve(downloadsDir, curlPax), `${ussWorkDir}/${curlPax}`, {
+      binary: true,
+    });
+
+    console.log(`Uploading ${keyringUtilPax} to ${ussWorkDir}/keyring-util.pax...`);
+    await files.Upload.fileToUssFile(zosmfSession, path.resolve(downloadsDir, keyringUtilPax), `${ussWorkDir}/${keyringUtilPax}`, {
       binary: true,
     });
 
@@ -314,36 +315,6 @@ module.exports = async () => {
     });
     await uss.runCommand(`tar -xfo ${ussWorkDir}/zwe.tar`, REMOTE_SYSTEM_INFO.ussTestDir);
 
-    for (const file of fs.readdirSync(utilsDir)) {
-      const match = file.match(/zowe-(.*)-[0-9]?.*tgz/im);
-      if (match) {
-        const fileName = match[0];
-        const pkgName = match[1];
-
-        console.log(`Uploading ${pkgName} to ${REMOTE_SYSTEM_INFO.ussTestDir}/bin/utils...`);
-        // re-archive without compression (issues on some backends)
-        const finalPkg = path.resolve(utilsDir, `${pkgName}.tar`);
-        tar.x({ cwd: utilsDir, file: path.resolve(utilsDir, fileName), sync: true });
-        tar.c({ gzip: false, file: finalPkg, cwd: utilsDir, sync: true }, ['package']);
-        await files.Upload.fileToUssFile(zosmfSession, finalPkg, `${ussWorkDir}/${pkgName}.tar`, {
-          binary: true,
-        });
-        await uss.runCommand(`tar xf ${pkgName}.tar`, ussWorkDir);
-        await uss.runCommand(`mv package ${REMOTE_SYSTEM_INFO.ussTestDir}/bin/utils/${pkgName}`, ussWorkDir);
-      }
-    }
-    let ncertPax = '';
-    console.log(`Uploading ncert to ${REMOTE_SYSTEM_INFO.ussTestDir}/bin/utils...`);
-    fs.readdirSync(`${utilsDir}`).forEach((item) => {
-      const match = item.match(/zowe-ncert-([0-9]?.*)\.pax/im);
-      if (match && match[1]) {
-        ncertPax = match[0];
-      }
-    });
-    await files.Upload.fileToUssFile(zosmfSession, path.resolve(utilsDir, ncertPax), `${ussWorkDir}/ncert.pax`, {
-      binary: true,
-    });
-
     await uss.runCommand(
       `chmod 755 ${REMOTE_SYSTEM_INFO.ussTestDir}/bin/zwe && ` + `chmod 755 ${REMOTE_SYSTEM_INFO.ussTestDir}/bin/utils/opercmd.rex `,
       REMOTE_SYSTEM_INFO.ussTestDir,
@@ -354,6 +325,15 @@ module.exports = async () => {
       binary: true,
     });
     await uss.runCommand(`pax -ppx -rf ${getEsmArchive} && cp -f getesm ${REMOTE_SYSTEM_INFO.ussTestDir}/bin/utils`, ussWorkDir);
+
+    console.log(`Unpacking ${curlPax} and moving curl to ${REMOTE_SYSTEM_INFO.ussTestDir}/bin/utils...`);
+    await uss.runCommand(`pax -ppx -rf ${curlPax} && cp -f curl-*/bin/curl ${REMOTE_SYSTEM_INFO.ussTestDir}/bin/utils`, ussWorkDir);
+
+    console.log(`Unpacking ${keyringUtilPax} and moving keyring-util to ${REMOTE_SYSTEM_INFO.ussTestDir}/bin/utils...`);
+    await uss.runCommand(
+      `pax -ppx -rf ${keyringUtilPax} && cp -f keyring-util ${REMOTE_SYSTEM_INFO.ussTestDir}/bin/utils`,
+      ussWorkDir,
+    );
 
     console.log(`Uploading ${REPO_ROOT_DIR}/schemas to ${REMOTE_SYSTEM_INFO.ussTestDir}/schemas...`);
     await files.Upload.dirToUSSDirRecursive(
