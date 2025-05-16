@@ -117,12 +117,19 @@
       "version": "^3.0.0-STAGING"
     },
     "org.zowe.keyring-utilities": {
-      "version": "1.0.4",
+      "version": "3.0.0-USER-MARKACKERT-REMOVE-NCERT",
       "artifact": "keyring-util-*",
       "explode": "false",
       "flat": "true",
       "exclusions": ["*PR*"]
-   },
+    },
+    "org.zopencommunity.curlport": {
+      "version": "8.13.0",
+      "artifact": "curl-*",
+      "explode": "false",
+      "flat": "true",
+      "exclusions": ["*PR*"]
+    },
     "org.zowe.utility-tools": {
       "version": "~2.0.0-SNAPSHOT"
     },

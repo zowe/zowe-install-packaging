@@ -191,7 +191,8 @@ module.exports = async () => {
     }
 
     if (DOWNLOAD_ZOWE_TOOLS) {
-      await downloadManifestDep('org.zowe.utility-tools');
+      await downloadManifestDep('org.zowe.keyring-utilities');
+      await downloadManifestDep('org.zowe.curlport');
       await downloadManifestDep('org.zowe.getesm');
     }
 
