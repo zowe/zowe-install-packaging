@@ -1,15 +1,1 @@
-{
-  "actor": "markackert-manual-lock-ignore-fields",
-  "lockAcquiredTime": "Mon Mar 17 2025 12:30 EST",
-  "uid": "1741747861108656994",
-  "repository": {
-    "owner": "zowe",
-    "repo": "zowe-install-packaging"
-  },
-  "branch": "v2.x/staging",
-  "workflow": "Zowe CICD Integration Tests",
-  "job": "cicd-test",
-  "runId": 13802595406,
-  "runNumber": 6236,
-  "link": "https://github.com/zowe/zowe-install-packaging/actions/runs/13802595406"
-}
+""
