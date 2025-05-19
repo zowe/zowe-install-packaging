@@ -67,11 +67,10 @@ FILE {zowe.runtimeDirectory}/schemas/server-common.json
 $$
 //*
 //* The DD below must include one or more FILE or PARMLIB
-//* Entries. The lower entries have their values
-//* Overridden by the higher entries.
-//* PARMLIB member must be named "ZWEYAML"
+//* entries. The lower entries have their values
+//* overridden by the higher entries.
 //*
-//* Ex. PARMLIB MY.ZOWE.CUSTOM.PARMLIB
+//* Ex. PARMLIB MY.ZOWE.CUSTOM.PARMLIB(YAML)
 //*     FILE /some/other/zowe.yaml
 //MYCONFIG DD   *,DLM=$$
 FILE <full path to zowe.yaml file>
