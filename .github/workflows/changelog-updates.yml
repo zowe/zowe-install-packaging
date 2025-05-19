@@ -26,7 +26,7 @@ jobs:
         run: |
           git diff --exit-code "origin/${{ github.event.pull_request.base.ref }}" -- "CHANGELOG.md"
           if [[ "$?" -eq 0 ]]; then
-            echo "Please review the CHANGELOG and add an entry for this pull request."
+            echo "Please review the CHANGELOG and add an entry for this pull request if it contains changes users should be informed of."
             echo "If there are no changes, add the 'skip-changelog' label to this pull request."
             exit 1
           fi
