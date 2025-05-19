@@ -10,7 +10,7 @@ on:
   pull_request:
     branches: 
       - 'v*.x/staging'
-    types: [opened, synchronize]
+    types: [opened, synchronize, labeled]
 
 jobs:
   check-changelog:
