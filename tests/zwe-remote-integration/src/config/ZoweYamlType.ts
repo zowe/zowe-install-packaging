@@ -717,6 +717,11 @@ const zoweSchema = zoweYamlSchema as {
             type: 'string';
           };
         };
+        sysMessageTrim: {
+          type: 'boolean';
+          default: false;
+          description: 'Determines whether or not to trim the syslog messages, print will start from the system message id';
+        };
         useConfigmgr: {
           type: 'boolean';
           default: false;
