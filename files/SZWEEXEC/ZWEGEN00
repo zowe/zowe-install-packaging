@@ -24,6 +24,8 @@
 */
 
 parse arg operation verbosity
+operation = strip(operation)
+verbosity = strip(verbosity)
 
 VALID_OPERATIONS = '"generate" | "nogenerate"'
 VALID_VERBOSITY = '"verbose" | "noverbose"'
