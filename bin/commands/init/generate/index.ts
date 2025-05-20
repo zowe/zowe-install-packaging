@@ -97,7 +97,7 @@ export function execute(dryRun?: boolean) {
         common.printErrorAndExit(isValidParmlib.error.message, undefined, isValidParmlib.error.code);
       }
       const parmlib = part.substring(part.indexOf('(')+1, part.lastIndexOf(')'));
-      configLines.push('PARMLIB ' + parmlib.substring(0, parmlib.indexOf('(')).replace(/[$]/g, '$$$$'));
+      configLines.push(`PARMLIB ${parmlib}`);
     }
   }
 
