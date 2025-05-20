@@ -1,0 +1,34 @@
+zowe:
+  setup:
+    # >>>> Certificate setup scenario 1
+    # PKCS12 (keystore) with Zowe generate certificates.
+    certificate:
+      # Type of certificate storage. Valid values are: PKCS12, JCERACFKS. APIML additionally supports: JCEKS, JCECCAKS, JCECCARACFKS, or JCEHYBRIDRACFKS
+      type: PKCS12
+      pkcs12:
+        directory: {@ ussTestDir @}
+        # Certificate alias name. Optional, default value is localhost.
+        name: localhost
+        password: password
+        caAlias: local_ca
+        caPassword: local_ca_password
+      validity: 3650
+      # san:
+      #  # sample domain name
+      #  - dvipa.my-company.com
+      #  # sample IP address
+      #  - 12.34.56.78
+  certificate:
+    keystore:
+      type: PKCS12
+      file: {@ ussTestDir @}/localhost/localhost.keystore.p12
+      password: password
+      alias: localhost
+    truststore:
+      type: PKCS12
+      file: {@ ussTestDir @}/localhost/localhost.truststore.p12
+      password: password
+    pem:
+      key: {@ ussTestDir @}/localhost/localhost.key
+      certificate: {@ ussTestDir @}/localhost/localhost.cer
+      certificateAuthorities: {@ ussTestDir @}/local_ca/local_ca.cer
