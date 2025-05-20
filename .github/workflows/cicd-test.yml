@@ -31,6 +31,8 @@ on:
           - SMPE PTF
           - Extensions
           - Keyring
+          - Java 21
+          - Java 21 Keyring
           - z/OS node v20
           - z/OS node v22
           - Non-strict Verify External Certificate
@@ -81,6 +83,8 @@ env:
   SMPE_PTF_TESTFILE: basic/install-ptf.ts
   EXTENSIONS_TESTFILE: basic/install-ext.ts
   KEYRING_TESTFILE: extended/keyring.ts
+  JAVA_V21_TESTFILE: extended/java-versions/java-21.ts
+  JAVA_V21_KEYRING_TESTFILE: extended/java-versions/java-21-keyring.ts
   ZOS_NODE_V20_TESTFILE: extended/node-versions/node-v20.ts
   ZOS_NODE_V22_TESTFILE: extended/node-versions/node-v22.ts
   NON_STRICT_VERIFY_EXTERNAL_CERTIFICATE_TESTFILE: extended/certificates/nonstrict-verify-external-certificate.ts
@@ -90,7 +94,7 @@ env:
   CONFIG_MANAGER_TESTFILE: extended/config-manager/enable-config-manager.ts
   GENERAL_API_DOCUMENTATION_TESTFILE: basic/install-api-gen.ts
   ZOWE_NIGHTLY_TESTS_FULL: basic/install.ts(all);basic/install-ptf.ts(all)
-  ZOWE_RELEASE_TESTS_FULL: basic/install.ts(all);basic/install-ptf.ts(all);basic/install-ext.ts(any);extended/keyring.ts(all);extended/node-versions/node-v20.ts(any);extended/node-versions/node-v22.ts(any);extended/certificates/nonstrict-verify-external-certificate.ts(any);extended/caching-storages/infinispan-storage.ts(any);extended/config-manager/enable-config-manager.ts(any)
+  ZOWE_RELEASE_TESTS_FULL: basic/install.ts(all);basic/install-ptf.ts(all);basic/install-ext.ts(any);extended/keyring.ts(all);extended/java-versions/java-21.ts(any);extended/java-versions/java-21-keyring.ts(any);extended/node-versions/node-v20.ts(any);extended/node-versions/node-v22.ts(any);extended/certificates/nonstrict-verify-external-certificate.ts(any);extended/caching-storages/infinispan-storage.ts(any);extended/config-manager/enable-config-manager.ts(any)
 
 jobs:
   display-dispatch-event-id:

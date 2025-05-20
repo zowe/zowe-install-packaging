@@ -327,6 +327,8 @@ zowe:
   # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   # You can define any Zowe message portions to be checked for and the message added to the
   # system log upon its logging, truncated to 126 characters (wildcards are not supported).
+  # Setting "sysMessageTrim" to true will omit any text found before the match on the line.
+  sysMessageTrim: false
   sysMessages:
   #   # Zowe starting
     - "ZWEL0021I"
@@ -545,8 +547,6 @@ components:
     port: 7557
     crossMemoryServerName: ZWESIS_STD
     agent:
-      jwt:
-        fallback: true
       64bit: true
 
   # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>

@@ -11,12 +11,12 @@
 //*
 //*********************************************************************
 //*
-//MKPDSE EXEC PGM=IKJEFT01
+//MKPDSE EXEC PGM=IKJEFT01,DYNAMNBR=4
 //SYSTSPRT DD SYSOUT=A
 //SYSTSIN DD *
 ALLOC NEW DA('{zowe.setup.dataset.prefix}.SZWESAMP') +
 dsntype(library) dsorg(po) recfm(f b) lrecl(80) +
-unit(sysallda) space(15,15) tracks
+unit(sysallda) space(30,15) tracks
 
 ALLOC NEW DA('{zowe.setup.dataset.prefix}.SZWEEXEC') +
 dsntype(library) dsorg(po) recfm(f b) lrecl(80) +
@@ -24,11 +24,11 @@ unit(sysallda) space(15,15) tracks
 
 ALLOC NEW DA('{zowe.setup.dataset.prefix}.SZWEAUTH') +
 dsntype(library) dsorg(po) recfm(u) lrecl(0) +
-blksize(32760) unit(sysallda) space(30,15) tracks
+blksize(32760) unit(sysallda) space(195,15) tracks
 
 ALLOC NEW DA('{zowe.setup.dataset.prefix}.SZWELOAD') +
 dsntype(library) dsorg(po) recfm(u) lrecl(0) +
-blksize(32760) unit(sysallda) space(30,15) tracks
+blksize(32760) unit(sysallda) space(150,15) tracks
 //*
 //*
 //AUTHCPY EXEC PGM=BPXBATCH

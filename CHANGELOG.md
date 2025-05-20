@@ -2,6 +2,10 @@
 
 All notable changes to the Zowe Installer will be documented in this file.
 
+## `3.3.0`
+- Enhancement: Support different parmlib members when using JCL `ZWEGENER` [#4332](https://github.com/zowe/zowe-install-packaging/pull/4332)
+- Enhancement: Updated the `zowe-yaml-schema.json` and `defaults.yaml` to support new configuration parameter `zowe.sysMessageTrim` and set default value. This parameter will be used to trim syslog messages and print only from the sys-message-id. [#4294](https://github.com/zowe/zowe-install-packaging/pull/4294)
+
 ## `3.2.0`
 - Enhancement: `zwe support` command collecting more environment details [#4147](https://github.com/zowe/zowe-install-packaging/pull/4147)
 - Enhancement: Added new library function formatZosVersion() [#4134](https://github.com/zowe/zowe-install-packaging/pull/4134)
@@ -12,7 +16,7 @@ All notable changes to the Zowe Installer will be documented in this file.
 - Bugfix: When `--log-dir` parameter for `zwe` command is a file, there might be an error "InternalError: stack overflow". [#4064](https://github.com/zowe/zowe-install-packaging/pull/4064)
 - Enhancement: command `zwe init` does not require NodeJS [#4088](https://github.com/zowe/zowe-install-packaging/pull/4088)
 - Enhancement: command `zwe install` does not require NodeJS [#4069](https://github.com/zowe/zowe-install-packaging/pull/4069)
-- Enhancement: new javascript funtion `getStatvfs()` to obtain information about the file sysytem [#3994](https://github.com/zowe/zowe-install-packaging/pull/3994)
+- Enhancement: new javascript function `getStatvfs()` to obtain information about the file system [#3994](https://github.com/zowe/zowe-install-packaging/pull/3994)
 - Enhancement: command `zwe diagnose` in javascript only [#4061](https://github.com/zowe/zowe-install-packaging/pull/4061)
 - Enhancement: schema validation update for `zowe.job.name` and `zowe.job.prefix` [#4060](https://github.com/zowe/zowe-install-packaging/pull/4060)
 

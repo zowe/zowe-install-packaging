@@ -421,14 +421,6 @@ if (fs.fileExists(`${workspaceDirectory}/.init-for-container`)) {
   std.setenv('ZWE_RUN_IN_CONTAINER', 'true');
 }
 
-// Fix node.js piles up in IPC message queue
-// run this before any node command we start
-if (os.platform == 'zos') {
-  common.printFormattedTrace("ZWELS", "zwe-internal-start-prepare", "Clean up IPC message queue before using node.js.");
-  shell.execSync('sh', `${runtimeDirectory}/bin/utils/cleanup-ipc-mq.sh`);
-}
-
-
 // display starting information
 let manifestReturn = shell.execOutSync('cat', `${runtimeDirectory}/manifest.json`);
 
@@ -456,7 +448,7 @@ export function execute() {
   common.requireZoweYaml();
 
   // overwrite ZWE_PRIVATE_LOG_LEVEL_ZWELS with zowe.launchScript.logLevel config in YAML
-  if (ZOWE_CONFIG.zowe.launchScript) {
+  if (ZOWE_CONFIG.zowe.launchScript.logLevel) {
     std.setenv('ZWE_PRIVATE_LOG_LEVEL_ZWELS', ZOWE_CONFIG.zowe.launchScript.logLevel.toUpperCase());
   };
 
