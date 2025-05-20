@@ -38,7 +38,6 @@ import { JfrogClient } from 'jfrog-client-js';
 import { processManifestVersion } from './utils';
 import { execSync } from 'child_process';
 import { createPds } from './zos/Files';
-import * as yauzl from 'yauzl';
 
 const zosmfSession = getSession();
 const buildDir = path.resolve(THIS_TEST_ROOT_DIR, '.build');
