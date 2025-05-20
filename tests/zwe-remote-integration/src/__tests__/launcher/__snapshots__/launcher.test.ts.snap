@@ -75,6 +75,7 @@ zowe:
     logLevel: "info"
     onComponentConfigureFail: "warn"
   verifyCertificates: "STRICT"
+  sysMessageTrim: false
   runtimeDirectory: "/test/dir"
   logDirectory: "/test/dir/logs"
   workspaceDirectory: "/test/dir/workspace"
@@ -262,6 +263,7 @@ zowe:
     logLevel: "info"
     onComponentConfigureFail: "warn"
   verifyCertificates: "STRICT"
+  sysMessageTrim: false
   runtimeDirectory: "/test/dir"
   logDirectory: "/test/dir/logs"
   workspaceDirectory: "/test/dir/workspace"
