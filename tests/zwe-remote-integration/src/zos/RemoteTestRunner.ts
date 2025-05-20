@@ -328,6 +328,7 @@ export class RemoteTestRunner {
       .replaceAll(`${this.session.ISession.user}`, 'TESTUSR0')
       .replace(/\/tmp\/\.zweenv-\d{1,5}/g, '/tmp/.zweenv-0000')
       .replace(/\/tmp\/zwe-\d{1,5}/g, '/tmp/zwe-0000')
+      .replace(/\/tmp\/zowe-convert-for-k8s-\d{1,5}/g, '/tmp/zowe-convert-for-k8s-0000')
       .replaceAll(REMOTE_SYSTEM_INFO.volume, 'TSTVOL')
       .replaceAll(REMOTE_SYSTEM_INFO.hostname, this.dummyHostname)
       .replaceAll(REMOTE_SYSTEM_INFO.zosmfPort, this.dummyPort);
