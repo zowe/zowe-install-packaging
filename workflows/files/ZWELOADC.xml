@@ -252,7 +252,7 @@
             <instructions substitution="false"><![CDATA[
 	<p>Use this step to define the variables for ACF2.</p>
 	<p>For more information about security system setup and it's variables, please open via right-click in new tab or window and refer to security documentation 
-	<a href="https://techdocs.broadcom.com/us/en/ca-mainframe-software/security/ca-acf2-for-z-os/16-0/administrating/digital-certificate-support/process-digital-certificates-with-acf2/insert-certificates.html">configure ACF2 security certificates</a>.</p>
+	<a href="https://techdocs.broadcom.com/us/en/ca-mainframe-software/security/ca-acf2-for-z-os/16-0/administrating/digital-certificate-support/process-digital-certificates-with-acf2/add-certificates-to-the-acf2-database--insert-.html">configure ACF2 security certificates</a>.</p>
 	]]></instructions>
             <weight>1</weight>
             <skills>Security Administrator</skills>
@@ -452,7 +452,7 @@ DCDSN(${instance-output_dataset}) TRUST
             <instructions substitution="true"><![CDATA[
 	<p>This step will load signed client authentication certificate from the ${instance-output_dataset} into ESM</p>
 	<p>For more information about security system setup and it's variables, please open via right-click in new tab or window and refer to security documentation 
-	<a href="https://techdocs.broadcom.com/us/en/ca-mainframe-software/security/ca-acf2-for-z-os/16-0/administrating/digital-certificate-support/process-digital-certificates-with-acf2/insert-certificates.html">configure ACF2 security certificates</a>.</p>
+	<a href="https://techdocs.broadcom.com/us/en/ca-mainframe-software/security/ca-acf2-for-z-os/16-0/administrating/digital-certificate-support/process-digital-certificates-with-acf2/add-certificates-to-the-acf2-database--insert-.html">configure ACF2 security certificates</a>.</p>
 	]]></instructions>
             <weight>1</weight>
             <skills>Security Administrator</skills>
