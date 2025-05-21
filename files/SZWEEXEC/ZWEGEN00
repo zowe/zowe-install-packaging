@@ -27,10 +27,11 @@ parse arg operation verbosity
 operation = strip(operation)
 verbosity = strip(verbosity)
 
-VALID_OPERATIONS = '"generate" | "nogenerate"'
-VALID_VERBOSITY = '"verbose" | "noverbose"'
+VALID_OPERATIONS = 'generate nogenerate'
+VALID_VERBOSITY = 'verbose noverbose'
 
-if POS(verbosity, VALID_VERBOSITY) = 0 then do
+checkVerbosity = CheckInput(verbosity, VALID_VERBOSITY)
+if length(checkVerbosity) = 0 then do
   queue '"'verbosity'" is not a valid verbosity.'
   queue 'Valid verbosity levels are: '||VALID_VERBOSITY
   FormatError(8)
@@ -73,7 +74,8 @@ end
 ================================================================================
 */
 
-if POS(operation, VALID_OPERATIONS) = 0 then do
+checkOperatation = CheckInput(operation, VALID_OPERATIONS)
+if length(checkOperatation) = 0 then do
   queue '"'operation'" is not a valid operation.'
   queue 'Valid operations are: '||VALID_OPERATIONS
   FormatError(8)
@@ -977,13 +979,31 @@ AddToChain:
 
 /*
 ================================================================================
+  CheckInput('parmIn', 'list_of_valid_options')
+================================================================================
+*/
+CheckInput: procedure
+
+  parmIn = strip(ARG(1))
+  validOptions = ARG(2)
+  parmReturn = ''
+
+  do i = 1 to words(validOptions)
+    if word(validOptions, i) = parmIn then
+      parmReturn = parmIn
+  end
+
+  return parmReturn
+
+/*
+================================================================================
   Print('msg')
 ================================================================================
 */
 Print:
   procedure expose !verbose
 
-  if !verbose = 1 then do
+  if !verbose > 0 then do
     say ARG(1)
   end
 
