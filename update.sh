@@ -1,9 +1,11 @@
 #!/bin/bash -e
 
+# requires clean shell on MacOS: bash --norc --noprofile
+
 function getZoweMajorVersion {
   while read -r line; do
     if [[ "${line}" =~ \"version\".*:.*\"([0-9]+)\. ]]; then
-      echo ${BASH_REMATCH[-1]}
+      echo ${BASH_REMATCH[1]}
       return
     fi
   done < manifest.json.template
@@ -73,7 +75,7 @@ function getValue {
 
     if [[ ${selected} -eq 1 ]]; then
       if [[ "${line}" =~ ${fieldRegex} ]]; then
-        echo ${BASH_REMATCH[-1]}
+        echo ${BASH_REMATCH[2]}
         return
       fi
     fi
