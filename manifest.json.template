@@ -52,11 +52,11 @@
       "artifact": "zss-2.18.1-rc-1270-20250304134859.pax"
     },
     "org.zowe.explorer.jobs.jobs-api-package": {
-      "version": "2.0.38",
+      "version": "2.0.39",
       "artifact": "jobs-api-package-*.zip"
     },
     "org.zowe.explorer.files.files-api-package": {
-      "version": "2.0.37",
+      "version": "2.0.38",
       "artifact": "files-api-package-*.zip"
     },
     "org.zowe.explorer-jes": {
@@ -73,27 +73,27 @@
       "artifact": "explorer-ip*.pax"
     },
     "org.zowe.apiml.api-catalog-package": {
-      "version": "2.18.10",
+      "version": "2.18.13",
       "artifact": "api-catalog*.zip"
     },
     "org.zowe.apiml.discovery-package": {
-      "version": "2.18.10",
+      "version": "2.18.13",
       "artifact": "discovery*.zip"
     },
     "org.zowe.apiml.gateway-package": {
-      "version": "2.18.10",
+      "version": "2.18.13",
       "artifact": "gateway*.zip"
     },
     "org.zowe.apiml.caching-service-package": {
-      "version": "2.18.10",
+      "version": "2.18.13",
       "artifact": "caching-service*.zip"
     },
     "org.zowe.apiml.metrics-service-package": {
-      "version": "2.18.10",
+      "version": "2.18.13",
       "artifact": "metrics-service*.zip"
     },
     "org.zowe.apiml.apiml-common-lib-package": {
-      "version": "2.18.10",
+      "version": "2.18.13",
       "artifact": "apiml-common-lib-*.zip"
     },
     "org.zowe.apiml.sdk.common-java-lib-package": {
@@ -101,11 +101,11 @@
       "artifact": "common-java-lib-*.zip"
     },
     "org.zowe.apiml.sdk.apiml-sample-extension-package": {
-      "version": "2.18.10",
+      "version": "2.18.13",
       "artifact": "apiml-sample-extension-*.zip"
     },
     "org.zowe.apiml.cloud-gateway-package": {
-      "version": "2.18.10",
+      "version": "2.18.13",
       "artifact": "cloud-gateway-*.zip"
     },
     "org.zowe.configmgr-rexx": {
@@ -145,7 +145,7 @@
       "componentGroup": "Zowe API Mediation Layer",
       "entries": [{
         "repository": "api-layer",
-        "tag": "v2.18.6",
+        "tag": "v2.18.13",
         "destinations": ["Zowe PAX"]
       }]
     }, {
@@ -287,21 +287,21 @@
       "componentGroup": "Zowe Explorer Common REST Server",
       "entries": [{
         "repository": "explorer-api-common",
-        "tag": "2.0.38",
+        "tag": "2.0.39",
         "destinations": ["Zowe PAX"]
       }]
     }, {
       "componentGroup": "Zowe Explorer Data Sets REST Server",
       "entries": [{
         "repository": "data-sets",
-        "tag": "2.0.36",
+        "tag": "2.0.38",
         "destinations": ["Zowe PAX"]
       }]
     }, {
       "componentGroup": "Zowe Explorer Jobs REST Server",
       "entries": [{
         "repository": "jobs",
-        "tag": "2.0.37",
+        "tag": "2.0.39",
         "destinations": ["Zowe PAX"]
       }]
     },
@@ -410,23 +410,23 @@
     "api-catalog": {
       "registry": "zowe-docker-release.jfrog.io",
       "name": "ompzowe/api-catalog-services",
-      "tag" : "2.18.10-ubuntu"
+      "tag" : "2.18.13-ubuntu"
     },
     "caching": {
       "registry": "zowe-docker-release.jfrog.io",
       "name": "ompzowe/caching-service",
-      "tag" : "2.18.10-ubuntu"
+      "tag" : "2.18.13-ubuntu"
     },
     "discovery": {
       "kind": "statefulset",
       "registry": "zowe-docker-release.jfrog.io",
       "name": "ompzowe/discovery-service",
-      "tag" : "2.18.10-ubuntu"
+      "tag" : "2.18.13-ubuntu"
     },
     "gateway": {
       "registry": "zowe-docker-release.jfrog.io",
       "name": "ompzowe/gateway-service",
-      "tag" : "2.18.10-ubuntu"
+      "tag" : "2.18.13-ubuntu"
     },
     "app-server": {
       "registry": "zowe-docker-release.jfrog.io",
@@ -460,12 +460,12 @@
     "files-api": {
       "registry": "zowe-docker-release.jfrog.io",
       "name": "ompzowe/files-api",
-      "tag" : "2.0.37-ubuntu"
+      "tag" : "2.0.38-ubuntu"
     },
     "jobs-api": {
       "registry": "zowe-docker-release.jfrog.io",
       "name": "ompzowe/jobs-api",
-      "tag" : "2.0.38-ubuntu"
+      "tag" : "2.0.39-ubuntu"
     },
     "base": {
       "registry": "zowe-docker-release.jfrog.io",
