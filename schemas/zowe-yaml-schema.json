@@ -536,7 +536,7 @@
         },
         "externalDomains": {
           "type": "array",
-          "description": "List of domain names of how you access Zowe from your local computer.",
+          "description": "List of domain names, IPv4 or IPv6 addresses of how clients, such as browsers or the Zowe CLI, should use to access Zowe.",
           "minItems": 1,
           "uniqueItems": true,
           "items": {
@@ -1013,7 +1013,10 @@
               "type": "array",
               "description": "The IP addresses which all of the Zowe servers will be binding on and listening to. Some servers may only support listening on the first element.",
               "items": {
-                "$ref": "/schemas/v2/server-common#zoweIpv4"
+                "anyOf": [
+                  { "$ref": "/schemas/v2/server-common#zoweIpv4" },
+                  { "$ref": "/schemas/v2/server-common#zoweIpv6" }
+                ]
               }
             },
             "vipaIp": {

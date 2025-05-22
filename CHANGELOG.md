@@ -2,6 +2,9 @@
 
 All notable changes to the Zowe Installer will be documented in this file.
 
+## `3.4.0`
+- Enhancement: Support added for IPv6 addresses within the zowe.externalDomains and zowe.server.listenAddresses arrays. [#???](???)
+
 ## `3.3.0`
 - Enhancement: Support different parmlib members when using JCL `ZWEGENER` [#4332](https://github.com/zowe/zowe-install-packaging/pull/4332)
 - Enhancement: Updated the `zowe-yaml-schema.json` and `defaults.yaml` to support new configuration parameter `zowe.sysMessageTrim` and set default value. This parameter will be used to trim syslog messages and print only from the sys-message-id. [#4294](https://github.com/zowe/zowe-install-packaging/pull/4294)
