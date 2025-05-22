@@ -118,7 +118,7 @@ jobs:
     needs: check-permission
     steps:
       - name: '[Prep 1] Checkout'
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
       - name: Make matrix
         id: set-matrix
@@ -141,7 +141,7 @@ jobs:
     environment: ${{ matrix.server }}
     steps:
       - name: '[Prep 1] Checkout'
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
       - name: '[Prep 2] Setup Node'
         uses: actions/setup-node@v3
