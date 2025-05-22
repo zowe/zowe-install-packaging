@@ -60,16 +60,16 @@
       "artifact": "files-api-package-*.zip"
     },
     "org.zowe.explorer-jes": {
-      "version": "2.0.7"
+      "version": "2.0.9"
     },
     "org.zowe.explorer-mvs": {
-      "version": "2.0.9"
+      "version": "2.0.10"
     },
     "org.zowe.explorer-uss": {
-      "version": "2.0.9"
+      "version": "2.0.10"
     },
     "org.zowe.explorer-ip": {
-      "version": "2.0.0",
+      "version": "2.0.1",
       "artifact": "explorer-ip*.pax"
     },
     "org.zowe.apiml.api-catalog-package": {
