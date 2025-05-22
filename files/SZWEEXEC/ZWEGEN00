@@ -406,7 +406,9 @@ say 'The edit macro was invoked on each member.'
 ================================================================================
     Add the job card to each member if filled out.
 ================================================================================
-*/
+FIXME:
+  1. Card is added to each member (STCs included)
+  2. It overwrites the first line
 
 card.0 = 0
 
@@ -450,7 +452,7 @@ if card.0 > 0 then do
   say 'The job card was added to each member.'
 end
 
-
+*/
 
 say 'Checking the ZWESLSTC CONFIG entry'
 
