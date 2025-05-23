@@ -351,6 +351,11 @@ zowe:
     - "ZWED0031I"
   #   # ZSS ready
     - "ZWES1013I"
+  #   # Launcher status messages, such as shutdown received and requests for status
+    - "ZWEL0010I"
+    - "ZWEL0011I"
+    - "ZWEL0013I"
+    - "ZWEL0014I"
 
   #   # Not limited to Zowe message IDs, you can specify your own string for example:
   #   - "ERROR"
