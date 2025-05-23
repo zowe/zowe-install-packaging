@@ -142,6 +142,33 @@ zowe:
   # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   # To determine whether to trim ths syslog message inorder to print from message-id, disabled by default
   sysMessageTrim: false
+  sysMessages:
+  #   # Zowe starting
+    - "ZWEL0021I"
+  #   # Zowe started
+    - "ZWEL0018I"
+    - "ZWEL0006I"
+  #   # Zowe ready to use
+    - "ZWES1601I"
+  #   # Zowe stopping
+    - "ZWEL0008I"
+  #   # Zowe stopped
+    - "ZWEL0022I"
+  #   # Zowe components starting
+    - "ZWEL0001I"
+  #   # Zowe components stopped
+    - "ZWEL0002I"
+  #   # API ML components ready
+    - "ZWEAM000I"
+  #   # App server ready
+    - "ZWED0031I"
+  #   # ZSS ready
+    - "ZWES1013I"
+  #   # Launcher status messages, such as shutdown received and requests for status
+    - "ZWEL0010I"
+    - "ZWEL0011I"
+    - "ZWEL0013I"
+    - "ZWEL0014I"
 
 #-------------------------------------------------------------------------------
 # Zowe components default configurations
