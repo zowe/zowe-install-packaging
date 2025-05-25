@@ -338,6 +338,7 @@ cd ${TMP_MOUNT}
 get ${SWI_NAME}.pax.Z
 EOF
 cd ../pswi
+cp ../.pax/${SWI_NAME}.pax.Z ${SWI_NAME}.pax.Z
 
 #TODO: redirect everything to $log/x ?
 #TODO: Check why there is name in mountpoints responses and it still doesn't show (although the mount points are different so it's good it is not doing anything)
