@@ -1,1 +1,15 @@
-""
+{
+  "lockAcquiredTime": "Sun May 25 2025 20:33:20 GMT+0000 (Coordinated Universal Time)",
+  "uid": "1748205200138711578",
+  "repository": {
+    "owner": "zowe",
+    "repo": "zowe-install-packaging"
+  },
+  "branch": "user/muzikovam/pswi-build-error",
+  "workflow": "Zowe Build and Packaging",
+  "job": "regular-build",
+  "actor": "muzikovam",
+  "runId": 15241516810,
+  "runNumber": 7735,
+  "link": "https://github.com/zowe/zowe-install-packaging/actions/runs/15241516810"
+}
