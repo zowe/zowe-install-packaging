@@ -30,4 +30,5 @@ jobs:
             echo "If there are no changes, add the 'skip-changelog' label to this pull request."
             exit 1
           fi
-          exit 0
+
+
