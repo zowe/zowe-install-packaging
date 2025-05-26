@@ -25,7 +25,6 @@ jobs:
       - name: 'Check CHANGELOG'
         run: |
           result=$(git diff "origin/${{ github.event.pull_request.base.ref }}" -- "CHANGELOG.md")
-          echo "${result}"
           if [ -z "${result}" ]; then
             echo "Please review the CHANGELOG and add an entry for this pull request if it contains changes users should be informed of."
             echo "If there are no changes, add the 'skip-changelog' label to this pull request."
