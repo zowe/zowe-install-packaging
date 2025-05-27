@@ -157,6 +157,13 @@ echo "iconv -f ISO8859-1 -t IBM-1047 \$source > _ZWECONF;" >>JCL
 echo "sed 's|UTF-8|IBM-1047|g' _ZWECONF > ZWECONF;" >>JCL
 echo "cp -T ZWECONF \$target;" >>JCL
 echo "/*" >>JCL
+echo "//CHMODZWE EXEC PGM=BPXBATCH" >>JCL
+echo "//STDOUT DD SYSOUT=*" >>JCL
+echo "//STDERR DD SYSOUT=*" >>JCL
+echo "//STDPARM  DD *" >>JCL
+echo "SH set -x;set -e;" >>JCL
+echo "chmod -R 777 ${ZOWE_MOUNT};" >>JCL
+echo "/*" >>JCL
 
 sh scripts/submit_jcl.sh "$(cat JCL)"
 if [ $? -gt 0 ]; then exit -1; fi
@@ -331,6 +338,7 @@ cd ${TMP_MOUNT}
 get ${SWI_NAME}.pax.Z
 EOF
 cd ../pswi
+cp ../.pax/${SWI_NAME}.pax.Z ${SWI_NAME}.pax.Z
 
 #TODO: redirect everything to $log/x ?
 #TODO: Check why there is name in mountpoints responses and it still doesn't show (although the mount points are different so it's good it is not doing anything)
