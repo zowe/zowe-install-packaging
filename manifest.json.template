@@ -93,6 +93,11 @@
       "version": "3.2.3-PR-4051-4-SNAPSHOT",
       "artifact": "zaas-package-*.zip"
     },
+    "org.zowe.apiml.sdk.certificate-analyser": {
+      "version": "^3.0.3-SNAPSHOT",
+      "artifact": "certificate-analyser-*.jar",
+      "exclusions": ["*PR*.jar"]
+    },
     "org.zowe.getesm": {
       "version": "^3.0.0-V3.X-STAGING",
       "artifact": "*.pax"
