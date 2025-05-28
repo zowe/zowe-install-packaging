@@ -23,7 +23,9 @@ if [ "$(item_in_list "${ZWE_PRIVATE_CORE_COMPONENTS_REQUIRE_JAVA}" "${ZWE_CLI_PA
   # other extensions need to specify `require_java` in their validate.sh
   require_java
 fi
-require_node
+if [ "$(item_in_list "${ZWE_PRIVATE_CORE_COMPONENTS_REQUIRE_NODE}" "${ZOWE_CLI_PARAMETER_COMPONENT}")" = "true"]; then
+  require_node
+fi
 require_zowe_yaml
 
 # overwrite ZWE_PRIVATE_LOG_LEVEL_ZWELS with zowe.launchScript.logLevel config in YAML

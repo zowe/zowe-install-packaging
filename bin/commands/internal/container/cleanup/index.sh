@@ -39,9 +39,6 @@ check_instance() {
 }
  
 ###############################
-# validation
-require_node
-
 # check static definitions
 modified=
 for one in $(find "${ZWE_STATIC_DEFINITIONS_DIR}" -type f -mmin "+${POD_DNS_COOL_DOWN}"); do

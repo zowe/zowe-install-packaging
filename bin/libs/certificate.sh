@@ -1076,7 +1076,7 @@ keyring_export_to_pkcs12() {
 
     # export private key
     print_debug "- Export private key of \"${label}\" in PEM format"
-    result=$(keyring_util EXPORT "${keyring_owner}" "${keyring_name}" "${label}" -k -f "${uss_temp_target}.p12")
+    result=$(keyring_util EXPORT "${keyring_owner}" "${keyring_name}" "${label}" -k -f "${uss_temp_target}.p12" -p "${keystore_password}")
     if [ $? -ne 0 ]; then
       return 1
     fi

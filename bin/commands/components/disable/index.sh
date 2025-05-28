@@ -19,8 +19,6 @@ if [ "${USE_CONFIGMGR}" = "true" ]; then
   fi
   _CEE_RUNOPTS="XPLINK(ON),HEAPPOOLS(OFF),HEAPPOOLS64(OFF)" ${ZWE_zowe_runtimeDirectory}/bin/utils/configmgr -script "${ZWE_zowe_runtimeDirectory}/bin/commands/components/disable/cli.js"
 else
-
-  require_node
   require_zowe_yaml
 
   component_dir=$(find_component_directory "${ZWE_CLI_PARAMETER_COMPONENT_NAME}")

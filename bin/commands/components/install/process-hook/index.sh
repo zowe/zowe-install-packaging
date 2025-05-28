@@ -25,13 +25,16 @@ if [ -z "${extensionDir}" ]; then
   print_error_and_exit "Error ZWEL0180E: Zowe extension directory (zowe.extensionDirectory) is not defined in Zowe YAML configuration file." "" 180
 fi
 
-###############################
-# Variables
-target_dir=$(remove_trailing_slash "${extensionDir}")
-
-###############################
-# node is required to read module manifest
-require_node
+  ###############################
+  commands_install=$(read_component_manifest "${target_dir}/${ZWE_CLI_PARAMETER_COMPONENT_NAME}" ".commands.install" 2>/dev/null)
+  if [ -n "${commands_install}" ]; then
+    print_message "Process ${commands_install} defined in manifest commands.install:"
+    cd "${target_dir}/${ZWE_CLI_PARAMETER_COMPONENT_NAME}"
+    # run commands
+    . ${commands_install}
+  else
+    print_debug "Module ${ZWE_CLI_PARAMETER_COMPONENT_NAME} does not have commands.install defined."
+  fi
 
 commands_install=$(read_component_manifest "${target_dir}/${ZWE_CLI_PARAMETER_COMPONENT_NAME}" ".commands.install" 2>/dev/null)
 if [ -n "${commands_install}" ]; then
