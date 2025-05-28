@@ -193,6 +193,7 @@ for zlux_dep in zlux-editor tn3270-ng2 vt-ng2 sample-react-app sample-iframe-app
 done
 mv *.pax "${CONTENT_DIR}/files/"
 mv *.zip "${CONTENT_DIR}/files/"
+mv certificate-analyser-* "${CONTENT_DIR}/files/"
 # PAX_BINARY_DEPENDENCIES should be empty now
 if [ -n "$(ls -1)" ]; then
   echo "[$SCRIPT_NAME] Error: binaryDependencies directory is not clean"
