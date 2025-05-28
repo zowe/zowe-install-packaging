@@ -46,9 +46,6 @@ check_configmgr_enabled() {
 }
 
 require_zowe_yaml() {
-  if [ -z "${1}" ]; then
-    require_node
-  fi
   if [ -z "${ZWE_CLI_PARAMETER_CONFIG}" ]; then
     print_error_and_exit "Error ZWEL0108E: Zowe YAML config file is required." "" 108
   elif [ ! -f "${ZWE_CLI_PARAMETER_CONFIG}" ]; then

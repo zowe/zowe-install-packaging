@@ -892,8 +892,6 @@ refresh_static_registration() {
   auth_cert="${4:-${ZWE_zowe_certificate_pem_certificate}}"
   ca_cert="${5:-${ZWE_zowe_certificate_pem_certificateAuthorities}}"
 
-  require_node
-
   utils_dir="${ZWE_zowe_runtimeDirectory}/bin/utils"
 
   print_trace "- calling API Catalog /static-api/refresh to refresh static registrations"

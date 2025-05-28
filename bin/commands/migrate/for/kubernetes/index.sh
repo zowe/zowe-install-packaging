@@ -20,7 +20,6 @@ temp_dir="$(get_tmp_dir)/zowe-convert-for-k8s-$(echo ${rnd})"
 ###############################
 # validation
 require_java
-require_node
 require_zowe_yaml
 
 ###############################

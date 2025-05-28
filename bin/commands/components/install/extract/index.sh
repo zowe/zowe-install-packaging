@@ -22,8 +22,6 @@ else
 tmp_ext_dir=tmp_ext_dir
 
 ###############################
-# node is required to read module manifest
-require_node
 require_zowe_yaml
 
 ###############################
