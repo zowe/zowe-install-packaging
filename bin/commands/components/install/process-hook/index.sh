@@ -17,7 +17,11 @@ if [ "${USE_CONFIGMGR}" = "true" ]; then
 else
 
 
-require_zowe_yaml
+  # read extensionDirectory
+  extensionDir=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.extensionDirectory")
+  if [ -z "${extensionDir}" ]; then
+    print_error_and_exit "Error ZWEL0180E: Zowe extension directory (zowe.extensionDirectory) is not defined in Zowe YAML configuration file." "" 180
+  fi
 
 # read extensionDirectory
 extensionDir=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.extensionDirectory")

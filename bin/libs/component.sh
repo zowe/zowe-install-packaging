@@ -895,7 +895,12 @@ refresh_static_registration() {
   utils_dir="${ZWE_zowe_runtimeDirectory}/bin/utils"
 
   print_trace "- calling API Catalog /static-api/refresh to refresh static registrations"
-  result=$("${utils_dir}/curl" \
+  curl_bin="${utils_dir}/curl"
+  if [ "${ZWE_RUN_IN_CONTAINER}" = "true"]; then
+    curl_bin="curl" # if not on z, rely on container curl
+  fi
+
+  result=$("${curl_bin}" \
     "https://${apicatalog_host}:${apicatalog_port}/apicatalog/static-api/refresh" \
     -X POST \
     --key "${auth_key}" \

@@ -68,7 +68,7 @@ operator_command() {
 }
 
 verify_generated_jcl() {
-  jcllib=$(read_yaml_configmgr "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.dataset.jcllib")
+  jcllib=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.dataset.jcllib")
   # read JCL library and validate
   does_jcl_exist=$(is_data_set_exists "${jcllib}")
   if [ -z "${does_jcl_exist}" ]; then
