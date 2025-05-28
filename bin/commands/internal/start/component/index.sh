@@ -29,12 +29,12 @@ fi
 require_zowe_yaml
 
 # overwrite ZWE_PRIVATE_LOG_LEVEL_ZWELS with zowe.launchScript.logLevel config in YAML
-ZWE_PRIVATE_LOG_LEVEL_ZWELS="$(read_yaml_configmgr "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.launchScript.logLevel" | upper_case)"
+ZWE_PRIVATE_LOG_LEVEL_ZWELS="$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.launchScript.logLevel" | upper_case)"
 
 # check and sanitize ZWE_CLI_PARAMETER_HA_INSTANCE
 sanitize_ha_instance_id
 
-ZWE_zowe_workspaceDirectory=$(read_yaml_configmgr ${ZWE_CLI_PARAMETER_CONFIG} '.zowe.workspaceDirectory')
+ZWE_zowe_workspaceDirectory=$(read_yaml ${ZWE_CLI_PARAMETER_CONFIG} '.zowe.workspaceDirectory')
 if [ -z "${ZWE_zowe_workspaceDirectory}" ]; then
   print_error_and_exit "Error ZWEL0157E: Zowe workspace directory (zowe.workspaceDirectory) is not defined in Zowe YAML configuration file." "" 157
 fi

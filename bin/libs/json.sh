@@ -43,13 +43,13 @@ init_missing_yaml_properties() {
     if [ -n "${update_node_home}" -o -n "${update_java_home}" -o -n "${update_zowe_runtime_dir}" ]; then
       if [ "${ZWE_CLI_PARAMETER_UPDATE_CONFIG}" = "true" ]; then
         if [ -n "${update_node_home}" ]; then
-          update_zowe_yaml_configmgr "${ZWE_CLI_PARAMETER_CONFIG}" "node.home" "${update_node_home}"
+          update_zowe_yaml "${ZWE_CLI_PARAMETER_CONFIG}" "node.home" "${update_node_home}"
         fi
         if [ -n "${update_java_home}" ]; then
-          update_zowe_yaml_configmgr "${ZWE_CLI_PARAMETER_CONFIG}" "java.home" "${update_java_home}"
+          update_zowe_yaml "${ZWE_CLI_PARAMETER_CONFIG}" "java.home" "${update_java_home}"
         fi
         if [ -n "${update_zowe_runtime_dir}" ]; then
-          update_zowe_yaml_configmgr "${ZWE_CLI_PARAMETER_CONFIG}" "zowe.runtimeDirectory" "${update_zowe_runtime_dir}"
+          update_zowe_yaml "${ZWE_CLI_PARAMETER_CONFIG}" "zowe.runtimeDirectory" "${update_zowe_runtime_dir}"
         fi
 
         print_level2_message "Runtime directory, Java and/or node.js settings are updated successfully."
@@ -165,18 +165,26 @@ update_yaml_configmgr() {
   ensure_file_encoding "${file}" "${expected_sample}"
 }
 
-read_yaml_configmgr() {
+read_yaml() {
+
   file="${1}"
   key=$(echo "${2}" | tr '.' '/')
   ignore_null="${3:-true}"
 
-  print_trace "- read_yaml_configmgr process ${file} and extract '${2} -> ${key}'"
+  if [ "${ZWE_RUN_IN_CONTAINER}" = "true" ]; then
+    print_trace "- read_yaml process ${file} and extract '${2} -> ${key} using yq'"
+    result=$(yq "'.${key}'" "${file}")
+    code=$?
+  else
+    print_trace "- read_yaml process ${file} and extract '${2} -> ${key} using configmgr'"
 
-  configmgr="${ZWE_zowe_runtimeDirectory}/bin/utils/configmgr"
-  schema="${ZWE_zowe_runtimeDirectory}/schemas/server-common.json:${ZWE_zowe_runtimeDirectory}/schemas/zowe-yaml-schema.json"
+    configmgr="${ZWE_zowe_runtimeDirectory}/bin/utils/configmgr"
+    schema="${ZWE_zowe_runtimeDirectory}/schemas/server-common.json:${ZWE_zowe_runtimeDirectory}/schemas/zowe-yaml-schema.json"
 
-  result=$(_CEE_RUNOPTS="XPLINK(ON)" "${configmgr}" -s "$schema" -p "FILE(${file})" extract "${key}" 2>&1)
-  code=$?
+    result=$(_CEE_RUNOPTS="XPLINK(ON)" "${configmgr}" -s "$schema" -p "FILE(${file})" extract "${key}" 2>&1)
+    code=$?
+
+  fi
 
   print_trace "  * Exit code: ${code}"
   print_trace "  * Output:"
@@ -241,8 +249,15 @@ read_json_string() {
   return ${code}
 }
 
-update_zowe_yaml_configmgr() {
-  update_yaml_configmgr "${1}" "${2}" "${3}" "zowe:"
+update_zowe_yaml() {
+  if [ "${ZWE_RUN_IN_CONTAINER}" = "true" ]; then
+    yq -i "'.${2} = \"${3}\"'" "${1}"
+    if [ "${$?}" -ne 0 ]; then
+      print_error_and_exit "Error ZWEL0138E: Failed to update key ${2} of file ${1}." "" 138
+    fi
+  else
+    update_yaml_configmgr "${1}" "${2}" "${3}" "zowe:"
+  fi
 }
 
 delete_yaml_configmgr() {
@@ -275,6 +290,13 @@ delete_yaml_configmgr() {
   ensure_file_encoding "${file}" "${expected_sample}"
 }
 
-delete_zowe_yaml_configmgr() {
-  delete_yaml_configmgr "${1}" "${2}" "zowe:"
+delete_zowe_yaml() {
+  if [ "${ZWE_RUN_IN_CONTAINER}" = "true" ]; then
+    yq -i "'del(.${2})'" "${1}"
+    if [ "${$?}" -ne 0 ]; then
+      print_error_and_exit "Error ZWEL0138E: Failed to delete key ${2} of file ${1}." "" 138
+    fi
+  else
+    delete_yaml_configmgr "${1}" "${2}" "zowe:"
+  fi
 }

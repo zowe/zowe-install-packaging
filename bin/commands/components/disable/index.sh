@@ -31,6 +31,6 @@ else
   else
     componentCfgPath="components.${ZWE_CLI_PARAMETER_COMPONENT_NAME}"
   fi
-  update_zowe_yaml_configmgr "${ZWE_CLI_PARAMETER_CONFIG}" "${componentCfgPath}.enabled" "false"
+  update_zowe_yaml "${ZWE_CLI_PARAMETER_CONFIG}" "${componentCfgPath}.enabled" "false"
 
 fi

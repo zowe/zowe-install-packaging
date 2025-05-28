@@ -26,10 +26,10 @@ ${ZWE_PRIVATE_DS_SZWEEXEC}|Zowe executable utilities library|dsntype(library) ds
 if [ -n "${ZWE_CLI_PARAMETER_DATASET_PREFIX}" ]; then
   prefix="${ZWE_CLI_PARAMETER_DATASET_PREFIX}"
 else
-  require_zowe_yaml "skipnode"
+  require_zowe_yaml
 
   # read prefix and validate
-  prefix=$(read_yaml_configmgr "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.dataset.prefix")
+  prefix=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.dataset.prefix")
   if [ -z "${prefix}" ]; then
     print_error_and_exit "Error ZWEL0157E: Zowe dataset prefix (zowe.setup.dataset.prefix) is not defined in Zowe YAML configuration file." "" 157
   fi
@@ -42,7 +42,7 @@ while read -r line; do
   ds=$(echo "${line}" | awk -F"|" '{print $1}')
   name=$(echo "${line}" | awk -F"|" '{print $2}')
   spec=$(echo "${line}" | awk -F"|" '{print $3}')
-  
+
   # check existence
   ds_existence=$(is_data_set_exists "${prefix}.${ds}")
   if [ "${ds_existence}" = "true" ]; then
@@ -66,7 +66,7 @@ $(echo "${cust_ds_list}")
 EOF
 print_message
 
-if [ "${ds_existence}" = "true" ] &&  [ "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITE}" != "true" ]; then
+if [ "${ds_existence}" = "true" ] && [ "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITE}" != "true" ]; then
   print_level1_message "Zowe MVS data sets installation skipped."
 else
   ###############################
@@ -137,7 +137,6 @@ else
   # exit message
   print_level1_message "Zowe MVS data sets are installed successfully."
 fi
-
 
 print_message "Zowe installation completed. In order to use Zowe, you need to run \"zwe init\" command to initialize Zowe instance."
 print_message "- Type \"zwe init --help\" to get more information."
