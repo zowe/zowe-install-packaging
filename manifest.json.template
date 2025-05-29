@@ -65,23 +65,23 @@
       "artifact": "explorer-ip*.pax"
     },
     "org.zowe.apiml.api-catalog-package": {
-      "version": "3.2.7",
+      "version": "3.2.12-PR-PR-4144-SNAPSHOT",
       "artifact": "api-catalog-*.zip"
     },
     "org.zowe.apiml.discovery-package": {
-      "version": "3.2.7",
+      "version": "3.2.12-PR-PR-4144-SNAPSHOT",
       "artifact": "discovery-*.zip"
     },
     "org.zowe.apiml.gateway-package": {
-      "version": "3.2.7",
+      "version": "3.2.12-PR-PR-4144-SNAPSHOT",
       "artifact": "gateway-*.zip"
     },
     "org.zowe.apiml.caching-service-package": {
-      "version": "3.2.7",
+      "version": "3.2.12-PR-PR-4144-SNAPSHOT",
       "artifact": "caching-service-*.zip"
     },
     "org.zowe.apiml.apiml-common-lib-package": {
-      "version": "3.2.7",
+      "version": "3.2.12-PR-PR-4144-SNAPSHOT",
       "artifact": "apiml-common-lib-*.zip"
     },
     "org.zowe.apiml.sdk.common-java-lib-package": {
@@ -93,7 +93,7 @@
       "artifact": "apiml-sample-extension-*.zip"
     },
     "org.zowe.apiml.zaas-package": {
-      "version": "3.2.7",
+      "version": "3.2.12-PR-PR-4144-SNAPSHOT",
       "artifact": "zaas-package-*.zip"
 	},
 	"org.zowe.getesm": {
