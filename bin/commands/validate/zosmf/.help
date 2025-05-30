@@ -1,0 +1,2 @@
+Validates whether z/OSMF is running, reachable by Zowe, and trusted against Zowe's certificate truststore.
+This command can assist in checking if Zowe is likely to succeed in using z/OSMF.

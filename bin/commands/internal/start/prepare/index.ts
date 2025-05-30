@@ -28,6 +28,8 @@ import * as javaCI from '../../../../libs/java_ci';
 import * as node from '../../../../libs/node';
 import * as zosmf from '../../../../libs/zosmf';
 import * as zoslib from '../../../../libs/zos';
+import * as verifyCertificate from '../../../validate/certificate/index';
+import * as verifyZosmf from '../../../validate/zosmf/index';
 
 //# This command prepares everything needed to start Zowe.
 const cliParameterConfig = std.getenv('ZWE_CLI_PARAMETER_CONFIG');
@@ -455,10 +457,17 @@ export function execute() {
   common.printFormattedInfo("ZWELS", "zwe-internal-start-prepare", `ESM: ${zos.getEsm()}`);
 
   // validation
-  if (stringlib.itemInList(std.getenv('ZWE_PRIVATE_CORE_COMPONENTS_REQUIRE_JAVA'), std.getenv('ZWE_CLI_PARAMETER_COMPONENT'))) {
-    // other extensions need to specify `require_java` in their validate.sh
-    java.requireJava();
+  java.requireJava();
+  let certRc = 0;
+  if (stringlib.itemInList('gateway', std.getenv('ZWE_CLI_PARAMETER_COMPONENT'))) {
+    certRc = verifyZosmf.execute(false);
+  } else {
+    certRc = verifyCertificate.execute(false);
   }
+  if (certRc != 0) {
+    common.printErrorAndExit("Error ZWEL0323E: Certificate validation failed. Fix errors listed before starting Zowe.", undefined, 323);
+  }
+  
   if (stringlib.itemInList('app-server', std.getenv('ZWE_CLI_PARAMETER_COMPONENT'))) {
     // other extensions need to specify `require_node` in their validate.sh
     node.requireNode();

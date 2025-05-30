@@ -1,0 +1,2 @@
+Validates whether required Zowe keystore and truststore exist and meet Zowe's requirements.
+This command can be used to prove that Zowe's keystore and truststore are correct before starting zowe.
