@@ -155,6 +155,7 @@ rsync -rv \
   --exclude '*.tgz' \
   --exclude '*.tar.gz' \
   --exclude '*.pax' \
+  --exclude '*.pax.Z' \
   --exclude '*.jar' \
   --exclude '*.class' \
   --prune-empty-dirs --remove-source-files \
@@ -168,6 +169,7 @@ cd "${PAX_BINARY_DEPENDENCIES}"
 for zlux_dep in zlux-editor tn3270-ng2 vt-ng2 sample-react-app sample-iframe-app sample-angular-app explorer-ip; do
   mv ${zlux_dep}-*.pax "${CONTENT_DIR}/files/zlux/${zlux_dep}.pax"
 done
+mv *.pax.Z "${CONTENT_DIR}/files/"
 mv *.pax "${CONTENT_DIR}/files/"
 mv *.zip "${CONTENT_DIR}/files/"
 mv certificate-analyser-* "${CONTENT_DIR}/files/"
