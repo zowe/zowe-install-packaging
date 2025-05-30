@@ -161,22 +161,6 @@ rsync -rv \
   "${CONTENT_DIR}/" \
   "${ASCII_DIR}"
 
-# extract packaging utility tools to bin/utils
-echo "[${SCRIPT_NAME}] prepare curl and keyring-util ..."
-cd "${ROOT_DIR}" && cd "${CONTENT_DIR}/bin/utils"
-echo "[${SCRIPT_NAME}] extract curl-*.pax.Z ..."
-mv "${PAX_BINARY_DEPENDENCIES}"/curl-* curl.pax.Z
-pax -ppx -rf curl.pax.Z
-rm curl.pax.Z
-chmod +x curl
-
-echo "[${SCRIPT_NAME}] copy keyring_utils"
-cd "${ROOT_DIR}" && cd "${CONTENT_DIR}/bin/utils"
-mkdir -p keyring-util
-mv "${PAX_BINARY_DEPENDENCIES}"/keyring-util-* keyring-util/keyring-util.pax
-pax -ppx -rf keyring-util/keyring-util.pax
-rm keyring-util/keyring-util.pax
-
 # move binary dependencies and prepare to extract on z/OS
 echo "[${SCRIPT_NAME}] move binary dependencies ..."
 mkdir -p "${CONTENT_DIR}/files/zlux"
