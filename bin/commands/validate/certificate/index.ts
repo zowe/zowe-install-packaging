@@ -50,9 +50,10 @@ export function execute(quitOnError?: boolean): number {
       let rc = result.rc;
       if (rc == 0) {
         common.printFormattedInfo("ZWELS", "zwe-validate-certificate", "Certificate checks passed. Output follows:");
-        console.log(result.out);
+        let configLines = result.out.split('\n').filter((line)=>line != '++++++++');
+        console.log(configLines.join('\n'));
       } else {
-        let configLines = result.out.split('\n');
+        let configLines = result.out.split('\n').filter((line)=>line != '++++++++');
 
         let certificateInvalid = false;
         let configInvalid=false;
@@ -121,7 +122,13 @@ export function execute(quitOnError?: boolean): number {
           common.printFormattedError("ZWELS", "zwe-validate-certificate", `Correct the zowe.certificate YAML configuration before using Zowe.`);
         }
 
-        common.printFormattedInfo("ZWELS", "zwe-validate-certificate", "Validation failed. Output follows:");
+        if (rc != 0) {
+          common.printFormattedError("ZWELS", "zwe-validate-zosmf", "Validation failed. Output follows:");
+        } else {
+          common.printFormattedWarn("ZWELS", "zwe-validate-zosmf", "Validation had warnings. Output follows:");
+        }
+
+        console.log(configLines.join('\n'));
       }
 
 

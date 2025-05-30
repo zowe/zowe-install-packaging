@@ -76,11 +76,31 @@ export function execute(quitOnError?: boolean): number {
       let rc = result.rc;
       if (rc == 0) {
         common.printFormattedInfo("ZWELS", "zwe-validate-zosmf", "z/OSMF checks passed. Certificates checks passed. Output follows:");
-        console.log(result.out);
+        let configLines = result.out.split('\n').filter((line)=>line != '++++++++');
+        console.log(configLines.join('\n'));
       } else {
-        let configLines = result.out.split('\n');
+        let configLines = result.out.split('\n').filter((line)=>line != '++++++++');
+        let hasWarning = false;
         //Failed when calling url: "https://192.168.55.28:11443/zosmf/info" Error message: Unsupported or unrecognized SSL message     
+        if (result.out.includes('SSL Handshake failed for address')) {
+          //SSL Handshake failed for address "https://github.com". Cause of error: PKIX path building failed: sun.security.provider.certpath.SunCertPathBuil... n: unable to find valid certification path to requested target 
+          let line = configLines.filter((line)=> line.includes('SSL Handshake failed for address'))[0];
+          if (line.includes('unable to find valid certification path to requested target')) {
+            if (ZOWE_CONFIG.zowe.verifyCertificates == 'STRICT') {
+              common.printFormattedError("ZWELS", "zwe-validate-zosmf", `Zowe cannot trust z/OSMF's certificate using the truststore ${truststoreLocation}.`);
+              common.printFormattedError("ZWELS", "zwe-validate-zosmf", `Ensure the truststore has all certificate authorities needed to verify z/OSMF's certificate`);
+              common.printFormattedError("ZWELS", "zwe-validate-zosmf", `Ensure the z/OSMF's certificate is valid for hostname ${hostname}`);
+            } else {
+              hasWarning = true;
+              common.printFormattedWarn("ZWELS", "zwe-validate-zosmf", `z/OSMF's certificate either is invalid for the hostname ${hostname} or is not trusted by the Zowe truststore ${truststoreLocation}.`);
+              common.printFormattedInfo("ZWELS", "zwe-validate-zosmf", `This may be fixed by ensuring all certificate authorities needed to verify z/OSMF are in Zowe's truststore.`);
+              common.printFormattedInfo("ZWELS", "zwe-validate-zosmf", `This may be fixed by ensuring z/OSMF's certificate is valid for hostname ${hostname}`);
+              common.printFormattedInfo("ZWELS", "zwe-validate-zosmf", `Zowe will continue to use z/OSMF due to zowe.verifyCertificates=${ZOWE_CONFIG.zowe.verifyCertificates}.`);
+            }
+          }
+        }
         if (result.out.includes('Failed when calling url')) {
+          hasWarning = false;
           let line = configLines.filter((line)=> line.includes('Failed when calling url'))[0];
           
           common.printFormattedError("ZWELS", "zwe-validate-zosmf", "Could not reach z/OSMF");
@@ -101,22 +121,6 @@ export function execute(quitOnError?: boolean): number {
             common.printFormattedError("ZWELS", "zwe-validate'zosmf", `Error message: ${message}`);
             common.printFormattedError("ZWELS", "zwe-validate'zosmf", `bpxmtext description of errno2:`);
             console.log(bpxmtextResult.out);
-          }
-        }
-        if (result.out.includes('SSL Handshake failed for address')) {
-          //SSL Handshake failed for address "https://github.com". Cause of error: PKIX path building failed: sun.security.provider.certpath.SunCertPathBuil... n: unable to find valid certification path to requested target 
-          let line = configLines.filter((line)=> line.includes('SSL Handshake failed for address'))[0];
-          if (line.includes('unable to find valid certification path to requested target')) {
-            if (ZOWE_CONFIG.zowe.verifyCertificates == 'STRICT') {
-              common.printFormattedError("ZWELS", "zwe-validate-zosmf", `Zowe cannot trust z/OSMF's certificate using the truststore ${truststoreLocation}.`);
-              common.printFormattedError("ZWELS", "zwe-validate-zosmf", `Ensure the truststore has all certificate authorities needed to verify z/OSMF's certificate`);
-              common.printFormattedError("ZWELS", "zwe-validate-zosmf", `Ensure the z/OSMF's certificate is valid for hostname ${hostname}`);
-            } else {
-              common.printFormattedWarn("ZWELS", "zwe-validate-zosmf", `z/OSMF's certificate either is invalid for the hostname ${hostname} or is not trusted by the Zowe truststore ${truststoreLocation}.`);
-              common.printFormattedInfo("ZWELS", "zwe-validate-zosmf", `This may be fixed by ensuring all certificate authorities needed to verify z/OSMF are in Zowe's truststore.`);
-              common.printFormattedInfo("ZWELS", "zwe-validate-zosmf", `This may be fixed by ensuring z/OSMF's certificate is valid for hostname ${hostname}`);
-              common.printFormattedInfo("ZWELS", "zwe-validate-zosmf", `Zowe will continue to use z/OSMF due to zowe.verifyCertificates=${ZOWE_CONFIG.zowe.verifyCertificates}.`);
-            }
           }
         }
 
@@ -182,13 +186,24 @@ export function execute(quitOnError?: boolean): number {
         if (certificateInvalid) {
           if (ZOWE_CONFIG.zowe.verifyCertificates == 'DISABLED') {
             rc = 0; //ignored
+            certificateInvalid = false;
           }
         }
         if (configInvalid) {
           common.printFormattedError("ZWELS", "zwe-validate-zosmf", `Correct the ${usingGatewayCert ? 'zowe.certificate' : 'components.gateway.certificate'} YAML configuration before using Zowe.`);
         }
 
-        common.printFormattedInfo("ZWELS", "zwe-validate-zosmf", "Validation failed. Output follows:");
+        if (!certificateInvalid && !configInvalid && hasWarning) {
+          rc = 0;
+        }
+
+        if (rc != 0) {
+          common.printFormattedError("ZWELS", "zwe-validate-zosmf", "Validation failed. Output follows:");
+        } else {
+          common.printFormattedWarn("ZWELS", "zwe-validate-zosmf", "Validation had warnings. Output follows:");
+        }
+
+        console.log(configLines.join('\n'));
       }      
 
       if (rc && quitOnError) {
