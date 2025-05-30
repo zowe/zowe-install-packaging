@@ -69,7 +69,7 @@ export function execute(quitOnError?: boolean): number {
       }      
 
       let argsString = `-Djava.protocol.handler.pkgs=com.ibm.crypto.provider -jar ${ZOWE_CONFIG.zowe.runtimeDirectory}/bin/utils/certificate-analyser.jar `+
-        `-r ${useTls ? 'https://' : 'http://'}${hostname}${ZOWE_CONFIG.zOSMF.port}/zosmf/info -k ${keystoreLocation} -kt {keystoreType} -kp ${keystorePass} `+
+        `-r ${useTls ? 'https://' : 'http://'}${hostname}${ZOWE_CONFIG.zOSMF.port}/zosmf/info -k ${keystoreLocation} -kt ${keystoreType} -kp ${keystorePass} `+
         `-a ${keystoreAlias} -t ${truststoreLocation} -tt ${truststoreType} -tp ${truststorePass}`;
       
       let result = shell.execOutSync('java', ...argsString.split(' '));
