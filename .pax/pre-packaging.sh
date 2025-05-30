@@ -232,8 +232,8 @@ echo "[$SCRIPT_NAME] extract curl ..."
 curl_pax=$(find "${ZOWE_ROOT_DIR}/files" -type f \( -name "curl-*.pax.Z" \) | head -n 1)
 cd "${ZOWE_ROOT_DIR}/bin/utils"
 pax -ppx -rf "${curl_pax}"
-mv "${ZOWE_ROOT_DIR}/bin/utils/curl-*/bin/curl" ./curl
-rm -rf "${ZOWE_ROOT_DIR}/bin/utils/curl-*"
+mv "${ZOWE_ROOT_DIR}"/bin/utils/curl-*/bin/curl ./curl
+rm -rf "${ZOWE_ROOT_DIR}"/bin/utils/curl-*
 
 echo "[$SCRIPT_NAME] change curl to be executable ..."
 chmod +x "${ZOWE_ROOT_DIR}"/bin/utils/curl
