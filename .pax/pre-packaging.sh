@@ -229,7 +229,7 @@ chmod +x "${ZOWE_ROOT_DIR}"/bin/utils/*.sh
 chmod +x "${ZOWE_ROOT_DIR}"/bin/utils/*.rex
 
 echo "[$SCRIPT_NAME] extract curl ..."
-curl_pax=$(find "${ZOWE_ROOT_DIR}/files" -type f \( -name "curl-*.pax" \) | head -n 1)
+curl_pax=$(find "${ZOWE_ROOT_DIR}/files" -type f \( -name "curl-*.pax.Z" \) | head -n 1)
 cd "${ZOWE_ROOT_DIR}/bin/utils"
 pax -ppx -rf "${curl_pax}"
 mv "${ZOWE_ROOT_DIR}/bin/utils/curl-*/bin/curl" ./curl
