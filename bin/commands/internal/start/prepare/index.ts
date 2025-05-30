@@ -456,10 +456,13 @@ export function execute() {
   common.printFormattedInfo("ZWELS", "zwe-internal-start-prepare", `z/OS Version: ${zoslib.formatZosVersion('{major}.{minor}')}`);
   common.printFormattedInfo("ZWELS", "zwe-internal-start-prepare", `ESM: ${zos.getEsm()}`);
 
+  common.requireZoweYaml();
+  const enabledComponents=component.getEnabledComponents();
+  
   // validation
   java.requireJava();
   let certRc = 0;
-  if (stringlib.itemInList('gateway', std.getenv('ZWE_CLI_PARAMETER_COMPONENT'))) {
+  if (enabledComponents.includes('gateway')) {
     certRc = verifyZosmf.execute(false);
   } else {
     certRc = verifyCertificate.execute(false);
@@ -468,11 +471,11 @@ export function execute() {
     common.printErrorAndExit("Error ZWEL0323E: Certificate validation failed. Fix errors listed before starting Zowe.", undefined, 323);
   }
   
-  if (stringlib.itemInList('app-server', std.getenv('ZWE_CLI_PARAMETER_COMPONENT'))) {
+  if (enabledComponents.includes('app-server')) {
     // other extensions need to specify `require_node` in their validate.sh
     node.requireNode();
   }
-  common.requireZoweYaml();
+
 
   // overwrite ZWE_PRIVATE_LOG_LEVEL_ZWELS with zowe.launchScript.logLevel config in YAML
   if (ZOWE_CONFIG.zowe.launchScript.logLevel) {
@@ -502,7 +505,7 @@ export function execute() {
   common.printFormattedTrace("ZWELS", "zwe-internal-start-prepare", JSON.stringify(std.getenviron()));
   common.printFormattedTrace("ZWELS", "zwe-internal-start-prepare", "<<<");
 
-  const enabledComponents=component.getEnabledComponents();
+
 
   // main lifecycle
   // global validations
