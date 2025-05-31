@@ -42,17 +42,17 @@ export function execute(quitOnError?: boolean): number {
       }
 
       let usingGatewayCert = false;
-      if (ZOWE_CONFIG.components.gateway.certificate) {
+      if (ZOWE_CONFIG.components.gateway?.certificate) {
         usingGatewayCert = true;
       }
 
-      const keystoreType = ZOWE_CONFIG.components.gateway.certificate.keystore.type || ZOWE_CONFIG.zowe.certificate.keystore.type;
-      const keystoreAlias = ZOWE_CONFIG.components.gateway.certificate.keystore.alias || ZOWE_CONFIG.zowe.certificate.keystore.alias;
-      const keystorePass = ZOWE_CONFIG.components.gateway.certificate.keystore.password || ZOWE_CONFIG.zowe.certificate.keystore.password;
-      const truststoreType = ZOWE_CONFIG.components.gateway.certificate.truststore.type || ZOWE_CONFIG.zowe.certificate.truststore.type;
-      const truststorePass = ZOWE_CONFIG.components.gateway.certificate.truststore.password || ZOWE_CONFIG.zowe.certificate.truststore.password;
-      let keystoreLocation = ZOWE_CONFIG.components.gateway.certificate.keystore.file || ZOWE_CONFIG.zowe.certificate.keystore.file;
-      let truststoreLocation = ZOWE_CONFIG.components.gateway.certificate.truststore.file || ZOWE_CONFIG.zowe.certificate.truststore.file;
+      const keystoreType = ZOWE_CONFIG.components.gateway?.certificate?.keystore?.type || ZOWE_CONFIG.zowe.certificate.keystore.type;
+      const keystoreAlias = ZOWE_CONFIG.components.gateway?.certificate?.keystore?.alias || ZOWE_CONFIG.zowe.certificate.keystore.alias;
+      const keystorePass = ZOWE_CONFIG.components.gateway?.certificate?.keystore?.password || ZOWE_CONFIG.zowe.certificate.keystore.password;
+      const truststoreType = ZOWE_CONFIG.components.gateway?.certificate?.truststore?.type || ZOWE_CONFIG.zowe.certificate.truststore.type;
+      const truststorePass = ZOWE_CONFIG.components.gateway?.certificate?.truststore?.password || ZOWE_CONFIG.zowe.certificate.truststore.password;
+      let keystoreLocation = ZOWE_CONFIG.components.gateway?.certificate?.keystore?.file || ZOWE_CONFIG.zowe.certificate.keystore.file;
+      let truststoreLocation = ZOWE_CONFIG.components.gateway?.certificate?.truststore?.file || ZOWE_CONFIG.zowe.certificate.truststore.file;
       if (keystoreType == 'JCERACFKS') {
         keystoreLocation = keystoreLocation.replace('safkeyring', 'safkeyringjce');
       } else if (keystoreType == 'JCECCARACFKS') {
