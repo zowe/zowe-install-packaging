@@ -2,7 +2,7 @@
 apiVersion: autoscaling/v2beta2
 kind: HorizontalPodAutoscaler
 metadata:
-  name: explorer-uss-hpa
+  name: zaas-hpa
   namespace: zowe
   labels:
     app.kubernetes.io/name: zowe
@@ -14,7 +14,7 @@ spec:
   scaleTargetRef:
     apiVersion: apps/v1
     kind: Deployment
-    name: explorer-uss
+    name: zaas
   minReplicas: 1
   maxReplicas: 3
   metrics:
