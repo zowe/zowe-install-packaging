@@ -24,14 +24,17 @@
 */
 
 parse arg operation verbosity
+operation = strip(operation)
+verbosity = strip(verbosity)
 
-VALID_OPERATIONS = '"generate" | "nogenerate"'
-VALID_VERBOSITY = '"verbose" | "noverbose"'
+VALID_OPERATIONS = 'generate nogenerate'
+VALID_VERBOSITY = 'verbose noverbose'
 
-if POS(verbosity, VALID_VERBOSITY) = 0 then do
-  say 'Error: "'verbosity'" is not a valid verbosity.'
-  say '       Valid verbosity levels are: '||VALID_VERBOSITY
-  ExitWithRC(8)
+checkVerbosity = CheckInput(verbosity, VALID_VERBOSITY)
+if length(checkVerbosity) = 0 then do
+  queue '"'verbosity'" is not a valid verbosity.'
+  queue 'Valid verbosity levels are: '||VALID_VERBOSITY
+  FormatError(8)
 end
 !verbose = COMPARE(verbosity, 'noverbose')
 
@@ -71,10 +74,11 @@ end
 ================================================================================
 */
 
-if POS(operation, VALID_OPERATIONS) = 0 then do
-  say 'Error: "'operation'" is not a valid operation.'
-  say '       Valid operations are: '||VALID_OPERATIONS
-  ExitWithRC(8)
+checkOperatation = CheckInput(operation, VALID_OPERATIONS)
+if length(checkOperatation) = 0 then do
+  queue '"'operation'" is not a valid operation.'
+  queue 'Valid operations are: '||VALID_OPERATIONS
+  FormatError(8)
 end
 
 if COMPARE(operation, 'nogenerate') = 0 then do
@@ -101,14 +105,32 @@ CFG.zwe.header.time = TIME()
 ================================================================================
     Create a data set with attributes like the original jcl library and copy
     all the members of esm jcl.
-    FIXME:
-      1) check if zowe.setup.dataset.prefix is defined
-      2) check that jcllib != prefix.SZWESAMP
+    Note: CFG.ZOWE.SETUP.DATASET.PREFIX/JCLLIB is a valid dataset name,
+      we have to check if variable is initialized (via SYMBOL)
 ================================================================================
 */
 
+cfg_mandatory = 'zowe.setup.dataset.prefix zowe.setup.dataset.jcllib'
+UPDATE_CONFIG = 'Update the configuration and submit the JCL again.'
+
+say 'Checking required configuration keys'
+do i = 1 to words(cfg_mandatory)
+  if symbol('CFG.'||word(cfg_mandatory, i)) = 'LIT' then do
+    queue '"'word(cfg_mandatory, i)'" is not defined in configuration.'
+    queue UPDATE_CONFIG
+    FormatError(8)
+  end
+end
+
 jcl = CFG.zowe.setup.dataset.prefix'.SZWESAMP'
 jclCopy = CFG.zowe.setup.dataset.jcllib
+
+if jcl = jclCopy then do
+  queue '"zowe.setup.dataset.prefix" and "zowe.setup.dataset.jcllib"',
+      'are identical, which is not allowed.'
+  queue UPDATE_CONFIG
+  FormatError(8)
+end
 
 say 'Creating a fresh copy of 'jcl' named 'jclCopy'.'
 
@@ -373,7 +395,9 @@ say 'The edit macro was invoked on each member.'
 ================================================================================
     Add the job card to each member if filled out.
 ================================================================================
-*/
+FIXME:
+  1. Card is added to each member (STCs included)
+  2. It overwrites the first line
 
 card.0 = 0
 
@@ -417,7 +441,7 @@ if card.0 > 0 then do
   say 'The job card was added to each member.'
 end
 
-
+*/
 
 say 'Checking the ZWESLSTC CONFIG entry'
 
@@ -725,7 +749,7 @@ CreatePartitionedDataSet:
   cmd = 'alloc'
   cmd = cmd 'da('"'"ARG(1)"'"')'
   cmd = cmd 'dsorg(po)'
-  cmd = cmd 'space(50,5)'
+  cmd = cmd 'space(60,5)'
   cmd = cmd 'tracks'
   cmd = cmd 'lrecl('ARG(2)')'
   cmd = cmd 'recfm('ARG(3)')'
@@ -946,17 +970,53 @@ AddToChain:
 
 /*
 ================================================================================
+  CheckInput('parmIn', 'list_of_valid_options')
+================================================================================
+*/
+CheckInput: procedure
+
+  parmIn = strip(ARG(1))
+  validOptions = ARG(2)
+  parmReturn = ''
+
+  do i = 1 to words(validOptions)
+    if word(validOptions, i) = parmIn then
+      parmReturn = parmIn
+  end
+
+  return parmReturn
+
+/*
+================================================================================
   Print('msg')
 ================================================================================
 */
 Print:
   procedure expose !verbose
 
-  if !verbose = 1 then do
+  if !verbose > 0 then do
     say ARG(1)
   end
 
   return 0
+
+/*
+================================================================================
+  FormatError(exitCode)
+================================================================================
+*/
+FormatError:
+  exitCode = ARG(1)
+
+  do line = 1 to queued()
+    parse pull errorMessage
+    if line = 1 then
+      say 'Error: '||errorMessage
+    else
+      say '       '||errorMessage
+  end
+
+  ExitWithRC(exitCode)
 
 /*
 ================================================================================
