@@ -30,10 +30,14 @@ export function execute(quitOnError?: boolean): number {
     } else {
       java.requireJava();
 
-      let useTls = ZOWE_CONFIG.components.gateway?.zowe?.network?.server?.tls?.attls;
-      if (useTls === undefined) {
-        useTls = ZOWE_CONFIG.zowe.network?.server?.tls?.attls;
-        if (useTls === undefined) { useTls = true; }
+      let useTls = true;
+      //TODO seems that certificate-analyser isnt made to work with AT-TLS, so when useTls is false, should skip.
+      if (ZOWE_CONFIG.components.gateway?.zowe?.network?.server?.tls?.attls === undefined) {
+        if (ZOWE_CONFIG.zowe.network?.server?.tls?.attls !== undefined) {
+          useTls = !ZOWE_CONFIG.zowe.network?.server?.tls?.attls;
+        }
+      } else {
+        useTls = !ZOWE_CONFIG.components.gateway?.zowe?.network?.server?.tls?.attls
       }
 
       let hostname = ZOWE_CONFIG.zOSMF.host;
@@ -68,14 +72,26 @@ export function execute(quitOnError?: boolean): number {
         truststoreLocation = truststoreLocation.replace('safkeyring', 'safkeyringjcehybrid');
       }      
 
-      let argsString = `-Djava.protocol.handler.pkgs=com.ibm.crypto.provider -jar ${ZOWE_CONFIG.zowe.runtimeDirectory}/bin/utils/certificate-analyser.jar `+
-        `-r ${useTls ? 'https://' : 'http://'}${hostname}:${ZOWE_CONFIG.zOSMF.port}/zosmf/info -k ${keystoreLocation} -kt ${keystoreType} -kp ${keystorePass} `+
-        `-a ${keystoreAlias} -t ${truststoreLocation} -tt ${truststoreType} -tp ${truststorePass}`;
+      if (!useTls) {
+        //TODO we cannot check AT-TLS with certificate-analyser at this time, so we skip zosmf check and do certificate-only check...
+        let argsString = `-Djava.protocol.handler.pkgs=com.ibm.crypto.provider -jar ${ZOWE_CONFIG.zowe.runtimeDirectory}/bin/utils/certificate-analyser.jar `+
+          `-k ${keystoreLocation} -kt ${keystoreType} -kp ${keystorePass} `+
+          `-a ${keystoreAlias} -t ${truststoreLocation} -tt ${truststoreType} -tp ${truststorePass}`;
+      } else {
+        let argsString = `-Djava.protocol.handler.pkgs=com.ibm.crypto.provider -jar ${ZOWE_CONFIG.zowe.runtimeDirectory}/bin/utils/certificate-analyser.jar `+
+          `-r https://${hostname}:${ZOWE_CONFIG.zOSMF.port}/zosmf/info -k ${keystoreLocation} -kt ${keystoreType} -kp ${keystorePass} `+
+          `-a ${keystoreAlias} -t ${truststoreLocation} -tt ${truststoreType} -tp ${truststorePass}`;
+      }
+
       
       let result = shell.execOutSync('java', ...argsString.split(' '));
       let rc = result.rc;
       if (rc == 0) {
-        common.printFormattedInfo("ZWELS", "zwe-validate-zosmf", "z/OSMF checks passed. Certificates checks passed. Output follows:");
+        if (useTls) {
+          common.printFormattedInfo("ZWELS", "zwe-validate-zosmf", "z/OSMF checks passed. Certificates checks passed. Output follows:");
+        } else {
+          common.printFormattedInfo("ZWELS", "zwe-validate-zosmf", "z/OSMF checks skipped. Certificates checks passed. Output follows:");
+        }
         let configLines = result.out.split('\n').filter((line)=>line != '++++++++');
         console.log(configLines.join('\n'));
       } else {
