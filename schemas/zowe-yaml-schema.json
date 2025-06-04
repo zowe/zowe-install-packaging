@@ -454,7 +454,7 @@
                     },
                     {
                       "type": "string",
-                      "maxLength": 56,
+                      "maxLength": 65,
                       "description": "One line JCL header options for samples in SZWESAMP: '//ZWEnnnnn JOB {zowe.setup.jcl.header}'."
                     },
                     {
