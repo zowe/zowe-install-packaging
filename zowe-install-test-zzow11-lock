@@ -1,1 +1,15 @@
-""
+{
+  "lockAcquiredTime": "Wed Jun 04 2025 00:34:50 GMT+0000 (Coordinated Universal Time)",
+  "uid": "1748997290313878744",
+  "repository": {
+    "owner": "zowe",
+    "repo": "zowe-install-packaging"
+  },
+  "branch": "user/markackert/feat-v3-jcl-rebase",
+  "workflow": "Zowe CICD Integration Tests",
+  "job": "cicd-test",
+  "actor": "MarkAckert",
+  "runId": 15398251044,
+  "runNumber": 6717,
+  "link": "https://github.com/zowe/zowe-install-packaging/actions/runs/15398251044"
+}
