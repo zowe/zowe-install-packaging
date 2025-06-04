@@ -72,13 +72,14 @@ export function execute(quitOnError?: boolean): number {
         truststoreLocation = truststoreLocation.replace('safkeyring', 'safkeyringjcehybrid');
       }      
 
+      let argsString: string = '';
       if (!useTls) {
         //TODO we cannot check AT-TLS with certificate-analyser at this time, so we skip zosmf check and do certificate-only check...
-        let argsString = `-Djava.protocol.handler.pkgs=com.ibm.crypto.provider -jar ${ZOWE_CONFIG.zowe.runtimeDirectory}/bin/utils/certificate-analyser.jar `+
+        argsString = `-Djava.protocol.handler.pkgs=com.ibm.crypto.provider -jar ${ZOWE_CONFIG.zowe.runtimeDirectory}/bin/utils/certificate-analyser.jar `+
           `-k ${keystoreLocation} -kt ${keystoreType} -kp ${keystorePass} `+
           `-a ${keystoreAlias} -t ${truststoreLocation} -tt ${truststoreType} -tp ${truststorePass}`;
       } else {
-        let argsString = `-Djava.protocol.handler.pkgs=com.ibm.crypto.provider -jar ${ZOWE_CONFIG.zowe.runtimeDirectory}/bin/utils/certificate-analyser.jar `+
+        argsString = `-Djava.protocol.handler.pkgs=com.ibm.crypto.provider -jar ${ZOWE_CONFIG.zowe.runtimeDirectory}/bin/utils/certificate-analyser.jar `+
           `-r https://${hostname}:${ZOWE_CONFIG.zOSMF.port}/zosmf/info -k ${keystoreLocation} -kt ${keystoreType} -kp ${keystorePass} `+
           `-a ${keystoreAlias} -t ${truststoreLocation} -tt ${truststoreType} -tp ${truststorePass}`;
       }
