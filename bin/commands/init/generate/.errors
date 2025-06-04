@@ -1,2 +1,1 @@
 ZWEL0143E|143|Cannot find data set member %s. You may need to re-run zwe install.
-ZWEL0326E|326|JCL header line %s will be longer than 80 characters. Please split this line into multiple lines. %s
