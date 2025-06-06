@@ -582,7 +582,7 @@
           "description": "List of Zowe message portions when matched will be additionally logged into the system's log (such as syslog on z/OS). Note: Some messages extremely early in the Zowe lifecycle may not be added to the system's log",
           "uniqueItems": true,
           "items": {
-            "type": "string"
+            "type": "string",
             "minLength": 1,
             "not": {
               "type": "null"
