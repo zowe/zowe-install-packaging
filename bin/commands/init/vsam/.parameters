@@ -1,1 +1,4 @@
 allow-overwrite,allow-overwritten||boolean|||||Allow overwritten existing MVS data set.
+dry-run||boolean|||||Generates and prints JCL but does not execute
+update-config||boolean|||||Whether to update YAML configuration for caching-service to match vsam name.
+generate||boolean|||||Whether to force rebuild of JCL prior to submission. Use this when you've changed zowe.yaml and are re-submitting this command.

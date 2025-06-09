@@ -27,7 +27,7 @@ Below data sets will be initialized by this command:
   this data set.
   This loadlib requires APF authorize.
 - `zowe.setup.dataset.authPluginLib` is the user custom APF PLUGINLIB.
-  You can install Zowe ZIS plugins into this load library.
+  This field is optional. You can install Zowe ZIS plugins into this load library.
   This loadlib requires APF authorize.
 
 NOTE: Existing members in custom data sets will not be overwritten by default.

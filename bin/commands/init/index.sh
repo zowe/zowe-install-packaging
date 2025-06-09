@@ -11,6 +11,21 @@
 # Copyright Contributors to the Zowe Project.
 #######################################################################
 
+USE_JCL=$(check_jcl_init)
+if [ "${USE_JCL}" = "true" ]; then
+  if [ -z "${ZWE_PRIVATE_TMP_MERGED_YAML_DIR}" ]; then
+
+    # user-facing command, use tmpdir to not mess up workspace permissions
+    export ZWE_PRIVATE_TMP_MERGED_YAML_DIR=1
+  fi
+  _CEE_RUNOPTS="XPLINK(ON),HEAPPOOLS(OFF),HEAPPOOLS64(OFF)" ${ZWE_zowe_runtimeDirectory}/bin/utils/configmgr -script "${ZWE_zowe_runtimeDirectory}/bin/commands/init/cli.js"
+else
+
+###############################
+# Old 3.2 code follows
+
+
+
 print_level0_message "Configure Zowe"
 
 ###############################
@@ -97,3 +112,4 @@ zwecli_inline_execute_command init certificate
 zwecli_inline_execute_command init stc
 
 print_level1_message "Zowe is configured successfully."
+fi

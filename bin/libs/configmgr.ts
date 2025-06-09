@@ -15,7 +15,7 @@ import * as xplatform from 'xplatform';
 import { ConfigManager } from 'Configuration';
 import * as fs from './fs';
 import * as stringlib from './string';
-import * as common from './common';
+import { isValidZoweYamlParmlib, printErrorAndExit } from './common';
 
 import * as objUtils from '../utils/ObjUtils';
 
@@ -208,8 +208,11 @@ function writeZoweConfigUpdate(updateObj: any, arrayMergeStrategy: number): numb
         return xplatform.storeFileUTF8(destination, xplatform.AUTO_DETECT, textOrNull);
 
       } else if (destination.startsWith('PARMLIB(')) {
+        const isValidParmlib = isValidZoweYamlParmlib(destination);
+        if (!isValidParmlib.ok) {
+          printErrorAndExit(isValidParmlib.error.message, undefined, isValidParmlib.error.code);
+        }
         destination = destination.substring(8, destination.length-1);
-
         let zwePrivateWorkspaceEnvDir: string;
         let dirResult = getTempMergedYamlDir();
         if (typeof dirResult == 'string') {
@@ -399,9 +402,9 @@ function getConfig(configName: string, configPath: string, schemas: string): any
     for (let i = 0; i < parts.length; i++) {
       const part = parts[i].trim();
       if (part.startsWith('PARMLIB(')) {
-        const isValidParmlib = common.isValidZoweYamlParmlib(part);
+        const isValidParmlib = isValidZoweYamlParmlib(part);
         if (!isValidParmlib.ok) {
-          common.printErrorAndExit(isValidParmlib.error.message, undefined, isValidParmlib.error.code);
+          printErrorAndExit(isValidParmlib.error.message, undefined, isValidParmlib.error.code);
         }
       }
     }
