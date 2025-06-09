@@ -461,7 +461,8 @@
                       "type": "array",
                       "items": {
                         "type": "string",
-                        "maxLength": 80
+                        "maxLength": 80,
+                        "minItems": 2
                       },
                       "description": "Multiline JCL header options for samples in SZWESAMP: '//ZWEnnnnn JOB {zowe.setup.jcl.header}'."
                     }
