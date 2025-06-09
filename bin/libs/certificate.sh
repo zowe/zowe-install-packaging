@@ -648,8 +648,14 @@ EOF
         return 1
       fi
       if [ `uname` = "OS/390" ]; then
-        iconv -f ISO8859-1 -t IBM-1047 "${keystore_dir}/${alias_lc}.cer" > "${keystore_dir}/${alias_lc}.cer-ebcdic"
-        mv "${keystore_dir}/${alias_lc}.cer-ebcdic" "${keystore_dir}/${alias_lc}.cer"
+        # check if certificate is in EBCDIC before converting
+        if [[ "$(head -c 10 ${keystore_dir}/${alias_lc}.cer)" = "-----BEGIN" ]]; then
+          print_message ">>>> Certificate \"${keystore_dir}/${alias_lc}.cer is in EBCDIC."
+        else
+          print_message ">>>> Converting certificate \"${keystore_dir}/${alias_lc}.cer\" to EBCDIC."
+          iconv -f ISO8859-1 -t IBM-1047 "${keystore_dir}/${alias_lc}.cer" >"${keystore_dir}/${alias_lc}.cer-ebcdic"
+          mv "${keystore_dir}/${alias_lc}.cer-ebcdic" "${keystore_dir}/${alias_lc}.cer"
+        fi
         ensure_file_encoding "${keystore_dir}/${alias_lc}.cer" "CERTIFICATE"
       fi
     fi

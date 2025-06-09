@@ -192,7 +192,7 @@ read_yaml_configmgr() {
   configmgr="${ZWE_zowe_runtimeDirectory}/bin/utils/configmgr"
   schema="${ZWE_zowe_runtimeDirectory}/schemas/server-common.json:${ZWE_zowe_runtimeDirectory}/schemas/zowe-yaml-schema.json"
 
-  result=$(_CEE_RUNOPTS="XPLINK(ON)" "${configmgr}" -s "$schema" -p "FILE(${file})" extract "${key}" 2>&1);
+  result=$(_CEE_RUNOPTS="XPLINK(ON)" "${configmgr}" -s "$schema" -p "FILE(${file})" extract "${key}" 2>&1)
   code=$?
 
   print_trace "  * Exit code: ${code}"
@@ -236,26 +236,26 @@ read_json() {
   return ${code}
 }
 
-read_json_string() {	
-  string="${1}"	
-  key="${2}"	
-  ignore_null="${3:-true}"	
-  utils_dir="${ZWE_zowe_runtimeDirectory}/bin/utils"	
-  jq="${utils_dir}/njq/src/index.js"	
-  result=$(echo "${string}" | node "${jq}" -r "${key}" 2>&1)	
-  code=$?	
-  print_trace "  * Exit code: ${code}"	
-  print_trace "  * Output:"	
-  if [ -n "${result}" ]; then	
-    print_trace "$(padding_left "${result}" "    ")"	
-  fi	
-  if [ ${code} -eq 0 ]; then	
-    if [ "${ignore_null}" = "true" -a "${result}" = "null" ]; then	
-      result=	
-    fi	
-    printf "${result}"	
-  fi	
-  return ${code}	
+read_json_string() {
+  string="${1}"
+  key="${2}"
+  ignore_null="${3:-true}"
+  utils_dir="${ZWE_zowe_runtimeDirectory}/bin/utils"
+  jq="${utils_dir}/njq/src/index.js"
+  result=$(echo "${string}" | node "${jq}" -r "${key}" 2>&1)
+  code=$?
+  print_trace "  * Exit code: ${code}"
+  print_trace "  * Output:"
+  if [ -n "${result}" ]; then
+    print_trace "$(padding_left "${result}" "    ")"
+  fi
+  if [ ${code} -eq 0 ]; then
+    if [ "${ignore_null}" = "true" -a "${result}" = "null" ]; then
+      result=
+    fi
+    printf "${result}"
+  fi
+  return ${code}
 }
 
 update_yaml() {
@@ -266,8 +266,8 @@ update_yaml() {
 
   utils_dir="${ZWE_zowe_runtimeDirectory}/bin/utils"
   config_converter="${utils_dir}/config-converter/src/cli.js"
-  
-  print_message "- update \"${key}\" with value: ${val}"
+
+  print_message "- update ${f} \"${key}\" with value: ${val}"
   result=$(node "${config_converter}" yaml update "${file}" "${key}" "${val}")
   code=$?
   if [ ${code} -eq 0 ]; then

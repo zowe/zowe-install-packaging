@@ -134,8 +134,11 @@ else
         validate_this "validate_java_home 2>&1" "zwe-internal-start-prepare,global_validate:${LINENO}"
       fi
     else
-      if [ -z "${ZWE_PRIVATE_CONTAINER_COMPONENT_ID}" ]; then
-        validate_this "is_variable_set \"ZWE_PRIVATE_CONTAINER_COMPONENT_ID\" \"Cannot find name from the component image manifest file\" 2>&1" "zwe-internal-start-prepare,global_validate:${LINENO}"
+      # check doesn't apply to container environments
+      if [ "${ZWE_components_gateway_apiml_security_auth_provider}" = "zosmf" -a "${ZWE_RUN_IN_CONTAINER}" != "true" ]; then 
+        let "ZWE_PRIVATE_ERRORS_FOUND=${ZWE_PRIVATE_OLD_ERRORS_FOUND}+1"
+        print_error "Using z/OSMF as 'components.gateway.apiml.security.auth.provider' is not possible: discovery is disabled."
+        print_formatted_info "ZWELS" "zwe-internal-start-prepare,global_validate:${LINENO}" "Zosmf validation failed"
       fi
     fi
 
