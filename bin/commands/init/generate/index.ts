@@ -40,7 +40,7 @@ export function execute(dryRun?: boolean) {
 
   let jclHeaderJoined = '';
   // zowe.setup.jcl.header defined in defaults
-  const jclHeader = ZOWE_CONFIG.zowe.setup.jcl.header == null ? '' : ZOWE_CONFIG.zowe.setup.jcl.header;
+  const jclHeader = ZOWE_CONFIG.zowe.setup.jcl.header;
   if (Array.isArray(jclHeader)) {
       jclHeaderJoined = jclHeader.join("\n");
   } else {
