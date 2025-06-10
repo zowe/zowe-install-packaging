@@ -66,7 +66,7 @@ describe(`${testSuiteName}`, () => {
         result = await testRunner.runZweTest(cfgYaml, `init generate --dry-run -c ${tcase}`);
         expect(result.stdout).not.toBeNull();
         expect(result.cleanedStdout).toMatchSnapshot();
-        expect(result.rc).toBe(1);
+        expect(result.rc).toBe(60);
       }
     });
 
