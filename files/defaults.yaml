@@ -27,9 +27,11 @@ zowe:
   #-------------------------------------------------------------------------------
   # These configurations are used by "zwe install" or "zwe init" commands.
   #-------------------------------------------------------------------------------
+  environments:
+    jclHeader: ''
   setup:
     # MVS data set related configurations
-    dataset:      
+    dataset:
       parmlibMembers:
         # For ZIS plugins
         zis: ZWESIP00
@@ -37,7 +39,7 @@ zowe:
     # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
     security:
       # security product name. Can be RACF, ACF2 or TSS
-      product: RACF
+      product: "${{ [ 'RACF', 'ACF2', 'TSS' ].includes(zos.getEsm()) ? zos.getEsm() : 'RACF' }}"
       groups:
         admin: ZWEADMIN
         stc: ZWEADMIN
@@ -60,7 +62,7 @@ zowe:
     # This section fully defines a default for certificate scenario 1, but makes way when detecting any other scenarios.
     certificate:
       type: PKCS12
-      pkcs12: 
+      pkcs12:
         directory: "${{ zowe.setup.certificate.type != 'PKCS12' ? null : '/var/zowe/keystore' }}"
         lock: "${{ zowe.setup.certificate.type != 'PKCS12' ? null : true }}"
         name: "${{ zowe.setup.certificate.type == 'PKCS12' && !zowe.setup.certificate.pkcs12.import ? 'localhost' : null }}"
@@ -69,7 +71,7 @@ zowe:
         caPassword: "${{ zowe.setup.certificate.type == 'PKCS12' && !zowe.setup.certificate.pkcs12.import ? 'local_ca_password' : null }}"
 
       # Distinguished name for Zowe generated certificates.
-      dname: 
+      dname:
         caCommonName: "${{ (zowe.setup.certificate.pkcs12?.name || zowe.setup.certificate.keyring?.name) ? 'Zowe Development Instances CA' : null }}"
         commonName: "${{ (zowe.setup.certificate.pkcs12?.name || zowe.setup.certificate.keyring?.name) ? 'Zowe Development Instances Certificate' : null }}"
         orgUnit: "${{ (zowe.setup.certificate.pkcs12?.name || zowe.setup.certificate.keyring?.name) ? 'API Mediation Layer' : null }}"
@@ -78,7 +80,7 @@ zowe:
         state: "${{ (zowe.setup.certificate.pkcs12?.name || zowe.setup.certificate.keyring?.name) ? 'Prague' : null }}"
         country: "${{ (zowe.setup.certificate.pkcs12?.name || zowe.setup.certificate.keyring?.name) ? 'CZ' : null }}"
       # Validity days for Zowe generated certificates
-      validity: "${{ (zowe.setup.certificate.pkcs12?.import || zowe.setup.certificate.keyring?.name) ? null : 3650 }}"
+      validity: 3650
 
     vsam:
       # Default to caching service entry as it predates this one
@@ -104,14 +106,14 @@ zowe:
   # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   # This is an ID you use to separate multiple Zowe installs when determining
   # resource names used in RBAC authorization checks such as dataservices with RBAC
-  # expects this ID in SAF resources 
+  # expects this ID in SAF resources
   rbacProfileIdentifier: "1"
 
   # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-  # This is an ID that can be used by servers that distinguish their cookies from unrelated Zowe installs, 
+  # This is an ID that can be used by servers that distinguish their cookies from unrelated Zowe installs,
   # for purposes such as to allow multiple copies of Zowe to be used within the same client
   cookieIdentifier: "1"
-  
+
   # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   # This is the port you use to access Zowe Gateway from your web browser.
   #
@@ -136,7 +138,7 @@ zowe:
   #              This mode does not validate certificate Common Name and Subject
   #              Alternative Name (SAN).
   # - DISABLED:  disable certificate validation. This is NOT recommended for
-  #              security. 
+  #              security.
   verifyCertificates: STRICT
 
   # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
