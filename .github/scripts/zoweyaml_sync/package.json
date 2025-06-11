@@ -1,0 +1,16 @@
+{
+  "name": "zoweyaml_sync",
+  "version": "1.0.0",
+  "description": "Checks that example-zowe.yaml and defaults.yaml fields are sync'd with PSWI and config workflows",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "EPL-2.0",
+  "dependencies": {
+    "fs-extra": "11.3.0",
+    "js-yaml": "4.1.0",
+    "lodash": "^4.17.21"
+  }
+}

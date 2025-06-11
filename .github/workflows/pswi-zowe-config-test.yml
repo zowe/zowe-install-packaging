@@ -30,6 +30,17 @@ jobs:
           git config --global user.email dummy-email@email.com
         shell: bash
 
+      - name: Install Dependencies for sync check script to work
+        run: npm install
+        working-directory: .github/scripts/zoweyaml_sync
+
+      - name: Run Check
+        run: node .github/scripts/zoweyaml_sync/check_config_workflows.js
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          BASE_REF: ${{ github.event.pull_request.base.ref }}
+
+
       - name: '[PSI-LOCK] Lock marist servers to build PSWI'
         uses: zowe-actions/shared-actions/lock-resource@main
         with:
