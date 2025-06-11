@@ -3,13 +3,13 @@
 All notable changes to the Zowe Installer will be documented in this file.
 
 ## `3.3.0`
-- Bugfix: stop processing `ZWEGENER` if `zowe.setup.dataset.prefix` or `zowe.setup.dataset.jcllib` is undefined or identical [#4337](https://github.com/zowe/zowe-install-packaging/pull/#4337)
+- Enhancement: `zwe init` no longer creates certificates by default. Use `zwe init --create-certificate` or `zwe init certificate` after defining the "zowe.setup.certificate" section of the YAML. You can use the examples provided within zowe/files/examples/setup/certificate. [#4238](https://github.com/zowe/zowe-install-packaging/pull/4238)
+- Bugfix: stop processing `ZWEGENER` if `zowe.setup.dataset.prefix` or `zowe.setup.dataset.jcllib` is undefined or identical [#4337](https://github.com/zowe/zowe-install-packaging/pull/4337)
 - Enhancement: Add a utility "certificate-analyser.jar" to the folder zowe/bin/utils. This tool can be used to verify correct certificates for use by zowe, as well as correct connectivity to servers Zowe communicates with such as z/OSMF. It will be used by Zowe under specific circumstances to verify that network setup is correct. [#4354](https://github.com/zowe/zowe-install-packaging/pull/4354)
 - Enhancement: Support different parmlib members when using JCL `ZWEGENER` [#4332](https://github.com/zowe/zowe-install-packaging/pull/4332)
 - Enhancement: Updated the `zowe-yaml-schema.json` and `defaults.yaml` to support new configuration parameter `zowe.sysMessageTrim` and set default value. This parameter will be used to trim syslog messages and print only from the sys-message-id. [#4294](https://github.com/zowe/zowe-install-packaging/pull/4294)
 
 ## `3.2.0`
-- Enhancement: `zwe init` no longer creates certificates by default. Use `zwe init --create-certificate` or `zwe init certificate` after defining the "zowe.setup.certificate" section of the YAML. You can use the examples provided within zowe/files/examples/setup/certificate.
 - Enhancement: `zwe support` command collecting more environment details [#4147](https://github.com/zowe/zowe-install-packaging/pull/4147)
 - Enhancement: Added new library function formatZosVersion() [#4134](https://github.com/zowe/zowe-install-packaging/pull/4134)
 - `zwe support verify-fingerprints` no longer requires a `zowe.yaml` to be passed as a command-line parameter. 
