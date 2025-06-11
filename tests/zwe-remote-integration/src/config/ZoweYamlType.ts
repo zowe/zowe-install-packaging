@@ -715,6 +715,10 @@ const zoweSchema = zoweYamlSchema as {
           uniqueItems: true;
           items: {
             type: 'string';
+            minLength: 1;
+            not: {
+              type: 'null';
+            };
           };
         };
         sysMessageTrim: {
