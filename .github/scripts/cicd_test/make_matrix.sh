@@ -12,6 +12,12 @@
 
 case $install_test_choice in
 
+"ZWE_CI_Build")
+  test_file="ZWE_CI_Build"
+  ;;
+"ZWE_Full_Tests")
+  test_file="ZWE_Full_Tests"
+  ;;
 "Convenience Pax")
   test_file="$CONVENIENCE_PAX_TESTFILE"
   ;;
@@ -30,6 +36,14 @@ case $install_test_choice in
 
 "Keyring")
   test_file="$KEYRING_TESTFILE"
+  ;;
+
+"Java 21")
+  test_file="$JAVA_V21_TESTFILE"
+  ;;
+
+"Java 21 Keyring")
+  test_file="$JAVA_V21_KEYRING_TESTFILE"
   ;;
 
 "z/OS node v20")
@@ -87,6 +101,14 @@ else
   if [[ -z "$dont_parse_test_server" ]]; then
     if [[ "$test_server" == "Any zzow servers" ]]; then
       test_server="zzow"$(printf %02d $(($RANDOM % 3 + 9)))
+    elif [[ "$test_server" == "Any("* ]]; then
+      # keeping this all posix compliant
+      any_options=$(echo "$test_server" | cut -d ")" -f1 | cut -d "(" -f2) # Any(x,y,z) -> x,y,z
+      anyopts_comma_count=$(echo "$any_options" | tr -cd ',' | wc -c)
+      num_choices=$(($anyopts_comma_count + 1))
+      #  add 1 to RANDOM % num_choices because cut won't handle 0-indexed elements
+      server_choice=$(printf %01d $(($RANDOM % $num_choices + 1)))
+      test_server=$(echo $any_options | cut -d "," -f$server_choice) # pick one of x,y,z at random
     fi
     TEST_FILE_SERVER="$test_file($test_server)"
   else

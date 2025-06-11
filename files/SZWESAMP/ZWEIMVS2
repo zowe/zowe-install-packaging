@@ -1,4 +1,4 @@
-//ZWEIMVS2 JOB
+//ZWEIMVS2 JOB {zowe.environments.jclHeader}
 //*
 //* This program and the accompanying materials are made available
 //* under the terms of the Eclipse Public License v2.0 which
@@ -16,7 +16,8 @@
 //* 'zowe.setup.dataset.authLoadlib' is equal to
 //* 'zowe.setup.dataset.prefix' + 'SZWEAUTH'.
 //*
-//* When running this job, you should also run ZWEIMVS
+//* When running this job, you should also consider 
+//* to run ZWEIMVS and ZWEIMVS1.
 //*
 //*********************************************************************
 //MKPDSE EXEC PGM=IKJEFT01
@@ -25,7 +26,7 @@
 ALLOC NEW DA('{zowe.setup.dataset.authLoadlib}') +
 dsntype(library) dsorg(po) recfm(u) lrecl(0) +
 blksize(32760) unit(sysallda) space(30,15) tracks
-//*
+/*
 //AUTHCPY EXEC PGM=BPXBATCH
 //BPXPRINT DD SYSOUT=*
 //STDOUT   DD SYSOUT=*

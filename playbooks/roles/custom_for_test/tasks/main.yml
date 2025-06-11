@@ -162,6 +162,7 @@
       "zowe.launchScript.logLevel": "trace"
       # # this must be commented out to avoid flooding spool
       # "components.gateway.debug": "true"
+      # "components.gateway.sslDebug": "all"
       # # trace java apps
       # "zowe.environments.LOGGING_LEVEL_ORG_APACHE_HTTP": "TRACE"
       # "zowe.environments.LOGGING_LEVEL_ORG_APACHE": "TRACE"

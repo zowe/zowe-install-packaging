@@ -16,9 +16,9 @@ print_level0_message "Install Zowe MVS data sets"
 ###############################
 # constants
 # keep in sync with workflows/templates/smpe-install/ZWE3ALOC.vtl
-cust_ds_list="${ZWE_PRIVATE_DS_SZWESAMP}|Zowe sample library|dsntype(library) dsorg(po) recfm(f b) lrecl(80) unit(sysallda) space(15,15) tracks
-${ZWE_PRIVATE_DS_SZWEAUTH}|Zowe authorized load library|dsntype(library) dsorg(po) recfm(u) lrecl(0) blksize(32760) unit(sysallda) space(30,15) tracks
-${ZWE_PRIVATE_DS_SZWELOAD}|Zowe load library|dsntype(library) dsorg(po) recfm(u) lrecl(0) blksize(32760) unit(sysallda) space(30,15) tracks
+cust_ds_list="${ZWE_PRIVATE_DS_SZWESAMP}|Zowe sample library|dsntype(library) dsorg(po) recfm(f b) lrecl(80) unit(sysallda) space(30,15) tracks
+${ZWE_PRIVATE_DS_SZWEAUTH}|Zowe authorized load library|dsntype(library) dsorg(po) recfm(u) lrecl(0) blksize(32760) unit(sysallda) space(195,15) tracks
+${ZWE_PRIVATE_DS_SZWELOAD}|Zowe load library|dsntype(library) dsorg(po) recfm(u) lrecl(0) blksize(32760) unit(sysallda) space(150,15) tracks
 ${ZWE_PRIVATE_DS_SZWEEXEC}|Zowe executable utilities library|dsntype(library) dsorg(po) recfm(f b) lrecl(80) unit(sysallda) space(15,15) tracks"
 
 ###############################
@@ -115,15 +115,10 @@ else
   # FIXME: move these parts to zss commands.install?
   # FIXME: ZWESIPRG is in zowe-install-packaging
   cd "${ZWE_zowe_runtimeDirectory}/components/zss"
-  zss_samplib="ZWESAUX=ZWESASTC ZWESIP00 ZWESIS01=ZWESISTC ZWESISCH"
+  zss_samplib="ZWESASTC ZWESIP00 ZWESISTC ZWESISCH"
   for mb in ${zss_samplib}; do
-    mb_from=$(echo "${mb}" | awk -F= '{print $1}')
-    mb_to=$(echo "${mb}" | awk -F= '{print $2}')
-    if [ -z "${mb_to}" ]; then
-      mb_to="${mb_from}"
-    fi
-    print_message "Copy components/zss/SAMPLIB/${mb_from} to ${prefix}.${ZWE_PRIVATE_DS_SZWESAMP}(${mb_to})"
-    copy_to_data_set "SAMPLIB/${mb_from}" "${prefix}.${ZWE_PRIVATE_DS_SZWESAMP}(${mb_to})" "" "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITE}"
+    print_message "Copy components/zss/SAMPLIB/${mb} to ${prefix}.${ZWE_PRIVATE_DS_SZWESAMP}(${mb})"
+    copy_to_data_set "SAMPLIB/${mb}" "${prefix}.${ZWE_PRIVATE_DS_SZWESAMP}(${mb})" "" "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITE}"
     if [ $? -ne 0 ]; then
       print_error_and_exit "Error ZWEL0111E: Command aborts with error." "" 111
     fi

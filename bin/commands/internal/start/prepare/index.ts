@@ -27,6 +27,7 @@ import * as java from '../../../../libs/java';
 import * as javaCI from '../../../../libs/java_ci';
 import * as node from '../../../../libs/node';
 import * as zosmf from '../../../../libs/zosmf';
+import * as zoslib from '../../../../libs/zos';
 
 //# This command prepares everything needed to start Zowe.
 const cliParameterConfig = std.getenv('ZWE_CLI_PARAMETER_CONFIG');
@@ -420,14 +421,6 @@ if (fs.fileExists(`${workspaceDirectory}/.init-for-container`)) {
   std.setenv('ZWE_RUN_IN_CONTAINER', 'true');
 }
 
-// Fix node.js piles up in IPC message queue
-// run this before any node command we start
-if (os.platform == 'zos') {
-  common.printFormattedTrace("ZWELS", "zwe-internal-start-prepare", "Clean up IPC message queue before using node.js.");
-  shell.execSync('sh', `${runtimeDirectory}/bin/utils/cleanup-ipc-mq.sh`);
-}
-
-
 // display starting information
 let manifestReturn = shell.execOutSync('cat', `${runtimeDirectory}/manifest.json`);
 
@@ -440,6 +433,8 @@ if (zoweVersion) {
 export function execute() {
   common.printFormattedInfo("ZWELS", "zwe-internal-start-prepare", `Zowe version: v${zoweVersion}`);
   common.printFormattedInfo("ZWELS", "zwe-internal-start-prepare", `build and hash: ${runtimeManifest.build.branch}#${runtimeManifest.build.number} (${runtimeManifest.build.commitHash})`);
+  common.printFormattedInfo("ZWELS", "zwe-internal-start-prepare", `z/OS Version: ${zoslib.formatZosVersion('{major}.{minor}')}`);
+  common.printFormattedInfo("ZWELS", "zwe-internal-start-prepare", `ESM: ${zos.getEsm()}`);
 
   // validation
   if (stringlib.itemInList(std.getenv('ZWE_PRIVATE_CORE_COMPONENTS_REQUIRE_JAVA'), std.getenv('ZWE_CLI_PARAMETER_COMPONENT'))) {
@@ -453,7 +448,7 @@ export function execute() {
   common.requireZoweYaml();
 
   // overwrite ZWE_PRIVATE_LOG_LEVEL_ZWELS with zowe.launchScript.logLevel config in YAML
-  if (ZOWE_CONFIG.zowe.launchScript) {
+  if (ZOWE_CONFIG.zowe.launchScript.logLevel) {
     std.setenv('ZWE_PRIVATE_LOG_LEVEL_ZWELS', ZOWE_CONFIG.zowe.launchScript.logLevel.toUpperCase());
   };
 

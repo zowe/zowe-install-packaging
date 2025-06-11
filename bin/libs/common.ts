@@ -12,6 +12,7 @@
 import * as std from 'cm_std';
 import * as os from 'cm_os';
 import * as xplatform from 'xplatform';
+import * as zos from 'zos';
 
 import * as fs from './fs';
 //import * as stringlib from './string';
@@ -128,6 +129,13 @@ export function date(...args: string[]): string|undefined {
 
 
 let logExists = false;
+let logFile:std.File|null = null;
+export function finishLogFile() {
+  if (logFile) {
+    logFile.close();
+    zos.changeTag(std.getenv('ZWE_PRIVATE_LOG_FILE'), 819);
+  }
+}
 
 function writeLog(message: string): boolean {
   const filename = std.getenv('ZWE_PRIVATE_LOG_FILE');
@@ -138,6 +146,14 @@ function writeLog(message: string): boolean {
   if (!logExists) {
       fs.createFile(filename, 0o640, message);
       logExists = fs.fileExists(filename);
+      let errObj = {errno:undefined};
+      logFile = std.open(filename, 'w', errObj);
+      if (errObj.errno) {
+        printError(`Error opening file ${filename}, errno=${errObj.errno}`);
+        logFile=null;
+        logExists=false;
+        return false;
+      }
   } else {
       xplatform.appendFileUTF8(filename, xplatform.AUTO_DETECT, message);
       return true;
@@ -158,7 +174,7 @@ export function printRawMessage(message: string, isError: boolean, writeTo:strin
     }
   }
   if (writeTo.includes('log')) {
-    writeLog(message+'\n');
+    writeLog(message);
   }
   return true;
 }
@@ -349,6 +365,39 @@ export function getZoweVersion(): string|undefined {
   return std.getenv('ZWE_VERSION');
 }
 
+/**
+ * Checks if the zowe.yaml provided via "PARMLIB" syntax will be accepted by configmgr.
+ * 
+ * Accepts both PARMLIB(MY.PARM(MEMBER)) and MY.PARM(MEMBER)
+ * 
+ * @param parmlib 
+ * 
+ */
+export function isValidZoweYamlParmlib(parmlib: string): {ok: boolean; error: { message: string; code: number }} {
+  let finalParmlib = parmlib.trim();
+  const errorContent = {message: `ZWEL0316E Invalid PARMLIB format ${parmlib}.`, code: 316}
+  if (finalParmlib.startsWith('PARMLIB(')) {
+    // unbalanced paren, PARMLIB(A.B.C
+    if (finalParmlib.slice(-1) != ')') {
+      return {ok: false, error: errorContent}
+    }
+    finalParmlib = parmlib.substring(8, parmlib.lastIndexOf(')')); // cover cases where a trailing colon may be present
+  }
+  if (finalParmlib.indexOf('(') != -1) {
+    // Case where PARMLIB is A.B.C(D, which covers unbalanced paren e.g. PARMLIB(A.B.C(D) 
+    if (finalParmlib.slice(-1) != ')') {
+      return {ok: false, error: errorContent}
+    }
+    const member = finalParmlib.substring(finalParmlib.indexOf('(')+1, finalParmlib.indexOf(')'));
+    // This regex ported from server-common.json#zoweDatasetMember
+    if (/^([A-Z$#@])([A-Z0-9$#@]){0,7}$/gi.test(member) === false) {
+      return { ok: false, error: errorContent};
+    }
+    return {ok: true, error: {message: '', code: 0}};
+  }
+
+  return {ok: false, error: errorContent};
+}
 
 //From 'index.sh'
 std.setenv('ZWE_PRIVATE_DS_SZWESAMP', 'SZWESAMP');

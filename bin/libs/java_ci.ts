@@ -52,6 +52,7 @@ export function validateJavaHome(javaHome:string|undefined=std.getenv("JAVA_HOME
       common.printError("could not find java version");
       return false;
     }
+    common.printFormattedInfo('ZWELS', 'validateJavaHome', 'Java version: '+javaVersionShort);
     let versionParts = javaVersionShort.split('.');
     const javaMajorVersion=Number(versionParts[0]);
     const javaMinorVersion=Number(versionParts[1]);

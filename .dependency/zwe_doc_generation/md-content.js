@@ -71,7 +71,7 @@ function generateDocumentationForNode(curNode, assembledParentNode) {
 function assembleDocumentationElementsForNode(curNode, assembledParentNode) {
     const fileName = assembledParentNode.fileName ? `${assembledParentNode.fileName}-${curNode.command}` : curNode.command;
     const command = assembledParentNode.command ? assembledParentNode.command + ' ' + curNode.command : curNode.command;
-    const link = `[${curNode.command}](./${fileName})`;
+    const link = `[${curNode.command}](./${fileName}.md)`;
     const linkCommandElements = assembledParentNode.linkCommandElements ? [...assembledParentNode.linkCommandElements, link] : [link];
 
     let relPathToParentLinks = './';

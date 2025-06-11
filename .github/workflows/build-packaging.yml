@@ -236,7 +236,7 @@ jobs:
       - name: '[Prep 7] Comment on PR to indicate build is started'         
         uses: actions/github-script@v5
         id: create-comment
-        if: (github.event_name == 'workflow_dispatch' || github.event_name == 'pull_request') && startsWith(env.CURRENT_BRANCH, 'PR-')
+        if: (github.event_name == 'workflow_dispatch' || github.event_name == 'pull_request') && startsWith(env.CURRENT_BRANCH, 'PR-') &&  !contains(fromJson(needs.set-run-conditions.outputs.pr-labels), 'CICD_Quiet')
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
@@ -274,7 +274,7 @@ jobs:
         with:
           manifest-file-path: ${{ github.workspace }}/manifest.json
           default-target-path: .pax/binaryDependencies/
-          expected-count: 27
+          expected-count: 28
       
       # this step is not doing a publish, we are just utilizing this actions to get the PUBLISH_TARGET_PATH, 
       # and it will be used in the next step: [Download 3] Download SMPE build log
@@ -404,7 +404,7 @@ jobs:
 
       - name: '[Post Prep 7] Update PR comment to indicate build succeeded'
         uses: actions/github-script@v5
-        if: steps.create-comment.outputs.result != '' && success()
+        if: steps.create-comment.outputs.result != '' && success() && !contains(fromJson(needs.set-run-conditions.outputs.pr-labels), 'CICD_Quiet')
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
@@ -417,7 +417,7 @@ jobs:
 
       - name: '[Post Prep 7] Update PR comment to indicate build failed'
         uses: actions/github-script@v5
-        if: steps.create-comment.outputs.result != '' && failure()
+        if: steps.create-comment.outputs.result != '' && failure() && !contains(fromJson(needs.set-run-conditions.outputs.pr-labels), 'CICD_Quiet')
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
@@ -430,7 +430,7 @@ jobs:
 
       - name: '[Post Prep 7] Update PR comment to indicate build cancelled'
         uses: actions/github-script@v5
-        if: steps.create-comment.outputs.result != '' && cancelled()
+        if: steps.create-comment.outputs.result != '' && cancelled() && !contains(fromJson(needs.set-run-conditions.outputs.pr-labels), 'CICD_Quiet')
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
@@ -485,7 +485,7 @@ jobs:
           workflow-filename: cicd-test.yml
           branch-name: ${{ env.BRANCH_NAME }}
           poll-frequency: 3
-          inputs-json-string: '{"custom-zowe-artifactory-pattern-or-build-number":"${{ github.run_number }}", "install-test": "${{ steps.get-test-suite.outputs.TEST_SUITE }}"}'
+          inputs-json-string: '{"custom-zowe-artifactory-pattern-or-build-number":"${{ github.run_number }}", "install-test": "${{ steps.get-test-suite.outputs.TEST_SUITE }}", "origin-event" : "${{ github.event_name }}"}'
         # env:
         #   DEBUG: 'workflow-remote-call-wait'
       

@@ -31,6 +31,8 @@ on:
           - SMPE PTF
           - Extensions
           - Keyring
+          - Java 21
+          - Java 21 Keyring
           - z/OS node v20
           - z/OS node v22
           - Non-strict Verify External Certificate
@@ -57,6 +59,11 @@ on:
         description: 'random dispatch event id'
         required: false
         type: string
+      origin-event:
+        description: '[Automation] if caller was a pull request' # caller sets var to 'pull_request'
+        type: string
+        required: false
+        default: ''
 
 # create a new branch to overwrite following defaults if necessary
 env:
@@ -81,6 +88,8 @@ env:
   SMPE_PTF_TESTFILE: basic/install-ptf.ts
   EXTENSIONS_TESTFILE: basic/install-ext.ts
   KEYRING_TESTFILE: extended/keyring.ts
+  JAVA_V21_TESTFILE: extended/java-versions/java-21.ts
+  JAVA_V21_KEYRING_TESTFILE: extended/java-versions/java-21-keyring.ts
   ZOS_NODE_V20_TESTFILE: extended/node-versions/node-v20.ts
   ZOS_NODE_V22_TESTFILE: extended/node-versions/node-v22.ts
   NON_STRICT_VERIFY_EXTERNAL_CERTIFICATE_TESTFILE: extended/certificates/nonstrict-verify-external-certificate.ts
@@ -90,9 +99,39 @@ env:
   CONFIG_MANAGER_TESTFILE: extended/config-manager/enable-config-manager.ts
   GENERAL_API_DOCUMENTATION_TESTFILE: basic/install-api-gen.ts
   ZOWE_NIGHTLY_TESTS_FULL: basic/install.ts(all);basic/install-ptf.ts(all)
-  ZOWE_RELEASE_TESTS_FULL: basic/install.ts(all);basic/install-ptf.ts(all);basic/install-ext.ts(any);extended/keyring.ts(all);extended/node-versions/node-v20.ts(any);extended/node-versions/node-v22.ts(any);extended/certificates/nonstrict-verify-external-certificate.ts(any);extended/caching-storages/infinispan-storage.ts(any);extended/config-manager/enable-config-manager.ts(any)
+  ZOWE_RELEASE_TESTS_FULL: basic/install.ts(all);basic/install-ptf.ts(all);basic/install-ext.ts(any);extended/keyring.ts(all);extended/java-versions/java-21.ts(any);extended/java-versions/java-21-keyring.ts(any);extended/node-versions/node-v20.ts(any);extended/node-versions/node-v22.ts(any);extended/certificates/nonstrict-verify-external-certificate.ts(any);extended/caching-storages/infinispan-storage.ts(any);extended/config-manager/enable-config-manager.ts(any)
 
 jobs:
+
+  set-run-conditions:
+    runs-on: ubuntu-latest
+    outputs:
+      pr-labels: ${{ steps.get-labels.outputs.result }}
+    steps:
+      - name: 'Get labels'
+        id: get-labels
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            if ('${{ github.event_name}}' == 'pull_request') {
+              return JSON.stringify(${{ toJson(github.event.pull_request.labels) }})
+            }  
+            else if ('${{ github.event.inputs.origin-event }}' == 'pull_request') {
+              const res = await github.rest.pulls.list({
+                state: 'open',
+                head: 'zowe:${{ github.ref_name }}',
+                owner: 'zowe',
+                repo: 'zowe-install-packaging'
+              }).then((resp) => {
+                const pr = resp.data.find((item) => item.head.ref == '${{ github.ref_name }}')
+                return JSON.stringify(pr.labels)
+              })
+              return res;
+            } else {
+              return '[]'
+            }
+
   display-dispatch-event-id:
     if: github.event.inputs.RANDOM_DISPATCH_EVENT_ID != ''
     runs-on: ubuntu-latest
@@ -130,7 +169,7 @@ jobs:
 
   cicd-test:
     runs-on: ubuntu-latest
-    needs: make-matrix
+    needs: [set-run-conditions, make-matrix]
     strategy:
       matrix: ${{ fromJson(needs.make-matrix.outputs.matrix) }}
       fail-fast: false
@@ -234,7 +273,7 @@ jobs:
       - name: '[Comment] Post comments on PR about what tests are gonna be run'
         uses: actions/github-script@v5
         id: create-comment
-        if: startsWith(env.CURRENT_BRANCH, 'PR-')
+        if: startsWith(env.CURRENT_BRANCH, 'PR-') && !contains(fromJson(needs.set-run-conditions.outputs.pr-labels), 'CICD_Quiet')
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
@@ -273,7 +312,7 @@ jobs:
       
       - name: '[Comment] Update comment after lock is acquired'
         uses: actions/github-script@v5
-        if: steps.create-comment.outputs.result != ''
+        if: steps.create-comment.outputs.result != '' && !contains(fromJson(needs.set-run-conditions.outputs.pr-labels), 'CICD_Quiet')
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
@@ -389,7 +428,7 @@ jobs:
 
       - name: '[Comment] Update PR comment to indicate test succeeded'
         uses: actions/github-script@v5
-        if: steps.create-comment.outputs.result != '' && success()
+        if: steps.create-comment.outputs.result != '' && success() && !contains(fromJson(needs.set-run-conditions.outputs.pr-labels), 'CICD_Quiet')
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
@@ -416,7 +455,7 @@ jobs:
 
       - name: '[Comment] Update PR comment to indicate test failed'
         uses: actions/github-script@v5
-        if: steps.create-comment.outputs.result != '' && failure()
+        if: steps.create-comment.outputs.result != '' && failure() && !contains(fromJson(needs.set-run-conditions.outputs.pr-labels), 'CICD_Quiet')
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
@@ -443,7 +482,7 @@ jobs:
 
       - name: '[Comment] Update PR comment to indicate test cancelled'
         uses: actions/github-script@v5
-        if: steps.create-comment.outputs.result != '' && cancelled()
+        if: steps.create-comment.outputs.result != '' && cancelled() && !contains(fromJson(needs.set-run-conditions.outputs.pr-labels), 'CICD_Quiet')
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
