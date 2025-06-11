@@ -36,13 +36,6 @@ else
   print_error_and_exit "Error ZWEL0201E: File '${ZWE_PRIVATE_TMP_MERGED_YAML_DIR}/.zowe-merged.yaml' does not exist." "" 201
 fi
 
-###############################
-# read prefix and validate
-prefix=$(read_yaml_configmgr "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.dataset.prefix")
-if [ -z "${prefix}" ]; then
-  print_error_and_exit "Error ZWEL0157E: Zowe dataset prefix (zowe.setup.dataset.prefix) is not defined in Zowe YAML configuration file." "" 157
-fi
-
 # read cert type and validate
 cert_type=$(read_yaml_configmgr "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.certificate.type")
 if [ -z "${cert_type}" ]; then
@@ -55,6 +48,11 @@ fi
 
 # read JCL library and validate for keyrings only (JCE*KS)
 if [ "${cert_type}" != "PKCS12" ]; then
+  prefix=$(read_yaml_configmgr "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.dataset.prefix")
+  if [ -z "${prefix}" ]; then
+    print_error_and_exit "Error ZWEL0157E: Zowe dataset prefix (zowe.setup.dataset.prefix) is not defined in Zowe YAML configuration file." "" 157
+  fi
+
   jcllib=$(verify_generated_jcl)
   if [ "$?" -eq 1 ]; then
     print_error_and_exit "Error ZWEL0319E: zowe.setup.dataset.jcllib does not exist, cannot run. Run 'zwe init', 'zwe init generate', or submit JCL ${prefix}.SZWESAMP(ZWEGENER) before running this command." "" 319
