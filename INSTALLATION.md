@@ -31,7 +31,7 @@ Table of contents:
 Familiarize yourself with these core concepts of the Zowe servers, which are referenced during installation and configuration.
 
 ### Installation Concepts
-Runtime: The read-only content that comprises a version of Zowe.
+**Runtime**: The read-only content that comprises a version of Zowe.
 
 **Instance**: A collection of configuration and persistent data for Zowe that uses a particular Runtime.
 
@@ -44,7 +44,7 @@ Runtime: The read-only content that comprises a version of Zowe.
 **Keystore**: Zowe has several HTTPS servers which require certificates to function. You can store these certificates in a Keyring, or in a ZFS Keystore directory in the form of PKCS12 files.
 
 ### Configuration Concepts
-**Zowe YAML File**: Each Instance is configured by a YAML document composed of one or more unix file or PDSE member. It can be as simple as a "zowe.yaml" unix file, or ZWEYAML parmlib member, or advanced configuration can be accomplished by splitting configuration across multiple such files. This allows for defaults and customizations, splitting the configuration by administrative duty, or even splitting the configuration by core configuration versus extension configuration. 
+**Zowe YAML File**: Each Instance is configured by a YAML document composed of one or more unix file or PDSE member. It can be as simple as a "zowe.yaml" unix file, or parmlib member, or advanced configuration can be accomplished by splitting configuration across multiple such files. This allows for defaults and customizations, splitting the configuration by administrative duty, or even splitting the configuration by core configuration versus extension configuration. 
 
 **Schema**: The YAML file is backed by a Schema, found within `runtimeDirectory/schemas` ([link](https://github.com/zowe/zowe-install-packaging/tree/v2.x/staging/schemas)). Whenever Zowe starts up, or when most `zwe` commands are used, Zowe will check that the YAML file is valid before executing the requested operation, to reduce chance of misconfiguration. The schema also details advanced configuration parameters that may not be needed in basic installs.
 
@@ -65,8 +65,8 @@ The following covers installation when not using the Zowe Server Install Wizard.
 2. Navigate to the Runtime Directory and copy the [`example-zowe.yaml`](https://github.com/zowe/zowe-install-packaging/blob/v3.x/master/example-zowe.yaml) file to a location outside this folder, generally wherever you want to put the Zowe Instance.
 3. Edit the YAML copy to set the values of `zowe.runtimeDirectory`, `java.home`, `node.home`, and `zowe.setup.dataset`, as follows
    1. `zowe.runtimeDirectory`: The location you extracted the PAX to.
-   2. `java.home`: The location of the Java that will be used when installing & running Zowe. For example, if your java is located at /usr/lpp/java/J8.0_64/bin/java, then the java.home is /usr/lpp/java/J8.0_64
-   3. `node.home`: The location of the NodeJS that will be used when installing & running ZOwe. For example, if your node is located at /usr/lpp/node/v18/bin/node, then the java.home is /usr/lpp/node/v18
+   2. `java.home`: The location of the Java that will be used when installing & running Zowe. For example, if your java is located at `/usr/lpp/java/J8.0_64/bin/java`, then the `java.home` is `/usr/lpp/java/J8.0_64`
+   3. `node.home`: The location of the NodeJS that will be used when installing & running Zowe. For example, if your node is located at `/usr/lpp/node/v18/bin/node`, then the `node.home` is `/usr/lpp/node/v18`
    4. `zowe.setup.dataset`: This section defines where both Runtime and Instance datasets of Zowe will be created.
 
 
@@ -75,8 +75,8 @@ The following covers installation when not using the Zowe Server Install Wizard.
 2. Navigate to the Runtime Directory and copy the [`example-zowe.yaml`](https://github.com/zowe/zowe-install-packaging/blob/v3.x/master/example-zowe.yaml) file to a location outside this folder, generally wherever you want to put the Zowe Instance.
 3. Edit the YAML copy to set the values of `zowe.runtimeDirectory`, `java.home`, `node.home`, and `zowe.setup.dataset`, as follows
    1. `zowe.runtimeDirectory`: The location you extracted the PAX to.
-   2. `java.home`: The location of the Java that will be used when installing & running Zowe. For example, if your java is located at /usr/lpp/java/J8.0_64/bin/java, then the java.home is /usr/lpp/java/J8.0_64
-   3. `node.home`: The location of the NodeJS that will be used when installing & running ZOwe. For example, if your node is located at /usr/lpp/node/v18/bin/node, then the java.home is /usr/lpp/node/v18
+   2. `java.home`: The location of the Java that will be used when installing & running Zowe. For example, if your java is located at `/usr/lpp/java/J8.0_64/bin/java`, then the `java.home` is `/usr/lpp/java/J8.0_64`
+   3. `node.home`: The location of the NodeJS that will be used when installing & running Zowe. For example, if your node is located at `/usr/lpp/node/v18/bin/node`, then the `node.home` is `/usr/lpp/node/v18`
    4. `zowe.setup.dataset`: This section defines where both Runtime and Instance datasets of Zowe will be created.
 5. Navigate to the `/bin` folder of the extracted location
 6. Run `./zwe install -c /path/to/zowe.yaml`. This creates the Runtime datasets for the Zowe release.
@@ -181,7 +181,7 @@ Before each command runs, it will print the JCL that it is submitting.
 Using `zwe init` is an alternative to using the JCL samples from the previous section.
 
 <details>
-<summary><b>Click here to read about configuring via zwe instead of JCL samples</b></summary>
+<summary><b>Click here to read about configuring via `zwe` instead of JCL samples</b></summary>
 
 Every `zwe init` command also has a `--dry-run` option which validates the configuration, prints the JCL, but does not submit it.
 This allows you to review the actions before performing them with the appropriate administrator.
@@ -260,17 +260,17 @@ These are customized within the YAML at `components.<component-name>.port`, such
 |zss|App Framework|7557|ZWE1SZ|SZ|Provides APIs|
 |zaas|API Mediation Layer|7558|ZWE1AZ|AZ|Provides security APIs|
 
-Note that the Job name prefix ZWE1 can be modified via the YAML property `zowe.job.prefix`.
+Note that the Job name prefix `ZWE1` can be modified via the YAML property `zowe.job.prefix`.
 
 Zowe also has a property, `zowe.externalPort` that describes where clients should connect to access Zowe. This must match the gateway port when the gateway is enabled. When it isn't, this port should match the primary server of Zowe that you are using.
 
 ### IP Addresses
 These servers by default use the TCP IP address `0.0.0.0` which assigns the servers to be available on all network interfaces available to the jobs.
 
-If this default is not desired, it is recommended to use [TCPIP port assignment statements](https://www.ibm.com/docs/en/zos/2.4.0?topic=assignments-profiletcpip-port) to restrict the IP & ports of each server by their jobnames.
+If this default is not desired, it is recommended to use [TCPIP port assignment statements](https://www.ibm.com/docs/en/zos/2.5.0?topic=assignments-profiletcpip-port) to restrict the IP & ports of each server by their jobnames.
 The jobnames of each Zowe component is derived from the property `zowe.job.prefix` + `<component-suffix>`, where the suffix is seen in the port table above.
 
-When `zowe.job.prefix` is "ZWE1", An example of port reservations with a fixed IP of "10.11.12.13" could be:
+When `zowe.job.prefix` is `ZWE1`, An example of port reservations with a fixed IP of `10.11.12.13` could be:
 
 ```
    7552 TCP ZWE1AC BIND 10.11.12.13 ; Zowe API Catalog
