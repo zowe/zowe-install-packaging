@@ -1,15 +1,50 @@
 Init Zowe instance based on zowe.yaml configuration.
 
-You can find an example zowe.yaml in Zowe runtime directory folder.
+You can find an `example-zowe.yaml` in Zowe runtime directory folder.
 
 This command will run these sub-commands in sequence:
 
+- `zwe init generate`
 - `zwe init mvs`
 - `zwe init vsam`
 - `zwe init apfauth`
 - `zwe init security`
 - `zwe init certificate`
 - `zwe init stc`
+
+If you pass `--dry-run` with this command, each subcommand will print out the
+JCL that it would submit, without doing the submission. This can be used to
+review what Zowe would do before doing it.
+
+The following are the JCL submitted by each command as needed
+
+- `zwe init mvs`
+    - ZWEIMVS2, ZWEIMVS, ZWEIMVS1
+    - (If `--allow-overwrite` specified and old datasets exist) ZWERMVS, ZWERMVS1
+    - (If `zowe.setup.dataset.authLoadLib` is not named prefix + ZWELOAD) ZWEIMVS2
+    - (If above is true, and the dataset exists, and `--allow-overwrite` is set) ZWERMVS2
+- `zwe init vsam`
+    - ZWECSVSM
+    - (If `--allow-overwrite` specified and old datasets exist) ZWECSRVS
+- `zwe init apfauth`
+    - ZWEIAPF2
+- `zwe init security`
+    - (If RACF) ZWEIRAC
+    - (If TSS) ZWEITSS
+    - (If ACF2) ZWEIACF
+- `zwe init certificate`
+    - (If creating keyring and certificate for RACF) ZWEIKRR1
+    - (If creating keyring and connecting certificate for RACF) ZWEIKRR2
+    - (If creating keyring and importing certificate for RACF) ZWEIKRR3
+    - (If creating keyring and certificate for TSS) ZWEIKRR1
+    - (If creating keyring and connecting certificate for TSS) ZWEIKRT2
+    - (If creating keyring and importing certificate for TSS) ZWEIKRT3
+    - (If creating keyring and certificate for ACF2) ZWEIKRA1
+    - (If creating keyring and connecting certificate for ACF2) ZWEIKRA2
+    - (If creating keyring and importing certificate for ACF2) ZWEIKRA3
+- `zwe init stc`
+    - ZWEISTC
+    - (If `--allow-overwrite` specified and old members exist) ZWERSTC
 
 If you pass `--skip-security-setup` with this command, `zwe init apfauth` and
 `zwe init security` steps will be skipped.
@@ -158,7 +193,7 @@ components:
   hostname (domain) and one IP address.
 - `zowe.setup.certificate.importCertificateAuthorities` is the list of
   certificate authorities will be imported to Zowe PKCS12 keystore or
-  keyring. Please note, for keyring type, only maximum 2 CAs is supported.
+  keyring. Please note, for keyring type, only maximum 2 CAs are supported.
   If you are using `PKCS12` certificate, this should be USS files in PEM format.
   If you are using `JCEKS`, `JCECCAKS`, `JCERACFKS`, `JCECCARACFKS`, or
   `JCEHYBRIDRACFKS` certificate, this should be certificate labels
@@ -201,7 +236,7 @@ components:
     `localca`.
 - If you want to import certificate stored in MVS data set into Zowe keyring,
   * `zowe.setup.certificate.keyring.connect.dsName` is required in this case. It
-    tells Zowe the data set where the certificate stored.
+    tells Zowe the data set where the certificate is stored.
   * `zowe.setup.certificate.keyring.connect.password` is the password when
     importing the certificate.
   * The certificate will be imported with label defined in
@@ -213,14 +248,14 @@ components:
     Zowe the label of existing certificate.
 - If `zowe.verifyCertificates` is not `DISABLED`, and z/OSMF host (`zOSMF.host`)
   is provided, Zowe will try to trust z/OSMF certificate.
-  * If you are using `RACF` security manager, Zowe will try to automatically
-    detect the z/OSMF CA based on certificate owner specified by
+  * If you are using `RACF` or `TSS` security manager, Zowe will try to 
+    automatically detect the z/OSMF CA based on certificate owner specified by
     `zowe.setup.certificate.keyring.zOSMF.user`. Default value of this field is
     `IZUSVR`. If the automatic detection failed, you will need to define
     `zowe.setup.certificate.keyring.zOSMF.ca` indicates what is the label of
     z/OSMF root certificate authority.
-  * If you are using `ACF2` or `TSS` (Top Secret) security manager,
-    `zowe.setup.certificate.keyring.zOSMF.ca` is required to indicates what is
+  * If you are using `ACF2` security manager,
+    `zowe.setup.certificate.keyring.zOSMF.ca` is required to indicate what is
     the label of z/OSMF root certificate authority.
 
 - `zowe.setup.vsam.mode` indicates whether the VSAM will utilize Record Level
@@ -239,6 +274,6 @@ components:
   required if you are using z/OSMF as authentication service.
 
 - `components.caching-service.storage.mode` indicates what storage Zowe Caching
-  Service will use. Only if this value is `VSAM`, this command will try to
+  Service will be used. Only if this value is `VSAM`, this command will try to
   create VSAM data set.
 - `components.caching-service.storage.vsam.name` defines the VSAM data set name.

@@ -1,4 +1,5 @@
 ||100|If the user pass `--help` or `-h` parameter, the zwe command always exits with `100` code.
+ZWEL0064E|64|failed to run command os.pipe - Cannot start component %s
 ZWEL0101E|101|ZWE_zowe_runtimeDirectory is not defined.
 ZWEL0102E|102|Invalid parameter %s.
 ZWEL0103E|103|Invalid type of parameter %s.
@@ -28,10 +29,19 @@ ZWEL0139E|139|Failed to create directory %s.
 ZWEL0140E|140|Failed to translate Zowe configuration (%s).
 ZWEL0142E|142|Failed to refresh APIML static registrations.
 ZWEL0151E|151|Failed to create temporary file %s. Please check permission or volume free space.
+ZWEL0157E|157|%s (%s) is not defined in Zowe YAML configuration file.
+ZWEL0158W||Failed to find job %s result.
+ZWEL0159E|159|Failed to modify %s.
+ZWEL0160W||Failed to run JCL %s.
+ZWEL0161E|161|Failed to run JCL %s.
+ZWEL0162E|162|Failed to find job %s result.
+ZWEL0163E|163|Job %s ends with code %s.
+ZWEL0164W||Job %s(%s) ends with code %s (%s).
 ZWEL0172E||Component %s has %s defined but the file is missing.
 ZWEL0200E||Failed to copy USS file %s to MVS data set %s.
 ZWEL0201E||File %s does not exist.
 ZWEL0202E||Unable to find samplib key for %s.
 ZWEL0203E||Env value in key-value pair %s has not been defined.
-ZWEL0319E||NodeJS required but not found. Errors such as ZWEL0157E may occur as a result. The value 'node.home' in the Zowe YAML is not correct. 
+ZWEL0316E|316|Invalid PARMLIB format %s.
 ZWEL0322E|322|%s is not a valid directory.
+ZWEL0323E||NodeJS required but not found. Errors such as ZWEL0157E may occur as a result. The value 'node.home' in the Zowe YAML is not correct. 

@@ -201,9 +201,8 @@ CVT_ADDR = C2X(STORAGE(D2X(16), 4))
 CVTRAC_ADDR = C2X(STORAGE(D2X(X2D(CVT_ADDR) + 992), 4))
 CVTRAC_VAL = STORAGE(CVTRAC_ADDR, 4)
 
-ringType = 0
-
 /* attempt to handle getting only 1 keyring jcl
+ringType = 0
 if WORDINDEX(CFG.zowe.setup.certificate.type, 'JCE') > 0 then do
   if LENGTH(CFG.zowe.setup.certificate.keyring.connect) > 0 then do
     say 'connect exists, it is 'CFG.zowe.setup.certificate.keyring.connect'.'
@@ -222,47 +221,30 @@ else do
 end
 */
 
+samples.acf2 = "ZWEIKRA1 ZWEIKRA2 ZWEIKRA3 ZWEIACF ZWEIACFZ ZWENOKRA"
+samples.racf = "ZWEIKRR1 ZWEIKRR2 ZWEIKRR3 ZWEIRAC ZWEIRACZ ZWENOKRR"
+samples.tss  = "ZWEIKRT1 ZWEIKRT2 ZWEIKRT3 ZWEITSS ZWEITSSZ ZWENOKRT"
+
 if COMPARE('RCVT', CVTRAC_VAL) = 0 then do
-  x = DeleteDataSet(jclCopy'(ZWEIKRA1)')
-  x = DeleteDataSet(jclCopy'(ZWEIKRA2)')
-  x = DeleteDataSet(jclCopy'(ZWEIKRA3)')
-  x = DeleteDataSet(jclCopy'(ZWEIKRT1)')
-  x = DeleteDataSet(jclCopy'(ZWEIKRT2)')
-  x = DeleteDataSet(jclCopy'(ZWEIKRT3)')
-  x = DeleteDataSet(jclCopy'(ZWEIACF)')
-  x = DeleteDataSet(jclCopy'(ZWEIACFZ)')
-  x = DeleteDataSet(jclCopy'(ZWEITSS)')
-  x = DeleteDataSet(jclCopy'(ZWEITSSZ)')
-  x = DeleteDataSet(jclCopy'(ZWENOKRA)')
-  x = DeleteDataSet(jclCopy'(ZWENOKRT)')
+  CFG.zowe.setup.security.product = 'RACF'
+  deleteList = samples.acf2||" "||samples.tss
+  do m = 1 to words(deleteList)
+    x = DeleteDataSet(jclCopy'('word(deleteList, m)')')
+  end
 end
 if COMPARE('RTSS', CVTRAC_VAL) = 0 then do
-  x = DeleteDataSet(jclCopy'(ZWEIKRA1)')
-  x = DeleteDataSet(jclCopy'(ZWEIKRA2)')
-  x = DeleteDataSet(jclCopy'(ZWEIKRA3)')
-  x = DeleteDataSet(jclCopy'(ZWEIKRR1)')
-  x = DeleteDataSet(jclCopy'(ZWEIKRR2)')
-  x = DeleteDataSet(jclCopy'(ZWEIKRR3)')
-  x = DeleteDataSet(jclCopy'(ZWEIACF)')
-  x = DeleteDataSet(jclCopy'(ZWEIACFZ)')
-  x = DeleteDataSet(jclCopy'(ZWEIRAC)')
-  x = DeleteDataSet(jclCopy'(ZWEIRACZ)')
-  x = DeleteDataSet(jclCopy'(ZWENOKRA)')
-  x = DeleteDataSet(jclCopy'(ZWENOKRR)')
+  CFG.zowe.setup.security.product = 'TSS'
+  deleteList = samples.acf2||" "||samples.racf
+  do m = 1 to words(deleteList)
+    x = DeleteDataSet(jclCopy'('word(deleteList, m)')')
+  end
 end
 if COMPARE('ACF2', CVTRAC_VAL) = 0 then do
-  x = DeleteDataSet(jclCopy'(ZWEIKRT1)')
-  x = DeleteDataSet(jclCopy'(ZWEIKRT2)')
-  x = DeleteDataSet(jclCopy'(ZWEIKRT3)')
-  x = DeleteDataSet(jclCopy'(ZWEIKRR1)')
-  x = DeleteDataSet(jclCopy'(ZWEIKRR2)')
-  x = DeleteDataSet(jclCopy'(ZWEIKRR3)')
-  x = DeleteDataSet(jclCopy'(ZWEIRAC)')
-  x = DeleteDataSet(jclCopy'(ZWEIRACZ)')
-  x = DeleteDataSet(jclCopy'(ZWEITSS)')
-  x = DeleteDataSet(jclCopy'(ZWEITSSZ)')
-  x = DeleteDataSet(jclCopy'(ZWENOKRT)')
-  x = DeleteDataSet(jclCopy'(ZWENOKRR)')
+  CFG.zowe.setup.security.product = 'ACF2'
+  deleteList = samples.racf||" "||samples.tss
+  do m = 1 to words(deleteList)
+    x = DeleteDataSet(jclCopy'('word(deleteList, m)')')
+  end
 end
 
 say jcl' has been copied to 'jclCopy'.'
@@ -351,6 +333,7 @@ say 'All of the substitutions were found.'
 /*
 ================================================================================
     Invoke the edit macro on the substitutions for each member.
+    Skip zowe.environments.jclHeader if contains \n (x'15') or not initialized
     ZWECHG: change all word1 word2
       word1 is expected to be {zowe.something}
       word2 is anything, including spaces, single or double apostrophes
@@ -366,6 +349,12 @@ do i = 1 to members.0
       call Print 'Edit 'd'.'
       old = '{'members.i.substitutions.j'}'
       new = value('CFG.'members.i.substitutions.j)
+      if old = '{zowe.environments.jclHeader}' then do
+        if pos(x2c('15'), new) > 0 then
+          iterate j
+      end
+      if symbol('CFG.'members.i.substitutions.j) = 'LIT' then
+        iterate j
       apostrophes1 = "'"
       apostrophes2 = "'"
       if pos("'", new) > 0 & pos('"', new) = 0 then do
