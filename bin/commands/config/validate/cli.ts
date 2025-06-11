@@ -12,6 +12,8 @@ import * as std from 'cm_std';
 import * as index from './index';
 import * as configmgr from '../../../libs/configmgr';
 
-index.execute(std.getenv('ZWE_CLI_PARAMETER_CONFIG'), std.getenv('ZWE_CLI_PARAMETER_COMPONENTS')=='true', std.getenv('ZWE_CLI_PARAMETER_ALL')!='true');
+export function execute() {
+  index.execute(std.getenv('ZWE_CLI_PARAMETER_CONFIG'), std.getenv('ZWE_CLI_PARAMETER_COMPONENTS')=='true', std.getenv('ZWE_CLI_PARAMETER_ALL')!='true');
 
-configmgr.cleanupTempDir();
+  configmgr.cleanupTempDir();
+}

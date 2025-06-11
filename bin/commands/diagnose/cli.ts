@@ -10,4 +10,9 @@
 */
 
 import * as index from './index';
-index.execute();
+import * as configmgr from '../../libs/configmgr';
+export function execute() {
+  index.execute();
+
+  configmgr.cleanupTempDir();
+}
