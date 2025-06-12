@@ -5,8 +5,6 @@ const YAML = require('js-yaml');
 const rimraf = require('rimraf');
 const { default: Ajv } = require('ajv/dist/2019');
 const velocity = require('velocityjs');
-const {detailedDiff} = require('deep-object-diff');
-
 
 /** 
 *  Runs tests which verify the current Zowe schema works against the zowe.yaml
@@ -25,7 +23,7 @@ let REPO_DIR = process.cwd();
 let backtrackCt = 0;
 
 while (path.basename(path.resolve(REPO_DIR)) !== 'zowe-install-packaging') {
-  REPO_DIR+='../';
+  REPO_DIR += '../';
   if (backtrackCt++ > 10) {
     throw new Error('Cannot find the root zowe-install-packaging directory.');
   }
@@ -85,45 +83,61 @@ Object.freeze(WF_CONF_YAML_BASE);
  * Attempts to find quote or type changes between examples-zowe and PSWI
  */
 let testConfig = getBaseConf();
-let testDir = path.resolve(LOCAL_TEMP_DIR, 'test_field_changes');
-
-const wfYamlPath = renderYaml(testConfig, testDir);
-const wfYamlContent = YAML.load(fs.readFileSync(wfYamlPath, 'utf8'));
-
-const exampleZowePath = path.resolve(REPO_DIR,'example-zowe.yaml');
-const exampleZoweYamlContent = YAML.load(fs.readFileSync(exampleZowePath, 'utf8'));
+let testDir = path.resolve(LOCAL_TEMP_DIR, 'test_defaults');
 
 const result = runSchemaValidation(testConfig, testDir);
-if(result.errors != null) {
+if (result.errors != null) {
   errors.push('There should be no errors for a default schema validation.');
 }
 
-// represent simple if/else via true/false on each; no nested branches.
+// represent combinations of config paths, even unrelated ones
+// (1152 in total at writing)
+// could we be smarter about this and auto-generate the fields in the future?
+//  should we mark isolated config options to reduce permutation count?
 const configBranches = [
-  'components_gateway_enabled',
-  'components_metrics_service_enabled',
-  'components_api_catalog_enabled',
-  'components_discovery_enabled',
-  'components_caching_service_enabled',
-  'components_app_server_enabled',
-  'components_zss_enabled',
-  'components_jobs_api_enabled',
-  'components_files_api_enabled'
-]; // all branch combos = 2^9 = 512
+  { field: 'zowe_setup_vsam_mode', values: ['NONRLS', 'RLS', ''] },
+  { field: 'components_gateway_enabled', values: [true, false] },
+  { field: 'components_zaas_enabled', values: [true, false] },
+  { field: 'components_api_catalog_enabled', values: [true, false] },
+  { field: 'components_discovery_enabled', values: [true, false] },
+  {
+    field: 'components_caching_service_enabled', values: [true, false], dependentBranches:
+    {
+      when: true, branches: [
+        {
+          field: 'components_caching_service_storage_mode', values: ['infinispan', 'VSAM'], dependentBranches: {
+            when: 'infinispan', branches: [
+              { field: 'components_caching_service_storage_infinispan_jgroups_host', values: ["", 'localhost'] }
+            ]
+          }
+        }
+      ]
+    }
+  },
+  { field: 'components_app_server_enabled', values: [true, false] },
+  {
+    field: 'components_zss_enabled', values: [true, false], dependentBranches: {
+      when: true, branches: [
+        { field: 'components_zss_agent_jwt_fallback', values: [true, false] }
+      ]
+    }
+  }
+];
 
 testConfig = getBaseConf();
 
-const testMatrix = generateTrueFalsePermutations(configBranches.length);
+const testMatrix = generatePermutations(configBranches);
 testDir = path.resolve(LOCAL_TEMP_DIR, 'test_permutations');
 for (const test of testMatrix) {
   for (let i = 0; i < configBranches.length; i++) {
-    testConfig[configBranches[i]] =  ''+test[i];
+    const pieces = test[i].split('=');
+    testConfig[pieces[0]] = '' + pieces[1];
   }
 
   const result = runSchemaValidation(testConfig, testDir);
-  if(result.errors != null){
+  if (result.errors != null) {
     const testCase = test.map((t, i) => `\t${configBranches[i]} = ${t}`).join('\n');
-    errors.push(`There were errors during schema validation: ${JSON.stringify(result.errors, {indent: 2})}.\n\n Supplied config:\n ${testCase}\n`);
+    errors.push(`There were errors during schema validation: ${JSON.stringify(result.errors, { indent: 2 })}.\n\n Supplied config:\n ${testCase}\n`);
   }
 }
 
@@ -140,19 +154,30 @@ function getBaseConf() {
 }
 
 // 
-function generateTrueFalsePermutations(itemCount) {
-  if (itemCount == 0){ 
+function generatePermutations(items) {
+  if (items == null || items.length == 0) {
     return [[]];
   }
-  const subPermutations = generateTrueFalsePermutations(itemCount-1);
-  const zeroBase = subPermutations.map(function (arr) {
-    return [false].concat(arr);
-  });
-  const oneBase = subPermutations.map(function (arr) {
-    return [true].concat(arr);
-  });
+  const subPermutations = generatePermutations(items.slice(1));
+  
+  const currItem = items[0];
+  const perms = [];
+  for (const val of currItem.values) {
+    let merged = subPermutations.map(function (arr) {
+      return [`${currItem.field}=${val}`].concat(arr);  
+    })
 
-  return [...zeroBase, ...oneBase];
+    if (currItem.dependentBranches && currItem.dependentBranches.when === val) {
+      const extraPermutations = generatePermutations(currItem.dependentBranches.branches);
+      const newPerms = [];
+      merged.forEach((a) => { extraPermutations.forEach((b) => newPerms.push(a.concat(b))); });
+      merged = newPerms;
+    }
+
+    perms.push(...merged);
+  }
+
+  return perms;
 }
 
 
@@ -172,7 +197,7 @@ function renderYaml(testConfig, testDir) {
   fs.writeFileSync(yamlPropertiesFile, YAML.dump(testConfig), { mode: 0o766 });
   const zoweYmlScriptOut = path.resolve(testDir, 'zowe.yaml.final.sh');
   const renderContent = velocity.render(fs.readFileSync(ZOWE_YAML_SH_TEMPLATE, 'utf8'), testConfig);
-  fs.writeFileSync(zoweYmlScriptOut, renderContent, {mode: 0o755 });
+  fs.writeFileSync(zoweYmlScriptOut, renderContent, { mode: 0o755 });
   cp.execSync(`${zoweYmlScriptOut}`);
   return path.resolve(testDir, 'zowe.yaml');
 }
