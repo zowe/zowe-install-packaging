@@ -8,15 +8,17 @@ const velocity = require('velocityjs');
 
 /** 
 *  Runs tests which verify the current Zowe schema works against the zowe.yaml
-*    generated in configuration workflows. Different tests cover different combinations of
+*    generated in configuration workflows. This creates a test matrix covering different combinations of
 *    variable substitution to cover branching paths.
-*    Test is self-contained; i.e. all initialization of pre-reqs done in the before() method.
-*    Test should break when either the (a) schema changes or (b) pswi zowe.yaml schemas.
 *
-*  Note: this does not create a merged YAML with defaults.yaml. To test this with configmgr, 
-*         write tests in zwe-remote-integration.
+*    These tests should break when a change is introduced to schema, or the config workflow zowe.yaml contents.
+*
+*  Note: this does not create a merged YAML with defaults.yaml. 
+*    It is possible for configmgr-specific bugs to exist that won't be caught here.
+*    It is possible for schema failures to occur if fields are required and only present in defaults.yaml
 */
 
+// collect all errors before quitting out
 const errors = [];
 const LOCAL_TEMP_DIR = path.resolve(__dirname, 'tmp');
 let REPO_DIR = process.cwd();
@@ -44,7 +46,6 @@ let ajvParser;
 // Setup Workflow YAML variables and local files
 let wf_conf_properties;
 let PSWI_CONF = '';
-let currentPath = process.cwd();
 PSWI_CONF = fs.readFileSync(path.resolve(WF_DIR, 'files', 'ZWECONF.xml')).toString();
 wf_conf_properties = fs.readFileSync(path.resolve(WF_DIR, 'files', 'ZWECONF.properties')).toString();
 PSWI_CONF = PSWI_CONF.split('<inlineTemplate substitution="true"><![CDATA[')[1];
@@ -80,7 +81,7 @@ ajvParser = ajv.compile(fs.readJsonSync(SCHEMA_ZOWE_YAML, 'utf8'));
 Object.freeze(WF_CONF_YAML_BASE);
 
 /**
- * Attempts to find quote or type changes between examples-zowe and PSWI
+ *  Run a default schema validation (no custom variables)
  */
 let testConfig = getBaseConf();
 let testDir = path.resolve(LOCAL_TEMP_DIR, 'test_defaults');
@@ -90,10 +91,14 @@ if (result.errors != null) {
   errors.push('There should be no errors for a default schema validation.');
 }
 
-// represent combinations of config paths, even unrelated ones
-// (1152 in total at writing)
+/**
+ *  Run coverage for all known permutations of zowe.yaml produced by config workflow.
+ */
+
+// Structure used to generate combinations of config choices. Complete permutations are only created for fields with dependentBranches.
+//    The rest of the fields simply "fill-in" their values to existing permutations, ensuring their values are covered somewhere in a test case.
+// (12 in total at writing)
 // could we be smarter about this and auto-generate the fields in the future?
-//  should we mark isolated config options to reduce permutation count?
 const configBranches = [
   { field: 'zowe_setup_vsam_mode', values: ['NONRLS', 'RLS', ''] },
   { field: 'components_gateway_enabled', values: [true, false] },
@@ -125,9 +130,11 @@ const configBranches = [
 ];
 
 testConfig = getBaseConf();
+testDir = path.resolve(LOCAL_TEMP_DIR, 'test_permutations');
 
 const testMatrix = generatePermutations(configBranches);
-testDir = path.resolve(LOCAL_TEMP_DIR, 'test_permutations');
+
+// Run the test
 for (const test of testMatrix) {
   for (let i = 0; i < configBranches.length; i++) {
     const pieces = test[i].split('=');
@@ -142,7 +149,7 @@ for (const test of testMatrix) {
 }
 
 if (errors.length > 0) {
-  console.log(errors.join('\n') + '\n');
+  console.log(errors.join('\n'));
   process.exit(1);
 }
 
@@ -153,27 +160,41 @@ function getBaseConf() {
   return JSON.parse(JSON.stringify(WF_CONF_YAML_BASE));
 }
 
-// 
+// Generates permutations by recursing all the way down the item array, and building up by concatenating results.
+//  will multiply (combining permutations) when dependentBranches exist, otherwise linearly return arrays with new values prepended.
 function generatePermutations(items) {
   if (items == null || items.length == 0) {
     return [[]];
   }
   const subPermutations = generatePermutations(items.slice(1));
-  
   const currItem = items[0];
   const perms = [];
-  for (const val of currItem.values) {
-    let merged = subPermutations.map(function (arr) {
-      return [`${currItem.field}=${val}`].concat(arr);  
-    })
+  if (currItem.dependentBranches) {
+    for (const val of currItem.values) {
+      let merged = [];
+      merged =subPermutations.map(function (arr) {
+        return [`${currItem.field}=${val}`].concat(arr);  
+      })
 
-    if (currItem.dependentBranches && currItem.dependentBranches.when === val) {
-      const extraPermutations = generatePermutations(currItem.dependentBranches.branches);
-      const newPerms = [];
-      merged.forEach((a) => { extraPermutations.forEach((b) => newPerms.push(a.concat(b))); });
-      merged = newPerms;
+      if (currItem.dependentBranches.when === val) {
+        const extraPermutations = generatePermutations(currItem.dependentBranches.branches);
+        const newPerms = [];
+        // multiples each existing array * extraPermutations. (2 existing, 3 new = 6 total arrays)
+        merged.forEach((a) => { extraPermutations.forEach((b) => newPerms.push(a.concat(b))); });
+        merged = newPerms; 
+      }
+      perms.push(...merged);
     }
-
+  } else {
+    // since we don't iterate over currItem.values, ensure we have enough arrays to concat in below map. Just duplicate existing is fine.
+    while (subPermutations.length < currItem.values.length) {
+      subPermutations.push(subPermutations[0]);
+    }
+    // concat and randomly rotate through currItem values
+    let merged = subPermutations.map((arr, i) => {
+      const useVal = currItem.values[i%currItem.values.length];
+      return [`${currItem.field}=${useVal}`].concat(arr);
+    })
     perms.push(...merged);
   }
 

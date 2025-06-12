@@ -3,6 +3,19 @@ const path = require('path');
 const yaml = require('js-yaml');
 const _ = require('lodash');
 
+/**
+ *   Run tests which verify the variables defined in ZWECONF.xml and ZWEAMLCF.xml are in sync with fields defined
+ *     in example-zowe.yaml and defaults.yaml. 
+ * 
+ *   If fields are missing from either the configuration workflows, or exist in the workflows and are missing from either 
+ *     zowe.yaml file, this test will throw an error.
+ *   
+ *   Workflows are not expected to define fields 1:1 with zowe.yaml files, opting for sensible defaults in some cases. 
+ *     To track known exceptions, 'zowe-yaml-sync-rules.json' is tracked under the 'workflows' folder in this repository.
+ * 
+ *   This test also checks that variables defined in ZWECONF.properties exist in ZWECONF.xml
+ */
+
 let REPO_DIR = process.cwd();
 let backtrackCt = 0;
 
@@ -36,19 +49,13 @@ for (const wf of [{cfg: ZOWE_CFG_WORKFLOW_PATH, props: ZOWE_CFG_PROPERTIES_PATH}
   const propsContent = fs.readFileSync(wf.props, 'utf8');
   const confMatches = workflowContent.matchAll(/^.*?variableValue name="(.*?)".*$/gmi);
   const propsMatches = propsContent.matchAll(/^([^#].*?)=(.*?)$/gmi);
-  let matchCt = 0;
-  const confVars = [];
-  const propsVars = [];
+  const confVars = new Set();
+  const propsVars = new Set();
   for (const match of confMatches) {
-    matchCt++;
-    if (!confVars.includes(match[1])) {
-      confVars.push(match[1]);
-    }
+    confVars.add(match[1]);
   }
   for (const match of propsMatches) {
-    if (!propsVars.includes(match[1])) {
-      propsVars.push(match[1]);
-    }
+    propsVars.add(match[1]);
   }
 
   // check that all propsVars exist in confVars
@@ -57,8 +64,8 @@ for (const wf of [{cfg: ZOWE_CFG_WORKFLOW_PATH, props: ZOWE_CFG_PROPERTIES_PATH}
     errors.push(`Missing variables in ${path.basename(wf.props)} which are defined in ${path.basename(wf.cfg)}.\n\tList: \n\t\t${missingPropsInWf.join('\n\t\t')}`)
   }  
 
-  diffWfAgainstZoweYaml(flatZoweYamlVars, flatDefaultsYamlVars, confVars, path.basename(wf.cfg));
-  diffZoweYamlAgainstWf(flatZoweYamlVars, flatDefaultsYamlVars, confVars, path.basename(wf.cfg));
+  diffWfAgainstZoweYaml(flatZoweYamlVars, flatDefaultsYamlVars, Array.from(confVars), path.basename(wf.cfg));
+  diffZoweYamlAgainstWf(flatZoweYamlVars, flatDefaultsYamlVars, Array.from(confVars), path.basename(wf.cfg));
 }
 
 if (errors.length > 0) {
@@ -67,6 +74,7 @@ if (errors.length > 0) {
 }
 
 
+/** Checks for variables in zowe.yaml + defaults.yaml but not in given workflow */
 function diffZoweYamlAgainstWf(zoweVars, defaultsVars, confVars, wfName) {
   const diff1 = _.differenceWith(_.uniq([...zoweVars, ...defaultsVars]), confVars)
   const wfDiffRules = SYNC_RULES.rules.filter((item) => (item.rule_target === 'all' || wfName.includes(item.rule_target)) && item.rule_type === 'wf_missing_vars').reduce((p, c) => {p.push(...c.rule_entry); return p;}, []);
@@ -76,7 +84,7 @@ function diffZoweYamlAgainstWf(zoweVars, defaultsVars, confVars, wfName) {
   }
 }
 
-
+/** Checks for variables in configuration workflows not present in zowe.yaml + defaults.yaml */
 function diffWfAgainstZoweYaml(zoweVars, defaultsVars, confVars, wfName) {
   const diff1 = _.differenceWith(confVars, zoweVars)
   const diff2 = _.differenceWith(diff1, defaultsVars)
@@ -87,7 +95,12 @@ function diffWfAgainstZoweYaml(zoweVars, defaultsVars, confVars, wfName) {
   }
 }
 
-
+/**
+ * Flattens a json object, with nested keys separated by underscore, and hyphenated keys translated to underscores.
+ * 
+ * @param {*} jsonObj 
+ * @returns 
+ */
 function flatten(jsonObj) {
   const flattened = [];
   for (const k of Object.keys(jsonObj))
