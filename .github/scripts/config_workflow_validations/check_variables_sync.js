@@ -24,27 +24,41 @@ let SYNC_RULES = {};
 if (fs.existsSync(SYNCFILE_PATH))  {
   SYNC_RULES = fs.readJSONSync(SYNCFILE_PATH);
 }
+
 const zoweYaml = yaml.load(fs.readFileSync(path.resolve(ROOT_REPO_DIR, 'example-zowe.yaml'), 'utf8'));
 const defaultsYaml = yaml.load(fs.readFileSync(path.resolve(ROOT_REPO_DIR, 'files', 'defaults.yaml'), 'utf8'));
 const flatZoweYamlVars = _.uniq(flatten(zoweYaml));
 const flatDefaultsYamlVars = _.uniq(flatten(defaultsYaml));
 
 
-for (const wf of [ZOWE_CFG_WORKFLOW_PATH, APIML_CFG_WORKFLOW_PATH]) {
-  const workflowContent = fs.readFileSync(wf, 'utf8');
+for (const wf of [{cfg: ZOWE_CFG_WORKFLOW_PATH, props: ZOWE_CFG_PROPERTIES_PATH}, {cfg: APIML_CFG_WORKFLOW_PATH, props: ZOWE_CFG_PROPERTIES_PATH}]) {
+  const workflowContent = fs.readFileSync(wf.cfg, 'utf8');
+  const propsContent = fs.readFileSync(wf.props, 'utf8');
   const confMatches = workflowContent.matchAll(/^.*?variableValue name="(.*?)".*$/gmi);
+  const propsMatches = propsContent.matchAll(/^([^#].*?)=(.*?)$/gmi);
   let matchCt = 0;
   const confVars = [];
-  
+  const propsVars = [];
   for (const match of confMatches) {
     matchCt++;
     if (!confVars.includes(match[1])) {
       confVars.push(match[1]);
     }
   }
+  for (const match of propsMatches) {
+    if (!propsVars.includes(match[1])) {
+      propsVars.push(match[1]);
+    }
+  }
 
-  diffWfAgainstZoweYaml(flatZoweYamlVars, flatDefaultsYamlVars, confVars, path.basename(wf));
-  diffZoweYamlAgainstWf(flatZoweYamlVars, flatDefaultsYamlVars, confVars, path.basename(wf));
+  // check that all propsVars exist in confVars
+  const missingPropsInWf = _.differenceWith(confVars, propsVars);
+  if (missingPropsInWf.length > 0) {
+    errors.push(`Missing variables in ${path.basename(wf.props)} which are defined in ${path.basename(wf.cfg)}.\n\tList: \n\t\t${missingPropsInWf.join('\n\t\t')}`)
+  }  
+
+  diffWfAgainstZoweYaml(flatZoweYamlVars, flatDefaultsYamlVars, confVars, path.basename(wf.cfg));
+  diffZoweYamlAgainstWf(flatZoweYamlVars, flatDefaultsYamlVars, confVars, path.basename(wf.cfg));
 }
 
 if (errors.length > 0) {
