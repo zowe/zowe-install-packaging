@@ -56,7 +56,7 @@ For further details on this option, check `zwe init certificate --help`.
 
 The subcommand `zwe init vsam` will be run, but only if you have
 `components.caching-service.storage.mode` set to "VSAM"
-nd have `zowe.setup.vsam` defined, otherwise that step is not needed.
+and have `zowe.setup.vsam` defined, otherwise that step is not needed.
 For further details on this option, check `zwe init vsam --help`.
 
 If you pass `--update-config` with this command, these configurations could
@@ -130,4 +130,3 @@ zowe:
   This configuration is optional. Default value is `ZWESISTC`.
 - `zowe.setup.security.stcs.aux` is ZIS auxiliary started task name.
   This configuration is optional. Default value is `ZWESASTC`.
-
