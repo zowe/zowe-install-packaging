@@ -1,4 +1,4 @@
-//ZWEIACF JOB
+//ZWEIACF JOB {zowe.environments.jclHeader}
 //*
 //* This program and the accompanying materials are made available
 //* under the terms of the Eclipse Public License v2.0 which
@@ -31,7 +31,7 @@
 //* Note(s):
 //*
 //* 1. THE USER ID THAT RUNS THIS JOB MUST HAVE SUFFICIENT AUTHORITY
-//*    TO ALTER SECURITY DEFINITONS
+//*    TO ALTER SECURITY DEFINITIONS
 //*
 //* 2. The sample ACF2 commands create ROLEs that match the group
 //*    names. Due to permits assigned to the &STCGRP ROLE, it is

@@ -40,7 +40,7 @@
       "artifact": "*.pax"
     },
     "org.zowe.zss": {
-      "version": "^3.0.0-STAGING",
+      "version": "^3.2.0-PR-683",
       "artifact": "*.pax"
     },
     "org.zowe.explorer-jes": {
@@ -95,6 +95,11 @@
       "version": "^3.0.3-SNAPSHOT",
       "artifact": "zaas-package-*.zip",
       "exclusions": ["*PR*.zip"]
+    },
+    "org.zowe.apiml.sdk.certificate-analyser": {
+      "version": "^3.0.3-SNAPSHOT",
+      "artifact": "certificate-analyser-*.jar",
+      "exclusions": ["*PR*.jar"]
     },
     "org.zowe.getesm": {
       "version": "^3.0.0-V3.X-STAGING",

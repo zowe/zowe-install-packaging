@@ -1,0 +1,377 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`compare-zwe-output-with-launcher (SHORT) compare .zowe-merged.yaml created by launcher and zwe 1`] = `
+"---
+zowe:
+  environments:
+    jclHeader:
+    - ""
+  setup:
+    dataset:
+      parmlibMembers:
+        zis: "ZWESIP00"
+      prefix: "TEST.DATASET.PFX"
+      proclib: "TEST.DATASET.PFX.TEST.PROCLIB"
+      parmlib: "TEST.DATASET.PFX.PARMLIB"
+      jcllib: "TEST.DATASET.PFX.JCLLIB"
+      loadlib: "TEST.DATASET.PFX.SZWEEXEC"
+      authLoadlib: "TEST.DATASET.PFX.SZWELOAD"
+      authPluginLib: "TEST.DATASET.PFX.ZWESAPL"
+    security:
+      product: "ESMT"
+      groups:
+        admin: "ZWEADMIN"
+        stc: "ZWEADMIN"
+        sysProg: "ZWEADMIN"
+      users:
+        zowe: "ZWESVUSR"
+        zis: "ZWESIUSR"
+      stcs:
+        zowe: "ZWESLSTC"
+        zis: "ZWESISTC"
+        aux: "ZWESASTC"
+    certificate:
+      type: "PKCS12"
+      pkcs12:
+        directory: "/test/dir/pkcs12"
+        lock: true
+        name: "localhost"
+        password: "password"
+        caAlias: "local_ca"
+        caPassword: "local_ca_password"
+      dname:
+        caCommonName: "Zowe Development Instances CA"
+        commonName: "Zowe Development Instances Certificate"
+        orgUnit: "API Mediation Layer"
+        org: "Zowe Sample"
+        locality: "Prague"
+        state: "Prague"
+        country: "CZ"
+      validity: 3650
+    vsam:
+      name: "TEST.DATASET.PFX.VSAM"
+      mode: "NONRLS"
+      volume: "TSTVOL"
+      storageClass: ""
+  network:
+    proxyType: "https"
+    server:
+      tls:
+        attls: false
+        minTls: "TLSv1.2"
+        maxTls: "TLSv1.3"
+    client:
+      tls:
+        attls: false
+  configmgr:
+    validation: "STRICT"
+  job:
+    name: "ZWE1SV"
+    prefix: "ZWE1"
+  rbacProfileIdentifier: "1"
+  cookieIdentifier: "1"
+  externalPort: 7554
+  launchScript:
+    logLevel: "info"
+    onComponentConfigureFail: "warn"
+  verifyCertificates: "STRICT"
+  sysMessageTrim: false
+  runtimeDirectory: "/test/dir"
+  logDirectory: "/test/dir/logs"
+  workspaceDirectory: "/test/dir/workspace"
+  extensionDirectory: "/global/zowe/extensions"
+  externalDomains:
+  - "sample-domain.com"
+  sysMessages:
+  - "ZWEL0021I"
+  - "ZWEL0018I"
+  - "ZWEL0006I"
+  - "ZWES1601I"
+  - "ZWEL0008I"
+  - "ZWEL0022I"
+  - "ZWEL0001I"
+  - "ZWEL0002I"
+  - "ZWEAM000I"
+  - "ZWED0031I"
+  - "ZWES1013I"
+  certificate:
+    keystore:
+      type: "PKCS12"
+      file: "/global/zowe/keystore/localhost/localhost.keystore.p12"
+      password: "password"
+      alias: "localhost"
+    truststore:
+      type: "PKCS12"
+      file: "/global/zowe/keystore/localhost/localhost.truststore.p12"
+      password: "password"
+    pem:
+      key: "/global/zowe/keystore/localhost/localhost.key"
+      certificate: "/global/zowe/keystore/localhost/localhost.cer"
+      certificateAuthorities: "/global/zowe/keystore/local_ca/local_ca.cer"
+components:
+  gateway:
+    enabled: true
+    port: 7554
+    debug: false
+    apiml:
+      security:
+        auth:
+          provider: "zosmf"
+          zosmf:
+            jwtAutoconfiguration: "jwt"
+            serviceId: "ibmzosmf"
+        authorization:
+          endpoint:
+            enabled: false
+          provider: "native"
+        x509:
+          enabled: false
+  zaas:
+    enabled: true
+    port: 7558
+    debug: false
+  api-catalog:
+    enabled: true
+    port: 7552
+    debug: false
+  discovery:
+    enabled: true
+    port: 7553
+    debug: false
+  caching-service:
+    enabled: true
+    port: 7555
+    debug: false
+    storage:
+      evictionStrategy: "reject"
+      mode: "infinispan"
+      infinispan:
+        jgroups:
+          port: 7600
+          keyExchange:
+            port: 7601
+  app-server:
+    enabled: true
+    port: 7556
+    debug: false
+  zss:
+    enabled: true
+    port: 7557
+    crossMemoryServerName: "ZWESIS_STD"
+    agent:
+      jwt:
+        fallback: true
+      64bit: true
+  jobs-api:
+    enabled: false
+    debug: false
+    port: 7558
+  files-api:
+    enabled: false
+    debug: false
+    port: 7559
+  explorer-jes:
+    enabled: true
+  explorer-mvs:
+    enabled: true
+  explorer-uss:
+    enabled: true
+java:
+  home: "/test/java/home"
+node:
+  home: "/test/node/home"
+zOSMF:
+  host: "some.test.hostname"
+  port: 12321
+  applId: "IZUDFLT"
+...
+"
+`;
+
+exports[`compare-zwe-output-with-launcher (SHORT) compare .zowe-merged.yaml created by launcher and zwe 2`] = `
+"---
+zowe:
+  environments:
+    jclHeader:
+    - ""
+  setup:
+    dataset:
+      parmlibMembers:
+        zis: "ZWESIP00"
+      prefix: "TEST.DATASET.PFX"
+      proclib: "TEST.DATASET.PFX.TEST.PROCLIB"
+      parmlib: "TEST.DATASET.PFX.PARMLIB"
+      jcllib: "TEST.DATASET.PFX.JCLLIB"
+      loadlib: "TEST.DATASET.PFX.SZWEEXEC"
+      authLoadlib: "TEST.DATASET.PFX.SZWELOAD"
+      authPluginLib: "TEST.DATASET.PFX.ZWESAPL"
+    security:
+      product: "ESMT"
+      groups:
+        admin: "ZWEADMIN"
+        stc: "ZWEADMIN"
+        sysProg: "ZWEADMIN"
+      users:
+        zowe: "ZWESVUSR"
+        zis: "ZWESIUSR"
+      stcs:
+        zowe: "ZWESLSTC"
+        zis: "ZWESISTC"
+        aux: "ZWESASTC"
+    certificate:
+      type: "PKCS12"
+      pkcs12:
+        directory: "/test/dir/pkcs12"
+        lock: true
+        name: "localhost"
+        password: "password"
+        caAlias: "local_ca"
+        caPassword: "local_ca_password"
+      dname:
+        caCommonName: "Zowe Development Instances CA"
+        commonName: "Zowe Development Instances Certificate"
+        orgUnit: "API Mediation Layer"
+        org: "Zowe Sample"
+        locality: "Prague"
+        state: "Prague"
+        country: "CZ"
+      validity: 3650
+    vsam:
+      name: "TEST.DATASET.PFX.VSAM"
+      mode: "NONRLS"
+      volume: "TSTVOL"
+      storageClass: ""
+  network:
+    proxyType: "https"
+    server:
+      tls:
+        attls: false
+        minTls: "TLSv1.2"
+        maxTls: "TLSv1.3"
+    client:
+      tls:
+        attls: false
+  configmgr:
+    validation: "STRICT"
+  job:
+    name: "ZWE1SV"
+    prefix: "ZWE1"
+  rbacProfileIdentifier: "1"
+  cookieIdentifier: "1"
+  externalPort: 7554
+  launchScript:
+    logLevel: "info"
+    onComponentConfigureFail: "warn"
+  verifyCertificates: "STRICT"
+  sysMessageTrim: false
+  runtimeDirectory: "/test/dir"
+  logDirectory: "/test/dir/logs"
+  workspaceDirectory: "/test/dir/workspace"
+  extensionDirectory: "/global/zowe/extensions"
+  externalDomains:
+  - "sample-domain.com"
+  sysMessages:
+  - "ZWEL0021I"
+  - "ZWEL0018I"
+  - "ZWEL0006I"
+  - "ZWES1601I"
+  - "ZWEL0008I"
+  - "ZWEL0022I"
+  - "ZWEL0001I"
+  - "ZWEL0002I"
+  - "ZWEAM000I"
+  - "ZWED0031I"
+  - "ZWES1013I"
+  certificate:
+    keystore:
+      type: "PKCS12"
+      file: "/global/zowe/keystore/localhost/localhost.keystore.p12"
+      password: "password"
+      alias: "localhost"
+    truststore:
+      type: "PKCS12"
+      file: "/global/zowe/keystore/localhost/localhost.truststore.p12"
+      password: "password"
+    pem:
+      key: "/global/zowe/keystore/localhost/localhost.key"
+      certificate: "/global/zowe/keystore/localhost/localhost.cer"
+      certificateAuthorities: "/global/zowe/keystore/local_ca/local_ca.cer"
+components:
+  gateway:
+    enabled: true
+    port: 7554
+    debug: false
+    apiml:
+      security:
+        auth:
+          provider: "zosmf"
+          zosmf:
+            jwtAutoconfiguration: "jwt"
+            serviceId: "ibmzosmf"
+        authorization:
+          endpoint:
+            enabled: false
+          provider: "native"
+        x509:
+          enabled: false
+  zaas:
+    enabled: true
+    port: 7558
+    debug: false
+  api-catalog:
+    enabled: true
+    port: 7552
+    debug: false
+  discovery:
+    enabled: true
+    port: 7553
+    debug: false
+  caching-service:
+    enabled: true
+    port: 7555
+    debug: false
+    storage:
+      evictionStrategy: "reject"
+      mode: "infinispan"
+      infinispan:
+        jgroups:
+          port: 7600
+          keyExchange:
+            port: 7601
+  app-server:
+    enabled: true
+    port: 7556
+    debug: false
+  zss:
+    enabled: true
+    port: 7557
+    crossMemoryServerName: "ZWESIS_STD"
+    agent:
+      jwt:
+        fallback: true
+      64bit: true
+  jobs-api:
+    enabled: false
+    debug: false
+    port: 7558
+  files-api:
+    enabled: false
+    debug: false
+    port: 7559
+  explorer-jes:
+    enabled: true
+  explorer-mvs:
+    enabled: true
+  explorer-uss:
+    enabled: true
+java:
+  home: "/test/java/home"
+node:
+  home: "/test/node/home"
+zOSMF:
+  host: "some.test.hostname"
+  port: 12321
+  applId: "IZUDFLT"
+...
+"
+`;
