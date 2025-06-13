@@ -51,15 +51,8 @@ const ZOWE_SCHEMA = `${std.getenv('ZWE_zowe_runtimeDirectory')}/schemas/zowe-yam
 const ZOWE_SCHEMA_ID = 'https://zowe.org/schemas/v2/server-base';
 const ZOWE_SCHEMA_SET=`${ZOWE_SCHEMA}:${COMMON_SCHEMA}`;
 
-let ZOWE_CONFIG;
+export let ZOWE_CONFIG=getZoweConfig();
 let HA_CONFIGS = {};
-
-export function getZoweConfig() {
-  if (ZOWE_CONFIG == null) {
-    ZOWE_CONFIG = loadZoweConfig();
-  }
-  return ZOWE_CONFIG
-}
 
 export function getZoweBaseSchemas(): string {
   return ZOWE_SCHEMA_SET;
@@ -387,7 +380,7 @@ function updateConfig(configName: string, updateObj: any, arrayMergeStrategy: nu
 export function updateZoweConfig(updateObj: any, writeUpdate: boolean, arrayMergeStrategy: number=1): [number, any] {
   let rc = updateConfig(getZoweConfigName(), updateObj, arrayMergeStrategy);
   if (rc == 0) {
-    ZOWE_CONFIG=loadZoweConfig();
+    ZOWE_CONFIG=getZoweConfig();
     HA_CONFIGS = {}; //reset
     if (writeUpdate) {
       writeZoweConfigUpdate(updateObj, arrayMergeStrategy);
@@ -475,7 +468,7 @@ function makeHaConfig(haInstance: string): any {
   return config;
 }
 
-export function loadZoweConfig(haInstance?: string): any {
+export function getZoweConfig(haInstance?: string): any {
   if (configLoaded && !haInstance) {
     return getConfig(ZOWE_CONFIG_NAME, ZOWE_CONFIG_PATH, ZOWE_SCHEMA_SET);
   } else if (configLoaded) {
@@ -502,7 +495,7 @@ const INSTANCE_KEYS_NOT_IN_BASE = [
 
 const keyNameRegex = /[^a-zA-Z0-9]/g;
 export function getZoweConfigEnv(haInstance: string): any {
-  let config = loadZoweConfig();
+  let config = getZoweConfig();
   let flattener = new objUtils.Flattener();
   flattener.setSeparator('_');
   flattener.setPrefix('ZWE_');

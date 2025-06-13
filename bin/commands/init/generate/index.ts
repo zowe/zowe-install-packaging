@@ -44,7 +44,18 @@ export function execute(dryRun?: boolean) {
   if (Array.isArray(jclHeader)) {
       jclHeaderJoined = jclHeader.join("\n");
   } else {
-      jclHeaderJoined = jclHeader.toString();
+    jclHeaderJoined = jclHeader.toString();
+    if (jclHeaderJoined && (jclHeaderJoined.match(/\n/g) || []).length) {
+      jclPostProcessing = true;
+    }
+  }
+  // check header lengths
+  const headerLines = jclHeaderJoined.split('\n');
+  for (let i = 0; i < headerLines.length; i++) {
+    const maxLen = 80 - ((i==0) ? '//ZWEGENER JOB '.length : 0);
+    if (headerLines[i].length >= maxLen) {
+      common.printErrorAndExit(`ZWEL0326E JCL header line ${i+1} will be longer than 80 characters. Please split this line into multiple lines.\n${headerLines[i]}\n`, undefined, 326);
+    }
   }
 
   const tempFile = fs.createTmpFile();
