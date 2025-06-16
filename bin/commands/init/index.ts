@@ -125,6 +125,12 @@ export function execute(allowOverwrite?: boolean, dryRun?: boolean, ignoreSecuri
   // TODO: init certificate remains shell code for now due to complexity.
   if (std.getenv("ZWE_CLI_PARAMETER_CREATE_CERTIFICATE") == 'true') {
     let result = shell.execSync('sh', '-c', `ZWE_PRIVATE_CLI_LIBRARY_LOADED= ${std.getenv('ZWE_zowe_runtimeDirectory')}/bin/zwe init certificate ${dryRun?'--dry-run':''} ${updateConfig?'--update-config':''} ${allowOverwrite?'--allow-overwrite':''} ${ignoreSecurityFailures?'--ignore-security-failures':''} -c "${std.getenv('ZWE_CLI_PARAMETER_CONFIG')}"`);
+  } else if (!zowe.certificate.keystore || (zowe.certificate.keystore.name == 'safkeyring://<stc_username>/<keyring_name>')) {
+    common.printMessage(`Zowe does not create certificates, keystores, or truststores by default, so verify that zowe.certificate in your YAML is valid.`);
+    common.printMessage(`Zowe appears to be missing certificate setup. Complete zowe.certificate in your Zowe YAML before starting Zowe.`);
+    common.printMessage(`You can review Zowe certificate requirements at https://docs.zowe.org/stable/user-guide/configure-certificates#zowe-certificate-requirements`);
+    common.printMessage(`If you want Zowe to assist in keystore creation, the command "zwe init certificate" can be run with YAML properties from "zowe.setup.certificate"`);
+    common.printMessage(`Examples of "zowe.setup.certificate" are at ${std.getenv('ZWE_zowe_runtimeDirectory')}/files/examples/setup/certificate`);
   }
   initStc.execute(allowOverwrite);
 
