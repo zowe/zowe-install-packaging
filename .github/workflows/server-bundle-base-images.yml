@@ -1,4 +1,7 @@
 name: Build ompzowe/zowecicd-node-java builder
+
+permissions: read-all
+
 on:
   # push:
   # pull_request:
