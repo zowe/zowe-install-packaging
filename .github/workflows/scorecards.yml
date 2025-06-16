@@ -42,7 +42,7 @@ jobs:
 
       - name: "Filter analysis results to enabled checks"
         env:
-          SCORECARD_ENABLED_CHECKS: Pinned-Dependencies
+          SCORECARD_ENABLED_CHECKS: TokenPermissionsID,PinnedDependenciesID
         run: | 
           ENABLED_CHECKS_IN_JSON=$(echo $SCORECARD_ENABLED_CHECKS | jq -cR 'split(",")')
           
