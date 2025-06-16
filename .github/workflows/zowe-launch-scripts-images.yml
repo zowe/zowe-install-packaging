@@ -1,4 +1,7 @@
 name: Build ompzowe/zowe-launch-scripts
+
+permissions: read-all
+
 on:
   # push:
   # pull_request:

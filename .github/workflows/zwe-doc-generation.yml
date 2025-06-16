@@ -1,5 +1,7 @@
 name: Update zwe documentation
 
+permissions: read-all
+
 on:
   # Will run this on push when v2 is out
   push:
