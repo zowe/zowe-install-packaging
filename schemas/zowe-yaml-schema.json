@@ -713,7 +713,7 @@
     "pkcs12-certificate": { 
       "type": "object",
       "additionalProperties": false,
-      "required": ["keystore", "truststore", "pem"],
+      "required": ["keystore", "truststore"],
       "properties": {
         "keystore": {
           "type": "object",
@@ -765,6 +765,7 @@
           "type": "object",
           "additionalProperties": false,
           "description": "Certificate in PEM format.",
+          "deprecated": true,
           "required": ["key", "certificate"],
           "properties": {
             "key": {

@@ -7,6 +7,8 @@ All notable changes to the Zowe Installer will be documented in this file.
 - Enhancement: Add a utility "certificate-analyser.jar" to the folder zowe/bin/utils. This tool can be used to verify correct certificates for use by zowe, as well as correct connectivity to servers Zowe communicates with such as z/OSMF. It will be used by Zowe under specific circumstances to verify that network setup is correct. [#4354](https://github.com/zowe/zowe-install-packaging/pull/4354)
 - Enhancement: Support different parmlib members when using JCL `ZWEGENER` [#4332](https://github.com/zowe/zowe-install-packaging/pull/4332)
 - Enhancement: Updated the `zowe-yaml-schema.json` and `defaults.yaml` to support new configuration parameter `zowe.sysMessageTrim` and set default value. This parameter will be used to trim syslog messages and print only from the sys-message-id. [#4294](https://github.com/zowe/zowe-install-packaging/pull/4294)
+- Enhancement: PEM certificates are no longer created by default when creating PKCS12 keystores with `zwe init`. You can use `zwe init --create-pem` instead. [#4241](https://github.com/zowe/zowe-install-packaging/pull/4241)
+
 
 ## `3.2.0`
 - Enhancement: `zwe support` command collecting more environment details [#4147](https://github.com/zowe/zowe-install-packaging/pull/4147)

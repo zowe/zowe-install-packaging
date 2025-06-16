@@ -291,12 +291,14 @@ if [ "${cert_type}" = "PKCS12" ]; then
       --validity "${cert_validity}"
 
     # export CA cert in PEM format
-    zwecli_inline_execute_command \
-      certificate pkcs12 export \
-      --keystore "${pkcs12_directory}/${pkcs12_caAlias}/${pkcs12_caAlias}.keystore.p12" \
-      --password "${pkcs12_caPassword}"
+    if [ -n "${ZWE_CLI_PARAMETER_CREATE_PEM}" ]; then
+      zwecli_inline_execute_command \
+        certificate pkcs12 export \
+          --keystore "${pkcs12_directory}/${pkcs12_caAlias}/${pkcs12_caAlias}.keystore.p12" \
+          --password "${pkcs12_caPassword}"
 
-    yaml_pem_cas="${pkcs12_directory}/${pkcs12_caAlias}/${pkcs12_caAlias_lc}.cer"
+      yaml_pem_cas="${pkcs12_directory}/${pkcs12_caAlias}/${pkcs12_caAlias_lc}.cer"
+    fi
 
     # create default cert
     zwecli_inline_execute_command \
@@ -355,24 +357,27 @@ if [ "${cert_type}" = "PKCS12" ]; then
   fi
 
   # export all certs in PEM format
-  zwecli_inline_execute_command \
-    certificate pkcs12 export \
-    --keystore "${pkcs12_directory}/${pkcs12_name}/${pkcs12_name}.keystore.p12" \
-    --password "${pkcs12_password}" \
-    --private-keys "${pkcs12_name}"
-  zwecli_inline_execute_command \
-    certificate pkcs12 export \
-    --keystore "${pkcs12_directory}/${pkcs12_name}/${pkcs12_name}.truststore.p12" \
-    --password "${pkcs12_password}" \
-    --private-keys ""
+  if [ -n "${ZWE_CLI_PARAMETER_CREATE_PEM}" ]; then
+    zwecli_inline_execute_command \
+      certificate pkcs12 export \
+        --keystore "${pkcs12_directory}/${pkcs12_name}/${pkcs12_name}.keystore.p12" \
+        --password "${pkcs12_password}" \
+        --private-keys "${pkcs12_name}"
+    zwecli_inline_execute_command \
+      certificate pkcs12 export \
+        --keystore "${pkcs12_directory}/${pkcs12_name}/${pkcs12_name}.truststore.p12" \
+        --password "${pkcs12_password}" \
+        --private-keys ""
 
-  # after we export truststore, the imported CAs will be exported as extca*.cer
-  if [ -n "${cert_import_CAs}" ]; then
-    imported_cas=$(find "${pkcs12_directory}/${pkcs12_name}" -name 'extca*.cer' -type f | tr '\n' ',')
-    if [ -z "${yaml_pem_cas}" ]; then
-      yaml_pem_cas="${imported_cas}"
-    else
-      yaml_pem_cas="${yaml_pem_cas},${imported_cas}"
+
+    # after we export truststore, the imported CAs will be exported as extca*.cer
+    if [ -n "${cert_import_CAs}" ]; then
+      imported_cas=$(find "${pkcs12_directory}/${pkcs12_name}" -name 'extca*.cer' -type f | tr '\n' ',')
+      if [ -z "${yaml_pem_cas}" ]; then
+        yaml_pem_cas="${imported_cas}"
+      else
+        yaml_pem_cas="${yaml_pem_cas},${imported_cas}"
+      fi
     fi
   fi
 
@@ -404,9 +409,11 @@ if [ "${cert_type}" = "PKCS12" ]; then
     update_zowe_yaml "${ZWE_CLI_PARAMETER_CONFIG}" "zowe.certificate.truststore.type" "PKCS12"
     update_zowe_yaml "${ZWE_CLI_PARAMETER_CONFIG}" "zowe.certificate.truststore.file" "${pkcs12_directory}/${pkcs12_name}/${pkcs12_name}.truststore.p12"
     update_zowe_yaml "${ZWE_CLI_PARAMETER_CONFIG}" "zowe.certificate.truststore.password" "${pkcs12_password}"
+    if [ -n "${ZWE_CLI_PARAMETER_CREATE_PEM}" ]; then
     update_zowe_yaml "${ZWE_CLI_PARAMETER_CONFIG}" "zowe.certificate.pem.key" "${pkcs12_directory}/${pkcs12_name}/${pkcs12_name_lc}.key"
     update_zowe_yaml "${ZWE_CLI_PARAMETER_CONFIG}" "zowe.certificate.pem.certificate" "${pkcs12_directory}/${pkcs12_name}/${pkcs12_name_lc}.cer"
     update_zowe_yaml "${ZWE_CLI_PARAMETER_CONFIG}" "zowe.certificate.pem.certificateAuthorities" "${yaml_pem_cas}"
+    fi
     print_level2_message "Zowe configuration is updated successfully."
   else
     print_level1_message "Update certificate configuration to ${ZWE_CLI_PARAMETER_CONFIG}"
@@ -428,10 +435,12 @@ if [ "${cert_type}" = "PKCS12" ]; then
     print_message "      type: PKCS12"
     print_message "      file: \"${pkcs12_directory}/${pkcs12_name}/${pkcs12_name}.truststore.p12\""
     print_message "      password: \"${pkcs12_password}\""
+    if [ -n "${ZWE_CLI_PARAMETER_CREATE_PEM}" ]; then
     print_message "    pem:"
     print_message "      key: \"${pkcs12_directory}/${pkcs12_name}/${pkcs12_name_lc}.key\""
     print_message "      certificate: \"${pkcs12_directory}/${pkcs12_name}/${pkcs12_name_lc}.cer\""
     print_message "      certificateAuthorities: \"${yaml_pem_cas}\""
+    fi
     print_message ""
     print_level2_message "Zowe configuration requires manual updates."
   fi
