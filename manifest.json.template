@@ -40,7 +40,7 @@
       "artifact": "*.pax"
     },
     "org.zowe.zss": {
-      "version": "^3.2.0-PR-683",
+      "version": "^3.0.0-STAGING",
       "artifact": "*.pax"
     },
     "org.zowe.explorer-jes": {

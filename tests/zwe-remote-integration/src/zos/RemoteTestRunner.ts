@@ -429,10 +429,14 @@ export class RemoteTestRunner {
     if (command.startsWith('zwe')) {
       command = command.replace(/zwe/, '');
     }
+    let defaultConfig = `--config ${REMOTE_SYSTEM_INFO.ussTestDir}/zowe.test.yaml`;
+    if (this.containsConfigString(zweCommand)) {
+      defaultConfig = ''; // the runCommand's ${command} will have the config
+    }
     const finalZwe = this.addAnyCustomJobStatements(zoweYaml);
     await this.uploadZoweYaml(finalZwe.yaml, false, cwd);
     const start = performance.now();
-    const output = await this.uss.runCommand(`./bin/zwe ${command} --config  ${REMOTE_SYSTEM_INFO.ussTestDir}/zowe.test.yaml`, cwd);
+    const output = await this.uss.runCommand(`./bin/zwe ${command} ${defaultConfig}`, cwd);
     // default per-test should always be off. If you want tty, run this.useTty() in a beforeEach() block
     const end = performance.now();
     const duration = end - start;
@@ -501,6 +505,15 @@ export class RemoteTestRunner {
     }
 
     return jclLines;
+  }
+
+  // checks for --config or -c followed by space or =. Not restrictive.
+  //  OK: --config myconfig
+  //  OK: -c=myconfig
+  //  OK: -c
+  //  Still OK: -c =
+  private containsConfigString(zweCommand: string): boolean {
+    return /(--config|(?<!-)-c)[\s+|=]/gim.test(zweCommand);
   }
 }
 
