@@ -47,7 +47,7 @@ jobs:
           ENABLED_CHECKS_IN_JSON=$(echo $SCORECARD_ENABLED_CHECKS | jq -cR 'split(",")')
           
           # Filter SARIF File and only keep enabled checks
-          cat results.sarif | jq '.runs[].results |= map(select(.ruleId as $id | '$ENABLED_CHECKS_IN_JSON' | all($id == .)))' > filteredResults.sarif
+          cat results.sarif | jq '.runs[].results |= map(select(.ruleId as $id | '$ENABLED_CHECKS_IN_JSON' | index($id)))' > filteredResults.sarif
 
       # Upload the results as artifacts (optional). Commenting out will disable
       # uploads of run results in SARIF format to the repository Actions tab.
