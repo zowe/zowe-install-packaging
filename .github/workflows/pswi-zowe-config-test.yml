@@ -29,7 +29,7 @@ jobs:
         shell: bash
 
       - name: '[PSI-LOCK] Lock marist servers to build PSWI'
-        uses: zowe-actions/shared-actions/lock-resource@main
+        uses: zowe-actions/shared-actions/lock-resource@54a9b36cf54e61fefea2801008788d81e1e3a560 # main 06/17/25
         with:
           lock-repository: ${{ github.repository }}
           github-token: ${{ secrets.GITHUB_TOKEN }}

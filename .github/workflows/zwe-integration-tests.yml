@@ -65,7 +65,7 @@ jobs:
     steps:
       # this action will fail the whole workflow if permission check fails
       - name: check permission
-        uses: zowe-actions/shared-actions/permission-check@main
+        uses: zowe-actions/shared-actions/permission-check@54a9b36cf54e61fefea2801008788d81e1e3a560 # main 06/17/25
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
@@ -124,10 +124,10 @@ jobs:
           JF_ENV_1: ${{ secrets.JF_ARTIFACTORY_TOKEN }}
 
       - name: '[Prep 5] Validate package.json'
-        uses: zowe-actions/shared-actions/validate-package-json@main
+        uses: zowe-actions/shared-actions/validate-package-json@54a9b36cf54e61fefea2801008788d81e1e3a560 # main 06/17/25
 
       - name: '[Prep 6] Prepare workflow'
-        uses: zowe-actions/shared-actions/prepare-workflow@main
+        uses: zowe-actions/shared-actions/prepare-workflow@54a9b36cf54e61fefea2801008788d81e1e3a560 # main 06/17/25
 
       - name: '[Setup 1] Test Project Dependencies'
         working-directory: ${{ env.ZWE_TEST_PATH }}
@@ -147,7 +147,7 @@ jobs:
           npm run lint
 
       - name: '[LOCK] Lock marist servers'
-        uses: zowe-actions/shared-actions/lock-resource@main
+        uses: zowe-actions/shared-actions/lock-resource@54a9b36cf54e61fefea2801008788d81e1e3a560 # main 06/17/25
 
         with:
           lock-repository: ${{ github.repository }}

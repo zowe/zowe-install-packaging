@@ -24,9 +24,9 @@ jobs:
         env:
           JF_ENV_1: ${{ secrets.JF_ARTIFACTORY_TOKEN }}
 
-      - uses: zowe-actions/shared-actions/prepare-workflow@main
+      - uses: zowe-actions/shared-actions/prepare-workflow@54a9b36cf54e61fefea2801008788d81e1e3a560 # main 06/17/25
 
-      - uses: zowe-actions/shared-actions/docker-prepare@main
+      - uses: zowe-actions/shared-actions/docker-prepare@54a9b36cf54e61fefea2801008788d81e1e3a560 # main 06/17/25
         with:
           registry-user: ${{ secrets.ARTIFACTORY_X_USERNAME }}
           registry-password: ${{ secrets.ARTIFACTORY_X_PASSWORD }}
@@ -35,7 +35,7 @@ jobs:
           linux-distro: ubuntu
           cpu-arch: amd64
 
-      - uses: zowe-actions/shared-actions/docker-build-local@main
+      - uses: zowe-actions/shared-actions/docker-build-local@54a9b36cf54e61fefea2801008788d81e1e3a560 # main 06/17/25
         with:
           build-arg-list: ZOWE_BASE_IMAGE=latest-ubuntu
         timeout-minutes: 5
@@ -65,9 +65,9 @@ jobs:
         env:
           JF_ENV_1: ${{ secrets.JF_ARTIFACTORY_TOKEN }}
 
-      - uses: zowe-actions/shared-actions/prepare-workflow@main
+      - uses: zowe-actions/shared-actions/prepare-workflow@54a9b36cf54e61fefea2801008788d81e1e3a560 # main 06/17/25
 
-      - uses: zowe-actions/shared-actions/docker-prepare@main
+      - uses: zowe-actions/shared-actions/docker-prepare@54a9b36cf54e61fefea2801008788d81e1e3a560 # main 06/17/25
         with:
           registry-user: ${{ secrets.ARTIFACTORY_X_USERNAME }}
           registry-password: ${{ secrets.ARTIFACTORY_X_PASSWORD }}
@@ -76,7 +76,7 @@ jobs:
           linux-distro: ubuntu
           cpu-arch: s390x
 
-      - uses: zowe-actions/shared-actions/docker-build-zlinux@main
+      - uses: zowe-actions/shared-actions/docker-build-zlinux@54a9b36cf54e61fefea2801008788d81e1e3a560 # main 06/17/25
         with:
           zlinux-host: ${{ secrets.ZLINUX_HOST }}
           zlinux-ssh-user: ${{ secrets.ZLINUX_SSH_USER }}
@@ -113,9 +113,9 @@ jobs:
         env:
           JF_ENV_1: ${{ secrets.JF_ARTIFACTORY_TOKEN }}
 
-      - uses: zowe-actions/shared-actions/prepare-workflow@main
+      - uses: zowe-actions/shared-actions/prepare-workflow@54a9b36cf54e61fefea2801008788d81e1e3a560 # main 06/17/25
 
-      - uses: zowe-actions/shared-actions/docker-prepare@main
+      - uses: zowe-actions/shared-actions/docker-prepare@54a9b36cf54e61fefea2801008788d81e1e3a560 # main 06/17/25
         with:
           registry-user: ${{ secrets.ARTIFACTORY_X_USERNAME }}
           registry-password: ${{ secrets.ARTIFACTORY_X_PASSWORD }}
@@ -123,7 +123,7 @@ jobs:
           base-directory: ${{ env.IMAGE_BASE_DIR }}
           linux-distro: ubuntu
 
-      - uses: zowe-actions/shared-actions/docker-manifest@main
+      - uses: zowe-actions/shared-actions/docker-manifest@54a9b36cf54e61fefea2801008788d81e1e3a560 # main 06/17/25
         with:
           linux-distro: ubuntu
           cpu-arch-list: "amd64 s390x"
@@ -138,9 +138,9 @@ jobs:
         env:
           JF_ENV_1: ${{ secrets.JF_ARTIFACTORY_TOKEN }}
 
-      - uses: zowe-actions/shared-actions/prepare-workflow@main
+      - uses: zowe-actions/shared-actions/prepare-workflow@54a9b36cf54e61fefea2801008788d81e1e3a560 # main 06/17/25
 
-      - uses: zowe-actions/shared-actions/docker-prepare@main
+      - uses: zowe-actions/shared-actions/docker-prepare@54a9b36cf54e61fefea2801008788d81e1e3a560 # main 06/17/25
         with:
           registry-user: ${{ secrets.ARTIFACTORY_X_USERNAME }}
           registry-password: ${{ secrets.ARTIFACTORY_X_PASSWORD }}
@@ -152,7 +152,7 @@ jobs:
           redhat-registry-user: ${{ secrets.REDHAT_DEVELOPER_USER }}
           redhat-registry-password: ${{ secrets.REDHAT_DEVELOPER_PASSWORD }}
 
-      - uses: zowe-actions/shared-actions/docker-build-local@main
+      - uses: zowe-actions/shared-actions/docker-build-local@54a9b36cf54e61fefea2801008788d81e1e3a560 # main 06/17/25
         with:
           build-arg-list: ZOWE_BASE_IMAGE=latest-ubi
         timeout-minutes: 5
@@ -182,9 +182,9 @@ jobs:
         env:
           JF_ENV_1: ${{ secrets.JF_ARTIFACTORY_TOKEN }}
 
-      - uses: zowe-actions/shared-actions/prepare-workflow@main
+      - uses: zowe-actions/shared-actions/prepare-workflow@54a9b36cf54e61fefea2801008788d81e1e3a560 # main 06/17/25
 
-      - uses: zowe-actions/shared-actions/docker-prepare@main
+      - uses: zowe-actions/shared-actions/docker-prepare@54a9b36cf54e61fefea2801008788d81e1e3a560 # main 06/17/25
         with:
           registry-user: ${{ secrets.ARTIFACTORY_X_USERNAME }}
           registry-password: ${{ secrets.ARTIFACTORY_X_PASSWORD }}
@@ -193,7 +193,7 @@ jobs:
           linux-distro: ubi
           cpu-arch: s390x
 
-      - uses: zowe-actions/shared-actions/docker-build-zlinux@main
+      - uses: zowe-actions/shared-actions/docker-build-zlinux@54a9b36cf54e61fefea2801008788d81e1e3a560 # main 06/17/25
         with:
           zlinux-host: ${{ secrets.ZLINUX_HOST }}
           zlinux-ssh-user: ${{ secrets.ZLINUX_SSH_USER }}
@@ -233,9 +233,9 @@ jobs:
         env:
           JF_ENV_1: ${{ secrets.JF_ARTIFACTORY_TOKEN }}
 
-      - uses: zowe-actions/shared-actions/prepare-workflow@main
+      - uses: zowe-actions/shared-actions/prepare-workflow@54a9b36cf54e61fefea2801008788d81e1e3a560 # main 06/17/25
 
-      - uses: zowe-actions/shared-actions/docker-prepare@main
+      - uses: zowe-actions/shared-actions/docker-prepare@54a9b36cf54e61fefea2801008788d81e1e3a560 # main 06/17/25
         with:
           registry-user: ${{ secrets.ARTIFACTORY_X_USERNAME }}
           registry-password: ${{ secrets.ARTIFACTORY_X_PASSWORD }}
@@ -243,7 +243,7 @@ jobs:
           base-directory: ${{ env.IMAGE_BASE_DIR }}
           linux-distro: ubi
 
-      - uses: zowe-actions/shared-actions/docker-manifest@main
+      - uses: zowe-actions/shared-actions/docker-manifest@54a9b36cf54e61fefea2801008788d81e1e3a560 # main 06/17/25
         with:
           linux-distro: ubi
           cpu-arch-list: "amd64 s390x"

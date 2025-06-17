@@ -31,9 +31,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: zowe-actions/shared-actions/prepare-workflow@main
+      - uses: zowe-actions/shared-actions/prepare-workflow@54a9b36cf54e61fefea2801008788d81e1e3a560 # main 06/17/25
 
-      - uses: zowe-actions/shared-actions/docker-prepare@main
+      - uses: zowe-actions/shared-actions/docker-prepare@54a9b36cf54e61fefea2801008788d81e1e3a560 # main 06/17/25
         with:
           registry-user: ${{ secrets.ARTIFACTORY_X_USERNAME }}
           registry-password: ${{ secrets.ARTIFACTORY_X_PASSWORD }}
@@ -43,7 +43,7 @@ jobs:
           linux-distro: ubuntu
           cpu-arch: amd64
 
-      - uses: zowe-actions/shared-actions/docker-build-local@main
+      - uses: zowe-actions/shared-actions/docker-build-local@54a9b36cf54e61fefea2801008788d81e1e3a560 # main 06/17/25
         with:
           build-arg-list: NODE_CPU_ARCH=x64
         timeout-minutes: 5
@@ -69,9 +69,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: zowe-actions/shared-actions/prepare-workflow@main
+      - uses: zowe-actions/shared-actions/prepare-workflow@54a9b36cf54e61fefea2801008788d81e1e3a560 # main 06/17/25
 
-      - uses: zowe-actions/shared-actions/docker-prepare@main
+      - uses: zowe-actions/shared-actions/docker-prepare@54a9b36cf54e61fefea2801008788d81e1e3a560 # main 06/17/25
         with:
           registry-user: ${{ secrets.ARTIFACTORY_X_USERNAME }}
           registry-password: ${{ secrets.ARTIFACTORY_X_PASSWORD }}
@@ -81,7 +81,7 @@ jobs:
           linux-distro: ubuntu
           cpu-arch: s390x
 
-      - uses: zowe-actions/shared-actions/docker-build-zlinux@main
+      - uses: zowe-actions/shared-actions/docker-build-zlinux@54a9b36cf54e61fefea2801008788d81e1e3a560 # main 06/17/25
         with:
           zlinux-host: ${{ secrets.ZLINUX_HOST }}
           zlinux-ssh-user: ${{ secrets.ZLINUX_SSH_USER }}
@@ -114,9 +114,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: zowe-actions/shared-actions/prepare-workflow@main
+      - uses: zowe-actions/shared-actions/prepare-workflow@54a9b36cf54e61fefea2801008788d81e1e3a560 # main 06/17/25
 
-      - uses: zowe-actions/shared-actions/docker-prepare@main
+      - uses: zowe-actions/shared-actions/docker-prepare@54a9b36cf54e61fefea2801008788d81e1e3a560 # main 06/17/25
         with:
           registry-user: ${{ secrets.ARTIFACTORY_X_USERNAME }}
           registry-password: ${{ secrets.ARTIFACTORY_X_PASSWORD }}
@@ -125,7 +125,7 @@ jobs:
           image-name: zowecicd-node-java
           linux-distro: ubuntu
 
-      - uses: zowe-actions/shared-actions/docker-manifest@main
+      - uses: zowe-actions/shared-actions/docker-manifest@54a9b36cf54e61fefea2801008788d81e1e3a560 # main 06/17/25
         with:
           linux-distro: ubuntu
           cpu-arch-list: "amd64 s390x"
