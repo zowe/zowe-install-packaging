@@ -222,9 +222,9 @@ function writeToCfgPath(zweCfgPath: string, content: string): any {
     return xplatform.storeFileUTF8(destination, xplatform.AUTO_DETECT, content);
 
   } else if (destination.startsWith('PARMLIB(')) {
-    const isValidParmlib = isValidZoweYamlParmlib(destination);
+    const isValidParmlib = common.isValidZoweYamlParmlib(destination);
     if (!isValidParmlib.ok) {
-      printErrorAndExit(isValidParmlib.error.message, undefined, isValidParmlib.error.code);
+      common.printErrorAndExit(isValidParmlib.error.message, undefined, isValidParmlib.error.code);
     }
     destination = destination.substring(8, destination.length-1);
     let zwePrivateWorkspaceEnvDir: string;
@@ -460,6 +460,10 @@ export function updateZoweConfig(updateObj: any, writeUpdate: boolean, arrayMerg
   return [ rc, ZOWE_CONFIG ];
 }
 
+export function loadConfig(configName: string, configPath: string, schemas: string) : any {
+  return getConfig(configName, configPath, schemas);
+}
+
 function getConfig(configName: string, configPath: string, schemas: string): any {
   let configRevisionName = getConfigRevisionName(configName);
   if (Number.isInteger(CONFIG_REVISIONS[configName])) {
@@ -472,9 +476,9 @@ function getConfig(configName: string, configPath: string, schemas: string): any
     for (let i = 0; i < parts.length; i++) {
       const part = parts[i].trim();
       if (part.startsWith('PARMLIB(')) {
-        const isValidParmlib = isValidZoweYamlParmlib(part);
+        const isValidParmlib = common.isValidZoweYamlParmlib(part);
         if (!isValidParmlib.ok) {
-          printErrorAndExit(isValidParmlib.error.message, undefined, isValidParmlib.error.code);
+          common.printErrorAndExit(isValidParmlib.error.message, undefined, isValidParmlib.error.code);
         }
       }
     }
