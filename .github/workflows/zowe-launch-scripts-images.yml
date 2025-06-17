@@ -20,7 +20,7 @@ jobs:
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
 
-      - uses: jfrog/setup-jfrog-cli@v2
+      - uses: jfrog/setup-jfrog-cli@11ee3f9bb82595485cb55670e4f93885080e183b # v2.4.1 (FIXME: upgrade to v4)
         env:
           JF_ENV_1: ${{ secrets.JF_ARTIFACTORY_TOKEN }}
 
@@ -61,7 +61,7 @@ jobs:
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
 
-      - uses: jfrog/setup-jfrog-cli@v2
+      - uses: jfrog/setup-jfrog-cli@11ee3f9bb82595485cb55670e4f93885080e183b # v2.4.1 (FIXME: upgrade to v4)
         env:
           JF_ENV_1: ${{ secrets.JF_ARTIFACTORY_TOKEN }}
 
@@ -109,7 +109,7 @@ jobs:
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
 
-      - uses: jfrog/setup-jfrog-cli@v2
+      - uses: jfrog/setup-jfrog-cli@11ee3f9bb82595485cb55670e4f93885080e183b # v2.4.1 (FIXME: upgrade to v4)
         env:
           JF_ENV_1: ${{ secrets.JF_ARTIFACTORY_TOKEN }}
 
@@ -134,7 +134,7 @@ jobs:
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
 
-      - uses: jfrog/setup-jfrog-cli@v2
+      - uses: jfrog/setup-jfrog-cli@11ee3f9bb82595485cb55670e4f93885080e183b # v2.4.1 (FIXME: upgrade to v4)
         env:
           JF_ENV_1: ${{ secrets.JF_ARTIFACTORY_TOKEN }}
 
@@ -178,7 +178,7 @@ jobs:
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
 
-      - uses: jfrog/setup-jfrog-cli@v2
+      - uses: jfrog/setup-jfrog-cli@11ee3f9bb82595485cb55670e4f93885080e183b # v2.4.1 (FIXME: upgrade to v4)
         env:
           JF_ENV_1: ${{ secrets.JF_ARTIFACTORY_TOKEN }}
 
@@ -229,7 +229,7 @@ jobs:
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
 
-      - uses: jfrog/setup-jfrog-cli@v2
+      - uses: jfrog/setup-jfrog-cli@11ee3f9bb82595485cb55670e4f93885080e183b # v2.4.1 (FIXME: upgrade to v4)
         env:
           JF_ENV_1: ${{ secrets.JF_ARTIFACTORY_TOKEN }}
 
