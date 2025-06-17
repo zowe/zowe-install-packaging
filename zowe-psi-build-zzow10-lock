@@ -1,1 +1,15 @@
-""
+{
+  "lockAcquiredTime": "Tue Jun 17 2025 19:47:32 GMT+0000 (Coordinated Universal Time)",
+  "uid": "1750189652726855980",
+  "repository": {
+    "owner": "zowe",
+    "repo": "zowe-install-packaging"
+  },
+  "branch": "user/markackert/address-scorecard-findings",
+  "workflow": "Zowe Build and Packaging",
+  "job": "regular-build",
+  "actor": "MarkAckert",
+  "runId": 15716261071,
+  "runNumber": 7944,
+  "link": "https://github.com/zowe/zowe-install-packaging/actions/runs/15716261071"
+}
