@@ -15,7 +15,7 @@ jobs:
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
 
       - name: Install Dependencies for script to work
-        run: npm install
+        run: npm ci
         working-directory: .github/scripts/manifest_verification
 
       - name: Run Check

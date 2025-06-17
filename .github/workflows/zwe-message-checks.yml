@@ -34,7 +34,7 @@ jobs:
 
       - name: Prepare node project
         working-directory: ${{ env.ZWE_MESSAGE_CHECKS_DIR }}
-        run: npm install 
+        run: npm ci 
 
       - name: Check zwe messages for issues and print them to the log
         id: duplicates
