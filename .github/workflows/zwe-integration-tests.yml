@@ -74,7 +74,7 @@ jobs:
     needs: [set-test-vars, check-permission]
     steps:
       - name: '[Prep 1] Checkout'
-        uses: actions/checkout@v2
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
 
       - name: Make matrix
         id: set-matrix
@@ -99,7 +99,7 @@ jobs:
     environment: ${{ matrix.server }}
     steps:
       - name: '[Prep 1] Checkout'
-        uses: actions/checkout@v4
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
 
       - name: '[Prep 2] Setup Node'
         uses: actions/setup-node@v4
