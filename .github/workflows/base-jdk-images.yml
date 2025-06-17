@@ -49,7 +49,7 @@ jobs:
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
         continue-on-error: true
-        uses: snyk/actions/docker@master
+        uses: snyk/actions/docker@ff5c02a0e3adc5c52e2c9e7558edf2b46d69ac1f # v?.? commit may 23,2020
         with:
           image: ${{ env.IMAGE_NAME_FULL_REMOTE }}
           args: --file=${{ env.IMAGE_DIRECTORY }}/Dockerfile
@@ -89,7 +89,7 @@ jobs:
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
         continue-on-error: true
-        uses: snyk/actions/docker@master
+        uses: snyk/actions/docker@ff5c02a0e3adc5c52e2c9e7558edf2b46d69ac1f # v?.? commit may 23,2020
         with:
           image: ${{ env.IMAGE_NAME_FULL_REMOTE }}
           args: --file=${{ env.IMAGE_DIRECTORY }}/Dockerfile
@@ -151,7 +151,7 @@ jobs:
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
         continue-on-error: true
-        uses: snyk/actions/docker@master
+        uses: snyk/actions/docker@ff5c02a0e3adc5c52e2c9e7558edf2b46d69ac1f # v?.? commit may 23,2020
         with:
           image: ${{ env.IMAGE_NAME_FULL_REMOTE }}
           args: --file=${{ env.IMAGE_DIRECTORY }}/Dockerfile
@@ -194,7 +194,7 @@ jobs:
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
         continue-on-error: true
-        uses: snyk/actions/docker@master
+        uses: snyk/actions/docker@ff5c02a0e3adc5c52e2c9e7558edf2b46d69ac1f # v?.? commit may 23,2020
         with:
           image: ${{ env.IMAGE_NAME_FULL_REMOTE }}
           args: --file=${{ env.IMAGE_DIRECTORY }}/Dockerfile
