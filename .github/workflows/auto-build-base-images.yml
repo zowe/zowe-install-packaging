@@ -1,5 +1,7 @@
 name: Scheduled Build Base Images
 
+permissions: read-all
+
 on: 
   workflow_dispatch:
   # push:

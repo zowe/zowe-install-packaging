@@ -1,4 +1,7 @@
 name: Build ompzowe/base-jdk
+
+permissions: read-all
+
 on:
   # push:
   # pull_request:

@@ -1,4 +1,7 @@
 name: Build ompzowe/base-node
+
+permissions: read-all
+
 on:
   # push:
   # pull_request:
