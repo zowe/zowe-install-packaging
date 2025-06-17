@@ -68,7 +68,7 @@ jobs:
 
       - name: Create PR if doesn't exist
         if: ${{ steps.commitChanges.outputs.createPr == 'true' }}
-        uses: actions/github-script@v5
+        uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7.0.1
         with:
           github-token: ${{ secrets.ZOWE_ROBOT_TOKEN }}
           script: |

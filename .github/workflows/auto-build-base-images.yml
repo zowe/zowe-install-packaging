@@ -38,7 +38,7 @@ jobs:
 
       - name: Exit if build failed
         if: ${{ steps.build-base.outputs.workflow-run-conclusion != 'success' }}
-        uses: actions/github-script@v5
+        uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7.0.1
         with:
           script: |
             core.setFailed('Build base images #${{ steps.build-base.outputs.workflow-run-num }} is not successful')
@@ -59,7 +59,7 @@ jobs:
 
       - name: Exit if build failed
         if: ${{ steps.build-jdk-base.outputs.workflow-run-conclusion != 'success' }}
-        uses: actions/github-script@v5
+        uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7.0.1
         with:
           script: |
             core.setFailed('Build base images #${{ steps.build-jdk-base.outputs.workflow-run-num }} is not successful')
@@ -80,7 +80,7 @@ jobs:
 
       - name: Exit if build failed
         if: ${{ steps.build-node-base.outputs.workflow-run-conclusion != 'success' }}
-        uses: actions/github-script@v5
+        uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7.0.1
         with:
           script: |
             core.setFailed('Build base images #${{ steps.build-node-base.outputs.workflow-run-num }} is not successful')
@@ -101,7 +101,7 @@ jobs:
 
       - name: Exit if build failed
         if: ${{ steps.scan-released-images.outputs.workflow-run-conclusion != 'success' }}
-        uses: actions/github-script@v5
+        uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7.0.1
         with:
           script: |
             core.setFailed('Build base images #${{ steps.scan-released-images.outputs.workflow-run-num }} is not successful')
