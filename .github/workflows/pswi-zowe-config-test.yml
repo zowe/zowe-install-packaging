@@ -1,6 +1,6 @@
 name: PSWI zowe.yaml sync check
 
-
+permissions: read-all
 
 on:
   push:
