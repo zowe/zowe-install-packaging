@@ -93,7 +93,7 @@
         <string valueMustBeChoice="false" multiLine="false">
             <!-- Put validation here -->
             <!-- Specify choices here -->
-            <default>IBMUSER.ZWEV3.SZWEAUTH</default>    
+            <default>IBMUSER.ZWEV3.SZWEAUTH</default>
         </string>
     </variable>
     <variable name="zowe_setup_dataset_authPluginLib" scope="instance" visibility="public">
@@ -127,7 +127,7 @@
         <category>components</category>
         <string valueMustBeChoice="false" multiLine="false">
             <!-- Put validation here -->
-            <!-- Specify choices here -->            
+            <!-- Specify choices here -->
         </string>
     </variable>
     <variable name="zowe_setup_vsam_storageClass" scope="instance" visibility="public">
@@ -253,7 +253,7 @@ some use cases, like containerization, this port could be different.</descriptio
         <string valueMustBeChoice="false" multiLine="false">
             <!-- Put validation here -->
             <choice>warn</choice>
-            <choice>exit</choice>            
+            <choice>exit</choice>
             <default>warn</default>
         </string>
     </variable>
@@ -291,7 +291,7 @@ some use cases, like containerization, this port could be different.</descriptio
             <!-- Put validation here -->
             <choice>TLSv1.1</choice>
             <choice>TLSv1.2</choice>
-            <choice>TLSv1.3</choice>            
+            <choice>TLSv1.3</choice>
             <default>TLSv1.2</default>
         </string>
     </variable>
@@ -307,7 +307,7 @@ some use cases, like containerization, this port could be different.</descriptio
             <!-- Put validation here -->
             <choice>TLSv1.1</choice>
             <choice>TLSv1.2</choice>
-            <choice>TLSv1.3</choice>            
+            <choice>TLSv1.3</choice>
             <default>TLSv1.3</default>
         </string>
     </variable>
@@ -345,7 +345,7 @@ some use cases, like containerization, this port could be different.</descriptio
         <description>Certificate keystore password.</description>
         <category>certificates</category>
         <string valueMustBeChoice="false" multiLine="false">
-            <!-- Put validation here -->                        
+            <!-- Put validation here -->
             <default>password</default>
         </string>
     </variable>
@@ -444,7 +444,7 @@ How we want to verify SSL certificates of services. Valid values are:
              This mode does not validate certificate Common Name and Subject
              Alternative Name (SAN).
 - DISABLED:  disable certificate validation. This is NOT recommended for
-             security 
+             security
         ]]>        </description>
         <category>certificates</category>
         <string valueMustBeChoice="true" multiLine="false">
@@ -939,7 +939,7 @@ How we want to verify SSL certificates of services. Valid values are:
             <!-- Put validation here -->
             <!-- Specify choices here -->
             <choice>COMPONENT-COMPAT</choice>
-            <choice>STRICT</choice>            
+            <choice>STRICT</choice>
             <default>STRICT</default>
         </string>
     </variable>
@@ -1075,7 +1075,7 @@ How we want to verify SSL certificates of services. Valid values are:
             <!-- Specify choices here -->
             <default>ZWESASTC</default>
         </string>
-    </variable>    
+    </variable>
     <!--atCreate-->
     <!--steps-->
     <step name="define_variables" optional="false">
@@ -1148,7 +1148,7 @@ How we want to verify SSL certificates of services. Valid values are:
             <variableValue name="zowe_setup_security_users_zis" scope="instance" noPromptIfSet="false" required="true"/>
             <variableValue name="zowe_setup_security_stcs_zowe" scope="instance" noPromptIfSet="false" required="true"/>
             <variableValue name="zowe_setup_security_stcs_zis" scope="instance" noPromptIfSet="false" required="true"/>
-            <variableValue name="zowe_setup_security_stcs_aux" scope="instance" noPromptIfSet="false" required="true"/>            
+            <variableValue name="zowe_setup_security_stcs_aux" scope="instance" noPromptIfSet="false" required="true"/>
             <instructions>Run this step to fill base variables.</instructions>
             <weight>1</weight>
             <skills>z/OS System Programmer</skills>
@@ -1364,7 +1364,7 @@ How we want to verify SSL certificates of services. Valid values are:
                         <targetState>skipped</targetState>
                     </extendStateExpression>
                 </targetStateSet>
-            </condition>    
+            </condition>
             <variableValue name="components_app_server_port" scope="instance" noPromptIfSet="false" required="true"/>
             <variableValue name="components_app_server_debug" scope="instance" noPromptIfSet="false" required="true"/>
             <instructions substitution="false">Run this step to specify the variables for the App Server.</instructions>
@@ -1468,6 +1468,22 @@ echo '  # As seen in the documentation:' >> "${instance-zowe_runtimeDirectory}/z
 echo '  # https://docs.zowe.org/stable/user-guide/zos-components-installation-checklist' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '  #-------------------------------------------------------------------------------' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '  setup:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+#if (${global-zowe_setup_job_stmt_parms.trim().length()} > 0 )
+echo '    # JCL job header for samples in SZWESAMP' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '    jcl:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+  #if (${global-zowe_setup_job_stmt_parms.trim().includes("\n")} == -1)
+echo '      header: ${global-zowe_setup_job_stmt_parms.trim()}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+  #else
+echo '      header:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+    #foreach($line in ${global-zowe_setup_job_stmt_parms.split("\n")})
+      #if (${foreach.index} == 0)
+echo '     - ${line}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+      #else
+echo '     - //    ${line}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+      #end
+    #end
+  #end
+#end
 echo '    # MVS data set related configurations' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '    dataset:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '      # where Zowe MVS data sets will be installed' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
@@ -1759,19 +1775,7 @@ echo '' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '  # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '  # You can un-comment and define any extra environment variables as key/value' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '  # pairs here.' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-#if (${global-zowe_setup_job_stmt_parms.trim().length()} > 0 )
-echo '  environments:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '    jclHeader:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-  #foreach($line in ${global-zowe_setup_job_stmt_parms.split("\n")})
-    #if (${foreach.index} == 0) 
-echo '     - ${line}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-    #else
-echo '     - //    ${line}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-    #end
-  #end
-#else
 echo '  # environments:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-#end
 echo '  #   # Example of a global environment variable for all components' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '  #   MY_ENV_VAR: my_env_val' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
@@ -2206,9 +2210,9 @@ zwe init generate --allow-overwrite -c '${instance-zowe_runtimeDirectory}/zowe.y
         <description>Zowe installation</description>
         <step name="install_zowe" optional="false">
             <title>Run the Zowe install</title>
-            <description>Configure Zowe.</description>            
+            <description>Configure Zowe.</description>
             <prereqStep name="main_variables"/>
-            <prereqStep name="configure"/>            
+            <prereqStep name="configure"/>
             <!-- condition -->
             <!--variableValues-->
             <instructions substitution="true"><![CDATA[
@@ -2238,7 +2242,7 @@ zwe install -c '${instance-zowe_runtimeDirectory}/zowe.yaml' --allow-overwrite</
                 <maxLrecl>1024</maxLrecl>
                 <!-- zosmfOutput -->
             </template>
-        </step>        
+        </step>
         <step name="init_zowe" optional="false">
             <title>Run scripts for Zowe initialization</title>
             <description>Executes scripts for Zowe initialization</description>
@@ -2254,7 +2258,7 @@ zwe install -c '${instance-zowe_runtimeDirectory}/zowe.yaml' --allow-overwrite</
 #end
             <br/>
             <b>NOTE:</b>
-            Each <b>zwe init</b> sub-command defines a configuration. 
+            Each <b>zwe init</b> sub-command defines a configuration.
 <ul>
 <li><b>mvs:</b> Copy the data sets provided with Zowe to custom data sets.</li>
 #if (${instance-components_caching_service_storage_mode} == "VSAM" && ${instance-components_caching_service_enabled})
@@ -2294,10 +2298,10 @@ zwe init vsam -c '${instance-zowe_runtimeDirectory}/zowe.yaml' --allow-overwrite
             <instructions substitution="true"><![CDATA[
             This step runs the commands: <br/>
             <code>zwe init security -c ${instance-zowe_runtimeDirectory}/zowe.yml --allow-overwrite</code> <br/>
-            <code>zwe init apfauth -c ${instance-zowe_runtimeDirectory}/zowe.yml</code> <br/>            
+            <code>zwe init apfauth -c ${instance-zowe_runtimeDirectory}/zowe.yml</code> <br/>
             <br/>
             <b>NOTE:</b>
-            Each <b>zwe init</b> sub-command defines a configuration. 
+            Each <b>zwe init</b> sub-command defines a configuration.
 <ul>
 <li><b>security:</b> Create the user IDs and security manager settings.</li>
 <li><b>apfauth:</b> APF authorize the LOADLIB containing the modules that need to perform z/OS priviledged security calls.</li>
