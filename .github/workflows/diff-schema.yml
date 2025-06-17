@@ -1,4 +1,7 @@
 name: Generate schema diff
+
+permissions: read-all
+
 on:
   push:
     branches:

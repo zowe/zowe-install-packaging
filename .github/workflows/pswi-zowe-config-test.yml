@@ -1,10 +1,6 @@
 name: PSWI zowe.yaml sync check
 
-permissions:
-  id-token: write
-  issues: write
-  pull-requests: write
-  contents: write
+
 
 on:
   push:
@@ -17,6 +13,8 @@ on:
 jobs:
   test-pswi-zowe-yaml:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
 
       - name: '[Prep 1] Checkout'

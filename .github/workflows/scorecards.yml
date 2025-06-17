@@ -1,11 +1,14 @@
 name: OSSF Scorecard
 on:
+  push:
+    branches:
+      - 'v*.x/staging'
   pull_request:
     branches: 
       - 'v*.x/staging'
       - 'v*.x/rc'
       - 'v*.x/master'
-    types: [opened, synchronize, labeled, unlabeled]
+    types: [opened, synchronize]
   workflow_dispatch:
   schedule:
     # Weekly on Saturdays.

@@ -1,5 +1,6 @@
 name: Kubernetes Containers Scan
 
+permissions: read-all
 on:
   push:
     branches:

@@ -1,11 +1,7 @@
 # Triggers when comments are made on issues/PRs, runs when '/ci' is added to a pull request.
 name: Zowe CICD Issue Trigger
 
-permissions:
-  issues: write
-  pull-requests: write
-  contents: write
-
+permissions: read-all
 
 on:
   issue_comment:
