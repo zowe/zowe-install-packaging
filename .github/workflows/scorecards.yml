@@ -6,6 +6,7 @@ on:
       - 'v*.x/rc'
       - 'v*.x/master'
     types: [opened, synchronize, labeled, unlabeled]
+  workflow_dispatch:
   schedule:
     # Weekly on Saturdays.
     - cron:  '30 1 * * 6'
