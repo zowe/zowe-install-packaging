@@ -106,18 +106,18 @@
       "artifact": "*.pax"
     },
     "org.zowe.configmgr": {
-      "version": "^3.2.0-USER-MARKACKERT-DELETEJSONAPI",
+      "version": "^3.0.0-V3.X-STAGING",
       "artifact": "*.pax"
     },
     "org.zowe.configmgr-rexx": {
-      "version": "^3.2.0-USER-MARKACKERT-DELETEJSONAPI",
+      "version": "^3.0.0-V3.X-STAGING",
       "artifact": "*.pax"
     },
     "org.zowe.launcher": {
       "version": "^3.0.0-STAGING"
     },
     "org.zowe.keyring-utilities": {
-      "version": "^3.0.0-USER-MARKACKERT-REMOVE-NCERT",
+      "version": "^3.0.0-MASTER",
       "artifact": "*.pax"
     },
     "org.zopencommunity.curl": {
