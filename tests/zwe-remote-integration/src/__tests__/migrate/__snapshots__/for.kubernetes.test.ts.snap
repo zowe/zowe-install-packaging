@@ -28,6 +28,7 @@ You can customize domains by passing --domains option to this command.
 >>>> List content of keystore "/tmp/zowe-convert-for-k8s-0000/keystore/localhost/localhost.keystore.p12":
 >>>> Export certificate "localhost" to PEM format
 >>>> Export certificate "local_ca" to PEM format
+>>>> Certificate "/tmp/zowe-convert-for-k8s-0000/keystore/localhost/local_ca.cer is in EBCDIC.
 >>>> Exporting certificate "localhost" private key
 -------------------------------------------------------------------------------
 >> Update zowe.yaml configuration for Kubernetes
@@ -132,6 +133,8 @@ data:
         prefix: "ZWE1"
       rbacProfileIdentifier: "1"
       cookieIdentifier: "1"
+      externalDomains:
+      - "localhost"
       externalPort: 7554
       network:
         server:
@@ -181,10 +184,10 @@ data:
         ZOWE_ZLUX_TELNET_HOST: "sample-domain.com"
         ZOWE_ZLUX_SSH_HOST: "sample-domain.com"
       useConfigmgr: false
-      externalDomains:
-      - "localhost"
-    java: {}
-    node: {}
+    java:
+      home: "/test/java/home"
+    node:
+      home: "/test/node/home"
     zOSMF:
       host: "some.test.hostname"
       port: 12321

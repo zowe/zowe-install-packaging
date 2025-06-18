@@ -17,5 +17,5 @@
     export ZWE_zowe_runtimeDirectory="{{ zowe_root_dir }}" && \
     . "{{ zowe_root_dir }}/bin/libs/index.sh" && \
     cd "{{ zowe_root_dir }}" && \
-    update_zowe_yaml_configmgr "{{ zowe_instance_dir }}/zowe.yaml" "{{ item }}" "{{ configs[item] | default('') }}"
+    update_zowe_yaml "{{ zowe_instance_dir }}/zowe.yaml" "{{ item }}" "{{ configs[item] | default('') }}"
   with_items: "{{ configs.keys() | list }}"

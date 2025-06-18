@@ -201,9 +201,8 @@ module.exports = async () => {
       await downloadManifestDep('org.zowe.keyring-utilities');
       await downloadManifestDep('org.zopencommunity.curl');
       await downloadManifestDep('org.zowe.getesm');
+      await downloadArtifact('libs-snapshot-local', 'org/zowe/vtl-cli/zowe-cli-package/1.0.7-SNAPSHOT', 'vtl.tar.gz');
     }
-
-    await downloadArtifact('libs-snapshot-local', 'org/zowe/vtl-cli/zowe-cli-package/1.0.7-SNAPSHOT', 'vtl.tar.gz');
 
     const downloadsDirContents = fs.readdirSync(downloadsDir);
 
