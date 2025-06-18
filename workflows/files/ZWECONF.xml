@@ -14,7 +14,7 @@
     <variable name="zowe_setup_job_stmt_parms" scope="global" visibility="public">
       <label>JOB statement positional parameters and keywords used by Zowe during installation and configuration.</label>
       <abstract>JOB statement positional parameters and keywords used by Zowe during installation and configuration.</abstract>
-      <description>These parameters and keywords are optional, and by default empty. These are used separately from z/OSMF defined JOB cards. Each line should be less than 70 characters, use commas for end-of-line continuation, and omit identifier statements such as "//", "/*", etc.</description>
+      <description>These parameters and keywords are optional, and by default empty. These are used separately from z/OSMF defined JOB cards. Each line should be less than 70 characters, omit start-of-line identifier statements such as "//", "/*", and include commas for end-of-line continuation.</description>
       <category>zowe</category>
       <string multiLine="true" valueMustBeChoice="false">
       </string>
