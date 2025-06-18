@@ -1,1 +1,15 @@
-""
+{
+  "lockAcquiredTime": "Wed Jun 18 2025 16:54:36 GMT+0000 (Coordinated Universal Time)",
+  "uid": "1750265676887488077",
+  "repository": {
+    "owner": "zowe",
+    "repo": "zowe-install-packaging"
+  },
+  "branch": "user/markackert/node-removal-tasks",
+  "workflow": "Zowe Build and Packaging",
+  "job": "regular-build",
+  "actor": "MarkAckert",
+  "runId": 15738394397,
+  "runNumber": 7955,
+  "link": "https://github.com/zowe/zowe-install-packaging/actions/runs/15738394397"
+}
