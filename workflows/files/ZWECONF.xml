@@ -1477,9 +1477,9 @@ echo '      header: ${global-zowe_setup_job_stmt_parms.trim()}' >> "${instance-z
 echo '      header:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
     #foreach($line in ${global-zowe_setup_job_stmt_parms.split("\n")})
       #if (${foreach.index} == 0)
-echo '     - ${line}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '      - ${line}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
       #else
-echo '     - //    ${line}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '      - //    ${line}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
       #end
     #end
   #end
