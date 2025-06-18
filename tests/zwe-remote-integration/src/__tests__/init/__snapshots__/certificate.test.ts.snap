@@ -60,14 +60,18 @@ exports[`init-cert (LONG) passing init 1`] = `
 >>>> List content of keystore "/test/dir/pkcs12/localhost/localhost.keystore.p12":
 >>>> Export certificate "localhost" to PEM format
 >>>> Export certificate "local_ca" to PEM format
+>>>> Certificate "/test/dir/pkcs12/localhost/local_ca.cer is in EBCDIC.
 >>>> Exporting certificate "localhost" private key
 >> Keystore /test/dir/pkcs12/localhost/localhost.keystore.p12 is exported successfully.
 -------------------------------------------------------------------------------
 >> Export keystore /test/dir/pkcs12/localhost/localhost.truststore.p12
 >>>> List content of keystore "/test/dir/pkcs12/localhost/localhost.truststore.p12":
 >>>> Export certificate "local_ca" to PEM format
+>>>> Certificate "/test/dir/pkcs12/localhost/local_ca.cer is in EBCDIC.
 >>>> Export certificate "zosmf00" to PEM format
+>>>> Certificate "/test/dir/pkcs12/localhost/zosmf00.cer is in EBCDIC.
 >>>> Export certificate "zosmf01" to PEM format
+>>>> Certificate "/test/dir/pkcs12/localhost/zosmf01.cer is in EBCDIC.
 >> Keystore /test/dir/pkcs12/localhost/localhost.truststore.p12 is exported successfully.
 -------------------------------------------------------------------------------
 >> Lock keystore directory /test/dir/pkcs12

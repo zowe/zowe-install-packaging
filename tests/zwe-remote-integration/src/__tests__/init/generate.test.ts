@@ -14,6 +14,7 @@ import { RemoteTestRunner } from '../../zos/RemoteTestRunner';
 import { ZoweConfig } from '../../config/ZoweConfig';
 import { FileType, TestFileActions, TestFile } from '../../zos/TestFileActions';
 import * as fs from 'fs-extra';
+import * as _ from 'lodash';
 import path from 'path';
 
 const testSuiteName = 'init-generate';
@@ -72,7 +73,7 @@ describe(`${testSuiteName}`, () => {
 
     it('jcl header single line', async () => {
       // eslint-disable-next-line
-      cfgYaml.zowe.environments = {jclHeader: "'SOMEJOB',(0000000000)" };
+      _.set(cfgYaml, 'zowe.setup.jcl.header', "'SOMEJOB',(0000000000)");
       const result = await testRunner.runZweTest(cfgYaml, 'init generate --dry-run');
       expect(result.stdout).not.toBeNull();
       expect(result.cleanedStdout).toMatchSnapshot();
@@ -83,31 +84,31 @@ describe(`${testSuiteName}`, () => {
       // eslint-disable-next-line
       const longString = "LONGFIELD1,LONGFIELD2,LONGFIELD3,ANOTHER,FIELD,GOING,WAY,PAST,EIGHTY,CHARACTERS,INCLUDING,THIS";
       let jclLines = [`'SOMEJOB'`, `// (0000000000)`, longString, 'SYSAFF=SYS1'];
-      cfgYaml.zowe.environments = { jclHeader: jclLines };
+      _.set(cfgYaml, 'zowe.setup.jcl.header', jclLines);
       let result = await testRunner.runZweTest(cfgYaml, 'init generate --dry-run');
       expect(result.stdout).not.toBeNull();
       expect(result.cleanedStdout).toMatchSnapshot();
-      expect(result.rc).toBe(70);
+      expect(result.rc).toBe(1);
 
       // this is technically not valid JCL, but fits in 80 chars
       jclLines = [`'SOMEJOB'`, `(0000000000)`, longString.slice(0, 79), 'SYSAFF=SYS1'];
-      cfgYaml.zowe.environments = { jclHeader: jclLines };
+      _.set(cfgYaml, 'zowe.setup.jcl.header', jclLines);
       result = await testRunner.runZweTest(cfgYaml, 'init generate --dry-run');
       expect(result.stdout).not.toBeNull();
       expect(result.cleanedStdout).toMatchSnapshot();
       expect(result.rc).toBe(0);
 
-      // with idx 0, the slice is invalid for first line
+      // with idx 0, the slice is invalid for first line. this is currently allowed by schema.
       jclLines = [longString.slice(0, 79), `(0000000000)`, 'SOMEJOB', 'SYSAFF=SYS1'];
-      cfgYaml.zowe.environments = { jclHeader: jclLines };
+      _.set(cfgYaml, 'zowe.setup.jcl.header', jclLines);
       result = await testRunner.runZweTest(cfgYaml, 'init generate --dry-run');
       expect(result.stdout).not.toBeNull();
       expect(result.cleanedStdout).toMatchSnapshot();
-      expect(result.rc).toBe(70);
+      expect(result.rc).toBe(0);
 
       // this is the right max width
       jclLines = [longString.slice(0, 80 - ('//ABCABCDE JOB '.length + 1)), `// (0000000000),`, `// 'SOMEJOB',`, '// SYSAFF=SYS1'];
-      cfgYaml.zowe.environments = { jclHeader: jclLines };
+      _.set(cfgYaml, 'zowe.setup.jcl.header', jclLines);
       result = await testRunner.runZweTest(cfgYaml, 'init generate --dry-run');
       expect(result.stdout).not.toBeNull();
       expect(result.cleanedStdout).toMatchSnapshot();
@@ -118,27 +119,23 @@ describe(`${testSuiteName}`, () => {
       // eslint-disable-next-line
       const longString = "'SOMEJOB',(0000000000),ANOTHER,FIELD,GOING,WAY,PAST,EIGHTY,CHARACTERS,INCLUDING,THIS";
       // error - line > 100 chars
-      cfgYaml.zowe.environments = { jclHeader: longString };
+      _.set(cfgYaml, 'zowe.setup.jcl.header', longString);
       let result = await testRunner.runZweTest(cfgYaml, 'init generate --dry-run');
       expect(result.stdout).not.toBeNull();
       expect(result.cleanedStdout).toMatchSnapshot();
-      expect(result.rc).toBe(70);
+      expect(result.rc).toBe(1);
 
       // error - 81 char line
-      cfgYaml.zowe.environments = {
-        // eslint-disable-next-line
-        jclHeader: longString.slice(0, 80-'//ABCABCDE JOB '.length),
-      };
+      // eslint-disable-next-line
+      _.set(cfgYaml, 'zowe.setup.jcl.header', longString.slice(0, 80- ('//ABCABCDE JOB '.length-1) ));
       result = await testRunner.runZweTest(cfgYaml, 'init generate --dry-run');
       expect(result.stdout).not.toBeNull();
       expect(result.cleanedStdout).toMatchSnapshot();
-      expect(result.rc).toBe(70);
+      expect(result.rc).toBe(1);
 
       // OK - 80 char line
-      cfgYaml.zowe.environments = {
-        // eslint-disable-next-line
-        jclHeader: longString.slice(0, 80-('//ABCABCDE JOB '.length+1)),
-      };
+      // eslint-disable-next-line
+      _.set(cfgYaml, 'zowe.setup.jcl.header', longString.slice(0, 80-'//ABCABCDE JOB '.length));
       result = await testRunner.runZweTest(cfgYaml, 'init generate --dry-run');
       expect(result.stdout).not.toBeNull();
       expect(result.cleanedStdout).toMatchSnapshot();
@@ -191,8 +188,7 @@ describe(`${testSuiteName}`, () => {
   describe('(LONG)', () => {
     it('jcllib updates: jcl header single line', async () => {
       const header = `'SOMEJOB',REGION=0M`;
-      // eslint-disable-next-line
-      cfgYaml.zowe.environments = {jclHeader: header };
+      _.set(cfgYaml, 'zowe.setup.jcl.header', header);
       const result = await testRunner.runZweTest(cfgYaml, 'init generate');
       expect(result.stdout).not.toBeNull();
       expect(result.cleanedStdout).toMatchSnapshot();
@@ -201,9 +197,10 @@ describe(`${testSuiteName}`, () => {
       // the jcl generated in JCLLIB should have the headers
       const localPdsPath = await TestFileActions.downloadPds(cfgYaml.zowe.setup.dataset.jcllib as string);
       const members = fs.readdirSync(localPdsPath);
+      // skip Zowe STC, this shouldn't have the headers, and deprecated keyring members (to be removed in v4)
+      const exceptions = /(zwe.*?stc)|(ZWEKRING)|(ZWENOKYR)/i;
       for (const member of members) {
-        if (/zwe.*?stc/i.test(member)) {
-          // skip Zowe STC, this shouldn't have the headers
+        if (exceptions.test(member)) {
           continue;
         }
         const jclFile = path.join(localPdsPath, member);
@@ -217,7 +214,7 @@ describe(`${testSuiteName}`, () => {
 
     it('jcllib updates: jcl header multi line', async () => {
       const jclLines = [`'SOMEJOB',`, `// REGION=0M`, `//* atestcomment`, '//* secondtestcomment'];
-      cfgYaml.zowe.environments = { jclHeader: jclLines };
+      _.set(cfgYaml, 'zowe.setup.jcl.header', jclLines);
       const result = await testRunner.runZweTest(cfgYaml, 'init generate');
       expect(result.stdout).not.toBeNull();
       expect(result.cleanedStdout).toMatchSnapshot();
@@ -226,8 +223,10 @@ describe(`${testSuiteName}`, () => {
       // the jcl generated in JCLLIB should have the headers
       const localPdsPath = await TestFileActions.downloadPds(cfgYaml.zowe.setup.dataset.jcllib as string);
       const members = fs.readdirSync(localPdsPath);
+      // skip Zowe STC, this shouldn't have the headers, and deprecated keyring members (to be removed in v4)
+      const exceptions = /(zwe.*?stc)|(ZWEKRING)|(ZWENOKYR)/i;
       for (const member of members) {
-        if (/zwe.*?stc/i.test(member)) {
+        if (exceptions.test(member)) {
           // skip Zowe STC, this shouldn't have the headers
           continue;
         }
