@@ -1,1 +1,15 @@
-""
+{
+  "lockAcquiredTime": "Wed Jun 18 2025 15:38:38 GMT+0000 (Coordinated Universal Time)",
+  "uid": "1750261118097554901",
+  "repository": {
+    "owner": "zowe",
+    "repo": "zowe-install-packaging"
+  },
+  "branch": "UpdatePSWIForJCLHeaders",
+  "workflow": "Zowe Build and Packaging",
+  "job": "regular-build",
+  "actor": "MarkAckert",
+  "runId": 15736609362,
+  "runNumber": 7952,
+  "link": "https://github.com/zowe/zowe-install-packaging/actions/runs/15736609362"
+}
