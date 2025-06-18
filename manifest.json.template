@@ -47,9 +47,9 @@
       "artifact": "zlux-editor-2.18.2-20250519.144423.pax"
     },
     "org.zowe.zss": {
-      "version": "2.18.1-RC",
+      "version": "2.18.2-RC",
       "repository": "libs-snapshot-local",
-      "artifact": "zss-2.18.1-rc-1270-20250304134859.pax"
+      "artifact": "zss-2.18.2-rc-1331-20250618181129.pax"
     },
     "org.zowe.explorer.jobs.jobs-api-package": {
       "version": "2.0.39",
@@ -109,19 +109,19 @@
       "artifact": "cloud-gateway-*.zip"
     },
     "org.zowe.configmgr-rexx": {
-      "version": "2.18.1-V2.X-RC",
+      "version": "2.18.2-V2.X-RC",
       "repository": "libs-snapshot-local",
-      "artifact": "configmgr-rexx-2.18.1-2025021134.pax"
+      "artifact": "configmgr-rexx-2.18.2-2025061824.pax"
     },
 	"org.zowe.getesm": {
-      "version": "2.18.1-V2.X-RC",
+      "version": "2.18.2-V2.X-RC",
       "repository": "libs-snapshot-local",
-      "artifact": "getesm-2.18.1-2025021134.pax"
+      "artifact": "getesm-2.18.2-2025061822.pax"
     },
     "org.zowe.configmgr": {
-      "version": "2.18.1-V2.X-RC",
+      "version": "2.18.2-V2.X-RC",
       "repository": "libs-snapshot-local",
-      "artifact": "configmgr-2.18.1-2025021131.pax"
+      "artifact": "configmgr-2.18.2-2025061823.pax"
     },
     "org.zowe.launcher": {
       "version": "2.18.1"
