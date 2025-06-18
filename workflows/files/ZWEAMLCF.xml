@@ -1387,6 +1387,12 @@ echo '#       zss:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '#         port: 28542' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '#       caching-service:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '#         enabled: false' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+
+export JAVA_HOME='${instance-java_home}'
+export PATH=$PATH:'${instance-zowe_runtimeDirectory}/bin'
+
+zwe init generate --allow-overwrite -c '${instance-zowe_runtimeDirectory}/zowe.yaml'
+
 ]]></inlineTemplate>
             <submitAs maxRc="0">shell-JCL</submitAs>
             <maxLrecl>1024</maxLrecl>
