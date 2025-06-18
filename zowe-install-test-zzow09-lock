@@ -1,1 +1,15 @@
-""
+{
+  "lockAcquiredTime": "Wed Jun 18 2025 18:10:04 GMT+0000 (Coordinated Universal Time)",
+  "uid": "1750270204263138190",
+  "repository": {
+    "owner": "zowe",
+    "repo": "zowe-install-packaging"
+  },
+  "branch": "UpdatePSWIForJCLHeaders",
+  "workflow": "Zowe CICD Integration Tests",
+  "job": "cicd-test",
+  "actor": "zowe-robot",
+  "runId": 15740302512,
+  "runNumber": 6812,
+  "link": "https://github.com/zowe/zowe-install-packaging/actions/runs/15740302512"
+}
