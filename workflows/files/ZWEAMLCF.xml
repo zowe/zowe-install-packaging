@@ -14,7 +14,7 @@
     <variable name="zowe_setup_job_stmt_parms" scope="global" visibility="public">
       <label>JOB statement positional parameters and keywords used by Zowe during installation and configuration.</label>
       <abstract>JOB statement positional parameters and keywords used by Zowe during installation and configuration.</abstract>
-      <description>These parameters and keywords are optional, and by default empty. These are used separately from z/OSMF defined JOB cards. Each line should be less than 70 characters, use commas for end-of-line continuation, and omit identifier statements such as "//", "/*", etc.</description>
+      <description>These parameters and keywords are optional, and by default empty. These are used separately from z/OSMF defined JOB cards. Each line should be less than 70 characters, omit start-of-line identifier statements such as "//", "/*", and include commas for end-of-line continuation.</description>
       <category>zowe</category>
       <string multiLine="true" valueMustBeChoice="false">
       </string>
@@ -93,7 +93,7 @@
         <string valueMustBeChoice="false" multiLine="false">
             <!-- Put validation here -->
             <!-- Specify choices here -->
-            <default>IBMUSER.ZWEV3.SZWEAUTH</default>    
+            <default>IBMUSER.ZWEV3.SZWEAUTH</default>
         </string>
     </variable>
     <variable name="zowe_setup_dataset_authPluginLib" scope="instance" visibility="public">
@@ -106,7 +106,7 @@
             <!-- Specify choices here -->
             <default>IBMUSER.ZWEV3.CUST.ZWESAPL</default>
         </string>
-    </variable>       
+    </variable>
     <variable name="zowe_runtimeDirectory" scope="instance" visibility="public">
         <label>Existing Zowe runtime directory</label>
         <abstract>Zowe runtime (root) directory with libraries</abstract>
@@ -220,7 +220,7 @@ some use cases, like containerization, this port could be different.</descriptio
         <string valueMustBeChoice="false" multiLine="false">
             <!-- Put validation here -->
             <choice>warn</choice>
-            <choice>exit</choice>            
+            <choice>exit</choice>
             <default>warn</default>
         </string>
     </variable>
@@ -258,7 +258,7 @@ some use cases, like containerization, this port could be different.</descriptio
             <!-- Put validation here -->
             <choice>TLSv1.1</choice>
             <choice>TLSv1.2</choice>
-            <choice>TLSv1.3</choice>            
+            <choice>TLSv1.3</choice>
             <default>TLSv1.2</default>
         </string>
     </variable>
@@ -274,7 +274,7 @@ some use cases, like containerization, this port could be different.</descriptio
             <!-- Put validation here -->
             <choice>TLSv1.1</choice>
             <choice>TLSv1.2</choice>
-            <choice>TLSv1.3</choice>            
+            <choice>TLSv1.3</choice>
             <default>TLSv1.3</default>
         </string>
     </variable>
@@ -286,8 +286,8 @@ some use cases, like containerization, this port could be different.</descriptio
         <string valueMustBeChoice="false" multiLine="false">
             <!-- Put validation here -->
             <!-- Specify choices here -->
-            <choice>PKCS12</choice>            
-            <choice>JCERACFKS</choice>            
+            <choice>PKCS12</choice>
+            <choice>JCERACFKS</choice>
             <default>JCERACFKS</default>
         </string>
     </variable>
@@ -308,7 +308,7 @@ some use cases, like containerization, this port could be different.</descriptio
         <description>Certificate keystore password.</description>
         <category>certificates</category>
         <string valueMustBeChoice="false" multiLine="false">
-            <!-- Put validation here -->                        
+            <!-- Put validation here -->
             <default>password</default>
         </string>
     </variable>
@@ -331,8 +331,8 @@ some use cases, like containerization, this port could be different.</descriptio
         <string valueMustBeChoice="false" multiLine="false">
             <!-- Put validation here -->
             <!-- Specify choices here -->
-            <choice>PKCS12</choice>            
-            <choice>JCERACFKS</choice>            
+            <choice>PKCS12</choice>
+            <choice>JCERACFKS</choice>
             <default>JCERACFKS</default>
         </string>
     </variable>
@@ -357,7 +357,7 @@ some use cases, like containerization, this port could be different.</descriptio
             <!-- Specify choices here -->
             <default>password</default>
         </string>
-    </variable>    
+    </variable>
     <variable name="java_home" scope="instance" visibility="public">
         <label>JAVA home</label>
         <abstract>Path to the JAVA home</abstract>
@@ -410,7 +410,7 @@ some use cases, like containerization, this port could be different.</descriptio
             <!-- Specify choices here -->
             <default>IZUDFLT</default>
         </string>
-    </variable>    
+    </variable>
     <variable name="components_gateway_port" scope="instance" visibility="public">
         <label>Gateway port</label>
         <abstract>Port for API ML Gateway</abstract>
@@ -421,7 +421,7 @@ some use cases, like containerization, this port could be different.</descriptio
             <!-- Specify choices here -->
             <default>7554</default>
         </integer>
-    </variable>    
+    </variable>
   <variable name="components_zaas_port" scope="instance" visibility="public">
     <label>ZAAS port</label>
     <abstract>Port for API ML ZAAS</abstract>
@@ -432,7 +432,7 @@ some use cases, like containerization, this port could be different.</descriptio
       <!-- Specify choices here -->
       <default>7558</default>
     </integer>
-  </variable>     
+  </variable>
     <variable name="components_api_catalog_port" scope="instance" visibility="public">
         <label>API catalog port</label>
         <abstract>Port on which API Catalog should be running.</abstract>
@@ -443,7 +443,7 @@ some use cases, like containerization, this port could be different.</descriptio
             <!-- Specify choices here -->
             <default>7552</default>
         </integer>
-    </variable>     
+    </variable>
     <variable name="components_discovery_port" scope="instance" visibility="public">
         <label>Discovery port</label>
         <abstract>Port on which Discovery service should be running</abstract>
@@ -454,7 +454,7 @@ some use cases, like containerization, this port could be different.</descriptio
             <!-- Specify choices here -->
             <default>7553</default>
         </integer>
-    </variable>    
+    </variable>
     <variable name="components_caching_service_port" scope="instance" visibility="public">
         <label>Caching service port</label>
         <abstract>Port for Caching service</abstract>
@@ -465,7 +465,7 @@ some use cases, like containerization, this port could be different.</descriptio
             <!-- Specify choices here -->
             <default>7555</default>
         </integer>
-    </variable>       
+    </variable>
   <variable name="components_caching_service_storage_infinispan_jgroups_port" scope="instance" visibility="public">
         <label>Caching service storage jgroups port</label>
         <abstract>Port for jgroups</abstract>
@@ -476,7 +476,7 @@ some use cases, like containerization, this port could be different.</descriptio
             <!-- Specify choices here -->
             <default>7559</default>
         </string>
-    </variable>  
+    </variable>
   <variable name="components_caching_service_storage_infinispan_jgroups_keyExchange_port" scope="instance" visibility="public">
         <label>Caching service storage jgroups keyExchange port</label>
         <abstract>Port for jgroups key exchange</abstract>
@@ -620,7 +620,7 @@ some use cases, like containerization, this port could be different.</descriptio
             <!-- Specify choices here -->
             <default>ZWESASTC</default>
         </string>
-    </variable>    
+    </variable>
     <!--atCreate-->
     <!--steps-->
     <step name="define_variables" optional="false">
@@ -669,7 +669,7 @@ some use cases, like containerization, this port could be different.</descriptio
             <variableValue name="node_home" scope="instance" noPromptIfSet="false" required="true"/>
             <variableValue name="zOSMF_host" scope="instance" noPromptIfSet="false" required="true"/>
             <variableValue name="zOSMF_port" scope="instance" noPromptIfSet="false" required="true"/>
-            <variableValue name="zOSMF_applId" scope="instance" noPromptIfSet="false" required="true"/>            
+            <variableValue name="zOSMF_applId" scope="instance" noPromptIfSet="false" required="true"/>
             <variableValue name="zowe_setup_security_product" scope="instance" noPromptIfSet="false" required="true"/>
             <variableValue name="zowe_setup_security_groups_admin" scope="instance" noPromptIfSet="false" required="true"/>
             <variableValue name="zowe_setup_security_groups_stc" scope="instance" noPromptIfSet="false" required="true"/>
@@ -689,10 +689,10 @@ some use cases, like containerization, this port could be different.</descriptio
         <step name="ports_setup" optional="false">
             <title>Ports</title>
             <description>Specify ports variables for components</description>
-            <prereqStep name="main_variables"/>                  
+            <prereqStep name="main_variables"/>
             <variableValue name="components_gateway_port" scope="instance" noPromptIfSet="false" required="true"/>
             <variableValue name="components_api_catalog_port" scope="instance" noPromptIfSet="false" required="true"/>
-            <variableValue name="components_zaas_port" scope="instance" noPromptIfSet="false" required="true"/>            
+            <variableValue name="components_zaas_port" scope="instance" noPromptIfSet="false" required="true"/>
             <variableValue name="components_discovery_port" scope="instance" noPromptIfSet="false" required="true"/>
             <variableValue name="components_caching_service_port" scope="instance" noPromptIfSet="false" required="true"/>
             <variableValue name="components_caching_service_storage_infinispan_jgroups_port" scope="instance" noPromptIfSet="false" required="false"/>
@@ -703,7 +703,7 @@ some use cases, like containerization, this port could be different.</descriptio
             <autoEnable>false</autoEnable>
             <canMarkAsFailed>false</canMarkAsFailed>
             <!--template-->
-          </step>              
+          </step>
     </step>
     <step name="configure" optional="false">
         <title>Create configuration</title>
@@ -773,6 +773,22 @@ echo '  # As seen in the documentation:' >> "${instance-zowe_runtimeDirectory}/z
 echo '  # https://docs.zowe.org/stable/user-guide/zos-components-installation-checklist' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '  #-------------------------------------------------------------------------------' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '  setup:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+#if (${global-zowe_setup_job_stmt_parms.trim().length()} > 0 )
+echo '    # JCL job header for samples in SZWESAMP' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '    jcl:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+  #if (${global-zowe_setup_job_stmt_parms.trim().includes("\n")} == -1)
+echo '      header: ${global-zowe_setup_job_stmt_parms.trim()}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+  #else
+echo '      header:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+    #foreach($line in ${global-zowe_setup_job_stmt_parms.split("\n")})
+      #if (${foreach.index} == 0)
+echo '      - ${line}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+      #else
+echo '      - //    ${line}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+      #end
+    #end
+  #end
+#end
 echo '    # MVS data set related configurations' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '    dataset:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '      # where Zowe MVS data sets will be installed' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
@@ -1060,19 +1076,7 @@ echo '' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '  # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '  # You can un-comment and define any extra environment variables as key/value' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '  # pairs here.' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-#if (${global-zowe_setup_job_stmt_parms.trim().length()} > 0 )
-echo '  environments:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '    jclHeader:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-  #foreach($line in ${global-zowe_setup_job_stmt_parms.split("\n")})
-    #if (${foreach.index} == 0) 
-echo '     - ${line}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-    #else
-echo '     - //    ${line}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-    #end
-  #end
-#else
 echo '  # environments:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-#end
 echo '  #   # Example of a global environment variable for all components' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '  #   MY_ENV_VAR: my_env_val' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
@@ -1383,6 +1387,12 @@ echo '#       zss:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '#         port: 28542' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '#       caching-service:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '#         enabled: false' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+
+export JAVA_HOME='${instance-java_home}'
+export PATH=$PATH:'${instance-zowe_runtimeDirectory}/bin'
+
+zwe init generate --allow-overwrite -c '${instance-zowe_runtimeDirectory}/zowe.yaml'
+
 ]]></inlineTemplate>
             <submitAs maxRc="0">shell-JCL</submitAs>
             <maxLrecl>1024</maxLrecl>
@@ -1391,11 +1401,11 @@ echo '#         enabled: false' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
     </step>
     <step name="zowe_installation_steps" optional="false">
         <title>Zowe installation</title>
-        <description>Zowe installation</description>  
+        <description>Zowe installation</description>
         <step name="install_zowe" optional="false">
             <title>Run the Zowe install</title>
-            <description>Configure Zowe.</description>            
-            <prereqStep name="configure"/>            
+            <description>Configure Zowe.</description>
+            <prereqStep name="configure"/>
             <!-- condition -->
             <!--variableValues-->
             <instructions substitution="true"><![CDATA[
@@ -1425,7 +1435,7 @@ zwe install -c '${instance-zowe_runtimeDirectory}/zowe.yaml' --allow-overwrite</
                 <maxLrecl>1024</maxLrecl>
                 <!-- zosmfOutput -->
             </template>
-        </step>      
+        </step>
         <step name="init_zowe" optional="false">
             <title>Run scripts for Zowe initialization</title>
             <description>Executes scripts for Zowe initialization</description>
@@ -1439,7 +1449,7 @@ zwe install -c '${instance-zowe_runtimeDirectory}/zowe.yaml' --allow-overwrite</
             <code>zwe init stc -c ${instance-zowe_runtimeDirectory}/zowe.yml --allow-overwrite</code> <br/>
             <br/>
             <b>NOTE:</b>
-            Each <b>zwe init</b> sub-command defines a configuration. 
+            Each <b>zwe init</b> sub-command defines a configuration.
 <ul>
 <li><b>mvs:</b> Copy the data sets provided with Zowe to custom data sets.</li>
 <li><b>stc:</b> Configure the system to launch the Zowe started task.</li>
@@ -1465,6 +1475,6 @@ zwe init stc -c '${instance-zowe_runtimeDirectory}/zowe.yaml' --allow-overwrite
                 <maxLrecl>1024</maxLrecl>
                 <!-- zosmfOutput -->
             </template>
-        </step>        
+        </step>
     </step>
 </workflow>
