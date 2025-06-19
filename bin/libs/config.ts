@@ -35,8 +35,12 @@ const cliParameterConfig:string = function() {
     return (value as string);
 }();
 
+const runtimeDirectory=configmgr.ZOWE_CONFIG.zowe.runtimeDirectory;
+//const extensionDirectory=ZOWE_CONFIG.zowe.extensionDirectory;
+const workspaceDirectory=configmgr.ZOWE_CONFIG.zowe.workspaceDirectory;
+
 export function getZoweConfig(): any {
-  return configmgr.getZoweConfig();
+  return configmgr.ZOWE_CONFIG;
 }
 
 export function updateZoweConfig(updateObj: any, writeUpdate: boolean, arrayMergeStrategy: number): any {
@@ -67,7 +71,6 @@ export function zosConvertEnvDirFileEncoding(file: string) {
 // compatible instance.env files from zowe.yaml.
 //
 export function generateInstanceEnvFromYamlConfig(haInstance: string) {
-  const workspaceDirectory = getZoweConfig().zowe.workspaceDirectory;
   let zwePrivateWorkspaceEnvDir = std.getenv('ZWE_PRIVATE_WORKSPACE_ENV_DIR');
   if (!zwePrivateWorkspaceEnvDir) {
     zwePrivateWorkspaceEnvDir=`${workspaceDirectory}/.env`
@@ -257,8 +260,7 @@ export function applyEnviron(environ: any): void {
 //       "zwe internal start prepare" is the only special case where we may need to define some variables before calling
 //       this function. The reason is to properly prepare the directories, logging, etc.
 export function loadEnvironmentVariables(componentId?: string) {
-  const workspaceDirectory = getZoweConfig().zowe.workspaceDirectory;
-  const runtimeDirectory = getZoweConfig().zowe.runtimeDirectory;
+
   // check and sanitize zweCliParameterHaInstance
   sanitizeHaInstanceId();
   std.setenv('ZWE_zowe_workspaceDirectory',workspaceDirectory);
@@ -299,7 +301,7 @@ export function loadEnvironmentVariables(componentId?: string) {
   // ZWE_DISCOVERY_SERVICES_LIST should have been prepared in zowe-install-packaging-tools and had been sourced.
 
   // overwrite ZWE_PRIVATE_LOG_LEVEL_ZWELS with zowe.launchScript.logLevel config in YAML
-  let logLevel =  configmgr.getZoweConfig().zowe.launchScript.logLevel;
+  let logLevel =  configmgr.ZOWE_CONFIG.zowe.launchScript.logLevel;
   if (logLevel) {
     std.setenv('ZWE_PRIVATE_LOG_LEVEL_ZWELS', logLevel.toUpperCase());
   }
@@ -314,10 +316,10 @@ export function loadEnvironmentVariables(componentId?: string) {
     container.prepareContainerRuntimeEnvironments();
   }
 
-  if (configmgr.getZoweConfig().zowe?.environments) {
-    const environmentKeys = Object.keys(configmgr.getZoweConfig().zowe.environments);
+  if (configmgr.ZOWE_CONFIG.zowe?.environments) {
+    const environmentKeys = Object.keys(configmgr.ZOWE_CONFIG.zowe.environments);
     environmentKeys.forEach((key)=> {
-      std.setenv(key, configmgr.getZoweConfig().zowe.environments[key]);
+      std.setenv(key, configmgr.ZOWE_CONFIG.zowe.environments[key]);
     });
   }
   

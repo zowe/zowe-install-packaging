@@ -27,7 +27,7 @@ import * as fakejq from './fakejq';
 import * as configUtils from './config';
 
 const CONFIG_MGR=configmgr.CONFIG_MGR;
-const ZOWE_CONFIG=configmgr.getZoweConfig();
+const ZOWE_CONFIG=configmgr.ZOWE_CONFIG;
 const runtimeDirectory=ZOWE_CONFIG.zowe.runtimeDirectory;
 const extensionDirectory=ZOWE_CONFIG.zowe.extensionDirectory;
 const workspaceDirectory=ZOWE_CONFIG.zowe.workspaceDirectory;
@@ -47,7 +47,7 @@ const PLUGIN_DEF_SCHEMAS = `${runtimeDirectory}/components/app-server/schemas/pl
 
 export function getEnabledComponents() {
   let haInstance = configUtils.sanitizeHaInstanceId();
-  let haConfig = configmgr.loadZoweConfig(haInstance);
+  let haConfig = configmgr.getZoweConfig(haInstance);
   let components = Object.keys(haConfig.components);
   let enabled: string[] = [];
   components.forEach((key) => {
