@@ -15,6 +15,7 @@
     "js-yaml": "4.1.0",
     "lodash": "4.17.21",
     "rimraf": "5.0.1",
+    "unescape-js": "1.1.4",
     "velocityjs": "2.1.5"
   }
 }

@@ -5,6 +5,7 @@ const YAML = require('js-yaml');
 const rimraf = require('rimraf');
 const { default: Ajv } = require('ajv/dist/2019');
 const velocity = require('velocityjs');
+const unescapeJs = require('unescape-js');
 
 /** 
 *  Runs tests which verify the current Zowe schema works against the zowe.yaml
@@ -21,6 +22,57 @@ const velocity = require('velocityjs');
 // collect all errors before quitting out
 const errors = [];
 const LOCAL_TEMP_DIR = path.resolve(__dirname, 'tmp');
+const ERROR_CASES_DIR = path.resolve(LOCAL_TEMP_DIR, 'collected_errors');
+const velocityMethodHandlers = [
+  {
+    uid: 'trim',
+    match: (payload) => {
+      return payload.property === 'trim';
+    },
+    resolve: (payload) => {
+      return payload.context.toString().trim()
+    }
+  }, 
+  {
+    uid: 'length',
+    match: (payload) => {
+      return payload.property === 'length';
+    },
+    resolve: (payload) => {
+      return payload.context.toString().length;
+    }
+  }, 
+  {
+    uid: 'includes',
+    match: (payload) => {
+      return payload.property === 'includes';
+    },
+    resolve: (payload) => {
+      if (payload.params.length > 1) {
+        return false;
+      }
+      const includeTerm = unescapeJs(payload.params[0]);
+      if (payload.context.toString().includes(includeTerm)) {
+        return 1;
+      } 
+      return -1; //explicitly -1, returning 'includes' result coerces result to a bool which breaks template 
+    }
+  }, 
+  {
+    uid: 'split',
+    match: (payload) => {
+      return payload.property === 'split';
+    },
+    resolve: (payload) => {
+      if (payload.params.length > 1) {
+        return payload.context.toString();
+      }
+      const splitTerm = unescapeJs(payload.params[0].toString());
+      return payload.context.toString().split(splitTerm)
+    }
+  }
+];
+
 let REPO_DIR = process.cwd();
 let backtrackCt = 0;
 
@@ -34,6 +86,7 @@ while (path.basename(path.resolve(REPO_DIR)) !== 'zowe-install-packaging') {
 
 rimraf.sync(LOCAL_TEMP_DIR);
 fs.mkdirSync(LOCAL_TEMP_DIR);
+fs.mkdirpSync(ERROR_CASES_DIR);
 const SCHEMA_PATH = path.resolve(REPO_DIR, 'schemas');
 const SCHEMA_SERVER_COMMON = path.resolve(SCHEMA_PATH, 'server-common.json');
 const SCHEMA_ZOWE_YAML = path.resolve(SCHEMA_PATH, 'zowe-yaml-schema.json');
@@ -53,6 +106,7 @@ PSWI_CONF = PSWI_CONF.split(']]></inlineTemplate>')[0];
 PSWI_CONF = PSWI_CONF.replaceAll('set -x', '');
 PSWI_CONF = PSWI_CONF.replaceAll('set -e', '');
 PSWI_CONF = PSWI_CONF.replaceAll('instance-', '');
+PSWI_CONF = PSWI_CONF.replaceAll('global-', '');
 PSWI_CONF = PSWI_CONF.replace(/^zwe.*$/m, '');
 wf_conf_properties = wf_conf_properties.replaceAll(/#(.*)$\n/gm, '');
 for (let line of wf_conf_properties.split('\n')) {
@@ -95,16 +149,26 @@ if (result.errors != null) {
  *  Run coverage for all known permutations of zowe.yaml produced by config workflow.
  */
 
-// Structure used to generate combinations of config choices. Complete permutations are only created for fields with dependentBranches.
+// Structure used to generate combinations of config choices. Complete combinations are only created for fields with dependentBranches.
 //    The rest of the fields simply "fill-in" their values to existing permutations, ensuring their values are covered somewhere in a test case.
 // (12 in total at writing)
 // could we be smarter about this and auto-generate the fields in the future?
 const configBranches = [
+  { field: 'zowe_setup_jcl_header', values: [ '', 'abc', 123, 'this_is\nmultiline\nheader']},
+  { field: 'zowe_externalDomains', values: ['localhost', 'localhost\nsome.other.host\n.dns.magic']},
   { field: 'zowe_setup_vsam_mode', values: ['NONRLS', 'RLS', ''] },
   { field: 'components_gateway_enabled', values: [true, false] },
   { field: 'components_zaas_enabled', values: [true, false] },
   { field: 'components_api_catalog_enabled', values: [true, false] },
   { field: 'components_discovery_enabled', values: [true, false] },
+  { field: 'components_app_server_enabled', values: [true, false] },
+  {
+    field: 'components_zss_enabled', values: [true, false], dependentBranches: {
+      when: true, branches: [
+        { field: 'components_zss_agent_jwt_fallback', values: [true, false] }
+      ]
+    }
+  },
   {
     field: 'components_caching_service_enabled', values: [true, false], dependentBranches:
     {
@@ -116,14 +180,6 @@ const configBranches = [
             ]
           }
         }
-      ]
-    }
-  },
-  { field: 'components_app_server_enabled', values: [true, false] },
-  {
-    field: 'components_zss_enabled', values: [true, false], dependentBranches: {
-      when: true, branches: [
-        { field: 'components_zss_agent_jwt_fallback', values: [true, false] }
       ]
     }
   }
@@ -145,6 +201,8 @@ for (const test of testMatrix) {
   if (result.errors != null) {
     const testCase = test.map((t, i) => `\t${configBranches[i]} = ${t}`).join('\n');
     errors.push(`There were errors during schema validation: ${JSON.stringify(result.errors, { indent: 2 })}.\n\n Supplied config:\n ${testCase}\n`);
+    fs.copySync(path.resolve(testDir, 'zowe.test.properties.yaml'), path.resolve(ERROR_CASES_DIR, 'zowe.yaml.properties.' + testMatrix.indexOf(test)))
+    fs.copySync(path.resolve(testDir, 'zowe.yaml'), path.resolve(ERROR_CASES_DIR, 'zowe.yaml.' + testMatrix.indexOf(test)))
   }
 }
 
@@ -217,7 +275,9 @@ function renderYaml(testConfig, testDir) {
   testConfig['zowe_runtimeDirectory'] = testDir;
   fs.writeFileSync(yamlPropertiesFile, YAML.dump(testConfig), { mode: 0o766 });
   const zoweYmlScriptOut = path.resolve(testDir, 'zowe.yaml.final.sh');
-  const renderContent = velocity.render(fs.readFileSync(ZOWE_YAML_SH_TEMPLATE, 'utf8'), testConfig);
+  const renderContent = velocity.render(fs.readFileSync(ZOWE_YAML_SH_TEMPLATE, 'utf8'), testConfig, null, {
+    customMethodHandlers: velocityMethodHandlers
+  });
   fs.writeFileSync(zoweYmlScriptOut, renderContent, { mode: 0o755 });
   cp.execSync(`${zoweYmlScriptOut}`);
   return path.resolve(testDir, 'zowe.yaml');
