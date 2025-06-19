@@ -24,6 +24,14 @@ describe(`${testSuiteName}`, () => {
 
   beforeAll(async () => {
     testRunner = new RemoteTestRunner(testSuiteName);
+    testRunner.addCleanFn((output) => {
+      return output
+        .replace(/keystore\.p12:.*$/gm, 'keystore.p12: [MASKED]')
+        .replace(/truststore\.p12:.*$/gm, 'truststore.p12: [MASKED]')
+        .replace(/^(\s+).*BEGIN CERTIFICATE[\s\S]*?END CERTIFICATE.*$/gm, '$1[MASKED]')
+        .replace(/^(\s+).*BEGIN PRIVATE KEY[\s\S]*?END PRIVATE KEY.*$/gm, '$1[MASKED]');
+    });
+
     cfgYaml = ZoweConfig.getZoweYaml();
     cfgYaml.zowe.setup.certificate.defaultCfgYaml = ZoweConfig.getDefaultsYaml();
   });
@@ -44,13 +52,6 @@ describe(`${testSuiteName}`, () => {
   describe('(SHORT)', () => {
     it('run migrate for kubernetes', async () => {
       const scenarioYml = 'setup.scenario.1.yml';
-      testRunner.addCleanFn((output) => {
-        return output
-          .replace(/keystore\.p12:.*$/gm, 'keystore.p12: [MASKED]')
-          .replace(/truststore\.p12:.*$/gm, 'truststore.p12: [MASKED]')
-          .replace(/^(\s+).*BEGIN CERTIFICATE[\s\S]*?END CERTIFICATE.*$/gm, '$1[MASKED]')
-          .replace(/^(\s+).*BEGIN PRIVATE KEY[\s\S]*?END PRIVATE KEY.*$/gm, '$1[MASKED]');
-      });
       cfgYaml = ZoweConfig.loadAndOverlay(cfgYaml, yamlResourceDir, scenarioYml);
       let result = await testRunner.runZweTest(cfgYaml, 'init certificate');
       result = await testRunner.runZweTest(cfgYaml, 'migrate for kubernetes');
