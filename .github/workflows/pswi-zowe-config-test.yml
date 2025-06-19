@@ -31,7 +31,7 @@ jobs:
         shell: bash
 
       - name: Install Dependencies for sync check script to work
-        run: npm install
+        run: npm ci
         working-directory: .github/scripts/config_workflow_validations
 
       - name: Check zowe.yaml + wf variable sync
