@@ -644,7 +644,7 @@ How we want to verify SSL certificates of services. Valid values are:
             <default>7563</default>
         </integer>
     </variable>
-    <variable name="components_cloud_gatewaye_debug" scope="instance" visibility="public">
+    <variable name="components_cloud_gateway_debug" scope="instance" visibility="public">
         <label>Cloud gateway debug</label>
         <abstract>Check this value to get additional debugging</abstract>
         <description>Check this value to get additional debugging</description>
@@ -1001,7 +1001,7 @@ How we want to verify SSL certificates of services. Valid values are:
             <default>true</default>
         </boolean>
     </variable>
-    <variable name="useconfig_manager_enabled" scope="instance" visibility="public">
+    <variable name="zowe_useConfigmgr" scope="instance" visibility="public">
         <label>Enable Zowe configuration manager</label>
         <abstract>Check this option to enable Zowe configuration manager</abstract>
         <description>Check this option to enable Zowe configuration manager.</description>
@@ -1206,8 +1206,8 @@ How we want to verify SSL certificates of services. Valid values are:
             <variableValue name="zOSMF_host" scope="instance" noPromptIfSet="false" required="true"/>
             <variableValue name="zOSMF_port" scope="instance" noPromptIfSet="false" required="true"/>
             <variableValue name="zOSMF_applId" scope="instance" noPromptIfSet="false" required="true"/>
-            <variableValue name="useconfig_manager_enabled" scope="instance" noPromptIfSet="false" required="true"/>
-            <variableValue name="config_manager_validation" scope="instance" noPromptIfSet="false" required="true"/>
+            <variableValue name="zowe_useConfigmgr" scope="instance" noPromptIfSet="false" required="true"/>
+            <variableValue name="zowe_configmgr_validation" scope="instance" noPromptIfSet="false" required="true"/>
             <variableValue name="components_gateway_enabled" scope="instance" noPromptIfSet="false" required="true"/>
             <variableValue name="components_metrics_service_enabled" scope="instance" noPromptIfSet="false" required="true"/>
             <variableValue name="components_cloud_gateway_enabled" scope="instance" noPromptIfSet="false" required="true"/>
@@ -1311,7 +1311,7 @@ How we want to verify SSL certificates of services. Valid values are:
                 </targetStateSet>
             </condition>
             <variableValue name="components_cloud_gateway_port" scope="instance" noPromptIfSet="false" required="true"/>
-            <variableValue name="components_cloud_gatewaye_debug" scope="instance" noPromptIfSet="false" required="true"/>
+            <variableValue name="components_cloud_gateway_debug" scope="instance" noPromptIfSet="false" required="true"/>
             <instructions substitution="false">Run this step to specify the cloud gateway variables</instructions>
             <weight>1</weight>
             <skills>z/OS System Programmer</skills>
@@ -1885,7 +1885,7 @@ echo '  # Where extensions are installed' >> "${instance-zowe_runtimeDirectory}/
 echo '  extensionDirectory: $!{instance-zowe_extensionDirectory}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '  # **COMMONLY_CUSTOMIZED**' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '  useConfigmgr: $!{instance-useconfig_manager_enabled}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '  useConfigmgr: $!{instance-zowe_useConfigmgr}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '  # Setting to true will enable:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '  # * schema-backed validation of zowe.yaml' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '  # * should greatly improve startup time.' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
@@ -2176,7 +2176,7 @@ echo '  # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>' >> "${instance-zowe_runtimeDire
 echo '  cloud-gateway:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '    enabled: ${instance-components_cloud_gateway_enabled}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '    port: ${instance-components_cloud_gateway_port}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '    debug: ${instance-components_cloud_gatewaye_debug}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '    debug: ${instance-components_cloud_gateway_debug}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 #end
 #if (${instance-components_cloud_gateway_enabled} == "false" )
 echo '  cloud-gateway:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"

@@ -5,8 +5,39 @@
       "description": "Caching service and Infinispan variables are present in the workflow and not present by default in example-zowe.yaml. These are valid variables. The default is infinispan.",
       "rule_target": "all",
       "rule_type": "wf_extra_vars",
-      "rule_entry": ["components_caching_service_storage_vsam_name", "components_caching_service_storage_infinispan_jgroups_host"]
-    }, {
+      "rule_entry": [
+        "components_caching_service_storage_vsam_name",
+        "components_caching_service_storage_infinispan_jgroups_host"
+      ]
+    },
+    {
+      "description": "ZSS TLS settings are not in zowe.yaml by default, but valid in workflow",
+      "rule_target": "ZWECONF",
+      "rule_type": "wf_extra_vars",
+      "rule_entry": [
+        "components_zss_tls"
+      ]
+    },
+    {
+      "description": "Gateway internal mapper is not displayed in zowe.yaml",
+      "rule_target": "ZWECONF",
+      "rule_type": "wf_extra_vars",
+      "rule_entry": [
+        "components_gateway_internalMapper"
+      ]
+    },
+    {
+      "description": "Missing zowe.yaml settings in v2.x workflows",
+      "rule_target": "all",
+      "rule_type": "wf_missing_vars",
+      "rule_entry": [
+        "zowe_network_server_tls_attls",
+        "zowe_network_server_tls_minTls",
+        "zowe_network_server_tls_maxTls",
+        "zowe_network_client_tls_attls"
+      ]
+    },
+    {
       "description": "zowe_setup_certficate_* is always commented out and not part of the default config workflow.",
       "rule_target": "all",
       "rule_type": "wf_missing_vars",
@@ -79,8 +110,15 @@
         "components_gateway_apiml_security_authorization_endpoint_enabled",
         "components_gateway_apiml_security_authorization_provider",
         "components_gateway_apiml_security_x509_enabled",
-        "components_zaas_enabled",
-        "components_zaas_debug",
+        "components_gateway_server_internal_enabled",
+        "components_gateway_server_internal_port",
+        "components_gateway_server_internal_ssl_enabled",
+        "components_metrics_service_enabled",
+        "components_metrics_service_port",
+        "components_metrics_service_debug",
+        "components_cloud_gateway_enabled",
+        "components_cloud_gateway_port",
+        "components_cloud_gateway_debug",
         "components_api_catalog_enabled",
         "components_api_catalog_debug",
         "components_discovery_enabled",
@@ -89,6 +127,8 @@
         "components_caching_service_debug",
         "components_caching_service_storage_evictionStrategy",
         "components_caching_service_storage_mode",
+        "components_caching_service_storage_size",
+        "components_caching_service_storage_vsam_name",
         "components_app_server_enabled",
         "components_app_server_port",
         "components_app_server_debug",
@@ -99,7 +139,8 @@
         "components_explorer_jes_enabled",
         "components_explorer_mvs_enabled",
         "components_explorer_uss_enabled",
-        "components_zss_agent_jwt_fallback"
+        "components_zss_agent_jwt_fallback",
+        "zowe_useConfigmgr"
       ]
     },
     {
