@@ -3,6 +3,9 @@
 All notable changes to the Zowe Installer will be documented in this file.
 <!--Add the PR or issue number to the entry if available.-->
 
+## `2.18.3`
+- Bugfix: YAML lookup for HA instances within "haInstances" was not working when HA instance names were uppercase. Now, the lookup is case insensitive to allow for any casing of HA instance names. [#4380](https://github.com/zowe/zowe-install-packaging/pull/4380)
+
 ## `2.18.1`
 - Bugfix: When logging `zwe` command, sometimes the log has wrong file tag and the log is unreadable. [#4068](https://github.com/zowe/zowe-install-packaging/pull/4068)
 - Bugfix: When `--log-dir` parameter for `zwe` command is a file, there might be an error "InternalError: stack overflow". [#4063](https://github.com/zowe/zowe-install-packaging/pull/4063)
