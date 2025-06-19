@@ -30,6 +30,15 @@ jobs:
           git config --global user.email dummy-email@email.com
         shell: bash
 
+      - name: Install Dependencies for sync check script to work
+        run: npm ci
+        working-directory: .github/scripts/config_workflow_validations
+
+      - name: Check zowe.yaml + wf variable sync
+        run: node .github/scripts/config_workflow_validations/check_variables_sync.js
+
+      - name: Check that all rendering permutations create valid zowe.yaml files
+        run: node .github/scripts/config_workflow_validations/check_render_permutations.js
       - name: '[PSI-LOCK] Lock marist servers to build PSWI'
         uses: zowe-actions/shared-actions/lock-resource@main
         with:
