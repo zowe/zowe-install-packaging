@@ -3,9 +3,6 @@
 exports[`compare-zwe-output-with-launcher (SHORT) compare .zowe-merged.yaml created by launcher and zwe 1`] = `
 "---
 zowe:
-  environments:
-    jclHeader:
-    - ""
   setup:
     dataset:
       parmlibMembers:
@@ -53,6 +50,9 @@ zowe:
       mode: "NONRLS"
       volume: "TSTVOL"
       storageClass: ""
+    jcl:
+      header:
+      - ""
   network:
     proxyType: "https"
     server:
@@ -191,9 +191,6 @@ zOSMF:
 exports[`compare-zwe-output-with-launcher (SHORT) compare .zowe-merged.yaml created by launcher and zwe 2`] = `
 "---
 zowe:
-  environments:
-    jclHeader:
-    - ""
   setup:
     dataset:
       parmlibMembers:
@@ -241,6 +238,9 @@ zowe:
       mode: "NONRLS"
       volume: "TSTVOL"
       storageClass: ""
+    jcl:
+      header:
+      - ""
   network:
     proxyType: "https"
     server:

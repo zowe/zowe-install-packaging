@@ -123,17 +123,17 @@ do i = 1 to words(cfg_mandatory)
   end
 end
 
-jcl = CFG.zowe.setup.dataset.prefix'.SZWESAMP'
+_jcl_ = CFG.zowe.setup.dataset.prefix'.SZWESAMP'
 jclCopy = CFG.zowe.setup.dataset.jcllib
 
-if jcl = jclCopy then do
+if _jcl_ = jclCopy then do
   queue '"zowe.setup.dataset.prefix" and "zowe.setup.dataset.jcllib"',
       'are identical, which is not allowed.'
   queue UPDATE_CONFIG
   FormatError(8)
 end
 
-say 'Creating a fresh copy of 'jcl' named 'jclCopy'.'
+say 'Creating a fresh copy of '_jcl_' named 'jclCopy'.'
 
 x = DeleteDataSet(jclCopy)
 
@@ -145,7 +145,7 @@ if AllocateDataSet(jclCopy, 'zweto') > 0 then do
   ExitWithRC(8)
 end
 
-if AllocateDataSet(jcl, 'zwefrom') > 0 then do
+if AllocateDataSet(_jcl_, 'zwefrom') > 0 then do
   ExitWithRC(8)
 end
 
@@ -248,7 +248,7 @@ if COMPARE('ACF2', CVTRAC_VAL) = 0 then do
   end
 end
 
-say jcl' has been copied to 'jclCopy'.'
+say _jcl_' has been copied to 'jclCopy'.'
 
 /*
 ================================================================================
@@ -334,7 +334,6 @@ say 'All of the substitutions were found.'
 /*
 ================================================================================
     Invoke the edit macro on the substitutions for each member.
-    Skip zowe.environments.jclHeader if contains \n (x'15') or not initialized
     ZWECHG: change all word1 word2
       word1 is expected to be {zowe.something}
       word2 is anything, including spaces, single or double apostrophes
@@ -350,10 +349,6 @@ do i = 1 to members.0
       call Print 'Edit 'd'.'
       old = '{'members.i.substitutions.j'}'
       new = value('CFG.'members.i.substitutions.j)
-      if old = '{zowe.environments.jclHeader}' then do
-        if pos(x2c('15'), new) > 0 then
-          iterate j
-      end
       if symbol('CFG.'members.i.substitutions.j) = 'LIT' then
         iterate j
       apostrophes1 = "'"
@@ -395,18 +390,17 @@ say 'The edit macro was invoked on each member.'
 /*
 ================================================================================
     Add the job card to each member if filled out.
+    1) If the zowe.setup.jcl.header is one line, it was already done
+    2) Proceed only arrays, use queue to simplify indexing
 ================================================================================
-FIXME:
-  1. Card is added to each member (STCs included)
-  2. It overwrites the first line
-
+*/
 card.0 = 0
-
-do i = 0 to 99
-  if COMPARE(SYMBOL('CFG.setup.jobCard.'i), 'VAR') = 0 then do
-    j = card.0 + 1
-    card.j = VALUE('CFG.setup.jobCard.'i)
-    card.0 = j
+idx = 0
+do forever
+  if SYMBOL('CFG.zowe.setup.jcl.header.'idx) = 'VAR' then do
+    idx = idx + 1
+    card.idx = VALUE('CFG.zowe.setup.jcl.header.'idx - 1)
+    card.0 = idx
   end
   else do
     leave
@@ -415,7 +409,6 @@ end
 
 if card.0 > 0 then do
   say 'The job card has 'card.0' lines.'
-  say 'Adding the job card to each member.'
   do i = 1 to members.0
     if AllocateDataSet(jclCopy'('members.i.name')', 'zwejcl') > 0 then do
       ExitWithRC(8)
@@ -423,26 +416,37 @@ if card.0 > 0 then do
     if ReadFromDataSet('zwejcl') > 0 then do
       ExitWithRC(8)
     end
-    !contentToWrite.0 = !contentToRead.0 + card.0 - 1
-    do j = 1 to card.0
-      !contentToWrite.j = card.j
+
+    clsQueue = ClearQueue()
+    updated = 0
+    do readLine = 1 to !contentToRead.0
+      jclHeaderPos = pos('{zowe.setup.jcl.header}', !contentToRead.readLine)
+      if jclHeaderPos > 0 then do
+        ol = overlay(card.1, !contentToRead.readLine, jclHeaderPos, 80, ' ')
+        queue strip(ol, 'T')
+        do jobCardItem = 2 to card.0
+          queue card.jobCardItem
+        end
+        updated = 1
+      end
+      else do
+        queue !contentToRead.readLine
+      end
     end
-    j = card.0 + 1
-    do k = 2 to !contentToRead.0
-      !contentToWrite.j = !contentToRead.k
-      j = j + 1
+
+    if updated then do
+      say 'Adding the job card to '_jcl_'('members.i.name')'
+      if WriteQueueToDataSet('zwejcl') > 0 then do
+        ExitWithRC(8)
+      end
     end
-    if WriteToDataSet('zwejcl') > 0 then do
-      ExitWithRC(8)
-    end
+
     if FreeByDD('zwejcl') > 0 then do
       ExitWithRC(8)
     end
-  end
-  say 'The job card was added to each member.'
-end
 
-*/
+  end
+end
 
 say 'Checking the ZWESLSTC CONFIG entry'
 
@@ -686,6 +690,38 @@ WriteToDataSet:
   !contentToWrite.0 = 0
 
   return rc
+
+/*
+================================================================================
+  WriteQueueToDataSet('dd')
+================================================================================
+*/
+WriteQueueToDataSet:
+  procedure expose !verbose
+
+  if ARG() <> 1 then do
+    return 1
+  end
+
+  cmd = 'execio * diskw 'ARG(1)' (finis'
+  call Print cmd
+  address tso cmd
+
+  return rc
+
+/*
+================================================================================
+  ClearQueue()
+================================================================================
+*/
+ClearQueue: procedure
+
+  lines = queued()
+  do lines
+    pull dummy
+  end
+
+  return lines
 
 /*
 ================================================================================

@@ -463,7 +463,7 @@ export class RemoteTestRunner {
   }
 
   private addAnyCustomJobStatements(zoweYaml: ZoweYamlType): { yaml: ZoweYamlType; headers: string[] } {
-    const jclHeader = zoweYaml.zowe?.environments?.jclHeader;
+    const jclHeader = zoweYaml.zowe?.setup?.jcl?.header;
     // jclHeader is either an array or string, so .length works in both cases
     // @ts-expect-error incomplete schema
     if (jclHeader != null && jclHeader.length > 0) {
@@ -485,10 +485,10 @@ export class RemoteTestRunner {
     }
 
     const jclLines = this.convertParamsToLines(fullParams);
-    if (cloneYaml.zowe?.environments == null) {
-      cloneYaml.zowe.environments = {};
+    if (cloneYaml.zowe?.setup?.jcl?.header == null) {
+      _.set(cloneYaml, 'zowe.setup.jcl.header', []);
     }
-    cloneYaml.zowe.environments.jclHeader = jclLines;
+    cloneYaml.zowe.setup.jcl.header = jclLines;
     return { yaml: cloneYaml, headers: jclLines };
   }
 

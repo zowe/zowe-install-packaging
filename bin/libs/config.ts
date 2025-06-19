@@ -200,8 +200,17 @@ export function generateInstanceEnvFromYamlConfig(haInstance: string) {
   let hostname = jsonConfig.hostname;
 
   let haConfig = jsonConfig;
-  if (haInstance && jsonConfig.haInstances && jsonConfig.haInstances[haInstance]) {
-    haConfig = merger.merge(jsonConfig.haInstances[haInstance], jsonConfig);
+  let haKeys = [];
+  if (jsonConfig.haInstances) { haKeys = Object.keys(jsonConfig.haInstances) }
+
+  if (haInstance && haKeys.length > 0) {
+    for (let i = 0; i < haKeys.length; i++) {
+      // make haInstance lookup case-insensitive by looking for first lowercase match
+      if (haKeys[i].toLowerCase() == haInstance) {
+        haConfig = merger.merge(jsonConfig.haInstances[haKeys[i]], jsonConfig);
+        break;
+      }
+    }
   }
 
   haConfig.haInstance = {
