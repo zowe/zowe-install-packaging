@@ -19,10 +19,13 @@ const unescapeJs = require('unescape-js');
 *    It is possible for schema failures to occur if fields are required and only present in defaults.yaml
 */
 
-// collect all errors before quitting out
+//// ---- init section -----
+// we collect all errors before quitting out
 const errors = [];
 const LOCAL_TEMP_DIR = path.resolve(__dirname, 'tmp');
 const ERROR_CASES_DIR = path.resolve(LOCAL_TEMP_DIR, 'collected_errors');
+
+// required method implementations for velocity-js
 const velocityMethodHandlers = [
   {
     uid: 'trim',
@@ -83,45 +86,69 @@ while (path.basename(path.resolve(REPO_DIR)) !== 'zowe-install-packaging') {
   }
 }
 
-
 rimraf.sync(LOCAL_TEMP_DIR);
 fs.mkdirSync(LOCAL_TEMP_DIR);
 fs.mkdirpSync(ERROR_CASES_DIR);
+
 const SCHEMA_PATH = path.resolve(REPO_DIR, 'schemas');
 const SCHEMA_SERVER_COMMON = path.resolve(SCHEMA_PATH, 'server-common.json');
 const SCHEMA_ZOWE_YAML = path.resolve(SCHEMA_PATH, 'zowe-yaml-schema.json');
-const ZOWE_YAML_SH_TEMPLATE = path.resolve(LOCAL_TEMP_DIR, 'zowe.yaml.sh');
-let WF_CONF_YAML_BASE = {}; // do not modify directly, use "getConfBase"
-const WF_DIR = path.resolve(REPO_DIR, 'workflows');
-let WF_SCRIPT = path.resolve(LOCAL_TEMP_DIR, 'zowe.yaml.sh');
-let ajvParser;
 
 // Setup Workflow YAML variables and local files
-let wf_conf_properties;
-let PSWI_CONF = '';
-PSWI_CONF = fs.readFileSync(path.resolve(WF_DIR, 'files', 'ZWECONF.xml')).toString();
-wf_conf_properties = fs.readFileSync(path.resolve(WF_DIR, 'files', 'ZWECONF.properties')).toString();
-PSWI_CONF = PSWI_CONF.split('<inlineTemplate substitution="true"><![CDATA[')[1];
-PSWI_CONF = PSWI_CONF.split(']]></inlineTemplate>')[0];
-PSWI_CONF = PSWI_CONF.replaceAll('set -x', '');
-PSWI_CONF = PSWI_CONF.replaceAll('set -e', '');
-PSWI_CONF = PSWI_CONF.replaceAll('instance-', '');
-PSWI_CONF = PSWI_CONF.replaceAll('global-', '');
-PSWI_CONF = PSWI_CONF.replace(/^zwe.*$/m, '');
+let WF_PROPERTIES_COMMON_BASE = {};
+const WF_DIR = path.resolve(REPO_DIR, 'workflows');
+const ZWECONF_WF_FILE_PATH = path.resolve(WF_DIR, 'files', 'ZWECONF.xml');
+const ZWECONF_SH_TEMPLATE = path.resolve(LOCAL_TEMP_DIR, 'zowe.yaml.ZWECONF.sh');
+const ZWEAMLCF_WF_FILE_PATH = path.resolve(WF_DIR, 'files', 'ZWEAMLCF.xml');
+const ZWEAMLCF_SH_TEMPLATE = path.resolve(LOCAL_TEMP_DIR, 'zowe.yaml.ZWEAMLCF.sh');
+
+// shared properties between ZWEAMLCF and ZWECONF
+const ZWECONF_PROPERTIES_FILE_PATH = path.resolve(WF_DIR, 'files', 'ZWECONF.properties');
+let wf_conf_properties = fs.readFileSync(ZWECONF_PROPERTIES_FILE_PATH, 'utf8');
 wf_conf_properties = wf_conf_properties.replaceAll(/#(.*)$\n/gm, '');
 for (let line of wf_conf_properties.split('\n')) {
   if (line.trim().length > 0) {
     let propSplit = line.split('=');
     let key = propSplit[0];
     let value = propSplit[1];
-    WF_CONF_YAML_BASE[key] = value;
+    WF_PROPERTIES_COMMON_BASE[key] = value;
   }
 }
-WF_CONF_YAML_BASE['zowe_runtimeDirectory'] = path.resolve(LOCAL_TEMP_DIR, 'test_yaml');
-fs.writeFileSync(path.resolve(LOCAL_TEMP_DIR, 'zowe.base.properties.yaml'), YAML.dump(WF_CONF_YAML_BASE), { mode: 0o766 });
-fs.writeFileSync(WF_SCRIPT, PSWI_CONF, { mode: 0o755 });
+WF_PROPERTIES_COMMON_BASE['zowe_runtimeDirectory'] = path.resolve(LOCAL_TEMP_DIR, 'test_yaml');
+Object.freeze(WF_PROPERTIES_COMMON_BASE); // Protect Base config
+fs.writeFileSync(path.resolve(LOCAL_TEMP_DIR, 'zowe.base.properties.yaml'), YAML.dump(WF_PROPERTIES_COMMON_BASE), { mode: 0o766 });
+
+// Define workflows to test, initialize them and use them with test cases
+const workflowsToTest = [
+  {
+    name: 'ZWECONF',
+    content: '',
+    filePath: ZWECONF_WF_FILE_PATH,
+    templatePath: ZWECONF_SH_TEMPLATE
+  }, {
+    name: 'ZWEAMLCF',
+    content: '',
+    filePath: ZWEAMLCF_WF_FILE_PATH,
+    templatePath: ZWEAMLCF_SH_TEMPLATE
+  }
+]
+
+for (const wf of workflowsToTest) {
+  wf.content = fs.readFileSync(wf.filePath).toString();
+  wf.content = wf.content.split('<inlineTemplate substitution="true"><![CDATA[')[1];
+  wf.content = wf.content.split(']]></inlineTemplate>')[0];
+  wf.content = wf.content.replaceAll('set -x', '');
+  wf.content = wf.content.replaceAll('set -e', '');
+  wf.content = wf.content.replaceAll('instance-', '');
+  wf.content = wf.content.replaceAll('global-', '');
+  wf.content = wf.content.replace(/^zwe.*$/m, '');
+  fs.writeFileSync(wf.templatePath, wf.content);
+
+}
+
 
 // Setup AJV Parser
+let ajvParser;
 const ajv = new Ajv({
   strict: "log",
   unicodeRegExp: false,
@@ -131,8 +158,7 @@ ajv.addSchema([fs.readJSONSync(SCHEMA_SERVER_COMMON)]);
 ajv.addKeyword('$anchor');
 ajvParser = ajv.compile(fs.readJsonSync(SCHEMA_ZOWE_YAML, 'utf8'));
 
-// Protect Base config
-Object.freeze(WF_CONF_YAML_BASE);
+///// --- end init section ----
 
 /**
  *  Run a default schema validation (no custom variables)
@@ -140,7 +166,7 @@ Object.freeze(WF_CONF_YAML_BASE);
 let testConfig = getBaseConf();
 let testDir = path.resolve(LOCAL_TEMP_DIR, 'test_defaults');
 
-const result = runSchemaValidation(testConfig, testDir);
+const result = runSchemaValidation(testConfig, testDir, workflowsToTest[0]);
 if (result.errors != null) {
   errors.push('There should be no errors for a default schema validation.');
 }
@@ -185,26 +211,33 @@ const configBranches = [
   }
 ];
 
-testConfig = getBaseConf();
-testDir = path.resolve(LOCAL_TEMP_DIR, 'test_permutations');
 
 const testMatrix = generatePermutations(configBranches);
+testDir = path.resolve(LOCAL_TEMP_DIR, 'test_permutations');
+let testCt = 0;
+// Run the tests. 
+for (const [testIdx, test] of testMatrix.entries()) {
+  
+  testConfig = getBaseConf();
 
-// Run the test
-for (const test of testMatrix) {
-  for (let i = 0; i < configBranches.length; i++) {
-    const pieces = test[i].split('=');
+  for (const element of test) {
+    const pieces = element.split('=');
     testConfig[pieces[0]] = '' + pieces[1];
   }
 
-  const result = runSchemaValidation(testConfig, testDir);
-  if (result.errors != null) {
-    const testCase = test.map((t, i) => `\t${configBranches[i]} = ${t}`).join('\n');
-    errors.push(`There were errors during schema validation: ${JSON.stringify(result.errors, { indent: 2 })}.\n\n Supplied config:\n ${testCase}\n`);
-    fs.copySync(path.resolve(testDir, 'zowe.test.properties.yaml'), path.resolve(ERROR_CASES_DIR, 'zowe.yaml.properties.' + testMatrix.indexOf(test)))
-    fs.copySync(path.resolve(testDir, 'zowe.yaml'), path.resolve(ERROR_CASES_DIR, 'zowe.yaml.' + testMatrix.indexOf(test)))
+  for (const wf of workflowsToTest) {
+    const result = runSchemaValidation(testConfig, testDir, wf);
+    if (result.errors != null) {
+      const testCase = test.map((t, i) => `\t${configBranches[i]} = ${t}`).join('\n');
+      errors.push(`There were errors during schema validation: ${JSON.stringify(result.errors, { indent: 2 })}.\n\n Supplied config:\n ${testCase}\n`);
+      fs.copySync(path.resolve(testDir, 'zowe.test.properties.yaml'), path.resolve(ERROR_CASES_DIR, `zowe.yaml.properties.${testIdx}`))
+      fs.copySync(path.resolve(testDir, 'zowe.yaml'), path.resolve(ERROR_CASES_DIR, `zowe.yaml.${testIdx}`))
+    }
+    testCt++;
   }
 }
+
+console.log(`${testCt} tests run.`);
 
 if (errors.length > 0) {
   console.log(errors.join('\n'));
@@ -215,11 +248,11 @@ process.exit(0);
 
 
 function getBaseConf() {
-  return JSON.parse(JSON.stringify(WF_CONF_YAML_BASE));
+  return JSON.parse(JSON.stringify(WF_PROPERTIES_COMMON_BASE));
 }
 
 // Generates permutations by recursing all the way down the item array, and building up by concatenating results.
-//  will multiply (combining permutations) when dependentBranches exist, otherwise linearly return arrays with new values prepended.
+//  will multiply (combining permutations) when dependentBranches exist, otherwise return arrays as-is with new values prepended.
 function generatePermutations(items) {
   if (items == null || items.length == 0) {
     return [[]];
@@ -237,14 +270,14 @@ function generatePermutations(items) {
       if (currItem.dependentBranches.when === val) {
         const extraPermutations = generatePermutations(currItem.dependentBranches.branches);
         const newPerms = [];
-        // multiples each existing array * extraPermutations. (2 existing, 3 new = 6 total arrays)
+        // multiply existing arrays * extraPermutations. (2 existing, 3 new = 6 total arrays)
         merged.forEach((a) => { extraPermutations.forEach((b) => newPerms.push(a.concat(b))); });
         merged = newPerms; 
       }
       perms.push(...merged);
     }
   } else {
-    // since we don't iterate over currItem.values, ensure we have enough arrays to concat in below map. Just duplicate existing is fine.
+    // ensure we have enough arrays to concat at least one of every `currItem.values` options. Duplicating existing subPerms is fine.
     while (subPermutations.length < currItem.values.length) {
       subPermutations.push(subPermutations[0]);
     }
@@ -260,26 +293,28 @@ function generatePermutations(items) {
 }
 
 
-function runSchemaValidation(testConfig, testDir) {
+function runSchemaValidation(testConfig, testDir, workflow) {
   fs.mkdirpSync(testDir);
 
-  const yamlPath = renderYaml(testConfig, testDir);
+  const yamlPath = renderTemplate(testConfig, testDir, workflow);
   const zoweYaml = YAML.load(fs.readFileSync(yamlPath, 'utf8'));
   const validation = ajvParser(zoweYaml);
   return { res: validation, errors: ajvParser.errors };
 }
 
-function renderYaml(testConfig, testDir) {
+function renderTemplate(testConfig, testDir, workflow) {
   fs.mkdirpSync(testDir);
   const yamlPropertiesFile = path.resolve(testDir, 'zowe.test.properties.yaml');
   testConfig['zowe_runtimeDirectory'] = testDir;
   fs.writeFileSync(yamlPropertiesFile, YAML.dump(testConfig), { mode: 0o766 });
-  const zoweYmlScriptOut = path.resolve(testDir, 'zowe.yaml.final.sh');
-  const renderContent = velocity.render(fs.readFileSync(ZOWE_YAML_SH_TEMPLATE, 'utf8'), testConfig, null, {
+  const zoweYmlScriptOut = path.resolve(testDir, `zowe.yaml.final.${workflow.name}.sh`);
+  const renderContent = velocity.render(fs.readFileSync(workflow.templatePath, 'utf8'), testConfig, null, {
     customMethodHandlers: velocityMethodHandlers
   });
   fs.writeFileSync(zoweYmlScriptOut, renderContent, { mode: 0o755 });
   cp.execSync(`${zoweYmlScriptOut}`);
-  return path.resolve(testDir, 'zowe.yaml');
+  const zoweYamlOut = path.resolve(testDir, `zowe.${workflow.name}.yaml`);
+  fs.moveSync(path.resolve(testDir, 'zowe.yaml'), zoweYamlOut, {overwrite: true})
+  return zoweYamlOut;
 }
 
