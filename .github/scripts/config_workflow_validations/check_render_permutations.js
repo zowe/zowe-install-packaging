@@ -114,6 +114,8 @@ for (let line of wf_conf_properties.split('\n')) {
     WF_PROPERTIES_COMMON_BASE[key] = value;
   }
 }
+WF_PROPERTIES_COMMON_BASE['java_home'] = '/dummy/java/home'
+WF_PROPERTIES_COMMON_BASE['node_home'] = '/dummy/node/home'
 WF_PROPERTIES_COMMON_BASE['zowe_runtimeDirectory'] = path.resolve(LOCAL_TEMP_DIR, 'test_yaml');
 Object.freeze(WF_PROPERTIES_COMMON_BASE); // Protect Base config
 fs.writeFileSync(path.resolve(LOCAL_TEMP_DIR, 'zowe.base.properties.yaml'), YAML.dump(WF_PROPERTIES_COMMON_BASE), { mode: 0o766 });
@@ -139,11 +141,12 @@ for (const wf of workflowsToTest) {
   wf.content = wf.content.split(']]></inlineTemplate>')[0];
   wf.content = wf.content.replaceAll('set -x', '');
   wf.content = wf.content.replaceAll('set -e', '');
+  wf.content = wf.content.replaceAll('${{ }}', '')
+  wf.content = wf.content.replaceAll('${{ zowe.job.prefix }}SV', 'zowe.job.prefixSV')
   wf.content = wf.content.replaceAll('instance-', '');
   wf.content = wf.content.replaceAll('global-', '');
   wf.content = wf.content.replace(/^zwe.*$/m, '');
   fs.writeFileSync(wf.templatePath, wf.content);
-
 }
 
 
@@ -231,7 +234,7 @@ for (const [testIdx, test] of testMatrix.entries()) {
       const testCase = test.map((t, i) => `\t${configBranches[i]} = ${t}`).join('\n');
       errors.push(`There were errors during schema validation: ${JSON.stringify(result.errors, { indent: 2 })}.\n\n Supplied config:\n ${testCase}\n`);
       fs.copySync(path.resolve(testDir, 'zowe.test.properties.yaml'), path.resolve(ERROR_CASES_DIR, `zowe.yaml.properties.${testIdx}`))
-      fs.copySync(path.resolve(testDir, 'zowe.yaml'), path.resolve(ERROR_CASES_DIR, `zowe.yaml.${testIdx}`))
+      fs.copySync(path.resolve(testDir, `zowe.${wf.name}.yaml`), path.resolve(ERROR_CASES_DIR, `zowe.${wf.name}.yaml.${testIdx}`))
     }
     testCt++;
   }
@@ -295,7 +298,6 @@ function generatePermutations(items) {
 
 function runSchemaValidation(testConfig, testDir, workflow) {
   fs.mkdirpSync(testDir);
-
   const yamlPath = renderTemplate(testConfig, testDir, workflow);
   const zoweYaml = YAML.load(fs.readFileSync(yamlPath, 'utf8'));
   const validation = ajvParser(zoweYaml);
