@@ -32,12 +32,15 @@
     chmod 777 "{{ zowe_instance_dir }}" && \
     cp "{{ zowe_root_dir }}/example-zowe.yaml" "{{ zowe_instance_dir }}/zowe.yaml"
 
+# runtimeDirectory must be the first update.
+#   Updating runtimeDirectory is required to fix out-of-the-box invalid schema
 - name: Update zowe.yaml zowe.setup.dataset.prefix
   include_role:
     name: zos
     tasks_from: update_zowe_yaml
   vars:
     configs:
+      "zowe.runtimeDirectory": "{{ zowe_root_dir }}"
       "zowe.setup.dataset.prefix": "{{ zowe_dataset_prefix }}"
 
 - name: Install Zowe

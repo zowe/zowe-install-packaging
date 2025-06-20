@@ -84,6 +84,30 @@
     cp "{{ zowe_root_dir }}/example-zowe.yaml" "{{ zowe_instance_dir }}/zowe.yaml"
   when: zowe_yaml_exists.rc != 0
 
+# This must be first, and runtimeDirectory first update.
+#   Updating runtimeDirectory is required to fix out-of-the-box invalid schema
+- name: Update zowe.yaml runtime configs
+  import_role:
+    name: zos
+    tasks_from: update_zowe_yaml
+  vars:
+    configs:
+      "zowe.runtimeDirectory": "{{ zowe_root_dir }}"
+      "zowe.logDirectory": "{{ zowe_instance_dir }}/logs"
+      "zowe.workspaceDirectory": "{{ zowe_instance_dir }}/workspace"
+      "zowe.extensionDirectory": "{{ zowe_extension_dir }}"
+      "zowe.job.name": "{{ zowe_job_prefix }}{{ zowe_instance_id }}SV"
+      "zowe.job.prefix": "{{ zowe_job_prefix }}{{ zowe_instance_id }}"
+      # FIXME: multiplpe domains?
+      "zowe.externalDomains.0": "{{ zowe_external_domain_name }}"
+      "zowe.externalPort": "{{ zowe_apiml_gateway_port }}"
+      "zowe.launchScript.logLevel": "{{ zowe_launch_scripts_loglevel }}"
+      "java.home": "{{ zos_java_home }}"
+      "node.home": "{{ zos_node_home }}"
+      "zOSMF.host": "{{ zos_zosmf_host }}"
+      "zOSMF.port": "{{ zos_zosmf_port }}"
+      "zOSMF.applId": "{{ zowe_apiml_security_zosmf_applid }}"
+
 - name: Update zowe.yaml zowe.setup.dataset
   import_role:
     name: zos
@@ -260,27 +284,6 @@
       "zowe.setup.vsam.mode": "RLS"
   when: zos_vsam_rls
 
-- name: Update zowe.yaml runtime configs
-  import_role:
-    name: zos
-    tasks_from: update_zowe_yaml
-  vars:
-    configs:
-      "zowe.runtimeDirectory": "{{ zowe_root_dir }}"
-      "zowe.logDirectory": "{{ zowe_instance_dir }}/logs"
-      "zowe.workspaceDirectory": "{{ zowe_instance_dir }}/workspace"
-      "zowe.extensionDirectory": "{{ zowe_extension_dir }}"
-      "zowe.job.name": "{{ zowe_job_prefix }}{{ zowe_instance_id }}SV"
-      "zowe.job.prefix": "{{ zowe_job_prefix }}{{ zowe_instance_id }}"
-      # FIXME: multiplpe domains?
-      "zowe.externalDomains.0": "{{ zowe_external_domain_name }}"
-      "zowe.externalPort": "{{ zowe_apiml_gateway_port }}"
-      "zowe.launchScript.logLevel": "{{ zowe_launch_scripts_loglevel }}"
-      "java.home": "{{ zos_java_home }}"
-      "node.home": "{{ zos_node_home }}"
-      "zOSMF.host": "{{ zos_zosmf_host }}"
-      "zOSMF.port": "{{ zos_zosmf_port }}"
-      "zOSMF.applId": "{{ zowe_apiml_security_zosmf_applid }}"
 
 - name: Update zowe.yaml runtime configs if IP is defined
   when: zowe_external_ip_address is not none and zowe_external_ip_address != ''
