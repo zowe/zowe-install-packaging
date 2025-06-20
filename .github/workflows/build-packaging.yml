@@ -1,10 +1,6 @@
 name: Zowe Build and Packaging
 
-permissions:
-  id-token: write
-  issues: write
-  pull-requests: write
-  contents: write
+permissions: read-all
 
 on:
   push:
@@ -69,7 +65,7 @@ jobs:
     steps:
       - name: 'Get labels'
         id: get-labels
-        uses: actions/github-script@v7
+        uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7.0.1
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
@@ -115,21 +111,27 @@ jobs:
     steps:
       # this action will fail the whole workflow if permission check fails
       - name: check permission
-        uses: zowe-actions/shared-actions/permission-check@main
+        uses: zowe-actions/shared-actions/permission-check@54a9b36cf54e61fefea2801008788d81e1e3a560 # main 06/17/25
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}  
 
   regular-build:
 
     if: ${{ needs.set-run-conditions.outputs.should-build == 'true' }}
+    permissions:
+      id-token: write
+      issues: write
+      pull-requests: write
+      contents: write
+    
     runs-on: ubuntu-latest
     needs: [set-run-conditions, check-permission]
     steps: 
       - name: '[Prep 1] Checkout'
-        uses: actions/checkout@v4
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
 
       - name: '[Prep 2] Setup jFrog CLI'
-        uses: jfrog/setup-jfrog-cli@v2
+        uses: jfrog/setup-jfrog-cli@11ee3f9bb82595485cb55670e4f93885080e183b # v2.4.1 (FIXME: upgrade to v4)
         env:
           JF_ENV_1: ${{ secrets.JF_ARTIFACTORY_TOKEN }}
       
@@ -162,10 +164,10 @@ jobs:
           cat manifest.json
 
       - name: '[Prep 4] Validate package.json'
-        uses: zowe-actions/shared-actions/validate-package-json@main
+        uses: zowe-actions/shared-actions/validate-package-json@54a9b36cf54e61fefea2801008788d81e1e3a560 # main 06/17/25
 
       - name: '[Prep 5] Prepare workflow'
-        uses: zowe-actions/shared-actions/prepare-workflow@main
+        uses: zowe-actions/shared-actions/prepare-workflow@54a9b36cf54e61fefea2801008788d81e1e3a560 # main 06/17/25
         with:
           package-name: org.zowe
           extra-init: |
@@ -234,7 +236,7 @@ jobs:
           echo BUILD_WHAT=$BUILD_WHAT >> $GITHUB_OUTPUT
       
       - name: '[Prep 7] Comment on PR to indicate build is started'         
-        uses: actions/github-script@v5
+        uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7.0.1
         id: create-comment
         if: (github.event_name == 'workflow_dispatch' || github.event_name == 'pull_request') && startsWith(env.CURRENT_BRANCH, 'PR-') &&  !contains(fromJson(needs.set-run-conditions.outputs.pr-labels), 'CICD_Quiet')
         with:
@@ -270,7 +272,7 @@ jobs:
 
       - name: '[PAX/SMPE Download 1] Download from jfrog according to manifest'
         timeout-minutes: 5
-        uses: zowe-actions/shared-actions/jfrog-download@main
+        uses: zowe-actions/shared-actions/jfrog-download@54a9b36cf54e61fefea2801008788d81e1e3a560 # main 06/17/25
         with:
           manifest-file-path: ${{ github.workspace }}/manifest.json
           default-target-path: .pax/binaryDependencies/
@@ -281,12 +283,12 @@ jobs:
       - name: '[SMPE Download 2] Get publish target path'
         timeout-minutes: 5
         if: env.INPUTS_BUILD_SMPE == 'true' || env.INPUTS_BUILD_PSWI == 'true'
-        uses: zowe-actions/shared-actions/publish@main
+        uses: zowe-actions/shared-actions/publish@54a9b36cf54e61fefea2801008788d81e1e3a560 # main 06/17/25
 
       - name: '[SMPE Download 3] Download SMPE build log'
         timeout-minutes: 5
         if: env.INPUTS_BUILD_SMPE == 'true' || env.INPUTS_BUILD_PSWI == 'true'
-        uses: zowe-actions/shared-actions/jfrog-download@main
+        uses: zowe-actions/shared-actions/jfrog-download@54a9b36cf54e61fefea2801008788d81e1e3a560 # main 06/17/25
         with:
           source-path-or-pattern: ${{ env.PUBLISH_TARGET_PATH }}smpe-build-logs-*.pax.Z
           default-target-path: .pax/content/smpe/
@@ -318,7 +320,7 @@ jobs:
       - name: '[PAX/SMPE Pax 2] Packaging'
         timeout-minutes: 60
         if: env.INPUTS_BUILD_PSWI != 'true' || (env.INPUTS_BUILD_PSWI == 'true' && github.event.inputs.PSWI_SMPE_ARTIFACTORY_PATH == '' && github.event.inputs.PSWI_SMPE_AZWE_ARTIFACTORY_PATH == '')
-        uses: zowe-actions/shared-actions/make-pax@main
+        uses: zowe-actions/shared-actions/make-pax@54a9b36cf54e61fefea2801008788d81e1e3a560 # main 06/17/25
         with: 
           pax-name: zowe
           pax-options: '-o saveext'
@@ -340,7 +342,7 @@ jobs:
           ./rename-back.sh
 
       - name: '[PSI-LOCK] Lock marist servers to build PSWI'
-        uses: zowe-actions/shared-actions/lock-resource@main
+        uses: zowe-actions/shared-actions/lock-resource@54a9b36cf54e61fefea2801008788d81e1e3a560 # main 06/17/25
         if: env.INPUTS_BUILD_PSWI == 'true'
         with:
           lock-repository: ${{ github.repository }}
@@ -369,7 +371,7 @@ jobs:
           VERSION: ${{ env.P_VERSION }}
 
       - name: Store PSWI folder
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         if: env.INPUTS_BUILD_PSWI == 'true' && failure()
         with:
           name: pswi-folder
@@ -387,7 +389,7 @@ jobs:
       - name: '[Upload] Upload everything to artifactory'
         id: publish
         timeout-minutes: 10
-        uses: zowe-actions/shared-actions/publish@main
+        uses: zowe-actions/shared-actions/publish@54a9b36cf54e61fefea2801008788d81e1e3a560 # main 06/17/25
         with:
           sigstore-sign-artifacts: true
           artifacts: |
@@ -403,7 +405,7 @@ jobs:
           DEBUG: 'zowe-actions:shared-actions:publish'
 
       - name: '[Post Prep 7] Update PR comment to indicate build succeeded'
-        uses: actions/github-script@v5
+        uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7.0.1
         if: steps.create-comment.outputs.result != '' && success() && !contains(fromJson(needs.set-run-conditions.outputs.pr-labels), 'CICD_Quiet')
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
@@ -416,7 +418,7 @@ jobs:
             });
 
       - name: '[Post Prep 7] Update PR comment to indicate build failed'
-        uses: actions/github-script@v5
+        uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7.0.1
         if: steps.create-comment.outputs.result != '' && failure() && !contains(fromJson(needs.set-run-conditions.outputs.pr-labels), 'CICD_Quiet')
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
@@ -429,7 +431,7 @@ jobs:
             });
 
       - name: '[Post Prep 7] Update PR comment to indicate build cancelled'
-        uses: actions/github-script@v5
+        uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7.0.1
         if: steps.create-comment.outputs.result != '' && cancelled() && !contains(fromJson(needs.set-run-conditions.outputs.pr-labels), 'CICD_Quiet')
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
@@ -476,7 +478,7 @@ jobs:
           echo "TEST_SUITE=$TEST_SUITE" >> $GITHUB_OUTPUT
 
       - name: 'Call test workflow'
-        uses: zowe-actions/shared-actions/workflow-remote-call-wait@main
+        uses: zowe-actions/shared-actions/workflow-remote-call-wait@54a9b36cf54e61fefea2801008788d81e1e3a560 # main 06/17/25
         id: call-test
         with:
           github-token: ${{ secrets.ZOWE_ROBOT_TOKEN }}
@@ -491,7 +493,7 @@ jobs:
       
       - name: 'Report test failure if applied'
         if: ${{ steps.call-test.outputs.workflow-run-conclusion != 'success' }}
-        uses: actions/github-script@v5
+        uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7.0.1
         with:
           script: |
             core.setFailed('Test workflow ${{ steps.call-test.outputs.workflow-run-num }} is not successful')
