@@ -58,32 +58,32 @@
     },
     "org.zowe.apiml.api-catalog-package": {
       "version": "^3.0.3-SNAPSHOT",
-      "artifact": "api-catalog-3.2.15-20250616.142200*.zip",
+      "artifact": "api-catalog-package-3.2.15-20250616.142200*.zip",
       "exclusions": ["*PR*.zip"]
     },
     "org.zowe.apiml.discovery-package": {
       "version": "^3.0.3-SNAPSHOT",
-      "artifact": "discovery-3.2.15-20250616.142200*.zip",
+      "artifact": "discovery-package-3.2.15-20250616.142200-3.zip",
       "exclusions": ["*PR*.zip"]
     },
     "org.zowe.apiml.gateway-package": {
       "version": "^3.0.3-SNAPSHOT",
-      "artifact": "gateway-3.2.15-20250616.142200*.zip",
+      "artifact": "gateway-package-3.2.15-20250616.142200*.zip",
       "exclusions": ["*PR*.zip"]
     },
     "org.zowe.apiml.caching-service-package": {
       "version": "^3.0.3-SNAPSHOT",
-      "artifact": "caching-service-3.2.15-20250616.142200*.zip",
+      "artifact": "caching-service-package-3.2.15-20250616.142200*.zip",
       "exclusions": ["*PR*.zip"]
     },
     "org.zowe.apiml.apiml-common-lib-package": {
       "version": "^3.0.3-SNAPSHOT",
-      "artifact": "apiml-common-lib-3.2.15-20250616.142200*.zip",
+      "artifact": "apiml-common-lib-package-3.2.15-20250616.142200*.zip",
       "exclusions": ["*PR*.zip"]
     },
     "org.zowe.apiml.sdk.common-java-lib-package": {
       "version": "^2.0.0-SNAPSHOT",
-      "artifact": "common-java-lib-3.2.15-20250616.142200*.zip",
+      "artifact": "common-java-lib-package-3.2.15-20250616.142200*.zip",
       "exclusions": ["*PR*.zip"]
     },
     "org.zowe.apiml.sdk.apiml-sample-extension-package": {
