@@ -122,6 +122,9 @@ data:
           volume: "TSTVOL"
           storageClass: ""
           name: "TEST.DATASET.PFX.VSAM"
+        jcl:
+          header:
+          - ""
       runtimeDirectory: "/home/zowe/runtime"
       logDirectory: "/home/zowe/instance/logs"
       workspaceDirectory: "/home/zowe/instance/workspace"
@@ -176,14 +179,12 @@ data:
           certificate: "/home/zowe/keystore/keystore.cer"
           certificateAuthorities: "/home/zowe/keystore/ca.cer"
       verifyCertificates: "STRICT"
+      useConfigmgr: false
       environments:
-        jclHeader:
-        - ""
         ZWED_agent_host: "sample-domain.com"
         ZWED_agent_https_port: "7557"
         ZOWE_ZLUX_TELNET_HOST: "sample-domain.com"
         ZOWE_ZLUX_SSH_HOST: "sample-domain.com"
-      useConfigmgr: false
     java:
       home: "/test/java/home"
     node:
