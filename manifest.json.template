@@ -41,7 +41,7 @@
     },
     "org.zowe.zss": {
       "version": "^3.0.0-STAGING",
-      "artifact": "*.pax"
+      "artifact": "zss-3.3.0-staging-1318-20250611120903.pax"
     },
     "org.zowe.explorer-jes": {
       "version": "^3.0.0-SNAPSHOT"
