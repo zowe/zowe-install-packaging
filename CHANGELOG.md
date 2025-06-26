@@ -4,8 +4,8 @@ All notable changes to the Zowe Installer will be documented in this file.
 <!--Add the PR or issue number to the entry if available.-->
 
 ## `2.18.3`
-- Bugfix: YAML lookup for HA instances within "haInstances" was not working when HA instance names were uppercase. Now, the lookup is case insensitive to allow for any casing of HA instance names. [#4378](https://github.com/zowe/zowe-install-packaging/pull/4378)
 - Bugfix: JCL sample `ZWEINSTL` did not included the `ZWESLSTC`. [#4???](https://github.com/zowe/zowe-install-packaging/pull/4???)
+- Bugfix: YAML lookup for HA instances within "haInstances" was not working when HA instance names were uppercase. Now, the lookup is case insensitive to allow for any casing of HA instance names. [#4378](https://github.com/zowe/zowe-install-packaging/pull/4378)
 
 ## `2.18.1`
 - Bugfix: When logging `zwe` command, sometimes the log has wrong file tag and the log is unreadable. [#4068](https://github.com/zowe/zowe-install-packaging/pull/4068)
