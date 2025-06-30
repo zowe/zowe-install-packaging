@@ -16,21 +16,6 @@ import * as config from '../../libs/config';
 import * as fs from '../../libs/fs';
 import * as zosdataset from '../../libs/zos-dataset';
 
-// **********************************
-// This would be moved to zos-dataset
-function validDatasetName(dsn: string): boolean {
-    common.printTrace(`- validDatasetName for "${dsn}"`);
-    if (!dsn || dsn.length < 1 || dsn.length > 44) {
-        common.printTrace('  * dataset null, empty or > 44 chars');
-        return false;
-    }
-    const result = !!dsn.match(/^([A-Z\$\#\@]){1}([A-Z0-9\$\#\@\-]){0,7}(\.([A-Z\$\#\@]){1}([A-Z0-9\$\#\@\-]){0,7}){0,11}$/g);
-    common.printTrace(`  * regex match: ${result}`);
-    return result;
-}
-// This would be moved to zos-dataset
-// **********************************
-
 export function execute(): void {
 
     common.printLevel1Message("Install Zowe MVS data sets");
@@ -73,7 +58,15 @@ export function execute(): void {
                 skipJCL = true;
             } else {
                 common.printMessage(`Warning ZWEL0300W: ${prefix}.${DATASETS[ds]} already exists. Members in this data set will be overwritten.`);
-                // **************************************************************
+                /* 
+                Should we update the ZWEINSTL to always detete datasets? Or add new JCL sample for this?
+
+                //DELALL   EXEC PGM=IEFBR14
+                //DELLOAD  DD   DSN={zowe.setup.dataset.prefix}.SZWELOAD,
+                //         DISP=(MOD,DELETE),SPACE=(TRK,0)
+                ... + other datasets
+
+                */
                 console.log(`FAKE: tsocmd "DELETE '${prefix}.${DATASETS[ds]}'"`);
                 // **************************************************************
             }
@@ -91,12 +84,11 @@ export function execute(): void {
     }
 
     // Make string from array or convert possible number to string
-    let jclHeader = zoweConfig.zowe.environments?.jclHeader;
-    if (jclHeader !== undefined && jclHeader !== null && jclHeader !== '') {
-        jclHeader = Array.isArray(jclHeader) ? jclHeader.join("\n"): jclHeader.toString();
-        jclContents = jclContents.replace(/\/\/ZWEINSTL JOB/gi, `//ZWEINSTL JOB ${jclHeader.replace(/[$]/g, '$$$$')}`);
-    }
+    // zowe.setup.jcl.header defined in defaults
+    let jclHeader = zoweConfig.zowe.setup.jcl.header;
+    jclHeader = Array.isArray(jclHeader) ? jclHeader.join("\n"): jclHeader.toString();
 
+    jclContents = jclContents.replace(/\{zowe\.setup\.jcl\.header\}/gi, `${jclHeader.replace(/[$]/g, '$$$$')}`);
     jclContents = jclContents.replace(/\{zowe\.setup\.dataset\.prefix\}/gi, prefix.replace(/[$]/g, '$$$$'));
     jclContents = jclContents.replace(/\{zowe\.runtimeDirectory\}/gi, runtime.replace(/[$]/g, '$$$$'));
     

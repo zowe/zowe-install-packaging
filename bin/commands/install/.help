@@ -9,6 +9,8 @@ These Zowe YAML configurations showing with sample values are used:
 ```yaml
 zowe:
   setup:
+    jcl:
+      header: 123456
     dataset:
       prefix: IBMUSER.ZWE
 ```
