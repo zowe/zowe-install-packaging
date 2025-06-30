@@ -1,1 +1,1 @@
-dry-run||boolean|||||Prints out existing JCL templates but does not generate resolved JCL.
+dry-run||boolean|||||Prints out used JCL sample without submitting it.
