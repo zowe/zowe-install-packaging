@@ -15,60 +15,55 @@ import * as common from '../../libs/common';
 import * as config from '../../libs/config';
 import * as fs from '../../libs/fs';
 import * as zosdataset from '../../libs/zos-dataset';
+import * as zosJes from '../../libs/zos-jes';
 
 export function execute(): void {
 
     common.printLevel1Message("Install Zowe MVS data sets");
 
-    const dsPrefix = std.getenv("ZWE_CLI_PARAMETER_DATASET_PREFIX");
-    if (dsPrefix != null) {
-      console.log(' no zowe yaml loaded');
-      // ...go from here 
-    }
-    common.requireZoweYaml();
-    const zoweConfig = config.getZoweConfig();
-
-    const prefix = zoweConfig.zowe.setup?.dataset?.prefix;
-    if (!prefix) {
-        common.printErrorAndExit(`Error ZWEL0157E: Zowe dataset prefix (zowe.setup.dataset.prefix) is not defined in Zowe YAML configuration file.`, undefined, 157); 
-    } 
-    
-    let runtime = zoweConfig.zowe?.runtimeDirectory;
     const runtimeEnv = std.getenv('ZWE_zowe_runtimeDirectory');
+
+    const zoweConfig = config.getZoweConfig();
+    let runtime = zoweConfig.zowe?.runtimeDirectory;
+    const prefix = zoweConfig.zowe.setup?.dataset?.prefix;
+    const jclHeaderCfg = zoweConfig.zowe.setup?.jcl?.header;
+    let jclHeaderJoined;
+
     if (!runtime) {
-        runtime = runtimeEnv;
+      runtime = runtimeEnv;
     } else {
-        // We need clean path for xplatform.loadFileUTF8, otherwise will fail for e.g. /zowe/./files/SZWESAMP//ZWEINSTL
-        runtime = fs.convertToAbsolutePath(runtime);
-        if (runtime != runtimeEnv) {
-            common.printErrorAndExit(`Error ZWEL0105E: The Zowe YAML config file is associated to Zowe runtime "${runtime}", which is not same as where zwe command is located "${runtimeEnv}".`, undefined, 105);
-        } 
+      // We need clean path for xplatform.loadFileUTF8, otherwise will fail for e.g. /zowe/./files/SZWESAMP//ZWEINSTL
+      runtime = fs.convertToAbsolutePath(runtime);
+      if (runtime != runtimeEnv) {
+          common.printErrorAndExit(`Error ZWEL0105E: The Zowe YAML config file is associated to Zowe runtime "${runtime}", which is not same as where zwe command is located "${runtimeEnv}".`, undefined, 105);
+      } 
     }
 
+    if (!prefix) {
+      common.printErrorAndExit(`Error ZWEL0157E: Zowe dataset prefix (zowe.setup.dataset.prefix) is not defined in Zowe YAML configuration file.`, undefined, 157); 
+    } 
+
+    if (Array.isArray(jclHeaderCfg)) {
+        jclHeaderJoined = jclHeaderCfg.join("\n");
+    } else {
+        jclHeaderJoined = jclHeaderCfg.toString();
+    }    
+    
     const ZWEINSTL=`${runtime}/files/SZWESAMP/ZWEINSTL`;
     const DATASETS = [ 'SZWEAUTH', 'SZWEEXEC', 'SZWELOAD', 'SZWESAMP' ];
-    const allowOverwrite = std.getenv("ZWE_CLI_PARAMETER_ALLOW_OVERWRITE") == 'true' ? true : false;
-    const dryRun = std.getenv("ZWE_CLI_PARAMETER_DRY_RUN") == 'true' ? true : false;
+    const allowOverwrite = std.getenv("ZWE_CLI_PARAMETER_ALLOW_OVERWRITE") == 'true';
+    const dryRun = std.getenv("ZWE_CLI_PARAMETER_DRY_RUN") == 'true';
+    const existingDatasets: string[] = [];
     let skipJCL = false;
 
     for (let ds in DATASETS) {
         if (zosdataset.isDatasetExists(`${prefix}.${DATASETS[ds]}`)) {
-            if (allowOverwrite == false) {
+            if (allowOverwrite === false) {
                 common.printMessage(`Warning ZWEL0301W: ${prefix}.${DATASETS[ds]} already exists and will not be overwritten. For upgrades, you must use --allow-overwrite.`);
                 skipJCL = true;
             } else {
                 common.printMessage(`Warning ZWEL0300W: ${prefix}.${DATASETS[ds]} already exists. Members in this data set will be overwritten.`);
-                /* 
-                Should we update the ZWEINSTL to always detete datasets? Or add new JCL sample for this?
-
-                //DELALL   EXEC PGM=IEFBR14
-                //DELLOAD  DD   DSN={zowe.setup.dataset.prefix}.SZWELOAD,
-                //         DISP=(MOD,DELETE),SPACE=(TRK,0)
-                ... + other datasets
-
-                */
-                console.log(`FAKE: tsocmd "DELETE '${prefix}.${DATASETS[ds]}'"`);
-                // **************************************************************
+                existingDatasets.push(`${prefix}.${DATASETS[ds]}`);
             }
         }
     }
@@ -83,12 +78,7 @@ export function execute(): void {
         common.printErrorAndExit(`Error ZWEL0159E Failed to modify ${ZWEINSTL}.`, undefined, 159);
     }
 
-    // Make string from array or convert possible number to string
-    // zowe.setup.jcl.header defined in defaults
-    let jclHeader = zoweConfig.zowe.setup.jcl.header;
-    jclHeader = Array.isArray(jclHeader) ? jclHeader.join("\n"): jclHeader.toString();
-
-    jclContents = jclContents.replace(/\{zowe\.setup\.jcl\.header\}/gi, `${jclHeader.replace(/[$]/g, '$$$$')}`);
+    jclContents = jclContents.replace(/\{zowe\.setup\.jcl\.header\}/gi, jclHeaderJoined.replace(/[$]/g, '$$$$'));
     jclContents = jclContents.replace(/\{zowe\.setup\.dataset\.prefix\}/gi, prefix.replace(/[$]/g, '$$$$'));
     jclContents = jclContents.replace(/\{zowe\.runtimeDirectory\}/gi, runtime.replace(/[$]/g, '$$$$'));
     
@@ -101,19 +91,22 @@ export function execute(): void {
         common.printMessage('JCL not submitted, command run with "--dry-run" flag.');
         common.printMessage('To perform command, re-run command without "--dry-run" flag, or submit the JCL directly.');
     } else { 
+        if (existingDatasets.length > 0) {
+          common.printMessage('Deleting existing datasets.');
+          for (const ds of existingDatasets) {
+            common.printDebug(`Deleting ${ds}.`);
+            const res = zosdataset.tsoDeleteDataset(ds);
+            if (res != 0) {
+              common.printErrorAndExit(`Error ZWEL0112E: Could not delete existing dataset: '${ds}'.`, undefined, 112);
+            }
+          }
+
+        }
+
         common.printMessage('Submitting Job ZWEINSTL');
-        // **************************************************************
-        // submitJob and waitForJob implemented in 3718 (migrate2JCL)
-        const result = { 
-            rc: 0,
-            jobcccode: 123,
-            jobcctext: "JCL ESM error"
-        };
-        // const jobid = zosJes.submitJob(jclContents, true, true);
-        // const result = zosJes.waitForJob(jobid);
-        // **************************************************************
-        
-        common.printMessage(`Job completed with RC=${result.rc}`);
+        const jobId = zosJes.submitJob(jclContents, true, true);
+        const result = zosJes.waitForJob(jobId);        
+        common.printMessage(`Job ZWEINSTL(${jobId}) completed with RC=${result.rc}`);
         if (result.rc == 0) {
             common.printLevel1Message("Zowe MVS data sets are installed successfully.");
             common.printMessage("Zowe installation completed. In order to use Zowe, you need to run \"zwe init\" command to initialize Zowe instance.");

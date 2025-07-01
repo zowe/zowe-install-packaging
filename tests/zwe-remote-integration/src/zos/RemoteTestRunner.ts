@@ -359,10 +359,10 @@ export class RemoteTestRunner {
    */
   private writeRedundant(filePath: string, content: string): string {
     let tgtFile = filePath;
-    const iter = 0;
+    let iter = 0;
     // TODO: replace with single readDir, find highest idx, write to idx+1
     while (fs.existsSync(tgtFile) && iter < 1000) {
-      tgtFile = `${tgtFile}.${iter}`;
+      tgtFile = `${filePath}.${iter++}`;
     }
     fs.writeFileSync(tgtFile, content);
     return tgtFile;
@@ -414,22 +414,31 @@ export class RemoteTestRunner {
   }
 
   /**
+   *  If cfgYaml is set to null, the `--config <path-to-zowe-yaml>` parameter is omitted.
    *
-   * @param zoweYaml
+   * @param cfgYaml
    * @param zweCommand
    * @param cwd
    */
   public async runZweTest(
-    zoweYaml: ZoweYamlType,
+    cfgYaml: ZoweYamlType,
     zweCommand: string,
     cwd: string = REMOTE_SYSTEM_INFO.ussTestDir,
   ): Promise<TestOutput> {
+    let shouldOmitConfigParm;
+    let zoweYaml = cfgYaml;
+
+    if (zoweYaml == null) {
+      zoweYaml = {};
+      shouldOmitConfigParm = true;
+    }
+
     let command = zweCommand.trim();
     if (command.startsWith('zwe')) {
       command = command.replace(/zwe/, '');
     }
     let defaultConfig = `--config ${REMOTE_SYSTEM_INFO.ussTestDir}/zowe.test.yaml`;
-    if (this.containsConfigString(zweCommand)) {
+    if (this.containsConfigString(zweCommand) || shouldOmitConfigParm) {
       defaultConfig = ''; // the runCommand's ${command} will have the config
     }
     const finalZwe = this.addAnyCustomJobStatements(zoweYaml);

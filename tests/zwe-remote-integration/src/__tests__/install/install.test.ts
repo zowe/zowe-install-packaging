@@ -11,9 +11,9 @@
 import { ZoweConfig } from '../../config/ZoweConfig';
 import ZoweYamlType from '../../config/ZoweYamlType';
 import { RemoteTestRunner } from '../../zos/RemoteTestRunner';
-import { TestFile, TestFileActions } from '../../zos/TestFileActions';
+import { FileType, TestFile, TestFileActions } from '../../zos/TestFileActions';
 
-const testSuiteName = 'init-mvs';
+const testSuiteName = 'zwe-install';
 describe(`${testSuiteName}`, () => {
   let testRunner: RemoteTestRunner;
   let cfgYaml: ZoweYamlType;
@@ -22,11 +22,6 @@ describe(`${testSuiteName}`, () => {
   beforeAll(async () => {
     testRunner = new RemoteTestRunner(testSuiteName);
     cfgYaml = ZoweConfig.getZoweYaml();
-    expect.getState().currentTestName = 'before-all-mvs';
-    const result = await testRunner.runZweTest(cfgYaml, 'init generate --allow-overwrite');
-    expect(result.stdout).not.toBeNull();
-    expect(result.rc).toBe(0);
-    await testRunner.postTest();
   });
   beforeEach(() => {
     cfgYaml = ZoweConfig.getZoweYaml();
@@ -43,210 +38,116 @@ describe(`${testSuiteName}`, () => {
   });
 
   describe('(LONG)', () => {
-    /* beforeEach(async () => {
-      cfgYaml = ZoweConfig.getZoweYaml();
-      // re-created in every `init` subcommand based on changes to zowe yaml command...
-      const jcllib: TestFile = { name: REMOTE_SYSTEM_INFO.jcllib, type: FileType.DS_NON_CLUSTER };
-      // try to delete everything we know about
-      await TestFileActions.deleteAll([jcllib]);
+    it('install, re-install and fail, overwrite and succeed abc', async () => {
+      cfgYaml.zowe.setup.dataset.prefix = `${cfgYaml.zowe.setup.dataset.prefix}.INST.TEST`;
+      cleanupDatasets.push(
+        {
+          name: `${cfgYaml.zowe.setup.dataset.prefix}.SZWESAMP`,
+          type: FileType.DS_NON_CLUSTER,
+        },
+        {
+          name: `${cfgYaml.zowe.setup.dataset.prefix}.SZWEEXEC`,
+          type: FileType.DS_NON_CLUSTER,
+        },
+        {
+          name: `${cfgYaml.zowe.setup.dataset.prefix}.SZWELOAD`,
+          type: FileType.DS_NON_CLUSTER,
+        },
+        {
+          name: `${cfgYaml.zowe.setup.dataset.prefix}.SZWEAUTH`,
+          type: FileType.DS_NON_CLUSTER,
+        },
+      );
+      let result = await testRunner.runZweTest(cfgYaml, `install`); // this passes
+      expect(result.stdout).not.toBeNull();
+      expect(result.cleanedStdout).toMatchSnapshot();
+      expect(result.rc).toBe(0);
+
+      result = await testRunner.runZweTest(cfgYaml, 'install'); // this warns and rc=0, datasets exist
+      expect(result.stdout).not.toBeNull();
+      expect(result.cleanedStdout).toMatchSnapshot();
+      expect(result.rc).toBe(0);
+
+      result = await testRunner.runZweTest(cfgYaml, 'install'); // this warns again and rc=0 (second call to check system state not mutated)
+      expect(result.stdout).not.toBeNull();
+      expect(result.cleanedStdout).toMatchSnapshot();
+      expect(result.rc).toBe(0);
+
+      result = await testRunner.runZweTest(cfgYaml, 'install --allow-overwrite'); // this passes
+      expect(result.stdout).not.toBeNull();
+      expect(result.cleanedStdout).toMatchSnapshot();
+      expect(result.rc).toBe(0);
     });
-
-      below test pending review of ZWESISDL, ZWESIS01, zowe_launcher usage in ZWEIMVS2 and
-        corresponding update to test framework
-
-    it('creates mvs', async () => {
-      const dsRoot = cfgYaml.zowe.setup.dataset;
-      // @ts-expect-error schema typing issues in TS
-      testRunner.removeDatasetsForTest([dsRoot.authPluginLib]);
-      let result = await testRunner.runZweTest(cfgYaml, 'init mvs'); // this runs init generate implicitly
-      expect(result.stdout).not.toBeNull();
-      expect(result.cleanedStdout).toMatchSnapshot();
-      expect(result.rc).toBe(0);
-
-      result = await testRunner.runZweTest(cfgYaml, 'init mvs');
-      expect(result.stdout).not.toBeNull();
-      expect(result.cleanedStdout).toMatchSnapshot();
-      expect(result.rc).toBe(0);
-
-
-      result = await testRunner.runZweTest(cfgYaml, 'init mvs --allow-overwrite');
-      expect(result.stdout).not.toBeNull();
-      expect(result.cleanedStdout).toMatchSnapshot();
-      expect(result.rc).toBe(0);
-    });*/
   });
 
   describe('(SHORT)', () => {
-    it('bad ds prefix post-generate', async () => {
-      cfgYaml.zowe.setup.dataset.prefix = null;
-      let result = await testRunner.runZweTest(cfgYaml, 'init mvs --dry-run');
+    // ensure --ds-prefix is not supported
+    it('zwe install invalid parameter', async () => {
+      const result = await testRunner.runZweTest(cfgYaml, `install --dry-run --ds-prefix 'SOME.THING'`);
       expect(result.stdout).not.toBeNull();
       expect(result.cleanedStdout).toMatchSnapshot();
-      expect(result.rc).toBe(1);
-
-      cfgYaml.zowe.setup.dataset.prefix = '';
-      result = await testRunner.runZweTest(cfgYaml, 'init mvs --dry-run');
-      expect(result.stdout).not.toBeNull();
-      expect(result.cleanedStdout).toMatchSnapshot();
-      expect(result.rc).toBe(1);
+      expect(result.rc).toBe(102);
     });
 
-    it('jcllib fails verification', async () => {
-      cfgYaml.zowe.setup.dataset.jcllib = null;
-      let result = await testRunner.runZweTest(cfgYaml, 'init mvs --dry-run');
+    it('zwe install invalid config', async () => {
+      const result = await testRunner.runZweTest(cfgYaml, 'install --dry-run --config /not/real/config.yml');
       expect(result.stdout).not.toBeNull();
       expect(result.cleanedStdout).toMatchSnapshot();
-      expect(result.rc).toBe(1);
-
-      cfgYaml.zowe.setup.dataset.jcllib = '';
-      result = await testRunner.runZweTest(cfgYaml, 'init mvs --dry-run');
-      expect(result.stdout).not.toBeNull();
-      expect(result.cleanedStdout).toMatchSnapshot();
-      expect(result.rc).toBe(1);
+      expect(result.rc).toBe(102);
     });
 
-    it('authLoadLib negatives', async () => {
-      cfgYaml.zowe.setup.dataset.authLoadlib = null;
-      let result = await testRunner.runZweTest(cfgYaml, 'init mvs --dry-run');
-      expect(result.stdout).not.toBeNull();
-      expect(result.cleanedStdout).toMatchSnapshot();
-      expect(result.rc).toBe(1);
-
-      cfgYaml.zowe.setup.dataset.authLoadlib = '';
-      result = await testRunner.runZweTest(cfgYaml, 'init mvs --dry-run');
-      expect(result.stdout).not.toBeNull();
-      expect(result.cleanedStdout).toMatchSnapshot();
-      expect(result.rc).toBe(1);
-
-      cfgYaml.zowe.setup.dataset.authLoadlib = 'DOES.NOT.EXIST.ALL';
-      result = await testRunner.runZweTest(cfgYaml, 'init mvs --dry-run');
+    it('zwe install --dry-run valid ds names', async () => {
+      // dataset prefix exists
+      let result = await testRunner.runZweTest(cfgYaml, 'install --dry-run');
       expect(result.stdout).not.toBeNull();
       expect(result.cleanedStdout).toMatchSnapshot();
       expect(result.rc).toBe(0);
 
-      cfgYaml.zowe.setup.dataset.authLoadlib = cfgYaml.zowe.setup.dataset.authPluginLib;
-      result = await testRunner.runZweTest(cfgYaml, 'init mvs --dry-run');
+      result = await testRunner.runZweTest(cfgYaml, 'install --dry-run --allow-overwrite');
       expect(result.stdout).not.toBeNull();
       expect(result.cleanedStdout).toMatchSnapshot();
       expect(result.rc).toBe(0);
 
-      cfgYaml.zowe.setup.dataset.authLoadlib = cfgYaml.zowe.setup.dataset.prefix + '.SZWEAUTH';
-      result = await testRunner.runZweTest(cfgYaml, 'init mvs --dry-run');
+      // dataset prefix doesn't exist
+      cfgYaml.zowe.setup.dataset.prefix = `${cfgYaml.zowe.setup.dataset.prefix}.NEW`;
+      result = await testRunner.runZweTest(cfgYaml, 'install --dry-run');
       expect(result.stdout).not.toBeNull();
       expect(result.cleanedStdout).toMatchSnapshot();
       expect(result.rc).toBe(0);
 
-      // with allow-overwrite
-      cfgYaml.zowe.setup.dataset.authLoadlib = cfgYaml.zowe.setup.dataset.prefix + '.SZWEAUTH';
-      result = await testRunner.runZweTest(cfgYaml, 'init mvs --dry-run --allow-overwrite');
-      expect(result.stdout).not.toBeNull();
-      expect(result.cleanedStdout).toMatchSnapshot();
-      expect(result.rc).toBe(0);
-
-      cfgYaml.zowe.setup.dataset.authLoadlib = 'DOES.NOT.EXIST';
-      result = await testRunner.runZweTest(cfgYaml, 'init mvs --dry-run --allow-overwrite');
-      expect(result.stdout).not.toBeNull();
-      expect(result.cleanedStdout).toMatchSnapshot();
-      expect(result.rc).toBe(0);
-
-      cfgYaml.zowe.setup.dataset.authLoadlib = ZoweConfig.getZoweYaml().zowe.setup.dataset.authLoadlib;
-      result = await testRunner.runZweTest(cfgYaml, 'init mvs --dry-run --allow-overwrite');
+      result = await testRunner.runZweTest(cfgYaml, 'install --dry-run --allow-overwrite');
       expect(result.stdout).not.toBeNull();
       expect(result.cleanedStdout).toMatchSnapshot();
       expect(result.rc).toBe(0);
     });
 
-    it('parmlib negatives ', async () => {
-      cfgYaml.zowe.setup.dataset.parmlib = null;
-      let result = await testRunner.runZweTest(cfgYaml, 'init mvs --dry-run');
+    it('zwe install invalid dataset name', async () => {
+      const invalidDsn = 'INVALID.DSN.LENGTH123123';
+      cfgYaml.zowe.setup.dataset.prefix = invalidDsn;
+      let result = await testRunner.runZweTest(cfgYaml, 'install --dry-run');
       expect(result.stdout).not.toBeNull();
       expect(result.cleanedStdout).toMatchSnapshot();
       expect(result.rc).toBe(1);
 
-      cfgYaml.zowe.setup.dataset.parmlib = '';
-      result = await testRunner.runZweTest(cfgYaml, 'init mvs --dry-run');
+      delete cfgYaml.zowe.setup.dataset.prefix;
+      result = await testRunner.runZweTest(cfgYaml, `install --dry-run`);
       expect(result.stdout).not.toBeNull();
       expect(result.cleanedStdout).toMatchSnapshot();
-      expect(result.rc).toBe(1);
-
-      cfgYaml.zowe.setup.dataset.parmlib = 'DOES.NOT.EXIST.ALL';
-      result = await testRunner.runZweTest(cfgYaml, 'init mvs --dry-run');
-      expect(result.stdout).not.toBeNull();
-      expect(result.cleanedStdout).toMatchSnapshot();
-      expect(result.rc).toBe(0);
-
-      cfgYaml.zowe.setup.dataset.parmlib = cfgYaml.zowe.setup.dataset.authPluginLib;
-      result = await testRunner.runZweTest(cfgYaml, 'init mvs --dry-run');
-      expect(result.stdout).not.toBeNull();
-      expect(result.cleanedStdout).toMatchSnapshot();
-      expect(result.rc).toBe(0);
-
-      // with allow-overwrite
-      cfgYaml.zowe.setup.dataset.parmlib = 'DOES.NOT.EXIST';
-      result = await testRunner.runZweTest(cfgYaml, 'init mvs --dry-run --allow-overwrite');
-      expect(result.stdout).not.toBeNull();
-      expect(result.cleanedStdout).toMatchSnapshot();
-      expect(result.rc).toBe(0);
-
-      cfgYaml.zowe.setup.dataset.parmlib = ZoweConfig.getZoweYaml().zowe.setup.dataset.authLoadlib;
-      result = await testRunner.runZweTest(cfgYaml, 'init mvs --dry-run --allow-overwrite');
-      expect(result.stdout).not.toBeNull();
-      expect(result.cleanedStdout).toMatchSnapshot();
-      expect(result.rc).toBe(0);
+      expect(result.rc).toBe(157);
     });
 
-    it('authPluginLib negatives ', async () => {
-      cfgYaml.zowe.setup.dataset.authPluginLib = null;
-      let result = await testRunner.runZweTest(cfgYaml, 'init mvs --dry-run');
+    it('zwe install invalid runtime directory', async () => {
+      cfgYaml.zowe.runtimeDirectory = `/`; // TODO: verify this should be safe to use with any backend system
+      let result = await testRunner.runZweTest(cfgYaml, 'install --dry-run');
       expect(result.stdout).not.toBeNull();
       expect(result.cleanedStdout).toMatchSnapshot();
-      expect(result.rc).toBe(1);
+      expect(result.rc).toBe(105);
 
-      cfgYaml.zowe.setup.dataset.authPluginLib = '';
-      result = await testRunner.runZweTest(cfgYaml, 'init mvs --dry-run');
+      cfgYaml.zowe.runtimeDirectory = '/not/a/real/path';
+      result = await testRunner.runZweTest(cfgYaml, 'install --dry-run');
       expect(result.stdout).not.toBeNull();
       expect(result.cleanedStdout).toMatchSnapshot();
-      expect(result.rc).toBe(1);
-
-      cfgYaml.zowe.setup.dataset.authPluginLib = 'DOES.NOT.EXIST.ALL';
-      result = await testRunner.runZweTest(cfgYaml, 'init mvs --dry-run');
-      expect(result.stdout).not.toBeNull();
-      expect(result.cleanedStdout).toMatchSnapshot();
-      expect(result.rc).toBe(0);
-
-      cfgYaml.zowe.setup.dataset.authPluginLib = cfgYaml.zowe.setup.dataset.parmlib;
-      result = await testRunner.runZweTest(cfgYaml, 'init mvs --dry-run');
-      expect(result.stdout).not.toBeNull();
-      expect(result.cleanedStdout).toMatchSnapshot();
-      expect(result.rc).toBe(0);
-
-      // with allow-overwrite
-      cfgYaml.zowe.setup.dataset.authPluginLib = 'DOES.NOT.EXIST';
-      result = await testRunner.runZweTest(cfgYaml, 'init mvs --dry-run --allow-overwrite');
-      expect(result.stdout).not.toBeNull();
-      expect(result.cleanedStdout).toMatchSnapshot();
-      expect(result.rc).toBe(0);
-
-      cfgYaml.zowe.setup.dataset.parmlib = ZoweConfig.getZoweYaml().zowe.setup.dataset.authLoadlib;
-      result = await testRunner.runZweTest(cfgYaml, 'init mvs --dry-run --allow-overwrite');
-      expect(result.stdout).not.toBeNull();
-      expect(result.cleanedStdout).toMatchSnapshot();
-      expect(result.rc).toBe(0);
-    });
-
-    it('zwesip00 customization ', async () => {
-      cfgYaml.zowe.setup.dataset.parmlibMembers = { zis: 'ZWESIP11' };
-      const result = await testRunner.runZweTest(cfgYaml, 'init mvs --dry-run --allow-overwrite');
-      expect(result.stdout).not.toBeNull();
-      expect(result.cleanedStdout).toMatchSnapshot();
-      expect(result.rc).toBe(0);
-    });
-
-    it('simple --dry-run', async () => {
-      const result = await testRunner.runZweTest(cfgYaml, 'init mvs --dry-run');
-      expect(result.stdout).not.toBeNull();
-      expect(result.cleanedStdout).toMatchSnapshot();
-      expect(result.rc).toBe(0);
+      expect(result.rc).toBe(105);
     });
   });
 });

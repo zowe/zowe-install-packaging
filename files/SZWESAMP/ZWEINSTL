@@ -55,12 +55,12 @@ cp * "//'$ZWE_TMP_PREFIX.SZWEEXEC'" &&
 cd ../SZWELOAD &&
 cp * "//'$ZWE_TMP_PREFIX.SZWELOAD'" &&
 cd ../../components/launcher/bin &&
-cp zowe_launcher
+cp zowe_launcher \
    "//'$ZWE_TMP_PREFIX.SZWEAUTH(ZWELNCH)'" &&
 cd ../samplib/ &&
 cp * "//'$ZWE_TMP_PREFIX.SZWESAMP'" &&
 cd ../../zss/SAMPLIB &&
-cp ZWESASTC ZWESIP00 ZWESISCH ZWESISTC
+cp ZWESASTC ZWESIP00 ZWESISCH ZWESISTC \
    "//'$ZWE_TMP_PREFIX.SZWESAMP'" &&
 cd ../LOADLIB &&
 cp * "//'$ZWE_TMP_PREFIX.SZWEAUTH'"

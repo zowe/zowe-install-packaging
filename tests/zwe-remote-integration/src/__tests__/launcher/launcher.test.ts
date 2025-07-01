@@ -51,7 +51,7 @@ describe(`${testSuiteName}`, () => {
             export RUNTIME_DIRECTORY=${cfgYaml.zowe.runtimeDirectory} && \
             export CONFIG='FILE(${zyUpl}):FILE(${defaultsUpl})' && \
             export ZLDEBUG='ON' && \
-            ${cfgYaml.zowe.runtimeDirectory}/bin/zowe_launcher ''`);
+            ${cfgYaml.zowe.runtimeDirectory}/components/launcher/bin/zowe_launcher ''`);
 
       // this is an intentionally invalid zowe_launcher run - create env configs and then exit with an error
       expect(launcherRes.rc).toBe(8);

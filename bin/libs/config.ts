@@ -36,6 +36,7 @@ const cliParameterConfig:string = function() {
 }();
 
 export function getZoweConfig(): any {
+  common.requireZoweYaml();
   return configmgr.getZoweConfig();
 }
 
