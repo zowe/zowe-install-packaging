@@ -1,1 +1,15 @@
-""
+{
+  "lockAcquiredTime": "Wed Jul 02 2025 13:51:28 GMT+0000 (Coordinated Universal Time)",
+  "uid": "1751464288605720847",
+  "repository": {
+    "owner": "zowe",
+    "repo": "zowe-install-packaging"
+  },
+  "branch": "user/markackert/zwe-install-refactor-jcl",
+  "workflow": "Zowe CICD Integration Tests",
+  "job": "cicd-test",
+  "actor": "zowe-robot",
+  "runId": 16026960941,
+  "runNumber": 6856,
+  "link": "https://github.com/zowe/zowe-install-packaging/actions/runs/16026960941"
+}
