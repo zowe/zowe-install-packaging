@@ -73,7 +73,8 @@ export function execute(): void {
         std.exit(0);
     }
     
-    let jclContents = xplatform.loadFileUTF8(ZWEINSTL, xplatform.AUTO_DETECT);        
+    // If file does not exist, xplatform.loadFileUTF8 ends javascript and ZWEL0159E is not printed
+    let jclContents = fs.fileExists(ZWEINSTL, true) ? xplatform.loadFileUTF8(ZWEINSTL, xplatform.AUTO_DETECT) : null;
     if (!jclContents) {
         common.printErrorAndExit(`Error ZWEL0159E Failed to modify ${ZWEINSTL}.`, undefined, 159);
     }
