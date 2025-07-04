@@ -144,3 +144,12 @@ export function formatZosVersion(format?: string, versionNumber?: string | numbe
     .replace(/\{\s*major\s*\}/g, zosVer.major)
     .replace(/\{\s*minor\s*\}/g, zosVer.minor);
 }
+
+export function isSDFS() {
+    common.printDebug(`- Test if SDSF is accessible.`);
+    const result = shell.execSync('sh', '-c', `${std.getenv('ZWE_zowe_runtimeDirectory')}/bin/utils/getSDSF.rex`);
+    if (result.rc == 0) {
+        return true;
+    }
+    return false;
+}
