@@ -104,11 +104,15 @@ export function execute(dryRun?: boolean) {
     common.printMessage('Submitting Job ZWEGENER');
     const jobid = zosJes.submitJob(tempFile);
     const result = zosJes.waitForJob(jobid);
-    common.printMessage(`Job ZWEGENER(${jobid}) completed with RC=${result.rc}`);
-    if (result.rc == 0) {
-      common.printMessage("Zowe JCL generated successfully");
+    if (result.rc == -1 ) {
+      common.printMessage(`No SDSF detected, review the job log of ZWEGENER(${jobid}) manually.`);
     } else {
-      common.printMessage(`Zowe JCL generated with errors, check job log. Job completion code=${result.jobcccode}, Job completion text=${result.jobcctext}`);
+      common.printMessage(`Job ZWEGENER(${jobid}) completed with RC=${result.rc}`);
+      if (result.rc == 0) {
+        common.printMessage("Zowe JCL generated successfully");
+      } else {
+        common.printMessage(`Zowe JCL generated with errors, check job log. Job completion code=${result.jobcccode}, Job completion text=${result.jobcctext}`);
+      }
     }
   }
   os.remove(tempFile);

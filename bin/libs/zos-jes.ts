@@ -86,6 +86,10 @@ export function waitForJob(jobid: string): {jobcctext?: string, jobcccode?: stri
   let jobcccode;    
   let is_jes3;
 
+  if (!zoslib.isSDFS()) {
+    return { rc: -1 };
+  }
+
   common.printDebug(`- Wait for job ${jobid} completed, starting at ${new Date().toString()}.`);
   // wait for job to finish
   const timesSec = [1, 5, 10, 20, 30, 60, 100, 300, 500];
