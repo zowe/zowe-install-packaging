@@ -147,7 +147,8 @@ export function formatZosVersion(format?: string, versionNumber?: string | numbe
 
 export function isSDFS() {
     common.printDebug(`- Test if SDSF is accessible.`);
-    const result = shell.execSync('sh', '-c', `${std.getenv('ZWE_zowe_runtimeDirectory')}/bin/utils/getSDSF.rex`);
+    // We need only return code, if no SDSF, suppress possible error message
+    const result = shell.execSync('sh', '-c', `${std.getenv('ZWE_zowe_runtimeDirectory')}/bin/utils/getSDSF.rex 2>&1 >/dev/null`);
     if (result.rc == 0) {
         return true;
     }
