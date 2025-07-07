@@ -106,6 +106,20 @@ export function execute(dryRun?: boolean) {
     const result = zosJes.waitForJob(jobid);
     if (result.rc == -1 ) {
       common.printMessage(`No SDSF detected, review the job log of ZWEGENER(${jobid}) manually.`);
+      // We can't continue, if 'zwe init' was issued. The next action (zwe mvs) must start after ZWEGENER successfully ended
+      if (std.getenv('ZWE_CLI_COMMANDS_LIST') == 'init') {
+        os.remove(tempFile);
+        common.printMessage(`The processing is terminated. The following subcommands must be started manually:`);
+        common.printMessage(`  * zwe init mvs`);
+        common.printMessage(`  * zwe init vsam`);
+        if (std.getenv("ZWE_CLI_PARAMETER_SKIP_SECURITY_SETUP") != 'true') {
+          common.printMessage(`  * zwe init apfauth`);
+          common.printMessage(`  * zwe init security`);
+        }
+        common.printMessage(`  * zwe init certificate`);
+        common.printMessage(`  * zwe init stc`);
+        std.exit(0);
+      }
     } else {
       common.printMessage(`Job ZWEGENER(${jobid}) completed with RC=${result.rc}`);
       if (result.rc == 0) {
