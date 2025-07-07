@@ -44,6 +44,11 @@ export function tsoCommand(...args:string[]): { rc: number, out: string } {
 }
 
 export function operatorCommand(command: string): { rc: number, out: string } {
+
+  if (!isSDFS()) {
+    return { rc: -1, out: 'failed to initilize SDSF' }
+  }
+
   const opercmd=std.getenv('ZWE_zowe_runtimeDirectory')+'/bin/utils/opercmd.rex';
 
   let message=`- opercmd ${command}`;

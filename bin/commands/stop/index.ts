@@ -54,20 +54,20 @@ export function execute() {
   if (routeSysname) {
     cmd=`RO ${routeSysname},${cmd}`
   }
-  const shellReturn = zoslib.operatorCommand(cmd);
-  if (shellReturn.rc != 0) {
-    common.printErrorAndExit(`Error ZWEL0166E: Failed to stop ${jobname}: exit code ${shellReturn.rc}.`, undefined, 166);
+  const operCmdReturn = zoslib.operatorCommand(cmd);
+  if (operCmdReturn.rc != 0) {
+    const errorExplanation = operCmdReturn.rc == -1 ? operCmdReturn.out : `exit code ${operCmdReturn.rc}`
+    common.printErrorAndExit(`Error ZWEL0166E: Failed to stop ${jobname}: ${errorExplanation}.`, undefined, 166);
   } else {
-    let errorMessage = shellReturn.out;
-    if (shellReturn.out) {
-      const errorResult = shell.execOutSync('sh', '-c', `echo "${shellReturn.out}" | awk "/-P ${jobname}/{x=NR+1;next}(NR<=x){print}" | sed "s/^\\([^ ]\\+\\) \\+\\([^ ]\\+\\) \\+\\([^ ]\\+\\) \\+\\(.\\+\\)\\$/\\4/"`);
+    let errorMessage = operCmdReturn.out;
+    if (operCmdReturn.out) {
+      const errorResult = shell.execOutSync('sh', '-c', `echo "${operCmdReturn.out}" | awk "/-P ${jobname}/{x=NR+1;next}(NR<=x){print}" | sed "s/^\\([^ ]\\+\\) \\+\\([^ ]\\+\\) \\+\\([^ ]\\+\\) \\+\\(.\\+\\)\\$/\\4/"`);
       errorMessage = errorResult.out;
     }
     if (errorMessage) {
       common.printErrorAndExit(`Error ZWEL0166E: Failed to stop ${securityStcsZowe}: ${stringlib.trim(errorMessage)}.`, undefined, 166);
     }
-}
-
+  }
 
   // exit message
   common.printLevel1Message(`Terminate command on job ${jobname} is sent successfully. Please check job log for details.`);

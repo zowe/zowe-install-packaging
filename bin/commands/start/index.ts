@@ -51,14 +51,16 @@ export function execute() {
     cmd=`RO ${routeSysname},${cmd}`;
   }
 
-  const shellReturn = zoslib.operatorCommand(cmd);
-  if (shellReturn.rc) {
-    common.printErrorAndExit(`Error ZWEL0165E: Failed to start ${securityStcsZowe}: exit code ${shellReturn.rc}.`, undefined, 165);
-  } else {
+  const operCmdReturn = zoslib.operatorCommand(cmd);
+  if (operCmdReturn.rc != 0) {
+    const errorExplanation = operCmdReturn.rc == -1 ? operCmdReturn.out : `exit code ${operCmdReturn.rc}`
+    common.printErrorAndExit(`Error ZWEL0165E: Failed to start ${securityStcsZowe}: ${errorExplanation}.`, undefined, 165);
+  }
+  else {
     //TODO handle awk and set patterns here
-    let errorMessage = shellReturn.out;
-    if (shellReturn.out) {
-      const errorResult = shell.execOutSync('sh', '-c', `echo "${shellReturn.out}" | awk "/-S ${securityStcsZowe}/{x=NR+1;next}(NR<=x){print}" | sed "s/^\\([^ ]\\+\\) \\+\\([^ ]\\+\\) \\+\\([^ ]\\+\\) \\+\\(.\\+\\)\\$/\\4/"`);
+    let errorMessage = operCmdReturn.out;
+    if (operCmdReturn.out) {
+      const errorResult = shell.execOutSync('sh', '-c', `echo "${operCmdReturn.out}" | awk "/-S ${securityStcsZowe}/{x=NR+1;next}(NR<=x){print}" | sed "s/^\\([^ ]\\+\\) \\+\\([^ ]\\+\\) \\+\\([^ ]\\+\\) \\+\\(.\\+\\)\\$/\\4/"`);
       errorMessage = errorResult.out;
     }
     if (errorMessage) {
