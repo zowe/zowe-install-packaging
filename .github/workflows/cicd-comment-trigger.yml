@@ -1,11 +1,7 @@
 # Triggers when comments are made on issues/PRs, runs when '/ci' is added to a pull request.
 name: Zowe CICD Issue Trigger
 
-permissions:
-  issues: write
-  pull-requests: write
-  contents: write
-
+permissions: read-all
 
 on:
   issue_comment:
@@ -20,11 +16,14 @@ jobs:
     outputs:
       issue_run_ci: ${{ steps.check-comment.outputs.issue_run_ci }}
     steps:
+
       - name: Check for a comment triggering a build
+        env:
+          ISSUE_COMMENT: ${{ github.event.comment.body }}
         id: check-comment
         run: |
           echo "issue_run_ci=false" >> $GITHUB_OUTPUT
-          if [[ ! -z "${{ github.event.issue.pull_request }}" && ${{ github.event_name == 'issue_comment' }} && "${{ github.event.comment.body }}" = '/ci' ]]; then
+          if [[ ! -z "${{ github.event.issue.pull_request }}" && ${{ github.event_name == 'issue_comment' }} && "$ISSUE_COMMENT" = '/ci' ]]; then
             echo "issue_run_ci=true" >> $GITHUB_OUTPUT
           fi     
 
@@ -50,7 +49,7 @@ jobs:
     if: ${{ needs.pr-comment-check.outputs.issue_run_ci == 'true' }}
     steps:
       - name: 'Trigger Build workflow'
-        uses: zowe-actions/shared-actions/workflow-remote-call-wait@main    
+        uses: zowe-actions/shared-actions/workflow-remote-call-wait@54a9b36cf54e61fefea2801008788d81e1e3a560 # main 06/17/25    
         with:
           github-token: ${{ secrets.ZOWE_ROBOT_TOKEN }}
           owner: zowe

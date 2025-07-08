@@ -21,15 +21,15 @@
               "description": "MVS data set related configurations",
               "properties": {
                 "prefix": {
-                  "type": "string",
+                  "$ref": "/schemas/v2/server-common#zoweDatasetPrefix",
                   "description": "Where Zowe MVS data sets will be installed"
                 },
                 "proclib": {
-                  "type": "string",
+                  "$ref": "/schemas/v2/server-common#zoweDataset",
                   "description": "PROCLIB where Zowe STCs will be copied over"
                 },
                 "parmlib": {
-                  "type": "string",
+                  "$ref": "/schemas/v2/server-common#zoweDataset",
                   "description": "Zowe PARMLIB"
                 },
                 "parmlibMembers": {
@@ -44,21 +44,21 @@
                   }
                 },
                 "jcllib": {
-                  "type": "string",
+                  "$ref": "/schemas/v2/server-common#zoweDataset",
                   "description": "JCL library where Zowe will store temporary JCLs during initialization"
                 },
                 "loadlib": {
-                  "type": "string",
+                  "$ref": "/schemas/v2/server-common#zoweDataset",
                   "description": "States the dataset where Zowe executable utilities are located",
                   "default": "<hlq>.SZWELOAD"
                 },
                 "authLoadlib": {
-                  "type": "string",
+                  "$ref": "/schemas/v2/server-common#zoweDataset",
                   "description": "The dataset that contains any Zowe core code that needs to run APF-authorized, such as ZIS",
                   "default": "<hlq>.SZWEAUTH"
                 },
                 "authPluginLib": {
-                  "type": "string",
+                  "$ref": "/schemas/v2/server-common#zoweDataset",
                   "description": "APF authorized LOADLIB for Zowe ZIS Plugins"
                 }
               }
@@ -103,17 +103,17 @@
                   "description": "security group name",
                   "properties": {
                     "admin": {
-                      "type": "string",
+                      "$ref": "/schemas/v2/server-common#zoweUser",
                       "description": "Zowe admin user group",
                       "default": "ZWEADMIN"
                     },
                     "stc": {
-                      "type": "string",
+                      "$ref": "/schemas/v2/server-common#zoweUser",
                       "description": "Zowe STC group",
                       "default": "ZWEADMIN"
                     },
                     "sysProg": {
-                      "type": "string",
+                      "$ref": "/schemas/v2/server-common#zoweUser",
                       "description": "Zowe SysProg group",
                       "default": "ZWEADMIN"
                     }
@@ -125,12 +125,12 @@
                   "description": "security user name",
                   "properties": {
                     "zowe": {
-                      "type": "string",
+                      "$ref": "/schemas/v2/server-common#zoweUser",
                       "description": "Zowe runtime user name of main service",
                       "default": "ZWESVUSR"
                     },
                     "zis": {
-                      "type": "string",
+                      "$ref": "/schemas/v2/server-common#zoweUser",
                       "description": "Zowe runtime user name of ZIS",
                       "default": "ZWESIUSR"
                     }
@@ -142,17 +142,17 @@
                   "description": "STC names",
                   "properties": {
                     "zowe": {
-                      "type": "string",
+                      "$ref": "/schemas/v2/server-common#zoweDatasetMember",
                       "description": "STC name of main service",
                       "default": "ZWESLSTC"
                     },
                     "zis": {
-                      "type": "string",
+                      "$ref": "/schemas/v2/server-common#zoweDatasetMember",
                       "description": "STC name of ZIS",
                       "default": "ZWESISTC"
                     },
                     "aux": {
-                      "type": "string",
+                      "$ref": "/schemas/v2/server-common#zoweDatasetMember",
                       "description": "STC name of Auxiliary Service",
                       "default": "ZWESASTC"
                     }
@@ -173,7 +173,7 @@
                       "description": "PKCS#12 keystore settings",
                       "properties": {
                         "directory": {
-                          "$ref": "/schemas/v2/server-common#zowePath",
+                          "type": [ "string", "null" ],
                           "description": "Keystore directory"
                         },
                         "name": {
@@ -197,7 +197,7 @@
                           "default": "local_ca_password"
                         },
                         "lock": {
-                          "type": "boolean",
+                          "type": [ "boolean", "null" ],
                           "description": "Whether to restrict the permissions of the keystore after creation"
                         },
                         "import": {
@@ -275,7 +275,7 @@
                         "type": "string"
                       }
                     }
-                  } 
+                  }
                 },
                 {
                   "type": "object",
@@ -358,31 +358,31 @@
                       "description": "Certificate distinguish name",
                       "properties": {
                         "caCommonName": {
-                          "type": "string",
+                          "type": [ "string", "null" ],
                           "description": "Common name of certificate authority generated by Zowe."
                         },
                         "commonName": {
-                          "type": "string",
+                          "type": [ "string", "null" ],
                           "description": "Common name of certificate generated by Zowe."
                         },
                         "orgUnit": {
-                          "type": "string",
+                          "type": [ "string", "null" ],
                           "description": "Organization unit of certificate generated by Zowe."
                         },
                         "org": {
-                          "type": "string",
+                          "type": [ "string", "null" ],
                           "description": "Organization of certificate generated by Zowe."
                         },
                         "locality": {
-                          "type": "string",
+                          "type": [ "string", "null" ],
                           "description": "Locality of certificate generated by Zowe. This is usually the city name."
                         },
                         "state": {
-                          "type": "string",
+                          "type": [ "string", "null" ],
                           "description": "State of certificate generated by Zowe. You can also put province name here."
                         },
                         "country": {
-                          "type": "string",
+                          "type": [ "string", "null" ],
                           "description": "2 letters country code of certificate generated by Zowe."
                         }
                       }
@@ -436,6 +436,44 @@
                     {
                       "$ref": "/schemas/v2/server-common#zoweDatasetVsam",
                       "description": "Data set name. Must match components.caching-service.storage.vsam.name"
+                    }
+                  ]
+                }
+              }
+            },
+            "jcl": {
+              "type": "object",
+              "additionalProperties": false,
+              "description": "SZWESAMP JCLs related setting.",
+              "properties": {
+                "header": {
+                  "anyOf": [
+                    {
+                      "type": "integer",
+                      "not": {
+                        "type": "null"
+                      },
+                      "description": "Numeric option for JCL header for samples in SZWESAMP: '//ZWEnnnnn JOB {zowe.setup.jcl.header}'. Typically accounting information."
+                    },
+                    {
+                      "type": "string",
+                      "not": {
+                        "type": "null"
+                      },
+                      "maxLength": 65,
+                      "description": "One line JCL header options for samples in SZWESAMP: '//ZWEnnnnn JOB {zowe.setup.jcl.header}'."
+                    },
+                    {
+                      "type": "array",
+                      "items": {
+                        "type": "string",
+                        "not": {
+                          "type": "null"
+                        },
+                        "maxLength": 80,
+                        "minItems": 2
+                      },
+                      "description": "Multiline JCL header options for samples in SZWESAMP: '//ZWEnnnnn JOB {zowe.setup.jcl.header}'."
                     }
                   ]
                 }
@@ -505,7 +543,7 @@
               "type": "array",
               "description": "Intervals of seconds to wait before restarting a component if it fails before the minUptime value.",
               "items": {
-                "type": "integer"  
+                "type": "integer"
               }
             },
             "minUptime": {
@@ -582,13 +620,17 @@
           "description": "List of Zowe message portions when matched will be additionally logged into the system's log (such as syslog on z/OS). Note: Some messages extremely early in the Zowe lifecycle may not be added to the system's log",
           "uniqueItems": true,
           "items": {
-            "type": "string"
+            "type": "string",
+            "minLength": 1,
+            "not": {
+              "type": "null"
+            }
           }
         },
         "sysMessageTrim": {
           "type": "boolean",
           "default": false,
-          "description": "Determines whether or not to trim the syslog messages, print will start from the system message id",
+          "description": "Determines whether or not to trim the syslog messages, print will start from the system message id"
         },
         "useConfigmgr": {
           "type": "boolean",
@@ -613,8 +655,8 @@
       "type": "object",
       "properties": {
         "home": {
-          "$ref": "/schemas/v2/server-common#zowePath",
-          "description": "Path to Java home directory."
+          "$ref": "/schemas/v2/server-common#zoweOptionalPath",
+          "description": "Path to Java home directory. If java is at '/java/home/bin/java', than this would be '/java/home'"
         }
       }
     },
@@ -622,8 +664,8 @@
       "type": "object",
       "properties": {
         "home": {
-          "$ref": "/schemas/v2/server-common#zowePath",
-          "description": "Path to node.js home directory."
+          "$ref": "/schemas/v2/server-common#zoweOptionalPath",
+          "description": "Path to node.js home directory. If node is at '/node/home/bin/node', than this would be '/node/home'"
         }
       }
     },
@@ -640,7 +682,7 @@
           "description": "Port number of your z/OSMF instance."
         },
         "scheme": {
-          "$ref" : "#/$defs/scheme",
+          "$ref": "#/$defs/scheme",
           "description": "Scheme used to connect to z/OSMF instance. Optional for outbout AT-TLS, defaults to https"
         },
         "applId": {
@@ -702,11 +744,11 @@
     },
     "certificate": {
       "oneOf": [
-        { "$ref": "#/$defs/pkcs12-certificate" }, 
+        { "$ref": "#/$defs/pkcs12-certificate" },
         { "$ref": "#/$defs/keyring-certificate" }
       ]
     },
-    "pkcs12-certificate": { 
+    "pkcs12-certificate": {
       "type": "object",
       "additionalProperties": false,
       "required": ["keystore", "truststore", "pem"],
@@ -790,7 +832,7 @@
         }
       }
     },
-    "keyring-certificate": { 
+    "keyring-certificate": {
       "type": "object",
       "additionalProperties": false,
       "required": ["keystore", "truststore"],
@@ -899,7 +941,7 @@
               "type": "array",
               "description": "Intervals of seconds to wait before restarting a component if it fails before the minUptime value.",
               "items": {
-                "type": "integer"  
+                "type": "integer"
               }
             },
             "minUptime": {

@@ -272,11 +272,19 @@ pax -ppx -rf "${configmgr_rexx}"
 rm "${configmgr_rexx}"
 cd "${BASE_DIR}"
 
+certificate_analyser=$(find "${ZOWE_ROOT_DIR}/files" -type f \( -name "certificate-analyser*.jar" \) | head -n 1)
+echo "[$SCRIPT_NAME] move certificate_analyser $certificate_analyser"
+mkdir -p "${ZOWE_ROOT_DIR}/bin/utils"
+mv "${certificate_analyser}" "${ZOWE_ROOT_DIR}/bin/utils/certificate-analyser.jar"
+
+
 echo "[$SCRIPT_NAME] create dummy zowe.yaml for install"
 cat <<EOT >>"${BASE_DIR}/zowe.yaml"
 zowe:
+  runtimeDirectory: "${ZOWE_ROOT_DIR}"
   extensionDirectory: "${ZOWE_ROOT_DIR}/components"
-  useConfigmgr: false
+  logDirectory: "${BASE_DIR}/logs"
+  workspaceDirectory: "${BASE_DIR}/logs/workspace"
 EOT
 
 echo "[$SCRIPT_NAME] extract components"
