@@ -12,6 +12,7 @@ import { ZoweConfig } from '../../config/ZoweConfig';
 import ZoweYamlType from '../../config/ZoweYamlType';
 import { RemoteTestRunner } from '../../zos/RemoteTestRunner';
 import { FileType, TestFile, TestFileActions } from '../../zos/TestFileActions';
+import * as YAML from 'yaml';
 
 const testSuiteName = 'zwe-install';
 describe(`${testSuiteName}`, () => {
@@ -97,6 +98,40 @@ describe(`${testSuiteName}`, () => {
   });
 
   describe('(SHORT)', () => {
+    it('install via PARMLIB and exported variable', async () => {
+      const testParmlib = `${cfgYaml.zowe.setup.dataset.parmlib}`;
+      const testMember = `${testParmlib}(ZWECNF)`;
+
+      const zweYamlString = YAML.stringify(cfgYaml, { nullStr: '' });
+      await testRunner.uploadToDatasetForTest(zweYamlString, testMember);
+      await testRunner.collectTestContent(zweYamlString, 'parmlib.zowe.yaml');
+
+      const configString = `PARMLIB(${testMember}):FILE(./files/defaults.yaml)`;
+
+      let result = await testRunner.runZweTest(null, `zwe install --dry-run --config '${configString}'`);
+      expect(result.stdout).not.toBeNull();
+      expect(result.cleanedStdout).toMatchSnapshot();
+      expect(result.rc).toBe(0);
+
+      result = await testRunner.runRaw(`
+        export ZWE_CLI_PARAMETER_CONFIG='${configString}' && \
+        ./bin/zwe install --dry-run
+        `);
+
+      expect(result.stdout).not.toBeNull();
+      expect(result.cleanedStdout).toMatchSnapshot();
+      expect(result.rc).toBe(0);
+    });
+
+    it('bad runtimeDirectory, missing ZWEINSTL', async () => {
+      cfgYaml.zowe.setup.dataset.prefix = 'SOME.NEW.VALID.DSN';
+      await testRunner.removeUssFileForTest('files/SZWESAMP/ZWEINSTL');
+      const result = await testRunner.runZweTest(cfgYaml, 'install');
+      expect(result.stdout).not.toBeNull();
+      expect(result.cleanedStdout).toMatchSnapshot();
+      expect(result.rc).toBe(159);
+    });
+
     it('zwe install --help', async () => {
       const result = await testRunner.runZweTest(cfgYaml, `install --help`);
       expect(result.stdout).not.toBeNull();

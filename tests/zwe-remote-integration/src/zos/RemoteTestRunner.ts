@@ -21,7 +21,7 @@ import * as fs from 'fs-extra';
 import * as YAML from 'yaml';
 import * as jobs from '@zowe/zos-jobs-for-zowe-sdk';
 import path, { basename } from 'path';
-import { FileType } from './TestFileActions';
+import { FileType, TestFileActions } from './TestFileActions';
 
 /**
  * RemoteTestRunner is a class which drives actions on the backend test environment and
@@ -116,6 +116,14 @@ export class RemoteTestRunner {
     };
   }
 
+  public collectTestContent(content: string, fileName: string) {
+    const tempDir = fs.mkdtempSync('zwe_tmp');
+    const tempFile = path.resolve(tempDir, fileName);
+    fs.writeFileSync(tempFile, content);
+    this.collectTestFile(tempFile);
+    fs.rmSync(tempDir, { recursive: true, force: true });
+  }
+
   /**
    * Collects a local file into the test output directory.
    * Use this to collect files that are not tracked by the test runner but useful to review.
@@ -183,6 +191,18 @@ export class RemoteTestRunner {
     this.trackedJobs = [];
   }
 
+  public async deleteDs(ds: string) {
+    try {
+      await files.Delete.dataSet(this.session, ds, {});
+    } catch (error: unknown) {
+      // if we didn't find the dataset, it's safe to ignore the problem.
+      // The test could've failed to create a dataset for example.
+      if (!JSON.stringify(error).includes('status 404')) {
+        throw error;
+      }
+    }
+  }
+
   public async restoreFiles() {
     for (const trackedFile of this.trackedFiles) {
       switch (trackedFile.type) {
@@ -191,17 +211,15 @@ export class RemoteTestRunner {
           await this.runRaw(`mv ${trackedFile.tmpFile} ${trackedFile.srcFile}`);
           break;
         case FileType.DS_NON_CLUSTER:
-          try {
-            await files.Delete.dataSet(this.session, trackedFile.srcFile, {});
-          } catch (error: unknown) {
-            // if we didn't find the dataset, it's safe to ignore the problem.
-            // The test could've failed to create a dataset for example.
-            if (!JSON.stringify(error).includes('status 404')) {
-              throw error;
-            }
-          }
+          await this.deleteDs(trackedFile.srcFile);
           if (trackedFile.tmpFile != null) {
             await files.Rename.dataSet(this.session, trackedFile.tmpFile, trackedFile.srcFile);
+          }
+          break;
+        case FileType.DS_MEMBER:
+          await this.deleteDs(trackedFile.srcFile);
+          if (trackedFile.tmpFile != null) {
+            await this.runRaw(`cp ${trackedFile.tmpFile} "//'${trackedFile.srcFile}'"`);
           }
           break;
         case FileType.DS_VSAM:
@@ -230,46 +248,64 @@ export class RemoteTestRunner {
    * The dataset is restored with either the #postTest or #restore operations.
    */
   public async removeDatasetForTest(dataset: string) {
-    try {
-      const dsList = await files.List.dataSetsMatchingPattern(this.session, [dataset]);
-
-      console.log(JSON.stringify(dsList));
-      if (dsList.success) {
-        // cleanup old backups if they're on the system
-        const bkupDs = `${dataset}.TEST.BKUP`;
-        const bkupList = await files.List.dataSetsMatchingPattern(this.session, [bkupDs]);
-        if (bkupList.success) {
+    if (TestFileActions.hasMember(dataset)) {
+      const matches = /(.*)\((.*?)\)$/gim.exec(dataset);
+      const ds = matches[1];
+      const member = matches[2];
+      const listResponse = await files.List.membersMatchingPattern(this.session, ds, [member], {});
+      if (listResponse.success && listResponse.apiResponse.length > 0) {
+        // already exists
+        const flattenedTmpName = dataset.replaceAll('.', '_');
+        await this.runRaw(`mkdir -p ${this.REMOTE_TEST_TMP_DIR}`);
+        await this.runRaw(`cp -f "//'${dataset}'" ${flattenedTmpName}`);
+        this.trackedFiles.push({
+          srcFile: dataset,
+          tmpFile: flattenedTmpName,
+          type: FileType.DS_MEMBER,
+        });
+        await files.Delete.dataSet(this.session, dataset);
+      }
+    } else {
+      try {
+        const dsList = await files.List.dataSetsMatchingPattern(this.session, [dataset]);
+        console.log(JSON.stringify(dsList));
+        if (dsList.success) {
+          // cleanup old backups if they're on the system
+          const bkupDs = `${dataset}.TEST.BKUP`;
+          const bkupList = await files.List.dataSetsMatchingPattern(this.session, [bkupDs]);
+          if (bkupList.success) {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            const match = bkupList.apiResponse.find((ds: any) => ds.dsname === bkupDs);
+            if (match != null) {
+              await files.Delete.dataSet(this.session, bkupDs);
+            }
+          }
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          const match = bkupList.apiResponse.find((ds: any) => ds.dsname === bkupDs);
-          if (match != null) {
-            await files.Delete.dataSet(this.session, bkupDs);
+          const matchedItem = dsList.apiResponse.find((ds: any) => ds.dsname === dataset);
+          console.log(`Search: ${dataset} | Matched: ${matchedItem}`);
+          if (matchedItem == null) {
+            this.trackedFiles.push({
+              srcFile: dataset,
+              tmpFile: null, // null indicates there is no 'restore' op later
+              type: FileType.DS_NON_CLUSTER,
+            });
+          } else {
+            await files.Rename.dataSet(this.session, dataset, bkupDs, {});
+            this.trackedFiles.push({
+              srcFile: dataset,
+              tmpFile: bkupDs,
+              type: FileType.DS_NON_CLUSTER,
+            });
           }
         }
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const matchedItem = dsList.apiResponse.find((ds: any) => ds.dsname === dataset);
-        console.log(`Search: ${dataset} | Matched: ${matchedItem}`);
-        if (matchedItem == null) {
-          this.trackedFiles.push({
-            srcFile: dataset,
-            tmpFile: null, // null indicates there is no 'restore' op later
-            type: FileType.DS_NON_CLUSTER,
-          });
-        } else {
-          await files.Rename.dataSet(this.session, dataset, bkupDs, {});
-          this.trackedFiles.push({
-            srcFile: dataset,
-            tmpFile: bkupDs,
-            type: FileType.DS_NON_CLUSTER,
-          });
-        }
-      }
-    } catch (error) {
-      console.log('[TestRunner] Error trying to rename dataset. ' + error);
-      console.log(`[TestRunner] Input dataset: ${dataset}`);
-      console.log(
-        `[TestRunner] !!!IMPORTANT!!! Tests will continue to run so 
+      } catch (error) {
+        console.log('[TestRunner] Error trying to rename dataset. ' + error);
+        console.log(`[TestRunner] Input dataset: ${dataset}`);
+        console.log(
+          `[TestRunner] !!!IMPORTANT!!! Tests will continue to run so 
         cleanup can be run post-test, but will likely have invalid results.`,
-      );
+        );
+      }
     }
   }
 
@@ -390,6 +426,11 @@ export class RemoteTestRunner {
       binary: false,
     });
     return yamlUploadPath;
+  }
+
+  public async uploadToDatasetForTest(content: string, dsPath: string): Promise<void> {
+    await this.removeDatasetForTest(dsPath);
+    await files.Upload.bufferToDataSet(this.session, Buffer.from(content), dsPath);
   }
 
   public async uploadZoweYaml(

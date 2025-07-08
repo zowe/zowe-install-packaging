@@ -39,6 +39,10 @@ export class TestFileActions {
     return dlDir;
   }
 
+  public static hasMember(dataset: string) {
+    return dataset.length > 0 && dataset.endsWith(')') && /\(.*?\)/gim.test(dataset);
+  }
+
   public static async deleteAll(datasets: TestFile[]) {
     const deleteOps: DeleteFile[] = [];
     datasets.forEach((testFile) => {
@@ -50,7 +54,12 @@ export class TestFileActions {
         case FileType.DS_ZFS:
           delPromise = files.Delete.zfs(this.session, testFile.name, {});
           break;
+        case FileType.DS_MEMBER:
         case FileType.DS_NON_CLUSTER:
+          if (testFile.type === FileType.DS_MEMBER && !TestFileActions.hasMember(testFile.name)) {
+            console.log(`${testFile.name} is marked as a dataset member to be deleted, but is missing the member name. Ignoring.`);
+            break;
+          }
           delPromise = files.Delete.dataSet(this.session, testFile.name, {});
           break;
         case FileType.USS_FILE:
@@ -94,6 +103,8 @@ export type TestFile = {
 export enum FileType {
   // eslint-disable-next-line no-unused-vars
   DS_NON_CLUSTER,
+  // eslint-disable-next-line no-unused-vars
+  DS_MEMBER,
   // eslint-disable-next-line no-unused-vars
   DS_VSAM,
   // eslint-disable-next-line no-unused-vars
