@@ -91,7 +91,7 @@ export function waitForJob(jobid: string): {jobcctext?: string, jobcccode?: stri
   let jobcccode;    
   let isJES3;
 
-  if (!zoslib.isSDFS()) {
+  if (!zoslib.isSDSF()) {
     return { rc: WAIT_FOR_JOB_NO_SDSF };
   }
 
