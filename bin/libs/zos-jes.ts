@@ -79,10 +79,10 @@ export function submitJob(jclFileOrContent: string, printJobDebug:boolean=true, 
   }
 }
 
-const WAIT_FOR_JOB_NO_SDFS = -1;
-const WAIT_FOR_JOB_OK = 0;
-const WAIT_FOR_JOB_TIMEOUT = 1;
-const WAIT_FOR_JOB_JCL = 2;
+export const WAIT_FOR_JOB_NO_SDSF = -1;
+export const WAIT_FOR_JOB_OK = 0;
+export const WAIT_FOR_JOB_TIMEOUT = 1;
+export const WAIT_FOR_JOB_JCL = 2;
 
 export function waitForJob(jobid: string): {jobcctext?: string, jobcccode?: string, jobid?: string, jobname?: string, rc: number} {
   let jobstatus;
@@ -92,7 +92,7 @@ export function waitForJob(jobid: string): {jobcctext?: string, jobcccode?: stri
   let isJES3;
 
   if (!zoslib.isSDFS()) {
-    return { rc: WAIT_FOR_JOB_NO_SDFS };
+    return { rc: WAIT_FOR_JOB_NO_SDSF };
   }
 
   common.printDebug(`- Wait for job ${jobid} completed, starting at ${new Date().toString()}.`);
@@ -212,7 +212,7 @@ export function printAndHandleJcl(jclLocationOrContent: string, jobName: string,
     let {jobcctext, jobcccode, jobname, rc} = waitForJob(jobId);
     if (rc) {
       jobHasFailures=true;
-      if (rc == WAIT_FOR_JOB_NO_SDFS || rc == WAIT_FOR_JOB_TIMEOUT) {
+      if (rc == WAIT_FOR_JOB_NO_SDSF || rc == WAIT_FOR_JOB_TIMEOUT) {
         if (continueOnFailure) {
           common.printError(`Warning ZWEL0158W: Failed to find job ${jobId} result.`);
         } else {

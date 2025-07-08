@@ -104,7 +104,7 @@ export function execute(dryRun?: boolean) {
     common.printMessage('Submitting Job ZWEGENER');
     const jobid = zosJes.submitJob(tempFile);
     const result = zosJes.waitForJob(jobid);
-    if (result.rc == -1 ) {
+    if (result.rc == zosJes.WAIT_FOR_JOB_NO_SDSF) {
       common.printMessage(`No SDSF detected, review the job log of ZWEGENER(${jobid}) manually.`);
       // We can't continue, if 'zwe init' was issued. The next action (zwe mvs) must start after ZWEGENER successfully ended
       if (std.getenv('ZWE_CLI_COMMANDS_LIST') == 'init') {
