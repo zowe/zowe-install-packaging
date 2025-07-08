@@ -24,27 +24,23 @@ export function execute() {
 
   // read Zowe STC name and apply default value
   const zoweConfig = config.getZoweConfig();
-  let securityStcsZowe = zoweConfig.zowe.setup?.security?.stcs?.zowe;
-  if (!securityStcsZowe) {
-    securityStcsZowe=std.getenv('ZWE_PRIVATE_DEFAULT_ZOWE_STC');
-  }
+  // zowe.setup.security.stcs.zowe defined in defaults
+  // And rejected by schema if user defines null/empty => always defined
+  const securityStcsZowe = zoweConfig.zowe.setup.security.stcs.zowe;
   // read job name and apply default value
   let jobname: string;
   config.sanitizeHaInstanceId();
   const haInstance=std.getenv('ZWE_CLI_PARAMETER_HA_INSTANCE');
 
   if (haInstance && zoweConfig.haInstances && zoweConfig.haInstances[haInstance]) {
-    jobname=zoweConfig.haInstances[haInstance].zowe?.job?.name;
+    jobname = zoweConfig.haInstances[haInstance].zowe?.job?.name;
   }
   if (!jobname) {
-    jobname = zoweConfig.zowe.job?.name;
-  }
-  if (!jobname) {
-    jobname=securityStcsZowe
+    jobname = zoweConfig.zowe.job.name;
   }
 
   // read SYSNAME if --ha-instance is specified
-  let routeSysname:string;
+  let routeSysname: string;
   if (haInstance && zoweConfig.haInstances && zoweConfig.haInstances[haInstance]) {
     routeSysname = zoweConfig.haInstances[haInstance]?.sysname;
   }

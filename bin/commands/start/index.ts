@@ -22,16 +22,13 @@ export function execute() {
   // Validation
   common.requireZoweYaml();
 
-  // Read job name and validate
   const zoweConfig = config.getZoweConfig();
-  const jobname = zoweConfig.zowe.job?.name;
-  let securityStcsZowe = zoweConfig.zowe.setup?.security?.stcs?.zowe;
-  if (!securityStcsZowe) {
-    //TODO defaults should be stored in default yaml, not out of thin air
-    securityStcsZowe=std.getenv('ZWE_PRIVATE_DEFAULT_ZOWE_STC');
-  }
+  // zowe.job.name and zowe.setup.security.stcs.zowe defined in defaults
+  // And rejected by schema if user defines null/empty => always defined
+  const jobname = zoweConfig.zowe.job.name;
+  const securityStcsZowe = zoweConfig.zowe.setup.security.stcs.zowe;
 
-  let routeSysname:string;
+  let routeSysname: string;
 
   config.sanitizeHaInstanceId();
   const haInstance=std.getenv('ZWE_CLI_PARAMETER_HA_INSTANCE');
@@ -44,9 +41,7 @@ export function execute() {
   if (haInstance) {
     cmd+=`,HAINST=${haInstance}`;
   }
-  if (jobname) {
-    cmd+=`,JOBNAME=${jobname}`;
-  }
+  cmd+=`,JOBNAME=${jobname}`;
   if (routeSysname) {
     cmd=`RO ${routeSysname},${cmd}`;
   }
