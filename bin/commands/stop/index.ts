@@ -56,7 +56,7 @@ export function execute() {
   }
   const operCmdReturn = zoslib.operatorCommand(cmd);
   if (operCmdReturn.rc != 0) {
-    const errorExplanation = operCmdReturn.rc == -1 ? operCmdReturn.out : `exit code ${operCmdReturn.rc}`
+    const errorExplanation = operCmdReturn.rc == zoslib.OPER_CMD_NO_SDSF ? operCmdReturn.out : `exit code ${operCmdReturn.rc}`
     common.printErrorAndExit(`Error ZWEL0166E: Failed to stop ${jobname}: ${errorExplanation}.`, undefined, 166);
   } else {
     let errorMessage = operCmdReturn.out;

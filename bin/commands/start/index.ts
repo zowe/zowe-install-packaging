@@ -53,7 +53,7 @@ export function execute() {
 
   const operCmdReturn = zoslib.operatorCommand(cmd);
   if (operCmdReturn.rc != 0) {
-    const errorExplanation = operCmdReturn.rc == -1 ? operCmdReturn.out : `exit code ${operCmdReturn.rc}`
+    const errorExplanation = operCmdReturn.rc == zoslib.OPER_CMD_NO_SDSF ? operCmdReturn.out : `exit code ${operCmdReturn.rc}`
     common.printErrorAndExit(`Error ZWEL0165E: Failed to start ${securityStcsZowe}: ${errorExplanation}.`, undefined, 165);
   }
   else {
