@@ -49,15 +49,19 @@ export function execute() {
     routeSysname = zoweConfig.haInstances[haInstance]?.sysname;
   }
 
-  // start job
+  // Stop job
   let cmd=`P ${jobname}`
   if (routeSysname) {
     cmd=`RO ${routeSysname},${cmd}`
   }
   const operCmdReturn = zoslib.operatorCommand(cmd);
   if (operCmdReturn.rc != 0) {
-    const errorExplanation = operCmdReturn.rc == zoslib.OPER_CMD_NO_SDSF ? operCmdReturn.out : `exit code ${operCmdReturn.rc}`
-    common.printErrorAndExit(`Error ZWEL0166E: Failed to stop ${jobname}: ${errorExplanation}.`, undefined, 166);
+    const errorExplanation = operCmdReturn.rc == zoslib.OPER_CMD_NO_SDSF ? operCmdReturn.out : `exit code ${operCmdReturn.rc}`;
+    common.printError(`Error ZWEL0166E: Failed to stop ${jobname}: ${errorExplanation}.`);
+    if (operCmdReturn.rc == zoslib.OPER_CMD_NO_SDSF) {
+      common.printMessage(`Use following operator command to stop Zowe Launcher manually: ${cmd}`);
+    }
+    std.exit(166);
   } else {
     let errorMessage = operCmdReturn.out;
     if (operCmdReturn.out) {

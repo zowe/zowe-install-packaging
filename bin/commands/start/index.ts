@@ -53,8 +53,12 @@ export function execute() {
 
   const operCmdReturn = zoslib.operatorCommand(cmd);
   if (operCmdReturn.rc != 0) {
-    const errorExplanation = operCmdReturn.rc == zoslib.OPER_CMD_NO_SDSF ? operCmdReturn.out : `exit code ${operCmdReturn.rc}`
-    common.printErrorAndExit(`Error ZWEL0165E: Failed to start ${securityStcsZowe}: ${errorExplanation}.`, undefined, 165);
+    const errorExplanation = operCmdReturn.rc == zoslib.OPER_CMD_NO_SDSF ? operCmdReturn.out : `exit code ${operCmdReturn.rc}`;
+    common.printError(`Error ZWEL0165E: Failed to start ${securityStcsZowe}: ${errorExplanation}.`);
+    if (operCmdReturn.rc == zoslib.OPER_CMD_NO_SDSF) {
+      common.printMessage(`Use following operator command to start Zowe Launcher manually: ${cmd}`);
+    }
+    std.exit(165);
   }
   else {
     //TODO handle awk and set patterns here
