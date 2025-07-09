@@ -33,7 +33,6 @@ describe(`${testSuiteName}`, () => {
     });
 
     cfgYaml = ZoweConfig.getZoweYaml();
-    cfgYaml.zowe.setup.certificate.defaultCfgYaml = ZoweConfig.getDefaultsYaml();
   });
   beforeEach(() => {
     cfgYaml = ZoweConfig.getZoweYaml();

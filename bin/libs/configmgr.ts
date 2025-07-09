@@ -189,7 +189,7 @@ function getDiscoveryServiceUrl(config) {
   return getDiscoveryServiceUrlNonHa(config);
 }
 
-function writeZoweConfigUpdate(updateObj: any, arrayMergeStrategy: number): number {
+function writeZoweConfigUpdate(updateObj: any, arrayMergeStrategy: number, shouldValidate: boolean=true): number {
   let firstConfigPath = ZOWE_CONFIG_PATH.split(':')[0];
 
   if (!Number.isInteger(CONFIG_REVISIONS[firstConfigPath])) {
@@ -197,7 +197,7 @@ function writeZoweConfigUpdate(updateObj: any, arrayMergeStrategy: number): numb
     getConfig(firstConfigPath, firstConfigPath, ZOWE_SCHEMA_SET);
   }
   
-  let rc = updateConfig(firstConfigPath, updateObj, arrayMergeStrategy);
+  let rc = updateConfig(firstConfigPath, updateObj, arrayMergeStrategy, shouldValidate);
   if (rc == 0) {
     let [ yamlStatus, textOrNull ] = CONFIG_MGR.writeYAML(getConfigRevisionName(firstConfigPath));
     if (yamlStatus === 0) {
@@ -389,7 +389,7 @@ function deleteConfig(configName: string, deletePath: string): number {
   return status;
 }
 
-function updateConfig(configName: string, updateObj: any, arrayMergeStrategy: number=1): number {
+function updateConfig(configName: string, updateObj: any, arrayMergeStrategy: number=1, shouldValidate: boolean=true): number {
   let revision = CONFIG_REVISIONS[configName];
   if (!Number.isInteger(revision)) {
     console.log(`Error: Cannot update config if config not yet loaded`);
@@ -399,7 +399,7 @@ function updateConfig(configName: string, updateObj: any, arrayMergeStrategy: nu
   revision++;
   let newName = getConfigRevisionName(configName, revision);
   let status = CONFIG_MGR.makeModifiedConfiguration(currentName, newName, updateObj, arrayMergeStrategy);
-  if (status == 0) {
+  if (status == 0 && shouldValidate) {
     const validation = CONFIG_MGR.validate(newName);
     if (validation.ok) {
       if (validation.exceptionTree) {
@@ -433,11 +433,11 @@ export function deleteFromZoweCfgFile(file: string,deleteKey: string): [number, 
   return [rc, ZOWE_FILE_CONFIG];
 }
 
-export function updateZoweCfgFile(file: string, updateObj: any, arrayMergeStrategy: number=1): [number, any] {
+export function updateZoweCfgFile(file: string, updateObj: any, arrayMergeStrategy: number=1, shouldValidate: boolean=true): [number, any] {
   const fileCfg = `FILE(${file})`;
   const zoweConfigName = 'zowe-update-yaml';
   const ZOWE_FILE_CONFIG = getConfig(zoweConfigName, fileCfg, ZOWE_SCHEMA_SET); 
-  let rc = updateConfig(zoweConfigName, updateObj, arrayMergeStrategy);
+  let rc = updateConfig(zoweConfigName, updateObj, arrayMergeStrategy, shouldValidate);
   if (rc == 0){ 
     let [ yamlStatus, textOrNull ] = CONFIG_MGR.writeYAML(getConfigRevisionName(zoweConfigName));
     if (yamlStatus == 0) {
@@ -447,13 +447,13 @@ export function updateZoweCfgFile(file: string, updateObj: any, arrayMergeStrate
   return [rc, ZOWE_FILE_CONFIG];
 }
 
-export function updateZoweConfig(updateObj: any, writeUpdate: boolean, arrayMergeStrategy: number=1): [number, any] {
-  let rc = updateConfig(getZoweConfigName(), updateObj, arrayMergeStrategy);
+export function updateZoweConfig(updateObj: any, writeUpdate: boolean, arrayMergeStrategy: number=1, shouldValidate:boolean=true): [number, any] {
+  let rc = updateConfig(getZoweConfigName(), updateObj, arrayMergeStrategy, shouldValidate);
   if (rc == 0) {
     ZOWE_CONFIG=getZoweConfig();
     HA_CONFIGS = {}; //reset
     if (writeUpdate) {
-      writeZoweConfigUpdate(updateObj, arrayMergeStrategy);
+      writeZoweConfigUpdate(updateObj, arrayMergeStrategy, shouldValidate);
       writeMergedConfig(ZOWE_CONFIG);
     }
   }

@@ -117,7 +117,7 @@ function buildUpdateObjWithArrays(zoweConfig: any, key: string): any {
  * @param val 
  * @returns 
  */
-export function updateZoweYaml(file: string, key: string, val: any): number {
+export function updateZoweYaml(file: string, key: string, val: any, validate: boolean=true): number {
   common.printMessage(`- update zowe config ${file}, key: "${key}" with value: ${val}`);
   let mergeObj = {};
   if (/\[\d+\]/.test(key)) {
@@ -127,7 +127,7 @@ export function updateZoweYaml(file: string, key: string, val: any): number {
   let [ success, updateObj ] = fakejq.jqset(mergeObj, key, val);
   if (success) {
     common.printMessage(`  * Success`);
-    const updateResult = config.updateZoweCfgFile(file, updateObj, 4);
+    const updateResult = config.updateZoweCfgFile(file, updateObj, 4, validate);
     return updateResult[0];
   } else {
     common.printError(`  * Error`); 

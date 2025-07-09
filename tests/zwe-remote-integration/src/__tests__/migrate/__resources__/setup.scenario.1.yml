@@ -6,7 +6,7 @@ zowe:
       # Type of certificate storage. Valid values are: PKCS12, JCERACFKS. APIML additionally supports: JCEKS, JCECCAKS, JCECCARACFKS, or JCEHYBRIDRACFKS
       type: PKCS12
       pkcs12:
-        directory: {@ ussTestDir @}
+        directory: {@ ussTestDir @}/pkcs12
         # Certificate alias name. Optional, default value is localhost.
         name: localhost
         password: password
@@ -21,14 +21,14 @@ zowe:
   certificate:
     keystore:
       type: PKCS12
-      file: {@ ussTestDir @}/localhost/localhost.keystore.p12
+      file: {@ ussTestDir @}/pkcs12/localhost/localhost.keystore.p12
       password: password
       alias: localhost
     truststore:
       type: PKCS12
-      file: {@ ussTestDir @}/localhost/localhost.truststore.p12
+      file: {@ ussTestDir @}/pkcs12/localhost/localhost.truststore.p12
       password: password
     pem:
-      key: {@ ussTestDir @}/localhost/localhost.key
-      certificate: {@ ussTestDir @}/localhost/localhost.cer
-      certificateAuthorities: {@ ussTestDir @}/local_ca/local_ca.cer
+      key: {@ ussTestDir @}/pkcs12/localhost/localhost.key
+      certificate: {@ ussTestDir @}/pkcs12/localhost/localhost.cer
+      certificateAuthorities: {@ ussTestDir @}/pkcs12/local_ca/local_ca.cer

@@ -111,7 +111,7 @@ data:
         certificate:
           type: "PKCS12"
           pkcs12:
-            directory: "/test/dir"
+            directory: "/test/dir/pkcs12"
             name: "localhost"
             password: "password"
             caAlias: "local_ca"
