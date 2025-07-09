@@ -32,12 +32,13 @@ describe(`${testSuiteName}`, () => {
   beforeEach(async () => {
     cfgYaml = ZoweConfig.getZoweYaml();
     defaultCfgYaml = ZoweConfig.getDefaultsYaml();
-
-    await testRunner.removeUssFileOrDirForTest('components');
-    cleanupFiles.push({
+    const workspaceEnv: TestFile = {
       name: `${cfgYaml.zowe.workspaceDirectory}/.env`,
       type: FileType.USS_DIR,
-    });
+    };
+    await TestFileActions.deleteAll([workspaceEnv]);
+    await testRunner.removeUssFileOrDirForTest('components');
+    cleanupFiles.push(workspaceEnv);
   });
 
   afterEach(async () => {
