@@ -20,15 +20,16 @@ describe(`${testSuiteName}`, () => {
   let testRunner: RemoteTestRunner;
   let cfgYaml: ZoweYamlType;
   let defaultCfgYaml: ZoweYamlType;
-  const workspaceEnv: TestFile = {
-    name: `${cfgYaml.zowe.workspaceDirectory}/.env`,
-    type: FileType.USS_DIR,
-  };
+  let workspaceEnv: TestFile;
 
   beforeAll(async () => {
     testRunner = new RemoteTestRunner(testSuiteName);
     cfgYaml = ZoweConfig.getZoweYaml();
     defaultCfgYaml = ZoweConfig.getDefaultsYaml();
+    workspaceEnv = {
+      name: `${cfgYaml.zowe.workspaceDirectory}/.env`,
+      type: FileType.USS_DIR,
+    };
     const cleanSecurityManager = (input: string) => {
       return input.replaceAll(/TSS|ACF2|RACF/gi, 'ESMT'); // ESM TEST
     };
