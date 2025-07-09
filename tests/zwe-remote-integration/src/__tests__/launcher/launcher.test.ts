@@ -46,6 +46,8 @@ describe(`${testSuiteName}`, () => {
     it('compare .zowe-merged.yaml created by launcher and zwe', async () => {
       const defaultsUpl = await testRunner.uploadDefaultsYaml(defaultCfgYaml);
       const zyUpl = await testRunner.uploadZoweYaml(cfgYaml);
+      // we need to remove the components dir so zowe_launcher fails and returns after creating env. otherwise test hangs.
+      await testRunner.removeUssFileOrDirForTest('components');
 
       const launcherRes = await testRunner.runRaw(` 
             export RUNTIME_DIRECTORY=${cfgYaml.zowe.runtimeDirectory} && \
@@ -56,7 +58,10 @@ describe(`${testSuiteName}`, () => {
       // this is an intentionally invalid zowe_launcher run - create env configs and then exit with an error
       expect(launcherRes.rc).toBe(8);
 
-      const launchZoweMerged = await testRunner.downloadMaskedUssFilesMatching('*.yaml', `${cfgYaml.zowe.workspaceDirectory}/.env/`);
+      const launchZoweMerged = await testRunner.downloadMaskedUssFilesMatching(
+        '.zowe-merged.yaml',
+        `${cfgYaml.zowe.workspaceDirectory}/.env/`,
+      );
       expect(launchZoweMerged.length).toBe(1);
       testRunner.collectTestFile(launchZoweMerged[0]);
 

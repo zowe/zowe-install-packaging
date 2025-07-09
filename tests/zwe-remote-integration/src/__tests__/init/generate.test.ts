@@ -158,7 +158,7 @@ describe(`${testSuiteName}`, () => {
     });
 
     it('BAD: missing defaults.yaml', async () => {
-      await testRunner.removeUssFileForTest('files/defaults.yaml');
+      await testRunner.removeUssFileOrDirForTest('files/defaults.yaml');
       const result = await testRunner.runZweTest(cfgYaml, 'init generate --dry-run');
       expect(result.stdout).not.toBeNull();
       expect(result.cleanedStdout).toMatchSnapshot(); // FIXME: the snapshot indicates processing continues when it shouldn't
