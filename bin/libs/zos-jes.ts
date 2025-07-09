@@ -46,7 +46,10 @@ export function submitJob(jclFileOrContent: string, printJobDebug:boolean=true, 
   if (jclIsContent) {
     // always submit through a file, as printf/echo can introduce errors to content
     jclFile = fs.createTmpFile()!;
-    xplatform.storeFileUTF8(jclFile, xplatform.AUTO_DETECT, jclFileOrContent);
+    const storeRC = xplatform.storeFileUTF8(jclFile, xplatform.AUTO_DETECT, jclFileOrContent);
+    if (storeRC) {
+      common.printErrorAndExit(`Error ZWEL0159E Failed to modify temporary file ${jclFile}.`, undefined, 159);
+    }
     cleanupFile = true;
   }
 
