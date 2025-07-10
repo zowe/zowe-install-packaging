@@ -91,7 +91,7 @@ describe(`${testSuiteName}`, () => {
       expect(result.rc).toBe(1);
 
       // this is technically not valid JCL, but fits in 80 chars
-      jclLines = [`'SOMEJOB'`, `(0000000000)`, longString.slice(0, 79), 'SYSAFF=SYS1'];
+      jclLines = [`'SOMEJOB'`, `//    (0000000000)`, ('//    ' + longString).slice(0, 79), '//    SYSAFF=SYS1'];
       _.set(cfgYaml, 'zowe.setup.jcl.header', jclLines);
       result = await testRunner.runZweTest(cfgYaml, 'init generate --dry-run');
       expect(result.stdout).not.toBeNull();
@@ -99,7 +99,7 @@ describe(`${testSuiteName}`, () => {
       expect(result.rc).toBe(0);
 
       // with idx 0, the slice is invalid for first line. this is currently allowed by schema.
-      jclLines = [longString.slice(0, 79), `(0000000000)`, 'SOMEJOB', 'SYSAFF=SYS1'];
+      jclLines = [longString.slice(0, 79), `//    (0000000000)`, '//    SOMEJOB', '//    SYSAFF=SYS1'];
       _.set(cfgYaml, 'zowe.setup.jcl.header', jclLines);
       result = await testRunner.runZweTest(cfgYaml, 'init generate --dry-run');
       expect(result.stdout).not.toBeNull();
@@ -127,7 +127,7 @@ describe(`${testSuiteName}`, () => {
 
       // error - 81 char line
       // eslint-disable-next-line
-      _.set(cfgYaml, 'zowe.setup.jcl.header', longString.slice(0, 80- ('//ABCABCDE JOB '.length-1) ));
+      _.set(cfgYaml, 'zowe.setup.jcl.header', longString.slice(0, 80 - ('//ABCABCDE JOB '.length - 1)));
       result = await testRunner.runZweTest(cfgYaml, 'init generate --dry-run');
       expect(result.stdout).not.toBeNull();
       expect(result.cleanedStdout).toMatchSnapshot();
@@ -135,7 +135,7 @@ describe(`${testSuiteName}`, () => {
 
       // OK - 80 char line
       // eslint-disable-next-line
-      _.set(cfgYaml, 'zowe.setup.jcl.header', longString.slice(0, 80-'//ABCABCDE JOB '.length));
+      _.set(cfgYaml, 'zowe.setup.jcl.header', longString.slice(0, 80 - '//ABCABCDE JOB '.length));
       result = await testRunner.runZweTest(cfgYaml, 'init generate --dry-run');
       expect(result.stdout).not.toBeNull();
       expect(result.cleanedStdout).toMatchSnapshot();
@@ -158,7 +158,7 @@ describe(`${testSuiteName}`, () => {
     });
 
     it('BAD: missing defaults.yaml', async () => {
-      await testRunner.removeUssFileForTest('files/defaults.yaml');
+      await testRunner.removeUssFileOrDirForTest('files/defaults.yaml');
       const result = await testRunner.runZweTest(cfgYaml, 'init generate --dry-run');
       expect(result.stdout).not.toBeNull();
       expect(result.cleanedStdout).toMatchSnapshot(); // FIXME: the snapshot indicates processing continues when it shouldn't

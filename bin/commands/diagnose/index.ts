@@ -34,7 +34,7 @@ const COMPONENTS = {
         ]
     },
     s: {
-        title: 'Zowe Subsystem Services (ZSS) and Zowe Installation Services (ZIS)',
+        title: 'Zowe System Services (ZSS) and Zowe Interprocess Services (ZIS)',
         urls: [
             { text: 'ZSS', link: 'https://docs.zowe.org/stable/troubleshoot/app-framework/zss-error-codes' },
             { text: 'ZIS', link: 'https://docs.zowe.org/stable/troubleshoot/app-framework/zis-error-codes' }
