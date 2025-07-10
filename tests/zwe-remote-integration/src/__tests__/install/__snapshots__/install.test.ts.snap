@@ -1772,7 +1772,7 @@ Parameters for command "install"
     --allow-overwrite|--allow-overwritten  (optional)
         Allow overwritten existing MVS data set.
     --dry-run  (optional)
-        Prints out existing JCL templates but does not generate resolved JCL.
+        Generates and prints JCL but does not execute.
 ------------------
 Example(s)
     zwe install -v -c /path/to/zowe.yaml"

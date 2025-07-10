@@ -467,7 +467,10 @@ module.exports = async () => {
     await uss.runCommand(`pax -ppx -rf launcher.pax`, `${REMOTE_SYSTEM_INFO.ussTestDir}/components/launcher`);
     await uss.runCommand(`rm launcher.pax`, `${REMOTE_SYSTEM_INFO.ussTestDir}/components/launcher`);
     for (const pgm of ['ZWESLSTC']) {
-      await uss.runCommand(`cp samplib/${pgm} "//'${REMOTE_SYSTEM_INFO.szwesamp}(${pgm})'"`, ussWorkDir);
+      await uss.runCommand(
+        `cp samplib/${pgm} "//'${REMOTE_SYSTEM_INFO.szwesamp}(${pgm})'"`,
+        `${REMOTE_SYSTEM_INFO.ussTestDir}/components/launcher`,
+      );
     }
 
     console.log(`Unpacking ncert.pax from zowe-install-packaging-tools and placing it in bin/utils/...`);
