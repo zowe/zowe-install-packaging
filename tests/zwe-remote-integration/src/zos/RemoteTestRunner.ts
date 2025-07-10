@@ -273,7 +273,7 @@ export class RemoteTestRunner {
     }
   }
 
-  public async removeUssFileForTest(filePath: string) {
+  public async removeUssFileOrDirForTest(filePath: string) {
     const flattenedTmpName = filePath.replaceAll('/', '_');
     await this.runRaw(`mkdir -p ${this.REMOTE_TEST_TMP_DIR}`);
     await this.runRaw(`mv ${filePath} ${this.REMOTE_TEST_TMP_DIR}/${flattenedTmpName}`);
@@ -384,7 +384,7 @@ export class RemoteTestRunner {
     const stringDefaultYaml = YAML.stringify(defaultsYaml, { nullStr: '' });
     const yamlOutputDir = this.yamlOutputTemplate.replace('{{ testInstance }}', testName);
     fs.mkdirpSync(yamlOutputDir);
-    await this.removeUssFileForTest('files/defaults.yaml');
+    await this.removeUssFileOrDirForTest('files/defaults.yaml');
     const redundantFilePath = this.writeRedundant(`${yamlOutputDir}/defaults.yaml`, stringDefaultYaml);
     await files.Upload.fileToUssFile(this.session, redundantFilePath, yamlUploadPath, {
       binary: false,
