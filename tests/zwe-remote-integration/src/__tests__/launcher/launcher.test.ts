@@ -13,29 +13,37 @@ import { RemoteTestRunner } from '../../zos/RemoteTestRunner';
 import { ZoweConfig } from '../../config/ZoweConfig';
 import * as fs from 'fs-extra';
 import * as yaml from 'yaml';
+import { FileType, TestFile, TestFileActions } from '../../zos/TestFileActions';
 
 const testSuiteName = 'compare-zwe-output-with-launcher';
 describe(`${testSuiteName}`, () => {
   let testRunner: RemoteTestRunner;
   let cfgYaml: ZoweYamlType;
   let defaultCfgYaml: ZoweYamlType;
+  let workspaceEnv: TestFile;
 
   beforeAll(async () => {
     testRunner = new RemoteTestRunner(testSuiteName);
     cfgYaml = ZoweConfig.getZoweYaml();
     defaultCfgYaml = ZoweConfig.getDefaultsYaml();
+    workspaceEnv = {
+      name: `${cfgYaml.zowe.workspaceDirectory}/.env`,
+      type: FileType.USS_DIR,
+    };
     const cleanSecurityManager = (input: string) => {
       return input.replaceAll(/TSS|ACF2|RACF/gi, 'ESMT'); // ESM TEST
     };
     testRunner.addCleanFn(cleanSecurityManager);
   });
-  beforeEach(() => {
+  beforeEach(async () => {
     cfgYaml = ZoweConfig.getZoweYaml();
     defaultCfgYaml = ZoweConfig.getDefaultsYaml();
+    await TestFileActions.deleteAll([workspaceEnv]);
   });
 
   afterEach(async () => {
     await testRunner.postTest();
+    await TestFileActions.deleteAll([workspaceEnv]);
   });
 
   afterAll(() => {
@@ -46,6 +54,8 @@ describe(`${testSuiteName}`, () => {
     it('compare .zowe-merged.yaml created by launcher and zwe', async () => {
       const defaultsUpl = await testRunner.uploadDefaultsYaml(defaultCfgYaml);
       const zyUpl = await testRunner.uploadZoweYaml(cfgYaml);
+      // we need to remove the components dir so zowe_launcher fails and returns after creating env. otherwise test hangs.
+      await testRunner.removeUssFileOrDirForTest('components');
 
       const launcherRes = await testRunner.runRaw(` 
             export RUNTIME_DIRECTORY=${cfgYaml.zowe.runtimeDirectory} && \
@@ -56,7 +66,10 @@ describe(`${testSuiteName}`, () => {
       // this is an intentionally invalid zowe_launcher run - create env configs and then exit with an error
       expect(launcherRes.rc).toBe(8);
 
-      const launchZoweMerged = await testRunner.downloadMaskedUssFilesMatching('*.yaml', `${cfgYaml.zowe.workspaceDirectory}/.env/`);
+      const launchZoweMerged = await testRunner.downloadMaskedUssFilesMatching(
+        '.zowe-merged.yaml',
+        `${cfgYaml.zowe.workspaceDirectory}/.env/`,
+      );
       expect(launchZoweMerged.length).toBe(1);
       testRunner.collectTestFile(launchZoweMerged[0]);
 
@@ -66,7 +79,6 @@ describe(`${testSuiteName}`, () => {
       const zweZoweMerged = await testRunner.downloadMaskedUssFilesMatching('*.yaml', `${cfgYaml.zowe.workspaceDirectory}/.env/`);
       expect(zweZoweMerged.length).toBe(1);
       testRunner.collectTestFile(zweZoweMerged[0]);
-
       // track changes to merged yaml files generally
       const launchMergedYaml = fs.readFileSync(launchZoweMerged[0], 'utf8');
       const zweMergedYaml = fs.readFileSync(zweZoweMerged[0], 'utf8');

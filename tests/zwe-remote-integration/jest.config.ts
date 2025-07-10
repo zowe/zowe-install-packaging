@@ -14,6 +14,7 @@ const config: Config = {
   // runner: "./dist/worker-group-runner.js",
   globalSetup: '<rootDir>/src/globalSetup.ts',
   globalTeardown: '<rootDir>/src/globalTeardown.ts',
+  setupFilesAfterEnv: ['<rootDir>/src/jest-config.ts'],
   preset: 'ts-jest',
   modulePathIgnorePatterns: ['<rootDir>/.build'],
   testRegex: '__tests__.*\\.*?\\.(spec|test)\\.ts$',
