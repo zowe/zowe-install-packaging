@@ -126,7 +126,7 @@ describe(`${testSuiteName}`, () => {
 
     it('bad runtimeDirectory, missing ZWEINSTL', async () => {
       _.set(cfgYaml, 'zowe.setup.dataset.prefix', 'SOME.NEW.VALID.DSN');
-      await testRunner.removeUssFileForTest('files/SZWESAMP/ZWEINSTL');
+      await testRunner.removeUssFileOrDirForTest('files/SZWESAMP/ZWEINSTL');
       const result = await testRunner.runZweTest(cfgYaml, 'install');
       expect(result.stdout).not.toBeNull();
       expect(result.cleanedStdout).toMatchSnapshot();
