@@ -23,6 +23,7 @@ describe(`${testSuiteName}`, () => {
   let cfgYaml: ZoweYamlType;
   let defaultCfgYaml: ZoweYamlType;
   let cleanupDatasets: TestFile[] = []; // a list of datasets deleted after every test
+  const resourcesDir = path.resolve('src', '__tests__', 'init', '__resources__', 'generate');
 
   beforeAll(async () => {
     testRunner = new RemoteTestRunner(testSuiteName);
@@ -127,7 +128,7 @@ describe(`${testSuiteName}`, () => {
 
       // error - 81 char line
       // eslint-disable-next-line
-      _.set(cfgYaml, 'zowe.setup.jcl.header', longString.slice(0, 80- ('//ABCABCDE JOB '.length-1) ));
+      _.set(cfgYaml, 'zowe.setup.jcl.header', longString.slice(0, 80 - ('//ABCABCDE JOB '.length - 1)));
       result = await testRunner.runZweTest(cfgYaml, 'init generate --dry-run');
       expect(result.stdout).not.toBeNull();
       expect(result.cleanedStdout).toMatchSnapshot();
@@ -135,7 +136,7 @@ describe(`${testSuiteName}`, () => {
 
       // OK - 80 char line
       // eslint-disable-next-line
-      _.set(cfgYaml, 'zowe.setup.jcl.header', longString.slice(0, 80-'//ABCABCDE JOB '.length));
+      _.set(cfgYaml, 'zowe.setup.jcl.header', longString.slice(0, 80 - '//ABCABCDE JOB '.length));
       result = await testRunner.runZweTest(cfgYaml, 'init generate --dry-run');
       expect(result.stdout).not.toBeNull();
       expect(result.cleanedStdout).toMatchSnapshot();
@@ -186,6 +187,26 @@ describe(`${testSuiteName}`, () => {
   });
 
   describe('(LONG)', () => {
+    it('sdsf disabled', async () => {
+      const noSdsfRex = path.resolve(resourcesDir, 'noSDSF.rex');
+      await testRunner.uploadUssFileForTest(noSdsfRex, 'bin/utils/getSDSF.rex', { binary: false, mode: 0o755 });
+
+      let result = await testRunner.runZweTest(cfgYaml, 'init generate');
+      expect(result.stdout).not.toBeNull();
+      expect(result.cleanedStdout).toMatchSnapshot();
+      expect(result.rc).toBe(0);
+
+      result = await testRunner.runZweTest(cfgYaml, 'init'); // different output, stops short and tells user commands to run
+      expect(result.stdout).not.toBeNull();
+      expect(result.cleanedStdout).toMatchSnapshot();
+      expect(result.rc).toBe(0);
+
+      result = await testRunner.runZweTest(cfgYaml, 'init --skip-security-setup');
+      expect(result.stdout).not.toBeNull();
+      expect(result.cleanedStdout).toMatchSnapshot();
+      expect(result.rc).toBe(0);
+    });
+
     it('jcllib updates: jcl header single line', async () => {
       const header = `'SOMEJOB',REGION=0M`;
       _.set(cfgYaml, 'zowe.setup.jcl.header', header);

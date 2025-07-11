@@ -273,12 +273,25 @@ export class RemoteTestRunner {
     }
   }
 
-  public async removeUssFileForTest(filePath: string) {
+  public async uploadUssFileForTest(
+    localFile: string,
+    remoteFile: string,
+    opts: { binary: boolean; mode: number } = { binary: true, mode: 0o644 },
+  ) {
+    const fullRemoteFilePath = `${REMOTE_SYSTEM_INFO.ussTestDir}/${remoteFile}`;
+    await this.removeUssFileForTest(remoteFile); // this tracks/restores
+    await files.Upload.fileToUssFile(this.session, localFile, fullRemoteFilePath, {
+      binary: opts.binary,
+    });
+    await this.runRaw(`chmod ${opts.mode.toString(8)} ${fullRemoteFilePath}`);
+  }
+
+  public async removeUssFileForTest(filePath: String) {
     const flattenedTmpName = filePath.replaceAll('/', '_');
     await this.runRaw(`mkdir -p ${this.REMOTE_TEST_TMP_DIR}`);
     await this.runRaw(`mv ${filePath} ${this.REMOTE_TEST_TMP_DIR}/${flattenedTmpName}`);
     this.trackedFiles.push({
-      srcFile: filePath,
+      srcFile: `${filePath}`,
       tmpFile: `${this.REMOTE_TEST_TMP_DIR}/${flattenedTmpName}`,
       type: FileType.USS_FILE,
     });

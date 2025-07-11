@@ -1,0 +1,37 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`start-stop (LONG) start stop normal submission 1`] = `
+"Temporary directory '/tmp/.zweenv-0000' created.
+Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
+===============================================================================
+>> STARTING ZOWE
+-------------------------------------------------------------------------------
+>> Job ZWE1SV is started successfully."
+`;
+
+exports[`start-stop (LONG) start stop normal submission 2`] = `
+"Temporary directory '/tmp/.zweenv-0000' created.
+Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
+===============================================================================
+>> STOPPING ZOWE
+-------------------------------------------------------------------------------
+>> Terminate command on job ZWE1SV is sent successfully. Please check job log for details."
+`;
+
+exports[`start-stop (LONG) startstop sdsf disabled 1`] = `
+"Temporary directory '/tmp/.zweenv-0000' created.
+Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
+===============================================================================
+>> STARTING ZOWE
+ERROR: Error ZWEL0165E: Failed to start ZWESLSTC: failed to initilize SDSF.
+Use following operator command to start Zowe Launcher manually: S ZWESLSTC,HAINST=SYS0,JOBNAME=ZWE1SV"
+`;
+
+exports[`start-stop (LONG) startstop sdsf disabled 2`] = `
+"Temporary directory '/tmp/.zweenv-0000' created.
+Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
+===============================================================================
+>> STOPPING ZOWE
+ERROR: Error ZWEL0166E: Failed to stop ZWE1SV: failed to initilize SDSF.
+Use following operator command to stop Zowe Launcher manually: P ZWE1SV"
+`;
