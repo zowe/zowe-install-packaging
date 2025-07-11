@@ -442,19 +442,15 @@ module.exports = async () => {
 
     console.log(`Unpacking launcher pax and placing SAMPLIB in ${REMOTE_SYSTEM_INFO.szwesamp} ...`);
     await uss.runCommand(`mkdir -p ${REMOTE_SYSTEM_INFO.ussTestDir}/components/launcher`);
-    await uss.runCommand(`cp launcher.pax ${REMOTE_SYSTEM_INFO.ussTestDir}/components/launcher`, ussWorkDir);
-    await uss.runCommand(`pax -ppx -rf launcher.pax`, `${REMOTE_SYSTEM_INFO.ussTestDir}/components/launcher`);
-    await uss.runCommand(`rm launcher.pax`, `${REMOTE_SYSTEM_INFO.ussTestDir}/components/launcher`);
+    await uss.runCommand(`cp ${launcherPax} ${REMOTE_SYSTEM_INFO.ussTestDir}/components/launcher`, ussWorkDir);
+    await uss.runCommand(`pax -ppx -rf ${launcherPax}`, `${REMOTE_SYSTEM_INFO.ussTestDir}/components/launcher`);
+    await uss.runCommand(`rm ${launcherPax}`, `${REMOTE_SYSTEM_INFO.ussTestDir}/components/launcher`);
     for (const pgm of ['ZWESLSTC']) {
       await uss.runCommand(
         `cp samplib/${pgm} "//'${REMOTE_SYSTEM_INFO.szwesamp}(${pgm})'"`,
         `${REMOTE_SYSTEM_INFO.ussTestDir}/components/launcher`,
       );
     }
-
-    console.log(`Unpacking ncert.pax from zowe-install-packaging-tools and placing it in bin/utils/...`);
-    await uss.runCommand(`pax -ppx -rf ncert.pax -s#^#${REMOTE_SYSTEM_INFO.ussTestDir}/bin/utils/ncert/#g`, ussWorkDir);
-
     console.log(`Unpacking vtl-cli, generating ZWESECUR, and copying it to SZWESAMP`);
     await uss.runCommand(`tar -xf vtl-cli.tar && rm -rf vtl-cli && mkdir -p vtl-cli && mv vtl vtl-cli.jar zos vtl-cli`, ussWorkDir);
     await uss.runCommand(
