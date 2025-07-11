@@ -54,14 +54,15 @@ describe(`${testSuiteName}`, () => {
     it('compare .zowe-merged.yaml created by launcher and zwe', async () => {
       const defaultsUpl = await testRunner.uploadDefaultsYaml(defaultCfgYaml);
       const zyUpl = await testRunner.uploadZoweYaml(cfgYaml);
-      // we need to remove the components dir so zowe_launcher fails and returns after creating env. otherwise test hangs.
-      await testRunner.removeUssFileOrDirForTest('components');
+      // we need to remove the components/zss dir so zowe_launcher fails and returns after creating env. otherwise test hangs.
+      // if more components are added to remote environment, we need to remove those too
+      await testRunner.removeUssFileOrDirForTest('components/zss');
 
       const launcherRes = await testRunner.runRaw(` 
             export RUNTIME_DIRECTORY=${cfgYaml.zowe.runtimeDirectory} && \
             export CONFIG='FILE(${zyUpl}):FILE(${defaultsUpl})' && \
             export ZLDEBUG='ON' && \
-            ${cfgYaml.zowe.runtimeDirectory}/bin/zowe_launcher ''`);
+            ${cfgYaml.zowe.runtimeDirectory}/components/launcher/bin/zowe_launcher ''`);
 
       // this is an intentionally invalid zowe_launcher run - create env configs and then exit with an error
       expect(launcherRes.rc).toBe(8);
