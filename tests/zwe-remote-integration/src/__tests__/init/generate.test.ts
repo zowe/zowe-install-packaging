@@ -158,7 +158,7 @@ describe(`${testSuiteName}`, () => {
     });
 
     it('BAD: missing defaults.yaml', async () => {
-      await testRunner.removeUssFileForTest('files/defaults.yaml');
+      await testRunner.removeUssFileOrDirForTest('files/defaults.yaml');
       const result = await testRunner.runZweTest(cfgYaml, 'init generate --dry-run');
       expect(result.stdout).not.toBeNull();
       expect(result.cleanedStdout).toMatchSnapshot(); // FIXME: the snapshot indicates processing continues when it shouldn't
@@ -213,7 +213,7 @@ describe(`${testSuiteName}`, () => {
     });
 
     it('jcllib updates: jcl header multi line', async () => {
-      const jclLines = [`'SOMEJOB',`, `// REGION=0M`, `//* atestcomment`, '//* secondtestcomment'];
+      const jclLines = [`'SOMEJOB',`, `//   REGION=0M`, `//* atestcomment`, '//* secondtestcomment'];
       _.set(cfgYaml, 'zowe.setup.jcl.header', jclLines);
       const result = await testRunner.runZweTest(cfgYaml, 'init generate');
       expect(result.stdout).not.toBeNull();

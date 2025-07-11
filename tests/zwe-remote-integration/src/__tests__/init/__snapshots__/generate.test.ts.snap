@@ -6,7 +6,7 @@ Zowe will remove it on success, but if zwe exits with a non-zero code manual cle
 Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWEGENER)
 --- JCL content ---
 //ZWEGENER JOB 'SOMEJOB',
-// REGION=0M
+//   REGION=0M
 //* atestcomment
 //* secondtestcomment
 //*
@@ -43,7 +43,7 @@ Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWEGENER)
 //*       {key} -> value
 //*
 //GENER    EXEC PGM=IKJEFT1B
-//ISPPROF  DD   DSN=,DISP=(NEW,DELETE),UNIT=,
+//ISPPROF  DD   DSN=,DISP=(NEW,DELETE),UNIT=VIO,
 //   DCB=(RECFM=FB,LRECL=80,BLKSIZE=3120,DSORG=PO),
 //   SPACE=(3120,(20,5,10))
 //*
@@ -156,7 +156,7 @@ Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWEGENER)
 //*       {key} -> value
 //*
 //GENER    EXEC PGM=IKJEFT1B
-//ISPPROF  DD   DSN=,DISP=(NEW,DELETE),UNIT=,
+//ISPPROF  DD   DSN=,DISP=(NEW,DELETE),UNIT=VIO,
 //   DCB=(RECFM=FB,LRECL=80,BLKSIZE=3120,DSORG=PO),
 //   SPACE=(3120,(20,5,10))
 //*

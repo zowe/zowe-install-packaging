@@ -10,7 +10,6 @@ ZWEL0107E|107|No handler defined for command %s.
 ZWEL0108E|108|Zowe YAML config file is required.
 ZWEL0109E|109|The Zowe YAML config file specified does not exist.
 ZWEL0110E|110|Doesn't have write permission on %s directory.
-ZWEL0111E|111|Command aborts with error.
 ZWEL0112E|112|Zowe runtime environment must be prepared first with "zwe internal start prepare" command.
 ZWEL0114E|114|Reached max retries on allocating random number.
 ZWEL0120E|120|This command must run on a z/OS system.
