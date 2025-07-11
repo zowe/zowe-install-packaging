@@ -2,37 +2,7 @@
 
 All notable changes to the Zowe Installer will be documented in this file.
 <!--Add the PR or issue number to the entry if available.-->
-## `2.15.0`
-
-## New features and enhancements
-
-## Minor enhancements/defect fixes
-- Bugfix: `zwe diagnose` running under comfigmgr and output formatted. Fixes #[3627](https://github.com/zowe/zowe-install-packaging/issues/3627).
-
-## `2.14.0`
-
-### New features and enhancements
-- Enhancement: configmgr.ts now can return a Zowe config with the given HA instance's configuration substituted for convenience. This now used in zwe to fix an issue where zwe would not respect the preference of if a component was enabled or disabled in a particular instance when zowe.useConfigmgr was set to true.
-
-#### Minor enhancements/defect fixes
-- Bugfix: environment variables were not using the values specified for each HA instance when zowe.useConfigmgr was set to true.
-
-## `2.13.0`
-
-### New features and enhancements
-- Enhancement: Added utility "getesm" into bin/utils. When run it outputs to STDOUT which ESM your system is using. (#3662)
-
-#### Minor enhancements/defect fixes
-- Bugfix: Workflow files in the Zowe PAX are now ASCII-encoded. Fixes [#3591](https://github.com/zowe/zowe-install-packaging/issues/3591).
-- Enhancement: `/bin/utils/date-add.rex` utility is accepting the date formatting as combination of YY|YYYY, MM, DD and any separator.
-
-## `2.12.0`
-
-### New features and enhancements
-
-#### Minor enhancements/defect fixes
-
-## `2.18.3`
+## `2.18.2`
 - Bugfix: JCL sample `ZWEINSTL` did not include the `ZWESLSTC`. [#4382](https://github.com/zowe/zowe-install-packaging/pull/4382)
 - Bugfix: YAML lookup for HA instances within "haInstances" was not working when HA instance names were uppercase. Now, the lookup is case insensitive to allow for any casing of HA instance names. [#4378](https://github.com/zowe/zowe-install-packaging/pull/4378)
 
