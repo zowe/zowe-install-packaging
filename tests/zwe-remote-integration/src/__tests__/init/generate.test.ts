@@ -213,7 +213,7 @@ describe(`${testSuiteName}`, () => {
     });
 
     it('jcllib updates: jcl header multi line', async () => {
-      const jclLines = [`'SOMEJOB',`, `// REGION=0M`, `//* atestcomment`, '//* secondtestcomment'];
+      const jclLines = [`'SOMEJOB',`, `//   REGION=0M`, `//* atestcomment`, '//* secondtestcomment'];
       _.set(cfgYaml, 'zowe.setup.jcl.header', jclLines);
       const result = await testRunner.runZweTest(cfgYaml, 'init generate');
       expect(result.stdout).not.toBeNull();
