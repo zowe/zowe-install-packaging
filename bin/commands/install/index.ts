@@ -106,16 +106,20 @@ export function execute(): void {
     common.printMessage('Submitting Job ZWEINSTL');
     const jobId = zosJes.submitJob(jclContents, true, true);
     const result = zosJes.waitForJob(jobId);
-    common.printMessage(`Job ZWEINSTL(${jobId}) completed with RC=${result.rc}`);
-    if (result.rc == 0) {
-      common.printLevel1Message("Zowe MVS data sets are installed successfully.");
-      common.printMessage("Zowe installation completed. In order to use Zowe, you need to run \"zwe init\" command to initialize Zowe instance.");
-      common.printMessage("- Type \"zwe init --help\" to get more information.\n\n");
-      common.printMessage("You can also run individual init sub-commands: generate, mvs, certificate, security, vsam, apfauth, and stc.");
-      common.printMessage("- Type \"zwe init <sub-command> --help\" (for example, \"zwe init stc --help\") to get more information.\n\n");
-      common.printMessage("Zowe JCL generated successfully");
+    if (result.rc == zosJes.WAIT_FOR_JOB_NO_SDSF) {
+      common.printMessage(`No SDSF detected, review the job log of ZWEINSTL(${jobid}) manually.`);
     } else {
-      common.printMessage(`Zowe JCL submitted with errors, check job log. Job completion code=${result.jobcccode}, Job completion text=${result.jobcctext}`);
+      common.printMessage(`Job ZWEINSTL(${jobId}) completed with RC=${result.rc}`);
+      if (result.rc == 0) {
+        common.printLevel1Message("Zowe MVS data sets are installed successfully.");
+        common.printMessage("Zowe installation completed. In order to use Zowe, you need to run \"zwe init\" command to initialize Zowe instance.");
+        common.printMessage("- Type \"zwe init --help\" to get more information.\n\n");
+        common.printMessage("You can also run individual init sub-commands: generate, mvs, certificate, security, vsam, apfauth, and stc.");
+        common.printMessage("- Type \"zwe init <sub-command> --help\" (for example, \"zwe init stc --help\") to get more information.\n\n");
+        common.printMessage("Zowe JCL generated successfully");
+      } else {
+        common.printMessage(`Zowe JCL submitted with errors, check job log. Job completion code=${result.jobcccode}, Job completion text=${result.jobcctext}`);
+      }
     }
   }
 
