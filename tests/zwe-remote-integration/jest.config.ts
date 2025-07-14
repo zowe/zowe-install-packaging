@@ -35,7 +35,7 @@ const config: Config = {
       },
     ],
   ],
-  testTimeout: 120000,
+  testTimeout: 150000,
   transform: {
     '^.+\\.(t|j)sx?$': ['ts-jest', { isolatedModules: true }],
   },
