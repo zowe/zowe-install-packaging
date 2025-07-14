@@ -6,7 +6,7 @@ Zowe will remove it on success, but if zwe exits with a non-zero code manual cle
 Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWEGENER)
 --- JCL content ---
 //ZWEGENER JOB 'SOMEJOB',
-// REGION=0M
+//   REGION=0M
 //* atestcomment
 //* secondtestcomment
 //*
@@ -43,7 +43,7 @@ Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWEGENER)
 //*       {key} -> value
 //*
 //GENER    EXEC PGM=IKJEFT1B
-//ISPPROF  DD   DSN=,DISP=(NEW,DELETE),UNIT=,
+//ISPPROF  DD   DSN=,DISP=(NEW,DELETE),UNIT=VIO,
 //   DCB=(RECFM=FB,LRECL=80,BLKSIZE=3120,DSORG=PO),
 //   SPACE=(3120,(20,5,10))
 //*
@@ -156,7 +156,7 @@ Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWEGENER)
 //*       {key} -> value
 //*
 //GENER    EXEC PGM=IKJEFT1B
-//ISPPROF  DD   DSN=,DISP=(NEW,DELETE),UNIT=,
+//ISPPROF  DD   DSN=,DISP=(NEW,DELETE),UNIT=VIO,
 //   DCB=(RECFM=FB,LRECL=80,BLKSIZE=3120,DSORG=PO),
 //   SPACE=(3120,(20,5,10))
 //*
@@ -624,7 +624,7 @@ Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWEGENER)
 //*       {key} -> value
 //*
 //GENER    EXEC PGM=IKJEFT1B
-//ISPPROF  DD   DSN=,DISP=(NEW,DELETE),UNIT=,
+//ISPPROF  DD   DSN=,DISP=(NEW,DELETE),UNIT=VIO,
 //   DCB=(RECFM=FB,LRECL=80,BLKSIZE=3120,DSORG=PO),
 //   SPACE=(3120,(20,5,10))
 //*
@@ -741,9 +741,9 @@ Zowe will remove it on success, but if zwe exits with a non-zero code manual cle
 Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWEGENER)
 --- JCL content ---
 //ZWEGENER JOB 'SOMEJOB'
-(0000000000)
-LONGFIELD1,LONGFIELD2,LONGFIELD3,ANOTHER,FIELD,GOING,WAY,PAST,EIGHTY,CHARACTERS
-SYSAFF=SYS1
+//    (0000000000)
+//    LONGFIELD1,LONGFIELD2,LONGFIELD3,ANOTHER,FIELD,GOING,WAY,PAST,EIGHTY,CHAR
+//    SYSAFF=SYS1
 //*
 //* This program and the accompanying materials are made available
 //* under the terms of the Eclipse Public License v2.0 which
@@ -778,7 +778,7 @@ SYSAFF=SYS1
 //*       {key} -> value
 //*
 //GENER    EXEC PGM=IKJEFT1B
-//ISPPROF  DD   DSN=,DISP=(NEW,DELETE),UNIT=,
+//ISPPROF  DD   DSN=,DISP=(NEW,DELETE),UNIT=VIO,
 //   DCB=(RECFM=FB,LRECL=80,BLKSIZE=3120,DSORG=PO),
 //   SPACE=(3120,(20,5,10))
 //*
@@ -856,9 +856,9 @@ Zowe will remove it on success, but if zwe exits with a non-zero code manual cle
 Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWEGENER)
 --- JCL content ---
 //ZWEGENER JOB LONGFIELD1,LONGFIELD2,LONGFIELD3,ANOTHER,FIELD,GOING,WAY,PAST,EIGHTY,CHARACTERS
-(0000000000)
-SOMEJOB
-SYSAFF=SYS1
+//    (0000000000)
+//    SOMEJOB
+//    SYSAFF=SYS1
 //*
 //* This program and the accompanying materials are made available
 //* under the terms of the Eclipse Public License v2.0 which
@@ -893,7 +893,7 @@ SYSAFF=SYS1
 //*       {key} -> value
 //*
 //GENER    EXEC PGM=IKJEFT1B
-//ISPPROF  DD   DSN=,DISP=(NEW,DELETE),UNIT=,
+//ISPPROF  DD   DSN=,DISP=(NEW,DELETE),UNIT=VIO,
 //   DCB=(RECFM=FB,LRECL=80,BLKSIZE=3120,DSORG=PO),
 //   SPACE=(3120,(20,5,10))
 //*
@@ -1008,7 +1008,7 @@ Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWEGENER)
 //*       {key} -> value
 //*
 //GENER    EXEC PGM=IKJEFT1B
-//ISPPROF  DD   DSN=,DISP=(NEW,DELETE),UNIT=,
+//ISPPROF  DD   DSN=,DISP=(NEW,DELETE),UNIT=VIO,
 //   DCB=(RECFM=FB,LRECL=80,BLKSIZE=3120,DSORG=PO),
 //   SPACE=(3120,(20,5,10))
 //*
@@ -1120,7 +1120,7 @@ Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWEGENER)
 //*       {key} -> value
 //*
 //GENER    EXEC PGM=IKJEFT1B
-//ISPPROF  DD   DSN=,DISP=(NEW,DELETE),UNIT=,
+//ISPPROF  DD   DSN=,DISP=(NEW,DELETE),UNIT=VIO,
 //   DCB=(RECFM=FB,LRECL=80,BLKSIZE=3120,DSORG=PO),
 //   SPACE=(3120,(20,5,10))
 //*
@@ -1264,7 +1264,7 @@ Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWEGENER)
 //*       {key} -> value
 //*
 //GENER    EXEC PGM=IKJEFT1B
-//ISPPROF  DD   DSN=,DISP=(NEW,DELETE),UNIT=,
+//ISPPROF  DD   DSN=,DISP=(NEW,DELETE),UNIT=VIO,
 //   DCB=(RECFM=FB,LRECL=80,BLKSIZE=3120,DSORG=PO),
 //   SPACE=(3120,(20,5,10))
 //*
@@ -1376,7 +1376,7 @@ Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWEGENER)
 //*       {key} -> value
 //*
 //GENER    EXEC PGM=IKJEFT1B
-//ISPPROF  DD   DSN=,DISP=(NEW,DELETE),UNIT=,
+//ISPPROF  DD   DSN=,DISP=(NEW,DELETE),UNIT=VIO,
 //   DCB=(RECFM=FB,LRECL=80,BLKSIZE=3120,DSORG=PO),
 //   SPACE=(3120,(20,5,10))
 //*

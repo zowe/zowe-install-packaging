@@ -92,7 +92,7 @@ describe(`${testSuiteName}`, () => {
       expect(result.rc).toBe(1);
 
       // this is technically not valid JCL, but fits in 80 chars
-      jclLines = [`'SOMEJOB'`, `(0000000000)`, longString.slice(0, 79), 'SYSAFF=SYS1'];
+      jclLines = [`'SOMEJOB'`, `//    (0000000000)`, ('//    ' + longString).slice(0, 79), '//    SYSAFF=SYS1'];
       _.set(cfgYaml, 'zowe.setup.jcl.header', jclLines);
       result = await testRunner.runZweTest(cfgYaml, 'init generate --dry-run');
       expect(result.stdout).not.toBeNull();
@@ -100,7 +100,7 @@ describe(`${testSuiteName}`, () => {
       expect(result.rc).toBe(0);
 
       // with idx 0, the slice is invalid for first line. this is currently allowed by schema.
-      jclLines = [longString.slice(0, 79), `(0000000000)`, 'SOMEJOB', 'SYSAFF=SYS1'];
+      jclLines = [longString.slice(0, 79), `//    (0000000000)`, '//    SOMEJOB', '//    SYSAFF=SYS1'];
       _.set(cfgYaml, 'zowe.setup.jcl.header', jclLines);
       result = await testRunner.runZweTest(cfgYaml, 'init generate --dry-run');
       expect(result.stdout).not.toBeNull();
@@ -159,7 +159,7 @@ describe(`${testSuiteName}`, () => {
     });
 
     it('BAD: missing defaults.yaml', async () => {
-      await testRunner.removeUssFileForTest('files/defaults.yaml');
+      await testRunner.removeUssFileOrDirForTest('files/defaults.yaml');
       const result = await testRunner.runZweTest(cfgYaml, 'init generate --dry-run');
       expect(result.stdout).not.toBeNull();
       expect(result.cleanedStdout).toMatchSnapshot(); // FIXME: the snapshot indicates processing continues when it shouldn't
@@ -234,7 +234,7 @@ describe(`${testSuiteName}`, () => {
     });
 
     it('jcllib updates: jcl header multi line', async () => {
-      const jclLines = [`'SOMEJOB',`, `// REGION=0M`, `//* atestcomment`, '//* secondtestcomment'];
+      const jclLines = [`'SOMEJOB',`, `//   REGION=0M`, `//* atestcomment`, '//* secondtestcomment'];
       _.set(cfgYaml, 'zowe.setup.jcl.header', jclLines);
       const result = await testRunner.runZweTest(cfgYaml, 'init generate');
       expect(result.stdout).not.toBeNull();

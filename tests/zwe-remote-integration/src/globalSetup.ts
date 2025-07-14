@@ -235,7 +235,9 @@ module.exports = async () => {
     }
 
     console.log(`Setting up remote server on ${REMOTE_SYSTEM_INFO.hostname}...`);
-    await uss.runCommand(`mkdir -p ${REMOTE_SYSTEM_INFO.ussTestDir} && mkdir -p ${ussWorkDir}`);
+    await uss.runCommand(
+      `rm -rf ${REMOTE_SYSTEM_INFO.ussTestDir} && mkdir -p ${REMOTE_SYSTEM_INFO.ussTestDir} && mkdir -p ${ussWorkDir}`,
+    );
 
     // zowe-install-packaging-tools and vtl-cli
     const utilsDir = path.resolve(buildDir, 'utility-tools');
@@ -376,6 +378,28 @@ module.exports = async () => {
       },
     );
 
+    console.log(
+      `Uploading ${REPO_ROOT_DIR}/files/SZWESAMP and ${REPO_ROOT_DIR}/files/SZWEEXEC to ${REMOTE_SYSTEM_INFO.ussTestDir}...`,
+    );
+
+    await files.Upload.dirToUSSDir(
+      zosmfSession,
+      path.resolve(REPO_ROOT_DIR, 'files', 'SZWESAMP'),
+      `${REMOTE_SYSTEM_INFO.ussTestDir}/files/SZWESAMP`,
+      {
+        binary: false,
+      },
+    );
+
+    await files.Upload.dirToUSSDir(
+      zosmfSession,
+      path.resolve(REPO_ROOT_DIR, 'files', 'SZWEEXEC'),
+      `${REMOTE_SYSTEM_INFO.ussTestDir}/files/SZWEEXEC`,
+      {
+        binary: false,
+      },
+    );
+
     console.log(`Uploading ${REPO_ROOT_DIR}/workflows/templates/ZWESECUR.vtl and ZWESECUR.properties to ${ussWorkDir}...`);
     await files.Upload.fileToUssFile(
       zosmfSession,
@@ -410,12 +434,17 @@ module.exports = async () => {
 
     console.log(`Unpacking configmgr-rexx and placing it in ${REMOTE_SYSTEM_INFO.szweload} ...`);
     await uss.runCommand(`pax -ppx -rf configmgr-rexx.pax`, ussWorkDir);
+    await uss.runCommand(`mkdir -p ${REMOTE_SYSTEM_INFO.ussTestDir}/files/SZWELOAD`);
     for (const pgm of ['ZWERXCFG', 'ZWECFG31', 'ZWECFG64']) {
       await uss.runCommand(`cp -X ${pgm} "//'${REMOTE_SYSTEM_INFO.szweload}(${pgm})'"`, ussWorkDir);
+      await uss.runCommand(`cp ${pgm} ${REMOTE_SYSTEM_INFO.ussTestDir}/files/SZWELOAD`, ussWorkDir);
     }
 
     console.log(`Unpacking zss pax and placing SAMPLIB in ${REMOTE_SYSTEM_INFO.szwesamp} ...`);
-    await uss.runCommand(`pax -ppx -rf zss.pax`, ussWorkDir);
+    await uss.runCommand(`mkdir -p ${REMOTE_SYSTEM_INFO.ussTestDir}/components/zss`);
+    await uss.runCommand(`cp zss.pax ${REMOTE_SYSTEM_INFO.ussTestDir}/components/zss`, ussWorkDir);
+    await uss.runCommand(`pax -ppx -rf zss.pax`, `${REMOTE_SYSTEM_INFO.ussTestDir}/components/zss`);
+    await uss.runCommand(`rm zss.pax`, `${REMOTE_SYSTEM_INFO.ussTestDir}/components/zss`);
     const zssPgms = [
       { from: 'ZWESIP00', to: 'ZWESIP00' },
       { from: 'ZWESISCH', to: 'ZWESISCH' },
@@ -423,17 +452,25 @@ module.exports = async () => {
       { from: 'ZWESISTC', to: 'ZWESISTC' },
     ];
     for (const pgm of zssPgms) {
-      const resp = await uss.runCommand(`cp SAMPLIB/${pgm.from} "//'${REMOTE_SYSTEM_INFO.szwesamp}(${pgm.to})'"`, ussWorkDir);
+      const resp = await uss.runCommand(
+        `cp SAMPLIB/${pgm.from} "//'${REMOTE_SYSTEM_INFO.szwesamp}(${pgm.to})'"`,
+        `${REMOTE_SYSTEM_INFO.ussTestDir}/components/zss`,
+      );
       if (resp.rc !== 0) {
         throw new Error(`Failed to copy ${pgm.from} to ${pgm.to}`);
       }
     }
 
     console.log(`Unpacking launcher pax and placing SAMPLIB in ${REMOTE_SYSTEM_INFO.szwesamp} ...`);
-    await uss.runCommand(`pax -ppx -rf launcher.pax`, ussWorkDir);
-    await uss.runCommand(`cp bin/zowe_launcher ${REMOTE_SYSTEM_INFO.ussTestDir}/bin`, ussWorkDir);
+    await uss.runCommand(`mkdir -p ${REMOTE_SYSTEM_INFO.ussTestDir}/components/launcher`);
+    await uss.runCommand(`cp launcher.pax ${REMOTE_SYSTEM_INFO.ussTestDir}/components/launcher`, ussWorkDir);
+    await uss.runCommand(`pax -ppx -rf launcher.pax`, `${REMOTE_SYSTEM_INFO.ussTestDir}/components/launcher`);
+    await uss.runCommand(`rm launcher.pax`, `${REMOTE_SYSTEM_INFO.ussTestDir}/components/launcher`);
     for (const pgm of ['ZWESLSTC']) {
-      await uss.runCommand(`cp samplib/${pgm} "//'${REMOTE_SYSTEM_INFO.szwesamp}(${pgm})'"`, ussWorkDir);
+      await uss.runCommand(
+        `cp samplib/${pgm} "//'${REMOTE_SYSTEM_INFO.szwesamp}(${pgm})'"`,
+        `${REMOTE_SYSTEM_INFO.ussTestDir}/components/launcher`,
+      );
     }
 
     console.log(`Unpacking ncert.pax from zowe-install-packaging-tools and placing it in bin/utils/...`);
