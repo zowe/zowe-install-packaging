@@ -107,7 +107,7 @@ export function execute(): void {
     const jobId = zosJes.submitJob(jclContents, true, true);
     const result = zosJes.waitForJob(jobId);
     if (result.rc == zosJes.WAIT_FOR_JOB_NO_SDSF) {
-      common.printMessage(`No SDSF detected, review the job log of ZWEINSTL(${jobid}) manually.`);
+      common.printMessage(`No SDSF detected, review the job log of ZWEINSTL(${jobId}) manually.`);
     } else {
       common.printMessage(`Job ZWEINSTL(${jobId}) completed with RC=${result.rc}`);
       if (result.rc == 0) {
