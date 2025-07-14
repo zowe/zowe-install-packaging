@@ -1,0 +1,31 @@
+# Triggers when comments are made on issues/PRs, runs when '/ci' is added to a pull request.
+name: Zowe Changelog Check
+
+permissions: read-all
+
+on:
+  pull_request:
+    branches: 
+      - 'v*.x/staging'
+    types: [opened, synchronize, labeled, unlabeled]
+
+jobs:
+  check-changelog:
+    runs-on: ubuntu-latest
+    if: ${{ !contains(github.event.pull_request.labels.*.name, 'skip-changelog') }}
+    steps:
+      - name: 'Checkout'
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          fetch-depth: 0
+
+      - name: 'Check CHANGELOG'
+        run: |
+          result=$(git diff "origin/${{ github.event.pull_request.base.ref }}" -- "CHANGELOG.md")
+          if [ -z "${result}" ]; then
+            echo "Please review the CHANGELOG and add an entry for this pull request if it contains changes users should be informed of."
+            echo "If there are no changes, add the 'skip-changelog' label to this pull request."
+            exit 1
+          fi
+
+

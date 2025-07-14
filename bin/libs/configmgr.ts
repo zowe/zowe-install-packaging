@@ -15,7 +15,7 @@ import * as xplatform from 'xplatform';
 import { ConfigManager } from 'Configuration';
 import * as fs from './fs';
 import * as stringlib from './string';
-import * as common from './common';
+import { isValidZoweYamlParmlib, printErrorAndExit } from './common';
 
 import * as objUtils from '../utils/ObjUtils';
 
@@ -38,8 +38,8 @@ std.setenv('ZWE_PRIVATE_CONFIG_ORIG', parameterConfig);
   the config property of Zowe can take a few shapes:
   1. a single path, ex /my/zowe.yaml
   2. one or more file paths with FILE() syntax, ex FILE(/my/1.yaml):FILE(/my2.yaml)
-  3. one or more parmlib paths with PARMLIB() syntax, ex PARMLIB(my.zowe(yaml)):PARMLIB(my.other.zowe(yaml)) ... note the member names must be the same for every PARMLIB mentioned!
-  4. one or more of FILE and PARMLIB syntax combined, ex FILE(/my/1.yaml):FILE(/my2.yaml):PARMLIB(my.zowe(yaml)):PARMLIB(my.other.zowe(yaml))
+  3. one or more parmlib paths with PARMLIB() syntax, ex PARMLIB(my.zowe(yaml1)):PARMLIB(my.other.zowe(yaml2))
+  4. one or more of FILE and PARMLIB syntax combined, ex FILE(/my/1.yaml):FILE(/my2.yaml):PARMLIB(my.zowe(yaml1)):PARMLIB(my.other.zowe(yaml2))
  */
 const ZOWE_CONFIG_PATH = (parameterConfig && !parameterConfig.startsWith('FILE(') && !parameterConfig.startsWith('PARMLIB('))
                           ? `FILE(${parameterConfig}):FILE(${std.getenv('ZWE_zowe_runtimeDirectory')}/files/defaults.yaml)`
@@ -51,8 +51,15 @@ const ZOWE_SCHEMA = `${std.getenv('ZWE_zowe_runtimeDirectory')}/schemas/zowe-yam
 const ZOWE_SCHEMA_ID = 'https://zowe.org/schemas/v2/server-base';
 const ZOWE_SCHEMA_SET=`${ZOWE_SCHEMA}:${COMMON_SCHEMA}`;
 
-export let ZOWE_CONFIG=getZoweConfig();
+let ZOWE_CONFIG;
 let HA_CONFIGS = {};
+
+export function getZoweConfig() {
+  if (ZOWE_CONFIG == null) {
+    ZOWE_CONFIG = loadZoweConfig();
+  }
+  return ZOWE_CONFIG
+}
 
 export function getZoweBaseSchemas(): string {
   return ZOWE_SCHEMA_SET;
@@ -208,8 +215,11 @@ function writeZoweConfigUpdate(updateObj: any, arrayMergeStrategy: number): numb
         return xplatform.storeFileUTF8(destination, xplatform.AUTO_DETECT, textOrNull);
 
       } else if (destination.startsWith('PARMLIB(')) {
+        const isValidParmlib = isValidZoweYamlParmlib(destination);
+        if (!isValidParmlib.ok) {
+          printErrorAndExit(isValidParmlib.error.message, undefined, isValidParmlib.error.code);
+        }
         destination = destination.substring(8, destination.length-1);
-
         let zwePrivateWorkspaceEnvDir: string;
         let dirResult = getTempMergedYamlDir();
         if (typeof dirResult == 'string') {
@@ -377,7 +387,7 @@ function updateConfig(configName: string, updateObj: any, arrayMergeStrategy: nu
 export function updateZoweConfig(updateObj: any, writeUpdate: boolean, arrayMergeStrategy: number=1): [number, any] {
   let rc = updateConfig(getZoweConfigName(), updateObj, arrayMergeStrategy);
   if (rc == 0) {
-    ZOWE_CONFIG=getZoweConfig();
+    ZOWE_CONFIG=loadZoweConfig();
     HA_CONFIGS = {}; //reset
     if (writeUpdate) {
       writeZoweConfigUpdate(updateObj, arrayMergeStrategy);
@@ -399,9 +409,9 @@ function getConfig(configName: string, configPath: string, schemas: string): any
     for (let i = 0; i < parts.length; i++) {
       const part = parts[i].trim();
       if (part.startsWith('PARMLIB(')) {
-        const isValidParmlib = common.isValidZoweYamlParmlib(part);
+        const isValidParmlib = isValidZoweYamlParmlib(part);
         if (!isValidParmlib.ok) {
-          common.printErrorAndExit(isValidParmlib.error.message, undefined, isValidParmlib.error.code);
+          printErrorAndExit(isValidParmlib.error.message, undefined, isValidParmlib.error.code);
         }
       }
     }
@@ -465,7 +475,7 @@ function makeHaConfig(haInstance: string): any {
   return config;
 }
 
-export function getZoweConfig(haInstance?: string): any {
+export function loadZoweConfig(haInstance?: string): any {
   if (configLoaded && !haInstance) {
     return getConfig(ZOWE_CONFIG_NAME, ZOWE_CONFIG_PATH, ZOWE_SCHEMA_SET);
   } else if (configLoaded) {
@@ -492,7 +502,7 @@ const INSTANCE_KEYS_NOT_IN_BASE = [
 
 const keyNameRegex = /[^a-zA-Z0-9]/g;
 export function getZoweConfigEnv(haInstance: string): any {
-  let config = getZoweConfig();
+  let config = loadZoweConfig();
   let flattener = new objUtils.Flattener();
   flattener.setSeparator('_');
   flattener.setPrefix('ZWE_');

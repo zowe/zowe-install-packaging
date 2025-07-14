@@ -11,6 +11,14 @@
         <General/>
     </workflowInfo>
     <!--variables-->
+    <variable name="zowe_setup_jcl_header" scope="global" visibility="public">
+      <label>JOB statement positional parameters and keywords used by Zowe during installation and configuration.</label>
+      <abstract>JOB statement positional parameters and keywords used by Zowe during installation and configuration.</abstract>
+      <description>These parameters and keywords are optional, and by default empty. These are used separately from z/OSMF defined JOB cards. Each line should be less than 70 characters, omit start-of-line identifier statements such as "//", "/*", and include commas for end-of-line continuation.</description>
+      <category>zowe</category>
+      <string multiLine="true" valueMustBeChoice="false">
+      </string>
+    </variable>
     <variable name="zowe_setup_dataset_prefix" scope="instance" visibility="public">
         <label>Prefix of Zowe setup MVS datasets</label>
         <abstract>Prefix of datasets where remaining runtime datasets will be created</abstract>
@@ -44,7 +52,7 @@
             <default>IBMUSER.ZWEV3.CUST.PARMLIB</default>
         </string>
     </variable>
-    <variable name="zowe_setup_dataset_libzis" scope="instance" visibility="public">
+    <variable name="zowe_setup_dataset_parmlibMembers_zis" scope="instance" visibility="public">
       <label>Zowe setup PARMLIB members for ZIS plugins</label>
       <abstract>Zowe ZIS plugins PARMLIB</abstract>
       <description>Holds PARMLIB members for ZIS plugins</description>
@@ -66,7 +74,7 @@
             <default>IBMUSER.ZWEV3.CUST.JCLLIB</default>
         </string>
     </variable>
-    <variable name="zowe_setup_dataset_loadlibPlugin" scope="instance" visibility="public">
+    <variable name="zowe_setup_dataset_loadlib" scope="instance" visibility="public">
         <label>Zowe setup Utilities and extensions library</label>
         <abstract>Load library where Zowe stores libraries for Utilities for use by Zowe and extensions</abstract>
         <description>Load library for Utilities for use by Zowe and extensions</description>
@@ -85,7 +93,7 @@
         <string valueMustBeChoice="false" multiLine="false">
             <!-- Put validation here -->
             <!-- Specify choices here -->
-            <default>IBMUSER.ZWEV3.SZWEAUTH</default>    
+            <default>IBMUSER.ZWEV3.SZWEAUTH</default>
         </string>
     </variable>
     <variable name="zowe_setup_dataset_authPluginLib" scope="instance" visibility="public">
@@ -119,7 +127,7 @@
         <category>components</category>
         <string valueMustBeChoice="false" multiLine="false">
             <!-- Put validation here -->
-            <!-- Specify choices here -->            
+            <!-- Specify choices here -->
         </string>
     </variable>
     <variable name="zowe_setup_vsam_storageClass" scope="instance" visibility="public">
@@ -237,7 +245,7 @@ some use cases, like containerization, this port could be different.</descriptio
             <default>info</default>
         </string>
     </variable>
-    <variable name="zowe_launchScript_CompConf" scope="instance" visibility="public">
+    <variable name="zowe_launchScript_onComponentConfigureFail" scope="instance" visibility="public">
         <label>Zowe launch script component configuration</label>
         <abstract>Set to "exit" or "warn" if any component has an error</abstract>
         <description>Set to "exit" if you want startup to exit if any component has an error in the configuration stage, otherwise zwe will issue a warning but continue running.</description>
@@ -245,11 +253,11 @@ some use cases, like containerization, this port could be different.</descriptio
         <string valueMustBeChoice="false" multiLine="false">
             <!-- Put validation here -->
             <choice>warn</choice>
-            <choice>exit</choice>            
+            <choice>exit</choice>
             <default>warn</default>
         </string>
     </variable>
-    <variable name="zowe_network_server_attls" scope="instance" visibility="public">
+    <variable name="zowe_network_server_tls_attls" scope="instance" visibility="public">
         <label>Application Transparent Transport Layer Security for inbound</label>
         <abstract>Enable on AT-TLS on inbound calls</abstract>
         <description>Enable aware mode of inbound AT-TLS rules of all Zowe components.</description>
@@ -260,7 +268,7 @@ some use cases, like containerization, this port could be different.</descriptio
             <default>false</default>
         </boolean>
     </variable>
-    <variable name="zowe_network_client_attls" scope="instance" visibility="public">
+    <variable name="zowe_network_client_tls_attls" scope="instance" visibility="public">
         <label>Application Transparent Transport Layer Security for outbound</label>
         <abstract>Enable on AT-TLS on outbound calls</abstract>
         <description>Enable aware mode of outbound AT-TLS rules of all Zowe components.</description>
@@ -271,7 +279,7 @@ some use cases, like containerization, this port could be different.</descriptio
             <default>false</default>
         </boolean>
     </variable>
-    <variable name="zowe_network_server_tls_min" scope="instance" visibility="public">
+    <variable name="zowe_network_server_tls_minTls" scope="instance" visibility="public">
         <label>Transport Layer Security - min version</label>
         <abstract>TLS minimum version</abstract>
         <description>The default configuration of the minimal version of a security transport protocol for inbound calls.
@@ -283,11 +291,11 @@ some use cases, like containerization, this port could be different.</descriptio
             <!-- Put validation here -->
             <choice>TLSv1.1</choice>
             <choice>TLSv1.2</choice>
-            <choice>TLSv1.3</choice>            
+            <choice>TLSv1.3</choice>
             <default>TLSv1.2</default>
         </string>
     </variable>
-    <variable name="zowe_network_server_tls_max" scope="instance" visibility="public">
+    <variable name="zowe_network_server_tls_maxTls" scope="instance" visibility="public">
        <label>Transport Layer Security - max version</label>
         <abstract>TLS maximum version</abstract>
         <description>The default configuration of the maximum version of a security transport protocol for inbound calls.
@@ -299,7 +307,7 @@ some use cases, like containerization, this port could be different.</descriptio
             <!-- Put validation here -->
             <choice>TLSv1.1</choice>
             <choice>TLSv1.2</choice>
-            <choice>TLSv1.3</choice>            
+            <choice>TLSv1.3</choice>
             <default>TLSv1.3</default>
         </string>
     </variable>
@@ -337,7 +345,7 @@ some use cases, like containerization, this port could be different.</descriptio
         <description>Certificate keystore password.</description>
         <category>certificates</category>
         <string valueMustBeChoice="false" multiLine="false">
-            <!-- Put validation here -->                        
+            <!-- Put validation here -->
             <default>password</default>
         </string>
     </variable>
@@ -436,7 +444,7 @@ How we want to verify SSL certificates of services. Valid values are:
              This mode does not validate certificate Common Name and Subject
              Alternative Name (SAN).
 - DISABLED:  disable certificate validation. This is NOT recommended for
-             security 
+             security
         ]]>        </description>
         <category>certificates</category>
         <string valueMustBeChoice="true" multiLine="false">
@@ -922,7 +930,7 @@ How we want to verify SSL certificates of services. Valid values are:
             <default>true</default>
         </boolean>
     </variable>
-    <variable name="config_manager_validation" scope="instance" visibility="public">
+    <variable name="zowe_configmgr_validation" scope="instance" visibility="public">
         <label>Zowe configuration manager validation type</label>
         <abstract>STRICT or COMPONENT-COMPAT validation type</abstract>
         <description>STRICT=quit on any error, COMPONENT-COMPAT=if component missing schema, skip it with warning instead of quit</description>
@@ -931,11 +939,11 @@ How we want to verify SSL certificates of services. Valid values are:
             <!-- Put validation here -->
             <!-- Specify choices here -->
             <choice>COMPONENT-COMPAT</choice>
-            <choice>STRICT</choice>            
+            <choice>STRICT</choice>
             <default>STRICT</default>
         </string>
     </variable>
-    <variable name="zowe_rbacProfileId" scope="instance" visibility="public">
+    <variable name="zowe_rbacProfileIdentifier" scope="instance" visibility="public">
         <label>Zowe Profile Identifier</label>
         <abstract>ID you use to separate multiple Zowe installs</abstract>
         <description>ID when determining resource names used in RBAC authorization checks such as dataservices with RBAC expects this ID in SAF resources</description>
@@ -946,7 +954,7 @@ How we want to verify SSL certificates of services. Valid values are:
             <default>1</default>
         </string>
     </variable>
-    <variable name="zowe_cookieId" scope="instance" visibility="public">
+    <variable name="zowe_cookieIdentifier" scope="instance" visibility="public">
         <label>Zowe Cookie Identifier</label>
         <abstract>ID that can be used by servers to distinguish their cookies from unrelated Zowe installs</abstract>
         <description>ID which allows multiple copies of Zowe to be used within the same client</description>
@@ -1067,7 +1075,7 @@ How we want to verify SSL certificates of services. Valid values are:
             <!-- Specify choices here -->
             <default>ZWESASTC</default>
         </string>
-    </variable>    
+    </variable>
     <!--atCreate-->
     <!--steps-->
     <step name="define_variables" optional="false">
@@ -1080,12 +1088,13 @@ How we want to verify SSL certificates of services. Valid values are:
             <!-- pre-requisite step -->
             <!-- condition -->
             <!--variableValues-->
+            <variableValue name="zowe_setup_jcl_header" scope="global" noPromptIfSet="false" required="false" />
             <variableValue name="zowe_setup_dataset_prefix" scope="instance" noPromptIfSet="false" required="true"/>
             <variableValue name="zowe_setup_dataset_proclib" scope="instance" noPromptIfSet="false" required="true"/>
             <variableValue name="zowe_setup_dataset_parmlib" scope="instance" noPromptIfSet="false" required="true"/>
-            <variableValue name="zowe_setup_dataset_libzis" scope="instance" noPromptIfSet="false" required="true"/>
+            <variableValue name="zowe_setup_dataset_parmlibMembers_zis" scope="instance" noPromptIfSet="false" required="true"/>
             <variableValue name="zowe_setup_dataset_jcllib" scope="instance" noPromptIfSet="false" required="true"/>
-            <variableValue name="zowe_setup_dataset_loadlibPlugin" scope="instance" noPromptIfSet="false" required="true"/>
+            <variableValue name="zowe_setup_dataset_loadlib" scope="instance" noPromptIfSet="false" required="true"/>
             <variableValue name="zowe_setup_dataset_authLoadlib" scope="instance" noPromptIfSet="false" required="false"/>
             <variableValue name="zowe_setup_dataset_authPluginLib" scope="instance" noPromptIfSet="false" required="true"/>
             <variableValue name="zowe_runtimeDirectory" scope="instance" noPromptIfSet="false" required="true"/>
@@ -1096,12 +1105,12 @@ How we want to verify SSL certificates of services. Valid values are:
             <variableValue name="zowe_job_prefix" scope="instance" noPromptIfSet="false" required="true"/>
             <variableValue name="zowe_externalDomains" scope="instance" noPromptIfSet="false" required="true"/>
             <variableValue name="zowe_externalPort" scope="instance" noPromptIfSet="false" required="true"/>
-            <variableValue name="zowe_network_server_attls" scope="instance" noPromptIfSet="false" required="false"/>
-            <variableValue name="zowe_network_server_tls_min" scope="instance" noPromptIfSet="false" required="false"/>
-            <variableValue name="zowe_network_server_tls_max" scope="instance" noPromptIfSet="false" required="false"/>
-            <variableValue name="zowe_network_client_attls" scope="instance" noPromptIfSet="false" required="false"/>
+            <variableValue name="zowe_network_server_tls_attls" scope="instance" noPromptIfSet="false" required="false"/>
+            <variableValue name="zowe_network_server_tls_minTls" scope="instance" noPromptIfSet="false" required="false"/>
+            <variableValue name="zowe_network_server_tls_maxTls" scope="instance" noPromptIfSet="false" required="false"/>
+            <variableValue name="zowe_network_client_tls_attls" scope="instance" noPromptIfSet="false" required="false"/>
             <variableValue name="zowe_launchScript_logLevel" scope="instance" noPromptIfSet="false" required="false"/>
-            <variableValue name="zowe_launchScript_CompConf" scope="instance" noPromptIfSet="false" required="false"/>
+            <variableValue name="zowe_launchScript_onComponentConfigureFail" scope="instance" noPromptIfSet="false" required="false"/>
             <variableValue name="zowe_certificate_keystore_type" scope="instance" noPromptIfSet="false" required="true"/>
             <variableValue name="zowe_certificate_keystore_file" scope="instance" noPromptIfSet="false" required="true"/>
             <variableValue name="zowe_certificate_keystore_password" scope="instance" noPromptIfSet="false" required="true"/>
@@ -1113,14 +1122,14 @@ How we want to verify SSL certificates of services. Valid values are:
             <variableValue name="zowe_certificate_pem_certificate" scope="instance" noPromptIfSet="false" required="true"/>
             <variableValue name="zowe_certificate_pem_certificateAuthorities" scope="instance" noPromptIfSet="false" required="true"/>
             <variableValue name="zowe_verifyCertificates" scope="instance" noPromptIfSet="false" required="true"/>
-            <variableValue name="zowe_rbacProfileId" scope="instance" noPromptIfSet="false" required="true"/>
-            <variableValue name="zowe_cookieId" scope="instance" noPromptIfSet="false" required="true"/>
+            <variableValue name="zowe_rbacProfileIdentifier" scope="instance" noPromptIfSet="false" required="true"/>
+            <variableValue name="zowe_cookieIdentifier" scope="instance" noPromptIfSet="false" required="true"/>
             <variableValue name="java_home" scope="instance" noPromptIfSet="false" required="true"/>
             <variableValue name="node_home" scope="instance" noPromptIfSet="false" required="true"/>
             <variableValue name="zOSMF_host" scope="instance" noPromptIfSet="false" required="true"/>
             <variableValue name="zOSMF_port" scope="instance" noPromptIfSet="false" required="true"/>
             <variableValue name="zOSMF_applId" scope="instance" noPromptIfSet="false" required="true"/>
-            <variableValue name="config_manager_validation" scope="instance" noPromptIfSet="false" required="true"/>
+            <variableValue name="zowe_configmgr_validation" scope="instance" noPromptIfSet="false" required="true"/>
             <variableValue name="components_gateway_enabled" scope="instance" noPromptIfSet="false" required="true"/>
             <variableValue name="components_zaas_enabled" scope="instance" noPromptIfSet="false" required="true"/>
             <variableValue name="components_api_catalog_enabled" scope="instance" noPromptIfSet="false" required="true"/>
@@ -1139,7 +1148,7 @@ How we want to verify SSL certificates of services. Valid values are:
             <variableValue name="zowe_setup_security_users_zis" scope="instance" noPromptIfSet="false" required="true"/>
             <variableValue name="zowe_setup_security_stcs_zowe" scope="instance" noPromptIfSet="false" required="true"/>
             <variableValue name="zowe_setup_security_stcs_zis" scope="instance" noPromptIfSet="false" required="true"/>
-            <variableValue name="zowe_setup_security_stcs_aux" scope="instance" noPromptIfSet="false" required="true"/>            
+            <variableValue name="zowe_setup_security_stcs_aux" scope="instance" noPromptIfSet="false" required="true"/>
             <instructions>Run this step to fill base variables.</instructions>
             <weight>1</weight>
             <skills>z/OS System Programmer</skills>
@@ -1355,7 +1364,7 @@ How we want to verify SSL certificates of services. Valid values are:
                         <targetState>skipped</targetState>
                     </extendStateExpression>
                 </targetStateSet>
-            </condition>    
+            </condition>
             <variableValue name="components_app_server_port" scope="instance" noPromptIfSet="false" required="true"/>
             <variableValue name="components_app_server_debug" scope="instance" noPromptIfSet="false" required="true"/>
             <instructions substitution="false">Run this step to specify the variables for the App Server.</instructions>
@@ -1398,9 +1407,10 @@ How we want to verify SSL certificates of services. Valid values are:
         <prereqStep name="define_variables"/>
         <!-- condition -->
         <!--variableValues-->
-        <instructions substitution="true"><![CDATA[Run this step to create the configuration file for Zowe. <br/>
+        <instructions substitution="true"><![CDATA[Run this step to create the configuration file for Zowe and the JCL used to install Zowe. <br/>
         Ensure that the values are correct. <br/>
-        <b>zowe.yaml</b> file is created in the: <b>${instance-zowe_runtimeDirectory}</b> directory<br/><br/>
+        <b>zowe.yaml</b> file is created in the: <b>${instance-zowe_runtimeDirectory}</b> directory<br/>
+        <b>${instance-zowe_setup_dataset_jcllib}</b> is created.<br/><br />
         <b>NOTE:</b> If you run this workflow outside of PSWI (SMP/E or convenience build), you might encounter a folder write permission issue.<br/>
         To solve the issue, run the following command in USS:<br/>
         <code>chmod 775 ${instance-zowe_runtimeDirectory} </code><br/>
@@ -1458,6 +1468,22 @@ echo '  # As seen in the documentation:' >> "${instance-zowe_runtimeDirectory}/z
 echo '  # https://docs.zowe.org/stable/user-guide/zos-components-installation-checklist' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '  #-------------------------------------------------------------------------------' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '  setup:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+#if (${global-zowe_setup_jcl_header.trim().length()} > 0 )
+echo '    # JCL job header for samples in SZWESAMP' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '    jcl:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+  #if (${global-zowe_setup_jcl_header.trim().includes("\n")} == -1)
+echo '      header: ${global-zowe_setup_jcl_header.trim()}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+  #else
+echo '      header:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+    #foreach($line in ${global-zowe_setup_jcl_header.split("\n")})
+      #if (${foreach.index} == 0)
+echo '      - ${line}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+      #else
+echo '      - //    ${line}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+      #end
+    #end
+  #end
+#end
 echo '    # MVS data set related configurations' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '    dataset:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '      # where Zowe MVS data sets will be installed' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
@@ -1469,11 +1495,11 @@ echo '      parmlib: $!{instance-zowe_setup_dataset_parmlib}' >> "${instance-zow
 echo '      # Holds Zowe PARMLIB members for plugins' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '      parmlibMembers:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '        # For ZIS plugins' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '        zis: $!{instance-zowe_setup_dataset_libzis}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '        zis: $!{instance-zowe_setup_dataset_parmlibMembers_zis}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '      # JCL library where Zowe will store temporary JCLs during initialization' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '      jcllib: $!{instance-zowe_setup_dataset_jcllib}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '      # Utilities for use by Zowe and extensions' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '      loadlib: $!{instance-zowe_setup_dataset_loadlibPlugin}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '      loadlib: $!{instance-zowe_setup_dataset_loadlib}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '      # APF authorized LOADLIB for Zowe' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '      authLoadlib: $!{instance-zowe_setup_dataset_authLoadlib}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '      # APF authorized LOADLIB for Zowe ZIS Plugins' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
@@ -1543,10 +1569,10 @@ echo '      # # Domain names and IPs should be added into certificate SAN' >> "$
 echo '      # # If this field is not defined, `zwe init` command will use' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '      # # `zowe.externalDomains`.' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '      # san:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '      #   # sample domain name' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '      #   - dvipa.my-company.com' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '      #   # sample IP address' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '      #   - 12.34.56.78' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '      #  # sample domain name' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '      #  - dvipa.my-company.com' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '      #  # sample IP address' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '      #  - 12.34.56.78' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '    # # >>>> Certificate setup scenario 2' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '    # # PKCS12 (keystore) with importing certificate generated by other CA.' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
@@ -1639,6 +1665,11 @@ echo '    #       # Name of the data set holds the certificate issued by other C
 echo '    #       # This data set should be in PKCS12 format and contain private key.' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '    #       dsName: ""' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '    #       password: ""' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '    #     # If zowe.verifyCertificates is not DISABLED, zOSMF certificate' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '    #     # Will be registered with the truststore. You can customize how this is performed here.' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '    #     zOSMF:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '    #       ca: "_auto_"' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '    #       user: "IZUSVR"' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '    # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '    # VSAM configurations if you are using VSAM as Caching Service storage' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
@@ -1682,7 +1713,7 @@ echo '' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '  configmgr:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '    # STRICT=quit on any error, including missing schema' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '    # COMPONENT-COMPAT=if component missing schema, skip it with warning instead of quit' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '    validation: "$!{instance-config_manager_validation}"' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '    validation: "$!{instance-zowe_configmgr_validation}"' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '  # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '  # runtime z/OS job name' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
@@ -1696,12 +1727,12 @@ echo '  # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>' >> "${instance-zowe_runtimeDire
 echo '  # This is an ID you use to separate multiple Zowe installs when determining' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '  # resource names used in RBAC authorization checks such as dataservices with RBAC' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '  # expects this ID in SAF resources' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '  rbacProfileIdentifier: "$!{instance-zowe_rbacProfileId}"' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '  rbacProfileIdentifier: "$!{instance-zowe_rbacProfileIdentifier}"' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '  # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '  # This is an ID that can be used by servers that distinguish their cookies from unrelated Zowe installs, ' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '  # for purposes such as to allow multiple copies of Zowe to be used within the same client' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '  cookieIdentifier: "$!{instance-zowe_cookieId}"' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '  cookieIdentifier: "$!{instance-zowe_cookieIdentifier}"' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '  # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '  # You can list your external domains on how you want to access Zowe.' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
@@ -1732,14 +1763,14 @@ echo '  # Under a "zowe" subsection of a component, as in "components.zss.zowe.n
 echo '  network:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '    server:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '      tls:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '        attls: ${instance-zowe_network_server_attls}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '        attls: ${instance-zowe_network_server_tls_attls}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '        # TLS settings only apply when attls=false' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '        # Else you must use AT-TLS configuration for TLS customization.' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '        minTls: "${instance-zowe_network_server_tls_min}"' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '        maxTls: "${instance-zowe_network_server_tls_max}"' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '        minTls: "${instance-zowe_network_server_tls_minTls}"' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '        maxTls: "${instance-zowe_network_server_tls_maxTls}"' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '    client:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '      tls:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '        attls: ${instance-zowe_network_client_attls}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '        attls: ${instance-zowe_network_client_tls_attls}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '  # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '  # You can un-comment and define any extra environment variables as key/value' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
@@ -1755,6 +1786,8 @@ echo '' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '  # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '  # You can define any Zowe message portions to be checked for and the message added to the' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '  # system log upon its logging, truncated to 126 characters (wildcards are not supported).' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '  # Setting "sysMessageTrim" to true will omit any text found before the match on the line.' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '  sysMessageTrim: false' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '  sysMessages:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '  #   # Zowe starting' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '    - "ZWEL0021I"' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
@@ -1787,7 +1820,7 @@ echo '  launchScript:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '    # Set to "debug" or "trace" to display extra debug information' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '    logLevel: "$!{instance-zowe_launchScript_logLevel}"' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '    # Set to "exit" if you would like startup to exit if any component has an error in the configure stage, otherwise zwe will warn but continue.' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '    onComponentConfigureFail: "$!{instance-zowe_launchScript_CompConf}"' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '    onComponentConfigureFail: "$!{instance-zowe_launchScript_onComponentConfigureFail}"' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '  # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '  # Zowe certificate' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
@@ -2160,6 +2193,12 @@ echo '#       zss:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '#         port: 28542' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '#       caching-service:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '#         enabled: false' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+
+export JAVA_HOME='${instance-java_home}'
+export NODE_HOME='${instance-node_home}'
+export PATH=$PATH:'${instance-zowe_runtimeDirectory}/bin'
+
+zwe init generate --allow-overwrite -c '${instance-zowe_runtimeDirectory}/zowe.yaml'
 ]]></inlineTemplate>
             <submitAs maxRc="0">shell-JCL</submitAs>
             <maxLrecl>1024</maxLrecl>
@@ -2171,9 +2210,9 @@ echo '#         enabled: false' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
         <description>Zowe installation</description>
         <step name="install_zowe" optional="false">
             <title>Run the Zowe install</title>
-            <description>Configure Zowe.</description>            
+            <description>Configure Zowe.</description>
             <prereqStep name="main_variables"/>
-            <prereqStep name="configure"/>            
+            <prereqStep name="configure"/>
             <!-- condition -->
             <!--variableValues-->
             <instructions substitution="true"><![CDATA[
@@ -2203,7 +2242,7 @@ zwe install -c '${instance-zowe_runtimeDirectory}/zowe.yaml' --allow-overwrite</
                 <maxLrecl>1024</maxLrecl>
                 <!-- zosmfOutput -->
             </template>
-        </step>        
+        </step>
         <step name="init_zowe" optional="false">
             <title>Run scripts for Zowe initialization</title>
             <description>Executes scripts for Zowe initialization</description>
@@ -2219,7 +2258,7 @@ zwe install -c '${instance-zowe_runtimeDirectory}/zowe.yaml' --allow-overwrite</
 #end
             <br/>
             <b>NOTE:</b>
-            Each <b>zwe init</b> sub-command defines a configuration. 
+            Each <b>zwe init</b> sub-command defines a configuration.
 <ul>
 <li><b>mvs:</b> Copy the data sets provided with Zowe to custom data sets.</li>
 #if (${instance-components_caching_service_storage_mode} == "VSAM" && ${instance-components_caching_service_enabled})
@@ -2259,10 +2298,10 @@ zwe init vsam -c '${instance-zowe_runtimeDirectory}/zowe.yaml' --allow-overwrite
             <instructions substitution="true"><![CDATA[
             This step runs the commands: <br/>
             <code>zwe init security -c ${instance-zowe_runtimeDirectory}/zowe.yml --allow-overwrite</code> <br/>
-            <code>zwe init apfauth -c ${instance-zowe_runtimeDirectory}/zowe.yml</code> <br/>            
+            <code>zwe init apfauth -c ${instance-zowe_runtimeDirectory}/zowe.yml</code> <br/>
             <br/>
             <b>NOTE:</b>
-            Each <b>zwe init</b> sub-command defines a configuration. 
+            Each <b>zwe init</b> sub-command defines a configuration.
 <ul>
 <li><b>security:</b> Create the user IDs and security manager settings.</li>
 <li><b>apfauth:</b> APF authorize the LOADLIB containing the modules that need to perform z/OS priviledged security calls.</li>

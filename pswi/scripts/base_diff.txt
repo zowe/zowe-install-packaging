@@ -58,15 +58,15 @@
 >       # type: 
 >       # pkcs12:
 >         # directory: 
-245c245
+250c250
 <   runtimeDirectory: ""
 ---
 >   runtimeDirectory: "/tmp"
-415c415
+422c422
 <   home: ""
 ---
 >   home: "#delete_me#"
-431c431
+438c438
 <   home: ""
 ---
 >   home: "#delete_me#"
