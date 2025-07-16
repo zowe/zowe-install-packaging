@@ -106,7 +106,7 @@ export function submitJob(jclFileOrContent: string, printJobDebug: boolean = tru
  * @returns 
  */
 function getJobStatus(jobId: string): { status: string, cc: string, name: string } {
-  const getStatusCmd = std.getenv('ZWE_zowe_runtimeDirectory') + `/bin/utils/zowex job vs ${jobId}`;
+  const getStatusCmd = std.getenv('ZWE_zowe_runtimeDirectory') + `/bin/utils/zowex job vs ${jobId} --rfc`;
   common.printDebug(`-- Running ${getStatusCmd}`);
   const result = shell.execOutSync('sh', '-c', `${getStatusCmd} 2>&1 && echo '.'`);
   let status = 'UNKNOWN';
@@ -115,20 +115,20 @@ function getJobStatus(jobId: string): { status: string, cc: string, name: string
   result.out?.split('\n').forEach((line) => {
     if (line.includes(jobId)) {
       /*     
-      cout << job.jobid << " " << left << setw(10) << job.retcode << " " << job.jobname << " " << job.status << endl;
-
       Sample outputs (only one such line returned with `zowex job vs`)
-      JOB05609 CANCELED   LONGJOB  OUTPUT
-      JOB05602 CC 0000    SOMEJB OUTPUT
-      TSU05611            USER1  ACTIVE
-      JOB05486            IEFBR14$ INPUT
+      JOB05625,CC 0000,IEFBR14$,OUTPUT,J0005625SVSCJES2E131FBE0.......:
+      JOB05624,CC 0000,IEFBR14$,OUTPUT,J0005624SVSCJES2E131FBDF.......:
+      TSU05611,ABEND 222,USERABC,OUTPUT,T0005611SVSCJES2E131F631.......:
+      JOB05609,CANCELED,LONGJOB,OUTPUT,J0005609SVSCJES2E131ED16.......:
+      JOB05607,CANCELED,LONGJOB,OUTPUT,J0005607SVSCJES2E131ED14.......:
+      JOB05602,CC 0000,ATLJ0000,OUTPUT,J0005602SVSCJES2E131ED0F.......:
+      JOB05586,CC 0000,ATLJ0000,OUTPUT,J0005586SVSCJES2E131ECF4.......:
+      TSU05815,,USERABC,ACTIVE,T0005815SVSCJES2E132110A.......:
       */
-      const columns = line.split(/\s+/).reverse();
-      status = columns[0];
-      jobName = columns[1];
-      if (columns[2] !== jobId) {
-        compCode = columns[2];
-      }
+      const columns = line.split(',').reverse(); //TODO: commas should be safe, not legal jobname/correlator? how about user id?
+      status = columns[1];
+      jobName = columns[2];
+      compCode = columns[3];
     }
   })
   return { status: status, cc: compCode, name: jobName };
@@ -169,6 +169,12 @@ export function waitForJob(jobid: string): { jobcccode?: string, jobid?: string,
   common.printTrace(`  * Job status check done at ${new Date().toString()}.`);
   if (jobcccode.length > 0) {
     common.printDebug(`  * Job (${jobname}) exits with code ${jobcccode}.`);
+
+    if (jobcccode.startsWith('CC')) {
+      // Format: 'CC 0000'. We drop the CC from all responses
+      jobcccode = jobcccode.split(/\s+/)[1];
+    }
+
     if (Number(jobcccode) === 0) {
       return { jobcccode, jobname, rc: 0 };
     } else {
