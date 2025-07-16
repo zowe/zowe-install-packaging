@@ -12,7 +12,7 @@
   },
   "binaryDependencies": {
     "org.zowe.zowe-native-proto-tmp.server": {
-      "version": "0.0.1",
+      "version": "^0.0.1",
       "artifact": "*.pax.Z"
     },
     "org.zowe.zlux.zlux-core": {
