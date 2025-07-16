@@ -111,7 +111,7 @@ function getJobStatus(jobId: string): { status: string, cc: string, name: string
   const result = shell.execOutSync('sh', '-c', `${getStatusCmd} 2>&1 && echo '.'`);
   let status = 'UNKNOWN';
   let compCode = '';
-  let jobName = 'UNKNOWN';
+  let jobName = '';
   result.out?.split('\n').forEach((line) => {
     if (line.includes(jobId)) {
       /*     
