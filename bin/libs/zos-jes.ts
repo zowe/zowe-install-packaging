@@ -167,7 +167,7 @@ export function waitForJob(jobid: string): { jobcccode?: string, jobid?: string,
     }
   }
   common.printTrace(`  * Job status check done at ${new Date().toString()}.`);
-  if (jobcccode) {
+  if (jobcccode.length > 0) {
     common.printDebug(`  * Job (${jobname}) exits with code ${jobcccode}.`);
     if (Number(jobcccode) === 0) {
       return { jobcccode, jobname, rc: 0 };
