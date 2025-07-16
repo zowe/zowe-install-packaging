@@ -228,6 +228,18 @@ chmod +x "${ZOWE_ROOT_DIR}"/bin/zwe
 chmod +x "${ZOWE_ROOT_DIR}"/bin/utils/*.sh
 chmod +x "${ZOWE_ROOT_DIR}"/bin/utils/*.rex
 
+echo "[$SCRIPT_NAME] extract zowex ..."
+zowex_components=$(find "${ZOWE_ROOT_DIR}/files" -type f \( -name "zowe-server-*.pax.Z" \) | head -n 1)
+cd "${ZOWE_ROOT_DIR}/bin/utils"
+pax -ppx -rf "${zowex_components}"
+rm -rf "${ZOWE_ROOT_DIR}"/bin/utils/zowe-server-*
+
+echo "[$SCRIPT_NAME] change zowex to be executable ..."
+chmod +x "${ZOWE_ROOT_DIR}"/bin/utils/zowex
+
+echo "[$SCRIPT_NAME] disable zoweax and zowed for the moment ..."
+chmod -x "${ZOWE_ROOT_DIR}"/bin/utils/zoweax "${ZOWE_ROOT_DIR}"/bin/utils/zowed
+
 echo "[$SCRIPT_NAME] change keyring-util to be executable ..."
 chmod +x "${ZOWE_ROOT_DIR}"/bin/utils/keyring-util/keyring-util
 
