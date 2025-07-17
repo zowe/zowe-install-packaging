@@ -21,15 +21,39 @@
               "description": "MVS data set related configurations",
               "properties": {
                 "prefix": {
-                  "$ref": "/schemas/v2/server-common#zoweDatasetPrefix",
+                  "oneOf": [
+                    {
+                      "$ref": "/schemas/v2/server-common#zoweDatasetPrefix"
+                    },
+                    {
+                      "type": "string",
+                      "maxLength": 0
+                    }
+                  ],
                   "description": "Where Zowe MVS data sets will be installed"
                 },
                 "proclib": {
-                  "$ref": "/schemas/v2/server-common#zoweDataset",
+                  "oneOf": [
+                    {
+                      "$ref": "/schemas/v2/server-common#zoweDataset"
+                    },
+                    {
+                      "type": "string",
+                      "maxLength": 0
+                    }
+                  ],
                   "description": "PROCLIB where Zowe STCs will be copied over"
                 },
                 "parmlib": {
-                  "$ref": "/schemas/v2/server-common#zoweDataset",
+                  "oneOf": [
+                    {
+                      "$ref": "/schemas/v2/server-common#zoweDataset"
+                    },
+                    {
+                      "type": "string",
+                      "maxLength": 0
+                    }
+                  ],
                   "description": "Zowe PARMLIB"
                 },
                 "parmlibMembers": {
@@ -44,21 +68,53 @@
                   }
                 },
                 "jcllib": {
-                  "$ref": "/schemas/v2/server-common#zoweDataset",
+                  "oneOf": [
+                    {
+                      "$ref": "/schemas/v2/server-common#zoweDataset"
+                    },
+                    {
+                      "type": "string",
+                      "maxLength": 0
+                    }
+                  ],
                   "description": "JCL library where Zowe will store temporary JCLs during initialization"
                 },
                 "loadlib": {
-                  "$ref": "/schemas/v2/server-common#zoweDataset",
+                  "oneOf": [
+                    {
+                      "$ref": "/schemas/v2/server-common#zoweDataset"
+                    },
+                    {
+                      "type": "string",
+                      "maxLength": 0
+                    }
+                  ],
                   "description": "States the dataset where Zowe executable utilities are located",
                   "default": "<hlq>.SZWELOAD"
                 },
                 "authLoadlib": {
-                  "$ref": "/schemas/v2/server-common#zoweDataset",
+                  "oneOf": [
+                    {
+                      "$ref": "/schemas/v2/server-common#zoweDataset"
+                    },
+                    {
+                      "type": "string",
+                      "maxLength": 0
+                    }
+                  ],
                   "description": "The dataset that contains any Zowe core code that needs to run APF-authorized, such as ZIS",
                   "default": "<hlq>.SZWEAUTH"
                 },
                 "authPluginLib": {
-                  "$ref": "/schemas/v2/server-common#zoweDataset",
+                  "oneOf": [
+                    {
+                      "$ref": "/schemas/v2/server-common#zoweDataset"
+                    },
+                    {
+                      "type": "string",
+                      "maxLength": 0
+                    }
+                  ],
                   "description": "APF authorized LOADLIB for Zowe ZIS Plugins"
                 }
               }
@@ -103,17 +159,41 @@
                   "description": "security group name",
                   "properties": {
                     "admin": {
-                      "$ref": "/schemas/v2/server-common#zoweUser",
+                      "oneOf": [
+                        {
+                          "$ref": "/schemas/v2/server-common#zoweUser"
+                        },
+                        {
+                          "type": "string",
+                          "maxLength": 0
+                        }
+                      ],
                       "description": "Zowe admin user group",
                       "default": "ZWEADMIN"
                     },
                     "stc": {
-                      "$ref": "/schemas/v2/server-common#zoweUser",
+                      "oneOf": [
+                        {
+                          "$ref": "/schemas/v2/server-common#zoweUser"
+                        },
+                        {
+                          "type": "string",
+                          "maxLength": 0
+                        }
+                      ],
                       "description": "Zowe STC group",
                       "default": "ZWEADMIN"
                     },
                     "sysProg": {
-                      "$ref": "/schemas/v2/server-common#zoweUser",
+                      "oneOf": [
+                        {
+                          "$ref": "/schemas/v2/server-common#zoweUser"
+                        },
+                        {
+                          "type": "string",
+                          "maxLength": 0
+                        }
+                      ],
                       "description": "Zowe SysProg group",
                       "default": "ZWEADMIN"
                     }
@@ -125,12 +205,28 @@
                   "description": "security user name",
                   "properties": {
                     "zowe": {
-                      "$ref": "/schemas/v2/server-common#zoweUser",
+                      "oneOf": [
+                        {
+                          "$ref": "/schemas/v2/server-common#zoweUser"
+                        },
+                        {
+                          "type": "string",
+                          "maxLength": 0
+                        }
+                      ],
                       "description": "Zowe runtime user name of main service",
                       "default": "ZWESVUSR"
                     },
                     "zis": {
-                      "$ref": "/schemas/v2/server-common#zoweUser",
+                      "oneOf": [
+                        {
+                          "$ref": "/schemas/v2/server-common#zoweUser"
+                        },
+                        {
+                          "type": "string",
+                          "maxLength": 0
+                        }
+                      ],
                       "description": "Zowe runtime user name of ZIS",
                       "default": "ZWESIUSR"
                     }
