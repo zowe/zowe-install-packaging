@@ -1412,7 +1412,8 @@ How we want to verify SSL certificates of services. Valid values are:
         <b>zowe.yaml</b> file is created in the: <b>${instance-zowe_workspaceDirectory}</b> directory<br/>
         <b>${instance-zowe_setup_dataset_jcllib}</b> is created.<br/><br />
         <b>NOTE:</b> If you run this workflow outside of PSWI (SMP/E or convenience build), you might encounter a folder write permission issue.<br/>
-        To solve the issue, run the following command in USS:<br/>
+        To solve the issue, run the following commands in USS:<br/>
+        <code>mkdir -p ${instance-zowe_workspaceDirectory} </code><br/>
         <code>chmod 775 ${instance-zowe_workspaceDirectory} </code><br/>
         and change the folder UID to the ID of the user who executes this workflow.<br/>
         Issue the following command: <br/>
