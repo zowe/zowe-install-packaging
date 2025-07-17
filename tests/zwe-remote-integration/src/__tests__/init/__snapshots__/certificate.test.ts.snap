@@ -50,7 +50,7 @@ exports[`init-cert (LONG) passing init 1`] = `
 >>>> Import the signed CSR to the keystore "localhost":
 >> Certificate localhost is created successfully.
 -------------------------------------------------------------------------------
->> Trust z/OSMF "localhost:12321"
+>> Trust z/OSMF "some.test.hostname:12321"
 >>>> Getting certificates from service host
 >>>> Import a certificate "zosmf00" to the truststore:
 >>>> Import a certificate "zosmf01" to the truststore:

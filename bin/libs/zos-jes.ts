@@ -9,6 +9,8 @@
   Copyright Contributors to the Zowe Project.
 */
 
+import * as xplatform from "xplatform";
+import * as fs from './fs';
 import * as os from 'cm_os';
 import * as std from 'cm_std';
 import * as zoslib from './zos';
@@ -37,12 +39,29 @@ export function submitJob(jclFileOrContent: string, printJobDebug:boolean=true, 
       common.printTrace(jclFileOrContent);
     }
   }
+  
+  let cleanupFile = false;
+  let jclFile: string = jclFileOrContent;
+
+  if (jclIsContent) {
+    // always submit through a file, as printf/echo can introduce errors to content
+    jclFile = fs.createTmpFile()!;
+    const storeRC = xplatform.storeFileUTF8(jclFile, xplatform.AUTO_DETECT, jclFileOrContent);
+    if (storeRC) {
+      common.printErrorAndExit(`Error ZWEL0159E Failed to modify temporary file ${jclFile}.`, undefined, 159);
+    }
+    cleanupFile = true;
+  }
 
   // cat seems to work more reliably. sometimes, submit by itself just says it cannot find a real dataset.
-  const result = shell.execOutSync('sh', '-c', jclIsContent ? `echo "${jclFileOrContent}" | submit 2>&1`
-                                                            : `cat "${stringlib.escapeDollar(jclFileOrContent)}" | submit 2>&1`);
+  const result = shell.execOutSync('sh', '-c', `cat "${stringlib.escapeDollar(jclFile)}" | submit 2>&1`);
   // expected: JOB JOB????? submitted from path '...'
   const code=result.rc;
+
+  if (cleanupFile) {
+    os.remove(jclFile);
+  }
+
   if (code==0) {
     let jobidlines = result.out.split('\n').filter(line=>line.indexOf('submitted')!=-1);
     let jobid = jobidlines.length > 0 ? jobidlines[0].split(' ')[1] : undefined;
