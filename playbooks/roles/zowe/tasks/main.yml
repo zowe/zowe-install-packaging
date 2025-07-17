@@ -38,6 +38,7 @@
     tasks_from: update_zowe_yaml
   vars:
     configs:
+      "zowe.runtimeDirectory": "{{ zowe_root_dir }}"
       "zowe.setup.dataset.prefix": "{{ zowe_dataset_prefix }}"
 
 - name: Install Zowe

@@ -1,0 +1,116 @@
+/*
+ * This program and the accompanying materials are made available under the terms of the
+ * Eclipse Public License v2.0 which accompanies this distribution, and is available at
+ * https://www.eclipse.org/legal/epl-v20.html
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ *
+ * Copyright Contributors to the Zowe Project.
+ */
+
+import * as fs from 'fs-extra';
+import { getSession } from './ZosmfSession';
+import * as files from '@zowe/zos-files-for-zowe-sdk';
+import * as _ from 'lodash';
+import * as path from 'path';
+import { LINGERING_REMOTE_FILES_FILE, TEST_OUTPUT_DIR } from '../config/TestConfig';
+export class TestFileActions {
+  private static readonly session = getSession();
+
+  constructor() {}
+
+  /**
+   * Downloads pds members to a temporary directory and returns the absolute path to the
+   * temporary directory.
+   *
+   * @param {string} pdsName The PDS to download.
+   * @param {files.IDownloadOptions} [options] Options for the download.
+   * @returns {Promise<string>} The local absolute directory containing the downloaded pds members.
+   *
+   * @throws {Error} If the download fails.
+   */
+  public static async downloadPds(pdsName: string, options: files.IDownloadOptions = {}): Promise<string> {
+    const dlDir = path.resolve(TEST_OUTPUT_DIR, '.tmp');
+    const finalOpts = _.merge(options, { directory: dlDir });
+    const downloadPdsResp = await files.Download.allMembers(this.session, pdsName, finalOpts);
+    if (!downloadPdsResp.success) {
+      throw new Error(`Failed to download dataset ${pdsName}, details: ${downloadPdsResp.apiResponse}`);
+    }
+    return dlDir;
+  }
+
+  public static hasMember(dataset: string) {
+    return dataset.length > 0 && dataset.endsWith(')') && /\(.*?\)/gim.test(dataset);
+  }
+
+  public static async deleteAll(datasets: TestFile[]) {
+    const deleteOps: DeleteFile[] = [];
+    datasets.forEach((testFile) => {
+      let delPromise;
+      switch (testFile.type) {
+        case FileType.DS_VSAM:
+          delPromise = files.Delete.vsam(this.session, testFile.name, { purge: true });
+          break;
+        case FileType.DS_ZFS:
+          delPromise = files.Delete.zfs(this.session, testFile.name, {});
+          break;
+        case FileType.DS_MEMBER:
+        case FileType.DS_NON_CLUSTER:
+          if (testFile.type === FileType.DS_MEMBER && !TestFileActions.hasMember(testFile.name)) {
+            console.log(`${testFile.name} is marked as a dataset member to be deleted, but is missing the member name. Ignoring.`);
+            break;
+          }
+          delPromise = files.Delete.dataSet(this.session, testFile.name, {});
+          break;
+        case FileType.USS_FILE:
+          delPromise = files.Delete.ussFile(this.session, testFile.name, false);
+          break;
+        case FileType.USS_DIR:
+          delPromise = files.Delete.ussFile(this.session, testFile.name, true);
+          break;
+      }
+      deleteOps.push({ file: testFile, action: delPromise });
+    });
+    for (const dsDelete of deleteOps) {
+      let res = { success: false };
+      try {
+        res = await dsDelete.action;
+      } catch (error) {
+        // if error message indicates 404, file didn't exist to be deleted.
+        if (error?.mDetails?.msg && error.mDetails.msg.includes('status 404')) {
+          res.success = true; // consider file deleted.
+        }
+      }
+      if (!res.success) {
+        console.log(`Issue deleting ${dsDelete.file.name}. Will try again during teardown.`);
+        fs.appendFileSync(LINGERING_REMOTE_FILES_FILE, `${dsDelete.file.name}:${dsDelete.file.type}\n`);
+      }
+    }
+  }
+}
+
+type DeleteFile = {
+  file: TestFile;
+  action: Promise<files.IDeleteVsamResponse | files.IZosFilesResponse>;
+};
+
+export type TestFile = {
+  name: string;
+  type: FileType;
+};
+
+// why is eslint flagging these?
+export enum FileType {
+  // eslint-disable-next-line no-unused-vars
+  DS_NON_CLUSTER,
+  // eslint-disable-next-line no-unused-vars
+  DS_MEMBER,
+  // eslint-disable-next-line no-unused-vars
+  DS_VSAM,
+  // eslint-disable-next-line no-unused-vars
+  DS_ZFS,
+  // eslint-disable-next-line no-unused-vars
+  USS_FILE,
+  // eslint-disable-next-line no-unused-vars
+  USS_DIR,
+}

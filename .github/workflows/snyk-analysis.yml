@@ -1,5 +1,6 @@
 name: Kubernetes Containers Scan
 
+permissions: read-all
 on:
   push:
     branches:
@@ -25,7 +26,7 @@ jobs:
   setup-matrix:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
       - name: Setup image list matrix
         id: setup-image-matrix
         run: |
@@ -46,13 +47,13 @@ jobs:
     strategy:
       matrix: ${{ fromJson(needs.setup-matrix.outputs.image-matrix) }}
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
 
     - name: Run Snyk to check Docker image for vulnerabilities
       env:
         SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
       continue-on-error: true
-      uses: snyk/actions/docker@master
+      uses: snyk/actions/docker@ff5c02a0e3adc5c52e2c9e7558edf2b46d69ac1f # v?.? commit may 23,2020
       # we don't have original Dockerfile, cannot generate and upload sarif 
       with:
         image: ${{ matrix.images }}

@@ -281,8 +281,10 @@ mv "${certificate_analyser}" "${ZOWE_ROOT_DIR}/bin/utils/certificate-analyser.ja
 echo "[$SCRIPT_NAME] create dummy zowe.yaml for install"
 cat <<EOT >>"${BASE_DIR}/zowe.yaml"
 zowe:
+  runtimeDirectory: "${ZOWE_ROOT_DIR}"
   extensionDirectory: "${ZOWE_ROOT_DIR}/components"
-  useConfigmgr: false
+  logDirectory: "${BASE_DIR}/logs"
+  workspaceDirectory: "${BASE_DIR}/logs/workspace"
 EOT
 
 echo "[$SCRIPT_NAME] extract components"

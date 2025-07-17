@@ -12,6 +12,7 @@
 import * as std from 'cm_std';
 import * as os from 'cm_os';
 import * as xplatform from 'xplatform';
+import * as zos from 'zos';
 
 import * as fs from './fs';
 //import * as stringlib from './string';
@@ -128,6 +129,13 @@ export function date(...args: string[]): string|undefined {
 
 
 let logExists = false;
+let logFile:std.File|null = null;
+export function finishLogFile() {
+  if (logFile) {
+    logFile.close();
+    zos.changeTag(std.getenv('ZWE_PRIVATE_LOG_FILE'), 819);
+  }
+}
 
 function writeLog(message: string): boolean {
   const filename = std.getenv('ZWE_PRIVATE_LOG_FILE');
@@ -138,6 +146,14 @@ function writeLog(message: string): boolean {
   if (!logExists) {
       fs.createFile(filename, 0o640, message);
       logExists = fs.fileExists(filename);
+      let errObj = {errno:undefined};
+      logFile = std.open(filename, 'w', errObj);
+      if (errObj.errno) {
+        printError(`Error opening file ${filename}, errno=${errObj.errno}`);
+        logFile=null;
+        logExists=false;
+        return false;
+      }
   } else {
       xplatform.appendFileUTF8(filename, xplatform.AUTO_DETECT, message);
       return true;
@@ -158,7 +174,7 @@ export function printRawMessage(message: string, isError: boolean, writeTo:strin
     }
   }
   if (writeTo.includes('log')) {
-    writeLog(message+'\n');
+    writeLog(message);
   }
   return true;
 }

@@ -1,0 +1,142 @@
+{
+  "version": "3.3.0",
+  "rules": [
+    {
+      "description": "Caching service and Infinispan variables are present in the workflow and not present by default in example-zowe.yaml. These are valid variables. The default is infinispan.",
+      "rule_target": "all",
+      "rule_type": "wf_extra_vars",
+      "rule_entry": ["components_caching_service_storage_vsam_name", "components_caching_service_storage_infinispan_jgroups_host"]
+    }, {
+      "description": "zowe_setup_certficate_* is always commented out and not part of the default config workflow.",
+      "rule_target": "all",
+      "rule_type": "wf_missing_vars",
+      "rule_entry": [
+        "zowe_setup_certificate_type",
+        "zowe_setup_certificate_pkcs12_directory",
+        "zowe_setup_certificate_pkcs12_lock",
+        "zowe_setup_certificate_pkcs12_name",
+        "zowe_setup_certificate_pkcs12_password",
+        "zowe_setup_certificate_pkcs12_caAlias",
+        "zowe_setup_certificate_pkcs12_caPassword",
+        "zowe_setup_certificate_dname_caCommonName",
+        "zowe_setup_certificate_dname_commonName",
+        "zowe_setup_certificate_dname_orgUnit",
+        "zowe_setup_certificate_dname_org",
+        "zowe_setup_certificate_dname_locality",
+        "zowe_setup_certificate_dname_state",
+        "zowe_setup_certificate_dname_country",
+        "zowe_setup_certificate_validity"
+      ]
+    },
+    {
+      "description": "sysMessageTrim is hard-coded to defaults in example-zowe.yaml.",
+      "rule_target": "all",
+      "rule_type": "wf_missing_vars",
+      "rule_entry": [
+        "zowe_sysMessageTrim",
+        "zowe_sysMessages"
+      ]
+    },
+    {
+      "description": "setup vsam name is set in defaults.yaml via caching-service vsam name, which is set by the workflow.",
+      "rule_target": "all",
+      "rule_type": "wf_missing_vars",
+      "rule_entry": [
+        "zowe_setup_vsam_name"
+      ]
+    },
+    {
+      "description": "component settings disabled by default in defaults.yaml (deprecated)",
+      "rule_target": "all",
+      "rule_type": "wf_missing_vars",
+      "rule_entry": [
+        "components_jobs_api_enabled",
+        "components_jobs_api_debug",
+        "components_jobs_api_port",
+        "components_files_api_enabled",
+        "components_files_api_debug",
+        "components_files_api_port"
+      ]
+    },
+    {
+      "description": "zowe_network_proxyType is an internal setting derived in defaults.yaml",
+      "rule_target": "all",
+      "rule_type": "wf_missing_vars",
+      "rule_entry": [
+        "zowe_network_proxyType"
+      ]
+    },
+    {
+      "description": "many component settings for the APIML-only workflow are set by default within the workflow",
+      "rule_target": "ZWEAMLCF",
+      "rule_type": "wf_missing_vars",
+      "rule_entry": [
+        "components_gateway_enabled",
+        "components_gateway_debug",
+        "components_gateway_apiml_security_auth_provider",
+        "components_gateway_apiml_security_auth_zosmf_jwtAutoconfiguration",
+        "components_gateway_apiml_security_auth_zosmf_serviceId",
+        "components_gateway_apiml_security_authorization_endpoint_enabled",
+        "components_gateway_apiml_security_authorization_provider",
+        "components_gateway_apiml_security_x509_enabled",
+        "components_zaas_enabled",
+        "components_zaas_debug",
+        "components_api_catalog_enabled",
+        "components_api_catalog_debug",
+        "components_discovery_enabled",
+        "components_discovery_debug",
+        "components_caching_service_enabled",
+        "components_caching_service_debug",
+        "components_caching_service_storage_evictionStrategy",
+        "components_caching_service_storage_mode",
+        "components_app_server_enabled",
+        "components_app_server_port",
+        "components_app_server_debug",
+        "components_zss_enabled",
+        "components_zss_port",
+        "components_zss_crossMemoryServerName",
+        "components_zss_agent_64bit",
+        "components_explorer_jes_enabled",
+        "components_explorer_mvs_enabled",
+        "components_explorer_uss_enabled",
+        "components_zss_agent_jwt_fallback"
+      ]
+    },
+    {
+      "description": "VSAM is not enabled by default in ZWEAMLCF.xml, and the fields are set by default if it's enabled",
+      "rule_target": "ZWEAMLCF",
+      "rule_type": "wf_missing_vars",
+      "rule_entry": [
+        "zowe_setup_vsam_mode",
+        "zowe_setup_vsam_volume",
+        "zowe_setup_vsam_storageClass"
+      ]
+    },
+    {
+      "description": "zowe_certificate_pem_* is hard-coded to /global/zowe directories, and by default is unused (keyrings enabled)",
+      "rule_target": "ZWEAMLCF",
+      "rule_type": "wf_missing_vars",
+      "rule_entry": [
+        "zowe_certificate_pem_key",
+        "zowe_certificate_pem_certificate",
+        "zowe_certificate_pem_certificateAuthorities"
+      ]
+    },
+    {
+      "description": "configmgr validation in ZWEAMLCF is hard-coded to COMPONENT-COMPAT ",
+      "rule_target": "ZWEAMLCF",
+      "rule_type": "wf_missing_vars",
+      "rule_entry": [
+        "zowe_configmgr_validation"
+      ]
+    },
+    {
+      "description": "zowe_verifyCertificates is hard-coded to STRICT and not configurable (secure by default)",
+      "rule_target": "ZWEAMLCF",
+      "rule_type": "wf_missing_vars",
+      "rule_entry": [
+        "zowe_verifyCertificates"
+      ]
+    }
+  ]
+}

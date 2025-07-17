@@ -24,14 +24,17 @@
 */
 
 parse arg operation verbosity
+operation = strip(operation)
+verbosity = strip(verbosity)
 
-VALID_OPERATIONS = '"generate" | "nogenerate"'
-VALID_VERBOSITY = '"verbose" | "noverbose"'
+VALID_OPERATIONS = 'generate nogenerate'
+VALID_VERBOSITY = 'verbose noverbose'
 
-if POS(verbosity, VALID_VERBOSITY) = 0 then do
-  say 'Error: "'verbosity'" is not a valid verbosity.'
-  say '       Valid verbosity levels are: '||VALID_VERBOSITY
-  ExitWithRC(8)
+checkVerbosity = CheckInput(verbosity, VALID_VERBOSITY)
+if length(checkVerbosity) = 0 then do
+  queue '"'verbosity'" is not a valid verbosity.'
+  queue 'Valid verbosity levels are: '||VALID_VERBOSITY
+  FormatError(8)
 end
 !verbose = COMPARE(verbosity, 'noverbose')
 
@@ -71,10 +74,11 @@ end
 ================================================================================
 */
 
-if POS(operation, VALID_OPERATIONS) = 0 then do
-  say 'Error: "'operation'" is not a valid operation.'
-  say '       Valid operations are: '||VALID_OPERATIONS
-  ExitWithRC(8)
+checkOperatation = CheckInput(operation, VALID_OPERATIONS)
+if length(checkOperatation) = 0 then do
+  queue '"'operation'" is not a valid operation.'
+  queue 'Valid operations are: '||VALID_OPERATIONS
+  FormatError(8)
 end
 
 if COMPARE(operation, 'nogenerate') = 0 then do
@@ -101,16 +105,34 @@ CFG.zwe.header.time = TIME()
 ================================================================================
     Create a data set with attributes like the original jcl library and copy
     all the members of esm jcl.
-    FIXME:
-      1) check if zowe.setup.dataset.prefix is defined
-      2) check that jcllib != prefix.SZWESAMP
+    Note: CFG.ZOWE.SETUP.DATASET.PREFIX/JCLLIB is a valid dataset name,
+      we have to check if variable is initialized (via SYMBOL)
 ================================================================================
 */
 
-jcl = CFG.zowe.setup.dataset.prefix'.SZWESAMP'
+cfg_mandatory = 'zowe.setup.dataset.prefix zowe.setup.dataset.jcllib'
+UPDATE_CONFIG = 'Update the configuration and submit the JCL again.'
+
+say 'Checking required configuration keys'
+do i = 1 to words(cfg_mandatory)
+  if symbol('CFG.'||word(cfg_mandatory, i)) = 'LIT' then do
+    queue '"'word(cfg_mandatory, i)'" is not defined in configuration.'
+    queue UPDATE_CONFIG
+    FormatError(8)
+  end
+end
+
+_jcl_ = CFG.zowe.setup.dataset.prefix'.SZWESAMP'
 jclCopy = CFG.zowe.setup.dataset.jcllib
 
-say 'Creating a fresh copy of 'jcl' named 'jclCopy'.'
+if _jcl_ = jclCopy then do
+  queue '"zowe.setup.dataset.prefix" and "zowe.setup.dataset.jcllib"',
+      'are identical, which is not allowed.'
+  queue UPDATE_CONFIG
+  FormatError(8)
+end
+
+say 'Creating a fresh copy of '_jcl_' named 'jclCopy'.'
 
 x = DeleteDataSet(jclCopy)
 
@@ -122,7 +144,7 @@ if AllocateDataSet(jclCopy, 'zweto') > 0 then do
   ExitWithRC(8)
 end
 
-if AllocateDataSet(jcl, 'zwefrom') > 0 then do
+if AllocateDataSet(_jcl_, 'zwefrom') > 0 then do
   ExitWithRC(8)
 end
 
@@ -179,9 +201,8 @@ CVT_ADDR = C2X(STORAGE(D2X(16), 4))
 CVTRAC_ADDR = C2X(STORAGE(D2X(X2D(CVT_ADDR) + 992), 4))
 CVTRAC_VAL = STORAGE(CVTRAC_ADDR, 4)
 
-ringType = 0
-
 /* attempt to handle getting only 1 keyring jcl
+ringType = 0
 if WORDINDEX(CFG.zowe.setup.certificate.type, 'JCE') > 0 then do
   if LENGTH(CFG.zowe.setup.certificate.keyring.connect) > 0 then do
     say 'connect exists, it is 'CFG.zowe.setup.certificate.keyring.connect'.'
@@ -200,50 +221,33 @@ else do
 end
 */
 
+samples.acf2 = "ZWEIKRA1 ZWEIKRA2 ZWEIKRA3 ZWEIACF ZWEIACFZ ZWENOKRA"
+samples.racf = "ZWEIKRR1 ZWEIKRR2 ZWEIKRR3 ZWEIRAC ZWEIRACZ ZWENOKRR"
+samples.tss  = "ZWEIKRT1 ZWEIKRT2 ZWEIKRT3 ZWEITSS ZWEITSSZ ZWENOKRT"
+
 if COMPARE('RCVT', CVTRAC_VAL) = 0 then do
-  x = DeleteDataSet(jclCopy'(ZWEIKRA1)')
-  x = DeleteDataSet(jclCopy'(ZWEIKRA2)')
-  x = DeleteDataSet(jclCopy'(ZWEIKRA3)')
-  x = DeleteDataSet(jclCopy'(ZWEIKRT1)')
-  x = DeleteDataSet(jclCopy'(ZWEIKRT2)')
-  x = DeleteDataSet(jclCopy'(ZWEIKRT3)')
-  x = DeleteDataSet(jclCopy'(ZWEIACF)')
-  x = DeleteDataSet(jclCopy'(ZWEIACFZ)')
-  x = DeleteDataSet(jclCopy'(ZWEITSS)')
-  x = DeleteDataSet(jclCopy'(ZWEITSSZ)')
-  x = DeleteDataSet(jclCopy'(ZWENOKRA)')
-  x = DeleteDataSet(jclCopy'(ZWENOKRT)')
+  CFG.zowe.setup.security.product = 'RACF'
+  deleteList = samples.acf2||" "||samples.tss
+  do m = 1 to words(deleteList)
+    x = DeleteDataSet(jclCopy'('word(deleteList, m)')')
+  end
 end
 if COMPARE('RTSS', CVTRAC_VAL) = 0 then do
-  x = DeleteDataSet(jclCopy'(ZWEIKRA1)')
-  x = DeleteDataSet(jclCopy'(ZWEIKRA2)')
-  x = DeleteDataSet(jclCopy'(ZWEIKRA3)')
-  x = DeleteDataSet(jclCopy'(ZWEIKRR1)')
-  x = DeleteDataSet(jclCopy'(ZWEIKRR2)')
-  x = DeleteDataSet(jclCopy'(ZWEIKRR3)')
-  x = DeleteDataSet(jclCopy'(ZWEIACF)')
-  x = DeleteDataSet(jclCopy'(ZWEIACFZ)')
-  x = DeleteDataSet(jclCopy'(ZWEIRAC)')
-  x = DeleteDataSet(jclCopy'(ZWEIRACZ)')
-  x = DeleteDataSet(jclCopy'(ZWENOKRA)')
-  x = DeleteDataSet(jclCopy'(ZWENOKRR)')
+  CFG.zowe.setup.security.product = 'TSS'
+  deleteList = samples.acf2||" "||samples.racf
+  do m = 1 to words(deleteList)
+    x = DeleteDataSet(jclCopy'('word(deleteList, m)')')
+  end
 end
 if COMPARE('ACF2', CVTRAC_VAL) = 0 then do
-  x = DeleteDataSet(jclCopy'(ZWEIKRT1)')
-  x = DeleteDataSet(jclCopy'(ZWEIKRT2)')
-  x = DeleteDataSet(jclCopy'(ZWEIKRT3)')
-  x = DeleteDataSet(jclCopy'(ZWEIKRR1)')
-  x = DeleteDataSet(jclCopy'(ZWEIKRR2)')
-  x = DeleteDataSet(jclCopy'(ZWEIKRR3)')
-  x = DeleteDataSet(jclCopy'(ZWEIRAC)')
-  x = DeleteDataSet(jclCopy'(ZWEIRACZ)')
-  x = DeleteDataSet(jclCopy'(ZWEITSS)')
-  x = DeleteDataSet(jclCopy'(ZWEITSSZ)')
-  x = DeleteDataSet(jclCopy'(ZWENOKRT)')
-  x = DeleteDataSet(jclCopy'(ZWENOKRR)')
+  CFG.zowe.setup.security.product = 'ACF2'
+  deleteList = samples.racf||" "||samples.tss
+  do m = 1 to words(deleteList)
+    x = DeleteDataSet(jclCopy'('word(deleteList, m)')')
+  end
 end
 
-say jcl' has been copied to 'jclCopy'.'
+say _jcl_' has been copied to 'jclCopy'.'
 
 /*
 ================================================================================
@@ -344,6 +348,8 @@ do i = 1 to members.0
       call Print 'Edit 'd'.'
       old = '{'members.i.substitutions.j'}'
       new = value('CFG.'members.i.substitutions.j)
+      if symbol('CFG.'members.i.substitutions.j) = 'LIT' then
+        iterate j
       apostrophes1 = "'"
       apostrophes2 = "'"
       if pos("'", new) > 0 & pos('"', new) = 0 then do
@@ -383,16 +389,17 @@ say 'The edit macro was invoked on each member.'
 /*
 ================================================================================
     Add the job card to each member if filled out.
+    1) If the zowe.setup.jcl.header is one line, it was already done
+    2) Proceed only arrays, use queue to simplify indexing
 ================================================================================
 */
-
 card.0 = 0
-
-do i = 0 to 99
-  if COMPARE(SYMBOL('CFG.setup.jobCard.'i), 'VAR') = 0 then do
-    j = card.0 + 1
-    card.j = VALUE('CFG.setup.jobCard.'i)
-    card.0 = j
+idx = 0
+do forever
+  if SYMBOL('CFG.zowe.setup.jcl.header.'idx) = 'VAR' then do
+    idx = idx + 1
+    card.idx = VALUE('CFG.zowe.setup.jcl.header.'idx - 1)
+    card.0 = idx
   end
   else do
     leave
@@ -401,7 +408,6 @@ end
 
 if card.0 > 0 then do
   say 'The job card has 'card.0' lines.'
-  say 'Adding the job card to each member.'
   do i = 1 to members.0
     if AllocateDataSet(jclCopy'('members.i.name')', 'zwejcl') > 0 then do
       ExitWithRC(8)
@@ -409,26 +415,37 @@ if card.0 > 0 then do
     if ReadFromDataSet('zwejcl') > 0 then do
       ExitWithRC(8)
     end
-    !contentToWrite.0 = !contentToRead.0 + card.0 - 1
-    do j = 1 to card.0
-      !contentToWrite.j = card.j
+
+    clsQueue = ClearQueue()
+    updated = 0
+    do readLine = 1 to !contentToRead.0
+      jclHeaderPos = pos('{zowe.setup.jcl.header}', !contentToRead.readLine)
+      if jclHeaderPos > 0 then do
+        ol = overlay(card.1, !contentToRead.readLine, jclHeaderPos, 80, ' ')
+        queue strip(ol, 'T')
+        do jobCardItem = 2 to card.0
+          queue card.jobCardItem
+        end
+        updated = 1
+      end
+      else do
+        queue !contentToRead.readLine
+      end
     end
-    j = card.0 + 1
-    do k = 2 to !contentToRead.0
-      !contentToWrite.j = !contentToRead.k
-      j = j + 1
+
+    if updated then do
+      say 'Adding the job card to '_jcl_'('members.i.name')'
+      if WriteQueueToDataSet('zwejcl') > 0 then do
+        ExitWithRC(8)
+      end
     end
-    if WriteToDataSet('zwejcl') > 0 then do
-      ExitWithRC(8)
-    end
+
     if FreeByDD('zwejcl') > 0 then do
       ExitWithRC(8)
     end
+
   end
-  say 'The job card was added to each member.'
 end
-
-
 
 say 'Checking the ZWESLSTC CONFIG entry'
 
@@ -675,6 +692,38 @@ WriteToDataSet:
 
 /*
 ================================================================================
+  WriteQueueToDataSet('dd')
+================================================================================
+*/
+WriteQueueToDataSet:
+  procedure expose !verbose
+
+  if ARG() <> 1 then do
+    return 1
+  end
+
+  cmd = 'execio * diskw 'ARG(1)' (finis'
+  call Print cmd
+  address tso cmd
+
+  return rc
+
+/*
+================================================================================
+  ClearQueue()
+================================================================================
+*/
+ClearQueue: procedure
+
+  lines = queued()
+  do lines
+    pull dummy
+  end
+
+  return lines
+
+/*
+================================================================================
   ReadFromDataSet('dd')
 ================================================================================
 */
@@ -736,7 +785,7 @@ CreatePartitionedDataSet:
   cmd = 'alloc'
   cmd = cmd 'da('"'"ARG(1)"'"')'
   cmd = cmd 'dsorg(po)'
-  cmd = cmd 'space(50,5)'
+  cmd = cmd 'space(60,5)'
   cmd = cmd 'tracks'
   cmd = cmd 'lrecl('ARG(2)')'
   cmd = cmd 'recfm('ARG(3)')'
@@ -957,17 +1006,53 @@ AddToChain:
 
 /*
 ================================================================================
+  CheckInput('parmIn', 'list_of_valid_options')
+================================================================================
+*/
+CheckInput: procedure
+
+  parmIn = strip(ARG(1))
+  validOptions = ARG(2)
+  parmReturn = ''
+
+  do i = 1 to words(validOptions)
+    if word(validOptions, i) = parmIn then
+      parmReturn = parmIn
+  end
+
+  return parmReturn
+
+/*
+================================================================================
   Print('msg')
 ================================================================================
 */
 Print:
   procedure expose !verbose
 
-  if !verbose = 1 then do
+  if !verbose > 0 then do
     say ARG(1)
   end
 
   return 0
+
+/*
+================================================================================
+  FormatError(exitCode)
+================================================================================
+*/
+FormatError:
+  exitCode = ARG(1)
+
+  do line = 1 to queued()
+    parse pull errorMessage
+    if line = 1 then
+      say 'Error: '||errorMessage
+    else
+      say '       '||errorMessage
+  end
+
+  ExitWithRC(exitCode)
 
 /*
 ================================================================================
