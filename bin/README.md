@@ -54,10 +54,11 @@ Please be aware of using functions marked as `@experimental`. These functions ma
 
 `bin/utils` directory holds several utility tools used by Zowe, and you can take advantage of them too.
 
-- `bin/utils/opercmd.rex`: To issue operator command on z/OS. This script can only run on z/OS.
+- `bin/utils/opercmd.rex`: To issue operator command on z/OS. This script can only run on z/OS and requires SDSF.
 - `bin/utils/curl.js`: This node.js script works similar to popular Linux tool `curl`. It can make HTTP/HTTPS request and display response.
-- `bin/utils/getesm`: Executable to get the name of External Security Manager
+- `bin/utils/getesm`: Executable to get the name of External Security Manager.
 - `bin/utils/certificate-analyser.jar`: Java based tool to verify the certificates. See [README](https://github.com/zowe/api-layer/blob/v3.x.x/certificate-analyser/README.md) for more information.
+- `bin/utils/zowex`: Zowe Native Protocol CLI for various tasks (console, jobs, datasets, ...), use `zowex --help` for more information.
 
 Please be aware of using utilities marked as `@experimental`. These utilities may be changed or improved in the future, and they may not be stable enough for extenders to use if they target to support multiple versions of Zowe.
 
