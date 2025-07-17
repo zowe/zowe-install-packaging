@@ -57,27 +57,27 @@
       "artifact": "*.pax"
     },
     "org.zowe.apiml.apiml-package": {
-      "version": "3.2.3-PR-4051-4-SNAPSHOT",
+      "version": "3.2.23-PR-4223-SNAPSHOT",
       "artifact": "apiml-*.zip"
     },
     "org.zowe.apiml.api-catalog-package": {
-      "version": "3.2.3-PR-4051-4-SNAPSHOT",
+      "version": "3.2.23-PR-4223-SNAPSHOT",
       "artifact": "api-catalog-*.zip"
     },
     "org.zowe.apiml.discovery-package": {
-      "version": "3.2.3-PR-4051-4-SNAPSHOT",
+      "version": "3.2.23-PR-4223-SNAPSHOT",
       "artifact": "discovery-*.zip"
     },
     "org.zowe.apiml.gateway-package": {
-      "version": "3.2.3-PR-4051-4-SNAPSHOT",
+      "version": "3.2.23-PR-4223-SNAPSHOT",
       "artifact": "gateway-*.zip"
     },
     "org.zowe.apiml.caching-service-package": {
-      "version": "3.2.3-PR-4051-4-SNAPSHOT",
+      "version": "3.2.23-PR-4223-SNAPSHOT",
       "artifact": "caching-service-*.zip"
     },
     "org.zowe.apiml.apiml-common-lib-package": {
-      "version": "3.2.3-PR-4051-4-SNAPSHOT",
+      "version": "3.2.23-PR-4223-SNAPSHOT",
       "artifact": "apiml-common-lib-*.zip"
     },
     "org.zowe.apiml.sdk.common-java-lib-package": {
@@ -86,11 +86,11 @@
       "exclusions": ["*PR*.zip"]
     },
     "org.zowe.apiml.sdk.apiml-sample-extension-package": {
-      "version": "3.2.3-PR-4051-4-SNAPSHOT",
+      "version": "3.2.23-PR-4223-SNAPSHOT",
       "artifact": "apiml-sample-extension-*.zip"
     },
     "org.zowe.apiml.zaas-package": {
-      "version": "3.2.3-PR-4051-4-SNAPSHOT",
+      "version": "3.2.23-PR-4223-SNAPSHOT",
       "artifact": "zaas-package-*.zip"
     },
     "org.zowe.apiml.sdk.certificate-analyser": {
