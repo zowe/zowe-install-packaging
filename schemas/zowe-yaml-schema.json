@@ -238,17 +238,41 @@
                   "description": "STC names",
                   "properties": {
                     "zowe": {
-                      "$ref": "/schemas/v2/server-common#zoweDatasetMember",
+                      "oneOf": [
+                        {
+                          "$ref": "/schemas/v2/server-common#zoweDatasetMember"
+                        },
+                        {
+                          "type": "string",
+                          "maxLength": 0
+                        }
+                      ],
                       "description": "STC name of main service",
                       "default": "ZWESLSTC"
                     },
                     "zis": {
-                      "$ref": "/schemas/v2/server-common#zoweDatasetMember",
+                      "oneOf": [
+                        {
+                          "$ref": "/schemas/v2/server-common#zoweDatasetMember"
+                        },
+                        {
+                          "type": "string",
+                          "maxLength": 0
+                        }
+                      ],
                       "description": "STC name of ZIS",
                       "default": "ZWESISTC"
                     },
                     "aux": {
-                      "$ref": "/schemas/v2/server-common#zoweDatasetMember",
+                      "oneOf": [
+                        {
+                          "$ref": "/schemas/v2/server-common#zoweDatasetMember"
+                        },
+                        {
+                          "type": "string",
+                          "maxLength": 0
+                        }
+                      ],
                       "description": "STC name of Auxiliary Service",
                       "default": "ZWESASTC"
                     }
