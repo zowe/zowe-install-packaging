@@ -231,8 +231,6 @@ export function printAndHandleJcl(jclLocationOrContent: string, jobName: string,
         }
         common.printErrorAndExit(`Error ZWEL0162E: Failed to find job ${jobId} result.`, undefined, 162);
       }
-
-      jobHasFailures = true
       if (continueOnFailure) {
         common.printError(`Warning ZWEL0164W: Job ${jobname}(${jobId}) ends with code ${jobcccode}.`);
       } else {
