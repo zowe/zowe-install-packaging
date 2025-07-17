@@ -99,8 +99,7 @@ export function submitJob(jclFileOrContent: string, printJobDebug: boolean = tru
 }
 
 /**
- * Returns job name, completion code, and status. If we cannot retrieve the completion code, it is set to -1. 
- * Callers should check both cc and status, as cc can be -1 when the job is in OUTPUT state (job cancelled).
+ * Returns job name, completion code, and status. If we cannot retrieve the completion code, it is set to the empty string. 
  * 
  * @param jobId 
  * @returns 
@@ -112,25 +111,27 @@ function getJobStatus(jobId: string): { status: string, cc: string, name: string
   let status = 'UNKNOWN';
   let compCode = '';
   let jobName = '';
-  result.out?.split('\n').forEach((line) => {
-    if (line.includes(jobId)) {
-      /*     
-      Sample outputs (only one such line returned with `zowex job vs`)
-      JOB05625,CC 0000,IEFBR14$,OUTPUT,J0005625SVSCJES2E131FBE0.......:
-      JOB05624,CC 0000,IEFBR14$,OUTPUT,J0005624SVSCJES2E131FBDF.......:
-      TSU05611,ABEND 222,USERABC,OUTPUT,T0005611SVSCJES2E131F631.......:
-      JOB05609,CANCELED,LONGJOB,OUTPUT,J0005609SVSCJES2E131ED16.......:
-      JOB05607,CANCELED,LONGJOB,OUTPUT,J0005607SVSCJES2E131ED14.......:
-      JOB05602,CC 0000,ATLJ0000,OUTPUT,J0005602SVSCJES2E131ED0F.......:
-      JOB05586,CC 0000,ATLJ0000,OUTPUT,J0005586SVSCJES2E131ECF4.......:
-      TSU05815,,USERABC,ACTIVE,T0005815SVSCJES2E132110A.......:
-      */
-      const columns = line.split(',').reverse(); //TODO: commas should be safe, not legal jobname/correlator? how about user id?
-      status = columns[1];
-      jobName = columns[2];
-      compCode = columns[3];
-    }
-  })
+  if (result.rc == 0) { // job not found rc=255, empty job rc=1
+    result.out?.split('\n').forEach((line) => {
+      if (line.includes(jobId)) {
+        /*     
+        Sample outputs (only one such line returned with `zowex job vs`)
+        JOB05625,CC 0000,IEFBR14$,OUTPUT,J0005625SVSCJES2E131FBE0.......:
+        JOB05624,CC 0000,IEFBR14$,OUTPUT,J0005624SVSCJES2E131FBDF.......:
+        TSU05611,ABEND 222,USERABC,OUTPUT,T0005611SVSCJES2E131F631.......:
+        JOB05609,CANCELED,LONGJOB,OUTPUT,J0005609SVSCJES2E131ED16.......:
+        JOB05607,CANCELED,LONGJOB,OUTPUT,J0005607SVSCJES2E131ED14.......:
+        JOB05602,CC 0000,ATLJ0000,OUTPUT,J0005602SVSCJES2E131ED0F.......:
+        JOB05586,CC 0000,ATLJ0000,OUTPUT,J0005586SVSCJES2E131ECF4.......:
+        TSU05815,,USERABC,ACTIVE,T0005815SVSCJES2E132110A.......:
+        */
+        const columns = line.split(',').reverse(); //TODO: commas should be safe, not legal jobname/correlator? how about user id?
+        status = columns[1];
+        jobName = columns[2];
+        compCode = columns[3];
+      }
+    })
+  }
   return { status: status, cc: compCode, name: jobName };
 
 }
