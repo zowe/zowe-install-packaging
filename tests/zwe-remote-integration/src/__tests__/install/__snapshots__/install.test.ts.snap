@@ -1789,8 +1789,12 @@ Validity Exceptions(s) with object at
   Validity Exceptions(s) with object at /zowe
     Validity Exceptions(s) with object at /zowe/setup
       Validity Exceptions(s) with object at /zowe/setup/dataset
-        Validity Exceptions(s) with string at /zowe/setup/dataset/prefix
-          string pattern match fail s='INVALID.DSN.LENGTH123123', pat='^([A-Z\\$\\#\\@]){1}([A-Z0-9\\$\\#\\@\\-]){0,7}(\\.([A-Z\\$\\#\\@]){1}([A-Z0-9\\$\\#\\@\\-]){0,7}){0,11}$', at /zowe/setup/dataset/prefix"
+        Schema at '/zowe/setup/dataset/prefix' invalid
+          not oneOf schemas at '/zowe/setup/dataset/prefix' are valid, 0 are
+            Validity Exceptions(s) with string at /zowe/setup/dataset/prefix
+              string pattern match fail s='INVALID.DSN.LENGTH123123', pat='^([A-Z\\$\\#\\@]){1}([A-Z0-9\\$\\#\\@\\-]){0,7}(\\.([A-Z\\$\\#\\@]){1}([A-Z0-9\\$\\#\\@\\-]){0,7}){0,11}$', at /zowe/setup/dataset/prefix
+            Validity Exceptions(s) with string at /zowe/setup/dataset/prefix
+              string too long (len=24) 'INVALID.DSN.LENGTH123123' 24 > MAX=0 at /zowe/setup/dataset/prefix"
 `;
 
 exports[`zwe-install (SHORT) zwe install invalid dataset name 2`] = `

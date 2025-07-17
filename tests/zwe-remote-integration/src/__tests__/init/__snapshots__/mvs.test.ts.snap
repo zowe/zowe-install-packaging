@@ -1,14 +1,15 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`init-mvs (SHORT) authLoadLib negatives 1`] = `
-"Error: Validation of FILE(/test/dir/zowe.test.yaml):FILE(/test/dir/files/defaults.yaml) against schema /test/dir/schemas/zowe-yaml-schema.json:/test/dir/schemas/server-common.json found invalid JSON Schema data
-Validity Exceptions(s) with object at
-  Validity Exceptions(s) with object at /zowe
-    Validity Exceptions(s) with object at /zowe/setup
-      Validity Exceptions(s) with object at /zowe/setup/dataset
-        Validity Exceptions(s) with string at /zowe/setup/dataset/authLoadlib
-          string too short (len=0) '' 0 < MIN=3 at /zowe/setup/dataset/authLoadlib
-          string pattern match fail s='', pat='^([A-Z\\$\\#\\@]){1}([A-Z0-9\\$\\#\\@\\-]){0,7}(\\.([A-Z\\$\\#\\@]){1}([A-Z0-9\\$\\#\\@\\-]){0,7}){0,11}$', at /zowe/setup/dataset/authLoadlib"
+"Temporary directory '/tmp/.zweenv-0000' created.
+Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
+-------------------------------------------------------------------------------
+>> Initialize Zowe custom data sets
+Create data sets if they do not exist
+Warning ZWEL0301W: TEST.DATASET.PFX.PARMLIB already exists and will not be overwritten. For upgrades, you must use --allow-overwrite.
+Warning ZWEL0301W: TEST.DATASET.PFX.ZWESAPL already exists and will not be overwritten. For upgrades, you must use --allow-overwrite.
+Skipped writing to a dataset. To write, you must use --allow-overwrite.
+>> Zowe custom data sets are initialized successfully."
 `;
 
 exports[`init-mvs (SHORT) authLoadLib negatives 2`] = `
@@ -701,14 +702,15 @@ To perform command, re-run command without "--dry-run" flag, or submit the JCL d
 `;
 
 exports[`init-mvs (SHORT) authPluginLib negatives  1`] = `
-"Error: Validation of FILE(/test/dir/zowe.test.yaml):FILE(/test/dir/files/defaults.yaml) against schema /test/dir/schemas/zowe-yaml-schema.json:/test/dir/schemas/server-common.json found invalid JSON Schema data
-Validity Exceptions(s) with object at
-  Validity Exceptions(s) with object at /zowe
-    Validity Exceptions(s) with object at /zowe/setup
-      Validity Exceptions(s) with object at /zowe/setup/dataset
-        Validity Exceptions(s) with string at /zowe/setup/dataset/authPluginLib
-          string too short (len=0) '' 0 < MIN=3 at /zowe/setup/dataset/authPluginLib
-          string pattern match fail s='', pat='^([A-Z\\$\\#\\@]){1}([A-Z0-9\\$\\#\\@\\-]){0,7}(\\.([A-Z\\$\\#\\@]){1}([A-Z0-9\\$\\#\\@\\-]){0,7}){0,11}$', at /zowe/setup/dataset/authPluginLib"
+"Temporary directory '/tmp/.zweenv-0000' created.
+Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
+-------------------------------------------------------------------------------
+>> Initialize Zowe custom data sets
+Create data sets if they do not exist
+Warning ZWEL0301W: TEST.DATASET.PFX.PARMLIB already exists and will not be overwritten. For upgrades, you must use --allow-overwrite.
+Warning ZWEL0301W: TEST.DATASET.PFX.SZWELOAD already exists and will not be overwritten. For upgrades, you must use --allow-overwrite.
+Skipped writing to a dataset. To write, you must use --allow-overwrite.
+>> Zowe custom data sets are initialized successfully."
 `;
 
 exports[`init-mvs (SHORT) authPluginLib negatives  2`] = `
@@ -1188,14 +1190,11 @@ To perform command, re-run command without "--dry-run" flag, or submit the JCL d
 `;
 
 exports[`init-mvs (SHORT) bad ds prefix post-generate 1`] = `
-"Error: Validation of FILE(/test/dir/zowe.test.yaml):FILE(/test/dir/files/defaults.yaml) against schema /test/dir/schemas/zowe-yaml-schema.json:/test/dir/schemas/server-common.json found invalid JSON Schema data
-Validity Exceptions(s) with object at
-  Validity Exceptions(s) with object at /zowe
-    Validity Exceptions(s) with object at /zowe/setup
-      Validity Exceptions(s) with object at /zowe/setup/dataset
-        Validity Exceptions(s) with string at /zowe/setup/dataset/prefix
-          string too short (len=0) '' 0 < MIN=3 at /zowe/setup/dataset/prefix
-          string pattern match fail s='', pat='^([A-Z\\$\\#\\@]){1}([A-Z0-9\\$\\#\\@\\-]){0,7}(\\.([A-Z\\$\\#\\@]){1}([A-Z0-9\\$\\#\\@\\-]){0,7}){0,11}$', at /zowe/setup/dataset/prefix"
+"Temporary directory '/tmp/.zweenv-0000' created.
+Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
+-------------------------------------------------------------------------------
+>> Initialize Zowe custom data sets
+ERROR: Error ZWEL0157E: Zowe dataset prefix (zowe.setup.dataset.prefix) is not defined in Zowe YAML configuration file."
 `;
 
 exports[`init-mvs (SHORT) bad ds prefix post-generate 2`] = `
@@ -1210,14 +1209,11 @@ Validity Exceptions(s) with object at
 `;
 
 exports[`init-mvs (SHORT) jcllib fails verification 1`] = `
-"Error: Validation of FILE(/test/dir/zowe.test.yaml):FILE(/test/dir/files/defaults.yaml) against schema /test/dir/schemas/zowe-yaml-schema.json:/test/dir/schemas/server-common.json found invalid JSON Schema data
-Validity Exceptions(s) with object at
-  Validity Exceptions(s) with object at /zowe
-    Validity Exceptions(s) with object at /zowe/setup
-      Validity Exceptions(s) with object at /zowe/setup/dataset
-        Validity Exceptions(s) with string at /zowe/setup/dataset/jcllib
-          string too short (len=0) '' 0 < MIN=3 at /zowe/setup/dataset/jcllib
-          string pattern match fail s='', pat='^([A-Z\\$\\#\\@]){1}([A-Z0-9\\$\\#\\@\\-]){0,7}(\\.([A-Z\\$\\#\\@]){1}([A-Z0-9\\$\\#\\@\\-]){0,7}){0,11}$', at /zowe/setup/dataset/jcllib"
+"Temporary directory '/tmp/.zweenv-0000' created.
+Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
+-------------------------------------------------------------------------------
+>> Initialize Zowe custom data sets
+ERROR: Error ZWEL0319E: zowe.setup.dataset.jcllib does not exist, cannot run. Run 'zwe init', 'zwe init generate', or submit JCL TEST.DATASET.PFX.SZWESAMP(ZWEGENER) before running this command."
 `;
 
 exports[`init-mvs (SHORT) jcllib fails verification 2`] = `
@@ -1232,14 +1228,11 @@ Validity Exceptions(s) with object at
 `;
 
 exports[`init-mvs (SHORT) parmlib negatives  1`] = `
-"Error: Validation of FILE(/test/dir/zowe.test.yaml):FILE(/test/dir/files/defaults.yaml) against schema /test/dir/schemas/zowe-yaml-schema.json:/test/dir/schemas/server-common.json found invalid JSON Schema data
-Validity Exceptions(s) with object at
-  Validity Exceptions(s) with object at /zowe
-    Validity Exceptions(s) with object at /zowe/setup
-      Validity Exceptions(s) with object at /zowe/setup/dataset
-        Validity Exceptions(s) with string at /zowe/setup/dataset/parmlib
-          string too short (len=0) '' 0 < MIN=3 at /zowe/setup/dataset/parmlib
-          string pattern match fail s='', pat='^([A-Z\\$\\#\\@]){1}([A-Z0-9\\$\\#\\@\\-]){0,7}(\\.([A-Z\\$\\#\\@]){1}([A-Z0-9\\$\\#\\@\\-]){0,7}){0,11}$', at /zowe/setup/dataset/parmlib"
+"Temporary directory '/tmp/.zweenv-0000' created.
+Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
+-------------------------------------------------------------------------------
+>> Initialize Zowe custom data sets
+ERROR: Error ZWEL0157E: zowe.setup.dataset.parmlib is not defined in Zowe YAML configuration file."
 `;
 
 exports[`init-mvs (SHORT) parmlib negatives  2`] = `
