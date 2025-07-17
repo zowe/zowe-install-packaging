@@ -70,9 +70,6 @@ function enableApiml() {
 
 export function getZoweConfig(): any {
   common.requireZoweYaml();
-  if (!isApimlEnabled()) {
-    enableApiml();
-  }
 
   return configmgr.getZoweConfig();
 }

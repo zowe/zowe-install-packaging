@@ -367,11 +367,6 @@
     },
     "api-catalog": {
       "registry": "zowe-docker-snapshot.jfrog.io",
-      "name": "ompzowe/apiml",
-      "tag" : "3.0.21-SNAPSHOT-ubuntu.v2-x-x"
-    },
-    "api-catalog": {
-      "registry": "zowe-docker-snapshot.jfrog.io",
       "name": "ompzowe/api-catalog-services",
       "tag" : "3.0.21-SNAPSHOT-ubuntu.v2-x-x"
     },

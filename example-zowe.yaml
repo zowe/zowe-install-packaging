@@ -493,7 +493,7 @@ components:
 
   # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   apiml:
-    enabled: true # Use true to use new version with less JVM processes
+    enabled: false # Use true to use new version with less JVM processes
 
   # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   zaas:
