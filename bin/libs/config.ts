@@ -42,6 +42,9 @@ function isApimlEnabled(): boolean {
   return componentEnabled 
   && config.components['gateway'].enabled == false
   && config.components['discovery'].enabled == false
+  && config.components['caching-service'].enabled == false
+  && config.components['api-catalog'].enabled == false
+  && config.components['zaas'].enabled == false
   && config.components['apiml'].port == config.components['gateway'].port
 }
 
@@ -53,6 +56,15 @@ function enableApiml() {
         enabled: false
       },
       discovery: {
+        enabled: false
+      },
+      "caching-service": {
+        enabled: false
+      },
+      zaas: {
+        enabled: false
+      },
+      "api-catalog": {
         enabled: false
       },
       apiml: {
