@@ -5,6 +5,7 @@ All notable changes to the Zowe Installer will be documented in this file.
 ## `3.3.0`
 - Bugfix: YAML lookup for HA instances within "haInstances" was not working when HA instance names were uppercase. Now, the lookup is case insensitive to allow for any casing of HA instance names. [#4370](https://github.com/zowe/zowe-install-packaging/pull/4370)
 - Bugfix: stop processing `ZWEGENER` if `zowe.setup.dataset.prefix` or `zowe.setup.dataset.jcllib` is undefined or identical [#4337](https://github.com/zowe/zowe-install-packaging/pull/4337)
+- Bugfix: The Zowe PSWI installation now creates `zowe.yaml` in the `workspaceDirectory` rather than `runtimeDirectory`.
 - Enhancement: Add a utility "certificate-analyser.jar" to the folder zowe/bin/utils. This tool can be used to verify correct certificates for use by zowe, as well as correct connectivity to servers Zowe communicates with such as z/OSMF. It will be used by Zowe under specific circumstances to verify that network setup is correct. [#4354](https://github.com/zowe/zowe-install-packaging/pull/4354)
 - Enhancement: Support different parmlib members when using JCL `ZWEGENER` [#4332](https://github.com/zowe/zowe-install-packaging/pull/4332)
 - Enhancement: Updated the `zowe-yaml-schema.json` and `defaults.yaml` to support new configuration parameter `zowe.sysMessageTrim` and set default value. This parameter will be used to trim syslog messages and print only from the sys-message-id. [#4294](https://github.com/zowe/zowe-install-packaging/pull/4294)
