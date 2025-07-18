@@ -11,10 +11,9 @@
     "timestamp": "{BUILD_TIMESTAMP}"
   },
   "binaryDependencies": {
-    "org.zowe.zowe-native-proto-tmp.server": {
-      "repository": "libs-snapshot-local",
-      "version": "0.0.1",
-      "artifact": "*.pax.Z"
+    "org.zowe.zowe-native-proto": {
+      "version": "0.1.3",
+      "artifact": "zowe-server-*.pax.Z"
     },
     "org.zowe.zlux.zlux-core": {
       "version": "^3.0.0-V3.X-STAGING-ZLUX-CORE",
