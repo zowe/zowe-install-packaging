@@ -471,58 +471,59 @@ do j = 1 to !contentToRead.0
         element.0 = 1
         element.1 = type'('location')'
         eleLength = length(element.1)
-        maxLineLength = 55
-        if eleLength >= maxLineLength then do
-          /* divide element.1 into chunks of maxLineLength with continutation characters */
-          chunks = eleLength % maxLineLength
-          if eleLength // maxLineLength > 0 then do
+        maxLineLen = 55
+        if eleLength >= maxLineLen then do
+          /* divide element.1 into chunks of maxLineLen
+               without        continutation characters */
+          chunks = eleLength % maxLineLen
+          if eleLength // maxLineLen > 0 then do
             chunks = chunks + 1 
           end
-          originalElement = element.1
+          original = element.1
           do i = 1 to chunks
-            element.i = SUBSTR(originalElement, (i-1)*maxLineLength + 1, maxLineLength)
-            /* include continutation character in string */
-            if (i < chunks) then do
-              element.i = element.i'\' 
-            end
+            element.i = SUBSTR(original, (i-1)*maxLineLen + 1, maxLineLen)
           end
           element.0 = chunks
         end
         if j = 1 then do
-          cmd = 'LINE 'currentline' = "CONFIG='element.1
-          if !contentToRead.0 > 1 then do
-            cmd = cmd':\"'
-          end
-          else do
-            cmd = cmd'"'
-          end
-          call Print '  'cmd
-          queue cmd
-          do i = 2 to element.0
-            currentline = currentline + 1
-            cmd = 'LINE 'currentline' = "'element.i'"'
+          shouldAddColon = !contentToRead.0 > 1 
+          do i = 1 to element.0
+            cmd= 'LINE 'currentline' = "'
+            if i == 1 then do
+              cmd= cmd'CONFIG='
+            end
+            cmd = cmd''element.1
+            if i < element.0 then do
+              cmd = cmd'\"'
+            end
+            else do
+              if shouldAddColon then do
+                cmd = cmd':\'
+              end
+              cmd = '"'
+            end
             call Print '  'cmd
             queue cmd
+            currentline = currentline + 1
           end
+          currentline = currentline + 1
         end
         else do
-          if j > 2 then do
-            currentline = currentline + 1
-          end
-          cmd = 'LINE_AFTER 'currentline' = "'element.1
-          if !contentToRead.0 > j then do
-            cmd = cmd':\"'
-          end
-          else do
-            cmd = cmd'"'
-          end
-          call Print '  'cmd
-          queue cmd
-          do i = 2 to element.0
-            currentline = currentline + 1
-            cmd = 'LINE 'currentline' = "'element.i'"'
+          shouldAddColon = !contentToRead.0 > j /* more FILE or PARMLIBs */
+          do i = 1 to element.0
+            cmd= 'LINE 'currentline' = "'element.1
+            if i < element.0 then do
+              cmd = cmd'\"'
+            end
+            else do
+              if shouldAddColon then do
+                cmd = cmd':\'
+              end
+              cmd = '"'
+            end
             call Print '  'cmd
             queue cmd
+            currentline = currentline + 1
           end
         end
       end
