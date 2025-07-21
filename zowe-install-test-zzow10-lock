@@ -1,15 +1,1 @@
-{
-  "lockAcquiredTime": "Mon Jul 21 2025 14:32:33 GMT+0000 (Coordinated Universal Time)",
-  "uid": "1753108353595775751",
-  "repository": {
-    "owner": "zowe",
-    "repo": "zowe-install-packaging"
-  },
-  "branch": "hrishikesh-nalawade/GH3921/timezone-config-snapshot-v2",
-  "workflow": "Zowe CICD Integration Tests",
-  "job": "cicd-test",
-  "actor": "zowe-robot",
-  "runId": 16419842867,
-  "runNumber": 6966,
-  "link": "https://github.com/zowe/zowe-install-packaging/actions/runs/16419842867"
-}
+""
