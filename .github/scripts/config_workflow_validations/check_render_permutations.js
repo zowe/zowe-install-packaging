@@ -115,6 +115,7 @@ for (let line of wf_conf_properties.split('\n')) {
   }
 }
 WF_PROPERTIES_COMMON_BASE['zowe_runtimeDirectory'] = path.resolve(LOCAL_TEMP_DIR, 'test_yaml');
+WF_PROPERTIES_COMMON_BASE['zowe_workspaceDirectory'] = path.resolve(LOCAL_TEMP_DIR, 'test_yaml');
 Object.freeze(WF_PROPERTIES_COMMON_BASE); // Protect Base config
 fs.writeFileSync(path.resolve(LOCAL_TEMP_DIR, 'zowe.base.properties.yaml'), YAML.dump(WF_PROPERTIES_COMMON_BASE), { mode: 0o766 });
 
@@ -228,10 +229,12 @@ for (const [testIdx, test] of testMatrix.entries()) {
   for (const wf of workflowsToTest) {
     const result = runSchemaValidation(testConfig, testDir, wf);
     if (result.errors != null) {
-      const testCase = test.map((t, i) => `\t${configBranches[i]} = ${t}`).join('\n');
+      const testCase = test.map((t, i) => `\t${t}`).join('\n');
       errors.push(`There were errors during schema validation: ${JSON.stringify(result.errors, { indent: 2 })}.\n\n Supplied config:\n ${testCase}\n`);
       fs.copySync(path.resolve(testDir, 'zowe.test.properties.yaml'), path.resolve(ERROR_CASES_DIR, `zowe.yaml.properties.${testIdx}`))
-      fs.copySync(path.resolve(testDir, 'zowe.yaml'), path.resolve(ERROR_CASES_DIR, `zowe.yaml.${testIdx}`))
+      fs.readdirSync(testDir).filter((file) => /zowe\.([^..]*?)\.yaml/mi.test(file)).forEach((zoweYamlTest) => {
+        fs.copySync(path.resolve(testDir, zoweYamlTest), path.resolve(ERROR_CASES_DIR, `${zoweYamlTest}.${testIdx}`))
+      })
     }
     testCt++;
   }
@@ -306,6 +309,7 @@ function renderTemplate(testConfig, testDir, workflow) {
   fs.mkdirpSync(testDir);
   const yamlPropertiesFile = path.resolve(testDir, 'zowe.test.properties.yaml');
   testConfig['zowe_runtimeDirectory'] = testDir;
+  testConfig['zowe_workspaceDirectory'] = testDir;
   fs.writeFileSync(yamlPropertiesFile, YAML.dump(testConfig), { mode: 0o766 });
   const zoweYmlScriptOut = path.resolve(testDir, `zowe.yaml.final.${workflow.name}.sh`);
   const renderContent = velocity.render(fs.readFileSync(workflow.templatePath, 'utf8'), testConfig, null, {
