@@ -468,9 +468,28 @@ do j = 1 to !contentToRead.0
       do j = 1 to !contentToRead.0
         type = WORD(!contentToRead.j, 1)
         location = WORD(!contentToRead.j, 2)
-        element = type'('location')'
+        element.0 = 1
+        element.1 = type'('location')'
+        eleLength = length(element.1)
+        maxLineLength = 61
+        if eleLength >= maxLineLength then do
+          /* divide element.1 into chunks of maxLineLength with continutation characters */
+          chunks = eleLength % maxLineLength
+          if eleLength // maxLineLength > 0 then do
+            chunks = chunks + 1 
+          end
+          originalElement = element.1
+          do i = 1 to chunks
+            element.i = SUBSTR(originalElement, (i-1)*maxLineLength + 1, maxLineLength)
+            /* include continutation character in string */
+            if (i < chunks) then do
+              element.i = element.i'\' 
+            end
+          end
+          element.0 = chunks
+        end
         if j = 1 then do
-          cmd = 'LINE 'currentline' = "CONFIG='element
+          cmd = 'LINE 'currentline' = "CONFIG='element.1
           if !contentToRead.0 > 1 then do
             cmd = cmd':\"'
           end
@@ -479,12 +498,18 @@ do j = 1 to !contentToRead.0
           end
           call Print '  'cmd
           queue cmd
+          do i = 2 to element.0
+            currentline = currentline + 1
+            cmd = 'LINE 'currentline' = "'element.i'"'
+            call Print '  'cmd
+            queue cmd
+          end
         end
         else do
           if j > 2 then do
             currentline = currentline + 1
           end
-          cmd = 'LINE_AFTER 'currentline' = "'element
+          cmd = 'LINE_AFTER 'currentline' = "'element.1
           if !contentToRead.0 > j then do
             cmd = cmd':\"'
           end
@@ -493,6 +518,12 @@ do j = 1 to !contentToRead.0
           end
           call Print '  'cmd
           queue cmd
+          do i = 2 to element.0
+            currentline = currentline + 1
+            cmd = 'LINE 'currentline' = "'element.i'"'
+            call Print '  'cmd
+            queue cmd
+          end
         end
       end
       cmd = 'edit dataset('"'"jclCopy'(ZWESLSTC)'"'"') macro(zweins)'
