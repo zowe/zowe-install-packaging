@@ -471,7 +471,7 @@ do j = 1 to !contentToRead.0
         element.0 = 1
         element.1 = type'('location')'
         eleLength = length(element.1)
-        maxLineLength = 61
+        maxLineLength = 55
         if eleLength >= maxLineLength then do
           /* divide element.1 into chunks of maxLineLength with continutation characters */
           chunks = eleLength % maxLineLength
