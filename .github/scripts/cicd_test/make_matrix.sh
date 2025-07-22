@@ -62,6 +62,10 @@ case $install_test_choice in
   test_file="$INSTALL_PTF_TWICE_TESTFILE"
   ;;
 
+"Upgrade Zowe (3.0 to latest)")
+  test_file="$UPGRADE_ZOWE_TESTFILE"
+  ;;
+
 "VSAM Caching Storage Method")
   test_file="$VSAM_CACHING_STORAGE_METHOD_TESTFILE"
   ;;

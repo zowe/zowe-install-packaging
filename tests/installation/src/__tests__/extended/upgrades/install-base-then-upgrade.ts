@@ -12,20 +12,15 @@ import {
   checkMandatoryEnvironmentVariables,
   installAndVerifySmpePtf,
   showZoweRuntimeLogs,
-} from '../../../../utils';
-import {TEST_TIMEOUT_SMPE_PTF} from '../../../../constants';
+} from '../../../utils';
+import { TEST_TIMEOUT_SMPE_FMID, TEST_TIMEOUT_SMPE_PTF } from '../../../constants';
 
-/**
- * Define this test should run in a specific worker
- *
- * @worker marist-11
- */
-const testServer = 'marist-11';
-const testSuiteName = 'Test SMPE PTF installation with RACF';
+const testSuiteName = 'Test 3.0 base install then upgrade (basic config)';
 describe(testSuiteName, () => {
   beforeAll(() => {
     // validate variables
     checkMandatoryEnvironmentVariables([
+      'TEST_SERVER',
       'ZOWE_BUILD_LOCAL',
     ]);
   });
@@ -33,17 +28,22 @@ describe(testSuiteName, () => {
   test('install and verify', async () => {
     await installAndVerifySmpePtf(
       testSuiteName,
-      testServer,
-      {},
+      process.env.TEST_SERVER,
+      {
+        'zowe_custom_for_test': 'true'
+      },
       {
         'zowe_build_local': process.env['ZOWE_BUILD_LOCAL'],
-        'zowe_custom_for_test': 'true',
+        'zowe_custom_for_test': false,
+        'zowe_ptf_configure': false,
         'zowe_lock_keystore': 'false',
       }
     );
-  }, TEST_TIMEOUT_SMPE_PTF);
+  }, TEST_TIMEOUT_SMPE_FMID + TEST_TIMEOUT_SMPE_PTF); // long timeout since we start + test both
+    
 
   afterAll(async () => {
-    await showZoweRuntimeLogs(testServer);
-  })
+    await showZoweRuntimeLogs(process.env.TEST_SERVER);
+  });
+
 });

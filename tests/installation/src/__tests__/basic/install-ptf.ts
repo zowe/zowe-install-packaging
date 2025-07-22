@@ -29,6 +29,7 @@ describe(testSuiteName, () => {
     await installAndVerifySmpePtf(
       testSuiteName,
       process.env.TEST_SERVER,
+      {},
       {
         'zowe_build_local': process.env['ZOWE_BUILD_LOCAL'],
         'zowe_custom_for_test': 'true',
