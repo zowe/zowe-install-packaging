@@ -145,9 +145,9 @@ export function execute(allowOverwrite: boolean = false) {
       }
     });
 
-    zosJes.printAndHandleJcl(`//'${jcllib}(ZWEISTC)'`, `ZWEISTC`, jcllib, prefix, false, true);
+    zosJes.printAndHandleJcl(`//'${jcllib}(ZWEISTC)'`, `ZWEISTC`, jcllib, prefix, false, false);
 
     common.printLevel2Message(`Zowe main started tasks are installed successfully.`);
-}
+  }
 
 }
