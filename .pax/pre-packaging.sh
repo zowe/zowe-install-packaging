@@ -191,7 +191,7 @@ BASE_DIR=$(
 ) # <something>/.pax
 
 # use node v18 to build
-export NODE_HOME=/ZOWE/node/node-v18.16.0
+export NODE_HOME=/ZOWE/node/node-v18.20.8
 export JAVA_HOME=/ZOWE/node/J17.0_64
 export PATH=$JAVA_HOME/bin:$PATH
 ZOWE_ROOT_DIR="${BASE_DIR}/content"
