@@ -257,6 +257,21 @@ pax -ppx -rf "${getesm}"
 rm "${getesm}"
 cd "${BASE_DIR}"
 
+bind_test=$(find "${ZOWE_ROOT_DIR}/files" -type f \( -name "bind-test*.pax" \) | head -n 1)
+echo "[$SCRIPT_NAME] extract bind-test $bind_test"
+cd "${ZOWE_ROOT_DIR}/bin/utils"
+pax -ppx -rf "${bind_test}"
+rm "${bind_test}"
+cd "${BASE_DIR}"
+
+zis_test=$(find "${ZOWE_ROOT_DIR}/files" -type f \( -name "zis-test*.pax" \) | head -n 1)
+echo "[$SCRIPT_NAME] extract zis-test $zis_test"
+cd "${ZOWE_ROOT_DIR}/bin/utils"
+pax -ppx -rf "${zis_test}"
+rm "${zis_test}"
+cd "${BASE_DIR}"
+
+
 configmgr=$(find "${ZOWE_ROOT_DIR}/files" -type f \( -name "configmgr-3*.pax" \) | head -n 1)
 echo "[$SCRIPT_NAME] extract configmgr $configmgr"
 cd "${ZOWE_ROOT_DIR}/bin/utils"
