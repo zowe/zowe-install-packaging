@@ -59,6 +59,9 @@ Please be aware of using functions marked as `@experimental`. These functions ma
 - `bin/utils/getesm`: Executable to get the name of External Security Manager.
 - `bin/utils/certificate-analyser.jar`: Java based tool to verify the certificates. See [README](https://github.com/zowe/api-layer/blob/v3.x.x/certificate-analyser/README.md) for more information.
 - `@experimental`: `bin/utils/zowex`: Zowe Native Protocol CLI for various tasks (console, jobs, datasets, ...), use `zowex --help` for more information.
+- `bin/utils/configmr`: A tool to read YAML configuration files present in files or parmlib datasets, validate them against a json-schema, evaluate any `${{ }}` templates within, and return a verified, unified configuration. See [Using the configmgr](https://docs.zowe.org/stable/user-guide/configmgr-using/) for more information.
+- `bin/utils/bind-test`: Can be used to check if a user can bind to a socket. Useful for verifying network configuration and troubleshooting. Usage: `_BPX_JOBNAME=<jobname> bind-test --host <hostname> --port <port>`
+- `bin/utils/zis-test`: Can be used to check if a ZIS is running. Useful for verifying ZIS is running before running code that depends upon it. Usage: `zis-test --zis <crossMemoryServerName>`
 
 Please be aware of using utilities marked as `@experimental`. These utilities may be changed or improved in the future, and they may not be stable enough for extenders to use if they target to support multiple versions of Zowe.
 

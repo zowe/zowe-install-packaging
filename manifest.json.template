@@ -109,6 +109,14 @@
       "version": "^3.0.0-V3.X-STAGING",
       "artifact": "*.pax"
     },
+    "org.zowe.bind-test": {
+      "version": "^3.0.0-V3.X-STAGING",
+      "artifact": "*.pax"
+    },
+    "org.zowe.zis-test": {
+      "version": "^3.0.0-V3.X-STAGING",
+      "artifact": "*.pax"
+    },
     "org.zowe.configmgr": {
       "version": "^3.0.0-V3.X-STAGING",
       "artifact": "*.pax"
