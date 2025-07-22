@@ -228,6 +228,19 @@ chmod +x "${ZOWE_ROOT_DIR}"/bin/zwe
 chmod +x "${ZOWE_ROOT_DIR}"/bin/utils/*.sh
 chmod +x "${ZOWE_ROOT_DIR}"/bin/utils/*.rex
 
+echo "[$SCRIPT_NAME] extract zowex ..."
+zowex_components=$(find "${ZOWE_ROOT_DIR}/files" -type f \( -name "zowe-server-*.pax.Z" \) | head -n 1)
+mkdir -p "${ZOWE_ROOT_DIR}/bin/utils/zowe-server"
+cd "${ZOWE_ROOT_DIR}/bin/utils/zowe-server"
+pax -ppx -rf "${zowex_components}"
+
+echo "[$SCRIPT_NAME] place zowex in bin/utils and change zowex to be executable ..."
+# If we want zowed and zoweax, copy them now
+cp "${ZOWE_ROOT_DIR}/bin/utils/zowe-server/zowex" "${ZOWE_ROOT_DIR}/bin/utils/zowex"
+chmod +x "${ZOWE_ROOT_DIR}/bin/utils/zowex"
+cd "${ZOWE_ROOT_DIR}/bin/utils"
+rm -rf "${ZOWE_ROOT_DIR}/bin/utils/zowe-server"
+
 echo "[$SCRIPT_NAME] change keyring-util to be executable ..."
 chmod +x "${ZOWE_ROOT_DIR}"/bin/utils/keyring-util/keyring-util
 
