@@ -61,6 +61,14 @@ describe(`${testSuiteName}`, () => {
       await TestFileActions.deleteAll([jcllib]);
     });
 
+    it(`run with proclib that doesn't exist`, async () => {
+      cfgYaml.zowe.setup.dataset.proclib = 'DOES.NOT.EXIST';
+      const result = await testRunner.runZweTest(cfgYaml, 'init stc --allow-overwrite');
+      expect(result.stdout).not.toBeNull();
+      expect(result.cleanedStdout).toMatchSnapshot();
+      expect(result.rc).toBe(162);
+    });
+
     // implicit 'init generate'
     it('run setup with defaults', async () => {
       const proc: string = cfgYaml.zowe.setup.dataset.proclib as string;
