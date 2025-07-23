@@ -440,6 +440,169 @@ Warning ZWEL0301W: TEST.DATASET.PFX.TEST.PROCLIB(ZWESASTC) already exists and wi
 Skipped writing to TEST.DATASET.PFX.TEST.PROCLIB. To write, you must use --allow-overwrite."
 `;
 
+exports[`init-stc (LONG) run with proclib that doesn't exist 1`] = `
+"Temporary directory '/tmp/.zweenv-0000' created.
+Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
+-------------------------------------------------------------------------------
+>> Install Zowe main started task
+Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWEGENER)
+--- JCL content ---
+//ZWEGENER JOB
+//*
+//* This program and the accompanying materials are made available
+//* under the terms of the Eclipse Public License v2.0 which
+//* accompanies this distribution, and is available at
+//* https://www.eclipse.org/legal/epl-v20.html
+//*
+//* SPDX-License-Identifier: EPL-2.0
+//*
+//* Copyright Contributors to the Zowe Project. 2020, 2020
+//*
+//*********************************************************************
+//*
+//* This job is responsible for generating other jobs required
+//* to configure Zowe.
+//*
+//* The method of validating your configuration is using
+//* JSON Schema <https://json-schema.org>. Zowe provides
+//* the ConfigMgr to assist in this. This job will invoke
+//* the ConfigMgr to validate your current configuration
+//* before generating any jobs. If there are any values
+//* that are incorrect, you will be notified. You should
+//* fix the value and then run this job again. You can run
+//* this job as many times as you need.
+//*
+//* Configmgr documentation:
+//* https://docs.zowe.org/stable/user-guide/configmgr-using
+//*
+//* Note: Any string with braces has an associated yaml value
+//*       in one of the yaml definitions for Zowe.
+//*       You must find the value and substitute it.
+//*
+//*       {key} -> value
+//*
+//GENER    EXEC PGM=IKJEFT1B
+//ISPPROF  DD   DSN=,DISP=(NEW,DELETE),UNIT=VIO,
+//   DCB=(RECFM=FB,LRECL=80,BLKSIZE=3120,DSORG=PO),
+//   SPACE=(3120,(20,5,10))
+//*
+//* Replace TEST.DATASET.PFX with the
+//* Value as seen in zowe.yaml
+//*
+//SYSPROC  DD DSN=TEST.DATASET.PFX.SZWEEXEC,DISP=SHR
+//*
+//* Replace TEST.DATASET.PFX with the
+//* Value as seen in zowe.yaml
+//*
+//STEPLIB  DD DSN=TEST.DATASET.PFX.SZWELOAD,DISP=SHR
+//ISPPLIB  DD DSN=ISP.SISPPENU,DISP=SHR
+//ISPMLIB  DD DSN=ISP.SISPMENU,DISP=SHR
+//ISPTLIB  DD DSN=ISP.SISPTENU,DISP=SHR
+//ISPSLIB  DD DSN=ISP.SISPSENU,DISP=SHR
+//ISPLOG   DD UNIT=SYSDA,SPACE=(CYL,(10,1,1),RLSE),
+//   DCB=(RECFM=VA,LRECL=125,BLKSIZE=129)
+//*
+//* The order must be as follows.
+//*
+//* zowe-yaml-schema.json
+//* server-common.json
+//*
+//* Replace /test/dir with where your Zowe run time
+//* directory is, as seen in zowe.yaml
+//*
+//MYSCHEMA DD   *,DLM=$$
+FILE /test/dir/schemas/zowe-yaml-schema.json
+FILE /test/dir/schemas/server-common.json
+$$
+//*
+//* The DD below must include one or more FILE or PARMLIB
+//* entries. The lower entries have their values
+//* overridden by the higher entries.
+//*
+//* Ex. PARMLIB MY.ZOWE.CUSTOM.PARMLIB(YAML)
+//*     FILE /some/other/zowe.yaml
+//MYCONFIG DD   *,DLM=$$
+FILE /test/dir/zowe.test.yaml
+$$
+//CMGROUT  DD   SYSOUT=*
+//SYSPRINT DD   SYSOUT=*
+//SYSTSPRT DD   SYSOUT=*
+//*
+//* Change 'generate' to 'nogenerate' if you only
+//* want to validate your configuration. The default
+//* option, 'generate', will validate and then generate
+//* jobs based on your configuration.
+//*
+//*   - generate
+//*   - nogenerate
+//*
+//* Change 'noverbose' to 'verbose' below for
+//* advanced logging. This is not needed unless
+//* there is an error.
+//*
+//*   - verbose
+//*   - noverbose
+//*
+//SYSTSIN  DD   *
+ISPSTART CMD(%ZWEGEN00 -
+generate -
+noverbose -
+)
+--- End of JCL ---
+Submitting Job ZWEGENER
+Job ZWEGENER(JOB00000) completed with RC=0
+Zowe JCL generated successfully
+Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWEISTC) , Executable JCL: TEST.DATASET.PFX.JCLLIB(ZWEISTC)
+--- JCL Content ---
+//ZWEISTC JOB
+//*
+//* This program and the accompanying materials are made available
+//* under the terms of the Eclipse Public License v2.0 which
+//* accompanies this distribution, and is available at
+//* https://www.eclipse.org/legal/epl-v20.html
+//*
+//* SPDX-License-Identifier: EPL-2.0
+//*
+//* Copyright Contributors to the Zowe Project. 2020, 2020
+//*
+//*********************************************************************
+//*
+//* This job is used to add proclib members
+//* Used to start a Zowe "instance"
+//* Instances represent a configuration of Zowe, different from the
+//* "runtime" datasets that are created upon install of Zowe / SMPE.
+//*
+//* If you plan NOT to use Zowe Cross Memory Server, consider to
+//* copy Zowe Launcher STC only (ZWESLSTC).
+//*
+//*********************************************************************
+//*
+//MCOPY EXEC PGM=IKJEFT01
+//SYSTSPRT DD SYSOUT=A
+//  SET PROCLIB=DOES.NOT.EXIST
+//STCZOWE DD DISP=SHR,
+// DSN=&PROCLIB.(ZWESLSTC)
+//STCZIS DD DISP=SHR,
+// DSN=&PROCLIB.(ZWESISTC)
+//STCAUX DD DISP=SHR,
+// DSN=&PROCLIB.(ZWESASTC)
+//*
+//SYSTSIN DD *
+REPRO +
+INDATASET('TEST.DATASET.PFX.JCLLIB(ZWESLSTC)') +
+OUTFILE(STCZOWE)
+REPRO +
+INDATASET('TEST.DATASET.PFX.JCLLIB(ZWESISTC)') +
+OUTFILE(STCZIS)
+REPRO +
+INDATASET('TEST.DATASET.PFX.JCLLIB(ZWESASTC)') +
+OUTFILE(STCAUX)
+//*
+--- End of JCL ---
+Submitting Job ZWEISTC
+ERROR: Error ZWEL0162E: Failed to find job JOB00000 result."
+`;
+
 exports[`init-stc (SHORT) aux stc exists 1`] = `
 "Temporary directory '/tmp/.zweenv-0000' created.
 Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.

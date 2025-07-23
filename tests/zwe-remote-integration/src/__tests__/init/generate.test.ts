@@ -16,6 +16,7 @@ import { FileType, TestFileActions, TestFile } from '../../zos/TestFileActions';
 import * as fs from 'fs-extra';
 import * as _ from 'lodash';
 import path from 'path';
+import { sleep } from '../../utils';
 
 const testSuiteName = 'init-generate';
 describe(`${testSuiteName}`, () => {
@@ -185,6 +186,42 @@ describe(`${testSuiteName}`, () => {
     });
   });
 
+  describe('FLAKY', () => {
+    it('interrupt generate commands', async () => {
+      // First case: cancel and purge
+
+      // we have ~30 seconds to cancel the running job
+      let deferredResult = testRunner.runZweTest(cfgYaml, 'init generate --allow-overwrite');
+      // wait for zwegener to be submitted
+      await sleep(6000);
+      // TODO: this can capture other ZWEGENER tasks running on the system? change jcl name before submission?
+      let jobid = await testRunner.runRaw(
+        `./bin/utils/zowex job list --rfc | awk -F, 'match($3, "ZWEGENER") && match($4, "ACTIVE") { print $1 }'`,
+      );
+      let runningJob = jobid.stdout.trim();
+      console.log(`Found running job: ${runningJob}`);
+      await testRunner.runRaw(`./bin/utils/zowex job cancel ${runningJob}`);
+      await testRunner.runRaw(`./bin/utils/zowex job delete ${runningJob}`);
+      let genResult = await deferredResult;
+      expect(genResult.cleanedStdout).toMatchSnapshot();
+
+      // Second case: cancel
+
+      deferredResult = testRunner.runZweTest(cfgYaml, 'init generate --allow-overwrite');
+      // wait for zwegener to be submitted
+      await sleep(6000);
+      // TODO: this can capture other ZWEGENER tasks running on the system? change jcl name before submission?
+      jobid = await testRunner.runRaw(
+        `./bin/utils/zowex job list --rfc | awk -F, 'match($3, "ZWEGENER") && match($4, "ACTIVE") { print $1 }'`,
+      );
+      runningJob = jobid.stdout.trim();
+      console.log(`Found running job: ${runningJob}`);
+      await testRunner.runRaw(`./bin/utils/zowex job cancel ${runningJob}`);
+      genResult = await deferredResult;
+      expect(genResult.cleanedStdout).toMatchSnapshot();
+    });
+  });
+
   describe('(LONG)', () => {
     function expectStcSTDEnvHasContinuations(stcContent: string) {
       let stdEnvPassed = false;
@@ -311,7 +348,7 @@ describe(`${testSuiteName}`, () => {
     }, 400000);
 
     it('jcllib updates: jcl header single line', async () => {
-      const header = `'SOMEJOB',REGION=0M`;
+      const header = `'SOMEJOB', REGION = 0M`;
       _.set(cfgYaml, 'zowe.setup.jcl.header', header);
       const result = await testRunner.runZweTest(cfgYaml, 'init generate');
       expect(result.stdout).not.toBeNull();
@@ -337,7 +374,7 @@ describe(`${testSuiteName}`, () => {
     });
 
     it('jcllib updates: jcl header multi line', async () => {
-      const jclLines = [`'SOMEJOB',`, `//   REGION=0M`, `//* atestcomment`, '//* secondtestcomment'];
+      const jclLines = [`'SOMEJOB', `, `//   REGION=0M`, `//* atestcomment`, '//* secondtestcomment'];
       _.set(cfgYaml, 'zowe.setup.jcl.header', jclLines);
       const result = await testRunner.runZweTest(cfgYaml, 'init generate');
       expect(result.stdout).not.toBeNull();

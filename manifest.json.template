@@ -11,6 +11,10 @@
     "timestamp": "{BUILD_TIMESTAMP}"
   },
   "binaryDependencies": {
+    "org.zowe.zowe-native-proto": {
+      "version": "0.1.3",
+      "artifact": "zowe-server-*.pax.Z"
+    },
     "org.zowe.zlux.zlux-core": {
       "version": "^3.0.0-V3.X-STAGING-ZLUX-CORE",
       "artifact": "*.pax"
@@ -105,6 +109,14 @@
       "version": "^3.0.0-V3.X-STAGING",
       "artifact": "*.pax"
     },
+    "org.zowe.bind-test": {
+      "version": "^3.0.0-V3.X-STAGING",
+      "artifact": "*.pax"
+    },
+    "org.zowe.zis-test": {
+      "version": "^3.0.0-V3.X-STAGING",
+      "artifact": "*.pax"
+    },
     "org.zowe.configmgr": {
       "version": "^3.0.0-V3.X-STAGING",
       "artifact": "*.pax"
@@ -132,7 +144,14 @@
     }
   },
   "sourceDependencies": [
-   {
+    {
+     "componentGroup": "Zowex Native Tools",
+     "entries": [{
+        "repository": "zowe-native-proto",
+        "tag": "main",
+        "destinations": ["Zowe PAX"]
+     }]
+    }, {
       "componentGroup": "Zowe API Mediation Layer",
       "entries": [{
         "repository": "api-layer",

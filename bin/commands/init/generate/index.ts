@@ -108,7 +108,7 @@ export function execute(dryRun?: boolean) {
     if (result.rc == 0) {
       common.printMessage("Zowe JCL generated successfully");
     } else {
-      common.printMessage(`Zowe JCL generated with errors, check job log. Job completion code=${result.jobcccode}, Job completion text=${result.jobcctext}`);
+      common.printMessage(`Zowe JCL generated with errors, check job log. Job completion code=${result.jobcccode}.`);
       genRc = 1;
     }
   }
