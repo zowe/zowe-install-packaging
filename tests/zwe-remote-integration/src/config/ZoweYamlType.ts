@@ -635,7 +635,15 @@ const zoweSchema = zoweYamlSchema as {
           description: 'Customize your Zowe z/OS JES job.';
           properties: {
             name: {
-              $ref: '/schemas/v2/server-common#zoweJobname';
+              oneOf: [
+                {
+                  $ref: '/schemas/v2/server-common#zoweJobname'
+                },
+                {
+                  type: 'string',
+                  maxLength: 0
+                }
+              ],
               description: 'Job name of Zowe primary ZWESLSTC started task.';
             };
             prefix: {

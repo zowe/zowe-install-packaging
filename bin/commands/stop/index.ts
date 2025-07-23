@@ -24,9 +24,12 @@ export function execute() {
 
   // read Zowe STC name and apply default value
   const zoweConfig = config.getZoweConfig();
-  // zowe.setup.security.stcs.zowe defined in defaults
-  // And rejected by schema if user defines null/empty => always defined
-  const securityStcsZowe = zoweConfig.zowe.setup.security.stcs.zowe;
+  // zowe.setup.security.stcs.zowe defined in defaults with possibility to overwrite with empty/null
+  // If no stcs.zowe, use the defaults
+  let securityStcsZowe = zoweConfig.zowe.setup.security.stcs.zowe;
+  if (!securityStcsZowe) {
+    securityStcsZowe = 'ZWESLSTC';
+  }
   // read job name and apply default value
   let jobname: string;
   config.sanitizeHaInstanceId();
@@ -37,6 +40,9 @@ export function execute() {
   }
   if (!jobname) {
     jobname = zoweConfig.zowe.job.name;
+  }
+  if (!jobname) {
+    jobname = securityStcsZowe;
   }
 
   // read SYSNAME if --ha-instance is specified

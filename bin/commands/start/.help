@@ -18,7 +18,8 @@ haInstances:
 - `zowe.setup.security.stcs.zowe` is Zowe started task name.
   This configuration is optional. Default value is `ZWESLSTC`.
 - `zowe.job.name` is the optional customized job name to start Zowe. If not
-  defined, the default value is `ZWE1SV`.
+  defined, the default value is `ZWE1SV`. If set to null or empty string,
+  `zowe.job.name` is not used to start the Zowe.
 - `haInstances.[ha-instance].sysname` is the SYSNAME of the target HA instance.
   If you pass `--ha-instance` parameter, this is the SYSNAME the start command
   will be routed to.

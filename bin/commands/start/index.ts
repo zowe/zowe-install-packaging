@@ -23,10 +23,15 @@ export function execute() {
   common.requireZoweYaml();
 
   const zoweConfig = config.getZoweConfig();
-  // zowe.job.name and zowe.setup.security.stcs.zowe defined in defaults
-  // And rejected by schema if user defines null/empty => always defined
+  // zowe.job.name defined in defaults with possibility to overwrite with empty/null
+  // If no job.name, skip it when building command
   const jobname = zoweConfig.zowe.job.name;
-  const securityStcsZowe = zoweConfig.zowe.setup.security.stcs.zowe;
+  // zowe.setup.security.stcs.zowe defined in defaults with possibility to overwrite with empty/null
+  // If no stcs.zowe, use the defaults
+  let securityStcsZowe = zoweConfig.zowe.setup.security.stcs.zowe;
+  if (!securityStcsZowe) {
+    securityStcsZowe = 'ZWESLSTC';
+  }
 
   let routeSysname: string;
 
@@ -41,7 +46,9 @@ export function execute() {
   if (haInstance) {
     cmd+=`,HAINST=${haInstance}`;
   }
-  cmd+=`,JOBNAME=${jobname}`;
+  if (jobname) {
+    cmd+=`,JOBNAME=${jobname}`;
+  }
   if (routeSysname) {
     cmd=`RO ${routeSysname},${cmd}`;
   }
