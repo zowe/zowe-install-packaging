@@ -49,8 +49,8 @@ export function execute(): void {
     jclHeaderJoined = jclHeaderCfg.toString();
   }
 
-  const ZWEINSTL=`${runtime}/files/SZWESAMP/ZWEINSTL`;
-  const DATASETS = [ 'SZWEAUTH', 'SZWEEXEC', 'SZWELOAD', 'SZWESAMP' ];
+  const ZWEINSTL = `${runtime}/files/SZWESAMP/ZWEINSTL`;
+  const DATASETS = ['SZWEAUTH', 'SZWEEXEC', 'SZWELOAD', 'SZWESAMP'];
   const allowOverwrite = std.getenv("ZWE_CLI_PARAMETER_ALLOW_OVERWRITE") == 'true';
   const dryRun = std.getenv("ZWE_CLI_PARAMETER_DRY_RUN") == 'true';
   const existingDatasets: string[] = [];
@@ -115,7 +115,7 @@ export function execute(): void {
       common.printMessage("- Type \"zwe init <sub-command> --help\" (for example, \"zwe init stc --help\") to get more information.\n\n");
       common.printMessage("Zowe JCL generated successfully");
     } else {
-      common.printMessage(`Zowe JCL submitted with errors, check job log. Job completion code=${result.jobcccode}, Job completion text=${result.jobcctext}`);
+      common.printMessage(`Zowe JCL submitted with errors, check job log. Job completion code=${result.jobcccode}.`);
     }
   }
 

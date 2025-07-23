@@ -180,15 +180,11 @@ if FreeByDD('zweto') > 0 then do
   ExitWithRC(8)
 end
 
-
-/* members which are not JCL */
-x = DeleteDataSet(jclCopy'(ZWEGENER)')
-x = DeleteDataSet(jclCopy'(ZWESIP00)')
-x = DeleteDataSet(jclCopy'(ZWESIPRG)')
-x = DeleteDataSet(jclCopy'(ZWESISCH)')
-x = DeleteDataSet(jclCopy'(ZWESECKG)')
-x = DeleteDataSet(jclCopy'(ZWEINSTL)')
-
+/* members not processed */
+excludeList = "ZWEKRING ZWENOKYR ZWEGENER ZWESIP00 ZWESIPRG ZWESISCH ZWESECKG"
+do el = 1 to words(excludeList)
+  ret = DeleteDataSet(jclCopy'('word(excludeList, el)')')
+end
 
 /*
 ================================================================================

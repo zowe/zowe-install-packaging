@@ -164,11 +164,24 @@ echo "-- installing product in $mvsI"
 echo The extract $extract contains
 ls -l $extract
 
+cat <<EOT >>"${extract}/zowe.yaml"  # target HLQ
+zowe:
+  runtimeDirectory: "${extract}"
+  extensionDirectory: "${extract}/components"
+  logDirectory: "${extract}/logs"
+  workspaceDirectory: "${extract}/logs/workspace"
+  setup:
+    dataset:
+      prefix: $mvsI 
+EOT
+
+echo 
 opts=""
-opts="$opts --dataset-prefix $mvsI"                       # target HLQ
+opts="-c $extract/zowe.yaml"                   # use zowe.yaml
 opts="$opts -vv"                               # trace level debug info
 opts="$opts -l $log"                           # install log
 _cmd $extract/$zweScript install $opts </dev/null
+rm $extract/zowe.yaml
 
 echo "-- copying product to  $stage"
 _cmd mkdir -p $stage
