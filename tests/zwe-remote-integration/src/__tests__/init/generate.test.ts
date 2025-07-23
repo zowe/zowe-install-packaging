@@ -22,7 +22,7 @@ describe(`${testSuiteName}`, () => {
   let testRunner: RemoteTestRunner;
   let cfgYaml: ZoweYamlType;
   let defaultCfgYaml: ZoweYamlType;
-  let cleanupDatasets: TestFile[] = []; // a list of datasets deleted after every test
+  let cleanupFiles: TestFile[] = []; // a list of datasets deleted after every test
 
   beforeAll(async () => {
     testRunner = new RemoteTestRunner(testSuiteName);
@@ -39,8 +39,8 @@ describe(`${testSuiteName}`, () => {
     const jcllib: TestFile = { name: REMOTE_SYSTEM_INFO.jcllib, type: FileType.DS_NON_CLUSTER };
 
     // try to delete everything we know about
-    await TestFileActions.deleteAll([...cleanupDatasets, jcllib]);
-    cleanupDatasets = [];
+    await TestFileActions.deleteAll([...cleanupFiles, jcllib]);
+    cleanupFiles = [];
   });
 
   afterAll(() => {
@@ -186,6 +186,130 @@ describe(`${testSuiteName}`, () => {
   });
 
   describe('(LONG)', () => {
+    function expectStcSTDEnvHasContinuations(stcContent: string) {
+      let stdEnvPassed = false;
+      stcContent.split('\n').forEach((line) => {
+        if (line.startsWith('//STDENV')) {
+          stdEnvPassed = true;
+        }
+        if (stdEnvPassed) {
+          expect(line.length <= 71);
+          if (line.length === 71) {
+            expect(line.endsWith(`\\`));
+          }
+        }
+      });
+    }
+
+    /**
+     * This test cannot accurately capture the output of ZWESLSTC as a snapshot, because the
+     *  test directory may vary from system to system which changes the output. We check that the correct
+     *  config choices are ordered in the final ZWESLSTC and that 
+     */
+    it('test adversarial paths and concatenations', async () => {
+      const MAX_DIR_LEN = 255; // USS restriction
+      const MAX_TOTAL_PATH_LEN = 261; // unknown REXX submit() restriction...no doc. related to lrecl?
+
+      const EVIL_DIR_LEN = MAX_TOTAL_PATH_LEN - REMOTE_SYSTEM_INFO.ussTestDir.length - '//zowe.test.yaml'.length - 'FILE '.length + 1;
+      if (EVIL_DIR_LEN >= MAX_DIR_LEN) {
+        // idk yet - shouldn't happen
+        throw new Error(`Can't run this test`);
+      }
+      const goodDir = `${REMOTE_SYSTEM_INFO.ussTestDir}/${'a'.repeat(EVIL_DIR_LEN - 1)}`;
+      const evilDir = `${REMOTE_SYSTEM_INFO.ussTestDir}/${'a'.repeat(EVIL_DIR_LEN)}`;
+      await testRunner.runRaw(`mkdir -p ${goodDir}`, REMOTE_SYSTEM_INFO.ussTestDir);
+      await testRunner.runRaw(`mkdir -p ${evilDir}`, REMOTE_SYSTEM_INFO.ussTestDir);
+      cleanupFiles.push(
+        {
+          name: evilDir,
+          type: FileType.USS_DIR,
+        },
+        {
+          name: goodDir,
+          type: FileType.USS_DIR,
+        },
+      );
+      const dupCfg = ZoweConfig.getZoweYaml();
+      const parmMemberOne = `${cfgYaml.zowe.setup.dataset.parmlib}(ZWECFG01)`;
+      const parmMemberTwo = `${cfgYaml.zowe.setup.dataset.parmlib}(ZWECFG02)`;
+      delete dupCfg.zowe.setup.jcl; // avoid problems with jcl headers being duplicated through cfgYaml
+      delete dupCfg.zowe.sysMessages;
+      delete dupCfg.zowe.externalDomains;
+      await testRunner.uploadToDatasetForTest(ZoweConfig.render(dupCfg), parmMemberOne);
+      await testRunner.uploadToDatasetForTest(ZoweConfig.render(dupCfg), parmMemberTwo);
+
+      await testRunner.uploadZoweYaml(dupCfg, false, evilDir);
+      await testRunner.uploadDefaultsYaml(defaultCfgYaml, evilDir);
+
+      await testRunner.uploadZoweYaml(dupCfg, false, goodDir);
+      await testRunner.uploadDefaultsYaml(defaultCfgYaml, goodDir);
+
+      let result = await testRunner.runRaw(
+        `./bin/zwe init generate --allow-overwrite -c "PARMLIB(${parmMemberOne}):PARMLIB(${parmMemberTwo}):FILE(${evilDir}/zowe.test.yaml):FILE(${evilDir}/defaults.yaml)"`,
+      );
+
+      expect(result.stdout).not.toBeNull();
+      expect(result.cleanedStdout).toMatchSnapshot();
+      expect(result.rc).toBe(1);
+
+      result = await testRunner.runRaw(`./bin/zwe init generate --allow-overwrite -c ${evilDir}/zowe.test.yaml`);
+
+      expect(result.stdout).not.toBeNull();
+      expect(result.cleanedStdout).toMatchSnapshot();
+      expect(result.rc).toBe(1);
+
+      result = await testRunner.runRaw(`./bin/zwe init generate --allow-overwrite -c ${goodDir}/zowe.test.yaml`);
+
+      expect(result.stdout).not.toBeNull();
+      expect(result.cleanedStdout).toMatchSnapshot();
+      expect(result.rc).toBe(0);
+
+      result = await testRunner.runRaw(
+        `./bin/zwe init generate --allow-overwrite -c "PARMLIB(${parmMemberOne}):PARMLIB(${parmMemberTwo}):FILE(${goodDir}/zowe.test.yaml):FILE(${goodDir}/defaults.yaml)"`,
+      );
+
+      expect(result.stdout).not.toBeNull();
+      expect(result.cleanedStdout).toMatchSnapshot();
+      expect(result.rc).toBe(0);
+
+      let generatedStc = await testRunner.downloadMaskedPdsMember(`${cfgYaml.zowe.setup.dataset.jcllib}(ZWESLSTC)`);
+      await testRunner.collectTestFile(generatedStc);
+      let stcContents = fs.readFileSync(generatedStc, 'utf8');
+      expect(stcContents.includes(`CONFIG=PARMLIB(${parmMemberOne})`));
+      expect(stcContents.includes(`PARMLIB(${parmMemberTwo})`));
+      expectStcSTDEnvHasContinuations(stcContents);
+
+      result = await testRunner.runRaw(
+        `./bin/zwe init generate --allow-overwrite -c "FILE(${goodDir}/zowe.test.yaml):FILE(${goodDir}/defaults.yaml):PARMLIB(${parmMemberOne}):PARMLIB(${parmMemberTwo})"`,
+      );
+
+      expect(result.stdout).not.toBeNull();
+      expect(result.cleanedStdout).toMatchSnapshot();
+      expect(result.rc).toBe(0);
+
+      generatedStc = await testRunner.downloadMaskedPdsMember(`${cfgYaml.zowe.setup.dataset.jcllib}(ZWESLSTC)`);
+      await testRunner.collectTestFile(generatedStc);
+      stcContents = fs.readFileSync(generatedStc, 'utf8');
+      expect(stcContents.includes(`CONFIG=PARMLIB(${parmMemberOne})`));
+      expect(stcContents.includes(`PARMLIB(${parmMemberTwo})`));
+      expectStcSTDEnvHasContinuations(stcContents);
+
+      result = await testRunner.runRaw(
+        `./bin/zwe init generate --allow-overwrite -c "FILE(${goodDir}/zowe.test.yaml):PARMLIB(${parmMemberTwo})"`,
+      );
+
+      expect(result.stdout).not.toBeNull();
+      expect(result.cleanedStdout).toMatchSnapshot();
+      expect(result.rc).toBe(0);
+
+      generatedStc = await testRunner.downloadMaskedPdsMember(`${cfgYaml.zowe.setup.dataset.jcllib}(ZWESLSTC)`);
+      await testRunner.collectTestFile(generatedStc);
+      stcContents = fs.readFileSync(generatedStc, 'utf8');
+      expect(stcContents.includes(`CONFIG=FILE(${goodDir.substring(0, 71 - 12)}`));
+      expect(stcContents.includes(`PARMLIB(${parmMemberTwo})`));
+      expectStcSTDEnvHasContinuations(stcContents);
+    }, 400000);
+
     it('jcllib updates: jcl header single line', async () => {
       const header = `'SOMEJOB',REGION=0M`;
       _.set(cfgYaml, 'zowe.setup.jcl.header', header);

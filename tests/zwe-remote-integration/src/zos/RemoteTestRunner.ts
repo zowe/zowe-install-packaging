@@ -73,6 +73,23 @@ export class RemoteTestRunner {
     this.uss.shutdown();
   }
 
+  public async downloadMaskedPdsMember(memberName: string): Promise<string> {
+    fs.mkdirpSync(this.tmpDir);
+    const tmpFile = `${this.tmpDir}/${memberName}-${Date.now()}`;
+    // const writeStream = fs.createWriteStream(tmpFile, { autoClose: true, mode: 0o775 });
+    const dlResp = await files.Download.dataSet(this.session, memberName, {
+      file: tmpFile,
+    });
+    console.log(JSON.stringify(dlResp));
+    if (!dlResp.success) {
+      console.log('Failed');
+    }
+    const fileContents = fs.readFileSync(tmpFile).toString();
+    const cleanedContents = this.cleanOutput(fileContents, []);
+    fs.writeFileSync(tmpFile, cleanedContents);
+    return tmpFile;
+  }
+
   public async downloadMaskedUssFilesMatching(
     filePattern: string,
     remoteDir: string = REMOTE_SYSTEM_INFO.ussTestDir,
@@ -414,13 +431,18 @@ export class RemoteTestRunner {
     return this.runZweTest(zoweYaml, zweCommand, cwd);
   }
 
-  public async uploadDefaultsYaml(defaultsYaml: ZoweYamlType): Promise<string> {
+  public async uploadDefaultsYaml(
+    defaultsYaml: ZoweYamlType,
+    cwd: string = `${REMOTE_SYSTEM_INFO.ussTestDir}/files`,
+  ): Promise<string> {
     const testName = expect.getState().currentTestName.replace(/\s/g, '_');
-    const yamlUploadPath = `${REMOTE_SYSTEM_INFO.ussTestDir}/files/defaults.yaml`;
+    const yamlUploadPath = `${cwd}/defaults.yaml`;
     const stringDefaultYaml = YAML.stringify(defaultsYaml, { nullStr: '' });
     const yamlOutputDir = this.yamlOutputTemplate.replace('{{ testInstance }}', testName);
     fs.mkdirpSync(yamlOutputDir);
-    await this.removeUssFileOrDirForTest('files/defaults.yaml');
+    if (cwd === `${REMOTE_SYSTEM_INFO.ussTestDir}/files`) {
+      await this.removeUssFileOrDirForTest('files/defaults.yaml');
+    }
     const redundantFilePath = this.writeRedundant(`${yamlOutputDir}/defaults.yaml`, stringDefaultYaml);
     await files.Upload.fileToUssFile(this.session, redundantFilePath, yamlUploadPath, {
       binary: false,

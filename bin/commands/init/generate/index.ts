@@ -20,7 +20,7 @@ import * as zosJes from '../../../libs/zos-jes';
 
 export function execute(dryRun?: boolean) {
   common.requireZoweYaml();
-  const ZOWE_CONFIG=config.getZoweConfig();
+  const ZOWE_CONFIG = config.getZoweConfig();
 
   // zowe.setup.dataset defined in defaults
   const prefix = ZOWE_CONFIG.zowe.setup.dataset.prefix;
@@ -42,9 +42,9 @@ export function execute(dryRun?: boolean) {
   // zowe.setup.jcl.header defined in defaults
   const jclHeader = ZOWE_CONFIG.zowe.setup.jcl.header;
   if (Array.isArray(jclHeader)) {
-      jclHeaderJoined = jclHeader.join("\n");
+    jclHeaderJoined = jclHeader.join("\n");
   } else {
-      jclHeaderJoined = jclHeader.toString();
+    jclHeaderJoined = jclHeader.toString();
   }
 
   const tempFile = fs.createTmpFile();
@@ -65,7 +65,7 @@ export function execute(dryRun?: boolean) {
   let originalConfig = std.getenv('ZWE_PRIVATE_CONFIG_ORIG');
   let startingConfig = originalConfig;
   if ((originalConfig.indexOf('FILE(') == -1) && (originalConfig.indexOf('PARMLIB(') == -1)) {
-    startingConfig = 'FILE('+originalConfig+')';
+    startingConfig = 'FILE(' + originalConfig + ')';
   }
 
   // we are guaranteed to have FILE() or PARMLIB() formatted config concatenated with ':'
@@ -76,14 +76,14 @@ export function execute(dryRun?: boolean) {
   for (let i = 0; i < parts.length; i++) {
     let part = parts[i].trim();
     if (part.startsWith('FILE(')) {
-      let filename = part.substring(part.indexOf('(')+1, part.indexOf(')'));
+      let filename = part.substring(part.indexOf('(') + 1, part.indexOf(')'));
       configLines.push('FILE ' + fs.convertToAbsolutePath(filename).replace(/[$]/g, '$$$$'));
     } else if (part.startsWith('PARMLIB(')) {
       const isValidParmlib = common.isValidZoweYamlParmlib(part);
       if (!isValidParmlib.ok) {
         common.printErrorAndExit(isValidParmlib.error.message, undefined, isValidParmlib.error.code);
       }
-      const parmlib = part.substring(part.indexOf('(')+1, part.lastIndexOf(')'));
+      const parmlib = part.substring(part.indexOf('(') + 1, part.lastIndexOf(')'));
       configLines.push(`PARMLIB ${parmlib}`);
     }
   }
@@ -96,7 +96,7 @@ export function execute(dryRun?: boolean) {
   common.printMessage('--- JCL content ---');
   common.printMessage(jclContents);
   common.printMessage('--- End of JCL ---');
-
+  let genRc = 0;
   if (dryRun) {
     common.printMessage('JCL not submitted, command run with "--dry-run" flag.');
     common.printMessage('To perform command, re-run command without "--dry-run" flag, or submit the JCL directly.');
@@ -109,7 +109,9 @@ export function execute(dryRun?: boolean) {
       common.printMessage("Zowe JCL generated successfully");
     } else {
       common.printMessage(`Zowe JCL generated with errors, check job log. Job completion code=${result.jobcccode}, Job completion text=${result.jobcctext}`);
+      genRc = 1;
     }
   }
   os.remove(tempFile);
+  std.exit(genRc);
 }

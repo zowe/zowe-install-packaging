@@ -40,6 +40,10 @@ export class ZoweConfig {
     return defaultsYaml as ZoweYamlType;
   }
 
+  static render(cfg: ZoweYamlType): string {
+    return yaml.stringify(cfg, { nullStr: '' });
+  }
+
   /**
    * Loads a YAML resource from the specified directory and optionally renders it.
    *
