@@ -447,35 +447,11 @@
               "description": "SZWESAMP JCLs related setting.",
               "properties": {
                 "header": {
-                  "anyOf": [
-                    {
-                      "type": "integer",
-                      "not": {
-                        "type": "null"
-                      },
-                      "description": "Numeric option for JCL header for samples in SZWESAMP: '//ZWEnnnnn JOB {zowe.setup.jcl.header}'. Typically accounting information."
-                    },
-                    {
-                      "type": "string",
-                      "not": {
-                        "type": "null"
-                      },
-                      "maxLength": 65,
-                      "description": "One line JCL header options for samples in SZWESAMP: '//ZWEnnnnn JOB {zowe.setup.jcl.header}'."
-                    },
-                    {
-                      "type": "array",
-                      "items": {
-                        "type": "string",
-                        "not": {
-                          "type": "null"
-                        },
-                        "maxLength": 80,
-                        "minItems": 2
-                      },
-                      "description": "Multiline JCL header options for samples in SZWESAMP: '//ZWEnnnnn JOB {zowe.setup.jcl.header}'."
-                    }
-                  ]
+                  "type": "string",
+                  "not": {
+                    "type": "null"
+                  },
+                  "description": "JCL header options for samples in SZWESAMP: '//ZWEnnnnn JOB {zowe.setup.jcl.header}'."
                 }
               }
             }
