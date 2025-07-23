@@ -26,7 +26,13 @@ export function execute(): void {
   const zoweConfig = config.getZoweConfig();
   let runtime = zoweConfig.zowe?.runtimeDirectory;
   const prefix = zoweConfig.zowe.setup?.dataset?.prefix;
-  const jclHeaderCfg = zoweConfig.zowe.setup?.jcl?.header;
+
+  // zoweConfig.zowe.setup.jcl.header
+  // If literal style (symbol |) is used, it will append new line at the end of the string
+  let jclHeaderCfg = zoweConfig.zowe.setup.jcl.header;
+  if (jclHeaderCfg.slice(-1) == '\n') {
+    jclHeaderCfg = jclHeaderCfg.slice(0, -1);
+  }
 
   if (!runtime) {
     runtime = runtimeEnv;
