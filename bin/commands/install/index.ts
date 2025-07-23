@@ -27,7 +27,6 @@ export function execute(): void {
   let runtime = zoweConfig.zowe?.runtimeDirectory;
   const prefix = zoweConfig.zowe.setup?.dataset?.prefix;
   const jclHeaderCfg = zoweConfig.zowe.setup?.jcl?.header;
-  let jclHeaderJoined: string;
 
   if (!runtime) {
     runtime = runtimeEnv;
@@ -41,12 +40,6 @@ export function execute(): void {
 
   if (!prefix) {
     common.printErrorAndExit(`Error ZWEL0157E: Zowe dataset prefix (zowe.setup.dataset.prefix) is not defined in Zowe YAML configuration file.`, undefined, 157);
-  }
-
-  if (Array.isArray(jclHeaderCfg)) {
-    jclHeaderJoined = jclHeaderCfg.join("\n");
-  } else {
-    jclHeaderJoined = jclHeaderCfg.toString();
   }
 
   const ZWEINSTL = `${runtime}/files/SZWESAMP/ZWEINSTL`;
@@ -79,7 +72,7 @@ export function execute(): void {
     common.printErrorAndExit(`Error ZWEL0159E Failed to modify ${ZWEINSTL}.`, undefined, 159);
   }
 
-  jclContents = jclContents.replace(/\{zowe\.setup\.jcl\.header\}/gi, jclHeaderJoined.replace(/[$]/g, '$$$$'));
+  jclContents = jclContents.replace(/\{zowe\.setup\.jcl\.header\}/gi, jclHeaderCfg.replace(/[$]/g, '$$$$'));
   jclContents = jclContents.replace(/\{zowe\.setup\.dataset\.prefix\}/gi, prefix.replace(/[$]/g, '$$$$'));
   jclContents = jclContents.replace(/\{zowe\.runtimeDirectory\}/gi, runtime.replace(/[$]/g, '$$$$'));
 

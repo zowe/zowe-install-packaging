@@ -38,14 +38,8 @@ export function execute(dryRun?: boolean) {
     common.printErrorAndExit(`Error ZWEL0157E: Zowe runtime directory (zowe.runtimeDirectory) is not defined in Zowe YAML configuration file.`, undefined, 157);
   }
 
-  let jclHeaderJoined = '';
   // zowe.setup.jcl.header defined in defaults
   const jclHeader = ZOWE_CONFIG.zowe.setup.jcl.header;
-  if (Array.isArray(jclHeader)) {
-    jclHeaderJoined = jclHeader.join("\n");
-  } else {
-    jclHeaderJoined = jclHeader.toString();
-  }
 
   const tempFile = fs.createTmpFile();
   if (zosFs.copyMvsToUss(ZOWE_CONFIG.zowe.setup.dataset.prefix + '.SZWESAMP(ZWEGENER)', tempFile) !== 0) {
@@ -58,7 +52,7 @@ export function execute(dryRun?: boolean) {
   // $$ inserts a '$', replace(/[$]/g, '$$$$') => double each '$' occurence
   jclContents = jclContents.replace(/\{zowe\.setup\.dataset\.prefix\}/gi, prefix.replace(/[$]/g, '$$$$'));
   jclContents = jclContents.replace(/\{zowe\.runtimeDirectory\}/gi, runtimeDirectory.replace(/[$]/g, '$$$$'));
-  jclContents = jclContents.replace(/\{zowe\.setup\.jcl\.header\}/i, jclHeaderJoined.replace(/[$]/g, '$$$$'));
+  jclContents = jclContents.replace(/\{zowe\.setup\.jcl\.header\}/i, jclHeader.replace(/[$]/g, '$$$$'));
   if (std.getenv('ZWE_PRIVATE_LOG_LEVEL_ZWELS') !== 'INFO') {
     jclContents = jclContents.replace('noverbose -', 'verbose -');
   }
