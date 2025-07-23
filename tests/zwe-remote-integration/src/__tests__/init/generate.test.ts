@@ -23,7 +23,6 @@ describe(`${testSuiteName}`, () => {
   let cfgYaml: ZoweYamlType;
   let defaultCfgYaml: ZoweYamlType;
   let cleanupDatasets: TestFile[] = []; // a list of datasets deleted after every test
-  const resourcesDir = path.resolve('src', '__tests__', 'init', '__resources__', 'generate');
 
   beforeAll(async () => {
     testRunner = new RemoteTestRunner(testSuiteName);
@@ -187,26 +186,6 @@ describe(`${testSuiteName}`, () => {
   });
 
   describe('(LONG)', () => {
-    it('sdsf disabled', async () => {
-      const noSdsfRex = path.resolve(resourcesDir, 'noSDSF.rex');
-      await testRunner.uploadUssFileForTest(noSdsfRex, 'bin/utils/getSDSF.rex', { binary: false, mode: 0o755 });
-
-      let result = await testRunner.runZweTest(cfgYaml, 'init generate');
-      expect(result.stdout).not.toBeNull();
-      expect(result.cleanedStdout).toMatchSnapshot();
-      expect(result.rc).toBe(0);
-
-      result = await testRunner.runZweTest(cfgYaml, 'init'); // different output, stops short and tells user commands to run
-      expect(result.stdout).not.toBeNull();
-      expect(result.cleanedStdout).toMatchSnapshot();
-      expect(result.rc).toBe(0);
-
-      result = await testRunner.runZweTest(cfgYaml, 'init --skip-security-setup');
-      expect(result.stdout).not.toBeNull();
-      expect(result.cleanedStdout).toMatchSnapshot();
-      expect(result.rc).toBe(0);
-    });
-
     it('jcllib updates: jcl header single line', async () => {
       const header = `'SOMEJOB',REGION=0M`;
       _.set(cfgYaml, 'zowe.setup.jcl.header', header);

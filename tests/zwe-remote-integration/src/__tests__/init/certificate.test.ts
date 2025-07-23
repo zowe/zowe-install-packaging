@@ -69,8 +69,10 @@ describe(`${testSuiteName}`, () => {
   });
 
   describe('(LONG)', () => {
-    beforeEach(async () => {
-      const cleanupDirs = [
+    it('passing init', async () => {
+      cfgYaml.zowe.verifyCertificates = 'NONSTRICT';
+      const result = await testRunner.runZweTest(cfgYaml, 'init certificate');
+      cleanupFiles.push(
         {
           // @ts-expect-error incomplete schema
           name: cfgYaml.zowe.setup.certificate.pkcs12.directory + '/local_ca/',
@@ -81,14 +83,7 @@ describe(`${testSuiteName}`, () => {
           name: cfgYaml.zowe.setup.certificate.pkcs12.directory + '/localhost/',
           type: FileType.USS_DIR,
         },
-      ];
-      await TestFileActions.deleteAll(cleanupDirs); // this catches lingering datasets in case a test times out and doesn't clean up
-      cleanupFiles.push(...cleanupDirs);
-    });
-
-    it('passing init', async () => {
-      cfgYaml.zowe.verifyCertificates = 'NONSTRICT';
-      const result = await testRunner.runZweTest(cfgYaml, 'init certificate');
+      );
       expect(result.stdout).not.toBeNull();
       expect(result.cleanedStdout).toMatchSnapshot();
       expect(result.rc).toBe(0);
@@ -98,6 +93,18 @@ describe(`${testSuiteName}`, () => {
       cfgYaml.zowe.useConfigmgr = true;
       cfgYaml.zOSMF.host = 'doesnt-exist.anywhere.cloud';
       const result = await testRunner.runZweTest(cfgYaml, 'init certificate');
+      cleanupFiles.push(
+        {
+          // @ts-expect-error incomplete schema
+          name: cfgYaml.zowe.setup.certificate.pkcs12.directory + '/local_ca/',
+          type: FileType.USS_DIR,
+        },
+        {
+          // @ts-expect-error incomplete schema
+          name: cfgYaml.zowe.setup.certificate.pkcs12.directory + '/localhost/',
+          type: FileType.USS_DIR,
+        },
+      );
       expect(result.stdout).not.toBeNull();
       expect(result.cleanedStdout).toMatchSnapshot();
       expect(result.rc).toBe(170);

@@ -103,29 +103,13 @@ export function execute(dryRun?: boolean) {
   } else { //TODO can we generate just for one step, or no reason?
     common.printMessage('Submitting Job ZWEGENER');
     const jobid = zosJes.submitJob(tempFile);
-    os.remove(tempFile);
     const result = zosJes.waitForJob(jobid);
-    if (result.rc == zosJes.WAIT_FOR_JOB_NO_SDSF) {
-      common.printMessage(`No SDSF detected, review the job log of ZWEGENER(${jobid}) manually.`);
-      if (std.getenv('ZWE_CLI_COMMANDS_LIST') == 'init') {
-        common.printMessage(`The processing is terminated. The following subcommands must be started manually:`);
-        common.printMessage(`  * zwe init mvs`);
-        common.printMessage(`  * zwe init vsam`);
-        if (std.getenv("ZWE_CLI_PARAMETER_SKIP_SECURITY_SETUP") != 'true') {
-          common.printMessage(`  * zwe init apfauth`);
-          common.printMessage(`  * zwe init security`);
-        }
-        common.printMessage(`  * zwe init certificate`);
-        common.printMessage(`  * zwe init stc`);
-      }
-      std.exit(0);
+    common.printMessage(`Job ZWEGENER(${jobid}) completed with RC=${result.rc}`);
+    if (result.rc == 0) {
+      common.printMessage("Zowe JCL generated successfully");
     } else {
-      common.printMessage(`Job ZWEGENER(${jobid}) completed with RC=${result.rc}`);
-      if (result.rc == 0) {
-        common.printMessage("Zowe JCL generated successfully");
-      } else {
-        common.printMessage(`Zowe JCL generated with errors, check job log. Job completion code=${result.jobcccode}, Job completion text=${result.jobcctext}`);
-      }
+      common.printMessage(`Zowe JCL generated with errors, check job log. Job completion code=${result.jobcccode}, Job completion text=${result.jobcctext}`);
     }
   }
+  os.remove(tempFile);
 }

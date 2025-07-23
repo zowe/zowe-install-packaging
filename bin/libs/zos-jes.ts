@@ -98,21 +98,12 @@ export function submitJob(jclFileOrContent: string, printJobDebug:boolean=true, 
   }
 }
 
-export const WAIT_FOR_JOB_NO_SDSF = -1;
-export const WAIT_FOR_JOB_OK = 0;
-export const WAIT_FOR_JOB_TIMEOUT = 1;
-export const WAIT_FOR_JOB_JCL = 2;
-
 export function waitForJob(jobid: string): {jobcctext?: string, jobcccode?: string, jobid?: string, jobname?: string, rc: number} {
   let jobstatus;
   let jobname;
   let jobcctext;
   let jobcccode;    
-  let isJES3;
-
-  if (!zoslib.isSDSF()) {
-    return { rc: WAIT_FOR_JOB_NO_SDSF };
-  }
+  let is_jes3;
 
   common.printDebug(`- Wait for job ${jobid} completed, starting at ${new Date().toString()}.`);
   // wait for job to finish
@@ -121,7 +112,7 @@ export function waitForJob(jobid: string): {jobcctext?: string, jobcccode?: stri
     jobcctext = undefined;
     jobcccode = undefined;
     jobname = undefined;
-    isJES3 = false;
+    is_jes3 = false;
     const secs = timesSec[i];
     common.printTrace(`  * Wait for ${secs} seconds`);
     os.sleep(secs*1000); 
@@ -131,8 +122,8 @@ export function waitForJob(jobid: string): {jobcctext?: string, jobcccode?: stri
     // ...             ISF031I CONSOLE IBMUSER ACTIVATED
     // ...            -$D JOB00132,CC
     // ...  IBMUSER7   IEE305I $D       COMMAND INVALID
-    isJES3=result.out ? result.out.match(new RegExp('\$D \+COMMAND INVALID')) : false;
-    if (isJES3) {
+    is_jes3=result.out ? result.out.match(new RegExp('\$D \+COMMAND INVALID')) : false;
+    if (is_jes3) {
       common.printDebug(`  * JES3 identified`);
       const show_jobid=jobid.substring(3);
       result=zoslib.operatorCommand(`*I J=${show_jobid}`);
@@ -181,17 +172,17 @@ export function waitForJob(jobid: string): {jobcctext?: string, jobcccode?: stri
   if (jobcctext || jobcccode) {
     common.printDebug(`  * Job (${jobname}) exits with code ${jobcccode} (${jobcctext}).`);
     if (jobcccode == "0") {
-      return {jobcctext, jobcccode, jobname, rc: WAIT_FOR_JOB_OK};
+      return {jobcctext, jobcccode, jobname, rc: 0};
     } else {
       // ${jobcccode} could be greater than 255
-      return {jobcctext, jobcccode, jobname, rc: WAIT_FOR_JOB_JCL};
+      return {jobcctext, jobcccode, jobname, rc: 2};
     }
-  } else if (isJES3) {
+  } else if (is_jes3) {
     common.printTrace(`  * Cannot determine job complete code. Please check job log manually.`);
-    return {jobcctext, jobcccode, jobname, rc: WAIT_FOR_JOB_OK};
+    return {jobcctext, jobcccode, jobname, rc: 0};
   } else {
     common.printError(`  * Job (${jobname? jobname : jobid}) doesn't finish within max waiting period.`);
-    return {jobcctext, jobcccode, jobname, rc: WAIT_FOR_JOB_TIMEOUT};
+    return {jobcctext, jobcccode, jobname, rc: 1};
   }
 }
 
@@ -231,24 +222,23 @@ export function printAndHandleJcl(jclLocationOrContent: string, jobName: string,
     let {jobcctext, jobcccode, jobname, rc} = waitForJob(jobId);
     if (rc) {
       jobHasFailures=true;
-      if (rc == WAIT_FOR_JOB_NO_SDSF || rc == WAIT_FOR_JOB_TIMEOUT) {
-        if (continueOnFailure) {
-          common.printError(`Warning ZWEL0158W: Failed to find job ${jobId} result.`);
-        } else {
-          if (removeJclOnFinish) {
-            removeRc = os.remove(jclLocationOrContent);
-          }
-          common.printErrorAndExit(`Error ZWEL0162E: Failed to find job ${jobId} result.`, undefined, 162);
-        }
+      if (continueOnFailure) {
+        common.printError(`Warning ZWEL0158W: Failed to find job ${jobId} result.`);
       } else {
-        if (continueOnFailure) {
-          common.printError(`Warning ZWEL0164W: Job ${jobname}(${jobId}) ends with code ${jobcccode} (${jobcctext}).`);
-        } else {
-          if (removeJclOnFinish) {
-            removeRc = os.remove(jclLocationOrContent);
-          }
-          common.printErrorAndExit(`Error ZWEL0163E: Job ${jobname}(${jobId}) ends with code ${jobcccode} (${jobcctext}).`, undefined, 163);
+        if (removeJclOnFinish) {
+          removeRc = os.remove(jclLocationOrContent);
         }
+        common.printErrorAndExit(`Error ZWEL0162E: Failed to find job ${jobId} result.`, undefined, 162);
+      }
+    
+      jobHasFailures=true
+      if (continueOnFailure) {
+        common.printError(`Warning ZWEL0164W: Job ${jobname}(${jobId}) ends with code ${jobcccode} (${jobcctext}).`);
+      } else {
+        if (removeJclOnFinish) {
+          removeRc = os.remove(jclLocationOrContent);
+        }
+        common.printErrorAndExit(`Error ZWEL0163E: Job ${jobname}(${jobId}) ends with code ${jobcccode} (${jobcctext}).`, undefined, 163);
       }
     }
     if (removeJclOnFinish) {
