@@ -232,7 +232,7 @@ describe(`${testSuiteName}`, () => {
       const dupCfg = ZoweConfig.getZoweYaml();
       const parmMemberOne = `${cfgYaml.zowe.setup.dataset.parmlib}(ZWECFG01)`;
       const parmMemberTwo = `${cfgYaml.zowe.setup.dataset.parmlib}(ZWECFG02)`;
-      delete dupCfg.zowe.setup.jcl; // avoid problems with jcl headers being duplicated through cfgYaml
+      delete dupCfg.zowe.setup.jcl; // avoid problems with arrays being duplicated through cfgYaml
       delete dupCfg.zowe.sysMessages;
       delete dupCfg.zowe.externalDomains;
       await testRunner.uploadToDatasetForTest(ZoweConfig.render(dupCfg), parmMemberOne);
