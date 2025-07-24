@@ -95,11 +95,12 @@ end
     Prepare header information ahead of time so that it gets substituted in
     each member.
 ================================================================================
-*/
 
 CFG.zwe.header.user = USERID()
 CFG.zwe.header.date = TRANSLATE(DATE(), '-', ' ')
 CFG.zwe.header.time = TIME()
+
+*/
 
 /*
 ================================================================================
