@@ -342,7 +342,7 @@ noverbose -
 --- End of JCL ---
 Submitting Job ZWEGENER
 Job ZWEGENER(JOB00000) completed with RC=2
-Zowe JCL generated with errors, check job log. Job completion code=8, Job completion text=COMPLETED"
+Zowe JCL generated with errors, check job log. Job completion code=0008."
 `;
 
 exports[`init-generate (LONG) test adversarial paths and concatenations 2`] = `
@@ -455,7 +455,7 @@ noverbose -
 --- End of JCL ---
 Submitting Job ZWEGENER
 Job ZWEGENER(JOB00000) completed with RC=2
-Zowe JCL generated with errors, check job log. Job completion code=8, Job completion text=COMPLETED"
+Zowe JCL generated with errors, check job log. Job completion code=0008."
 `;
 
 exports[`init-generate (LONG) test adversarial paths and concatenations 3`] = `
