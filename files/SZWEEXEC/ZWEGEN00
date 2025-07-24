@@ -281,7 +281,7 @@ say 'The 'output.0' members in 'jclCopy' have been recorded.'
 ================================================================================
 */
 
-say 'Setting the defaults values.'
+say 'Setting the default values.'
 
 if isNullEmpty(CFG.zowe.setup.dataset.authLoadlib) then do
   CFG.zowe.setup.dataset.authLoadlib = CFG.zowe.setup.dataset.prefix'.SZWEAUTH'
