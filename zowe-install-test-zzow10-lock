@@ -1,1 +1,15 @@
-""
+{
+  "lockAcquiredTime": "Thu Jul 24 2025 20:00:10 GMT+0000 (Coordinated Universal Time)",
+  "uid": "1753387210991529649",
+  "repository": {
+    "owner": "zowe",
+    "repo": "zowe-install-packaging"
+  },
+  "branch": "user/markackert/add-zwegener-line-splitting",
+  "workflow": "Zowe CICD Integration Tests",
+  "job": "cicd-test",
+  "actor": "zowe-robot",
+  "runId": 16506590481,
+  "runNumber": 7008,
+  "link": "https://github.com/zowe/zowe-install-packaging/actions/runs/16506590481"
+}
