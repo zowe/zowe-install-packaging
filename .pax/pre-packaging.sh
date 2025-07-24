@@ -191,7 +191,7 @@ BASE_DIR=$(
 ) # <something>/.pax
 
 # use node v18 to build
-export NODE_HOME=/ZOWE/node/node-v18.16.0
+export NODE_HOME=/ZOWE/node/node-v18.20.8
 export JAVA_HOME=/ZOWE/node/J17.0_64
 export PATH=$JAVA_HOME/bin:$PATH
 ZOWE_ROOT_DIR="${BASE_DIR}/content"
@@ -228,6 +228,19 @@ chmod +x "${ZOWE_ROOT_DIR}"/bin/zwe
 chmod +x "${ZOWE_ROOT_DIR}"/bin/utils/*.sh
 chmod +x "${ZOWE_ROOT_DIR}"/bin/utils/*.rex
 
+echo "[$SCRIPT_NAME] extract zowex ..."
+zowex_components=$(find "${ZOWE_ROOT_DIR}/files" -type f \( -name "zowe-server-*.pax.Z" \) | head -n 1)
+mkdir -p "${ZOWE_ROOT_DIR}/bin/utils/zowe-server"
+cd "${ZOWE_ROOT_DIR}/bin/utils/zowe-server"
+pax -ppx -rf "${zowex_components}"
+
+echo "[$SCRIPT_NAME] place zowex in bin/utils and change zowex to be executable ..."
+# If we want zowed and zoweax, copy them now
+cp "${ZOWE_ROOT_DIR}/bin/utils/zowe-server/zowex" "${ZOWE_ROOT_DIR}/bin/utils/zowex"
+chmod +x "${ZOWE_ROOT_DIR}/bin/utils/zowex"
+cd "${ZOWE_ROOT_DIR}/bin/utils"
+rm -rf "${ZOWE_ROOT_DIR}/bin/utils/zowe-server"
+
 echo "[$SCRIPT_NAME] change keyring-util to be executable ..."
 chmod +x "${ZOWE_ROOT_DIR}"/bin/utils/keyring-util/keyring-util
 
@@ -256,6 +269,21 @@ cd "${ZOWE_ROOT_DIR}/bin/utils"
 pax -ppx -rf "${getesm}"
 rm "${getesm}"
 cd "${BASE_DIR}"
+
+bind_test=$(find "${ZOWE_ROOT_DIR}/files" -type f \( -name "bind-test*.pax" \) | head -n 1)
+echo "[$SCRIPT_NAME] extract bind-test $bind_test"
+cd "${ZOWE_ROOT_DIR}/bin/utils"
+pax -ppx -rf "${bind_test}"
+rm "${bind_test}"
+cd "${BASE_DIR}"
+
+zis_test=$(find "${ZOWE_ROOT_DIR}/files" -type f \( -name "zis-test*.pax" \) | head -n 1)
+echo "[$SCRIPT_NAME] extract zis-test $zis_test"
+cd "${ZOWE_ROOT_DIR}/bin/utils"
+pax -ppx -rf "${zis_test}"
+rm "${zis_test}"
+cd "${BASE_DIR}"
+
 
 configmgr=$(find "${ZOWE_ROOT_DIR}/files" -type f \( -name "configmgr-3*.pax" \) | head -n 1)
 echo "[$SCRIPT_NAME] extract configmgr $configmgr"
