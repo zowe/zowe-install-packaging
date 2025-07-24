@@ -27,11 +27,11 @@ export function execute(): void {
   let runtime = zoweConfig.zowe?.runtimeDirectory;
   const prefix = zoweConfig.zowe.setup?.dataset?.prefix;
 
-  // zoweConfig.zowe.setup.jcl.header
-  // If literal style (symbol |) is used, it will append new line at the end of the string
+  // zoweConfig.zowe.setup.jcl.header defined in defaults
   let jclHeaderCfg = zoweConfig.zowe.setup.jcl.header;
-  if (jclHeaderCfg.slice(-1) == '\n') {
-    jclHeaderCfg = jclHeaderCfg.slice(0, -1);
+  if (jclHeaderCfg.trim().length > 0 && jclHeaderCfg.includes('\n')) {
+    // Remove empty lines
+    jclHeaderCfg = jclHeaderCfg.split('\n').filter((jclLine: string) => jclLine.trim().length > 0).join('\n');
   }
 
   if (!runtime) {
