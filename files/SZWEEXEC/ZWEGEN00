@@ -480,7 +480,7 @@ do queued()
           element = element':\'
         end
         eleLength = length(element)
-        MAX_LINE_LEN = 70 /* 70 allows PARMLIB to always fit in a single line */
+        MAX_LINE_LEN = 72 /* 72 allows PARMLIB to always fit in a single line */
         if eleLength >= MAX_LINE_LEN then do
           /* divide element.1 into chunks of MAX_LINE_LEN
                without continutation characters */
