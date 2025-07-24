@@ -485,7 +485,7 @@ do queued()
                without continutation characters */
           chunks = eleLength % MAX_LINE_LEN
           if eleLength // MAX_LINE_LEN > 0 then do
-            chunks = chunks + 1 
+            chunks = chunks + 1
           end
           do i = 1 to chunks
             line = strip(SUBSTR(element, (i-1)*MAX_LINE_LEN + 1, MAX_LINE_LEN))
@@ -942,9 +942,8 @@ FreeByDSN:
 
   if ReadFromDataSet('myconfig') = 0 then do
     do j = 1 to !contentToRead.0
-      type = WORD(!contentToRead.j, 1)
-      location = WORD(!contentToRead.j, 2)
-      element = type'('location')'
+      parse var !contentToRead.j type location
+      element = type'('strip(location)')'
       configChain = AddToChain(configChain, element)
     end
   end
