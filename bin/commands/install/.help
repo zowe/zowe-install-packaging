@@ -10,9 +10,39 @@ These Zowe YAML configurations showing with sample values are used:
 zowe:
   setup:
     jcl:
-      header: 123456
+      header: '123456'
     dataset:
       prefix: IBMUSER.ZWE
+```
+
+Installation is done by submitting `ZWEINSTL` job. For the JOB statement customization,
+update the zowe.yaml property `zowe.setup.jcl.header`. This customization replaces
+the template `{zowe.setup.jcl.header}` in `ZWEINSTL` job:
+```
+//ZWEINSTL JOB {zowe.setup.jcl.header}`
+```
+
+- Default setting is empty string causing no additional JOB fields will be used - if your site or External Security Manager does not require additional fields, you can skip this
+- Otherwise use `zowe.setup.jcl.header` to fill with required fields
+- Note: JCL syntax is not checked by `zwe install` command, however empty lines are filtered out
+
+One line, for example accounting information only:
+```yaml
+zowe:
+  setup:
+    jcl:
+      header: '123456'
+```
+
+Multiple lines in Literal style:
+```yaml
+zowe:
+  setup:
+    jcl:
+      header: |-
+        123456,
+        //     'Zowe User',"
+        //      NOTIFY=&SYSUID"
 ```
 
 Expected outputs:
