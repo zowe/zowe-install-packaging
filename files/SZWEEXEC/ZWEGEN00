@@ -960,8 +960,7 @@ GetRuntimeDirectory:
   runtime = ''
 
   if ReadFromDataSet('myschema') = 0 then do
-    type = WORD(!contentToRead.1, 1)
-    location = WORD(!contentToRead.1, 2)
+    location = strip(delword(!contentToRead.1, 1, 1))
     offset = INDEX(location, '/schemas/zowe-yaml-schema.json')
     runtime = SUBSTR(location, 1, offset)
   end
@@ -980,10 +979,8 @@ GetSchemaChain:
 
   if ReadFromDataSet('myschema') = 0 then do
     do j = 1 to !contentToRead.0
-      type = WORD(!contentToRead.j, 1)
-      location = WORD(!contentToRead.j, 2)
-      element = location
-      schemaChain = AddToChain(schemaChain, element)
+      location = strip(delword(!contentToRead.j, 1, 1))
+      schemaChain = AddToChain(schemaChain, location)
     end
   end
 
