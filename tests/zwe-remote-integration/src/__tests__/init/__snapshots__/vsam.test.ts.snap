@@ -427,15 +427,15 @@ ERROR: Warning ZWEL0304W: Zowe Caching Service is not configured to use VSAM. Co
 `;
 
 exports[`init-vsam (SHORT) skip undefined caching service 1`] = `
-"failed to evaluate ' components.gateway?.zowe?.network?.server?.tls?.attls == true ? 'http' : zowe.network?.server?.tls?.attls == true ? 'http' : 'https' ', status=-1
+"TypeError: cannot read property 'gateway' of null
+    at <eval> (<embedded>)
+failed to evaluate ' components.gateway?.zowe?.network?.server?.tls?.attls == true ? 'http' : zowe.network?.server?.tls?.attls == true ? 'http' : 'https' ', status=-1
 Error: Validation of FILE(/test/dir/zowe.test.yaml):FILE(/test/dir/files/defaults.yaml) against schema /test/dir/schemas/zowe-yaml-schema.json:/test/dir/schemas/server-common.json found invalid JSON Schema data
 Validity Exceptions(s) with object at
   Validity Exceptions(s) with object at /zowe
     Validity Exceptions(s) with object at /zowe/network
       type 'object' not permitted at /zowe/network/proxyType; expecting type 'string'
-  string cannot be null for /components
-TypeError: cannot read property 'gateway' of null
-    at <eval> (<embedded>)"
+  string cannot be null for /components"
 `;
 
 exports[`init-vsam (SHORT) unset ds prefix 1`] = `
@@ -447,14 +447,11 @@ ERROR: Error ZWEL0157E: Zowe dataset prefix (zowe.setup.dataset.prefix) is not d
 `;
 
 exports[`init-vsam (SHORT) unset ds prefix 2`] = `
-"Error: Validation of FILE(/test/dir/zowe.test.yaml):FILE(/test/dir/files/defaults.yaml) against schema /test/dir/schemas/zowe-yaml-schema.json:/test/dir/schemas/server-common.json found invalid JSON Schema data
-Validity Exceptions(s) with object at
-  Validity Exceptions(s) with object at /zowe
-    Validity Exceptions(s) with object at /zowe/setup
-      Validity Exceptions(s) with object at /zowe/setup/dataset
-        Validity Exceptions(s) with string at /zowe/setup/dataset/prefix
-          string too short (len=0) '' 0 < MIN=3 at /zowe/setup/dataset/prefix
-          string pattern match fail s='', pat='^([A-Z\\$\\#\\@]){1}([A-Z0-9\\$\\#\\@\\-]){0,7}(\\.([A-Z\\$\\#\\@]){1}([A-Z0-9\\$\\#\\@\\-]){0,7}){0,11}$', at /zowe/setup/dataset/prefix"
+"Temporary directory '/tmp/.zweenv-0000' created.
+Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
+-------------------------------------------------------------------------------
+>> Initialize Zowe custom data sets
+ERROR: Error ZWEL0157E: Zowe dataset prefix (zowe.setup.dataset.prefix) is not defined in Zowe YAML configuration file."
 `;
 
 exports[`init-vsam (SHORT) unset jcllib 1`] = `
@@ -466,14 +463,11 @@ ERROR: Error ZWEL0319E: zowe.setup.dataset.jcllib does not exist, cannot run. Ru
 `;
 
 exports[`init-vsam (SHORT) unset jcllib 2`] = `
-"Error: Validation of FILE(/test/dir/zowe.test.yaml):FILE(/test/dir/files/defaults.yaml) against schema /test/dir/schemas/zowe-yaml-schema.json:/test/dir/schemas/server-common.json found invalid JSON Schema data
-Validity Exceptions(s) with object at
-  Validity Exceptions(s) with object at /zowe
-    Validity Exceptions(s) with object at /zowe/setup
-      Validity Exceptions(s) with object at /zowe/setup/dataset
-        Validity Exceptions(s) with string at /zowe/setup/dataset/jcllib
-          string too short (len=0) '' 0 < MIN=3 at /zowe/setup/dataset/jcllib
-          string pattern match fail s='', pat='^([A-Z\\$\\#\\@]){1}([A-Z0-9\\$\\#\\@\\-]){0,7}(\\.([A-Z\\$\\#\\@]){1}([A-Z0-9\\$\\#\\@\\-]){0,7}){0,11}$', at /zowe/setup/dataset/jcllib"
+"Temporary directory '/tmp/.zweenv-0000' created.
+Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
+-------------------------------------------------------------------------------
+>> Initialize Zowe custom data sets
+ERROR: Error ZWEL0319E: zowe.setup.dataset.jcllib does not exist, cannot run. Run 'zwe init', 'zwe init generate', or submit JCL TEST.DATASET.PFX.SZWESAMP(ZWEGENER) before running this command."
 `;
 
 exports[`init-vsam (SHORT) unset vsam mode 1`] = `
