@@ -481,7 +481,7 @@ ERROR: ZWEL0143E Cannot find data set member 'SOME.DS.NOEXIST.SZWESAMP(ZWEGENER)
 exports[`init-generate (SHORT) jcl header multi line 1`] = `
 "Temporary directory '/tmp/.zweenv-0000' created.
 Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
-ERROR: Cannot generate JCL with a header line greater than 80 characters. Line in error: LONGFIELD1,LONGFIELD2,LONGFIELD3,ANOTHER,FIELD,GOING,WAY,PAST,EIGHTY,CHARACTERS,INCLUDING,THIS. Please adjust this line in 'zowe.setup.jcl.header'."
+ERROR: ZWEL0144E Cannot generate JCL with a header line greater than 80 characters. Line in error: LONGFIELD1,LONGFIELD2,LONGFIELD3,ANOTHER,FIELD,GOING,WAY,PAST,EIGHTY,CHARACTERS,INCLUDING,THIS. Please adjust this line in 'zowe.setup.jcl.header'."
 `;
 
 exports[`init-generate (SHORT) jcl header multi line 2`] = `
@@ -602,7 +602,7 @@ To perform command, re-run command without "--dry-run" flag, or submit the JCL d
 exports[`init-generate (SHORT) jcl header multi line 3`] = `
 "Temporary directory '/tmp/.zweenv-0000' created.
 Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
-ERROR: Cannot generate JCL with a header line greater than 80 characters. Line in error: LONGFIELD1,LONGFIELD2,LONGFIELD3,ANOTHER,FIELD,GOING,WAY,PAST,EIGHTY,CHARACTERS. Please adjust this line in 'zowe.setup.jcl.header'."
+ERROR: ZWEL0144E Cannot generate JCL with a header line greater than 80 characters. Line in error: LONGFIELD1,LONGFIELD2,LONGFIELD3,ANOTHER,FIELD,GOING,WAY,PAST,EIGHTY,CHARACTERS. Please adjust this line in 'zowe.setup.jcl.header'."
 `;
 
 exports[`init-generate (SHORT) jcl header multi line 4`] = `
@@ -835,13 +835,13 @@ To perform command, re-run command without "--dry-run" flag, or submit the JCL d
 exports[`init-generate (SHORT) jcl header single line length 1`] = `
 "Temporary directory '/tmp/.zweenv-0000' created.
 Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
-ERROR: Cannot generate JCL with a header line greater than 80 characters. Line in error: 'SOMEJOB',(0000000000),ANOTHER,FIELD,GOING,WAY,PAST,EIGHTY,CHARACTERS,INCLUDING,THIS. Please adjust this line in 'zowe.setup.jcl.header'."
+ERROR: ZWEL0144E Cannot generate JCL with a header line greater than 80 characters. Line in error: 'SOMEJOB',(0000000000),ANOTHER,FIELD,GOING,WAY,PAST,EIGHTY,CHARACTERS,INCLUDING,THIS. Please adjust this line in 'zowe.setup.jcl.header'."
 `;
 
 exports[`init-generate (SHORT) jcl header single line length 2`] = `
 "Temporary directory '/tmp/.zweenv-0000' created.
 Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
-ERROR: Cannot generate JCL with a header line greater than 80 characters. Line in error: 'SOMEJOB',(0000000000),ANOTHER,FIELD,GOING,WAY,PAST,EIGHTY,CHARACT. Please adjust this line in 'zowe.setup.jcl.header'."
+ERROR: ZWEL0144E Cannot generate JCL with a header line greater than 80 characters. Line in error: 'SOMEJOB',(0000000000),ANOTHER,FIELD,GOING,WAY,PAST,EIGHTY,CHARACT. Please adjust this line in 'zowe.setup.jcl.header'."
 `;
 
 exports[`init-generate (SHORT) jcl header single line length 3`] = `
