@@ -8,4 +8,7 @@
  * Copyright Contributors to the Zowe Project.
  */
 
-jest.retryTimes(1, { logErrorsBeforeRetry: true });
+// only set retry when we're not updating snapshots...retries + updates causes problems with duplicate snapshots written out
+if (!process.argv.includes('-u') && !process.argv.includes('--updateSnapshot')) {
+  jest.retryTimes(1, { logErrorsBeforeRetry: true });
+}

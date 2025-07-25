@@ -518,82 +518,12 @@ exports[`zwe-install (LONG) install with edge-case prefix names 7`] = `
 Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
 -------------------------------------------------------------------------------
 >> Install Zowe MVS data sets
-Template JCL: /test/dir/files/SZWESAMP/ZWEINSTL
---- JCL content ---
-//ZWEINSTL JOB
-//*
-//* This program and the accompanying materials are made available
-//* under the terms of the Eclipse Public License v2.0 which
-//* accompanies this distribution, and is available at
-//* https://www.eclipse.org/legal/epl-v20.html
-//*
-//* SPDX-License-Identifier: EPL-2.0
-//*
-//* Copyright Contributors to the Zowe Project. 2020, 2020
-//*
-//*********************************************************************
-//*
-//* This job is used to create the MVS data sets under the
-//* zowe.setup.dataset.prefix definition:
-//*   - SZWEAUTH - Zowe load modules (++PROGRAM)
-//*   - SZWESAMP - sample configurations
-//*   - SZWEEXEC - utilities used by Zowe
-//*   - SZWELOAD - config manager for REXX
-//*
-//* The following step will copy required members.
-//*
-//*********************************************************************
-//MKPDSE EXEC PGM=IKJEFT01,DYNAMNBR=4
-//SYSTSPRT DD SYSOUT=A
-//SYSTSIN DD *
-ALLOC NEW DA('TEST.DATASET.PFX.PR#4282.$1-#-@.SZWESAMP') +
-dsntype(library) dsorg(po) recfm(f b) lrecl(80) +
-unit(sysallda) space(30,15) tracks
-ALLOC NEW DA('TEST.DATASET.PFX.PR#4282.$1-#-@.SZWEEXEC') +
-dsntype(library) dsorg(po) recfm(f b) lrecl(80) +
-unit(sysallda) space(15,15) tracks
-ALLOC NEW DA('TEST.DATASET.PFX.PR#4282.$1-#-@.SZWEAUTH') +
-dsntype(library) dsorg(po) recfm(u) lrecl(0) +
-blksize(32760) unit(sysallda) space(195,15) tracks
-ALLOC NEW DA('TEST.DATASET.PFX.PR#4282.$1-#-@.SZWELOAD') +
-dsntype(library) dsorg(po) recfm(u) lrecl(0) +
-blksize(32760) unit(sysallda) space(150,15) tracks
-//*
-//*
-//AUTHCPY EXEC PGM=BPXBATCH
-//BPXPRINT DD SYSOUT=*
-//STDOUT   DD SYSOUT=*
-//STDERR   DD SYSOUT=*
-//STDPARM DD *
-SH cd '/test/dir' &&
-ZWE_TMP_PREFIX='TEST.DATASET.PFX.PR#4282.$1-#-@' &&
-cd files/SZWESAMP &&
-cp * "//'$ZWE_TMP_PREFIX.SZWESAMP'" &&
-cd ../SZWEEXEC &&
-cp * "//'$ZWE_TMP_PREFIX.SZWEEXEC'" &&
-cd ../SZWELOAD &&
-cp * "//'$ZWE_TMP_PREFIX.SZWELOAD'" &&
-cd ../../components/launcher/bin &&
-cp zowe_launcher
-   "//'$ZWE_TMP_PREFIX.SZWEAUTH(ZWELNCH)'" &&
-cd ../samplib/ &&
-cp * "//'$ZWE_TMP_PREFIX.SZWESAMP'" &&
-cd ../../zss/SAMPLIB &&
-cp ZWESASTC ZWESIP00 ZWESISCH ZWESISTC
-   "//'$ZWE_TMP_PREFIX.SZWESAMP'" &&
-cd ../LOADLIB &&
-cp * "//'$ZWE_TMP_PREFIX.SZWEAUTH'"
-/*
---- End of JCL ---
-Submitting Job ZWEINSTL
-Job ZWEINSTL(JOB00000) completed with RC=0
+Warning ZWEL0301W: TEST.DATASET.PFX.PR#4282.$1-#-@.SZWEAUTH already exists and will not be overwritten. For upgrades, you must use --allow-overwrite.
+Warning ZWEL0301W: TEST.DATASET.PFX.PR#4282.$1-#-@.SZWEEXEC already exists and will not be overwritten. For upgrades, you must use --allow-overwrite.
+Warning ZWEL0301W: TEST.DATASET.PFX.PR#4282.$1-#-@.SZWELOAD already exists and will not be overwritten. For upgrades, you must use --allow-overwrite.
+Warning ZWEL0301W: TEST.DATASET.PFX.PR#4282.$1-#-@.SZWESAMP already exists and will not be overwritten. For upgrades, you must use --allow-overwrite.
 -------------------------------------------------------------------------------
->> Zowe MVS data sets are installed successfully.
-Zowe installation completed. In order to use Zowe, you need to run "zwe init" command to initialize Zowe instance.
-- Type "zwe init --help" to get more information.
-You can also run individual init sub-commands: generate, mvs, certificate, security, vsam, apfauth, and stc.
-- Type "zwe init <sub-command> --help" (for example, "zwe init stc --help") to get more information.
-Zowe JCL generated successfully"
+>> Zowe MVS data sets installation skipped."
 `;
 
 exports[`zwe-install (LONG) install with edge-case prefix names 8`] = `
@@ -689,6 +619,94 @@ exports[`zwe-install (LONG) install, re-install and fail, overwrite and succeed 
 Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
 -------------------------------------------------------------------------------
 >> Install Zowe MVS data sets
+Warning ZWEL0300W: TEST.DATASET.PFX.PR#4282.$1-#-@.SZWEAUTH already exists. Members in this data set will be overwritten.
+Warning ZWEL0300W: TEST.DATASET.PFX.PR#4282.$1-#-@.SZWEEXEC already exists. Members in this data set will be overwritten.
+Warning ZWEL0300W: TEST.DATASET.PFX.PR#4282.$1-#-@.SZWELOAD already exists. Members in this data set will be overwritten.
+Warning ZWEL0300W: TEST.DATASET.PFX.PR#4282.$1-#-@.SZWESAMP already exists. Members in this data set will be overwritten.
+Template JCL: /test/dir/files/SZWESAMP/ZWEINSTL
+--- JCL content ---
+//ZWEINSTL JOB
+//*
+//* This program and the accompanying materials are made available
+//* under the terms of the Eclipse Public License v2.0 which
+//* accompanies this distribution, and is available at
+//* https://www.eclipse.org/legal/epl-v20.html
+//*
+//* SPDX-License-Identifier: EPL-2.0
+//*
+//* Copyright Contributors to the Zowe Project. 2020, 2020
+//*
+//*********************************************************************
+//*
+//* This job is used to create the MVS data sets under the
+//* zowe.setup.dataset.prefix definition:
+//*   - SZWEAUTH - Zowe load modules (++PROGRAM)
+//*   - SZWESAMP - sample configurations
+//*   - SZWEEXEC - utilities used by Zowe
+//*   - SZWELOAD - config manager for REXX
+//*
+//* The following step will copy required members.
+//*
+//*********************************************************************
+//MKPDSE EXEC PGM=IKJEFT01,DYNAMNBR=4
+//SYSTSPRT DD SYSOUT=A
+//SYSTSIN DD *
+ALLOC NEW DA('TEST.DATASET.PFX.PR#4282.$1-#-@.SZWESAMP') +
+dsntype(library) dsorg(po) recfm(f b) lrecl(80) +
+unit(sysallda) space(30,15) tracks
+ALLOC NEW DA('TEST.DATASET.PFX.PR#4282.$1-#-@.SZWEEXEC') +
+dsntype(library) dsorg(po) recfm(f b) lrecl(80) +
+unit(sysallda) space(15,15) tracks
+ALLOC NEW DA('TEST.DATASET.PFX.PR#4282.$1-#-@.SZWEAUTH') +
+dsntype(library) dsorg(po) recfm(u) lrecl(0) +
+blksize(32760) unit(sysallda) space(195,15) tracks
+ALLOC NEW DA('TEST.DATASET.PFX.PR#4282.$1-#-@.SZWELOAD') +
+dsntype(library) dsorg(po) recfm(u) lrecl(0) +
+blksize(32760) unit(sysallda) space(150,15) tracks
+//*
+//*
+//AUTHCPY EXEC PGM=BPXBATCH
+//BPXPRINT DD SYSOUT=*
+//STDOUT   DD SYSOUT=*
+//STDERR   DD SYSOUT=*
+//STDPARM DD *
+SH cd '/test/dir' &&
+ZWE_TMP_PREFIX='TEST.DATASET.PFX.PR#4282.$1-#-@' &&
+cd files/SZWESAMP &&
+cp * "//'$ZWE_TMP_PREFIX.SZWESAMP'" &&
+cd ../SZWEEXEC &&
+cp * "//'$ZWE_TMP_PREFIX.SZWEEXEC'" &&
+cd ../SZWELOAD &&
+cp * "//'$ZWE_TMP_PREFIX.SZWELOAD'" &&
+cd ../../components/launcher/bin &&
+cp zowe_launcher
+   "//'$ZWE_TMP_PREFIX.SZWEAUTH(ZWELNCH)'" &&
+cd ../samplib/ &&
+cp * "//'$ZWE_TMP_PREFIX.SZWESAMP'" &&
+cd ../../zss/SAMPLIB &&
+cp ZWESASTC ZWESIP00 ZWESISCH ZWESISTC
+   "//'$ZWE_TMP_PREFIX.SZWESAMP'" &&
+cd ../LOADLIB &&
+cp * "//'$ZWE_TMP_PREFIX.SZWEAUTH'"
+/*
+--- End of JCL ---
+Deleting existing datasets.
+Submitting Job ZWEINSTL
+Job ZWEINSTL(JOB00000) completed with RC=0
+-------------------------------------------------------------------------------
+>> Zowe MVS data sets are installed successfully.
+Zowe installation completed. In order to use Zowe, you need to run "zwe init" command to initialize Zowe instance.
+- Type "zwe init --help" to get more information.
+You can also run individual init sub-commands: generate, mvs, certificate, security, vsam, apfauth, and stc.
+- Type "zwe init <sub-command> --help" (for example, "zwe init stc --help") to get more information.
+Zowe JCL generated successfully"
+`;
+
+exports[`zwe-install (LONG) install, re-install and fail, overwrite and succeed 2`] = `
+"Temporary directory '/tmp/.zweenv-0000' created.
+Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
+-------------------------------------------------------------------------------
+>> Install Zowe MVS data sets
 Template JCL: /test/dir/files/SZWESAMP/ZWEINSTL
 --- JCL content ---
 //ZWEINSTL JOB
@@ -767,19 +785,6 @@ You can also run individual init sub-commands: generate, mvs, certificate, secur
 Zowe JCL generated successfully"
 `;
 
-exports[`zwe-install (LONG) install, re-install and fail, overwrite and succeed 2`] = `
-"Temporary directory '/tmp/.zweenv-0000' created.
-Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
--------------------------------------------------------------------------------
->> Install Zowe MVS data sets
-Warning ZWEL0301W: TEST.DATASET.PFX.INST.TEST.SZWEAUTH already exists and will not be overwritten. For upgrades, you must use --allow-overwrite.
-Warning ZWEL0301W: TEST.DATASET.PFX.INST.TEST.SZWEEXEC already exists and will not be overwritten. For upgrades, you must use --allow-overwrite.
-Warning ZWEL0301W: TEST.DATASET.PFX.INST.TEST.SZWELOAD already exists and will not be overwritten. For upgrades, you must use --allow-overwrite.
-Warning ZWEL0301W: TEST.DATASET.PFX.INST.TEST.SZWESAMP already exists and will not be overwritten. For upgrades, you must use --allow-overwrite.
--------------------------------------------------------------------------------
->> Zowe MVS data sets installation skipped."
-`;
-
 exports[`zwe-install (LONG) install, re-install and fail, overwrite and succeed 3`] = `
 "Temporary directory '/tmp/.zweenv-0000' created.
 Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
@@ -794,6 +799,19 @@ Warning ZWEL0301W: TEST.DATASET.PFX.INST.TEST.SZWESAMP already exists and will n
 `;
 
 exports[`zwe-install (LONG) install, re-install and fail, overwrite and succeed 4`] = `
+"Temporary directory '/tmp/.zweenv-0000' created.
+Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
+-------------------------------------------------------------------------------
+>> Install Zowe MVS data sets
+Warning ZWEL0301W: TEST.DATASET.PFX.INST.TEST.SZWEAUTH already exists and will not be overwritten. For upgrades, you must use --allow-overwrite.
+Warning ZWEL0301W: TEST.DATASET.PFX.INST.TEST.SZWEEXEC already exists and will not be overwritten. For upgrades, you must use --allow-overwrite.
+Warning ZWEL0301W: TEST.DATASET.PFX.INST.TEST.SZWELOAD already exists and will not be overwritten. For upgrades, you must use --allow-overwrite.
+Warning ZWEL0301W: TEST.DATASET.PFX.INST.TEST.SZWESAMP already exists and will not be overwritten. For upgrades, you must use --allow-overwrite.
+-------------------------------------------------------------------------------
+>> Zowe MVS data sets installation skipped."
+`;
+
+exports[`zwe-install (LONG) install, re-install and fail, overwrite and succeed 5`] = `
 "Temporary directory '/tmp/.zweenv-0000' created.
 Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
 -------------------------------------------------------------------------------
@@ -1745,8 +1763,28 @@ Description
         dataset:
           prefix: IBMUSER.ZWE
     \`\`\`
-    Expected outputs:
-    - Will create these data sets under \`zowe.setup.dataset.prefix\` definition:
+    - \`zowe.setup.jcl.header\` controls the JOB header parameters for \`ZWEINSTL\` JCL sample.
+    Default setting is empty string causing no additional JOB fields will be used.
+    Is is optional, if your site or External Security Manager does not require additional fields.
+    One line, for example accounting information only:
+    \`\`\`
+    zowe:
+      setup:
+        jcl:
+          header: 123456
+    \`\`\`
+    Multiple lines as an array:
+    \`\`\`
+    zowe:
+      setup:
+        jcl:
+          header:
+            - "123456,"
+            - "//       'Zowe User',"
+            - "//       NOTIFY=&SYSUID"
+    \`\`\`
+    Note: the JCL syntax in not check by \`zwe\` command.
+    - \`zowe.setup.dataset.prefix\` shows where the datasets will be installed:
       * \`SZWEAUTH\` contains few Zowe load modules (++PROGRAM).
       * \`SZWESAMP\` contains several sample configurations.
       * \`SZWEEXEC\` contains few utilities used by Zowe.
@@ -1789,8 +1827,12 @@ Validity Exceptions(s) with object at
   Validity Exceptions(s) with object at /zowe
     Validity Exceptions(s) with object at /zowe/setup
       Validity Exceptions(s) with object at /zowe/setup/dataset
-        Validity Exceptions(s) with string at /zowe/setup/dataset/prefix
-          string pattern match fail s='INVALID.DSN.LENGTH123123', pat='^([A-Z\\$\\#\\@]){1}([A-Z0-9\\$\\#\\@\\-]){0,7}(\\.([A-Z\\$\\#\\@]){1}([A-Z0-9\\$\\#\\@\\-]){0,7}){0,11}$', at /zowe/setup/dataset/prefix"
+        Schema at '/zowe/setup/dataset/prefix' invalid
+          not oneOf schemas at '/zowe/setup/dataset/prefix' are valid, 0 are
+            Validity Exceptions(s) with string at /zowe/setup/dataset/prefix
+              string pattern match fail s='INVALID.DSN.LENGTH123123', pat='^([A-Z\\$\\#\\@]){1}([A-Z0-9\\$\\#\\@\\-]){0,7}(\\.([A-Z\\$\\#\\@]){1}([A-Z0-9\\$\\#\\@\\-]){0,7}){0,11}$', at /zowe/setup/dataset/prefix
+            Validity Exceptions(s) with string at /zowe/setup/dataset/prefix
+              string too long (len=24) 'INVALID.DSN.LENGTH123123' 24 > MAX=0 at /zowe/setup/dataset/prefix"
 `;
 
 exports[`zwe-install (SHORT) zwe install invalid dataset name 2`] = `
