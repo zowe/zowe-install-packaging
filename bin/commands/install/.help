@@ -15,9 +15,32 @@ zowe:
       prefix: IBMUSER.ZWE
 ```
 
-Expected outputs:
+- `zowe.setup.jcl.header` controls the JOB header parameters for `ZWEINSTL` JCL sample.
+Default setting is empty string causing no additional JOB fields will be used.
+Is is optional, if your site or External Security Manager does not require additional fields.
 
-- Will create these data sets under `zowe.setup.dataset.prefix` definition:
+One line, for example accounting information only:
+```yaml
+zowe:
+  setup:
+    jcl:
+      header: 123456
+```
+
+Multiple lines as an array:
+```yaml
+zowe:
+  setup:
+    jcl:
+      header:
+        - "123456,"
+        - "//       'Zowe User',"
+        - "//       NOTIFY=&SYSUID"
+```
+
+Note: the JCL syntax in not check by `zwe` command.
+
+- `zowe.setup.dataset.prefix` shows where the datasets will be installed:
   * `SZWEAUTH` contains few Zowe load modules (++PROGRAM).
   * `SZWESAMP` contains several sample configurations.
   * `SZWEEXEC` contains few utilities used by Zowe.

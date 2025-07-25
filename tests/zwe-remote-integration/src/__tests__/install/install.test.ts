@@ -63,11 +63,11 @@ describe(`${testSuiteName}`, () => {
         expect(result.rc).toBe(0);
 
         const cleanupDs: TestFile[] = installDatasets.map((ds) => {
-          return { name: `${cfgYaml.zowe.setup.dataset.prefix}.${ds}`, type: FileType.DS_NON_CLUSTER };
+          return { name: `${test}.${ds}`, type: FileType.DS_NON_CLUSTER };
         });
         await TestFileActions.deleteAll(cleanupDs);
       }
-    }, 300000);
+    }, 500000);
 
     it('install, re-install and fail, overwrite and succeed', async () => {
       _.set(cfgYaml, 'zowe.setup.dataset.prefix', `${cfgYaml.zowe.setup.dataset.prefix}.INST.TEST`);
