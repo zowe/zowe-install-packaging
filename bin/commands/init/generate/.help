@@ -80,7 +80,7 @@ zowe:
       header: '123456'
 ```
 
-Multiple lines in Literal style:
+Multiple lines in block literal style, '|-' is preferred as it removes accidental newlines:
 ```yaml
 zowe:
   setup:
