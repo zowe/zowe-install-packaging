@@ -20,6 +20,22 @@ export _BPXK_AUTOCVT="ON"
 export _EDC_ADD_ERRNO2=1                        # show details on error
 unset ENV             # just in case, as it can cause unexpected output
 
+# Temporarily, the zwe init commands have old shell code and new jcl code paths available.
+# To determine which are used, we check if --generate is given (implies jcl)
+# If not, we check if zowe.setup.jcl.enabled is explicitly false.
+# If so, shell is used, otherwise jcl is used.
+check_jcl_init() {
+  enabled=$(yaml_read_configmgr "${ZWE_CLI_PARAMETER_CONFIG" ".zowe.setup.jcl.enable")
+  if [ "${ZWE_CLI_PARAMETER_GENERATE}" = "true" ]; then
+      echo "true"
+  elif [ "${enabled}" = "false" ]; then
+     echo "false"
+  else
+     echo "true"
+  fi
+}
+
+
 # Leveraging the configmgr scripting is by opt-in of a config parameter or flag
 # However, configmgr-only config file specifications also exist
 # So if we see it in ZWE_CLI_PARAMETER_CONFIG we can also consider that opt-in

@@ -566,6 +566,10 @@
               "additionalProperties": false,
               "description": "SZWESAMP JCLs related setting.",
               "properties": {
+                "enable": {
+                  "type": "boolean",
+                  "description": "Controls whether zwe install and zwe init commands and subcommands will utilize jobs for executing system changes instead of shell commands."
+                },
                 "header": {
                   "anyOf": [
                     {
