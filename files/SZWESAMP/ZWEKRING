@@ -16,6 +16,9 @@
 //*
 //*********************************************************************
 //* ATTENTION!
+//*
+//* This sample is DEPRECATED.
+//*
 //* Configure certificate for Zowe
 //* Select one of three options which is the most suitable for your
 //* environment and follow the appropriate action
