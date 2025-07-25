@@ -20,6 +20,22 @@ export _BPXK_AUTOCVT="ON"
 export _EDC_ADD_ERRNO2=1                        # show details on error
 unset ENV             # just in case, as it can cause unexpected output
 
+# Leveraging JCL driven init and install is opt-in via config option or 
+# a flag passed to the calling command.
+check_jcl_enabled() {
+  USE_JCL=${ZWE_CLI_PARAMETER_JCL}
+  if [ -n "${USE_JCL}" ]; then
+    echo $USE_JCL
+  elif [ -n "${ZWE_CLI_PARAMETER_JCL}" ]; then
+    USE_JCL=$(shell_read_yaml_config "${ZWE_CLI_PARAMETER_JCL}" 'setup' 'useJcl')
+  fi
+  if [ "${USE_JCL}" = "false" ]; then
+    echo "false"
+  else
+    echo "true"
+  fi
+}
+
 # Leveraging the configmgr scripting is by opt-in of a config parameter or flag
 # However, configmgr-only config file specifications also exist
 # So if we see it in ZWE_CLI_PARAMETER_CONFIG we can also consider that opt-in
