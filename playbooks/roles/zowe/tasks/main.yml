@@ -39,6 +39,7 @@
   vars:
     configs:
       "zowe.runtimeDirectory": "{{ zowe_root_dir }}"
+      "zowe.setup.useJcl": "{{ zowe_setup_use_jcl | default(True) }}"
       "zowe.setup.dataset.prefix": "{{ zowe_dataset_prefix }}"
 
 - name: Install Zowe

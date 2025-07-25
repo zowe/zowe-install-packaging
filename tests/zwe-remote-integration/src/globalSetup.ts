@@ -53,6 +53,7 @@ function setupBaseYaml() {
   zoweYaml.zowe.runtimeDirectory = REMOTE_SYSTEM_INFO.ussTestDir;
   zoweYaml.zowe.logDirectory = REMOTE_SYSTEM_INFO.zweLogDir;
   zoweYaml.zowe.workspaceDirectory = REMOTE_SYSTEM_INFO.zweWorkspaceDir;
+  zoweYaml.zowe.setup.useJcl = true; // we only test JCL version of init/install
   zoweYaml.zowe.setup.dataset.prefix = REMOTE_SYSTEM_INFO.prefix;
   zoweYaml.zowe.setup.dataset.jcllib = REMOTE_SYSTEM_INFO.jcllib;
   zoweYaml.zowe.setup.dataset.proclib = REMOTE_SYSTEM_INFO.proclib;

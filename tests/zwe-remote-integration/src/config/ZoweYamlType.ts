@@ -150,6 +150,10 @@ const zoweSchema = zoweYamlSchema as {
           additionalProperties: false;
           description: 'Zowe setup configurations used by "zwe install" and "zwe init" commands.';
           properties: {
+            useJcl: {
+              type: 'boolean';
+              description: 'Whether to restrict the permissions of the keystore after creation';
+            };
             dataset: {
               type: 'object';
               additionalProperties: false;

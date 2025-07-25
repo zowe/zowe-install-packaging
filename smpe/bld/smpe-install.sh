@@ -171,6 +171,7 @@ zowe:
   logDirectory: "${extract}/logs"
   workspaceDirectory: "${extract}/logs/workspace"
   setup:
+    useJcl: true
     dataset:
       prefix: $mvsI 
 EOT
