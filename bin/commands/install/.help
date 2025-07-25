@@ -47,7 +47,28 @@ zowe:
 
 Expected outputs:
 
-- Will create these data sets under `zowe.setup.dataset.prefix` definition:
+One line, for example accounting information only:
+```yaml
+zowe:
+  setup:
+    jcl:
+      header: 123456
+```
+
+Multiple lines as an array:
+```yaml
+zowe:
+  setup:
+    jcl:
+      header:
+        - "123456,"
+        - "//       'Zowe User',"
+        - "//       NOTIFY=&SYSUID"
+```
+
+Note: the JCL syntax in not check by `zwe` command.
+
+- `zowe.setup.dataset.prefix` shows where the datasets will be installed:
   * `SZWEAUTH` contains few Zowe load modules (++PROGRAM).
   * `SZWESAMP` contains several sample configurations.
   * `SZWEEXEC` contains few utilities used by Zowe.
