@@ -82,13 +82,13 @@ describe(`${testSuiteName}`, () => {
       let result = await testRunner.runZweTest(cfgYaml, 'init mvs --dry-run');
       expect(result.stdout).not.toBeNull();
       expect(result.cleanedStdout).toMatchSnapshot();
-      expect(result.rc).toBe(1);
+      expect(result.rc).toBe(157);
 
       cfgYaml.zowe.setup.dataset.prefix = '';
       result = await testRunner.runZweTest(cfgYaml, 'init mvs --dry-run');
       expect(result.stdout).not.toBeNull();
       expect(result.cleanedStdout).toMatchSnapshot();
-      expect(result.rc).toBe(1);
+      expect(result.rc).toBe(157);
     });
 
     it('jcllib fails verification', async () => {
@@ -96,13 +96,13 @@ describe(`${testSuiteName}`, () => {
       let result = await testRunner.runZweTest(cfgYaml, 'init mvs --dry-run');
       expect(result.stdout).not.toBeNull();
       expect(result.cleanedStdout).toMatchSnapshot();
-      expect(result.rc).toBe(1);
+      expect(result.rc).toBe(63);
 
       cfgYaml.zowe.setup.dataset.jcllib = '';
       result = await testRunner.runZweTest(cfgYaml, 'init mvs --dry-run');
       expect(result.stdout).not.toBeNull();
       expect(result.cleanedStdout).toMatchSnapshot();
-      expect(result.rc).toBe(1);
+      expect(result.rc).toBe(63);
     });
 
     it('authLoadLib negatives', async () => {
@@ -110,13 +110,13 @@ describe(`${testSuiteName}`, () => {
       let result = await testRunner.runZweTest(cfgYaml, 'init mvs --dry-run');
       expect(result.stdout).not.toBeNull();
       expect(result.cleanedStdout).toMatchSnapshot();
-      expect(result.rc).toBe(1);
+      expect(result.rc).toBe(0);
 
       cfgYaml.zowe.setup.dataset.authLoadlib = '';
       result = await testRunner.runZweTest(cfgYaml, 'init mvs --dry-run');
       expect(result.stdout).not.toBeNull();
       expect(result.cleanedStdout).toMatchSnapshot();
-      expect(result.rc).toBe(1);
+      expect(result.rc).toBe(0);
 
       cfgYaml.zowe.setup.dataset.authLoadlib = 'DOES.NOT.EXIST.ALL';
       result = await testRunner.runZweTest(cfgYaml, 'init mvs --dry-run');
@@ -161,13 +161,13 @@ describe(`${testSuiteName}`, () => {
       let result = await testRunner.runZweTest(cfgYaml, 'init mvs --dry-run');
       expect(result.stdout).not.toBeNull();
       expect(result.cleanedStdout).toMatchSnapshot();
-      expect(result.rc).toBe(1);
+      expect(result.rc).toBe(157);
 
       cfgYaml.zowe.setup.dataset.parmlib = '';
       result = await testRunner.runZweTest(cfgYaml, 'init mvs --dry-run');
       expect(result.stdout).not.toBeNull();
       expect(result.cleanedStdout).toMatchSnapshot();
-      expect(result.rc).toBe(1);
+      expect(result.rc).toBe(157);
 
       cfgYaml.zowe.setup.dataset.parmlib = 'DOES.NOT.EXIST.ALL';
       result = await testRunner.runZweTest(cfgYaml, 'init mvs --dry-run');
@@ -200,13 +200,13 @@ describe(`${testSuiteName}`, () => {
       let result = await testRunner.runZweTest(cfgYaml, 'init mvs --dry-run');
       expect(result.stdout).not.toBeNull();
       expect(result.cleanedStdout).toMatchSnapshot();
-      expect(result.rc).toBe(1);
+      expect(result.rc).toBe(0);
 
       cfgYaml.zowe.setup.dataset.authPluginLib = '';
       result = await testRunner.runZweTest(cfgYaml, 'init mvs --dry-run');
       expect(result.stdout).not.toBeNull();
       expect(result.cleanedStdout).toMatchSnapshot();
-      expect(result.rc).toBe(1);
+      expect(result.rc).toBe(0);
 
       cfgYaml.zowe.setup.dataset.authPluginLib = 'DOES.NOT.EXIST.ALL';
       result = await testRunner.runZweTest(cfgYaml, 'init mvs --dry-run');

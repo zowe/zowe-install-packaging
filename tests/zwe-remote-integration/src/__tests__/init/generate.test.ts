@@ -348,7 +348,7 @@ describe(`${testSuiteName}`, () => {
     }, 400000);
 
     it('jcllib updates: jcl header single line', async () => {
-      const header = `'SOMEJOB', REGION = 0M`;
+      const header = `'SOMEJOB', REGION=0M`;
       _.set(cfgYaml, 'zowe.setup.jcl.header', header);
       const result = await testRunner.runZweTest(cfgYaml, 'init generate');
       expect(result.stdout).not.toBeNull();
