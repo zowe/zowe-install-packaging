@@ -699,11 +699,11 @@ const zoweSchema = zoweYamlSchema as {
               description: 'SZWESAMP JCLs related setting.';
               properties: {
                 header: {
-                  type: 'string',
+                  type: 'string';
                   not: {
-                    type: 'null'
-                  },
-                  description: "JCL header options for samples in SZWESAMP: '//ZWEnnnnn JOB {zowe.setup.jcl.header}'."
+                    type: 'null';
+                  };
+                  description: "JCL header options for samples in SZWESAMP: '//ZWEnnnnn JOB {zowe.setup.jcl.header}'.";
                 };
               };
             };
