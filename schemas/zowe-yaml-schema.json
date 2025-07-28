@@ -445,7 +445,6 @@
               "type": "object",
               "additionalProperties": false,
               "description": "SZWESAMP JCLs related setting.",
-              "required": ["enable"],
               "properties": {
                 "enable": {
                   "type": "boolean",
