@@ -777,14 +777,14 @@ echo '  setup:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '    # JCL job header for samples in SZWESAMP' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '    jcl:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
   #if (${global-zowe_setup_jcl_header.trim().includes("\n")} == -1)
-echo '      header: ${global-zowe_setup_jcl_header.trim()}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '      header: "${global-zowe_setup_jcl_header.trim()}"' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
   #else
-echo '      header:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '      header: |-' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
     #foreach($line in ${global-zowe_setup_jcl_header.split("\n")})
       #if (${foreach.index} == 0)
-echo '      - ${line}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '        ${line}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
       #else
-echo '      - //    ${line}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '        //    ${line}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
       #end
     #end
   #end

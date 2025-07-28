@@ -38,14 +38,18 @@ export function execute(dryRun?: boolean) {
     common.printErrorAndExit(`Error ZWEL0157E: Zowe runtime directory (zowe.runtimeDirectory) is not defined in Zowe YAML configuration file.`, undefined, 157);
   }
 
-  let jclHeaderJoined = '';
   // zowe.setup.jcl.header defined in defaults
-  const jclHeader = ZOWE_CONFIG.zowe.setup.jcl.header;
-  if (Array.isArray(jclHeader)) {
-    jclHeaderJoined = jclHeader.join("\n");
-  } else {
-    jclHeaderJoined = jclHeader.toString();
+  let jclHeader = ZOWE_CONFIG.zowe.setup.jcl.header;
+  if (jclHeader.trim().length > 0 && jclHeader.includes('\n')) {
+    // Remove empty lines
+    jclHeader = jclHeader.split('\n').filter((jclLine: string) => jclLine.trim().length > 0).join('\n');
   }
+  jclHeader.split('\n').forEach((line, i) => {
+    // ideally this is a schema check. 80 - 15 is the length of "//abcdefgh job "
+    if (line.length > 80 || (0 === i && line.length > (80 - 15))) {
+      common.printErrorAndExit(`ZWEL0144E Cannot generate JCL with a header line greater than 80 characters. Line in error: ${line}. Please adjust this line in 'zowe.setup.jcl.header'.`, undefined, 144);
+    }
+  });
 
   const tempFile = fs.createTmpFile();
   if (zosFs.copyMvsToUss(ZOWE_CONFIG.zowe.setup.dataset.prefix + '.SZWESAMP(ZWEGENER)', tempFile) !== 0) {
@@ -58,7 +62,7 @@ export function execute(dryRun?: boolean) {
   // $$ inserts a '$', replace(/[$]/g, '$$$$') => double each '$' occurence
   jclContents = jclContents.replace(/\{zowe\.setup\.dataset\.prefix\}/gi, prefix.replace(/[$]/g, '$$$$'));
   jclContents = jclContents.replace(/\{zowe\.runtimeDirectory\}/gi, runtimeDirectory.replace(/[$]/g, '$$$$'));
-  jclContents = jclContents.replace(/\{zowe\.setup\.jcl\.header\}/i, jclHeaderJoined.replace(/[$]/g, '$$$$'));
+  jclContents = jclContents.replace(/\{zowe\.setup\.jcl\.header\}/i, jclHeader.replace(/[$]/g, '$$$$'));
   if (std.getenv('ZWE_PRIVATE_LOG_LEVEL_ZWELS') !== 'INFO') {
     jclContents = jclContents.replace('noverbose -', 'verbose -');
   }

@@ -70,23 +70,23 @@ JCL JOB statement customization:
 - Each JOB statement is defined as `//ZWEnnnnn JOB {zowe.setup.jcl.header}`, where `nnnnn` identifies the job
 - Default setting is empty string causing no additional JOB fields will be used - if your site or External Security Manager does not require additional fields, you can skip this
 - Otherwise you can use `zwe init generate` to set additional JOB fields
-- Note: JCL syntax is not checked by `zwe init generate` command
+- Note: JCL syntax is not checked by `zwe init generate` command, however empty lines are filtered out
 
 One line, for example accounting information only:
 ```yaml
 zowe:
   setup:
     jcl:
-      header: 123456
+      header: '123456'
 ```
 
-Multiple lines as an array:
+Multiple lines in block literal style, '|-' is preferred as it removes accidental newlines:
 ```yaml
 zowe:
   setup:
     jcl:
-      header:
-        - "123456,"
-        - "//       'Zowe User',"
-        - "//       NOTIFY=&SYSUID"
+      header: |-
+        123456,
+        //     'Zowe User',"
+        //      NOTIFY=&SYSUID"
 ```

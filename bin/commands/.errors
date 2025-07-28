@@ -27,6 +27,7 @@ ZWEL0138E|138|Failed to update key %s of file %s.
 ZWEL0139E|139|Failed to create directory %s.
 ZWEL0140E|140|Failed to translate Zowe configuration (%s).
 ZWEL0142E|142|Failed to refresh APIML static registrations.
+ZWEL0144E|144|Cannot generate JCL with a header line greater than 80 characters. Line in error: %s. Please adjust this line in 'zowe.setup.jcl.header'.
 ZWEL0151E|151|Failed to create temporary file %s. Please check permission or volume free space.
 ZWEL0157E|157|%s (%s) is not defined in Zowe YAML configuration file.
 ZWEL0158W||Failed to find job %s result.
