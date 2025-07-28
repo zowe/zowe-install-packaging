@@ -63,11 +63,11 @@ describe(`${testSuiteName}`, () => {
         expect(result.rc).toBe(0);
 
         const cleanupDs: TestFile[] = installDatasets.map((ds) => {
-          return { name: `${cfgYaml.zowe.setup.dataset.prefix}.${ds}`, type: FileType.DS_NON_CLUSTER };
+          return { name: `${test}.${ds}`, type: FileType.DS_NON_CLUSTER };
         });
         await TestFileActions.deleteAll(cleanupDs);
       }
-    }, 300000);
+    }, 500000);
 
     it('install, re-install and fail, overwrite and succeed', async () => {
       _.set(cfgYaml, 'zowe.setup.dataset.prefix', `${cfgYaml.zowe.setup.dataset.prefix}.INST.TEST`);
@@ -125,9 +125,10 @@ describe(`${testSuiteName}`, () => {
     });
 
     it('bad runtimeDirectory, missing ZWEINSTL', async () => {
-      _.set(cfgYaml, 'zowe.setup.dataset.prefix', 'SOME.NEW.VALID.DSN');
+      const emptyDs = `${cfgYaml.zowe.setup.dataset.prefix}.NEW.VALID.DSN`;
+      _.set(cfgYaml, 'zowe.setup.dataset.prefix', emptyDs);
       await testRunner.removeUssFileOrDirForTest('files/SZWESAMP/ZWEINSTL');
-      const result = await testRunner.runZweTest(cfgYaml, 'install');
+      const result = await testRunner.runZweTest(cfgYaml, 'install --dry-run');
       expect(result.stdout).not.toBeNull();
       expect(result.cleanedStdout).toMatchSnapshot();
       expect(result.rc).toBe(159);
@@ -237,31 +238,31 @@ describe(`${testSuiteName}`, () => {
       // eslint-disable-next-line
       const longString = "LONGFIELD1,LONGFIELD2,LONGFIELD3,ANOTHER,FIELD,GOING,WAY,PAST,EIGHTY,CHARACTERS,INCLUDING,THIS";
       let jclLines = [`'SOMEJOB'`, `// (0000000000)`, longString, 'SYSAFF=SYS1'];
-      _.set(cfgYaml, 'zowe.setup.jcl.header', jclLines);
+      _.set(cfgYaml, 'zowe.setup.jcl.header', jclLines.join('\n'));
       let result = await testRunner.runZweTest(cfgYaml, 'install --dry-run');
       expect(result.stdout).not.toBeNull();
       expect(result.cleanedStdout).toMatchSnapshot();
-      expect(result.rc).toBe(1);
+      expect(result.rc).toBe(144);
 
       // this is technically not valid JCL, but fits in 80 chars
       jclLines = [`'SOMEJOB'`, `//    (0000000000)`, ('//    ' + longString).slice(0, 79), '//    SYSAFF=SYS1'];
-      _.set(cfgYaml, 'zowe.setup.jcl.header', jclLines);
+      _.set(cfgYaml, 'zowe.setup.jcl.header', jclLines.join('\n'));
       result = await testRunner.runZweTest(cfgYaml, 'install --dry-run');
       expect(result.stdout).not.toBeNull();
       expect(result.cleanedStdout).toMatchSnapshot();
       expect(result.rc).toBe(0);
 
-      // with idx 0, the slice is invalid for first line. this is currently allowed by schema.
+      // with idx 0, the slice is invalid for first line.
       jclLines = [longString.slice(0, 79), `//    (0000000000)`, '//    SOMEJOB', '//    SYSAFF=SYS1'];
-      _.set(cfgYaml, 'zowe.setup.jcl.header', jclLines);
+      _.set(cfgYaml, 'zowe.setup.jcl.header', jclLines.join('\n'));
       result = await testRunner.runZweTest(cfgYaml, 'install --dry-run');
       expect(result.stdout).not.toBeNull();
       expect(result.cleanedStdout).toMatchSnapshot();
-      expect(result.rc).toBe(0);
+      expect(result.rc).toBe(144);
 
       // this is the right max width
       jclLines = [longString.slice(0, 80 - ('//ABCABCDE JOB '.length + 1)), `// (0000000000),`, `// 'SOMEJOB',`, '// SYSAFF=SYS1'];
-      _.set(cfgYaml, 'zowe.setup.jcl.header', jclLines);
+      _.set(cfgYaml, 'zowe.setup.jcl.header', jclLines.join('\n'));
       result = await testRunner.runZweTest(cfgYaml, 'install --dry-run');
       expect(result.stdout).not.toBeNull();
       expect(result.cleanedStdout).toMatchSnapshot();

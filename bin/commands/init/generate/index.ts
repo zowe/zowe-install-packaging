@@ -20,7 +20,7 @@ import * as zosJes from '../../../libs/zos-jes';
 
 export function execute(dryRun?: boolean) {
   common.requireZoweYaml();
-  const ZOWE_CONFIG=config.getZoweConfig();
+  const ZOWE_CONFIG = config.getZoweConfig();
 
   // zowe.setup.dataset defined in defaults
   const prefix = ZOWE_CONFIG.zowe.setup.dataset.prefix;
@@ -38,14 +38,18 @@ export function execute(dryRun?: boolean) {
     common.printErrorAndExit(`Error ZWEL0157E: Zowe runtime directory (zowe.runtimeDirectory) is not defined in Zowe YAML configuration file.`, undefined, 157);
   }
 
-  let jclHeaderJoined = '';
   // zowe.setup.jcl.header defined in defaults
-  const jclHeader = ZOWE_CONFIG.zowe.setup.jcl.header;
-  if (Array.isArray(jclHeader)) {
-      jclHeaderJoined = jclHeader.join("\n");
-  } else {
-      jclHeaderJoined = jclHeader.toString();
+  let jclHeader = ZOWE_CONFIG.zowe.setup.jcl.header;
+  if (jclHeader.trim().length > 0 && jclHeader.includes('\n')) {
+    // Remove empty lines
+    jclHeader = jclHeader.split('\n').filter((jclLine: string) => jclLine.trim().length > 0).join('\n');
   }
+  jclHeader.split('\n').forEach((line, i) => {
+    // ideally this is a schema check. 80 - 15 is the length of "//abcdefgh job "
+    if (line.length > 80 || (0 === i && line.length > (80 - 15))) {
+      common.printErrorAndExit(`ZWEL0144E Cannot generate JCL with a header line greater than 80 characters. Line in error: ${line}. Please adjust this line in 'zowe.setup.jcl.header'.`, undefined, 144);
+    }
+  });
 
   const tempFile = fs.createTmpFile();
   if (zosFs.copyMvsToUss(ZOWE_CONFIG.zowe.setup.dataset.prefix + '.SZWESAMP(ZWEGENER)', tempFile) !== 0) {
@@ -58,14 +62,14 @@ export function execute(dryRun?: boolean) {
   // $$ inserts a '$', replace(/[$]/g, '$$$$') => double each '$' occurence
   jclContents = jclContents.replace(/\{zowe\.setup\.dataset\.prefix\}/gi, prefix.replace(/[$]/g, '$$$$'));
   jclContents = jclContents.replace(/\{zowe\.runtimeDirectory\}/gi, runtimeDirectory.replace(/[$]/g, '$$$$'));
-  jclContents = jclContents.replace(/\{zowe\.setup\.jcl\.header\}/i, jclHeaderJoined.replace(/[$]/g, '$$$$'));
+  jclContents = jclContents.replace(/\{zowe\.setup\.jcl\.header\}/i, jclHeader.replace(/[$]/g, '$$$$'));
   if (std.getenv('ZWE_PRIVATE_LOG_LEVEL_ZWELS') !== 'INFO') {
     jclContents = jclContents.replace('noverbose -', 'verbose -');
   }
   let originalConfig = std.getenv('ZWE_PRIVATE_CONFIG_ORIG');
   let startingConfig = originalConfig;
   if ((originalConfig.indexOf('FILE(') == -1) && (originalConfig.indexOf('PARMLIB(') == -1)) {
-    startingConfig = 'FILE('+originalConfig+')';
+    startingConfig = 'FILE(' + originalConfig + ')';
   }
 
   // we are guaranteed to have FILE() or PARMLIB() formatted config concatenated with ':'
@@ -76,14 +80,14 @@ export function execute(dryRun?: boolean) {
   for (let i = 0; i < parts.length; i++) {
     let part = parts[i].trim();
     if (part.startsWith('FILE(')) {
-      let filename = part.substring(part.indexOf('(')+1, part.indexOf(')'));
+      let filename = part.substring(part.indexOf('(') + 1, part.indexOf(')'));
       configLines.push('FILE ' + fs.convertToAbsolutePath(filename).replace(/[$]/g, '$$$$'));
     } else if (part.startsWith('PARMLIB(')) {
       const isValidParmlib = common.isValidZoweYamlParmlib(part);
       if (!isValidParmlib.ok) {
         common.printErrorAndExit(isValidParmlib.error.message, undefined, isValidParmlib.error.code);
       }
-      const parmlib = part.substring(part.indexOf('(')+1, part.lastIndexOf(')'));
+      const parmlib = part.substring(part.indexOf('(') + 1, part.lastIndexOf(')'));
       configLines.push(`PARMLIB ${parmlib}`);
     }
   }
@@ -108,7 +112,7 @@ export function execute(dryRun?: boolean) {
     if (result.rc == 0) {
       common.printMessage("Zowe JCL generated successfully");
     } else {
-      common.printMessage(`Zowe JCL generated with errors, check job log. Job completion code=${result.jobcccode}, Job completion text=${result.jobcctext}`);
+      common.printMessage(`Zowe JCL generated with errors, check job log. Job completion code=${result.jobcccode}.`);
     }
   }
   os.remove(tempFile);

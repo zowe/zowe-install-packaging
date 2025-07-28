@@ -196,6 +196,11 @@ module.exports = async () => {
       await downloadManifestDep('org.zowe.getesm');
     }
 
+    await downloadArtifact(
+      'libs-snapshot-local',
+      'org/zowe/zowe-native-proto/Server/Nightly',
+      'zowe-server-0.1.2-2025-07-15-013657.pax.Z',
+    );
     await downloadArtifact('libs-snapshot-local', 'org/zowe/vtl-cli/zowe-cli-package/1.0.7-SNAPSHOT', 'vtl.tar.gz');
 
     const downloadsDirContents = fs.readdirSync(downloadsDir);
@@ -227,7 +232,12 @@ module.exports = async () => {
 
     const vtlArchive = downloadsDirContents.find((item) => /vtl.tar.gz/g.test(item));
     if (vtlArchive == null) {
-      throw new Error('Could not locate zowe-utility-tools zip in the .build directory');
+      throw new Error('Could not locate vtl tar in the .build directory');
+    }
+
+    const zowexArchive = downloadsDirContents.find((item) => /zowe-server.*pax.Z/g.test(item));
+    if (zowexArchive == null) {
+      throw new Error('Could not locate zowex archive in the .build directory');
     }
 
     const getEsmArchive = downloadsDirContents.find((item) => /getesm.*.pax/g.test(item));
@@ -294,6 +304,11 @@ module.exports = async () => {
 
     console.log(`Uploading ${launcherPax} to ${ussWorkDir}/launcher.pax ...`);
     await files.Upload.fileToUssFile(zosmfSession, path.resolve(downloadsDir, launcherPax), `${ussWorkDir}/launcher.pax`, {
+      binary: true,
+    });
+
+    console.log(`Uploading ${zowexArchive} to ${ussWorkDir}/zowex.pax.Z ...`);
+    await files.Upload.fileToUssFile(zosmfSession, path.resolve(downloadsDir, zowexArchive), `${ussWorkDir}/zowex.pax.Z`, {
       binary: true,
     });
 
@@ -440,6 +455,10 @@ module.exports = async () => {
       await uss.runCommand(`cp -X ${pgm} "//'${REMOTE_SYSTEM_INFO.szweload}(${pgm})'"`, ussWorkDir);
       await uss.runCommand(`cp ${pgm} ${REMOTE_SYSTEM_INFO.ussTestDir}/files/SZWELOAD`, ussWorkDir);
     }
+
+    console.log(`Unpacking zowex pax and placing zowex in utils directory ... `);
+    await uss.runCommand(`pax -ppx -rf zowex.pax.Z`, ussWorkDir);
+    await uss.runCommand(`cp -f ${ussWorkDir}/zowex ${REMOTE_SYSTEM_INFO.ussTestDir}/bin/utils`);
 
     console.log(`Unpacking zss pax and placing SAMPLIB in ${REMOTE_SYSTEM_INFO.szwesamp} ...`);
     await uss.runCommand(`mkdir -p ${REMOTE_SYSTEM_INFO.ussTestDir}/components/zss`);

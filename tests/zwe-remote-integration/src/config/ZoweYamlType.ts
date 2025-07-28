@@ -156,15 +156,39 @@ const zoweSchema = zoweYamlSchema as {
               description: 'MVS data set related configurations';
               properties: {
                 prefix: {
-                  $ref: '/schemas/v2/server-common#zoweDatasetPrefix';
+                  oneOf: [
+                    {
+                      $ref: '/schemas/v2/server-common#zoweDatasetPrefix';
+                    },
+                    {
+                      type: 'string';
+                      maxLength: 0;
+                    },
+                  ];
                   description: 'Where Zowe MVS data sets will be installed';
                 };
                 proclib: {
-                  $ref: '/schemas/v2/server-common#zoweDataset';
+                  oneOf: [
+                    {
+                      $ref: '/schemas/v2/server-common#zoweDataset';
+                    },
+                    {
+                      type: 'string';
+                      maxLength: 0;
+                    },
+                  ];
                   description: 'PROCLIB where Zowe STCs will be copied over';
                 };
                 parmlib: {
-                  $ref: '/schemas/v2/server-common#zoweDataset';
+                  oneOf: [
+                    {
+                      $ref: '/schemas/v2/server-common#zoweDataset';
+                    },
+                    {
+                      type: 'string';
+                      maxLength: 0;
+                    },
+                  ];
                   description: 'Zowe PARMLIB';
                 };
                 parmlibMembers: {
@@ -179,21 +203,53 @@ const zoweSchema = zoweYamlSchema as {
                   };
                 };
                 jcllib: {
-                  $ref: '/schemas/v2/server-common#zoweDataset';
+                  oneOf: [
+                    {
+                      $ref: '/schemas/v2/server-common#zoweDataset';
+                    },
+                    {
+                      type: 'string';
+                      maxLength: 0;
+                    },
+                  ];
                   description: 'JCL library where Zowe will store temporary JCLs during initialization';
                 };
                 loadlib: {
-                  $ref: '/schemas/v2/server-common#zoweDataset';
+                  oneOf: [
+                    {
+                      $ref: '/schemas/v2/server-common#zoweDataset';
+                    },
+                    {
+                      type: 'string';
+                      maxLength: 0;
+                    },
+                  ];
                   description: 'States the dataset where Zowe executable utilities are located';
                   default: '<hlq>.SZWELOAD';
                 };
                 authLoadlib: {
-                  $ref: '/schemas/v2/server-common#zoweDataset';
+                  oneOf: [
+                    {
+                      $ref: '/schemas/v2/server-common#zoweDataset';
+                    },
+                    {
+                      type: 'string';
+                      maxLength: 0;
+                    },
+                  ];
                   description: 'The dataset that contains any Zowe core code that needs to run APF-authorized, such as ZIS';
                   default: '<hlq>.SZWEAUTH';
                 };
                 authPluginLib: {
-                  $ref: '/schemas/v2/server-common#zoweDataset';
+                  oneOf: [
+                    {
+                      $ref: '/schemas/v2/server-common#zoweDataset';
+                    },
+                    {
+                      type: 'string';
+                      maxLength: 0;
+                    },
+                  ];
                   description: 'APF authorized LOADLIB for Zowe ZIS Plugins';
                 };
               };
@@ -235,17 +291,41 @@ const zoweSchema = zoweYamlSchema as {
                   description: 'security group name';
                   properties: {
                     admin: {
-                      $ref: '/schemas/v2/server-common#zoweUser';
+                      oneOf: [
+                        {
+                          $ref: '/schemas/v2/server-common#zoweUser';
+                        },
+                        {
+                          type: 'string';
+                          maxLength: 0;
+                        },
+                      ];
                       description: 'Zowe admin user group';
                       default: 'ZWEADMIN';
                     };
                     stc: {
-                      $ref: '/schemas/v2/server-common#zoweUser';
+                      oneOf: [
+                        {
+                          $ref: '/schemas/v2/server-common#zoweUser';
+                        },
+                        {
+                          type: 'string';
+                          maxLength: 0;
+                        },
+                      ];
                       description: 'Zowe STC group';
                       default: 'ZWEADMIN';
                     };
                     sysProg: {
-                      $ref: '/schemas/v2/server-common#zoweUser';
+                      oneOf: [
+                        {
+                          $ref: '/schemas/v2/server-common#zoweUser';
+                        },
+                        {
+                          type: 'string';
+                          maxLength: 0;
+                        },
+                      ];
                       description: 'Zowe SysProg group';
                       default: 'ZWEADMIN';
                     };
@@ -257,12 +337,28 @@ const zoweSchema = zoweYamlSchema as {
                   description: 'security user name';
                   properties: {
                     zowe: {
-                      $ref: '/schemas/v2/server-common#zoweUser';
+                      oneOf: [
+                        {
+                          $ref: '/schemas/v2/server-common#zoweUser';
+                        },
+                        {
+                          type: 'string';
+                          maxLength: 0;
+                        },
+                      ];
                       description: 'Zowe runtime user name of main service';
                       default: 'ZWESVUSR';
                     };
                     zis: {
-                      $ref: '/schemas/v2/server-common#zoweUser';
+                      oneOf: [
+                        {
+                          $ref: '/schemas/v2/server-common#zoweUser';
+                        },
+                        {
+                          type: 'string';
+                          maxLength: 0;
+                        },
+                      ];
                       description: 'Zowe runtime user name of ZIS';
                       default: 'ZWESIUSR';
                     };
@@ -274,17 +370,41 @@ const zoweSchema = zoweYamlSchema as {
                   description: 'STC names';
                   properties: {
                     zowe: {
-                      $ref: '/schemas/v2/server-common#zoweDatasetMember';
+                      oneOf: [
+                        {
+                          $ref: '/schemas/v2/server-common#zoweDatasetMember';
+                        },
+                        {
+                          type: 'string';
+                          maxLength: 0;
+                        },
+                      ];
                       description: 'STC name of main service';
                       default: 'ZWESLSTC';
                     };
                     zis: {
-                      $ref: '/schemas/v2/server-common#zoweDatasetMember';
+                      oneOf: [
+                        {
+                          $ref: '/schemas/v2/server-common#zoweDatasetMember';
+                        },
+                        {
+                          type: 'string';
+                          maxLength: 0;
+                        },
+                      ];
                       description: 'STC name of ZIS';
                       default: 'ZWESISTC';
                     };
                     aux: {
-                      $ref: '/schemas/v2/server-common#zoweDatasetMember';
+                      oneOf: [
+                        {
+                          $ref: '/schemas/v2/server-common#zoweDatasetMember';
+                        },
+                        {
+                          type: 'string';
+                          maxLength: 0;
+                        },
+                      ];
                       description: 'STC name of Auxiliary Service';
                       default: 'ZWESASTC';
                     };
@@ -583,35 +703,11 @@ const zoweSchema = zoweYamlSchema as {
                   description: 'Whether to restrict the permissions of the keystore after creation';
                 };
                 header: {
-                  anyOf: [
-                    {
-                      type: 'integer';
-                      not: {
-                        type: 'null';
-                      };
-                      description: "Numeric option for JCL header for samples in SZWESAMP: '//ZWEnnnnn JOB {zowe.setup.jcl.header}'. Typically accounting information.";
-                    },
-                    {
-                      type: 'string';
-                      not: {
-                        type: 'null';
-                      };
-                      maxLength: 65;
-                      description: "One line JCL header options for samples in SZWESAMP: '//ZWEnnnnn JOB {zowe.setup.jcl.header}'.";
-                    },
-                    {
-                      type: 'array';
-                      items: {
-                        type: 'string';
-                        not: {
-                          type: 'null';
-                        };
-                        maxLength: 80;
-                        minItems: 2;
-                      };
-                      description: "Multiline JCL header options for samples in SZWESAMP: '//ZWEnnnnn JOB {zowe.setup.jcl.header}'.";
-                    },
-                  ];
+                  type: 'string';
+                  not: {
+                    type: 'null';
+                  };
+                  description: "JCL header options for samples in SZWESAMP: '//ZWEnnnnn JOB {zowe.setup.jcl.header}'.";
                 };
               };
             };

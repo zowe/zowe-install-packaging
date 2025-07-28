@@ -790,14 +790,14 @@ echo '      # If set to true, Zowe will use generate and use JCL to install comp
 echo '      enable: ${instance-zowe_setup_jcl_enable}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 #if (${global-zowe_setup_jcl_header.trim().length()} > 0 )
   #if (${global-zowe_setup_jcl_header.trim().includes("\n")} == -1)
-echo '      header: ${global-zowe_setup_jcl_header.trim()}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '      header: "${global-zowe_setup_jcl_header.trim()}"' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
   #else
-echo '      header:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '      header: |-' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
     #foreach($line in ${global-zowe_setup_jcl_header.split("\n")})
       #if (${foreach.index} == 0)
-echo '      - ${line}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '        ${line}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
       #else
-echo '      - //    ${line}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '        //    ${line}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
       #end
     #end
   #end

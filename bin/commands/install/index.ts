@@ -26,8 +26,19 @@ export function execute(): void {
   const zoweConfig = config.getZoweConfig();
   let runtime = zoweConfig.zowe?.runtimeDirectory;
   const prefix = zoweConfig.zowe.setup?.dataset?.prefix;
-  const jclHeaderCfg = zoweConfig.zowe.setup?.jcl?.header;
-  let jclHeaderJoined: string;
+
+  // zoweConfig.zowe.setup.jcl.header defined in defaults
+  let jclHeaderCfg = zoweConfig.zowe.setup.jcl.header;
+  if (jclHeaderCfg.trim().length > 0 && jclHeaderCfg.includes('\n')) {
+    // Remove empty lines
+    jclHeaderCfg = jclHeaderCfg.split('\n').filter((jclLine: string) => jclLine.trim().length > 0).join('\n');
+  }
+  jclHeaderCfg.split('\n').forEach((line, i) => {
+    // ideally this is a schema check. 80 - 15 is the length of "//abcdefgh job "
+    if (line.length > 80 || (0 === i && line.length > (80 - 15))) {
+      common.printErrorAndExit(`ZWEL0144E Cannot generate JCL with a header line greater than 80 characters. Line in error: ${line}. Please adjust this line in 'zowe.setup.jcl.header'.`, undefined, 144);
+    }
+  });
 
   if (!runtime) {
     runtime = runtimeEnv;
@@ -43,14 +54,8 @@ export function execute(): void {
     common.printErrorAndExit(`Error ZWEL0157E: Zowe dataset prefix (zowe.setup.dataset.prefix) is not defined in Zowe YAML configuration file.`, undefined, 157);
   }
 
-  if (Array.isArray(jclHeaderCfg)) {
-    jclHeaderJoined = jclHeaderCfg.join("\n");
-  } else {
-    jclHeaderJoined = jclHeaderCfg.toString();
-  }
-
-  const ZWEINSTL=`${runtime}/files/SZWESAMP/ZWEINSTL`;
-  const DATASETS = [ 'SZWEAUTH', 'SZWEEXEC', 'SZWELOAD', 'SZWESAMP' ];
+  const ZWEINSTL = `${runtime}/files/SZWESAMP/ZWEINSTL`;
+  const DATASETS = ['SZWEAUTH', 'SZWEEXEC', 'SZWELOAD', 'SZWESAMP'];
   const allowOverwrite = std.getenv("ZWE_CLI_PARAMETER_ALLOW_OVERWRITE") == 'true';
   const dryRun = std.getenv("ZWE_CLI_PARAMETER_DRY_RUN") == 'true';
   const existingDatasets: string[] = [];
@@ -79,7 +84,7 @@ export function execute(): void {
     common.printErrorAndExit(`Error ZWEL0159E Failed to modify ${ZWEINSTL}.`, undefined, 159);
   }
 
-  jclContents = jclContents.replace(/\{zowe\.setup\.jcl\.header\}/gi, jclHeaderJoined.replace(/[$]/g, '$$$$'));
+  jclContents = jclContents.replace(/\{zowe\.setup\.jcl\.header\}/gi, jclHeaderCfg.replace(/[$]/g, '$$$$'));
   jclContents = jclContents.replace(/\{zowe\.setup\.dataset\.prefix\}/gi, prefix.replace(/[$]/g, '$$$$'));
   jclContents = jclContents.replace(/\{zowe\.runtimeDirectory\}/gi, runtime.replace(/[$]/g, '$$$$'));
 
@@ -115,7 +120,7 @@ export function execute(): void {
       common.printMessage("- Type \"zwe init <sub-command> --help\" (for example, \"zwe init stc --help\") to get more information.\n\n");
       common.printMessage("Zowe JCL generated successfully");
     } else {
-      common.printMessage(`Zowe JCL submitted with errors, check job log. Job completion code=${result.jobcccode}, Job completion text=${result.jobcctext}`);
+      common.printMessage(`Zowe JCL submitted with errors, check job log. Job completion code=${result.jobcccode}.`);
     }
   }
 
