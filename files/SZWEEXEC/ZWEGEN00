@@ -401,6 +401,7 @@ say 'All of the substitutions were found.'
 */
 
 say 'Invoking the edit macro on each member.'
+NEW_LINE = x2c('15')
 
 do i = 1 to members.0
   if members.i.substitutions.0 > 0 then do
@@ -409,6 +410,11 @@ do i = 1 to members.0
       call Print 'Edit 'd'.'
       old = '{'members.i.substitutions.j'}'
       new = value('CFG.'members.i.substitutions.j)
+      /* Skip JCL header with new line character(s) 0x15 */
+      if old = '{zowe.setup.jcl.header}' then do
+        if pos(NEW_LINE, new) > 0 then
+          iterate j
+      end
       if symbol('CFG.'members.i.substitutions.j) = 'LIT' then
         iterate j
       apostrophes1 = "'"
@@ -454,16 +460,29 @@ say 'The edit macro was invoked on each member.'
     2) Proceed only arrays, use queue to simplify indexing
 ================================================================================
 */
+copyOfJCLHeader = CFG.zowe.setup.jcl.header
 card.0 = 0
 idx = 0
-do forever
-  if SYMBOL('CFG.zowe.setup.jcl.header.'idx) = 'VAR' then do
+if pos(NEW_LINE, copyOfJCLHeader) > 0 then do
+  do forever
     idx = idx + 1
-    card.idx = VALUE('CFG.zowe.setup.jcl.header.'idx - 1)
-    card.0 = idx
-  end
-  else do
-    leave
+    endIndex = pos(NEW_LINE, copyOfJCLHeader)
+    if endIndex = 0 then do
+      if length(strip(copyOfJCLHeader)) > 0 then do
+        card.idx = copyOfJCLHeader
+        card.0 = idx
+      end
+      else do
+        card.0 = idx - 1
+      end
+      leave
+    end
+    currentJLine = substr(copyOfJCLHeader, 1, endIndex - 1)
+    if length(strip(currentJLine)) > 0 then
+      card.idx = currentJLine
+    else
+      idx = idx - 1
+    copyOfJCLHeader = substr(copyOfJCLHeader, endIndex + 1)
   end
 end
 

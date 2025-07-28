@@ -39,6 +39,11 @@ export class RemoteTestRunner {
   private readonly spoolOutputTemplate: string;
   private readonly otherOutputTemplate: string;
   private readonly session: Session;
+  private customYamlRenderOpts: YAML.DocumentOptions &
+    YAML.SchemaOptions &
+    YAML.ParseOptions &
+    YAML.CreateNodeOptions &
+    YAML.ToStringOptions = null;
   private trackedFiles: TrackedFile[] = [];
   private trackedJobs: jobs.IDownloadAllSpoolContentParms[] = [];
   private readonly cleanFns: ((stdout: string) => string)[] = [];
@@ -169,6 +174,7 @@ export class RemoteTestRunner {
    *  Collects spool, restores files tracked by #removeFileForTest, and cleans up local work dirs
    */
   public async postTest() {
+    this.customYamlRenderOpts = null;
     if (TEST_COLLECT_SPOOL) {
       await this.collectSpool();
     }
@@ -337,6 +343,12 @@ export class RemoteTestRunner {
     });
   }
 
+  public setYamlRenderOptions(
+    opts: YAML.DocumentOptions & YAML.SchemaOptions & YAML.ParseOptions & YAML.CreateNodeOptions & YAML.ToStringOptions,
+  ) {
+    this.customYamlRenderOpts = opts;
+  }
+
   public addCleanFn(replaceFn: (output: string) => string) {
     this.cleanFns.push(replaceFn);
   }
@@ -437,7 +449,7 @@ export class RemoteTestRunner {
   ): Promise<string> {
     const testName = expect.getState().currentTestName.replace(/\s/g, '_');
     const yamlUploadPath = `${cwd}/defaults.yaml`;
-    const stringDefaultYaml = YAML.stringify(defaultsYaml, { nullStr: '' });
+    const stringDefaultYaml = YAML.stringify(defaultsYaml, { nullStr: '', ...this.customYamlRenderOpts });
     const yamlOutputDir = this.yamlOutputTemplate.replace('{{ testInstance }}', testName);
     fs.mkdirpSync(yamlOutputDir);
     if (cwd === `${REMOTE_SYSTEM_INFO.ussTestDir}/files`) {
@@ -465,7 +477,7 @@ export class RemoteTestRunner {
     if (addCustomJobHeaders) {
       finalZoweYaml = this.addAnyCustomJobStatements(zoweYaml).yaml;
     }
-    const stringZoweYaml = YAML.stringify(finalZoweYaml, { nullStr: '' });
+    const stringZoweYaml = YAML.stringify(finalZoweYaml, { nullStr: '', ...this.customYamlRenderOpts });
     const uploadPath = `${cwd}/zowe.test.yaml`;
     const yamlOutputDir = this.yamlOutputTemplate.replace('{{ testInstance }}', testName);
     fs.mkdirpSync(yamlOutputDir);
@@ -536,7 +548,6 @@ export class RemoteTestRunner {
   private addAnyCustomJobStatements(zoweYaml: ZoweYamlType): { yaml: ZoweYamlType; headers: string[] } {
     const jclHeader = zoweYaml.zowe?.setup?.jcl?.header;
     // jclHeader is either an array or string, so .length works in both cases
-    // @ts-expect-error incomplete schema
     if (jclHeader != null && jclHeader.length > 0) {
       return { yaml: zoweYaml, headers: [] };
     }
@@ -557,9 +568,9 @@ export class RemoteTestRunner {
 
     const jclLines = this.convertParamsToLines(fullParams);
     if (cloneYaml.zowe?.setup?.jcl?.header == null) {
-      _.set(cloneYaml, 'zowe.setup.jcl.header', []);
+      _.set(cloneYaml, 'zowe.setup.jcl.header', '');
     }
-    cloneYaml.zowe.setup.jcl.header = jclLines;
+    cloneYaml.zowe.setup.jcl.header = jclLines.join('\n');
     return { yaml: cloneYaml, headers: jclLines };
   }
 

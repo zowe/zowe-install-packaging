@@ -51,8 +51,7 @@ zowe:
       volume: "TSTVOL"
       storageClass: ""
     jcl:
-      header:
-      - ""
+      header: ""
   network:
     proxyType: "https"
     server:
@@ -239,8 +238,7 @@ zowe:
       volume: "TSTVOL"
       storageClass: ""
     jcl:
-      header:
-      - ""
+      header: ""
   network:
     proxyType: "https"
     server:
