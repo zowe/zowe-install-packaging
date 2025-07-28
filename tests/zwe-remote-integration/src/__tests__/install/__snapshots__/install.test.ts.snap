@@ -1428,10 +1428,6 @@ exports[`zwe-install (SHORT) zwe install --dry-run valid ds names 3`] = `
 Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
 -------------------------------------------------------------------------------
 >> Install Zowe MVS data sets
-Warning ZWEL0301W: TEST.DATASET.PFX.NEW.SZWEAUTH already exists and will not be overwritten. For upgrades, you must use --allow-overwrite.
-Warning ZWEL0301W: TEST.DATASET.PFX.NEW.SZWEEXEC already exists and will not be overwritten. For upgrades, you must use --allow-overwrite.
-Warning ZWEL0301W: TEST.DATASET.PFX.NEW.SZWELOAD already exists and will not be overwritten. For upgrades, you must use --allow-overwrite.
-Warning ZWEL0301W: TEST.DATASET.PFX.NEW.SZWESAMP already exists and will not be overwritten. For upgrades, you must use --allow-overwrite.
 Template JCL: /test/dir/files/SZWESAMP/ZWEINSTL
 --- JCL content ---
 //ZWEINSTL JOB
@@ -1508,10 +1504,6 @@ exports[`zwe-install (SHORT) zwe install --dry-run valid ds names 4`] = `
 Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
 -------------------------------------------------------------------------------
 >> Install Zowe MVS data sets
-Warning ZWEL0300W: TEST.DATASET.PFX.NEW.SZWEAUTH already exists. Members in this data set will be overwritten.
-Warning ZWEL0300W: TEST.DATASET.PFX.NEW.SZWEEXEC already exists. Members in this data set will be overwritten.
-Warning ZWEL0300W: TEST.DATASET.PFX.NEW.SZWELOAD already exists. Members in this data set will be overwritten.
-Warning ZWEL0300W: TEST.DATASET.PFX.NEW.SZWESAMP already exists. Members in this data set will be overwritten.
 Template JCL: /test/dir/files/SZWESAMP/ZWEINSTL
 --- JCL content ---
 //ZWEINSTL JOB
@@ -1681,7 +1673,8 @@ Example(s)
 `;
 
 exports[`zwe-install (SHORT) zwe install invalid config 1`] = `
-"Error: Could not load config for FILE(/not/real/config.yml):FILE(/test/dir/files/defaults.yaml), status=7
+"cat: /not/real/config.yml: EDC5129I No such file or directory. (errno2=0x0594003D)
+Error: Could not load config for FILE(/not/real/config.yml):FILE(/test/dir/files/defaults.yaml), status=7
 ZWEL0318E - failed to read '/not/real/config.yml' - EDC5129I No such file or directory. (errno2=0x0594003D)"
 `;
 
@@ -1726,7 +1719,11 @@ ERROR: Could not convert /not/a/real/path to absolute path, err=129
 ERROR: Error ZWEL0105E: The Zowe YAML config file is associated to Zowe runtime "undefined", which is not same as where zwe command is located "/test/dir"."
 `;
 
-exports[`zwe-install (SHORT) zwe install missing config 1`] = `"Error ZWEL0108E: Zowe YAML config file is required."`;
+exports[`zwe-install (SHORT) zwe install missing config 1`] = `
+"===============================================================================
+>> INSTALL ZOWE MVS DATA SETS
+Error ZWEL0108E: Zowe YAML config file is required."
+`;
 
 exports[`zwe-install (SHORT) zwe install missing prefix 1`] = `
 "Temporary directory '/tmp/.zweenv-0000' created.

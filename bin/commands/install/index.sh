@@ -20,7 +20,7 @@ fi
 
 USE_CONFIGMGR=$(check_configmgr_enabled)
 USE_JCL=$(check_jcl_enabled)
-if [ "${USE_CONFIGMGR}" = "true" && "${USE_JCL}" = "true" ]; then
+if [ "${USE_CONFIGMGR}" = "true" -a "${USE_JCL}" = "true" ]; then
   if [ -n "${ZWE_CLI_PARAMETER_CONFIG}" ]; then
     _CEE_RUNOPTS="${CEE_RO}" ${ZWE_zowe_runtimeDirectory}/bin/utils/configmgr -script "${ZWE_zowe_runtimeDirectory}/bin/commands/install/cli.js"
     exit $?
