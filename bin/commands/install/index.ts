@@ -33,6 +33,12 @@ export function execute(): void {
     // Remove empty lines
     jclHeaderCfg = jclHeaderCfg.split('\n').filter((jclLine: string) => jclLine.trim().length > 0).join('\n');
   }
+  jclHeaderCfg.split('\n').forEach((line, i) => {
+    // ideally this is a schema check. 80 - 15 is the length of "//abcdefgh job "
+    if (line.length > 80 || (0 === i && line.length > (80 - 15))) {
+      common.printErrorAndExit(`ZWEL0144E Cannot generate JCL with a header line greater than 80 characters. Line in error: ${line}. Please adjust this line in 'zowe.setup.jcl.header'.`, undefined, 144);
+    }
+  });
 
   if (!runtime) {
     runtime = runtimeEnv;
