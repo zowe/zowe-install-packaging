@@ -36,8 +36,9 @@ zowe:
   # https://docs.zowe.org/stable/user-guide/zos-components-installation-checklist
   #-------------------------------------------------------------------------------
   setup:
-    # If set to true, Zowe will use generate and use JCL to install components.
-    useJcl: false
+    jcl:
+      # If set to true, Zowe will use generate and use JCL to install components.
+      enable: false
     # MVS data set related configurations
     dataset:
       # where Zowe MVS data sets will be installed

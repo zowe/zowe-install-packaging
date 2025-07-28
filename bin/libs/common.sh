@@ -23,11 +23,17 @@ unset ENV             # just in case, as it can cause unexpected output
 # Leveraging JCL driven init and install is opt-in via config option or 
 # a flag passed to the calling command.
 check_jcl_enabled() {
+  # first, we have to make sure configmgr is enabled
+  USE_JCL=$(check_configmgr_enabled())
+  if [ "${USE_JCL}" = "false" ]; then
+    echo "false"
+  fi
+  # then we can check the jcl specific enablement
   USE_JCL=${ZWE_CLI_PARAMETER_JCL}
   if [ -n "${USE_JCL}" ]; then
     echo $USE_JCL
   elif [ -n "${ZWE_CLI_PARAMETER_JCL}" ]; then
-    USE_JCL=$(shell_read_yaml_config "${ZWE_CLI_PARAMETER_JCL}" 'setup' 'useJcl')
+    USE_JCL=$(shell_read_yaml_config "${ZWE_CLI_PARAMETER_CONFIG}" 'jcl' 'enable')
   fi
   if [ "${USE_JCL}" = "false" ]; then
     echo "false"
