@@ -51,6 +51,11 @@ else
     fi
   fi
 
+  dry_run="false"
+  if [ -n "${ZOWE_CLI_PARAMETER_DRY_RUN}" ]; then
+    dry_run="${ZOWE_CLI_PARAMETER_DRY_RUN}"
+  fi
+
   ###############################
   # create data sets if they do not exist
   print_message "Create MVS data sets if they do not exist"
@@ -72,9 +77,13 @@ else
       fi
     else
       print_message "Creating ${name} - ${prefix}.${ds}"
-      create_data_set "${prefix}.${ds}" "${spec}"
-      if [ $? -ne 0 ]; then
-        print_error_and_exit "Error ZWEL0111E: Command aborts with error." "" 111
+      if [ "false" = "${dry_run}" ]; then
+        create_data_set "${prefix}.${ds}" "${spec}"
+        if [ $? -ne 0 ]; then
+          print_error_and_exit "Error ZWEL0111E: Command aborts with error." "" 111
+        fi
+      else
+        print_message "${prefix}.${ds} not created due to --dry-run parameter."
       fi
     fi
   done <<EOF
@@ -85,6 +94,8 @@ EOF
 
   if [ "${ds_existence}" = "true" ] &&  [ "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITE}" != "true" ]; then
     print_level1_message "Zowe MVS data sets installation skipped."
+  elif [ "true" = "${dry_run}" ]; then
+    print_message "Zowe MVS data sets installation skipped due to --dry-run parameter"
   else
     ###############################
     # copy members

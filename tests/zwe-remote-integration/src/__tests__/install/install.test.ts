@@ -125,7 +125,7 @@ describe(`${testSuiteName}`, () => {
     });
 
     it('bad runtimeDirectory, missing ZWEINSTL', async () => {
-      const emptyDs = `${cfgYaml.zowe.setup.dataset.prefix}.NEW.VALID.DSN`;
+      const emptyDs = `${cfgYaml.zowe.setup.dataset.prefix}.NEW`;
       _.set(cfgYaml, 'zowe.setup.dataset.prefix', emptyDs);
       await testRunner.removeUssFileOrDirForTest('files/SZWESAMP/ZWEINSTL');
       const result = await testRunner.runZweTest(cfgYaml, 'install --dry-run');
@@ -184,7 +184,13 @@ describe(`${testSuiteName}`, () => {
       expect(result.rc).toBe(0);
 
       // dataset prefix doesn't exist
-      _.set(cfgYaml, 'zowe.setup.dataset.prefix', `${cfgYaml.zowe.setup.dataset.prefix}.NEW`);
+      const dsPrefix = `${cfgYaml.zowe.setup.dataset.prefix}.NEW`;
+      // cautionary - make sure they're not on the system
+      for (const dsSuffix of installDatasets) {
+        await TestFileActions.deleteAll([{ name: `${dsPrefix}.${dsSuffix}`, type: FileType.DS_NON_CLUSTER }]);
+      }
+
+      _.set(cfgYaml, 'zowe.setup.dataset.prefix', dsPrefix);
       result = await testRunner.runZweTest(cfgYaml, 'install --dry-run');
       expect(result.stdout).not.toBeNull();
       expect(result.cleanedStdout).toMatchSnapshot();
