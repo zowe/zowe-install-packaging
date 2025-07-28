@@ -252,7 +252,7 @@ describe(`${testSuiteName}`, () => {
       expect(result.cleanedStdout).toMatchSnapshot();
       expect(result.rc).toBe(0);
 
-      // with idx 0, the slice is invalid for first line. 
+      // with idx 0, the slice is invalid for first line.
       jclLines = [longString.slice(0, 79), `//    (0000000000)`, '//    SOMEJOB', '//    SYSAFF=SYS1'];
       _.set(cfgYaml, 'zowe.setup.jcl.header', jclLines.join('\n'));
       result = await testRunner.runZweTest(cfgYaml, 'install --dry-run');
