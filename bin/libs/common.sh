@@ -25,7 +25,7 @@ unset ENV             # just in case, as it can cause unexpected output
 # If not, we check if zowe.setup.jcl.enabled is explicitly false.
 # If so, shell is used, otherwise jcl is used.
 check_jcl_init() {
-  enabled=$(yaml_read_configmgr "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.jcl.enable")
+  enabled=$(read_yaml_configmgr "${ZWE_CLI_PARAMETER_CONFIG" ".zowe.setup.jcl.enable")
   if [ "${ZWE_CLI_PARAMETER_GENERATE}" = "true" ]; then
       echo "true"
   elif [ "${enabled}" = "false" ]; then
