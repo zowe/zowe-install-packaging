@@ -39,6 +39,8 @@ const containerComponentId = std.getenv('ZWE_PRIVATE_CONTAINER_COMPONENT_ID');
 const zosmfHost = std.getenv('ZOSMF_HOST');
 const zosmfPort = Number(std.getenv('ZOSMF_PORT'));
 
+const INDIVIDUAL_APIML_COMPONENTS = ['gateway', 'discovery', 'api-catalog', 'caching-service', 'zaas'];
+
 
 const user = std.getenv('USER');
 
@@ -199,8 +201,17 @@ function validateComponents(enabledComponents:string[]): any {
   // reset error counter
   let privateErrors = 0;
   std.setenv('ZWE_PRIVATE_ERRORS_FOUND','0');
-  enabledComponents.forEach((componentId: string)=> {
+
+  let apimlModulithEnabled = enabledComponents.includes('apiml');
+  for (let i = 0; i < enabledComponents.length; i++) {
+    let componentId = enabledComponents[i];
     common.printFormattedTrace("ZWELS", "zwe-internal-start-prepare,validate_components", `- checking ${componentId}`);
+    
+    if (apimlModulithEnabled && INDIVIDUAL_APIML_COMPONENTS.includes(componentId)) {
+      common.printFormattedTrace("ZWELS", "zwe-internal-start-prepare,validate_components", `- skipping ${componentId} because apiml modulith enabled`);
+      continue;
+    }
+
     const componentDir = component.findComponentDirectory(componentId);
     common.printFormattedTrace("ZWELS", "zwe-internal-start-prepare,validate_components", `- in directory ${componentDir}`);
     if (componentDir) {
@@ -243,7 +254,7 @@ function validateComponents(enabledComponents:string[]): any {
         }
       }
     }
-  });
+  }
 
   std.setenv('ZWE_PRIVATE_ERRORS_FOUND', ''+privateErrors);
   varlib.checkRuntimeValidationResult("zwe-internal-start-prepare,validate_components");
@@ -260,11 +271,18 @@ function configureComponents(componentEnvironments?: any, enabledComponents?:str
   const zwePrivateWorkspaceEnvDir = std.getenv('ZWE_PRIVATE_WORKSPACE_ENV_DIR');
   const zweCliParameterHaInstance = std.getenv('ZWE_CLI_PARAMETER_HA_INSTANCE');
 
-
-  enabledComponents.forEach((componentId: string)=> {
+  let apimlModulithEnabled = enabledComponents.includes('apiml');
+  for (let i = 0; i < enabledComponents.length; i++) {
+    let componentId = enabledComponents[i];
     common.printFormattedTrace("ZWELS", "zwe-internal-start-prepare,configure_components", `- checking ${componentId}`);
+
+    if (apimlModulithEnabled && INDIVIDUAL_APIML_COMPONENTS.includes(componentId)) {
+      common.printFormattedTrace("ZWELS", "zwe-internal-start-prepare,configure_components", `- skipping ${componentId} because apiml modulith enabled`);
+      continue;
+    }
+
     const componentDir = component.findComponentDirectory(componentId);
-    common.printFormattedTrace("ZWELS", "zwe-internal-start-prepare,validate_components", `- in directory ${componentDir}`);
+    common.printFormattedTrace("ZWELS", "zwe-internal-start-prepare,configure_components", `- in directory ${componentDir}`);
     if (componentDir) {
       const manifestPath = component.getManifestPath(componentDir);
       const manifest = component.getManifest(componentDir);
@@ -395,7 +413,7 @@ function configureComponents(componentEnvironments?: any, enabledComponents?:str
         }
       }
     }
-  });
+  }
 
   common.printFormattedDebug("ZWELS", "zwe-internal-start-prepare,configure_components", "component configurations are successful");
 }

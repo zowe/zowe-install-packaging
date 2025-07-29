@@ -35,52 +35,6 @@ const cliParameterConfig:string = function() {
     return (value as string);
 }();
 
-function isApimlEnabled(): boolean {
-  const config = configmgr.getZoweConfig();
-  const defaultEnabledComponents = component.getEnabledComponents();
-  const componentEnabled = config.components['apiml']?.enabled;
-  return componentEnabled 
-  && !config.components['gateway'].enabled
-  && !config.components['discovery'].enabled
-  && !config.components['caching-service'].enabled
-  && !config.components['api-catalog'].enabled
-  && !config.components['zaas'].enabled
-  && !config.components['apiml'].port == config.components['gateway'].port
-}
-
-function enableApiml() {
-  const config = configmgr.getZoweConfig();
-  const updateObj = {
-    components: {
-      gateway: {
-        enabled: false
-      },
-      discovery: {
-        enabled: false
-      },
-      "caching-service": {
-        enabled: false
-      },
-      zaas: {
-        enabled: false
-      },
-      "api-catalog": {
-        enabled: false
-      },
-      apiml: {
-        enabled: true,
-        port: config.components['gateway'].port
-      }
-    }
-  }
-
-  updateZoweConfig(updateObj, true, 1);
-
-  std.setenv('ZWE_INSTALLED_COMPONENTS', component.findAllInstalledComponents());
-  std.setenv('ZWE_ENABLED_COMPONENTS', component.findAllEnabledComponents());
-  std.setenv('ZWE_LAUNCH_COMPONENTS', component.findAllLaunchComponents());
-}
-
 export function getZoweConfig(): any {
   common.requireZoweYaml();
 
@@ -352,9 +306,19 @@ export function loadEnvironmentVariables(componentId?: string) {
     std.setenv('ZWE_PRIVATE_LOG_LEVEL_ZWELS', logLevel.toUpperCase());
   }
   // generate other variables
+  let enabledComponents = component.findAllEnabledComponents();
   std.setenv('ZWE_INSTALLED_COMPONENTS', component.findAllInstalledComponents());
-  std.setenv('ZWE_ENABLED_COMPONENTS', component.findAllEnabledComponents());
+  std.setenv('ZWE_ENABLED_COMPONENTS', enabledComponents);
   std.setenv('ZWE_LAUNCH_COMPONENTS', component.findAllLaunchComponents());
+
+  //ensure these are set true for backward compat of programs that read the env vars
+  if (enabledComponents.includes('apiml')) {
+    std.setenv('ZWE_components_gateway_enabled', 'true');
+    std.setenv('ZWE_components_discovery_enabled', 'true');
+    std.setenv('ZWE_components_api_catalog_enabled', 'true');
+    std.setenv('ZWE_components_caching_service_enabled', 'true');
+    std.setenv('ZWE_components_zaas_enabled', 'true');
+  }
 
   // ZWE_DISCOVERY_SERVICES_LIST should have been prepared in zowe-install-packaging-tools
 
