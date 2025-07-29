@@ -1152,6 +1152,7 @@ How we want to verify SSL certificates of services. Valid values are:
             <variableValue name="zOSMF_port" scope="instance" noPromptIfSet="false" required="true"/>
             <variableValue name="zOSMF_applId" scope="instance" noPromptIfSet="false" required="true"/>
             <variableValue name="zowe_configmgr_validation" scope="instance" noPromptIfSet="false" required="true"/>
+            <variableValue name="components_apiml_enabled" scope="instance" noPromptIfSet="false" required="false"/>
             <variableValue name="components_gateway_enabled" scope="instance" noPromptIfSet="false" required="true"/>
             <variableValue name="components_zaas_enabled" scope="instance" noPromptIfSet="false" required="true"/>
             <variableValue name="components_api_catalog_enabled" scope="instance" noPromptIfSet="false" required="true"/>
