@@ -2373,13 +2373,13 @@ Global parameters
 Parameters for command "install"
     --allow-overwrite|--allow-overwritten  (optional)
         Allow overwritten existing MVS data set.
-    --dataset-prefix|--ds-prefix string (optional)
-        Install Zowe to this dataset prefix.
-        If you specify this value, --config is not required.
     --jcl  (optional)
         Generates and submits JCL to drive the install, rather than using USS utilities.
     --dry-run  (optional)
         Generates and prints JCL but does not execute.
+    --dataset-prefix|--ds-prefix string (optional)
+        Install Zowe to this dataset prefix.
+        This parameter only works when jcl is disabled.
 ------------------
 Example(s)
     zwe install -v -c /path/to/zowe.yaml"

@@ -51,8 +51,9 @@ check_configmgr_config_syntax() {
     echo "true"
   elif [[ ${ZWE_CLI_PARAMETER_CONFIG} == "PARMLIB("* ]]; then
     echo "true"
+  else 
+    echo "false"
   fi
-  echo "false"
 }
 
 # Leveraging the configmgr scripting is by opt-in of a config parameter or flag

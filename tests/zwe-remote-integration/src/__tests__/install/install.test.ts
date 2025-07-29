@@ -49,6 +49,15 @@ describe(`${testSuiteName}`, () => {
         `${cfgYaml.zowe.setup.dataset.prefix}.PR#4282.$1-#-@`,
       ];
 
+      const cleanupDs: TestFile[] = installDatasets.map((ds) => {
+        for (const test of testCases) {
+          return { name: `${test}.${ds}`, type: FileType.DS_NON_CLUSTER };
+        }
+      });
+
+      // delete files at start just in case they're lingering on the system
+      await TestFileActions.deleteAll(cleanupDs);
+
       for (const test of testCases) {
         _.set(cfgYaml, 'zowe.setup.dataset.prefix', test);
         let result = await testRunner.runZweTest(cfgYaml, `install`);
@@ -62,9 +71,6 @@ describe(`${testSuiteName}`, () => {
         expect(result.cleanedStdout).toMatchSnapshot();
         expect(result.rc).toBe(0);
 
-        const cleanupDs: TestFile[] = installDatasets.map((ds) => {
-          return { name: `${test}.${ds}`, type: FileType.DS_NON_CLUSTER };
-        });
         await TestFileActions.deleteAll(cleanupDs);
       }
     }, 500000);
