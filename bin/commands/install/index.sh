@@ -54,8 +54,8 @@ else
   fi
 
   dry_run="false"
-  if [ -n "${ZOWE_CLI_PARAMETER_DRY_RUN}" ]; then
-    dry_run="${ZOWE_CLI_PARAMETER_DRY_RUN}"
+  if [ -n "${ZWE_CLI_PARAMETER_DRY_RUN}" ]; then
+    dry_run="${ZWE_CLI_PARAMETER_DRY_RUN}"
   fi
 
   ###############################
