@@ -59,6 +59,7 @@ else
   ###############################
   # create data sets if they do not exist
   print_message "Create MVS data sets if they do not exist"
+  any_existence=
   while read -r line; do
     ds=$(echo "${line}" | awk -F"|" '{print $1}')
     name=$(echo "${line}" | awk -F"|" '{print $2}')
@@ -67,6 +68,7 @@ else
     # check existence
     ds_existence=$(is_data_set_exists "${prefix}.${ds}")
     if [ "${ds_existence}" = "true" ]; then
+      any_existence="true"
       if [ "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITE}" = "true" ]; then
         # warning
         print_message "Warning ZWEL0300W: ${prefix}.${ds} already exists. This dataset will be overwritten."
@@ -92,7 +94,7 @@ EOF
   
   print_message
 
-  if [ "${ds_existence}" = "true" ] &&  [ "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITE}" != "true" ]; then
+  if [ "${any_existence}" = "true" ] && [ "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITE}" != "true" ]; then
     print_level1_message "Zowe MVS data sets installation skipped."
   elif [ "true" = "${dry_run}" ]; then
     print_message "Zowe MVS data sets installation skipped due to --dry-run parameter"
