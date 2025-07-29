@@ -46,6 +46,15 @@
       ]
     },
     {
+      "description": "component settings disabled by default in defaults.yaml (technical-preview of API Mediation Layer in single-service mode)",
+      "rule_target": "all",
+      "rule_type": "wf_missing_vars",
+      "rule_entry": [
+        "components_apiml_enabled",
+        "components_apiml_debug"
+      ]
+    },
+    {
       "description": "component settings disabled by default in defaults.yaml (deprecated)",
       "rule_target": "all",
       "rule_type": "wf_missing_vars",
