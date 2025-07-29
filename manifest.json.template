@@ -16,7 +16,7 @@
       "artifact": "zowe-server-*.pax.Z"
     },
     "org.zowe.zlux.zlux-core": {
-      "version": "^3.0.0-V3.X-STAGING-ZLUX-CORE",
+      "version": "^3.3.0-zlux-app-server-PR-345",
       "artifact": "*.pax"
     },
     "org.zowe.zlux.sample-angular-app": {
@@ -123,7 +123,8 @@
       "artifact": "*.pax"
     },
     "org.zowe.launcher": {
-      "version": "^3.0.0-STAGING"
+      "version": "^3.3.0-PR-160",
+      "artifact": "*.pax"
     },
     "org.zowe.keyring-utilities": {
       "version": "1.0.4",
