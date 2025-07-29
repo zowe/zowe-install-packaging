@@ -509,6 +509,28 @@ How we want to verify SSL certificates of services. Valid values are:
             <default>IZUDFLT</default>
         </string>
     </variable>
+    <variable name="components_apiml_enabled" scope="instance" visibility="public">
+        <label>Enable the API Mediation Layer in single-service mode</label>
+        <abstract>Check this option to enable the API Mediation Layer in single-service mode</abstract>
+        <description>Check this option to enable the API Mediation Layer in single-service mode</description>
+        <category>components</category>
+        <boolean>
+            <!-- Put validation here -->
+            <!-- Specify choices here -->
+            <default>false</default>
+        </boolean>
+    </variable>
+    <variable name="components_apiml_debug" scope="instance" visibility="public">
+        <label>API Mediation Layer in single-service debug</label>
+        <abstract>Switch on the debug mode for the API Mediation Layer in single-service mode</abstract>
+        <description>Switch on the debug mode for the API Mediation Layer in single-service mode</description>
+        <category>components</category>
+        <boolean>
+            <!-- Put validation here -->
+            <!-- Specify choices here -->
+            <default>false</default>
+        </boolean>
+    </variable>
     <variable name="components_gateway_enabled" scope="instance" visibility="public">
         <label>Enable Gateway</label>
         <abstract>Check this option to enable Gateway</abstract>
