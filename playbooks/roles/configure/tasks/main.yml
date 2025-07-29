@@ -41,6 +41,7 @@
     - zowe_apiml_security_oidc_client_secret
     - zowe_apiml_security_oidc_registry
     - zowe_apiml_security_oidc_jwks_uri
+    - zowe_apiml_modulith_mode
     - zowe_jobs_explorer_port
     - zowe_mvs_explorer_port
     - zowe_uss_explorer_port
@@ -304,6 +305,9 @@
       "components.caching-service.port": "{{ zowe_caching_service_port }}"
       "components.app-server.port": "{{ zowe_zlux_port }}"
       "components.zss.port": "{{ zowe_zss_port }}"
+      # apiml modulith
+      "components.apiml.enabled": "{{ zowe_apiml_modulith_mode }}"
+
       # other gateway configs
       "components.gateway.apiml.gateway.timeoutMillis": "{{ zowe_apiml_gateway_timeout_millis }}"
       "components.gateway.apiml.service.forwardClientCertEnabled": "{{ zowe_apiml_service_forwardClientCertEnabled|string|lower }}"

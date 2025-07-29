@@ -11,6 +11,8 @@ zowe_dataset_prefix: ZOWEAD3.ZWE
 zowe_apiml_verify_certficates_of_services: false
 # enable Non-Strict verify certificates by default
 zowe_apiml_nonstrict_verify_certficates_of_services: true
+# use apiml modulith mode
+zowe_apiml_modulith_mode: false
 zowe_jcllib: ZOWEAD3.ZWE.JCLLIB
 zowe_xmem_proclib: VENDOR.PROCLIB
 zowe_xmem_loadlib: ZOWEAD3.ZWE.LOADLIB

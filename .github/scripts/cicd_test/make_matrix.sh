@@ -78,6 +78,10 @@ case $install_test_choice in
   test_file="$CONFIG_MANAGER_TESTFILE"
   ;;
 
+"APIML Modulith Mode")
+  test_file="$APIML_MODULITH_TESTFILE"
+  ;;
+
 "Zowe Nightly Tests")
   test_file="$ZOWE_NIGHTLY_TESTS_FULL"
   dont_parse_test_server=true

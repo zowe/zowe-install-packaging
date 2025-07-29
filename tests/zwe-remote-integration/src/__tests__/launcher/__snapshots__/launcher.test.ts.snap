@@ -108,6 +108,9 @@ zowe:
       certificate: "/global/zowe/keystore/localhost/localhost.cer"
       certificateAuthorities: "/global/zowe/keystore/local_ca/local_ca.cer"
 components:
+  apiml:
+    enabled: false
+    debug: false
   gateway:
     enabled: true
     port: 7554
@@ -295,6 +298,9 @@ zowe:
       certificate: "/global/zowe/keystore/localhost/localhost.cer"
       certificateAuthorities: "/global/zowe/keystore/local_ca/local_ca.cer"
 components:
+  apiml:
+    enabled: false
+    debug: false
   gateway:
     enabled: true
     port: 7554
