@@ -1428,10 +1428,6 @@ exports[`zwe-install (SHORT) zwe install --dry-run valid ds names 3`] = `
 Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
 -------------------------------------------------------------------------------
 >> Install Zowe MVS data sets
-Warning ZWEL0301W: TEST.DATASET.PFX.NEW.SZWEAUTH already exists and will not be overwritten. For upgrades, you must use --allow-overwrite.
-Warning ZWEL0301W: TEST.DATASET.PFX.NEW.SZWEEXEC already exists and will not be overwritten. For upgrades, you must use --allow-overwrite.
-Warning ZWEL0301W: TEST.DATASET.PFX.NEW.SZWELOAD already exists and will not be overwritten. For upgrades, you must use --allow-overwrite.
-Warning ZWEL0301W: TEST.DATASET.PFX.NEW.SZWESAMP already exists and will not be overwritten. For upgrades, you must use --allow-overwrite.
 Template JCL: /test/dir/files/SZWESAMP/ZWEINSTL
 --- JCL content ---
 //ZWEINSTL JOB
@@ -1508,10 +1504,6 @@ exports[`zwe-install (SHORT) zwe install --dry-run valid ds names 4`] = `
 Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
 -------------------------------------------------------------------------------
 >> Install Zowe MVS data sets
-Warning ZWEL0300W: TEST.DATASET.PFX.NEW.SZWEAUTH already exists. Members in this data set will be overwritten.
-Warning ZWEL0300W: TEST.DATASET.PFX.NEW.SZWEEXEC already exists. Members in this data set will be overwritten.
-Warning ZWEL0300W: TEST.DATASET.PFX.NEW.SZWELOAD already exists. Members in this data set will be overwritten.
-Warning ZWEL0300W: TEST.DATASET.PFX.NEW.SZWESAMP already exists. Members in this data set will be overwritten.
 Template JCL: /test/dir/files/SZWESAMP/ZWEINSTL
 --- JCL content ---
 //ZWEINSTL JOB
