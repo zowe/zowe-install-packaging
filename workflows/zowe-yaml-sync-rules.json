@@ -71,6 +71,8 @@
       "rule_target": "ZWEAMLCF",
       "rule_type": "wf_missing_vars",
       "rule_entry": [
+        "components_apiml_enabled",
+        "components_apiml_debug",
         "components_gateway_enabled",
         "components_gateway_debug",
         "components_gateway_apiml_security_auth_provider",
