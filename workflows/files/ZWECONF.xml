@@ -2007,6 +2007,7 @@ echo '    enabled: ${instance-components_zaas_enabled}' >> "${instance-zowe_runt
 echo '    port: 7558' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '    debug: false' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 #end
+echo '' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '  # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 #if (${instance-components_api_catalog_enabled} == "true" )
 echo '  api-catalog:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
