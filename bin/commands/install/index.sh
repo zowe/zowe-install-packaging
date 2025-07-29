@@ -18,15 +18,17 @@ if [ -z "${ZWE_PRIVATE_TMP_MERGED_YAML_DIR}" ]; then
   export ZWE_PRIVATE_TMP_MERGED_YAML_DIR=1
 fi
 
-USE_CONFIGMGR=$(check_configmgr_enabled)
+CONFIGMGR_SYNTAX=$(check_configmgr_config_syntax)
 USE_JCL=$(check_jcl_enabled)
-if [ "${USE_CONFIGMGR}" = "true" -a "${USE_JCL}" = "true" ]; then
+if [ "${USE_JCL}" = "true" ]; then
   if [ -n "${ZWE_CLI_PARAMETER_CONFIG}" ]; then
     _CEE_RUNOPTS="${CEE_RO}" ${ZWE_zowe_runtimeDirectory}/bin/utils/configmgr -script "${ZWE_zowe_runtimeDirectory}/bin/commands/install/cli.js"
     exit $?
   else
     print_error_and_exit "Error ZWEL0108E: Zowe YAML config file is required." "" 108
   fi
+elif [ "${CONFIGMGR_SYNTAX}" = "true" ]; then
+  print_error_and_exit "Error ZWEL0115E: This command was submitted with FILE() or PARMLIB() syntax, which is only supported when JCL is also enabled."
 else
   print_level0_message "Install Zowe MVS data sets"
   ###############################

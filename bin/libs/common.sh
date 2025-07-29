@@ -24,22 +24,34 @@ unset ENV             # just in case, as it can cause unexpected output
 # a flag passed to the calling command.
 check_jcl_enabled() {
   # first, we have to make sure configmgr is enabled
-  USE_JCL=$(check_configmgr_enabled())
+  USE_JCL=$(check_configmgr_enabled)
   if [ "${USE_JCL}" = "false" ]; then
     echo "false"
+    return
   fi
   # then we can check the jcl specific enablement
   USE_JCL=${ZWE_CLI_PARAMETER_JCL}
   if [ -n "${USE_JCL}" ]; then
-    echo $USE_JCL
-  elif [ -n "${ZWE_CLI_PARAMETER_JCL}" ]; then
-    USE_JCL=$(shell_read_yaml_config "${ZWE_CLI_PARAMETER_CONFIG}" 'jcl' 'enable')
+    echo "true"
+    return
   fi
+  USE_JCL=$(shell_read_yaml_config "${ZWE_CLI_PARAMETER_CONFIG}" 'jcl' 'enable')
   if [ "${USE_JCL}" = "false" ]; then
     echo "false"
   else
     echo "true"
   fi
+}
+
+# checks to see if the zwe command was written with config syntax
+# that is configmgr-only, e.g. FILE() or PARMLIB()
+check_configmgr_config_syntax() {
+  if [[ ${ZWE_CLI_PARAMETER_CONFIG} == "FILE("* ]]; then
+    echo "true"
+  elif [[ ${ZWE_CLI_PARAMETER_CONFIG} == "PARMLIB("* ]]; then
+    echo "true"
+  fi
+  echo "false"
 }
 
 # Leveraging the configmgr scripting is by opt-in of a config parameter or flag
@@ -50,11 +62,8 @@ check_configmgr_enabled() {
   if [ -n "${USE_CONFIGMGR}" ]; then
     echo $USE_CONFIGMGR
   elif [ -n "${ZWE_CLI_PARAMETER_CONFIG}" ]; then
-    if [[ ${ZWE_CLI_PARAMETER_CONFIG} == "FILE("* ]]
-    then
-      echo "true"
-    elif [[ ${ZWE_CLI_PARAMETER_CONFIG} == "PARMLIB("* ]]
-    then
+    ZWE_CLI_CONFIGMGR_ONLY_SYNTAX=$(check_configmgr_config_syntax)
+    if [ "${ZWE_CLI_CONFIGMGR_ONLY_SYNTAX}" = "true" ]; then
       echo "true"
     else
       USE_CONFIGMGR=$(shell_read_yaml_config "${ZWE_CLI_PARAMETER_CONFIG}" 'zowe' 'useConfigmgr')
