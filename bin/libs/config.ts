@@ -38,14 +38,14 @@ const cliParameterConfig:string = function() {
 function isApimlEnabled(): boolean {
   const config = configmgr.getZoweConfig();
   const defaultEnabledComponents = component.getEnabledComponents();
-  const componentEnabled = defaultEnabledComponents.includes('apiml') || config.components['apiml'].enabled;
+  const componentEnabled = config.components['apiml']?.enabled;
   return componentEnabled 
-  && config.components['gateway'].enabled == false
-  && config.components['discovery'].enabled == false
-  && config.components['caching-service'].enabled == false
-  && config.components['api-catalog'].enabled == false
-  && config.components['zaas'].enabled == false
-  && config.components['apiml'].port == config.components['gateway'].port
+  && !config.components['gateway'].enabled
+  && !config.components['discovery'].enabled
+  && !config.components['caching-service'].enabled
+  && !config.components['api-catalog'].enabled
+  && !config.components['zaas'].enabled
+  && !config.components['apiml'].port == config.components['gateway'].port
 }
 
 function enableApiml() {
@@ -68,6 +68,7 @@ function enableApiml() {
         enabled: false
       },
       apiml: {
+        enabled: true,
         port: config.components['gateway'].port
       }
     }
