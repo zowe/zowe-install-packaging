@@ -1,1 +1,15 @@
-""
+{
+  "lockAcquiredTime": "Tue Jul 29 2025 07:44:27 GMT+0000 (Coordinated Universal Time)",
+  "uid": "1753775067956693509",
+  "repository": {
+    "owner": "zowe",
+    "repo": "zowe-install-packaging"
+  },
+  "branch": "user/markackert/install-dualpath",
+  "workflow": "Zowe CICD Integration Tests",
+  "job": "cicd-test",
+  "actor": "zowe-robot",
+  "runId": 16589849065,
+  "runNumber": 7048,
+  "link": "https://github.com/zowe/zowe-install-packaging/actions/runs/16589849065"
+}
