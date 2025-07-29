@@ -99,6 +99,25 @@ describe(`${testSuiteName}`, () => {
   });
 
   describe('(SHORT)', () => {
+    it('cover different configmgr and jcl combinations', async () => {
+      // set session libraries
+      for (const jclSetting of [true, false]) {
+        for (const cmgrSetting of [true, false]) {
+          for (const flag of ['--jcl', '--configmgr', '', '-c "FILE(zowe.test.yaml)"']) {
+            cfgYaml = ZoweConfig.getZoweYaml();
+            _.set(cfgYaml, 'zowe.setup.jcl.enable', jclSetting);
+            _.set(cfgYaml, 'zowe.useConfigmgr', cmgrSetting);
+            const result = await testRunner.runZweTest(cfgYaml, `install --dry-run ${flag}`);
+            expect(result.stdout).not.toBeNull();
+            expect(`jcl: ${jclSetting}, cmgr: ${cmgrSetting}, extra flag: ${flag}, rc: ${result.rc}`).toMatchSnapshot(); // also capture test settings to make snapshots
+            expect(result.cleanedStdout).toMatchSnapshot();
+            // easier to read
+            // expect(result.rc).toBe(0);  -- captured the rc in the snapshot
+          }
+        }
+      }
+    }, 200000);
+
     it('install via PARMLIB and exported variable', async () => {
       const testParmlib = `${cfgYaml.zowe.setup.dataset.parmlib}`;
       const testMember = `${testParmlib}(ZWECNF)`;
@@ -107,17 +126,17 @@ describe(`${testSuiteName}`, () => {
       await testRunner.uploadToDatasetForTest(zweYamlString, testMember);
       await testRunner.collectTestContent(zweYamlString, 'parmlib.zowe.yaml');
 
-      const configString = `PARMLIB(${testMember}):FILE(./files/defaults.yaml)`;
+      const configString = `PARMLIB(${testMember}): FILE(./files/defaults.yaml)`;
 
-      let result = await testRunner.runZweTest(null, `zwe install --dry-run --config '${configString}'`);
+      let result = await testRunner.runZweTest(null, `zwe install--dry - run--config '${configString}'`);
       expect(result.stdout).not.toBeNull();
       expect(result.cleanedStdout).toMatchSnapshot();
       expect(result.rc).toBe(0);
 
       result = await testRunner.runRaw(`
-        export ZWE_CLI_PARAMETER_CONFIG='${configString}' && \
-        ./bin/zwe install --dry-run
-        `);
+        export ZWE_CLI_PARAMETER_CONFIG = '${configString}' && \
+        ./bin/zwe install--dry - run
+              `);
 
       expect(result.stdout).not.toBeNull();
       expect(result.cleanedStdout).toMatchSnapshot();
@@ -135,7 +154,7 @@ describe(`${testSuiteName}`, () => {
     });
 
     it('zwe install --help', async () => {
-      const result = await testRunner.runZweTest(cfgYaml, `install --help`);
+      const result = await testRunner.runZweTest(cfgYaml, `install--help`);
       expect(result.stdout).not.toBeNull();
       expect(result.cleanedStdout).toMatchSnapshot();
       expect(result.rc).toBe(100);
@@ -143,7 +162,7 @@ describe(`${testSuiteName}`, () => {
 
     // ensure --ds-prefix is not supported
     it('zwe install invalid parameter', async () => {
-      const result = await testRunner.runZweTest(cfgYaml, `install --dry-run --ds-prefix 'SOME.THING'`);
+      const result = await testRunner.runZweTest(cfgYaml, `install--dry - run--ds - prefix 'SOME.THING'`);
       expect(result.stdout).not.toBeNull();
       expect(result.cleanedStdout).toMatchSnapshot();
       expect(result.rc).toBe(102);
@@ -211,14 +230,14 @@ describe(`${testSuiteName}`, () => {
       expect(result.rc).toBe(1);
 
       delete cfgYaml.zowe.setup.dataset.prefix;
-      result = await testRunner.runZweTest(cfgYaml, `install --dry-run`);
+      result = await testRunner.runZweTest(cfgYaml, `install--dry - run`);
       expect(result.stdout).not.toBeNull();
       expect(result.cleanedStdout).toMatchSnapshot();
       expect(result.rc).toBe(157);
     });
 
     it('zwe install invalid runtime directory', async () => {
-      _.set(cfgYaml, 'zowe.runtimeDirectory', `/`); // TODO: verify this should be safe to use with any backend system
+      _.set(cfgYaml, 'zowe.runtimeDirectory', `/ `); // TODO: verify this should be safe to use with any backend system
       let result = await testRunner.runZweTest(cfgYaml, 'install --dry-run');
       expect(result.stdout).not.toBeNull();
       expect(result.cleanedStdout).toMatchSnapshot();

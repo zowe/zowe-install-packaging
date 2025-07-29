@@ -35,13 +35,14 @@ check_jcl_enabled() {
     echo "true"
     return
   fi
-  USE_JCL=$(shell_read_yaml_config "${ZWE_CLI_PARAMETER_CONFIG}" 'jcl' 'enable')
-  if [ "${USE_JCL}" = "false" ]; then
-    echo "false"
-  else
+  USE_JCL=$(read_yaml_configmgr "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.jcl.enable")
+  if [ "${USE_JCL}" = "true" ]; then
     echo "true"
+  else
+    echo "false"
   fi
 }
+
 
 # checks to see if the zwe command was written with config syntax
 # that is configmgr-only, e.g. FILE() or PARMLIB()
