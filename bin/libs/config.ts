@@ -35,52 +35,6 @@ const cliParameterConfig:string = function() {
     return (value as string);
 }();
 
-function isApimlEnabled(): boolean {
-  const config = configmgr.getZoweConfig();
-  const defaultEnabledComponents = component.getEnabledComponents();
-  const componentEnabled = config.components['apiml']?.enabled;
-  return componentEnabled 
-  && !config.components['gateway'].enabled
-  && !config.components['discovery'].enabled
-  && !config.components['caching-service'].enabled
-  && !config.components['api-catalog'].enabled
-  && !config.components['zaas'].enabled
-  && !config.components['apiml'].port == config.components['gateway'].port
-}
-
-function enableApiml() {
-  const config = configmgr.getZoweConfig();
-  const updateObj = {
-    components: {
-      gateway: {
-        enabled: false
-      },
-      discovery: {
-        enabled: false
-      },
-      "caching-service": {
-        enabled: false
-      },
-      zaas: {
-        enabled: false
-      },
-      "api-catalog": {
-        enabled: false
-      },
-      apiml: {
-        enabled: true,
-        port: config.components['gateway'].port
-      }
-    }
-  }
-
-  updateZoweConfig(updateObj, true, 1);
-
-  std.setenv('ZWE_INSTALLED_COMPONENTS', component.findAllInstalledComponents());
-  std.setenv('ZWE_ENABLED_COMPONENTS', component.findAllEnabledComponents());
-  std.setenv('ZWE_LAUNCH_COMPONENTS', component.findAllLaunchComponents());
-}
-
 export function getZoweConfig(): any {
   common.requireZoweYaml();
 
