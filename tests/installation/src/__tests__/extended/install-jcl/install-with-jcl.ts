@@ -13,17 +13,14 @@ import {
   installAndVerifyConvenienceBuild,
   showZoweRuntimeLogs,
 } from '../../../utils';
-import {
-  TEST_TIMEOUT_CONVENIENCE_BUILD,
-} from '../../../constants';
+import { TEST_TIMEOUT_CONVENIENCE_BUILD } from '../../../constants';
 
 const testServer = process.env.TEST_SERVER;
-const testSuiteName = 'Test convenience build installation with enabling config manager';
+const testSuiteName = 'Test convenience build installation using JCL';
 describe(testSuiteName, () => {
   beforeAll(() => {
     // validate variables
     checkMandatoryEnvironmentVariables([
-      'TEST_SERVER',
       'ZOWE_BUILD_LOCAL',
     ]);
   });
@@ -35,7 +32,8 @@ describe(testSuiteName, () => {
       {
         'zowe_build_local': process.env['ZOWE_BUILD_LOCAL'],
         'zowe_custom_for_test': 'true',
-        'zowe_use_config_manager': 'true',
+        'zowe_setup_jcl_enable': 'true',
+        'zowe_lock_keystore': 'false',
       }
     );
   }, TEST_TIMEOUT_CONVENIENCE_BUILD);

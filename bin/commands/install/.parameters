@@ -1,2 +1,4 @@
 allow-overwrite,allow-overwritten||boolean|||||Allow overwritten existing MVS data set.
+jcl||boolean|||||Generates and submits JCL to drive the install, rather than using USS utilities.
 dry-run||boolean|||||Generates and prints JCL but does not execute.
+dataset-prefix,ds-prefix||string|||||Install Zowe to this dataset prefix.\nThis parameter will not work with '--jcl'.

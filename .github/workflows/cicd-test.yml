@@ -35,7 +35,7 @@ on:
           - Install PTF Twice
           - VSAM Caching Storage Method
           - Infinispan Caching Storage Method
-          - Config Manager
+          - JCL Installation
           - Generate API Documentation
           - APIML Modulith Mode
           - Zowe Nightly Tests
@@ -87,6 +87,7 @@ env:
   KEYRING_TESTFILE: extended/keyring.ts
   JAVA_V21_TESTFILE: extended/java-versions/java-21.ts
   JAVA_V21_KEYRING_TESTFILE: extended/java-versions/java-21-keyring.ts
+  JCL_INSTALL_TESTFILE: extended/install-jcl/install-with-jcl.ts
   ZOS_NODE_V20_TESTFILE: extended/node-versions/node-v20.ts
   ZOS_NODE_V22_TESTFILE: extended/node-versions/node-v22.ts
   APIML_MODULITH_TESTFILE: extended/apiml-monolith/enable-monolith.ts
@@ -94,10 +95,9 @@ env:
   INSTALL_PTF_TWICE_TESTFILE: extended/install-ptf-two-times.ts
   VSAM_CACHING_STORAGE_METHOD_TESTFILE: extended/caching-storages/vsam-storage.ts
   INFINISPAN_CACHING_STORAGE_METHOD_TESTFILE: extended/caching-storages/infinispan-storage.ts
-  CONFIG_MANAGER_TESTFILE: extended/config-manager/enable-config-manager.ts
   GENERAL_API_DOCUMENTATION_TESTFILE: basic/install-api-gen.ts
-  ZOWE_NIGHTLY_TESTS_FULL: basic/install.ts(all);basic/install-ptf.ts(all)
-  ZOWE_RELEASE_TESTS_FULL: basic/install.ts(all);basic/install-ptf.ts(all);basic/install-ext.ts(any);extended/keyring.ts(all);extended/java-versions/java-21.ts(any);extended/java-versions/java-21-keyring.ts(any);extended/node-versions/node-v20.ts(any);extended/node-versions/node-v22.ts(any);extended/certificates/nonstrict-verify-external-certificate.ts(any);extended/caching-storages/infinispan-storage.ts(any);extended/config-manager/enable-config-manager.ts(any);extended/apiml-monolith/enable-monolith.ts(any)
+  ZOWE_NIGHTLY_TESTS_FULL: basic/install.ts(all);basic/install-ptf.ts(all);extended/install-jcl/install-with-jcl.ts(any)
+  ZOWE_RELEASE_TESTS_FULL: basic/install.ts(all);basic/install-ptf.ts(all);basic/install-ext.ts(any);extended/keyring.ts(all);extended/java-versions/java-21.ts(any);extended/java-versions/java-21-keyring.ts(any);extended/node-versions/node-v20.ts(any);extended/node-versions/node-v22.ts(any);extended/certificates/nonstrict-verify-external-certificate.ts(any);extended/caching-storages/infinispan-storage.ts(any);extended/install-jcl/install-with-jcl.ts(any);extended/apiml-monolith/enable-monolith.ts(any)
 
 jobs:
 

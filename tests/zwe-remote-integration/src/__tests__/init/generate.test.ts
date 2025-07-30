@@ -144,7 +144,7 @@ describe(`${testSuiteName}`, () => {
     });
 
     it('bad ds prefix', async () => {
-      cfgYaml.zowe.setup.dataset.prefix = 'SOME.DS.NOEXIST';
+      cfgYaml.zowe.setup.dataset.prefix = `${cfgYaml.zowe.setup.dataset.prefix}.SOME.DS.NOEXIST`;
       const result = await testRunner.runZweTest(cfgYaml, 'init generate --dry-run');
       expect(result.stdout).not.toBeNull();
       expect(result.cleanedStdout).toMatchSnapshot();

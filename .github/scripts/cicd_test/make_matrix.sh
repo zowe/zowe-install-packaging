@@ -74,8 +74,8 @@ case $install_test_choice in
   test_file="$GENERAL_API_DOCUMENTATION_TESTFILE"
   ;;
 
-"Config Manager")
-  test_file="$CONFIG_MANAGER_TESTFILE"
+"JCL Installation")
+  test_file="$JCL_INSTALL_TESTFILE"
   ;;
 
 "APIML Modulith Mode")
