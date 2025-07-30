@@ -3,9 +3,9 @@
   under the terms of the Eclipse Public License v2.0 which
   accompanies this distribution, and is available at
   https://www.eclipse.org/legal/epl-v20.html
- 
+
   SPDX-License-Identifier: EPL-2.0
- 
+
   Copyright Contributors to the Zowe Project.
 */
 
@@ -99,13 +99,13 @@ export function submitJob(jclFileOrContent: string, printJobDebug: boolean = tru
 }
 
 /**
- * Returns job name, completion code, and status. If we cannot retrieve the completion code, it is set to the empty string. 
- * 
- * @param jobId 
- * @returns 
+ * Returns job name, completion code, and status. If we cannot retrieve the completion code, it is set to the empty string.
+ *
+ * @param jobId
+ * @returns
  */
 function getJobStatus(jobId: string): { status: string, cc: string, name: string } {
-  const getStatusCmd = std.getenv('ZWE_zowe_runtimeDirectory') + `/bin/utils/zowex job vs ${jobId} --rfc`;
+  const getStatusCmd = std.getenv('ZWE_zowe_runtimeDirectory') + `/bin/utils/zowex job view-status ${jobId} --rfc`;
   common.printDebug(`-- Running ${getStatusCmd}`);
   const result = shell.execOutSync('sh', '-c', `${getStatusCmd} 2>&1 && echo '.'`);
   let status = 'UNKNOWN';
@@ -114,7 +114,7 @@ function getJobStatus(jobId: string): { status: string, cc: string, name: string
   if (result.rc == 0) { // job not found rc=255, empty job rc=1
     result.out?.split('\n').forEach((line) => {
       if (line.includes(jobId)) {
-        /*     
+        /*
         Sample outputs (only one such line returned with `zowex job vs`)
         JOB05625,CC 0000,IEFBR14$,OUTPUT,J0005625SVSCJES2E131FBE0.......:
         JOB05624,CC 0000,IEFBR14$,OUTPUT,J0005624SVSCJES2E131FBDF.......:
@@ -131,6 +131,19 @@ function getJobStatus(jobId: string): { status: string, cc: string, name: string
         compCode = columns[3];
       }
     })
+  }
+  if (compCode == 'CC 0000') {
+    // Bug in zowex? For CC 0000, try to get JCL file, if returned this
+    //   Error: could not view job file for: 'JOB12345' rc: '-1'
+    //   Details: Could not allocate job spool file 'USERID.ZWEINSTL.JOB12345.JCL', rc: '4' s99error: '1144' s99info: '0'
+    // It is probably JCL Error.
+    const getJobJCL = std.getenv('ZWE_zowe_runtimeDirectory') + `/bin/utils/zowex job view-jcl ${jobId}`;
+    const result = shell.execOutSync('sh', '-c', `${getJobJCL} 2>&1`);
+    if (result.rc != 0 && result.out) {
+      if (result.out.toLowerCase().match(/.*could not allocate job spool file.*rc: '4' s99error: '1144'/)) {
+        compCode = 'JCL ERROR';
+      }
+    }
   }
   return { status: status, cc: compCode, name: jobName };
 

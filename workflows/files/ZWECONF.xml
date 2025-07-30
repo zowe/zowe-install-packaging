@@ -11,6 +11,17 @@
         <General/>
     </workflowInfo>
     <!--variables-->
+    <variable name="zowe_setup_jcl_enable" scope="instance" visibility="public"> 
+      <label>Zowe should generate and use JCL as part of the installation process.</label>
+      <abstract>Zowe should generate and use JCL as part of the installation process.</abstract>
+      <description>Set this to true to have Zowe use JCL during the installation and configuration scripts used in later workflow steps. If set to false, you do not need to fill out the JCL header information in the next field.</description>
+      <category>zowe</category>
+        <boolean>
+            <!-- Put validation here -->
+            <!-- Specify choices here -->
+            <default>false</default>
+        </boolean>
+    </variable>
     <variable name="zowe_setup_jcl_header" scope="global" visibility="public">
       <label>JOB statement positional parameters and keywords used by Zowe during installation and configuration.</label>
       <abstract>JOB statement positional parameters and keywords used by Zowe during installation and configuration.</abstract>
@@ -1088,6 +1099,7 @@ How we want to verify SSL certificates of services. Valid values are:
             <!-- pre-requisite step -->
             <!-- condition -->
             <!--variableValues-->
+            <variableValue name="zowe_setup_jcl_enable" scope="instance" noPromptIfSet="false" required="false" />
             <variableValue name="zowe_setup_jcl_header" scope="global" noPromptIfSet="false" required="false" />
             <variableValue name="zowe_setup_dataset_prefix" scope="instance" noPromptIfSet="false" required="true"/>
             <variableValue name="zowe_setup_dataset_proclib" scope="instance" noPromptIfSet="false" required="true"/>
@@ -1468,9 +1480,10 @@ echo '  # As seen in the documentation:' >> "${instance-zowe_runtimeDirectory}/z
 echo '  # https://docs.zowe.org/stable/user-guide/zos-components-installation-checklist' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '  #-------------------------------------------------------------------------------' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '  setup:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-#if (${global-zowe_setup_jcl_header.trim().length()} > 0 )
-echo '    # JCL job header for samples in SZWESAMP' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '    jcl:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '      # If set to true, Zowe will use generate and use JCL to install components.' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '      enable: ${instance-zowe_setup_jcl_enable}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+#if (${global-zowe_setup_jcl_header.trim().length()} > 0 )
   #if (${global-zowe_setup_jcl_header.trim().includes("\n")} == -1)
 echo '      header: "${global-zowe_setup_jcl_header.trim()}"' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
   #else
