@@ -16,9 +16,10 @@ zowe:
 ```
 
 The dataset allocations and copying of members are done in shell script. Only the `prefix` is required:
-* Use `--dataset-prefix` parameter
-* Or in yaml configuration as `zowe.setup.dataset.prefix`
-* Note: if both parameters are used, `--dataset-prefix` overrides the value defined in `--config`
+* Use `zowe.setup.dataset.prefix` in your Zowe YAML
+* Or use `--dataset-prefix` parameter
+* Note: if `--jcl` is used or if `zowe.setup.jcl.enable` is `true`, `--dataset-prefix` is not supported.
+* Note: if both parameters are used, `--dataset-prefix` overrides the value defined in your Zowe YAML
 
 This is the default behavior.
 

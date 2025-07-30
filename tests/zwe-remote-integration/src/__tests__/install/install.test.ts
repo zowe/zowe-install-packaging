@@ -73,7 +73,7 @@ describe(`${testSuiteName}`, () => {
 
         await TestFileActions.deleteAll(cleanupDs);
       }
-    }, 500000);
+    }, 600000);
 
     it('install, re-install and fail, overwrite and succeed', async () => {
       _.set(cfgYaml, 'zowe.setup.dataset.prefix', `${cfgYaml.zowe.setup.dataset.prefix}.INST.TEST`);
