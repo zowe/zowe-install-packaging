@@ -125,6 +125,10 @@ shell_read_yaml_config() {
   key="${3}"
   required="${4}"
 
+  if [ ! -f "${yaml_file}" ]; then
+    return
+  fi
+
   val=$(cat "${yaml_file}" | awk "/^ *${parent_key}:/{x=NR+2000;next}(NR<=x){print}" | grep -e "^ \+${key}:" | head -n 1 | awk -F: '{print $2;}' | tr -d '[[:space:]]' | sed -e 's/^"//' -e 's/"$//')
   if [ -z "${val}" ]; then
     if [ "${required}" = "true" ]; then
@@ -186,7 +190,7 @@ read_yaml_configmgr() {
   inpFile="${1}"
   key=$(echo "${2}" | tr '.' '/')
   ignore_null="${3:-true}"
-  
+
   if [[ ${inpFile} == "FILE("* ]] || [[ ${inpFile} == "PARMLIB("* ]]; then
     file="${inpFile}"
   else
