@@ -1,4 +1,5 @@
 ZWEL0319E|319|zowe.setup.dataset.jcllib does not exist, cannot run. Run 'zwe init', 'zwe init generate', or submit JCL zowe.setup.dataset.prefix.SZWESAMP(ZWEGENER) before running this command.
+ZWEL0129E|129|The path to the Zowe YAML config must be less than 74 characters long. Config: %s
 ZWEL0130E|130|%s.%s(%s) already exists. This data set member will be overwritten during configuration.
 ZWEL0158E|158|%s already exists.
 ZWEL0159E|159|Failed to modify %s.

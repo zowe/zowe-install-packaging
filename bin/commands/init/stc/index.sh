@@ -137,6 +137,10 @@ else
     print_message "CONFIG path defined in ZWESLSTC is converted into absolute path and may contain SYSNAME."
     print_message "Please manually verify if this path works for your environment, especially when you are working in Sysplex environment."
   fi
+  CFG_LEN_CHECK=$(echo "${ZWE_CLI_PARAMETER_CONFIG}" | awk 'length($0) > 74')
+  if [ -n "${CFG_LEN_CHECK}" ]; then
+    print_error_and_exit "Error ZWEL0129E: The path to the Zowe YAML config must be less than 74 characters long. Config: ${ZWE_CLI_PARAMETER_CONFIG}" "" 129
+  fi
   result=$(cat "//'${prefix}.${ZWE_PRIVATE_DS_SZWESAMP}(ZWESLSTC)'" | \
           sed "s/^\/\/STEPLIB .*\$/\/\/STEPLIB  DD   DSNAME=${authLoadlib},/" | \
           sed "s#^CONFIG=.*\$#CONFIG=$(convert_to_absolute_path ${ZWE_CLI_PARAMETER_CONFIG})#" \
