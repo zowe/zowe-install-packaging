@@ -11,8 +11,8 @@
 # Copyright Contributors to the Zowe Project.
 #######################################################################
 
-
-USE_JCL=$(check_jcl_init)
+CONFIGMGR_SYNTAX=$(check_configmgr_config_syntax)
+USE_JCL=$(check_jcl_enabled)
 if [ "${USE_JCL}" = "true" ]; then
   if [ -z "${ZWE_PRIVATE_TMP_MERGED_YAML_DIR}" ]; then
 
@@ -20,6 +20,8 @@ if [ "${USE_JCL}" = "true" ]; then
     export ZWE_PRIVATE_TMP_MERGED_YAML_DIR=1
   fi
   _CEE_RUNOPTS="XPLINK(ON),HEAPPOOLS(OFF),HEAPPOOLS64(OFF)" ${ZWE_zowe_runtimeDirectory}/bin/utils/configmgr -script "${ZWE_zowe_runtimeDirectory}/bin/commands/init/stc/cli.js"
+elif [ "${CONFIGMGR_SYNTAX}" = "true" ]; then
+  print_error_and_exit "Error ZWEL0115E: This command was submitted with FILE() or PARMLIB() syntax, which is only supported when JCL is also enabled." "" 115
 else
 
 ###############################
@@ -87,7 +89,7 @@ for mb in ${proclibs}; do
   # source in SZWESAMP
   samp_existence=$(is_data_set_exists "${prefix}.${ZWE_PRIVATE_DS_SZWESAMP}(${mb})")
   if [ "${samp_existence}" != "true" ]; then
-      print_error_and_exit "Error ZWEL0143E: ${prefix}.${ZWE_PRIVATE_DS_SZWESAMP}(${mb}) already exists. This data set member will be overwritten during configuration." "" 143
+      print_error_and_exit "Error ZWEL0130E: ${prefix}.${ZWE_PRIVATE_DS_SZWESAMP}(${mb}) already exists. This data set member will be overwritten during configuration." "" 130
   fi
 done
 for mb in ${target_proclibs}; do

@@ -11,8 +11,8 @@
 # Copyright Contributors to the Zowe Project.
 #######################################################################
 
-
-USE_JCL=$(check_jcl_init)
+CONFIGMGR_SYNTAX=$(check_configmgr_config_syntax)
+USE_JCL=$(check_jcl_enabled)
 if [ "${USE_JCL}" = "true" ]; then
   if [ -z "${ZWE_PRIVATE_TMP_MERGED_YAML_DIR}" ]; then
 
@@ -20,6 +20,8 @@ if [ "${USE_JCL}" = "true" ]; then
     export ZWE_PRIVATE_TMP_MERGED_YAML_DIR=1
   fi
   _CEE_RUNOPTS="XPLINK(ON),HEAPPOOLS(OFF),HEAPPOOLS64(OFF)" ${ZWE_zowe_runtimeDirectory}/bin/utils/configmgr -script "${ZWE_zowe_runtimeDirectory}/bin/commands/init/vsam/cli.js"
+elif [ "${CONFIGMGR_SYNTAX}" = "true" ]; then
+  print_error_and_exit "Error ZWEL0115E: This command was submitted with FILE() or PARMLIB() syntax, which is only supported when JCL is also enabled." "" 115
 else
 
 ###############################
@@ -38,7 +40,7 @@ require_zowe_yaml "skipnode"
 
 caching_storage=$(read_yaml_configmgr "${ZWE_CLI_PARAMETER_CONFIG}" ".components.caching-service.storage.mode" | upper_case)
 if [ "${caching_storage}" != "VSAM" ]; then
-  print_error "Warning ZWEL0321W: Zowe Caching Service is not configured to use VSAM. Command skipped."
+  print_error "Warning ZWEL0304W: Zowe Caching Service is not configured to use VSAM. Command skipped."
   return 0
 fi
 

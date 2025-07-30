@@ -1,5 +1,2 @@
-ZWEL0300W||%s already exists. This %s will be overwritten.
 ZWEL0301W||%s already exists and will not be overwritten. For upgrades, you must use --allow-overwrite.
-ZWEL0111E||Command aborts with error.
-ZWEL0115E||This command was submitted with FILE() or PARMLIB() syntax, which is only supported when JCL is also enabled.
 ZWEL0158E||%s already exists.

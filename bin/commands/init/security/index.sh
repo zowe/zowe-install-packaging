@@ -11,7 +11,8 @@
 # Copyright Contributors to the Zowe Project.
 #######################################################################
 
-USE_JCL=$(check_jcl_init)
+CONFIGMGR_SYNTAX=$(check_configmgr_config_syntax)
+USE_JCL=$(check_jcl_enabled)
 if [ "${USE_JCL}" = "true" ]; then
   if [ -z "${ZWE_PRIVATE_TMP_MERGED_YAML_DIR}" ]; then
 
@@ -19,6 +20,8 @@ if [ "${USE_JCL}" = "true" ]; then
     export ZWE_PRIVATE_TMP_MERGED_YAML_DIR=1
   fi
   _CEE_RUNOPTS="XPLINK(ON),HEAPPOOLS(OFF),HEAPPOOLS64(OFF)" ${ZWE_zowe_runtimeDirectory}/bin/utils/configmgr -script "${ZWE_zowe_runtimeDirectory}/bin/commands/init/security/cli.js"
+elif [ "${CONFIGMGR_SYNTAX}" = "true" ]; then
+  print_error_and_exit "Error ZWEL0115E: This command was submitted with FILE() or PARMLIB() syntax, which is only supported when JCL is also enabled." "" 115
 else
 
 ###############################
@@ -148,7 +151,7 @@ else
   if [ ${code} -ne 0 ]; then
     job_has_failures=true
     if [ "${ZWE_CLI_PARAMETER_IGNORE_SECURITY_FAILURES}" = "true" ]; then
-      print_error "Warning ZWEL0161W: Failed to run JCL ${jcllib}(${tmpdsm})."
+      print_error "Warning ZWEL0160W: Failed to run JCL ${jcllib}(${tmpdsm})."
       # skip wait for job status step
       jobid=
     else
@@ -163,7 +166,7 @@ else
     if [ ${code} -eq 1 ]; then
       job_has_failures=true
       if [ "${ZWE_CLI_PARAMETER_IGNORE_SECURITY_FAILURES}" = "true" ]; then
-        print_error "Warning ZWEL0162W: Failed to find job ${jobid} result."
+        print_error "Warning ZWEL0158W: Failed to find job ${jobid} result."
       else
         print_error_and_exit "Error ZWEL0162E: Failed to find job ${jobid} result." "" 162
       fi
