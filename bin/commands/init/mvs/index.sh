@@ -37,6 +37,10 @@ cust_ds_list="parmlib|Zowe parameter library|dsntype(library) dsorg(po) recfm(f 
 jcllib|Zowe JCL library|dsntype(library) dsorg(po) recfm(f b) lrecl(80) unit(sysallda) space(15,15) tracks
 authLoadlib|Zowe authorized load library|dsntype(library) dsorg(po) recfm(u) lrecl(0) blksize(32760) unit(sysallda) space(30,15) tracks
 authPluginLib|Zowe authorized plugin library|dsntype(library) dsorg(po) recfm(u) lrecl(0) blksize(32760) unit(sysallda) space(30,15) tracks"
+DRY_RUN=
+if [ -n "${ZWE_CLI_PARAMETER_DRY_RUN}" ] || [ -n "${ZWE_CLI_PARAMETER_SECURITY_DRY_RUN}" ]; then
+  DRY_RUN="true"
+fi
 
 ###############################
 # validation
@@ -79,9 +83,13 @@ while read -r line; do
     fi
   else
     print_message "Creating ${ds}"
-    create_data_set "${ds}" "${spec}"
-    if [ $? -ne 0 ]; then
-      print_error_and_exit "Error ZWEL0111E: Command aborts with error." "" 111
+    if [ -z "${DRY_RUN}" ]; then
+      create_data_set "${ds}" "${spec}"
+      if [ $? -ne 0 ]; then
+        print_error_and_exit "Error ZWEL0111E: Command aborts with error." "" 111
+      fi
+    else
+      print_message "Skipping creating ${ds} due to --dry-run parameter."
     fi
   fi
 done <<EOF
@@ -97,9 +105,13 @@ else
   parmlib=$(read_yaml_configmgr "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.dataset.parmlib")
   for ds in ZWESIP00; do
     print_message "Copy ${prefix}.${ZWE_PRIVATE_DS_SZWESAMP}(${ds}) to ${parmlib}(${ds})"
-    data_set_copy_to_data_set "${prefix}" "${prefix}.${ZWE_PRIVATE_DS_SZWESAMP}(${ds})" "${parmlib}(${ds})" "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITE}"
-    if [ $? -ne 0 ]; then
-      print_error_and_exit "Error ZWEL0111E: Command aborts with error." "" 111
+    if [ -z "${DRY_RUN}" ]; then
+      data_set_copy_to_data_set "${prefix}" "${prefix}.${ZWE_PRIVATE_DS_SZWESAMP}(${ds})" "${parmlib}(${ds})" "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITE}"
+      if [ $? -ne 0 ]; then
+        print_error_and_exit "Error ZWEL0111E: Command aborts with error." "" 111
+      fi
+    else
+      print_message "Skipping copy operation due to --dry-run parameter."
     fi
   done
 
@@ -110,18 +122,26 @@ else
   if [ -n "${authLoadlib}" ]; then
     for ds in ZWESIS01 ZWESAUX ZWESISDL; do
       print_message "Copy components/zss/LOADLIB/${ds} to ${authLoadlib}(${ds})"
-      # data_set_copy_to_data_set "${prefix}" "${prefix}.${ZWE_PRIVATE_DS_SZWEAUTH}(${ds})" "${authLoadlib}(${ds})" "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITE}"
-      copy_to_data_set "${ZWE_zowe_runtimeDirectory}/components/zss/LOADLIB/${ds}" "${authLoadlib}(${ds})" "-X" "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITE}"
-      if [ $? -ne 0 ]; then
-        print_error_and_exit "Error ZWEL0111E: Command aborts with error." "" 111
+      if [ -z "${DRY_RUN}" ]; then
+        # data_set_copy_to_data_set "${prefix}" "${prefix}.${ZWE_PRIVATE_DS_SZWEAUTH}(${ds})" "${authLoadlib}(${ds})" "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITE}"
+        copy_to_data_set "${ZWE_zowe_runtimeDirectory}/components/zss/LOADLIB/${ds}" "${authLoadlib}(${ds})" "-X" "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITE}"
+        if [ $? -ne 0 ]; then
+          print_error_and_exit "Error ZWEL0111E: Command aborts with error." "" 111
+        fi
+      else
+        print_message "Skipping copy operation due to --dry-run parameter."  
       fi
     done
     for ds in ZWELNCH; do
       print_message "Copy components/launcher/bin/zowe_launcher to ${authLoadlib}(${ds})"
-      # data_set_copy_to_data_set "${prefix}" "${prefix}.${ZWE_PRIVATE_DS_SZWEAUTH}(${ds})" "${authLoadlib}(${ds})" "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITE}"
-      copy_to_data_set "${ZWE_zowe_runtimeDirectory}/components/launcher/bin/zowe_launcher" "${authLoadlib}(${ds})" "-X" "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITE}"
-      if [ $? -ne 0 ]; then
-        print_error_and_exit "Error ZWEL0111E: Command aborts with error." "" 111
+      if [ -z "${DRY_RUN}" ]; then
+        # data_set_copy_to_data_set "${prefix}" "${prefix}.${ZWE_PRIVATE_DS_SZWEAUTH}(${ds})" "${authLoadlib}(${ds})" "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITE}"
+        copy_to_data_set "${ZWE_zowe_runtimeDirectory}/components/launcher/bin/zowe_launcher" "${authLoadlib}(${ds})" "-X" "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITE}"
+        if [ $? -ne 0 ]; then
+          print_error_and_exit "Error ZWEL0111E: Command aborts with error." "" 111
+        fi
+      else
+        print_message "Skipping copy operation due to --dry-run parameter."
       fi
     done
   fi

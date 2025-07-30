@@ -35,6 +35,10 @@ print_level1_message "Install Zowe main started task"
 ###############################
 # constants
 proclibs="ZWESLSTC ZWESISTC ZWESASTC"
+DRY_RUN=
+if [ -n "${ZWE_CLI_PARAMETER_DRY_RUN}" ] || [ -n "${ZWE_CLI_PARAMETER_SECURITY_DRY_RUN}" ]; then
+  DRY_RUN="true"
+fi
 
 ###############################
 # validation
@@ -264,9 +268,13 @@ else
   # copy to proclib
   for mb in ${target_proclibs}; do
     print_message "Copy ${jcllib}(${mb}) to ${proclib}(${mb})"
-    data_set_copy_to_data_set "${prefix}" "${jcllib}(${mb})" "${proclib}(${mb})" "-X" "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITE}"
-    if [ $? -ne 0 ]; then
-      print_error_and_exit "Error ZWEL0111E: Command aborts with error." "" 111
+    if [ -z "${DRY_RUN}" ]; then
+      data_set_copy_to_data_set "${prefix}" "${jcllib}(${mb})" "${proclib}(${mb})" "-X" "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITE}"
+      if [ $? -ne 0 ]; then
+        print_error_and_exit "Error ZWEL0111E: Command aborts with error." "" 111
+      fi
+    else
+      print_message "Skipping copy operation due to --dry-run parameter."
     fi
   done
 fi

@@ -33,6 +33,10 @@ print_level1_message "Create VSAM storage for Zowe Caching Service"
 
 ###############################
 # constants
+DRY_RUN=
+if [ -n "${ZWE_CLI_PARAMETER_DRY_RUN}" ] || [ -n "${ZWE_CLI_PARAMETER_SECURITY_DRY_RUN}" ]; then
+  DRY_RUN="true"
+fi
 
 ###############################
 # validation
@@ -98,7 +102,12 @@ if [ "${vsam_existence}" = "true" ]; then
 fi
 if [ "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITE}" = "true" ]; then
   # delete blindly and ignore errors
-  result=$(tso_command delete "'${vsam_name}'")
+  print_message "Deleting ${vsam_name}"
+  if [ -z "${DRY_RUN}" ]; then
+    result=$(tso_command delete "'${vsam_name}'")
+  else
+    print_message "Skipping delete operation due to --dry-run parameter."
+  fi
 fi
 
 
@@ -156,24 +165,28 @@ fi
 ###############################
 # submit job
 print_message "Submit ${jcllib}(ZWECSVSM)"
-jobid=$(submit_job "//'${jcllib}(ZWECSVSM)'")
-code=$?
-if [ ${code} -ne 0 ]; then
-  print_error_and_exit "Error ZWEL0161E: Failed to run JCL ${jcllib}(ZWECSVSM)." "" 161
-fi
-print_debug "- job id ${jobid}"
-jobstate=$(wait_for_job "${jobid}")
-code=$?
-if [ ${code} -eq 1 ]; then
-  print_error_and_exit "Error ZWEL0162E: Failed to find job ${jobid} result." "" 162
-fi
-jobname=$(echo "${jobstate}" | awk -F, '{print $2}')
-jobcctext=$(echo "${jobstate}" | awk -F, '{print $3}')
-jobcccode=$(echo "${jobstate}" | awk -F, '{print $4}')
-if [ ${code} -eq 0 ]; then
-  print_message "- Job ${jobname}(${jobid}) ends with code ${jobcccode} (${jobcctext})."
+if [ -z "${DRY_RUN}" ]; then
+  jobid=$(submit_job "//'${jcllib}(ZWECSVSM)'")
+  code=$?
+  if [ ${code} -ne 0 ]; then
+    print_error_and_exit "Error ZWEL0161E: Failed to run JCL ${jcllib}(ZWECSVSM)." "" 161
+  fi
+  print_debug "- job id ${jobid}"
+  jobstate=$(wait_for_job "${jobid}")
+  code=$?
+  if [ ${code} -eq 1 ]; then
+    print_error_and_exit "Error ZWEL0162E: Failed to find job ${jobid} result." "" 162
+  fi
+  jobname=$(echo "${jobstate}" | awk -F, '{print $2}')
+  jobcctext=$(echo "${jobstate}" | awk -F, '{print $3}')
+  jobcccode=$(echo "${jobstate}" | awk -F, '{print $4}')
+  if [ ${code} -eq 0 ]; then
+    print_message "- Job ${jobname}(${jobid}) ends with code ${jobcccode} (${jobcctext})."
+  else
+    print_error_and_exit "Error ZWEL0163E: Job ${jobname}(${jobid}) ends with code ${jobcccode} (${jobcctext})." "" 163
+  fi
 else
-  print_error_and_exit "Error ZWEL0163E: Job ${jobname}(${jobid}) ends with code ${jobcccode} (${jobcctext})." "" 163
+  print_message "Skipping JCL submission due to --dry-run parameter."
 fi
 
 ###############################

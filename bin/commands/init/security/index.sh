@@ -141,7 +141,7 @@ print_message
 ###############################
 # submit job
 job_has_failures=
-if [ "${ZWE_CLI_PARAMETER_SECURITY_DRY_RUN}" = "true" ]; then
+if [ "${ZWE_CLI_PARAMETER_SECURITY_DRY_RUN}" = "true" ] || [ "${ZWE_CLI_PARAMETER_DRY_RUN}" = "true" ]; then
   print_message "Dry-run mode, security setup is NOT performed on the system."
   print_message "Please submit ${jcllib}(${tmpdsm}) manually."
 else

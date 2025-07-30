@@ -34,6 +34,10 @@ print_level1_message "APF authorize load libraries"
 ###############################
 # constants
 auth_libs="authLoadlib authPluginLib"
+DRY_RUN=
+if [ -n "${ZWE_CLI_PARAMETER_DRY_RUN}" ] || [ -n "${ZWE_CLI_PARAMETER_SECURITY_DRY_RUN}" ]; then
+  DRY_RUN="true"
+fi
 
 ###############################
 # validation
@@ -61,16 +65,20 @@ for key in ${auth_libs}; do
   fi
 
   print_message "APF authorize ${ds}"
-  apf_authorize_data_set "${ds}"
-  code=$?
-  if [ $code -ne 0 ]; then
-    if [ "${ZWE_CLI_PARAMETER_IGNORE_SECURITY_FAILURES}" = "true" ]; then
-      job_has_failures=true
+  if [ -z "${DRY_RUN}" ]; then
+    apf_authorize_data_set "${ds}"
+    code=$?
+    if [ $code -ne 0 ]; then
+      if [ "${ZWE_CLI_PARAMETER_IGNORE_SECURITY_FAILURES}" = "true" ]; then
+        job_has_failures=true
+      else
+        exit $code
+      fi
     else
-      exit $code
+      print_debug "- APF authorized successfully."
     fi
   else
-    print_debug "- APF authorized successfully."
+    print_message "Skipping APF authorize due to --dry-run parameter."
   fi
 done
 
