@@ -42,7 +42,17 @@ else
   ###############################
   # validation
   if [ -n "${ZWE_CLI_PARAMETER_DATASET_PREFIX}" ]; then
+    # --ds-prefix needs to be checked: length(max 35) & regex(DSN pattern)
     prefix="${ZWE_CLI_PARAMETER_DATASET_PREFIX}"
+    if [ -n "$(echo "${prefix}" | awk 'length($0) > 35')" ]; then
+      print_error_and_exit "Error ZWEL0102E: Invalid parameter --dataset-prefix '${prefix}' - maximum length is 35" "" 102
+    else
+      # prefix could be mixed case, 'ALLOC DS' does not care, but regex (copied from schemas\server-common.json) is expecting uppercase
+      regexCheck=$(echo "$prefix" | awk ' {print toupper($0)} ' | awk '/^([A-Z\$\#\@]){1}([A-Z0-9\$\#\@\-]){0,7}(\.([A-Z\$\#\@]){1}([A-Z0-9\$\#\@\-]){0,7}){0,11}$/ { print $0 }')
+      if [ -z "${regexCheck}" ]; then
+        print_error_and_exit "Error ZWEL0102E: Invalid parameter --dataset-prefix '${prefix}' - not a valid dataset name" "" 102
+      fi
+    fi
   else
     require_zowe_yaml "skipnode"
 
