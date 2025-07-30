@@ -190,7 +190,7 @@ else
           sed '/^.*authPluginLib.*/c\
 //         DD  DSNAME='${authPluginLib}',
 ' |
-          sed '/^..PARMLIB.*/c\
+          sed '/^..PARMLIB.*parmlib.*/c\
 //PARMLIB  DD  DSNAME='${parmlib}',
 ' \
           > "${tmpfile}")
