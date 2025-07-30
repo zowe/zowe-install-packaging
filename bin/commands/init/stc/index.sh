@@ -232,10 +232,11 @@ else
   tmpfile=$(create_tmp_file $(echo "zwe ${ZWE_CLI_COMMANDS_LIST}" | sed "s# #-#g"))
   print_debug "- Copy ${prefix}.${ZWE_PRIVATE_DS_SZWESAMP}(ZWESASTC) to ${tmpfile}"
   result=$(cat "//'${prefix}.${ZWE_PRIVATE_DS_SZWESAMP}(ZWESASTC)'" | \
-          sed '/^..STEPLIB/c\
-\//STEPLIB  DD   DSNAME='${authLoadlib}',DISP=SHR\
-\//         DD   DSNAME='${authPluginLib}',DISP=SHR' \
-          > "${tmpfile}")
+          sed '/^..STEPLIB.*authLoadlib.*/c\
+\//STEPLIB  DD  DSNAME='${authLoadlib}',
+' | sed '/^.*DD.*authPluginLib.*/c\
+\//         DD  DSNAME='${authPluginLib}',
+' > "${tmpfile}")
   code=$?
   chmod 700 "${tmpfile}"
   if [ ${code} -eq 0 ]; then
