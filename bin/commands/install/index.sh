@@ -28,7 +28,7 @@ if [ "${USE_JCL}" = "true" ]; then
     print_error_and_exit "Error ZWEL0108E: Zowe YAML config file is required." "" 108
   fi
 elif [ "${CONFIGMGR_SYNTAX}" = "true" ]; then
-  print_error_and_exit "Error ZWEL0115E: This command was submitted with FILE() or PARMLIB() syntax, which is only supported when JCL is also enabled."
+  print_error_and_exit "Error ZWEL0115E: This command was submitted with FILE() or PARMLIB() syntax, which is only supported when JCL is also enabled." "" 115
 else
   print_level0_message "Install Zowe MVS data sets"
   ###############################
