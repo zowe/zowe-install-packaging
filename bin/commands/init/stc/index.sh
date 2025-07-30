@@ -181,11 +181,18 @@ else
   print_message "Modify ZWESISTC and save as ${jcllib}(${security_stcs_zis})"
   tmpfile=$(create_tmp_file $(echo "zwe ${ZWE_CLI_COMMANDS_LIST}" | sed "s# #-#g"))
   print_debug "- Copy ${prefix}.${ZWE_PRIVATE_DS_SZWESAMP}(ZWESISTC) to ${tmpfile}"
+
+  # note the newlines here are ugly, but \n and \\n did not work correctly, and this works with disp=shr from zweistc
   result=$(cat "//'${prefix}.${ZWE_PRIVATE_DS_SZWESAMP}(ZWESISTC)'" | \
-          sed '/^..STEPLIB/c\
-\//STEPLIB  DD   DSNAME='${authLoadlib}',DISP=SHR\
-\//         DD   DSNAME='${authPluginLib}',DISP=SHR' | \
-          sed "s/^\/\/PARMLIB .*\$/\/\/PARMLIB  DD   DSNAME=${parmlib},DISP=SHR/" \
+          sed '/^..STEPLIB.*authLoadlib.*/c\
+//STEPLIB  DD  DSNAME='${authLoadlib}',
+' |
+          sed '/^.*authPluginLib.*/c\
+//         DD  DSNAME='${authPluginLib}',
+' |
+          sed '/^..PARMLIB.*/c\
+//PARMLIB  DD  DSNAME='${parmlib}',
+' \
           > "${tmpfile}")
   code=$?
   chmod 700 "${tmpfile}"
