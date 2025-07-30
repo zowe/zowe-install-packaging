@@ -1,3 +1,3 @@
 allow-overwrite,allow-overwritten||boolean|||||Allow overwritten existing MVS data set.
-dry-run||boolean|||||Generates and prints JCL but does not execute.
+dry-run||boolean|||||Generates JCL or displays actions to be taken on the system without modifying the system.
 generate||boolean|||||Whether to force rebuild of JCL prior to submission. Use this when you've changed zowe.yaml and are re-submitting this command.
