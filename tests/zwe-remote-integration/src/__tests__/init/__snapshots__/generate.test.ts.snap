@@ -472,10 +472,10 @@ exports[`init-generate (SHORT) PARMLIB negatives 4`] = `"ERROR: ZWEL0316E Invali
 exports[`init-generate (SHORT) PARMLIB negatives 5`] = `"ERROR: ZWEL0316E Invalid PARMLIB format PARMLIB(ZOWE.PR4285B))."`;
 
 exports[`init-generate (SHORT) bad ds prefix 1`] = `
-"cp: FSUM6258 cannot open file "//'SOME.DS.NOEXIST.SZWESAMP(ZWEGENER)'": EDC5049I The specified file name could not be located. (errno2=0xC00B0641)
+"cp: FSUM6258 cannot open file "//'TEST.DATASET.PFX.SOME.DS.NOEXIST.SZWESAMP(ZWEGENER)'": EDC5049I The specified file name could not be located. (errno2=0xC00B0641)
 Temporary directory '/tmp/.zweenv-0000' created.
 Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
-ERROR: ZWEL0143E Cannot find data set member 'SOME.DS.NOEXIST.SZWESAMP(ZWEGENER)'. You may need to re-run zwe install."
+ERROR: ZWEL0143E Cannot find data set member 'TEST.DATASET.PFX.SOME.DS.NOEXIST.SZWESAMP(ZWEGENER)'. You may need to re-run zwe install."
 `;
 
 exports[`init-generate (SHORT) jcl header multi line 1`] = `

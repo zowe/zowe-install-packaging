@@ -52,6 +52,7 @@ zowe:
       storageClass: ""
     jcl:
       header: ""
+      enable: true
   network:
     proxyType: "https"
     server:
@@ -239,6 +240,7 @@ zowe:
       storageClass: ""
     jcl:
       header: ""
+      enable: true
   network:
     proxyType: "https"
     server:

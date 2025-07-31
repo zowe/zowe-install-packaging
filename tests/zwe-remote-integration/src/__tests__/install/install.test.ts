@@ -49,6 +49,15 @@ describe(`${testSuiteName}`, () => {
         `${cfgYaml.zowe.setup.dataset.prefix}.PR#4282.$1-#-@`,
       ];
 
+      const cleanupDs: TestFile[] = installDatasets.map((ds) => {
+        for (const test of testCases) {
+          return { name: `${test}.${ds}`, type: FileType.DS_NON_CLUSTER };
+        }
+      });
+
+      // delete files at start just in case they're lingering on the system
+      await TestFileActions.deleteAll(cleanupDs);
+
       for (const test of testCases) {
         _.set(cfgYaml, 'zowe.setup.dataset.prefix', test);
         let result = await testRunner.runZweTest(cfgYaml, `install`);
@@ -62,12 +71,9 @@ describe(`${testSuiteName}`, () => {
         expect(result.cleanedStdout).toMatchSnapshot();
         expect(result.rc).toBe(0);
 
-        const cleanupDs: TestFile[] = installDatasets.map((ds) => {
-          return { name: `${test}.${ds}`, type: FileType.DS_NON_CLUSTER };
-        });
         await TestFileActions.deleteAll(cleanupDs);
       }
-    }, 500000);
+    }, 600000);
 
     it('install, re-install and fail, overwrite and succeed', async () => {
       _.set(cfgYaml, 'zowe.setup.dataset.prefix', `${cfgYaml.zowe.setup.dataset.prefix}.INST.TEST`);
@@ -99,6 +105,25 @@ describe(`${testSuiteName}`, () => {
   });
 
   describe('(SHORT)', () => {
+    it('cover different configmgr and jcl combinations', async () => {
+      // set session libraries
+      for (const jclSetting of [true, false]) {
+        for (const cmgrSetting of [true, false]) {
+          for (const flag of ['--jcl', '--configmgr', '', '-c "FILE(zowe.test.yaml)"']) {
+            cfgYaml = ZoweConfig.getZoweYaml();
+            _.set(cfgYaml, 'zowe.setup.jcl.enable', jclSetting);
+            _.set(cfgYaml, 'zowe.useConfigmgr', cmgrSetting);
+            const result = await testRunner.runZweTest(cfgYaml, `install --dry-run ${flag}`);
+            expect(result.stdout).not.toBeNull();
+            expect(`jcl: ${jclSetting}, cmgr: ${cmgrSetting}, extra flag: ${flag}, rc: ${result.rc}`).toMatchSnapshot(); // also capture test settings to make snapshots
+            expect(result.cleanedStdout).toMatchSnapshot();
+            // easier to read
+            // expect(result.rc).toBe(0);  -- captured the rc in the snapshot
+          }
+        }
+      }
+    }, 200000);
+
     it('install via PARMLIB and exported variable', async () => {
       const testParmlib = `${cfgYaml.zowe.setup.dataset.parmlib}`;
       const testMember = `${testParmlib}(ZWECNF)`;
@@ -116,8 +141,7 @@ describe(`${testSuiteName}`, () => {
 
       result = await testRunner.runRaw(`
         export ZWE_CLI_PARAMETER_CONFIG='${configString}' && \
-        ./bin/zwe install --dry-run
-        `);
+        ./bin/zwe install --dry-run`);
 
       expect(result.stdout).not.toBeNull();
       expect(result.cleanedStdout).toMatchSnapshot();
@@ -125,7 +149,7 @@ describe(`${testSuiteName}`, () => {
     });
 
     it('bad runtimeDirectory, missing ZWEINSTL', async () => {
-      const emptyDs = `${cfgYaml.zowe.setup.dataset.prefix}.NEW.VALID.DSN`;
+      const emptyDs = `${cfgYaml.zowe.setup.dataset.prefix}.NEW`;
       _.set(cfgYaml, 'zowe.setup.dataset.prefix', emptyDs);
       await testRunner.removeUssFileOrDirForTest('files/SZWESAMP/ZWEINSTL');
       const result = await testRunner.runZweTest(cfgYaml, 'install --dry-run');
@@ -141,12 +165,18 @@ describe(`${testSuiteName}`, () => {
       expect(result.rc).toBe(100);
     });
 
-    // ensure --ds-prefix is not supported
+    // ensure --ds-prefix is not supported in jcl mode
     it('zwe install invalid parameter', async () => {
-      const result = await testRunner.runZweTest(cfgYaml, `install --dry-run --ds-prefix 'SOME.THING'`);
+      let result = await testRunner.runZweTest(cfgYaml, `install --dry-run --ds-prefix 'SOME.THING'`);
       expect(result.stdout).not.toBeNull();
       expect(result.cleanedStdout).toMatchSnapshot();
       expect(result.rc).toBe(102);
+
+      cfgYaml.zowe.setup.jcl.enable = false;
+      result = await testRunner.runZweTest(cfgYaml, `install --dry-run --ds-prefix 'SOME.THING'`);
+      expect(result.stdout).not.toBeNull();
+      expect(result.cleanedStdout).toMatchSnapshot();
+      expect(result.rc).toBe(0);
     });
 
     it('zwe install missing prefix', async () => {
@@ -168,7 +198,7 @@ describe(`${testSuiteName}`, () => {
       const result = await testRunner.runZweTest(cfgYaml, 'install --dry-run --config /not/real/config.yml');
       expect(result.stdout).not.toBeNull();
       expect(result.cleanedStdout).toMatchSnapshot();
-      expect(result.rc).toBe(1);
+      expect(result.rc).toBe(109);
     });
 
     it('zwe install --dry-run valid ds names', async () => {
@@ -184,7 +214,13 @@ describe(`${testSuiteName}`, () => {
       expect(result.rc).toBe(0);
 
       // dataset prefix doesn't exist
-      _.set(cfgYaml, 'zowe.setup.dataset.prefix', `${cfgYaml.zowe.setup.dataset.prefix}.NEW`);
+      const dsPrefix = `${cfgYaml.zowe.setup.dataset.prefix}.NEW`;
+      // cautionary - make sure they're not on the system
+      for (const dsSuffix of installDatasets) {
+        await TestFileActions.deleteAll([{ name: `${dsPrefix}.${dsSuffix}`, type: FileType.DS_NON_CLUSTER }]);
+      }
+
+      _.set(cfgYaml, 'zowe.setup.dataset.prefix', dsPrefix);
       result = await testRunner.runZweTest(cfgYaml, 'install --dry-run');
       expect(result.stdout).not.toBeNull();
       expect(result.cleanedStdout).toMatchSnapshot();
@@ -237,7 +273,7 @@ describe(`${testSuiteName}`, () => {
     it('jcl header multi line', async () => {
       // eslint-disable-next-line
       const longString = "LONGFIELD1,LONGFIELD2,LONGFIELD3,ANOTHER,FIELD,GOING,WAY,PAST,EIGHTY,CHARACTERS,INCLUDING,THIS";
-      let jclLines = [`'SOMEJOB'`, `// (0000000000)`, longString, 'SYSAFF=SYS1'];
+      let jclLines = [`'SOMEJOB'`, `//  (0000000000)`, '//  ' + longString, 'SYSAFF=SYS1'];
       _.set(cfgYaml, 'zowe.setup.jcl.header', jclLines.join('\n'));
       let result = await testRunner.runZweTest(cfgYaml, 'install --dry-run');
       expect(result.stdout).not.toBeNull();

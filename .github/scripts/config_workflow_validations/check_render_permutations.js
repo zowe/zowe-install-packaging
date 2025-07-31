@@ -181,7 +181,7 @@ if (result.errors != null) {
 // (12 in total at writing)
 // could we be smarter about this and auto-generate the fields in the future?
 const configBranches = [
-  { field: 'zowe_setup_jcl_header', values: [ '', 'abc', 123, 'this_is\nmultiline\nheader']},
+  { field: 'zowe_setup_jcl_enable', values: [true, false], dependentBranches: { field: 'zowe_setup_jcl_header', values: [ '', 'abc', 123, 'this_is\nmultiline\nheader']}},
   { field: 'zowe_externalDomains', values: ['localhost', 'localhost\nsome.other.host\n.dns.magic']},
   { field: 'zowe_setup_vsam_mode', values: ['NONRLS', 'RLS', ''] },
   { field: 'components_gateway_enabled', values: [true, false] },
