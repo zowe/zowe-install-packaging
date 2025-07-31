@@ -1,1 +1,15 @@
-""
+{
+  "lockAcquiredTime": "Thu Jul 31 2025 14:07:04 GMT+0000 (Coordinated Universal Time)",
+  "uid": "1753970824031201397",
+  "repository": {
+    "owner": "zowe",
+    "repo": "zowe-install-packaging"
+  },
+  "branch": "winchj/tn3270tls_example",
+  "workflow": "Zowe CICD Integration Tests",
+  "job": "cicd-test",
+  "actor": "zowe-robot",
+  "runId": 16651226366,
+  "runNumber": 7098,
+  "link": "https://github.com/zowe/zowe-install-packaging/actions/runs/16651226366"
+}
