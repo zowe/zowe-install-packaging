@@ -331,7 +331,7 @@ zowe:
   #   # To customize SSH port for VT Terminal Desktop app
   #   ZWED_SSH_PORT: 22
   
-  #   # To customize port and protocol for TN3270 Desktop app 
+  #   # To customize port and protocol for TN3270 Desktop app
   #   ZWED_TN3270_PORT: 992
   #   ZWED_TN3270_SECURITY: "tls"
 
