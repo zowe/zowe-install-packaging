@@ -1095,7 +1095,7 @@ echo '  #   MY_ENV_VAR: my_env_val' >> "${instance-zowe_runtimeDirectory}/zowe.y
 echo '' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '  #   # To customize SSH port for VT Terminal Desktop app' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '  #   ZWED_SSH_PORT: 22' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '' >> ${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '  #   # To customize port and protocol for TN3270 Desktop app' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '  #   ZWED_TN3270_PORT: 992' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '  #   ZWED_TN3270_SECURITY: "tls"' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
