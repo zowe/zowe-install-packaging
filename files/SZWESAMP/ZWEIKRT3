@@ -72,6 +72,9 @@
 //*      * Label of the intermediate CA of the Zowe certificate
 //*        if applicable
 //         SET ITRMZWCA=''
+//*      * Label of the root CA for z/OSMF. Can be auto-detected if
+//*        unset in the zowe.yaml
+//         SET ROOTZFCA='{zowe.setup.certificate.keyring.zOSMF.ca}'
 //*      * Label of the root CA of the Zowe certificate if applicable
 //         SET ROOTZWCA=''
 //*      * If you enable VERIFY_CERTIFICATES or
@@ -149,7 +152,7 @@ $$
 /* authority (CA) with the keyring ................................. */
    TSS ADD({zowe.setup.security.users.zowe}) KEYRING(ZOWERING) +
      LABLRING({zowe.setup.certificate.keyring.name}) +
-     RINGDATA(CERTAUTH,{zowe.setup.certificate.keyring.zOSMF.ca}) +
+     RINGDATA(CERTAUTH,&ROOTZFCA.) +
      USAGE(CERTAUTH)
 $$
 //IFZFCAED ENDIF
