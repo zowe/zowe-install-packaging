@@ -132,19 +132,6 @@ function getJobStatus(jobId: string): { status: string, cc: string, name: string
       }
     })
   }
-  if (compCode == 'CC 0000') {
-    // Bug in zowex? For CC 0000, try to get JCL file, if returned this
-    //   Error: could not view job file for: 'JOB12345' rc: '-1'
-    //   Details: Could not allocate job spool file 'USERID.ZWEINSTL.JOB12345.JCL', rc: '4' s99error: '1144' s99info: '0'
-    // It is probably JCL Error.
-    const getJobJCL = std.getenv('ZWE_zowe_runtimeDirectory') + `/bin/utils/zowex job view-jcl ${jobId}`;
-    const result = shell.execOutSync('sh', '-c', `${getJobJCL} 2>&1`);
-    if (result.rc != 0 && result.out) {
-      if (result.out.toLowerCase().match(/.*could not allocate job spool file.*rc: '4' s99error: '1144'/)) {
-        compCode = 'JCL ERROR';
-      }
-    }
-  }
   return { status: status, cc: compCode, name: jobName };
 
 }
