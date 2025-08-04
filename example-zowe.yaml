@@ -168,10 +168,10 @@ zowe:
     #   type: JCERACFKS
     #   keyring:
     #     name: ZoweKeyring
-    #     # # Label of Zowe certificate. Optional, default value is localhost.
-    #     # label: localhost
-    #     # # label of Zowe CA certificate. Optional, default value is localca.
-    #     # caLabel: localca
+    #     # # Label of Zowe certificate. Default value is localhost.
+    #     label: localhost
+    #     # # label of Zowe CA certificate. Default value is localca.
+    #     caLabel: localca
     #   # # Distinguished name for Zowe generated certificates. All optional.
     #   # dname:
     #   #   caCommonName: ""
@@ -218,8 +218,8 @@ zowe:
     #   type: JCERACFKS
     #   keyring:
     #     name: ZoweKeyring
-    #     # # Label of Zowe certificate. Optional, default value is localhost.
-    #     # label: localhost
+    #     # # Label of Zowe certificate. Default value is localhost.
+    #     label: localhost
     #     import:
     #       # Name of the data set holds the certificate issued by other CA.
     #       # This data set should be in PKCS12 format and contain private key.
