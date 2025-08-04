@@ -119,7 +119,6 @@ ACF
 *
 * Option 2 - END .................................................. */
 $$
-//IFOPT2ED ENDIF
 //*
 //IFZWCA   IF (&IFZOWECA EQ 1) THEN
 //RUNZWCA  EXEC PGM=IKJEFT01,REGION=0M

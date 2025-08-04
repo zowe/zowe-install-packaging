@@ -1421,7 +1421,7 @@ detect_zosmf_root_ca_acf2() {
   zosmf_root_ca=
 
   print_trace "- Detect z/OSMF keyring by listing ID(${zosmf_user}) [ACF2]"
-  echo "${zosmf_root_ca}"
+  echo "${zosmf_root_ca}"  
   return 1
 }
 
@@ -1628,7 +1628,7 @@ EOF
   print_debug "  > temp file: ${tmpfile}"
   print_debug "- Create temp data set member"
   tmpdsm=$(create_data_set_tmp_member "${jcllib}" "ZW$(date +%H%M)")
-  print_debug "  > data set member: ${jcllib}(tmpdsm)"
+  print_debug "  > data set member: ${jcllib}(${tmpdsm})"
   print_debug "- Copy ${prefix}.${ZWE_PRIVATE_DS_SZWESAMP}(ZWEKRING) to ${tmpfile}"
 
   result=$(cat "//'${prefix}.${ZWE_PRIVATE_DS_SZWESAMP}(ZWEKRING)'" | \

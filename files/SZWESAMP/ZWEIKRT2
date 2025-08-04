@@ -100,7 +100,6 @@
       LABLRING({zowe.setup.certificate.keyring.name})
 $$
 //*
-//IFOPT2   IF (&OPTION EQ 2) THEN
 //RUNOPT2  EXEC PGM=IKJEFT01,REGION=0M
 //SYSTSPRT DD SYSOUT=*
 //SYSTSIN  DD DDNAME=TSS
@@ -114,7 +113,6 @@ $$
 
 /* Option 2 - END .................................................. */
 $$
-//IFOPT2ED ENDIF
 //*
 //IFZWCA   IF (&IFZOWECA EQ 1) THEN
 //RUNZWCA  EXEC PGM=IKJEFT01,REGION=0M
