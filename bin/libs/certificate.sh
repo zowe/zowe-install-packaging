@@ -848,7 +848,7 @@ keyring_run_zwekring_jcl() {
   done
 
   if [ -z "${ip_address}" ]; then
-    print_error_and_exit "Error ZWEL0157E: Fix this error message" "" 157
+    print_error_and_exit "Error ZWEL0157E: Subject alternative name (zowe.setup.certificate.san) or external domain (zowe.externalDomains)\nis not defined in Zowe YAML configuration file." "" 157
   fi
 
   import_ext_ca=0
@@ -1506,7 +1506,7 @@ keyring_run_zwekring_jcl_legacy_mode() {
   done
 
   if [ -z "${ip_address}" ]; then
-    print_error_and_exit "Error ZWEL0157E: Fix this error message" "" 157
+    print_error_and_exit "Error ZWEL0157E: Subject alternative name (zowe.setup.certificate.san) or external domain (zowe.externalDomains)\nis not defined in Zowe YAML configuration file." "" 157
   fi
 
   import_ext_ca=0
