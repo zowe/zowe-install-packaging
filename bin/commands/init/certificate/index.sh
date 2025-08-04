@@ -450,7 +450,7 @@ else # JCE* content
     # warning
     print_message "Warning ZWEL0300W: Keyring \"safkeyring://${keyring_owner}/${keyring_name}\" already exists. This keyring will be overwritten."
     if [ "${USE_JCL}" = "true" ]; then
-      keyring_run_zwenokyr_jcl "${prefix}" "${jcllib}" "${security_product}"
+      keyring_run_zwenokyr_jcl "${prefix}" "${jcllib}" "${security_product}" "${keyring_label}" "${keyring_caLabel}"
     else
       keyring_run_zwenokyr_jcl_legacy_mode "${prefix}" "${jcllib}" "${keyring_owner}" "${keyring_name}" "${keyring_label}" "${keyring_caLabel}" "${security_product}"
     fi

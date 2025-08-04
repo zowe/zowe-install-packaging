@@ -1000,6 +1000,8 @@ keyring_run_zwenokyr_jcl() {
   prefix="${1}"
   jcllib="${2}"
   security_product="${3}"
+  cert_label="${4}"
+  ca_label="${5}"
 
   member_prefix="ZWENOKR"
   if [ "${security_product}" = "TSS" ]; then
@@ -1010,8 +1012,46 @@ keyring_run_zwenokyr_jcl() {
     member_name="${member_prefix}R"
   fi
 
+  ###############################
+  # prepare ZWENOKR* JCL
+  print_debug ">>>> Prepare ${member_name}"
+  print_debug "- Create temp file"
+  tmpfile=$(create_tmp_file $(echo "zwe ${ZWE_CLI_COMMANDS_LIST}" | sed "s# #-#g"))
+  print_debug "  > data set member: ${jcllib}(${member_name})"
+  print_debug "- Copy ${jcllib}(${member_name}) to ${tmpfile}"
+  # result = modified JCL
+  result=$(cat "//'${jcllib}(${member_name})'" | \
+          sed "s/^\/\/ \+SET \+ROOTZWCA=.*\$/\/\/         SET  ROOTZWCA='${ca_label}'/" | \
+          sed "s/^\/\/ \+SET \+ZOWECERT=.*\$/\/\/         SET  ZOWECERT='${cert_label}'/")
+  # code = no result or error writing to tmpfile
+  if [ -n "${result}" ]; then
+    echo "${result}" > "${tmpfile}"
+    code=$?
+  else
+    code=1
+  fi
+  if [ ${code} -eq 0 ]; then
+    print_debug "  * Succeeded"
+    print_trace "  * Exit code: ${code}"
+    print_trace "  * Output:"
+    if [ -n "${result}" ]; then
+      print_trace "$(padding_left "${result}" "    ")"
+    fi
+  else
+    print_debug "  * Failed"
+    print_error "  * Exit code: ${code}"
+    print_error "  * Output:"
+    if [ -n "${result}" ]; then
+      print_error "$(padding_left "${result}" "    ")"
+    fi
+  fi
+  if [ ! -f "${tmpfile}" ]; then
+    print_error "Error ZWEL0159E: Failed to modify ${jcllib}(${member_name})"
+    return 159
+  fi
+  chmod 700 "${tmpfile}"
 
-  jcl_contents=$(cat "//'${jcllib}(${member_name})'")
+  jcl_contents=$(cat "${tmpfile}")
 
   print_message "Template JCL: ${prefix}.SZWESAMP(${member_name}) , Executable JCL: ${jcllib}(${member_name})"
   print_message "--- JCL Content ---"
@@ -1029,6 +1069,8 @@ keyring_run_zwenokyr_jcl() {
     code=$?
     if [ ${code} -ne 0 ]; then
       print_error "Error ZWEL0161E: Failed to run JCL ${jcllib}(${member_name})."
+      print_trace "- Delete ${tmpfile}"
+      rm -f "${tmpfile}"
       return 161
     fi
     print_debug "- job id ${jobid}"
@@ -1036,6 +1078,8 @@ keyring_run_zwenokyr_jcl() {
     code=$?
     if [ ${code} -eq 1 ]; then
       print_error "Error ZWEL0162E: Failed to find job ${jobid} result."
+      print_trace "- Delete ${tmpfile}"
+      rm -f "${tmpfile}"
       return 162
     fi
     jobname=$(echo "${jobstate}" | awk -F, '{print $2}')
@@ -1045,8 +1089,12 @@ keyring_run_zwenokyr_jcl() {
       print_message "    - Job ${jobname}(${jobid}) ends with code ${jobcccode} (${jobcctext})."
     else
       print_error "Error ZWEL0163E: Job ${jobname}(${jobid}) ends with code ${jobcccode} (${jobcctext})."
+      print_trace "- Delete ${tmpfile}"
+      rm -f "${tmpfile}"
       return 163
     fi
+    print_trace "- Delete ${tmpfile}"
+    rm -f "${tmpfile}"
   fi
 }
 
@@ -1567,7 +1615,7 @@ EOF
   fi
 
   # used by ACF2  
-  stc_group=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.security.groups.stc")
+  stc_group=$(read_yaml_configmgr "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.security.groups.stc")
   if [ -z "${stc_group}" ]; then
     stc_group=${ZWE_PRIVATE_DEFAULT_ADMIN_GROUP}
   fi
@@ -1696,7 +1744,7 @@ keyring_run_zwenokyr_jcl_legacy_mode() {
   security_product=${7:-RACF}
 
   # used by ACF2
-  stc_group=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.security.groups.stc")
+  stc_group=$(read_yaml_configmgr "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.security.groups.stc")
   if [ -z "${stc_group}" ]; then
     stc_group=${ZWE_PRIVATE_DEFAULT_ADMIN_GROUP}
   fi
