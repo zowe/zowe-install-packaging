@@ -1419,7 +1419,51 @@ detect_zosmf_root_ca_tss() {
 detect_zosmf_root_ca_acf2() {
   zosmf_user=${1:-IZUSVR}
   zosmf_root_ca=
+  return_code=1
+  return_message=""
 
+  acfunix_exists="false"
+  acfunix_local_link="false"
+  acfunix ""
+  if [ $? -ne 0 ]; then
+    ln -e ACFUNIX ./acfunix
+    if [ -f "./acfunix" ]; then
+      acfunix_local_link="true"
+      acfunix ""
+      if [ $? -ne 0 ]; then
+        acfunix_exists="true"
+      fi
+    fi
+  else
+    acfunix_exists="true"
+  fi
+
+  if [ "${acfunix_exists}" = "true" ]; then
+    # KEYRING / ID.KEYRNAME LAST CHANGED BY USER ON mm/dd/yy-hh:mm
+    #                     DEFAULT(ID.CRTNAME) RINGNAME(Keyring.KEYRINGNAME)
+    # The following certificates are connected to this key ring:
+    # CERTDATA record    Label                             Usage
+    # -----------------  --------------------------------  --------
+    # CERTAUTH.CERTNAME  certLabel                         CERTAUTH
+    # ID.CRTNAME         Certlabel.CRTNAME                 PERSONAL 
+
+    zosmf_certs=$(acfunix "SET PROFILE(USER) DIV(KEYRING) LIST LIKE(${zosmf_user}.-)")
+    code=$?
+    if [ ${code} -ne 0 ]; then
+      print_trace "  * Exit code: ${code}"
+      print_trace "  * Output:"
+      if [ -n "${zosmf_certs}" ]; then
+        print_trace "$(padding_left "${zosmf_certs}" "    ")"
+      fi
+    else
+      
+    fi
+
+  fi
+
+  if [ "${acfunix_local_link}" = "true" ]; then
+    rm -f ./acfunix
+  fi
   print_trace "- Detect z/OSMF keyring by listing ID(${zosmf_user}) [ACF2]"
   echo "${zosmf_root_ca}"  
   return 1
