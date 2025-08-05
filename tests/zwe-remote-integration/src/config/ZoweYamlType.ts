@@ -698,6 +698,10 @@ const zoweSchema = zoweYamlSchema as {
               additionalProperties: false;
               description: 'SZWESAMP JCLs related setting.';
               properties: {
+                enable: {
+                  type: 'boolean';
+                  description: 'Whether to restrict the permissions of the keystore after creation';
+                };
                 header: {
                   type: 'string';
                   not: {

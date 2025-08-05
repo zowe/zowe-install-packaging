@@ -22,7 +22,10 @@ export function execute(): void {
   common.printLevel1Message("Install Zowe MVS data sets");
 
   const runtimeEnv = std.getenv('ZWE_zowe_runtimeDirectory');
-
+  const datasetPrefix = std.getenv('ZWE_CLI_PARAMETER_DATASET_PREFIX');
+  if (datasetPrefix && datasetPrefix.length > 0) {
+    common.printErrorAndExit("Error ZWEL0102E: Invalid parameter --dataset-prefix. This is not supported for 'zwe install' when JCL is enabled.", undefined, 102);
+  }
   const zoweConfig = config.getZoweConfig();
   let runtime = zoweConfig.zowe?.runtimeDirectory;
   const prefix = zoweConfig.zowe.setup?.dataset?.prefix;
