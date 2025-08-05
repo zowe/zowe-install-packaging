@@ -100,7 +100,7 @@ export function execute(dryRun?: boolean) {
   common.printMessage('--- JCL content ---');
   common.printMessage(jclContents);
   common.printMessage('--- End of JCL ---');
-
+  let genRc = 0;
   if (dryRun) {
     common.printMessage('JCL not submitted, command run with "--dry-run" flag.');
     common.printMessage('To perform command, re-run command without "--dry-run" flag, or submit the JCL directly.');
@@ -113,7 +113,11 @@ export function execute(dryRun?: boolean) {
       common.printMessage("Zowe JCL generated successfully");
     } else {
       common.printMessage(`Zowe JCL generated with errors, check job log. Job completion code=${result.jobcccode}.`);
+      genRc = 1;
     }
   }
   os.remove(tempFile);
+  if (genRc) {
+    std.exit(genRc);
+  }
 }
