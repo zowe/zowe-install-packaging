@@ -117,5 +117,7 @@ export function execute(dryRun?: boolean) {
     }
   }
   os.remove(tempFile);
-  std.exit(genRc);
+  if (genRc) {
+    std.exit(genRc);
+  }
 }
