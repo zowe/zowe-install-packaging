@@ -60,6 +60,11 @@
       "version": "^3.0.0-SNAPSHOT",
       "artifact": "*.pax"
     },
+    "org.zowe.apiml.apiml-package": {
+      "version": "^3.0.3-SNAPSHOT",
+      "artifact": "apiml-*.zip",
+      "exclusions": ["*PR*.zip"]
+    },
     "org.zowe.apiml.api-catalog-package": {
       "version": "^3.0.3-SNAPSHOT",
       "artifact": "api-catalog-*.zip",
@@ -92,8 +97,7 @@
     },
     "org.zowe.apiml.sdk.apiml-sample-extension-package": {
       "version": "^3.0.3-SNAPSHOT",
-      "artifact": "apiml-sample-extension-*.zip",
-      "exclusions": ["*PR*.zip"]
+      "artifact": "apiml-sample-extension-*.zip"
     },
     "org.zowe.apiml.zaas-package": {
       "version": "^3.0.3-SNAPSHOT",
@@ -126,7 +130,8 @@
       "artifact": "*.pax"
     },
     "org.zowe.launcher": {
-      "version": "^3.0.0-STAGING"
+      "version": "^3.0.0-STAGING",
+      "artifact": "*.pax"
     },
     "org.zowe.keyring-utilities": {
       "version": "1.0.4",

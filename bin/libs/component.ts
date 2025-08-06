@@ -44,12 +44,23 @@ const MANIFEST_SCHEMAS = `${runtimeDirectory}/schemas/manifest-schema.json:${COM
 const PLUGIN_DEF_SCHEMA_ID = "https://zowe.org/schemas/v2/appfw-plugin-definition";
 const PLUGIN_DEF_SCHEMAS = `${runtimeDirectory}/components/app-server/schemas/plugindefinition-schema.json`;
 
-
+// This intentionally lies about individual apiml components for backward compatibility.
+// If the apiml modulith is enabled, all are considered enabled.
 export function getEnabledComponents() {
   let haInstance = configUtils.sanitizeHaInstanceId();
   let haConfig = configmgr.loadZoweConfig(haInstance);
   let components = Object.keys(haConfig.components);
   let enabled: string[] = [];
+  let apimlModulithEnabled = haConfig.components.apiml.enabled == true;
+  let individualApimlComponents = ['gateway', 'discovery', 'api-catalog', 'caching-service', 'zaas'];
+  
+  if (apimlModulithEnabled) {
+    enabled = enabled.concat(individualApimlComponents);
+    
+    //do not process individual apiml components further
+    components = components.filter(name => !individualApimlComponents.includes(name));
+  }
+  
   components.forEach((key) => {
     if (haConfig.components[key].enabled == true) {
       enabled.push(key);
