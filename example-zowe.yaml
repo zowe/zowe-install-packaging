@@ -475,6 +475,11 @@ zOSMF:
 components:
 
   # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+  apiml:
+    enabled: false
+    debug: false
+
+  # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   gateway:
     enabled: true
     port: 7554
@@ -504,6 +509,7 @@ components:
     enabled: true
     port: 7558
     debug: false
+
   # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   api-catalog:
     enabled: true
