@@ -17,7 +17,7 @@ import { LINGERING_REMOTE_FILES_FILE, TEST_OUTPUT_DIR } from '../config/TestConf
 export class TestFileActions {
   private static readonly session = getSession();
 
-  constructor() {}
+  constructor() { }
 
   /**
    * Downloads pds members to a temporary directory and returns the absolute path to the
@@ -44,37 +44,32 @@ export class TestFileActions {
   }
 
   public static async deleteAll(datasets: TestFile[]) {
-    const deleteOps: DeleteFile[] = [];
-    datasets.forEach((testFile) => {
-      let delPromise;
-      switch (testFile.type) {
-        case FileType.DS_VSAM:
-          delPromise = files.Delete.vsam(this.session, testFile.name, { purge: true });
-          break;
-        case FileType.DS_ZFS:
-          delPromise = files.Delete.zfs(this.session, testFile.name, {});
-          break;
-        case FileType.DS_MEMBER:
-        case FileType.DS_NON_CLUSTER:
-          if (testFile.type === FileType.DS_MEMBER && !TestFileActions.hasMember(testFile.name)) {
-            console.log(`${testFile.name} is marked as a dataset member to be deleted, but is missing the member name. Ignoring.`);
-            break;
-          }
-          delPromise = files.Delete.dataSet(this.session, testFile.name, {});
-          break;
-        case FileType.USS_FILE:
-          delPromise = files.Delete.ussFile(this.session, testFile.name, false);
-          break;
-        case FileType.USS_DIR:
-          delPromise = files.Delete.ussFile(this.session, testFile.name, true);
-          break;
-      }
-      deleteOps.push({ file: testFile, action: delPromise });
-    });
-    for (const dsDelete of deleteOps) {
+    for (const testFile of datasets) {
       let res = { success: false };
       try {
-        res = await dsDelete.action;
+        switch (testFile.type) {
+          case FileType.DS_VSAM:
+            res = await files.Delete.vsam(this.session, testFile.name, { purge: true });
+            break;
+          case FileType.DS_ZFS:
+            res = await files.Delete.zfs(this.session, testFile.name, {});
+            break;
+          case FileType.DS_MEMBER:
+          case FileType.DS_NON_CLUSTER:
+            if (testFile.type === FileType.DS_MEMBER && !TestFileActions.hasMember(testFile.name)) {
+              console.log(`${testFile.name} is marked as a dataset member to be deleted, but is missing the member name. Ignoring.`);
+              res.success = true;
+              break;
+            }
+            res = await files.Delete.dataSet(this.session, testFile.name, {});
+            break;
+          case FileType.USS_FILE:
+            res = await files.Delete.ussFile(this.session, testFile.name, false);
+            break;
+          case FileType.USS_DIR:
+            res = await files.Delete.ussFile(this.session, testFile.name, true);
+            break;
+        }
       } catch (error) {
         // if error message indicates 404, file didn't exist to be deleted.
         if (error?.mDetails?.msg && error.mDetails.msg.includes('status 404')) {
@@ -82,8 +77,8 @@ export class TestFileActions {
         }
       }
       if (!res.success) {
-        console.log(`Issue deleting ${dsDelete.file.name}. Will try again during teardown.`);
-        fs.appendFileSync(LINGERING_REMOTE_FILES_FILE, `${dsDelete.file.name}:${dsDelete.file.type}\n`);
+        console.log(`Issue deleting ${testFile.name}. Will try again during teardown.`);
+        fs.appendFileSync(LINGERING_REMOTE_FILES_FILE, `${testFile.name}:${testFile.type}\n`);
       }
     }
   }

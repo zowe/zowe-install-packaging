@@ -92,6 +92,36 @@ describe(`${testSuiteName}`, () => {
       expect(result.rc).toBe(63);
     });
 
+    it('apf empty loadlib', async () => {
+      cfgYaml.zowe.setup.dataset.authLoadlib = null;
+      let result = await testRunner.runZweTest(cfgYaml, 'init apfauth --dry-run');
+      expect(result.stdout).not.toBeNull();
+      expect(result.cleanedStdout).toMatchSnapshot();
+      expect(result.rc).toBe(0);
+
+      delete cfgYaml.zowe.setup.dataset.authLoadlib;
+      result = await testRunner.runZweTest(cfgYaml, 'init apfauth --dry-run');
+      expect(result.stdout).not.toBeNull();
+      expect(result.cleanedStdout).toMatchSnapshot();
+      expect(result.rc).toBe(0);
+    });
+
+    it('apf empty loadlib and pluginlib', async () => {
+      cfgYaml.zowe.setup.dataset.authLoadlib = null;
+      cfgYaml.zowe.setup.dataset.authPluginLib = null;
+      let result = await testRunner.runZweTest(cfgYaml, 'init apfauth --dry-run');
+      expect(result.stdout).not.toBeNull();
+      expect(result.cleanedStdout).toMatchSnapshot();
+      expect(result.rc).toBe(0);
+
+      delete cfgYaml.zowe.setup.dataset.authLoadlib;
+      delete cfgYaml.zowe.setup.dataset.authPluginLib;
+      result = await testRunner.runZweTest(cfgYaml, 'init apfauth --dry-run');
+      expect(result.stdout).not.toBeNull();
+      expect(result.cleanedStdout).toMatchSnapshot();
+      expect(result.rc).toBe(0);
+    });
+
     it('apf empty pluginlib', async () => {
       cfgYaml.zowe.setup.dataset.authPluginLib = null;
       let result = await testRunner.runZweTest(cfgYaml, 'init apfauth --dry-run');
