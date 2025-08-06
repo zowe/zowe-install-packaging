@@ -17,7 +17,7 @@ import { LINGERING_REMOTE_FILES_FILE, TEST_OUTPUT_DIR } from '../config/TestConf
 export class TestFileActions {
   private static readonly session = getSession();
 
-  constructor() { }
+  constructor() {}
 
   /**
    * Downloads pds members to a temporary directory and returns the absolute path to the
@@ -83,11 +83,6 @@ export class TestFileActions {
     }
   }
 }
-
-type DeleteFile = {
-  file: TestFile;
-  action: Promise<files.IDeleteVsamResponse | files.IZosFilesResponse>;
-};
 
 export type TestFile = {
   name: string;
