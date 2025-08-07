@@ -896,7 +896,6 @@ exports[`zwe-install (SHORT) cover different configmgr and jcl combinations 2`] 
 Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
 -------------------------------------------------------------------------------
 >> Install Zowe MVS data sets
-Warning ZWEL0301W: TEST.DATASET.PFX.SZWEAUTH already exists and will not be overwritten. For upgrades, you must use --allow-overwrite.
 Warning ZWEL0301W: TEST.DATASET.PFX.SZWEEXEC already exists and will not be overwritten. For upgrades, you must use --allow-overwrite.
 Warning ZWEL0301W: TEST.DATASET.PFX.SZWELOAD already exists and will not be overwritten. For upgrades, you must use --allow-overwrite.
 Warning ZWEL0301W: TEST.DATASET.PFX.SZWESAMP already exists and will not be overwritten. For upgrades, you must use --allow-overwrite.
@@ -978,7 +977,6 @@ exports[`zwe-install (SHORT) cover different configmgr and jcl combinations 4`] 
 Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
 -------------------------------------------------------------------------------
 >> Install Zowe MVS data sets
-Warning ZWEL0301W: TEST.DATASET.PFX.SZWEAUTH already exists and will not be overwritten. For upgrades, you must use --allow-overwrite.
 Warning ZWEL0301W: TEST.DATASET.PFX.SZWEEXEC already exists and will not be overwritten. For upgrades, you must use --allow-overwrite.
 Warning ZWEL0301W: TEST.DATASET.PFX.SZWELOAD already exists and will not be overwritten. For upgrades, you must use --allow-overwrite.
 Warning ZWEL0301W: TEST.DATASET.PFX.SZWESAMP already exists and will not be overwritten. For upgrades, you must use --allow-overwrite.
@@ -1060,7 +1058,6 @@ exports[`zwe-install (SHORT) cover different configmgr and jcl combinations 6`] 
 Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
 -------------------------------------------------------------------------------
 >> Install Zowe MVS data sets
-Warning ZWEL0301W: TEST.DATASET.PFX.SZWEAUTH already exists and will not be overwritten. For upgrades, you must use --allow-overwrite.
 Warning ZWEL0301W: TEST.DATASET.PFX.SZWEEXEC already exists and will not be overwritten. For upgrades, you must use --allow-overwrite.
 Warning ZWEL0301W: TEST.DATASET.PFX.SZWELOAD already exists and will not be overwritten. For upgrades, you must use --allow-overwrite.
 Warning ZWEL0301W: TEST.DATASET.PFX.SZWESAMP already exists and will not be overwritten. For upgrades, you must use --allow-overwrite.
@@ -1142,7 +1139,6 @@ exports[`zwe-install (SHORT) cover different configmgr and jcl combinations 8`] 
 Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
 -------------------------------------------------------------------------------
 >> Install Zowe MVS data sets
-Warning ZWEL0301W: TEST.DATASET.PFX.SZWEAUTH already exists and will not be overwritten. For upgrades, you must use --allow-overwrite.
 Warning ZWEL0301W: TEST.DATASET.PFX.SZWEEXEC already exists and will not be overwritten. For upgrades, you must use --allow-overwrite.
 Warning ZWEL0301W: TEST.DATASET.PFX.SZWELOAD already exists and will not be overwritten. For upgrades, you must use --allow-overwrite.
 Warning ZWEL0301W: TEST.DATASET.PFX.SZWESAMP already exists and will not be overwritten. For upgrades, you must use --allow-overwrite.
@@ -1224,7 +1220,8 @@ exports[`zwe-install (SHORT) cover different configmgr and jcl combinations 10`]
 >> INSTALL ZOWE MVS DATA SETS
 Create MVS data sets if they do not exist
 Warning ZWEL0301W: TEST.DATASET.PFX.SZWESAMP already exists and will not be overwritten. For upgrades, you must use --allow-overwrite.
-Warning ZWEL0301W: TEST.DATASET.PFX.SZWEAUTH already exists and will not be overwritten. For upgrades, you must use --allow-overwrite.
+Creating Zowe authorized load library - TEST.DATASET.PFX.SZWEAUTH
+TEST.DATASET.PFX.SZWEAUTH not created due to --dry-run parameter.
 Warning ZWEL0301W: TEST.DATASET.PFX.SZWELOAD already exists and will not be overwritten. For upgrades, you must use --allow-overwrite.
 Warning ZWEL0301W: TEST.DATASET.PFX.SZWEEXEC already exists and will not be overwritten. For upgrades, you must use --allow-overwrite.
 -------------------------------------------------------------------------------
@@ -1242,7 +1239,6 @@ exports[`zwe-install (SHORT) cover different configmgr and jcl combinations 12`]
 Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
 -------------------------------------------------------------------------------
 >> Install Zowe MVS data sets
-Warning ZWEL0301W: TEST.DATASET.PFX.SZWEAUTH already exists and will not be overwritten. For upgrades, you must use --allow-overwrite.
 Warning ZWEL0301W: TEST.DATASET.PFX.SZWEEXEC already exists and will not be overwritten. For upgrades, you must use --allow-overwrite.
 Warning ZWEL0301W: TEST.DATASET.PFX.SZWELOAD already exists and will not be overwritten. For upgrades, you must use --allow-overwrite.
 Warning ZWEL0301W: TEST.DATASET.PFX.SZWESAMP already exists and will not be overwritten. For upgrades, you must use --allow-overwrite.
@@ -1324,7 +1320,8 @@ exports[`zwe-install (SHORT) cover different configmgr and jcl combinations 14`]
 >> INSTALL ZOWE MVS DATA SETS
 Create MVS data sets if they do not exist
 Warning ZWEL0301W: TEST.DATASET.PFX.SZWESAMP already exists and will not be overwritten. For upgrades, you must use --allow-overwrite.
-Warning ZWEL0301W: TEST.DATASET.PFX.SZWEAUTH already exists and will not be overwritten. For upgrades, you must use --allow-overwrite.
+Creating Zowe authorized load library - TEST.DATASET.PFX.SZWEAUTH
+TEST.DATASET.PFX.SZWEAUTH not created due to --dry-run parameter.
 Warning ZWEL0301W: TEST.DATASET.PFX.SZWELOAD already exists and will not be overwritten. For upgrades, you must use --allow-overwrite.
 Warning ZWEL0301W: TEST.DATASET.PFX.SZWEEXEC already exists and will not be overwritten. For upgrades, you must use --allow-overwrite.
 -------------------------------------------------------------------------------
@@ -1342,7 +1339,6 @@ exports[`zwe-install (SHORT) cover different configmgr and jcl combinations 16`]
 Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
 -------------------------------------------------------------------------------
 >> Install Zowe MVS data sets
-Warning ZWEL0301W: TEST.DATASET.PFX.SZWEAUTH already exists and will not be overwritten. For upgrades, you must use --allow-overwrite.
 Warning ZWEL0301W: TEST.DATASET.PFX.SZWEEXEC already exists and will not be overwritten. For upgrades, you must use --allow-overwrite.
 Warning ZWEL0301W: TEST.DATASET.PFX.SZWELOAD already exists and will not be overwritten. For upgrades, you must use --allow-overwrite.
 Warning ZWEL0301W: TEST.DATASET.PFX.SZWESAMP already exists and will not be overwritten. For upgrades, you must use --allow-overwrite.
@@ -1424,7 +1420,6 @@ exports[`zwe-install (SHORT) cover different configmgr and jcl combinations 18`]
 Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
 -------------------------------------------------------------------------------
 >> Install Zowe MVS data sets
-Warning ZWEL0301W: TEST.DATASET.PFX.SZWEAUTH already exists and will not be overwritten. For upgrades, you must use --allow-overwrite.
 Warning ZWEL0301W: TEST.DATASET.PFX.SZWEEXEC already exists and will not be overwritten. For upgrades, you must use --allow-overwrite.
 Warning ZWEL0301W: TEST.DATASET.PFX.SZWELOAD already exists and will not be overwritten. For upgrades, you must use --allow-overwrite.
 Warning ZWEL0301W: TEST.DATASET.PFX.SZWESAMP already exists and will not be overwritten. For upgrades, you must use --allow-overwrite.
@@ -1506,7 +1501,8 @@ exports[`zwe-install (SHORT) cover different configmgr and jcl combinations 20`]
 >> INSTALL ZOWE MVS DATA SETS
 Create MVS data sets if they do not exist
 Warning ZWEL0301W: TEST.DATASET.PFX.SZWESAMP already exists and will not be overwritten. For upgrades, you must use --allow-overwrite.
-Warning ZWEL0301W: TEST.DATASET.PFX.SZWEAUTH already exists and will not be overwritten. For upgrades, you must use --allow-overwrite.
+Creating Zowe authorized load library - TEST.DATASET.PFX.SZWEAUTH
+TEST.DATASET.PFX.SZWEAUTH not created due to --dry-run parameter.
 Warning ZWEL0301W: TEST.DATASET.PFX.SZWELOAD already exists and will not be overwritten. For upgrades, you must use --allow-overwrite.
 Warning ZWEL0301W: TEST.DATASET.PFX.SZWEEXEC already exists and will not be overwritten. For upgrades, you must use --allow-overwrite.
 -------------------------------------------------------------------------------
@@ -1524,7 +1520,8 @@ exports[`zwe-install (SHORT) cover different configmgr and jcl combinations 22`]
 >> INSTALL ZOWE MVS DATA SETS
 Create MVS data sets if they do not exist
 Warning ZWEL0301W: TEST.DATASET.PFX.SZWESAMP already exists and will not be overwritten. For upgrades, you must use --allow-overwrite.
-Warning ZWEL0301W: TEST.DATASET.PFX.SZWEAUTH already exists and will not be overwritten. For upgrades, you must use --allow-overwrite.
+Creating Zowe authorized load library - TEST.DATASET.PFX.SZWEAUTH
+TEST.DATASET.PFX.SZWEAUTH not created due to --dry-run parameter.
 Warning ZWEL0301W: TEST.DATASET.PFX.SZWELOAD already exists and will not be overwritten. For upgrades, you must use --allow-overwrite.
 Warning ZWEL0301W: TEST.DATASET.PFX.SZWEEXEC already exists and will not be overwritten. For upgrades, you must use --allow-overwrite.
 -------------------------------------------------------------------------------
@@ -1546,7 +1543,8 @@ exports[`zwe-install (SHORT) cover different configmgr and jcl combinations 26`]
 >> INSTALL ZOWE MVS DATA SETS
 Create MVS data sets if they do not exist
 Warning ZWEL0301W: TEST.DATASET.PFX.SZWESAMP already exists and will not be overwritten. For upgrades, you must use --allow-overwrite.
-Warning ZWEL0301W: TEST.DATASET.PFX.SZWEAUTH already exists and will not be overwritten. For upgrades, you must use --allow-overwrite.
+Creating Zowe authorized load library - TEST.DATASET.PFX.SZWEAUTH
+TEST.DATASET.PFX.SZWEAUTH not created due to --dry-run parameter.
 Warning ZWEL0301W: TEST.DATASET.PFX.SZWELOAD already exists and will not be overwritten. For upgrades, you must use --allow-overwrite.
 Warning ZWEL0301W: TEST.DATASET.PFX.SZWEEXEC already exists and will not be overwritten. For upgrades, you must use --allow-overwrite.
 -------------------------------------------------------------------------------
@@ -1564,7 +1562,8 @@ exports[`zwe-install (SHORT) cover different configmgr and jcl combinations 28`]
 >> INSTALL ZOWE MVS DATA SETS
 Create MVS data sets if they do not exist
 Warning ZWEL0301W: TEST.DATASET.PFX.SZWESAMP already exists and will not be overwritten. For upgrades, you must use --allow-overwrite.
-Warning ZWEL0301W: TEST.DATASET.PFX.SZWEAUTH already exists and will not be overwritten. For upgrades, you must use --allow-overwrite.
+Creating Zowe authorized load library - TEST.DATASET.PFX.SZWEAUTH
+TEST.DATASET.PFX.SZWEAUTH not created due to --dry-run parameter.
 Warning ZWEL0301W: TEST.DATASET.PFX.SZWELOAD already exists and will not be overwritten. For upgrades, you must use --allow-overwrite.
 Warning ZWEL0301W: TEST.DATASET.PFX.SZWEEXEC already exists and will not be overwritten. For upgrades, you must use --allow-overwrite.
 -------------------------------------------------------------------------------
@@ -1582,7 +1581,8 @@ exports[`zwe-install (SHORT) cover different configmgr and jcl combinations 30`]
 >> INSTALL ZOWE MVS DATA SETS
 Create MVS data sets if they do not exist
 Warning ZWEL0301W: TEST.DATASET.PFX.SZWESAMP already exists and will not be overwritten. For upgrades, you must use --allow-overwrite.
-Warning ZWEL0301W: TEST.DATASET.PFX.SZWEAUTH already exists and will not be overwritten. For upgrades, you must use --allow-overwrite.
+Creating Zowe authorized load library - TEST.DATASET.PFX.SZWEAUTH
+TEST.DATASET.PFX.SZWEAUTH not created due to --dry-run parameter.
 Warning ZWEL0301W: TEST.DATASET.PFX.SZWELOAD already exists and will not be overwritten. For upgrades, you must use --allow-overwrite.
 Warning ZWEL0301W: TEST.DATASET.PFX.SZWEEXEC already exists and will not be overwritten. For upgrades, you must use --allow-overwrite.
 -------------------------------------------------------------------------------
@@ -1602,7 +1602,6 @@ exports[`zwe-install (SHORT) install via PARMLIB and exported variable 1`] = `
 Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
 -------------------------------------------------------------------------------
 >> Install Zowe MVS data sets
-Warning ZWEL0301W: TEST.DATASET.PFX.SZWEAUTH already exists and will not be overwritten. For upgrades, you must use --allow-overwrite.
 Warning ZWEL0301W: TEST.DATASET.PFX.SZWEEXEC already exists and will not be overwritten. For upgrades, you must use --allow-overwrite.
 Warning ZWEL0301W: TEST.DATASET.PFX.SZWELOAD already exists and will not be overwritten. For upgrades, you must use --allow-overwrite.
 Warning ZWEL0301W: TEST.DATASET.PFX.SZWESAMP already exists and will not be overwritten. For upgrades, you must use --allow-overwrite.
@@ -1683,7 +1682,6 @@ Zowe will remove it on success, but if zwe exits with a non-zero code manual cle
 -------------------------------------------------------------------------------
 >> Install Zowe MVS data sets
 
-Warning ZWEL0301W: TEST.DATASET.PFX.SZWEAUTH already exists and will not be overwritten. For upgrades, you must use --allow-overwrite.
 Warning ZWEL0301W: TEST.DATASET.PFX.SZWEEXEC already exists and will not be overwritten. For upgrades, you must use --allow-overwrite.
 Warning ZWEL0301W: TEST.DATASET.PFX.SZWELOAD already exists and will not be overwritten. For upgrades, you must use --allow-overwrite.
 Warning ZWEL0301W: TEST.DATASET.PFX.SZWESAMP already exists and will not be overwritten. For upgrades, you must use --allow-overwrite.
@@ -1777,7 +1775,6 @@ Zowe will remove it on success, but if zwe exits with a non-zero code manual cle
 -------------------------------------------------------------------------------
 >> Install Zowe MVS data sets
 
-Warning ZWEL0301W: TEST.DATASET.PFX.SZWEAUTH already exists and will not be overwritten. For upgrades, you must use --allow-overwrite.
 Warning ZWEL0301W: TEST.DATASET.PFX.SZWEEXEC already exists and will not be overwritten. For upgrades, you must use --allow-overwrite.
 Warning ZWEL0301W: TEST.DATASET.PFX.SZWELOAD already exists and will not be overwritten. For upgrades, you must use --allow-overwrite.
 Warning ZWEL0301W: TEST.DATASET.PFX.SZWESAMP already exists and will not be overwritten. For upgrades, you must use --allow-overwrite.
@@ -1874,7 +1871,6 @@ Zowe will remove it on success, but if zwe exits with a non-zero code manual cle
 -------------------------------------------------------------------------------
 >> Install Zowe MVS data sets
 
-Warning ZWEL0301W: TEST.DATASET.PFX.SZWEAUTH already exists and will not be overwritten. For upgrades, you must use --allow-overwrite.
 Warning ZWEL0301W: TEST.DATASET.PFX.SZWEEXEC already exists and will not be overwritten. For upgrades, you must use --allow-overwrite.
 Warning ZWEL0301W: TEST.DATASET.PFX.SZWELOAD already exists and will not be overwritten. For upgrades, you must use --allow-overwrite.
 Warning ZWEL0301W: TEST.DATASET.PFX.SZWESAMP already exists and will not be overwritten. For upgrades, you must use --allow-overwrite.
@@ -1962,7 +1958,6 @@ Zowe will remove it on success, but if zwe exits with a non-zero code manual cle
 -------------------------------------------------------------------------------
 >> Install Zowe MVS data sets
 
-Warning ZWEL0301W: TEST.DATASET.PFX.SZWEAUTH already exists and will not be overwritten. For upgrades, you must use --allow-overwrite.
 Warning ZWEL0301W: TEST.DATASET.PFX.SZWEEXEC already exists and will not be overwritten. For upgrades, you must use --allow-overwrite.
 Warning ZWEL0301W: TEST.DATASET.PFX.SZWELOAD already exists and will not be overwritten. For upgrades, you must use --allow-overwrite.
 Warning ZWEL0301W: TEST.DATASET.PFX.SZWESAMP already exists and will not be overwritten. For upgrades, you must use --allow-overwrite.
@@ -2046,7 +2041,6 @@ exports[`zwe-install (SHORT) zwe install --dry-run valid ds names 1`] = `
 Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
 -------------------------------------------------------------------------------
 >> Install Zowe MVS data sets
-Warning ZWEL0301W: TEST.DATASET.PFX.SZWEAUTH already exists and will not be overwritten. For upgrades, you must use --allow-overwrite.
 Warning ZWEL0301W: TEST.DATASET.PFX.SZWEEXEC already exists and will not be overwritten. For upgrades, you must use --allow-overwrite.
 Warning ZWEL0301W: TEST.DATASET.PFX.SZWELOAD already exists and will not be overwritten. For upgrades, you must use --allow-overwrite.
 Warning ZWEL0301W: TEST.DATASET.PFX.SZWESAMP already exists and will not be overwritten. For upgrades, you must use --allow-overwrite.
@@ -2126,7 +2120,6 @@ exports[`zwe-install (SHORT) zwe install --dry-run valid ds names 2`] = `
 Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
 -------------------------------------------------------------------------------
 >> Install Zowe MVS data sets
-Warning ZWEL0300W: TEST.DATASET.PFX.SZWEAUTH already exists. Members in this data set will be overwritten.
 Warning ZWEL0300W: TEST.DATASET.PFX.SZWEEXEC already exists. Members in this data set will be overwritten.
 Warning ZWEL0300W: TEST.DATASET.PFX.SZWELOAD already exists. Members in this data set will be overwritten.
 Warning ZWEL0300W: TEST.DATASET.PFX.SZWESAMP already exists. Members in this data set will be overwritten.

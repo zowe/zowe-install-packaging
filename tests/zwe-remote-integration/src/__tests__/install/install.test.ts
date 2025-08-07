@@ -105,6 +105,17 @@ describe(`${testSuiteName}`, () => {
   });
 
   describe('(SHORT)', () => {
+    beforeEach(async () => {
+      // ensure that szweauth does not exist
+      const defaultLoadlib = `${cfgYaml.zowe.setup.dataset.prefix}.SZWEAUTH`;
+      const defaultTestFile = {
+        name: defaultLoadlib,
+        type: FileType.DS_NON_CLUSTER,
+      };
+      // ensure it's not there
+      await TestFileActions.deleteAll([defaultTestFile]);
+    });
+
     it('cover different configmgr and jcl combinations', async () => {
       // set session libraries
       for (const jclSetting of [true, false]) {
