@@ -1,4 +1,7 @@
-This command will run ZWESECUR jcl.
+This command will run JCL based on the security product:
+  - (If RACF) ZWEIRAC
+  - (If TSS) ZWEITSS
+  - (If ACF2) ZWEIACF
 
 NOTE: You require proper permission to run security configuration.
 

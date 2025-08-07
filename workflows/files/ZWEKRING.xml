@@ -700,7 +700,7 @@ $$
 /* Option 2 - BEGINNING ............................................ */
 /* Connect a Zowe certificate to the keyring ................... */
 #if (${owner} == "SITE")
-   RACDCERT CONNECT(SITE) +
+   RACDCERT CONNECT(SITE +
 #else
    RACDCERT CONNECT(ID(&amp;ZOWEUSER.) +
 #end

@@ -1,0 +1,18 @@
+# These below variables can be replaced 
+host: 
+user: 
+password: 
+ssh_port: 
+zosmf_port: 
+remote_test_dir: 
+zos_java_home:
+zos_node_home: 
+remote_setup: false
+remote_teardown: false
+test_ds_hlq: 
+test_volume:
+zosmf_reject_unauthorized: 
+download_configmgr: false
+jfrog_user:
+jfrog_token:
+collect_test_spool: true
