@@ -307,7 +307,7 @@
       "components.app-server.port": "{{ zowe_zlux_port }}"
       "components.zss.port": "{{ zowe_zss_port }}"
       # apiml modulith
-      "components.apiml.enabled": "{{ zowe_apiml_modulith_mode }}"
+      "components.apiml.enabled": "{{ zowe_apiml_modulith_mode|string|lower }}"
 
       # other gateway configs
       "components.gateway.apiml.gateway.timeoutMillis": "{{ zowe_apiml_gateway_timeout_millis }}"
