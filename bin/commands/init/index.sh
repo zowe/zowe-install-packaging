@@ -11,6 +11,22 @@
 # Copyright Contributors to the Zowe Project.
 #######################################################################
 
+CONFIGMGR_SYNTAX=$(check_configmgr_config_syntax)
+USE_JCL=$(check_jcl_enabled)
+if [ "${USE_JCL}" = "true" ]; then
+  if [ -z "${ZWE_PRIVATE_TMP_MERGED_YAML_DIR}" ]; then
+
+    # user-facing command, use tmpdir to not mess up workspace permissions
+    export ZWE_PRIVATE_TMP_MERGED_YAML_DIR=1
+  fi
+  _CEE_RUNOPTS="XPLINK(ON),HEAPPOOLS(OFF),HEAPPOOLS64(OFF)" ${ZWE_zowe_runtimeDirectory}/bin/utils/configmgr -script "${ZWE_zowe_runtimeDirectory}/bin/commands/init/cli.js"
+elif [ "${CONFIGMGR_SYNTAX}" = "true" ]; then
+  print_error_and_exit "Error ZWEL0115E: This command was submitted with FILE() or PARMLIB() syntax, which is only supported when JCL is also enabled." "" 115
+else
+
+###############################
+# Old 3.2 code follows
+
 print_level0_message "Configure Zowe"
 
 ###############################
@@ -19,10 +35,12 @@ print_level1_message "Check if need to update runtime directory, Java and/or nod
 update_node_home=
 yaml_node_home="$(shell_read_yaml_node_home "${ZWE_CLI_PARAMETER_CONFIG}")"
 # only try to update if it's not defined
-if [ -z "${yaml_node_home}" ]; then
-  require_node
-  if [ -n "${NODE_HOME}" ]; then
-    update_node_home="${NODE_HOME}"
+if [[ ${ZWE_ENABLED_COMPONENTS} == *"app-server"* ]]; then
+  if [ -z "${yaml_node_home}" ]; then
+    require_node
+    if [ -n "${NODE_HOME}" ]; then
+      update_node_home="${NODE_HOME}"
+    fi
   fi
 fi
 # java.home
@@ -97,3 +115,4 @@ zwecli_inline_execute_command init certificate
 zwecli_inline_execute_command init stc
 
 print_level1_message "Zowe is configured successfully."
+fi

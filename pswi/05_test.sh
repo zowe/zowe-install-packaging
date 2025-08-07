@@ -70,6 +70,6 @@ if [ $? -gt 0 ]; then exit -1; fi
 # Run the deployment test
 echo " Running the deployment test for z/OSMF version ${ZOSMF_V}"
 
-pip install requests
+pip install -r py_requirements.txt
 
 python scripts/deploy_test_2_3.py

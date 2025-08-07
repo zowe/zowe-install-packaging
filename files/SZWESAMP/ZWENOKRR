@@ -1,4 +1,4 @@
-//ZWENOKRR JOB
+//ZWENOKRR JOB {zowe.setup.jcl.header}
 //*
 //* This program and the accompanying materials are made available
 //* under the terms of the Eclipse Public License v2.0 which
@@ -40,6 +40,12 @@
 //*********************************************************************
 //         EXPORT SYMLIST=*
 //*
+//*      * Label of the Zowe certificate to delete if applicable
+//         SET ZOWECERT='{zowe.setup.certificate.keyring.label}'
+//*      * Label of the root CA of the Zowe certificate to delete 
+//*      * if applicable
+//         SET ROOTZWCA='{zowe.setup.certificate.keyring.caLabel}'
+//*
 //*********************************************************************
 //*
 //* EXECUTE COMMANDS FOR SELECTED SECURITY PRODUCT
@@ -78,12 +84,12 @@
   SETROPTS RACLIST(RDATALIB) REFRESH
 
 /* Delete LABEL certificate ........................................*/
-  RACDCERT DELETE(LABEL('{zowe.setup.certificate.keyring.label}')) +
+  RACDCERT DELETE(LABEL('&ZOWECERT.')) +
            ID({zowe.setup.security.users.zowe})
 
 /* Delete LOCALCA certificate ......................................*/
   RACDCERT DELETE(LABEL( +
-           '{zowe.setup.certificate.keyring.caLabel}')) CERTAUTH
+           '&ROOTZWCA.')) CERTAUTH
 
 /* Delete keyring ...................................................*/
   RACDCERT DELRING({zowe.setup.certificate.keyring.name}) +

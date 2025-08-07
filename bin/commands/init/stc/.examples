@@ -1,1 +1,2 @@
 zwe init stc -v -c /path/to/zowe.yaml
+zwe init stc --config 'FILE(/path/to/zowe.yaml):PARMLIB(DSN.TO.PARMS(ZWEYAML))' --generate --trace
