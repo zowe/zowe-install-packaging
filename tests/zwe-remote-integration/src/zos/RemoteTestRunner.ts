@@ -205,11 +205,15 @@ export class RemoteTestRunner {
     const spoolOutputDir = this.spoolOutputTemplate.replace('{{ testInstance }}', testName);
     fs.mkdirpSync(spoolOutputDir);
     for (const job of this.trackedJobs) {
-      await jobs.DownloadJobs.downloadAllSpoolContentCommon(getSession(), {
-        ...job,
-        outDir: spoolOutputDir,
-        extension: '.txt', // arbitrarily chosen to keep things readable...
-      });
+      try {
+        await jobs.DownloadJobs.downloadAllSpoolContentCommon(getSession(), {
+          ...job,
+          outDir: spoolOutputDir,
+          extension: '.txt', // arbitrarily chosen to keep things readable...
+        });
+      } catch (err) {
+        console.log(`Warning: Could not download spool information for ${job.jobname}(${job.jobid})`);
+      }
     }
     this.trackedJobs = [];
   }

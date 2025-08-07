@@ -106,7 +106,7 @@ export function execute(): void {
         common.printDebug(`Deleting ${ds}.`);
         const res = zosdataset.tsoDeleteDataset(ds);
         if (res != 0) {
-          common.printErrorAndExit(`Error ZWEL0112E: Could not delete existing dataset: '${ds}'.`, undefined, 112);
+          common.printErrorAndExit(`Error ZWEL0116E: Could not delete existing dataset: '${ds}'.`, undefined, 116);
         }
       }
     }

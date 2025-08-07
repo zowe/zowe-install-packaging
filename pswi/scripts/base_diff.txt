@@ -1,4 +1,4 @@
-64,86c64,86
+69,91c69,91
 <     # # Security related configurations. This setup is optional.
 <     # security:
 <     #   # security product name. Can be RACF, ACF2 or TSS
@@ -46,7 +46,7 @@
 >         zis: ZWESISTC
 >         # STC name of Zowe ZIS Auxiliary Server
 >         aux: ZWESASTC
-95,99c95,99
+100,104c100,104
 <     certificate:
 <       # Type of certificate storage. Valid values are: PKCS12, JCERACFKS. APIML additionally supports: JCEKS, JCECCAKS, JCECCARACFKS, or JCEHYBRIDRACFKS
 <       type: PKCS12
@@ -58,15 +58,15 @@
 >       # type: 
 >       # pkcs12:
 >         # directory: 
-253c253
+258c258
 <   runtimeDirectory: ""
 ---
 >   runtimeDirectory: "/tmp"
-425c425
+430c430
 <   home: ""
 ---
 >   home: "#delete_me#"
-441c441
+446c446
 <   home: ""
 ---
 >   home: "#delete_me#"
