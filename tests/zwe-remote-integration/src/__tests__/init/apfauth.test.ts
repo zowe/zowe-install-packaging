@@ -175,7 +175,6 @@ describe(`${testSuiteName}`, () => {
       expect(result.rc).toBe(0);
 
       await TestFileActions.deleteAll([defaultTestFile]);
-
     });
 
     it('apf empty pluginlib', async () => {
