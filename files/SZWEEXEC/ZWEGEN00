@@ -1045,7 +1045,7 @@ GetRuntimeDirectory:
 
   if ReadFromDataSet('myschema') = 0 then do
     location = strip(delword(!contentToRead.1, 1, 1))
-    offset = INDEX(location, '/schemas/zowe-yaml-schema.json')
+    offset = INDEX(location, '/schemas/zowe-yaml-schema.json') - 1
     runtime = SUBSTR(location, 1, offset)
   end
 
