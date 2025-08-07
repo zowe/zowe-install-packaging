@@ -1,1 +1,5 @@
-ZWEL0157E|157|%s (%s) is not defined in Zowe YAML configuration file.
+ZWEL0319E|319|zowe.setup.dataset.jcllib does not exist, cannot run. Run 'zwe init', 'zwe init generate', or submit JCL zowe.setup.dataset.prefix.SZWESAMP(ZWEGENER) before running this command.
+ZWEL0324E|324|The dataset specified in %s does not exist.
+ZWEL0325E|325|Failed to prepare %s
+ZWEL0158I|158|zowe.setup.dataset.authLoadlib is not defined in Zowe YAML configuration file. Using the default value %s.SZWEAUTH.
+ZWEL0159I|159|zowe.setup.dataset.authPluginLib is not defined in Zowe YAML configuration file. Skipping.

@@ -11,10 +11,32 @@
 # Copyright Contributors to the Zowe Project.
 #######################################################################
 
+CONFIGMGR_SYNTAX=$(check_configmgr_config_syntax)
+USE_JCL=$(check_jcl_enabled)
+if [ "${USE_JCL}" = "true" ]; then
+  if [ -z "${ZWE_PRIVATE_TMP_MERGED_YAML_DIR}" ]; then
+
+    # user-facing command, use tmpdir to not mess up workspace permissions
+    export ZWE_PRIVATE_TMP_MERGED_YAML_DIR=1
+  fi
+  _CEE_RUNOPTS="XPLINK(ON),HEAPPOOLS(OFF),HEAPPOOLS64(OFF)" ${ZWE_zowe_runtimeDirectory}/bin/utils/configmgr -script "${ZWE_zowe_runtimeDirectory}/bin/commands/init/vsam/cli.js"
+elif [ "${CONFIGMGR_SYNTAX}" = "true" ]; then
+  print_error_and_exit "Error ZWEL0115E: This command was submitted with FILE() or PARMLIB() syntax, which is only supported when JCL is also enabled." "" 115
+else
+
+###############################
+# Old 3.2 code follows
+
+
+
 print_level1_message "Create VSAM storage for Zowe Caching Service"
 
 ###############################
 # constants
+DRY_RUN=
+if [ -n "${ZWE_CLI_PARAMETER_DRY_RUN}" ] || [ -n "${ZWE_CLI_PARAMETER_SECURITY_DRY_RUN}" ]; then
+  DRY_RUN="true"
+fi
 
 ###############################
 # validation
@@ -22,7 +44,7 @@ require_zowe_yaml "skipnode"
 
 caching_storage=$(read_yaml_configmgr "${ZWE_CLI_PARAMETER_CONFIG}" ".components.caching-service.storage.mode" | upper_case)
 if [ "${caching_storage}" != "VSAM" ]; then
-  print_error "Warning ZWEL0321W: Zowe Caching Service is not configured to use VSAM. Command skipped."
+  print_error "Warning ZWEL0304W: Zowe Caching Service is not configured to use VSAM. Command skipped."
   return 0
 fi
 
@@ -80,7 +102,12 @@ if [ "${vsam_existence}" = "true" ]; then
 fi
 if [ "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITE}" = "true" ]; then
   # delete blindly and ignore errors
-  result=$(tso_command delete "'${vsam_name}'")
+  print_message "Deleting ${vsam_name}"
+  if [ -z "${DRY_RUN}" ]; then
+    result=$(tso_command delete "'${vsam_name}'")
+  else
+    print_message "Skipping delete operation due to --dry-run parameter."
+  fi
 fi
 
 
@@ -138,26 +165,31 @@ fi
 ###############################
 # submit job
 print_message "Submit ${jcllib}(ZWECSVSM)"
-jobid=$(submit_job "//'${jcllib}(ZWECSVSM)'")
-code=$?
-if [ ${code} -ne 0 ]; then
-  print_error_and_exit "Error ZWEL0161E: Failed to run JCL ${jcllib}(ZWECSVSM)." "" 161
-fi
-print_debug "- job id ${jobid}"
-jobstate=$(wait_for_job "${jobid}")
-code=$?
-if [ ${code} -eq 1 ]; then
-  print_error_and_exit "Error ZWEL0162E: Failed to find job ${jobid} result." "" 162
-fi
-jobname=$(echo "${jobstate}" | awk -F, '{print $2}')
-jobcctext=$(echo "${jobstate}" | awk -F, '{print $3}')
-jobcccode=$(echo "${jobstate}" | awk -F, '{print $4}')
-if [ ${code} -eq 0 ]; then
-  print_message "- Job ${jobname}(${jobid}) ends with code ${jobcccode} (${jobcctext})."
+if [ -z "${DRY_RUN}" ]; then
+  jobid=$(submit_job "//'${jcllib}(ZWECSVSM)'")
+  code=$?
+  if [ ${code} -ne 0 ]; then
+    print_error_and_exit "Error ZWEL0161E: Failed to run JCL ${jcllib}(ZWECSVSM)." "" 161
+  fi
+  print_debug "- job id ${jobid}"
+  jobstate=$(wait_for_job "${jobid}")
+  code=$?
+  if [ ${code} -eq 1 ]; then
+    print_error_and_exit "Error ZWEL0162E: Failed to find job ${jobid} result." "" 162
+  fi
+  jobname=$(echo "${jobstate}" | awk -F, '{print $2}')
+  jobcctext=$(echo "${jobstate}" | awk -F, '{print $3}')
+  jobcccode=$(echo "${jobstate}" | awk -F, '{print $4}')
+  if [ ${code} -eq 0 ]; then
+    print_message "- Job ${jobname}(${jobid}) ends with code ${jobcccode} (${jobcctext})."
+  else
+    print_error_and_exit "Error ZWEL0163E: Job ${jobname}(${jobid}) ends with code ${jobcccode} (${jobcctext})." "" 163
+  fi
 else
-  print_error_and_exit "Error ZWEL0163E: Job ${jobname}(${jobid}) ends with code ${jobcccode} (${jobcctext})." "" 163
+  print_message "Skipping JCL submission due to --dry-run parameter."
 fi
 
 ###############################
 # exit message
 print_level2_message "Zowe Caching Service VSAM storage is created successfully."
+fi
