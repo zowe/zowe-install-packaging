@@ -110,10 +110,8 @@ validate_zowe_yaml() {
   print_trace "  * Output:"
   print_trace "$(padding_left "${result}" "    ")"
 
-  if [ ${code} -eq 0 ]; then
-    printf "true"
-  else
-    printf "false"
+  if [ ${code} -ne 0 ]; then
+    print_error_and_exit "Error ZWEL0324E The YAML error detected in ${inpFile}."
   fi
 }
 
