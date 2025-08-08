@@ -28,6 +28,7 @@ import * as javaCI from '../../../../libs/java_ci';
 import * as node from '../../../../libs/node';
 import * as zosmf from '../../../../libs/zosmf';
 import * as zoslib from '../../../../libs/zos';
+import * as validateBind from '../../../validate/port/bind/index';
 
 //# This command prepares everything needed to start Zowe.
 const cliParameterConfig = std.getenv('ZWE_CLI_PARAMETER_CONFIG');
@@ -189,13 +190,13 @@ function globalValidate(enabledComponents:string[]): void {
   common.printFormattedInfo("ZWELS", "zwe-internal-start-prepare,global_validate", "global validations are successful");
 }
 
-
-
-
 // Validate component properties if script exists
 function validateComponents(enabledComponents:string[]): any {
   common.printFormattedInfo("ZWELS", "zwe-internal-start-prepare,validate_components", "process component validations ...");
 
+  validateBind.execute(true);
+
+  
   const componentEnvironments = {};
 
   // reset error counter
@@ -203,6 +204,20 @@ function validateComponents(enabledComponents:string[]): any {
   std.setenv('ZWE_PRIVATE_ERRORS_FOUND','0');
 
   let apimlModulithEnabled = enabledComponents.includes('apiml');
+  if (apimlModulithEnabled) {
+    let gatewayPort = ZOWE_CONFIG.components.gateway?.port;
+    let apimlPort = ZOWE_CONFIG.components.apiml.port;
+    let discoveryPort = ZOWE_CONFIG.components.discovery?.port;
+    if (apimlPort) {
+      validateComponentBind('apiml', apimlPort);
+    } else if (gatewayPort) {
+      validateComponentBind('gateway', gatewayPort);
+    }
+    if (discoveryPort) {
+      validateComponentBind('discovery', discoveryPort);
+    }
+  }
+  
   for (let i = 0; i < enabledComponents.length; i++) {
     let componentId = enabledComponents[i];
     common.printFormattedTrace("ZWELS", "zwe-internal-start-prepare,validate_components", `- checking ${componentId}`);
@@ -454,6 +469,9 @@ export function execute() {
   common.printFormattedInfo("ZWELS", "zwe-internal-start-prepare", `z/OS Version: ${zoslib.formatZosVersion('{major}.{minor}')}`);
   common.printFormattedInfo("ZWELS", "zwe-internal-start-prepare", `ESM: ${zos.getEsm()}`);
 
+  common.requireZoweYaml();
+  const enabledComponents=component.getEnabledComponents();
+  
   // validation
   if (stringlib.itemInList(std.getenv('ZWE_PRIVATE_CORE_COMPONENTS_REQUIRE_JAVA'), std.getenv('ZWE_CLI_PARAMETER_COMPONENT'))) {
     // other extensions need to specify `require_java` in their validate.sh

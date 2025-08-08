@@ -130,6 +130,9 @@ zowe:
     logLevel: "info"
     # Set to "exit" if you'd like startup to exit if any component has an error in the configure stage, otherwise zwe will warn but continue.
     onComponentConfigureFail: "warn"
+    startupChecks:
+      bypassAll: false
+      ports: true
 
   # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   # How we want to verify SSL certificates of services. Valid values are:
