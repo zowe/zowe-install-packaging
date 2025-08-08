@@ -276,6 +276,24 @@
 /* - Defines resource APIML.SERVICES that controls access to         */
 /*   detailed information about API services to Zowe users.          */
 
+/* uncomment to activate CDT class to define ZOWE resource class     */
+/* SETROPTS CLASSACT(CDT) RACLIST(CDT)                               */
+
+/* define ZOWE resource class                                        */
+/* skip this command if the ZOWE resource class already exists       */
+/* use a unique value in POSIT                                       */
+  RDEFINE CDT ZOWE -
+    UACC(NONE) -
+    CDTINFO(DEFAULTUACC(NONE) -
+      FIRST(ALPHA) -
+      OTHER(ALPHA,NATIONAL,NUMERIC,SPECIAL) -
+      MAXLENGTH(246) -
+      POSIT(607) -
+      RACLIST(DISALLOWED))
+
+  SETROPTS RACLIST(CDT) REFRESH
+  SETROPTS CLASSACT(ZOWE)
+
 /* define resource for information about API services                */
   RDEFINE ZOWE APIML.SERVICES UACC(NONE)
 
