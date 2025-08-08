@@ -1,15 +1,1 @@
-{
-  "lockAcquiredTime": "Fri Aug 08 2025 12:42:29 GMT+0000 (Coordinated Universal Time)",
-  "uid": "1754656949952480066",
-  "repository": {
-    "owner": "zowe",
-    "repo": "zowe-install-packaging"
-  },
-  "branch": "user/markackert/fix-ptf-test",
-  "workflow": "Zowe CICD Integration Tests",
-  "job": "cicd-test",
-  "actor": "MarkAckert",
-  "runId": 16814983435,
-  "runNumber": 7151,
-  "link": "https://github.com/zowe/zowe-install-packaging/actions/runs/16814983435"
-}
+""
