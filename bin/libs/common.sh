@@ -20,7 +20,7 @@ export _BPXK_AUTOCVT="ON"
 export _EDC_ADD_ERRNO2=1                        # show details on error
 unset ENV             # just in case, as it can cause unexpected output
 
-# Leveraging JCL driven init and install is opt-in via config option or 
+# Leveraging JCL driven init and install is opt-in via config option or
 # a flag passed to the calling command.
 check_jcl_enabled() {
   # first, we have to make sure configmgr is enabled
@@ -51,7 +51,7 @@ check_configmgr_config_syntax() {
     echo "true"
   elif [[ ${ZWE_CLI_PARAMETER_CONFIG} == "PARMLIB("* ]]; then
     echo "true"
-  else 
+  else
     echo "false"
   fi
 }
@@ -88,6 +88,35 @@ require_zowe_yaml() {
     print_error_and_exit "Error ZWEL0109E: The Zowe YAML config file specified does not exist." "" 109
   fi
 }
+
+validate_zowe_yaml() {
+  inpFile="${1}"
+
+  if [[ ${inpFile} == "FILE("* ]] || [[ ${inpFile} == "PARMLIB("* ]]; then
+    file="${inpFile}"
+  else
+    file="FILE(${inpFile})"
+  fi
+
+  print_trace "- validate_zowe_yaml process ${file}'"
+
+  configmgr="${ZWE_zowe_runtimeDirectory}/bin/utils/configmgr"
+  schemas="${ZWE_zowe_runtimeDirectory}/schemas/server-common.json:${ZWE_zowe_runtimeDirectory}/schemas/zowe-yaml-schema.json"
+
+  result=$(_CEE_RUNOPTS="XPLINK(ON)" "${configmgr}" -s "${schemas}" -p "${file}" validate)
+  code=$?
+
+  print_trace "  * Exit code: ${code}"
+  print_trace "  * Output:"
+  print_trace "$(padding_left "${result}" "    ")"
+
+  if [ ${code} -eq 0 ]; then
+    printf "true"
+  else
+    printf "false"
+  fi
+}
+
 
 print_raw_message() {
   message="${1}"
