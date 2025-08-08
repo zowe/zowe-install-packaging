@@ -1977,5 +1977,5 @@ noverbose -
 --- End of JCL ---
 Submitting Job ZWEGENER
 Job ZWEGENER(JOB00000) completed with RC=2
-Zowe JCL generated with errors, check job log. Job completion code=CANCELED."
+Zowe JCL generated with errors, check job log. Job completion code=0008."
 `;

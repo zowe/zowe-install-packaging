@@ -115,35 +115,17 @@ function getJobStatus(jobId: string): { status: string, cc: string, name: string
     result.out?.split('\n').forEach((line) => {
       if (line.includes(jobId)) {
         /*
-        Sample outputs (only one such line returned with `zowex job vs`)
-        JOB05625,CC 0000,IEFBR14$,OUTPUT,J0005625SVSCJES2E131FBE0.......:
-        JOB05624,CC 0000,IEFBR14$,OUTPUT,J0005624SVSCJES2E131FBDF.......:
-        TSU05611,ABEND 222,USERABC,OUTPUT,T0005611SVSCJES2E131F631.......:
-        JOB05609,CANCELED,LONGJOB,OUTPUT,J0005609SVSCJES2E131ED16.......:
-        JOB05607,CANCELED,LONGJOB,OUTPUT,J0005607SVSCJES2E131ED14.......:
-        JOB05602,CC 0000,ATLJ0000,OUTPUT,J0005602SVSCJES2E131ED0F.......:
-        JOB05586,CC 0000,ATLJ0000,OUTPUT,J0005586SVSCJES2E131ECF4.......:
-        TSU05815,,USERABC,ACTIVE,T0005815SVSCJES2E132110A.......:
+        Sample outputs (only one such line returned with `zowex job view-status`)
+        TSU83841,ABEND 522,JOHN1234,OUTPUT,T0083841NODELPARE146573E.......:,AWAITING OUTPUT
+        JOB60356,SEC ERROR,ZWESECUR,OUTPUT,J0060356NODELPARE1462840.......:,AWAITING OUTPUT
+        JOB33252,CC 0000,ZWEINSTL,OUTPUT,J0033252NODELPARE1497477.......:,AWAITING OUTPUT
         */
-        const columns = line.split(',').reverse(); //TODO: commas should be safe, not legal jobname/correlator? how about user id?
-        status = columns[1];
+        const columns = line.split(','); //TODO: commas should be safe, not legal jobname/correlator? how about user id?
+        compCode = columns[1];
         jobName = columns[2];
-        compCode = columns[3];
+        status = columns[3];
       }
     })
-  }
-  if (compCode == 'CC 0000') {
-    // Bug in zowex? For CC 0000, try to get JCL file, if returned this
-    //   Error: could not view job file for: 'JOB12345' rc: '-1'
-    //   Details: Could not allocate job spool file 'USERID.ZWEINSTL.JOB12345.JCL', rc: '4' s99error: '1144' s99info: '0'
-    // It is probably JCL Error.
-    const getJobJCL = std.getenv('ZWE_zowe_runtimeDirectory') + `/bin/utils/zowex job view-jcl ${jobId}`;
-    const result = shell.execOutSync('sh', '-c', `${getJobJCL} 2>&1`);
-    if (result.rc != 0 && result.out) {
-      if (result.out.toLowerCase().match(/.*could not allocate job spool file.*rc: '4' s99error: '1144'/)) {
-        compCode = 'JCL ERROR';
-      }
-    }
   }
   return { status: status, cc: compCode, name: jobName };
 
