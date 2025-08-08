@@ -46,7 +46,7 @@
       "artifact": "vt-ng2-3.3.0-20250808.163415.pax"
     },
     "org.zowe.zlux.zlux-editor": {
-      "version": "3.18.1-V2.X-RC",
+      "version": "3.3.0-V3.X-RC",
       "repository": "libs-snapshot-local",
       "artifact": "zlux-editor-3.3.0-20250808.163636.pax"
     },
