@@ -20,6 +20,9 @@ fi
 
 CONFIGMGR_SYNTAX=$(check_configmgr_config_syntax)
 USE_JCL=$(check_jcl_enabled)
+if [ "${USE_JCL}" = "yamlError" ]; then
+  exit 324
+fi
 if [ "${USE_JCL}" = "true" ]; then
   if [ -n "${ZWE_CLI_PARAMETER_CONFIG}" ]; then
     _CEE_RUNOPTS="${CEE_RO}" ${ZWE_zowe_runtimeDirectory}/bin/utils/configmgr -script "${ZWE_zowe_runtimeDirectory}/bin/commands/install/cli.js"

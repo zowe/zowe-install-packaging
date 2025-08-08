@@ -35,6 +35,11 @@ check_jcl_enabled() {
     echo "true"
     return
   fi
+  validate_zowe_yaml "${ZWE_CLI_PARAMETER_CONFIG}"
+  if [ $? -ne 0 ]; then
+    echo "yamlError"
+    return
+  fi
   USE_JCL=$(read_yaml_configmgr "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.jcl.enable")
   if [ "${USE_JCL}" = "true" ]; then
     echo "true"
@@ -98,23 +103,18 @@ validate_zowe_yaml() {
     file="FILE(${inpFile})"
   fi
 
-  print_trace "- validate_zowe_yaml process ${file}'"
-
   configmgr="${ZWE_zowe_runtimeDirectory}/bin/utils/configmgr"
   schemas="${ZWE_zowe_runtimeDirectory}/schemas/server-common.json:${ZWE_zowe_runtimeDirectory}/schemas/zowe-yaml-schema.json"
 
-  result=$(_CEE_RUNOPTS="XPLINK(ON)" "${configmgr}" -s "${schemas}" -p "${file}" validate)
+  result=$(_CEE_RUNOPTS="XPLINK(ON)" "${configmgr}" -s "${schemas}" -p "${file}" validate 2>&1 >/dev/null)
   code=$?
 
-  print_trace "  * Exit code: ${code}"
-  print_trace "  * Output:"
-  print_trace "$(padding_left "${result}" "    ")"
-
   if [ ${code} -ne 0 ]; then
-    print_error_and_exit "Error ZWEL0324E The YAML error detected in ${inpFile}."
+    print_error "Error ZWEL0324E: An error was detected in Zowe YAML configuration:"
+    print_error "${result}"
   fi
+  return ${code}
 }
-
 
 print_raw_message() {
   message="${1}"
