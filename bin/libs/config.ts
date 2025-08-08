@@ -37,6 +37,7 @@ const cliParameterConfig:string = function() {
 
 export function getZoweConfig(): any {
   common.requireZoweYaml();
+
   return configmgr.getZoweConfig();
 }
 
@@ -305,9 +306,19 @@ export function loadEnvironmentVariables(componentId?: string) {
     std.setenv('ZWE_PRIVATE_LOG_LEVEL_ZWELS', logLevel.toUpperCase());
   }
   // generate other variables
+  let enabledComponents = component.findAllEnabledComponents();
   std.setenv('ZWE_INSTALLED_COMPONENTS', component.findAllInstalledComponents());
-  std.setenv('ZWE_ENABLED_COMPONENTS', component.findAllEnabledComponents());
+  std.setenv('ZWE_ENABLED_COMPONENTS', enabledComponents);
   std.setenv('ZWE_LAUNCH_COMPONENTS', component.findAllLaunchComponents());
+
+  //ensure these are set true for backward compat of programs that read the env vars
+  if (enabledComponents.includes('apiml')) {
+    std.setenv('ZWE_components_gateway_enabled', 'true');
+    std.setenv('ZWE_components_discovery_enabled', 'true');
+    std.setenv('ZWE_components_api_catalog_enabled', 'true');
+    std.setenv('ZWE_components_caching_service_enabled', 'true');
+    std.setenv('ZWE_components_zaas_enabled', 'true');
+  }
 
   // ZWE_DISCOVERY_SERVICES_LIST should have been prepared in zowe-install-packaging-tools
 
