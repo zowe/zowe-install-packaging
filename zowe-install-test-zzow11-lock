@@ -1,1 +1,15 @@
-""
+{
+  "lockAcquiredTime": "Fri Aug 08 2025 14:53:58 GMT+0000 (Coordinated Universal Time)",
+  "uid": "1754664838746591807",
+  "repository": {
+    "owner": "zowe",
+    "repo": "zowe-install-packaging"
+  },
+  "branch": "usser/markackert/address-minor-issues-security",
+  "workflow": "Zowe CICD Integration Tests",
+  "job": "cicd-test",
+  "actor": "zowe-robot",
+  "runId": 16833431945,
+  "runNumber": 7160,
+  "link": "https://github.com/zowe/zowe-install-packaging/actions/runs/16833431945"
+}
