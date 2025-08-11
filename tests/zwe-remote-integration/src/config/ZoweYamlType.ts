@@ -700,7 +700,7 @@ const zoweSchema = zoweYamlSchema as {
               properties: {
                 enable: {
                   type: 'boolean';
-                  description: 'Whether to restrict the permissions of the keystore after creation';
+                  description: 'Controls whether zwe install and zwe init commands and subcommands will utilize jobs for executing system changes instead of shell commands.';
                 };
                 header: {
                   type: 'string';
@@ -719,15 +719,15 @@ const zoweSchema = zoweYamlSchema as {
         };
         logDirectory: {
           $ref: '/schemas/v2/server-common#zowePath';
-          description: 'Path to where you want to store Zowe log files.';
+          description: 'Path to where you want to store Zowe log files. This cannot reside within the runtime directory.';
         };
         workspaceDirectory: {
           $ref: '/schemas/v2/server-common#zowePath';
-          description: 'Path to where you want to store Zowe workspace files. Zowe workspace are used by Zowe component runtime to store temporary files.';
+          description: 'Path to where you want to store Zowe workspace files. Zowe workspace are used by Zowe component runtime to store temporary files. This cannot reside within the runtime directory.';
         };
         extensionDirectory: {
           $ref: '/schemas/v2/server-common#zowePath';
-          description: 'Path to where you want to store Zowe extensions. "zwe components install" will install new extensions into this directory.';
+          description: 'Path to where you want to store Zowe extensions. "zwe components install" will install new extensions into this directory. This cannot reside within the runtime directory.';
         };
         job: {
           type: 'object';
@@ -835,6 +835,22 @@ const zoweSchema = zoweYamlSchema as {
               description: "Chooses how 'zwe start' behaves if a component configure script fails";
               enum: ['warn', 'exit'];
               default: 'warn';
+            };
+            startupChecks: {
+              type: 'object';
+              description: 'Startup check configuration options';
+              properties: {
+                bypassAll: {
+                  type: 'boolean';
+                  default: false;
+                  description: 'Skips all startup checks listed within the zowe.launchScript.startupChecks section';
+                };
+                ports: {
+                  type: 'boolean';
+                  default: true;
+                  description: 'Checks the port for each enabled component to ensure Zowe can bind to it and that it is not already occupied by some other program';
+                };
+              };
             };
           };
         };

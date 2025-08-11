@@ -194,13 +194,10 @@ module.exports = async () => {
     if (DOWNLOAD_ZOWE_TOOLS) {
       await downloadManifestDep('org.zowe.utility-tools');
       await downloadManifestDep('org.zowe.getesm');
+      await downloadManifestDep('org.zowe.zis-test');
     }
 
-    await downloadArtifact(
-      'libs-snapshot-local',
-      'org/zowe/zowe-native-proto/Server/Nightly',
-      'zowe-server-0.1.2-2025-07-15-013657.pax.Z',
-    );
+    await downloadManifestDep('org.zowe.zowe-native-proto');
     await downloadArtifact('libs-snapshot-local', 'org/zowe/vtl-cli/zowe-cli-package/1.0.7-SNAPSHOT', 'vtl.tar.gz');
 
     const downloadsDirContents = fs.readdirSync(downloadsDir);

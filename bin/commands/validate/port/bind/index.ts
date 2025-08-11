@@ -18,12 +18,12 @@ import * as shell from '../../../../libs/shell';
 export function execute(quitOnError?: boolean, componentName?: string) {
   let enabledComponents = componentName ? [componentName] : component.getEnabledComponents();
   let hasErrors = false;
-  const ZOWE_CONFIG=config.getZoweConfig();
+  const ZOWE_CONFIG = config.getZoweConfig();
   let bindUtilPath = ZOWE_CONFIG.zowe.runtimeDirectory;
   if (!bindUtilPath.endsWith('/')) {
-    bindUtilPath+='/';
+    bindUtilPath += '/';
   }
-  bindUtilPath+='bin/utils/bind-test';
+  bindUtilPath += 'bin/utils/bind-test';
 
   let myJobname = std.getenv('_BPX_JOBNAME');
 
@@ -45,7 +45,7 @@ export function execute(quitOnError?: boolean, componentName?: string) {
         componentManifest = component.getManifest(componentDir);
       }
       let jobname = component.getJobnameForComponent(componentName, componentManifest);
-      
+
 
 
       let listenAddress = '0.0.0.0';
@@ -54,7 +54,7 @@ export function execute(quitOnError?: boolean, componentName?: string) {
       } else if (ZOWE_CONFIG.zowe?.network?.server?.listenAddresses) {
         listenAddress = ZOWE_CONFIG.zowe.network.server.listenAddresses[0];
       }
-      
+
       //TODO this only works on z/OS, but configmgr also only works on z/OS, so at this time the limitation has not been exposed.
       if (jobname) {
         std.setenv('_BPX_JOBNAME', jobname);
