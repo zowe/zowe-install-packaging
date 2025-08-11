@@ -824,6 +824,7 @@ const zoweSchema = zoweYamlSchema as {
         launchScript: {
           type: 'object';
           description: 'Customize Zowe launch scripts (zwe commands) behavior.';
+          additionalProperties: false;
           properties: {
             logLevel: {
               type: 'string';
