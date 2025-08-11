@@ -202,14 +202,14 @@ describe(`${testSuiteName}`, () => {
       const result = await testRunner.runZweTest(null, 'install');
       expect(result.stdout).not.toBeNull();
       expect(result.cleanedStdout).toMatchSnapshot();
-      expect(result.rc).toBe(108);
+      expect(result.rc).toBe(68);
     });
 
     it('zwe install invalid config', async () => {
       const result = await testRunner.runZweTest(cfgYaml, 'install --dry-run --config /not/real/config.yml');
       expect(result.stdout).not.toBeNull();
       expect(result.cleanedStdout).toMatchSnapshot();
-      expect(result.rc).toBe(109);
+      expect(result.rc).toBe(68);
     });
 
     it('zwe install --dry-run valid ds names', async () => {

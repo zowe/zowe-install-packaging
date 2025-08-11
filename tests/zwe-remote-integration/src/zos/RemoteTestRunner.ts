@@ -85,7 +85,6 @@ export class RemoteTestRunner {
     const dlResp = await files.Download.dataSet(this.session, memberName, {
       file: tmpFile,
     });
-    console.log(JSON.stringify(dlResp));
     if (!dlResp.success) {
       console.log('Failed');
     }
