@@ -37,7 +37,7 @@ check_jcl_enabled() {
   fi
   validate_zowe_yaml "${ZWE_CLI_PARAMETER_CONFIG}"
   code=$?
-  if [ $? -ne 0 ]; then
+  if [ $code -ne 0 ]; then
     echo "error ${code}"
     return
   fi
@@ -115,7 +115,7 @@ validate_zowe_yaml() {
     print_error "${result}"
     code=324
   fi
-  return ${code}
+  return $code
 }
 
 print_raw_message() {
