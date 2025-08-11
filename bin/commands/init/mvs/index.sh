@@ -13,6 +13,10 @@
 
 CONFIGMGR_SYNTAX=$(check_configmgr_config_syntax)
 USE_JCL=$(check_jcl_enabled)
+if [[ "${USE_JCL}" == "error"* ]]; then
+  code=$(echo "${USE_JCL}" | awk '{print $2}')
+  exit $code
+fi
 if [ "${USE_JCL}" = "true" ]; then
   if [ -z "${ZWE_PRIVATE_TMP_MERGED_YAML_DIR}" ]; then
 

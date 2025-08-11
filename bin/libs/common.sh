@@ -36,8 +36,9 @@ check_jcl_enabled() {
     return
   fi
   validate_zowe_yaml "${ZWE_CLI_PARAMETER_CONFIG}"
+  code=$?
   if [ $? -ne 0 ]; then
-    echo "yamlError"
+    echo "error ${code}"
     return
   fi
   USE_JCL=$(read_yaml_configmgr "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.jcl.enable")
@@ -110,8 +111,9 @@ validate_zowe_yaml() {
   code=$?
 
   if [ ${code} -ne 0 ]; then
-    print_error "Error ZWEL0324E: An error was detected in Zowe YAML configuration:"
+    print_error "Error ZWEL0324E: An error occurred while processing Zowe YAML config ${inpFile}:"
     print_error "${result}"
+    code=324
   fi
   return ${code}
 }

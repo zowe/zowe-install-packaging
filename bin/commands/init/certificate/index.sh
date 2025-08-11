@@ -27,6 +27,10 @@ else
 fi
 
 USE_JCL=$(check_jcl_enabled)
+if [[ "${USE_JCL}" == "error"* ]]; then
+  code=$(echo "${USE_JCL}" | awk '{print $2}')
+  exit $code
+fi
 
 export ZWE_PRIVATE_TMP_MERGED_YAML_DIR=$(create_tmp_file)
 mkdir -p ${ZWE_PRIVATE_TMP_MERGED_YAML_DIR}

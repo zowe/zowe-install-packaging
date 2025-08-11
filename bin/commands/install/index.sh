@@ -20,8 +20,9 @@ fi
 
 CONFIGMGR_SYNTAX=$(check_configmgr_config_syntax)
 USE_JCL=$(check_jcl_enabled)
-if [ "${USE_JCL}" = "yamlError" ]; then
-  exit 324
+if [[ "${USE_JCL}" == "error"* ]]; then
+  code=$(echo "${USE_JCL}" | awk '{print $2}')
+  exit $code
 fi
 if [ "${USE_JCL}" = "true" ]; then
   if [ -n "${ZWE_CLI_PARAMETER_CONFIG}" ]; then
