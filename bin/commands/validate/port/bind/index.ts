@@ -27,14 +27,13 @@ export function execute(quitOnError?: boolean, componentName?: string) {
 
   let myJobname = std.getenv('_BPX_JOBNAME');
 
-
   for (let i = 0; i < enabledComponents.length; i++) {
     let componentName = enabledComponents[i];
     let port = ZOWE_CONFIG.components[componentName].port;
-    if (isComponentInAPIMLModulith(componentName)) {
+    if (component.isComponentInAPIMLModulith(componentName)) {
       if (componentName == 'gateway' && !port) {
         port = ZOWE_CONFIG.components.apiml.port;
-      } else if (compopnentName != 'discovery') {
+      } else if (componentName != 'discovery') {
         continue;
       }
     }
