@@ -127,7 +127,13 @@ export class RemoteTestRunner {
   }
 
   public async runRaw(command: string, cwd: string = REMOTE_SYSTEM_INFO.ussTestDir): Promise<TestOutput> {
+    const start = performance.now();
     const output = await this.uss.runCommand(`${command}`, cwd);
+    const end = performance.now();
+    const duration = end - start;
+    this.totalRuntime += duration;
+    this.totalRuns++;
+    this.maxRuntime = Math.max(this.maxRuntime, duration);
     // Any non-deterministic output should be cleaned up for test snapshots.
     const cleanedOutput = this.cleanOutput(output.consoleLog, []);
     return {
