@@ -89,39 +89,6 @@ require_zowe_yaml() {
   fi
 }
 
-validate_zowe_yaml() {
-  inpConfig="${1}"
-  ignoreUndefined="${2}"
-
-  if [ -z "${inpConfig}" ]; then
-    if  [ -n "${ignoreUndefined}" ]; then
-      return 0
-    elsew
-      print_error "Error ZWEL0108E: Zowe YAML config file is required."
-      return 108
-    fi
-  fi
-
-  if [[ ${inpConfig} == "FILE("* ]] || [[ ${inpConfig} == "PARMLIB("* ]]; then
-    file="${inpConfig}"
-  else
-    file="FILE(${inpConfig})"
-  fi
-
-  configmgr="${ZWE_zowe_runtimeDirectory}/bin/utils/configmgr"
-  schemas="${ZWE_zowe_runtimeDirectory}/schemas/server-common.json:${ZWE_zowe_runtimeDirectory}/schemas/zowe-yaml-schema.json"
-
-  result=$(_CEE_RUNOPTS="XPLINK(ON)" "${configmgr}" -s "${schemas}" -p "${file}" validate 2>&1 >/dev/null)
-  code=$?
-
-  if [ ${code} -ne 0 ]; then
-    print_error "Error ZWEL0325E: An error occurred while processing Zowe YAML config ${inpFile}:"
-    print_error "${result}"
-    code=325
-  fi
-  return $code
-}
-
 print_raw_message() {
   message="${1}"
   is_error="${2}"
