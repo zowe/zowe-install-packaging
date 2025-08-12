@@ -86,7 +86,6 @@ else
         # warning
         print_message "Warning ZWEL0300W: ${prefix}.${ds} already exists. This dataset will be overwritten."
       else
-        # print_error_and_exit "Error ZWEL0158E: ${prefix}.${ds} already exists." "" 158
         # warning
         print_message "Warning ZWEL0301W: ${prefix}.${ds} already exists and will not be overwritten. For upgrades, you must use --allow-overwrite."
       fi
