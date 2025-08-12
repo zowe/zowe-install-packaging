@@ -199,7 +199,6 @@ describe(`${testSuiteName}`, () => {
         `./bin/utils/zowex job list --rfc | awk -F, 'match($3, "ZWEGENER") && match($4, "ACTIVE") { print $1 }'`,
       );
       let runningJob = jobid.stdout.trim();
-      console.log(`Found running job: ${runningJob}`);
       await testRunner.runRaw(`./bin/utils/zowex job cancel ${runningJob}`);
       await testRunner.runRaw(`./bin/utils/zowex job delete ${runningJob}`);
       let genResult = await deferredResult;

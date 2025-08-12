@@ -11,7 +11,7 @@
 ################################################################################
 
 ################################################################################
-# @internal 
+# @internal
 
 ###############################
 # Check encoding of a file and convert to IBM-1047 if needed.
@@ -150,5 +150,41 @@ load_environment_variables() {
 
   if [ "${ZWE_RUN_IN_CONTAINER}" = "true" ]; then
     prepare_container_runtime_environments
+  fi
+}
+
+validate_zowe_yaml() {
+  inpConfig="${1}"
+  ignoreUndefined="${2}"
+
+  print_trace "- validate_zowe_yaml configuration ${inpConfig}"
+
+  if [ -z "${inpConfig}" ]; then
+    if  [ -n "${ignoreUndefined}" ]; then
+      print_trace "  - ignore undefined config"
+      return
+    else
+      print_error_and_exit "Error ZWEL0108E: Zowe YAML config file is required." "" 108
+    fi
+  fi
+
+  if [[ ${inpConfig} == "FILE("* ]] || [[ ${inpConfig} == "PARMLIB("* ]]; then
+    file="${inpConfig}"
+  else
+    file="FILE(${inpConfig})"
+  fi
+
+  configmgr="${ZWE_zowe_runtimeDirectory}/bin/utils/configmgr"
+  schemas="${ZWE_zowe_runtimeDirectory}/schemas/server-common.json:${ZWE_zowe_runtimeDirectory}/schemas/zowe-yaml-schema.json"
+
+  result=$(_CEE_RUNOPTS="XPLINK(ON)" "${configmgr}" -s "${schemas}" -p "${file}" validate 2>&1 >/dev/null)
+  code=$?
+
+  if [ ${code} -ne 0 ]; then
+    print_error "Error ZWEL0326E: An error occurred while processing Zowe YAML config ${inpConfig}:"
+    print_error "$(padding_left "${result}" "    ")"
+    exit 325
+  else
+    print_trace "$(padding_left "${result}" "    ")"
   fi
 }
