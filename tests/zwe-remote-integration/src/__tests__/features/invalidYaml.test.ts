@@ -41,15 +41,15 @@ describe(`${testSuiteName}`, () => {
 
     it('run commands with bad config', async () => {
       const testCases = [
-        { cmd: 'install', rc: 68 },
-        { cmd: 'init', rc: 68 },
-        { cmd: 'init apfauth', rc: 68 },
-        { cmd: 'init certificate', rc: 68 },
+        { cmd: 'install', rc: 69 },
+        { cmd: 'init', rc: 69 },
+        { cmd: 'init apfauth', rc: 69 },
+        { cmd: 'init certificate', rc: 69 },
         { cmd: 'init generate', rc: 1 },
-        { cmd: 'init mvs', rc: 68 },
-        { cmd: 'init security', rc: 68 },
-        { cmd: 'init stc', rc: 68 },
-        { cmd: 'init vsam', rc: 68 },
+        { cmd: 'init mvs', rc: 69 },
+        { cmd: 'init security', rc: 69 },
+        { cmd: 'init stc', rc: 69 },
+        { cmd: 'init vsam', rc: 69 },
       ];
 
       for (const test of testCases) {

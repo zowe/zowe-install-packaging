@@ -2454,8 +2454,8 @@ Example(s)
 
 exports[`zwe-install (SHORT) zwe install invalid config 1`] = `
 "Error ZWEL0325E: An error occurred while processing Zowe YAML config /not/real/config.yml:
-ZWEL0318E - failed to read '/not/real/config.yml' - EDC5129I No such file or directory. (errno2=0x0594003D)
-ZWEL0319E - Failed to load configuration, element may be bad, or less likely a bad merge."
+    ZWEL0318E - failed to read '/not/real/config.yml' - EDC5129I No such file or directory. (errno2=0x0594003D)
+    ZWEL0319E - Failed to load configuration, element may be bad, or less likely a bad merge."
 `;
 
 exports[`zwe-install (SHORT) zwe install invalid dataset name 1`] = `
@@ -2525,10 +2525,7 @@ ERROR: Error ZWEL0105E: The Zowe YAML config file is associated to Zowe runtime 
 `;
 
 exports[`zwe-install (SHORT) zwe install missing config 1`] = `
-"Error ZWEL0325E: An error occurred while processing Zowe YAML config :
-path building failed
-built config path failed
-Problems with config path rsn=4"
+"Error ZWEL0108E: Zowe YAML config file is required."
 `;
 
 exports[`zwe-install (SHORT) zwe install missing prefix 1`] = `
