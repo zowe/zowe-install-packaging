@@ -1,15 +1,1 @@
-{
-  "lockAcquiredTime": "Tue Aug 12 2025 14:01:13 GMT+0000 (Coordinated Universal Time)",
-  "uid": "1755007273418990870",
-  "repository": {
-    "owner": "zowe",
-    "repo": "zowe-install-packaging"
-  },
-  "branch": "v3.x/feature/detectSDSF",
-  "workflow": "Zowe CICD Integration Tests",
-  "job": "cicd-test",
-  "actor": "zowe-robot",
-  "runId": 16911161480,
-  "runNumber": 7194,
-  "link": "https://github.com/zowe/zowe-install-packaging/actions/runs/16911161480"
-}
+""
