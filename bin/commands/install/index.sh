@@ -55,6 +55,8 @@ else
       fi
     fi
   else
+    # second validate/require, at this point we cannot ignore an undefined config
+    validate_zowe_yaml "${ZWE_CLI_PARAMETER_CONFIG}" 
     # read prefix and validate
     prefix=$(read_yaml_configmgr "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.dataset.prefix")
     if [ -z "${prefix}" ]; then
