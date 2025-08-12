@@ -1,2 +1,2 @@
 ZWEL0301W||%s already exists and will not be overwritten. For upgrades, you must use --allow-overwrite.
-ZWEL0324E|324|An error occurred while processing Zowe YAML config %s:
+ZWEL0325E|325|An error occurred while processing Zowe YAML config %s:

@@ -3,4 +3,4 @@ ZWEL0129E|129|The path to the Zowe YAML config must be less than 74 characters. 
 ZWEL0130E|130|%s.%s(%s) already exists. This data set member will be overwritten during configuration.
 ZWEL0158E|158|%s already exists.
 ZWEL0159E|159|Failed to modify %s.
-ZWEL0324E|324|An error occurred while processing Zowe YAML config %s:
+ZWEL0325E|325|An error occurred while processing Zowe YAML config %s:
