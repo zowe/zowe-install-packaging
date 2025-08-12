@@ -202,7 +202,7 @@ describe(`${testSuiteName}`, () => {
       const result = await testRunner.runZweTest(null, 'install');
       expect(result.stdout).not.toBeNull();
       expect(result.cleanedStdout).toMatchSnapshot();
-      expect(result.rc).toBe(69);
+      expect(result.rc).toBe(108);
     });
 
     it('zwe install invalid config', async () => {

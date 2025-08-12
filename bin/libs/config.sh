@@ -181,7 +181,7 @@ validate_zowe_yaml() {
   code=$?
 
   if [ ${code} -ne 0 ]; then
-    print_error "Error ZWEL0325E: An error occurred while processing Zowe YAML config ${inpConfig}:"
+    print_error "Error ZWEL0326E: An error occurred while processing Zowe YAML config ${inpConfig}:"
     print_error "$(padding_left "${result}" "    ")"
     exit 325
   else

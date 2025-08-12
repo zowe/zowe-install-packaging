@@ -476,6 +476,25 @@ export class RemoteTestRunner {
     await files.Upload.bufferToDataSet(this.session, Buffer.from(content), dsPath);
   }
 
+  /**
+   * Uploads a given file directly as the zowe.yaml to be used in a test case (zowe.test.yaml).
+   *
+   * @param filePath
+   * @param remoteCwd
+   * @returns the full path to the uploaded zowe.yaml
+   */
+  public async uploadZoweYamlFromFile(filePath: string, remoteCwd: string = REMOTE_SYSTEM_INFO.ussTestDir): Promise<string> {
+    const testName = expect.getState().currentTestName.replace(/\s/g, '_');
+    const uploadPath = `${remoteCwd}/zowe.test.yaml`;
+    const yamlOutputDir = this.yamlOutputTemplate.replace('{{ testInstance }}', testName);
+    fs.mkdirpSync(yamlOutputDir);
+    const redundantFilePath = this.writeRedundant(`${yamlOutputDir}/zowe.yaml`, fs.readFileSync(filePath, 'utf-8'));
+    await files.Upload.fileToUssFile(this.session, redundantFilePath, uploadPath, {
+      binary: false,
+    });
+    return uploadPath;
+  }
+
   public async uploadZoweYaml(
     zoweYaml: ZoweYamlType,
     addCustomJobHeaders: boolean = true,

@@ -11,8 +11,10 @@
 import ZoweYamlType from '../../config/ZoweYamlType';
 import { RemoteTestRunner } from '../../zos/RemoteTestRunner';
 import { ZoweConfig } from '../../config/ZoweConfig';
+import * as path from 'path';
 
 const testSuiteName = 'feat-invalidYaml';
+const yamlResourceDir = path.resolve('src', '__tests__', 'features', '__resources__');
 describe(`${testSuiteName}`, () => {
   let testRunner: RemoteTestRunner;
   let cfgYaml: ZoweYamlType;
@@ -33,13 +35,9 @@ describe(`${testSuiteName}`, () => {
   });
 
   describe('(SHORT)', () => {
-    beforeEach(async () => {
-      // TODO: Replace this with an upload of __resources__/bad.yaml to zowe.test.yaml
-      await testRunner.uploadZoweYaml(cfgYaml);
-      await testRunner.runRaw('sed -e "s#jcllib\\:#jcllib#g" zowe.test.yaml | tee zowe.test.yaml');
-    });
-
     it('run commands with bad config', async () => {
+      const testYamlPath = await testRunner.uploadZoweYamlFromFile(path.resolve(yamlResourceDir, 'bad.yaml'));
+
       const testCases = [
         { cmd: 'install', rc: 69 },
         { cmd: 'init', rc: 69 },
@@ -53,7 +51,7 @@ describe(`${testSuiteName}`, () => {
       ];
 
       for (const test of testCases) {
-        const result = await testRunner.runRaw(`./bin/zwe ${test.cmd} --dry-run -c zowe.test.yaml`);
+        const result = await testRunner.runRaw(`./bin/zwe ${test.cmd} --dry-run -c ${testYamlPath}`);
         expect(result.stdout).not.toBeNull();
         expect(result.cleanedStdout).toMatchSnapshot();
         expect(result.rc).toEqual(test.rc);
