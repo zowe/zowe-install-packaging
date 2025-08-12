@@ -12,11 +12,8 @@
 #######################################################################
 
 CONFIGMGR_SYNTAX=$(check_configmgr_config_syntax)
+validate_zowe_yaml "${ZWE_CLI_PARAMETER_CONFIG}"
 USE_JCL=$(check_jcl_enabled)
-if [[ "${USE_JCL}" == "error"* ]]; then
-  code=$(echo "${USE_JCL}" | awk '{print $2}')
-  exit $code
-fi
 if [ "${USE_JCL}" = "true" ]; then
   if [ -z "${ZWE_PRIVATE_TMP_MERGED_YAML_DIR}" ]; then
 
@@ -38,10 +35,6 @@ print_level1_message "Run Zowe security configurations"
 
 ###############################
 # constants
-
-###############################
-# validation
-require_zowe_yaml "skipnode"
 
 # read prefix and validate
 prefix=$(read_yaml_configmgr "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.dataset.prefix")

@@ -15,7 +15,7 @@ print_level1_message "Generate certificate"
 
 ###############################
 # validation
-require_zowe_yaml "skipnode"
+validate_zowe_yaml "${ZWE_CLI_PARAMETER_CONFIG}"
 
 # Keytool is needed
 require_java

@@ -35,12 +35,6 @@ check_jcl_enabled() {
     echo "true"
     return
   fi
-  validate_zowe_yaml "${ZWE_CLI_PARAMETER_CONFIG}"
-  code=$?
-  if [ $code -ne 0 ]; then
-    echo "error ${code}"
-    return
-  fi
   USE_JCL=$(read_yaml_configmgr "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.jcl.enable")
   if [ "${USE_JCL}" = "true" ]; then
     echo "true"
@@ -96,12 +90,22 @@ require_zowe_yaml() {
 }
 
 validate_zowe_yaml() {
-  inpFile="${1}"
+  inpConfig="${1}"
+  ignoreUndefined="${2}"
 
-  if [[ ${inpFile} == "FILE("* ]] || [[ ${inpFile} == "PARMLIB("* ]]; then
-    file="${inpFile}"
+  if [ -z "${inpConfig}" ]; then
+    if  [ -n "${ignoreUndefined}" ]; then
+      return 0
+    elsew
+      print_error "Error ZWEL0108E: Zowe YAML config file is required."
+      return 108
+    fi
+  fi
+
+  if [[ ${inpConfig} == "FILE("* ]] || [[ ${inpConfig} == "PARMLIB("* ]]; then
+    file="${inpConfig}"
   else
-    file="FILE(${inpFile})"
+    file="FILE(${inpConfig})"
   fi
 
   configmgr="${ZWE_zowe_runtimeDirectory}/bin/utils/configmgr"
