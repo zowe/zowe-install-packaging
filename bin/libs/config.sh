@@ -185,6 +185,6 @@ validate_zowe_yaml() {
     print_error "$(padding_left "${result}" "    ")"
     exit 325
   else
-    print_trace
+    print_trace "$(padding_left "${result}" "    ")"
   fi
 }
