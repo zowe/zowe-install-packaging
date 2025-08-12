@@ -8,22 +8,16 @@
  * Copyright Contributors to the Zowe Project.
  */
 
-import ZoweYamlType from '../../config/ZoweYamlType';
 import { RemoteTestRunner } from '../../zos/RemoteTestRunner';
-import { ZoweConfig } from '../../config/ZoweConfig';
 import * as path from 'path';
 
 const testSuiteName = 'feat-invalidYaml';
 const yamlResourceDir = path.resolve('src', '__tests__', 'features', '__resources__');
 describe(`${testSuiteName}`, () => {
   let testRunner: RemoteTestRunner;
-  let cfgYaml: ZoweYamlType;
 
   beforeAll(async () => {
     testRunner = new RemoteTestRunner(testSuiteName);
-  });
-  beforeEach(() => {
-    cfgYaml = ZoweConfig.getZoweYaml();
   });
 
   afterEach(async () => {
