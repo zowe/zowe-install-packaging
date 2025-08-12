@@ -11,7 +11,7 @@
 import { ZoweConfig } from '../../config/ZoweConfig';
 import ZoweYamlType from '../../config/ZoweYamlType';
 import { RemoteTestRunner } from '../../zos/RemoteTestRunner';
-import { TestFile, TestFileActions } from '../../zos/TestFileActions';
+import { FileType, TestFile, TestFileActions } from '../../zos/TestFileActions';
 
 const testSuiteName = 'init-mvs';
 describe(`${testSuiteName}`, () => {
@@ -77,6 +77,15 @@ describe(`${testSuiteName}`, () => {
   });
 
   describe('(SHORT)', () => {
+    beforeAll(async () => {
+      cfgYaml = ZoweConfig.getZoweYaml();
+      const lingeringSzweauth: TestFile = {
+        name: `${cfgYaml.zowe.setup.dataset.authLoadlib}`,
+        type: FileType.DS_NON_CLUSTER,
+      };
+      await TestFileActions.deleteAll([lingeringSzweauth]);
+    });
+
     it('bad ds prefix post-generate', async () => {
       cfgYaml.zowe.setup.dataset.prefix = null;
       let result = await testRunner.runZweTest(cfgYaml, 'init mvs --dry-run');
