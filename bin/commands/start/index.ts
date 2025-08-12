@@ -30,7 +30,7 @@ export function execute() {
   // If no stcs.zowe, use the defaults
   let securityStcsZowe = zoweConfig.zowe.setup.security.stcs.zowe;
   if (!securityStcsZowe) {
-    securityStcsZowe = 'ZWESLSTC';
+    securityStcsZowe=std.getenv('ZWE_PRIVATE_DEFAULT_ZOWE_STC');
   }
 
   let routeSysname: string;

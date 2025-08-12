@@ -196,7 +196,7 @@ export function execute(): void {
   // zowe.job.name could be possibly null/empty
   let jobName = ZOWE_CONFIG.zowe.job.name;
   if (!jobName) {
-    jobName = 'ZWESLSTC';
+    jobName = std.getenv('ZWE_PRIVATE_DEFAULT_ZOWE_STC');
   }
   const jobPrefix = ZOWE_CONFIG.zowe.job.prefix;
 
