@@ -5,7 +5,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  *
- * Copyright Zowe Contributors 2024
+ * Copyright IBM Corporation 2022
  */
 
 import {
@@ -16,7 +16,7 @@ import {
 import { TEST_TIMEOUT_CONVENIENCE_BUILD } from '../../../constants';
 
 const testServer = process.env.TEST_SERVER;
-const testSuiteName = 'Test convenience build installation with node.js v22';
+const testSuiteName = 'Test convenience build installation with the APIML monolith enabled';
 describe(testSuiteName, () => {
   beforeAll(() => {
     // validate variables
@@ -32,7 +32,7 @@ describe(testSuiteName, () => {
       {
         'zowe_build_local': process.env['ZOWE_BUILD_LOCAL'],
         'zowe_custom_for_test': 'true',
-        'zos_node_home': '/ZOWE/node/node-v22.16.0',
+        'zowe_apiml_modulith_mode': 'true',
         'zowe_lock_keystore': 'false',
       }
     );
