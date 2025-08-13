@@ -33,15 +33,15 @@ describe(`${testSuiteName}`, () => {
       const testYamlPath = await testRunner.uploadZoweYamlFromFile(path.resolve(yamlResourceDir, 'bad.yaml'));
 
       const testCases = [
-        { cmd: 'install', rc: 69 },
-        { cmd: 'init', rc: 69 },
-        { cmd: 'init apfauth', rc: 69 },
-        { cmd: 'init certificate', rc: 69 },
+        { cmd: 'install', rc: 70 },
+        { cmd: 'init', rc: 70 },
+        { cmd: 'init apfauth', rc: 70 },
+        { cmd: 'init certificate', rc: 70 },
         { cmd: 'init generate', rc: 1 },
-        { cmd: 'init mvs', rc: 69 },
-        { cmd: 'init security', rc: 69 },
-        { cmd: 'init stc', rc: 69 },
-        { cmd: 'init vsam', rc: 69 },
+        { cmd: 'init mvs', rc: 70 },
+        { cmd: 'init security', rc: 70 },
+        { cmd: 'init stc', rc: 70 },
+        { cmd: 'init vsam', rc: 70 },
       ];
 
       for (const test of testCases) {
