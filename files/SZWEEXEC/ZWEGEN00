@@ -182,7 +182,8 @@ if FreeByDD('zweto') > 0 then do
 end
 
 /* members not processed */
-excludeList = "ZWEKRING ZWENOKYR ZWEGENER ZWESIP00 ZWESIPRG ZWESISCH ZWESECKG"
+excludeList = "ZWEKRING ZWENOKYR ZWEGENER ZWESIP00 ZWESIPRG ZWESISCH ZWESECKG",
+  "ZWEIAPF"
 do el = 1 to words(excludeList)
   ret = DeleteDataSet(jclCopy'('word(excludeList, el)')')
 end
