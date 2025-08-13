@@ -1,1 +1,15 @@
-""
+{
+  "lockAcquiredTime": "Wed Aug 13 2025 11:46:07 GMT+0000 (Coordinated Universal Time)",
+  "uid": "1755085567716272275",
+  "repository": {
+    "owner": "zowe",
+    "repo": "zowe-install-packaging"
+  },
+  "branch": "hrishikesh-nalawade/GH4268/diskspace-snapshot",
+  "workflow": "Zowe CICD Integration Tests",
+  "job": "cicd-test",
+  "actor": "zowe-robot",
+  "runId": 16936073631,
+  "runNumber": 7218,
+  "link": "https://github.com/zowe/zowe-install-packaging/actions/runs/16936073631"
+}
