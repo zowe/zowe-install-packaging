@@ -118,14 +118,19 @@ else
   tmpfile=$(create_tmp_file $(echo "zwe ${ZWE_CLI_COMMANDS_LIST}" | sed "s# #-#g"))
   print_debug "- Copy ${prefix}.${ZWE_PRIVATE_DS_SZWESAMP}(ZWECSVSM) to ${tmpfile}"
   result=$(cat "//'${prefix}.${ZWE_PRIVATE_DS_SZWESAMP}(ZWECSVSM)'" | \
-          sed /\{zowe\.setup\.jcl\.header\}// | \
-          sed /\{zowe\.setup\.vsam\.name\}/${vsam_name}/ | \
-          sed /\{zowe\.setup\.vsam\.mode\}/${vsam_mode}/ | \
-          sed /\{zowe\.setup\.vsam\.storageClass\}/${vsam_storageClass}/ | \
-          sed /\{zowe\.setup\.vsam\.volume\}/${vsam_volume}/ \
-          > "${tmpfile}")
-  code=$?
-  chmod 700 "${tmpfile}"
+          sed "s/{zowe\.setup\.jcl\.header}//" | \
+          sed "s/{zowe\.setup\.vsam\.name}/${vsam_name}/" | \
+          sed "s/{zowe\.setup\.vsam\.mode}/${vsam_mode}/" | \
+          sed "s/{zowe\.setup\.vsam\.storageClass}/${vsam_storageClass}/" | \
+          sed "s/{zowe\.setup\.vsam\.volume}/${vsam_volume}/")
+
+  if [ -n "${result}" ]; then
+    echo "${result}" > "${tmpfile}"
+    code=$?
+  else
+    code=1
+  fi
+
   if [ ${code} -eq 0 ]; then
     print_debug "  * Succeeded"
     print_trace "  * Exit code: ${code}"
@@ -144,6 +149,7 @@ else
   if [ ! -f "${tmpfile}" ]; then
     print_error_and_exit "Error ZWEL0159E: Failed to modify ${prefix}.${ZWE_PRIVATE_DS_SZWESAMP}(ZWECSVSM)" "" 159
   fi
+  chmod 700 "${tmpfile}"
   print_trace "- ${tmpfile} created with content"
   print_trace "$(cat "${tmpfile}")"
   print_trace "- ensure ${tmpfile} encoding before copying into data set"
