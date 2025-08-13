@@ -118,10 +118,11 @@ else
   tmpfile=$(create_tmp_file $(echo "zwe ${ZWE_CLI_COMMANDS_LIST}" | sed "s# #-#g"))
   print_debug "- Copy ${prefix}.${ZWE_PRIVATE_DS_SZWESAMP}(ZWECSVSM) to ${tmpfile}"
   result=$(cat "//'${prefix}.${ZWE_PRIVATE_DS_SZWESAMP}(ZWECSVSM)'" | \
-          sed  "s/^\/\/ \+SET \+MODE=.*\$/\/\/         SET  MODE=${vsam_mode}/" | \
-          sed  "/^\/\/ALLOC/,9999s/#dsname/${vsam_name}/g" | \
-          sed  "/^\/\/ALLOC/,9999s/#volume/${vsam_volume}/g" | \
-          sed  "/^\/\/ALLOC/,9999s/#storclas/${vsam_storageClass}/g" \
+          sed /\{zowe\.setup\.jcl\.header\}// | \
+          sed /\{zowe\.setup\.vsam\.name\}/${vsam_name}/ | \
+          sed /\{zowe\.setup\.vsam\.mode\}/${vsam_mode}/ | \
+          sed /\{zowe\.setup\.vsam\.storageClass\}/${vsam_storageClass}/ | \
+          sed /\{zowe\.setup\.vsam\.volume\}/${vsam_volume}/ \
           > "${tmpfile}")
   code=$?
   chmod 700 "${tmpfile}"
