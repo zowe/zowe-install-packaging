@@ -29,8 +29,8 @@
 //EXEC14   EXEC  PGM=IEFBR14
 //*
 //* {zowe.setup.dataset.authLoadlib} holds the APF portion of Zowe
-//  COMMAND 'SETPROG APF,ADD,DSN={zowe.setup.dataset.authLoadlib},SMS'
+// COMMAND 'SETPROG APF,ADD,DSN={zowe.setup.dataset.authLoadlib},SMS'
 //*
 //* {zowe.setup.dataset.authPluginLib} holds product plugins for ZIS
-//  COMMAND 'SETPROG APF,ADD,DSN={zowe.setup.dataset.authPluginLib},SMS'
+// COMMAND 'SETPROG APF,ADD,DSN={zowe.setup.dataset.authPluginLib},SMS'
 //*
