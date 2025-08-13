@@ -85,7 +85,6 @@ export class RemoteTestRunner {
     const dlResp = await files.Download.dataSet(this.session, memberName, {
       file: tmpFile,
     });
-    console.log(JSON.stringify(dlResp));
     if (!dlResp.success) {
       console.log('Failed');
     }
@@ -128,7 +127,13 @@ export class RemoteTestRunner {
   }
 
   public async runRaw(command: string, cwd: string = REMOTE_SYSTEM_INFO.ussTestDir): Promise<TestOutput> {
+    const start = performance.now();
     const output = await this.uss.runCommand(`${command}`, cwd);
+    const end = performance.now();
+    const duration = end - start;
+    this.totalRuntime += duration;
+    this.totalRuns++;
+    this.maxRuntime = Math.max(this.maxRuntime, duration);
     // Any non-deterministic output should be cleaned up for test snapshots.
     const cleanedOutput = this.cleanOutput(output.consoleLog, []);
     return {
@@ -482,6 +487,25 @@ export class RemoteTestRunner {
   public async uploadToDatasetForTest(content: string, dsPath: string): Promise<void> {
     await this.removeDatasetForTest(dsPath);
     await files.Upload.bufferToDataSet(this.session, Buffer.from(content), dsPath);
+  }
+
+  /**
+   * Uploads a given file directly as the zowe.yaml to be used in a test case (zowe.test.yaml).
+   *
+   * @param filePath
+   * @param remoteCwd
+   * @returns the full path to the uploaded zowe.yaml
+   */
+  public async uploadZoweYamlFromFile(filePath: string, remoteCwd: string = REMOTE_SYSTEM_INFO.ussTestDir): Promise<string> {
+    const testName = expect.getState().currentTestName.replace(/\s/g, '_');
+    const uploadPath = `${remoteCwd}/zowe.test.yaml`;
+    const yamlOutputDir = this.yamlOutputTemplate.replace('{{ testInstance }}', testName);
+    fs.mkdirpSync(yamlOutputDir);
+    const redundantFilePath = this.writeRedundant(`${yamlOutputDir}/zowe.yaml`, fs.readFileSync(filePath, 'utf-8'));
+    await files.Upload.fileToUssFile(this.session, redundantFilePath, uploadPath, {
+      binary: false,
+    });
+    return uploadPath;
   }
 
   public async uploadZoweYaml(
