@@ -56,16 +56,16 @@
       "artifact": "zss-3.3.0-rc-1362-20250808181141.pax"
     },
     "org.zowe.explorer-jes": {
-      "version": "3.0.2"
+      "version": "3.0.3"
     },
     "org.zowe.explorer-mvs": {
-      "version": "3.0.2"
+      "version": "3.0.3"
     },
     "org.zowe.explorer-uss": {
-      "version": "3.0.2"
+      "version": "3.0.3"
     },
     "org.zowe.explorer-ip": {
-      "version": "3.0.2",
+      "version": "3.0.3",
       "artifact": "explorer-ip*.pax"
     },
      "org.zowe.apiml.apiml-package": {
