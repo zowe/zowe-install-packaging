@@ -51,7 +51,6 @@ runtime = GetRuntimeDirectory()
 defaultYaml = 'FILE('runtime'/files/defaults.yaml)'
 configChain = GetConfigChain()
 configChain = AddToChain(configChain, defaultYaml)
-
 /*
 ================================================================================
     Use ConfigMgr to validate the current configuration.
@@ -558,40 +557,37 @@ do queued()
   cmp2 = COMPARE(zoweslstcLine, 'CONFIG=CFG.ZWE_CLI_PARAMETER_CONFIG')
   if 0 == cmp1 | 0 == cmp2 then do
     say 'Defining CONFIG entry for ZWESLSTC'
-    if ReadFromDataSet('myconfig') = 0 then do
-      do j = 1 to !contentToRead.0
-        parse var !contentToRead.j type location
-        shouldAddColon = !contentToRead.0 > j
-        element = type'('strip(location)')'
-        if 1 == j then do
-          element = 'CONFIG='element
+    do j = 1 to !myconfig.0
+      shouldAddColon = !myconfig.0 > j
+      element = !myconfig.j
+      if j == 1 then do
+        element = 'CONFIG='element
+      end
+      if shouldAddColon then do
+        element = element':\'
+      end
+      eleLength = length(element)
+      MAX_LINE_LEN = 72 /* 72 allows PARMLIB to always fit in a single line */
+      if eleLength >= MAX_LINE_LEN then do
+        /* divide element.1 into chunks of MAX_LINE_LEN
+             without continutation characters */
+        chunks = eleLength % MAX_LINE_LEN
+        if eleLength // MAX_LINE_LEN > 0 then do
+          chunks = chunks + 1
         end
-        if shouldAddColon then do
-          element = element':\'
-        end
-        eleLength = length(element)
-        MAX_LINE_LEN = 72 /* 72 allows PARMLIB to always fit in a single line */
-        if eleLength >= MAX_LINE_LEN then do
-          /* divide element.1 into chunks of MAX_LINE_LEN
-               without continutation characters */
-          chunks = eleLength % MAX_LINE_LEN
-          if eleLength // MAX_LINE_LEN > 0 then do
-            chunks = chunks + 1
+        do i = 1 to chunks
+          line = strip(SUBSTR(element, (i-1)*MAX_LINE_LEN + 1, MAX_LINE_LEN))
+          if i == chunks then do
+            queue line
           end
-          do i = 1 to chunks
-            line = strip(SUBSTR(element, (i-1)*MAX_LINE_LEN + 1, MAX_LINE_LEN))
-            if i == chunks then do
-              queue line
-            end
-            else do
-              queue line'\'
-            end
+          else do
+            queue line'\'
           end
         end
-        else do
-          line = element
-          queue line
-        end
+      end
+      else do
+        line = element
+        queue line
       end
     end
   end
@@ -1024,10 +1020,20 @@ FreeByDSN:
 /*
 ================================================================================
   GetConfigChain()
+    Reads MYCONFIG
+    Saves results into !myconfig. to be reused for ZWESLSTC
+    E.g.:
+      FILE path/to\
+      zowe.yaml
+      PARMLIB ZOWE.PARM(YAML)
+    Will be
+      !myconfig.0 = 2
+      !myconfig.1 = FILE(path/to/zowe.yaml)
+      !myconfig.2 = PARMLIB(ZOWE.PARM(YAML))
 ================================================================================
 */
 GetConfigChain:
-  procedure expose !verbose
+  procedure expose !verbose !myconfig.
   VALID_ENTRIES = 'FILE PARMLIB'
 
   configChain = ''
@@ -1043,7 +1049,7 @@ GetConfigChain:
     end
 
     contChar = 0
-    output. = ''
+    drop !myconfig.
     idx = 1
 
     do j = 1 to !contentToRead.0
@@ -1076,22 +1082,22 @@ GetConfigChain:
       if contChar = 1 then do
         if type = '+' then do
           /* Add continuation line, type already known */
-          output.idx = output.idx||location
+          !myconfig.idx = !myconfig.idx||location
         end
         else do
           /* Start with type and will continue */
-          output.idx = type'('location
+          !myconfig.idx = type'('location
         end
       end
       else do
         if type = '+' then do
           /* Add last continuation line */
-          output.idx = output.idx||location||')'
+          !myconfig.idx = !myconfig.idx||location||')'
           idx = idx + 1
         end
         else do
           /* Complete entry */
-          output.idx = type'('location')'
+          !myconfig.idx = type'('location')'
           idx = idx + 1
         end
       end
@@ -1101,9 +1107,9 @@ GetConfigChain:
     ExitWithRC(8)
   end
 
-  idx = idx - 1
-  do i = 1 to idx
-    configChain = AddToChain(configChain, output.i)
+  !myconfig.0 = idx - 1
+  do i = 1 to !myconfig.0
+    configChain = AddToChain(configChain, !myconfig.i)
   end
 
   return configChain
