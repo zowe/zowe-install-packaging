@@ -1026,14 +1026,21 @@ FreeByDSN:
   GetConfigChain()
 ================================================================================
 */
- GetConfigChain:
+GetConfigChain:
   procedure expose !verbose
-
+  VALID_ENTRIES = 'FILE PARMLIB'
   configChain = ''
 
   if ReadFromDataSet('myconfig') = 0 then do
     do j = 1 to !contentToRead.0
       parse var !contentToRead.j type location
+      checkType = CheckInput(type, VALID_ENTRIES)
+      if checkType = '' then do
+        queue '"'type'" is not a valid config entry type:'
+        queue !contentToRead.j
+        queue 'Valid config entries are: '||VALID_ENTRIES
+        FormatError(8)
+      end
       element = type'('strip(location)')'
       configChain = AddToChain(configChain, element)
     end
