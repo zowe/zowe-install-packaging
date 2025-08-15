@@ -27,6 +27,7 @@ export function execute(quitOnError?: boolean, componentName?: string) {
 
   let myJobname = std.getenv('_BPX_JOBNAME');
 
+  common.printFormattedInfo(`ZWELS`, `zwe-validate-port-available`, `Checking ports of ${enabledComponents.length} enabled components`);
   for (let i = 0; i < enabledComponents.length; i++) {
     let componentName = enabledComponents[i];
     let port = ZOWE_CONFIG.components[componentName].port;
