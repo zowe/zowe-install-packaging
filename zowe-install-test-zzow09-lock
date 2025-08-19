@@ -1,1 +1,15 @@
-""
+{
+  "lockAcquiredTime": "Tue Aug 19 2025 04:24:55 GMT+0000 (Coordinated Universal Time)",
+  "uid": "1755577495007622711",
+  "repository": {
+    "owner": "zowe",
+    "repo": "zowe-install-packaging"
+  },
+  "branch": "reboot/fix/attls-nokeyring",
+  "workflow": "Zowe CICD Integration Tests",
+  "job": "cicd-test",
+  "actor": "zowe-robot",
+  "runId": 17059489480,
+  "runNumber": 7243,
+  "link": "https://github.com/zowe/zowe-install-packaging/actions/runs/17059489480"
+}
