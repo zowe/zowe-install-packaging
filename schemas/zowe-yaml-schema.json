@@ -440,7 +440,24 @@
                   ]
                 }
               }
-            }
+            },
+            "jcl": {
+              "type": "object",
+              "additionalProperties": false,
+              "description": "SZWESAMP JCLs related setting.",
+              "properties": {
+                "enable": {
+                  "type": "boolean",
+                  "description": "Controls whether zwe install and zwe init commands and subcommands will utilize jobs for executing system changes instead of shell commands."                
+                },
+                "header": {
+                  "type": "string",
+                  "not": {
+                    "type": "null"
+                  },
+                  "description": "JCL header options for samples in SZWESAMP: '//ZWEnnnnn JOB {zowe.setup.jcl.header}'."
+                }
+              }
           }
         },
         "runtimeDirectory": {
@@ -584,6 +601,11 @@
           "items": {
             "type": "string"
           }
+        },
+        "sysMessageTrim": {
+          "type": "boolean",
+          "default": false,
+          "description": "Determines whether or not to trim the syslog messages, print will start from the system message id"
         },
         "useConfigmgr": {
           "type": "boolean",
