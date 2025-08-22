@@ -458,6 +458,7 @@
                   "description": "JCL header options for samples in SZWESAMP: '//ZWEnnnnn JOB {zowe.setup.jcl.header}'."
                 }
               }
+            }
           }
         },
         "runtimeDirectory": {
