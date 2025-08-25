@@ -3,3 +3,4 @@ ZWEL0324E|324|The dataset specified in %s does not exist.
 ZWEL0325E|325|Failed to prepare %s
 ZWEL0158I|158|zowe.setup.dataset.authLoadlib is not defined in Zowe YAML configuration file. Using the default value %s.SZWEAUTH.
 ZWEL0159I|159|zowe.setup.dataset.authPluginLib is not defined in Zowe YAML configuration file. Skipping.
+ZWEL0326E|326|An error occurred while processing Zowe YAML config %s:

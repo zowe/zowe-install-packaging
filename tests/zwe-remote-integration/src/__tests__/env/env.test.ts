@@ -12,12 +12,14 @@ import ZoweYamlType from '../../config/ZoweYamlType';
 import { RemoteTestRunner } from '../../zos/RemoteTestRunner';
 import { ZoweConfig } from '../../config/ZoweConfig';
 import * as fs from 'fs-extra';
+import { FileType, TestFile, TestFileActions } from '../../zos/TestFileActions';
 
 const testSuiteName = 'generated-env-tests';
 describe(`${testSuiteName}`, () => {
   let testRunner: RemoteTestRunner;
   let cfgYaml: ZoweYamlType;
   let defaultCfgYaml: ZoweYamlType;
+  let cleanupFiles: TestFile[] = [];
 
   beforeAll(async () => {
     testRunner = new RemoteTestRunner(testSuiteName);
@@ -27,13 +29,22 @@ describe(`${testSuiteName}`, () => {
     };
     testRunner.addCleanFn(cleanSecurityManager);
   });
-  beforeEach(() => {
+  beforeEach(async () => {
     cfgYaml = ZoweConfig.getZoweYaml();
     defaultCfgYaml = ZoweConfig.getDefaultsYaml();
+    const workspaceEnv: TestFile = {
+      name: `${cfgYaml.zowe.workspaceDirectory}/.env`,
+      type: FileType.USS_DIR,
+    };
+    await TestFileActions.deleteAll([workspaceEnv]);
+    await testRunner.removeUssFileOrDirForTest('components');
+    cleanupFiles.push(workspaceEnv);
   });
 
   afterEach(async () => {
     await testRunner.postTest();
+    await TestFileActions.deleteAll(cleanupFiles);
+    cleanupFiles = [];
   });
 
   afterAll(() => {

@@ -87,7 +87,7 @@ export const REMOTE_SYSTEM_INFO = {
   jcllib: `${testPrefix}.JCLLIB`,
   proclib: `${testPrefix}.TEST.PROCLIB`,
   szweload: `${testPrefix}.SZWELOAD`,
-  authLoadLib: `${testPrefix}.SZWELOAD`,
+  authLoadLib: `${testPrefix}.SZWEAUTH`,
   authPluginLib: `${testPrefix}.ZWESAPL`,
   parmlib: `${testPrefix}.PARMLIB`,
   ussTestDir: configData.remote_test_dir,

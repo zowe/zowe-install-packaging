@@ -36,6 +36,14 @@ zowe:
   # https://docs.zowe.org/stable/user-guide/zos-components-installation-checklist
   #-------------------------------------------------------------------------------
   setup:
+    jcl:
+      # When enabled, "zwe init" will use job submission for system changes
+      # instead of shell commands. A `--dry-run` option is also enabled
+      # which allows you to see jobs instead of submitting.
+      enable: false
+      # Edit to set a header for job cards. Some systems need this, but not all.
+      # See `zwe init generate --help` for examples.
+      header: ""
     # MVS data set related configurations
     dataset:
       # where Zowe MVS data sets will be installed
@@ -160,10 +168,10 @@ zowe:
     #   type: JCERACFKS
     #   keyring:
     #     name: ZoweKeyring
-    #     # # Label of Zowe certificate. Optional, default value is localhost.
-    #     # label: localhost
-    #     # # label of Zowe CA certificate. Optional, default value is localca.
-    #     # caLabel: localca
+    #     # # Label of Zowe certificate. Default value is localhost.
+    #     label: localhost
+    #     # # label of Zowe CA certificate. Default value is localca.
+    #     caLabel: localca
     #   # # Distinguished name for Zowe generated certificates. All optional.
     #   # dname:
     #   #   caCommonName: ""
@@ -210,8 +218,8 @@ zowe:
     #   type: JCERACFKS
     #   keyring:
     #     name: ZoweKeyring
-    #     # # Label of Zowe certificate. Optional, default value is localhost.
-    #     # label: localhost
+    #     # # Label of Zowe certificate. Default value is localhost.
+    #     label: localhost
     #     import:
     #       # Name of the data set holds the certificate issued by other CA.
     #       # This data set should be in PKCS12 format and contain private key.
@@ -467,6 +475,11 @@ zOSMF:
 components:
 
   # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+  apiml:
+    enabled: false
+    debug: false
+
+  # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   gateway:
     enabled: true
     port: 7554
@@ -496,6 +509,7 @@ components:
     enabled: true
     port: 7558
     debug: false
+
   # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   api-catalog:
     enabled: true

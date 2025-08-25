@@ -15,7 +15,7 @@ print_level1_message "Generate certificate"
 
 ###############################
 # validation
-require_zowe_yaml "skipnode"
+validate_zowe_yaml "${ZWE_CLI_PARAMETER_CONFIG}"
 
 # Keytool is needed
 require_java
@@ -25,6 +25,8 @@ if [ -n "${ZWE_PRIVATE_CONFIG_ORIG}" ]; then
 else
   CONFIG_TO_WRITE=${ZWE_CLI_PARAMETER_CONFIG}
 fi
+
+USE_JCL=$(check_jcl_enabled)
 
 export ZWE_PRIVATE_TMP_MERGED_YAML_DIR=$(create_tmp_file)
 mkdir -p ${ZWE_PRIVATE_TMP_MERGED_YAML_DIR}
@@ -53,10 +55,14 @@ if [ $? -ne 0 ]; then
   print_error_and_exit "Error ZWEL0164E: Value of certificate type (zowe.setup.certificate.type) defined in Zowe YAML configuration file is invalid. Valid values are PKCS12, JCEKS, JCECCAKS, JCERACFKS, JCECCARACFKS, or JCEHYBRIDRACFKS." "" 164
 fi
 
+
 # read JCL library and validate for keyrings only (JCE*KS)
 if [ "${cert_type}" != "PKCS12" ]; then
-  jcllib=$(verify_generated_jcl)
-  if [ "$?" -eq 1 ]; then
+  jcllib=$(verify_generated_jcl "${USE_JCL}")
+  rc=$?
+  if [ "$rc" -eq 2 ]; then
+     print_error_and_exit "Error ZWEL0157E: Zowe custom JCL library (zowe.setup.dataset.jcllib) is not defined in Zowe YAML configuration file." "" 157
+  elif [ "$rc" -eq 1 ]; then
     print_error_and_exit "Error ZWEL0319E: zowe.setup.dataset.jcllib does not exist, cannot run. Run 'zwe init', 'zwe init generate', or submit JCL ${prefix}.SZWESAMP(ZWEGENER) before running this command." "" 319
   fi
 fi
@@ -114,7 +120,6 @@ else # JCE* content
   keyring_import_password=$(read_yaml_configmgr "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.certificate.keyring.import.password")
   if [ -n "${keyring_import_dsName}" ]; then
     keyring_option=3
-    keyring_import_password=$(read_yaml_configmgr "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.certificate.keyring.import.password")
     if [ -z "${keyring_import_password}" ]; then
       print_error_and_exit "Error ZWEL0157E: The password for data set storing importing certificate (zowe.setup.certificate.keyring.import.password) is not defined in Zowe YAML configuration file." "" 157
     fi
@@ -152,6 +157,7 @@ else # JCE* content
     eval "${var_name}=\"${var_val}\""
   done
 fi
+
 # read keystore CAs
 cert_import_CAs=$(read_yaml_configmgr "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.certificate.importCertificateAuthorities" | tr '\n' ',')
 # read keystore domains
@@ -237,6 +243,7 @@ else # JCE* content
     fi
   fi
 fi
+
 
 ###############################
 if [ "${cert_type}" = "PKCS12" ]; then
@@ -442,22 +449,29 @@ else # JCE* content
   if [ "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITE}" = "true" ]; then
     # warning
     print_message "Warning ZWEL0300W: Keyring \"safkeyring://${keyring_owner}/${keyring_name}\" already exists. This keyring will be overwritten."
-
-    keyring_run_zwenokyr_jcl "${prefix}" "${jcllib}" "${security_product}"
+    if [ "${USE_JCL}" = "true" ]; then
+      keyring_run_zwenokyr_jcl "${prefix}" "${jcllib}" "${security_product}" "${keyring_label}" "${keyring_caLabel}"
+    else
+      keyring_run_zwenokyr_jcl_legacy_mode "${prefix}" "${jcllib}" "${keyring_owner}" "${keyring_name}" "${keyring_label}" "${keyring_caLabel}" "${security_product}"
+    fi
   else
     # error
     # print_error_and_exit "Error 158: Keyring \"safkeyring://${keyring_owner}/${keyring_name}\" already exists." "" 158
   fi
 
-  keyring_run_zwekring_jcl "${prefix}" \
-    "${jcllib}" \
-    "${keyring_option}" \
-    "${cert_domains}" \
-    "${cert_import_CAs}" \
-    "${keyring_trust_zosmf}" \
-    "${zosmf_ca}" \
-    "${cert_validity}" \
-    "${security_product}"
+  if [ "${USE_JCL}" = "true" ]; then
+    keyring_run_zwekring_jcl "${prefix}" \
+      "${jcllib}" \
+      "${keyring_option}" \
+      "${cert_domains}" \
+      "${cert_import_CAs}" \
+      "${keyring_trust_zosmf}" \
+      "${zosmf_ca}" \
+      "${cert_validity}" \
+      "${security_product}"
+  else
+    keyring_run_zwekring_jcl_legacy_mode "${prefix}" "${jcllib}" "${keyring_option}" "${keyring_owner}" "${keyring_name}" "${cert_domains}" "${keyring_label}" "${keyring_caLabel}" "${cert_import_CAs}"  "${keyring_trust_zosmf}" "${zosmf_ca}" "${keyring_connect_user}" "${keyring_connect_label}" "${keyring_import_dsName}" "${keyring_import_password}" "${cert_validity}" "${security_product}"
+  fi
 
   if [ $? -ne 0 ]; then
     job_has_failures=true

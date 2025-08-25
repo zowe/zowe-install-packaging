@@ -153,6 +153,11 @@ zowe:
 components:
 
   # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+  apiml:
+    enabled: false
+    debug: false
+
+  # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   gateway:
     enabled: true
     port: 7554

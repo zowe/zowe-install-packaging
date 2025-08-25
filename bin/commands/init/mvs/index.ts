@@ -27,9 +27,9 @@ export function execute(allowOverwrite?: boolean) {
     common.printErrorAndExit(`Error ZWEL0157E: Zowe dataset prefix (zowe.setup.dataset.prefix) is not defined in Zowe YAML configuration file.`, undefined, 157);
   }
 
-  const zssEnabled = ZOWE_CONFIG.components.zss.enabled;  // In defaults, this property is always defined
+  // For V4: if components.zss.enabled = false => no need to create parmlib
   const parmlib = ZOWE_CONFIG.zowe.setup?.dataset?.parmlib ? ZOWE_CONFIG.zowe.setup.dataset.parmlib : undefined;
-  if (zssEnabled && parmlib == undefined) {
+  if (!parmlib) {
       common.printErrorAndExit(`Error ZWEL0157E: zowe.setup.dataset.parmlib is not defined in Zowe YAML configuration file.`, undefined, 157);
   }
 

@@ -12,7 +12,7 @@ zowe:
       parmlib: "TEST.DATASET.PFX.PARMLIB"
       jcllib: "TEST.DATASET.PFX.JCLLIB"
       loadlib: "TEST.DATASET.PFX.SZWEEXEC"
-      authLoadlib: "TEST.DATASET.PFX.SZWELOAD"
+      authLoadlib: "TEST.DATASET.PFX.SZWEAUTH"
       authPluginLib: "TEST.DATASET.PFX.ZWESAPL"
     security:
       product: "ESMT"
@@ -51,8 +51,8 @@ zowe:
       volume: "TSTVOL"
       storageClass: ""
     jcl:
-      header:
-      - ""
+      header: ""
+      enable: true
   network:
     proxyType: "https"
     server:
@@ -109,6 +109,9 @@ zowe:
       certificate: "/global/zowe/keystore/localhost/localhost.cer"
       certificateAuthorities: "/global/zowe/keystore/local_ca/local_ca.cer"
 components:
+  apiml:
+    enabled: false
+    debug: false
   gateway:
     enabled: true
     port: 7554
@@ -200,7 +203,7 @@ zowe:
       parmlib: "TEST.DATASET.PFX.PARMLIB"
       jcllib: "TEST.DATASET.PFX.JCLLIB"
       loadlib: "TEST.DATASET.PFX.SZWEEXEC"
-      authLoadlib: "TEST.DATASET.PFX.SZWELOAD"
+      authLoadlib: "TEST.DATASET.PFX.SZWEAUTH"
       authPluginLib: "TEST.DATASET.PFX.ZWESAPL"
     security:
       product: "ESMT"
@@ -239,8 +242,8 @@ zowe:
       volume: "TSTVOL"
       storageClass: ""
     jcl:
-      header:
-      - ""
+      header: ""
+      enable: true
   network:
     proxyType: "https"
     server:
@@ -297,6 +300,9 @@ zowe:
       certificate: "/global/zowe/keystore/localhost/localhost.cer"
       certificateAuthorities: "/global/zowe/keystore/local_ca/local_ca.cer"
 components:
+  apiml:
+    enabled: false
+    debug: false
   gateway:
     enabled: true
     port: 7554
