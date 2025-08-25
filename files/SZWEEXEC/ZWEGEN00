@@ -42,16 +42,30 @@ end
 ==============================================================================*/
 
 schemaChain = GetSchemaChain()
+if !verbose then do
+  say 'MYSCHEMA entries:'
+  do i = 1 to !mySchema.0
+    say i||') '||!mySchema.i
+  end
+end
 
 runtime = !mySchema.runtime
 if runtime = '' then do
   say 'Runtime directory not found in DD MYSCHEMA.'
   ExitWithRC(8)
 end
+call Print 'Zowe Runtime Directory = '||runtime
 
 defaultYaml = 'FILE('runtime'/files/defaults.yaml)'
 configChain = GetConfigChain()
+if !verbose then do
+  say 'MYCONFIG entries:'
+  do i = 1 to !myConfig.0
+    say format(i, length(!myConfig.0))||') '||!myConfig.i
+  end
+end
 configChain = AddToChain(configChain, defaultYaml)
+
 /*==============================================================================
   Use ConfigMgr to validate the current configuration.
 ==============================================================================*/
@@ -534,9 +548,9 @@ do queued()
   cmp2 = COMPARE(zoweslstcLine, 'CONFIG=CFG.ZWE_CLI_PARAMETER_CONFIG')
   if 0 == cmp1 | 0 == cmp2 then do
     say 'Defining CONFIG entry for ZWESLSTC'
-    do j = 1 to !myconfig.0
-      shouldAddColon = !myconfig.0 > j
-      element = !myconfig.j
+    do j = 1 to !myConfig.0
+      shouldAddColon = !myConfig.0 > j
+      element = !myConfig.j
       if j == 1 then do
         element = 'CONFIG='element
       end
@@ -963,18 +977,18 @@ FreeByDSN:
 /*==============================================================================
   GetConfigChain()
     Reads DD MYCONFIG
-    Saves results into !myconfig. to be reused for ZWESLSTC entries
+    Saves results into !myConfig. to be reused for ZWESLSTC entries
     E.g.:
       FILE path/to\
       zowe.yaml
       PARMLIB ZOWE.PARM(YAML)
     Will be
-      !myconfig.0 = 2
-      !myconfig.1 = FILE(path/to/zowe.yaml)
-      !myconfig.2 = PARMLIB(ZOWE.PARM(YAML))
+      !myConfig.0 = 2
+      !myConfig.1 = FILE(path/to/zowe.yaml)
+      !myConfig.2 = PARMLIB(ZOWE.PARM(YAML))
 ==============================================================================*/
 GetConfigChain:
-  procedure expose !verbose !myconfig.
+  procedure expose !verbose !myConfig.
   VALID_ENTRIES = 'FILE PARMLIB'
 
   configChain = ''
@@ -992,7 +1006,7 @@ GetConfigChain:
   end
 
   contChar = 0
-  drop !myconfig.
+  drop !myConfig.
   idx = 1
 
   do j = 1 to !contentToRead.0
@@ -1024,30 +1038,30 @@ GetConfigChain:
     if contChar = 1 then do
       if type = '+' then do
         /* Add continuation line, type already known */
-        !myconfig.idx = !myconfig.idx||location
+        !myConfig.idx = !myConfig.idx||location
       end
       else do
         /* Start with type and will continue */
-        !myconfig.idx = type'('location
+        !myConfig.idx = type'('location
       end
     end
     else do
       if type = '+' then do
         /* Add last continuation line */
-        !myconfig.idx = !myconfig.idx||location||')'
+        !myConfig.idx = !myConfig.idx||location||')'
         idx = idx + 1
       end
       else do
         /* Complete entry */
-        !myconfig.idx = type'('location')'
+        !myConfig.idx = type'('location')'
         idx = idx + 1
       end
     end
   end
 
-  !myconfig.0 = idx - 1
-  do i = 1 to !myconfig.0
-    configChain = AddToChain(configChain, !myconfig.i)
+  !myConfig.0 = idx - 1
+  do i = 1 to !myConfig.0
+    configChain = AddToChain(configChain, !myConfig.i)
   end
 
   return configChain
