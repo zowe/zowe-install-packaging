@@ -20,6 +20,9 @@ import * as zosFs from '../../../libs/zos-fs';
 import * as zosJes from '../../../libs/zos-jes';
 
 const JCL_SPLIT_LEN = 71;
+// 5 = length of "FILE "
+// 30 = length of "/schemas/zowe-yaml-schema.json"
+const MAX_RUNTIME_LEN = JCL_SPLIT_LEN - 5 - 30
 
 export function execute(dryRun?: boolean) {
   common.requireZoweYaml();
@@ -63,8 +66,21 @@ export function execute(dryRun?: boolean) {
   // Replace is using special replacement patterns, by doubling '$' we will avoid that
   // Otherwise: let d4 = '$$$$'; console.log('a'.replace(/a/gi, d4)); --> '$$' (we want '$$$$')
   // $$ inserts a '$', replace(/[$]/g, '$$$$') => double each '$' occurence
-  jclContents = jclContents.replace(/\{zowe\.setup\.dataset\.prefix\}/gi, prefix.replace(/[$]/g, '$$$$'));
-  jclContents = jclContents.replace(/\{zowe\.runtimeDirectory\}/gi, runtimeDirectory.replace(/[$]/g, '$$$$'));
+  jclContents = jclContents.replace(/DSN\=\{zowe\.setup\.dataset\.prefix\}/gi, 'DSN=' + prefix.replace(/[$]/g, '$$$$'));
+
+  if (runtimeDirectory.length <= MAX_RUNTIME_LEN) {
+    jclContents = jclContents.replace(/FILE \{zowe\.runtimeDirectory\}/gi, 'FILE ' + runtimeDirectory.replace(/[$]/g, '$$$$'));
+  } else {
+    const SCHEMAS = [ '/schemas/zowe-yaml-schema.json', '/schemas/server-common.json' ];
+    SCHEMAS.forEach((schema) => {
+      let schemaEntry = `FILE ${runtimeDirectory}${schema}`;
+      let schemaArray = stringLib.splitStringByLength(schemaEntry, JCL_SPLIT_LEN);
+      schemaEntry = stringLib.joinArrayWithString(schemaArray, '\\\n');
+      const schemaRE = new RegExp(`FILE {zowe.runtimeDirectory}${schema}`, "i");
+      jclContents = jclContents.replace(schemaRE, schemaEntry.replace(/[$]/g, '$$$$'));
+    })
+  }
+
   jclContents = jclContents.replace(/\{zowe\.setup\.jcl\.header\}/i, jclHeader.replace(/[$]/g, '$$$$'));
   if (std.getenv('ZWE_PRIVATE_LOG_LEVEL_ZWELS') !== 'INFO') {
     jclContents = jclContents.replace('noverbose -', 'verbose -');
