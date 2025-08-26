@@ -15,8 +15,11 @@ import * as xplatform from "xplatform";
 import * as fs from '../../../libs/fs';
 import * as config from '../../../libs/config';
 import * as common from '../../../libs/common';
+import * as stringLib from '../../../libs/string';
 import * as zosFs from '../../../libs/zos-fs';
 import * as zosJes from '../../../libs/zos-jes';
+
+const JCL_SPLIT_LEN = 71;
 
 export function execute(dryRun?: boolean) {
   common.requireZoweYaml();
@@ -81,7 +84,12 @@ export function execute(dryRun?: boolean) {
     let part = parts[i].trim();
     if (part.startsWith('FILE(')) {
       let filename = part.substring(part.indexOf('(') + 1, part.indexOf(')'));
-      configLines.push('FILE ' + fs.convertToAbsolutePath(filename).replace(/[$]/g, '$$$$'));
+      let fileEntry = 'FILE ' + fs.convertToAbsolutePath(filename).replace(/[$]/g, '$$$$');
+      if (fileEntry.length > JCL_SPLIT_LEN) {
+        const fileEntryArray = stringLib.splitStringByLength(fileEntry, JCL_SPLIT_LEN);
+        fileEntry = stringLib.joinArrayWithString(fileEntryArray, '\\\n');
+      }
+      configLines.push(fileEntry);
     } else if (part.startsWith('PARMLIB(')) {
       const isValidParmlib = common.isValidZoweYamlParmlib(part);
       if (!isValidParmlib.ok) {
