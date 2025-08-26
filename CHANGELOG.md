@@ -3,7 +3,9 @@
 All notable changes to the Zowe Installer will be documented in this file.
 
 ## `3.4.0`
-- Enhancement: Support added for IPv6 addresses within the zowe.externalDomains and zowe.server.listenAddresses arrays. [#???](???)
+
+- Enhancement: Support added for IPv6 addresses within the zowe.externalDomains and zowe.server.listenAddresses arrays. [#4346](https://github.com/zowe/zowe-install-packaging/pull/4346)
+- Enhancement: Support added for IPv6 addresses within APIML static definition files [#4346](https://github.com/zowe/zowe-install-packaging/pull/4346)
 
 ## `3.3.0`
 

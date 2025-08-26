@@ -25,6 +25,7 @@ import * as configmgr from './configmgr';
 import * as varlib from './var';
 import * as fakejq from './fakejq';
 import * as configUtils from './config';
+import * as network from './network';
 
 const CONFIG_MGR=configmgr.CONFIG_MGR;
 const ZOWE_CONFIG=configmgr.getZoweConfig();
@@ -471,7 +472,37 @@ export function processComponentApimlStaticDefinitions(componentDir: string): bo
           
           std.setenv('ZOSMF_SCHEME', scheme);
 
-          const resolvedContents = varlib.resolveShellTemplate(contents);
+          let resolvedContents = varlib.resolveShellTemplate(contents);
+          let rest = resolvedContents;
+          let ipv6ResolvedContents = '';
+
+          let urlRegexp = new RegExp(/\w+:\/\/\S+/);
+          let whitespaceRegexp = new RegExp(/\s+/);
+          let indexOfUrl = rest.search(urlRegexp);
+          //no urls, no change
+          if (indexOfUrl == -1) { ipv6ResolvedContents = resolvedContents; }
+
+          // env vars such as ZWE_haInstance_hostname or ZWE_zowe_externalDomains_0 may need to be wrapped in "[]"
+          // if they are ipv6 strings, as noted in RFC 3986
+          while (indexOfUrl != -1) {
+            let beginning = rest.substring(0, indexOfUrl);
+            rest = rest.substring(indexOfUrl);
+            let stopIndex = rest.search(whitespaceRegexp);
+            if (stopIndex == -1) { stopIndex = undefined; }
+
+            let urlString = rest.substring(0, stopIndex);
+            let wrappedUrlString = network.wrapIpv6Url(urlString);
+            
+            ipv6ResolvedContents += beginning + wrappedUrlString;
+
+            if (stopIndex) {
+              rest = rest.substring(stopIndex);
+              indexOfUrl = rest.search(urlRegexp);
+              if (indexOfUrl == -1) {
+                ipv6ResolvedContents += rest;
+              }
+            } else { break; }
+          }
 
           const zweCliParameterHaInstance=std.getenv("ZWE_CLI_PARAMETER_HA_INSTANCE");
           //discovery static code requires specifically .yml. Not .yaml
@@ -484,7 +515,7 @@ export function processComponentApimlStaticDefinitions(componentDir: string): bo
           let errorObj;
           let fileReturn = std.open(outPath, 'w', errorObj);
           if (fileReturn && !errorObj) {
-            fileReturn.puts(resolvedContents);
+            fileReturn.puts(ipv6ResolvedContents);
             fileReturn.close();
             shell.execSync(`chmod`, `770`, outPath);
           } else {
