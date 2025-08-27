@@ -405,8 +405,8 @@ NEW_LINE = x2c('15')
 do i = 1 to members.0
   if members.i.substitutions.0 > 0 then do
     do j = 1 to members.i.substitutions.0
-      d = jclCopy'('members.i.name')'
-      call Print 'Edit 'd'.'
+      currentMember = jclCopy'('members.i.name')'
+      call Print 'Edit 'currentMember'.'
       old = '{'members.i.substitutions.j'}'
       new = value('CFG.'members.i.substitutions.j)
       /* Skip JCL header with new line character(s) 0x15 */
@@ -429,21 +429,28 @@ do i = 1 to members.0
       end
       changeCommand = 'change all 'old apostrophes1||new||apostrophes2
       if length(changeCommand) > 255 then do
-        say 'Stopping at 'd'.'
+        say 'Stopping at 'currentMember'.'
         say '  Command too long:'
         say '  'changeCommand
         ExitWithRC(8)
       end
       queue changeCommand
       call Print changeCommand
-      cmd = 'edit dataset('"'"d"'"') macro(zwechg)'
+      cmd = 'edit dataset('"'"currentMember"'"') macro(zwechg)'
       call Print cmd
       address ispexec cmd
       if RC <= 4 then do
-        call Print 'Edit successful.'
+        if RC = 0 then do
+          call Print 'Edit successful.'
+        end
+        else do
+          call Print 'WARNING: edit ended with rc='||rc||','
+          call Print '         review '||'{'||members.i.substitutions.j||'}'
+          call Print '         in '||currentMember
+        end
       end
       else do
-        say 'Stopping at 'd'.'
+        say 'Stopping at 'currentMember'.'
         ExitWithRC(8)
       end
     end
