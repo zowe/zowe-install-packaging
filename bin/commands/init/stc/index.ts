@@ -135,7 +135,7 @@ export function execute(allowOverwrite: boolean = false) {
             let line = jclContentArray[i];
             if (pluginRegex.test(line) == true) {
               // Look for defaulted authPluginLib entry
-              if (line.includes('{zowe.setup.dataset.authPluginLib}')) {
+              if (line.toUpperCase().includes('{ZOWE.SETUP.DATASET.AUTHPLUGINLIB}')) {
                 indexOfPluginLib = i;
                 break;
               }
