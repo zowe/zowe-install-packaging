@@ -48,7 +48,7 @@ export function execute(): void {
   } else {
     // We need clean path for xplatform.loadFileUTF8, otherwise will fail for e.g. /zowe/./files/SZWESAMP//ZWEINSTL
     const runtimeAbs = fs.convertToAbsolutePath(runtime);
-    if (runtimeAbs != runtimeEnv) {
+    if (runtimeAbs == undefined || runtimeAbs != runtimeEnv) {
       common.printErrorAndExit(`Error ZWEL0105E: The Zowe YAML config file is associated to Zowe runtime "${runtime}", which is not same as where zwe command is located "${runtimeEnv}".`, undefined, 105);
     }
     runtime = runtimeAbs;
