@@ -12,7 +12,7 @@ zowe:
       parmlib: "TEST.DATASET.PFX.PARMLIB"
       jcllib: "TEST.DATASET.PFX.JCLLIB"
       loadlib: "TEST.DATASET.PFX.SZWEEXEC"
-      authLoadlib: "TEST.DATASET.PFX.SZWELOAD"
+      authLoadlib: "TEST.DATASET.PFX.SZWEAUTH"
       authPluginLib: "TEST.DATASET.PFX.ZWESAPL"
     security:
       product: "ESMT"
@@ -203,7 +203,7 @@ zowe:
       parmlib: "TEST.DATASET.PFX.PARMLIB"
       jcllib: "TEST.DATASET.PFX.JCLLIB"
       loadlib: "TEST.DATASET.PFX.SZWEEXEC"
-      authLoadlib: "TEST.DATASET.PFX.SZWELOAD"
+      authLoadlib: "TEST.DATASET.PFX.SZWEAUTH"
       authPluginLib: "TEST.DATASET.PFX.ZWESAPL"
     security:
       product: "ESMT"

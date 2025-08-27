@@ -182,7 +182,8 @@ if FreeByDD('zweto') > 0 then do
 end
 
 /* members not processed */
-excludeList = "ZWEKRING ZWENOKYR ZWEGENER ZWESIP00 ZWESIPRG ZWESISCH ZWESECKG"
+excludeList = "ZWEKRING ZWENOKYR ZWEGENER ZWESIP00 ZWESIPRG ZWESISCH ZWESECKG",
+  "ZWEIAPF"
 do el = 1 to words(excludeList)
   ret = DeleteDataSet(jclCopy'('word(excludeList, el)')')
 end
@@ -283,6 +284,12 @@ say 'The 'output.0' members in 'jclCopy' have been recorded.'
 */
 
 say 'Setting the default values.'
+
+if symbol(CFG.zowe.setup.dataset.authLoadlib) = 'LIT' then do
+  CFG.zowe.setup.dataset.authLoadlib = CFG.zowe.setup.dataset.prefix'.SZWEAUTH'
+  dbgTxt = 'zowe.setup.dataset.authLoadlib = '
+  call Print dbgTxt||CFG.zowe.setup.dataset.authLoadlib
+end
 
 if isNullEmpty(CFG.zowe.setup.dataset.authLoadlib) then do
   CFG.zowe.setup.dataset.authLoadlib = CFG.zowe.setup.dataset.prefix'.SZWEAUTH'
