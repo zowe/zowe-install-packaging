@@ -85,6 +85,13 @@ describe(`${testSuiteName}`, () => {
       await testRunner.postTest();
     });
 
+    beforeEach(async () => {
+      cfgYaml = ZoweConfig.getZoweYaml();
+      // create default
+      const simplePdsParams = { primary: 5, secondary: 1, volser: REMOTE_SYSTEM_INFO.volume };
+      await createPds(`${cfgYaml.zowe.setup.dataset.authLoadlib}`, simplePdsParams); // set in globalSetup
+    });
+
     it('apf empty jcllib post-generate', async () => {
       cfgYaml.zowe.setup.dataset.jcllib = '';
       const result = await testRunner.runZweTest(cfgYaml, 'init apfauth --dry-run');

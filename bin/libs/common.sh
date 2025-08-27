@@ -20,7 +20,7 @@ export _BPXK_AUTOCVT="ON"
 export _EDC_ADD_ERRNO2=1                        # show details on error
 unset ENV             # just in case, as it can cause unexpected output
 
-# Leveraging JCL driven init and install is opt-in via config option or 
+# Leveraging JCL driven init and install is opt-in via config option or
 # a flag passed to the calling command.
 check_jcl_enabled() {
   # first, we have to make sure configmgr is enabled
@@ -51,7 +51,7 @@ check_configmgr_config_syntax() {
     echo "true"
   elif [[ ${ZWE_CLI_PARAMETER_CONFIG} == "PARMLIB("* ]]; then
     echo "true"
-  else 
+  else
     echo "false"
   fi
 }
