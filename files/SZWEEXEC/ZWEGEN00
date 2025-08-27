@@ -567,7 +567,7 @@ do queued()
           chunks = chunks + 1
         end
         do i = 1 to chunks
-          line = strip(SUBSTR(element, (i-1)*MAX_LINE_LEN + 1, MAX_LINE_LEN))
+          line = SUBSTR(element, (i-1)*MAX_LINE_LEN + 1, MAX_LINE_LEN)
           if i == chunks then do
             queue line
           end
