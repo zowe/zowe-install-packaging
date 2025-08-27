@@ -19,6 +19,7 @@ if [ -z "${ZWE_PRIVATE_TMP_MERGED_YAML_DIR}" ]; then
 fi
 
 CONFIGMGR_SYNTAX=$(check_configmgr_config_syntax)
+validate_zowe_yaml "${ZWE_CLI_PARAMETER_CONFIG}" "ignoreUndefinedConfig"
 USE_JCL=$(check_jcl_enabled)
 if [ "${USE_JCL}" = "true" ]; then
   if [ -n "${ZWE_CLI_PARAMETER_CONFIG}" ]; then
@@ -54,8 +55,8 @@ else
       fi
     fi
   else
-    require_zowe_yaml "skipnode"
-
+    # second validate/require, at this point we cannot ignore an undefined config
+    validate_zowe_yaml "${ZWE_CLI_PARAMETER_CONFIG}" 
     # read prefix and validate
     prefix=$(read_yaml_configmgr "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.dataset.prefix")
     if [ -z "${prefix}" ]; then
@@ -85,7 +86,6 @@ else
         # warning
         print_message "Warning ZWEL0300W: ${prefix}.${ds} already exists. This dataset will be overwritten."
       else
-        # print_error_and_exit "Error ZWEL0158E: ${prefix}.${ds} already exists." "" 158
         # warning
         print_message "Warning ZWEL0301W: ${prefix}.${ds} already exists and will not be overwritten. For upgrades, you must use --allow-overwrite."
       fi
