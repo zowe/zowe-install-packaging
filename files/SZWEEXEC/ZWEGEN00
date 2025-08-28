@@ -406,7 +406,9 @@ do i = 1 to members.0
   if members.i.substitutions.0 > 0 then do
     do j = 1 to members.i.substitutions.0
       currentMember = jclCopy'('members.i.name')'
-      call Print 'Edit 'currentMember'.'
+      if j = 1 then do
+        call Print 'Edit 'currentMember'.'
+      end
       old = '{'members.i.substitutions.j'}'
       new = value('CFG.'members.i.substitutions.j)
       /* Skip JCL header with new line character(s) 0x15 */
@@ -427,7 +429,7 @@ do i = 1 to members.0
         apostrophes2 = "'"
         new = c2x(new)
       end
-      changeCommand = 'change all 'old apostrophes1||new||apostrophes2
+      changeCommand = 'Change all 'old apostrophes1||new||apostrophes2
       if length(changeCommand) > 255 then do
         say '  Stopping at 'currentMember'.'
         say '    Command too long:'
@@ -436,7 +438,7 @@ do i = 1 to members.0
       end
       queue changeCommand
       call Print '  'changeCommand
-      cmd = 'edit dataset('"'"currentMember"'"') macro(zwechg)'
+      cmd = 'Edit dataset('"'"currentMember"'"') macro(zwechg)'
       call Print '  'cmd
       address ispexec cmd
       if RC <= 4 then do
