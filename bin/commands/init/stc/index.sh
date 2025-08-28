@@ -141,12 +141,13 @@ else
   fi
   result=$(cat "//'${prefix}.${ZWE_PRIVATE_DS_SZWESAMP}(ZWESLSTC)'" | \
           sed "s/^\/\/STEPLIB .*\$/\/\/STEPLIB  DD   DSNAME=${authLoadlib},/" | \
-          sed "s#^CONFIG=.*\$#CONFIG=${configAbsolutePath}#" \
-          > "${tmpfile}")
-  # FIXME: result=$(cat ./FileWhichDoesNotExist | sed "s/a/b/" > /dev/null)
-  #        echo $? -> always 0
-  code=$?
-  chmod 700 "${tmpfile}"
+          sed "s#^CONFIG=.*\$#CONFIG=${configAbsolutePath}#")
+  if [ -n "${result}" ]; then
+    echo "${result}" > "${tmpfile}"
+    code=$?
+  else
+    code=1
+  fi
   if [ ${code} -eq 0 ]; then
     print_debug "  * Succeeded"
     print_trace "  * Exit code: ${code}"
@@ -165,6 +166,7 @@ else
   if [ ! -f "${tmpfile}" ]; then
     print_error_and_exit "Error ZWEL0159E: Failed to modify ${prefix}.${ZWE_PRIVATE_DS_SZWESAMP}(ZWESLSTC)" "" 159
   fi
+  chmod 700 "${tmpfile}"
   print_trace "- ensure ${tmpfile} encoding before copying into data set"
   ensure_file_encoding "${tmpfile}" "SPDX-License-Identifier"
   print_trace "- ${tmpfile} created, copy to ${jcllib}(${security_stcs_zowe})"
@@ -192,10 +194,13 @@ else
 ' |
           sed '/^..PARMLIB.*parmlib.*/c\
 //PARMLIB  DD  DSNAME='${parmlib}',
-' \
-          > "${tmpfile}")
-  code=$?
-  chmod 700 "${tmpfile}"
+' )
+  if [ -n "${result}" ]; then
+    echo "${result}" > "${tmpfile}"
+    code=$?
+  else
+    code=1
+  fi
   if [ ${code} -eq 0 ]; then
     print_debug "  * Succeeded"
     print_trace "  * Exit code: ${code}"
@@ -215,6 +220,7 @@ else
   if [ ! -f "${tmpfile}" ]; then
     print_error_and_exit "Error ZWEL0159E: Failed to modify ${prefix}.${ZWE_PRIVATE_DS_SZWESAMP}(ZWESISTC)" "" 159
   fi
+  chmod 700 "${tmpfile}"
   print_trace "- ensure ${tmpfile} encoding before copying into data set"
   ensure_file_encoding "${tmpfile}" "SPDX-License-Identifier"
   print_trace "- ${tmpfile} created, copy to ${jcllib}(${security_stcs_zis})"
@@ -232,12 +238,14 @@ else
   tmpfile=$(create_tmp_file $(echo "zwe ${ZWE_CLI_COMMANDS_LIST}" | sed "s# #-#g"))
   print_debug "- Copy ${prefix}.${ZWE_PRIVATE_DS_SZWESAMP}(ZWESASTC) to ${tmpfile}"
   result=$(cat "//'${prefix}.${ZWE_PRIVATE_DS_SZWESAMP}(ZWESASTC)'" | \
-          sed '/^..STEPLIB/c\
-\//STEPLIB  DD   DSNAME='${authLoadlib}',DISP=SHR\
-\//         DD   DSNAME='${authPluginLib}',DISP=SHR' \
-          > "${tmpfile}")
-  code=$?
-  chmod 700 "${tmpfile}"
+          sed "s/{zowe\.setup\.dataset\.authLoadlib}/${authLoadlib}/gi" | \
+          sed "s/{zowe\.setup\.dataset\.authPluginLib}/${authPluginLib}/gi")
+  if [ -n "${result}" ]; then
+    echo "${result}" > "${tmpfile}"
+    code=$?
+  else
+    code=1
+  fi
   if [ ${code} -eq 0 ]; then
     print_debug "  * Succeeded"
     print_trace "  * Exit code: ${code}"
@@ -257,6 +265,7 @@ else
   if [ ! -f "${tmpfile}" ]; then
     print_error_and_exit "Error ZWEL0159E: Failed to modify ${prefix}.${ZWE_PRIVATE_DS_SZWESAMP}(ZWESASTC)" "" 159
   fi
+  chmod 700 "${tmpfile}"
   print_trace "- ensure ${tmpfile} encoding before copying into data set"
   ensure_file_encoding "${tmpfile}" "SPDX-License-Identifier"
   print_trace "- ${tmpfile} created, copy to ${jcllib}(${security_stcs_aux})"
