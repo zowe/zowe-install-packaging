@@ -2521,7 +2521,7 @@ Zowe will remove it on success, but if zwe exits with a non-zero code manual cle
 -------------------------------------------------------------------------------
 >> Install Zowe MVS data sets
 ERROR: Could not convert /not/a/real/path to absolute path, err=129
-ERROR: Error ZWEL0105E: The Zowe YAML config file is associated to Zowe runtime "undefined", which is not same as where zwe command is located "/test/dir"."
+ERROR: Error ZWEL0105E: The Zowe YAML config file is associated to Zowe runtime "/not/a/real/path", which is not same as where zwe command is located "/test/dir"."
 `;
 
 exports[`zwe-install (SHORT) zwe install missing config 1`] = `
