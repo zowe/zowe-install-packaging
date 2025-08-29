@@ -238,8 +238,8 @@ else
   tmpfile=$(create_tmp_file $(echo "zwe ${ZWE_CLI_COMMANDS_LIST}" | sed "s# #-#g"))
   print_debug "- Copy ${prefix}.${ZWE_PRIVATE_DS_SZWESAMP}(ZWESASTC) to ${tmpfile}"
   result=$(cat "//'${prefix}.${ZWE_PRIVATE_DS_SZWESAMP}(ZWESASTC)'" | \
-          sed "s/{zowe\.setup\.dataset\.authLoadlib}/${authLoadlib}/gi" | \
-          sed "s/{zowe\.setup\.dataset\.authPluginLib}/${authPluginLib}/gi")
+          sed "s/{zowe\.setup\.dataset\.authLoadlib}/${authLoadlib}/" | \
+          sed "s/{zowe\.setup\.dataset\.authPluginLib}/${authPluginLib}/")
   if [ -n "${result}" ]; then
     echo "${result}" > "${tmpfile}"
     code=$?
