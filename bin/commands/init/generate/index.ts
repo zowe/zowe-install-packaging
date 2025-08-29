@@ -22,7 +22,8 @@ import * as zosJes from '../../../libs/zos-jes';
 const JCL_SPLIT_LEN = 71;
 // 5 = length of "FILE "
 // 30 = length of "/schemas/zowe-yaml-schema.json"
-const MAX_RUNTIME_LEN = JCL_SPLIT_LEN - 5 - 30
+const MAX_RUNTIME_LEN = JCL_SPLIT_LEN - 5 - 30;
+const BACKSLASH_NEWLINE = '\\\n';
 
 export function execute(dryRun?: boolean) {
   common.requireZoweYaml();
@@ -74,8 +75,8 @@ export function execute(dryRun?: boolean) {
     const SCHEMAS = [ '/schemas/zowe-yaml-schema.json', '/schemas/server-common.json' ];
     SCHEMAS.forEach((schema) => {
       let schemaEntry = `FILE ${runtimeDirectory}${schema}`;
-      let schemaArray = stringLib.splitStringByLength(schemaEntry, JCL_SPLIT_LEN);
-      schemaEntry = stringLib.joinArrayWithString(schemaArray, '\\\n');
+      let schemaEntryArray = stringLib.splitStringByLength(schemaEntry, JCL_SPLIT_LEN);
+      schemaEntry = schemaEntryArray.join(BACKSLASH_NEWLINE);
       const schemaRE = new RegExp(`FILE {zowe.runtimeDirectory}${schema}`, "i");
       jclContents = jclContents.replace(schemaRE, schemaEntry.replace(/[$]/g, '$$$$'));
     })
@@ -103,7 +104,7 @@ export function execute(dryRun?: boolean) {
       let fileEntry = 'FILE ' + fs.convertToAbsolutePath(filename).replace(/[$]/g, '$$$$');
       if (fileEntry.length > JCL_SPLIT_LEN) {
         const fileEntryArray = stringLib.splitStringByLength(fileEntry, JCL_SPLIT_LEN);
-        fileEntry = stringLib.joinArrayWithString(fileEntryArray, '\\\n');
+        fileEntry = fileEntryArray.join(BACKSLASH_NEWLINE);
       }
       configLines.push(fileEntry);
     } else if (part.startsWith('PARMLIB(')) {

@@ -367,17 +367,3 @@ export function splitStringByLength(str: string, len: number): Array<string> {
   }
   return result;
 }
-
-export function joinArrayWithString(arr: Array<string>, joinStr: string): string {
-  if (!joinStr) {
-    joinStr = '\\\n';
-  }
-  let result = '';
-  for (let i = 0; i < arr.length; i++) {
-    result += arr[i];
-    if (i < arr.length - 1) {
-      result += joinStr;
-    }
-  }
-  return result;
-}
