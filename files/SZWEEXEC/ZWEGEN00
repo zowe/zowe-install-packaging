@@ -366,11 +366,11 @@ do i = 1 to members.0
       if len > 0 then do
         sub = SUBSTR(!contentToRead.j, firstChar, len)
         if len = length(strip(sub)) then do
-          call Print 'Substitution found for' sub'.'
+          call Print '  Substitution found for' sub'.'
           isFound = 0
           do n = 1 to members.i.substitutions.0
             if COMPARE(members.i.substitutions.n, sub) = 0 then do
-              call Print 'Substitution 'sub' already noted. Skipping.'
+              call Print '  Substitution 'sub' already noted. Skipping.'
               isFound = 1
               leave
             end
