@@ -53,7 +53,7 @@
     "org.zowe.zss": {
       "version": "3.3.0-RC",
       "repository": "libs-snapshot-local",
-      "artifact": "zss-3.3.0-rc-1362-20250808181141.pax"
+      "artifact": "zss-3.3.0-rc-1371-20250828205636.pax"
     },
     "org.zowe.explorer-jes": {
       "version": "3.0.3"
