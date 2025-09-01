@@ -11,9 +11,11 @@
 # Copyright Contributors to the Zowe Project.
 #######################################################################
 
-if [ -z "${ZWE_PRIVATE_TMP_MERGED_YAML_DIR}" ]; then
-
-  # user-facing command, use tmpdir to not mess up workspace permissions
-  export ZWE_PRIVATE_TMP_MERGED_YAML_DIR=1
+if [ -n "${ZWE_CLI_PARAMETER_CONFIG}" ]; then
+  result=$(read_yaml_configmgr "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.runtimeDirectory")
+  if [ -n "${result}" ]; then
+    export ZWE_PRIVATE_COMMANDS_VERSION_ZOWE_RUNTIMEDIRECTORY="${result}"
+  fi
 fi
+
 _CEE_RUNOPTS="XPLINK(ON),HEAPPOOLS(OFF),HEAPPOOLS64(OFF)" ${ZWE_zowe_runtimeDirectory}/bin/utils/configmgr -script "${ZWE_zowe_runtimeDirectory}/bin/commands/version/cli.js"
