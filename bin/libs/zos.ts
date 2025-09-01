@@ -108,6 +108,7 @@ export function verifyGeneratedJcl(config:any): string | undefined {
 
 export function formatZosVersion(format?: string, versionNumber?: string | number): string {
   const ZOS_VERS = {
+    'Z1030200': { 'osname': 'z/OS', 'hbb': 'HBB77F0', 'major': '3', 'minor': '2' },
     'Z1030100': { 'osname': 'z/OS', 'hbb': 'HBB77E0', 'major': '3', 'minor': '1' },
     'Z1020500': { 'osname': 'z/OS', 'hbb': 'HBB77D0', 'major': '2', 'minor': '5' },
     'Z1020400': { 'osname': 'z/OS', 'hbb': 'HBB77C0', 'major': '2', 'minor': '4' },
