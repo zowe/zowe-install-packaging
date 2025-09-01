@@ -1087,17 +1087,6 @@ GetConfigChain:
       !mySchema.1 = path/to/zowe/schemas/zowe-yaml-schema.json
       !mySchema.2 = path/to/zowe/schemas/server-common.json
       !mySchema.runtime = path/to/zowe
-
-  V4 IDEA:
-    MYSCHEMA approach is complicated, we need just Zowe Runtime Directory.
-    Schema files are known. User doesn't need to control schema paths.
-
-    For example, replace MYSCHEMA with ZOWERD:
-
-    //ZOWERD DD   *,DLM=$$
-    {zowe.runtimeDirectory}
-    $$
-
 ==============================================================================*/
 GetSchemaChain:
   procedure expose !verbose !mySchema.
