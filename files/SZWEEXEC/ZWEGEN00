@@ -1035,6 +1035,11 @@ GetConfigChain:
 
     lastChar = substr(reverse(location), 1, 1)
     if lastChar = '\' then do
+      if j = !contentToRead.0 then do
+        queue "Unexpected continuation character in MYCONFIG"
+        queue !contentToRead.j
+        FormatError(8)
+      end
       contChar = 1
       location = substr(location, 1, lastpos('\', location) - 1)
     end
@@ -1129,6 +1134,11 @@ GetSchemaChain:
 
     lastChar = substr(reverse(location), 1, 1)
     if lastChar = '\' then do
+      if j = !contentToRead.0 then do
+        queue "Unexpected continuation character in MYSCHEMA"
+        queue !contentToRead.j
+        FormatError(8)
+      end
       contChar = 1
       location = substr(location, 1, lastpos('\', location) - 1)
     end
