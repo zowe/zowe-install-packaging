@@ -245,7 +245,7 @@ do i = output.0 to 1 by -1
   members.0 = j
 end
 
-say 'The 'output.0' members in 'jclCopy' have been recorded.'
+say 'The 'members.0' members in 'jclCopy' have been recorded.'
 
 /*==============================================================================
   Set defaults - user defined empty/null values will overwrite the defaults
