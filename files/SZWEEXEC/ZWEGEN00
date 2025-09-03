@@ -184,65 +184,39 @@ if FreeByDD('zweto') > 0 then do
 end
 
 /* members not processed */
-excludeList = "ZWEKRING ZWENOKYR ZWEGENER ZWESIP00 ZWESIPRG ZWESISCH ZWESECKG",
-  "ZWEIAPF"
+excludeList = "KRING NOKYR GENER SIP00 SIPRG SISCH SECKG IAPF"
 do el = 1 to words(excludeList)
-  ret = DeleteDataSet(jclCopy'('word(excludeList, el)')')
+  ret = DeleteDataSet(jclCopy'(ZWE'word(excludeList, el)')')
 end
 
 /*==============================================================================
   Determine the external security manager on the system so that the correct
-  jcl templates can be used.
+  JCL templates can be used.
 ==============================================================================*/
-
 CVT_ADDR = C2X(STORAGE(D2X(16), 4))
 CVTRAC_ADDR = C2X(STORAGE(D2X(X2D(CVT_ADDR) + 992), 4))
 CVTRAC_VAL = STORAGE(CVTRAC_ADDR, 4)
 
-/* attempt to handle getting only 1 keyring jcl
-ringType = 0
-if WORDINDEX(CFG.zowe.setup.certificate.type, 'JCE') > 0 then do
-  if LENGTH(CFG.zowe.setup.certificate.keyring.connect) > 0 then do
-    say 'connect exists, it is 'CFG.zowe.setup.certificate.keyring.connect'.'
-    ringType = 2
-  end
-  if LENGTH(CFG.zowe.setup.certificate.keyring.import) > 0 then do
-    say 'import exists, it is 'CFG.zowe.setup.certificate.keyring.import'.'
-    ringType = 3
-  end
-  else do
-    say 'ring to be created'
-    ringType = 1
-  end
-else do
-  say 'pkcs12 to be used'
-end
-*/
+samples.acf2 = "IKRA1 IKRA2 IKRA3 IACF IACFZ NOKRA"
+samples.racf = "IKRR1 IKRR2 IKRR3 IRAC IRACZ NOKRR"
+samples.tss  = "IKRT1 IKRT2 IKRT3 ITSS ITSSZ NOKRT"
 
-samples.acf2 = "ZWEIKRA1 ZWEIKRA2 ZWEIKRA3 ZWEIACF ZWEIACFZ ZWENOKRA"
-samples.racf = "ZWEIKRR1 ZWEIKRR2 ZWEIKRR3 ZWEIRAC ZWEIRACZ ZWENOKRR"
-samples.tss  = "ZWEIKRT1 ZWEIKRT2 ZWEIKRT3 ZWEITSS ZWEITSSZ ZWENOKRT"
+/* ACF2 -> ACF2, RCTV -> RACF, RTSS -> TSS */
+detectedESM = CVTRAC_VAL
+if CVTRAC_VAL = 'RCVT' then
+  detectedESM = 'RACF'
+if CVTRAC_VAL = 'RTSS' then
+  detectedESM = 'TSS'
 
-if COMPARE('RCVT', CVTRAC_VAL) = 0 then do
-  CFG.zowe.setup.security.product = 'RACF'
-  deleteList = samples.acf2||" "||samples.tss
-  do m = 1 to words(deleteList)
-    x = DeleteDataSet(jclCopy'('word(deleteList, m)')')
-  end
+if CFG.zowe.setup.security.product <> detectedESM then do
+  say "WARNING: zowe.setup.security.product = "CFG.zowe.setup.security.product
+  say "         Continue with detected ESM = "detectedESM
+  CFG.zowe.setup.security.product = detectedESM
 end
-if COMPARE('RTSS', CVTRAC_VAL) = 0 then do
-  CFG.zowe.setup.security.product = 'TSS'
-  deleteList = samples.acf2||" "||samples.racf
-  do m = 1 to words(deleteList)
-    x = DeleteDataSet(jclCopy'('word(deleteList, m)')')
-  end
-end
-if COMPARE('ACF2', CVTRAC_VAL) = 0 then do
-  CFG.zowe.setup.security.product = 'ACF2'
-  deleteList = samples.racf||" "||samples.tss
-  do m = 1 to words(deleteList)
-    x = DeleteDataSet(jclCopy'('word(deleteList, m)')')
-  end
+samples.detectedESM = ''
+deleteList = samples.acf2||" "||samples.racf||" "||samples.tss
+do m = 1 to words(deleteList)
+  x = DeleteDataSet(jclCopy'(ZWE'word(deleteList, m)')')
 end
 
 say _jcl_' has been copied to 'jclCopy'.'
