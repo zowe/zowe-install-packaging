@@ -2,6 +2,7 @@ name: Zwe Remote Integration Tests
 
 permissions: read-all
 
+# cancel prior workflows on a PR/branch basis
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
