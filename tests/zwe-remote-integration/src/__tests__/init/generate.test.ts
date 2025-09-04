@@ -286,13 +286,13 @@ describe(`${testSuiteName}`, () => {
 
       expect(result.stdout).not.toBeNull();
       expect(result.cleanedStdout).toMatchSnapshot();
-      expect(result.rc).toBe(1);
+      expect(result.rc).toBe(70);
 
       result = await testRunner.runRaw(`./bin/zwe init generate --allow-overwrite -c ${evilDir}/zowe.test.yaml`);
 
       expect(result.stdout).not.toBeNull();
       expect(result.cleanedStdout).toMatchSnapshot();
-      expect(result.rc).toBe(1);
+      expect(result.rc).toBe(70);
 
       result = await testRunner.runRaw(`./bin/zwe init generate --allow-overwrite -c ${goodDir}/zowe.test.yaml`);
 
