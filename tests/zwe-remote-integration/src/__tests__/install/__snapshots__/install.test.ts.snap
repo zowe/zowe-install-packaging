@@ -2453,9 +2453,9 @@ Example(s)
 `;
 
 exports[`zwe-install (SHORT) zwe install invalid config 1`] = `
-"===============================================================================
->> INSTALL ZOWE MVS DATA SETS
-Error ZWEL0109E: The Zowe YAML config file specified does not exist."
+"Error ZWEL0326E: An error occurred while processing Zowe YAML config /not/real/config.yml:
+    ZWEL0318E - failed to read '/not/real/config.yml' - EDC5129I No such file or directory. (errno2=0x0594003D)
+    ZWEL0319E - Failed to load configuration, element may be bad, or less likely a bad merge."
 `;
 
 exports[`zwe-install (SHORT) zwe install invalid dataset name 1`] = `
@@ -2521,7 +2521,7 @@ Zowe will remove it on success, but if zwe exits with a non-zero code manual cle
 -------------------------------------------------------------------------------
 >> Install Zowe MVS data sets
 ERROR: Could not convert /not/a/real/path to absolute path, err=129
-ERROR: Error ZWEL0105E: The Zowe YAML config file is associated to Zowe runtime "undefined", which is not same as where zwe command is located "/test/dir"."
+ERROR: Error ZWEL0105E: The Zowe YAML config file is associated to Zowe runtime "/not/a/real/path", which is not same as where zwe command is located "/test/dir"."
 `;
 
 exports[`zwe-install (SHORT) zwe install missing config 1`] = `

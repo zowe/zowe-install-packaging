@@ -12,6 +12,7 @@
 #######################################################################
 
 CONFIGMGR_SYNTAX=$(check_configmgr_config_syntax)
+validate_zowe_yaml "${ZWE_CLI_PARAMETER_CONFIG}"
 USE_JCL=$(check_jcl_enabled)
 if [ "${USE_JCL}" = "true" ]; then
   if [ -z "${ZWE_PRIVATE_TMP_MERGED_YAML_DIR}" ]; then
@@ -37,10 +38,6 @@ DRY_RUN=
 if [ -n "${ZWE_CLI_PARAMETER_DRY_RUN}" ] || [ -n "${ZWE_CLI_PARAMETER_SECURITY_DRY_RUN}" ]; then
   DRY_RUN="true"
 fi
-
-###############################
-# validation
-require_zowe_yaml "skipnode"
 
 caching_storage=$(read_yaml_configmgr "${ZWE_CLI_PARAMETER_CONFIG}" ".components.caching-service.storage.mode" | upper_case)
 if [ "${caching_storage}" != "VSAM" ]; then
@@ -121,13 +118,19 @@ else
   tmpfile=$(create_tmp_file $(echo "zwe ${ZWE_CLI_COMMANDS_LIST}" | sed "s# #-#g"))
   print_debug "- Copy ${prefix}.${ZWE_PRIVATE_DS_SZWESAMP}(ZWECSVSM) to ${tmpfile}"
   result=$(cat "//'${prefix}.${ZWE_PRIVATE_DS_SZWESAMP}(ZWECSVSM)'" | \
-          sed  "s/^\/\/ \+SET \+MODE=.*\$/\/\/         SET  MODE=${vsam_mode}/" | \
-          sed  "/^\/\/ALLOC/,9999s/#dsname/${vsam_name}/g" | \
-          sed  "/^\/\/ALLOC/,9999s/#volume/${vsam_volume}/g" | \
-          sed  "/^\/\/ALLOC/,9999s/#storclas/${vsam_storageClass}/g" \
-          > "${tmpfile}")
-  code=$?
-  chmod 700 "${tmpfile}"
+          sed "s/{zowe\.setup\.jcl\.header}//" | \
+          sed "s/{zowe\.setup\.vsam\.name}/${vsam_name}/" | \
+          sed "s/{zowe\.setup\.vsam\.mode}/${vsam_mode}/" | \
+          sed "s/{zowe\.setup\.vsam\.storageClass}/${vsam_storageClass}/" | \
+          sed "s/{zowe\.setup\.vsam\.volume}/${vsam_volume}/")
+
+  if [ -n "${result}" ]; then
+    echo "${result}" > "${tmpfile}"
+    code=$?
+  else
+    code=1
+  fi
+
   if [ ${code} -eq 0 ]; then
     print_debug "  * Succeeded"
     print_trace "  * Exit code: ${code}"
@@ -146,6 +149,7 @@ else
   if [ ! -f "${tmpfile}" ]; then
     print_error_and_exit "Error ZWEL0159E: Failed to modify ${prefix}.${ZWE_PRIVATE_DS_SZWESAMP}(ZWECSVSM)" "" 159
   fi
+  chmod 700 "${tmpfile}"
   print_trace "- ${tmpfile} created with content"
   print_trace "$(cat "${tmpfile}")"
   print_trace "- ensure ${tmpfile} encoding before copying into data set"
