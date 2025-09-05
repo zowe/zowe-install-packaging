@@ -904,6 +904,20 @@ Zowe will remove it on success, but if zwe exits with a non-zero code manual cle
 ERROR: Error ZWEL0157E: Zowe dataset prefix (zowe.setup.dataset.prefix) is not defined in Zowe YAML configuration file."
 `;
 
+exports[`init-mvs (SHORT) command accepts --jcl flag 1`] = `
+"Temporary directory '/tmp/.zweenv-0000' created.
+Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
+-------------------------------------------------------------------------------
+>> Initialize Zowe custom data sets
+Create data sets if they do not exist
+Warning ZWEL0301W: TEST.DATASET.PFX.PARMLIB already exists and will not be overwritten. For upgrades, you must use --allow-overwrite.
+Warning ZWEL0301W: TEST.DATASET.PFX.ZWESAPL already exists and will not be overwritten. For upgrades, you must use --allow-overwrite.
+Skipped writing to a dataset. To write, you must use --allow-overwrite.
+>> Zowe custom data sets are initialized successfully."
+`;
+
+exports[`init-mvs (SHORT) command errors out on configmgr with no jcl 1`] = `"Error ZWEL0115E: This command was submitted with FILE() or PARMLIB() syntax, which is only supported when JCL is also enabled."`;
+
 exports[`init-mvs (SHORT) jcllib fails verification 1`] = `
 "Temporary directory '/tmp/.zweenv-0000' created.
 Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.

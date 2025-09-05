@@ -74,6 +74,22 @@ describe(`${testSuiteName}`, () => {
   });
 
   describe('(SHORT)', () => {
+    it('command accepts --jcl flag', async () => {
+      cfgYaml.zowe.setup.jcl.enable = false;
+      const result = await testRunner.runZweTest(cfgYaml, 'init vsam --dry-run --jcl');
+      expect(result.stdout).not.toBeNull();
+      expect(result.cleanedStdout).toMatchSnapshot();
+      expect(result.rc).toBe(0);
+    });
+
+    it('command errors out on configmgr with no jcl', async () => {
+      cfgYaml.zowe.setup.jcl.enable = false;
+      const result = await testRunner.runZweTest(cfgYaml, 'init vsam --dry-run -c "FILE(zowe.test.yaml)"');
+      expect(result.stdout).not.toBeNull();
+      expect(result.cleanedStdout).toMatchSnapshot();
+      expect(result.rc).toBe(115);
+    });
+
     it('error yaml', async () => {
       const testYml = ZoweConfig.loadAndOverlay(cfgYaml, yamlResourceDir, 'ok.vsam.yaml');
       const result = await testRunner.runZweTest(testYml, 'init vsam --dry-run');

@@ -86,6 +86,22 @@ describe(`${testSuiteName}`, () => {
       await TestFileActions.deleteAll([lingeringSzweauth]);
     });
 
+    it('command accepts --jcl flag', async () => {
+      cfgYaml.zowe.setup.jcl.enable = false;
+      const result = await testRunner.runZweTest(cfgYaml, 'init mvs --dry-run --jcl');
+      expect(result.stdout).not.toBeNull();
+      expect(result.cleanedStdout).toMatchSnapshot();
+      expect(result.rc).toBe(0);
+    });
+
+    it('command errors out on configmgr with no jcl', async () => {
+      cfgYaml.zowe.setup.jcl.enable = false;
+      const result = await testRunner.runZweTest(cfgYaml, 'init mvs --dry-run -c "FILE(zowe.test.yaml)"');
+      expect(result.stdout).not.toBeNull();
+      expect(result.cleanedStdout).toMatchSnapshot();
+      expect(result.rc).toBe(115);
+    });
+
     it('bad ds prefix post-generate', async () => {
       cfgYaml.zowe.setup.dataset.prefix = null;
       let result = await testRunner.runZweTest(cfgYaml, 'init mvs --dry-run');

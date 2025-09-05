@@ -92,6 +92,22 @@ describe(`${testSuiteName}`, () => {
       await createPds(`${cfgYaml.zowe.setup.dataset.authLoadlib}`, simplePdsParams); // set in globalSetup
     });
 
+    it('command accepts --jcl flag', async () => {
+      cfgYaml.zowe.setup.jcl.enable = false;
+      const result = await testRunner.runZweTest(cfgYaml, 'init apfauth --dry-run --jcl');
+      expect(result.stdout).not.toBeNull();
+      expect(result.cleanedStdout).toMatchSnapshot();
+      expect(result.rc).toBe(0);
+    });
+
+    it('command errors out on configmgr with no jcl', async () => {
+      cfgYaml.zowe.setup.jcl.enable = false;
+      const result = await testRunner.runZweTest(cfgYaml, 'init apfauth --dry-run -c "FILE(zowe.test.yaml)"');
+      expect(result.stdout).not.toBeNull();
+      expect(result.cleanedStdout).toMatchSnapshot();
+      expect(result.rc).toBe(115);
+    });
+
     it('apf empty jcllib post-generate', async () => {
       cfgYaml.zowe.setup.dataset.jcllib = '';
       const result = await testRunner.runZweTest(cfgYaml, 'init apfauth --dry-run');

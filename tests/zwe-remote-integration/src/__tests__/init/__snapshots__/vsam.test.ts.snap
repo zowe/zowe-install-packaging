@@ -178,6 +178,80 @@ Job ZWECSVSM(JOB00000) completed with RC=0
 >> Zowe Caching Service VSAM storage is created successfully."
 `;
 
+exports[`init-vsam (SHORT) command accepts --jcl flag 1`] = `
+"Temporary directory '/tmp/.zweenv-0000' created.
+Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
+-------------------------------------------------------------------------------
+>> Initialize Zowe custom data sets
+Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWECSVSM) , Executable JCL: TEST.DATASET.PFX.JCLLIB(ZWECSVSM)
+--- JCL Content ---
+//ZWECSVSM JOB
+//*
+//* This program and the accompanying materials are made available
+//* under the terms of the Eclipse Public License v2.0 which
+//* accompanies this distribution, and is available at
+//* https://www.eclipse.org/legal/epl-v20.html
+//*
+//* SPDX-License-Identifier: EPL-2.0
+//*
+//* Copyright Contributors to the Zowe Project. 2020, 2020
+//*
+//*********************************************************************
+//*
+//* Zowe Open Source Project
+//* This JCL creates the VSAM data set for the Caching Service.
+//*
+//*
+//* CAUTION: This is neither a JCL procedure nor a complete job.
+//* Before using this JCL, you will have to make the following
+//* modifications:
+//*
+//* 1) Add job name and job parameters to the JOB statement, to
+//*    meet your system requirements.
+//*
+//* When using RLS, customize the definitions in the RLS DD:
+//*
+//* 2) Optionally, change LOG option NONE to UNDO or ALL to set the
+//*    desired recovery options for the RLS VSAM.
+//*
+//*
+//* Note(s):
+//*
+//* 1. This job should complete with return code 0.
+//*
+//********************************************************************
+//*
+//ALLOC    EXEC PGM=IDCAMS,REGION=0M
+//SYSPRINT DD SYSOUT=*
+//SYSIN    DD *
+  DEFINE CLUSTER -
+   (NAME(TEST.DATASET.PFX.VSAMTEST) -
+//         DD DDNAME=NONRLS
+//         DD *
+    REC(80 20) -
+    INDEXED) -
+   DATA(NAME(TEST.DATASET.PFX.VSAMTEST.DATA) -
+    RECSZ(4096 4096) -
+    UNIQUE -
+    KEYS(128 0)) -
+   INDEX(NAME(TEST.DATASET.PFX.VSAMTEST.INDEX) -
+    UNIQUE)
+//RLS      DD *
+    STORCLAS() -
+    LOG(NONE) -
+//NONRLS   DD *
+    VOLUME(TSTVOL) -
+    SHAREOPTIONS(2 3) -
+//*
+--- End of JCL ---
+JCL not submitted, command run with "--dry-run" flag.
+To perform command, re-run command without "--dry-run" flag, or submit the JCL directly
+>> Command run successfully.
+>> Zowe Caching Service VSAM storage is created successfully."
+`;
+
+exports[`init-vsam (SHORT) command errors out on configmgr with no jcl 1`] = `"Error ZWEL0115E: This command was submitted with FILE() or PARMLIB() syntax, which is only supported when JCL is also enabled."`;
+
 exports[`init-vsam (SHORT) error yaml 1`] = `
 "Temporary directory '/tmp/.zweenv-0000' created.
 Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
