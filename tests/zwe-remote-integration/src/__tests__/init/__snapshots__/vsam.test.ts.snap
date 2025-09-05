@@ -427,7 +427,7 @@ ERROR: Warning ZWEL0304W: Zowe Caching Service is not configured to use VSAM. Co
 `;
 
 exports[`init-vsam (SHORT) skip undefined caching service 1`] = `
-"Error ZWEL0326E: An error occurred while processing Zowe YAML config /ZOWE/mark-zwe-tests/zowe.test.yaml:
+"Error ZWEL0326E: An error occurred while processing Zowe YAML config /test/dir/zowe.test.yaml:
     about to validate merged yamls as
     {
       "zowe": {
@@ -437,33 +437,33 @@ exports[`init-vsam (SHORT) skip undefined caching service 1`] = `
             "header": ""
           },
           "dataset": {
-            "prefix": "ZOWEAD6.ZWETEST",
-            "proclib": "ZOWEAD6.ZWETEST.TEST.PROCLIB",
-            "parmlib": "ZOWEAD6.ZWETEST.PARMLIB",
+            "prefix": "TEST.DATASET.PFX",
+            "proclib": "TEST.DATASET.PFX.TEST.PROCLIB",
+            "parmlib": "TEST.DATASET.PFX.PARMLIB",
             "parmlibMembers": {
               "zis": "ZWESIP00"
             },
-            "jcllib": "ZOWEAD6.ZWETEST.JCLLIB",
-            "loadlib": "ZOWEAD6.ZWETEST.SZWEEXEC",
-            "authLoadlib": "ZOWEAD6.ZWETEST.SZWEAUTH",
-            "authPluginLib": "ZOWEAD6.ZWETEST.ZWESAPL"
+            "jcllib": "TEST.DATASET.PFX.JCLLIB",
+            "loadlib": "TEST.DATASET.PFX.SZWEEXEC",
+            "authLoadlib": "TEST.DATASET.PFX.SZWEAUTH",
+            "authPluginLib": "TEST.DATASET.PFX.ZWESAPL"
           },
           "certificate": {
             "type": "PKCS12",
             "pkcs12": {
-              "directory": "/ZOWE/mark-zwe-tests/pkcs12"
+              "directory": "/test/dir/pkcs12"
             }
           },
           "vsam": {
             "mode": "NONRLS",
-            "volume": "ZOS003",
+            "volume": "TSTVOL",
             "storageClass": "",
-            "name": "ZOWEAD6.ZWETEST.VSAMTEST"
+            "name": "TEST.DATASET.PFX.VSAMTEST"
           }
         },
-        "runtimeDirectory": "/ZOWE/mark-zwe-tests",
-        "logDirectory": "/ZOWE/mark-zwe-tests/logs",
-        "workspaceDirectory": "/ZOWE/mark-zwe-tests/workspace",
+        "runtimeDirectory": "/test/dir",
+        "logDirectory": "/test/dir/logs",
+        "workspaceDirectory": "/test/dir/workspace",
         "extensionDirectory": "/global/zowe/extensions",
         "configmgr": {
           "validation": "STRICT"
@@ -531,21 +531,21 @@ exports[`init-vsam (SHORT) skip undefined caching service 1`] = `
         "verifyCertificates": "STRICT"
       },
       "java": {
-        "home": "/ZOWE/node/J17.0_64"
+        "home": "/test/java/home"
       },
       "node": {
-        "home": "/ZOWE/node/node-v18.18.2"
+        "home": "/test/node/home"
       },
       "zOSMF": {
-        "host": "zzow11.zowe.marist.cloud",
-        "port": 10443,
+        "host": "some.test.hostname",
+        "port": 12321,
         "applId": "IZUDFLT"
       },
       "components": null
     }
     validate status = 4
     Validity Exceptions:
-    Validity Exceptions(s) with object at 
+    Validity Exceptions(s) with object at
       string cannot be null for /components"
 `;
 

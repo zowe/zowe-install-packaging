@@ -95,7 +95,7 @@ describe(`${testSuiteName}`, () => {
       cfgYaml.components = null;
       const result = await testRunner.runZweTest(cfgYaml, 'init vsam --dry-run');
       expect(result.stdout).not.toBeNull();
-      expect(result.stdout).toMatchSnapshot();
+      expect(result.cleanedStdout).toMatchSnapshot();
       expect(result.rc).toBe(70);
     });
 
