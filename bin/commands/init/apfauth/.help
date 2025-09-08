@@ -9,13 +9,16 @@ zowe:
   setup:
     dataset:
       prefix: IBMUSER.ZWE
+      jcllib: IBMUSER.ZWE.CUST.JCLLIB
       authLoadlib: IBMUSER.ZWE.CUST.ZWESALL
       authPluginLib: IBMUSER.ZWE.CUST.ZWESAPL
 ```
 
 - `zowe.setup.dataset.prefix` shows where the `SZWEAUTH` data set is installed.
+- `zowe.setup.dataset.jcllib` is the custom JCL library. Zowe server command may
+  generate sample JCLs and put into this data set.
 - `zowe.setup.dataset.authLoadlib` is the user custom APF LOADLIB. This field is
   optional. If it's not defined, `SZWEAUTH` from `zowe.setup.dataset.prefix` data
   set will be APF authorized.
 - `zowe.setup.dataset.authPluginLib` is the user custom APF PLUGINLIB.
-  You can install Zowe ZIS plugins into this load library.
+  You can install Zowe ZIS plugins into this load library. This field is optional.

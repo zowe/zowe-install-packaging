@@ -81,3 +81,8 @@ export function updateZoweYaml(file: string, key: string, val: any) {
     common.printError(`  * Error`); 
   }
 }
+
+export function updateZoweYamlFromObj(file: string, updateObj: any) {
+  common.printMessage(`- update zowe config ${file} with obj=${JSON.stringify(updateObj, null, 2)}`);
+  config.updateZoweConfig(updateObj, true, 1); //TODO externalize array merge strategy = 1
+}

@@ -1,5 +1,7 @@
 name: Scheduled Build Base Images
 
+permissions: read-all
+
 on: 
   workflow_dispatch:
   # push:
@@ -21,7 +23,7 @@ jobs:
           fi
 
       - name: Build Base Images
-        uses: zowe-actions/shared-actions/workflow-remote-call-wait@main
+        uses: zowe-actions/shared-actions/workflow-remote-call-wait@54a9b36cf54e61fefea2801008788d81e1e3a560 # main 06/17/25
         id: build-base
         with:
           github-token: ${{ secrets.ZOWE_ROBOT_TOKEN }}
@@ -36,13 +38,13 @@ jobs:
 
       - name: Exit if build failed
         if: ${{ steps.build-base.outputs.workflow-run-conclusion != 'success' }}
-        uses: actions/github-script@v5
+        uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7.0.1
         with:
           script: |
             core.setFailed('Build base images #${{ steps.build-base.outputs.workflow-run-num }} is not successful')
 
       - name: Build Base JDK Images
-        uses: zowe-actions/shared-actions/workflow-remote-call-wait@main
+        uses: zowe-actions/shared-actions/workflow-remote-call-wait@54a9b36cf54e61fefea2801008788d81e1e3a560 # main 06/17/25
         id: build-jdk-base
         with:
           github-token: ${{ secrets.ZOWE_ROBOT_TOKEN }}
@@ -57,13 +59,13 @@ jobs:
 
       - name: Exit if build failed
         if: ${{ steps.build-jdk-base.outputs.workflow-run-conclusion != 'success' }}
-        uses: actions/github-script@v5
+        uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7.0.1
         with:
           script: |
             core.setFailed('Build base images #${{ steps.build-jdk-base.outputs.workflow-run-num }} is not successful')
 
       - name: Build Base Node Images
-        uses: zowe-actions/shared-actions/workflow-remote-call-wait@main
+        uses: zowe-actions/shared-actions/workflow-remote-call-wait@54a9b36cf54e61fefea2801008788d81e1e3a560 # main 06/17/25
         id: build-node-base
         with:
           github-token: ${{ secrets.ZOWE_ROBOT_TOKEN }}
@@ -78,13 +80,13 @@ jobs:
 
       - name: Exit if build failed
         if: ${{ steps.build-node-base.outputs.workflow-run-conclusion != 'success' }}
-        uses: actions/github-script@v5
+        uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7.0.1
         with:
           script: |
             core.setFailed('Build base images #${{ steps.build-node-base.outputs.workflow-run-num }} is not successful')
 
       - name: Scan images
-        uses: zowe-actions/shared-actions/workflow-remote-call-wait@main
+        uses: zowe-actions/shared-actions/workflow-remote-call-wait@54a9b36cf54e61fefea2801008788d81e1e3a560 # main 06/17/25
         id: scan-released-images
         with:
           github-token: ${{ secrets.ZOWE_ROBOT_TOKEN }}
@@ -99,7 +101,7 @@ jobs:
 
       - name: Exit if build failed
         if: ${{ steps.scan-released-images.outputs.workflow-run-conclusion != 'success' }}
-        uses: actions/github-script@v5
+        uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7.0.1
         with:
           script: |
             core.setFailed('Build base images #${{ steps.scan-released-images.outputs.workflow-run-num }} is not successful')

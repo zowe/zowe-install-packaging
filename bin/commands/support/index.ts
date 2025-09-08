@@ -56,7 +56,7 @@ export function execute(): void {
   }
 
   if (!fs.directoryExists(targetDirectory, true)) {
-    common.printErrorAndExit(`Error ZWELxxxx: "${targetDirectory}" is not a valid directory.`, undefined, 999);
+    common.printErrorAndExit(`Error ZWEL0322E: ${targetDirectory} is not a valid directory.`, undefined, 322);
   }
 
   const tmpFilePrefix = 'zwe-support';
@@ -85,7 +85,7 @@ export function execute(): void {
     const nodeVersion = shell.execOutSync('sh', '-c', '${NODE_HOME}/bin/node -v 2>&1 | head -n 1');
     if (nodeVersion.rc == 0 && nodeVersion.out) {
       environment["node"] = `${nodeVersion.out}`;
-      const discovery = ZOWE_CONFIG.components?.discovery?.enabled;
+      const discovery = ZOWE_CONFIG.components?.discovery?.enabled || ZOWE_CONFIG.components?.apiml?.enabled;
       const zosmfHost = ZOWE_CONFIG.zOSMF?.host;
       const zosmfPort = ZOWE_CONFIG.zOSMF?.port;
       if (discovery && zosmfHost && zosmfPort) {
@@ -146,7 +146,7 @@ export function execute(): void {
   common.printMessage(JSON.stringify(environment, null, 2));
   const saveEnvRc = xplatform.storeFileUTF8(environmentFile, xplatform.AUTO_DETECT, JSON.stringify(environment, null, 2));
   if (saveEnvRc) {
-    common.printErrorAndExit(`Error ZWEL0151E: Failed to create temporary file "${environmentFile}". Please check permission or volume free space.`, undefined, 151);
+    common.printErrorAndExit(`Error ZWEL0151E: Failed to create temporary file ${environmentFile}. Please check permission or volume free space.`, undefined, 151);
   }
 
   common.printLevel1Message('Collecting Zowe configurations');
@@ -233,6 +233,6 @@ export function execute(): void {
   if (fs.fileExists(`${tmpPax}.Z`)) {
     common.printLevel1Message(`Zowe support package is generated as ${tmpPax}.Z`);
   } else {
-    common.printErrorAndExit(`Error ZWEL0151E: Failed to create file "${tmpPax}.Z". Please check permission or volume free space.`, undefined, 151);
+    common.printErrorAndExit(`Error ZWEL0151E: Failed to create temporary file ${tmpPax}.Z. Please check permission or volume free space.`, undefined, 151);
   }
 }

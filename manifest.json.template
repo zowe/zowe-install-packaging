@@ -1,6 +1,6 @@
 {
   "name": "Zowe",
-  "version": "3.2.0",
+  "version": "3.3.0",
   "description": "Zowe is an open source project created to host technologies that benefit the Z platform from all members of the Z community (Integrated Software Vendors, System Integrators and z/OS consumers). Zowe, like Mac or Windows, comes with a set of APIs and OS capabilities that applications build on and also includes some applications out of the box. Zowe offers modern interfaces to interact with z/OS and allows you to work with z/OS in a way that is similar to what you experience on cloud platforms today. You can use these interfaces as delivered or through plug-ins and extensions that are created by clients or third-party vendors.",
   "license": "EPL-2.0",
   "homepage": "https://zowe.org",
@@ -11,6 +11,10 @@
     "timestamp": "{BUILD_TIMESTAMP}"
   },
   "binaryDependencies": {
+    "org.zowe.zowe-native-proto": {
+      "version": "0.1.4",
+      "artifact": "zowe-server-*.pax.Z"
+    },
     "org.zowe.zlux.zlux-core": {
       "version": "^3.0.0-V3.X-STAGING-ZLUX-CORE",
       "artifact": "*.pax"
@@ -56,6 +60,11 @@
       "version": "^3.0.0-SNAPSHOT",
       "artifact": "*.pax"
     },
+    "org.zowe.apiml.apiml-package": {
+      "version": "^3.0.3-SNAPSHOT",
+      "artifact": "apiml-*.zip",
+      "exclusions": ["*PR*.zip"]
+    },
     "org.zowe.apiml.api-catalog-package": {
       "version": "^3.0.3-SNAPSHOT",
       "artifact": "api-catalog-*.zip",
@@ -88,15 +97,27 @@
     },
     "org.zowe.apiml.sdk.apiml-sample-extension-package": {
       "version": "^3.0.3-SNAPSHOT",
-      "artifact": "apiml-sample-extension-*.zip",
-      "exclusions": ["*PR*.zip"]
+      "artifact": "apiml-sample-extension-*.zip"
     },
     "org.zowe.apiml.zaas-package": {
       "version": "^3.0.3-SNAPSHOT",
       "artifact": "zaas-package-*.zip",
       "exclusions": ["*PR*.zip"]
     },
+    "org.zowe.apiml.sdk.certificate-analyser": {
+      "version": "^3.0.3-SNAPSHOT",
+      "artifact": "certificate-analyser-*.jar",
+      "exclusions": ["*PR*.jar"]
+    },
     "org.zowe.getesm": {
+      "version": "^3.0.0-V3.X-STAGING",
+      "artifact": "*.pax"
+    },
+    "org.zowe.bind-test": {
+      "version": "^3.0.0-V3.X-STAGING",
+      "artifact": "*.pax"
+    },
+    "org.zowe.zis-test": {
       "version": "^3.0.0-V3.X-STAGING",
       "artifact": "*.pax"
     },
@@ -109,7 +130,8 @@
       "artifact": "*.pax"
     },
     "org.zowe.launcher": {
-      "version": "^3.0.0-STAGING"
+      "version": "^3.0.0-STAGING",
+      "artifact": "*.pax"
     },
     "org.zowe.keyring-utilities": {
       "version": "1.0.4",
@@ -127,7 +149,14 @@
     }
   },
   "sourceDependencies": [
-   {
+    {
+     "componentGroup": "Zowex Native Tools",
+     "entries": [{
+        "repository": "zowe-native-proto",
+        "tag": "main",
+        "destinations": ["Zowe PAX"]
+     }]
+    }, {
       "componentGroup": "Zowe API Mediation Layer",
       "entries": [{
         "repository": "api-layer",
