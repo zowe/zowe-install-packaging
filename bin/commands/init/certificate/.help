@@ -4,6 +4,7 @@ If you specify `--update-config` with this command, these configurations could
 be written back to your Zowe YAML configuration file:
 
 - `zowe.certificate` based on your `zowe.setup.certificate` configuration.
+- `zowe.setup.security.product` based on the detected External Security Manager
 
 These Zowe YAML configurations showing with sample values are used:
 
@@ -85,7 +86,7 @@ zOSMF:
   hostname (domain) and one IP address.
 - `zowe.setup.certificate.importCertificateAuthorities` is the list of
   certificate authorities will be imported to Zowe PKCS12 keystore or
-  keyring. Please note, for keyring type, only maximum 2 CAs is supported.
+  keyring. Please note, for keyring type, only maximum 2 CAs are supported.
   If you are using `PKCS12` certificate, this should be USS files in PEM format.
   If you are using `JCEKS`, `JCECCAKS`, `JCERACFKS`, `JCECCARACFKS`, or
   `JCEHYBRIDRACFKS` certificate, this should be certificate labels
@@ -136,7 +137,7 @@ zOSMF:
     `localca`.
 - If you want to import certificate stored in MVS data set into Zowe keyring,
   * `zowe.setup.certificate.keyring.connect.dsName` is required in this case. It
-    tells Zowe the data set where the certificate stored.
+    tells Zowe the data set where the certificate is stored.
   * `zowe.setup.certificate.keyring.connect.password` is the password when
     importing the certificate.
   * The certificate will be imported with label defined in
@@ -155,5 +156,5 @@ zOSMF:
     `zowe.setup.certificate.keyring.zOSMF.ca` indicates what is the label of
     z/OSMF root certificate authority.
   * If you are using `ACF2` security manager,
-    `zowe.setup.certificate.keyring.zOSMF.ca` is required to indicates what is
+    `zowe.setup.certificate.keyring.zOSMF.ca` is required to indicate what is
     the label of z/OSMF root certificate authority.

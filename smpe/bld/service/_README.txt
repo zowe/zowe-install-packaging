@@ -89,6 +89,9 @@ IBM reference: PDR602 - Standardization of SMP PTF
   * Problem Description: max 39 col
   * Problem Summary: max 64 col
   * Problem Conclusion: max 64 col
+- Note: Part of IBM's Shopz back-end processing includes enhanced
+holddata generation, e.g. creating FIXCAT MCS included in IBM's
+complete set of enhanced holddata.
 
 +--------------------+
 | current-hold-*.txt |
