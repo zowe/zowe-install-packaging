@@ -90,13 +90,14 @@ for mb in ${proclibs}; do
   # source in SZWESAMP
   samp_existence=$(is_data_set_exists "${prefix}.${ZWE_PRIVATE_DS_SZWESAMP}(${mb})")
   if [ "${samp_existence}" != "true" ]; then
-      print_error_and_exit "Error ZWEL0130E: ${prefix}.${ZWE_PRIVATE_DS_SZWESAMP}(${mb}) already exists. This data set member will be overwritten during configuration." "" 130
+      print_error_and_exit "Error ZWEL0201E: File ${prefix}.${ZWE_PRIVATE_DS_SZWESAMP}(${mb}) does not exist." "" 201
   fi
 done
 for mb in ${target_proclibs}; do
   # JCL for preview purpose
   jcl_existence=$(is_data_set_exists "${jcllib}(${mb})")
   if [ "${jcl_existence}" = "true" ]; then
+    any_jcl_existence="true"
     if [ "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITE}" = "true" ]; then
       # warning
       print_message "Warning ZWEL0300W: ${jcllib}(${mb}) already exists. This member will be overwritten."
@@ -110,6 +111,7 @@ for mb in ${target_proclibs}; do
   # STCs in target proclib
   stc_existence=$(is_data_set_exists "${proclib}(${mb})")
   if [ "${stc_existence}" = "true" ]; then
+    any_stc_existence="true"
     if [ "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITE}" = "true" ]; then
       # warning
       print_message "Warning ZWEL0300W: ${proclib}(${mb}) already exists. This member will be overwritten."
@@ -121,8 +123,8 @@ for mb in ${target_proclibs}; do
   fi
 done
 
-if [ "${jcl_existence}" = "true" ] &&  [ "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITE}" != "true" ]; then
-  print_message "Skipped writing to ${jcllib}(${mb}). To write, you must use --allow-overwrite."
+if [ "${any_jcl_existence}" = "true" ] &&  [ "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITE}" != "true" ]; then
+  print_message "Skipped writing to ${jcllib}. To write, you must use --allow-overwrite."
 else
   ###############################
   # prepare STCs
@@ -284,15 +286,15 @@ else
   print_message
 fi
 
-if [ "${stc_existence}" = "true" ] &&  [ "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITE}" != "true" ]; then
-  print_message "Skipped writing to ${proclib}(${mb}). To write, you must use --allow-overwrite."
+if [ "${any_stc_existence}" = "true" ] &&  [ "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITE}" != "true" ]; then
+  print_message "Skipped writing to ${proclib}. To write, you must use --allow-overwrite."
 else
   ###############################
   # copy to proclib
   for mb in ${target_proclibs}; do
     print_message "Copy ${jcllib}(${mb}) to ${proclib}(${mb})"
     if [ -z "${DRY_RUN}" ]; then
-      data_set_copy_to_data_set "${prefix}" "${jcllib}(${mb})" "${proclib}(${mb})" "-X" "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITE}"
+      data_set_copy_to_data_set "${prefix}" "${jcllib}(${mb})" "${proclib}(${mb})" "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITE}"
       if [ $? -ne 0 ]; then
         print_error_and_exit "Error ZWEL0111E: Command aborts with error." "" 111
       fi
