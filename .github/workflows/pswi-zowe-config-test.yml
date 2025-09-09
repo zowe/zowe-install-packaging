@@ -1,10 +1,6 @@
 name: PSWI zowe.yaml sync check
 
-permissions:
-  id-token: write
-  issues: write
-  pull-requests: write
-  contents: write
+permissions: read-all
 
 on:
   push:
@@ -17,10 +13,12 @@ on:
 jobs:
   test-pswi-zowe-yaml:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
 
       - name: '[Prep 1] Checkout'
-        uses: actions/checkout@v4
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
 
       # Taken from shared-actions/prepare-workflow
       - name: 'export github username and email'
@@ -30,8 +28,17 @@ jobs:
           git config --global user.email dummy-email@email.com
         shell: bash
 
+      - name: Install Dependencies for sync check script to work
+        run: npm ci
+        working-directory: .github/scripts/config_workflow_validations
+
+      - name: Check zowe.yaml + wf variable sync
+        run: node .github/scripts/config_workflow_validations/check_variables_sync.js
+
+      - name: Check that all rendering permutations create valid zowe.yaml files
+        run: node .github/scripts/config_workflow_validations/check_render_permutations.js
       - name: '[PSI-LOCK] Lock marist servers to build PSWI'
-        uses: zowe-actions/shared-actions/lock-resource@main
+        uses: zowe-actions/shared-actions/lock-resource@54a9b36cf54e61fefea2801008788d81e1e3a560 # main 06/17/25
         with:
           lock-repository: ${{ github.repository }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
@@ -50,7 +57,7 @@ jobs:
           ZZOW_SSH_PORT: ${{ secrets.SSH_MARIST_ALLSYS_PORT }}
 
       - name: Store test output
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         if: steps.zweconf.outcome != '' && failure()
         with:
           name: zweconf_test

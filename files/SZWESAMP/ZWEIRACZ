@@ -1,4 +1,4 @@
-//ZWEIRACZ JOB
+//ZWEIRACZ JOB {zowe.setup.jcl.header}
 //*
 //* This program and the accompanying materials are made available
 //* under the terms of the Eclipse Public License v2.0 which
@@ -26,15 +26,12 @@
 //* Note(s):
 //*
 //* 1. THE USER ID THAT RUNS THIS JOB MUST HAVE SUFFICIENT AUTHORITY
-//*    TO ALTER SECURITY DEFINITONS
+//*    TO ALTER SECURITY DEFINITIONS
 //*
 //*********************************************************************
-//         EXPORT SYMLIST=*
-//*
 //RUN      EXEC PGM=IKJEFT01,REGION=0M
 //SYSTSPRT DD SYSOUT=*
-//SYSTSIN  DD DDNAME=RACF
-//RACF     DD DATA,DLM=$$,SYMBOLS=JCLONLY
+//SYSTSIN  DD *,DLM=$$
 
 /* DEFINE ZOWE RESOURCE PROTECTION ................................. */
 
