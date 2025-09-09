@@ -125,20 +125,29 @@ export function execute(allowOverwrite: boolean = false) {
         // // Common for zis & aux STCs: delete DD for authPluginLib, if not defined or same as authLoadlib
         let pluginRegex: any = undefined;
         if (!authPluginLib || authPluginLib == authLoadlib || authPluginLib == `${prefix}.SZWEAUTH`) {
-          // Regex for DD statement with no label
-          pluginRegex = /^\/\/[\ ]+DD[\ ]+/;
+          // Regex for DD statement with DSN[AME]
+          pluginRegex = /^\/\/[\ ]+DD[\ ]+DSN/;
         }
         if (pluginRegex) {
           let jclContentArray = jclContent.split('\n');
           let indexOfPluginLib = -1;
           for (let i = 0; i < jclContentArray.length; i++) {
-            if (pluginRegex.test(jclContentArray[i]) == true) {
-              indexOfPluginLib = i;
-              break;
+            let line = jclContentArray[i];
+            if (pluginRegex.test(line) == true) {
+              // Look for defaulted authPluginLib entry
+              if (line.toUpperCase().includes('{ZOWE.SETUP.DATASET.AUTHPLUGINLIB}')) {
+                indexOfPluginLib = i;
+                break;
+              }
             }
           }
           if (indexOfPluginLib != -1) {
-            jclContentArray.splice(indexOfPluginLib, 2);  // First line DD, second line DISP
+            let linesToRemove = 1;
+            let nextLine = jclContentArray[indexOfPluginLib];
+            if (nextLine.includes('DISP=') && !nextLine.includes(' DD ')) {
+              linesToRemove = 2; // Multi-line DD statement seen
+            }
+            jclContentArray.splice(indexOfPluginLib, linesToRemove);
             jclContent = jclContentArray.join('\n');
           }
         }
