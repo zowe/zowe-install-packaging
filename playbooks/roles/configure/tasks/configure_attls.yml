@@ -52,18 +52,6 @@
   vars:
     opercmd: "F PAGENT,REFRESH"
 
-# Note these updates assume the default state of zowe.yaml includes maxTls, minTls, 
-#   and no ZOSMF_SCHEME env variable.
-# This is not intended to be re-runnable.
-- name: Update the zowe.yaml 
-  import_role:
-    name: zos
-    tasks_from: update_zowe_yaml
-  vars:
-    configs:
-      "zowe.network.server.tls.attls": "{{ zowe_attls_enabled|string|lower | default('false', true) }}"
-      "zowe.network.client.tls.attls": "{{ zowe_attls_enabled|string|lower | default('false', true) }}"
-
 - name: Update zowe.yaml min and max tls settings when AT-TLS is enabled
   when: zowe_attls_enabled is ansible.builtin.truthy
   block:
@@ -75,6 +63,18 @@
       configs:
       - zowe.network.server.tls.maxTls
       - zowe.network.server.tls.minTls
+
+# Note these updates assume the default state of zowe.yaml includes maxTls, minTls, 
+#   and no ZOSMF_SCHEME env variable.
+# This is not intended to be re-runnable.
+- name: Update the zowe.yaml 
+  import_role:
+    name: zos
+    tasks_from: update_zowe_yaml
+  vars:
+    configs:
+      "zowe.network.server.tls.attls": "{{ zowe_attls_enabled|string|lower | default('false', true) }}"
+      "zowe.network.client.tls.attls": "{{ zowe_attls_enabled|string|lower | default('false', true) }}"
 
 - name: When AT-TLS is set, add ZOSMF_SCHEME environment variable
   when: zowe_attls_enabled is ansible.builtin.truthy
