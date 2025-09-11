@@ -73,7 +73,7 @@
       tasks_from: delete_zowe_yaml
     vars:
       configs:
-      - zowe.network.server.tls.minTls
+      - zowe.network.server.tls.maxTls
       - zowe.network.server.tls.minTls
 
 - name: When AT-TLS is set, add ZOSMF_SCHEME environment variable
