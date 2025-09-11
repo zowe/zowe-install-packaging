@@ -43,7 +43,7 @@
     . {{ zos_uss_user_profile }} \
     {{ zowe_environment_variable_overrides | default('') }} && \
     cd "{{ work_dir_remote }}" && \
-    node zwe-setup-attls.js {{ zowe_attls_enabled | default('false', true) }} ATTLS_Rules.txt {{ zowe_attls_policy_file }}"
+    node zwe-setup-attls.js {{ zowe_attls_enabled | default('false', true) }} ATTLS_Rules.txt "{{ zowe_attls_policy_file }}"
 
 - name: Refresh the policy agent with the updated rules
   import_role:
