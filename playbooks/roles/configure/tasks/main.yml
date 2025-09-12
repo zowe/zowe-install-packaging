@@ -405,6 +405,7 @@
     parameters: "init apfauth {{ zwe_init_params }}"
 
 - name: Init Zowe certificate
+  when: not zowe_attls_enabled|bool # For at-tls, we use a predefined backend keyring sync'd with PAGENT
   import_role:
     name: zos
     tasks_from: run_zwe
@@ -417,3 +418,18 @@
     tasks_from: run_zwe
   vars:
     parameters: "init stc {{ zwe_init_params }}"
+
+- name: Set AT-TLS Certificate Fields
+  when: zowe_attls_enabled|bool
+  import_role:
+    name: zos
+    tasks_from: update_zowe_yaml
+  vars:
+    configs:
+      "zowe.certificate.keystore.type": "JCERACFKS"
+      "zowe.certificate.keystore.file": "{{ zowe_attls_full_keyring }}"
+      "zowe.certificate.keystore.password": "password" # dummy value
+      "zowe.certificate.keystore.alias": "{{ zowe_attls_cert_alias }}"
+      "zowe.certificate.truststore.type": "JCERACFKS"
+      "zowe.certificate.truststore.file": "{{ zowe_attls_full_keyring }}"
+      "zowe.certificate.truststore.password": "password" # dummy value

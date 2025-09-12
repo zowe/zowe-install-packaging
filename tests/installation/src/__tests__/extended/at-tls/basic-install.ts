@@ -14,6 +14,7 @@ import {
   showZoweRuntimeLogs,
 } from '../../../utils';
 import {
+  KEYSTORE_MODE_KEYRING,
   TEST_TIMEOUT_CONVENIENCE_BUILD,
 } from '../../../constants';
 
@@ -35,6 +36,8 @@ describe(testSuiteName, () => {
       {
         'zowe_build_local': process.env['ZOWE_BUILD_LOCAL'],
         'zowe_attls_enabled': 'true',
+        'zos_keystore_mode': KEYSTORE_MODE_KEYRING,
+        'zowe_lock_keystore': 'false',
         // attls-policy-file is lifted from the defaults on every playbook run
       }
     );
