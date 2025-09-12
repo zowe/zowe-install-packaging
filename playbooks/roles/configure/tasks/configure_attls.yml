@@ -53,7 +53,7 @@
     opercmd: "F PAGENT,REFRESH"
 
 - name: Update zowe.yaml min and max tls settings when AT-TLS is enabled
-  when: zowe_attls_enabled is ansible.builtin.truthy
+  when: zowe_attls_enabled|bool
   block:
   - name: Delete server tls enablement
     import_role:
@@ -77,7 +77,7 @@
       "zowe.network.client.tls.attls": "{{ zowe_attls_enabled|string|lower | default('false', true) }}"
 
 - name: When AT-TLS is set, add ZOSMF_SCHEME environment variable
-  when: zowe_attls_enabled is ansible.builtin.truthy
+  when: zowe_attls_enabled|bool
   import_role:
     name: zos
     tasks_from: update_zowe_yaml
