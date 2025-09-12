@@ -3,7 +3,7 @@
 All notable changes to the Zowe Installer will be documented in this file.
 <!--Add the PR or issue number to the entry if available.-->
 ## `2.18.3`
-- Bugfix: internal routine `copy_to_data_set` did not correctly check if data set exists. [#44??](https://github.com/zowe/zowe-install-packaging/pull/44??)
+- Bugfix: internal routine `copy_to_data_set` did not correctly check if data set exists. [#4489](https://github.com/zowe/zowe-install-packaging/pull/4489)
 
 ## `2.18.2`
 - Bugfix: JCL sample `ZWEINSTL` did not include the `ZWESLSTC`. [#4382](https://github.com/zowe/zowe-install-packaging/pull/4382)
