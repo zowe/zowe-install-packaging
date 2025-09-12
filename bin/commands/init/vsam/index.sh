@@ -87,9 +87,7 @@ fi
 if [ "${jcl_existence}" = "true" ] &&  [ "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITE}" != "true" ]; then
   print_message "Skipped writing to ${jcllib}(ZWECSVSM). To write, you must use --allow-overwrite."
 else
-  ###############################
-  # prepare STCs
-  # ZWESLSTC
+  # ZWECSVSM
   print_message "Modify ZWECSVSM"
   tmpfile=$(create_tmp_file $(echo "zwe ${ZWE_CLI_COMMANDS_LIST}" | sed "s# #-#g"))
   print_debug "- Copy ${prefix}.${ZWE_PRIVATE_DS_SZWESAMP}(ZWECSVSM) to ${tmpfile}"

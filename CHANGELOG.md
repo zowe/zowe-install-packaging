@@ -2,6 +2,9 @@
 
 All notable changes to the Zowe Installer will be documented in this file.
 <!--Add the PR or issue number to the entry if available.-->
+## `2.18.3`
+- Bugfix: internal routine `copy_to_data_set` did not correctly check if data set exists. [#44??](https://github.com/zowe/zowe-install-packaging/pull/44??)
+
 ## `2.18.2`
 - Bugfix: JCL sample `ZWEINSTL` did not include the `ZWESLSTC`. [#4382](https://github.com/zowe/zowe-install-packaging/pull/4382)
 - Bugfix: YAML lookup for HA instances within "haInstances" was not working when HA instance names were uppercase. Now, the lookup is case insensitive to allow for any casing of HA instance names. [#4378](https://github.com/zowe/zowe-install-packaging/pull/4378)
