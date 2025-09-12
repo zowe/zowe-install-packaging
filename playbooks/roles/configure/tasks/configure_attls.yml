@@ -26,10 +26,10 @@
 - name: Remove and upload AT-TLS automation files
   include_role: 
     name: common
-    tasks_from: 
+    tasks_from: upload_file
   vars:
     file_upload_method: scp
-    file_upload_hashcheck: true
+    file_upload_hashcheck: false
   loop:
     - ATTLS_Rules.txt
     - zwe-setup-attls.js
