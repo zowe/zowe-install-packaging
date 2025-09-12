@@ -255,7 +255,7 @@ else
 fi
 
 if [ "${any_stc_existence}" = "true" ] && [ "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITE}" != "true" ]; then
-  print_message "Skipped writing to ${proclib}(${mb}). To write, you must use --allow-overwrite."
+  print_message "Skipped writing to ${proclib}. To write, you must use --allow-overwrite."
 else
   ###############################
   # copy to proclib
