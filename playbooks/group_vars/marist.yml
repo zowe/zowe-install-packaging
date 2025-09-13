@@ -16,6 +16,7 @@ zowe_apiml_nonstrict_verify_certficates_of_services: true
 #  zowe_attls_enabled: false
 #  zowe_attls_policy_file: 
 zowe_attls_full_keyring: safkeyring://ZWESVUSR/ZWEATTLS
+zowe_attls_cert_alias: ZOWE_ATTLS_CERT
 # use apiml modulith mode
 zowe_apiml_modulith_mode: false
 # use new jcl path for install
