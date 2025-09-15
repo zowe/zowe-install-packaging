@@ -96,8 +96,8 @@ TTLSConnectionAdvancedParms ApimlClientX509ConnAdvParms
 TTLSConnectionAdvancedParms ZoweConnectionAdvParms
 {
   ApplicationControlled Off
-  ServerCertificateLabel apimlcert # Specify the personal server certificate 
-  CertificateLabel apimlcert # Specify the personal server certificate
+  ServerCertificateLabel ZOWE_ATTLS_CERT
+  CertificateLabel ZOWE_ATTLS_CERT
   SecondaryMap Off
 }
 
