@@ -18,6 +18,10 @@
 # output          USS encoding if exists in upper case
 get_file_encoding() {
   file="${1}"
+  # Resolve symbolic link to real file. "ls -T" does not work on symbolic link.
+  if [ -L "${file}" ]; then
+    file=$(readlink -f "${file}")
+  fi
   # m ISO8859-1   T=off <file>
   # - untagged    T=off <file>
   ls -T "${file}" | awk '{print $2;}' | upper_case
