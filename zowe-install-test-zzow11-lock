@@ -1,1 +1,15 @@
-""
+{
+  "lockAcquiredTime": "Mon Sep 15 2025 15:25:46 GMT+0000 (Coordinated Universal Time)",
+  "uid": "1757949946874900722",
+  "repository": {
+    "owner": "zowe",
+    "repo": "zowe-install-packaging"
+  },
+  "branch": "user/markackert/at-tls-test",
+  "workflow": "Zowe CICD Integration Tests",
+  "job": "cicd-test",
+  "actor": "MarkAckert",
+  "runId": 17689765933,
+  "runNumber": 7399,
+  "link": "https://github.com/zowe/zowe-install-packaging/actions/runs/17689765933"
+}
