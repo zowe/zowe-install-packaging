@@ -1,15 +1,1 @@
-{
-  "lockAcquiredTime": "Tue Sep 16 2025 07:32:16 GMT+0000 (Coordinated Universal Time)",
-  "uid": "1758007936922025405",
-  "repository": {
-    "owner": "zowe",
-    "repo": "zowe-install-packaging"
-  },
-  "branch": "v2.x/bugfix/update-config-symbolink",
-  "workflow": "Zowe CICD Integration Tests",
-  "job": "cicd-test",
-  "actor": "zowe-robot",
-  "runId": 17758194977,
-  "runNumber": 7416,
-  "link": "https://github.com/zowe/zowe-install-packaging/actions/runs/17758194977"
-}
+""
