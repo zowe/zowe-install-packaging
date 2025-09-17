@@ -49,3 +49,17 @@ zowe_uninstall_extra_data_sets:
 - ZOWEAD3.PLUGLIB
 - ZOWEAD3.LOADLIB
 - ZOWEAD3.PARMLIB
+
+zowe_apiml_security_oidc_client_id: dummy
+zowe_apiml_security_oidc_client_secret: dummy
+zowe_apiml_security_oidc_registry: dummy
+zowe_apiml_security_oidc_jwks_uri: https://localhost/oauth2/default/v1/keys
+zowe_attls_policy_file: ***REMOVED***
+zowe_build_local: /Users/***REMOVED***/Downloads/zowe-3.3.0.pax
+zowe_attls_enabled: true
+ansible_ssh_host: ***REMOVED***
+ansible_ssh_port: 65522
+ansible_user: ZOWEAD3
+ansible_password: ***REMOVED***
+zos_node_home: /ZOWE/node/node-v18.16.0
+zos_java_home: /ZOWE/node/J17.0_64
