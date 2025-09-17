@@ -405,7 +405,6 @@
     parameters: "init apfauth {{ zwe_init_params }}"
 
 - name: Init Zowe certificate
-  when: not zowe_attls_enabled|bool # For at-tls, we use a predefined backend keyring sync'd with PAGENT
   import_role:
     name: zos
     tasks_from: run_zwe
