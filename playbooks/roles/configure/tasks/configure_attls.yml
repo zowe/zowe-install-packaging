@@ -39,7 +39,7 @@
 # !!! Important
 # This runs the script that sets the at-tls rules for the system.
 # If zowe_attls_enabled is not defined or empty, the default will be false (AT-TLS disabled).
-# If the zowe_attls_policy_file is not the system's active AT-TLS policy, then this fectively does nothing.
+# If the zowe_attls_policy_file is not the system's active AT-TLS policy agent config, then this effectively does nothing.
 - name: Make AT-TLS PAGENT rule updates
   raw: >-
     touch {{ zos_uss_user_profile }} && \
