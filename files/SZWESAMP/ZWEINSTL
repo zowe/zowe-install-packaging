@@ -46,22 +46,22 @@ blksize(32760) unit(sysallda) space(150,15) tracks
 //STDOUT   DD SYSOUT=*
 //STDERR   DD SYSOUT=*
 //STDPARM DD *
-SH cd '{zowe.runtimeDirectory}' &&
-ZWE_TMP_PREFIX='{zowe.setup.dataset.prefix}' &&
-cd files/SZWESAMP &&
-cp * "//'$ZWE_TMP_PREFIX.SZWESAMP'" &&
-cd ../SZWEEXEC &&
-cp * "//'$ZWE_TMP_PREFIX.SZWEEXEC'" &&
-cd ../SZWELOAD &&
-cp * "//'$ZWE_TMP_PREFIX.SZWELOAD'" &&
-cd ../../components/launcher/bin &&
+SH cd '{zowe.runtimeDirectory}';
+ZWE_TMP_PREFIX='{zowe.setup.dataset.prefix}';
+cd files/SZWESAMP;
+cp * "//'$ZWE_TMP_PREFIX.SZWESAMP'";
+cd ../SZWEEXEC;
+cp * "//'$ZWE_TMP_PREFIX.SZWEEXEC'";
+cd ../SZWELOAD;
+cp * "//'$ZWE_TMP_PREFIX.SZWELOAD'";
+cd ../../components/launcher/bin;
 cp zowe_launcher
-   "//'$ZWE_TMP_PREFIX.SZWEAUTH(ZWELNCH)'" &&
-cd ../samplib/ &&
-cp * "//'$ZWE_TMP_PREFIX.SZWESAMP'" &&
-cd ../../zss/SAMPLIB &&
+   "//'$ZWE_TMP_PREFIX.SZWEAUTH(ZWELNCH)'";
+cd ../samplib/;
+cp * "//'$ZWE_TMP_PREFIX.SZWESAMP'";
+cd ../../zss/SAMPLIB;
 cp ZWESASTC ZWESIP00 ZWESISCH ZWESISTC
-   "//'$ZWE_TMP_PREFIX.SZWESAMP'" &&
-cd ../LOADLIB &&
+   "//'$ZWE_TMP_PREFIX.SZWESAMP'";
+cd ../LOADLIB;
 cp * "//'$ZWE_TMP_PREFIX.SZWEAUTH'"
 /*

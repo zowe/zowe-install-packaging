@@ -32,16 +32,16 @@ blksize(32760) unit(sysallda) space(30,15) tracks
 //STDOUT   DD SYSOUT=*
 //STDERR   DD SYSOUT=*
 //STDPARM DD *
-SH cd '{zowe.runtimeDirectory}' &&
-cd components/zss &&
-ZWE_TMP_MVS2='{zowe.setup.dataset.authLoadlib}' &&
+SH cd '{zowe.runtimeDirectory}';
+cd components/zss;
+ZWE_TMP_MVS2='{zowe.setup.dataset.authLoadlib}';
 cp -X LOADLIB/ZWESIS01
-"//'$ZWE_TMP_MVS2(ZWESIS01)'" &&
+"//'$ZWE_TMP_MVS2(ZWESIS01)'";
 cp -X LOADLIB/ZWESAUX
-"//'$ZWE_TMP_MVS2(ZWESAUX)'" &&
+"//'$ZWE_TMP_MVS2(ZWESAUX)'";
 cp -X LOADLIB/ZWESISDL
-"//'$ZWE_TMP_MVS2(ZWESISDL)'" &&
-cd ../launcher/bin &&
+"//'$ZWE_TMP_MVS2(ZWESISDL)'";
+cd ../launcher/bin;
 cp -X zowe_launcher
 "//'$ZWE_TMP_MVS2(ZWELNCH)'"
 /*

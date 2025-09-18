@@ -357,3 +357,13 @@ export function escapeRegExp(str: string): string | undefined {
   return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
 
+export function splitStringByLength(str: string, len: number): Array<string> {
+  let result = [];
+  if (!len) {
+    len = 71;
+  }
+  for (let i = 0; i < str.length; i += len) {
+    result.push(str.substring(i, i + len));
+  }
+  return result;
+}

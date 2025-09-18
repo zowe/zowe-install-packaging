@@ -31,12 +31,12 @@
 //STDOUT   DD SYSOUT=*
 //STDERR   DD SYSOUT=*
 //STDPARM DD *
-SH cd '{zowe.runtimeDirectory}' &&
-cd bin/utils &&
-LOADLIB='{zowe.setup.dataset.authLoadlib}' &&
-LOADLOC=SMS &&
-./opercmd.rex "SETPROG APF,ADD,DSN=$LOADLIB,$LOADLOC" &&
-PLUGLIB='{zowe.setup.dataset.authPluginLib}' &&
-PLUGLOC=SMS &&
+SH cd '{zowe.runtimeDirectory}';
+cd bin/utils;
+LOADLIB='{zowe.setup.dataset.authLoadlib}';
+LOADLOC=SMS;
+./opercmd.rex "SETPROG APF,ADD,DSN=$LOADLIB,$LOADLOC";
+PLUGLIB='{zowe.setup.dataset.authPluginLib}';
+PLUGLOC=SMS;
 ./opercmd.rex "SETPROG APF,ADD,DSN=$PLUGLIB,$PLUGLOC"
 //*
