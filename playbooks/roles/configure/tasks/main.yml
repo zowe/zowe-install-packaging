@@ -52,6 +52,7 @@
     - zowe_zlux_terminal_telnet_port
     - zos_security_system
     - zowe_lock_keystore
+    - zowe_attls_policy_file
 - name: Show value of zowe_root_dir
   debug:
     msg: zowe_root_dir is {{ zowe_root_dir }}
@@ -349,6 +350,11 @@
         "components.{{ item }}.enabled": "true"
     with_items: "{{ zowe_launch_components.split(',') }}"
 
+- name: Update AT-TLS zowe configuration
+  include_role: 
+    name: configure
+    tasks_from: configure_attls
+
 # ============================================================================
 - name: Show zowe.yaml before zwe init
   raw: cat "{{ zowe_instance_dir }}/zowe.yaml" | grep -v '^ *#' | sed '/^[[:space:]]*$/d'
@@ -411,3 +417,18 @@
     tasks_from: run_zwe
   vars:
     parameters: "init stc {{ zwe_init_params }}"
+
+- name: Set AT-TLS Certificate Fields
+  when: zowe_attls_enabled|bool
+  import_role:
+    name: zos
+    tasks_from: update_zowe_yaml
+  vars:
+    configs:
+      "zowe.certificate.keystore.type": "JCERACFKS"
+      "zowe.certificate.keystore.file": "{{ zowe_attls_full_keyring }}"
+      "zowe.certificate.keystore.password": "password" # dummy value
+      "zowe.certificate.keystore.alias": "{{ zowe_attls_cert_alias }}"
+      "zowe.certificate.truststore.type": "JCERACFKS"
+      "zowe.certificate.truststore.file": "{{ zowe_attls_full_keyring }}"
+      "zowe.certificate.truststore.password": "password" # dummy value
