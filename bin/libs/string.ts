@@ -367,3 +367,13 @@ export function splitStringByLength(str: string, len: number): Array<string> {
   }
   return result;
 }
+
+export function splitRuntimeToVariable(runtime: string): string {
+    const runtimeArray = splitStringByLength(runtime, 50);
+    runtime = `SH ZWE_RD="${runtimeArray[0]}";\n`;
+    for (let i = 1; i < runtimeArray.length; i++) {
+        runtime += `ZWE_RD="\$\{ZWE_TMP\}${runtimeArray[i]}";\n`;
+    }
+    runtime += 'cd "${ZWE_TMP}";';
+    return runtime;
+}
