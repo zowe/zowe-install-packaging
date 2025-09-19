@@ -228,18 +228,6 @@ components:
         fallback: true
 
   # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-  jobs-api:
-    enabled: false
-    debug: false
-    port: 7558
-
-  # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-  files-api:
-    enabled: false
-    debug: false
-    port: 7559
-
-  # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   explorer-jes:
     enabled: true
 
