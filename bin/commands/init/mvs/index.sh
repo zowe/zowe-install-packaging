@@ -70,6 +70,7 @@ while read -r line; do
   # check existence
   ds_existence=$(is_data_set_exists "${ds}")
   if [ "${ds_existence}" = "true" ]; then
+    any_existence="true"
     if [ "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITE}" = "true" ]; then
       # warning
       print_message "Warning ZWEL0300W: ${ds} already exists. This dataset will be overwritten."
@@ -94,16 +95,16 @@ $(echo "${cust_ds_list}")
 EOF
 print_message
 
-if [ "${ds_existence}" = "true" ] &&  [ "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITE}" != "true" ]; then
-  print_message "Skipped writing to ${ds}. To write, you must use --allow-overwrite."
+if [ "${any_existence}" = "true" ] && [ "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITE}" != "true" ]; then
+  print_message "Skipped writing, you must use --allow-overwrite."
 else
   ###############################
   # copy sample lib members
   parmlib=$(read_yaml_configmgr "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.dataset.parmlib")
-  for ds in ZWESIP00; do
-    print_message "Copy ${prefix}.${ZWE_PRIVATE_DS_SZWESAMP}(${ds}) to ${parmlib}(${ds})"
+  for mb in ZWESIP00; do
+    print_message "Copy ${prefix}.${ZWE_PRIVATE_DS_SZWESAMP}(${mb}) to ${parmlib}(${mb})"
     if [ -z "${DRY_RUN}" ]; then
-      data_set_copy_to_data_set "${prefix}" "${prefix}.${ZWE_PRIVATE_DS_SZWESAMP}(${ds})" "${parmlib}(${ds})" "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITE}"
+      data_set_copy_to_data_set "${prefix}" "${prefix}.${ZWE_PRIVATE_DS_SZWESAMP}(${mb})" "${parmlib}(${mb})" "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITE}"
       if [ $? -ne 0 ]; then
         print_error_and_exit "Error ZWEL0111E: Command aborts with error." "" 111
       fi
@@ -114,14 +115,12 @@ else
 
   ###############################
   # copy auth lib members
-  # FIXME: data_set_copy_to_data_set cannot be used to copy program?
   authLoadlib=$(read_yaml_configmgr "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.dataset.authLoadlib")
   if [ -n "${authLoadlib}" ]; then
-    for ds in ZWESIS01 ZWESAUX ZWESISDL; do
-      print_message "Copy components/zss/LOADLIB/${ds} to ${authLoadlib}(${ds})"
+    for mb in ZWESIS01 ZWESAUX ZWESISDL; do
+      print_message "Copy components/zss/LOADLIB/${mb} to ${authLoadlib}(${mb})"
       if [ -z "${DRY_RUN}" ]; then
-        # data_set_copy_to_data_set "${prefix}" "${prefix}.${ZWE_PRIVATE_DS_SZWEAUTH}(${ds})" "${authLoadlib}(${ds})" "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITE}"
-        copy_to_data_set "${ZWE_zowe_runtimeDirectory}/components/zss/LOADLIB/${ds}" "${authLoadlib}(${ds})" "-X" "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITE}"
+        copy_to_data_set "${ZWE_zowe_runtimeDirectory}/components/zss/LOADLIB/${mb}" "${authLoadlib}(${mb})" "-X" "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITE}"
         if [ $? -ne 0 ]; then
           print_error_and_exit "Error ZWEL0111E: Command aborts with error." "" 111
         fi
@@ -129,11 +128,10 @@ else
         print_message "Skipping copy operation due to --dry-run parameter."  
       fi
     done
-    for ds in ZWELNCH; do
-      print_message "Copy components/launcher/bin/zowe_launcher to ${authLoadlib}(${ds})"
+    for mb in ZWELNCH; do
+      print_message "Copy components/launcher/bin/zowe_launcher to ${authLoadlib}(${mb})"
       if [ -z "${DRY_RUN}" ]; then
-        # data_set_copy_to_data_set "${prefix}" "${prefix}.${ZWE_PRIVATE_DS_SZWEAUTH}(${ds})" "${authLoadlib}(${ds})" "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITE}"
-        copy_to_data_set "${ZWE_zowe_runtimeDirectory}/components/launcher/bin/zowe_launcher" "${authLoadlib}(${ds})" "-X" "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITE}"
+        copy_to_data_set "${ZWE_zowe_runtimeDirectory}/components/launcher/bin/zowe_launcher" "${authLoadlib}(${mb})" "-X" "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITE}"
         if [ $? -ne 0 ]; then
           print_error_and_exit "Error ZWEL0111E: Command aborts with error." "" 111
         fi
