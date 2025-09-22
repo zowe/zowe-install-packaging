@@ -2,8 +2,9 @@
 
 All notable changes to the Zowe Installer will be documented in this file.
 
-## `3.4.0
+## `3.4.0`
 - Enhancement: Detect if `SDSF` is available. [#4389](https://github.com/zowe/zowe-install-packaging/pull/4389)
+- Bugfix: internal routine `copy_to_data_set` did not correctly check if data set exists. [#4476](https://github.com/zowe/zowe-install-packaging/pull/4476)
 
 ## `3.3.0`
 
