@@ -240,7 +240,7 @@ cp "${ZOWE_ROOT_DIR}/bin/utils/zowe-server/zowex" "${ZOWE_ROOT_DIR}/bin/utils/zo
 chmod +x "${ZOWE_ROOT_DIR}/bin/utils/zowex"
 cd "${ZOWE_ROOT_DIR}/bin/utils"
 rm -rf "${ZOWE_ROOT_DIR}/bin/utils/zowe-server"
-rm "${zowex_components}"
+rm -rf "${zowex_components}"
 
 echo "[$SCRIPT_NAME] change keyring-util to be executable ..."
 chmod +x "${ZOWE_ROOT_DIR}"/bin/utils/keyring-util/keyring-util
