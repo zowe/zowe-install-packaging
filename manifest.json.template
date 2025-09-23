@@ -16,7 +16,7 @@
       "artifact": "zowe-server-*.pax.Z"
     },
     "org.zowe.zlux.zlux-core": {
-      "version": "zlux-core-3.4.0-20250923.062130",
+      "version": "3.4.0-1328-v3.x-staging-zlux-build",
       "artifact": "*.pax"
     },
     "org.zowe.zlux.sample-angular-app": {
