@@ -118,6 +118,11 @@ ensure_file_encoding() {
     return 0
   fi
 
+  # check if this is a symlink
+  if [ -L "${file}" ]; then
+    file=$(readlink -f "${file}")
+  fi
+
   if [ -z "${expected_encoding}" ]; then
     expected_encoding=IBM-1047
   fi
@@ -130,6 +135,8 @@ ensure_file_encoding() {
     # any cases we cannot find encoding?
     if [ "${file_encoding}" != "${expected_encoding}" ]; then
       print_trace "- Convert encoding of ${file} from ${file_encoding} to ${expected_encoding}."
+
+
       iconv -f "${file_encoding}" -t "${expected_encoding}" "${file}" > "${file}.tmp"
       mv "${file}.tmp" "${file}"
     fi
