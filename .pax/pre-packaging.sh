@@ -34,7 +34,7 @@
 #              If unset, conversion happens in-place
 #              If set, conversion will mirror directory structure in output
 # (output) converted files or directory following $2
-# TODO: is this replacable with autoconv?
+# TODO: is this replaceable with autoconv?
 # ---------------------------------------------------------------------
 function _convertEbcdicToAscii {
     input=$1
@@ -240,6 +240,7 @@ cp "${ZOWE_ROOT_DIR}/bin/utils/zowe-server/zowex" "${ZOWE_ROOT_DIR}/bin/utils/zo
 chmod +x "${ZOWE_ROOT_DIR}/bin/utils/zowex"
 cd "${ZOWE_ROOT_DIR}/bin/utils"
 rm -rf "${ZOWE_ROOT_DIR}/bin/utils/zowe-server"
+rm -rf "${zowex_components}"
 
 echo "[$SCRIPT_NAME] change keyring-util to be executable ..."
 chmod +x "${ZOWE_ROOT_DIR}"/bin/utils/keyring-util/keyring-util
