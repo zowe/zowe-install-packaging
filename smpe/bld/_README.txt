@@ -240,8 +240,10 @@ A community build engineer working for IBM will use zService to update
 the PE field in the Closing Information tab of the APAR.
 1. Check PE check box
 2. Uncheck Draft check box
-3. Check afftected PTF(s) in drop-down list
+3. Check affected PTF(s) in drop-down list
 4. Save
+Other companies that provide Zowe PTFs through their own store-front
+must do something similar to have the Zowe PTFs in error marked as PE.
 
 Flow for SMP/E packaging build
 ------------------------------
