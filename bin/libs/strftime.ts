@@ -43,7 +43,7 @@ const HOUR_MULTIPLIER = 60*60*1000;
 export function strftime(sFormat:string, dateArg?:Date): string {
   let date:Date = (dateArg instanceof Date) ? dateArg : new Date();
   let tzenv = std.getenv("ZWE_PRIVATE_TIMEZONE_DIFF");
-  let timezonePreference = std.getenv("ZWE_logging_timezone") || '';
+  let timezonePreference = std.getenv("ZWE_zowe_logging_timezone") || '';
   let useLocalTime = timezonePreference.toLowerCase() == 'local';
   if (useLocalTime && tzenv && (tzenv.length == 5) && (tzenv != '+0000')) {
     let operator = tzenv[0];
