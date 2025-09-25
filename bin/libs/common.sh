@@ -332,7 +332,7 @@ print_formatted_message() {
     return 0
   fi
 
-  if [ "${ZWE_logging_timezone"} = "LOCAL" -o "${ZWE_logging_timezone"} = "local" ]; then
+  if [ "${ZWE_logging_timezone}" = "LOCAL" -o "${ZWE_logging_timezone}" = "local" ]; then
     log_line_prefix="$(date '+%Y-%m-%d %T') <${service}:$$> $(get_user_id) ${level} (${logger})"
   else
     log_line_prefix="$(date -u '+%Y-%m-%d %T') <${service}:$$> $(get_user_id) ${level} (${logger})"
