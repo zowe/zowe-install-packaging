@@ -118,6 +118,11 @@ ensure_file_encoding() {
     return 0
   fi
 
+  # check if this is a symlink
+  if [ -L "${file}" ]; then
+    file=$(readlink -f "${file}")
+  fi
+
   if [ -z "${expected_encoding}" ]; then
     expected_encoding=IBM-1047
   fi
