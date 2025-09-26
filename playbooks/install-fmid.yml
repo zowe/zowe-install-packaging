@@ -16,7 +16,7 @@
   # ============================================================================
   # uninstall zowe
   - name: Uninstall Zowe
-    when: zowe_uninstall_before_install|default(True)
+    when: zowe_uninstall_before_install|bool|default(True)
     block:
     - import_role:
         name: zowe
@@ -88,10 +88,10 @@
   # Customize for testing
   - import_role:
       name: custom_for_test
-    when: zowe_custom_for_test|default(False)
+    when: zowe_custom_for_test|bool|default(False)
 
   # ============================================================================
   # Start Zowe
   - import_role:
       name: start
-    when: not skip_start|default(False)
+    when: not skip_start|bool|default(False)
