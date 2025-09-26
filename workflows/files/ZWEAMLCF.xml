@@ -194,7 +194,7 @@ It is used by ZWESLSTC or by zwe command</description>
         <string valueMustBeChoice="false" multiLine="true">
             <!-- Put validation here -->
             <!-- Specify choices here -->
-            <default>sample-domain.com</default>
+            <default>example.com</default>
         </string>
     </variable>
     <variable name="zowe_externalPort" scope="instance" visibility="public">
@@ -397,7 +397,7 @@ some use cases, like containerization, this port could be different.</descriptio
         <string valueMustBeChoice="false" multiLine="false">
             <!-- Put validation here -->
             <!-- Specify choices here -->
-            <default>dvipa.my-company.com</default>
+            <default>dvipa.example.com</default>
         </string>
     </variable>
     <variable name="zOSMF_port" scope="instance" visibility="public">
@@ -894,7 +894,7 @@ echo '      # # If this field is not defined, `zwe init` command will use' >> "$
 echo '      # # `zowe.externalDomains`.' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '      # san:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '      #  # sample domain name' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '      #  - dvipa.my-company.com' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '      #  - dvipa.example.com' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '      #  # sample IP address' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '      #  - 12.34.56.78' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
@@ -953,7 +953,7 @@ echo '    #   # # `zowe.externalDomains`.' >> "${instance-zowe_runtimeDirectory}
 echo '    #   # # **NOTE**: due to the limitation of RACDCERT command, this field should' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '    #   # #           contain exactly 2 entries with the domain name and IP address.' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '    #   # san:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '    #   #   - dvipa.my-company.com' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '    #   #   - dvipa.example.com' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '    #   #   - 12.34.56.78' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '    # # >>>> Certificate setup scenario 4' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
@@ -1359,7 +1359,7 @@ echo '#' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '#   # HA instance ID' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '#   lpar1:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '#     # hostname where this instance will be started' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '#     hostname: lpar1.my-company.com' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '#     hostname: lpar1.example.com' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '#     # Your &SYSNAME for this LPAR' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '#     # This sysname will be used to route your JES command to target system.' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '#     sysname: LPR1' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
@@ -1369,7 +1369,7 @@ echo '#   # HA instance ID, we will start 2 instances on LPAR2' >> "${instance-z
 echo '#   # **NOTE**, we can only start one Gateway in same LPAR.' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '#   lpar2a:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '#     # hostname where this instance will be started' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '#     hostname: lpar2.my-company.com' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '#     hostname: lpar2.example.com' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '#     # Your &SYSNAME for this LPAR' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '#     # This sysname will be used to route your JES command to target system.' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '#     sysname: LPR2' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
@@ -1391,7 +1391,7 @@ echo '#       caching-service:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '#         port: 17555' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '#' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '#   lpar2b:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '#     hostname: lpar2.my-company.com' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '#     hostname: lpar2.example.com' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '#     # your &SYSNAME for this LPAR' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '#     sysname: LPR2' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"

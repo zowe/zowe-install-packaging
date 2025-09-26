@@ -81,7 +81,7 @@ zowe:
   workspaceDirectory: "/test/dir/workspace"
   extensionDirectory: "/global/zowe/extensions"
   externalDomains:
-  - "sample-domain.com"
+  - "example.com"
   sysMessages:
   - "ZWEL0021I"
   - "ZWEL0018I"
@@ -264,7 +264,7 @@ zowe:
   workspaceDirectory: "/test/dir/workspace"
   extensionDirectory: "/global/zowe/extensions"
   externalDomains:
-  - "sample-domain.com"
+  - "example.com"
   sysMessages:
   - "ZWEL0021I"
   - "ZWEL0018I"
