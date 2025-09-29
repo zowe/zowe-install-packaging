@@ -7,7 +7,7 @@ on:
     types: [opened, synchronize]
 
 jobs:
-  check-manifest:
+  typescript-build:
     runs-on: ubuntu-latest
     steps:
 
