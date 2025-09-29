@@ -477,8 +477,8 @@ export function processComponentApimlStaticDefinitions(componentDir: string): bo
           }
           
           std.setenv('ZOSMF_SCHEME', scheme);
-          std.setenv('ZOSMF_NON_SECURE_PORT_ENABLED', nonSecurePortEnabled);
-          std.setenv('ZOSMF_SECURE_PORT_ENABLED', securePortEnabled);
+          std.setenv('ZOSMF_NON_SECURE_PORT_ENABLED', `${nonSecurePortEnabled}`);
+          std.setenv('ZOSMF_SECURE_PORT_ENABLED', `${securePortEnabled}`);
 
           const resolvedContents = varlib.resolveShellTemplate(contents);
 
