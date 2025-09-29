@@ -7,7 +7,7 @@
 declare namespace console {
   function log(...args:string[]): void;
 };
-a
+
 export class Objutils {
     static isObject(x:any){
         let type = typeof x;
