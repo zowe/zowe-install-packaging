@@ -16,9 +16,9 @@
       "artifact": "zowe-server-*.pax.Z"
     },
     "org.zowe.zlux.zlux-core": {
-      "version": "3.3.0-RC",
+      "version": "3.3.1-RC",
       "repository": "libs-snapshot-local",
-      "artifact": "zlux-core-3.3.0-20250808.164421.pax"
+      "artifact": "zlux-core-3.3.1-20250930.132730.pax"
     },
     "org.zowe.zlux.sample-angular-app": {
       "version": "2.18.2-V2.X-RC",
@@ -180,12 +180,12 @@
       "componentGroup": "Zowe Application Framework",
       "entries": [{
           "repository": "zlux-app-manager",
-          "tag": "v3.3.0-RC1",
+          "tag": "v3.3.1-RC1",
           "destinations": ["Zowe PAX"]
         },
         {
           "repository": "zlux-app-server",
-          "tag": "v3.3.0-RC1",
+          "tag": "v3.3.1-RC1",
           "destinations": ["Zowe PAX"]
         },
         {
@@ -200,7 +200,7 @@
         },
         {
           "repository": "zlux-platform",
-          "tag": "v3.3.0-RC1",
+          "tag": "v3.3.1-RC1",
           "destinations": ["Zowe PAX"]
         },
         {
