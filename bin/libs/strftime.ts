@@ -48,14 +48,16 @@ export function strftime(sFormat:string, dateArg?:Date): string {
   if (useLocalTime && tzenv && (tzenv.length == 5) && (tzenv != '+0000')) {
     let operator = tzenv[0];
     if (operator == '+' || operator == '-') {
-      let hourDiff = tzenv.substring(1,3);
-      let minuteDiff = tzenv.substring(3,5);
-      let newTime = date.getTime();
-      let unixDiff = ((minuteDiff*MINUTE_MULTIPLIER)+(hourDiff*HOUR_MULTIPLIER));
-      if (operator == '+') {
-        date = new Date(newTime + unixDiff);
-      } else {
-        date = new Date(newTime - unixDiff);
+      let hourDiff = Number(tzenv.substring(1, 3));
+      let minuteDiff = Number(tzenv.substring(3, 5));
+      if (!isNaN(hourDiff) && !isNaN(minuteDiff)) {
+        let newTime = date.getTime();
+        let unixDiff = ((minuteDiff * MINUTE_MULTIPLIER) + (hourDiff * HOUR_MULTIPLIER));
+        if (operator == '+') {
+          date = new Date(newTime + unixDiff);
+        } else {
+          date = new Date(newTime - unixDiff);
+        }
       }
     }
   }
