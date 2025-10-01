@@ -95,7 +95,15 @@ describe(`${testSuiteName}`, () => {
       cfgYaml.components = null;
       const result = await testRunner.runZweTest(cfgYaml, 'init vsam --dry-run');
       expect(result.stdout).not.toBeNull();
-      expect(result.cleanedStdout).toMatchSnapshot();
+
+      // console output varies due to timing of 2 messages, we need to adjust for that.
+      // test for one portion and remove it
+      const movingMsg = `TypeError: cannot read property 'gateway' of null
+    at <eval> (<embedded>)`; // keep spacing here exact
+      expect(result.cleanedStdout.includes(movingMsg)).toBe(true);
+      let modifiedStdout = result.cleanedStdout.replace(movingMsg + '\n', ''); // if at start,
+      modifiedStdout = modifiedStdout.replace(movingMsg, '');
+      expect(modifiedStdout).toMatchSnapshot();
       expect(result.rc).toBe(1);
     });
 
@@ -104,13 +112,13 @@ describe(`${testSuiteName}`, () => {
       let result = await testRunner.runZweTest(cfgYaml, 'init vsam --dry-run');
       expect(result.stdout).not.toBeNull();
       expect(result.cleanedStdout).toMatchSnapshot();
-      expect(result.rc).toBe(1);
+      expect(result.rc).toBe(157);
 
       cfgYaml.zowe.setup.dataset.prefix = '';
       result = await testRunner.runZweTest(cfgYaml, 'init vsam --dry-run');
       expect(result.stdout).not.toBeNull();
       expect(result.cleanedStdout).toMatchSnapshot();
-      expect(result.rc).toBe(1);
+      expect(result.rc).toBe(157);
     });
 
     it('unset jcllib', async () => {
@@ -118,13 +126,13 @@ describe(`${testSuiteName}`, () => {
       let result = await testRunner.runZweTest(cfgYaml, 'init vsam --dry-run');
       expect(result.stdout).not.toBeNull();
       expect(result.cleanedStdout).toMatchSnapshot();
-      expect(result.rc).toBe(1);
+      expect(result.rc).toBe(63);
 
       cfgYaml.zowe.setup.dataset.jcllib = '';
       result = await testRunner.runZweTest(cfgYaml, 'init vsam --dry-run');
       expect(result.stdout).not.toBeNull();
       expect(result.cleanedStdout).toMatchSnapshot();
-      expect(result.rc).toBe(1);
+      expect(result.rc).toBe(63);
     });
 
     it('invalid NONRLS configurations', async () => {

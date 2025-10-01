@@ -50,12 +50,20 @@ export function execute(allowOverwrite: boolean = false) {
     return common.printErrorAndExit(`Error ZWEL0319E: zowe.setup.dataset.jcllib does not exist, cannot run. Run 'zwe init', 'zwe init generate', or submit JCL ${prefix}.SZWESAMP(ZWEGENER) before running this command.`, undefined, 319);
   }
 
-  // zowe.setup.security.stcs.* defined in defaults
-  const security_stcs_zowe = ZOWE_CONFIG.zowe.setup.security.stcs.zowe;
-  const security_stcs_zis = ZOWE_CONFIG.zowe.setup.security.stcs.zis;
-  const security_stcsAux = ZOWE_CONFIG.zowe.setup.security.stcs.aux;
+  let stcZowe = ZOWE_CONFIG.zowe.setup.security.stcs.zowe;
+  if (!stcZowe) {
+    stcZowe = 'ZWESLSTC';
+  }
+  let stcZis = ZOWE_CONFIG.zowe.setup.security.stcs.zis;
+  if (!stcZis) {
+    stcZis = 'ZWESISTC';
+  }
+  let stcAux = ZOWE_CONFIG.zowe.setup.security.stcs.aux;
+  if (!stcAux) {
+    stcAux = 'ZWESASTC';
+  }
 
-  [security_stcs_zowe, security_stcs_zis, security_stcsAux].forEach((mb: string) => {
+  [stcZowe, stcZis, stcAux].forEach((mb: string) => {
     // STCs in target proclib
     if (zosdataset.isDatasetExists(`${proclib}(${mb})`)) {
       stcExistence = true;
@@ -79,7 +87,6 @@ export function execute(allowOverwrite: boolean = false) {
     const DEFAULT_CMS_NAME = 'ZWESIS_STD';
     // zis and crossMemoryServerName are in defaults
     const zisSuffix = ZOWE_CONFIG.zowe.setup.dataset.parmlibMembers.zis.substring(6);
-    // There is no schema validation (at this point) for crossMemoryServerName as it is in components
     // Check and take string or use defaults
     const cmsName = typeof ZOWE_CONFIG.components.zss.crossMemoryServerName === "string" ? ZOWE_CONFIG.components.zss.crossMemoryServerName.substring(0, 16) : DEFAULT_CMS_NAME;
     if (stcExistence == true) {

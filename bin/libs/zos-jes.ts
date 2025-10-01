@@ -3,9 +3,9 @@
   under the terms of the Eclipse Public License v2.0 which
   accompanies this distribution, and is available at
   https://www.eclipse.org/legal/epl-v20.html
- 
+
   SPDX-License-Identifier: EPL-2.0
- 
+
   Copyright Contributors to the Zowe Project.
 */
 
@@ -99,13 +99,13 @@ export function submitJob(jclFileOrContent: string, printJobDebug: boolean = tru
 }
 
 /**
- * Returns job name, completion code, and status. If we cannot retrieve the completion code, it is set to the empty string. 
- * 
- * @param jobId 
- * @returns 
+ * Returns job name, completion code, and status. If we cannot retrieve the completion code, it is set to the empty string.
+ *
+ * @param jobId
+ * @returns
  */
 function getJobStatus(jobId: string): { status: string, cc: string, name: string } {
-  const getStatusCmd = std.getenv('ZWE_zowe_runtimeDirectory') + `/bin/utils/zowex job vs ${jobId} --rfc`;
+  const getStatusCmd = std.getenv('ZWE_zowe_runtimeDirectory') + `/bin/utils/zowex job view-status ${jobId} --rfc`;
   common.printDebug(`-- Running ${getStatusCmd}`);
   const result = shell.execOutSync('sh', '-c', `${getStatusCmd} 2>&1 && echo '.'`);
   let status = 'UNKNOWN';
@@ -114,21 +114,16 @@ function getJobStatus(jobId: string): { status: string, cc: string, name: string
   if (result.rc == 0) { // job not found rc=255, empty job rc=1
     result.out?.split('\n').forEach((line) => {
       if (line.includes(jobId)) {
-        /*     
-        Sample outputs (only one such line returned with `zowex job vs`)
-        JOB05625,CC 0000,IEFBR14$,OUTPUT,J0005625SVSCJES2E131FBE0.......:
-        JOB05624,CC 0000,IEFBR14$,OUTPUT,J0005624SVSCJES2E131FBDF.......:
-        TSU05611,ABEND 222,USERABC,OUTPUT,T0005611SVSCJES2E131F631.......:
-        JOB05609,CANCELED,LONGJOB,OUTPUT,J0005609SVSCJES2E131ED16.......:
-        JOB05607,CANCELED,LONGJOB,OUTPUT,J0005607SVSCJES2E131ED14.......:
-        JOB05602,CC 0000,ATLJ0000,OUTPUT,J0005602SVSCJES2E131ED0F.......:
-        JOB05586,CC 0000,ATLJ0000,OUTPUT,J0005586SVSCJES2E131ECF4.......:
-        TSU05815,,USERABC,ACTIVE,T0005815SVSCJES2E132110A.......:
+        /*
+        Sample outputs (only one such line returned with `zowex job view-status`)
+        TSU83841,ABEND 522,JOHN1234,OUTPUT,T0083841NODELPARE146573E.......:,AWAITING OUTPUT
+        JOB60356,SEC ERROR,ZWESECUR,OUTPUT,J0060356NODELPARE1462840.......:,AWAITING OUTPUT
+        JOB33252,CC 0000,ZWEINSTL,OUTPUT,J0033252NODELPARE1497477.......:,AWAITING OUTPUT
         */
-        const columns = line.split(',').reverse(); //TODO: commas should be safe, not legal jobname/correlator? how about user id?
-        status = columns[1];
+        const columns = line.split(','); //TODO: commas should be safe, not legal jobname/correlator? how about user id?
+        compCode = columns[1];
         jobName = columns[2];
-        compCode = columns[3];
+        status = columns[3];
       }
     })
   }

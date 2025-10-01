@@ -34,7 +34,7 @@
 #              If unset, conversion happens in-place
 #              If set, conversion will mirror directory structure in output
 # (output) converted files or directory following $2
-# TODO: is this replacable with autoconv?
+# TODO: is this replaceable with autoconv?
 # ---------------------------------------------------------------------
 function _convertEbcdicToAscii {
     input=$1
@@ -240,6 +240,7 @@ cp "${ZOWE_ROOT_DIR}/bin/utils/zowe-server/zowex" "${ZOWE_ROOT_DIR}/bin/utils/zo
 chmod +x "${ZOWE_ROOT_DIR}/bin/utils/zowex"
 cd "${ZOWE_ROOT_DIR}/bin/utils"
 rm -rf "${ZOWE_ROOT_DIR}/bin/utils/zowe-server"
+rm -rf "${zowex_components}"
 
 echo "[$SCRIPT_NAME] change keyring-util to be executable ..."
 chmod +x "${ZOWE_ROOT_DIR}"/bin/utils/keyring-util/keyring-util
@@ -318,7 +319,7 @@ EOT
 echo "[$SCRIPT_NAME] extract components"
 mkdir -p "${BASE_DIR}/logs"
 mkdir -p "${ZOWE_ROOT_DIR}/components"
-for component in launcher zlux-core zss apiml-common-lib common-java-lib apiml-sample-extension zaas gateway caching-service discovery api-catalog explorer-jes explorer-mvs explorer-uss; do
+for component in launcher zlux-core zss apiml-common-lib common-java-lib apiml-sample-extension apiml zaas gateway caching-service discovery api-catalog explorer-jes explorer-mvs explorer-uss; do
   echo "[$SCRIPT_NAME] - ${component}"
   component_file=$(find "${ZOWE_ROOT_DIR}/files" -type f \( -name "${component}*.pax" -o -name "${component}*.zip" \) | head -n 1)
   "${ZOWE_ROOT_DIR}/bin/zwe" \

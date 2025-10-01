@@ -125,6 +125,10 @@ shell_read_yaml_config() {
   key="${3}"
   required="${4}"
 
+  if [ ! -f "${yaml_file}" ]; then
+    return
+  fi
+
   val=$(cat "${yaml_file}" | awk "/^ *${parent_key}:/{x=NR+2000;next}(NR<=x){print}" | grep -e "^ \+${key}:" | head -n 1 | awk -F: '{print $2;}' | tr -d '[[:space:]]' | sed -e 's/^"//' -e 's/"$//')
   if [ -z "${val}" ]; then
     if [ "${required}" = "true" ]; then
@@ -183,16 +187,22 @@ read_yaml() {
 }
 
 read_yaml_configmgr() {
-  file="${1}"
+  inpFile="${1}"
   key=$(echo "${2}" | tr '.' '/')
   ignore_null="${3:-true}"
+
+  if [[ ${inpFile} == "FILE("* ]] || [[ ${inpFile} == "PARMLIB("* ]]; then
+    file="${inpFile}"
+  else
+    file="FILE(${inpFile})"
+  fi
 
   print_trace "- read_yaml_configmgr process ${file} and extract '${2} -> ${key}'"
 
   configmgr="${ZWE_zowe_runtimeDirectory}/bin/utils/configmgr"
   schema="${ZWE_zowe_runtimeDirectory}/schemas/server-common.json:${ZWE_zowe_runtimeDirectory}/schemas/zowe-yaml-schema.json"
 
-  result=$(_CEE_RUNOPTS="XPLINK(ON)" "${configmgr}" -s "$schema" -p "FILE(${file})" extract "${key}" 2>&1)
+  result=$(_CEE_RUNOPTS="XPLINK(ON)" "${configmgr}" -s "$schema" -p "${file}" extract "${key}" 2>&1)
   code=$?
 
   print_trace "  * Exit code: ${code}"
