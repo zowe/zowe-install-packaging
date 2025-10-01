@@ -37,10 +37,10 @@ zowe:
   #-------------------------------------------------------------------------------
   setup:
     jcl:
-      # When enabled, "zwe init" will use job submission for system changes
+      # When enabled, "zwe install & init" will use job submission for system changes
       # instead of shell commands. A `--dry-run` option is also enabled
       # which allows you to see jobs instead of submitting.
-      enable: false
+      enable: true
       # Edit to set a header for job cards. Some systems need this, but not all.
       # See `zwe init generate --help` for examples.
       header: ""
