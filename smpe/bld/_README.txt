@@ -9,6 +9,7 @@ Table of contents
 * Remove product data set to build
 * Remove product member from build
 * Remove SMPE-only member/file from build
+* Mark a PTF as PE
 * Flow for SMP/E packaging build
 * Additional tools
 * FMID (base) build
@@ -155,17 +156,17 @@ site requirements.
 
 Adding or removing Zowe components
 ---------------------------
-When modifying Zowe components included in the PAX via manifest.json.template, 
-changes may be required to the SMPMCS.txt and smpe-split.sh scripts. The smpe-split.sh 
+When modifying Zowe components included in the PAX via manifest.json.template,
+changes may be required to the SMPMCS.txt and smpe-split.sh scripts. The smpe-split.sh
 script chunks the Zowe install into multiple PAX files, which are included in the SMPMCS.txt
 file as HFS definitions. For example:
 ++HFS(ZWEPAX02)      SYSLIB(SZWEZFS ) DISTLIB(AZWEZFS ) RELFILE(4)
 
 In general, adding new components will continue to work with the SMP/e build,
-while removing components, either by renaming directories or deleting them outright, 
+while removing components, either by renaming directories or deleting them outright,
 will result in errors.
 
-See the smpe-split.sh script for additional inline documentation, and consult with an IBM SMP/e 
+See the smpe-split.sh script for additional inline documentation, and consult with an IBM SMP/e
 engineer before finalizing any changes to the smpe-split.sh or SMPMCS.txt file.
 
 
@@ -226,6 +227,23 @@ Actual removal:
 Remove SMPE-only member/file from build
 ---------------------------------------
 TODO
+
+Mark a PTF as PE
+----------------
+Note: Can ONLY be done by a community build engineer working for IBM
+PTFs are marked as PE (Program in Error) by creating an APAR that marks
+the PTF PE. Zowe uses APARs and PTFs that are pre-created by IBM, which
+implies we must update an existing APAR instead of creating a new one.
+The APAR that marks a PTF as PE must be the one that fixes the issue.
+For Zowe this normally is the APAR currently being used for daily build.
+A community build engineer working for IBM will use zService to update
+the PE field in the Closing Information tab of the APAR.
+1. Check PE check box
+2. Uncheck Draft check box
+3. Check affected PTF(s) in drop-down list
+4. Save
+Other companies that provide Zowe PTFs through their own store-front
+must do something similar to have the Zowe PTFs in error marked as PE.
 
 Flow for SMP/E packaging build
 ------------------------------
@@ -290,14 +308,14 @@ An APAR-fix will never be published on zowe.org, but can be retrieved
 from Artifactory and provided to a customer that requires an SMP/E
 installable fix.
 
-Note: Security/integrity issues require special treatment, and are 
+Note: Security/integrity issues require special treatment, and are
       processed using a special APAR that has the sec/int flag set.
       It is expected that each PTF will resolve one or more sec/int
       issues. To simplify administration work, sec/int APARs are not
       pulled from apar-bucket.txt and tracked in current-apar.txt, but
       are added to a ptf definition in ptf-bucket.txt. Upon PTF
       promotion, an IBM-employed build engineer will handle the special
-      treatment for the embedded sec/int APAR during the APAR closing 
+      treatment for the embedded sec/int APAR during the APAR closing
       process.
 
 Since an APAR-fix build requires updates to the zowe-install-packaging

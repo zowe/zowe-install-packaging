@@ -2,6 +2,16 @@
 
 All notable changes to the Zowe Installer will be documented in this file.
 
+## `3.4.0`
+
+- Bugfix: internal routine `copy_to_data_set` did not correctly check if data set exists. [#4476](https://github.com/zowe/zowe-install-packaging/pull/4476)
+- Bugfix: Zowe startup now removes outdated static definition files from workspace/api-mediation/api-defs, which previously caused wrong or duplicate registrations of servers to APIML. [#4526](https://github.com/zowe/zowe-install-packaging/pull/4526)
+- Bugfix: `--update-config` might fail if the specified config file is a symbolic link. [#4492](https://github.com/zowe/zowe-install-packaging/pull/4492)
+
+## `3.3.1`
+
+- Bugfix: z/OSMF static definition is missing scheme information, this is needed for AT-TLS hybrid scenarios where connections TO z/OSMF do not follow AT-TLS rules [#4512](https://github.com/zowe/zowe-install-packaging/pull/4512)
+
 ## `3.3.0`
 
 - Bugfix: YAML lookup for HA instances within "haInstances" was not working when HA instance names were uppercase. Now, the lookup is case insensitive to allow for any casing of HA instance names. [#4370](https://github.com/zowe/zowe-install-packaging/pull/4370)
