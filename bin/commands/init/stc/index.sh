@@ -254,7 +254,7 @@ else
   print_message
 fi
 
-if [ "${any_stc_existence}" = "true" ] && [ "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITE}" != "true" ]; then
+if [ "${any_jcl_existence}" = "true" ] || [ "${any_stc_existence}" = "true" ] && [ "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITE}" != "true" ]; then
   print_message "Skipped writing to ${proclib}. To write, you must use --allow-overwrite."
 else
   ###############################
