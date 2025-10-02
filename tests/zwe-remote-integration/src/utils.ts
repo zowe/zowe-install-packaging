@@ -67,7 +67,9 @@ export function processManifestVersion(version: string, repository: string = und
     // parse semantic version, this may throw exception if version is invalid
     if (semver.prerelease(version)) {
       repoOut = `${repository ? repository : REPOSITORY_SNAPSHOT}`;
-      versionOut = `${semver.major(version)}.${semver.minor(version)}.${semver.patch(version)}-${semver.prerelease(version)}/`;
+      // semver turns ..-3.X-RC to ..-3,X-RC
+      const prerelease = `${semver.prerelease(version, false)}`.replaceAll(',', '.');
+      versionOut = `${semver.major(version)}.${semver.minor(version)}.${semver.patch(version)}-${prerelease}`;
     } else {
       // this is formal release
       repoOut = `${repository ? repository : REPOSITORY_RELEASE}`;

@@ -2,9 +2,12 @@ Init Zowe instance based on zowe.yaml configuration.
 
 You can find an `example-zowe.yaml` in Zowe runtime directory folder.
 
+This command can initialize Zowe using either pure JCL or shell scripts and utilities.
+If you want to use pure JCL, set `zowe.setup.jcl.enable` to `true` or run commands with the `--jcl` parameter.
+
 This command will run these sub-commands in sequence:
 
-- `zwe init generate`
+- (Pure JCL only) `zwe init generate`
 - `zwe init mvs`
 - `zwe init vsam`
 - `zwe init apfauth`
@@ -13,10 +16,22 @@ This command will run these sub-commands in sequence:
 - `zwe init stc`
 
 If you pass `--dry-run` with this command, each subcommand will print out the
-JCL that it would submit, without doing the submission. This can be used to
+JCL that it would submit or actions it would take in shell without modifying the system. This can be used to
 review what Zowe would do before doing it.
 
-The following are the JCL submitted by each command as needed
+If you pass `--skip-security-setup` with this command, `zwe init apfauth` and
+`zwe init security` steps will be skipped.
+
+If you pass `--update-config` with this command, these configurations could
+be written back to your Zowe YAML configuration file:
+
+- `zowe.runtimeDirectory` based on where your `zwe` command is located, and if it
+  is not defined,
+- `zowe.certificate` based on your `zowe.setup.certificate` configuration,
+- `java.home` based on your current JAVA_HOME or automatic detection,
+- `node.home` based on your current NODE_HOME or automatic detection.
+
+If you are using the pure JCL option, the following are the JCL submitted by each command as needed:
 
 - `zwe init mvs`
     - ZWEIMVS2, ZWEIMVS, ZWEIMVS1
@@ -46,22 +61,21 @@ The following are the JCL submitted by each command as needed
     - ZWEISTC
     - (If `--allow-overwrite` specified and old members exist) ZWERSTC
 
-If you pass `--skip-security-setup` with this command, `zwe init apfauth` and
-`zwe init security` steps will be skipped.
 
-If you pass `--update-config` with this command, these configurations could
-be written back to your Zowe YAML configuration file:
+These Zowe YAML configurations showing with sample values are used:
 
-- `zowe.runtimeDirectory` based on where your `zwe` command is located, and if it
-  is not defined,
-- `zowe.certificate` based on your `zowe.setup.certificate` configuration,
-- `java.home` based on your current JAVA_HOME or automatic detection,
-- `node.home` based on your current NODE_HOME or automatic detection.
+If you want to use JCL, include this in the Zowe YAML snippet:
+
+```yaml
+zowe:
+  setup:
+    jcl:
+      enable: true
+      header: ""   # optional jobcard information to include
+```
 
 **IMPORTANT**, if you modify any of the values below, it's suggested to re-run
 relevant `zwe init` command to make them taking effect.
-
-These Zowe YAML configurations showing with sample values are used:
 
 ```yaml
 zowe:

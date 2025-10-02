@@ -94,7 +94,7 @@ describe(`${testSuiteName}`, () => {
       expect(launchYaml).toEqual(zweYaml);
 
       // try to extract json from launcher stdout
-      const regex = /INFO ZWEL0018I.*?(\{.*\}).*?mkey='/gims;
+      const regex = /INFO ZWEL0018I.*?(\{.*\}).*?mkey='ha/gims;
       const matches = regex.exec(launcherRes.cleanedStdout);
       expect(matches.length).toBe(2);
       const jsonGroup = matches[1];

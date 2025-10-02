@@ -11,6 +11,17 @@
         <General/>
     </workflowInfo>
     <!--variables-->
+    <variable name="zowe_setup_jcl_enable" scope="instance" visibility="public"> 
+      <label>Zowe should generate and use JCL as part of the installation process.</label>
+      <abstract>Zowe should generate and use JCL as part of the installation process.</abstract>
+      <description>Set this to true to have Zowe use JCL during the installation and configuration scripts used in later workflow steps. If set to false, you do not need to fill out the JCL header information in the next field.</description>
+      <category>zowe</category>
+        <boolean>
+            <!-- Put validation here -->
+            <!-- Specify choices here -->
+            <default>false</default>
+        </boolean>
+    </variable>
     <variable name="zowe_setup_jcl_header" scope="global" visibility="public">
       <label>JOB statement positional parameters and keywords used by Zowe during installation and configuration.</label>
       <abstract>JOB statement positional parameters and keywords used by Zowe during installation and configuration.</abstract>
@@ -633,6 +644,7 @@ some use cases, like containerization, this port could be different.</descriptio
             <!-- pre-requisite step -->
             <!-- condition -->
             <!--variableValues-->
+            <variableValue name="zowe_setup_jcl_enable" scope="instance" noPromptIfSet="false" required="false" />
             <variableValue name="zowe_setup_jcl_header" scope="global" noPromptIfSet="false" required="false" />
             <variableValue name="zowe_setup_dataset_prefix" scope="instance" noPromptIfSet="false" required="true"/>
             <variableValue name="zowe_setup_dataset_proclib" scope="instance" noPromptIfSet="false" required="true"/>
@@ -773,21 +785,28 @@ echo '  # As seen in the documentation:' >> "${instance-zowe_runtimeDirectory}/z
 echo '  # https://docs.zowe.org/stable/user-guide/zos-components-installation-checklist' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '  #-------------------------------------------------------------------------------' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '  setup:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-#if (${global-zowe_setup_jcl_header.trim().length()} > 0 )
-echo '    # JCL job header for samples in SZWESAMP' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '    jcl:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '      # When enabled, "zwe init" will use job submission for system changes' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '      # instead of shell commands. A `--dry-run` option is also enabled' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '      # which allows you to see jobs instead of submitting.' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '      enable: ${instance-zowe_setup_jcl_enable}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '      # Edit to set a header for job cards. Some systems need this, but not all.' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '      # See `zwe init generate --help` for examples.' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+#if (${global-zowe_setup_jcl_header.trim().length()} > 0 )
   #if (${global-zowe_setup_jcl_header.trim().includes("\n")} == -1)
-echo '      header: ${global-zowe_setup_jcl_header.trim()}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '      header: "${global-zowe_setup_jcl_header.trim()}"' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
   #else
-echo '      header:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '      header: |' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
     #foreach($line in ${global-zowe_setup_jcl_header.split("\n")})
       #if (${foreach.index} == 0)
-echo '      - ${line}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '        ${line}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
       #else
-echo '      - //    ${line}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '        //    ${line}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
       #end
     #end
   #end
+#else
+echo '      header: ""' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 #end
 echo '    # MVS data set related configurations' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '    dataset:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
@@ -913,10 +932,10 @@ echo '    #   # Type of certificate storage. Valid values are: PKCS12, JCERACFKS
 echo '    #   type: JCERACFKS' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '    #   keyring:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '    #     name: ZoweKeyring' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '    #     # # Label of Zowe certificate. Optional, default value is localhost.' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '    #     # label: localhost' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '    #     # # label of Zowe CA certificate. Optional, default value is localca.' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '    #     # caLabel: localca' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '    #     # # Label of Zowe certificate. Default value is localhost.' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '    #     label: localhost' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '    #     # # label of Zowe CA certificate. Default value is localca.' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '    #     caLabel: localca' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '    #   # # Distinguished name for Zowe generated certificates. All optional.' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '    #   # dname:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '    #   #   caCommonName: ""' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
@@ -963,8 +982,8 @@ echo '    #   # Type of certificate storage. Valid values are: PKCS12, JCERACFKS
 echo '    #   type: JCERACFKS' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '    #   keyring:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '    #     name: ZoweKeyring' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '    #     # # Label of Zowe certificate. Optional, default value is localhost.' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '    #     # label: localhost' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '    #     # # Label of Zowe certificate. Default value is localhost.' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '    #     label: localhost' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '    #     import:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '    #       # Name of the data set holds the certificate issued by other CA.' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '    #       # This data set should be in PKCS12 format and contain private key.' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
@@ -1220,6 +1239,12 @@ echo '#-------------------------------------------------------------------------
 echo 'components:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '  # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '  apiml:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '    enabled: false' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '    debug: false' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '  # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '  gateway:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '    enabled: true' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '    port: ${instance-components_gateway_port}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
@@ -1387,12 +1412,14 @@ echo '#       zss:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '#         port: 28542' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '#       caching-service:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '#         enabled: false' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+#if (${instance-zowe_setup_jcl_enable} == "true" )
 
 export JAVA_HOME='${instance-java_home}'
 export PATH=$PATH:'${instance-zowe_runtimeDirectory}/bin'
 
 zwe init generate --allow-overwrite -c '${instance-zowe_runtimeDirectory}/zowe.yaml'
 
+#end
 ]]></inlineTemplate>
             <submitAs maxRc="0">shell-JCL</submitAs>
             <maxLrecl>1024</maxLrecl>

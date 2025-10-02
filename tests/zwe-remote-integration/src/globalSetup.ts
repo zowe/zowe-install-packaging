@@ -52,6 +52,7 @@ function setupBaseYaml() {
   zoweYaml.zowe.runtimeDirectory = REMOTE_SYSTEM_INFO.ussTestDir;
   zoweYaml.zowe.logDirectory = REMOTE_SYSTEM_INFO.zweLogDir;
   zoweYaml.zowe.workspaceDirectory = REMOTE_SYSTEM_INFO.zweWorkspaceDir;
+  zoweYaml.zowe.setup.jcl.enable = true; // we only test JCL version of init/install
   zoweYaml.zowe.setup.dataset.prefix = REMOTE_SYSTEM_INFO.prefix;
   zoweYaml.zowe.setup.dataset.jcllib = REMOTE_SYSTEM_INFO.jcllib;
   zoweYaml.zowe.setup.dataset.proclib = REMOTE_SYSTEM_INFO.proclib;
@@ -204,6 +205,8 @@ module.exports = async () => {
       await downloadArtifact('libs-snapshot-local', 'org/zowe/vtl-cli/zowe-cli-package/1.0.7-SNAPSHOT', 'vtl.tar.gz');
     }
 
+    await downloadManifestDep('org.zowe.zowe-native-proto');
+
     const downloadsDirContents = fs.readdirSync(downloadsDir);
 
     const launcherPax = downloadsDirContents.find((item) => /launcher.*\.pax/g.test(item));
@@ -238,7 +241,12 @@ module.exports = async () => {
 
     const vtlArchive = downloadsDirContents.find((item) => /vtl.tar.gz/g.test(item));
     if (vtlArchive == null) {
-      throw new Error('Could not locate vtl archive in the .build directory');
+      throw new Error('Could not locate vtl tar in the .build directory');
+    }
+
+    const zowexArchive = downloadsDirContents.find((item) => /zowe-server.*pax.Z/g.test(item));
+    if (zowexArchive == null) {
+      throw new Error('Could not locate zowex archive in the .build directory');
     }
 
     const getEsmArchive = downloadsDirContents.find((item) => /getesm.*.pax/g.test(item));
@@ -293,6 +301,11 @@ module.exports = async () => {
 
     console.log(`Uploading ${keyringUtilPax} to ${ussWorkDir}/keyring-util.pax...`);
     await files.Upload.fileToUssFile(zosmfSession, path.resolve(downloadsDir, keyringUtilPax), `${ussWorkDir}/${keyringUtilPax}`, {
+      binary: true,
+    });
+
+    console.log(`Uploading ${zowexArchive} to ${ussWorkDir}/zowex.pax.Z ...`);
+    await files.Upload.fileToUssFile(zosmfSession, path.resolve(downloadsDir, zowexArchive), `${ussWorkDir}/zowex.pax.Z`, {
       binary: true,
     });
 
@@ -418,6 +431,10 @@ module.exports = async () => {
       await uss.runCommand(`cp -X ${pgm} "//'${REMOTE_SYSTEM_INFO.szweload}(${pgm})'"`, ussWorkDir);
       await uss.runCommand(`cp ${pgm} ${REMOTE_SYSTEM_INFO.ussTestDir}/files/SZWELOAD`, ussWorkDir);
     }
+
+    console.log(`Unpacking zowex pax and placing zowex in utils directory ... `);
+    await uss.runCommand(`pax -ppx -rf zowex.pax.Z`, ussWorkDir);
+    await uss.runCommand(`cp -f ${ussWorkDir}/zowex ${REMOTE_SYSTEM_INFO.ussTestDir}/bin/utils`);
 
     console.log(`Unpacking zss pax and placing SAMPLIB in ${REMOTE_SYSTEM_INFO.szwesamp} ...`);
     await uss.runCommand(`mkdir -p ${REMOTE_SYSTEM_INFO.ussTestDir}/components/zss`);

@@ -154,6 +154,7 @@ rsync -rv \
   --exclude '*.png' \
   --exclude '*.tgz' \
   --exclude '*.tar.gz' \
+  --exclude '*.pax.Z' \
   --exclude '*.pax' \
   --exclude '*.pax.Z' \
   --exclude '*.jar' \

@@ -46,7 +46,7 @@ Familiarize yourself with these core concepts of the Zowe servers, which are ref
 ### Configuration Concepts
 **Zowe YAML File**: Each Instance is configured by a YAML document composed of one or more unix file or PDSE member. It can be as simple as a "zowe.yaml" unix file, or parmlib member, or advanced configuration can be accomplished by splitting configuration across multiple such files. This allows for defaults and customizations, splitting the configuration by administrative duty, or even splitting the configuration by core configuration versus extension configuration. 
 
-**Schema**: The YAML file is backed by a Schema, found within `runtimeDirectory/schemas` ([link](https://github.com/zowe/zowe-install-packaging/tree/v2.x/staging/schemas)). Whenever Zowe starts up, or when most `zwe` commands are used, Zowe will check that the YAML file is valid before executing the requested operation, to reduce chance of misconfiguration. The schema also details advanced configuration parameters that may not be needed in basic installs.
+**Schema**: The YAML file is backed by a Schema, found within `runtimeDirectory/schemas` ([link](https://github.com/zowe/zowe-install-packaging/tree/v3.x/master/schemas)). Whenever Zowe starts up, or when most `zwe` commands are used, Zowe will check that the YAML file is valid before executing the requested operation, to reduce chance of misconfiguration. The schema also details advanced configuration parameters that may not be needed in basic installs.
 
 **Configuration Templates**: Each YAML file can contain values that have templates within in the form of `${{ item }}` where the item within can be a reference to another property in the YAML, an environment variable, system symbol, or even simple conditional logic of them. This allows you to have configuration that works across multiple systems, such as by tying a hostname to `${{ zos.resolveSymbol('&SYSNAME') }}` to have the value be whatever the SYSNAME symbol is on a given LPAR. <br>([examples](https://github.com/zowe/docs-site/blob/c09f2a0763fa7c2925dc01489e89a71ba7b62fec/docs/images/configure/templating.png))
 
@@ -61,13 +61,13 @@ The Zowe server components are distributed in multiple forms, such as SMPE, PSWI
 The following covers installation when not using the Zowe Server Install Wizard. When using that instead, please refer to the prompts within it instead of this guide.
 
 ### SMPE or PSWI
-1. When you install Zowe via SMPE or PSWI, the Runtime directory and datasets will be populated.
+1. When you install Zowe via SMPE or PSWI, the Runtime directory and data sets will be populated.
 2. Navigate to the Runtime Directory and copy the [`example-zowe.yaml`](https://github.com/zowe/zowe-install-packaging/blob/v3.x/master/example-zowe.yaml) file to a location outside this folder, generally wherever you want to put the Zowe Instance.
 3. Edit the YAML copy to set the values of `zowe.runtimeDirectory`, `java.home`, `node.home`, and `zowe.setup.dataset`, as follows
    1. `zowe.runtimeDirectory`: The location you extracted the PAX to.
    2. `java.home`: The location of the Java that will be used when installing & running Zowe. For example, if your java is located at `/usr/lpp/java/J8.0_64/bin/java`, then the `java.home` is `/usr/lpp/java/J8.0_64`
    3. `node.home`: The location of the NodeJS that will be used when installing & running Zowe. For example, if your node is located at `/usr/lpp/node/v18/bin/node`, then the `node.home` is `/usr/lpp/node/v18`
-   4. `zowe.setup.dataset`: This section defines where both Runtime and Instance datasets of Zowe will be created.
+   4. `zowe.setup.dataset`: This section defines where both Runtime and Instance data sets of Zowe will be created.
 
 
 ### PAX
@@ -77,9 +77,9 @@ The following covers installation when not using the Zowe Server Install Wizard.
    1. `zowe.runtimeDirectory`: The location you extracted the PAX to.
    2. `java.home`: The location of the Java that will be used when installing & running Zowe. For example, if your java is located at `/usr/lpp/java/J8.0_64/bin/java`, then the `java.home` is `/usr/lpp/java/J8.0_64`
    3. `node.home`: The location of the NodeJS that will be used when installing & running Zowe. For example, if your node is located at `/usr/lpp/node/v18/bin/node`, then the `node.home` is `/usr/lpp/node/v18`
-   4. `zowe.setup.dataset`: This section defines where both Runtime and Instance datasets of Zowe will be created.
+   4. `zowe.setup.dataset`: This section defines where both Runtime and Instance data sets of Zowe will be created.
 5. Navigate to the `/bin` folder of the extracted location
-6. Run `./zwe install -c /path/to/zowe.yaml`. This creates the Runtime datasets for the Zowe release.
+6. Run `./zwe install -c /path/to/zowe.yaml`. This creates the Runtime data sets for the Zowe release.
 
 
 
@@ -87,7 +87,7 @@ The following covers installation when not using the Zowe Server Install Wizard.
 
 The following covers configuration when not using the Zowe Server Install Wizard. When using that instead, please refer to the prompts within it instead of this guide.
 Aside from the Zowe Server Install Wizard, there are three other ways to configure a Zowe Instance.
-1. **JCL samples**: The Zowe Runtime dataset SZWESAMP contains templates of JCL that must be substituted with Zowe YAML parameters before executed. That can be done manually, or automatically via editing and submitting the job ZWEGENER, which will place resolved JCL into the PDSE defined at `zowe.setup.dataset.jcllib`
+1. **JCL samples**: The Zowe Runtime data set SZWESAMP contains templates of JCL that must be substituted with Zowe YAML parameters before executed. That can be done manually, or automatically via editing and submitting the job ZWEGENER, which will place resolved JCL into the PDSE defined at `zowe.setup.dataset.jcllib`
 2. **zwe operations**: `zwe` is a Unix CLI program that has commands which will automate the execution of the JCL samples.
 3. **z/OSMF workflow**: The z/OSMF workflows will prompt you for Zowe YAML parameters before submitting jobs equivalent to the actions seen in the JCL samples.
 
@@ -102,7 +102,7 @@ Aside from the Zowe Server Install Wizard, there are three other ways to configu
 The Zowe Runtime Dataset `SZWESAMP` contains JCL samples that have templates referencing Zowe YAML parameters.
 They cannot be submitted without modification as a result.
 
-It is recommended to edit and submit the job SZWESAMP([ZWEGENER](https://github.com/zowe/zowe-install-packaging/tree/feature/v3/jcl/files/SZWESAMP/ZWEGENER)) which will validate the contents of your Zowe YAML before resolving the JCL templates and placing the resulting JCL into a separate PDSE created during installation, located at the value of `zowe.setup.dataset.jcllib`.
+It is recommended to edit and submit the job SZWESAMP([ZWEGENER](https://github.com/zowe/zowe-install-packaging/blob/v3.x/master/files/SZWESAMP/ZWEGENER)) which will validate the contents of your Zowe YAML before resolving the JCL templates and placing the resulting JCL into a separate PDSE created during installation, located at the value of `zowe.setup.dataset.jcllib`.
 
 When the JCL is prepared, the following jobs can be submitted to perform the following Instance configuration actions:
 
@@ -111,10 +111,10 @@ When the JCL is prepared, the following jobs can be submitted to perform the fol
 
 |Task|Description|Sample JCL|
 |---|---|---|
-|Create Instance Datasets|**Purpose:** Create datasets for Zowe's PARMLIB content and non-ZFS extension content for a given Zowe Instance<br><br>**Action:**<br>1) Allocate PDSE FB80 dataset with at least 15 tracks named from Zowe parameter `zowe.setup.dataset.parmlib`<br>2) Allocate PDSE FB80 dataset with at least 30 tracks named from Zowe parameter `zowe.setup.dataset.authPluginLib`<br>3) Copy ZWESIP00 member from `zowe.setup.dataset.prefix`.SZWESAMP into `zowe.setup.dataset.parmlib`|[ZWEIMVS](https://github.com/zowe/zowe-install-packaging/tree/feature/v3/jcl/files/SZWESAMP/ZWEIMVS)<br/><br/>[ZWEIMVS1](https://github.com/zowe/zowe-install-packaging/tree/feature/v3/jcl/files/SZWESAMP/ZWEIMVS1)|
-|APF Authorize privileged content|**Purpose:** Zowe contains one privileged component, ZIS, which enables the security model by which the majority of Zowe is unprivileged and in key 8. The load library for the ZIS component and its extension library must be set APF authorized and run in key 4 to use ZIS and components that depend upon it.<br><br>**Action:**<br>1) APF authorize the datasets defined at `zowe.setup.dataset.authLoadlib` and `zowe.setup.dataset.authPluginLib`.<br>2) Define PPT entries for the members ZWESIS01 and ZWESAUX as Key 4, NOSWAP in the SCHEDxx member of the system PARMLIB.|[ZWEIAPF](https://github.com/zowe/zowe-install-packaging/tree/feature/v3/jcl/files/SZWESAMP/ZWEIAPF)|
-|Grant SAF permissions|The STC accounts for Zowe need permissions for operating servers, and users need permissions for interacting with the servers.<br><br>**Action:** [Set SAF permissions for accounts](https://docs.zowe.org/stable/user-guide/assign-security-permissions-to-users#security-permissions-reference-table)|RACF: [ZWEIRAC](https://github.com/zowe/zowe-install-packaging/tree/feature/v3/jcl/files/SZWESAMP/ZWEIRAC)<br><br>TSS: [ZWEITSS](https://github.com/zowe/zowe-install-packaging/tree/feature/v3/jcl/files/SZWESAMP/ZWEITSS)<br><br>ACF2: [ZWEIACF](https://github.com/zowe/zowe-install-packaging/tree/feature/v3/jcl/files/SZWESAMP/SZWIACF)|
-|Copy STC JCL to PROCLIB|**Purpose**: ZWESLSTC is the job for running Zowe's webservers, and ZWESISTC is for running the APF authorized cross-memory server. The ZWESASTC job is started by ZWESISTC on an as-needed basis.<br><br>**Action**: Copy the members ZWESLSTC, ZWESISTC, and ZWESASTC into your desired PROCLIB. If the job names are customized, also modify the YAML values of them in `zowe.setup.security.stcs`|[ZWEISTC](https://github.com/zowe/zowe-install-packaging/tree/feature/v3/jcl/files/SZWESAMP/ZWEISTC)|
+|Create Instance Datasets|**Purpose:** Create data sets for Zowe's PARMLIB content and non-ZFS extension content for a given Zowe Instance<br><br>**Action:**<br>1) Allocate PDSE FB80 data set with at least 15 tracks named from Zowe parameter `zowe.setup.dataset.parmlib`<br>2) Allocate PDSE FB80 data set with at least 30 tracks named from Zowe parameter `zowe.setup.dataset.authPluginLib`<br>3) Allocate PDSE FB80 data set with at least 30 tracks named from Zowe parameter `zowe.setup.dataset.authLoadlib`<br>4) Copy ZWESIP00 member from `zowe.setup.dataset.prefix`.SZWESAMP into `zowe.setup.dataset.parmlib`|[ZWEIMVS](https://github.com/zowe/zowe-install-packaging/blob/v3.x/master/files/SZWESAMP/ZWEIMVS)<br/><br/>[ZWEIMVS1](https://github.com/zowe/zowe-install-packaging/blob/v3.x/master/files/SZWESAMP/ZWEIMVS1)<br><br>[ZWEIMVS2](https://github.com/zowe/zowe-install-packaging/blob/v3.x/master/files/SZWESAMP/ZWEIMVS2)|
+|APF Authorize privileged content|**Purpose:** Zowe contains one privileged component, ZIS, which enables the security model by which the majority of Zowe is unprivileged and in key 8. The load library for the ZIS component and its extension library must be set APF authorized and run in key 4 to use ZIS and components that depend upon it.<br><br>**Action:**<br>1) APF authorize the data sets defined at `zowe.setup.dataset.authLoadlib` and `zowe.setup.dataset.authPluginLib`.<br>2) Define PPT entries for the members ZWESIS01 and ZWESAUX as Key 4, NOSWAP in the SCHEDxx member of the system PARMLIB.|[ZWEIAPF2](https://github.com/zowe/zowe-install-packaging/blob/v3.x/master/files/SZWESAMP/ZWEIAPF2)|
+|Grant SAF permissions|The STC accounts for Zowe need permissions for operating servers, and users need permissions for interacting with the servers.<br><br>**Action:** [Set SAF permissions for accounts](https://docs.zowe.org/stable/user-guide/assign-security-permissions-to-users#security-permissions-reference-table)|RACF: [ZWEIRAC](https://github.com/zowe/zowe-install-packaging/blob/v3.x/master/files/SZWESAMP/ZWEIRAC)<br><br>TSS: [ZWEITSS](https://github.com/zowe/zowe-install-packaging/blob/v3.x/master/files/SZWESAMP/ZWEITSS)<br><br>ACF2: [ZWEIACF](https://github.com/zowe/zowe-install-packaging/blob/v3.x/master/files/SZWESAMP/SZWIACF)|
+|Copy STC JCL to PROCLIB|**Purpose**: ZWESLSTC is the job for running Zowe's webservers, and ZWESISTC is for running the APF authorized cross-memory server. The ZWESASTC job is started by ZWESISTC on an as-needed basis.<br><br>**Action**: Copy the members ZWESLSTC, ZWESISTC, and ZWESASTC into your desired PROCLIB. If the job names are customized, also modify the YAML values of them in `zowe.setup.security.stcs`|[ZWEISTC](https://github.com/zowe/zowe-install-packaging/blob/v3.x/master/files/SZWESAMP/ZWEISTC)|
 
 
 #### Keyring Tasks
@@ -148,20 +148,21 @@ zowe:
 
 |Keyring Setup Type|Description|Sample JCL|
 |---|---|---|
-|1|Zowe will create a keyring and populate it with a newly generated certificate and certificate authority. The certificate would be seen as "self-signed" by clients unless import of the CA to clients is performed|RACF: [ZWEIKRR1](https://github.com/zowe/zowe-install-packaging/tree/feature/v3/jcl/files/SZWESAMP/ZWEIKRR1)<br><br>TSS: [ZWEIKRT1](https://github.com/zowe/zowe-install-packaging/tree/feature/v3/jcl/files/SZWESAMP/ZWEIKRT1)<br><br>ACF2: [ZWEIKRA1](https://github.com/zowe/zowe-install-packaging/tree/feature/v3/jcl/files/SZWESAMP/ZWEIKRA1)|
-|2|Zowe will create a keyring and populate it by connecting pre-existing certificates and CAs that you specify.|RACF: [ZWEIKRR2](https://github.com/zowe/zowe-install-packaging/tree/feature/v3/jcl/files/SZWESAMP/ZWEIKRR2)<br><br>TSS: [ZWEIKRT2](https://github.com/zowe/zowe-install-packaging/tree/feature/v3/jcl/files/SZWESAMP/ZWEIKRT2)<br><br>ACF2: [ZWEIKRA2](https://github.com/zowe/zowe-install-packaging/tree/feature/v3/jcl/files/SZWESAMP/ZWEIKRA2)|
-|3|Zowe will create a keyring and populate it by importing PKCS12 content from a dataset that you specify.|RACF: [ZWEIKRR3](https://github.com/zowe/zowe-install-packaging/tree/feature/v3/jcl/files/SZWESAMP/ZWEIKRR3)<br><br>TSS: [ZWEIKRT3](https://github.com/zowe/zowe-install-packaging/tree/feature/v3/jcl/files/SZWESAMP/ZWEIKRT3)<br><br>ACF2: [ZWEIKRA3](https://github.com/zowe/zowe-install-packaging/tree/feature/v3/jcl/files/SZWESAMP/ZWEIKRA3)|
+|1|Zowe will create a keyring and populate it with a newly generated certificate and certificate authority. The certificate would be seen as "self-signed" by clients unless import of the CA to clients is performed|RACF: [ZWEIKRR1](https://github.com/zowe/zowe-install-packaging/blob/v3.x/master/files/SZWESAMP/ZWEIKRR1)<br><br>TSS: [ZWEIKRT1](https://github.com/zowe/zowe-install-packaging/blob/v3.x/master/files/SZWESAMP/ZWEIKRT1)<br><br>ACF2: [ZWEIKRA1](https://github.com/zowe/zowe-install-packaging/blob/v3.x/master/files/SZWESAMP/ZWEIKRA1)|
+|2|Zowe will create a keyring and populate it by connecting pre-existing certificates and CAs that you specify.|RACF: [ZWEIKRR2](https://github.com/zowe/zowe-install-packaging/blob/v3.x/master/files/SZWESAMP/ZWEIKRR2)<br><br>TSS: [ZWEIKRT2](https://github.com/zowe/zowe-install-packaging/blob/v3.x/master/files/SZWESAMP/ZWEIKRT2)<br><br>ACF2: [ZWEIKRA2](https://github.com/zowe/zowe-install-packaging/blob/v3.x/master/files/SZWESAMP/ZWEIKRA2)|
+|3|Zowe will create a keyring and populate it by importing PKCS12 content from a data set that you specify.|RACF: [ZWEIKRR3](https://github.com/zowe/zowe-install-packaging/blob/v3.x/master/files/SZWESAMP/ZWEIKRR3)<br><br>TSS: [ZWEIKRT3](https://github.com/zowe/zowe-install-packaging/blob/v3.x/master/files/SZWESAMP/ZWEIKRT3)<br><br>ACF2: [ZWEIKRA3](https://github.com/zowe/zowe-install-packaging/blob/v3.x/master/files/SZWESAMP/ZWEIKRA3)|
 </details>
 <br>
 
 JCL samples for removing Zowe configuration also exist.
 |Action|Sample JCL|
 |---|---|
-|Remove Instance Parmlib Dataset|[ZWERMVS](https://github.com/zowe/zowe-install-packaging/tree/feature/v3/jcl/files/SZWESAMP/ZWERMVS)|
-|Remove Instance ZIS Plugins Dataset|[ZWERMVS1](https://github.com/zowe/zowe-install-packaging/tree/feature/v3/jcl/files/SZWESAMP/ZWERMVS1)|
-|Remove SAF Permissions|[ZWENOSEC](https://github.com/zowe/zowe-install-packaging/tree/feature/v3/jcl/files/SZWESAMP/ZWENOSEC)|
-|Remove Keyring|[ZWENOKR](https://github.com/zowe/zowe-install-packaging/tree/feature/v3/jcl/files/SZWESAMP/ZWENOKR)|
-|Remove Caching Service VSAM Dataset|[ZWECSRVS](https://github.com/zowe/zowe-install-packaging/tree/feature/v3/jcl/files/SZWESAMP/ZWECSRVS)|
+|Remove Instance Parmlib Dataset|[ZWERMVS](https://github.com/zowe/zowe-install-packaging/blob/v3.x/master/files/SZWESAMP/ZWERMVS)|
+|Remove Instance ZIS Plugins Dataset|[ZWERMVS1](https://github.com/zowe/zowe-install-packaging/blob/v3.x/master/files/SZWESAMP/ZWERMVS1)|
+|Remove Instance Authorized Loadlib Dataset|[ZWERMVS2](https://github.com/zowe/zowe-install-packaging/blob/v3.x/master/files/SZWESAMP/ZWERMVS2)|
+|Remove SAF Permissions|[ZWENOSEC](https://github.com/zowe/zowe-install-packaging/blob/v3.x/master/files/SZWESAMP/ZWENOSEC)|
+|Remove Keyring|[ZWENOKR](https://github.com/zowe/zowe-install-packaging/blob/v3.x/master/files/SZWESAMP/ZWENOKR)|
+|Remove Caching Service VSAM Dataset|[ZWECSRVS](https://github.com/zowe/zowe-install-packaging/blob/v3.x/master/files/SZWESAMP/ZWECSRVS)|
 
 <br>
 <br>
@@ -174,8 +175,8 @@ JCL samples for removing Zowe configuration also exist.
 
 `zwe` is a unix tool located in the `<Runtime Directory>/bin` directory of Zowe.
 If you type `zwe init --help`, you will see each configuration command that is available.
-Each command reads configuration properties from the Zowe YAML files, and combines that with the JCL samples from the SZWESAMP dataset.
-The commands resolve the JCL sample templates into usable JCL within the dataset defined by YAML value `zowe.setup.dataset.jcllib`.
+Each command reads configuration properties from the Zowe YAML files, and combines that with the JCL samples from the SZWESAMP data set.
+The commands resolve the JCL sample templates into usable JCL within the data set defined by YAML value `zowe.setup.dataset.jcllib`.
 Before each command runs, it will print the JCL that it is submitting.
 
 Using `zwe init` is an alternative to using the JCL samples from the previous section.
@@ -190,7 +191,7 @@ The following commands can be run to set up a Zowe Instance via `zwe`
 
 |Task|Description|Command|Doc|
 |---|---|---|---|
-|Create Instance Datasets|Creates datasets for holding PARMLIB content and non-ZFS Extension content that is particular to one Zowe instance|`zwe init mvs`|[Doc](https://docs.zowe.org/stable/appendix/zwe_server_command_reference/zwe/init/zwe-init-mvs)|
+|Create Instance Datasets|Creates data sets for holding PARMLIB content and non-ZFS Extension content that is particular to one Zowe instance|`zwe init mvs`|[Doc](https://docs.zowe.org/stable/appendix/zwe_server_command_reference/zwe/init/zwe-init-mvs)|
 |APF Authorize privileged content|Zowe contains one privileged component, ZIS, which enables the security model by which the majority of Zowe is unprivileged and in key 8. The load library for the ZIS component (SZWEAUTH, or customized via YAML value `zowe.setup.dataset.authLoadlib`) and its extension library (The value value `zowe.setup.dataset.authPluginLib`) must be set APF authorized and run in key 4 to use ZIS and components that depend upon it|`zwe init apfauth`|[Doc](https://docs.zowe.org/stable/appendix/zwe_server_command_reference/zwe/init/zwe-init-apfauth)|
 |Grant SAF permissions|The STC accounts for Zowe need permissions for operating servers, and users need permissions for interacting with the servers.|`zwe init security`|[Doc](https://docs.zowe.org/stable/appendix/zwe_server_command_reference/zwe/init/zwe-init-security)|
 |Copy STC JCL to PROCLIB|The jobs for starting the Zowe webservers, ZWESLSTC, and the Zowe APF authorized cross-memory server, ZWESISTC, and its auxiliary address space, ZWESASTC, must be copied to the desired proclib for running. The YAML value `zowe.setup.dataset.proclib` defines where these members will be placed. The names of the members can be customized with YAML value `zowe.setup.security.stcs`|`zwe init stc`|[Doc](https://docs.zowe.org/stable/appendix/zwe_server_command_reference/zwe/init/zwe-init-stc)|
@@ -231,7 +232,7 @@ zowe:
 |2|Zowe will create a ZFS keystore and populate it with PKCS12 certificate and certificate authority content that you provide.|
 |3|Zowe will create a keyring and populate it with a newly generated certificate and certificate authority. The certificate would be seen as "self-signed" by clients unless import of the CA to clients is performed|
 |4|Zowe will create a keyring and populate it by connecting pre-existing certificates and CAs that you specify.|
-|5|Zowe will create a keyring and populate it by importing PKCS12 content from a dataset that you specify.|
+|5|Zowe will create a keyring and populate it by importing PKCS12 content from a data set that you specify.|
 </details>
 </details>
 

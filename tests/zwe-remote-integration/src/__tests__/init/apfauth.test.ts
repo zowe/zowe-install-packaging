@@ -14,6 +14,7 @@ import * as zosfiles from '../../zos/Files';
 import { RemoteTestRunner } from '../../zos/RemoteTestRunner';
 import { ZoweConfig } from '../../config/ZoweConfig';
 import { FileType, TestFileActions, TestFile } from '../../zos/TestFileActions';
+import { createPds } from '../../zos/Files';
 
 const testSuiteName = 'init-apfauth';
 const itIf = (condition: boolean, ...args: Parameters<typeof test>) => (condition ? test(...args) : test.skip(...args));
@@ -54,7 +55,7 @@ describe(`${testSuiteName}`, () => {
       const result = await testRunner.runZweTest(cfgYaml, 'init apfauth --dry-run');
       expect(result.stdout).not.toBeNull();
       expect(result.cleanedStdout).toMatchSnapshot();
-      expect(result.rc).toBe(1);
+      expect(result.rc).toBe(63);
     });
 
     it('apf empty ds prefix', async () => {
@@ -62,7 +63,7 @@ describe(`${testSuiteName}`, () => {
       const result = await testRunner.runZweTest(cfgYaml, 'init apfauth --dry-run');
       expect(result.stdout).not.toBeNull();
       expect(result.cleanedStdout).toMatchSnapshot();
-      expect(result.rc).toBe(1);
+      expect(result.rc).toBe(157);
     });
 
     it('apf bad ds prefix', async () => {
@@ -84,12 +85,103 @@ describe(`${testSuiteName}`, () => {
       await testRunner.postTest();
     });
 
+    beforeEach(async () => {
+      cfgYaml = ZoweConfig.getZoweYaml();
+      // create default
+      const simplePdsParams = { primary: 5, secondary: 1, volser: REMOTE_SYSTEM_INFO.volume };
+      await createPds(`${cfgYaml.zowe.setup.dataset.authLoadlib}`, simplePdsParams); // set in globalSetup
+    });
+
     it('apf empty jcllib post-generate', async () => {
       cfgYaml.zowe.setup.dataset.jcllib = '';
       const result = await testRunner.runZweTest(cfgYaml, 'init apfauth --dry-run');
       expect(result.stdout).not.toBeNull();
       expect(result.cleanedStdout).toMatchSnapshot();
-      expect(result.rc).toBe(1);
+      expect(result.rc).toBe(63);
+    });
+
+    it('apf empty loadlib', async () => {
+      const defaultLoadlib = `${cfgYaml.zowe.setup.dataset.prefix}.SZWEAUTH`;
+      const defaultTestFile = {
+        name: defaultLoadlib,
+        type: FileType.DS_NON_CLUSTER,
+      };
+      // ensure it's not there
+      await TestFileActions.deleteAll([defaultTestFile]);
+
+      cfgYaml.zowe.setup.dataset.authLoadlib = null;
+      let result = await testRunner.runZweTest(cfgYaml, 'init apfauth --dry-run');
+      expect(result.stdout).not.toBeNull();
+      expect(result.cleanedStdout).toMatchSnapshot();
+      expect(result.rc).toBe(68);
+
+      delete cfgYaml.zowe.setup.dataset.authLoadlib;
+      result = await testRunner.runZweTest(cfgYaml, 'init apfauth --dry-run');
+      expect(result.stdout).not.toBeNull();
+      expect(result.cleanedStdout).toMatchSnapshot();
+      expect(result.rc).toBe(68);
+
+      // create default
+      const simplePdsParams = { primary: 5, secondary: 1, volser: REMOTE_SYSTEM_INFO.volume };
+      await createPds(defaultLoadlib, simplePdsParams);
+
+      cfgYaml.zowe.setup.dataset.authLoadlib = null;
+      result = await testRunner.runZweTest(cfgYaml, 'init apfauth --dry-run');
+      expect(result.stdout).not.toBeNull();
+      expect(result.cleanedStdout).toMatchSnapshot();
+      expect(result.rc).toBe(0);
+
+      delete cfgYaml.zowe.setup.dataset.authLoadlib;
+      result = await testRunner.runZweTest(cfgYaml, 'init apfauth --dry-run');
+      expect(result.stdout).not.toBeNull();
+      expect(result.cleanedStdout).toMatchSnapshot();
+      expect(result.rc).toBe(0);
+
+      await TestFileActions.deleteAll([defaultTestFile]);
+    });
+
+    it('apf empty loadlib and pluginlib', async () => {
+      const defaultLoadlib = `${cfgYaml.zowe.setup.dataset.prefix}.SZWEAUTH`;
+      const defaultTestFile = {
+        name: defaultLoadlib,
+        type: FileType.DS_NON_CLUSTER,
+      };
+      // ensure it's not there
+      await TestFileActions.deleteAll([defaultTestFile]);
+
+      cfgYaml.zowe.setup.dataset.authLoadlib = null;
+      cfgYaml.zowe.setup.dataset.authPluginLib = null;
+      let result = await testRunner.runZweTest(cfgYaml, 'init apfauth --dry-run');
+      expect(result.stdout).not.toBeNull();
+      expect(result.cleanedStdout).toMatchSnapshot();
+      expect(result.rc).toBe(68);
+
+      delete cfgYaml.zowe.setup.dataset.authLoadlib;
+      delete cfgYaml.zowe.setup.dataset.authPluginLib;
+      result = await testRunner.runZweTest(cfgYaml, 'init apfauth --dry-run');
+      expect(result.stdout).not.toBeNull();
+      expect(result.cleanedStdout).toMatchSnapshot();
+      expect(result.rc).toBe(68);
+
+      // create default
+      const simplePdsParams = { primary: 5, secondary: 1, volser: REMOTE_SYSTEM_INFO.volume };
+      await createPds(defaultLoadlib, simplePdsParams);
+
+      cfgYaml.zowe.setup.dataset.authLoadlib = null;
+      cfgYaml.zowe.setup.dataset.authPluginLib = null;
+      result = await testRunner.runZweTest(cfgYaml, 'init apfauth --dry-run');
+      expect(result.stdout).not.toBeNull();
+      expect(result.cleanedStdout).toMatchSnapshot();
+      expect(result.rc).toBe(0);
+
+      delete cfgYaml.zowe.setup.dataset.authLoadlib;
+      delete cfgYaml.zowe.setup.dataset.authPluginLib;
+      result = await testRunner.runZweTest(cfgYaml, 'init apfauth --dry-run');
+      expect(result.stdout).not.toBeNull();
+      expect(result.cleanedStdout).toMatchSnapshot();
+      expect(result.rc).toBe(0);
+
+      await TestFileActions.deleteAll([defaultTestFile]);
     });
 
     it('apf empty pluginlib', async () => {
@@ -97,7 +189,7 @@ describe(`${testSuiteName}`, () => {
       let result = await testRunner.runZweTest(cfgYaml, 'init apfauth --dry-run');
       expect(result.stdout).not.toBeNull();
       expect(result.cleanedStdout).toMatchSnapshot();
-      expect(result.rc).toBe(1);
+      expect(result.rc).toBe(0);
 
       delete cfgYaml.zowe.setup.dataset.authPluginLib;
       result = await testRunner.runZweTest(cfgYaml, 'init apfauth --dry-run');

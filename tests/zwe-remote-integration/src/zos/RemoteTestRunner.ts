@@ -39,6 +39,11 @@ export class RemoteTestRunner {
   private readonly spoolOutputTemplate: string;
   private readonly otherOutputTemplate: string;
   private readonly session: Session;
+  private customYamlRenderOpts: YAML.DocumentOptions &
+    YAML.SchemaOptions &
+    YAML.ParseOptions &
+    YAML.CreateNodeOptions &
+    YAML.ToStringOptions = null;
   private trackedFiles: TrackedFile[] = [];
   private trackedJobs: jobs.IDownloadAllSpoolContentParms[] = [];
   private readonly cleanFns: ((stdout: string) => string)[] = [];
@@ -71,6 +76,22 @@ export class RemoteTestRunner {
     console.log(`Avg time spent per uss command: ${this.totalRuntime / this.totalRuns / 1000} seconds`);
     this.cleanFns.length = 0; // reset cleanFns
     this.uss.shutdown();
+  }
+
+  public async downloadMaskedPdsMember(memberName: string): Promise<string> {
+    fs.mkdirpSync(this.tmpDir);
+    const tmpFile = `${this.tmpDir}/${memberName}-${Date.now()}`;
+    // const writeStream = fs.createWriteStream(tmpFile, { autoClose: true, mode: 0o775 });
+    const dlResp = await files.Download.dataSet(this.session, memberName, {
+      file: tmpFile,
+    });
+    if (!dlResp.success) {
+      console.log('Failed');
+    }
+    const fileContents = fs.readFileSync(tmpFile).toString();
+    const cleanedContents = this.cleanOutput(fileContents, []);
+    fs.writeFileSync(tmpFile, cleanedContents);
+    return tmpFile;
   }
 
   public async downloadMaskedUssFilesMatching(
@@ -106,7 +127,13 @@ export class RemoteTestRunner {
   }
 
   public async runRaw(command: string, cwd: string = REMOTE_SYSTEM_INFO.ussTestDir): Promise<TestOutput> {
+    const start = performance.now();
     const output = await this.uss.runCommand(`${command}`, cwd);
+    const end = performance.now();
+    const duration = end - start;
+    this.totalRuntime += duration;
+    this.totalRuns++;
+    this.maxRuntime = Math.max(this.maxRuntime, duration);
     // Any non-deterministic output should be cleaned up for test snapshots.
     const cleanedOutput = this.cleanOutput(output.consoleLog, []);
     return {
@@ -152,6 +179,7 @@ export class RemoteTestRunner {
    *  Collects spool, restores files tracked by #removeFileForTest, and cleans up local work dirs
    */
   public async postTest() {
+    this.customYamlRenderOpts = null;
     if (TEST_COLLECT_SPOOL) {
       await this.collectSpool();
     }
@@ -182,11 +210,15 @@ export class RemoteTestRunner {
     const spoolOutputDir = this.spoolOutputTemplate.replace('{{ testInstance }}', testName);
     fs.mkdirpSync(spoolOutputDir);
     for (const job of this.trackedJobs) {
-      await jobs.DownloadJobs.downloadAllSpoolContentCommon(getSession(), {
-        ...job,
-        outDir: spoolOutputDir,
-        extension: '.txt', // arbitrarily chosen to keep things readable...
-      });
+      try {
+        await jobs.DownloadJobs.downloadAllSpoolContentCommon(getSession(), {
+          ...job,
+          outDir: spoolOutputDir,
+          extension: '.txt', // arbitrarily chosen to keep things readable...
+        });
+      } catch (err) {
+        console.log(`Warning: Could not download spool information for ${job.jobname}(${job.jobid})`);
+      }
     }
     this.trackedJobs = [];
   }
@@ -320,6 +352,12 @@ export class RemoteTestRunner {
     });
   }
 
+  public setYamlRenderOptions(
+    opts: YAML.DocumentOptions & YAML.SchemaOptions & YAML.ParseOptions & YAML.CreateNodeOptions & YAML.ToStringOptions,
+  ) {
+    this.customYamlRenderOpts = opts;
+  }
+
   public addCleanFn(replaceFn: (output: string) => string) {
     this.cleanFns.push(replaceFn);
   }
@@ -415,13 +453,18 @@ export class RemoteTestRunner {
     return this.runZweTest(zoweYaml, zweCommand, cwd);
   }
 
-  public async uploadDefaultsYaml(defaultsYaml: ZoweYamlType): Promise<string> {
+  public async uploadDefaultsYaml(
+    defaultsYaml: ZoweYamlType,
+    cwd: string = `${REMOTE_SYSTEM_INFO.ussTestDir}/files`,
+  ): Promise<string> {
     const testName = expect.getState().currentTestName.replace(/\s/g, '_');
-    const yamlUploadPath = `${REMOTE_SYSTEM_INFO.ussTestDir}/files/defaults.yaml`;
-    const stringDefaultYaml = YAML.stringify(defaultsYaml, { nullStr: '' });
+    const yamlUploadPath = `${cwd}/defaults.yaml`;
+    const stringDefaultYaml = YAML.stringify(defaultsYaml, { nullStr: '', ...this.customYamlRenderOpts });
     const yamlOutputDir = this.yamlOutputTemplate.replace('{{ testInstance }}', testName);
     fs.mkdirpSync(yamlOutputDir);
-    await this.removeUssFileOrDirForTest('files/defaults.yaml');
+    if (cwd === `${REMOTE_SYSTEM_INFO.ussTestDir}/files`) {
+      await this.removeUssFileOrDirForTest('files/defaults.yaml');
+    }
     const redundantFilePath = this.writeRedundant(`${yamlOutputDir}/defaults.yaml`, stringDefaultYaml);
     await files.Upload.fileToUssFile(this.session, redundantFilePath, yamlUploadPath, {
       binary: false,
@@ -434,6 +477,25 @@ export class RemoteTestRunner {
     await files.Upload.bufferToDataSet(this.session, Buffer.from(content), dsPath);
   }
 
+  /**
+   * Uploads a given file directly as the zowe.yaml to be used in a test case (zowe.test.yaml).
+   *
+   * @param filePath
+   * @param remoteCwd
+   * @returns the full path to the uploaded zowe.yaml
+   */
+  public async uploadZoweYamlFromFile(filePath: string, remoteCwd: string = REMOTE_SYSTEM_INFO.ussTestDir): Promise<string> {
+    const testName = expect.getState().currentTestName.replace(/\s/g, '_');
+    const uploadPath = `${remoteCwd}/zowe.test.yaml`;
+    const yamlOutputDir = this.yamlOutputTemplate.replace('{{ testInstance }}', testName);
+    fs.mkdirpSync(yamlOutputDir);
+    const redundantFilePath = this.writeRedundant(`${yamlOutputDir}/zowe.yaml`, fs.readFileSync(filePath, 'utf-8'));
+    await files.Upload.fileToUssFile(this.session, redundantFilePath, uploadPath, {
+      binary: false,
+    });
+    return uploadPath;
+  }
+
   public async uploadZoweYaml(
     zoweYaml: ZoweYamlType,
     addCustomJobHeaders: boolean = true,
@@ -444,7 +506,7 @@ export class RemoteTestRunner {
     if (addCustomJobHeaders) {
       finalZoweYaml = this.addAnyCustomJobStatements(zoweYaml).yaml;
     }
-    const stringZoweYaml = YAML.stringify(finalZoweYaml, { nullStr: '' });
+    const stringZoweYaml = YAML.stringify(finalZoweYaml, { nullStr: '', ...this.customYamlRenderOpts });
     const uploadPath = `${cwd}/zowe.test.yaml`;
     const yamlOutputDir = this.yamlOutputTemplate.replace('{{ testInstance }}', testName);
     fs.mkdirpSync(yamlOutputDir);
@@ -515,7 +577,6 @@ export class RemoteTestRunner {
   private addAnyCustomJobStatements(zoweYaml: ZoweYamlType): { yaml: ZoweYamlType; headers: string[] } {
     const jclHeader = zoweYaml.zowe?.setup?.jcl?.header;
     // jclHeader is either an array or string, so .length works in both cases
-    // @ts-expect-error incomplete schema
     if (jclHeader != null && jclHeader.length > 0) {
       return { yaml: zoweYaml, headers: [] };
     }
@@ -536,9 +597,9 @@ export class RemoteTestRunner {
 
     const jclLines = this.convertParamsToLines(fullParams);
     if (cloneYaml.zowe?.setup?.jcl?.header == null) {
-      _.set(cloneYaml, 'zowe.setup.jcl.header', []);
+      _.set(cloneYaml, 'zowe.setup.jcl.header', '');
     }
-    cloneYaml.zowe.setup.jcl.header = jclLines;
+    cloneYaml.zowe.setup.jcl.header = jclLines.join('\n');
     return { yaml: cloneYaml, headers: jclLines };
   }
 
