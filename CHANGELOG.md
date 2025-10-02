@@ -4,7 +4,7 @@ All notable changes to the Zowe Installer will be documented in this file.
 
 ## `3.4.0`
 
-- Enhancement: the default installation and configuration method is JCL. [#nnnn](https://github.com/zowe/zowe-install-packaging/pull/nnnn)
+- Enhancement: the default installation and configuration method is JCL. [#4534](https://github.com/zowe/zowe-install-packaging/pull/4534)
 - Bugfix: internal routine `copy_to_data_set` did not correctly check if data set exists. [#4476](https://github.com/zowe/zowe-install-packaging/pull/4476)
 - Bugfix: `--update-config` might fail if the specified config file is a symbolic link. [#4492](https://github.com/zowe/zowe-install-packaging/pull/4492)
 
