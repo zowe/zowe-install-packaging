@@ -10,6 +10,8 @@ These Zowe YAML configurations showing with sample values are used:
 ```yaml
 zowe:
   setup:
+    jcl:
+      header: "123456"
     dataset:
       prefix: IBMUSER.ZWE
       jcllib: IBMUSER.ZWE.CUST.JCLLIB
@@ -28,6 +30,7 @@ zowe:
         aux: ZWESASTC
 ```
 
+- `zowe.setup.jcl.header` is optional additional JCL fields used for submitting JCLs.
 - `zowe.setup.dataset.prefix` shows where the `SZWESAMP` data set is installed,
 - `zowe.setup.dataset.jcllib` is the custom JCL library. Zowe will create customized
   ZWESECUR JCL here before applying it.
