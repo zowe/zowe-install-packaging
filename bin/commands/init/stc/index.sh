@@ -196,7 +196,7 @@ else
 ' |
           sed '/^..PARMLIB.*parmlib.*/c\
 //PARMLIB  DD  DSNAME='${parmlib}',
-')
+' )
   if [ -n "${result}" ]; then
     echo "${result}" > "${tmpfile}"
     code=$?
@@ -240,11 +240,8 @@ else
   tmpfile=$(create_tmp_file $(echo "zwe ${ZWE_CLI_COMMANDS_LIST}" | sed "s# #-#g"))
   print_debug "- Copy ${prefix}.${ZWE_PRIVATE_DS_SZWESAMP}(ZWESASTC) to ${tmpfile}"
   result=$(cat "//'${prefix}.${ZWE_PRIVATE_DS_SZWESAMP}(ZWESASTC)'" | \
-          sed '/^..STEPLIB.*authLoadlib.*/c\
-\//STEPLIB  DD  DSNAME='${authLoadlib}',
-' | sed '/^.*DD.*authPluginLib.*/c\
-\//         DD  DSNAME='${authPluginLib}',
-')
+          sed "s/{zowe\.setup\.dataset\.authLoadlib}/${authLoadlib}/" | \
+          sed "s/{zowe\.setup\.dataset\.authPluginLib}/${authPluginLib}/")
   if [ -n "${result}" ]; then
     echo "${result}" > "${tmpfile}"
     code=$?
