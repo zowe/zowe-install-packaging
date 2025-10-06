@@ -175,7 +175,7 @@ validate_zowe_yaml() {
   fi
 
   configmgr="${ZWE_zowe_runtimeDirectory}/bin/utils/configmgr"
-  schemas="${ZWE_zowe_runtimeDirectory}/schemas/server-common.json:${ZWE_zowe_runtimeDirectory}/schemas/zowe-yaml-schema.json"
+  schemas="${ZWE_zowe_runtimeDirectory}/schemas/zowe-yaml-schema.json:${ZWE_zowe_runtimeDirectory}/schemas/server-common.json"
 
   result=$(_CEE_RUNOPTS="XPLINK(ON)" "${configmgr}" -s "${schemas}" -p "${file}" validate 2>&1 >/dev/null)
   code=$?
