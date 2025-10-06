@@ -84,10 +84,13 @@ result=$(cat "//'${prefix}.${ZWE_PRIVATE_DS_SZWESAMP}(ZWESECUR)'" | \
         sed   "s/^\/\/ \+SET \+ZISSTC=.*\$/\/\/         SET  ZISSTC=${security_stcs_zis}/" | \
         sed   "s/^\/\/ \+SET \+AUXSTC=.*\$/\/\/         SET  AUXSTC=${security_stcs_aux}/" | \
         sed      "s/^\/\/ \+SET \+HLQ=.*\$/\/\/         SET  HLQ=${prefix}/" | \
-        sed  "s/^\/\/ \+SET \+SYSPROG=.*\$/\/\/         SET  SYSPROG=${security_groups_sysProg}/" \
-        > "${tmpfile}")
-code=$?
-chmod 700 "${tmpfile}"
+        sed  "s/^\/\/ \+SET \+SYSPROG=.*\$/\/\/         SET  SYSPROG=${security_groups_sysProg}/")
+if [ -n "${result}" ]; then
+  echo "${result}" > "${tmpfile}"
+  code=$?
+else
+  code=1
+fi
 if [ ${code} -eq 0 ]; then
   print_debug "  * Succeeded"
   print_trace "  * Exit code: ${code}"
@@ -106,6 +109,7 @@ fi
 if [ ! -f "${tmpfile}" ]; then
   print_error_and_exit "Error ZWEL0159E: Failed to modify ${prefix}.${ZWE_PRIVATE_DS_SZWESAMP}(ZWESECUR)" "" 159
 fi
+chmod 700 "${tmpfile}"
 print_trace "- ensure ${tmpfile} encoding before copying into data set"
 ensure_file_encoding "${tmpfile}" "SPDX-License-Identifier"
 print_trace "- ${tmpfile} created, copy to ${jcllib}(${tmpdsm})"
