@@ -427,13 +427,126 @@ ERROR: Warning ZWEL0304W: Zowe Caching Service is not configured to use VSAM. Co
 `;
 
 exports[`init-vsam (SHORT) skip undefined caching service 1`] = `
-"failed to evaluate ' components.gateway?.zowe?.network?.server?.tls?.attls == true ? 'http' : zowe.network?.server?.tls?.attls == true ? 'http' : 'https' ', status=-1
-Error: Validation of FILE(/test/dir/zowe.test.yaml):FILE(/test/dir/files/defaults.yaml) against schema /test/dir/schemas/zowe-yaml-schema.json:/test/dir/schemas/server-common.json found invalid JSON Schema data
-Validity Exceptions(s) with object at
-  Validity Exceptions(s) with object at /zowe
-    Validity Exceptions(s) with object at /zowe/network
-      type 'object' not permitted at /zowe/network/proxyType; expecting type 'string'
-  string cannot be null for /components"
+"Error ZWEL0326E: An error occurred while processing Zowe YAML config /test/dir/zowe.test.yaml:
+    about to validate merged yamls as
+    {
+      "zowe": {
+        "setup": {
+          "jcl": {
+            "enable": true,
+            "header": ""
+          },
+          "dataset": {
+            "prefix": "TEST.DATASET.PFX",
+            "proclib": "TEST.DATASET.PFX.TEST.PROCLIB",
+            "parmlib": "TEST.DATASET.PFX.PARMLIB",
+            "parmlibMembers": {
+              "zis": "ZWESIP00"
+            },
+            "jcllib": "TEST.DATASET.PFX.JCLLIB",
+            "loadlib": "TEST.DATASET.PFX.SZWEEXEC",
+            "authLoadlib": "TEST.DATASET.PFX.SZWEAUTH",
+            "authPluginLib": "TEST.DATASET.PFX.ZWESAPL"
+          },
+          "certificate": {
+            "type": "PKCS12",
+            "pkcs12": {
+              "directory": "/test/dir/pkcs12"
+            }
+          },
+          "vsam": {
+            "mode": "NONRLS",
+            "volume": "TSTVOL",
+            "storageClass": "",
+            "name": "TEST.DATASET.PFX.VSAMTEST"
+          }
+        },
+        "runtimeDirectory": "/test/dir",
+        "logDirectory": "/test/dir/logs",
+        "workspaceDirectory": "/test/dir/workspace",
+        "extensionDirectory": "/global/zowe/extensions",
+        "configmgr": {
+          "validation": "STRICT"
+        },
+        "job": {
+          "name": "ZWE1SV",
+          "prefix": "ZWE1"
+        },
+        "rbacProfileIdentifier": "1",
+        "cookieIdentifier": "1",
+        "externalDomains": [
+          "sample-domain.com"
+        ],
+        "externalPort": 7554,
+        "network": {
+          "server": {
+            "tls": {
+              "attls": false,
+              "minTls": "TLSv1.2",
+              "maxTls": "TLSv1.3"
+            }
+          },
+          "client": {
+            "tls": {
+              "attls": false
+            }
+          }
+        },
+        "sysMessageTrim": false,
+        "sysMessages": [
+          "ZWEL0021I",
+          "ZWEL0018I",
+          "ZWEL0006I",
+          "ZWES1601I",
+          "ZWEL0008I",
+          "ZWEL0022I",
+          "ZWEL0001I",
+          "ZWEL0002I",
+          "ZWEAM000I",
+          "ZWED0031I",
+          "ZWES1013I"
+        ],
+        "launchScript": {
+          "logLevel": "info",
+          "onComponentConfigureFail": "warn"
+        },
+        "certificate": {
+          "keystore": {
+            "type": "PKCS12",
+            "file": "/global/zowe/keystore/localhost/localhost.keystore.p12",
+            "password": "password",
+            "alias": "localhost"
+          },
+          "truststore": {
+            "type": "PKCS12",
+            "file": "/global/zowe/keystore/localhost/localhost.truststore.p12",
+            "password": "password"
+          },
+          "pem": {
+            "key": "/global/zowe/keystore/localhost/localhost.key",
+            "certificate": "/global/zowe/keystore/localhost/localhost.cer",
+            "certificateAuthorities": "/global/zowe/keystore/local_ca/local_ca.cer"
+          }
+        },
+        "verifyCertificates": "STRICT"
+      },
+      "java": {
+        "home": "/test/java/home"
+      },
+      "node": {
+        "home": "/test/node/home"
+      },
+      "zOSMF": {
+        "host": "some.test.hostname",
+        "port": 12321,
+        "applId": "IZUDFLT"
+      },
+      "components": null
+    }
+    validate status = 4
+    Validity Exceptions:
+    Validity Exceptions(s) with object at
+      string cannot be null for /components"
 `;
 
 exports[`init-vsam (SHORT) unset ds prefix 1`] = `
@@ -469,21 +582,423 @@ ERROR: Error ZWEL0319E: zowe.setup.dataset.jcllib does not exist, cannot run. Ru
 `;
 
 exports[`init-vsam (SHORT) unset vsam mode 1`] = `
-"Error: Validation of FILE(/test/dir/zowe.test.yaml):FILE(/test/dir/files/defaults.yaml) against schema /test/dir/schemas/zowe-yaml-schema.json:/test/dir/schemas/server-common.json found invalid JSON Schema data
-Validity Exceptions(s) with object at
-  Validity Exceptions(s) with object at /zowe
-    Validity Exceptions(s) with object at /zowe/setup
-      Validity Exceptions(s) with object at /zowe/setup/vsam
-        no matching enum value at /zowe/setup/vsam/mode; expecting one of values '[NONRLS, RLS]' of type 'string'"
+"Error ZWEL0326E: An error occurred while processing Zowe YAML config /test/dir/zowe.test.yaml:
+    about to validate merged yamls as
+    {
+      "zowe": {
+        "setup": {
+          "jcl": {
+            "enable": true,
+            "header": ""
+          },
+          "dataset": {
+            "prefix": "TEST.DATASET.PFX",
+            "proclib": "TEST.DATASET.PFX.TEST.PROCLIB",
+            "parmlib": "TEST.DATASET.PFX.PARMLIB",
+            "parmlibMembers": {
+              "zis": "ZWESIP00"
+            },
+            "jcllib": "TEST.DATASET.PFX.JCLLIB",
+            "loadlib": "TEST.DATASET.PFX.SZWEEXEC",
+            "authLoadlib": "TEST.DATASET.PFX.SZWEAUTH",
+            "authPluginLib": "TEST.DATASET.PFX.ZWESAPL"
+          },
+          "certificate": {
+            "type": "PKCS12",
+            "pkcs12": {
+              "directory": "/test/dir/pkcs12"
+            }
+          },
+          "vsam": {
+            "mode": null,
+            "volume": "TSTVOL",
+            "storageClass": "",
+            "name": "TEST.DATASET.PFX.VSAMTEST"
+          }
+        },
+        "runtimeDirectory": "/test/dir",
+        "logDirectory": "/test/dir/logs",
+        "workspaceDirectory": "/test/dir/workspace",
+        "extensionDirectory": "/global/zowe/extensions",
+        "configmgr": {
+          "validation": "STRICT"
+        },
+        "job": {
+          "name": "ZWE1SV",
+          "prefix": "ZWE1"
+        },
+        "rbacProfileIdentifier": "1",
+        "cookieIdentifier": "1",
+        "externalDomains": [
+          "sample-domain.com"
+        ],
+        "externalPort": 7554,
+        "network": {
+          "server": {
+            "tls": {
+              "attls": false,
+              "minTls": "TLSv1.2",
+              "maxTls": "TLSv1.3"
+            }
+          },
+          "client": {
+            "tls": {
+              "attls": false
+            }
+          }
+        },
+        "sysMessageTrim": false,
+        "sysMessages": [
+          "ZWEL0021I",
+          "ZWEL0018I",
+          "ZWEL0006I",
+          "ZWES1601I",
+          "ZWEL0008I",
+          "ZWEL0022I",
+          "ZWEL0001I",
+          "ZWEL0002I",
+          "ZWEAM000I",
+          "ZWED0031I",
+          "ZWES1013I"
+        ],
+        "launchScript": {
+          "logLevel": "info",
+          "onComponentConfigureFail": "warn"
+        },
+        "certificate": {
+          "keystore": {
+            "type": "PKCS12",
+            "file": "/global/zowe/keystore/localhost/localhost.keystore.p12",
+            "password": "password",
+            "alias": "localhost"
+          },
+          "truststore": {
+            "type": "PKCS12",
+            "file": "/global/zowe/keystore/localhost/localhost.truststore.p12",
+            "password": "password"
+          },
+          "pem": {
+            "key": "/global/zowe/keystore/localhost/localhost.key",
+            "certificate": "/global/zowe/keystore/localhost/localhost.cer",
+            "certificateAuthorities": "/global/zowe/keystore/local_ca/local_ca.cer"
+          }
+        },
+        "verifyCertificates": "STRICT"
+      },
+      "java": {
+        "home": "/test/java/home"
+      },
+      "node": {
+        "home": "/test/node/home"
+      },
+      "zOSMF": {
+        "host": "some.test.hostname",
+        "port": 12321,
+        "applId": "IZUDFLT"
+      },
+      "components": {
+        "apiml": {
+          "enabled": false,
+          "debug": false
+        },
+        "gateway": {
+          "enabled": true,
+          "port": 7554,
+          "debug": false,
+          "apiml": {
+            "security": {
+              "auth": {
+                "provider": "zosmf",
+                "zosmf": {
+                  "jwtAutoconfiguration": "jwt",
+                  "serviceId": "ibmzosmf"
+                }
+              },
+              "authorization": {
+                "endpoint": {
+                  "enabled": false
+                },
+                "provider": "native"
+              },
+              "x509": {
+                "enabled": false
+              }
+            }
+          }
+        },
+        "zaas": {
+          "enabled": true,
+          "port": 7558,
+          "debug": false
+        },
+        "api-catalog": {
+          "enabled": true,
+          "port": 7552,
+          "debug": false
+        },
+        "discovery": {
+          "enabled": true,
+          "port": 7553,
+          "debug": false
+        },
+        "caching-service": {
+          "enabled": true,
+          "port": 7555,
+          "debug": false,
+          "storage": {
+            "evictionStrategy": "reject",
+            "mode": "VSAM",
+            "infinispan": {
+              "jgroups": {
+                "port": 7600,
+                "keyExchange": {
+                  "port": 7601
+                }
+              }
+            }
+          }
+        },
+        "app-server": {
+          "enabled": true,
+          "port": 7556,
+          "debug": false
+        },
+        "zss": {
+          "enabled": true,
+          "port": 7557,
+          "crossMemoryServerName": "ZWESIS_STD",
+          "agent": {
+            "64bit": true
+          }
+        },
+        "explorer-jes": {
+          "enabled": true
+        },
+        "explorer-mvs": {
+          "enabled": true
+        },
+        "explorer-uss": {
+          "enabled": true
+        }
+      }
+    }
+    validate status = 4
+    Validity Exceptions:
+    Validity Exceptions(s) with object at
+      Validity Exceptions(s) with object at /zowe
+        Validity Exceptions(s) with object at /zowe/setup
+          Validity Exceptions(s) with object at /zowe/setup/vsam
+            no matching enum value at /zowe/setup/vsam/mode; expecting one of values '[NONRLS, RLS]' of type 'string'"
 `;
 
 exports[`init-vsam (SHORT) unset vsam mode 2`] = `
-"Error: Validation of FILE(/test/dir/zowe.test.yaml):FILE(/test/dir/files/defaults.yaml) against schema /test/dir/schemas/zowe-yaml-schema.json:/test/dir/schemas/server-common.json found invalid JSON Schema data
-Validity Exceptions(s) with object at
-  Validity Exceptions(s) with object at /zowe
-    Validity Exceptions(s) with object at /zowe/setup
-      Validity Exceptions(s) with object at /zowe/setup/vsam
-        no matching enum value at /zowe/setup/vsam/mode; expecting one of values '[NONRLS, RLS]' of type 'string'"
+"Error ZWEL0326E: An error occurred while processing Zowe YAML config /test/dir/zowe.test.yaml:
+    about to validate merged yamls as
+    {
+      "zowe": {
+        "setup": {
+          "jcl": {
+            "enable": true,
+            "header": ""
+          },
+          "dataset": {
+            "prefix": "TEST.DATASET.PFX",
+            "proclib": "TEST.DATASET.PFX.TEST.PROCLIB",
+            "parmlib": "TEST.DATASET.PFX.PARMLIB",
+            "parmlibMembers": {
+              "zis": "ZWESIP00"
+            },
+            "jcllib": "TEST.DATASET.PFX.JCLLIB",
+            "loadlib": "TEST.DATASET.PFX.SZWEEXEC",
+            "authLoadlib": "TEST.DATASET.PFX.SZWEAUTH",
+            "authPluginLib": "TEST.DATASET.PFX.ZWESAPL"
+          },
+          "certificate": {
+            "type": "PKCS12",
+            "pkcs12": {
+              "directory": "/test/dir/pkcs12"
+            }
+          },
+          "vsam": {
+            "mode": "",
+            "volume": "TSTVOL",
+            "storageClass": "",
+            "name": "TEST.DATASET.PFX.VSAMTEST"
+          }
+        },
+        "runtimeDirectory": "/test/dir",
+        "logDirectory": "/test/dir/logs",
+        "workspaceDirectory": "/test/dir/workspace",
+        "extensionDirectory": "/global/zowe/extensions",
+        "configmgr": {
+          "validation": "STRICT"
+        },
+        "job": {
+          "name": "ZWE1SV",
+          "prefix": "ZWE1"
+        },
+        "rbacProfileIdentifier": "1",
+        "cookieIdentifier": "1",
+        "externalDomains": [
+          "sample-domain.com"
+        ],
+        "externalPort": 7554,
+        "network": {
+          "server": {
+            "tls": {
+              "attls": false,
+              "minTls": "TLSv1.2",
+              "maxTls": "TLSv1.3"
+            }
+          },
+          "client": {
+            "tls": {
+              "attls": false
+            }
+          }
+        },
+        "sysMessageTrim": false,
+        "sysMessages": [
+          "ZWEL0021I",
+          "ZWEL0018I",
+          "ZWEL0006I",
+          "ZWES1601I",
+          "ZWEL0008I",
+          "ZWEL0022I",
+          "ZWEL0001I",
+          "ZWEL0002I",
+          "ZWEAM000I",
+          "ZWED0031I",
+          "ZWES1013I"
+        ],
+        "launchScript": {
+          "logLevel": "info",
+          "onComponentConfigureFail": "warn"
+        },
+        "certificate": {
+          "keystore": {
+            "type": "PKCS12",
+            "file": "/global/zowe/keystore/localhost/localhost.keystore.p12",
+            "password": "password",
+            "alias": "localhost"
+          },
+          "truststore": {
+            "type": "PKCS12",
+            "file": "/global/zowe/keystore/localhost/localhost.truststore.p12",
+            "password": "password"
+          },
+          "pem": {
+            "key": "/global/zowe/keystore/localhost/localhost.key",
+            "certificate": "/global/zowe/keystore/localhost/localhost.cer",
+            "certificateAuthorities": "/global/zowe/keystore/local_ca/local_ca.cer"
+          }
+        },
+        "verifyCertificates": "STRICT"
+      },
+      "java": {
+        "home": "/test/java/home"
+      },
+      "node": {
+        "home": "/test/node/home"
+      },
+      "zOSMF": {
+        "host": "some.test.hostname",
+        "port": 12321,
+        "applId": "IZUDFLT"
+      },
+      "components": {
+        "apiml": {
+          "enabled": false,
+          "debug": false
+        },
+        "gateway": {
+          "enabled": true,
+          "port": 7554,
+          "debug": false,
+          "apiml": {
+            "security": {
+              "auth": {
+                "provider": "zosmf",
+                "zosmf": {
+                  "jwtAutoconfiguration": "jwt",
+                  "serviceId": "ibmzosmf"
+                }
+              },
+              "authorization": {
+                "endpoint": {
+                  "enabled": false
+                },
+                "provider": "native"
+              },
+              "x509": {
+                "enabled": false
+              }
+            }
+          }
+        },
+        "zaas": {
+          "enabled": true,
+          "port": 7558,
+          "debug": false
+        },
+        "api-catalog": {
+          "enabled": true,
+          "port": 7552,
+          "debug": false
+        },
+        "discovery": {
+          "enabled": true,
+          "port": 7553,
+          "debug": false
+        },
+        "caching-service": {
+          "enabled": true,
+          "port": 7555,
+          "debug": false,
+          "storage": {
+            "evictionStrategy": "reject",
+            "mode": "VSAM",
+            "infinispan": {
+              "jgroups": {
+                "port": 7600,
+                "keyExchange": {
+                  "port": 7601
+                }
+              }
+            }
+          }
+        },
+        "app-server": {
+          "enabled": true,
+          "port": 7556,
+          "debug": false
+        },
+        "zss": {
+          "enabled": true,
+          "port": 7557,
+          "crossMemoryServerName": "ZWESIS_STD",
+          "agent": {
+            "64bit": true
+          }
+        },
+        "explorer-jes": {
+          "enabled": true
+        },
+        "explorer-mvs": {
+          "enabled": true
+        },
+        "explorer-uss": {
+          "enabled": true
+        }
+      }
+    }
+    validate status = 4
+    Validity Exceptions:
+    Validity Exceptions(s) with object at
+      Validity Exceptions(s) with object at /zowe
+        Validity Exceptions(s) with object at /zowe/setup
+          Validity Exceptions(s) with object at /zowe/setup/vsam
+            no matching enum value at /zowe/setup/vsam/mode; expecting one of values '[NONRLS, RLS]' of type 'string'"
 `;
 
 exports[`init-vsam (SHORT) valid NONRLS configurations 1`] = `
