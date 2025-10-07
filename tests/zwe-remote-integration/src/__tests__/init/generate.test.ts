@@ -184,6 +184,28 @@ describe(`${testSuiteName}`, () => {
       expect(result.cleanedStdout).toMatchSnapshot();
       expect(result.rc).toBe(0);
     });
+
+    it('paths >71 characters in zowe.yaml and schema files', async () => {
+      const PATH_LEN_TESTS = [71, 72, 141, 142, 143, 144, 200];
+      testRunner.addCleanFn((output) => {
+        return output.replaceAll(`${REMOTE_SYSTEM_INFO.ussTestDir}`, `${REMOTE_SYSTEM_INFO.ussTestDir}`.replaceAll(/[^/]/gi, 'z'));
+      });
+      for (const testCase of PATH_LEN_TESTS) {
+        const dirLen = testCase - `${REMOTE_SYSTEM_INFO.ussTestDir}/`.length - '/zowe.test.yaml'.length - 'FILE '.length;
+        const evilDir = `${REMOTE_SYSTEM_INFO.ussTestDir}/${'a'.repeat(dirLen)}`;
+        await testRunner.runRaw(`mkdir -p ${evilDir}`, REMOTE_SYSTEM_INFO.ussTestDir);
+        cleanupFiles.push({
+          name: evilDir,
+          type: FileType.USS_DIR,
+        });
+        await testRunner.uploadZoweYaml(cfgYaml, false, `${evilDir}`);
+        const result = await testRunner.runZweTest(cfgYaml, `init generate -c ${evilDir}/zowe.test.yaml --dry-run`);
+
+        expect(result.stdout).not.toBeNull();
+        expect(result.rc).toBe(0);
+        expect(result.cleanedStdout).toMatchSnapshot();
+      }
+    });
   });
 
   describe('FLAKY', () => {
