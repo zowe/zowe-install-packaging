@@ -54,7 +54,7 @@ describe(`${testSuiteName}`, () => {
       expect(result.cleanedStdout).toMatchSnapshot();
       expect(result.rc).toBe(166);
     });
-  })
+  });
 
   describe('(LONG)', () => {
     it('start stop normal submission', async () => {
@@ -68,6 +68,5 @@ describe(`${testSuiteName}`, () => {
       expect(result.cleanedStdout).toMatchSnapshot();
       expect(result.rc).toBe(0);
     });
-
   });
 });
