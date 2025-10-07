@@ -39,19 +39,7 @@ describe(`${testSuiteName}`, () => {
     testRunner.shutdown();
   });
 
-  describe('(LONG)', () => {
-    it('start stop normal submission', async () => {
-      let result = await testRunner.runZweTest(cfgYaml, 'start');
-      expect(result.stdout).not.toBeNull();
-      expect(result.cleanedStdout).toMatchSnapshot();
-      expect(result.rc).toBe(0);
-
-      result = await testRunner.runZweTest(cfgYaml, 'stop');
-      expect(result.stdout).not.toBeNull();
-      expect(result.cleanedStdout).toMatchSnapshot();
-      expect(result.rc).toBe(0);
-    });
-
+  describe('(SHORT)', () => {
     it('startstop sdsf disabled', async () => {
       const noSdsfRex = path.resolve(resourcesDir, 'noSDSF.rex');
       await testRunner.uploadUssFileForTest(noSdsfRex, 'bin/utils/getSDSF.rex', { binary: false, mode: 0o755 });
@@ -66,5 +54,20 @@ describe(`${testSuiteName}`, () => {
       expect(result.cleanedStdout).toMatchSnapshot();
       expect(result.rc).toBe(166);
     });
+  })
+
+  describe('(LONG)', () => {
+    it('start stop normal submission', async () => {
+      let result = await testRunner.runZweTest(cfgYaml, 'start');
+      expect(result.stdout).not.toBeNull();
+      expect(result.cleanedStdout).toMatchSnapshot();
+      expect(result.rc).toBe(0);
+
+      result = await testRunner.runZweTest(cfgYaml, 'stop');
+      expect(result.stdout).not.toBeNull();
+      expect(result.cleanedStdout).toMatchSnapshot();
+      expect(result.rc).toBe(0);
+    });
+
   });
 });

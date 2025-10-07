@@ -737,13 +737,13 @@ const zoweSchema = zoweYamlSchema as {
             name: {
               oneOf: [
                 {
-                  $ref: '/schemas/v2/server-common#zoweJobname'
+                  $ref: '/schemas/v2/server-common#zoweJobname';
                 },
                 {
-                  type: 'string',
-                  maxLength: 0
-                }
-              ],
+                  type: 'string';
+                  maxLength: 0;
+                },
+              ];
               description: 'Job name of Zowe primary ZWESLSTC started task.';
             };
             prefix: {
