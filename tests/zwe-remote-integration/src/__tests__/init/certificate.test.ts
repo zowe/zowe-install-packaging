@@ -64,7 +64,7 @@ describe(`${testSuiteName}`, () => {
       result = await testRunner.runZweTest(cfgYaml, 'init certificate --dry-run');
       expect(result.stdout).not.toBeNull();
       expect(result.cleanedStdout).toMatchSnapshot();
-      expect(result.rc).toBe(201);
+      expect(result.rc).toBe(70);
     });
   });
 
