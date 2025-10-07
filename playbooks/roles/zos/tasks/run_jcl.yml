@@ -31,7 +31,7 @@
 
 - name: Get Job ID
   set_fact:
-    jcl_job_id: "{{ jcl_submit_result.stdout | regex_search(qry, multiline=True, ignorecase=True) }}"
+    jcl_job_id: "{{ jcl_submit_result.stdout | regex_search(qry, multiline=True, ignorecase=True) | default('', True) }}"
   vars:
     qry: (?!JOB JOB)[0-9]{1,}(?<! submitted)
 

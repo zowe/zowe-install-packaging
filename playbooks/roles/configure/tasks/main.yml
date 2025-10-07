@@ -69,7 +69,7 @@
       opercmd: "$D PROCLIB"
   - name: Find the first proclib
     set_fact:
-      zowe_proclib_dsname: "{{ opercmd_result.stdout | regex_search(qry, '\\1') | first }}"
+      zowe_proclib_dsname: "{{ opercmd_result.stdout | regex_search(qry, '\\1') | default([], True) | first }}"
     vars:
       qry: \$HASP319 +DD\(1\)=\(DSNAME=(.+),
 
