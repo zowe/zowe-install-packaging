@@ -19,7 +19,7 @@
         <boolean>
             <!-- Put validation here -->
             <!-- Specify choices here -->
-            <default>false</default>
+            <default>true</default>
         </boolean>
     </variable>
     <variable name="zowe_setup_jcl_header" scope="global" visibility="public">
