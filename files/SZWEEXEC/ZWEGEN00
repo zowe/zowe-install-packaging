@@ -213,6 +213,9 @@ if CFG.zowe.setup.security.product <> detectedESM then do
   say "         Continue with detected ESM = "detectedESM
   CFG.zowe.setup.security.product = detectedESM
 end
+/* samples.detectedESM -> detectedESM is evaluated and replaced by value
+   It will set samples for detected ESM to empty
+   deleteList = "all samples, but samples for detected ESM are empty" */
 samples.detectedESM = ''
 deleteList = samples.acf2||" "||samples.racf||" "||samples.tss
 do m = 1 to words(deleteList)
