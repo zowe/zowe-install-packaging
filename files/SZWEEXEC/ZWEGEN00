@@ -215,7 +215,9 @@ if CFG.zowe.setup.security.product <> detectedESM then do
 end
 /* samples.detectedESM -> detectedESM is evaluated and replaced by value
    It will set samples for detected ESM to empty
-   deleteList = "all samples, but samples for detected ESM are empty" */
+   deleteList = "all samples, but samples for detected ESM are empty"
+ www.ibm.com/docs/en/zos/2.5.0?topic=stems-exercises-using-compound-variables
+*/
 samples.detectedESM = ''
 deleteList = samples.acf2||" "||samples.racf||" "||samples.tss
 do m = 1 to words(deleteList)
