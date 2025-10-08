@@ -75,12 +75,19 @@ fi
 # FIXME: cat cannot be used to test VSAM data set
 vsam_existence=$(is_data_set_exists "${vsam_name}")
 if [ "${vsam_existence}" = "true" ]; then
-  if [ "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITE}" = "true" ]; then
-    result=$(tso_command delete "'${vsam_name}'")
-  else
-    print_error_and_exit "Error ZWEL0158E: ${vsam_name} already exists." "" 158
-  fi
+  # if [ "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITE}" = "true" ]; then
+  #   result=$(tso_command delete "'${vsam_name}'")
+  # fi
+  # else
+  #   print_error_and_exit "Error ZWEL0158E: ${vsam_name} already exists." "" 158
+  # fi
 fi
+
+# Blindly delete VSAM when allow-overwrite is set
+if [ "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITE}" = "true" ]; then
+  result=$(tso_command delete "'${vsam_name}'")
+fi
+
 
 if [ "${jcl_existence}" = "true" ] && [ "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITE}" != "true" ]; then
   print_message "Skipped writing to ${jcllib}(ZWECSVSM). To write, you must use --allow-overwrite."
