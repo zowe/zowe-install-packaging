@@ -186,21 +186,25 @@ describe(`${testSuiteName}`, () => {
     });
 
     it('paths >71 characters in zowe.yaml and schema files', async () => {
-      const PATH_LEN_TESTS = [71, 72, 141, 142, 143, 144, 200];
+      const fixedPathLen = 45;
+      const PATH_LEN_TESTS = [71, 72, 141, 142, 143, 144, 240];
+      if (REMOTE_SYSTEM_INFO.ussTestDir.length > fixedPathLen) {
+        console.log(`This test requires the base test dir be less than ${fixedPathLen} characters long.`);
+      }
+      const testDir = `${REMOTE_SYSTEM_INFO.ussTestDir}/${'z'.repeat(fixedPathLen - REMOTE_SYSTEM_INFO.ussTestDir.length - 1)}`;
+      cleanupFiles.push({
+        name: testDir,
+        type: FileType.USS_DIR,
+      });
       testRunner.addCleanFn((output) => {
-        return output.replaceAll(`${REMOTE_SYSTEM_INFO.ussTestDir}`, `${REMOTE_SYSTEM_INFO.ussTestDir}`.replaceAll(/[^/]/gi, 'z'));
+        return output.replaceAll(`${testDir.slice(1)}`, 'z'.repeat(testDir.length - 1));
       });
       for (const testCase of PATH_LEN_TESTS) {
-        const dirLen = testCase - `${REMOTE_SYSTEM_INFO.ussTestDir}/`.length - '/zowe.test.yaml'.length - 'FILE '.length;
-        const evilDir = `${REMOTE_SYSTEM_INFO.ussTestDir}/${'a'.repeat(dirLen)}`;
+        const dirLen = testCase - `${testDir}/`.length - '/zowe.test.yaml'.length - 'FILE '.length;
+        const evilDir = `${testDir}/${'a'.repeat(dirLen)}`;
         await testRunner.runRaw(`mkdir -p ${evilDir}`, REMOTE_SYSTEM_INFO.ussTestDir);
-        cleanupFiles.push({
-          name: evilDir,
-          type: FileType.USS_DIR,
-        });
         await testRunner.uploadZoweYaml(cfgYaml, false, `${evilDir}`);
         const result = await testRunner.runZweTest(cfgYaml, `init generate -c ${evilDir}/zowe.test.yaml --dry-run`);
-
         expect(result.stdout).not.toBeNull();
         expect(result.rc).toBe(0);
         expect(result.cleanedStdout).toMatchSnapshot();

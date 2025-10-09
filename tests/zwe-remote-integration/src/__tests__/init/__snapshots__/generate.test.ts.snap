@@ -1713,8 +1713,8 @@ Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWEGENER)
 //* directory is, as seen in zowe.yaml
 //*
 //MYSCHEMA DD   *,DLM=$$
-FILE /zzzz/zzzzzzzzzzzzzz/schemas/zowe-yaml-schema.json
-FILE /zzzz/zzzzzzzzzzzzzz/schemas/server-common.json
+FILE /test/dir/schemas/zowe-yaml-schema.json
+FILE /test/dir/schemas/server-common.json
 $$
 //*
 //* The DD below must include one or more FILE or PARMLIB
@@ -1729,7 +1729,7 @@ $$
 //*     zowe.yaml
 //*
 //MYCONFIG DD   *,DLM=$$
-FILE /zzzz/zzzzzzzzzzzzzz/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/zowe.test.yaml
+FILE /zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz/aaaaa/zowe.test.yaml
 $$
 //CMGROUT  DD   SYSOUT=*
 //SYSPRINT DD   SYSOUT=*
@@ -1829,8 +1829,8 @@ Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWEGENER)
 //* directory is, as seen in zowe.yaml
 //*
 //MYSCHEMA DD   *,DLM=$$
-FILE /zzzz/zzzzzzzzzzzzzz/schemas/zowe-yaml-schema.json
-FILE /zzzz/zzzzzzzzzzzzzz/schemas/server-common.json
+FILE /test/dir/schemas/zowe-yaml-schema.json
+FILE /test/dir/schemas/server-common.json
 $$
 //*
 //* The DD below must include one or more FILE or PARMLIB
@@ -1845,7 +1845,7 @@ $$
 //*     zowe.yaml
 //*
 //MYCONFIG DD   *,DLM=$$
-FILE /zzzz/zzzzzzzzzzzzzz/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/zowe.test.yam\\
+FILE /zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz/aaaaaa/zowe.test.yam\\
 l
 $$
 //CMGROUT  DD   SYSOUT=*
@@ -1946,8 +1946,8 @@ Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWEGENER)
 //* directory is, as seen in zowe.yaml
 //*
 //MYSCHEMA DD   *,DLM=$$
-FILE /zzzz/zzzzzzzzzzzzzz/schemas/zowe-yaml-schema.json
-FILE /zzzz/zzzzzzzzzzzzzz/schemas/server-common.json
+FILE /test/dir/schemas/zowe-yaml-schema.json
+FILE /test/dir/schemas/server-common.json
 $$
 //*
 //* The DD below must include one or more FILE or PARMLIB
@@ -1962,7 +1962,7 @@ $$
 //*     zowe.yaml
 //*
 //MYCONFIG DD   *,DLM=$$
-FILE /zzzz/zzzzzzzzzzzzzz/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\\
+FILE /zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz/aaaaaaaaaaaaaaaaaaaa\\
 aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/zowe.test.yaml
 $$
 //CMGROUT  DD   SYSOUT=*
@@ -2063,8 +2063,8 @@ Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWEGENER)
 //* directory is, as seen in zowe.yaml
 //*
 //MYSCHEMA DD   *,DLM=$$
-FILE /zzzz/zzzzzzzzzzzzzz/schemas/zowe-yaml-schema.json
-FILE /zzzz/zzzzzzzzzzzzzz/schemas/server-common.json
+FILE /test/dir/schemas/zowe-yaml-schema.json
+FILE /test/dir/schemas/server-common.json
 $$
 //*
 //* The DD below must include one or more FILE or PARMLIB
@@ -2079,7 +2079,7 @@ $$
 //*     zowe.yaml
 //*
 //MYCONFIG DD   *,DLM=$$
-FILE /zzzz/zzzzzzzzzzzzzz/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\\
+FILE /zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz/aaaaaaaaaaaaaaaaaaaa\\
 aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/zowe.test.yaml
 $$
 //CMGROUT  DD   SYSOUT=*
@@ -2180,8 +2180,8 @@ Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWEGENER)
 //* directory is, as seen in zowe.yaml
 //*
 //MYSCHEMA DD   *,DLM=$$
-FILE /zzzz/zzzzzzzzzzzzzz/schemas/zowe-yaml-schema.json
-FILE /zzzz/zzzzzzzzzzzzzz/schemas/server-common.json
+FILE /test/dir/schemas/zowe-yaml-schema.json
+FILE /test/dir/schemas/server-common.json
 $$
 //*
 //* The DD below must include one or more FILE or PARMLIB
@@ -2196,7 +2196,7 @@ $$
 //*     zowe.yaml
 //*
 //MYCONFIG DD   *,DLM=$$
-FILE /zzzz/zzzzzzzzzzzzzz/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\\
+FILE /zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz/aaaaaaaaaaaaaaaaaaaa\\
 aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/zowe.test.yam\\
 l
 $$
@@ -2298,8 +2298,8 @@ Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWEGENER)
 //* directory is, as seen in zowe.yaml
 //*
 //MYSCHEMA DD   *,DLM=$$
-FILE /zzzz/zzzzzzzzzzzzzz/schemas/zowe-yaml-schema.json
-FILE /zzzz/zzzzzzzzzzzzzz/schemas/server-common.json
+FILE /test/dir/schemas/zowe-yaml-schema.json
+FILE /test/dir/schemas/server-common.json
 $$
 //*
 //* The DD below must include one or more FILE or PARMLIB
@@ -2314,7 +2314,7 @@ $$
 //*     zowe.yaml
 //*
 //MYCONFIG DD   *,DLM=$$
-FILE /zzzz/zzzzzzzzzzzzzz/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\\
+FILE /zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz/aaaaaaaaaaaaaaaaaaaa\\
 aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/zowe.test.ya\\
 ml
 $$
@@ -2416,8 +2416,8 @@ Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWEGENER)
 //* directory is, as seen in zowe.yaml
 //*
 //MYSCHEMA DD   *,DLM=$$
-FILE /zzzz/zzzzzzzzzzzzzz/schemas/zowe-yaml-schema.json
-FILE /zzzz/zzzzzzzzzzzzzz/schemas/server-common.json
+FILE /test/dir/schemas/zowe-yaml-schema.json
+FILE /test/dir/schemas/server-common.json
 $$
 //*
 //* The DD below must include one or more FILE or PARMLIB
@@ -2432,9 +2432,10 @@ $$
 //*     zowe.yaml
 //*
 //MYCONFIG DD   *,DLM=$$
-FILE /zzzz/zzzzzzzzzzzzzz/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\\
+FILE /zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz/aaaaaaaaaaaaaaaaaaaa\\
 aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\\
-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/zowe.test.yaml
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\\
+aaaaaaaaaaaa/zowe.test.yaml
 $$
 //CMGROUT  DD   SYSOUT=*
 //SYSPRINT DD   SYSOUT=*
