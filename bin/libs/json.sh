@@ -202,7 +202,7 @@ read_yaml_configmgr() {
   configmgr="${ZWE_zowe_runtimeDirectory}/bin/utils/configmgr"
   schema="${ZWE_zowe_runtimeDirectory}/schemas/server-common.json:${ZWE_zowe_runtimeDirectory}/schemas/zowe-yaml-schema.json"
 
-  result=$(_CEE_RUNOPTS="XPLINK(ON)" "${configmgr}" -s "$schema" -p "${file}:FILE(${ZWE_zowe_runtimeDirectory}/files/defaults.yaml)" extract "${key}" 2>&1)
+  result=$(_CEE_RUNOPTS="XPLINK(ON)" "${configmgr}" -s "$schema" -p "${file}" extract "${key}" 2>&1)
   code=$?
 
   print_trace "  * Exit code: ${code}"

@@ -2,12 +2,12 @@ Init Zowe instance based on zowe.yaml configuration.
 
 You can find an `example-zowe.yaml` in Zowe runtime directory folder.
 
-This command can initialize Zowe using either pure JCL (default) or shell scripts and utilities.
-If you want to use shell scripts, set `zowe.setup.jcl.enable` to `false`.
+This command can initialize Zowe using either pure JCL or shell scripts and utilities.
+If you want to use pure JCL, set `zowe.setup.jcl.enable` to `true` or run commands with the `--jcl` parameter.
 
 This command will run these sub-commands in sequence:
 
-- `zwe init generate` (skipped for shell scripts and utilities)
+- (Pure JCL only) `zwe init generate`
 - `zwe init mvs`
 - `zwe init vsam`
 - `zwe init apfauth`
@@ -64,16 +64,15 @@ If you are using the pure JCL option, the following are the JCL submitted by eac
 
 These Zowe YAML configurations showing with sample values are used:
 
-Include this in the Zowe YAML snippet:
+If you want to use JCL, include this in the Zowe YAML snippet:
 
 ```yaml
 zowe:
   setup:
     jcl:
-      header: "123456"   # optional jobcard information to include
+      enable: true
+      header: ""   # optional jobcard information to include
 ```
-
-Note: `zowe.setup.jcl.header` might be skipped, if your site or External Security Manager does not require additional fields.
 
 **IMPORTANT**, if you modify any of the values below, it's suggested to re-run
 relevant `zwe init` command to make them taking effect.
