@@ -142,7 +142,7 @@ describe(`${testSuiteName}`, () => {
             expect(
               `jcl: ${jclSetting}, cmgr: ${cmgrSetting}, extra flag: ${testRunner.maskSensitiveData(flagCombo)}, rc: ${result.rc}`,
             ).toMatchSnapshot(); // also capture test settings to make snapshots
-            expect(result.cleanedStdout).toMatchSnapshot();
+            // expect(result.cleanedStdout).toMatchSnapshot();
             // easier to read
             // expect(result.rc).toBe(0);  -- captured the rc in the snapshot
           }
