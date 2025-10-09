@@ -91,8 +91,7 @@ if [ "${jcl_existence}" = "true" ]; then
 fi
 
 # VSAM cache cannot be overwritten, must delete manually
-# FIXME: cat cannot be used to test VSAM data set
-vsam_existence=$(is_data_set_exists "${vsam_name}")
+vsam_existence=$(tso_is_data_set_exists "${vsam_name}")
 if [ "${vsam_existence}" = "true" ]; then
   if [ "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITE}" = "true" ]; then
     print_message "Deleting ${vsam_name}"
