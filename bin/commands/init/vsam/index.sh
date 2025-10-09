@@ -72,7 +72,8 @@ if [ "${jcl_existence}" = "true" ]; then
 fi
 
 # VSAM cache cannot be overwritten, must delete manually
-vsam_existence=$(tso_is_data_set_exists "${vsam_name}")
+tso_is_data_set_exists "${vsam_name}"
+vsam_existence=$?
 if [ "${vsam_existence}" -eq 0 ]; then
   if [ "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITE}" = "true" ]; then
     result=$(tso_command delete "'${vsam_name}'")
