@@ -25,7 +25,7 @@ jobs:
         run: |
           git config --global user.name ${{ github.actor }}
           echo ${{ github.actor }}
-          git config --global user.email dummy-email@email.com
+          git config --global user.email dummy-email@example.com
         shell: bash
 
       - name: Install Dependencies for sync check script to work

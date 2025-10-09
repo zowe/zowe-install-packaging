@@ -13,7 +13,7 @@
 #######################################################################
 # Generate dummy CA and sign certificate
 
-domain_name=${1:-dummy-domain.com}
+domain_name=${1:-example.com}
 
 # create dummy CA
 keytool -genkeypair -v -alias "dummy_ca" -keyalg RSA -keysize 2048 -keystore "dummy_ca.keystore.p12" -dname "CN=ZOWE DUMMY CA, O=International Business Machines Corporation, C=US" -keypass "dummyca" -storepass "dummyca" -storetype PKCS12 -validity 3650 -ext KeyUsage="keyCertSign" -ext BasicConstraints:"critical=ca:true"

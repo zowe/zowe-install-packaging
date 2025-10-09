@@ -24,7 +24,9 @@ export function execute() {
 
   // read Zowe STC name and apply default value
   const zoweConfig = config.getZoweConfig();
-  let securityStcsZowe = zoweConfig.zowe.setup?.security?.stcs?.zowe;
+  // zowe.setup.security.stcs.zowe defined in defaults with possibility to overwrite with empty/null
+  // If no stcs.zowe, use the defaults
+  let securityStcsZowe = zoweConfig.zowe.setup.security.stcs.zowe;
   if (!securityStcsZowe) {
     securityStcsZowe=std.getenv('ZWE_PRIVATE_DEFAULT_ZOWE_STC');
   }
@@ -34,40 +36,44 @@ export function execute() {
   const haInstance=std.getenv('ZWE_CLI_PARAMETER_HA_INSTANCE');
 
   if (haInstance && zoweConfig.haInstances && zoweConfig.haInstances[haInstance]) {
-    jobname=zoweConfig.haInstances[haInstance].zowe?.job?.name;
+    jobname = zoweConfig.haInstances[haInstance].zowe?.job?.name;
   }
   if (!jobname) {
-    jobname = zoweConfig.zowe.job?.name;
+    jobname = zoweConfig.zowe.job.name;
   }
   if (!jobname) {
-    jobname=securityStcsZowe
+    jobname = securityStcsZowe;
   }
 
   // read SYSNAME if --ha-instance is specified
-  let routeSysname:string;
+  let routeSysname: string;
   if (haInstance && zoweConfig.haInstances && zoweConfig.haInstances[haInstance]) {
     routeSysname = zoweConfig.haInstances[haInstance]?.sysname;
   }
 
-  // start job
+  // Stop job
   let cmd=`P ${jobname}`
   if (routeSysname) {
     cmd=`RO ${routeSysname},${cmd}`
   }
-  const shellReturn = zoslib.operatorCommand(cmd);
-  if (shellReturn.rc != 0) {
-    common.printErrorAndExit(`Error ZWEL0166E: Failed to stop ${jobname}: exit code ${shellReturn.rc}.`, undefined, 166);
+  const operCmdReturn = zoslib.operatorCommand(cmd);
+  if (operCmdReturn.rc != 0) {
+    const errorExplanation = operCmdReturn.rc == zoslib.OPER_CMD_NO_SDSF ? operCmdReturn.out : `exit code ${operCmdReturn.rc}`;
+    common.printError(`Error ZWEL0166E: Failed to stop ${jobname}: ${errorExplanation}.`);
+    if (operCmdReturn.rc == zoslib.OPER_CMD_NO_SDSF) {
+      common.printMessage(`Use following operator command to stop Zowe Launcher manually: ${cmd}`);
+    }
+    std.exit(166);
   } else {
-    let errorMessage = shellReturn.out;
-    if (shellReturn.out) {
-      const errorResult = shell.execOutSync('sh', '-c', `echo "${shellReturn.out}" | awk "/-P ${jobname}/{x=NR+1;next}(NR<=x){print}" | sed "s/^\\([^ ]\\+\\) \\+\\([^ ]\\+\\) \\+\\([^ ]\\+\\) \\+\\(.\\+\\)\\$/\\4/"`);
+    let errorMessage = operCmdReturn.out;
+    if (operCmdReturn.out) {
+      const errorResult = shell.execOutSync('sh', '-c', `echo "${operCmdReturn.out}" | awk "/-P ${jobname}/{x=NR+1;next}(NR<=x){print}" | sed "s/^\\([^ ]\\+\\) \\+\\([^ ]\\+\\) \\+\\([^ ]\\+\\) \\+\\(.\\+\\)\\$/\\4/"`);
       errorMessage = errorResult.out;
     }
     if (errorMessage) {
       common.printErrorAndExit(`Error ZWEL0166E: Failed to stop ${securityStcsZowe}: ${stringlib.trim(errorMessage)}.`, undefined, 166);
     }
-}
-
+  }
 
   // exit message
   common.printLevel1Message(`Terminate command on job ${jobname} is sent successfully. Please check job log for details.`);
