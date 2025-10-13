@@ -475,7 +475,7 @@ exports[`init-vsam (SHORT) skip undefined caching service 1`] = `
         "rbacProfileIdentifier": "1",
         "cookieIdentifier": "1",
         "externalDomains": [
-          "sample-domain.com"
+          "example.com"
         ],
         "externalPort": 7554,
         "network": {
@@ -630,7 +630,7 @@ exports[`init-vsam (SHORT) unset vsam mode 1`] = `
         "rbacProfileIdentifier": "1",
         "cookieIdentifier": "1",
         "externalDomains": [
-          "sample-domain.com"
+          "example.com"
         ],
         "externalPort": 7554,
         "network": {
@@ -840,7 +840,7 @@ exports[`init-vsam (SHORT) unset vsam mode 2`] = `
         "rbacProfileIdentifier": "1",
         "cookieIdentifier": "1",
         "externalDomains": [
-          "sample-domain.com"
+          "example.com"
         ],
         "externalPort": 7554,
         "network": {
