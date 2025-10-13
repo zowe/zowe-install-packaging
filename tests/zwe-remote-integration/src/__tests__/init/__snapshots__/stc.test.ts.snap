@@ -883,7 +883,7 @@ exports[`init-stc (SHORT) invalid stc configurations 3`] = `
         "rbacProfileIdentifier": "1",
         "cookieIdentifier": "1",
         "externalDomains": [
-          "sample-domain.com"
+          "example.com"
         ],
         "externalPort": 7554,
         "network": {
@@ -1106,7 +1106,7 @@ exports[`init-stc (SHORT) invalid stc configurations 4`] = `
         "rbacProfileIdentifier": "1",
         "cookieIdentifier": "1",
         "externalDomains": [
-          "sample-domain.com"
+          "example.com"
         ],
         "externalPort": 7554,
         "network": {
@@ -1329,7 +1329,7 @@ exports[`init-stc (SHORT) invalid stc configurations 5`] = `
         "rbacProfileIdentifier": "1",
         "cookieIdentifier": "1",
         "externalDomains": [
-          "sample-domain.com"
+          "example.com"
         ],
         "externalPort": 7554,
         "network": {
@@ -1553,7 +1553,7 @@ exports[`init-stc (SHORT) invalid stc configurations 6`] = `
         "rbacProfileIdentifier": "1",
         "cookieIdentifier": "1",
         "externalDomains": [
-          "sample-domain.com"
+          "example.com"
         ],
         "externalPort": 7554,
         "network": {
@@ -1777,7 +1777,7 @@ exports[`init-stc (SHORT) invalid stc configurations 7`] = `
         "rbacProfileIdentifier": "1",
         "cookieIdentifier": "1",
         "externalDomains": [
-          "sample-domain.com"
+          "example.com"
         ],
         "externalPort": 7554,
         "network": {
@@ -2104,7 +2104,7 @@ exports[`init-stc (SHORT) wrong proclib 3`] = `
         "rbacProfileIdentifier": "1",
         "cookieIdentifier": "1",
         "externalDomains": [
-          "sample-domain.com"
+          "example.com"
         ],
         "externalPort": 7554,
         "network": {
