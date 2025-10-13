@@ -4200,7 +4200,7 @@ exports[`zwe-install (SHORT) zwe install invalid dataset name 1`] = `
         "rbacProfileIdentifier": "1",
         "cookieIdentifier": "1",
         "externalDomains": [
-          "sample-domain.com"
+          "example.com"
         ],
         "externalPort": 7554,
         "network": {

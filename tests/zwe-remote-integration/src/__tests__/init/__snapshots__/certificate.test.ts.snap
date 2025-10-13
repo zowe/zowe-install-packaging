@@ -160,7 +160,7 @@ Error ZWEL0326E: An error occurred while processing Zowe YAML config /test/dir/z
         "rbacProfileIdentifier": "1",
         "cookieIdentifier": "1",
         "externalDomains": [
-          "sample-domain.com"
+          "example.com"
         ],
         "externalPort": 7554,
         "network": {
