@@ -81,7 +81,7 @@ zowe:
   workspaceDirectory: "/test/dir/workspace"
   extensionDirectory: "/global/zowe/extensions"
   externalDomains:
-  - "sample-domain.com"
+  - "example.com"
   sysMessages:
   - "ZWEL0021I"
   - "ZWEL0018I"
@@ -165,14 +165,6 @@ components:
       jwt:
         fallback: true
       64bit: true
-  jobs-api:
-    enabled: false
-    debug: false
-    port: 7558
-  files-api:
-    enabled: false
-    debug: false
-    port: 7559
   explorer-jes:
     enabled: true
   explorer-mvs:
@@ -272,7 +264,7 @@ zowe:
   workspaceDirectory: "/test/dir/workspace"
   extensionDirectory: "/global/zowe/extensions"
   externalDomains:
-  - "sample-domain.com"
+  - "example.com"
   sysMessages:
   - "ZWEL0021I"
   - "ZWEL0018I"
@@ -356,14 +348,6 @@ components:
       jwt:
         fallback: true
       64bit: true
-  jobs-api:
-    enabled: false
-    debug: false
-    port: 7558
-  files-api:
-    enabled: false
-    debug: false
-    port: 7559
   explorer-jes:
     enabled: true
   explorer-mvs:

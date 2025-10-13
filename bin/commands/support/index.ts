@@ -193,7 +193,16 @@ export function execute(): void {
   common.printMessage("");
 
   // zowe.job.name + prefix are in defaults
-  const jobName = ZOWE_CONFIG.zowe.job.name;
+  // zowe.job.name could be possibly null/empty
+  let jobName = ZOWE_CONFIG.zowe.job.name;
+  if (!jobName) {
+    const launcherSTC = ZOWE_CONFIG.zowe.setup.security.stcs.zowe;
+    if (launcherSTC) {
+      jobName = launcherSTC;
+    } else {
+      jobName = std.getenv('ZWE_PRIVATE_DEFAULT_ZOWE_STC');
+    }
+  }
   const jobPrefix = ZOWE_CONFIG.zowe.job.prefix;
 
   common.printLevel1Message(`Collecting current process information based on the job prefix ${jobPrefix} and job name ${jobName}`);

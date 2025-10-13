@@ -237,7 +237,7 @@ describe('my test suite', function() {
   before('prepare axios', function() {
     // create axios object, set base url
     REQ = axios.create({
-      baseURL: 'https://my.host-name.com:api-port/',
+      baseURL: 'https://example.com:api-port/',
       timeout: 30000,
     });
   });
@@ -309,7 +309,7 @@ describe('my test suite', function() {
     // login to MVD
     await loginMVD(
       driver,
-      'https://my.host-name.com:zlux-port/',
+      'https://example.com:zlux-port/',
       username,
       password
     );

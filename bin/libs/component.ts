@@ -482,6 +482,11 @@ function isClientAttls() {
   }
 }
 
+// This function both creates static definition files from manifest templates,
+// And cleans up existing ones that seem to be outdated
+// It does not touch existing files that are neither - it continues to permit sideloaded static definition files
+// TODO - this also means it permits outdated files from extensions that no longer exist.
+//        uninstalling an extension does not do any such cleanup, so this bug continues to exist.
 export function processComponentApimlStaticDefinitions(componentDir: string): boolean {
   const STATIC_DEF_DIR=std.getenv('ZWE_STATIC_DEFINITIONS_DIR');
   if (!STATIC_DEF_DIR) {
@@ -499,6 +504,15 @@ export function processComponentApimlStaticDefinitions(componentDir: string): bo
   const componentName = manifest.name;
   if (manifest.apimlServices && manifest.apimlServices.static) {
     let staticDefs = manifest.apimlServices.static;
+
+    const existingFiles = fs.getFilesInDirectory(STATIC_DEF_DIR);
+    const definedHaInstanceNames = ZOWE_CONFIG.haInstances ?
+                                 Object.keys(ZOWE_CONFIG.haInstances).map(name=>configUtils.sanitizeHaInstanceId(name)) :
+                                 [];
+
+    const currentHaInstanceName = configUtils.sanitizeHaInstanceId();
+    const haInstanceNames = definedHaInstanceNames.includes(currentHaInstanceName) ? definedHaInstanceNames : [currentHaInstanceName].concat(definedHaInstanceNames);
+
     for (let i = 0; i < staticDefs.length; i++) {
       const staticDef = staticDefs[i];
       const file=staticDef.file;
@@ -518,6 +532,8 @@ export function processComponentApimlStaticDefinitions(componentDir: string): bo
           const schemeEnv = std.getenv("ZWE_zOSMF_scheme");
 
           let scheme = "https";
+          let securePortEnabled = true;
+          let nonSecurePortEnabled = false;
           
           if (zosmfScheme) {
             scheme = zosmfScheme;
@@ -526,14 +542,22 @@ export function processComponentApimlStaticDefinitions(componentDir: string): bo
           } else if (attls) {
             scheme = "http";
           }
+
+          if (scheme === "http") {
+            securePortEnabled = false;
+            nonSecurePortEnabled = true;
+          }
           
           std.setenv('ZOSMF_SCHEME', scheme);
+          std.setenv('ZOSMF_NON_SECURE_PORT_ENABLED', `${nonSecurePortEnabled}`);
+          std.setenv('ZOSMF_SECURE_PORT_ENABLED', `${securePortEnabled}`);
 
           const resolvedContents = varlib.resolveShellTemplate(contents);
 
-          const zweCliParameterHaInstance=std.getenv("ZWE_CLI_PARAMETER_HA_INSTANCE");
+          
           //discovery static code requires specifically .yml. Not .yaml
-          const outPath=`${STATIC_DEF_DIR}/${componentName}.${sanitizedDefName}.${zweCliParameterHaInstance}.yml`;
+          const outFileName = `${componentName}.${sanitizedDefName}.${currentHaInstanceName}.yml`;
+          const outPath=`${STATIC_DEF_DIR}/${outFileName}`;
 
           common.printDebug(`- writing ${outPath}`);
 
@@ -547,6 +571,39 @@ export function processComponentApimlStaticDefinitions(componentDir: string): bo
             shell.execSync(`chmod`, `770`, outPath);
           } else {
             common.printError(`Could not write static definition file ${outPath}, errobj=`+errorObj);
+          }
+
+          //cleanup outdated static definision files of same type
+          common.printDebug(`Checking for old static defs for cleanup`);
+          if (existingFiles) {
+            let prefix = `${componentName}.${sanitizedDefName}.`;
+            let apimlPrefix = `apiml.${sanitizedDefName}.`;
+            let discoveryPrefix = `discovery.${sanitizedDefName}.`;
+            let suffix = '.yml';
+            for (let i = 0; i < existingFiles.length; i++) {
+              let existingFile = existingFiles[i];
+              if (existingFile.endsWith(suffix)) {
+                if (existingFile.startsWith(prefix)) {
+                  let haInstanceFound = existingFile.substring(prefix.length, existingFile.length - suffix.length);
+                  if (!haInstanceNames.includes(haInstanceFound) && existingFile != outFileName) {
+                    common.printDebug(`Removing outdated static def ${existingFile}`);
+                    os.remove(`${STATIC_DEF_DIR}/${existingFile}`);
+                  } else {
+                    common.printDebug(`Ignored static def ${existingFile}`);
+                  }
+                } else if (componentName == 'discovery' && existingFile.startsWith(apimlPrefix)) {
+                  common.printDebug(`Removing apiml modulith static def ${existingFile}`);
+                  os.remove(`${STATIC_DEF_DIR}/${existingFile}`);
+                } else if (componentName == 'apiml' && existingFile.startsWith(discoveryPrefix)) {
+                  common.printDebug(`Removing discovery non-modulith static def ${existingFile}`);
+                  os.remove(`${STATIC_DEF_DIR}/${existingFile}`);
+                } else {
+                  common.printDebug(`Ignored static def ${existingFile}`);
+                }
+              }
+            }
+          } else {
+            common.printDebug(`No prior static defs for ${componentName} found`);
           }
         }
       }

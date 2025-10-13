@@ -22,16 +22,18 @@ export function execute() {
   // Validation
   common.requireZoweYaml();
 
-  // Read job name and validate
   const zoweConfig = config.getZoweConfig();
-  const jobname = zoweConfig.zowe.job?.name;
-  let securityStcsZowe = zoweConfig.zowe.setup?.security?.stcs?.zowe;
+  // zowe.job.name defined in defaults with possibility to overwrite with empty/null
+  // If no job.name, skip it when building command
+  const jobname = zoweConfig.zowe.job.name;
+  // zowe.setup.security.stcs.zowe defined in defaults with possibility to overwrite with empty/null
+  // If no stcs.zowe, use the defaults
+  let securityStcsZowe = zoweConfig.zowe.setup.security.stcs.zowe;
   if (!securityStcsZowe) {
-    //TODO defaults should be stored in default yaml, not out of thin air
     securityStcsZowe=std.getenv('ZWE_PRIVATE_DEFAULT_ZOWE_STC');
   }
 
-  let routeSysname:string;
+  let routeSysname: string;
 
   config.sanitizeHaInstanceId();
   const haInstance=std.getenv('ZWE_CLI_PARAMETER_HA_INSTANCE');
@@ -51,14 +53,20 @@ export function execute() {
     cmd=`RO ${routeSysname},${cmd}`;
   }
 
-  const shellReturn = zoslib.operatorCommand(cmd);
-  if (shellReturn.rc) {
-    common.printErrorAndExit(`Error ZWEL0165E: Failed to start ${securityStcsZowe}: exit code ${shellReturn.rc}.`, undefined, 165);
-  } else {
+  const operCmdReturn = zoslib.operatorCommand(cmd);
+  if (operCmdReturn.rc != 0) {
+    const errorExplanation = operCmdReturn.rc == zoslib.OPER_CMD_NO_SDSF ? operCmdReturn.out : `exit code ${operCmdReturn.rc}`;
+    common.printError(`Error ZWEL0165E: Failed to start ${securityStcsZowe}: ${errorExplanation}.`);
+    if (operCmdReturn.rc == zoslib.OPER_CMD_NO_SDSF) {
+      common.printMessage(`Use following operator command to start Zowe Launcher manually: ${cmd}`);
+    }
+    std.exit(165);
+  }
+  else {
     //TODO handle awk and set patterns here
-    let errorMessage = shellReturn.out;
-    if (shellReturn.out) {
-      const errorResult = shell.execOutSync('sh', '-c', `echo "${shellReturn.out}" | awk "/-S ${securityStcsZowe}/{x=NR+1;next}(NR<=x){print}" | sed "s/^\\([^ ]\\+\\) \\+\\([^ ]\\+\\) \\+\\([^ ]\\+\\) \\+\\(.\\+\\)\\$/\\4/"`);
+    let errorMessage = operCmdReturn.out;
+    if (operCmdReturn.out) {
+      const errorResult = shell.execOutSync('sh', '-c', `echo "${operCmdReturn.out}" | awk "/-S ${securityStcsZowe}/{x=NR+1;next}(NR<=x){print}" | sed "s/^\\([^ ]\\+\\) \\+\\([^ ]\\+\\) \\+\\([^ ]\\+\\) \\+\\(.\\+\\)\\$/\\4/"`);
       errorMessage = errorResult.out;
     }
     if (errorMessage) {

@@ -359,7 +359,7 @@ module.exports = async () => {
     });
 
     await uss.runCommand(
-      `chmod 755 ${REMOTE_SYSTEM_INFO.ussTestDir}/bin/zwe && ` + `chmod 755 ${REMOTE_SYSTEM_INFO.ussTestDir}/bin/utils/opercmd.rex `,
+      `chmod 755 ${REMOTE_SYSTEM_INFO.ussTestDir}/bin/zwe ${REMOTE_SYSTEM_INFO.ussTestDir}/bin/utils/opercmd.rex ${REMOTE_SYSTEM_INFO.ussTestDir}/bin/utils/getSDSF.rex`,
       REMOTE_SYSTEM_INFO.ussTestDir,
     );
 

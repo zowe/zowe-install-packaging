@@ -240,7 +240,7 @@ describe(`${testSuiteName}`, () => {
     /**
      * This test cannot accurately capture the output of ZWESLSTC as a snapshot, because the
      *  test directory may vary from system to system which changes the output. We check that the correct
-     *  config choices are ordered in the final ZWESLSTC and that the lonest lines in STDENV end with backslash
+     *  config choices are ordered in the final ZWESLSTC and that the longest lines in STDENV end with backslash
      */
     it('test adversarial paths and concatenations', async () => {
       const MAX_DIR_LEN = 255; // USS restriction

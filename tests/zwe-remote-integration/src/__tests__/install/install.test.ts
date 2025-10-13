@@ -249,7 +249,7 @@ describe(`${testSuiteName}`, () => {
       let result = await testRunner.runZweTest(cfgYaml, 'install --dry-run');
       expect(result.stdout).not.toBeNull();
       expect(result.cleanedStdout).toMatchSnapshot();
-      expect(result.rc).toBe(1);
+      expect(result.rc).toBe(70);
 
       delete cfgYaml.zowe.setup.dataset.prefix;
       result = await testRunner.runZweTest(cfgYaml, `install --dry-run`);
