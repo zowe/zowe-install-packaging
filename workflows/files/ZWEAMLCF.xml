@@ -19,7 +19,7 @@
         <boolean>
             <!-- Put validation here -->
             <!-- Specify choices here -->
-            <default>false</default>
+            <default>true</default>
         </boolean>
     </variable>
     <variable name="zowe_setup_jcl_header" scope="global" visibility="public">
@@ -786,7 +786,7 @@ echo '  # https://docs.zowe.org/stable/user-guide/zos-components-installation-ch
 echo '  #-------------------------------------------------------------------------------' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '  setup:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '    jcl:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '      # When enabled, "zwe init" will use job submission for system changes' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '      # When enabled, "zwe install & init" will use job submission for system changes' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '      # instead of shell commands. A `--dry-run` option is also enabled' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '      # which allows you to see jobs instead of submitting.' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '      enable: ${instance-zowe_setup_jcl_enable}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
