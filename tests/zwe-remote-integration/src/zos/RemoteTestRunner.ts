@@ -375,6 +375,19 @@ export class RemoteTestRunner {
     this.cleanFns.push(replaceFn);
   }
 
+  /**
+   * Utility to mask sensitive data from input data. Returns a new masked string. This will not mask against job
+   * headers present in zowe.yaml or defaults.yaml.
+   *
+   * In general, calls to this function should be rare - the testRunner's cleanedOutput is already masked.
+   *
+   * @param data
+   * @returns
+   */
+  public maskSensitiveData(data: string): string {
+    return this.cleanOutput(data, []);
+  }
+
   private cleanOutput(stdout: string, customJobHeaders: string[]): string {
     let cleanedOutput = stdout;
     // user-supplied

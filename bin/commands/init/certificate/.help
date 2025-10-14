@@ -11,6 +11,8 @@ These Zowe YAML configurations showing with sample values are used:
 ```yaml
 zowe:
   setup:
+    jcl:
+      header: "123456"
     dataset:
       prefix: IBMUSER.ZWE
       jcllib: IBMUSER.ZWE.CUST.JCLLIB
@@ -70,7 +72,7 @@ zOSMF:
   host: zosmf.example.com
   port: 443
 ```
-
+- `zowe.setup.jcl.header` is optional additional JCL fields used for submitting JCLs.
 - `zowe.setup.certificate.type` is the type of certificate. Valid values are
   "PKCS12" (USS keystore) or "JCEKS", "JCECCAKS", "JCERACFKS", "JCECCARACFKS",
   and "JCEHYBRIDRACFKS (z/OS keyring).
