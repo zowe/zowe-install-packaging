@@ -8,6 +8,7 @@ All notable changes to the Zowe Installer will be documented in this file.
 - Enhancement: Command `zwe validate port bind` command has been added. It can be used to validate if a zowe component is likely to succeed at binding to a TCP socket, and is used at startup to reduce likelihood of misconfiguration. [#4447](https://github.com/zowe/zowe-install-packaging/pull/4447)
 - Enhancement: Detect if `SDSF` is available. [#4389](https://github.com/zowe/zowe-install-packaging/pull/4389)
 - Bugfix: internal routine `copy_to_data_set` did not correctly check if data set exists. [#4476](https://github.com/zowe/zowe-install-packaging/pull/4476)
+- Enhancement: `ZWEGEN00` supports long path by continuation character, which can be used in JCL `ZWEGENER` [#4459](https://github.com/zowe/zowe-install-packaging/pull/4459)
 - Bugfix: Zowe startup now removes outdated static definition files from workspace/api-mediation/api-defs, which previously caused wrong or duplicate registrations of servers to APIML. [#4526](https://github.com/zowe/zowe-install-packaging/pull/4526)
 - Bugfix: `--update-config` might fail if the specified config file is a symbolic link. [#4492](https://github.com/zowe/zowe-install-packaging/pull/4492)
 
