@@ -2,6 +2,10 @@
 
 All notable changes to the Zowe Installer will be documented in this file.
 
+## `3.3.1`
+
+- Bugfix: z/OSMF static definition is missing scheme information, this is needed for AT-TLS hybrid scenarios where connections to z/OSMF do not follow AT-TLS rules [#4512](https://github.com/zowe/zowe-install-packaging/pull/4512)
+
 ## `3.3.0`
 
 - Bugfix: YAML lookup for HA instances within "haInstances" was not working when HA instance names were uppercase. Now, the lookup is case insensitive to allow for any casing of HA instance names. [#4370](https://github.com/zowe/zowe-install-packaging/pull/4370)
