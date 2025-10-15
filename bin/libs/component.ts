@@ -449,7 +449,9 @@ export function processComponentApimlStaticDefinitions(componentDir: string): bo
           const schemeEnv = std.getenv("ZWE_zOSMF_scheme");
 
           let scheme = "https";
-          
+          let securePortEnabled = true;
+          let nonSecurePortEnabled = false;
+
           if (zosmfScheme) {
             scheme = zosmfScheme;
           } else if (schemeEnv) {
@@ -457,8 +459,15 @@ export function processComponentApimlStaticDefinitions(componentDir: string): bo
           } else if (attls) {
             scheme = "http";
           }
+
+          if (scheme === "http") {
+            securePortEnabled = false;
+            nonSecurePortEnabled = true;
+          }
           
           std.setenv('ZOSMF_SCHEME', scheme);
+          std.setenv('ZOSMF_NON_SECURE_PORT_ENABLED', `${nonSecurePortEnabled}`);
+          std.setenv('ZOSMF_SECURE_PORT_ENABLED', `${securePortEnabled}`);
 
           const resolvedContents = varlib.resolveShellTemplate(contents);
 
