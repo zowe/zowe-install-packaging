@@ -99,15 +99,13 @@ export function execute(quitOnError?: boolean, level?: string): number {
     output += result.err;
   }
 
+  let certificateInvalid = VALIDATION_OK;
+  let configInvalid = VALIDATION_OK;
   
   if (rc == 0) {
     console.log(configLines.filter(line => !line.startsWith(SECTION_SEPARATOR)).join('\n'));
     common.printFormattedInfo(common.MSG_KEY, COMMAND_NAME, "Certificate checks passed.");
   } else {
-
-
-    let certificateInvalid = VALIDATION_OK;
-    let configInvalid = VALIDATION_OK;
 
 
     // From cert-analyser codebase
@@ -367,9 +365,16 @@ export function execute(quitOnError?: boolean, level?: string): number {
   }
 
 
-  if (rc && quitOnError) {
-    common.printErrorAndExit("Error ZWEL0323E: Certificate validation failed. Fix errors listed before starting Zowe.", undefined, 323);
+  if (rc) {
+    if (configInvalid == VALIDATION_ERROR || certificateInvalid == VALIDATION_ERROR) {
+      if (quitOnError) {
+        common.printErrorAndExit("Error ZWEL0323E: Certificate validation failed. Fix errors listed before starting Zowe.", undefined, 323);
+      }
+      return rc;
+    } else {
+      return 0; //report Ok to upstream, because just a warning.
+    }
   }
   
-  return rc;
+  return 0;
 }
