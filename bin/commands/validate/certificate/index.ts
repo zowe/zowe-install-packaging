@@ -321,9 +321,9 @@ export function execute(quitOnError?: boolean, level?: string): number {
     if (output.includes("No trusted certificate found. Add ")) {
       common.printFormattedWarn(common.MSG_KEY, COMMAND_NAME, `Certificate will fail verification  when zowe.verifyCertificates not DISABLED`);
       if (verifyCertificates == 'DISABLED') {
-        configurationInvalid = VALIDATION_WARN;
+        configInvalid = VALIDATION_WARN;
       } else {
-        configurationInvalid = VALIDATION_ERROR;
+        configInvalid = VALIDATION_ERROR;
 
         // Extracts 'Add ... certificate authority to the trust store'
         let addMsg;
