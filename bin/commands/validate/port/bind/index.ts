@@ -15,6 +15,8 @@ import * as config from '../../../../libs/config';
 import * as component from '../../../../libs/component';
 import * as shell from '../../../../libs/shell';
 
+const COMMAND_NAME = 'zwe-validate-port-available';
+
 export function execute(quitOnError?: boolean, componentName?: string) {
   let enabledComponents = componentName ? [componentName] : component.getEnabledComponents();
   let hasErrors = false;
@@ -27,7 +29,7 @@ export function execute(quitOnError?: boolean, componentName?: string) {
 
   let myJobname = std.getenv('_BPX_JOBNAME');
 
-  common.printFormattedInfo(`ZWELS`, `zwe-validate-port-available`, `Checking ports of ${enabledComponents.length} enabled components`);
+  common.printFormattedInfo(common.MSG_KEY, COMMAND_NAME, `Checking ports of ${enabledComponents.length} enabled components`);
   for (let i = 0; i < enabledComponents.length; i++) {
     let componentName = enabledComponents[i];
     let port = ZOWE_CONFIG.components[componentName].port;
@@ -60,22 +62,28 @@ export function execute(quitOnError?: boolean, componentName?: string) {
       if (jobname) {
         std.setenv('_BPX_JOBNAME', jobname);
       }
-      let result = shell.execSync(bindUtilPath, '--host', listenAddress, '--port', port);
+      let result = shell.execOutSync(bindUtilPath, '--host', listenAddress, '--port', port);
       if (jobname) {
         //restore
         std.setenv('_BPX_JOBNAME', myJobname);
       }
       if (result.rc) {
-        common.printFormattedError(`ZWELS`, `zwe-validate-port-available`, `${componentName} port ${port} not available or command failed.`);
+        if (result.out) {
+          console.log(result.out);
+        }
+        common.printFormattedError(common.MSG_KEY, COMMAND_NAME, `${componentName}: Port ${port} not available or command failed.`);
         hasErrors = true;
+      } else if (result.out) {
+        common.printDebug(result.out);
       }
-
+    } else {
+      common.printFormattedDebug(common.MSG_KEY, COMMAND_NAME, `{componentName}: Component has no port, skipped.`);
     }
   }
   if (!hasErrors) {
-    common.printFormattedInfo(`ZWELS`, `zwe-validate-port-available`, `Zowe port bind validation passed.`);
+    common.printFormattedInfo(common.MSG_KEY, COMMAND_NAME, `Zowe port bind validation passed.`);
   } else if (!quitOnError) {
-    common.printFormattedError(`ZWELS`, `zwe-validate-port-available`, `Zowe port bind validation failed, review output for action items before running Zowe.`);
+    common.printFormattedError(common.MSG_KEY, COMMAND_NAME, `Zowe port bind validation failed, review output for action items before running Zowe.`);
   } else {
     common.printErrorAndExit(`Zowe port bind validation failed, review output for action items before running Zowe.`, null, 8);
   }
