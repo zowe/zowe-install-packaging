@@ -133,6 +133,7 @@ zowe:
     startupChecks:
       bypassAll: false
       ports: true
+      certificate: true
 
   # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   # How we want to verify SSL certificates of services. Valid values are:
