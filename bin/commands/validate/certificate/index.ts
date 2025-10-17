@@ -64,7 +64,7 @@ export function execute(quitOnError?: boolean, level?: string): number {
     } catch (e) {
       common.printFormattedWarn(common.MSG_KEY, COMMAND_NAME, `Unexpected keyring format ${keystoreLocation}`);
     }
-  } else {
+  } else if (keystoreType != 'PKCS12') {
     common.printFormattedWarn(common.MSG_KEY, COMMAND_NAME, `Keystore unknown type ${keystoreType}`);
   }
   if (truststoreType.startsWith('JCE') && truststoreType.endsWith('RACFKS')) {
@@ -76,7 +76,7 @@ export function execute(quitOnError?: boolean, level?: string): number {
         common.printFormattedWarn(common.MSG_KEY, COMMAND_NAME, `Unexpected keyring format ${truststoreLocation}`);
       }
     }
-  } else {
+  } else if (keystoreType != 'PKCS12') {
     common.printFormattedWarn(common.MSG_KEY, COMMAND_NAME, `Truststore unknown type ${truststoreType}`);
   }
   
@@ -103,7 +103,7 @@ export function execute(quitOnError?: boolean, level?: string): number {
   let configInvalid = VALIDATION_OK;
   
   if (rc == 0) {
-    console.log(configLines.filter(line => !line.startsWith(SECTION_SEPARATOR)).join('\n'));
+    common.printDebug(configLines.filter(line => !line.startsWith(SECTION_SEPARATOR)).join('\n'));
     common.printFormattedInfo(common.MSG_KEY, COMMAND_NAME, "Certificate checks passed.");
   } else {
 
