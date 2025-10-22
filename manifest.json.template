@@ -66,7 +66,7 @@
     },
     "org.zowe.apiml.api-catalog-package": {
       "version": "^3.3.15-PR-0002-SNAPSHOT",
-      "artifact": "api-catalog-package-3.3.15-PR-0002-20251022.155840-2.zip "
+      "artifact": "api-catalog-package-3.3.15-PR-0002-20251022.155840-2.zip"
     },
     "org.zowe.apiml.discovery-package": {
       "version": "^3.3.15-PR-0002-SNAPSHOT",
@@ -82,7 +82,7 @@
     },
     "org.zowe.apiml.apiml-common-lib-package": {
       "version": "^3.3.15-PR-0002-SNAPSHOT",
-      "artifact": "apiml-common-lib-package-3.3.15-PR-0002-20251022.103522-2.zip"
+      "artifact": "apiml-common-lib-package-3.3.15-PR-0002-20251022.155840-1.zip"
     },
     "org.zowe.apiml.sdk.common-java-lib-package": {
       "version": "^2.0.7-SNAPSHOT",
@@ -95,7 +95,7 @@
     },
     "org.zowe.apiml.zaas-package": {
       "version": "^3.3.15-PR-0002-SNAPSHOT",
-      "artifact": "zaas-package-3.3.15-PR-0002-20251022.103522-2.zip"
+      "artifact": "zaas-package-3.3.15-PR-0002-20251022.155840-2.zip"
     },
     "org.zowe.apiml.sdk.certificate-analyser": {
       "version": "^3.3.15-PR-0002-SNAPSHOT",
