@@ -47,6 +47,29 @@ const user = std.getenv('USER');
 
 const ZOWE_CONFIG=config.getZoweConfig();
 
+function getStartupCheckMode(property: string): {doCheck: boolean, warnOnly: boolean} {
+  let doCheck = true;
+  let warnOnly = false;
+
+  if (ZOWE_CONFIG.zowe.launchScript?.startupChecks) {
+    let value = ZOWE_CONFIG.zowe.launchScript?.startupChecks[property];
+    doCheck = value == 'true' || value == 'warn';
+    warnOnly = value == 'warn';
+  }
+  if (ZOWE_CONFIG.zowe.launchScript?.startupChecks?.bypassAll) {
+    let value = ZOWE_CONFIG.zowe.launchScript?.startupChecks.bypassAll;
+    if (value == 'true') {
+      doCheck = false;
+    } else if (value == 'warn') {
+      doCheck = true;
+      warnOnly = true;
+    }
+  }
+  return {doCheck, warnOnly};
+}
+
+
+
 // Extra preparations for running in container
 // - link component runtime under zowe <runtime>/components
 // - `commands.configureInstance` is deprecated in v2
@@ -194,8 +217,9 @@ function globalValidate(enabledComponents:string[]): void {
 function validateComponents(enabledComponents:string[]): any {
   common.printFormattedInfo("ZWELS", "zwe-internal-start-prepare,validate_components", "process component validations ...");
 
-  if ( !(ZOWE_CONFIG.zowe.launchScript?.startupChecks?.ports === false || ZOWE_CONFIG.zowe.launchScript?.startupChecks?.bypassAll === true)) {
-    validateBind.execute(true);
+  const validateBindAction = getStartupCheckMode('ports');
+  if (validateBindAction.doCheck) {
+    validateBind.execute(!validateBindAction.warnOnly);
   }
   
   const componentEnvironments = {};

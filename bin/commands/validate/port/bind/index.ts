@@ -57,11 +57,16 @@ export function execute(quitOnError?: boolean, componentName?: string) {
       } else if (ZOWE_CONFIG.zowe?.network?.server?.listenAddresses) {
         listenAddress = ZOWE_CONFIG.zowe.network.server.listenAddresses[0];
       }
-
+      common.printFormattedDebug(common.MSG_KEY, COMMAND_NAME, `${componentName}: Checking port ${port}`);
+      
       //TODO this only works on z/OS, but configmgr also only works on z/OS, so at this time the limitation has not been exposed.
       if (jobname) {
         std.setenv('_BPX_JOBNAME', jobname);
+        common.printFormattedDebug(common.MSG_KEY, COMMAND_NAME, `${componentName}: Checking port ${port}, jobname ${jobname}`);
+      } else {
+        common.printFormattedDebug(common.MSG_KEY, COMMAND_NAME, `${componentName}: Checking port ${port} with default jobname`);
       }
+      
       let result = shell.execOutSync(bindUtilPath, '--host', listenAddress, '--port', port);
       if (jobname) {
         //restore
@@ -71,13 +76,17 @@ export function execute(quitOnError?: boolean, componentName?: string) {
         if (result.out) {
           console.log(result.out);
         }
-        common.printFormattedError(common.MSG_KEY, COMMAND_NAME, `${componentName}: Port ${port} not available or command failed.`);
+        if (jobname) {
+          common.printFormattedError(common.MSG_KEY, COMMAND_NAME, `${componentName}: Port ${port} not available for jobname ${jobname} or command failed.`);
+        } else {
+          common.printFormattedError(common.MSG_KEY, COMMAND_NAME, `${componentName}: Port ${port} not available or command failed.`);
+        }
         hasErrors = true;
       } else if (result.out) {
         common.printDebug(result.out);
       }
     } else {
-      common.printFormattedDebug(common.MSG_KEY, COMMAND_NAME, `{componentName}: Component has no port, skipped.`);
+      common.printFormattedDebug(common.MSG_KEY, COMMAND_NAME, `${componentName}: Component has no port, skipped.`);
     }
   }
   if (!hasErrors) {
