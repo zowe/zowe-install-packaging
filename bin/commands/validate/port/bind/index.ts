@@ -17,7 +17,7 @@ import * as shell from '../../../../libs/shell';
 
 const COMMAND_NAME = 'zwe-validate-port-available';
 
-export function execute(quitOnError?: boolean, componentName?: string) {
+export function execute(quitOnError?: boolean, componentName?: string): number {
   let enabledComponents = componentName ? [componentName] : component.getEnabledComponents();
   let hasErrors = false;
   const ZOWE_CONFIG = config.getZoweConfig();
@@ -30,6 +30,7 @@ export function execute(quitOnError?: boolean, componentName?: string) {
   let myJobname = std.getenv('_BPX_JOBNAME');
 
   common.printFormattedInfo(common.MSG_KEY, COMMAND_NAME, `Checking ports of ${enabledComponents.length} enabled components`);
+  let failedCount = 0;
   for (let i = 0; i < enabledComponents.length; i++) {
     let componentName = enabledComponents[i];
     let port = ZOWE_CONFIG.components[componentName].port;
@@ -73,6 +74,7 @@ export function execute(quitOnError?: boolean, componentName?: string) {
         std.setenv('_BPX_JOBNAME', myJobname);
       }
       if (result.rc) {
+        failedCount++;
         if (result.out) {
           console.log(result.out);
         }
@@ -91,9 +93,13 @@ export function execute(quitOnError?: boolean, componentName?: string) {
   }
   if (!hasErrors) {
     common.printFormattedInfo(common.MSG_KEY, COMMAND_NAME, `Zowe port bind validation passed.`);
+    return 0;
   } else if (!quitOnError) {
-    common.printFormattedError(common.MSG_KEY, COMMAND_NAME, `Zowe port bind validation failed, review output for action items before running Zowe.`);
+    common.printFormattedError(common.MSG_KEY, COMMAND_NAME, `${failedCount} port bind validation(s) failed, review output for action items before running Zowe.`);
+    return failedCount;
   } else {
-    common.printErrorAndExit(`Zowe port bind validation failed, review output for action items before running Zowe.`, null, 8);
+    common.printFormattedError(common.MSG_KEY, COMMAND_NAME, `Port bind validation failed. This check can be dismissed with YAML value "zowe.launchScript.startupChecks.port: warn"`);
+    common.printErrorAndExit(`${failedCount} port bind validation(s) failed, review output for action items before running Zowe.`, null, 8);
+    return failedCount;
   }
 }
