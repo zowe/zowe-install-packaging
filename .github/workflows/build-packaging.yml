@@ -206,7 +206,7 @@ jobs:
 
       - name: '[Prep 6b] Process github.event.inputs for manually triggered build'
         id: process-inputs
-        if: ${{ github.event_name == 'workflow_dispatch' || github.event.inputs.ORIGIN_ISSUE_TRIGGER != 'true' }}
+        if: ${{ github.event_name == 'workflow_dispatch' }}
         run: |
           BUILD_WHAT="${{ steps.process-labels.outputs.BUILD_WHAT_LABELS }}"
           

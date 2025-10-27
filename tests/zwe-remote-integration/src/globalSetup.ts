@@ -52,7 +52,6 @@ function setupBaseYaml() {
   zoweYaml.zowe.runtimeDirectory = REMOTE_SYSTEM_INFO.ussTestDir;
   zoweYaml.zowe.logDirectory = REMOTE_SYSTEM_INFO.zweLogDir;
   zoweYaml.zowe.workspaceDirectory = REMOTE_SYSTEM_INFO.zweWorkspaceDir;
-  zoweYaml.zowe.setup.jcl.enable = true; // we only test JCL version of init/install
   zoweYaml.zowe.setup.dataset.prefix = REMOTE_SYSTEM_INFO.prefix;
   zoweYaml.zowe.setup.dataset.jcllib = REMOTE_SYSTEM_INFO.jcllib;
   zoweYaml.zowe.setup.dataset.proclib = REMOTE_SYSTEM_INFO.proclib;
@@ -329,7 +328,7 @@ module.exports = async () => {
     await uss.runCommand(`tar -xfo ${ussWorkDir}/zwe.tar`, REMOTE_SYSTEM_INFO.ussTestDir);
 
     await uss.runCommand(
-      `chmod 755 ${REMOTE_SYSTEM_INFO.ussTestDir}/bin/zwe && ` + `chmod 755 ${REMOTE_SYSTEM_INFO.ussTestDir}/bin/utils/opercmd.rex `,
+      `chmod 755 ${REMOTE_SYSTEM_INFO.ussTestDir}/bin/zwe ${REMOTE_SYSTEM_INFO.ussTestDir}/bin/utils/opercmd.rex ${REMOTE_SYSTEM_INFO.ussTestDir}/bin/utils/getSDSF.rex`,
       REMOTE_SYSTEM_INFO.ussTestDir,
     );
 
