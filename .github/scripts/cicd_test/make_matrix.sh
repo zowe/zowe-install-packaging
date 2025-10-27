@@ -38,6 +38,10 @@ case $install_test_choice in
   test_file="$KEYRING_TESTFILE"
   ;;
 
+"ATTLS")
+  test_file="$ATTLS_TESTFILE"
+  ;;
+
 "Java 21")
   test_file="$JAVA_V21_TESTFILE"
   ;;
