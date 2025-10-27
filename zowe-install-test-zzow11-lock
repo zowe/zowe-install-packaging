@@ -1,1 +1,15 @@
-""
+{
+  "lockAcquiredTime": "Mon Oct 27 2025 07:38:29 GMT+0000 (Coordinated Universal Time)",
+  "uid": "1761550709234714523",
+  "repository": {
+    "owner": "zowe",
+    "repo": "zowe-install-packaging"
+  },
+  "branch": "MVD-7235fix",
+  "workflow": "Zowe CICD Integration Tests",
+  "job": "cicd-test",
+  "actor": "zowe-robot",
+  "runId": 18833367556,
+  "runNumber": 7684,
+  "link": "https://github.com/zowe/zowe-install-packaging/actions/runs/18833367556"
+}
