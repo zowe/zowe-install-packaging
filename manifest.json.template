@@ -61,28 +61,28 @@
       "artifact": "*.pax"
     },
     "org.zowe.apiml.apiml-package": {
-      "version": "^3.3.15-PR-0002-SNAPSHOT",
-      "artifact": "apiml-package-3.3.15-PR-0002-20251022.155840-2.zip"
+      "version": "^3.3.21-PR-4354-0-SNAPSHOT",
+      "artifact": "apiml-*.zip"
     },
     "org.zowe.apiml.api-catalog-package": {
-      "version": "^3.3.15-PR-0002-SNAPSHOT",
-      "artifact": "api-catalog-package-3.3.15-PR-0002-20251022.155840-2.zip"
+      "version": "^3.3.21-PR-4354-0-SNAPSHOT",
+      "artifact": "api-catalog-*.zip"
     },
     "org.zowe.apiml.discovery-package": {
       "version": "^3.3.15-PR-0002-SNAPSHOT",
-      "artifact": "discovery-package-3.3.15-PR-0002-20251022.155840-2.zip"
+      "artifact": "discovery-*.zip"
     },
     "org.zowe.apiml.gateway-package": {
       "version": "^3.3.15-PR-0002-SNAPSHOT",
-      "artifact": "gateway-package-3.3.15-PR-0002-20251022.155840-2.zip"
+      "artifact": "gateway-*.zip"
     },
     "org.zowe.apiml.caching-service-package": {
       "version": "^3.3.15-PR-0002-SNAPSHOT",
-      "artifact": "caching-service-package-3.3.15-PR-0002-20251022.155840-2.zip"
+      "artifact": "caching-service-*.zip"
     },
     "org.zowe.apiml.apiml-common-lib-package": {
       "version": "^3.3.15-PR-0002-SNAPSHOT",
-      "artifact": "apiml-common-lib-package-3.3.15-PR-0002-20251022.155840-1.zip"
+      "artifact": "apiml-common-lib-*.zip"
     },
     "org.zowe.apiml.sdk.common-java-lib-package": {
       "version": "^2.0.7-SNAPSHOT",
@@ -91,15 +91,15 @@
     },
     "org.zowe.apiml.sdk.apiml-sample-extension-package": {
       "version": "^3.3.15-PR-0002-SNAPSHOT",
-      "artifact": "apiml-sample-extension-package-3.3.15-PR-0002-20251022.155840-2.zip"
+      "artifact": "apiml-sample-extension-*.zip"
     },
     "org.zowe.apiml.zaas-package": {
       "version": "^3.3.15-PR-0002-SNAPSHOT",
-      "artifact": "zaas-package-3.3.15-PR-0002-20251022.155840-2.zip"
+      "artifact": "zaas-package-*.zip"
     },
     "org.zowe.apiml.sdk.certificate-analyser": {
       "version": "^3.3.15-PR-0002-SNAPSHOT",
-      "artifact": "certificate-analyser-3.3.15-PR-0002-20251022.155840-2.jar"
+      "artifact": "certificate-analyser-*.jar"
     },
     "org.zowe.getesm": {
       "version": "^3.0.0-V3.X-STAGING",
