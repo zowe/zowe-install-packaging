@@ -35,7 +35,7 @@ check_jcl_enabled() {
     echo "true"
     return
   fi
-  USE_JCL=$(read_yaml_configmgr "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.jcl.enable")
+  USE_JCL=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.jcl.enable")
   if [ "${USE_JCL}" = "true" ]; then
     echo "true"
   else

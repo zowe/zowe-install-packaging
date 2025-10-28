@@ -1520,7 +1520,7 @@ EOF
   fi
 
   # used by ACF2  
-  stc_group=$(read_yaml_configmgr "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.security.groups.stc")
+  stc_group=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.security.groups.stc")
   if [ -z "${stc_group}" ]; then
     stc_group=${ZWE_PRIVATE_DEFAULT_ADMIN_GROUP}
   fi
@@ -1653,7 +1653,7 @@ keyring_run_zwenokyr_jcl_legacy_mode() {
   security_product=${7:-RACF}
 
   # used by ACF2
-  stc_group=$(read_yaml_configmgr "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.security.groups.stc")
+  stc_group=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.security.groups.stc")
   if [ -z "${stc_group}" ]; then
     stc_group=${ZWE_PRIVATE_DEFAULT_ADMIN_GROUP}
   fi

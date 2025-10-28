@@ -57,7 +57,7 @@ fi
 # zowe.runtimeDirectory
 update_zowe_runtime_dir=
 # do we have zowe.runtimeDirectory defined in zowe.yaml?
-yaml_runtime_dir=$(read_yaml_configmgr "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.runtimeDirectory")
+yaml_runtime_dir=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.runtimeDirectory")
 if [ -n "${yaml_runtime_dir}" ]; then
   result=$(are_directories_same "${yaml_runtime_dir}" "${ZWE_zowe_runtimeDirectory}")
   code=$?
