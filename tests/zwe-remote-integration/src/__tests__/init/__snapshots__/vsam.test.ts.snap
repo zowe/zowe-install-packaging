@@ -46,12 +46,12 @@ Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWEGENER)
 //   DCB=(RECFM=FB,LRECL=80,BLKSIZE=3120,DSORG=PO),
 //   SPACE=(3120,(20,5,10))
 //*
-//* Replace TEST.DATASET.PFX with the
+//* Replace {zowe.setup.dataset.prefix} with the
 //* Value as seen in zowe.yaml
 //*
 //SYSPROC  DD DSN=TEST.DATASET.PFX.SZWEEXEC,DISP=SHR
 //*
-//* Replace TEST.DATASET.PFX with the
+//* Replace {zowe.setup.dataset.prefix} with the
 //* Value as seen in zowe.yaml
 //*
 //STEPLIB  DD DSN=TEST.DATASET.PFX.SZWELOAD,DISP=SHR
@@ -67,7 +67,7 @@ Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWEGENER)
 //* zowe-yaml-schema.json
 //* server-common.json
 //*
-//* Replace /test/dir with where your Zowe run time
+//* Replace {zowe.runtimeDirectory} with where your Zowe run time
 //* directory is, as seen in zowe.yaml
 //*
 //MYSCHEMA DD   *,DLM=$$
@@ -79,8 +79,13 @@ $$
 //* entries. The lower entries have their values
 //* overridden by the higher entries.
 //*
+//* Note: Use backslash in MYCONFIG or MYSCHEMA as continuation char.
+//*
 //* Ex. PARMLIB MY.ZOWE.CUSTOM.PARMLIB(YAML)
 //*     FILE /some/other/zowe.yaml
+//*     FILE /long/path/to/another/configuration/\\
+//*     zowe.yaml
+//*
 //MYCONFIG DD   *,DLM=$$
 FILE /test/dir/zowe.test.yaml
 $$
