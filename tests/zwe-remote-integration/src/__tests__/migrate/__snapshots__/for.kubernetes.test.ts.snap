@@ -62,10 +62,10 @@ You can customize domains by passing --domains option to this command.
 - update "components.gateway.apiml.security.authorization.endpoint.provider" with value:
 - update "components.discovery.replicas" with value: 1
 - update "components.caching-service.storage.mode" with value:
-- update "zowe.environments.ZWED_agent_host" with value: sample-domain.com
+- update "zowe.environments.ZWED_agent_host" with value: example.com
 - update "zowe.environments.ZWED_agent_https_port" with value: 7557
-- update "zowe.environments.ZOWE_ZLUX_TELNET_HOST" with value: sample-domain.com
-- update "zowe.environments.ZOWE_ZLUX_SSH_HOST" with value: sample-domain.com
+- update "zowe.environments.ZOWE_ZLUX_TELNET_HOST" with value: example.com
+- update "zowe.environments.ZOWE_ZLUX_SSH_HOST" with value: example.com
 - update "zowe.certificate.keystore.file" with value: /home/zowe/keystore/keystore.p12
 - update "zowe.certificate.truststore.file" with value: /home/zowe/keystore/truststore.p12
 - update "zowe.certificate.pem.certificateAuthorities" with value: /home/zowe/keystore/ca.cer
@@ -98,6 +98,9 @@ data:
     ---
     zowe:
       setup:
+        jcl:
+          enable: true
+          header: ""
         dataset:
           prefix: "TEST.DATASET.PFX"
           proclib: "TEST.DATASET.PFX.TEST.PROCLIB"
@@ -106,7 +109,7 @@ data:
             zis: "ZWESIP00"
           jcllib: "TEST.DATASET.PFX.JCLLIB"
           loadlib: "TEST.DATASET.PFX.SZWEEXEC"
-          authLoadlib: "TEST.DATASET.PFX.SZWELOAD"
+          authLoadlib: "TEST.DATASET.PFX.SZWEAUTH"
           authPluginLib: "TEST.DATASET.PFX.ZWESAPL"
         certificate:
           type: "PKCS12"
@@ -122,9 +125,6 @@ data:
           volume: "TSTVOL"
           storageClass: ""
           name: "TEST.DATASET.PFX.VSAM"
-        jcl:
-          header:
-          - ""
       runtimeDirectory: "/home/zowe/runtime"
       logDirectory: "/home/zowe/instance/logs"
       workspaceDirectory: "/home/zowe/instance/workspace"
@@ -181,10 +181,10 @@ data:
       verifyCertificates: "STRICT"
       useConfigmgr: false
       environments:
-        ZWED_agent_host: "sample-domain.com"
+        ZWED_agent_host: "example.com"
         ZWED_agent_https_port: "7557"
-        ZOWE_ZLUX_TELNET_HOST: "sample-domain.com"
-        ZOWE_ZLUX_SSH_HOST: "sample-domain.com"
+        ZOWE_ZLUX_TELNET_HOST: "example.com"
+        ZOWE_ZLUX_SSH_HOST: "example.com"
     java:
       home: "/test/java/home"
     node:
@@ -194,6 +194,9 @@ data:
       port: 12321
       applId: "IZUDFLT"
     components:
+      apiml:
+        enabled: false
+        debug: false
       gateway:
         enabled: true
         port: "7554"
