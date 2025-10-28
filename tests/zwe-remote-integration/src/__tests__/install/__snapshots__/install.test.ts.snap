@@ -1743,9 +1743,6 @@ exports[`zwe-install (SHORT) zwe install invalid dataset name 1`] = `
       "java": {
         "home": "/test/java/home"
       },
-      "node": {
-        "home": "/test/node/home"
-      },
       "zOSMF": {
         "host": "some.test.hostname",
         "port": 12321,

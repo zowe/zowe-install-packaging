@@ -48,7 +48,7 @@ function setupBaseYaml() {
   const zoweYaml: ZoweYamlType = yaml.parse(fs.readFileSync(path.resolve(REPO_ROOT_DIR, 'example-zowe.yaml'), 'utf8')) as ZoweYamlType;
 
   zoweYaml.java.home = REMOTE_SYSTEM_INFO.zosJavaHome;
-  zoweYaml.node.home = REMOTE_SYSTEM_INFO.zosNodeHome;
+  delete zoweYaml.node;
   zoweYaml.zowe.runtimeDirectory = REMOTE_SYSTEM_INFO.ussTestDir;
   zoweYaml.zowe.logDirectory = REMOTE_SYSTEM_INFO.zweLogDir;
   zoweYaml.zowe.workspaceDirectory = REMOTE_SYSTEM_INFO.zweWorkspaceDir;

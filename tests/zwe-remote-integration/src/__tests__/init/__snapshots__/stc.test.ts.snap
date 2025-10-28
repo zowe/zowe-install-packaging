@@ -956,9 +956,6 @@ exports[`init-stc (SHORT) invalid stc configurations 3`] = `
       "java": {
         "home": "/test/java/home"
       },
-      "node": {
-        "home": "/test/node/home"
-      },
       "zOSMF": {
         "host": "some.test.hostname",
         "port": 12321,
@@ -1179,9 +1176,6 @@ exports[`init-stc (SHORT) invalid stc configurations 4`] = `
       "java": {
         "home": "/test/java/home"
       },
-      "node": {
-        "home": "/test/node/home"
-      },
       "zOSMF": {
         "host": "some.test.hostname",
         "port": 12321,
@@ -1401,9 +1395,6 @@ exports[`init-stc (SHORT) invalid stc configurations 5`] = `
       },
       "java": {
         "home": "/test/java/home"
-      },
-      "node": {
-        "home": "/test/node/home"
       },
       "zOSMF": {
         "host": "some.test.hostname",
@@ -1626,9 +1617,6 @@ exports[`init-stc (SHORT) invalid stc configurations 6`] = `
       "java": {
         "home": "/test/java/home"
       },
-      "node": {
-        "home": "/test/node/home"
-      },
       "zOSMF": {
         "host": "some.test.hostname",
         "port": 12321,
@@ -1849,9 +1837,6 @@ exports[`init-stc (SHORT) invalid stc configurations 7`] = `
       },
       "java": {
         "home": "/test/java/home"
-      },
-      "node": {
-        "home": "/test/node/home"
       },
       "zOSMF": {
         "host": "some.test.hostname",
@@ -2176,9 +2161,6 @@ exports[`init-stc (SHORT) wrong proclib 3`] = `
       },
       "java": {
         "home": "/test/java/home"
-      },
-      "node": {
-        "home": "/test/node/home"
       },
       "zOSMF": {
         "host": "some.test.hostname",

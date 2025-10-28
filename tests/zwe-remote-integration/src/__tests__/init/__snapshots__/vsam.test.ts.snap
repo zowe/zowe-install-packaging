@@ -538,9 +538,6 @@ exports[`init-vsam (SHORT) skip undefined caching service 1`] = `
       "java": {
         "home": "/test/java/home"
       },
-      "node": {
-        "home": "/test/node/home"
-      },
       "zOSMF": {
         "host": "some.test.hostname",
         "port": 12321,
@@ -692,9 +689,6 @@ exports[`init-vsam (SHORT) unset vsam mode 1`] = `
       },
       "java": {
         "home": "/test/java/home"
-      },
-      "node": {
-        "home": "/test/node/home"
       },
       "zOSMF": {
         "host": "some.test.hostname",
@@ -902,9 +896,6 @@ exports[`init-vsam (SHORT) unset vsam mode 2`] = `
       },
       "java": {
         "home": "/test/java/home"
-      },
-      "node": {
-        "home": "/test/node/home"
       },
       "zOSMF": {
         "host": "some.test.hostname",

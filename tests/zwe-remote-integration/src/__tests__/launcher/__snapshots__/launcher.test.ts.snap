@@ -173,8 +173,6 @@ components:
     enabled: true
 java:
   home: "/test/java/home"
-node:
-  home: "/test/node/home"
 zOSMF:
   host: "some.test.hostname"
   port: 12321
@@ -356,8 +354,6 @@ components:
     enabled: true
 java:
   home: "/test/java/home"
-node:
-  home: "/test/node/home"
 zOSMF:
   host: "some.test.hostname"
   port: 12321
