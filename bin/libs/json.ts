@@ -121,7 +121,7 @@ export function updateZoweYaml(file: string, key: string, val: any, validate: bo
   common.printMessage(`- update zowe config ${file}, key: "${key}" with value: ${val}`);
   let mergeObj = {};
   if (/\[\d+\]/.test(key)) {
-    const zoweConfig = config.getZoweConfigFromFile(file);
+    const zoweConfig = config.getZoweConfigFromFile(file, validate);
     mergeObj = buildUpdateObjWithArrays(zoweConfig, key)
   }
   let [ success, updateObj ] = fakejq.jqset(mergeObj, key, val);

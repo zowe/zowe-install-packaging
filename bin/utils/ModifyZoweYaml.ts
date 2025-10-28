@@ -68,7 +68,7 @@ if (modType == MOD_TYPES.update) {
     // could be schema issue, check if newValue is a number
     if (/^\d+$/.test(newValue)) {
       common.printTrace(`Initial update failed, trying again with this value as a number: ${newValue}`)
-      rc = jsonlib.updateZoweYaml(file, key, parseInt(newValue));
+      rc = jsonlib.updateZoweYaml(file, key, parseInt(newValue), validate);
     }
   }
 } else if (modType == MOD_TYPES.delete) {

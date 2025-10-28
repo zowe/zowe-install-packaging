@@ -35,8 +35,8 @@ const cliParameterConfig: string = function () {
   return (value as string);
 }();
 
-export function getZoweConfigFromFile(file: string): any {
-  return configmgr.loadConfig(file, `FILE(${file})`, configmgr.getZoweBaseSchemas());
+export function getZoweConfigFromFile(file: string, shouldValidate: boolean = true): any {
+  return configmgr.loadConfig(file, `FILE(${file})`, configmgr.getZoweBaseSchemas(), shouldValidate);
 }
 
 export function getZoweConfig(): any {

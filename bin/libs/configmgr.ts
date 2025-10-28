@@ -443,7 +443,7 @@ export function deleteFromZoweCfgFile(file: string,deleteKey: string): [number, 
 export function updateZoweCfgFile(file: string, updateObj: any, arrayMergeStrategy: number=1, shouldValidate: boolean=true): [number, any] {
   const fileCfg = `FILE(${file})`;
   const zoweConfigName = 'zowe-update-yaml';
-  const ZOWE_FILE_CONFIG = getConfig(zoweConfigName, fileCfg, ZOWE_SCHEMA_SET); 
+  const ZOWE_FILE_CONFIG = getConfig(zoweConfigName, fileCfg, ZOWE_SCHEMA_SET, shouldValidate); 
   let rc = updateConfig(zoweConfigName, updateObj, arrayMergeStrategy, shouldValidate);
   if (rc == 0){ 
     let [ yamlStatus, textOrNull ] = CONFIG_MGR.writeYAML(getConfigRevisionName(zoweConfigName));
@@ -467,11 +467,11 @@ export function updateZoweConfig(updateObj: any, writeUpdate: boolean, arrayMerg
   return [ rc, ZOWE_CONFIG ];
 }
 
-export function loadConfig(configName: string, configPath: string, schemas: string) : any {
-  return getConfig(configName, configPath, schemas);
+export function loadConfig(configName: string, configPath: string, schemas: string, shouldValidate: boolean = true) : any {
+  return getConfig(configName, configPath, schemas, shouldValidate);
 }
 
-function getConfig(configName: string, configPath: string, schemas: string): any {
+function getConfig(configName: string, configPath: string, schemas: string, shouldValidate: boolean = true): any {
   let configRevisionName = getConfigRevisionName(configName);
   if (Number.isInteger(CONFIG_REVISIONS[configName])) {
     //Already loaded
@@ -512,28 +512,37 @@ function getConfig(configName: string, configPath: string, schemas: string): any
       std.exit(1);
     }
 
-    let validation = CONFIG_MGR.validate(configRevisionName);
-    if (validation.ok){
-      if (validation.exceptionTree){
-        console.log(`Error: Validation of ${configPath} against schema ${schemas} found invalid JSON Schema data`);
-        showExceptions(validation.exceptionTree, 0);
-        std.exit(1);
-      } else {
-        const config = CONFIG_MGR.getConfigData(configRevisionName);
-        if (!Number.isInteger(CONFIG_REVISIONS[configName])) {
-          //loaded, mark revision 0
-          CONFIG_REVISIONS[configName] = 0;
+    if (shouldValidate) {
+      let validation = CONFIG_MGR.validate(configRevisionName);
+      if (validation.ok){
+        if (validation.exceptionTree){
+          console.log(`Error: Validation of ${configPath} against schema ${schemas} found invalid JSON Schema data`);
+          showExceptions(validation.exceptionTree, 0);
+          std.exit(1);
+        } else {
+          const config = CONFIG_MGR.getConfigData(configRevisionName);
+          if (!Number.isInteger(CONFIG_REVISIONS[configName])) {
+            //loaded, mark revision 0
+            CONFIG_REVISIONS[configName] = 0;
+          }
+          return config;
         }
-        return config;
+      } else {
+        console.log(`Error: Error occurred on validation of ${configPath} against schema ${schemas}`);
+        std.exit(1);
       }
     } else {
-      console.log(`Error: Error occurred on validation of ${configPath} against schema ${schemas}`);
+      console.log(`Error: Server config path not given`);
       std.exit(1);
-    }
+    }  
   } else {
-    console.log(`Error: Server config path not given`);
-    std.exit(1);
-  }  
+    const config = CONFIG_MGR.getConfigData(configRevisionName);
+    if (!Number.isInteger(CONFIG_REVISIONS[configName])) {
+      //loaded, mark revision 0
+      CONFIG_REVISIONS[configName] = 0;
+    }
+    return config;
+  }
 }
 
 function makeHaConfig(haInstance: string): any {
