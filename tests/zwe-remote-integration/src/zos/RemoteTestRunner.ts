@@ -341,12 +341,25 @@ export class RemoteTestRunner {
     }
   }
 
-  public async removeUssFileOrDirForTest(filePath: string) {
+  public async uploadUssFileForTest(
+    localFile: string,
+    remoteFile: string,
+    opts: { binary: boolean; mode: number } = { binary: true, mode: 0o644 },
+  ) {
+    const fullRemoteFilePath = `${REMOTE_SYSTEM_INFO.ussTestDir}/${remoteFile}`;
+    await this.removeUssFileOrDirForTest(remoteFile); // this tracks/restores
+    await files.Upload.fileToUssFile(this.session, localFile, fullRemoteFilePath, {
+      binary: opts.binary,
+    });
+    await this.runRaw(`chmod ${opts.mode.toString(8)} ${fullRemoteFilePath}`);
+  }
+
+  public async removeUssFileOrDirForTest(filePath: String) {
     const flattenedTmpName = filePath.replaceAll('/', '_');
     await this.runRaw(`mkdir -p ${this.REMOTE_TEST_TMP_DIR}`);
     await this.runRaw(`mv ${filePath} ${this.REMOTE_TEST_TMP_DIR}/${flattenedTmpName}`);
     this.trackedFiles.push({
-      srcFile: filePath,
+      srcFile: `${filePath}`,
       tmpFile: `${this.REMOTE_TEST_TMP_DIR}/${flattenedTmpName}`,
       type: FileType.USS_FILE,
     });
@@ -360,6 +373,19 @@ export class RemoteTestRunner {
 
   public addCleanFn(replaceFn: (output: string) => string) {
     this.cleanFns.push(replaceFn);
+  }
+
+  /**
+   * Utility to mask sensitive data from input data. Returns a new masked string. This will not mask against job
+   * headers present in zowe.yaml or defaults.yaml.
+   *
+   * In general, calls to this function should be rare - the testRunner's cleanedOutput is already masked.
+   *
+   * @param data
+   * @returns
+   */
+  public maskSensitiveData(data: string): string {
+    return this.cleanOutput(data, []);
   }
 
   private cleanOutput(stdout: string, customJobHeaders: string[]): string {
