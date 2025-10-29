@@ -57,11 +57,6 @@ function loadConfig() {
   PLUGIN_DEF_SCHEMAS = `${runtimeDirectory}/components/app-server/schemas/plugindefinition-schema.json`;
 }
 
-
-
-
-
-
 // This intentionally lies about individual apiml components for backward compatibility.
 // If the apiml modulith is enabled, all are considered enabled.
 export function getEnabledComponents() {
