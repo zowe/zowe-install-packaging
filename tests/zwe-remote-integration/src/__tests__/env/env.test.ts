@@ -55,7 +55,6 @@ describe(`${testSuiteName}`, () => {
   });
 
   describe('(SHORT)', () => {
-
     async function snapEnvFiles(cfgYaml: ZoweYamlType) {
       const envFiles = await testRunner.downloadMaskedUssFilesMatching('*.env', `${cfgYaml.zowe.workspaceDirectory}/.env/`);
       expect(envFiles).not.toBeNull();
