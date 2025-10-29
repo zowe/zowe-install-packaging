@@ -118,7 +118,7 @@ function buildUpdateObjWithArrays(zoweConfig: any, key: string): any {
  * @returns 
  */
 export function updateZoweYaml(file: string, key: string, val: any, validate: boolean=true): number {
-  common.printMessage(`- update zowe config ${file}, key: "${key}" with value: ${val}`);
+  common.printMessage(`- update zowe config ${file}, key: "${key}" with value: ${val}, and validate: ${validate}`);
   let mergeObj = {};
   if (/\[\d+\]/.test(key)) {
     const zoweConfig = config.getZoweConfigFromFile(file, validate);

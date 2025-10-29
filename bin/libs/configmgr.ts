@@ -532,16 +532,16 @@ function getConfig(configName: string, configPath: string, schemas: string, shou
         std.exit(1);
       }
     } else {
-      console.log(`Error: Server config path not given`);
-      std.exit(1);
-    }  
-  } else {
-    const config = CONFIG_MGR.getConfigData(configRevisionName);
-    if (!Number.isInteger(CONFIG_REVISIONS[configName])) {
-      //loaded, mark revision 0
-      CONFIG_REVISIONS[configName] = 0;
+      const config = CONFIG_MGR.getConfigData(configRevisionName);
+      if (!Number.isInteger(CONFIG_REVISIONS[configName])) {
+        //loaded, mark revision 0
+        CONFIG_REVISIONS[configName] = 0;
+      }
+      return config;
     }
-    return config;
+  } else {
+    console.log(`Error: Server config path not given`);
+    std.exit(1);
   }
 }
 
@@ -630,7 +630,9 @@ export function getZoweConfigEnv(haInstance: string): any {
 
   let specialKeys = Object.keys(SPECIAL_ENV_MAPS);
   specialKeys.forEach((key:string)=> {
-    envs[SPECIAL_ENV_MAPS[key]] = envs[key];
+    if (envs[key] != null) {
+      envs[SPECIAL_ENV_MAPS[key]] = envs[key];
+    }
   });
 
 

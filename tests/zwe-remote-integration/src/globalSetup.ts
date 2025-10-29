@@ -120,14 +120,14 @@ async function downloadManifestDep(binaryName: string): Promise<string> {
   // get folders so we can regex against
   const pathMatch = `${binaryName.replace(/\./g, '/')}/${dlSpec.versionPattern}`;
 
-  console.log(`
-    items.find({
-      "repo": "${dlSpec.repository}",
-      "path": {"$match": "${pathMatch}"},
-      "name": {"$match": "${nameMatch}" }
-    }).sort({"$desc" : ["created"]}).limit(1)
-    
-  `);
+  // Debug AQLs
+  // console.log(`
+  // items.find({
+  // "repo": "${dlSpec.repository}",
+  // "path": {"$match": "${pathMatch}"},
+  // "name": {"$match": "${nameMatch}" }
+  // }).sort({"$desc" : ["created"]}).limit(1)
+  // `);
   const searchResults = await jf
     .artifactory()
     .search()
@@ -202,6 +202,7 @@ module.exports = async () => {
       await downloadManifestDep('org.zopencommunity.curl');
       await downloadManifestDep('org.zowe.getesm');
       await downloadArtifact('libs-snapshot-local', 'org/zowe/vtl-cli/zowe-cli-package/1.0.7-SNAPSHOT', 'vtl.tar.gz');
+      await downloadManifestDep('org.zowe.zis-test');
     }
 
     await downloadManifestDep('org.zowe.zowe-native-proto');
@@ -251,6 +252,11 @@ module.exports = async () => {
     const getEsmArchive = downloadsDirContents.find((item) => /getesm.*.pax/g.test(item));
     if (getEsmArchive == null) {
       throw new Error('Could not locate the getesm pax in the .build directory');
+    }
+
+    const getZisTestArchive = downloadsDirContents.find((item) => /zis-test.*.pax/g.test(item));
+    if (getZisTestArchive == null) {
+      throw new Error('Could not locate the zis-test pax in the .build directory');
     }
 
     console.log(`Setting up remote server on ${REMOTE_SYSTEM_INFO.hostname}...`);
@@ -308,6 +314,11 @@ module.exports = async () => {
       binary: true,
     });
 
+    console.log(`Uploading ${getZisTestArchive} to ${ussWorkDir}/zis-test.pax ...`);
+    await files.Upload.fileToUssFile(zosmfSession, path.resolve(downloadsDir, getZisTestArchive), `${ussWorkDir}/zis-test.pax`, {
+      binary: true,
+    });
+
     console.log(`Building zwe typescript...`);
     execSync(`npm install && npm run prod`, { cwd: zweBuildPath });
 
@@ -340,6 +351,9 @@ module.exports = async () => {
 
     console.log(`Unpacking ${curlPax} and moving curl to ${REMOTE_SYSTEM_INFO.ussTestDir}/bin/utils...`);
     await uss.runCommand(`pax -ppx -rf ${curlPax} && cp -f curl-*/bin/curl ${REMOTE_SYSTEM_INFO.ussTestDir}/bin/utils`, ussWorkDir);
+
+    console.debug(`Unpacking ${getZisTestArchive} and moving zis-test to ${REMOTE_SYSTEM_INFO.ussTestDir}/bin/utils...`);
+    await uss.runCommand(`pax -ppx -rf zis-test.pax && cp -f zis-test ${REMOTE_SYSTEM_INFO.ussTestDir}/bin/utils`, ussWorkDir);
 
     console.log(`Unpacking ${keyringUtilPax} and moving keyring-util to ${REMOTE_SYSTEM_INFO.ussTestDir}/bin/utils...`);
     await uss.runCommand(

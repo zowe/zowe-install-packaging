@@ -184,10 +184,10 @@ Job ZWECSVSM(JOB00000) completed with RC=0
 `;
 
 exports[`init-vsam (SHORT) error yaml 1`] = `
-"Temporary directory '/tmp/.zweenv-0000' created.
-Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
--------------------------------------------------------------------------------
+"-------------------------------------------------------------------------------
 >> Initialize Zowe custom data sets
+Temporary directory '/tmp/.zweenv-0000' created.
+Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
 Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWECSVSM) , Executable JCL: TEST.DATASET.PFX.JCLLIB(ZWECSVSM)
 --- JCL Content ---
 //ZWECSVSM JOB
@@ -256,106 +256,106 @@ To perform command, re-run command without "--dry-run" flag, or submit the JCL d
 `;
 
 exports[`init-vsam (SHORT) invalid NONRLS configurations 1`] = `
-"Temporary directory '/tmp/.zweenv-0000' created.
-Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
--------------------------------------------------------------------------------
+"-------------------------------------------------------------------------------
 >> Initialize Zowe custom data sets
+Temporary directory '/tmp/.zweenv-0000' created.
+Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
 ERROR: Error ZWEL0157E: VSAM parameter (zowe.setup.vsam.volume) is not defined in Zowe YAML configuration file."
 `;
 
 exports[`init-vsam (SHORT) invalid NONRLS configurations 2`] = `
-"Temporary directory '/tmp/.zweenv-0000' created.
-Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
--------------------------------------------------------------------------------
+"-------------------------------------------------------------------------------
 >> Initialize Zowe custom data sets
+Temporary directory '/tmp/.zweenv-0000' created.
+Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
 ERROR: Error ZWEL0157E: VSAM parameter (zowe.setup.vsam.volume) is not defined in Zowe YAML configuration file."
 `;
 
 exports[`init-vsam (SHORT) invalid NONRLS configurations 3`] = `
-"Temporary directory '/tmp/.zweenv-0000' created.
-Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
--------------------------------------------------------------------------------
+"-------------------------------------------------------------------------------
 >> Initialize Zowe custom data sets
+Temporary directory '/tmp/.zweenv-0000' created.
+Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
 ERROR: Error ZWEL0157E: VSAM parameter (zowe.setup.vsam.name) is not defined in Zowe YAML configuration file."
 `;
 
 exports[`init-vsam (SHORT) invalid NONRLS configurations 4`] = `
-"Temporary directory '/tmp/.zweenv-0000' created.
-Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
--------------------------------------------------------------------------------
+"-------------------------------------------------------------------------------
 >> Initialize Zowe custom data sets
+Temporary directory '/tmp/.zweenv-0000' created.
+Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
 ERROR: Error ZWEL0157E: VSAM parameter (zowe.setup.vsam.name) is not defined in Zowe YAML configuration file."
 `;
 
 exports[`init-vsam (SHORT) invalid NONRLS configurations 5`] = `
-"Temporary directory '/tmp/.zweenv-0000' created.
-Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
--------------------------------------------------------------------------------
+"-------------------------------------------------------------------------------
 >> Initialize Zowe custom data sets
+Temporary directory '/tmp/.zweenv-0000' created.
+Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
 ERROR: Error ZWEL0157E: VSAM parameter (zowe.setup.vsam.volume) is not defined in Zowe YAML configuration file."
 `;
 
 exports[`init-vsam (SHORT) invalid NONRLS configurations 6`] = `
-"Temporary directory '/tmp/.zweenv-0000' created.
-Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
--------------------------------------------------------------------------------
+"-------------------------------------------------------------------------------
 >> Initialize Zowe custom data sets
+Temporary directory '/tmp/.zweenv-0000' created.
+Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
 ERROR: Error ZWEL0157E: VSAM parameter (zowe.setup.vsam.volume) is not defined in Zowe YAML configuration file."
 `;
 
 exports[`init-vsam (SHORT) invalid NONRLS configurations 7`] = `
-"Temporary directory '/tmp/.zweenv-0000' created.
-Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
--------------------------------------------------------------------------------
+"-------------------------------------------------------------------------------
 >> Initialize Zowe custom data sets
+Temporary directory '/tmp/.zweenv-0000' created.
+Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
 ERROR: Error ZWEL0157E: VSAM parameter (zowe.setup.vsam.volume) is not defined in Zowe YAML configuration file."
 `;
 
 exports[`init-vsam (SHORT) invalid RLS configurations 1`] = `
-"Temporary directory '/tmp/.zweenv-0000' created.
-Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
--------------------------------------------------------------------------------
+"-------------------------------------------------------------------------------
 >> Initialize Zowe custom data sets
+Temporary directory '/tmp/.zweenv-0000' created.
+Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
 ERROR: Error ZWEL0157E: VSAM parameter (zowe.setup.vsam.storageClass) is not defined in Zowe YAML configuration file."
 `;
 
 exports[`init-vsam (SHORT) invalid RLS configurations 2`] = `
-"Temporary directory '/tmp/.zweenv-0000' created.
-Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
--------------------------------------------------------------------------------
+"-------------------------------------------------------------------------------
 >> Initialize Zowe custom data sets
+Temporary directory '/tmp/.zweenv-0000' created.
+Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
 ERROR: Error ZWEL0157E: VSAM parameter (zowe.setup.vsam.storageClass) is not defined in Zowe YAML configuration file."
 `;
 
 exports[`init-vsam (SHORT) invalid RLS configurations 3`] = `
-"Temporary directory '/tmp/.zweenv-0000' created.
-Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
--------------------------------------------------------------------------------
+"-------------------------------------------------------------------------------
 >> Initialize Zowe custom data sets
+Temporary directory '/tmp/.zweenv-0000' created.
+Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
 ERROR: Error ZWEL0157E: VSAM parameter (zowe.setup.vsam.storageClass) is not defined in Zowe YAML configuration file."
 `;
 
 exports[`init-vsam (SHORT) invalid RLS configurations 4`] = `
-"Temporary directory '/tmp/.zweenv-0000' created.
-Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
--------------------------------------------------------------------------------
+"-------------------------------------------------------------------------------
 >> Initialize Zowe custom data sets
+Temporary directory '/tmp/.zweenv-0000' created.
+Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
 ERROR: Error ZWEL0157E: VSAM parameter (zowe.setup.vsam.storageClass) is not defined in Zowe YAML configuration file."
 `;
 
 exports[`init-vsam (SHORT) invalid RLS configurations 5`] = `
-"Temporary directory '/tmp/.zweenv-0000' created.
-Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
--------------------------------------------------------------------------------
+"-------------------------------------------------------------------------------
 >> Initialize Zowe custom data sets
+Temporary directory '/tmp/.zweenv-0000' created.
+Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
 ERROR: Error ZWEL0157E: VSAM parameter (zowe.setup.vsam.storageClass) is not defined in Zowe YAML configuration file."
 `;
 
 exports[`init-vsam (SHORT) simple --dry-run 1`] = `
-"Temporary directory '/tmp/.zweenv-0000' created.
-Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
--------------------------------------------------------------------------------
+"-------------------------------------------------------------------------------
 >> Initialize Zowe custom data sets
+Temporary directory '/tmp/.zweenv-0000' created.
+Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
 Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWECSVSM) , Executable JCL: TEST.DATASET.PFX.JCLLIB(ZWECSVSM)
 --- JCL Content ---
 //ZWECSVSM JOB
@@ -424,10 +424,10 @@ To perform command, re-run command without "--dry-run" flag, or submit the JCL d
 `;
 
 exports[`init-vsam (SHORT) skip non-vsam caching service 1`] = `
-"Temporary directory '/tmp/.zweenv-0000' created.
-Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
--------------------------------------------------------------------------------
+"-------------------------------------------------------------------------------
 >> Initialize Zowe custom data sets
+Temporary directory '/tmp/.zweenv-0000' created.
+Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
 ERROR: Warning ZWEL0304W: Zowe Caching Service is not configured to use VSAM. Command skipped."
 `;
 
@@ -552,34 +552,34 @@ exports[`init-vsam (SHORT) skip undefined caching service 1`] = `
 `;
 
 exports[`init-vsam (SHORT) unset ds prefix 1`] = `
-"Temporary directory '/tmp/.zweenv-0000' created.
-Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
--------------------------------------------------------------------------------
+"-------------------------------------------------------------------------------
 >> Initialize Zowe custom data sets
+Temporary directory '/tmp/.zweenv-0000' created.
+Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
 ERROR: Error ZWEL0157E: Zowe dataset prefix (zowe.setup.dataset.prefix) is not defined in Zowe YAML configuration file."
 `;
 
 exports[`init-vsam (SHORT) unset ds prefix 2`] = `
-"Temporary directory '/tmp/.zweenv-0000' created.
-Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
--------------------------------------------------------------------------------
+"-------------------------------------------------------------------------------
 >> Initialize Zowe custom data sets
+Temporary directory '/tmp/.zweenv-0000' created.
+Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
 ERROR: Error ZWEL0157E: Zowe dataset prefix (zowe.setup.dataset.prefix) is not defined in Zowe YAML configuration file."
 `;
 
 exports[`init-vsam (SHORT) unset jcllib 1`] = `
-"Temporary directory '/tmp/.zweenv-0000' created.
-Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
--------------------------------------------------------------------------------
+"-------------------------------------------------------------------------------
 >> Initialize Zowe custom data sets
+Temporary directory '/tmp/.zweenv-0000' created.
+Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
 ERROR: Error ZWEL0319E: zowe.setup.dataset.jcllib does not exist, cannot run. Run 'zwe init', 'zwe init generate', or submit JCL TEST.DATASET.PFX.SZWESAMP(ZWEGENER) before running this command."
 `;
 
 exports[`init-vsam (SHORT) unset jcllib 2`] = `
-"Temporary directory '/tmp/.zweenv-0000' created.
-Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
--------------------------------------------------------------------------------
+"-------------------------------------------------------------------------------
 >> Initialize Zowe custom data sets
+Temporary directory '/tmp/.zweenv-0000' created.
+Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
 ERROR: Error ZWEL0319E: zowe.setup.dataset.jcllib does not exist, cannot run. Run 'zwe init', 'zwe init generate', or submit JCL TEST.DATASET.PFX.SZWESAMP(ZWEGENER) before running this command."
 `;
 
@@ -998,10 +998,10 @@ exports[`init-vsam (SHORT) unset vsam mode 2`] = `
 `;
 
 exports[`init-vsam (SHORT) valid NONRLS configurations 1`] = `
-"Temporary directory '/tmp/.zweenv-0000' created.
-Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
--------------------------------------------------------------------------------
+"-------------------------------------------------------------------------------
 >> Initialize Zowe custom data sets
+Temporary directory '/tmp/.zweenv-0000' created.
+Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
 Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWECSVSM) , Executable JCL: TEST.DATASET.PFX.JCLLIB(ZWECSVSM)
 --- JCL Content ---
 //ZWECSVSM JOB
@@ -1070,10 +1070,10 @@ To perform command, re-run command without "--dry-run" flag, or submit the JCL d
 `;
 
 exports[`init-vsam (SHORT) valid RLS configuration 1`] = `
-"Temporary directory '/tmp/.zweenv-0000' created.
-Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
--------------------------------------------------------------------------------
+"-------------------------------------------------------------------------------
 >> Initialize Zowe custom data sets
+Temporary directory '/tmp/.zweenv-0000' created.
+Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
 Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWECSVSM) , Executable JCL: TEST.DATASET.PFX.JCLLIB(ZWECSVSM)
 --- JCL Content ---
 //ZWECSVSM JOB

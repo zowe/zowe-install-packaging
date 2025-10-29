@@ -27,19 +27,16 @@ export function validateZosmfHostAndPort(zosmfHost: string, zosmfPort: number): 
   }
   let zosmfCheckPassed=true;
 
-  if (!std.getenv('NODE_HOME')) {
-    common.printError(`Warning: Could not validate if z/OS MF is available on 'https://${zosmfHost}:${zosmfPort}/zosmf/info'. NODE_HOME is not defined.`);
-    zosmfCheckPassed=false;
-  } else {
-    const execReturn = shell.execOutSync(`${std.getenv('ZWE_zowe_runtimeDirectory')}/bin/utils/curl`, `https://${zosmfHost}:${zosmfPort}/zosmf/info`, `-k`, `-H`, `X-CSRF-ZOSMF-HEADER: true`, `--response-type`, `status`);
-    if (execReturn.rc || !execReturn.out) {
-      common.printError(`Warning: Could not validate if z/OS MF is available on 'https://${zosmfHost}:${zosmfPort}/zosmf/info'. No response code from z/OSMF server.`);
-      zosmfCheckPassed=false
-    } else if (execReturn.out != '200') {
-      common.printError(`Could not contact z/OS MF on 'https://${zosmfHost}:${zosmfPort}/zosmf/info' - ${execReturn.out}`);
-      zosmfCheckPassed=false
-    }
+
+  const execReturn = shell.execOutSync(`${std.getenv('ZWE_zowe_runtimeDirectory')}/bin/utils/curl`, `https://${zosmfHost}:${zosmfPort}/zosmf/info`, `-k`, `-H`, `X-CSRF-ZOSMF-HEADER: true`, `--response-type`, `status`);
+  if (execReturn.rc || !execReturn.out) {
+    common.printError(`Warning: Could not validate if z/OS MF is available on 'https://${zosmfHost}:${zosmfPort}/zosmf/info'. No response code from z/OSMF server.`);
+    zosmfCheckPassed=false
+  } else if (execReturn.out != '200') {
+    common.printError(`Could not contact z/OS MF on 'https://${zosmfHost}:${zosmfPort}/zosmf/info' - ${execReturn.out}`);
+    zosmfCheckPassed=false
   }
+  
 
   if (zosmfCheckPassed) {
     common.printMessage(`Successfully checked z/OS MF is available on 'https://${zosmfHost}:${zosmfPort}/zosmf/info'`)

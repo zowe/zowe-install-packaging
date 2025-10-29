@@ -144,12 +144,13 @@ update_yaml_configmgr() {
   key="${2}"
   val="${3}"
   expected_sample="${4}"
+  validate="${5:-true}"
 
   configmgr="${ZWE_zowe_runtimeDirectory}/bin/utils/configmgr"
   updateYaml="${ZWE_zowe_runtimeDirectory}/bin/utils/ModifyZoweYaml.js"
 
   print_message "- update \"${key}\" with value: ${val}"
-  result=$(_CEE_RUNOPTS="XPLINK(ON)" "${configmgr}" -script "$updateYaml" update "$file" "$key" "$val" 2>&1)
+  result=$(_CEE_RUNOPTS="XPLINK(ON)" "${configmgr}" -script "$updateYaml" update "$file" "$key" "$val" "$validate" 2>&1)
   code=$?
   if [ ${code} -eq 0 ]; then
     print_trace "  * Exit code: ${code}"
@@ -261,13 +262,14 @@ read_json_string() {
 }
 
 update_zowe_yaml() {
+  validate="${4:-true}"
   if [ "${ZWE_RUN_IN_CONTAINER}" = "true" ]; then
     yq -i "'.${2} = \"${3}\"'" "${1}"
     if [ "${$?}" -ne 0 ]; then
       print_error_and_exit "Error ZWEL0138E: Failed to update key ${2} of file ${1}." "" 138
     fi
   else
-    update_yaml_configmgr "${1}" "${2}" "${3}" "zowe:"
+    update_yaml_configmgr "${1}" "${2}" "${3}" "zowe:" "${validate}"
   fi
 }
 

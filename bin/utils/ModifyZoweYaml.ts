@@ -62,7 +62,7 @@ if (modType == MOD_TYPES.update) {
     validate = true
   } 
   
-  common.printTrace(`Updating: ${file}, ${key}, ${newValue}`)
+  common.printTrace(`Updating: ${file}, ${key}, ${newValue}, ${validate}`)
   rc = jsonlib.updateZoweYaml(file, key, newValue, validate);
   if (rc != 0) {
     // could be schema issue, check if newValue is a number

@@ -187,8 +187,6 @@ data:
         ZOWE_ZLUX_SSH_HOST: "example.com"
     java:
       home: "/test/java/home"
-    node:
-      home: "/test/node/home"
     zOSMF:
       host: "some.test.hostname"
       port: 12321
