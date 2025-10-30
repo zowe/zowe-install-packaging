@@ -26,14 +26,14 @@ import * as sys from './sys';
 import * as container from './container';
 import * as objUtils from '../utils/ObjUtils';
 
-const cliParameterConfig: string = function () {
+const cliParameterConfig: () => string = function () {
   let value = std.getenv('ZWE_CLI_PARAMETER_CONFIG');
   if (!value) {
     std.out.printf("No ZWE_CLI_PARAMETER_CONFIG env var, exiting");
     std.exit(0);
   }
   return (value as string);
-}();
+};
 
 export function getZoweConfigFromFile(file: string, shouldValidate: boolean = true): any {
   return configmgr.loadConfig(file, `FILE(${file})`, configmgr.getZoweBaseSchemas(), shouldValidate);
@@ -189,7 +189,7 @@ export function generateInstanceEnvFromYamlConfig(haInstance: string) {
     const componentFileContent = componentFileArray.join('\n');
     rc = xplatform.storeFileUTF8(`${folderName}/.instance-${haInstance}.env`, xplatform.AUTO_DETECT, componentFileContent);
     if (rc) {
-      common.printFormattedError("ZWELS", "bin/libs/config.ts,generateInstanceEnvFromYamlConfig", `ZWEL0140E: 1Failed to translate Zowe configuration (${cliParameterConfig}).`);
+      common.printFormattedError("ZWELS", "bin/libs/config.ts,generateInstanceEnvFromYamlConfig", `ZWEL0140E: 1Failed to translate Zowe configuration (${cliParameterConfig()}).`);
       std.exit(140);
       return;
     }
@@ -227,7 +227,7 @@ export function generateInstanceEnvFromYamlConfig(haInstance: string) {
   xplatform.storeFileUTF8(`${zwePrivateWorkspaceEnvDir}/.zowe-${haInstance}.json`, xplatform.AUTO_DETECT, JSON.stringify(haConfig, null, 2));
 
   if (!fs.fileExists(`${zwePrivateWorkspaceEnvDir}/.zowe.json`)) {
-    common.printFormattedError("ZWELS", "bin/libs/config.ts,generateInstanceEnvFromYamlConfig", `ZWEL0140E: 2Failed to translate Zowe configuration (${cliParameterConfig}).`);
+    common.printFormattedError("ZWELS", "bin/libs/config.ts,generateInstanceEnvFromYamlConfig", `ZWEL0140E: 2Failed to translate Zowe configuration (${cliParameterConfig()}).`);
     std.exit(140);
   }
 
@@ -235,7 +235,7 @@ export function generateInstanceEnvFromYamlConfig(haInstance: string) {
   let envFileContent = envFileArray.join('\n');
   let rc = xplatform.storeFileUTF8(`${zwePrivateWorkspaceEnvDir}/.instance-${haInstance}.env`, xplatform.AUTO_DETECT, envFileContent);
   if (rc) {
-    common.printFormattedError("ZWELS", "bin/libs/config.ts,generateInstanceEnvFromYamlConfig", `ZWEL0140E: 3Failed to translate Zowe configuration (${cliParameterConfig}).`);
+    common.printFormattedError("ZWELS", "bin/libs/config.ts,generateInstanceEnvFromYamlConfig", `ZWEL0140E: 3Failed to translate Zowe configuration (${cliParameterConfig()}).`);
     std.exit(140);
     return;
   }
