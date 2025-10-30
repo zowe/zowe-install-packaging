@@ -100,19 +100,25 @@ export function ensureFileEncoding(file: string, expectedSample: string, expecte
     expectedEncoding=1047;
   }
 
+  let readlinkFile = shell.execSync('sh', '-c', `readlink ${file}`);
+  let fileToCvt = file;
+  if (!readlinkFile.rc) {
+    fileToCvt = `${readlinkFile.out}`;
+  }
+
   let fileEncoding=detectFileEncoding(file, expectedSample);
   if (fileEncoding) {
     // TODO  any cases we cannot find encoding?
     if (fileEncoding != expectedEncoding) {
-      common.printTrace(`- Convert encoding of ${file} from ${fileEncoding} to ${expectedEncoding}.`);
-      let shellReturn = shell.execSync('sh', '-c', `iconv -f "${fileEncoding}" -t "${expectedEncoding}" "${file}" > "${file}.tmp"`);
+      common.printTrace(`- Convert encoding of ${fileToCvt} from ${fileEncoding} to ${expectedEncoding}.`);
+      let shellReturn = shell.execSync('sh', '-c', `iconv -f "${fileEncoding}" -t "${expectedEncoding}" "${fileToCvt}" > "${fileToCvt}.tmp"`);
       if (!shellReturn.rc) {
-        os.rename(`${file}.tmp`, file);
+        os.rename(`${fileToCvt}.tmp`, fileToCvt);
       }
     }
-    common.printTrace(`- Remove encoding tag of ${file}.`);
-    shell.execSync('sh', '-c', `chtag -r "${file}"`);
+    common.printTrace(`- Remove encoding tag of ${fileToCvt}.`);
+    shell.execSync('sh', '-c', `chtag -r "${fileToCvt}"`);
   } else {
-    common.printTrace(`- Failed to detect encoding of ${file}.`);
+    common.printTrace(`- Failed to detect encoding of ${fileToCvt}.`);
   }
 }

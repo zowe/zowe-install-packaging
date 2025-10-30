@@ -1,0 +1,23 @@
+name: ZWE Typescript build
+
+permissions: read-all
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+
+jobs:
+  typescript-build:
+    runs-on: ubuntu-latest
+    steps:
+
+      - name: Checkout code
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Install Dependencies for script to work
+        run: npm ci
+        working-directory: build/zwe
+
+      - name: Run Transpile
+        run: npm run prod
+        working-directory: build/zwe

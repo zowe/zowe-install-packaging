@@ -70,13 +70,14 @@ for mb in ${proclibs}; do
   # source in SZWESAMP
   samp_existence=$(is_data_set_exists "${prefix}.${ZWE_PRIVATE_DS_SZWESAMP}(${mb})")
   if [ "${samp_existence}" != "true" ]; then
-      print_error_and_exit "Error ZWEL0143E: ${prefix}.${ZWE_PRIVATE_DS_SZWESAMP}(${mb}) already exists. This data set member will be overwritten during configuration." "" 143
+      print_error_and_exit "Error ZWEL0201E: File ${prefix}.${ZWE_PRIVATE_DS_SZWESAMP}(${mb}) does not exist." "" 201
   fi
 done
 for mb in ${target_proclibs}; do
   # JCL for preview purpose
   jcl_existence=$(is_data_set_exists "${jcllib}(${mb})")
   if [ "${jcl_existence}" = "true" ]; then
+    any_jcl_existence="true"
     if [ "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITE}" = "true" ]; then
       # warning
       print_message "Warning ZWEL0300W: ${jcllib}(${mb}) already exists. This data set member will be overwritten during configuration."
@@ -90,6 +91,7 @@ for mb in ${target_proclibs}; do
   # STCs in target proclib
   stc_existence=$(is_data_set_exists "${proclib}(${mb})")
   if [ "${stc_existence}" = "true" ]; then
+    any_stc_existence="true"
     if [ "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITE}" = "true" ]; then
       # warning
       print_message "Warning ZWEL0300W: ${proclib}(${mb}) already exists. This data set member will be overwritten during configuration."
@@ -101,8 +103,8 @@ for mb in ${target_proclibs}; do
   fi
 done
 
-if [ "${jcl_existence}" = "true" ] &&  [ "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITE}" != "true" ]; then
-  print_message "Skipped writing to ${jcllib}(${mb}). To write, you must use --allow-overwrite."
+if [ "${any_jcl_existence}" = "true" ] && [ "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITE}" != "true" ]; then
+  print_message "Skipped writing to ${jcllib}. To write, you must use --allow-overwrite."
 else
   ###############################
   # prepare STCs
@@ -116,10 +118,13 @@ else
   fi
   result=$(cat "//'${prefix}.${ZWE_PRIVATE_DS_SZWESAMP}(ZWESLSTC)'" | \
           sed "s/^\/\/STEPLIB .*\$/\/\/STEPLIB  DD   DSNAME=${authLoadlib},/" | \
-          sed "s#^CONFIG=.*\$#CONFIG=$(convert_to_absolute_path ${ZWE_CLI_PARAMETER_CONFIG})#" \
-          > "${tmpfile}")
-  code=$?
-  chmod 700 "${tmpfile}"
+          sed "s#^CONFIG=.*\$#CONFIG=$(convert_to_absolute_path ${ZWE_CLI_PARAMETER_CONFIG})#")
+  if [ -n "${result}" ]; then
+    echo "${result}" > "${tmpfile}"
+    code=$?
+  else
+    code=1
+  fi
   if [ ${code} -eq 0 ]; then
     print_debug "  * Succeeded"
     print_trace "  * Exit code: ${code}"
@@ -138,6 +143,7 @@ else
   if [ ! -f "${tmpfile}" ]; then
     print_error_and_exit "Error ZWEL0159E: Failed to modify ${prefix}.${ZWE_PRIVATE_DS_SZWESAMP}(ZWESLSTC)" "" 159
   fi
+  chmod 700 "${tmpfile}"
   print_trace "- ensure ${tmpfile} encoding before copying into data set"
   ensure_file_encoding "${tmpfile}" "SPDX-License-Identifier"
   print_trace "- ${tmpfile} created, copy to ${jcllib}(${security_stcs_zowe})"
@@ -159,9 +165,13 @@ else
 \//STEPLIB  DD   DSNAME='${authLoadlib}',DISP=SHR\
 \//         DD   DSNAME='${authPluginLib}',DISP=SHR' | \
           sed "s/^\/\/PARMLIB .*\$/\/\/PARMLIB  DD   DSNAME=${parmlib},DISP=SHR/" \
-          > "${tmpfile}")
-  code=$?
-  chmod 700 "${tmpfile}"
+)
+  if [ -n "${result}" ]; then
+    echo "${result}" > "${tmpfile}"
+    code=$?
+  else
+    code=1
+  fi
   if [ ${code} -eq 0 ]; then
     print_debug "  * Succeeded"
     print_trace "  * Exit code: ${code}"
@@ -181,6 +191,7 @@ else
   if [ ! -f "${tmpfile}" ]; then
     print_error_and_exit "Error ZWEL0159E: Failed to modify ${prefix}.${ZWE_PRIVATE_DS_SZWESAMP}(ZWESISTC)" "" 159
   fi
+  chmod 700 "${tmpfile}"
   print_trace "- ensure ${tmpfile} encoding before copying into data set"
   ensure_file_encoding "${tmpfile}" "SPDX-License-Identifier"
   print_trace "- ${tmpfile} created, copy to ${jcllib}(${security_stcs_zis})"
@@ -201,9 +212,13 @@ else
           sed '/^..STEPLIB/c\
 \//STEPLIB  DD   DSNAME='${authLoadlib}',DISP=SHR\
 \//         DD   DSNAME='${authPluginLib}',DISP=SHR' \
-          > "${tmpfile}")
-  code=$?
-  chmod 700 "${tmpfile}"
+)
+  if [ -n "${result}" ]; then
+    echo "${result}" > "${tmpfile}"
+    code=$?
+  else
+    code=1
+  fi
   if [ ${code} -eq 0 ]; then
     print_debug "  * Succeeded"
     print_trace "  * Exit code: ${code}"
@@ -223,6 +238,7 @@ else
   if [ ! -f "${tmpfile}" ]; then
     print_error_and_exit "Error ZWEL0159E: Failed to modify ${prefix}.${ZWE_PRIVATE_DS_SZWESAMP}(ZWESASTC)" "" 159
   fi
+  chmod 700 "${tmpfile}"
   print_trace "- ensure ${tmpfile} encoding before copying into data set"
   ensure_file_encoding "${tmpfile}" "SPDX-License-Identifier"
   print_trace "- ${tmpfile} created, copy to ${jcllib}(${security_stcs_aux})"
@@ -238,14 +254,14 @@ else
   print_message
 fi
 
-if [ "${stc_existence}" = "true" ] &&  [ "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITE}" != "true" ]; then
-  print_message "Skipped writing to ${proclib}(${mb}). To write, you must use --allow-overwrite."
+if [ "${any_jcl_existence}" = "true" ] || [ "${any_stc_existence}" = "true" ] && [ "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITE}" != "true" ]; then
+  print_message "Skipped writing to ${proclib}. To write, you must use --allow-overwrite."
 else
   ###############################
   # copy to proclib
   for mb in ${target_proclibs}; do
     print_message "Copy ${jcllib}(${mb}) to ${proclib}(${mb})"
-    data_set_copy_to_data_set "${prefix}" "${jcllib}(${mb})" "${proclib}(${mb})" "-X" "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITE}"
+    data_set_copy_to_data_set "${prefix}" "${jcllib}(${mb})" "${proclib}(${mb})" "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITE}"
     if [ $? -ne 0 ]; then
       print_error_and_exit "Error ZWEL0111E: Command aborts with error." "" 111
     fi

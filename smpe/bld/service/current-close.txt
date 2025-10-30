@@ -10,3 +10,4 @@ The Zowe community version was updated to #version.
 This PTF provides the community changes in SMP/E format.
 Follow this link for more details on the community changes:
 #link
+FIXCAT: ZOS0302T/K

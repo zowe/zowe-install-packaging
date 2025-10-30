@@ -156,13 +156,14 @@ if FreeByDD('zweto') > 0 then do
 end
 
 
-/* members which are not JCL */
+/* members which are not processed */
 x = DeleteDataSet(jclCopy'(ZWEGENER)')
 x = DeleteDataSet(jclCopy'(ZWESIP00)')
 x = DeleteDataSet(jclCopy'(ZWESIPRG)')
 x = DeleteDataSet(jclCopy'(ZWESISCH)')
 x = DeleteDataSet(jclCopy'(ZWESECKG)')
 x = DeleteDataSet(jclCopy'(ZWEINSTL)')
+x = DeleteDataSet(jclCopy'(ZWEIAPF)')
 
 
 /*

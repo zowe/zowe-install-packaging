@@ -365,6 +365,7 @@ jobs:
         env:
           ANSIBLE_FORCE_COLOR: true
           TEST_SERVER: ${{ steps.more-test-prep.outputs.TEST_SERVER_NICKNAME }}
+          ZOWE_ATTLS_POLICY_FILE: ${{ secrets.ATTLS_POLICY_FILE }}
           ZOWE_BUILD_LOCAL: "${{ runner.temp }}/zowe/${{ steps.more-test-prep.outputs.ZOWE_ARTIFACTORY_FINAL_FILENAME }}"
           ZOWE_DOCKER_URL: ${{ steps.more-test-prep.outputs.ZOWE_TP_DOCKER_ARTIFACTORY_URL }}
           EXTENSIONS_LIST: ${{ steps.more-test-prep.outputs.EXTENSION_LIST }}
