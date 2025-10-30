@@ -60,6 +60,9 @@ describe(`${testSuiteName}`, () => {
       expect(envFiles).not.toBeNull();
       expect(envFiles).toHaveLength(1);
       for (const envFile of envFiles) {
+        // sort before collection - avoid env ordering errors between systems
+        const sortedEnv = fs.readFileSync(envFile, 'utf-8').split('\n').sort();
+        fs.writeFileSync(envFile, sortedEnv.join('\n'));
         testRunner.collectTestFile(envFile);
         expect(fs.readFileSync(envFile, 'utf8')).toMatchSnapshot();
       }
