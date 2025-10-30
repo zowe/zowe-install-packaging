@@ -177,6 +177,8 @@ zOSMF:
   host: "some.test.hostname"
   port: 12321
   applId: "IZUDFLT"
+node:
+  home: "/test/node/home"
 ...
 "
 `;
@@ -358,6 +360,8 @@ zOSMF:
   host: "some.test.hostname"
   port: 12321
   applId: "IZUDFLT"
+node:
+  home: "/test/node/home"
 ...
 "
 `;

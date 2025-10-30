@@ -353,7 +353,10 @@ module.exports = async () => {
     await uss.runCommand(`pax -ppx -rf ${curlPax} && cp -f curl-*/bin/curl ${REMOTE_SYSTEM_INFO.ussTestDir}/bin/utils`, ussWorkDir);
 
     console.debug(`Unpacking ${getZisTestArchive} and moving zis-test to ${REMOTE_SYSTEM_INFO.ussTestDir}/bin/utils...`);
-    await uss.runCommand(`pax -ppx -rf zis-test.pax && cp -f zis-test ${REMOTE_SYSTEM_INFO.ussTestDir}/bin/utils`, ussWorkDir);
+    await uss.runCommand(
+      `pax -ppx -rf zis-test.pax && cp -f zis-test ${REMOTE_SYSTEM_INFO.ussTestDir}/bin/utils && chmod +x ${REMOTE_SYSTEM_INFO.ussTestDir}/bin/utils/zis-test`,
+      ussWorkDir,
+    );
 
     console.log(`Unpacking ${keyringUtilPax} and moving keyring-util to ${REMOTE_SYSTEM_INFO.ussTestDir}/bin/utils...`);
     await uss.runCommand(
