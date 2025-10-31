@@ -406,19 +406,21 @@ function updateConfig(configName: string, updateObj: any, arrayMergeStrategy: nu
   revision++;
   let newName = getConfigRevisionName(configName, revision);
   let status = CONFIG_MGR.makeModifiedConfiguration(currentName, newName, updateObj, arrayMergeStrategy);
-  if (status == 0 && shouldValidate) {
-    const validation = CONFIG_MGR.validate(newName);
-    if (validation.ok) {
-      if (validation.exceptionTree) {
-        console.log(`Error: Validation of update to ${configName} found invalid JSON Schema data`);
-        showExceptions(validation.exceptionTree, 0);
-        return 1;
+  if (status == 0) {
+    if (shouldValidate) {
+      const validation = CONFIG_MGR.validate(newName);
+      if (validation.ok) {
+        if (validation.exceptionTree) {
+          console.log(`Error: Validation of update to ${configName} found invalid JSON Schema data`);
+          showExceptions(validation.exceptionTree, 0);
+          return 1;
+        } else {
+          CONFIG_REVISIONS[configName]=revision;
+          return status;
+        }
       } else {
-        CONFIG_REVISIONS[configName]=revision;
-        return status;
+        console.log(`Error: Error occurred on validation of update to ${configName}`);
       }
-    } else {
-      console.log(`Error: Error occurred on validation of update to ${configName}`);
     }
   } else {
     console.log(`Error: Error occurred when making modified configuration of ${configName}`);
