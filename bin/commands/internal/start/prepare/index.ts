@@ -51,20 +51,25 @@ function getStartupCheckMode(property: string): {doCheck: boolean, warnOnly: boo
   let doCheck = true;
   let warnOnly = false;
 
-  if (ZOWE_CONFIG.zowe.launchScript?.startupChecks) {
-    let value = ZOWE_CONFIG.zowe.launchScript?.startupChecks[property];
-    doCheck = value == 'true' || value == 'warn';
-    warnOnly = value == 'warn';
-  }
-  if (ZOWE_CONFIG.zowe.launchScript?.startupChecks?.bypassAll) {
-    let value = ZOWE_CONFIG.zowe.launchScript?.startupChecks.bypassAll;
-    if (value == 'true') {
+  // set defaults
+  if (ZOWE_CONFIG.zowe.launchScript?.startupChecks?.default) {
+    let value = ZOWE_CONFIG.zowe.launchScript?.startupChecks.default;
+    if (value == 'disabled') {
       doCheck = false;
     } else if (value == 'warn') {
-      doCheck = true;
       warnOnly = true;
     }
   }
+
+  // per-startup-check override
+  if (ZOWE_CONFIG.zowe.launchScript?.startupChecks) {
+    let value = ZOWE_CONFIG.zowe.launchScript?.startupChecks[property];
+    if (value != null) {
+      doCheck = value != 'disabled';
+      warnOnly = value == 'warn';
+    }
+  }
+
   return {doCheck, warnOnly};
 }
 

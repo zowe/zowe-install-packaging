@@ -849,15 +849,17 @@ const zoweSchema = zoweYamlSchema as {
               type: 'object';
               description: 'Startup check configuration options';
               properties: {
-                bypassAll: {
-                  type: 'boolean';
-                  default: false;
-                  description: 'Skips all startup checks listed within the zowe.launchScript.startupChecks section';
+                default: {
+                  type: 'string';
+                  default: 'false';
+                  description: 'Sets the default runtime behavior for all startup checks';
+                  enum: ['exit', 'warn', 'disabled'];
                 };
                 ports: {
-                  type: 'boolean';
-                  default: true;
+                  type: 'string';
+                  default: 'true';
                   description: 'Checks the port for each enabled component to ensure Zowe can bind to it and that it is not already occupied by some other program';
+                  enum: ['exit', 'warn', 'disabled'];
                 };
               };
             };
