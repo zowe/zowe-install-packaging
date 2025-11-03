@@ -36,7 +36,8 @@ print_level1_message "Check if need to update runtime directory, Java and/or nod
 update_node_home=
 yaml_node_home="$(shell_read_yaml_node_home "${ZWE_CLI_PARAMETER_CONFIG}")"
 # only try to update if it's not defined
-if [[ ${ZWE_ENABLED_COMPONENTS} == *"app-server"* ]]; then
+appServerEnabled=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".components.app-server.enabled")
+if [ "${appServerEnabled}" = "true" ]; then
   if [ -z "${yaml_node_home}" ]; then
     require_node
     if [ -n "${NODE_HOME}" ]; then
