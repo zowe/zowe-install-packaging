@@ -28,7 +28,7 @@ export function validateZosmfHostAndPort(zosmfHost: string, zosmfPort: number): 
   let zosmfCheckPassed=true;
 
 
-  const execReturn = shell.execOutSync(`${std.getenv('ZWE_zowe_runtimeDirectory')}/bin/utils/curl`, `https://${zosmfHost}:${zosmfPort}/zosmf/info`, `-k`, `-H`, `X-CSRF-ZOSMF-HEADER: true`, `--response-type`, `status`);
+  const execReturn = shell.execOutSync(`${std.getenv('ZWE_zowe_runtimeDirectory')}/bin/utils/curl`, `https://${zosmfHost}:${zosmfPort}/zosmf/info`, `-k`, `-H`, `X-CSRF-ZOSMF-HEADER: true`, `-w`, `"%{http_code}"`, `-s`, `-o`, `/dev/null)`);
   if (execReturn.rc || !execReturn.out) {
     common.printError(`Warning: Could not validate if z/OS MF is available on 'https://${zosmfHost}:${zosmfPort}/zosmf/info'. No response code from z/OSMF server.`);
     zosmfCheckPassed=false

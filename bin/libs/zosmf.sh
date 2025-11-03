@@ -29,7 +29,7 @@ validate_zosmf_host_and_port() {
 
   zosmf_check_passed=true
 
-  http_response_code=$("${ZWE_zowe_runtimeDirectory}/bin/utils/curl" "https://${zosmf_host}:${zosmf_port}/zosmf/info" -k -H "X-CSRF-ZOSMF-HEADER: true" --response-type status)
+  http_response_code=$("${ZWE_zowe_runtimeDirectory}/bin/utils/curl" "https://${zosmf_host}:${zosmf_port}/zosmf/info" -k -H "X-CSRF-ZOSMF-HEADER: true" -w "%{http_code}" -s -o /dev/null)
   if [ -z "${http_response_code}" ]; then
     print_error "Warning: Could not validate if z/OS MF is available on 'https://${zosmf_host}:${zosmf_port}/zosmf/info'. No response code from z/OSMF server."
     zosmf_check_passed=false
