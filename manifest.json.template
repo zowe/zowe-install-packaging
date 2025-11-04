@@ -62,7 +62,7 @@
     },
     "org.zowe.apiml.apiml-package": {
       "version": "3.3.21-SNAPSHOT",
-      "artifact": "apiml-*.zip",
+      "artifact": "apiml-package-3.3.21-20251031.123403-7.zip",
       "exclusions": ["*PR*.zip"]
     },
     "org.zowe.apiml.api-catalog-package": {
