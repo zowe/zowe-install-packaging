@@ -520,6 +520,17 @@ How we want to verify SSL certificates of services. Valid values are:
             <default>IZUDFLT</default>
         </string>
     </variable>
+    <variable name="components_apiml_enabled" scope="instance" visibility="public">
+      <label>Enable API ML</label>
+      <abstract>Check this option to enable API ML</abstract>
+      <description>Check this option to enable API ML</description>
+      <category>components</category>
+      <boolean>
+        <!-- Put validation here -->
+        <!-- Specify choices here -->
+        <default>true</default>
+      </boolean>
+    </variable>
     <variable name="components_gateway_enabled" scope="instance" visibility="public">
         <label>Enable Gateway</label>
         <abstract>Check this option to enable Gateway</abstract>
@@ -1142,6 +1153,7 @@ How we want to verify SSL certificates of services. Valid values are:
             <variableValue name="zOSMF_port" scope="instance" noPromptIfSet="false" required="true"/>
             <variableValue name="zOSMF_applId" scope="instance" noPromptIfSet="false" required="true"/>
             <variableValue name="zowe_configmgr_validation" scope="instance" noPromptIfSet="false" required="true"/>
+            <variableValue name="components_apiml_enabled" scope="instance" noPromptIfSet="false" required="true"/>
             <variableValue name="components_gateway_enabled" scope="instance" noPromptIfSet="false" required="true"/>
             <variableValue name="components_zaas_enabled" scope="instance" noPromptIfSet="false" required="true"/>
             <variableValue name="components_api_catalog_enabled" scope="instance" noPromptIfSet="false" required="true"/>
