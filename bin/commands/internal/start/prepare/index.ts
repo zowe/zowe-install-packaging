@@ -56,7 +56,8 @@ function getStartupCheckMode(property: string): {doCheck: boolean, warnOnly: boo
     let value = ZOWE_CONFIG.zowe.launchScript?.startupChecks.default;
     if (value == 'disabled') {
       doCheck = false;
-    } else if (value == 'warn') {
+    } 
+    if (value == 'warn') {
       warnOnly = true;
     }
   }

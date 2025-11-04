@@ -1,0 +1,861 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`start-prepare-tests (SHORT) default startupChecks behavior 1`] = `
+"2025-10-31 19:58:38 <ZWELS:83954776> TESTUSR0 INFO (zwe-internal-start-prepare) Zowe version: v3.4.0
+2025-10-31 19:58:38 <ZWELS:83954776> TESTUSR0 INFO (zwe-internal-start-prepare) build and hash: {BUILD_BRANCH}#{BUILD_NUMBER} ({BUILD_COMMIT_HASH})
+2025-10-31 19:58:38 <ZWELS:83954776> TESTUSR0 INFO (zwe-internal-start-prepare) z/OS Version: 3.1
+2025-10-31 19:58:38 <ZWELS:83954776> TESTUSR0 INFO (zwe-internal-start-prepare) ESM: ESMT
+2025-10-31 19:58:38 <ZWELS:83954776> TESTUSR0 INFO (zwe-internal-start-prepare) starting Zowe instance SYS0 with /test/dir/workspace/.env/.zowe-merged.yaml ...
+2025-10-31 19:58:39 <ZWELS:83954776> TESTUSR0 INFO (zwe-internal-start-prepare,global_validate) process global validations ...
+2025-10-31 19:58:39 <ZWELS:83954776> TESTUSR0 INFO (validateNodeHome) NodeJS version: v18.18.2
+2025-10-31 19:58:41 <ZWELS:83954776> TESTUSR0 INFO (validateJavaHome) Java version: 17.0.13 2024-10-15
+2025-10-31 19:58:41 <ZWELS:83954776> TESTUSR0 INFO (zwe-internal-start-prepare,global_validate) global validations are successful
+2025-10-31 19:58:41 <ZWELS:83954776> TESTUSR0 INFO (zwe-internal-start-prepare,validate_components) process component validations ...
+2025-10-31 19:58:41 <ZWELS:83954776> TESTUSR0 INFO (zwe-validate-port-available) Checking ports of 10 enabled components
+2025-10-31 19:58:38 <ZWELS:83954776> TESTUSR0 INFO (zwe-internal-start-prepare) Zowe version: v3.4.0
+2025-10-31 19:58:38 <ZWELS:83954776> TESTUSR0 INFO (zwe-internal-start-prepare) build and hash: {BUILD_BRANCH}#{BUILD_NUMBER} ({BUILD_COMMIT_HASH})
+2025-10-31 19:58:38 <ZWELS:83954776> TESTUSR0 INFO (zwe-internal-start-prepare) z/OS Version: 3.1
+2025-10-31 19:58:38 <ZWELS:83954776> TESTUSR0 INFO (zwe-internal-start-prepare) ESM: ESMT
+2025-10-31 19:58:38 <ZWELS:83954776> TESTUSR0 INFO (zwe-internal-start-prepare) starting Zowe instance SYS0 with /test/dir/workspace/.env/.zowe-merged.yaml ...
+2025-10-31 19:58:39 <ZWELS:83954776> TESTUSR0 INFO (zwe-internal-start-prepare,global_validate) process global validations ...
+2025-10-31 19:58:39 <ZWELS:83954776> TESTUSR0 INFO (validateNodeHome) NodeJS version: v18.18.2
+2025-10-31 19:58:41 <ZWELS:83954776> TESTUSR0 INFO (validateJavaHome) Java version: 17.0.13 2024-10-15
+2025-10-31 19:58:41 <ZWELS:83954776> TESTUSR0 INFO (zwe-internal-start-prepare,global_validate) global validations are successful
+2025-10-31 19:58:41 <ZWELS:83954776> TESTUSR0 INFO (zwe-internal-start-prepare,validate_components) process component validations ...
+2025-10-31 19:58:41 <ZWELS:83954776> TESTUSR0 INFO (zwe-validate-port-available) Checking ports of 10 enabled components
+ERROR: 2025-10-31 19:58:41 <ZWELS:83954776> TESTUSR0 ERROR (zwe-validate-port-available) gateway: Port 7554 not available for jobname ZWE1AG or command failed.
+2025-10-31 19:58:38 <ZWELS:83954776> TESTUSR0 INFO (zwe-internal-start-prepare) Zowe version: v3.4.0
+2025-10-31 19:58:38 <ZWELS:83954776> TESTUSR0 INFO (zwe-internal-start-prepare) build and hash: {BUILD_BRANCH}#{BUILD_NUMBER} ({BUILD_COMMIT_HASH})
+2025-10-31 19:58:38 <ZWELS:83954776> TESTUSR0 INFO (zwe-internal-start-prepare) z/OS Version: 3.1
+2025-10-31 19:58:38 <ZWELS:83954776> TESTUSR0 INFO (zwe-internal-start-prepare) ESM: ESMT
+2025-10-31 19:58:38 <ZWELS:83954776> TESTUSR0 INFO (zwe-internal-start-prepare) starting Zowe instance SYS0 with /test/dir/workspace/.env/.zowe-merged.yaml ...
+2025-10-31 19:58:39 <ZWELS:83954776> TESTUSR0 INFO (zwe-internal-start-prepare,global_validate) process global validations ...
+2025-10-31 19:58:39 <ZWELS:83954776> TESTUSR0 INFO (validateNodeHome) NodeJS version: v18.18.2
+2025-10-31 19:58:41 <ZWELS:83954776> TESTUSR0 INFO (validateJavaHome) Java version: 17.0.13 2024-10-15
+2025-10-31 19:58:41 <ZWELS:83954776> TESTUSR0 INFO (zwe-internal-start-prepare,global_validate) global validations are successful
+2025-10-31 19:58:41 <ZWELS:83954776> TESTUSR0 INFO (zwe-internal-start-prepare,validate_components) process component validations ...
+2025-10-31 19:58:41 <ZWELS:83954776> TESTUSR0 INFO (zwe-validate-port-available) Checking ports of 10 enabled components
+2025-10-31 19:58:38 <ZWELS:83954776> TESTUSR0 INFO (zwe-internal-start-prepare) Zowe version: v3.4.0
+2025-10-31 19:58:38 <ZWELS:83954776> TESTUSR0 INFO (zwe-internal-start-prepare) build and hash: {BUILD_BRANCH}#{BUILD_NUMBER} ({BUILD_COMMIT_HASH})
+2025-10-31 19:58:38 <ZWELS:83954776> TESTUSR0 INFO (zwe-internal-start-prepare) z/OS Version: 3.1
+2025-10-31 19:58:38 <ZWELS:83954776> TESTUSR0 INFO (zwe-internal-start-prepare) ESM: ESMT
+2025-10-31 19:58:38 <ZWELS:83954776> TESTUSR0 INFO (zwe-internal-start-prepare) starting Zowe instance SYS0 with /test/dir/workspace/.env/.zowe-merged.yaml ...
+2025-10-31 19:58:39 <ZWELS:83954776> TESTUSR0 INFO (zwe-internal-start-prepare,global_validate) process global validations ...
+2025-10-31 19:58:39 <ZWELS:83954776> TESTUSR0 INFO (validateNodeHome) NodeJS version: v18.18.2
+2025-10-31 19:58:41 <ZWELS:83954776> TESTUSR0 INFO (validateJavaHome) Java version: 17.0.13 2024-10-15
+2025-10-31 19:58:41 <ZWELS:83954776> TESTUSR0 INFO (zwe-internal-start-prepare,global_validate) global validations are successful
+2025-10-31 19:58:41 <ZWELS:83954776> TESTUSR0 INFO (zwe-internal-start-prepare,validate_components) process component validations ...
+2025-10-31 19:58:41 <ZWELS:83954776> TESTUSR0 INFO (zwe-validate-port-available) Checking ports of 10 enabled components
+ERROR: 2025-10-31 19:58:41 <ZWELS:83954776> TESTUSR0 ERROR (zwe-validate-port-available) gateway: Port 7554 not available for jobname ZWE1AG or command failed.
+ERROR: 2025-10-31 19:58:41 <ZWELS:83954776> TESTUSR0 ERROR (zwe-validate-port-available) zaas: Port 7558 not available for jobname ZWE1AZ or command failed.
+:38 <ZWELS:83954776> TESTUSR0 INFO (zwe-internal-start-prepare) Zowe version: v3.4.0
+2025-10-31 19:58:38 <ZWELS:83954776> TESTUSR0 INFO (zwe-internal-start-prepare) build and hash: {BUILD_BRANCH}#{BUILD_NUMBER} ({BUILD_COMMIT_HASH})
+2025-10-31 19:58:38 <ZWELS:83954776> TESTUSR0 INFO (zwe-internal-start-prepare) z/OS Version: 3.1
+2025-10-31 19:58:38 <ZWELS:83954776> TESTUSR0 INFO (zwe-internal-start-prepare) ESM: ESMT
+2025-10-31 19:58:38 <ZWELS:83954776> TESTUSR0 INFO (zwe-internal-start-prepare) starting Zowe instance SYS0 with /test/dir/workspace/.env/.zowe-merged.yaml ...
+2025-10-31 19:58:39 <ZWELS:83954776> TESTUSR0 INFO (zwe-internal-start-prepare,global_validate) process global validations ...
+2025-10-31 19:58:39 <ZWELS:83954776> TESTUSR0 INFO (validateNodeHome) NodeJS version: v18.18.2
+2025-10-31 19:58:41 <ZWELS:83954776> TESTUSR0 INFO (validateJavaHome) Java version: 17.0.13 2024-10-15
+2025-10-31 19:58:41 <ZWELS:83954776> TESTUSR0 INFO (zwe-internal-start-prepare,global_validate) global validations are successful
+2025-10-31 19:58:41 <ZWELS:83954776> TESTUSR0 INFO (zwe-internal-start-prepare,validate_components) process component validations ...
+2025-10-31 19:58:41 <ZWELS:83954776> TESTUSR0 INFO (zwe-validate-port-available) Checking ports of 10 enabled components
+ERROR: 2025-10-31 19:58:41 <ZWELS:83954776> TESTUSR0 ERROR (zwe-validate-port-available) gateway: Port 7554 not available for jobname ZWE1AG or command failed.
+ERROR: 2025-10-31 19:58:41 <ZWELS:83954776> TESTUSR0 ERROR (zwe-validate-port-available) zaas: Port 7558 not available for jobname ZWE1AZ or command failed.
+ERROR: 2025-10-31 19:58:41 <ZWELS:83954776> TESTUSR0 ERROR (zwe-validate-port-available) api-catalog: Port 7552 not available for jobname ZWE1AC or command failed.
+:38 <ZWELS:83954776> TESTUSR0 INFO (zwe-internal-start-prepare) Zowe version: v3.4.0
+2025-10-31 19:58:38 <ZWELS:83954776> TESTUSR0 INFO (zwe-internal-start-prepare) build and hash: {BUILD_BRANCH}#{BUILD_NUMBER} ({BUILD_COMMIT_HASH})
+2025-10-31 19:58:38 <ZWELS:83954776> TESTUSR0 INFO (zwe-internal-start-prepare) z/OS Version: 3.1
+2025-10-31 19:58:38 <ZWELS:83954776> TESTUSR0 INFO (zwe-internal-start-prepare) ESM: ESMT
+2025-10-31 19:58:38 <ZWELS:83954776> TESTUSR0 INFO (zwe-internal-start-prepare) starting Zowe instance SYS0 with /test/dir/workspace/.env/.zowe-merged.yaml ...
+2025-10-31 19:58:39 <ZWELS:83954776> TESTUSR0 INFO (zwe-internal-start-prepare,global_validate) process global validations ...
+2025-10-31 19:58:39 <ZWELS:83954776> TESTUSR0 INFO (validateNodeHome) NodeJS version: v18.18.2
+2025-10-31 19:58:41 <ZWELS:83954776> TESTUSR0 INFO (validateJavaHome) Java version: 17.0.13 2024-10-15
+2025-10-31 19:58:41 <ZWELS:83954776> TESTUSR0 INFO (zwe-internal-start-prepare,global_validate) global validations are successful
+2025-10-31 19:58:41 <ZWELS:83954776> TESTUSR0 INFO (zwe-internal-start-prepare,validate_components) process component validations ...
+2025-10-31 19:58:41 <ZWELS:83954776> TESTUSR0 INFO (zwe-validate-port-available) Checking ports of 10 enabled components
+ERROR: 2025-10-31 19:58:41 <ZWELS:83954776> TESTUSR0 ERROR (zwe-validate-port-available) gateway: Port 7554 not available for jobname ZWE1AG or command failed.
+ERROR: 2025-10-31 19:58:41 <ZWELS:83954776> TESTUSR0 ERROR (zwe-validate-port-available) zaas: Port 7558 not available for jobname ZWE1AZ or command failed.
+:38 <ZWELS:83954776> TESTUSR0 INFO (zwe-internal-start-prepare) Zowe version: v3.4.0
+2025-10-31 19:58:38 <ZWELS:83954776> TESTUSR0 INFO (zwe-internal-start-prepare) build and hash: {BUILD_BRANCH}#{BUILD_NUMBER} ({BUILD_COMMIT_HASH})
+2025-10-31 19:58:38 <ZWELS:83954776> TESTUSR0 INFO (zwe-internal-start-prepare) z/OS Version: 3.1
+2025-10-31 19:58:38 <ZWELS:83954776> TESTUSR0 INFO (zwe-internal-start-prepare) ESM: ESMT
+2025-10-31 19:58:38 <ZWELS:83954776> TESTUSR0 INFO (zwe-internal-start-prepare) starting Zowe instance SYS0 with /test/dir/workspace/.env/.zowe-merged.yaml ...
+2025-10-31 19:58:39 <ZWELS:83954776> TESTUSR0 INFO (zwe-internal-start-prepare,global_validate) process global validations ...
+2025-10-31 19:58:39 <ZWELS:83954776> TESTUSR0 INFO (validateNodeHome) NodeJS version: v18.18.2
+2025-10-31 19:58:41 <ZWELS:83954776> TESTUSR0 INFO (validateJavaHome) Java version: 17.0.13 2024-10-15
+2025-10-31 19:58:41 <ZWELS:83954776> TESTUSR0 INFO (zwe-internal-start-prepare,global_validate) global validations are successful
+2025-10-31 19:58:41 <ZWELS:83954776> TESTUSR0 INFO (zwe-internal-start-prepare,validate_components) process component validations ...
+2025-10-31 19:58:41 <ZWELS:83954776> TESTUSR0 INFO (zwe-validate-port-available) Checking ports of 10 enabled components
+ERROR: 2025-10-31 19:58:41 <ZWELS:83954776> TESTUSR0 ERROR (zwe-validate-port-available) gateway: Port 7554 not available for jobname ZWE1AG or command failed.
+ERROR: 2025-10-31 19:58:41 <ZWELS:83954776> TESTUSR0 ERROR (zwe-validate-port-available) zaas: Port 7558 not available for jobname ZWE1AZ or command failed.
+ERROR: 2025-10-31 19:58:41 <ZWELS:83954776> TESTUSR0 ERROR (zwe-validate-port-available) api-catalog: Port 7552 not available for jobname ZWE1AC or command failed.
+ERROR: 2025-10-31 19:58:42 <ZWELS:83954776> TESTUSR0 ERROR (zwe-validate-port-available) discovery: Port 7553 not available for jobname ZWE1AD or command failed.
+31 19:58:39 <ZWELS:83954776> TESTUSR0 INFO (validateNodeHome) NodeJS version: v18.18.2
+2025-10-31 19:58:41 <ZWELS:83954776> TESTUSR0 INFO (validateJavaHome) Java version: 17.0.13 2024-10-15
+2025-10-31 19:58:41 <ZWELS:83954776> TESTUSR0 INFO (zwe-internal-start-prepare,global_validate) global validations are successful
+2025-10-31 19:58:41 <ZWELS:83954776> TESTUSR0 INFO (zwe-internal-start-prepare,validate_components) process component validations ...
+2025-10-31 19:58:41 <ZWELS:83954776> TESTUSR0 INFO (zwe-validate-port-available) Checking ports of 10 enabled components
+ERROR: 2025-10-31 19:58:41 <ZWELS:83954776> TESTUSR0 ERROR (zwe-validate-port-available) gateway: Port 7554 not available for jobname ZWE1AG or command failed.
+ERROR: 2025-10-31 19:58:41 <ZWELS:83954776> TESTUSR0 ERROR (zwe-validate-port-available) zaas: Port 7558 not available for jobname ZWE1AZ or command failed.
+:38 <ZWELS:83954776> TESTUSR0 INFO (zwe-internal-start-prepare) Zowe version: v3.4.0
+2025-10-31 19:58:38 <ZWELS:83954776> TESTUSR0 INFO (zwe-internal-start-prepare) build and hash: {BUILD_BRANCH}#{BUILD_NUMBER} ({BUILD_COMMIT_HASH})
+2025-10-31 19:58:38 <ZWELS:83954776> TESTUSR0 INFO (zwe-internal-start-prepare) z/OS Version: 3.1
+2025-10-31 19:58:38 <ZWELS:83954776> TESTUSR0 INFO (zwe-internal-start-prepare) ESM: ESMT
+2025-10-31 19:58:38 <ZWELS:83954776> TESTUSR0 INFO (zwe-internal-start-prepare) starting Zowe instance SYS0 with /test/dir/workspace/.env/.zowe-merged.yaml ...
+2025-10-31 19:58:39 <ZWELS:83954776> TESTUSR0 INFO (zwe-internal-start-prepare,global_validate) process global validations ...
+2025-10-31 19:58:39 <ZWELS:83954776> TESTUSR0 INFO (validateNodeHome) NodeJS version: v18.18.2
+2025-10-31 19:58:41 <ZWELS:83954776> TESTUSR0 INFO (validateJavaHome) Java version: 17.0.13 2024-10-15
+2025-10-31 19:58:41 <ZWELS:83954776> TESTUSR0 INFO (zwe-internal-start-prepare,global_validate) global validations are successful
+2025-10-31 19:58:41 <ZWELS:83954776> TESTUSR0 INFO (zwe-internal-start-prepare,validate_components) process component validations ...
+2025-10-31 19:58:41 <ZWELS:83954776> TESTUSR0 INFO (zwe-validate-port-available) Checking ports of 10 enabled components
+ERROR: 2025-10-31 19:58:41 <ZWELS:83954776> TESTUSR0 ERROR (zwe-validate-port-available) gateway: Port 7554 not available for jobname ZWE1AG or command failed.
+ERROR: 2025-10-31 19:58:41 <ZWELS:83954776> TESTUSR0 ERROR (zwe-validate-port-available) zaas: Port 7558 not available for jobname ZWE1AZ or command failed.
+ERROR: 2025-10-31 19:58:41 <ZWELS:83954776> TESTUSR0 ERROR (zwe-validate-port-available) api-catalog: Port 7552 not available for jobname ZWE1AC or command failed.
+ERROR: 2025-10-31 19:58:42 <ZWELS:83954776> TESTUSR0 ERROR (zwe-validate-port-available) discovery: Port 7553 not available for jobname ZWE1AD or command failed.
+ERROR: 2025-10-31 19:58:42 <ZWELS:83954776> TESTUSR0 ERROR (zwe-validate-port-available) caching-service: Port 7555 not available for jobname ZWE1CS or command failed.
+t-prepare) ESM: ESMT
+2025-10-31 19:58:38 <ZWELS:83954776> TESTUSR0 INFO (zwe-internal-start-prepare) starting Zowe instance SYS0 with /test/dir/workspace/.env/.zowe-merged.yaml ...
+2025-10-31 19:58:39 <ZWELS:83954776> TESTUSR0 INFO (zwe-internal-start-prepare,global_validate) process global validations ...
+2025-10-31 19:58:39 <ZWELS:83954776> TESTUSR0 INFO (validateNodeHome) NodeJS version: v18.18.2
+2025-10-31 19:58:41 <ZWELS:83954776> TESTUSR0 INFO (validateJavaHome) Java version: 17.0.13 2024-10-15
+2025-10-31 19:58:41 <ZWELS:83954776> TESTUSR0 INFO (zwe-internal-start-prepare,global_validate) global validations are successful
+2025-10-31 19:58:41 <ZWELS:83954776> TESTUSR0 INFO (zwe-internal-start-prepare,validate_components) process component validations ...
+2025-10-31 19:58:41 <ZWELS:83954776> TESTUSR0 INFO (zwe-validate-port-available) Checking ports of 10 enabled components
+ERROR: 2025-10-31 19:58:41 <ZWELS:83954776> TESTUSR0 ERROR (zwe-validate-port-available) gateway: Port 7554 not available for jobname ZWE1AG or command failed.
+ERROR: 2025-10-31 19:58:41 <ZWELS:83954776> TESTUSR0 ERROR (zwe-validate-port-available) zaas: Port 7558 not available for jobname ZWE1AZ or command failed.
+ERROR: 2025-10-31 19:58:41 <ZWELS:83954776> TESTUSR0 ERROR (zwe-validate-port-available) api-catalog: Port 7552 not available for jobname ZWE1AC or command failed.
+ERROR: 2025-10-31 19:58:42 <ZWELS:83954776> TESTUSR0 ERROR (zwe-validate-port-available) discovery: Port 7553 not available for jobname ZWE1AD or command failed.
+ERROR: 2025-10-31 19:58:42 <ZWELS:83954776> TESTUSR0 ERROR (zwe-validate-port-available) caching-service: Port 7555 not available for jobname ZWE1CS or command failed.
+ERROR: 2025-10-31 19:58:42 <ZWELS:83954776> TESTUSR0 ERROR (zwe-validate-port-available) app-server: Port 7556 not available or command failed.
+t-prepare) ESM: ESMT
+2025-10-31 19:58:38 <ZWELS:83954776> TESTUSR0 INFO (zwe-internal-start-prepare) starting Zowe instance SYS0 with /test/dir/workspace/.env/.zowe-merged.yaml ...
+2025-10-31 19:58:39 <ZWELS:83954776> TESTUSR0 INFO (zwe-internal-start-prepare,global_validate) process global validations ...
+2025-10-31 19:58:39 <ZWELS:83954776> TESTUSR0 INFO (validateNodeHome) NodeJS version: v18.18.2
+2025-10-31 19:58:41 <ZWELS:83954776> TESTUSR0 INFO (validateJavaHome) Java version: 17.0.13 2024-10-15
+2025-10-31 19:58:41 <ZWELS:83954776> TESTUSR0 INFO (zwe-internal-start-prepare,global_validate) global validations are successful
+2025-10-31 19:58:41 <ZWELS:83954776> TESTUSR0 INFO (zwe-internal-start-prepare,validate_components) process component validations ...
+2025-10-31 19:58:41 <ZWELS:83954776> TESTUSR0 INFO (zwe-validate-port-available) Checking ports of 10 enabled components
+ERROR: 2025-10-31 19:58:41 <ZWELS:83954776> TESTUSR0 ERROR (zwe-validate-port-available) gateway: Port 7554 not available for jobname ZWE1AG or command failed.
+ERROR: 2025-10-31 19:58:41 <ZWELS:83954776> TESTUSR0 ERROR (zwe-validate-port-available) zaas: Port 7558 not available for jobname ZWE1AZ or command failed.
+ERROR: 2025-10-31 19:58:41 <ZWELS:83954776> TESTUSR0 ERROR (zwe-validate-port-available) api-catalog: Port 7552 not available for jobname ZWE1AC or command failed.
+ERROR: 2025-10-31 19:58:42 <ZWELS:83954776> TESTUSR0 ERROR (zwe-validate-port-available) discovery: Port 7553 not available for jobname ZWE1AD or command failed.
+ERROR: 2025-10-31 19:58:42 <ZWELS:83954776> TESTUSR0 ERROR (zwe-validate-port-available) caching-service: Port 7555 not available for jobname ZWE1CS or command failed.
+t-prepare) ESM: ESMT
+2025-10-31 19:58:38 <ZWELS:83954776> TESTUSR0 INFO (zwe-internal-start-prepare) starting Zowe instance SYS0 with /test/dir/workspace/.env/.zowe-merged.yaml ...
+2025-10-31 19:58:39 <ZWELS:83954776> TESTUSR0 INFO (zwe-internal-start-prepare,global_validate) process global validations ...
+2025-10-31 19:58:39 <ZWELS:83954776> TESTUSR0 INFO (validateNodeHome) NodeJS version: v18.18.2
+2025-10-31 19:58:41 <ZWELS:83954776> TESTUSR0 INFO (validateJavaHome) Java version: 17.0.13 2024-10-15
+2025-10-31 19:58:41 <ZWELS:83954776> TESTUSR0 INFO (zwe-internal-start-prepare,global_validate) global validations are successful
+2025-10-31 19:58:41 <ZWELS:83954776> TESTUSR0 INFO (zwe-internal-start-prepare,validate_components) process component validations ...
+2025-10-31 19:58:41 <ZWELS:83954776> TESTUSR0 INFO (zwe-validate-port-available) Checking ports of 10 enabled components
+ERROR: 2025-10-31 19:58:41 <ZWELS:83954776> TESTUSR0 ERROR (zwe-validate-port-available) gateway: Port 7554 not available for jobname ZWE1AG or command failed.
+ERROR: 2025-10-31 19:58:41 <ZWELS:83954776> TESTUSR0 ERROR (zwe-validate-port-available) zaas: Port 7558 not available for jobname ZWE1AZ or command failed.
+ERROR: 2025-10-31 19:58:41 <ZWELS:83954776> TESTUSR0 ERROR (zwe-validate-port-available) api-catalog: Port 7552 not available for jobname ZWE1AC or command failed.
+ERROR: 2025-10-31 19:58:42 <ZWELS:83954776> TESTUSR0 ERROR (zwe-validate-port-available) discovery: Port 7553 not available for jobname ZWE1AD or command failed.
+ERROR: 2025-10-31 19:58:42 <ZWELS:83954776> TESTUSR0 ERROR (zwe-validate-port-available) caching-service: Port 7555 not available for jobname ZWE1CS or command failed.
+ERROR: 2025-10-31 19:58:42 <ZWELS:83954776> TESTUSR0 ERROR (zwe-validate-port-available) app-server: Port 7556 not available or command failed.
+ERROR: 2025-10-31 19:58:42 <ZWELS:83954776> TESTUSR0 ERROR (zwe-validate-port-available) zss: Port 7557 not available for jobname ZWE1SZ or command failed.
+ERROR: 2025-10-31 19:58:42 <ZWELS:83954776> TESTUSR0 ERROR (zwe-validate-port-available) Port bind validation failed. This check can be dismissed with YAML value "zowe.launchScript.startupChecks.ports: warn"
+TypeError: cannot read property 'includes' of null
+    at printRawMessage (/test/dir/bin/libs/common:148)
+    at printError (/test/dir/bin/libs/common:168)
+    at printErrorAndExit (/test/dir/bin/libs/common:185)
+    at execute (/test/dir/bin/commands/validate/port/bind/index:99)
+    at validateComponents (/test/dir/bin/commands/internal/start/prepare/index:193)
+    at execute (/test/dir/bin/commands/internal/start/prepare/index:467)
+    at <anonymous> (/test/dir/bin/commands/internal/start/prepare/cli.js:12)"
+`;
+
+exports[`start-prepare-tests (SHORT) set startupChecks disabled 1`] = `
+"2025-10-31 19:58:50 <ZWELS:33622405> TESTUSR0 INFO (zwe-internal-start-prepare) Zowe version: v3.4.0
+2025-10-31 19:58:50 <ZWELS:33622405> TESTUSR0 INFO (zwe-internal-start-prepare) build and hash: {BUILD_BRANCH}#{BUILD_NUMBER} ({BUILD_COMMIT_HASH})
+2025-10-31 19:58:50 <ZWELS:33622405> TESTUSR0 INFO (zwe-internal-start-prepare) z/OS Version: 3.1
+2025-10-31 19:58:50 <ZWELS:33622405> TESTUSR0 INFO (zwe-internal-start-prepare) ESM: ESMT
+2025-10-31 19:58:50 <ZWELS:33622405> TESTUSR0 INFO (zwe-internal-start-prepare) starting Zowe instance SYS0 with /test/dir/workspace/.env/.zowe-merged.yaml ...
+2025-10-31 19:58:51 <ZWELS:33622405> TESTUSR0 INFO (zwe-internal-start-prepare,global_validate) process global validations ...
+2025-10-31 19:58:51 <ZWELS:33622405> TESTUSR0 INFO (validateNodeHome) NodeJS version: v18.18.2
+2025-10-31 19:58:53 <ZWELS:33622405> TESTUSR0 INFO (validateJavaHome) Java version: 17.0.13 2024-10-15
+2025-10-31 19:58:53 <ZWELS:33622405> TESTUSR0 INFO (zwe-internal-start-prepare,global_validate) global validations are successful
+2025-10-31 19:58:53 <ZWELS:33622405> TESTUSR0 INFO (zwe-internal-start-prepare,validate_components) process component validations ...
+2025-10-31 19:58:53 <ZWELS:33622405> TESTUSR0 INFO (zwe-validate-port-available) Checking ports of 10 enabled components
+2025-10-31 19:58:50 <ZWELS:33622405> TESTUSR0 INFO (zwe-internal-start-prepare) Zowe version: v3.4.0
+2025-10-31 19:58:50 <ZWELS:33622405> TESTUSR0 INFO (zwe-internal-start-prepare) build and hash: {BUILD_BRANCH}#{BUILD_NUMBER} ({BUILD_COMMIT_HASH})
+2025-10-31 19:58:50 <ZWELS:33622405> TESTUSR0 INFO (zwe-internal-start-prepare) z/OS Version: 3.1
+2025-10-31 19:58:50 <ZWELS:33622405> TESTUSR0 INFO (zwe-internal-start-prepare) ESM: ESMT
+2025-10-31 19:58:50 <ZWELS:33622405> TESTUSR0 INFO (zwe-internal-start-prepare) starting Zowe instance SYS0 with /test/dir/workspace/.env/.zowe-merged.yaml ...
+2025-10-31 19:58:51 <ZWELS:33622405> TESTUSR0 INFO (zwe-internal-start-prepare,global_validate) process global validations ...
+2025-10-31 19:58:51 <ZWELS:33622405> TESTUSR0 INFO (validateNodeHome) NodeJS version: v18.18.2
+2025-10-31 19:58:53 <ZWELS:33622405> TESTUSR0 INFO (validateJavaHome) Java version: 17.0.13 2024-10-15
+2025-10-31 19:58:53 <ZWELS:33622405> TESTUSR0 INFO (zwe-internal-start-prepare,global_validate) global validations are successful
+2025-10-31 19:58:53 <ZWELS:33622405> TESTUSR0 INFO (zwe-internal-start-prepare,validate_components) process component validations ...
+2025-10-31 19:58:53 <ZWELS:33622405> TESTUSR0 INFO (zwe-validate-port-available) Checking ports of 10 enabled components
+ERROR: 2025-10-31 19:58:53 <ZWELS:33622405> TESTUSR0 ERROR (zwe-validate-port-available) gateway: Port 7554 not available for jobname ZWE1AG or command failed.
+2025-10-31 19:58:50 <ZWELS:33622405> TESTUSR0 INFO (zwe-internal-start-prepare) Zowe version: v3.4.0
+2025-10-31 19:58:50 <ZWELS:33622405> TESTUSR0 INFO (zwe-internal-start-prepare) build and hash: {BUILD_BRANCH}#{BUILD_NUMBER} ({BUILD_COMMIT_HASH})
+2025-10-31 19:58:50 <ZWELS:33622405> TESTUSR0 INFO (zwe-internal-start-prepare) z/OS Version: 3.1
+2025-10-31 19:58:50 <ZWELS:33622405> TESTUSR0 INFO (zwe-internal-start-prepare) ESM: ESMT
+2025-10-31 19:58:50 <ZWELS:33622405> TESTUSR0 INFO (zwe-internal-start-prepare) starting Zowe instance SYS0 with /test/dir/workspace/.env/.zowe-merged.yaml ...
+2025-10-31 19:58:51 <ZWELS:33622405> TESTUSR0 INFO (zwe-internal-start-prepare,global_validate) process global validations ...
+2025-10-31 19:58:51 <ZWELS:33622405> TESTUSR0 INFO (validateNodeHome) NodeJS version: v18.18.2
+2025-10-31 19:58:53 <ZWELS:33622405> TESTUSR0 INFO (validateJavaHome) Java version: 17.0.13 2024-10-15
+2025-10-31 19:58:53 <ZWELS:33622405> TESTUSR0 INFO (zwe-internal-start-prepare,global_validate) global validations are successful
+2025-10-31 19:58:53 <ZWELS:33622405> TESTUSR0 INFO (zwe-internal-start-prepare,validate_components) process component validations ...
+2025-10-31 19:58:53 <ZWELS:33622405> TESTUSR0 INFO (zwe-validate-port-available) Checking ports of 10 enabled components
+2025-10-31 19:58:50 <ZWELS:33622405> TESTUSR0 INFO (zwe-internal-start-prepare) Zowe version: v3.4.0
+2025-10-31 19:58:50 <ZWELS:33622405> TESTUSR0 INFO (zwe-internal-start-prepare) build and hash: {BUILD_BRANCH}#{BUILD_NUMBER} ({BUILD_COMMIT_HASH})
+2025-10-31 19:58:50 <ZWELS:33622405> TESTUSR0 INFO (zwe-internal-start-prepare) z/OS Version: 3.1
+2025-10-31 19:58:50 <ZWELS:33622405> TESTUSR0 INFO (zwe-internal-start-prepare) ESM: ESMT
+2025-10-31 19:58:50 <ZWELS:33622405> TESTUSR0 INFO (zwe-internal-start-prepare) starting Zowe instance SYS0 with /test/dir/workspace/.env/.zowe-merged.yaml ...
+2025-10-31 19:58:51 <ZWELS:33622405> TESTUSR0 INFO (zwe-internal-start-prepare,global_validate) process global validations ...
+2025-10-31 19:58:51 <ZWELS:33622405> TESTUSR0 INFO (validateNodeHome) NodeJS version: v18.18.2
+2025-10-31 19:58:53 <ZWELS:33622405> TESTUSR0 INFO (validateJavaHome) Java version: 17.0.13 2024-10-15
+2025-10-31 19:58:53 <ZWELS:33622405> TESTUSR0 INFO (zwe-internal-start-prepare,global_validate) global validations are successful
+2025-10-31 19:58:53 <ZWELS:33622405> TESTUSR0 INFO (zwe-internal-start-prepare,validate_components) process component validations ...
+2025-10-31 19:58:53 <ZWELS:33622405> TESTUSR0 INFO (zwe-validate-port-available) Checking ports of 10 enabled components
+ERROR: 2025-10-31 19:58:53 <ZWELS:33622405> TESTUSR0 ERROR (zwe-validate-port-available) gateway: Port 7554 not available for jobname ZWE1AG or command failed.
+ERROR: 2025-10-31 19:58:53 <ZWELS:33622405> TESTUSR0 ERROR (zwe-validate-port-available) zaas: Port 7558 not available for jobname ZWE1AZ or command failed.
+:50 <ZWELS:33622405> TESTUSR0 INFO (zwe-internal-start-prepare) Zowe version: v3.4.0
+2025-10-31 19:58:50 <ZWELS:33622405> TESTUSR0 INFO (zwe-internal-start-prepare) build and hash: {BUILD_BRANCH}#{BUILD_NUMBER} ({BUILD_COMMIT_HASH})
+2025-10-31 19:58:50 <ZWELS:33622405> TESTUSR0 INFO (zwe-internal-start-prepare) z/OS Version: 3.1
+2025-10-31 19:58:50 <ZWELS:33622405> TESTUSR0 INFO (zwe-internal-start-prepare) ESM: ESMT
+2025-10-31 19:58:50 <ZWELS:33622405> TESTUSR0 INFO (zwe-internal-start-prepare) starting Zowe instance SYS0 with /test/dir/workspace/.env/.zowe-merged.yaml ...
+2025-10-31 19:58:51 <ZWELS:33622405> TESTUSR0 INFO (zwe-internal-start-prepare,global_validate) process global validations ...
+2025-10-31 19:58:51 <ZWELS:33622405> TESTUSR0 INFO (validateNodeHome) NodeJS version: v18.18.2
+2025-10-31 19:58:53 <ZWELS:33622405> TESTUSR0 INFO (validateJavaHome) Java version: 17.0.13 2024-10-15
+2025-10-31 19:58:53 <ZWELS:33622405> TESTUSR0 INFO (zwe-internal-start-prepare,global_validate) global validations are successful
+2025-10-31 19:58:53 <ZWELS:33622405> TESTUSR0 INFO (zwe-internal-start-prepare,validate_components) process component validations ...
+2025-10-31 19:58:53 <ZWELS:33622405> TESTUSR0 INFO (zwe-validate-port-available) Checking ports of 10 enabled components
+ERROR: 2025-10-31 19:58:53 <ZWELS:33622405> TESTUSR0 ERROR (zwe-validate-port-available) gateway: Port 7554 not available for jobname ZWE1AG or command failed.
+ERROR: 2025-10-31 19:58:53 <ZWELS:33622405> TESTUSR0 ERROR (zwe-validate-port-available) zaas: Port 7558 not available for jobname ZWE1AZ or command failed.
+ERROR: 2025-10-31 19:58:53 <ZWELS:33622405> TESTUSR0 ERROR (zwe-validate-port-available) api-catalog: Port 7552 not available for jobname ZWE1AC or command failed.
+:50 <ZWELS:33622405> TESTUSR0 INFO (zwe-internal-start-prepare) Zowe version: v3.4.0
+2025-10-31 19:58:50 <ZWELS:33622405> TESTUSR0 INFO (zwe-internal-start-prepare) build and hash: {BUILD_BRANCH}#{BUILD_NUMBER} ({BUILD_COMMIT_HASH})
+2025-10-31 19:58:50 <ZWELS:33622405> TESTUSR0 INFO (zwe-internal-start-prepare) z/OS Version: 3.1
+2025-10-31 19:58:50 <ZWELS:33622405> TESTUSR0 INFO (zwe-internal-start-prepare) ESM: ESMT
+2025-10-31 19:58:50 <ZWELS:33622405> TESTUSR0 INFO (zwe-internal-start-prepare) starting Zowe instance SYS0 with /test/dir/workspace/.env/.zowe-merged.yaml ...
+2025-10-31 19:58:51 <ZWELS:33622405> TESTUSR0 INFO (zwe-internal-start-prepare,global_validate) process global validations ...
+2025-10-31 19:58:51 <ZWELS:33622405> TESTUSR0 INFO (validateNodeHome) NodeJS version: v18.18.2
+2025-10-31 19:58:53 <ZWELS:33622405> TESTUSR0 INFO (validateJavaHome) Java version: 17.0.13 2024-10-15
+2025-10-31 19:58:53 <ZWELS:33622405> TESTUSR0 INFO (zwe-internal-start-prepare,global_validate) global validations are successful
+2025-10-31 19:58:53 <ZWELS:33622405> TESTUSR0 INFO (zwe-internal-start-prepare,validate_components) process component validations ...
+2025-10-31 19:58:53 <ZWELS:33622405> TESTUSR0 INFO (zwe-validate-port-available) Checking ports of 10 enabled components
+ERROR: 2025-10-31 19:58:53 <ZWELS:33622405> TESTUSR0 ERROR (zwe-validate-port-available) gateway: Port 7554 not available for jobname ZWE1AG or command failed.
+ERROR: 2025-10-31 19:58:53 <ZWELS:33622405> TESTUSR0 ERROR (zwe-validate-port-available) zaas: Port 7558 not available for jobname ZWE1AZ or command failed.
+:50 <ZWELS:33622405> TESTUSR0 INFO (zwe-internal-start-prepare) Zowe version: v3.4.0
+2025-10-31 19:58:50 <ZWELS:33622405> TESTUSR0 INFO (zwe-internal-start-prepare) build and hash: {BUILD_BRANCH}#{BUILD_NUMBER} ({BUILD_COMMIT_HASH})
+2025-10-31 19:58:50 <ZWELS:33622405> TESTUSR0 INFO (zwe-internal-start-prepare) z/OS Version: 3.1
+2025-10-31 19:58:50 <ZWELS:33622405> TESTUSR0 INFO (zwe-internal-start-prepare) ESM: ESMT
+2025-10-31 19:58:50 <ZWELS:33622405> TESTUSR0 INFO (zwe-internal-start-prepare) starting Zowe instance SYS0 with /test/dir/workspace/.env/.zowe-merged.yaml ...
+2025-10-31 19:58:51 <ZWELS:33622405> TESTUSR0 INFO (zwe-internal-start-prepare,global_validate) process global validations ...
+2025-10-31 19:58:51 <ZWELS:33622405> TESTUSR0 INFO (validateNodeHome) NodeJS version: v18.18.2
+2025-10-31 19:58:53 <ZWELS:33622405> TESTUSR0 INFO (validateJavaHome) Java version: 17.0.13 2024-10-15
+2025-10-31 19:58:53 <ZWELS:33622405> TESTUSR0 INFO (zwe-internal-start-prepare,global_validate) global validations are successful
+2025-10-31 19:58:53 <ZWELS:33622405> TESTUSR0 INFO (zwe-internal-start-prepare,validate_components) process component validations ...
+2025-10-31 19:58:53 <ZWELS:33622405> TESTUSR0 INFO (zwe-validate-port-available) Checking ports of 10 enabled components
+ERROR: 2025-10-31 19:58:53 <ZWELS:33622405> TESTUSR0 ERROR (zwe-validate-port-available) gateway: Port 7554 not available for jobname ZWE1AG or command failed.
+ERROR: 2025-10-31 19:58:53 <ZWELS:33622405> TESTUSR0 ERROR (zwe-validate-port-available) zaas: Port 7558 not available for jobname ZWE1AZ or command failed.
+ERROR: 2025-10-31 19:58:53 <ZWELS:33622405> TESTUSR0 ERROR (zwe-validate-port-available) api-catalog: Port 7552 not available for jobname ZWE1AC or command failed.
+ERROR: 2025-10-31 19:58:54 <ZWELS:33622405> TESTUSR0 ERROR (zwe-validate-port-available) discovery: Port 7553 not available for jobname ZWE1AD or command failed.
+31 19:58:51 <ZWELS:33622405> TESTUSR0 INFO (validateNodeHome) NodeJS version: v18.18.2
+2025-10-31 19:58:53 <ZWELS:33622405> TESTUSR0 INFO (validateJavaHome) Java version: 17.0.13 2024-10-15
+2025-10-31 19:58:53 <ZWELS:33622405> TESTUSR0 INFO (zwe-internal-start-prepare,global_validate) global validations are successful
+2025-10-31 19:58:53 <ZWELS:33622405> TESTUSR0 INFO (zwe-internal-start-prepare,validate_components) process component validations ...
+2025-10-31 19:58:53 <ZWELS:33622405> TESTUSR0 INFO (zwe-validate-port-available) Checking ports of 10 enabled components
+ERROR: 2025-10-31 19:58:53 <ZWELS:33622405> TESTUSR0 ERROR (zwe-validate-port-available) gateway: Port 7554 not available for jobname ZWE1AG or command failed.
+ERROR: 2025-10-31 19:58:53 <ZWELS:33622405> TESTUSR0 ERROR (zwe-validate-port-available) zaas: Port 7558 not available for jobname ZWE1AZ or command failed.
+:50 <ZWELS:33622405> TESTUSR0 INFO (zwe-internal-start-prepare) Zowe version: v3.4.0
+2025-10-31 19:58:50 <ZWELS:33622405> TESTUSR0 INFO (zwe-internal-start-prepare) build and hash: {BUILD_BRANCH}#{BUILD_NUMBER} ({BUILD_COMMIT_HASH})
+2025-10-31 19:58:50 <ZWELS:33622405> TESTUSR0 INFO (zwe-internal-start-prepare) z/OS Version: 3.1
+2025-10-31 19:58:50 <ZWELS:33622405> TESTUSR0 INFO (zwe-internal-start-prepare) ESM: ESMT
+2025-10-31 19:58:50 <ZWELS:33622405> TESTUSR0 INFO (zwe-internal-start-prepare) starting Zowe instance SYS0 with /test/dir/workspace/.env/.zowe-merged.yaml ...
+2025-10-31 19:58:51 <ZWELS:33622405> TESTUSR0 INFO (zwe-internal-start-prepare,global_validate) process global validations ...
+2025-10-31 19:58:51 <ZWELS:33622405> TESTUSR0 INFO (validateNodeHome) NodeJS version: v18.18.2
+2025-10-31 19:58:53 <ZWELS:33622405> TESTUSR0 INFO (validateJavaHome) Java version: 17.0.13 2024-10-15
+2025-10-31 19:58:53 <ZWELS:33622405> TESTUSR0 INFO (zwe-internal-start-prepare,global_validate) global validations are successful
+2025-10-31 19:58:53 <ZWELS:33622405> TESTUSR0 INFO (zwe-internal-start-prepare,validate_components) process component validations ...
+2025-10-31 19:58:53 <ZWELS:33622405> TESTUSR0 INFO (zwe-validate-port-available) Checking ports of 10 enabled components
+ERROR: 2025-10-31 19:58:53 <ZWELS:33622405> TESTUSR0 ERROR (zwe-validate-port-available) gateway: Port 7554 not available for jobname ZWE1AG or command failed.
+ERROR: 2025-10-31 19:58:53 <ZWELS:33622405> TESTUSR0 ERROR (zwe-validate-port-available) zaas: Port 7558 not available for jobname ZWE1AZ or command failed.
+ERROR: 2025-10-31 19:58:53 <ZWELS:33622405> TESTUSR0 ERROR (zwe-validate-port-available) api-catalog: Port 7552 not available for jobname ZWE1AC or command failed.
+ERROR: 2025-10-31 19:58:54 <ZWELS:33622405> TESTUSR0 ERROR (zwe-validate-port-available) discovery: Port 7553 not available for jobname ZWE1AD or command failed.
+ERROR: 2025-10-31 19:58:54 <ZWELS:33622405> TESTUSR0 ERROR (zwe-validate-port-available) caching-service: Port 7555 not available for jobname ZWE1CS or command failed.
+t-prepare) ESM: ESMT
+2025-10-31 19:58:50 <ZWELS:33622405> TESTUSR0 INFO (zwe-internal-start-prepare) starting Zowe instance SYS0 with /test/dir/workspace/.env/.zowe-merged.yaml ...
+2025-10-31 19:58:51 <ZWELS:33622405> TESTUSR0 INFO (zwe-internal-start-prepare,global_validate) process global validations ...
+2025-10-31 19:58:51 <ZWELS:33622405> TESTUSR0 INFO (validateNodeHome) NodeJS version: v18.18.2
+2025-10-31 19:58:53 <ZWELS:33622405> TESTUSR0 INFO (validateJavaHome) Java version: 17.0.13 2024-10-15
+2025-10-31 19:58:53 <ZWELS:33622405> TESTUSR0 INFO (zwe-internal-start-prepare,global_validate) global validations are successful
+2025-10-31 19:58:53 <ZWELS:33622405> TESTUSR0 INFO (zwe-internal-start-prepare,validate_components) process component validations ...
+2025-10-31 19:58:53 <ZWELS:33622405> TESTUSR0 INFO (zwe-validate-port-available) Checking ports of 10 enabled components
+ERROR: 2025-10-31 19:58:53 <ZWELS:33622405> TESTUSR0 ERROR (zwe-validate-port-available) gateway: Port 7554 not available for jobname ZWE1AG or command failed.
+ERROR: 2025-10-31 19:58:53 <ZWELS:33622405> TESTUSR0 ERROR (zwe-validate-port-available) zaas: Port 7558 not available for jobname ZWE1AZ or command failed.
+ERROR: 2025-10-31 19:58:53 <ZWELS:33622405> TESTUSR0 ERROR (zwe-validate-port-available) api-catalog: Port 7552 not available for jobname ZWE1AC or command failed.
+ERROR: 2025-10-31 19:58:54 <ZWELS:33622405> TESTUSR0 ERROR (zwe-validate-port-available) discovery: Port 7553 not available for jobname ZWE1AD or command failed.
+ERROR: 2025-10-31 19:58:54 <ZWELS:33622405> TESTUSR0 ERROR (zwe-validate-port-available) caching-service: Port 7555 not available for jobname ZWE1CS or command failed.
+ERROR: 2025-10-31 19:58:54 <ZWELS:33622405> TESTUSR0 ERROR (zwe-validate-port-available) app-server: Port 7556 not available or command failed.
+t-prepare) ESM: ESMT
+2025-10-31 19:58:50 <ZWELS:33622405> TESTUSR0 INFO (zwe-internal-start-prepare) starting Zowe instance SYS0 with /test/dir/workspace/.env/.zowe-merged.yaml ...
+2025-10-31 19:58:51 <ZWELS:33622405> TESTUSR0 INFO (zwe-internal-start-prepare,global_validate) process global validations ...
+2025-10-31 19:58:51 <ZWELS:33622405> TESTUSR0 INFO (validateNodeHome) NodeJS version: v18.18.2
+2025-10-31 19:58:53 <ZWELS:33622405> TESTUSR0 INFO (validateJavaHome) Java version: 17.0.13 2024-10-15
+2025-10-31 19:58:53 <ZWELS:33622405> TESTUSR0 INFO (zwe-internal-start-prepare,global_validate) global validations are successful
+2025-10-31 19:58:53 <ZWELS:33622405> TESTUSR0 INFO (zwe-internal-start-prepare,validate_components) process component validations ...
+2025-10-31 19:58:53 <ZWELS:33622405> TESTUSR0 INFO (zwe-validate-port-available) Checking ports of 10 enabled components
+ERROR: 2025-10-31 19:58:53 <ZWELS:33622405> TESTUSR0 ERROR (zwe-validate-port-available) gateway: Port 7554 not available for jobname ZWE1AG or command failed.
+ERROR: 2025-10-31 19:58:53 <ZWELS:33622405> TESTUSR0 ERROR (zwe-validate-port-available) zaas: Port 7558 not available for jobname ZWE1AZ or command failed.
+ERROR: 2025-10-31 19:58:53 <ZWELS:33622405> TESTUSR0 ERROR (zwe-validate-port-available) api-catalog: Port 7552 not available for jobname ZWE1AC or command failed.
+ERROR: 2025-10-31 19:58:54 <ZWELS:33622405> TESTUSR0 ERROR (zwe-validate-port-available) discovery: Port 7553 not available for jobname ZWE1AD or command failed.
+ERROR: 2025-10-31 19:58:54 <ZWELS:33622405> TESTUSR0 ERROR (zwe-validate-port-available) caching-service: Port 7555 not available for jobname ZWE1CS or command failed.
+t-prepare) ESM: ESMT
+2025-10-31 19:58:50 <ZWELS:33622405> TESTUSR0 INFO (zwe-internal-start-prepare) starting Zowe instance SYS0 with /test/dir/workspace/.env/.zowe-merged.yaml ...
+2025-10-31 19:58:51 <ZWELS:33622405> TESTUSR0 INFO (zwe-internal-start-prepare,global_validate) process global validations ...
+2025-10-31 19:58:51 <ZWELS:33622405> TESTUSR0 INFO (validateNodeHome) NodeJS version: v18.18.2
+2025-10-31 19:58:53 <ZWELS:33622405> TESTUSR0 INFO (validateJavaHome) Java version: 17.0.13 2024-10-15
+2025-10-31 19:58:53 <ZWELS:33622405> TESTUSR0 INFO (zwe-internal-start-prepare,global_validate) global validations are successful
+2025-10-31 19:58:53 <ZWELS:33622405> TESTUSR0 INFO (zwe-internal-start-prepare,validate_components) process component validations ...
+2025-10-31 19:58:53 <ZWELS:33622405> TESTUSR0 INFO (zwe-validate-port-available) Checking ports of 10 enabled components
+ERROR: 2025-10-31 19:58:53 <ZWELS:33622405> TESTUSR0 ERROR (zwe-validate-port-available) gateway: Port 7554 not available for jobname ZWE1AG or command failed.
+ERROR: 2025-10-31 19:58:53 <ZWELS:33622405> TESTUSR0 ERROR (zwe-validate-port-available) zaas: Port 7558 not available for jobname ZWE1AZ or command failed.
+ERROR: 2025-10-31 19:58:53 <ZWELS:33622405> TESTUSR0 ERROR (zwe-validate-port-available) api-catalog: Port 7552 not available for jobname ZWE1AC or command failed.
+ERROR: 2025-10-31 19:58:54 <ZWELS:33622405> TESTUSR0 ERROR (zwe-validate-port-available) discovery: Port 7553 not available for jobname ZWE1AD or command failed.
+ERROR: 2025-10-31 19:58:54 <ZWELS:33622405> TESTUSR0 ERROR (zwe-validate-port-available) caching-service: Port 7555 not available for jobname ZWE1CS or command failed.
+ERROR: 2025-10-31 19:58:54 <ZWELS:33622405> TESTUSR0 ERROR (zwe-validate-port-available) app-server: Port 7556 not available or command failed.
+ERROR: 2025-10-31 19:58:54 <ZWELS:33622405> TESTUSR0 ERROR (zwe-validate-port-available) zss: Port 7557 not available for jobname ZWE1SZ or command failed.
+ERROR: 2025-10-31 19:58:54 <ZWELS:33622405> TESTUSR0 ERROR (zwe-validate-port-available) Port bind validation failed. This check can be dismissed with YAML value "zowe.launchScript.startupChecks.ports: warn"
+TypeError: cannot read property 'includes' of null
+    at printRawMessage (/test/dir/bin/libs/common:148)
+    at printError (/test/dir/bin/libs/common:168)
+    at printErrorAndExit (/test/dir/bin/libs/common:185)
+    at execute (/test/dir/bin/commands/validate/port/bind/index:99)
+    at validateComponents (/test/dir/bin/commands/internal/start/prepare/index:193)
+    at execute (/test/dir/bin/commands/internal/start/prepare/index:467)
+    at <anonymous> (/test/dir/bin/commands/internal/start/prepare/cli.js:12)"
+`;
+
+exports[`start-prepare-tests (SHORT) set startupChecks warn 1`] = `
+"2025-10-31 19:59:03 <ZWELS:50397668> TESTUSR0 INFO (zwe-internal-start-prepare) Zowe version: v3.4.0
+2025-10-31 19:59:03 <ZWELS:50397668> TESTUSR0 INFO (zwe-internal-start-prepare) build and hash: {BUILD_BRANCH}#{BUILD_NUMBER} ({BUILD_COMMIT_HASH})
+2025-10-31 19:59:03 <ZWELS:50397668> TESTUSR0 INFO (zwe-internal-start-prepare) z/OS Version: 3.1
+2025-10-31 19:59:03 <ZWELS:50397668> TESTUSR0 INFO (zwe-internal-start-prepare) ESM: ESMT
+2025-10-31 19:59:03 <ZWELS:50397668> TESTUSR0 INFO (zwe-internal-start-prepare) starting Zowe instance SYS0 with /test/dir/workspace/.env/.zowe-merged.yaml ...
+2025-10-31 19:59:04 <ZWELS:50397668> TESTUSR0 INFO (zwe-internal-start-prepare,global_validate) process global validations ...
+2025-10-31 19:59:04 <ZWELS:50397668> TESTUSR0 INFO (validateNodeHome) NodeJS version: v18.18.2
+2025-10-31 19:59:06 <ZWELS:50397668> TESTUSR0 INFO (validateJavaHome) Java version: 17.0.13 2024-10-15
+2025-10-31 19:59:06 <ZWELS:50397668> TESTUSR0 INFO (zwe-internal-start-prepare,global_validate) global validations are successful
+2025-10-31 19:59:06 <ZWELS:50397668> TESTUSR0 INFO (zwe-internal-start-prepare,validate_components) process component validations ...
+2025-10-31 19:59:06 <ZWELS:50397668> TESTUSR0 INFO (zwe-validate-port-available) Checking ports of 10 enabled components
+2025-10-31 19:59:03 <ZWELS:50397668> TESTUSR0 INFO (zwe-internal-start-prepare) Zowe version: v3.4.0
+2025-10-31 19:59:03 <ZWELS:50397668> TESTUSR0 INFO (zwe-internal-start-prepare) build and hash: {BUILD_BRANCH}#{BUILD_NUMBER} ({BUILD_COMMIT_HASH})
+2025-10-31 19:59:03 <ZWELS:50397668> TESTUSR0 INFO (zwe-internal-start-prepare) z/OS Version: 3.1
+2025-10-31 19:59:03 <ZWELS:50397668> TESTUSR0 INFO (zwe-internal-start-prepare) ESM: ESMT
+2025-10-31 19:59:03 <ZWELS:50397668> TESTUSR0 INFO (zwe-internal-start-prepare) starting Zowe instance SYS0 with /test/dir/workspace/.env/.zowe-merged.yaml ...
+2025-10-31 19:59:04 <ZWELS:50397668> TESTUSR0 INFO (zwe-internal-start-prepare,global_validate) process global validations ...
+2025-10-31 19:59:04 <ZWELS:50397668> TESTUSR0 INFO (validateNodeHome) NodeJS version: v18.18.2
+2025-10-31 19:59:06 <ZWELS:50397668> TESTUSR0 INFO (validateJavaHome) Java version: 17.0.13 2024-10-15
+2025-10-31 19:59:06 <ZWELS:50397668> TESTUSR0 INFO (zwe-internal-start-prepare,global_validate) global validations are successful
+2025-10-31 19:59:06 <ZWELS:50397668> TESTUSR0 INFO (zwe-internal-start-prepare,validate_components) process component validations ...
+2025-10-31 19:59:06 <ZWELS:50397668> TESTUSR0 INFO (zwe-validate-port-available) Checking ports of 10 enabled components
+ERROR: 2025-10-31 19:59:06 <ZWELS:50397668> TESTUSR0 ERROR (zwe-validate-port-available) gateway: Port 7554 not available for jobname ZWE1AG or command failed.
+2025-10-31 19:59:03 <ZWELS:50397668> TESTUSR0 INFO (zwe-internal-start-prepare) Zowe version: v3.4.0
+2025-10-31 19:59:03 <ZWELS:50397668> TESTUSR0 INFO (zwe-internal-start-prepare) build and hash: {BUILD_BRANCH}#{BUILD_NUMBER} ({BUILD_COMMIT_HASH})
+2025-10-31 19:59:03 <ZWELS:50397668> TESTUSR0 INFO (zwe-internal-start-prepare) z/OS Version: 3.1
+2025-10-31 19:59:03 <ZWELS:50397668> TESTUSR0 INFO (zwe-internal-start-prepare) ESM: ESMT
+2025-10-31 19:59:03 <ZWELS:50397668> TESTUSR0 INFO (zwe-internal-start-prepare) starting Zowe instance SYS0 with /test/dir/workspace/.env/.zowe-merged.yaml ...
+2025-10-31 19:59:04 <ZWELS:50397668> TESTUSR0 INFO (zwe-internal-start-prepare,global_validate) process global validations ...
+2025-10-31 19:59:04 <ZWELS:50397668> TESTUSR0 INFO (validateNodeHome) NodeJS version: v18.18.2
+2025-10-31 19:59:06 <ZWELS:50397668> TESTUSR0 INFO (validateJavaHome) Java version: 17.0.13 2024-10-15
+2025-10-31 19:59:06 <ZWELS:50397668> TESTUSR0 INFO (zwe-internal-start-prepare,global_validate) global validations are successful
+2025-10-31 19:59:06 <ZWELS:50397668> TESTUSR0 INFO (zwe-internal-start-prepare,validate_components) process component validations ...
+2025-10-31 19:59:06 <ZWELS:50397668> TESTUSR0 INFO (zwe-validate-port-available) Checking ports of 10 enabled components
+2025-10-31 19:59:03 <ZWELS:50397668> TESTUSR0 INFO (zwe-internal-start-prepare) Zowe version: v3.4.0
+2025-10-31 19:59:03 <ZWELS:50397668> TESTUSR0 INFO (zwe-internal-start-prepare) build and hash: {BUILD_BRANCH}#{BUILD_NUMBER} ({BUILD_COMMIT_HASH})
+2025-10-31 19:59:03 <ZWELS:50397668> TESTUSR0 INFO (zwe-internal-start-prepare) z/OS Version: 3.1
+2025-10-31 19:59:03 <ZWELS:50397668> TESTUSR0 INFO (zwe-internal-start-prepare) ESM: ESMT
+2025-10-31 19:59:03 <ZWELS:50397668> TESTUSR0 INFO (zwe-internal-start-prepare) starting Zowe instance SYS0 with /test/dir/workspace/.env/.zowe-merged.yaml ...
+2025-10-31 19:59:04 <ZWELS:50397668> TESTUSR0 INFO (zwe-internal-start-prepare,global_validate) process global validations ...
+2025-10-31 19:59:04 <ZWELS:50397668> TESTUSR0 INFO (validateNodeHome) NodeJS version: v18.18.2
+2025-10-31 19:59:06 <ZWELS:50397668> TESTUSR0 INFO (validateJavaHome) Java version: 17.0.13 2024-10-15
+2025-10-31 19:59:06 <ZWELS:50397668> TESTUSR0 INFO (zwe-internal-start-prepare,global_validate) global validations are successful
+2025-10-31 19:59:06 <ZWELS:50397668> TESTUSR0 INFO (zwe-internal-start-prepare,validate_components) process component validations ...
+2025-10-31 19:59:06 <ZWELS:50397668> TESTUSR0 INFO (zwe-validate-port-available) Checking ports of 10 enabled components
+ERROR: 2025-10-31 19:59:06 <ZWELS:50397668> TESTUSR0 ERROR (zwe-validate-port-available) gateway: Port 7554 not available for jobname ZWE1AG or command failed.
+ERROR: 2025-10-31 19:59:06 <ZWELS:50397668> TESTUSR0 ERROR (zwe-validate-port-available) zaas: Port 7558 not available for jobname ZWE1AZ or command failed.
+:03 <ZWELS:50397668> TESTUSR0 INFO (zwe-internal-start-prepare) Zowe version: v3.4.0
+2025-10-31 19:59:03 <ZWELS:50397668> TESTUSR0 INFO (zwe-internal-start-prepare) build and hash: {BUILD_BRANCH}#{BUILD_NUMBER} ({BUILD_COMMIT_HASH})
+2025-10-31 19:59:03 <ZWELS:50397668> TESTUSR0 INFO (zwe-internal-start-prepare) z/OS Version: 3.1
+2025-10-31 19:59:03 <ZWELS:50397668> TESTUSR0 INFO (zwe-internal-start-prepare) ESM: ESMT
+2025-10-31 19:59:03 <ZWELS:50397668> TESTUSR0 INFO (zwe-internal-start-prepare) starting Zowe instance SYS0 with /test/dir/workspace/.env/.zowe-merged.yaml ...
+2025-10-31 19:59:04 <ZWELS:50397668> TESTUSR0 INFO (zwe-internal-start-prepare,global_validate) process global validations ...
+2025-10-31 19:59:04 <ZWELS:50397668> TESTUSR0 INFO (validateNodeHome) NodeJS version: v18.18.2
+2025-10-31 19:59:06 <ZWELS:50397668> TESTUSR0 INFO (validateJavaHome) Java version: 17.0.13 2024-10-15
+2025-10-31 19:59:06 <ZWELS:50397668> TESTUSR0 INFO (zwe-internal-start-prepare,global_validate) global validations are successful
+2025-10-31 19:59:06 <ZWELS:50397668> TESTUSR0 INFO (zwe-internal-start-prepare,validate_components) process component validations ...
+2025-10-31 19:59:06 <ZWELS:50397668> TESTUSR0 INFO (zwe-validate-port-available) Checking ports of 10 enabled components
+ERROR: 2025-10-31 19:59:06 <ZWELS:50397668> TESTUSR0 ERROR (zwe-validate-port-available) gateway: Port 7554 not available for jobname ZWE1AG or command failed.
+ERROR: 2025-10-31 19:59:06 <ZWELS:50397668> TESTUSR0 ERROR (zwe-validate-port-available) zaas: Port 7558 not available for jobname ZWE1AZ or command failed.
+ERROR: 2025-10-31 19:59:06 <ZWELS:50397668> TESTUSR0 ERROR (zwe-validate-port-available) api-catalog: Port 7552 not available for jobname ZWE1AC or command failed.
+:03 <ZWELS:50397668> TESTUSR0 INFO (zwe-internal-start-prepare) Zowe version: v3.4.0
+2025-10-31 19:59:03 <ZWELS:50397668> TESTUSR0 INFO (zwe-internal-start-prepare) build and hash: {BUILD_BRANCH}#{BUILD_NUMBER} ({BUILD_COMMIT_HASH})
+2025-10-31 19:59:03 <ZWELS:50397668> TESTUSR0 INFO (zwe-internal-start-prepare) z/OS Version: 3.1
+2025-10-31 19:59:03 <ZWELS:50397668> TESTUSR0 INFO (zwe-internal-start-prepare) ESM: ESMT
+2025-10-31 19:59:03 <ZWELS:50397668> TESTUSR0 INFO (zwe-internal-start-prepare) starting Zowe instance SYS0 with /test/dir/workspace/.env/.zowe-merged.yaml ...
+2025-10-31 19:59:04 <ZWELS:50397668> TESTUSR0 INFO (zwe-internal-start-prepare,global_validate) process global validations ...
+2025-10-31 19:59:04 <ZWELS:50397668> TESTUSR0 INFO (validateNodeHome) NodeJS version: v18.18.2
+2025-10-31 19:59:06 <ZWELS:50397668> TESTUSR0 INFO (validateJavaHome) Java version: 17.0.13 2024-10-15
+2025-10-31 19:59:06 <ZWELS:50397668> TESTUSR0 INFO (zwe-internal-start-prepare,global_validate) global validations are successful
+2025-10-31 19:59:06 <ZWELS:50397668> TESTUSR0 INFO (zwe-internal-start-prepare,validate_components) process component validations ...
+2025-10-31 19:59:06 <ZWELS:50397668> TESTUSR0 INFO (zwe-validate-port-available) Checking ports of 10 enabled components
+ERROR: 2025-10-31 19:59:06 <ZWELS:50397668> TESTUSR0 ERROR (zwe-validate-port-available) gateway: Port 7554 not available for jobname ZWE1AG or command failed.
+ERROR: 2025-10-31 19:59:06 <ZWELS:50397668> TESTUSR0 ERROR (zwe-validate-port-available) zaas: Port 7558 not available for jobname ZWE1AZ or command failed.
+:03 <ZWELS:50397668> TESTUSR0 INFO (zwe-internal-start-prepare) Zowe version: v3.4.0
+2025-10-31 19:59:03 <ZWELS:50397668> TESTUSR0 INFO (zwe-internal-start-prepare) build and hash: {BUILD_BRANCH}#{BUILD_NUMBER} ({BUILD_COMMIT_HASH})
+2025-10-31 19:59:03 <ZWELS:50397668> TESTUSR0 INFO (zwe-internal-start-prepare) z/OS Version: 3.1
+2025-10-31 19:59:03 <ZWELS:50397668> TESTUSR0 INFO (zwe-internal-start-prepare) ESM: ESMT
+2025-10-31 19:59:03 <ZWELS:50397668> TESTUSR0 INFO (zwe-internal-start-prepare) starting Zowe instance SYS0 with /test/dir/workspace/.env/.zowe-merged.yaml ...
+2025-10-31 19:59:04 <ZWELS:50397668> TESTUSR0 INFO (zwe-internal-start-prepare,global_validate) process global validations ...
+2025-10-31 19:59:04 <ZWELS:50397668> TESTUSR0 INFO (validateNodeHome) NodeJS version: v18.18.2
+2025-10-31 19:59:06 <ZWELS:50397668> TESTUSR0 INFO (validateJavaHome) Java version: 17.0.13 2024-10-15
+2025-10-31 19:59:06 <ZWELS:50397668> TESTUSR0 INFO (zwe-internal-start-prepare,global_validate) global validations are successful
+2025-10-31 19:59:06 <ZWELS:50397668> TESTUSR0 INFO (zwe-internal-start-prepare,validate_components) process component validations ...
+2025-10-31 19:59:06 <ZWELS:50397668> TESTUSR0 INFO (zwe-validate-port-available) Checking ports of 10 enabled components
+ERROR: 2025-10-31 19:59:06 <ZWELS:50397668> TESTUSR0 ERROR (zwe-validate-port-available) gateway: Port 7554 not available for jobname ZWE1AG or command failed.
+ERROR: 2025-10-31 19:59:06 <ZWELS:50397668> TESTUSR0 ERROR (zwe-validate-port-available) zaas: Port 7558 not available for jobname ZWE1AZ or command failed.
+ERROR: 2025-10-31 19:59:06 <ZWELS:50397668> TESTUSR0 ERROR (zwe-validate-port-available) api-catalog: Port 7552 not available for jobname ZWE1AC or command failed.
+ERROR: 2025-10-31 19:59:07 <ZWELS:50397668> TESTUSR0 ERROR (zwe-validate-port-available) discovery: Port 7553 not available for jobname ZWE1AD or command failed.
+31 19:59:04 <ZWELS:50397668> TESTUSR0 INFO (validateNodeHome) NodeJS version: v18.18.2
+2025-10-31 19:59:06 <ZWELS:50397668> TESTUSR0 INFO (validateJavaHome) Java version: 17.0.13 2024-10-15
+2025-10-31 19:59:06 <ZWELS:50397668> TESTUSR0 INFO (zwe-internal-start-prepare,global_validate) global validations are successful
+2025-10-31 19:59:06 <ZWELS:50397668> TESTUSR0 INFO (zwe-internal-start-prepare,validate_components) process component validations ...
+2025-10-31 19:59:06 <ZWELS:50397668> TESTUSR0 INFO (zwe-validate-port-available) Checking ports of 10 enabled components
+ERROR: 2025-10-31 19:59:06 <ZWELS:50397668> TESTUSR0 ERROR (zwe-validate-port-available) gateway: Port 7554 not available for jobname ZWE1AG or command failed.
+ERROR: 2025-10-31 19:59:06 <ZWELS:50397668> TESTUSR0 ERROR (zwe-validate-port-available) zaas: Port 7558 not available for jobname ZWE1AZ or command failed.
+:03 <ZWELS:50397668> TESTUSR0 INFO (zwe-internal-start-prepare) Zowe version: v3.4.0
+2025-10-31 19:59:03 <ZWELS:50397668> TESTUSR0 INFO (zwe-internal-start-prepare) build and hash: {BUILD_BRANCH}#{BUILD_NUMBER} ({BUILD_COMMIT_HASH})
+2025-10-31 19:59:03 <ZWELS:50397668> TESTUSR0 INFO (zwe-internal-start-prepare) z/OS Version: 3.1
+2025-10-31 19:59:03 <ZWELS:50397668> TESTUSR0 INFO (zwe-internal-start-prepare) ESM: ESMT
+2025-10-31 19:59:03 <ZWELS:50397668> TESTUSR0 INFO (zwe-internal-start-prepare) starting Zowe instance SYS0 with /test/dir/workspace/.env/.zowe-merged.yaml ...
+2025-10-31 19:59:04 <ZWELS:50397668> TESTUSR0 INFO (zwe-internal-start-prepare,global_validate) process global validations ...
+2025-10-31 19:59:04 <ZWELS:50397668> TESTUSR0 INFO (validateNodeHome) NodeJS version: v18.18.2
+2025-10-31 19:59:06 <ZWELS:50397668> TESTUSR0 INFO (validateJavaHome) Java version: 17.0.13 2024-10-15
+2025-10-31 19:59:06 <ZWELS:50397668> TESTUSR0 INFO (zwe-internal-start-prepare,global_validate) global validations are successful
+2025-10-31 19:59:06 <ZWELS:50397668> TESTUSR0 INFO (zwe-internal-start-prepare,validate_components) process component validations ...
+2025-10-31 19:59:06 <ZWELS:50397668> TESTUSR0 INFO (zwe-validate-port-available) Checking ports of 10 enabled components
+ERROR: 2025-10-31 19:59:06 <ZWELS:50397668> TESTUSR0 ERROR (zwe-validate-port-available) gateway: Port 7554 not available for jobname ZWE1AG or command failed.
+ERROR: 2025-10-31 19:59:06 <ZWELS:50397668> TESTUSR0 ERROR (zwe-validate-port-available) zaas: Port 7558 not available for jobname ZWE1AZ or command failed.
+ERROR: 2025-10-31 19:59:06 <ZWELS:50397668> TESTUSR0 ERROR (zwe-validate-port-available) api-catalog: Port 7552 not available for jobname ZWE1AC or command failed.
+ERROR: 2025-10-31 19:59:07 <ZWELS:50397668> TESTUSR0 ERROR (zwe-validate-port-available) discovery: Port 7553 not available for jobname ZWE1AD or command failed.
+ERROR: 2025-10-31 19:59:07 <ZWELS:50397668> TESTUSR0 ERROR (zwe-validate-port-available) caching-service: Port 7555 not available for jobname ZWE1CS or command failed.
+t-prepare) ESM: ESMT
+2025-10-31 19:59:03 <ZWELS:50397668> TESTUSR0 INFO (zwe-internal-start-prepare) starting Zowe instance SYS0 with /test/dir/workspace/.env/.zowe-merged.yaml ...
+2025-10-31 19:59:04 <ZWELS:50397668> TESTUSR0 INFO (zwe-internal-start-prepare,global_validate) process global validations ...
+2025-10-31 19:59:04 <ZWELS:50397668> TESTUSR0 INFO (validateNodeHome) NodeJS version: v18.18.2
+2025-10-31 19:59:06 <ZWELS:50397668> TESTUSR0 INFO (validateJavaHome) Java version: 17.0.13 2024-10-15
+2025-10-31 19:59:06 <ZWELS:50397668> TESTUSR0 INFO (zwe-internal-start-prepare,global_validate) global validations are successful
+2025-10-31 19:59:06 <ZWELS:50397668> TESTUSR0 INFO (zwe-internal-start-prepare,validate_components) process component validations ...
+2025-10-31 19:59:06 <ZWELS:50397668> TESTUSR0 INFO (zwe-validate-port-available) Checking ports of 10 enabled components
+ERROR: 2025-10-31 19:59:06 <ZWELS:50397668> TESTUSR0 ERROR (zwe-validate-port-available) gateway: Port 7554 not available for jobname ZWE1AG or command failed.
+ERROR: 2025-10-31 19:59:06 <ZWELS:50397668> TESTUSR0 ERROR (zwe-validate-port-available) zaas: Port 7558 not available for jobname ZWE1AZ or command failed.
+ERROR: 2025-10-31 19:59:06 <ZWELS:50397668> TESTUSR0 ERROR (zwe-validate-port-available) api-catalog: Port 7552 not available for jobname ZWE1AC or command failed.
+ERROR: 2025-10-31 19:59:07 <ZWELS:50397668> TESTUSR0 ERROR (zwe-validate-port-available) discovery: Port 7553 not available for jobname ZWE1AD or command failed.
+ERROR: 2025-10-31 19:59:07 <ZWELS:50397668> TESTUSR0 ERROR (zwe-validate-port-available) caching-service: Port 7555 not available for jobname ZWE1CS or command failed.
+ERROR: 2025-10-31 19:59:07 <ZWELS:50397668> TESTUSR0 ERROR (zwe-validate-port-available) app-server: Port 7556 not available or command failed.
+t-prepare) ESM: ESMT
+2025-10-31 19:59:03 <ZWELS:50397668> TESTUSR0 INFO (zwe-internal-start-prepare) starting Zowe instance SYS0 with /test/dir/workspace/.env/.zowe-merged.yaml ...
+2025-10-31 19:59:04 <ZWELS:50397668> TESTUSR0 INFO (zwe-internal-start-prepare,global_validate) process global validations ...
+2025-10-31 19:59:04 <ZWELS:50397668> TESTUSR0 INFO (validateNodeHome) NodeJS version: v18.18.2
+2025-10-31 19:59:06 <ZWELS:50397668> TESTUSR0 INFO (validateJavaHome) Java version: 17.0.13 2024-10-15
+2025-10-31 19:59:06 <ZWELS:50397668> TESTUSR0 INFO (zwe-internal-start-prepare,global_validate) global validations are successful
+2025-10-31 19:59:06 <ZWELS:50397668> TESTUSR0 INFO (zwe-internal-start-prepare,validate_components) process component validations ...
+2025-10-31 19:59:06 <ZWELS:50397668> TESTUSR0 INFO (zwe-validate-port-available) Checking ports of 10 enabled components
+ERROR: 2025-10-31 19:59:06 <ZWELS:50397668> TESTUSR0 ERROR (zwe-validate-port-available) gateway: Port 7554 not available for jobname ZWE1AG or command failed.
+ERROR: 2025-10-31 19:59:06 <ZWELS:50397668> TESTUSR0 ERROR (zwe-validate-port-available) zaas: Port 7558 not available for jobname ZWE1AZ or command failed.
+ERROR: 2025-10-31 19:59:06 <ZWELS:50397668> TESTUSR0 ERROR (zwe-validate-port-available) api-catalog: Port 7552 not available for jobname ZWE1AC or command failed.
+ERROR: 2025-10-31 19:59:07 <ZWELS:50397668> TESTUSR0 ERROR (zwe-validate-port-available) discovery: Port 7553 not available for jobname ZWE1AD or command failed.
+ERROR: 2025-10-31 19:59:07 <ZWELS:50397668> TESTUSR0 ERROR (zwe-validate-port-available) caching-service: Port 7555 not available for jobname ZWE1CS or command failed.
+t-prepare) ESM: ESMT
+2025-10-31 19:59:03 <ZWELS:50397668> TESTUSR0 INFO (zwe-internal-start-prepare) starting Zowe instance SYS0 with /test/dir/workspace/.env/.zowe-merged.yaml ...
+2025-10-31 19:59:04 <ZWELS:50397668> TESTUSR0 INFO (zwe-internal-start-prepare,global_validate) process global validations ...
+2025-10-31 19:59:04 <ZWELS:50397668> TESTUSR0 INFO (validateNodeHome) NodeJS version: v18.18.2
+2025-10-31 19:59:06 <ZWELS:50397668> TESTUSR0 INFO (validateJavaHome) Java version: 17.0.13 2024-10-15
+2025-10-31 19:59:06 <ZWELS:50397668> TESTUSR0 INFO (zwe-internal-start-prepare,global_validate) global validations are successful
+2025-10-31 19:59:06 <ZWELS:50397668> TESTUSR0 INFO (zwe-internal-start-prepare,validate_components) process component validations ...
+2025-10-31 19:59:06 <ZWELS:50397668> TESTUSR0 INFO (zwe-validate-port-available) Checking ports of 10 enabled components
+ERROR: 2025-10-31 19:59:06 <ZWELS:50397668> TESTUSR0 ERROR (zwe-validate-port-available) gateway: Port 7554 not available for jobname ZWE1AG or command failed.
+ERROR: 2025-10-31 19:59:06 <ZWELS:50397668> TESTUSR0 ERROR (zwe-validate-port-available) zaas: Port 7558 not available for jobname ZWE1AZ or command failed.
+ERROR: 2025-10-31 19:59:06 <ZWELS:50397668> TESTUSR0 ERROR (zwe-validate-port-available) api-catalog: Port 7552 not available for jobname ZWE1AC or command failed.
+ERROR: 2025-10-31 19:59:07 <ZWELS:50397668> TESTUSR0 ERROR (zwe-validate-port-available) discovery: Port 7553 not available for jobname ZWE1AD or command failed.
+ERROR: 2025-10-31 19:59:07 <ZWELS:50397668> TESTUSR0 ERROR (zwe-validate-port-available) caching-service: Port 7555 not available for jobname ZWE1CS or command failed.
+ERROR: 2025-10-31 19:59:07 <ZWELS:50397668> TESTUSR0 ERROR (zwe-validate-port-available) app-server: Port 7556 not available or command failed.
+ERROR: 2025-10-31 19:59:07 <ZWELS:50397668> TESTUSR0 ERROR (zwe-validate-port-available) zss: Port 7557 not available for jobname ZWE1SZ or command failed.
+ERROR: 2025-10-31 19:59:07 <ZWELS:50397668> TESTUSR0 ERROR (zwe-validate-port-available) Port bind validation failed. This check can be dismissed with YAML value "zowe.launchScript.startupChecks.ports: warn"
+TypeError: cannot read property 'includes' of null
+    at printRawMessage (/test/dir/bin/libs/common:148)
+    at printError (/test/dir/bin/libs/common:168)
+    at printErrorAndExit (/test/dir/bin/libs/common:185)
+    at execute (/test/dir/bin/commands/validate/port/bind/index:99)
+    at validateComponents (/test/dir/bin/commands/internal/start/prepare/index:193)
+    at execute (/test/dir/bin/commands/internal/start/prepare/index:467)
+    at <anonymous> (/test/dir/bin/commands/internal/start/prepare/cli.js:12)"
+`;
+
+exports[`start-prepare-tests (SHORT) test combinations of startup default and ports 1`] = `
+"2025-10-31 19:59:16 <ZWELS:50397335> TESTUSR0 INFO (zwe-internal-start-prepare) Zowe version: v3.4.0
+2025-10-31 19:59:16 <ZWELS:50397335> TESTUSR0 INFO (zwe-internal-start-prepare) build and hash: {BUILD_BRANCH}#{BUILD_NUMBER} ({BUILD_COMMIT_HASH})
+2025-10-31 19:59:16 <ZWELS:50397335> TESTUSR0 INFO (zwe-internal-start-prepare) z/OS Version: 3.1
+2025-10-31 19:59:16 <ZWELS:50397335> TESTUSR0 INFO (zwe-internal-start-prepare) ESM: ESMT
+2025-10-31 19:59:16 <ZWELS:50397335> TESTUSR0 INFO (zwe-internal-start-prepare) starting Zowe instance SYS0 with /test/dir/workspace/.env/.zowe-merged.yaml ...
+2025-10-31 19:59:17 <ZWELS:50397335> TESTUSR0 INFO (zwe-internal-start-prepare,global_validate) process global validations ...
+2025-10-31 19:59:17 <ZWELS:50397335> TESTUSR0 INFO (validateNodeHome) NodeJS version: v18.18.2
+2025-10-31 19:59:19 <ZWELS:50397335> TESTUSR0 INFO (validateJavaHome) Java version: 17.0.13 2024-10-15
+2025-10-31 19:59:19 <ZWELS:50397335> TESTUSR0 INFO (zwe-internal-start-prepare,global_validate) global validations are successful
+2025-10-31 19:59:19 <ZWELS:50397335> TESTUSR0 INFO (zwe-internal-start-prepare,validate_components) process component validations ...
+ERROR: 2025-10-31 19:59:19 <ZWELS:50397335> TESTUSR0 ERROR (zwe-internal-start-prepare,validate_components) Error ZWEL0172E: Component zss has commands.validate defined but the file is missing.
+2025-10-31 19:59:19 <ZWELS:50397335> TESTUSR0 INFO (zwe-internal-start-prepare,configure_components) process component configurations ...
+2025-10-31 19:59:20 <ZWELS:50397335> TESTUSR0 INFO (zwe-internal-start-prepare,configure_components) - commands.configure output from zss is:
+2025-10-31 19:59:20 <ZWELS:50397335> TESTUSR0 INFO (zwe-internal-start-prepare) Zowe runtime environment prepared"
+`;
+
+exports[`start-prepare-tests (SHORT) test combinations of startup default and ports 2`] = `
+"2025-10-31 19:59:24 <ZWELS:83955145> TESTUSR0 INFO (zwe-internal-start-prepare) Zowe version: v3.4.0
+2025-10-31 19:59:24 <ZWELS:83955145> TESTUSR0 INFO (zwe-internal-start-prepare) build and hash: {BUILD_BRANCH}#{BUILD_NUMBER} ({BUILD_COMMIT_HASH})
+2025-10-31 19:59:24 <ZWELS:83955145> TESTUSR0 INFO (zwe-internal-start-prepare) z/OS Version: 3.1
+2025-10-31 19:59:24 <ZWELS:83955145> TESTUSR0 INFO (zwe-internal-start-prepare) ESM: ESMT
+2025-10-31 19:59:24 <ZWELS:83955145> TESTUSR0 INFO (zwe-internal-start-prepare) starting Zowe instance SYS0 with /test/dir/workspace/.env/.zowe-merged.yaml ...
+2025-10-31 19:59:25 <ZWELS:83955145> TESTUSR0 INFO (zwe-internal-start-prepare,global_validate) process global validations ...
+2025-10-31 19:59:25 <ZWELS:83955145> TESTUSR0 INFO (validateNodeHome) NodeJS version: v18.18.2
+2025-10-31 19:59:27 <ZWELS:83955145> TESTUSR0 INFO (validateJavaHome) Java version: 17.0.13 2024-10-15
+2025-10-31 19:59:27 <ZWELS:83955145> TESTUSR0 INFO (zwe-internal-start-prepare,global_validate) global validations are successful
+2025-10-31 19:59:27 <ZWELS:83955145> TESTUSR0 INFO (zwe-internal-start-prepare,validate_components) process component validations ...
+ERROR: 2025-10-31 19:59:27 <ZWELS:83955145> TESTUSR0 ERROR (zwe-internal-start-prepare,validate_components) Error ZWEL0172E: Component zss has commands.validate defined but the file is missing.
+2025-10-31 19:59:27 <ZWELS:83955145> TESTUSR0 INFO (zwe-internal-start-prepare,configure_components) process component configurations ...
+2025-10-31 19:59:28 <ZWELS:83955145> TESTUSR0 INFO (zwe-internal-start-prepare,configure_components) - commands.configure output from zss is:
+2025-10-31 19:59:28 <ZWELS:83955145> TESTUSR0 INFO (zwe-internal-start-prepare) Zowe runtime environment prepared"
+`;
+
+exports[`start-prepare-tests (SHORT) test combinations of startup default and ports 3`] = `
+"2025-10-31 19:59:32 <ZWELS:50400614> TESTUSR0 INFO (zwe-internal-start-prepare) Zowe version: v3.4.0
+2025-10-31 19:59:32 <ZWELS:50400614> TESTUSR0 INFO (zwe-internal-start-prepare) build and hash: {BUILD_BRANCH}#{BUILD_NUMBER} ({BUILD_COMMIT_HASH})
+2025-10-31 19:59:32 <ZWELS:50400614> TESTUSR0 INFO (zwe-internal-start-prepare) z/OS Version: 3.1
+2025-10-31 19:59:32 <ZWELS:50400614> TESTUSR0 INFO (zwe-internal-start-prepare) ESM: ESMT
+2025-10-31 19:59:32 <ZWELS:50400614> TESTUSR0 INFO (zwe-internal-start-prepare) starting Zowe instance SYS0 with /test/dir/workspace/.env/.zowe-merged.yaml ...
+2025-10-31 19:59:33 <ZWELS:50400614> TESTUSR0 INFO (zwe-internal-start-prepare,global_validate) process global validations ...
+2025-10-31 19:59:33 <ZWELS:50400614> TESTUSR0 INFO (validateNodeHome) NodeJS version: v18.18.2
+2025-10-31 19:59:35 <ZWELS:50400614> TESTUSR0 INFO (validateJavaHome) Java version: 17.0.13 2024-10-15
+2025-10-31 19:59:35 <ZWELS:50400614> TESTUSR0 INFO (zwe-internal-start-prepare,global_validate) global validations are successful
+2025-10-31 19:59:35 <ZWELS:50400614> TESTUSR0 INFO (zwe-internal-start-prepare,validate_components) process component validations ...
+2025-10-31 19:59:35 <ZWELS:50400614> TESTUSR0 INFO (zwe-validate-port-available) Checking ports of 10 enabled components
+2025-10-31 19:59:32 <ZWELS:50400614> TESTUSR0 INFO (zwe-internal-start-prepare) Zowe version: v3.4.0
+2025-10-31 19:59:32 <ZWELS:50400614> TESTUSR0 INFO (zwe-internal-start-prepare) build and hash: {BUILD_BRANCH}#{BUILD_NUMBER} ({BUILD_COMMIT_HASH})
+2025-10-31 19:59:32 <ZWELS:50400614> TESTUSR0 INFO (zwe-internal-start-prepare) z/OS Version: 3.1
+2025-10-31 19:59:32 <ZWELS:50400614> TESTUSR0 INFO (zwe-internal-start-prepare) ESM: ESMT
+2025-10-31 19:59:32 <ZWELS:50400614> TESTUSR0 INFO (zwe-internal-start-prepare) starting Zowe instance SYS0 with /test/dir/workspace/.env/.zowe-merged.yaml ...
+2025-10-31 19:59:33 <ZWELS:50400614> TESTUSR0 INFO (zwe-internal-start-prepare,global_validate) process global validations ...
+2025-10-31 19:59:33 <ZWELS:50400614> TESTUSR0 INFO (validateNodeHome) NodeJS version: v18.18.2
+2025-10-31 19:59:35 <ZWELS:50400614> TESTUSR0 INFO (validateJavaHome) Java version: 17.0.13 2024-10-15
+2025-10-31 19:59:35 <ZWELS:50400614> TESTUSR0 INFO (zwe-internal-start-prepare,global_validate) global validations are successful
+2025-10-31 19:59:35 <ZWELS:50400614> TESTUSR0 INFO (zwe-internal-start-prepare,validate_components) process component validations ...
+2025-10-31 19:59:35 <ZWELS:50400614> TESTUSR0 INFO (zwe-validate-port-available) Checking ports of 10 enabled components
+ERROR: 2025-10-31 19:59:35 <ZWELS:50400614> TESTUSR0 ERROR (zwe-validate-port-available) gateway: Port 7554 not available for jobname ZWE1AG or command failed.
+2025-10-31 19:59:32 <ZWELS:50400614> TESTUSR0 INFO (zwe-internal-start-prepare) Zowe version: v3.4.0
+2025-10-31 19:59:32 <ZWELS:50400614> TESTUSR0 INFO (zwe-internal-start-prepare) build and hash: {BUILD_BRANCH}#{BUILD_NUMBER} ({BUILD_COMMIT_HASH})
+2025-10-31 19:59:32 <ZWELS:50400614> TESTUSR0 INFO (zwe-internal-start-prepare) z/OS Version: 3.1
+2025-10-31 19:59:32 <ZWELS:50400614> TESTUSR0 INFO (zwe-internal-start-prepare) ESM: ESMT
+2025-10-31 19:59:32 <ZWELS:50400614> TESTUSR0 INFO (zwe-internal-start-prepare) starting Zowe instance SYS0 with /test/dir/workspace/.env/.zowe-merged.yaml ...
+2025-10-31 19:59:33 <ZWELS:50400614> TESTUSR0 INFO (zwe-internal-start-prepare,global_validate) process global validations ...
+2025-10-31 19:59:33 <ZWELS:50400614> TESTUSR0 INFO (validateNodeHome) NodeJS version: v18.18.2
+2025-10-31 19:59:35 <ZWELS:50400614> TESTUSR0 INFO (validateJavaHome) Java version: 17.0.13 2024-10-15
+2025-10-31 19:59:35 <ZWELS:50400614> TESTUSR0 INFO (zwe-internal-start-prepare,global_validate) global validations are successful
+2025-10-31 19:59:35 <ZWELS:50400614> TESTUSR0 INFO (zwe-internal-start-prepare,validate_components) process component validations ...
+2025-10-31 19:59:35 <ZWELS:50400614> TESTUSR0 INFO (zwe-validate-port-available) Checking ports of 10 enabled components
+2025-10-31 19:59:32 <ZWELS:50400614> TESTUSR0 INFO (zwe-internal-start-prepare) Zowe version: v3.4.0
+2025-10-31 19:59:32 <ZWELS:50400614> TESTUSR0 INFO (zwe-internal-start-prepare) build and hash: {BUILD_BRANCH}#{BUILD_NUMBER} ({BUILD_COMMIT_HASH})
+2025-10-31 19:59:32 <ZWELS:50400614> TESTUSR0 INFO (zwe-internal-start-prepare) z/OS Version: 3.1
+2025-10-31 19:59:32 <ZWELS:50400614> TESTUSR0 INFO (zwe-internal-start-prepare) ESM: ESMT
+2025-10-31 19:59:32 <ZWELS:50400614> TESTUSR0 INFO (zwe-internal-start-prepare) starting Zowe instance SYS0 with /test/dir/workspace/.env/.zowe-merged.yaml ...
+2025-10-31 19:59:33 <ZWELS:50400614> TESTUSR0 INFO (zwe-internal-start-prepare,global_validate) process global validations ...
+2025-10-31 19:59:33 <ZWELS:50400614> TESTUSR0 INFO (validateNodeHome) NodeJS version: v18.18.2
+2025-10-31 19:59:35 <ZWELS:50400614> TESTUSR0 INFO (validateJavaHome) Java version: 17.0.13 2024-10-15
+2025-10-31 19:59:35 <ZWELS:50400614> TESTUSR0 INFO (zwe-internal-start-prepare,global_validate) global validations are successful
+2025-10-31 19:59:35 <ZWELS:50400614> TESTUSR0 INFO (zwe-internal-start-prepare,validate_components) process component validations ...
+2025-10-31 19:59:35 <ZWELS:50400614> TESTUSR0 INFO (zwe-validate-port-available) Checking ports of 10 enabled components
+ERROR: 2025-10-31 19:59:35 <ZWELS:50400614> TESTUSR0 ERROR (zwe-validate-port-available) gateway: Port 7554 not available for jobname ZWE1AG or command failed.
+ERROR: 2025-10-31 19:59:35 <ZWELS:50400614> TESTUSR0 ERROR (zwe-validate-port-available) zaas: Port 7558 not available for jobname ZWE1AZ or command failed.
+:32 <ZWELS:50400614> TESTUSR0 INFO (zwe-internal-start-prepare) Zowe version: v3.4.0
+2025-10-31 19:59:32 <ZWELS:50400614> TESTUSR0 INFO (zwe-internal-start-prepare) build and hash: {BUILD_BRANCH}#{BUILD_NUMBER} ({BUILD_COMMIT_HASH})
+2025-10-31 19:59:32 <ZWELS:50400614> TESTUSR0 INFO (zwe-internal-start-prepare) z/OS Version: 3.1
+2025-10-31 19:59:32 <ZWELS:50400614> TESTUSR0 INFO (zwe-internal-start-prepare) ESM: ESMT
+2025-10-31 19:59:32 <ZWELS:50400614> TESTUSR0 INFO (zwe-internal-start-prepare) starting Zowe instance SYS0 with /test/dir/workspace/.env/.zowe-merged.yaml ...
+2025-10-31 19:59:33 <ZWELS:50400614> TESTUSR0 INFO (zwe-internal-start-prepare,global_validate) process global validations ...
+2025-10-31 19:59:33 <ZWELS:50400614> TESTUSR0 INFO (validateNodeHome) NodeJS version: v18.18.2
+2025-10-31 19:59:35 <ZWELS:50400614> TESTUSR0 INFO (validateJavaHome) Java version: 17.0.13 2024-10-15
+2025-10-31 19:59:35 <ZWELS:50400614> TESTUSR0 INFO (zwe-internal-start-prepare,global_validate) global validations are successful
+2025-10-31 19:59:35 <ZWELS:50400614> TESTUSR0 INFO (zwe-internal-start-prepare,validate_components) process component validations ...
+2025-10-31 19:59:35 <ZWELS:50400614> TESTUSR0 INFO (zwe-validate-port-available) Checking ports of 10 enabled components
+ERROR: 2025-10-31 19:59:35 <ZWELS:50400614> TESTUSR0 ERROR (zwe-validate-port-available) gateway: Port 7554 not available for jobname ZWE1AG or command failed.
+ERROR: 2025-10-31 19:59:35 <ZWELS:50400614> TESTUSR0 ERROR (zwe-validate-port-available) zaas: Port 7558 not available for jobname ZWE1AZ or command failed.
+ERROR: 2025-10-31 19:59:35 <ZWELS:50400614> TESTUSR0 ERROR (zwe-validate-port-available) api-catalog: Port 7552 not available for jobname ZWE1AC or command failed.
+:32 <ZWELS:50400614> TESTUSR0 INFO (zwe-internal-start-prepare) Zowe version: v3.4.0
+2025-10-31 19:59:32 <ZWELS:50400614> TESTUSR0 INFO (zwe-internal-start-prepare) build and hash: {BUILD_BRANCH}#{BUILD_NUMBER} ({BUILD_COMMIT_HASH})
+2025-10-31 19:59:32 <ZWELS:50400614> TESTUSR0 INFO (zwe-internal-start-prepare) z/OS Version: 3.1
+2025-10-31 19:59:32 <ZWELS:50400614> TESTUSR0 INFO (zwe-internal-start-prepare) ESM: ESMT
+2025-10-31 19:59:32 <ZWELS:50400614> TESTUSR0 INFO (zwe-internal-start-prepare) starting Zowe instance SYS0 with /test/dir/workspace/.env/.zowe-merged.yaml ...
+2025-10-31 19:59:33 <ZWELS:50400614> TESTUSR0 INFO (zwe-internal-start-prepare,global_validate) process global validations ...
+2025-10-31 19:59:33 <ZWELS:50400614> TESTUSR0 INFO (validateNodeHome) NodeJS version: v18.18.2
+2025-10-31 19:59:35 <ZWELS:50400614> TESTUSR0 INFO (validateJavaHome) Java version: 17.0.13 2024-10-15
+2025-10-31 19:59:35 <ZWELS:50400614> TESTUSR0 INFO (zwe-internal-start-prepare,global_validate) global validations are successful
+2025-10-31 19:59:35 <ZWELS:50400614> TESTUSR0 INFO (zwe-internal-start-prepare,validate_components) process component validations ...
+2025-10-31 19:59:35 <ZWELS:50400614> TESTUSR0 INFO (zwe-validate-port-available) Checking ports of 10 enabled components
+ERROR: 2025-10-31 19:59:35 <ZWELS:50400614> TESTUSR0 ERROR (zwe-validate-port-available) gateway: Port 7554 not available for jobname ZWE1AG or command failed.
+ERROR: 2025-10-31 19:59:35 <ZWELS:50400614> TESTUSR0 ERROR (zwe-validate-port-available) zaas: Port 7558 not available for jobname ZWE1AZ or command failed.
+:32 <ZWELS:50400614> TESTUSR0 INFO (zwe-internal-start-prepare) Zowe version: v3.4.0
+2025-10-31 19:59:32 <ZWELS:50400614> TESTUSR0 INFO (zwe-internal-start-prepare) build and hash: {BUILD_BRANCH}#{BUILD_NUMBER} ({BUILD_COMMIT_HASH})
+2025-10-31 19:59:32 <ZWELS:50400614> TESTUSR0 INFO (zwe-internal-start-prepare) z/OS Version: 3.1
+2025-10-31 19:59:32 <ZWELS:50400614> TESTUSR0 INFO (zwe-internal-start-prepare) ESM: ESMT
+2025-10-31 19:59:32 <ZWELS:50400614> TESTUSR0 INFO (zwe-internal-start-prepare) starting Zowe instance SYS0 with /test/dir/workspace/.env/.zowe-merged.yaml ...
+2025-10-31 19:59:33 <ZWELS:50400614> TESTUSR0 INFO (zwe-internal-start-prepare,global_validate) process global validations ...
+2025-10-31 19:59:33 <ZWELS:50400614> TESTUSR0 INFO (validateNodeHome) NodeJS version: v18.18.2
+2025-10-31 19:59:35 <ZWELS:50400614> TESTUSR0 INFO (validateJavaHome) Java version: 17.0.13 2024-10-15
+2025-10-31 19:59:35 <ZWELS:50400614> TESTUSR0 INFO (zwe-internal-start-prepare,global_validate) global validations are successful
+2025-10-31 19:59:35 <ZWELS:50400614> TESTUSR0 INFO (zwe-internal-start-prepare,validate_components) process component validations ...
+2025-10-31 19:59:35 <ZWELS:50400614> TESTUSR0 INFO (zwe-validate-port-available) Checking ports of 10 enabled components
+ERROR: 2025-10-31 19:59:35 <ZWELS:50400614> TESTUSR0 ERROR (zwe-validate-port-available) gateway: Port 7554 not available for jobname ZWE1AG or command failed.
+ERROR: 2025-10-31 19:59:35 <ZWELS:50400614> TESTUSR0 ERROR (zwe-validate-port-available) zaas: Port 7558 not available for jobname ZWE1AZ or command failed.
+ERROR: 2025-10-31 19:59:35 <ZWELS:50400614> TESTUSR0 ERROR (zwe-validate-port-available) api-catalog: Port 7552 not available for jobname ZWE1AC or command failed.
+ERROR: 2025-10-31 19:59:35 <ZWELS:50400614> TESTUSR0 ERROR (zwe-validate-port-available) discovery: Port 7553 not available for jobname ZWE1AD or command failed.
+31 19:59:33 <ZWELS:50400614> TESTUSR0 INFO (validateNodeHome) NodeJS version: v18.18.2
+2025-10-31 19:59:35 <ZWELS:50400614> TESTUSR0 INFO (validateJavaHome) Java version: 17.0.13 2024-10-15
+2025-10-31 19:59:35 <ZWELS:50400614> TESTUSR0 INFO (zwe-internal-start-prepare,global_validate) global validations are successful
+2025-10-31 19:59:35 <ZWELS:50400614> TESTUSR0 INFO (zwe-internal-start-prepare,validate_components) process component validations ...
+2025-10-31 19:59:35 <ZWELS:50400614> TESTUSR0 INFO (zwe-validate-port-available) Checking ports of 10 enabled components
+ERROR: 2025-10-31 19:59:35 <ZWELS:50400614> TESTUSR0 ERROR (zwe-validate-port-available) gateway: Port 7554 not available for jobname ZWE1AG or command failed.
+ERROR: 2025-10-31 19:59:35 <ZWELS:50400614> TESTUSR0 ERROR (zwe-validate-port-available) zaas: Port 7558 not available for jobname ZWE1AZ or command failed.
+:32 <ZWELS:50400614> TESTUSR0 INFO (zwe-internal-start-prepare) Zowe version: v3.4.0
+2025-10-31 19:59:32 <ZWELS:50400614> TESTUSR0 INFO (zwe-internal-start-prepare) build and hash: {BUILD_BRANCH}#{BUILD_NUMBER} ({BUILD_COMMIT_HASH})
+2025-10-31 19:59:32 <ZWELS:50400614> TESTUSR0 INFO (zwe-internal-start-prepare) z/OS Version: 3.1
+2025-10-31 19:59:32 <ZWELS:50400614> TESTUSR0 INFO (zwe-internal-start-prepare) ESM: ESMT
+2025-10-31 19:59:32 <ZWELS:50400614> TESTUSR0 INFO (zwe-internal-start-prepare) starting Zowe instance SYS0 with /test/dir/workspace/.env/.zowe-merged.yaml ...
+2025-10-31 19:59:33 <ZWELS:50400614> TESTUSR0 INFO (zwe-internal-start-prepare,global_validate) process global validations ...
+2025-10-31 19:59:33 <ZWELS:50400614> TESTUSR0 INFO (validateNodeHome) NodeJS version: v18.18.2
+2025-10-31 19:59:35 <ZWELS:50400614> TESTUSR0 INFO (validateJavaHome) Java version: 17.0.13 2024-10-15
+2025-10-31 19:59:35 <ZWELS:50400614> TESTUSR0 INFO (zwe-internal-start-prepare,global_validate) global validations are successful
+2025-10-31 19:59:35 <ZWELS:50400614> TESTUSR0 INFO (zwe-internal-start-prepare,validate_components) process component validations ...
+2025-10-31 19:59:35 <ZWELS:50400614> TESTUSR0 INFO (zwe-validate-port-available) Checking ports of 10 enabled components
+ERROR: 2025-10-31 19:59:35 <ZWELS:50400614> TESTUSR0 ERROR (zwe-validate-port-available) gateway: Port 7554 not available for jobname ZWE1AG or command failed.
+ERROR: 2025-10-31 19:59:35 <ZWELS:50400614> TESTUSR0 ERROR (zwe-validate-port-available) zaas: Port 7558 not available for jobname ZWE1AZ or command failed.
+ERROR: 2025-10-31 19:59:35 <ZWELS:50400614> TESTUSR0 ERROR (zwe-validate-port-available) api-catalog: Port 7552 not available for jobname ZWE1AC or command failed.
+ERROR: 2025-10-31 19:59:35 <ZWELS:50400614> TESTUSR0 ERROR (zwe-validate-port-available) discovery: Port 7553 not available for jobname ZWE1AD or command failed.
+ERROR: 2025-10-31 19:59:36 <ZWELS:50400614> TESTUSR0 ERROR (zwe-validate-port-available) caching-service: Port 7555 not available for jobname ZWE1CS or command failed.
+t-prepare) ESM: ESMT
+2025-10-31 19:59:32 <ZWELS:50400614> TESTUSR0 INFO (zwe-internal-start-prepare) starting Zowe instance SYS0 with /test/dir/workspace/.env/.zowe-merged.yaml ...
+2025-10-31 19:59:33 <ZWELS:50400614> TESTUSR0 INFO (zwe-internal-start-prepare,global_validate) process global validations ...
+2025-10-31 19:59:33 <ZWELS:50400614> TESTUSR0 INFO (validateNodeHome) NodeJS version: v18.18.2
+2025-10-31 19:59:35 <ZWELS:50400614> TESTUSR0 INFO (validateJavaHome) Java version: 17.0.13 2024-10-15
+2025-10-31 19:59:35 <ZWELS:50400614> TESTUSR0 INFO (zwe-internal-start-prepare,global_validate) global validations are successful
+2025-10-31 19:59:35 <ZWELS:50400614> TESTUSR0 INFO (zwe-internal-start-prepare,validate_components) process component validations ...
+2025-10-31 19:59:35 <ZWELS:50400614> TESTUSR0 INFO (zwe-validate-port-available) Checking ports of 10 enabled components
+ERROR: 2025-10-31 19:59:35 <ZWELS:50400614> TESTUSR0 ERROR (zwe-validate-port-available) gateway: Port 7554 not available for jobname ZWE1AG or command failed.
+ERROR: 2025-10-31 19:59:35 <ZWELS:50400614> TESTUSR0 ERROR (zwe-validate-port-available) zaas: Port 7558 not available for jobname ZWE1AZ or command failed.
+ERROR: 2025-10-31 19:59:35 <ZWELS:50400614> TESTUSR0 ERROR (zwe-validate-port-available) api-catalog: Port 7552 not available for jobname ZWE1AC or command failed.
+ERROR: 2025-10-31 19:59:35 <ZWELS:50400614> TESTUSR0 ERROR (zwe-validate-port-available) discovery: Port 7553 not available for jobname ZWE1AD or command failed.
+ERROR: 2025-10-31 19:59:36 <ZWELS:50400614> TESTUSR0 ERROR (zwe-validate-port-available) caching-service: Port 7555 not available for jobname ZWE1CS or command failed.
+ERROR: 2025-10-31 19:59:36 <ZWELS:50400614> TESTUSR0 ERROR (zwe-validate-port-available) app-server: Port 7556 not available or command failed.
+t-prepare) ESM: ESMT
+2025-10-31 19:59:32 <ZWELS:50400614> TESTUSR0 INFO (zwe-internal-start-prepare) starting Zowe instance SYS0 with /test/dir/workspace/.env/.zowe-merged.yaml ...
+2025-10-31 19:59:33 <ZWELS:50400614> TESTUSR0 INFO (zwe-internal-start-prepare,global_validate) process global validations ...
+2025-10-31 19:59:33 <ZWELS:50400614> TESTUSR0 INFO (validateNodeHome) NodeJS version: v18.18.2
+2025-10-31 19:59:35 <ZWELS:50400614> TESTUSR0 INFO (validateJavaHome) Java version: 17.0.13 2024-10-15
+2025-10-31 19:59:35 <ZWELS:50400614> TESTUSR0 INFO (zwe-internal-start-prepare,global_validate) global validations are successful
+2025-10-31 19:59:35 <ZWELS:50400614> TESTUSR0 INFO (zwe-internal-start-prepare,validate_components) process component validations ...
+2025-10-31 19:59:35 <ZWELS:50400614> TESTUSR0 INFO (zwe-validate-port-available) Checking ports of 10 enabled components
+ERROR: 2025-10-31 19:59:35 <ZWELS:50400614> TESTUSR0 ERROR (zwe-validate-port-available) gateway: Port 7554 not available for jobname ZWE1AG or command failed.
+ERROR: 2025-10-31 19:59:35 <ZWELS:50400614> TESTUSR0 ERROR (zwe-validate-port-available) zaas: Port 7558 not available for jobname ZWE1AZ or command failed.
+ERROR: 2025-10-31 19:59:35 <ZWELS:50400614> TESTUSR0 ERROR (zwe-validate-port-available) api-catalog: Port 7552 not available for jobname ZWE1AC or command failed.
+ERROR: 2025-10-31 19:59:35 <ZWELS:50400614> TESTUSR0 ERROR (zwe-validate-port-available) discovery: Port 7553 not available for jobname ZWE1AD or command failed.
+ERROR: 2025-10-31 19:59:36 <ZWELS:50400614> TESTUSR0 ERROR (zwe-validate-port-available) caching-service: Port 7555 not available for jobname ZWE1CS or command failed.
+t-prepare) ESM: ESMT
+2025-10-31 19:59:32 <ZWELS:50400614> TESTUSR0 INFO (zwe-internal-start-prepare) starting Zowe instance SYS0 with /test/dir/workspace/.env/.zowe-merged.yaml ...
+2025-10-31 19:59:33 <ZWELS:50400614> TESTUSR0 INFO (zwe-internal-start-prepare,global_validate) process global validations ...
+2025-10-31 19:59:33 <ZWELS:50400614> TESTUSR0 INFO (validateNodeHome) NodeJS version: v18.18.2
+2025-10-31 19:59:35 <ZWELS:50400614> TESTUSR0 INFO (validateJavaHome) Java version: 17.0.13 2024-10-15
+2025-10-31 19:59:35 <ZWELS:50400614> TESTUSR0 INFO (zwe-internal-start-prepare,global_validate) global validations are successful
+2025-10-31 19:59:35 <ZWELS:50400614> TESTUSR0 INFO (zwe-internal-start-prepare,validate_components) process component validations ...
+2025-10-31 19:59:35 <ZWELS:50400614> TESTUSR0 INFO (zwe-validate-port-available) Checking ports of 10 enabled components
+ERROR: 2025-10-31 19:59:35 <ZWELS:50400614> TESTUSR0 ERROR (zwe-validate-port-available) gateway: Port 7554 not available for jobname ZWE1AG or command failed.
+ERROR: 2025-10-31 19:59:35 <ZWELS:50400614> TESTUSR0 ERROR (zwe-validate-port-available) zaas: Port 7558 not available for jobname ZWE1AZ or command failed.
+ERROR: 2025-10-31 19:59:35 <ZWELS:50400614> TESTUSR0 ERROR (zwe-validate-port-available) api-catalog: Port 7552 not available for jobname ZWE1AC or command failed.
+ERROR: 2025-10-31 19:59:35 <ZWELS:50400614> TESTUSR0 ERROR (zwe-validate-port-available) discovery: Port 7553 not available for jobname ZWE1AD or command failed.
+ERROR: 2025-10-31 19:59:36 <ZWELS:50400614> TESTUSR0 ERROR (zwe-validate-port-available) caching-service: Port 7555 not available for jobname ZWE1CS or command failed.
+ERROR: 2025-10-31 19:59:36 <ZWELS:50400614> TESTUSR0 ERROR (zwe-validate-port-available) app-server: Port 7556 not available or command failed.
+ERROR: 2025-10-31 19:59:36 <ZWELS:50400614> TESTUSR0 ERROR (zwe-validate-port-available) zss: Port 7557 not available for jobname ZWE1SZ or command failed.
+ERROR: 2025-10-31 19:59:36 <ZWELS:50400614> TESTUSR0 ERROR (zwe-validate-port-available) 7 port bind validation(s) failed, review output for action items before running Zowe.
+ERROR: 2025-10-31 19:59:36 <ZWELS:50400614> TESTUSR0 ERROR (zwe-internal-start-prepare,validate_components) Error ZWEL0172E: Component zss has commands.validate defined but the file is missing.
+2025-10-31 19:59:36 <ZWELS:50400614> TESTUSR0 INFO (zwe-internal-start-prepare,configure_components) process component configurations ...
+2025-10-31 19:59:37 <ZWELS:50400614> TESTUSR0 INFO (zwe-internal-start-prepare,configure_components) - commands.configure output from zss is:
+2025-10-31 19:59:37 <ZWELS:50400614> TESTUSR0 INFO (zwe-internal-start-prepare) Zowe runtime environment prepared"
+`;
+
+exports[`start-prepare-tests (SHORT) test combinations of startup default and ports 4`] = `
+"2025-10-31 19:59:42 <ZWELS:83955612> TESTUSR0 INFO (zwe-internal-start-prepare) Zowe version: v3.4.0
+2025-10-31 19:59:42 <ZWELS:83955612> TESTUSR0 INFO (zwe-internal-start-prepare) build and hash: {BUILD_BRANCH}#{BUILD_NUMBER} ({BUILD_COMMIT_HASH})
+2025-10-31 19:59:42 <ZWELS:83955612> TESTUSR0 INFO (zwe-internal-start-prepare) z/OS Version: 3.1
+2025-10-31 19:59:42 <ZWELS:83955612> TESTUSR0 INFO (zwe-internal-start-prepare) ESM: ESMT
+2025-10-31 19:59:42 <ZWELS:83955612> TESTUSR0 INFO (zwe-internal-start-prepare) starting Zowe instance SYS0 with /test/dir/workspace/.env/.zowe-merged.yaml ...
+2025-10-31 19:59:42 <ZWELS:83955612> TESTUSR0 INFO (zwe-internal-start-prepare,global_validate) process global validations ...
+2025-10-31 19:59:43 <ZWELS:83955612> TESTUSR0 INFO (validateNodeHome) NodeJS version: v18.18.2
+2025-10-31 19:59:44 <ZWELS:83955612> TESTUSR0 INFO (validateJavaHome) Java version: 17.0.13 2024-10-15
+2025-10-31 19:59:44 <ZWELS:83955612> TESTUSR0 INFO (zwe-internal-start-prepare,global_validate) global validations are successful
+2025-10-31 19:59:44 <ZWELS:83955612> TESTUSR0 INFO (zwe-internal-start-prepare,validate_components) process component validations ...
+2025-10-31 19:59:44 <ZWELS:83955612> TESTUSR0 INFO (zwe-validate-port-available) Checking ports of 10 enabled components
+2025-10-31 19:59:42 <ZWELS:83955612> TESTUSR0 INFO (zwe-internal-start-prepare) Zowe version: v3.4.0
+2025-10-31 19:59:42 <ZWELS:83955612> TESTUSR0 INFO (zwe-internal-start-prepare) build and hash: {BUILD_BRANCH}#{BUILD_NUMBER} ({BUILD_COMMIT_HASH})
+2025-10-31 19:59:42 <ZWELS:83955612> TESTUSR0 INFO (zwe-internal-start-prepare) z/OS Version: 3.1
+2025-10-31 19:59:42 <ZWELS:83955612> TESTUSR0 INFO (zwe-internal-start-prepare) ESM: ESMT
+2025-10-31 19:59:42 <ZWELS:83955612> TESTUSR0 INFO (zwe-internal-start-prepare) starting Zowe instance SYS0 with /test/dir/workspace/.env/.zowe-merged.yaml ...
+2025-10-31 19:59:42 <ZWELS:83955612> TESTUSR0 INFO (zwe-internal-start-prepare,global_validate) process global validations ...
+2025-10-31 19:59:43 <ZWELS:83955612> TESTUSR0 INFO (validateNodeHome) NodeJS version: v18.18.2
+2025-10-31 19:59:44 <ZWELS:83955612> TESTUSR0 INFO (validateJavaHome) Java version: 17.0.13 2024-10-15
+2025-10-31 19:59:44 <ZWELS:83955612> TESTUSR0 INFO (zwe-internal-start-prepare,global_validate) global validations are successful
+2025-10-31 19:59:44 <ZWELS:83955612> TESTUSR0 INFO (zwe-internal-start-prepare,validate_components) process component validations ...
+2025-10-31 19:59:44 <ZWELS:83955612> TESTUSR0 INFO (zwe-validate-port-available) Checking ports of 10 enabled components
+ERROR: 2025-10-31 19:59:44 <ZWELS:83955612> TESTUSR0 ERROR (zwe-validate-port-available) gateway: Port 7554 not available for jobname ZWE1AG or command failed.
+2025-10-31 19:59:42 <ZWELS:83955612> TESTUSR0 INFO (zwe-internal-start-prepare) Zowe version: v3.4.0
+2025-10-31 19:59:42 <ZWELS:83955612> TESTUSR0 INFO (zwe-internal-start-prepare) build and hash: {BUILD_BRANCH}#{BUILD_NUMBER} ({BUILD_COMMIT_HASH})
+2025-10-31 19:59:42 <ZWELS:83955612> TESTUSR0 INFO (zwe-internal-start-prepare) z/OS Version: 3.1
+2025-10-31 19:59:42 <ZWELS:83955612> TESTUSR0 INFO (zwe-internal-start-prepare) ESM: ESMT
+2025-10-31 19:59:42 <ZWELS:83955612> TESTUSR0 INFO (zwe-internal-start-prepare) starting Zowe instance SYS0 with /test/dir/workspace/.env/.zowe-merged.yaml ...
+2025-10-31 19:59:42 <ZWELS:83955612> TESTUSR0 INFO (zwe-internal-start-prepare,global_validate) process global validations ...
+2025-10-31 19:59:43 <ZWELS:83955612> TESTUSR0 INFO (validateNodeHome) NodeJS version: v18.18.2
+2025-10-31 19:59:44 <ZWELS:83955612> TESTUSR0 INFO (validateJavaHome) Java version: 17.0.13 2024-10-15
+2025-10-31 19:59:44 <ZWELS:83955612> TESTUSR0 INFO (zwe-internal-start-prepare,global_validate) global validations are successful
+2025-10-31 19:59:44 <ZWELS:83955612> TESTUSR0 INFO (zwe-internal-start-prepare,validate_components) process component validations ...
+2025-10-31 19:59:44 <ZWELS:83955612> TESTUSR0 INFO (zwe-validate-port-available) Checking ports of 10 enabled components
+2025-10-31 19:59:42 <ZWELS:83955612> TESTUSR0 INFO (zwe-internal-start-prepare) Zowe version: v3.4.0
+2025-10-31 19:59:42 <ZWELS:83955612> TESTUSR0 INFO (zwe-internal-start-prepare) build and hash: {BUILD_BRANCH}#{BUILD_NUMBER} ({BUILD_COMMIT_HASH})
+2025-10-31 19:59:42 <ZWELS:83955612> TESTUSR0 INFO (zwe-internal-start-prepare) z/OS Version: 3.1
+2025-10-31 19:59:42 <ZWELS:83955612> TESTUSR0 INFO (zwe-internal-start-prepare) ESM: ESMT
+2025-10-31 19:59:42 <ZWELS:83955612> TESTUSR0 INFO (zwe-internal-start-prepare) starting Zowe instance SYS0 with /test/dir/workspace/.env/.zowe-merged.yaml ...
+2025-10-31 19:59:42 <ZWELS:83955612> TESTUSR0 INFO (zwe-internal-start-prepare,global_validate) process global validations ...
+2025-10-31 19:59:43 <ZWELS:83955612> TESTUSR0 INFO (validateNodeHome) NodeJS version: v18.18.2
+2025-10-31 19:59:44 <ZWELS:83955612> TESTUSR0 INFO (validateJavaHome) Java version: 17.0.13 2024-10-15
+2025-10-31 19:59:44 <ZWELS:83955612> TESTUSR0 INFO (zwe-internal-start-prepare,global_validate) global validations are successful
+2025-10-31 19:59:44 <ZWELS:83955612> TESTUSR0 INFO (zwe-internal-start-prepare,validate_components) process component validations ...
+2025-10-31 19:59:44 <ZWELS:83955612> TESTUSR0 INFO (zwe-validate-port-available) Checking ports of 10 enabled components
+ERROR: 2025-10-31 19:59:44 <ZWELS:83955612> TESTUSR0 ERROR (zwe-validate-port-available) gateway: Port 7554 not available for jobname ZWE1AG or command failed.
+ERROR: 2025-10-31 19:59:45 <ZWELS:83955612> TESTUSR0 ERROR (zwe-validate-port-available) zaas: Port 7558 not available for jobname ZWE1AZ or command failed.
+:42 <ZWELS:83955612> TESTUSR0 INFO (zwe-internal-start-prepare) Zowe version: v3.4.0
+2025-10-31 19:59:42 <ZWELS:83955612> TESTUSR0 INFO (zwe-internal-start-prepare) build and hash: {BUILD_BRANCH}#{BUILD_NUMBER} ({BUILD_COMMIT_HASH})
+2025-10-31 19:59:42 <ZWELS:83955612> TESTUSR0 INFO (zwe-internal-start-prepare) z/OS Version: 3.1
+2025-10-31 19:59:42 <ZWELS:83955612> TESTUSR0 INFO (zwe-internal-start-prepare) ESM: ESMT
+2025-10-31 19:59:42 <ZWELS:83955612> TESTUSR0 INFO (zwe-internal-start-prepare) starting Zowe instance SYS0 with /test/dir/workspace/.env/.zowe-merged.yaml ...
+2025-10-31 19:59:42 <ZWELS:83955612> TESTUSR0 INFO (zwe-internal-start-prepare,global_validate) process global validations ...
+2025-10-31 19:59:43 <ZWELS:83955612> TESTUSR0 INFO (validateNodeHome) NodeJS version: v18.18.2
+2025-10-31 19:59:44 <ZWELS:83955612> TESTUSR0 INFO (validateJavaHome) Java version: 17.0.13 2024-10-15
+2025-10-31 19:59:44 <ZWELS:83955612> TESTUSR0 INFO (zwe-internal-start-prepare,global_validate) global validations are successful
+2025-10-31 19:59:44 <ZWELS:83955612> TESTUSR0 INFO (zwe-internal-start-prepare,validate_components) process component validations ...
+2025-10-31 19:59:44 <ZWELS:83955612> TESTUSR0 INFO (zwe-validate-port-available) Checking ports of 10 enabled components
+ERROR: 2025-10-31 19:59:44 <ZWELS:83955612> TESTUSR0 ERROR (zwe-validate-port-available) gateway: Port 7554 not available for jobname ZWE1AG or command failed.
+ERROR: 2025-10-31 19:59:45 <ZWELS:83955612> TESTUSR0 ERROR (zwe-validate-port-available) zaas: Port 7558 not available for jobname ZWE1AZ or command failed.
+ERROR: 2025-10-31 19:59:45 <ZWELS:83955612> TESTUSR0 ERROR (zwe-validate-port-available) api-catalog: Port 7552 not available for jobname ZWE1AC or command failed.
+:42 <ZWELS:83955612> TESTUSR0 INFO (zwe-internal-start-prepare) Zowe version: v3.4.0
+2025-10-31 19:59:42 <ZWELS:83955612> TESTUSR0 INFO (zwe-internal-start-prepare) build and hash: {BUILD_BRANCH}#{BUILD_NUMBER} ({BUILD_COMMIT_HASH})
+2025-10-31 19:59:42 <ZWELS:83955612> TESTUSR0 INFO (zwe-internal-start-prepare) z/OS Version: 3.1
+2025-10-31 19:59:42 <ZWELS:83955612> TESTUSR0 INFO (zwe-internal-start-prepare) ESM: ESMT
+2025-10-31 19:59:42 <ZWELS:83955612> TESTUSR0 INFO (zwe-internal-start-prepare) starting Zowe instance SYS0 with /test/dir/workspace/.env/.zowe-merged.yaml ...
+2025-10-31 19:59:42 <ZWELS:83955612> TESTUSR0 INFO (zwe-internal-start-prepare,global_validate) process global validations ...
+2025-10-31 19:59:43 <ZWELS:83955612> TESTUSR0 INFO (validateNodeHome) NodeJS version: v18.18.2
+2025-10-31 19:59:44 <ZWELS:83955612> TESTUSR0 INFO (validateJavaHome) Java version: 17.0.13 2024-10-15
+2025-10-31 19:59:44 <ZWELS:83955612> TESTUSR0 INFO (zwe-internal-start-prepare,global_validate) global validations are successful
+2025-10-31 19:59:44 <ZWELS:83955612> TESTUSR0 INFO (zwe-internal-start-prepare,validate_components) process component validations ...
+2025-10-31 19:59:44 <ZWELS:83955612> TESTUSR0 INFO (zwe-validate-port-available) Checking ports of 10 enabled components
+ERROR: 2025-10-31 19:59:44 <ZWELS:83955612> TESTUSR0 ERROR (zwe-validate-port-available) gateway: Port 7554 not available for jobname ZWE1AG or command failed.
+ERROR: 2025-10-31 19:59:45 <ZWELS:83955612> TESTUSR0 ERROR (zwe-validate-port-available) zaas: Port 7558 not available for jobname ZWE1AZ or command failed.
+:42 <ZWELS:83955612> TESTUSR0 INFO (zwe-internal-start-prepare) Zowe version: v3.4.0
+2025-10-31 19:59:42 <ZWELS:83955612> TESTUSR0 INFO (zwe-internal-start-prepare) build and hash: {BUILD_BRANCH}#{BUILD_NUMBER} ({BUILD_COMMIT_HASH})
+2025-10-31 19:59:42 <ZWELS:83955612> TESTUSR0 INFO (zwe-internal-start-prepare) z/OS Version: 3.1
+2025-10-31 19:59:42 <ZWELS:83955612> TESTUSR0 INFO (zwe-internal-start-prepare) ESM: ESMT
+2025-10-31 19:59:42 <ZWELS:83955612> TESTUSR0 INFO (zwe-internal-start-prepare) starting Zowe instance SYS0 with /test/dir/workspace/.env/.zowe-merged.yaml ...
+2025-10-31 19:59:42 <ZWELS:83955612> TESTUSR0 INFO (zwe-internal-start-prepare,global_validate) process global validations ...
+2025-10-31 19:59:43 <ZWELS:83955612> TESTUSR0 INFO (validateNodeHome) NodeJS version: v18.18.2
+2025-10-31 19:59:44 <ZWELS:83955612> TESTUSR0 INFO (validateJavaHome) Java version: 17.0.13 2024-10-15
+2025-10-31 19:59:44 <ZWELS:83955612> TESTUSR0 INFO (zwe-internal-start-prepare,global_validate) global validations are successful
+2025-10-31 19:59:44 <ZWELS:83955612> TESTUSR0 INFO (zwe-internal-start-prepare,validate_components) process component validations ...
+2025-10-31 19:59:44 <ZWELS:83955612> TESTUSR0 INFO (zwe-validate-port-available) Checking ports of 10 enabled components
+ERROR: 2025-10-31 19:59:44 <ZWELS:83955612> TESTUSR0 ERROR (zwe-validate-port-available) gateway: Port 7554 not available for jobname ZWE1AG or command failed.
+ERROR: 2025-10-31 19:59:45 <ZWELS:83955612> TESTUSR0 ERROR (zwe-validate-port-available) zaas: Port 7558 not available for jobname ZWE1AZ or command failed.
+ERROR: 2025-10-31 19:59:45 <ZWELS:83955612> TESTUSR0 ERROR (zwe-validate-port-available) api-catalog: Port 7552 not available for jobname ZWE1AC or command failed.
+ERROR: 2025-10-31 19:59:45 <ZWELS:83955612> TESTUSR0 ERROR (zwe-validate-port-available) discovery: Port 7553 not available for jobname ZWE1AD or command failed.
+31 19:59:43 <ZWELS:83955612> TESTUSR0 INFO (validateNodeHome) NodeJS version: v18.18.2
+2025-10-31 19:59:44 <ZWELS:83955612> TESTUSR0 INFO (validateJavaHome) Java version: 17.0.13 2024-10-15
+2025-10-31 19:59:44 <ZWELS:83955612> TESTUSR0 INFO (zwe-internal-start-prepare,global_validate) global validations are successful
+2025-10-31 19:59:44 <ZWELS:83955612> TESTUSR0 INFO (zwe-internal-start-prepare,validate_components) process component validations ...
+2025-10-31 19:59:44 <ZWELS:83955612> TESTUSR0 INFO (zwe-validate-port-available) Checking ports of 10 enabled components
+ERROR: 2025-10-31 19:59:44 <ZWELS:83955612> TESTUSR0 ERROR (zwe-validate-port-available) gateway: Port 7554 not available for jobname ZWE1AG or command failed.
+ERROR: 2025-10-31 19:59:45 <ZWELS:83955612> TESTUSR0 ERROR (zwe-validate-port-available) zaas: Port 7558 not available for jobname ZWE1AZ or command failed.
+:42 <ZWELS:83955612> TESTUSR0 INFO (zwe-internal-start-prepare) Zowe version: v3.4.0
+2025-10-31 19:59:42 <ZWELS:83955612> TESTUSR0 INFO (zwe-internal-start-prepare) build and hash: {BUILD_BRANCH}#{BUILD_NUMBER} ({BUILD_COMMIT_HASH})
+2025-10-31 19:59:42 <ZWELS:83955612> TESTUSR0 INFO (zwe-internal-start-prepare) z/OS Version: 3.1
+2025-10-31 19:59:42 <ZWELS:83955612> TESTUSR0 INFO (zwe-internal-start-prepare) ESM: ESMT
+2025-10-31 19:59:42 <ZWELS:83955612> TESTUSR0 INFO (zwe-internal-start-prepare) starting Zowe instance SYS0 with /test/dir/workspace/.env/.zowe-merged.yaml ...
+2025-10-31 19:59:42 <ZWELS:83955612> TESTUSR0 INFO (zwe-internal-start-prepare,global_validate) process global validations ...
+2025-10-31 19:59:43 <ZWELS:83955612> TESTUSR0 INFO (validateNodeHome) NodeJS version: v18.18.2
+2025-10-31 19:59:44 <ZWELS:83955612> TESTUSR0 INFO (validateJavaHome) Java version: 17.0.13 2024-10-15
+2025-10-31 19:59:44 <ZWELS:83955612> TESTUSR0 INFO (zwe-internal-start-prepare,global_validate) global validations are successful
+2025-10-31 19:59:44 <ZWELS:83955612> TESTUSR0 INFO (zwe-internal-start-prepare,validate_components) process component validations ...
+2025-10-31 19:59:44 <ZWELS:83955612> TESTUSR0 INFO (zwe-validate-port-available) Checking ports of 10 enabled components
+ERROR: 2025-10-31 19:59:44 <ZWELS:83955612> TESTUSR0 ERROR (zwe-validate-port-available) gateway: Port 7554 not available for jobname ZWE1AG or command failed.
+ERROR: 2025-10-31 19:59:45 <ZWELS:83955612> TESTUSR0 ERROR (zwe-validate-port-available) zaas: Port 7558 not available for jobname ZWE1AZ or command failed.
+ERROR: 2025-10-31 19:59:45 <ZWELS:83955612> TESTUSR0 ERROR (zwe-validate-port-available) api-catalog: Port 7552 not available for jobname ZWE1AC or command failed.
+ERROR: 2025-10-31 19:59:45 <ZWELS:83955612> TESTUSR0 ERROR (zwe-validate-port-available) discovery: Port 7553 not available for jobname ZWE1AD or command failed.
+ERROR: 2025-10-31 19:59:45 <ZWELS:83955612> TESTUSR0 ERROR (zwe-validate-port-available) caching-service: Port 7555 not available for jobname ZWE1CS or command failed.
+t-prepare) ESM: ESMT
+2025-10-31 19:59:42 <ZWELS:83955612> TESTUSR0 INFO (zwe-internal-start-prepare) starting Zowe instance SYS0 with /test/dir/workspace/.env/.zowe-merged.yaml ...
+2025-10-31 19:59:42 <ZWELS:83955612> TESTUSR0 INFO (zwe-internal-start-prepare,global_validate) process global validations ...
+2025-10-31 19:59:43 <ZWELS:83955612> TESTUSR0 INFO (validateNodeHome) NodeJS version: v18.18.2
+2025-10-31 19:59:44 <ZWELS:83955612> TESTUSR0 INFO (validateJavaHome) Java version: 17.0.13 2024-10-15
+2025-10-31 19:59:44 <ZWELS:83955612> TESTUSR0 INFO (zwe-internal-start-prepare,global_validate) global validations are successful
+2025-10-31 19:59:44 <ZWELS:83955612> TESTUSR0 INFO (zwe-internal-start-prepare,validate_components) process component validations ...
+2025-10-31 19:59:44 <ZWELS:83955612> TESTUSR0 INFO (zwe-validate-port-available) Checking ports of 10 enabled components
+ERROR: 2025-10-31 19:59:44 <ZWELS:83955612> TESTUSR0 ERROR (zwe-validate-port-available) gateway: Port 7554 not available for jobname ZWE1AG or command failed.
+ERROR: 2025-10-31 19:59:45 <ZWELS:83955612> TESTUSR0 ERROR (zwe-validate-port-available) zaas: Port 7558 not available for jobname ZWE1AZ or command failed.
+ERROR: 2025-10-31 19:59:45 <ZWELS:83955612> TESTUSR0 ERROR (zwe-validate-port-available) api-catalog: Port 7552 not available for jobname ZWE1AC or command failed.
+ERROR: 2025-10-31 19:59:45 <ZWELS:83955612> TESTUSR0 ERROR (zwe-validate-port-available) discovery: Port 7553 not available for jobname ZWE1AD or command failed.
+ERROR: 2025-10-31 19:59:45 <ZWELS:83955612> TESTUSR0 ERROR (zwe-validate-port-available) caching-service: Port 7555 not available for jobname ZWE1CS or command failed.
+ERROR: 2025-10-31 19:59:45 <ZWELS:83955612> TESTUSR0 ERROR (zwe-validate-port-available) app-server: Port 7556 not available or command failed.
+t-prepare) ESM: ESMT
+2025-10-31 19:59:42 <ZWELS:83955612> TESTUSR0 INFO (zwe-internal-start-prepare) starting Zowe instance SYS0 with /test/dir/workspace/.env/.zowe-merged.yaml ...
+2025-10-31 19:59:42 <ZWELS:83955612> TESTUSR0 INFO (zwe-internal-start-prepare,global_validate) process global validations ...
+2025-10-31 19:59:43 <ZWELS:83955612> TESTUSR0 INFO (validateNodeHome) NodeJS version: v18.18.2
+2025-10-31 19:59:44 <ZWELS:83955612> TESTUSR0 INFO (validateJavaHome) Java version: 17.0.13 2024-10-15
+2025-10-31 19:59:44 <ZWELS:83955612> TESTUSR0 INFO (zwe-internal-start-prepare,global_validate) global validations are successful
+2025-10-31 19:59:44 <ZWELS:83955612> TESTUSR0 INFO (zwe-internal-start-prepare,validate_components) process component validations ...
+2025-10-31 19:59:44 <ZWELS:83955612> TESTUSR0 INFO (zwe-validate-port-available) Checking ports of 10 enabled components
+ERROR: 2025-10-31 19:59:44 <ZWELS:83955612> TESTUSR0 ERROR (zwe-validate-port-available) gateway: Port 7554 not available for jobname ZWE1AG or command failed.
+ERROR: 2025-10-31 19:59:45 <ZWELS:83955612> TESTUSR0 ERROR (zwe-validate-port-available) zaas: Port 7558 not available for jobname ZWE1AZ or command failed.
+ERROR: 2025-10-31 19:59:45 <ZWELS:83955612> TESTUSR0 ERROR (zwe-validate-port-available) api-catalog: Port 7552 not available for jobname ZWE1AC or command failed.
+ERROR: 2025-10-31 19:59:45 <ZWELS:83955612> TESTUSR0 ERROR (zwe-validate-port-available) discovery: Port 7553 not available for jobname ZWE1AD or command failed.
+ERROR: 2025-10-31 19:59:45 <ZWELS:83955612> TESTUSR0 ERROR (zwe-validate-port-available) caching-service: Port 7555 not available for jobname ZWE1CS or command failed.
+t-prepare) ESM: ESMT
+2025-10-31 19:59:42 <ZWELS:83955612> TESTUSR0 INFO (zwe-internal-start-prepare) starting Zowe instance SYS0 with /test/dir/workspace/.env/.zowe-merged.yaml ...
+2025-10-31 19:59:42 <ZWELS:83955612> TESTUSR0 INFO (zwe-internal-start-prepare,global_validate) process global validations ...
+2025-10-31 19:59:43 <ZWELS:83955612> TESTUSR0 INFO (validateNodeHome) NodeJS version: v18.18.2
+2025-10-31 19:59:44 <ZWELS:83955612> TESTUSR0 INFO (validateJavaHome) Java version: 17.0.13 2024-10-15
+2025-10-31 19:59:44 <ZWELS:83955612> TESTUSR0 INFO (zwe-internal-start-prepare,global_validate) global validations are successful
+2025-10-31 19:59:44 <ZWELS:83955612> TESTUSR0 INFO (zwe-internal-start-prepare,validate_components) process component validations ...
+2025-10-31 19:59:44 <ZWELS:83955612> TESTUSR0 INFO (zwe-validate-port-available) Checking ports of 10 enabled components
+ERROR: 2025-10-31 19:59:44 <ZWELS:83955612> TESTUSR0 ERROR (zwe-validate-port-available) gateway: Port 7554 not available for jobname ZWE1AG or command failed.
+ERROR: 2025-10-31 19:59:45 <ZWELS:83955612> TESTUSR0 ERROR (zwe-validate-port-available) zaas: Port 7558 not available for jobname ZWE1AZ or command failed.
+ERROR: 2025-10-31 19:59:45 <ZWELS:83955612> TESTUSR0 ERROR (zwe-validate-port-available) api-catalog: Port 7552 not available for jobname ZWE1AC or command failed.
+ERROR: 2025-10-31 19:59:45 <ZWELS:83955612> TESTUSR0 ERROR (zwe-validate-port-available) discovery: Port 7553 not available for jobname ZWE1AD or command failed.
+ERROR: 2025-10-31 19:59:45 <ZWELS:83955612> TESTUSR0 ERROR (zwe-validate-port-available) caching-service: Port 7555 not available for jobname ZWE1CS or command failed.
+ERROR: 2025-10-31 19:59:45 <ZWELS:83955612> TESTUSR0 ERROR (zwe-validate-port-available) app-server: Port 7556 not available or command failed.
+ERROR: 2025-10-31 19:59:46 <ZWELS:83955612> TESTUSR0 ERROR (zwe-validate-port-available) zss: Port 7557 not available for jobname ZWE1SZ or command failed.
+ERROR: 2025-10-31 19:59:46 <ZWELS:83955612> TESTUSR0 ERROR (zwe-validate-port-available) Port bind validation failed. This check can be dismissed with YAML value "zowe.launchScript.startupChecks.ports: warn"
+TypeError: cannot read property 'includes' of null
+    at printRawMessage (/test/dir/bin/libs/common:148)
+    at printError (/test/dir/bin/libs/common:168)
+    at printErrorAndExit (/test/dir/bin/libs/common:185)
+    at execute (/test/dir/bin/commands/validate/port/bind/index:99)
+    at validateComponents (/test/dir/bin/commands/internal/start/prepare/index:193)
+    at execute (/test/dir/bin/commands/internal/start/prepare/index:467)
+    at <anonymous> (/test/dir/bin/commands/internal/start/prepare/cli.js:12)"
+`;
