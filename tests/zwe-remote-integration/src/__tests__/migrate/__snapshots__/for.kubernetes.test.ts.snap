@@ -209,12 +209,12 @@ data:
             authorization:
               endpoint:
                 enabled: false
-                url: "\\"\\""
-                provider: "\\"\\""
+                url: ""
+                provider: ""
               provider: "native"
             x509:
               enabled: false
-              externalMapperUrl: "\\"\\""
+              externalMapperUrl: ""
       zaas:
         enabled: true
         port: "7558"
@@ -234,7 +234,7 @@ data:
         debug: false
         storage:
           evictionStrategy: "reject"
-          mode: "\\"\\""
+          mode: ""
           infinispan:
             jgroups:
               port: 7600
