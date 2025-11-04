@@ -61,7 +61,7 @@
       "artifact": "*.pax"
     },
     "org.zowe.apiml.apiml-package": {
-      "version": "^3.0.3-SNAPSHOT",
+      "version": "3.3.21-SNAPSHOT",
       "artifact": "apiml-*.zip",
       "exclusions": ["*PR*.zip"]
     },
