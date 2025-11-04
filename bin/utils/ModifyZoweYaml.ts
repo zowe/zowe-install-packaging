@@ -47,7 +47,7 @@ if (modType == MOD_TYPES.update) {
     newValue = false;
   } else if (newValue === '' || newValue === '""' || newValue === '\'\'' || newValue === '\'""\'' || newValue === '"\'\'"') {
     // sometimes ansible may send empty string as '""'
-    newValue = '""';
+    newValue = ''; // keep the empty string empty; using quotes like '""' will cause them to be escaped by configmgr's yaml rendering
   } 
 
   // convert string of boolean to real boolean
