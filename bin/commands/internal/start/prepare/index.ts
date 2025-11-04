@@ -42,8 +42,8 @@ const user = std.getenv('USER');
 
 const ZOWE_CONFIG=config.getZoweConfig();
 
-const zosmfHost = ZOWE_CONFIG.zOSMF.host;
-const zosmfPort = ZOWE_CONFIG.zOSMF.port;
+const zosmfHost = ZOWE_CONFIG.zOSMF?.host;
+const zosmfPort = ZOWE_CONFIG.zOSMF?.port;
 
 // Extra preparations for running in container
 // - link component runtime under zowe <runtime>/components
