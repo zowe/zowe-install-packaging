@@ -76,8 +76,8 @@
       "exclusions": ["*PR*.zip"]
     },
     "org.zowe.apiml.gateway-package": {
-      "version": "^3.0.3-SNAPSHOT",
-      "artifact": "gateway-*.zip",
+      "version": "3.3.21-SNAPSHOT",
+      "artifact": "gateway-package-3.3.21-20251031.123403-7.zip",
       "exclusions": ["*PR*.zip"]
     },
     "org.zowe.apiml.caching-service-package": {
