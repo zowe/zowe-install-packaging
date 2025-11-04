@@ -497,6 +497,7 @@ export function processComponentApimlStaticDefinitions(componentDir: string): bo
           const zosmfAuthenticationScheme = std.getenv("ZOSMF_AUTHENTICATION_SCHEME");
           const AuthenticationschemeEnv = std.getenv("ZWE_zOSMF_authentication_scheme");
           const apimlAuthProviderEnv = std.getenv("ZWE_components_apiml_apiml_security_auth_provider");
+          const gatewayAuthProviderEnv = std.getenv("ZWE_components_gateway_apiml_security_auth_provider");
 
           let authScheme = "zosmf";
 
@@ -504,8 +505,9 @@ export function processComponentApimlStaticDefinitions(componentDir: string): bo
             authScheme = zosmfAuthenticationScheme;
           } else if (AuthenticationschemeEnv) {
             authScheme = AuthenticationschemeEnv;
-          } else if (apimlAuthProviderEnv == 'saf') {
-            authScheme = "httpBasicPassTicket";
+          } else if (
+            apimlAuthProviderEnv === 'saf' || gatewayAuthProviderEnv === 'saf' ) {
+            authScheme = 'httpBasicPassTicket';
           }
           std.setenv('ZOSMF_AUTHENTICATION_SCHEME', authScheme);
 
