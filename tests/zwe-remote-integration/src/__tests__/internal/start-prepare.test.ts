@@ -11,8 +11,6 @@
 import ZoweYamlType from '../../config/ZoweYamlType';
 import { RemoteTestRunner } from '../../zos/RemoteTestRunner';
 import { ZoweConfig } from '../../config/ZoweConfig';
-import * as fs from 'fs-extra';
-import * as yaml from 'yaml';
 import { FileType, TestFile, TestFileActions } from '../../zos/TestFileActions';
 
 const testSuiteName = 'start-prepare-tests';
