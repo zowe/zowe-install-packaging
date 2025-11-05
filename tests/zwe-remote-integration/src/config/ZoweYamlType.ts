@@ -934,8 +934,8 @@ const zoweSchema = zoweYamlSchema as {
           properties: {
             scheme: {
               type: 'string';
-              description: "Authentication scheme for z/OSMF.";
-              enum: ["httpBasicPassTicket", "zosmf"];
+              description: 'Authentication scheme for z/OSMF.';
+              enum: ['httpBasicPassTicket', 'zosmf'];
             };
           };
         };
