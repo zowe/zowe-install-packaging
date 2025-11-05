@@ -281,14 +281,14 @@ update_zowe_yaml() {
 delete_yaml_configmgr() {
   file="${1}"
   key="${2}"
-  val="${3}"
-  expected_sample="${4}"
+  expected_sample="${3}"
+  validate="${4:-true}"
 
   configmgr="${ZWE_zowe_runtimeDirectory}/bin/utils/configmgr"
   updateYaml="${ZWE_zowe_runtimeDirectory}/bin/utils/ModifyZoweYaml.js"
 
   print_message "- delete \"${key}\""
-  result=$(_CEE_RUNOPTS="XPLINK(ON)" "${configmgr}" -script "$updateYaml" delete "$file" "$key" 2>&1)
+  result=$(_CEE_RUNOPTS="XPLINK(ON)" "${configmgr}" -script "$updateYaml" delete "$file" "$key" "$validate" 2>&1)
   code=$?
   if [ ${code} -eq 0 ]; then
     print_trace "  * Exit code: ${code}"
@@ -309,12 +309,13 @@ delete_yaml_configmgr() {
 }
 
 delete_zowe_yaml() {
+  validate="${3:-true}"
   if [ "${ZWE_RUN_IN_CONTAINER}" = "true" ]; then
     yq -i "'del(.${2})'" "${1}"
     if [ "${$?}" -ne 0 ]; then
       print_error_and_exit "Error ZWEL0138E: Failed to delete key ${2} of file ${1}." "" 138
     fi
   else
-    delete_yaml_configmgr "${1}" "${2}" "zowe:"
+    delete_yaml_configmgr "${1}" "${2}" "zowe:" "${validate}"
   fi
 }
