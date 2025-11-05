@@ -79,9 +79,9 @@ export function readJsonString(input: string, key: string): any {
  * @param key 
  * @returns 
  */
-export function deleteZoweYaml(file: string, key: string): number {
+export function deleteZoweYaml(file: string, key: string, shouldValidate: boolean = true): number {
   common.printMessage(`- delete zowe config ${file}, key: ${key}`);
-  const deleteResult = config.deleteFromZoweCfgFile(file, key);
+  const deleteResult = config.deleteFromZoweCfgFile(file, key, shouldValidate);
   return deleteResult[0];
 }
 

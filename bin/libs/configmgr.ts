@@ -366,7 +366,7 @@ function getConfigRevisionName(configName: string, revision?: number): string {
   return configName+'_rev'+revision;
 }
 
-function deleteConfig(configName: string, deletePath: string): number {
+function deleteConfig(configName: string, deletePath: string, shouldValidate: boolean = true): number {
   let revision = CONFIG_REVISIONS[configName];
   if (!Number.isInteger(revision)) {
     console.log(`Error: Cannot update config if config not yet loaded`);
@@ -377,18 +377,23 @@ function deleteConfig(configName: string, deletePath: string): number {
   let newName = getConfigRevisionName(configName, revision);
   let status = CONFIG_MGR.deleteFromConfiguration(currentName, newName, deletePath);
   if (status == 0) {
-    const validation = CONFIG_MGR.validate(newName);
-    if (validation.ok) {
-      if (validation.exceptionTree) {
-        console.log(`Error: Validation of delete operation on ${configName} resulted in invalid JSON Schema data`);
-        showExceptions(validation.exceptionTree, 0);
-        return 1;
+    if (shouldValidate) {
+      const validation = CONFIG_MGR.validate(newName);
+      if (validation.ok) {
+        if (validation.exceptionTree) {
+          console.log(`Error: Validation of delete operation on ${configName} resulted in invalid JSON Schema data`);
+          showExceptions(validation.exceptionTree, 0);
+          return 1;
+        } else {
+          CONFIG_REVISIONS[configName]=revision;
+          return status;
+        }
       } else {
-        CONFIG_REVISIONS[configName]=revision;
-        return status;
+        console.log(`Error: Error occurred on validation of delete operation to ${configName}`);
       }
     } else {
-      console.log(`Error: Error occurred on validation of delete operation to ${configName}`);
+      CONFIG_REVISIONS[configName]=revision;
+      return status;
     }
   } else {
     console.log(`Error: Error occurred when deleting ${deletePath} from ${configName}`);
@@ -432,11 +437,11 @@ function updateConfig(configName: string, updateObj: any, arrayMergeStrategy: nu
   }
 }
 
-export function deleteFromZoweCfgFile(file: string,deleteKey: string): [number, any] {
+export function deleteFromZoweCfgFile(file: string, deleteKey: string, shouldValidate: boolean = true): [number, any] {
   const fileCfg = `FILE(${file})`;
   const zoweConfigName = 'zowe-delete-yaml';
   const ZOWE_FILE_CONFIG = getConfig(zoweConfigName, fileCfg, ZOWE_SCHEMA_SET); 
-  let rc = deleteConfig(zoweConfigName, deleteKey);
+  let rc = deleteConfig(zoweConfigName, deleteKey, shouldValidate);
   if (rc == 0){ 
     let [ yamlStatus, textOrNull ] = CONFIG_MGR.writeYAML(getConfigRevisionName(zoweConfigName));
     if (yamlStatus == 0) {

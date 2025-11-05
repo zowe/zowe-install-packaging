@@ -27,7 +27,7 @@ const MOD_TYPES = {
 const pgmArgs = scriptArgs.slice(3);
 
 if (!scriptArgs[0].includes('configmgr') || !scriptArgs[1].includes('-script') || pgmArgs.length < 3) { 
-  common.printErrorAndExit('UpdateYaml script was not invoked with the correct number of arguments. Usage: ./configmgr -script <this_script> update <file> <key> <value> <validate> OR ./configmgr -script <this_script> delete <file> <key>');
+  common.printErrorAndExit('UpdateYaml script was not invoked with the correct number of arguments. Usage: ./configmgr -script <this_script> update <file> <key> <value> <validate> OR ./configmgr -script <this_script> delete <file> <key> <validate>');
 }
 
 const modType = pgmArgs[0];
@@ -38,7 +38,7 @@ let rc = 0;
 if (modType == MOD_TYPES.update) {
   // the final type of newValue changes based on parsing logic, and dynamic typing is used to distinguish "true" and true in the updated YAML.
   let newValue: any = pgmArgs[3]; // always comes wrapped in quotes.
-  let validate: any = pgmArgs[4]; 
+  const validate: boolean = setValidate(pgmArgs[4]); 
 
   // convert string of boolean to real boolean
   if (newValue === 'true') {
@@ -50,17 +50,7 @@ if (modType == MOD_TYPES.update) {
     newValue = ''; // keep the empty string empty; using quotes like '""' will cause them to be escaped by configmgr's yaml rendering
   } 
 
-  // convert string of boolean to real boolean
-  if (validate == null) {
-    validate = true;
-  } else if (validate === 'true') {
-    validate = true;
-  } else if (validate === 'false') {
-    validate = false;
-  } else if (newValue === '' || newValue === '""' || newValue === '\'\'' || newValue === '\'""\'' || newValue === '"\'\'"') {
-    // sometimes ansible may send empty string as '""', default any value to true
-    validate = true
-  } 
+
   
   common.printTrace(`Updating: ${file}, ${key}, ${newValue}, ${validate}`)
   rc = jsonlib.updateZoweYaml(file, key, newValue, validate);
@@ -72,8 +62,25 @@ if (modType == MOD_TYPES.update) {
     }
   }
 } else if (modType == MOD_TYPES.delete) {
+  const validate: boolean = setValidate(pgmArgs[3]); 
   common.printTrace(`Deleting: ${file}, ${key}`);
-  rc = jsonlib.deleteZoweYaml(file, key);
+  rc = jsonlib.deleteZoweYaml(file, key, validate);
 }
 
 std.exit(rc);
+
+function setValidate(arg: any): boolean {
+  let validate = true;
+  // convert string of boolean to real boolean
+  if (arg == null) {
+    validate = true;
+  } else if (arg === 'true') {
+    validate = true;
+  } else if (arg === 'false') {
+    validate = false;
+  } else if (arg === '' || arg === '""' || arg === '\'\'' || arg === '\'""\'' || arg === '"\'\'"') {
+    // sometimes ansible may send empty string as '""', default any value to true
+    validate = true
+  } 
+  return validate;
+}

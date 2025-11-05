@@ -45,8 +45,8 @@ export function getZoweConfig(): any {
   return configmgr.getZoweConfig();
 }
 
-export function deleteFromZoweCfgFile(file: string, deleteKey: string): any {
-  return configmgr.deleteFromZoweCfgFile(file, deleteKey);
+export function deleteFromZoweCfgFile(file: string, deleteKey: string, shouldValidate: boolean = true): any {
+  return configmgr.deleteFromZoweCfgFile(file, deleteKey, shouldValidate);
 }
 
 export function updateZoweCfgFile(file: string, updateObj: any, arrayMergeStrategy, shouldValidate: boolean = true): any {
