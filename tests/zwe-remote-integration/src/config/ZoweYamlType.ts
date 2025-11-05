@@ -929,6 +929,16 @@ const zoweSchema = zoweYamlSchema as {
           type: 'string';
           description: 'Appl ID of your z/OSMF instance.';
         };
+        authentication: {
+          type: 'object';
+          properties: {
+            scheme: {
+              type: 'string';
+              description: "Authentication scheme for z/OSMF.";
+              enum: ["httpBasicPassTicket", "zosmf"];
+            }
+          }
+        }
       };
     };
     components: {
