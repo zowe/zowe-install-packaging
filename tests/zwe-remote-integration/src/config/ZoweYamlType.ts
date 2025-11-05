@@ -936,9 +936,9 @@ const zoweSchema = zoweYamlSchema as {
               type: 'string';
               description: "Authentication scheme for z/OSMF.";
               enum: ["httpBasicPassTicket", "zosmf"];
-            }
-          }
-        }
+            };
+          };
+        };
       };
     };
     components: {
