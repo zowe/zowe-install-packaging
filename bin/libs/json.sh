@@ -112,7 +112,12 @@ shell_read_json_config() {
 # Note: this is not a reliable way to read YAML file, but we need this to find
 #       out ROOT_DIR to execute further functions.
 #
-# FIXME: we should have a language neutral YAML reading tool, not using shell script.
+# FIXME:
+#   - We should have a language neutral YAML reading tool, not using shell script.
+#   - Returns value and (if used) comment:
+# node:
+#   home: /dev/null # Comment
+# Returns "/dev/null#Comment" instead of "/dev/null"
 #
 # @param string   YAML file name
 # @param string   parent key to read after
