@@ -40,6 +40,11 @@ if (modType == MOD_TYPES.update) {
   let newValue: any = pgmArgs[3]; // always comes wrapped in quotes.
   const validate: boolean = setValidate(pgmArgs[4]); 
 
+  // check for NaN first - all values from pgmArgs[3] are strings
+  if (!isNaN(newValue)) {
+    newValue = parseInt(newValue);
+  }
+
   // convert string of boolean to real boolean
   if (newValue === 'true') {
     newValue = true;
@@ -50,9 +55,6 @@ if (modType == MOD_TYPES.update) {
     newValue = ''; // keep the empty string empty; using quotes like '""' will cause them to be escaped by configmgr's yaml rendering
   } 
 
-  if (!isNaN(newValue)) {
-    newValue = parseInt(newValue);
-  }
   common.printTrace(`Updating: ${file}, ${key}, ${newValue}, ${validate}`)
 
   rc = jsonlib.updateZoweYaml(file, key, newValue, validate);
