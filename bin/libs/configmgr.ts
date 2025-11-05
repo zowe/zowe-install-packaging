@@ -421,11 +421,14 @@ function updateConfig(configName: string, updateObj: any, arrayMergeStrategy: nu
       } else {
         console.log(`Error: Error occurred on validation of update to ${configName}`);
       }
+    } else {
+      CONFIG_REVISIONS[configName]=revision;
+      return status;
     }
   } else {
     console.log(`Error: Error occurred when making modified configuration of ${configName}`);
+    return status;
   }
-  return status;
 }
 
 export function deleteFromZoweCfgFile(file: string,deleteKey: string): [number, any] {
