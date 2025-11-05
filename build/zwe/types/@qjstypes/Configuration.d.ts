@@ -17,7 +17,7 @@ export interface ConfigManager {
     getConfigData(configName:string):any;
     setParmlibMemberName(configName:string,parmlibMemberName:string):number;
     loadConfiguration(configName:string):number;
-    deleteFromConfiguration(oldConfigName:string, newConfigName: string, deleteKey: string): number;
+    copyConfigurationAndDeleteKey(oldConfigName:string, newConfigName: string, deleteKey: string): number;
     makeModifiedConfiguration(oldConfigName:string, newConfigName: string, updateObject: any, arrayMergeStrategy: number): number;
     validate(configName:string):any;  // should give this a type
     writeYAML(configName:string):[ number, string|null];  // 0 means status is good , string present if 0

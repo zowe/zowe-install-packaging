@@ -50,17 +50,12 @@ if (modType == MOD_TYPES.update) {
     newValue = ''; // keep the empty string empty; using quotes like '""' will cause them to be escaped by configmgr's yaml rendering
   } 
 
-
-  
-  common.printTrace(`Updating: ${file}, ${key}, ${newValue}, ${validate}`)
-  rc = jsonlib.updateZoweYaml(file, key, newValue, validate);
-  if (rc != 0) {
-    // could be schema issue, check if newValue is a number
-    if (/^\d+$/.test(newValue)) {
-      common.printTrace(`Initial update failed, trying again with this value as a number: ${newValue}`)
-      rc = jsonlib.updateZoweYaml(file, key, parseInt(newValue), validate);
-    }
+  if (!Number.isNaN(newValue)) {
+    newValue = parseInt(newValue);
   }
+  common.printTrace(`Updating: ${file}, ${key}, ${newValue}, ${validate}`)
+
+  rc = jsonlib.updateZoweYaml(file, key, newValue, validate);
 } else if (modType == MOD_TYPES.delete) {
   const validate: boolean = setValidate(pgmArgs[3]); 
   common.printTrace(`Deleting: ${file}, ${key}`);

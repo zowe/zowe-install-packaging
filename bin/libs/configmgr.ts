@@ -375,7 +375,7 @@ function deleteConfig(configName: string, deletePath: string, shouldValidate: bo
   let currentName = getConfigRevisionName(configName, revision);
   revision++;
   let newName = getConfigRevisionName(configName, revision);
-  let status = CONFIG_MGR.deleteFromConfiguration(currentName, newName, deletePath);
+  let status = CONFIG_MGR.copyConfigurationAndDeleteKey(currentName, newName, deletePath);
   if (status == 0) {
     if (shouldValidate) {
       const validation = CONFIG_MGR.validate(newName);
@@ -440,7 +440,7 @@ function updateConfig(configName: string, updateObj: any, arrayMergeStrategy: nu
 export function deleteFromZoweCfgFile(file: string, deleteKey: string, shouldValidate: boolean = true): [number, any] {
   const fileCfg = `FILE(${file})`;
   const zoweConfigName = 'zowe-delete-yaml';
-  const ZOWE_FILE_CONFIG = getConfig(zoweConfigName, fileCfg, ZOWE_SCHEMA_SET); 
+  const ZOWE_FILE_CONFIG = getConfig(zoweConfigName, fileCfg, ZOWE_SCHEMA_SET, shouldValidate); 
   let rc = deleteConfig(zoweConfigName, deleteKey, shouldValidate);
   if (rc == 0){ 
     let [ yamlStatus, textOrNull ] = CONFIG_MGR.writeYAML(getConfigRevisionName(zoweConfigName));
