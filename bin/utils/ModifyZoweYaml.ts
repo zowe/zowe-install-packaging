@@ -50,7 +50,7 @@ if (modType == MOD_TYPES.update) {
     newValue = ''; // keep the empty string empty; using quotes like '""' will cause them to be escaped by configmgr's yaml rendering
   } 
 
-  if (!Number.isNaN(newValue)) {
+  if (!isNaN(newValue)) {
     newValue = parseInt(newValue);
   }
   common.printTrace(`Updating: ${file}, ${key}, ${newValue}, ${validate}`)
