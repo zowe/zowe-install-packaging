@@ -494,6 +494,15 @@ export function processComponentApimlStaticDefinitions(componentDir: string): bo
           std.setenv('ZOSMF_NON_SECURE_PORT_ENABLED', `${nonSecurePortEnabled}`);
           std.setenv('ZOSMF_SECURE_PORT_ENABLED', `${securePortEnabled}`);
 
+          const zosmfAuthenticationScheme = std.getenv("ZOSMF_AUTHENTICATION_SCHEME") ?? std.getenv("ZWE_zOSMF_authentication_scheme");
+          const authProvider = std.getenv("ZWE_components_apiml_apiml_security_auth_provider") ?? std.getenv("ZWE_components_gateway_apiml_security_auth_provider");
+
+          let authScheme = "zosmf";
+          if (!zosmfAuthenticationScheme && (authProvider === 'saf')) {
+            authScheme = 'httpBasicPassTicket';
+          }
+          std.setenv('ZOSMF_AUTHENTICATION_SCHEME', authScheme);
+
           const resolvedContents = varlib.resolveShellTemplate(contents);
 
           
