@@ -420,6 +420,7 @@ function updateConfig(configName: string, updateObj: any, arrayMergeStrategy: nu
         }
       } else {
         console.log(`Error: Error occurred on validation of update to ${configName}`);
+        return 1;
       }
     } else {
       CONFIG_REVISIONS[configName]=revision;
