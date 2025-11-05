@@ -25,7 +25,7 @@ shell_read_yaml_java_home() {
   result=$(validate_java_home "${java_home}" 2>/dev/null)
   code=$?
   if [ ${code} -ne 0 ]; then
-    # incorrect NODE_HOME, reset and try again
+    # incorrect JAVA_HOME, reset and try again
     # this could be caused by failing to read java.home correctly from zowe.yaml
     java_home=
   fi

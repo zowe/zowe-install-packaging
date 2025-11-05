@@ -34,7 +34,7 @@ print_level0_message "Configure Zowe"
 print_level1_message "Check if need to update runtime directory, Java and/or node.js settings in Zowe YAML configuration"
 # node.home
 update_node_home=
-yaml_node_home="$(shell_read_yaml_node_home "${ZWE_CLI_PARAMETER_CONFIG}")"
+yaml_node_home="$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".node.home")"
 # only try to update if it's not defined
 if [[ ${ZWE_ENABLED_COMPONENTS} == *"app-server"* ]]; then
   if [ -z "${yaml_node_home}" ]; then
@@ -46,7 +46,7 @@ if [[ ${ZWE_ENABLED_COMPONENTS} == *"app-server"* ]]; then
 fi
 # java.home
 update_java_home=
-yaml_java_home="$(shell_read_yaml_java_home "${ZWE_CLI_PARAMETER_CONFIG}")"
+yaml_java_home="$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".java.home")"
 # only try to update if it's not defined
 if [ -z "${yaml_java_home}" ]; then
   require_java
