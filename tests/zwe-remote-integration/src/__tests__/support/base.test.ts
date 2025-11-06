@@ -70,7 +70,7 @@ describe(`${testSuiteName}`, () => {
       //   -- Fingerprints failed (we supply a dummy)
       //   -- The support package is created
       expect(result.stdout).not.toBeNull();
-      expect(result.stdout.includes('Successfully checked z/OS MF is available')).toBe(true);
+      expect(result.stdout.includes('Successfully checked z/OSMF is available')).toBe(true);
       expect(result.stdout.includes('ZWEL0181E: Failed to verify Zowe file fingerprints')).toBe(true);
       expect(result.stdout.includes('Zowe support package is generated')).toBe(true);
       expect(result.rc).toBe(0);
@@ -85,7 +85,7 @@ describe(`${testSuiteName}`, () => {
 
       cfgYaml.components['app-server'].enabled = false;
       result = await testRunner.runZweTest(cfgYaml, `support --target-dir ${fingerprintDir}`);
-      expect(result.stdout.includes('Successfully checked z/OS MF is available')).toBe(true);
+      expect(result.stdout.includes('Successfully checked z/OSMF is available')).toBe(true);
       expect(result.stdout.includes('ZWEL0181E: Failed to verify Zowe file fingerprints')).toBe(true);
       expect(result.stdout.includes('Zowe support package is generated')).toBe(true);
       expect(result.rc).toBe(0);
