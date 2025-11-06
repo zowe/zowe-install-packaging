@@ -41,7 +41,7 @@ if (modType == MOD_TYPES.update) {
   const validate: boolean = setValidate(pgmArgs[4]); 
 
   // check for NaN first - all values from pgmArgs[3] are strings
-  if (!isNaN(newValue)) {
+  if (newValue.trim().length > 0 && !isNaN(newValue)) {
     newValue = parseInt(newValue);
   }
 
