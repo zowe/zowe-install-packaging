@@ -2,6 +2,9 @@
 
 All notable changes to the Zowe Installer will be documented in this file.
 
+## `3.5.0`
+- Enhancement: Environment variable `ZWE_DISCOVERY_SERVICES_LIST` is now sorted to have each HA instance's local discovery server listed first. [#4568](https://github.com/zowe/zowe-install-packaging/issues/4568)
+
 ## `3.4.0`
 
 - Enhancement: Configure z/OSMF static API definiton based on authentication provider [#4563](https://github.com/zowe/zowe-install-packaging/pull/4563)

@@ -153,19 +153,43 @@ function getDiscoveryServiceUrlHa(config) {
     const url = `https://${haInstance.hostname}:${port}/eureka/`;
 
     if (list.includes(url)) {
-      console.log(`Warn: Multiple haInstances reffers to the same hostname: ${haInstance.hostname}`);
+      console.log(`Warn: Multiple haInstances refers to the same hostname: ${haInstance.hostname}`);
     } else {
       list.push(url);
     }
 
   }
 
-  return list;
+  const definedHaInstanceNames = haInstanceKeys.map(name=>stringlib.sanitizeAlphanum(name.toLowerCase()));
+  //TODO check if this exists
+  const currentHaInstanceName = std.getenv('ZWE_CLI_PARAMETER_HA_INSTANCE');
+  let currentInstance;
+  for (let i = 0; i < haInstanceKeys.length; i++) {
+    let mappedName = stringlib.sanitizeAlphanum(haInstanceKeys[i].toLowerCase());
+    if (mappedName == currentHaInstanceName) {
+      currentInstance = config.haInstances[haInstanceKeys[i]];
+    }
+  }
+  
+
+  const currentPort = currentInstance?.components?.discovery?.port ? currentInstance.components.discovery.port : config.components.discovery?.port;
+  
+  const currentDiscoveryUrl = `https://${currentInstance.hostname}:${currentPort}/eureka/`;
+
+  return list.sort((a, b)=> {
+    if (a == currentDiscoveryUrl) {
+      return -1;
+    } else if (b == currentDiscoveryUrl) {
+      return 1;
+    } else {
+      return 0;
+    }
+  });
 }
 
 function getDiscoveryServiceUrlNonHa(config) {
   const list = [];
-  if (config.components?.discovery?.enabled !== true) {
+  if ((config.components?.discovery?.enabled !== true) && (config.components?.apiml?.enabled !== true)) {
     return list;
   }
 
