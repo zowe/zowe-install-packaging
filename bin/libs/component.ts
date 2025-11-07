@@ -500,7 +500,7 @@ export function processComponentApimlStaticDefinitions(componentDir: string): bo
           if (!authProvider) {
             authProvider = 'zosmf';
           }
-          let authScheme = 'zosmf';
+          let authScheme = zosmfAuthenticationScheme || 'zosmf';
           if (!zosmfAuthenticationScheme && (authProvider === 'saf')) {
             authScheme = 'httpBasicPassTicket';
           }
