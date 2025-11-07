@@ -172,7 +172,11 @@ update_yaml_configmgr() {
     print_error_and_exit "Error ZWEL0138E: Failed to update key ${key} of file ${file}." "" 138
   fi
 
-  ensure_file_encoding "${file}" "${expected_sample}"
+  # Only ensure_file_encoding if we don't have a configmgr style zowe.yaml
+  CONFIGMGR_SYNTAX=$(check_configmgr_config_syntax)
+  if [ "${CONFIGMGR_SYNTAX}" != "true" ]; then
+    ensure_file_encoding "${file}" "${expected_sample}"
+  fi
 }
 
 read_yaml() {
@@ -305,7 +309,11 @@ delete_yaml_configmgr() {
     print_error_and_exit "Error ZWEL0138E: Failed to delete key ${key} of file ${file}." "" 138
   fi
 
-  ensure_file_encoding "${file}" "${expected_sample}"
+  # Only ensure_file_encoding if we don't have a configmgr style zowe.yaml
+  CONFIGMGR_SYNTAX=$(check_configmgr_config_syntax)
+  if [ "${CONFIGMGR_SYNTAX}" != "true" ]; then
+    ensure_file_encoding "${file}" "${expected_sample}"
+  fi
 }
 
 delete_zowe_yaml() {

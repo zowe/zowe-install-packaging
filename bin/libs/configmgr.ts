@@ -239,11 +239,11 @@ function writeToCfgPath(zweCfgPath: string, content: string): any {
     if (typeof dirResult == 'string') {
       zwePrivateWorkspaceEnvDir = dirResult;
     } else if (dirResult === 0) {
-      const workspace = ZOWE_CONFIG.zowe.workspaceDirectory;
+      const workspace = getZoweConfig().zowe.workspaceDirectory;
 
       //need a temp file to do the cp into parmlib
       //ensure .env folder exists
-      let zwePrivateWorkspaceEnvDir = std.getenv('ZWE_PRIVATE_WORKSPACE_ENV_DIR');
+      zwePrivateWorkspaceEnvDir = std.getenv('ZWE_PRIVATE_WORKSPACE_ENV_DIR');
       if (!zwePrivateWorkspaceEnvDir) {
         zwePrivateWorkspaceEnvDir=`${workspace}/.env`;
         std.setenv('ZWE_PRIVATE_WORKSPACE_ENV_DIR', zwePrivateWorkspaceEnvDir);
@@ -438,7 +438,7 @@ function updateConfig(configName: string, updateObj: any, arrayMergeStrategy: nu
 }
 
 export function deleteFromZoweCfgFile(file: string, deleteKey: string, shouldValidate: boolean = true): [number, any] {
-  const fileCfg = `FILE(${file})`;
+  const fileCfg = getConfigMgrSyntax(file);
   const zoweConfigName = 'zowe-delete-yaml';
   const ZOWE_FILE_CONFIG = getConfig(zoweConfigName, fileCfg, ZOWE_SCHEMA_SET, shouldValidate); 
   let rc = deleteConfig(zoweConfigName, deleteKey, shouldValidate);
@@ -451,8 +451,16 @@ export function deleteFromZoweCfgFile(file: string, deleteKey: string, shouldVal
   return [rc, ZOWE_FILE_CONFIG];
 }
 
+export function getConfigMgrSyntax(file: string): string {
+  let cfgMgrFile = file;
+  if (!file.startsWith('PARMLIB(') && !file.startsWith('FILE(')) {
+    cfgMgrFile = `FILE(${file})`;
+  }
+  return cfgMgrFile;
+}
+
 export function updateZoweCfgFile(file: string, updateObj: any, arrayMergeStrategy: number=1, shouldValidate: boolean=true): [number, any] {
-  const fileCfg = `FILE(${file})`;
+  const fileCfg = getConfigMgrSyntax(file);
   const zoweConfigName = 'zowe-update-yaml';
   const ZOWE_FILE_CONFIG = getConfig(zoweConfigName, fileCfg, ZOWE_SCHEMA_SET, shouldValidate); 
   let rc = updateConfig(zoweConfigName, updateObj, arrayMergeStrategy, shouldValidate);

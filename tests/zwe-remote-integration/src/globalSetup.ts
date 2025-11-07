@@ -37,7 +37,7 @@ import ZoweYamlType from './config/ZoweYamlType';
 import { JfrogClient } from 'jfrog-client-js';
 import { processManifestVersion } from './utils';
 import { execSync } from 'child_process';
-import { createPds } from './zos/Files';
+import { createPds, LOADLIB_PARAMS, SIMPLE_PDS_PARAMS } from './zos/Files';
 
 const zosmfSession = getSession();
 const buildDir = path.resolve(THIS_TEST_ROOT_DIR, '.build');
@@ -427,15 +427,13 @@ module.exports = async () => {
       },
     );
 
-    const simplePdsParams = { primary: 5, secondary: 1, volser: REMOTE_SYSTEM_INFO.volume };
-    const loadlibParams = { primary: 5, recfm: 'U', lrecl: 0, secondary: 1, volser: REMOTE_SYSTEM_INFO.volume };
-    await createPds(REMOTE_SYSTEM_INFO.szweexec, simplePdsParams);
-    await createPds(REMOTE_SYSTEM_INFO.szwesamp, simplePdsParams);
-    await createPds(REMOTE_SYSTEM_INFO.szweload, loadlibParams);
-    await createPds(REMOTE_SYSTEM_INFO.proclib, simplePdsParams);
-    await createPds(REMOTE_SYSTEM_INFO.parmlib, simplePdsParams);
-    await createPds(REMOTE_SYSTEM_INFO.authLoadLib, loadlibParams);
-    await createPds(REMOTE_SYSTEM_INFO.authPluginLib, loadlibParams);
+    await createPds(REMOTE_SYSTEM_INFO.szweexec, SIMPLE_PDS_PARAMS);
+    await createPds(REMOTE_SYSTEM_INFO.szwesamp, SIMPLE_PDS_PARAMS);
+    await createPds(REMOTE_SYSTEM_INFO.szweload, LOADLIB_PARAMS);
+    await createPds(REMOTE_SYSTEM_INFO.proclib, SIMPLE_PDS_PARAMS);
+    await createPds(REMOTE_SYSTEM_INFO.parmlib, SIMPLE_PDS_PARAMS);
+    await createPds(REMOTE_SYSTEM_INFO.authLoadLib, LOADLIB_PARAMS);
+    await createPds(REMOTE_SYSTEM_INFO.authPluginLib, LOADLIB_PARAMS);
 
     console.log(`Unpacking configmgr and placing it in bin/utils ...`);
     await uss.runCommand(`pax -ppx -rf configmgr.pax && mv configmgr ${REMOTE_SYSTEM_INFO.ussTestDir}/bin/utils/`, ussWorkDir);
