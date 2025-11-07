@@ -16,9 +16,9 @@ if [ "${USE_CONFIGMGR}" = "true" ]; then
   _CEE_RUNOPTS="XPLINK(ON),HEAPPOOLS(OFF),HEAPPOOLS64(OFF)" ${ZWE_zowe_runtimeDirectory}/bin/utils/configmgr -script "${ZWE_zowe_runtimeDirectory}/bin/commands/internal/config/get/cli.js"
 else
 
-###############################
-# validation
-require_zowe_yaml
+  ###############################
+  # validation
+  require_zowe_yaml
 
   ###############################
   if [ -n "${ZWE_CLI_PARAMETER_HA_INSTANCE}" ] && [[ "${ZWE_CLI_PARAMETER_PATH}" != "haInstances.${ZWE_CLI_PARAMETER_HA_INSTANCE}."* ]]; then
