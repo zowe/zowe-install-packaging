@@ -203,6 +203,7 @@ module.exports = async () => {
       await downloadManifestDep('org.zowe.getesm');
       await downloadArtifact('libs-snapshot-local', 'org/zowe/vtl-cli/zowe-cli-package/1.0.7-SNAPSHOT', 'vtl.tar.gz');
       await downloadManifestDep('org.zowe.zis-test');
+      await downloadManifestDep('org.zowe.bind-test');
     }
 
     await downloadManifestDep('org.zowe.zowe-native-proto');
@@ -254,9 +255,14 @@ module.exports = async () => {
       throw new Error('Could not locate the getesm pax in the .build directory');
     }
 
-    const getZisTestArchive = downloadsDirContents.find((item) => /zis-test.*.pax/g.test(item));
-    if (getZisTestArchive == null) {
+    const zisTestArchive = downloadsDirContents.find((item) => /zis-test.*.pax/g.test(item));
+    if (zisTestArchive == null) {
       throw new Error('Could not locate the zis-test pax in the .build directory');
+    }
+
+    const bindTestArchive = downloadsDirContents.find((item) => /bind-test.*.pax/g.test(item));
+    if (bindTestArchive == null) {
+      throw new Error('Could not locate the bind-test pax in the .build directory');
     }
 
     console.log(`Setting up remote server on ${REMOTE_SYSTEM_INFO.hostname}...`);
@@ -314,8 +320,13 @@ module.exports = async () => {
       binary: true,
     });
 
-    console.log(`Uploading ${getZisTestArchive} to ${ussWorkDir}/zis-test.pax ...`);
-    await files.Upload.fileToUssFile(zosmfSession, path.resolve(downloadsDir, getZisTestArchive), `${ussWorkDir}/zis-test.pax`, {
+    console.log(`Uploading ${zisTestArchive} to ${ussWorkDir}/zis-test.pax ...`);
+    await files.Upload.fileToUssFile(zosmfSession, path.resolve(downloadsDir, zisTestArchive), `${ussWorkDir}/zis-test.pax`, {
+      binary: true,
+    });
+
+    console.log(`Upload ${bindTestArchive} to ${ussWorkDir}/bind-test.pax ...`);
+    await files.Upload.fileToUssFile(zosmfSession, path.resolve(downloadsDir, bindTestArchive), `${ussWorkDir}/bind-test.pax`, {
       binary: true,
     });
 
@@ -352,9 +363,15 @@ module.exports = async () => {
     console.log(`Unpacking ${curlPax} and moving curl to ${REMOTE_SYSTEM_INFO.ussTestDir}/bin/utils...`);
     await uss.runCommand(`pax -ppx -rf ${curlPax} && cp -f curl-*/bin/curl ${REMOTE_SYSTEM_INFO.ussTestDir}/bin/utils`, ussWorkDir);
 
-    console.debug(`Unpacking ${getZisTestArchive} and moving zis-test to ${REMOTE_SYSTEM_INFO.ussTestDir}/bin/utils...`);
+    console.debug(`Unpacking ${zisTestArchive} and moving zis-test to ${REMOTE_SYSTEM_INFO.ussTestDir}/bin/utils...`);
     await uss.runCommand(
       `pax -ppx -rf zis-test.pax && cp -f zis-test ${REMOTE_SYSTEM_INFO.ussTestDir}/bin/utils && chmod +x ${REMOTE_SYSTEM_INFO.ussTestDir}/bin/utils/zis-test`,
+      ussWorkDir,
+    );
+
+    console.debug(`Unpacking ${bindTestArchive} and moving bind-test to ${REMOTE_SYSTEM_INFO.ussTestDir}/bin/utils...`);
+    await uss.runCommand(
+      `pax -ppx -rf bind-test.pax && cp -f bind-test ${REMOTE_SYSTEM_INFO.ussTestDir}/bin/utils && chmod +x ${REMOTE_SYSTEM_INFO.ussTestDir}/bin/utils/bind-test`,
       ussWorkDir,
     );
 

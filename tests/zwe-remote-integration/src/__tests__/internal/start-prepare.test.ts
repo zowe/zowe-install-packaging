@@ -12,6 +12,8 @@ import ZoweYamlType from '../../config/ZoweYamlType';
 import { RemoteTestRunner } from '../../zos/RemoteTestRunner';
 import { ZoweConfig } from '../../config/ZoweConfig';
 import { FileType, TestFile, TestFileActions } from '../../zos/TestFileActions';
+import { REMOTE_SYSTEM_INFO } from '../../config/TestConfig';
+import * as _ from 'lodash';
 
 const testSuiteName = 'start-prepare-tests';
 describe(`${testSuiteName}`, () => {
@@ -35,6 +37,12 @@ describe(`${testSuiteName}`, () => {
   });
   beforeEach(async () => {
     cfgYaml = ZoweConfig.getZoweYaml();
+    for (const component of Object.values(cfgYaml.components)) {
+      if (component.port) {
+        component.port = (Number(component.port) + 15000) % 65535;
+      }
+    }
+    _.set(cfgYaml, 'node.home', REMOTE_SYSTEM_INFO.zosNodeHome);
     defaultCfgYaml = ZoweConfig.getDefaultsYaml();
     await testRunner.removeUssFileOrDirForTest('components/zss/bin/validate.sh'); // validate script causes rc=1
     await TestFileActions.deleteAll([workspaceEnv]);
@@ -50,50 +58,57 @@ describe(`${testSuiteName}`, () => {
   });
 
   describe('(SHORT)', () => {
+    it('modulith disabled', async () => {
+      cfgYaml.components.apiml.enabled = false;
+      const result = await testRunner.runZweTest(cfgYaml, 'internal start prepare');
+      expect(result.cleanedStdout).toMatchSnapshot();
+      expect(result.rc).toBe(0);
+    });
+
     it('default startupChecks behavior', async () => {
       const result = await testRunner.runZweTest(cfgYaml, 'internal start prepare');
-      expect(result.rc).toBe(0);
       expect(result.cleanedStdout).toMatchSnapshot();
+      expect(result.rc).toBe(0);
     });
 
     it('set startupChecks disabled', async () => {
       defaultCfgYaml.zowe.launchScript.startupChecks.default = 'disabled';
       const result = await testRunner.runZweTestWithDefaults(cfgYaml, defaultCfgYaml, 'internal start prepare');
-      expect(result.rc).toBe(0);
       expect(result.cleanedStdout).toMatchSnapshot();
+      expect(result.rc).toBe(0);
     });
 
     it('set startupChecks warn', async () => {
       defaultCfgYaml.zowe.launchScript.startupChecks.default = 'warn';
       const result = await testRunner.runZweTestWithDefaults(cfgYaml, defaultCfgYaml, 'internal start prepare');
-      expect(result.rc).toBe(0);
       expect(result.cleanedStdout).toMatchSnapshot();
+      expect(result.rc).toBe(0);
     });
 
     it('test combinations of startup default and ports', async () => {
       defaultCfgYaml.zowe.launchScript.startupChecks.default = 'warn';
       defaultCfgYaml.zowe.launchScript.startupChecks.ports = 'disabled';
       let result = await testRunner.runZweTestWithDefaults(cfgYaml, defaultCfgYaml, 'internal start prepare');
-      expect(result.rc).toBe(0);
       expect(result.cleanedStdout).toMatchSnapshot();
+      expect(result.rc).toBe(0);
 
       defaultCfgYaml.zowe.launchScript.startupChecks.default = 'exit';
       defaultCfgYaml.zowe.launchScript.startupChecks.ports = 'disabled';
       result = await testRunner.runZweTestWithDefaults(cfgYaml, defaultCfgYaml, 'internal start prepare');
-      expect(result.rc).toBe(0);
       expect(result.cleanedStdout).toMatchSnapshot();
+      expect(result.rc).toBe(0);
 
       defaultCfgYaml.zowe.launchScript.startupChecks.default = 'disabled';
       defaultCfgYaml.zowe.launchScript.startupChecks.ports = 'warn';
       result = await testRunner.runZweTestWithDefaults(cfgYaml, defaultCfgYaml, 'internal start prepare');
-      expect(result.rc).toBe(0);
       expect(result.cleanedStdout).toMatchSnapshot();
+      expect(result.rc).toBe(0);
 
       defaultCfgYaml.zowe.launchScript.startupChecks.default = 'disabled';
       defaultCfgYaml.zowe.launchScript.startupChecks.ports = 'exit';
       result = await testRunner.runZweTestWithDefaults(cfgYaml, defaultCfgYaml, 'internal start prepare');
-      expect(result.rc).toBe(0);
       expect(result.cleanedStdout).toMatchSnapshot();
+      expect(result.rc).toBe(0);
     });
   });
 });

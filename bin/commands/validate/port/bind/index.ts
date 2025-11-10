@@ -18,6 +18,7 @@ import * as shell from '../../../../libs/shell';
 const COMMAND_NAME = 'zwe-validate-port-available';
 
 export function execute(quitOnError?: boolean, componentName?: string): number {
+  common.requireZoweYaml();
   let enabledComponents = componentName ? [componentName] : component.getEnabledComponents();
   let hasErrors = false;
   const ZOWE_CONFIG = config.getZoweConfig();
@@ -35,8 +36,8 @@ export function execute(quitOnError?: boolean, componentName?: string): number {
     let componentName = enabledComponents[i];
     let port = ZOWE_CONFIG.components[componentName].port;
     if (component.isComponentInAPIMLModulith(componentName)) {
-      if (componentName == 'gateway' && !port) {
-        port = ZOWE_CONFIG.components.apiml.port;
+      if (componentName == 'gateway') {
+        port = ZOWE_CONFIG.components.apiml.port ?? port;
       } else if (componentName != 'discovery') {
         continue;
       }
@@ -76,7 +77,7 @@ export function execute(quitOnError?: boolean, componentName?: string): number {
       if (result.rc) {
         failedCount++;
         if (result.out) {
-          console.log(result.out);
+          common.printDebug(result.out);
         }
         if (jobname) {
           common.printFormattedError(common.MSG_KEY, COMMAND_NAME, `${componentName}: Port ${port} not available for jobname ${jobname} or command failed.`);
@@ -99,7 +100,6 @@ export function execute(quitOnError?: boolean, componentName?: string): number {
     return failedCount;
   } else {
     common.printFormattedError(common.MSG_KEY, COMMAND_NAME, `Port bind validation failed. This check can be dismissed with YAML value "zowe.launchScript.startupChecks.ports: warn"`);
-    common.printErrorAndExit(`${failedCount} port bind validation(s) failed, review output for action items before running Zowe.`, null, 8);
-    return failedCount;
+    common.printErrorAndExit(`${failedCount} port bind validation(s) failed, review output for action items before running Zowe.`, undefined, 8);
   }
 }

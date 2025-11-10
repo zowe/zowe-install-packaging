@@ -1,19 +1,281 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`zwe-validate-commands (SHORT) config validate alias 1`] = `
+exports[`zwe-validate-commands (SHORT) _(PORT) custom listen addresses 1`] = `
 "Temporary directory '/tmp/.zweenv-0000' created.
 Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
-TESTUSR0 INFO (zwe-internal-start-prepare) Zowe version: v3.3.0
+2025-11-10 21:01:49 <ZWELS:33623903> TESTUSR0 INFO (zwe-validate-port-available) Checking ports of 11 enabled components
+ERROR: 2025-11-10 21:01:49 <ZWELS:33623903> TESTUSR0 ERROR (zwe-validate-port-available) gateway: Port 22554 not available for jobname ZWE1AG or command failed.
+ERROR: 2025-11-10 21:01:50 <ZWELS:33623903> TESTUSR0 ERROR (zwe-validate-port-available) discovery: Port 22553 not available for jobname ZWE1AG or command failed.
+ERROR: 2025-11-10 21:01:51 <ZWELS:33623903> TESTUSR0 ERROR (zwe-validate-port-available) app-server: Port 22556 not available or command failed.
+ERROR: 2025-11-10 21:01:52 <ZWELS:33623903> TESTUSR0 ERROR (zwe-validate-port-available) zss: Port 22557 not available for jobname ZWE1SZ or command failed.
+ERROR: 2025-11-10 21:01:52 <ZWELS:33623903> TESTUSR0 ERROR (zwe-validate-port-available) 4 port bind validation(s) failed, review output for action items before running Zowe."
+`;
+
+exports[`zwe-validate-commands (SHORT) _(PORT) custom listen addresses 2`] = `
+"Temporary directory '/tmp/.zweenv-0000' created.
+Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
+2025-11-10 21:01:54 <ZWELS:33621642> TESTUSR0 INFO (zwe-validate-port-available) Checking ports of 11 enabled components
+ERROR: 2025-11-10 21:01:55 <ZWELS:33621642> TESTUSR0 ERROR (zwe-validate-port-available) gateway: Port 22554 not available for jobname ZWE1AG or command failed.
+ERROR: 2025-11-10 21:01:56 <ZWELS:33621642> TESTUSR0 ERROR (zwe-validate-port-available) discovery: Port 22553 not available for jobname ZWE1AG or command failed.
+ERROR: 2025-11-10 21:01:56 <ZWELS:33621642> TESTUSR0 ERROR (zwe-validate-port-available) app-server: Port 22556 not available or command failed.
+ERROR: 2025-11-10 21:01:57 <ZWELS:33621642> TESTUSR0 ERROR (zwe-validate-port-available) 3 port bind validation(s) failed, review output for action items before running Zowe."
+`;
+
+exports[`zwe-validate-commands (SHORT) _(PORT) custom listen addresses 3`] = `
+"Temporary directory '/tmp/.zweenv-0000' created.
+Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
+2025-11-10 21:02:00 <ZWELS:33622030> TESTUSR0 INFO (zwe-validate-port-available) Checking ports of 11 enabled components
+ERROR: 2025-11-10 21:02:03 <ZWELS:33622030> TESTUSR0 ERROR (zwe-validate-port-available) zss: Port 22557 not available for jobname ZWE1SZ or command failed.
+ERROR: 2025-11-10 21:02:03 <ZWELS:33622030> TESTUSR0 ERROR (zwe-validate-port-available) 1 port bind validation(s) failed, review output for action items before running Zowe."
+`;
+
+exports[`zwe-validate-commands (SHORT) _(PORT) custom listen addresses 4`] = `
+"Temporary directory '/tmp/.zweenv-0000' created.
+Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
+2025-11-10 21:02:06 <ZWELS:33622156> TESTUSR0 INFO (zwe-validate-port-available) Checking ports of 10 enabled components
+ERROR: 2025-11-10 21:02:07 <ZWELS:33622156> TESTUSR0 ERROR (zwe-validate-port-available) gateway: Port 22554 not available for jobname ZWE1AG or command failed.
+ERROR: 2025-11-10 21:02:07 <ZWELS:33622156> TESTUSR0 ERROR (zwe-validate-port-available) zaas: Port 22558 not available for jobname ZWE1AZ or command failed.
+ERROR: 2025-11-10 21:02:08 <ZWELS:33622156> TESTUSR0 ERROR (zwe-validate-port-available) api-catalog: Port 22552 not available for jobname ZWE1AC or command failed.
+ERROR: 2025-11-10 21:02:09 <ZWELS:33622156> TESTUSR0 ERROR (zwe-validate-port-available) discovery: Port 22553 not available for jobname ZWE1AD or command failed.
+ERROR: 2025-11-10 21:02:10 <ZWELS:33622156> TESTUSR0 ERROR (zwe-validate-port-available) caching-service: Port 22555 not available for jobname ZWE1CS or command failed.
+ERROR: 2025-11-10 21:02:10 <ZWELS:33622156> TESTUSR0 ERROR (zwe-validate-port-available) app-server: Port 22556 not available or command failed.
+ERROR: 2025-11-10 21:02:11 <ZWELS:33622156> TESTUSR0 ERROR (zwe-validate-port-available) zss: Port 22557 not available for jobname ZWE1SZ or command failed.
+ERROR: 2025-11-10 21:02:11 <ZWELS:33622156> TESTUSR0 ERROR (zwe-validate-port-available) 7 port bind validation(s) failed, review output for action items before running Zowe."
+`;
+
+exports[`zwe-validate-commands (SHORT) _(PORT) custom listen addresses 5`] = `
+"Temporary directory '/tmp/.zweenv-0000' created.
+Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
+2025-11-10 21:02:14 <ZWELS:33623635> TESTUSR0 INFO (zwe-validate-port-available) Checking ports of 10 enabled components
+ERROR: 2025-11-10 21:02:14 <ZWELS:33623635> TESTUSR0 ERROR (zwe-validate-port-available) gateway: Port 22554 not available for jobname ZWE1AG or command failed.
+ERROR: 2025-11-10 21:02:15 <ZWELS:33623635> TESTUSR0 ERROR (zwe-validate-port-available) zaas: Port 22558 not available for jobname ZWE1AZ or command failed.
+ERROR: 2025-11-10 21:02:16 <ZWELS:33623635> TESTUSR0 ERROR (zwe-validate-port-available) api-catalog: Port 22552 not available for jobname ZWE1AC or command failed.
+ERROR: 2025-11-10 21:02:17 <ZWELS:33623635> TESTUSR0 ERROR (zwe-validate-port-available) discovery: Port 22553 not available for jobname ZWE1AD or command failed.
+ERROR: 2025-11-10 21:02:18 <ZWELS:33623635> TESTUSR0 ERROR (zwe-validate-port-available) caching-service: Port 22555 not available for jobname ZWE1CS or command failed.
+ERROR: 2025-11-10 21:02:18 <ZWELS:33623635> TESTUSR0 ERROR (zwe-validate-port-available) app-server: Port 22556 not available or command failed.
+ERROR: 2025-11-10 21:02:19 <ZWELS:33623635> TESTUSR0 ERROR (zwe-validate-port-available) 6 port bind validation(s) failed, review output for action items before running Zowe."
+`;
+
+exports[`zwe-validate-commands (SHORT) _(PORT) custom listen addresses 6`] = `
+"Temporary directory '/tmp/.zweenv-0000' created.
+Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
+2025-11-10 21:02:22 <ZWELS:33622652> TESTUSR0 INFO (zwe-validate-port-available) Checking ports of 10 enabled components
+ERROR: 2025-11-10 21:02:27 <ZWELS:33622652> TESTUSR0 ERROR (zwe-validate-port-available) zss: Port 22557 not available for jobname ZWE1SZ or command failed.
+ERROR: 2025-11-10 21:02:27 <ZWELS:33622652> TESTUSR0 ERROR (zwe-validate-port-available) 1 port bind validation(s) failed, review output for action items before running Zowe."
+`;
+
+exports[`zwe-validate-commands (SHORT) _(PORT) test port priority 1`] = `
+"Temporary directory '/tmp/.zweenv-0000' created.
+Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
+2025-11-10 21:10:08 <ZWELS:33620443> TESTUSR0 INFO (zwe-validate-port-available) Checking ports of 11 enabled components
+ERROR: 2025-11-10 21:10:09 <ZWELS:33620443> TESTUSR0 ERROR (zwe-validate-port-available) gateway: Port 22554 not available for jobname ZWE1AG or command failed.
+ERROR: 2025-11-10 21:10:09 <ZWELS:33620443> TESTUSR0 ERROR (zwe-validate-port-available) discovery: Port 22553 not available for jobname ZWE1AG or command failed.
+ERROR: 2025-11-10 21:10:10 <ZWELS:33620443> TESTUSR0 ERROR (zwe-validate-port-available) app-server: Port 22556 not available or command failed.
+ERROR: 2025-11-10 21:10:11 <ZWELS:33620443> TESTUSR0 ERROR (zwe-validate-port-available) zss: Port 22557 not available for jobname ZWE1SZ or command failed.
+ERROR: 2025-11-10 21:10:11 <ZWELS:33620443> TESTUSR0 ERROR (zwe-validate-port-available) 4 port bind validation(s) failed, review output for action items before running Zowe."
+`;
+
+exports[`zwe-validate-commands (SHORT) _(PORT) test port priority 2`] = `
+"Temporary directory '/tmp/.zweenv-0000' created.
+Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
+2025-11-10 21:10:13 <ZWELS:33623733> TESTUSR0 INFO (zwe-validate-port-available) Checking ports of 11 enabled components
+ERROR: 2025-11-10 21:10:14 <ZWELS:33623733> TESTUSR0 ERROR (zwe-validate-port-available) gateway: Port 22553 not available for jobname ZWE1AG or command failed.
+ERROR: 2025-11-10 21:10:15 <ZWELS:33623733> TESTUSR0 ERROR (zwe-validate-port-available) discovery: Port 22553 not available for jobname ZWE1AG or command failed.
+ERROR: 2025-11-10 21:10:16 <ZWELS:33623733> TESTUSR0 ERROR (zwe-validate-port-available) apiml: Port 22553 not available or command failed.
+ERROR: 2025-11-10 21:10:17 <ZWELS:33623733> TESTUSR0 ERROR (zwe-validate-port-available) app-server: Port 22556 not available or command failed.
+ERROR: 2025-11-10 21:10:17 <ZWELS:33623733> TESTUSR0 ERROR (zwe-validate-port-available) zss: Port 22557 not available for jobname ZWE1SZ or command failed.
+ERROR: 2025-11-10 21:10:17 <ZWELS:33623733> TESTUSR0 ERROR (zwe-validate-port-available) 5 port bind validation(s) failed, review output for action items before running Zowe."
+`;
+
+exports[`zwe-validate-commands (SHORT) _(PORT) validate port bind 1`] = `
+"Temporary directory '/tmp/.zweenv-0000' created.
+Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
+2025-11-10 21:05:53 <ZWELS:33621346> TESTUSR0 INFO (zwe-validate-port-available) Checking ports of 11 enabled components
+2025-11-10 21:05:56 <ZWELS:33621346> TESTUSR0 INFO (zwe-validate-port-available) Zowe port bind validation passed."
+`;
+
+exports[`zwe-validate-commands (SHORT) _(PORT) validate port bind 2`] = `
+"Temporary directory '/tmp/.zweenv-0000' created.
+Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
+2025-11-10 21:05:59 <ZWELS:67176682> TESTUSR0 INFO (zwe-validate-port-available) Checking ports of 11 enabled components
+2025-11-10 21:06:03 <ZWELS:67176682> TESTUSR0 INFO (zwe-validate-port-available) Zowe port bind validation passed."
+`;
+
+exports[`zwe-validate-commands (SHORT) _(PORT) validate port bind 3`] = `
+"Temporary directory '/tmp/.zweenv-0000' created.
+Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
+2025-11-10 21:06:05 <ZWELS:33622600> TESTUSR0 INFO (zwe-validate-port-available) Checking ports of 10 enabled components
+2025-11-10 21:06:11 <ZWELS:33622600> TESTUSR0 INFO (zwe-validate-port-available) Zowe port bind validation passed."
+`;
+
+exports[`zwe-validate-commands (SHORT) _(PORT) validate port bind for specific components 1`] = `
+"Temporary directory '/tmp/.zweenv-0000' created.
+Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
+2025-11-10 21:06:13 <ZWELS:67178436> TESTUSR0 INFO (zwe-validate-port-available) Checking ports of 1 enabled components
+2025-11-10 21:06:13 <ZWELS:67178436> TESTUSR0 INFO (zwe-validate-port-available) Zowe port bind validation passed."
+`;
+
+exports[`zwe-validate-commands (SHORT) _(PORT) validate port bind for specific components 2`] = `
+"Temporary directory '/tmp/.zweenv-0000' created.
+Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
+2025-11-10 21:06:16 <ZWELS:83955669> TESTUSR0 INFO (zwe-validate-port-available) Checking ports of 1 enabled components
+2025-11-10 21:06:17 <ZWELS:83955669> TESTUSR0 INFO (zwe-validate-port-available) Zowe port bind validation passed."
+`;
+
+exports[`zwe-validate-commands (SHORT) _(PORT) validate port bind for specific components 3`] = `
+"Temporary directory '/tmp/.zweenv-0000' created.
+Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
+2025-11-10 21:06:19 <ZWELS:33623991> TESTUSR0 INFO (zwe-validate-port-available) Checking ports of 1 enabled components
+2025-11-10 21:06:19 <ZWELS:33623991> TESTUSR0 INFO (zwe-validate-port-available) Zowe port bind validation passed."
+`;
+
+exports[`zwe-validate-commands (SHORT) _(PORT) validate port bind for specific components 4`] = `
+"Temporary directory '/tmp/.zweenv-0000' created.
+Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
+2025-11-10 21:06:22 <ZWELS:33621157> TESTUSR0 INFO (zwe-validate-port-available) Checking ports of 1 enabled components
+2025-11-10 21:06:22 <ZWELS:33621157> TESTUSR0 INFO (zwe-validate-port-available) Zowe port bind validation passed."
+`;
+
+exports[`zwe-validate-commands (SHORT) _(PORT) validate port bind for specific components 5`] = `
+"Temporary directory '/tmp/.zweenv-0000' created.
+Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
+2025-11-10 21:06:24 <ZWELS:67175021> TESTUSR0 INFO (zwe-validate-port-available) Checking ports of 1 enabled components
+2025-11-10 21:06:25 <ZWELS:67175021> TESTUSR0 INFO (zwe-validate-port-available) Zowe port bind validation passed."
+`;
+
+exports[`zwe-validate-commands (SHORT) _(PORT) validate port bind for specific components 6`] = `
+"Temporary directory '/tmp/.zweenv-0000' created.
+Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
+2025-11-10 21:06:27 <ZWELS:33623318> TESTUSR0 INFO (zwe-validate-port-available) Checking ports of 1 enabled components
+2025-11-10 21:06:27 <ZWELS:33623318> TESTUSR0 INFO (zwe-validate-port-available) Zowe port bind validation passed."
+`;
+
+exports[`zwe-validate-commands (SHORT) _(PORT) validate port bind for specific components 7`] = `
+"Temporary directory '/tmp/.zweenv-0000' created.
+Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
+2025-11-10 21:06:30 <ZWELS:33622394> TESTUSR0 INFO (zwe-validate-port-available) Checking ports of 1 enabled components
+2025-11-10 21:06:30 <ZWELS:33622394> TESTUSR0 INFO (zwe-validate-port-available) Zowe port bind validation passed."
+`;
+
+exports[`zwe-validate-commands (SHORT) _(PORT) validate port bind for specific components 8`] = `
+"Temporary directory '/tmp/.zweenv-0000' created.
+Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
+2025-11-10 21:06:33 <ZWELS:67175022> TESTUSR0 INFO (zwe-validate-port-available) Checking ports of 1 enabled components
+2025-11-10 21:06:34 <ZWELS:67175022> TESTUSR0 INFO (zwe-validate-port-available) Zowe port bind validation passed."
+`;
+
+exports[`zwe-validate-commands (SHORT) _(PORT) validate port bind for specific components 9`] = `
+"Temporary directory '/tmp/.zweenv-0000' created.
+Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
+2025-11-10 21:06:36 <ZWELS:33623659> TESTUSR0 INFO (zwe-validate-port-available) Checking ports of 1 enabled components
+2025-11-10 21:06:36 <ZWELS:33623659> TESTUSR0 INFO (zwe-validate-port-available) Zowe port bind validation passed."
+`;
+
+exports[`zwe-validate-commands (SHORT) _(PORT) validate port bind for specific components 10`] = `
+"Temporary directory '/tmp/.zweenv-0000' created.
+Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
+2025-11-10 21:06:38 <ZWELS:33623180> TESTUSR0 INFO (zwe-validate-port-available) Checking ports of 1 enabled components
+2025-11-10 21:06:38 <ZWELS:33623180> TESTUSR0 INFO (zwe-validate-port-available) Zowe port bind validation passed."
+`;
+
+exports[`zwe-validate-commands (SHORT) _(PORT) validate port bind for specific components 11`] = `
+"Temporary directory '/tmp/.zweenv-0000' created.
+Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
+2025-11-10 21:06:41 <ZWELS:67175542> TESTUSR0 INFO (zwe-validate-port-available) Checking ports of 1 enabled components
+2025-11-10 21:06:41 <ZWELS:67175542> TESTUSR0 INFO (zwe-validate-port-available) Zowe port bind validation passed."
+`;
+
+exports[`zwe-validate-commands (SHORT) _(PORT) validate port bind for specific components 12`] = `
+"Temporary directory '/tmp/.zweenv-0000' created.
+Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
+2025-11-10 21:06:43 <ZWELS:33622646> TESTUSR0 INFO (zwe-validate-port-available) Checking ports of 1 enabled components
+2025-11-10 21:06:43 <ZWELS:33622646> TESTUSR0 INFO (zwe-validate-port-available) Zowe port bind validation passed."
+`;
+
+exports[`zwe-validate-commands (SHORT) _(PORT) validate port bind for specific components 13`] = `
+"Temporary directory '/tmp/.zweenv-0000' created.
+Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
+2025-11-10 21:06:46 <ZWELS:33620728> TESTUSR0 INFO (zwe-validate-port-available) Checking ports of 1 enabled components
+2025-11-10 21:06:47 <ZWELS:33620728> TESTUSR0 INFO (zwe-validate-port-available) Zowe port bind validation passed."
+`;
+
+exports[`zwe-validate-commands (SHORT) _(PORT) validate port bind for specific components 14`] = `
+"Temporary directory '/tmp/.zweenv-0000' created.
+Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
+2025-11-10 21:06:49 <ZWELS:16843855> TESTUSR0 INFO (zwe-validate-port-available) Checking ports of 1 enabled components
+2025-11-10 21:06:50 <ZWELS:16843855> TESTUSR0 INFO (zwe-validate-port-available) Zowe port bind validation passed."
+`;
+
+exports[`zwe-validate-commands (SHORT) _(PORT) validate port bind for specific components 15`] = `
+"Temporary directory '/tmp/.zweenv-0000' created.
+Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
+2025-11-10 21:06:52 <ZWELS:67174473> TESTUSR0 INFO (zwe-validate-port-available) Checking ports of 1 enabled components
+2025-11-10 21:06:53 <ZWELS:67174473> TESTUSR0 INFO (zwe-validate-port-available) Zowe port bind validation passed."
+`;
+
+exports[`zwe-validate-commands (SHORT) _(PORT) validate port bind for specific components 16`] = `
+"Temporary directory '/tmp/.zweenv-0000' created.
+Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
+2025-11-10 21:06:56 <ZWELS:33620262> TESTUSR0 INFO (zwe-validate-port-available) Checking ports of 1 enabled components
+2025-11-10 21:06:56 <ZWELS:33620262> TESTUSR0 INFO (zwe-validate-port-available) Zowe port bind validation passed."
+`;
+
+exports[`zwe-validate-commands (SHORT) _(PORT) validate port bind for specific components 17`] = `
+"Temporary directory '/tmp/.zweenv-0000' created.
+Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
+2025-11-10 21:06:59 <ZWELS:67175216> TESTUSR0 INFO (zwe-validate-port-available) Checking ports of 1 enabled components
+2025-11-10 21:07:00 <ZWELS:67175216> TESTUSR0 INFO (zwe-validate-port-available) Zowe port bind validation passed."
+`;
+
+exports[`zwe-validate-commands (SHORT) _(PORT) validate port bind for specific components 18`] = `
+"Temporary directory '/tmp/.zweenv-0000' created.
+Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
+2025-11-10 21:07:02 <ZWELS:33621718> TESTUSR0 INFO (zwe-validate-port-available) Checking ports of 1 enabled components
+2025-11-10 21:07:03 <ZWELS:33621718> TESTUSR0 INFO (zwe-validate-port-available) Zowe port bind validation passed."
+`;
+
+exports[`zwe-validate-commands (SHORT) _(PORT) validate port bind for specific components 19`] = `
+"Temporary directory '/tmp/.zweenv-0000' created.
+Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
+2025-11-10 21:07:05 <ZWELS:33623267> TESTUSR0 INFO (zwe-validate-port-available) Checking ports of 1 enabled components
+2025-11-10 21:07:06 <ZWELS:33623267> TESTUSR0 INFO (zwe-validate-port-available) Zowe port bind validation passed."
+`;
+
+exports[`zwe-validate-commands (SHORT) _(PORT) validate port bind for specific components 20`] = `
+"Temporary directory '/tmp/.zweenv-0000' created.
+Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
+2025-11-10 21:07:09 <ZWELS:33621070> TESTUSR0 INFO (zwe-validate-port-available) Checking ports of 1 enabled components
+2025-11-10 21:07:09 <ZWELS:33621070> TESTUSR0 INFO (zwe-validate-port-available) Zowe port bind validation passed."
+`;
+
+exports[`zwe-validate-commands (SHORT) _(PORT) validate port bind for specific components 21`] = `
+"Temporary directory '/tmp/.zweenv-0000' created.
+Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
+2025-11-10 21:07:11 <ZWELS:33622924> TESTUSR0 INFO (zwe-validate-port-available) Checking ports of 1 enabled components
+2025-11-10 21:07:11 <ZWELS:33622924> TESTUSR0 INFO (zwe-validate-port-available) Zowe port bind validation passed."
+`;
+
+exports[`zwe-validate-commands (SHORT) _(PORT) validate port bind for specific components 22`] = `
+"Temporary directory '/tmp/.zweenv-0000' created.
+Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
+2025-11-10 21:07:13 <ZWELS:16846697> TESTUSR0 INFO (zwe-validate-port-available) Checking ports of 1 enabled components
+2025-11-10 21:07:13 <ZWELS:16846697> TESTUSR0 INFO (zwe-validate-port-available) Zowe port bind validation passed."
+`;
+
+exports[`zwe-validate-commands (SHORT) config validate alias 1`] = `
+"TESTUSR0 INFO (zwe-internal-start-prepare) Zowe version: v3.4.0
 TESTUSR0 INFO (zwe-internal-start-prepare) build and hash: {BUILD_BRANCH}#{BUILD_NUMBER} ({BUILD_COMMIT_HASH})
-Validating Zowe core configuration for file(s)=/tmp/.zweenv-0000/.zowe-merged.yaml
+Validating Zowe core configuration for file(s)=/test/dir/zowe.test.yaml
+Temporary directory '/tmp/.zweenv-0000' created.
+Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
 Zowe core configuration is valid"
 `;
 
 exports[`zwe-validate-commands (SHORT) config validate alias 2`] = `
-"Temporary directory '/tmp/.zweenv-0000' created.
-Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
-TESTUSR0 INFO (zwe-internal-start-prepare) Zowe version: v3.3.0
+"TESTUSR0 INFO (zwe-internal-start-prepare) Zowe version: v3.4.0
 TESTUSR0 INFO (zwe-internal-start-prepare) build and hash: {BUILD_BRANCH}#{BUILD_NUMBER} ({BUILD_COMMIT_HASH})
-Validating Zowe core configuration for file(s)=/tmp/.zweenv-0000/.zowe-merged.yaml
+Validating Zowe core configuration for file(s)=/test/dir/zowe.test.yaml
+Temporary directory '/tmp/.zweenv-0000' created.
+Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
 Zowe core configuration is valid"
 `;

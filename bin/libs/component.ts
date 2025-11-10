@@ -60,11 +60,13 @@ function loadConfig() {
 const INDIVIDUAL_APIML_COMPONENTS = ['gateway', 'discovery', 'api-catalog', 'caching-service', 'zaas'];
 
 export function isComponentInAPIMLModulith(componentName: string): boolean {
+  loadConfig();
   let apimlModulith = ZOWE_CONFIG.components.apiml?.enabled;
   return apimlModulith && INDIVIDUAL_APIML_COMPONENTS.includes(componentName);
 }
 
 export function getJobnameForComponent(componentName: string, componentManifest?: any): string {
+  loadConfig();
   let apimlModulith = ZOWE_CONFIG.components.apiml?.enabled;
   let jobnamePrefix = ZOWE_CONFIG.zowe.job?.prefix || '';
   if (componentManifest && componentManifest.jobnameSuffix) {
