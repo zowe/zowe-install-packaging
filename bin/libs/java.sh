@@ -21,7 +21,7 @@ shell_read_yaml_java_home() {
   yaml="${1}"
 
   java_home=$(shell_read_yaml_config "${yaml}" 'java' 'home')
-  # validate NODE_HOME
+  # validate JAVA_HOME
   result=$(validate_java_home "${java_home}" 2>/dev/null)
   code=$?
   if [ ${code} -ne 0 ]; then
