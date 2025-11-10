@@ -4,7 +4,7 @@ All notable changes to the Zowe Installer will be documented in this file.
 <!--Add the PR or issue number to the entry if available.-->
 
 ## `2.18.4`
-- Bugfix: `detect_java_home` and `detect_node_home` routines used incorrect shell command [#____](https://github.com/zowe/zowe-install-packaging/pull/____)
+- Bugfix: `detect_java_home` and `detect_node_home` routines used incorrect shell command [#4572](https://github.com/zowe/zowe-install-packaging/pull/4572)
 
 ## `2.18.3`
 - Bugfix: internal routine `copy_to_data_set` did not correctly check if data set exists. [#4489](https://github.com/zowe/zowe-install-packaging/pull/4489)
