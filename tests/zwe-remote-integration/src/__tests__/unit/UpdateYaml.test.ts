@@ -11,8 +11,6 @@
 import ZoweYamlType from '../../config/ZoweYamlType';
 import { RemoteTestRunner } from '../../zos/RemoteTestRunner';
 import { ZoweConfig } from '../../config/ZoweConfig';
-import { REMOTE_SYSTEM_INFO } from '../../config/TestConfig';
-import _ from 'lodash';
 import { getZoweVersion } from '../../utils';
 import { FileType, TestFile, TestFileActions } from '../../zos/TestFileActions';
 import { createPds, SIMPLE_PDS_PARAMS } from '../../zos/Files';
