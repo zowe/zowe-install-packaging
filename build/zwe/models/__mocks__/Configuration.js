@@ -43,6 +43,11 @@ class ConfigManager {
     loadConfiguration(configName) {
         return 0;
     }
+
+    deleteFromConfiguration(oldConfigName, newConfigName, deleteKey) {
+      return 0;
+    }
+
     makeModifiedConfiguration(oldConfigName, newConfigName, updateObject, arrayMergeStrategy) {
         return 0;
     }

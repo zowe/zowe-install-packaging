@@ -11,6 +11,7 @@ All notable changes to the Zowe Installer will be documented in this file.
 - Enhancement: `ZWEGEN00` supports long path by continuation character, which can be used in JCL `ZWEGENER` [#4459](https://github.com/zowe/zowe-install-packaging/pull/4459)
 - Bugfix: Zowe startup now removes outdated static definition files from workspace/api-mediation/api-defs, which previously caused wrong or duplicate registrations of servers to APIML. [#4526](https://github.com/zowe/zowe-install-packaging/pull/4526)
 - Bugfix: `--update-config` might fail if the specified config file is a symbolic link. [#4492](https://github.com/zowe/zowe-install-packaging/pull/4492)
+- Enhancement: Node.JS is no longer required to run `zwe migrate for kubernetes`, or any other `zwe` command. [#4393](https://github.com/zowe/zowe-install-packaging/pull/4393)
 
 ## `3.3.1`
 
