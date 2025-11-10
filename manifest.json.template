@@ -48,7 +48,7 @@
     "org.zowe.zlux.zlux-editor": {
       "version": "3.4.0-V3.X-RC",
       "repository": "libs-snapshot-local",
-      "artifact": "zlux-editor-3.4.0-20251106.143055.pax"
+      "artifact": "zlux-editor-3.4.0-20251110.191224.pax"
     },
     "org.zowe.zss": {
       "version": "3.4.0-RC",
