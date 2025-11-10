@@ -192,7 +192,7 @@ data:
       applId: "IZUDFLT"
     components:
       apiml:
-        enabled: false
+        enabled: true
         debug: false
       gateway:
         enabled: true

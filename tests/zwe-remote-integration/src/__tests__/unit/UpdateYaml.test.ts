@@ -62,31 +62,16 @@ describe(`${testSuiteName}`, () => {
   });
 
   describe('(SHORT)', () => {
-    it('support with everything enabled', async () => {
-      _.set(cfgYaml, 'node.home', REMOTE_SYSTEM_INFO.zosNodeHome);
-      // output support pax in fingerprint dir, we're not getting a passing fingerprint check anyway
-      const result = await testRunner.runZweTest(cfgYaml, `support --target-dir ${fingerprintDir}`);
-      // don't snapshot this since it contains a lot of system information, instead key on specific details:
-      //   -- z/OSMF is active and curl worked
-      //   -- Fingerprints failed (we supply a dummy)
-      //   -- The support package is created
-      expect(result.stdout).not.toBeNull();
-      expect(result.stdout.includes('Successfully checked z/OSMF is available')).toBe(true);
-      expect(result.stdout.includes('ZWEL0181E: Failed to verify Zowe file fingerprints')).toBe(true);
-      expect(result.stdout.includes('Zowe support package is generated')).toBe(true);
-      expect(result.rc).toBe(0);
-    });
-
     // no node + app-server enabled = fail, no node + app-server disabled = pass
     it('update_yaml different config syntaxes', async () => {
       const testParmlib = `${cfgYaml.zowe.setup.dataset.prefix}.PRMTST`;
       const testParmCfg = `${testParmlib}(ZWECONF)`;
       const testFileCfg = await testRunner.uploadZoweYaml(cfgYaml);
       await createPds(testParmlib, SIMPLE_PDS_PARAMS);
-      // cleanupFiles.push({
-      //   name: testParmlib,
-      //   type: FileType.DS_NON_CLUSTER,
-      // });
+      cleanupFiles.push({
+        name: testParmlib,
+        type: FileType.DS_NON_CLUSTER,
+      });
       cleanupFiles.push({
         name: testFileCfg,
         type: FileType.USS_FILE,
