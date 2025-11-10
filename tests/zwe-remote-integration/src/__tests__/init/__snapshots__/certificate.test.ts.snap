@@ -218,9 +218,6 @@ Error ZWEL0326E: An error occurred while processing Zowe YAML config /test/dir/z
       "java": {
         "home": "/test/java/home"
       },
-      "node": {
-        "home": "/test/node/home"
-      },
       "zOSMF": {
         "host": "some.test.hostname",
         "port": 12321,
@@ -228,7 +225,7 @@ Error ZWEL0326E: An error occurred while processing Zowe YAML config /test/dir/z
       },
       "components": {
         "apiml": {
-          "enabled": false,
+          "enabled": true,
           "debug": false
         },
         "gateway": {

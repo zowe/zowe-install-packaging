@@ -48,34 +48,24 @@ zos_convert_env_dir_file_encoding() {
 generate_instance_env_from_yaml_config() {
   ha_instance="${1}"
 
-  if [ -z "${ZWE_PRIVATE_WORKSPACE_ENV_DIR}" ]; then
-    ZWE_PRIVATE_WORKSPACE_ENV_DIR="${ZWE_zowe_workspaceDirectory}/.env"
-  fi
+  configmgr="${ZWE_zowe_runtimeDirectory}/bin/utils/configmgr"
+  generateEnv="${ZWE_zowe_runtimeDirectory}/bin/utils/GenerateInstanceEnv.js"
 
-  # delete old files to avoid potential issues
-  print_formatted_trace "ZWELS" "bin/libs/config.sh,generate_instance_env_from_yaml_config:${LINENO}" "deleting old files under ${ZWE_PRIVATE_WORKSPACE_ENV_DIR}"
-  find "${ZWE_PRIVATE_WORKSPACE_ENV_DIR}" -type f -name ".*-${ha_instance}.env" | xargs rm -f
-  find "${ZWE_PRIVATE_WORKSPACE_ENV_DIR}" -type f -name ".*-${ha_instance}.json" | xargs rm -f
-  find "${ZWE_PRIVATE_WORKSPACE_ENV_DIR}" -type f -name ".zowe.json" | xargs rm -f
-
-  # prepare .zowe.json and .zowe-<ha-id>.json
-  print_formatted_trace "ZWELS" "bin/libs/config.sh,generate_instance_env_from_yaml_config:${LINENO}" "config-converter yaml convert --ha ${ha_instance} ${ZWE_CLI_PARAMETER_CONFIG}"
-  result=$(node "${ZWE_zowe_runtimeDirectory}/bin/utils/config-converter/src/cli.js" yaml convert --wd "${ZWE_PRIVATE_WORKSPACE_ENV_DIR}" --ha "${ha_instance}" "${ZWE_CLI_PARAMETER_CONFIG}" --verbose)
+  print_message "- generate env for \"${ha_instance}\""
+  result=$(_CEE_RUNOPTS="XPLINK(ON)" "${configmgr}" -script "$generateEnv" "$ha_instance" "${ZWE_PRIVATE_WORKSPACE_ENV_DIR}" 2>&1)
   code=$?
-  print_formatted_trace "ZWELS" "bin/libs/config.sh,generate_instance_env_from_yaml_config:${LINENO}" "- Exit code: ${code}: ${result}"
-  if [ ! -f "${ZWE_PRIVATE_WORKSPACE_ENV_DIR}/.zowe.json" ]; then
-    print_formatted_error "ZWELS" "bin/libs/config.sh,generate_instance_env_from_yaml_config:${LINENO}" "ZWEL0140E: Failed to translate Zowe configuration (${ZWE_CLI_PARAMETER_CONFIG})."
-    exit 140
-  fi
-
-  # convert YAML configurations to backward compatible .instance-<ha-id>.env files
-  print_formatted_trace "ZWELS" "bin/libs/config.sh,generate_instance_env_from_yaml_config:${LINENO}" "config-converter yaml env --ha ${ha_instance}"
-  result=$(node "${ZWE_zowe_runtimeDirectory}/bin/utils/config-converter/src/cli.js" yaml env --wd "${ZWE_PRIVATE_WORKSPACE_ENV_DIR}" --ha "${ha_instance}" --verbose)
-  code=$?
-  print_formatted_trace "ZWELS" "bin/libs/config.sh,generate_instance_env_from_yaml_config:${LINENO}" "- Exit code: ${code}: ${result}"
-  if [ ! -f "${ZWE_PRIVATE_WORKSPACE_ENV_DIR}/.instance-${ha_instance}.env" ]; then
-    print_formatted_error "ZWELS" "bin/libs/config.sh,generate_instance_env_from_yaml_config:${LINENO}" "ZWEL0140E: Failed to translate Zowe configuration (${ZWE_CLI_PARAMETER_CONFIG})."
-    exit 140
+  if [ ${code} -eq 0 ]; then
+    print_trace "  * Exit code: ${code}"
+    print_trace "  * Output:"
+    if [ -n "${result}" ]; then
+      print_trace "$(padding_left "${result}" "    ")"
+    fi
+  else
+    print_error "  * Exit code: ${code}"
+    print_error "  * Output:"
+    if [ -n "${result}" ]; then
+      print_error "$(padding_left "${result}" "    ")"
+    fi
   fi
 }
 

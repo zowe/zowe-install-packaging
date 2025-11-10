@@ -37,11 +37,7 @@ const containerComponentId = std.getenv('ZWE_PRIVATE_CONTAINER_COMPONENT_ID');
 //const installedComponentsEnv=std.getenv('ZWE_INSTALLED_COMPONENTS');
 //const installedComponents = installedComponentsEnv ? installedComponentsEnv.split(',') : null;
 
-const zosmfHost = std.getenv('ZOSMF_HOST');
-const zosmfPort = Number(std.getenv('ZOSMF_PORT'));
-
 const INDIVIDUAL_APIML_COMPONENTS = ['gateway', 'discovery', 'api-catalog', 'caching-service', 'zaas'];
-
 
 const user = std.getenv('USER');
 
@@ -75,6 +71,8 @@ function getStartupCheckMode(property: string): {doCheck: boolean, warnOnly: boo
 }
 
 
+const zosmfHost = ZOWE_CONFIG.zOSMF?.host;
+const zosmfPort = ZOWE_CONFIG.zOSMF?.port;
 
 // Extra preparations for running in container
 // - link component runtime under zowe <runtime>/components
@@ -492,7 +490,7 @@ export function execute() {
     // other extensions need to specify `require_java` in their validate.sh
     java.requireJava();
   }
-  if (stringlib.itemInList('app-server', std.getenv('ZWE_CLI_PARAMETER_COMPONENT'))) {
+  if (stringlib.itemInList(std.getenv('ZWE_PRIVATE_CORE_COMPONENTS_REQUIRE_NODE'), std.getenv('ZWE_CLI_PARAMETER_COMPONENT'))) {
     // other extensions need to specify `require_node` in their validate.sh
     node.requireNode();
   }
