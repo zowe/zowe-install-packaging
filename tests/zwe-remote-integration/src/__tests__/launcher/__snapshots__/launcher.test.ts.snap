@@ -110,7 +110,7 @@ zowe:
       certificateAuthorities: "/global/zowe/keystore/local_ca/local_ca.cer"
 components:
   apiml:
-    enabled: false
+    enabled: true
     debug: false
   gateway:
     enabled: true
@@ -293,7 +293,7 @@ zowe:
       certificateAuthorities: "/global/zowe/keystore/local_ca/local_ca.cer"
 components:
   apiml:
-    enabled: false
+    enabled: true
     debug: false
   gateway:
     enabled: true
