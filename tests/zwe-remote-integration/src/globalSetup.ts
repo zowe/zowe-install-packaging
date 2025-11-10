@@ -343,7 +343,7 @@ module.exports = async () => {
       REMOTE_SYSTEM_INFO.ussTestDir,
     );
 
-    console.log(`Uploading getesm pax tp ${ussWorkDir}/${getEsmArchive}...`);
+    console.log(`Uploading getesm pax to ${ussWorkDir}/${getEsmArchive}...`);
     await files.Upload.fileToUssFile(zosmfSession, path.resolve(downloadsDir, getEsmArchive), `${ussWorkDir}/${getEsmArchive}`, {
       binary: true,
     });
