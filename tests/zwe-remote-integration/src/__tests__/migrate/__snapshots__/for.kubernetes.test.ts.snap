@@ -136,8 +136,6 @@ data:
         prefix: "ZWE1"
       rbacProfileIdentifier: "1"
       cookieIdentifier: "1"
-      externalDomains:
-      - "localhost"
       externalPort: 7554
       network:
         server:
@@ -180,13 +178,14 @@ data:
           certificateAuthorities: "/home/zowe/keystore/ca.cer"
       verifyCertificates: "STRICT"
       useConfigmgr: false
+      externalDomains:
+      - "localhost"
       environments:
         ZWED_agent_host: "example.com"
-        ZWED_agent_https_port: "7557"
+        ZWED_agent_https_port: 7557
         ZOWE_ZLUX_TELNET_HOST: "example.com"
         ZOWE_ZLUX_SSH_HOST: "example.com"
-    java:
-      home: "/test/java/home"
+    java: {}
     zOSMF:
       host: "some.test.hostname"
       port: 12321
@@ -197,7 +196,7 @@ data:
         debug: false
       gateway:
         enabled: true
-        port: "7554"
+        port: 7554
         debug: false
         apiml:
           security:
@@ -217,20 +216,20 @@ data:
               externalMapperUrl: ""
       zaas:
         enabled: true
-        port: "7558"
+        port: 7558
         debug: false
       api-catalog:
         enabled: true
-        port: "7552"
+        port: 7552
         debug: false
       discovery:
         enabled: true
-        port: "7553"
+        port: 7553
         debug: false
-        replicas: "1"
+        replicas: 1
       caching-service:
         enabled: true
-        port: "7555"
+        port: 7555
         debug: false
         storage:
           evictionStrategy: "reject"
@@ -242,7 +241,7 @@ data:
                 port: 7601
       app-server:
         enabled: true
-        port: "7556"
+        port: 7556
         debug: false
       zss:
         enabled: true
