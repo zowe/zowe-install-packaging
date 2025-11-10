@@ -38,15 +38,13 @@ shell_read_yaml_java_home() {
 detect_java_home() {
   java_home=
 
-  # do we have which?
-  java_bin_home=$(which java 2>/dev/null)
+  java_bin_home=$(whence java 2>/dev/null)
   if [ -n "${java_bin_home}" ]; then
     # extract java home from result like: /var/jdk/bin/java
     java_home=$(dirname "$(dirname "${java_bin_home}")")
   fi
 
   # fall back to check PATH
-  java_home=$(which java 2>/dev/null)
   if [ -z "${java_home}" ]; then
     java_home=$(
       IFS=:
