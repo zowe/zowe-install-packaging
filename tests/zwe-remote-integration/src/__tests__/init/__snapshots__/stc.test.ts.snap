@@ -46,12 +46,12 @@ Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWEGENER)
 //   DCB=(RECFM=FB,LRECL=80,BLKSIZE=3120,DSORG=PO),
 //   SPACE=(3120,(20,5,10))
 //*
-//* Replace TEST.DATASET.PFX with the
+//* Replace {zowe.setup.dataset.prefix} with the
 //* Value as seen in zowe.yaml
 //*
 //SYSPROC  DD DSN=TEST.DATASET.PFX.SZWEEXEC,DISP=SHR
 //*
-//* Replace TEST.DATASET.PFX with the
+//* Replace {zowe.setup.dataset.prefix} with the
 //* Value as seen in zowe.yaml
 //*
 //STEPLIB  DD DSN=TEST.DATASET.PFX.SZWELOAD,DISP=SHR
@@ -67,7 +67,7 @@ Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWEGENER)
 //* zowe-yaml-schema.json
 //* server-common.json
 //*
-//* Replace /test/dir with where your Zowe run time
+//* Replace {zowe.runtimeDirectory} with where your Zowe run time
 //* directory is, as seen in zowe.yaml
 //*
 //MYSCHEMA DD   *,DLM=$$
@@ -79,8 +79,13 @@ $$
 //* entries. The lower entries have their values
 //* overridden by the higher entries.
 //*
+//* Note: Use backslash in MYCONFIG or MYSCHEMA as continuation char.
+//*
 //* Ex. PARMLIB MY.ZOWE.CUSTOM.PARMLIB(YAML)
 //*     FILE /some/other/zowe.yaml
+//*     FILE /long/path/to/another/configuration/\\
+//*     zowe.yaml
+//*
 //MYCONFIG DD   *,DLM=$$
 FILE /test/dir/zowe.test.yaml
 $$
@@ -210,12 +215,12 @@ Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWEGENER)
 //   DCB=(RECFM=FB,LRECL=80,BLKSIZE=3120,DSORG=PO),
 //   SPACE=(3120,(20,5,10))
 //*
-//* Replace TEST.DATASET.PFX with the
+//* Replace {zowe.setup.dataset.prefix} with the
 //* Value as seen in zowe.yaml
 //*
 //SYSPROC  DD DSN=TEST.DATASET.PFX.SZWEEXEC,DISP=SHR
 //*
-//* Replace TEST.DATASET.PFX with the
+//* Replace {zowe.setup.dataset.prefix} with the
 //* Value as seen in zowe.yaml
 //*
 //STEPLIB  DD DSN=TEST.DATASET.PFX.SZWELOAD,DISP=SHR
@@ -231,7 +236,7 @@ Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWEGENER)
 //* zowe-yaml-schema.json
 //* server-common.json
 //*
-//* Replace /test/dir with where your Zowe run time
+//* Replace {zowe.runtimeDirectory} with where your Zowe run time
 //* directory is, as seen in zowe.yaml
 //*
 //MYSCHEMA DD   *,DLM=$$
@@ -243,8 +248,13 @@ $$
 //* entries. The lower entries have their values
 //* overridden by the higher entries.
 //*
+//* Note: Use backslash in MYCONFIG or MYSCHEMA as continuation char.
+//*
 //* Ex. PARMLIB MY.ZOWE.CUSTOM.PARMLIB(YAML)
 //*     FILE /some/other/zowe.yaml
+//*     FILE /long/path/to/another/configuration/\\
+//*     zowe.yaml
+//*
 //MYCONFIG DD   *,DLM=$$
 FILE /test/dir/zowe.test.yaml
 $$
@@ -486,12 +496,12 @@ Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWEGENER)
 //   DCB=(RECFM=FB,LRECL=80,BLKSIZE=3120,DSORG=PO),
 //   SPACE=(3120,(20,5,10))
 //*
-//* Replace TEST.DATASET.PFX with the
+//* Replace {zowe.setup.dataset.prefix} with the
 //* Value as seen in zowe.yaml
 //*
 //SYSPROC  DD DSN=TEST.DATASET.PFX.SZWEEXEC,DISP=SHR
 //*
-//* Replace TEST.DATASET.PFX with the
+//* Replace {zowe.setup.dataset.prefix} with the
 //* Value as seen in zowe.yaml
 //*
 //STEPLIB  DD DSN=TEST.DATASET.PFX.SZWELOAD,DISP=SHR
@@ -507,7 +517,7 @@ Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWEGENER)
 //* zowe-yaml-schema.json
 //* server-common.json
 //*
-//* Replace /test/dir with where your Zowe run time
+//* Replace {zowe.runtimeDirectory} with where your Zowe run time
 //* directory is, as seen in zowe.yaml
 //*
 //MYSCHEMA DD   *,DLM=$$
@@ -519,8 +529,13 @@ $$
 //* entries. The lower entries have their values
 //* overridden by the higher entries.
 //*
+//* Note: Use backslash in MYCONFIG or MYSCHEMA as continuation char.
+//*
 //* Ex. PARMLIB MY.ZOWE.CUSTOM.PARMLIB(YAML)
 //*     FILE /some/other/zowe.yaml
+//*     FILE /long/path/to/another/configuration/\\
+//*     zowe.yaml
+//*
 //MYCONFIG DD   *,DLM=$$
 FILE /test/dir/zowe.test.yaml
 $$
@@ -604,19 +619,19 @@ ERROR: Error ZWEL0162E: Failed to find job JOB00000 result."
 `;
 
 exports[`init-stc (SHORT) aux stc exists 1`] = `
-"Temporary directory '/tmp/.zweenv-0000' created.
-Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
--------------------------------------------------------------------------------
+"-------------------------------------------------------------------------------
 >> Install Zowe main started task
+Temporary directory '/tmp/.zweenv-0000' created.
+Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
 Warning ZWEL0301W: TEST.DATASET.PFX.TEST.PROCLIB(ZWESASTC) already exists and will not be overwritten. For upgrades, you must use --allow-overwrite.
 Skipped writing to TEST.DATASET.PFX.TEST.PROCLIB. To write, you must use --allow-overwrite."
 `;
 
 exports[`init-stc (SHORT) aux stc exists 2`] = `
-"Temporary directory '/tmp/.zweenv-0000' created.
-Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
--------------------------------------------------------------------------------
+"-------------------------------------------------------------------------------
 >> Install Zowe main started task
+Temporary directory '/tmp/.zweenv-0000' created.
+Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
 Warning ZWEL0300W: TEST.DATASET.PFX.TEST.PROCLIB(ZWESASTC) already exists. This data set member will be overwritten.
 Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWERSTC) , Executable JCL: TEST.DATASET.PFX.JCLLIB(ZWERSTC)
 --- JCL Content ---
@@ -714,10 +729,10 @@ To perform command, re-run command without "--dry-run" flag, or submit the JCL d
 `;
 
 exports[`init-stc (SHORT) invalid stc configurations 1`] = `
-"Temporary directory '/tmp/.zweenv-0000' created.
-Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
--------------------------------------------------------------------------------
+"-------------------------------------------------------------------------------
 >> Install Zowe main started task
+Temporary directory '/tmp/.zweenv-0000' created.
+Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
 Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWEISTC) , Executable JCL: TEST.DATASET.PFX.JCLLIB(ZWEISTC)
 --- JCL Content ---
 //ZWEISTC JOB
@@ -772,10 +787,10 @@ To perform command, re-run command without "--dry-run" flag, or submit the JCL d
 `;
 
 exports[`init-stc (SHORT) invalid stc configurations 2`] = `
-"Temporary directory '/tmp/.zweenv-0000' created.
-Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
--------------------------------------------------------------------------------
+"-------------------------------------------------------------------------------
 >> Install Zowe main started task
+Temporary directory '/tmp/.zweenv-0000' created.
+Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
 Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWEISTC) , Executable JCL: TEST.DATASET.PFX.JCLLIB(ZWEISTC)
 --- JCL Content ---
 //ZWEISTC JOB
@@ -883,7 +898,7 @@ exports[`init-stc (SHORT) invalid stc configurations 3`] = `
         "rbacProfileIdentifier": "1",
         "cookieIdentifier": "1",
         "externalDomains": [
-          "sample-domain.com"
+          "example.com"
         ],
         "externalPort": 7554,
         "network": {
@@ -941,9 +956,6 @@ exports[`init-stc (SHORT) invalid stc configurations 3`] = `
       "java": {
         "home": "/test/java/home"
       },
-      "node": {
-        "home": "/test/node/home"
-      },
       "zOSMF": {
         "host": "some.test.hostname",
         "port": 12321,
@@ -951,7 +963,7 @@ exports[`init-stc (SHORT) invalid stc configurations 3`] = `
       },
       "components": {
         "apiml": {
-          "enabled": false,
+          "enabled": true,
           "debug": false
         },
         "gateway": {
@@ -1106,7 +1118,7 @@ exports[`init-stc (SHORT) invalid stc configurations 4`] = `
         "rbacProfileIdentifier": "1",
         "cookieIdentifier": "1",
         "externalDomains": [
-          "sample-domain.com"
+          "example.com"
         ],
         "externalPort": 7554,
         "network": {
@@ -1164,9 +1176,6 @@ exports[`init-stc (SHORT) invalid stc configurations 4`] = `
       "java": {
         "home": "/test/java/home"
       },
-      "node": {
-        "home": "/test/node/home"
-      },
       "zOSMF": {
         "host": "some.test.hostname",
         "port": 12321,
@@ -1174,7 +1183,7 @@ exports[`init-stc (SHORT) invalid stc configurations 4`] = `
       },
       "components": {
         "apiml": {
-          "enabled": false,
+          "enabled": true,
           "debug": false
         },
         "gateway": {
@@ -1329,7 +1338,7 @@ exports[`init-stc (SHORT) invalid stc configurations 5`] = `
         "rbacProfileIdentifier": "1",
         "cookieIdentifier": "1",
         "externalDomains": [
-          "sample-domain.com"
+          "example.com"
         ],
         "externalPort": 7554,
         "network": {
@@ -1387,9 +1396,6 @@ exports[`init-stc (SHORT) invalid stc configurations 5`] = `
       "java": {
         "home": "/test/java/home"
       },
-      "node": {
-        "home": "/test/node/home"
-      },
       "zOSMF": {
         "host": "some.test.hostname",
         "port": 12321,
@@ -1397,7 +1403,7 @@ exports[`init-stc (SHORT) invalid stc configurations 5`] = `
       },
       "components": {
         "apiml": {
-          "enabled": false,
+          "enabled": true,
           "debug": false
         },
         "gateway": {
@@ -1553,7 +1559,7 @@ exports[`init-stc (SHORT) invalid stc configurations 6`] = `
         "rbacProfileIdentifier": "1",
         "cookieIdentifier": "1",
         "externalDomains": [
-          "sample-domain.com"
+          "example.com"
         ],
         "externalPort": 7554,
         "network": {
@@ -1611,9 +1617,6 @@ exports[`init-stc (SHORT) invalid stc configurations 6`] = `
       "java": {
         "home": "/test/java/home"
       },
-      "node": {
-        "home": "/test/node/home"
-      },
       "zOSMF": {
         "host": "some.test.hostname",
         "port": 12321,
@@ -1621,7 +1624,7 @@ exports[`init-stc (SHORT) invalid stc configurations 6`] = `
       },
       "components": {
         "apiml": {
-          "enabled": false,
+          "enabled": true,
           "debug": false
         },
         "gateway": {
@@ -1777,7 +1780,7 @@ exports[`init-stc (SHORT) invalid stc configurations 7`] = `
         "rbacProfileIdentifier": "1",
         "cookieIdentifier": "1",
         "externalDomains": [
-          "sample-domain.com"
+          "example.com"
         ],
         "externalPort": 7554,
         "network": {
@@ -1835,9 +1838,6 @@ exports[`init-stc (SHORT) invalid stc configurations 7`] = `
       "java": {
         "home": "/test/java/home"
       },
-      "node": {
-        "home": "/test/node/home"
-      },
       "zOSMF": {
         "host": "some.test.hostname",
         "port": 12321,
@@ -1845,7 +1845,7 @@ exports[`init-stc (SHORT) invalid stc configurations 7`] = `
       },
       "components": {
         "apiml": {
-          "enabled": false,
+          "enabled": true,
           "debug": false
         },
         "gateway": {
@@ -1946,10 +1946,10 @@ exports[`init-stc (SHORT) invalid stc configurations 7`] = `
 `;
 
 exports[`init-stc (SHORT) valid config empty proclib 1`] = `
-"Temporary directory '/tmp/.zweenv-0000' created.
-Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
--------------------------------------------------------------------------------
+"-------------------------------------------------------------------------------
 >> Install Zowe main started task
+Temporary directory '/tmp/.zweenv-0000' created.
+Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
 Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWEISTC) , Executable JCL: TEST.DATASET.PFX.JCLLIB(ZWEISTC)
 --- JCL Content ---
 //ZWEISTC JOB
@@ -2004,50 +2004,50 @@ To perform command, re-run command without "--dry-run" flag, or submit the JCL d
 `;
 
 exports[`init-stc (SHORT) wrong ds prefix 1`] = `
-"Temporary directory '/tmp/.zweenv-0000' created.
-Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
--------------------------------------------------------------------------------
+"-------------------------------------------------------------------------------
 >> Install Zowe main started task
+Temporary directory '/tmp/.zweenv-0000' created.
+Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
 ERROR: Error ZWEL0157E: Zowe dataset prefix (zowe.setup.dataset.prefix) is not defined in Zowe YAML configuration file."
 `;
 
 exports[`init-stc (SHORT) wrong ds prefix 2`] = `
-"Temporary directory '/tmp/.zweenv-0000' created.
-Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
--------------------------------------------------------------------------------
+"-------------------------------------------------------------------------------
 >> Install Zowe main started task
+Temporary directory '/tmp/.zweenv-0000' created.
+Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
 ERROR: Error ZWEL0157E: Zowe dataset prefix (zowe.setup.dataset.prefix) is not defined in Zowe YAML configuration file."
 `;
 
 exports[`init-stc (SHORT) wrong jcllib 1`] = `
-"Temporary directory '/tmp/.zweenv-0000' created.
-Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
--------------------------------------------------------------------------------
+"-------------------------------------------------------------------------------
 >> Install Zowe main started task
+Temporary directory '/tmp/.zweenv-0000' created.
+Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
 ERROR: Error ZWEL0319E: zowe.setup.dataset.jcllib does not exist, cannot run. Run 'zwe init', 'zwe init generate', or submit JCL TEST.DATASET.PFX.SZWESAMP(ZWEGENER) before running this command."
 `;
 
 exports[`init-stc (SHORT) wrong jcllib 2`] = `
-"Temporary directory '/tmp/.zweenv-0000' created.
-Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
--------------------------------------------------------------------------------
+"-------------------------------------------------------------------------------
 >> Install Zowe main started task
+Temporary directory '/tmp/.zweenv-0000' created.
+Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
 ERROR: Error ZWEL0319E: zowe.setup.dataset.jcllib does not exist, cannot run. Run 'zwe init', 'zwe init generate', or submit JCL TEST.DATASET.PFX.SZWESAMP(ZWEGENER) before running this command."
 `;
 
 exports[`init-stc (SHORT) wrong proclib 1`] = `
-"Temporary directory '/tmp/.zweenv-0000' created.
-Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
--------------------------------------------------------------------------------
+"-------------------------------------------------------------------------------
 >> Install Zowe main started task
+Temporary directory '/tmp/.zweenv-0000' created.
+Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
 ERROR: Error ZWEL0157E: PROCLIB (zowe.setup.dataset.proclib) is not defined in Zowe YAML configuration file."
 `;
 
 exports[`init-stc (SHORT) wrong proclib 2`] = `
-"Temporary directory '/tmp/.zweenv-0000' created.
-Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
--------------------------------------------------------------------------------
+"-------------------------------------------------------------------------------
 >> Install Zowe main started task
+Temporary directory '/tmp/.zweenv-0000' created.
+Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
 ERROR: Error ZWEL0157E: PROCLIB (zowe.setup.dataset.proclib) is not defined in Zowe YAML configuration file."
 `;
 
@@ -2104,7 +2104,7 @@ exports[`init-stc (SHORT) wrong proclib 3`] = `
         "rbacProfileIdentifier": "1",
         "cookieIdentifier": "1",
         "externalDomains": [
-          "sample-domain.com"
+          "example.com"
         ],
         "externalPort": 7554,
         "network": {
@@ -2162,9 +2162,6 @@ exports[`init-stc (SHORT) wrong proclib 3`] = `
       "java": {
         "home": "/test/java/home"
       },
-      "node": {
-        "home": "/test/node/home"
-      },
       "zOSMF": {
         "host": "some.test.hostname",
         "port": 12321,
@@ -2172,7 +2169,7 @@ exports[`init-stc (SHORT) wrong proclib 3`] = `
       },
       "components": {
         "apiml": {
-          "enabled": false,
+          "enabled": true,
           "debug": false
         },
         "gateway": {
@@ -2271,19 +2268,19 @@ exports[`init-stc (SHORT) wrong proclib 3`] = `
 `;
 
 exports[`init-stc (SHORT) zis stc exists 1`] = `
-"Temporary directory '/tmp/.zweenv-0000' created.
-Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
--------------------------------------------------------------------------------
+"-------------------------------------------------------------------------------
 >> Install Zowe main started task
+Temporary directory '/tmp/.zweenv-0000' created.
+Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
 Warning ZWEL0301W: TEST.DATASET.PFX.TEST.PROCLIB(ZWESISTC) already exists and will not be overwritten. For upgrades, you must use --allow-overwrite.
 Skipped writing to TEST.DATASET.PFX.TEST.PROCLIB. To write, you must use --allow-overwrite."
 `;
 
 exports[`init-stc (SHORT) zis stc exists 2`] = `
-"Temporary directory '/tmp/.zweenv-0000' created.
-Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
--------------------------------------------------------------------------------
+"-------------------------------------------------------------------------------
 >> Install Zowe main started task
+Temporary directory '/tmp/.zweenv-0000' created.
+Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
 Warning ZWEL0300W: TEST.DATASET.PFX.TEST.PROCLIB(ZWESISTC) already exists. This data set member will be overwritten.
 Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWERSTC) , Executable JCL: TEST.DATASET.PFX.JCLLIB(ZWERSTC)
 --- JCL Content ---
@@ -2381,19 +2378,19 @@ To perform command, re-run command without "--dry-run" flag, or submit the JCL d
 `;
 
 exports[`init-stc (SHORT) zos stc exists 1`] = `
-"Temporary directory '/tmp/.zweenv-0000' created.
-Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
--------------------------------------------------------------------------------
+"-------------------------------------------------------------------------------
 >> Install Zowe main started task
+Temporary directory '/tmp/.zweenv-0000' created.
+Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
 Warning ZWEL0301W: TEST.DATASET.PFX.TEST.PROCLIB(ZWESLSTC) already exists and will not be overwritten. For upgrades, you must use --allow-overwrite.
 Skipped writing to TEST.DATASET.PFX.TEST.PROCLIB. To write, you must use --allow-overwrite."
 `;
 
 exports[`init-stc (SHORT) zos stc exists 2`] = `
-"Temporary directory '/tmp/.zweenv-0000' created.
-Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
--------------------------------------------------------------------------------
+"-------------------------------------------------------------------------------
 >> Install Zowe main started task
+Temporary directory '/tmp/.zweenv-0000' created.
+Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
 Warning ZWEL0300W: TEST.DATASET.PFX.TEST.PROCLIB(ZWESLSTC) already exists. This data set member will be overwritten.
 Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWERSTC) , Executable JCL: TEST.DATASET.PFX.JCLLIB(ZWERSTC)
 --- JCL Content ---

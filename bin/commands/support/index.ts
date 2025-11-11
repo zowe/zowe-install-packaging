@@ -85,15 +85,16 @@ export function execute(): void {
     const nodeVersion = shell.execOutSync('sh', '-c', '${NODE_HOME}/bin/node -v 2>&1 | head -n 1');
     if (nodeVersion.rc == 0 && nodeVersion.out) {
       environment["node"] = `${nodeVersion.out}`;
-      const discovery = ZOWE_CONFIG.components?.discovery?.enabled || ZOWE_CONFIG.components?.apiml?.enabled;
-      const zosmfHost = ZOWE_CONFIG.zOSMF?.host;
-      const zosmfPort = ZOWE_CONFIG.zOSMF?.port;
-      if (discovery && zosmfHost && zosmfPort) {
-        environment["zosmf_check"] = `'https://${zosmfHost}:${zosmfPort}/zosmf/info' => ${zosmf.validateZosmfHostAndPort(zosmfHost, zosmfPort)}`;
-      }
     }
   } else {
     environment["node"] = `not found`;
+  }
+
+  const discovery = ZOWE_CONFIG.components?.discovery?.enabled || ZOWE_CONFIG.components?.apiml?.enabled;
+  const zosmfHost = ZOWE_CONFIG.zOSMF?.host;
+  const zosmfPort = ZOWE_CONFIG.zOSMF?.port;
+  if (discovery && zosmfHost && zosmfPort) {
+    environment["zosmf_check"] = `'https://${zosmfHost}:${zosmfPort}/zosmf/info' => ${zosmf.validateZosmfHostAndPort(zosmfHost, zosmfPort)}`;
   }
 
   java.requireJava();

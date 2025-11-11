@@ -19,7 +19,7 @@
         <boolean>
             <!-- Put validation here -->
             <!-- Specify choices here -->
-            <default>false</default>
+            <default>true</default>
         </boolean>
     </variable>
     <variable name="zowe_setup_jcl_header" scope="global" visibility="public">
@@ -227,7 +227,7 @@ It is used by ZWESLSTC or by zwe command</description>
         <string valueMustBeChoice="false" multiLine="true">
             <!-- Put validation here -->
             <!-- Specify choices here -->
-            <default>sample-domain.com</default>
+            <default>example.com</default>
         </string>
     </variable>
     <variable name="zowe_externalPort" scope="instance" visibility="public">
@@ -495,7 +495,7 @@ How we want to verify SSL certificates of services. Valid values are:
         <string valueMustBeChoice="false" multiLine="false">
             <!-- Put validation here -->
             <!-- Specify choices here -->
-            <default>dvipa.my-company.com</default>
+            <default>dvipa.example.com</default>
         </string>
     </variable>
     <variable name="zOSMF_port" scope="instance" visibility="public">
@@ -519,6 +519,28 @@ How we want to verify SSL certificates of services. Valid values are:
             <!-- Specify choices here -->
             <default>IZUDFLT</default>
         </string>
+    </variable>
+    <variable name="components_apiml_enabled" scope="instance" visibility="public">
+      <label>Enable API ML</label>
+      <abstract>Check this option to enable API ML</abstract>
+      <description>Check this option to enable API ML</description>
+      <category>components</category>
+      <boolean>
+        <!-- Put validation here -->
+        <!-- Specify choices here -->
+        <default>true</default>
+      </boolean>
+    </variable>
+    <variable name="components_apiml_debug" scope="instance" visibility="public">
+      <label>API ML debug</label>
+      <abstract>Switch on the debug mode for API ML</abstract>
+      <description>Switch on the debug mode for API ML</description>
+      <category>components</category>
+      <boolean>
+        <!-- Put validation here -->
+        <!-- Specify choices here -->
+        <default>false</default>
+      </boolean>
     </variable>
     <variable name="components_gateway_enabled" scope="instance" visibility="public">
         <label>Enable Gateway</label>
@@ -1142,6 +1164,7 @@ How we want to verify SSL certificates of services. Valid values are:
             <variableValue name="zOSMF_port" scope="instance" noPromptIfSet="false" required="true"/>
             <variableValue name="zOSMF_applId" scope="instance" noPromptIfSet="false" required="true"/>
             <variableValue name="zowe_configmgr_validation" scope="instance" noPromptIfSet="false" required="true"/>
+            <variableValue name="components_apiml_enabled" scope="instance" noPromptIfSet="false" required="true"/>
             <variableValue name="components_gateway_enabled" scope="instance" noPromptIfSet="false" required="true"/>
             <variableValue name="components_zaas_enabled" scope="instance" noPromptIfSet="false" required="true"/>
             <variableValue name="components_api_catalog_enabled" scope="instance" noPromptIfSet="false" required="true"/>
@@ -1168,6 +1191,29 @@ How we want to verify SSL certificates of services. Valid values are:
             <canMarkAsFailed>false</canMarkAsFailed>
             <!--template-->
         </step>
+      <step name="apiml_component" optional="false">
+        <title>API ML variables</title>
+        <description>Specify the variables for the API ML component</description>
+        <prereqStep name="main_variables"/>
+        <condition>
+          <expression>1 == 1</expression>
+          <description>Always true</description>
+          <targetStateSet>
+            <extendStateExpression>
+              <description>Skipped if the Gateway was not selected</description>
+              <expression>!${instance-components_apiml_enabled}</expression>
+              <targetState>skipped</targetState>
+            </extendStateExpression>
+          </targetStateSet>
+        </condition>
+        <variableValue name="components_apiml_debug" scope="instance" noPromptIfSet="false" required="true"/>
+        <instructions substitution="false">Run this step to specify the Gateway variables</instructions>
+        <weight>1</weight>
+        <skills>z/OS System Programmer</skills>
+        <autoEnable>false</autoEnable>
+        <canMarkAsFailed>false</canMarkAsFailed>
+        <!--template-->
+      </step>
       <step name="gateway_component" optional="false">
         <title>Gateway variables</title>
         <description>Specify the variables for the Gateway component</description>
@@ -1482,7 +1528,7 @@ echo '  # https://docs.zowe.org/stable/user-guide/zos-components-installation-ch
 echo '  #-------------------------------------------------------------------------------' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
 echo '  setup:' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
 echo '    jcl:' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
-echo '      # When enabled, "zwe init" will use job submission for system changes' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
+echo '      # When enabled, "zwe install & init" will use job submission for system changes' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
 echo '      # instead of shell commands. A `--dry-run` option is also enabled' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
 echo '      # which allows you to see jobs instead of submitting.' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
 echo '      enable: ${instance-zowe_setup_jcl_enable}' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
@@ -1590,7 +1636,7 @@ echo '      # # If this field is not defined, `zwe init` command will use' >> "$
 echo '      # # `zowe.externalDomains`.' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
 echo '      # san:' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
 echo '      #  # sample domain name' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
-echo '      #  - dvipa.my-company.com' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
+echo '      #  - dvipa.example.com' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
 echo '      #  # sample IP address' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
 echo '      #  - 12.34.56.78' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
 echo '' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
@@ -1649,7 +1695,7 @@ echo '    #   # # `zowe.externalDomains`.' >> "${instance-zowe_workspaceDirector
 echo '    #   # # **NOTE**: due to the limitation of RACDCERT command, this field should' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
 echo '    #   # #           contain exactly 2 entries with the domain name and IP address.' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
 echo '    #   # san:' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
-echo '    #   #   - dvipa.my-company.com' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
+echo '    #   #   - dvipa.example.com' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
 echo '    #   #   - 12.34.56.78' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
 echo '' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
 echo '    # # >>>> Certificate setup scenario 4' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
@@ -1941,9 +1987,16 @@ echo '#-------------------------------------------------------------------------
 echo 'components:' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
 echo '' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
 echo '  # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
+#if (${instance-components_apiml_enabled} == "true" )
+echo '  apiml:' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
+echo '    enabled: ${instance-components_apiml_enabled}' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
+echo '    debug: ${instance-components_apiml_debug}' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
+#end
+#if (${instance-components_apiml_enabled} == "false" )
 echo '  apiml:' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
 echo '    enabled: false' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
 echo '    debug: false' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
+#end
 echo '' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
 echo '  # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
 #if (${instance-components_gateway_enabled} == "true" )
@@ -2166,7 +2219,7 @@ echo '#' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
 echo '#   # HA instance ID' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
 echo '#   lpar1:' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
 echo '#     # hostname where this instance will be started' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
-echo '#     hostname: lpar1.my-company.com' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
+echo '#     hostname: lpar1.example.com' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
 echo '#     # Your &SYSNAME for this LPAR' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
 echo '#     # This sysname will be used to route your JES command to target system.' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
 echo '#     sysname: LPR1' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
@@ -2176,7 +2229,7 @@ echo '#   # HA instance ID, we will start 2 instances on LPAR2' >> "${instance-z
 echo '#   # **NOTE**, we can only start one Gateway in same LPAR.' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
 echo '#   lpar2a:' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
 echo '#     # hostname where this instance will be started' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
-echo '#     hostname: lpar2.my-company.com' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
+echo '#     hostname: lpar2.example.com' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
 echo '#     # Your &SYSNAME for this LPAR' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
 echo '#     # This sysname will be used to route your JES command to target system.' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
 echo '#     sysname: LPR2' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
@@ -2198,7 +2251,7 @@ echo '#       caching-service:' >> "${instance-zowe_workspaceDirectory}/zowe.yam
 echo '#         port: 17555' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
 echo '#' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
 echo '#   lpar2b:' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
-echo '#     hostname: lpar2.my-company.com' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
+echo '#     hostname: lpar2.example.com' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
 echo '#     # your &SYSNAME for this LPAR' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
 echo '#     sysname: LPR2' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
 echo '' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"

@@ -39,41 +39,41 @@ if [ -n "${ZWE_CLI_PARAMETER_DRY_RUN}" ] || [ -n "${ZWE_CLI_PARAMETER_SECURITY_D
   DRY_RUN="true"
 fi
 
-caching_storage=$(read_yaml_configmgr "${ZWE_CLI_PARAMETER_CONFIG}" ".components.caching-service.storage.mode" | upper_case)
+caching_storage=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".components.caching-service.storage.mode" | upper_case)
 if [ "${caching_storage}" != "VSAM" ]; then
   print_error "Warning ZWEL0304W: Zowe Caching Service is not configured to use VSAM. Command skipped."
   return 0
 fi
 
 # read prefix and validate
-prefix=$(read_yaml_configmgr "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.dataset.prefix")
+prefix=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.dataset.prefix")
 if [ -z "${prefix}" ]; then
   print_error_and_exit "Error ZWEL0157E: Zowe dataset prefix (zowe.setup.dataset.prefix) is not defined in Zowe YAML configuration file." "" 157
 fi
 # read JCL library and validate
-jcllib=$(read_yaml_configmgr "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.dataset.jcllib")
+jcllib=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.dataset.jcllib")
 if [ -z "${jcllib}" ]; then
   print_error_and_exit "Error ZWEL0157E: Zowe custom JCL library (zowe.setup.dataset.jcllib) is not defined in Zowe YAML configuration file." "" 157
 fi
-vsam_mode=$(read_yaml_configmgr "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.vsam.mode")
+vsam_mode=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.vsam.mode")
 if [ -z "${vsam_mode}" ]; then
   vsam_mode=NONRLS
 fi
 vsam_volume=
 if [ "${vsam_mode}" = "NONRLS" ]; then
-  vsam_volume=$(read_yaml_configmgr "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.vsam.volume")
+  vsam_volume=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.vsam.volume")
   if [ -z "${vsam_volume}" ]; then
     print_error_and_exit "Error ZWEL0157E: Zowe Caching Service VSAM data set volume (zowe.setup.vsam.volume) is not defined in Zowe YAML configuration file." "" 157
   fi
 fi
 vsam_storageClass=
 if [ "${vsam_mode}" = "RLS" ]; then
-  vsam_storageClass=$(read_yaml_configmgr "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.vsam.storageClass")
+  vsam_storageClass=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.vsam.storageClass")
   if [ -z "${vsam_storageClass}" ]; then
     print_error_and_exit "Error ZWEL0157E: Zowe Caching Service VSAM data set RLS storage class (zowe.setup.vsam.storageClass) is not defined in Zowe YAML configuration file." "" 157
   fi
 fi
-vsam_name=$(read_yaml_configmgr "${ZWE_CLI_PARAMETER_CONFIG}" ".components.caching-service.storage.vsam.name")
+vsam_name=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".components.caching-service.storage.vsam.name")
 if [ -z "${vsam_name}" ]; then
   print_error_and_exit "Error ZWEL0157E: Zowe Caching Service VSAM data set name (components.caching-service.storage.vsam.name) is not defined in Zowe YAML configuration file." "" 157
 fi
@@ -91,9 +91,9 @@ if [ "${jcl_existence}" = "true" ]; then
 fi
 
 # VSAM cache cannot be overwritten, must delete manually
-# FIXME: cat cannot be used to test VSAM data set
-vsam_existence=$(is_data_set_exists "${vsam_name}")
-if [ "${vsam_existence}" = "true" ]; then
+tso_is_data_set_exists "${vsam_name}"
+vsam_existence=$?
+if [ "${vsam_existence}" -eq 0 ]; then
   if [ "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITE}" = "true" ]; then
     print_message "Deleting ${vsam_name}"
     if [ -z "${DRY_RUN}" ]; then

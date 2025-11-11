@@ -27,38 +27,112 @@ import * as fakejq from './fakejq';
 import * as configUtils from './config';
 
 const CONFIG_MGR=configmgr.CONFIG_MGR;
-const ZOWE_CONFIG=configmgr.getZoweConfig();
-const runtimeDirectory=ZOWE_CONFIG.zowe.runtimeDirectory;
-const extensionDirectory=ZOWE_CONFIG.zowe.extensionDirectory;
-const workspaceDirectory=ZOWE_CONFIG.zowe.workspaceDirectory;
+
+let ZOWE_CONFIG: any = null;
+let runtimeDirectory: string = '';
+let extensionDirectory: string = '';
+let workspaceDirectory: string = '';
+let pluginPointerDirectory: string = '';
 
 //key: name of config, value: boolean on if it is cached already
 const configLoadedList:any = {};
 
-
 //TODO this file is full of printErrorAndExit. unreasonable?
-
-const COMMON_SCHEMA = `${runtimeDirectory}/schemas/server-common.json`;
 const MANIFEST_SCHEMA_ID = 'https://zowe.org/schemas/v2/server-component-manifest';
-const MANIFEST_SCHEMAS = `${runtimeDirectory}/schemas/manifest-schema.json:${COMMON_SCHEMA}`;
 const PLUGIN_DEF_SCHEMA_ID = "https://zowe.org/schemas/v2/appfw-plugin-definition";
-const PLUGIN_DEF_SCHEMAS = `${runtimeDirectory}/components/app-server/schemas/plugindefinition-schema.json`;
+let COMMON_SCHEMA = '';
+let MANIFEST_SCHEMAS = '';
+let PLUGIN_DEF_SCHEMAS = '';
+
+function loadConfig() {
+  if (ZOWE_CONFIG == null) {
+    ZOWE_CONFIG = configmgr.getZoweConfig();
+  }
+  runtimeDirectory=ZOWE_CONFIG.zowe.runtimeDirectory;
+  extensionDirectory=ZOWE_CONFIG.zowe.extensionDirectory;
+  workspaceDirectory=ZOWE_CONFIG.zowe.workspaceDirectory;
+  pluginPointerDirectory = `${workspaceDirectory}/app-server/plugins`;
+  COMMON_SCHEMA = `${runtimeDirectory}/schemas/server-common.json`;
+  MANIFEST_SCHEMAS = `${runtimeDirectory}/schemas/manifest-schema.json:${COMMON_SCHEMA}`;
+  PLUGIN_DEF_SCHEMAS = `${runtimeDirectory}/components/app-server/schemas/plugindefinition-schema.json`;
+}
+
+const INDIVIDUAL_APIML_COMPONENTS = ['gateway', 'discovery', 'api-catalog', 'caching-service', 'zaas'];
+
+export function isComponentInAPIMLModulith(componentName: string): boolean {
+  loadConfig();
+  let apimlModulith = ZOWE_CONFIG.components.apiml?.enabled;
+  return apimlModulith && INDIVIDUAL_APIML_COMPONENTS.includes(componentName);
+}
+
+export function getJobnameForComponent(componentName: string, componentManifest?: any): string {
+  loadConfig();
+  let apimlModulith = ZOWE_CONFIG.components.apiml?.enabled;
+  let jobnamePrefix = ZOWE_CONFIG.zowe.job?.prefix || '';
+  if (componentManifest && componentManifest.jobnameSuffix) {
+    return jobnamePrefix + componentManifest.jobnameSuffix;
+  } else if (componentManifest && componentManifest.jobname) {
+    return componentManifest.jobname;
+  } else {    
+    switch (componentName) {
+    case 'gateway':
+      return jobnamePrefix+'AG';
+    case 'discovery':
+      if (apimlModulith) {
+        return jobnamePrefix+'AG';
+      } else {
+        return jobnamePrefix+'AD';
+      }
+    case 'api-catalog':
+      if (apimlModulith) {
+        return jobnamePrefix+'AG';
+      } else {
+        return jobnamePrefix+'AC';
+      }
+    case 'caching-service':
+      if (apimlModulith) {
+        return jobnamePrefix+'AG';
+      } else {
+        return jobnamePrefix+'CS';
+      }
+    case 'zaas':
+      if (apimlModulith) {
+        return jobnamePrefix+'AG';
+      } else {
+        return jobnamePrefix+'AZ';
+      }
+    case 'zss':
+      return jobnamePrefix+'SZ';
+    case 'app-server':
+      if ((std.getenv('ZLUX_NO_CLUSTER') == '1') || (ZOWE_CONFIG.zowe.environments?.ZLUX_NO_CLUSTER == 1)) {
+        return jobnamePrefix+'DS';
+      } else {
+        //its probably the current jobname, but we have no field to gather that.
+        return '';
+      }
+    default:
+      //we dont know
+      return '';
+    }
+  }
+}
 
 // This intentionally lies about individual apiml components for backward compatibility.
 // If the apiml modulith is enabled, all are considered enabled.
 export function getEnabledComponents() {
+  loadConfig();
   let haInstance = configUtils.sanitizeHaInstanceId();
   let haConfig = configmgr.loadZoweConfig(haInstance);
   let components = Object.keys(haConfig.components);
   let enabled: string[] = [];
   let apimlModulithEnabled = haConfig.components.apiml.enabled == true;
-  let individualApimlComponents = ['gateway', 'discovery', 'api-catalog', 'caching-service', 'zaas'];
+
   
   if (apimlModulithEnabled) {
-    enabled = enabled.concat(individualApimlComponents);
+    enabled = enabled.concat(INDIVIDUAL_APIML_COMPONENTS);
     
     //do not process individual apiml components further
-    components = components.filter(name => !individualApimlComponents.includes(name));
+    components = components.filter(name => !INDIVIDUAL_APIML_COMPONENTS.includes(name));
   }
   
   components.forEach((key) => {
@@ -70,6 +144,7 @@ export function getEnabledComponents() {
 }
 
 export function getManifestPath(componentDir: string): string|undefined {
+  loadConfig();
   if (fs.fileExists(`${componentDir}/manifest.yaml`)) {
     return `${componentDir}/manifest.yaml`;
   } else if (fs.fileExists(`${componentDir}/manifest.yml`)) {
@@ -81,6 +156,7 @@ export function getManifestPath(componentDir: string): string|undefined {
 }
 
 export function findComponentDirectory(componentId: string): string|undefined {
+  loadConfig();
   if (fs.directoryExists(`${runtimeDirectory}/components/${componentId}`)) {
     return `${runtimeDirectory}/components/${componentId}`;
   } else if (extensionDirectory && fs.directoryExists(`${extensionDirectory}/${componentId}`)) {
@@ -89,8 +165,8 @@ export function findComponentDirectory(componentId: string): string|undefined {
   return undefined;
 }
 
-const pluginPointerDirectory = `${workspaceDirectory}/app-server/plugins`;
 export function registerPlugin(path:string, pluginDefinition:any){
+  loadConfig();
   const filePath = `${pluginPointerDirectory}/${pluginDefinition.identifier}.json`;
   if (fs.fileExists(filePath)) {
     return true;
@@ -115,6 +191,7 @@ export function registerPlugin(path:string, pluginDefinition:any){
 }
 
 function showExceptions(e: any,depth: number): void {
+  loadConfig();
   let blanks = "                                                                 ";
   let subs = e.subExceptions;
   common.printError(blanks.substring(0,depth*2)+e.message);
@@ -126,6 +203,7 @@ function showExceptions(e: any,depth: number): void {
 }
 
 export function getPluginDefinition(pluginRootPath:string, continueOnFailure?: boolean) {
+  loadConfig();
   const pluginDefinitionPath = `${pluginRootPath}/pluginDefinition.json`;
   const configId = `appfwPlugin:${pluginRootPath}`;
 
@@ -177,6 +255,7 @@ export function getPluginDefinition(pluginRootPath:string, continueOnFailure?: b
 
 
 export function getManifest(componentDirectory: string): any {
+  loadConfig();
   let manifestPath = getManifestPath(componentDirectory);
 
   if (manifestPath) {
@@ -229,6 +308,7 @@ export function getManifest(componentDirectory: string): any {
 }
 
 export function getSchemasForComponentConfig(manifest: any, componentDir: string): string|undefined {
+  loadConfig();
   let baseSchemas = configmgr.getZoweBaseSchemas();
   if (manifest.schemas?.configs) {
     if (Array.isArray(manifest.schemas.configs)) {
@@ -241,6 +321,7 @@ export function getSchemasForComponentConfig(manifest: any, componentDir: string
 }
 
 export function validateConfigForComponent(componentId: string, manifest: any, componentDir: string, configPath: string): boolean {
+  loadConfig();
   if (configPath.startsWith('/')) { //likely input is merged yaml
     configPath=`FILE(${configPath})`; 
   }
@@ -299,6 +380,7 @@ export function validateConfigForComponent(componentId: string, manifest: any, c
 }
 
 export function detectComponentManifestEncoding(componentDir: string): number|undefined {
+  loadConfig();
   const manifestPath = getManifestPath(componentDir);
   if (!manifestPath) {
     return undefined;
@@ -308,6 +390,7 @@ export function detectComponentManifestEncoding(componentDir: string): number|un
 }
 
 export function detectIfComponentTagged(componentDir: string): boolean {
+  loadConfig();
   const manifestPath = getManifestPath(componentDir);
   if (!manifestPath) {
     return false;
@@ -320,6 +403,7 @@ export function detectIfComponentTagged(componentDir: string): boolean {
 }
 
 export function findAllInstalledComponents(): string {
+  loadConfig();
   let components='';
   let subDirectories = fs.getSubdirectories(`${runtimeDirectory}/components`);
   if (subDirectories) {
@@ -344,6 +428,7 @@ export function findAllInstalledComponents(): string {
 }
 
 export function findAllInstalledComponents2(): string[] {
+  loadConfig();
   let components:string[] = [];
   let subDirectories = fs.getSubdirectories(`${runtimeDirectory}/components`);
   if (subDirectories) {
@@ -380,6 +465,8 @@ export function findAllLaunchComponents(): string {
 }
 
 export function findAllLaunchComponents2(): string[] {
+  loadConfig();
+
   let enabledComponentsEnv=std.getenv('ZWE_ENABLED_COMPONENTS');
   let enabledComponents = enabledComponentsEnv ? enabledComponentsEnv.split(',') : null;
   if (!enabledComponents) {
@@ -430,6 +517,8 @@ function isClientAttls() {
 // TODO - this also means it permits outdated files from extensions that no longer exist.
 //        uninstalling an extension does not do any such cleanup, so this bug continues to exist.
 export function processComponentApimlStaticDefinitions(componentDir: string): boolean {
+  loadConfig();
+
   const STATIC_DEF_DIR=std.getenv('ZWE_STATIC_DEFINITIONS_DIR');
   if (!STATIC_DEF_DIR) {
     common.printError("Error: ZWE_STATIC_DEFINITIONS_DIR is required to process component definitions for API Mediation Layer.");
@@ -493,6 +582,18 @@ export function processComponentApimlStaticDefinitions(componentDir: string): bo
           std.setenv('ZOSMF_SCHEME', scheme);
           std.setenv('ZOSMF_NON_SECURE_PORT_ENABLED', `${nonSecurePortEnabled}`);
           std.setenv('ZOSMF_SECURE_PORT_ENABLED', `${securePortEnabled}`);
+
+          const zosmfAuthenticationScheme = ([ 'zosmf', 'httpBasicPassTicket' ].includes(std.getenv('ZOSMF_AUTHENTICATION_SCHEME'))) ? std.getenv('ZOSMF_AUTHENTICATION_SCHEME') : std.getenv('ZWE_zOSMF_authentication_scheme');
+          let authProvider = (['saf', 'zosmf', 'dummy'].includes(std.getenv('ZWE_components_apiml_apiml_security_auth_provider'))) ? std.getenv('ZWE_components_apiml_apiml_security_auth_provider') : std.getenv('ZWE_components_gateway_apiml_security_auth_provider');
+          // default auth provider to z/osmf for 3.x, consistent with apiml
+          if (!authProvider) {
+            authProvider = 'zosmf';
+          }
+          let authScheme = zosmfAuthenticationScheme || 'zosmf';
+          if (!zosmfAuthenticationScheme && (authProvider === 'saf')) {
+            authScheme = 'httpBasicPassTicket';
+          }
+          std.setenv('ZOSMF_AUTHENTICATION_SCHEME', authScheme);
 
           const resolvedContents = varlib.resolveShellTemplate(contents);
 
@@ -561,6 +662,8 @@ export function processComponentApimlStaticDefinitions(componentDir: string): bo
  defined will be passed to install-app.sh for proper installation.
 */
 export function testOrSetPcBit(path: string): boolean {
+  loadConfig();
+
   if (!hasPCBit(path)) {
     common.printError("Plugin ZSS API not program controlled. Attempting to add PC bit.");
     zos.changeExtAttr(path, zos.EXTATTR_PROGCTL, true);
@@ -575,6 +678,8 @@ export function testOrSetPcBit(path: string): boolean {
 }
 
 export function hasPCBit(path: string): boolean {
+  loadConfig();
+
   const returnArray = zos.zstat(path);
   if (!returnArray[1]) { //no error
     return returnArray[0].extattrs == zos.EXTATTR_PROGCTL
@@ -588,6 +693,8 @@ export function hasPCBit(path: string): boolean {
 
 
 export function checkZssPcBit(appfwPluginPath: string): void {
+  loadConfig();
+
   const pluginDefinition = getPluginDefinition(appfwPluginPath);
   if (pluginDefinition) {
     if (pluginDefinition.dataServices) {
@@ -612,6 +719,7 @@ export function checkZssPcBit(appfwPluginPath: string): void {
 }
 
 export function processZssPluginInstall(componentDir: string): void {
+  loadConfig();
   if (os.platform == 'zos') {
     common.printDebug(`- Checking for zss plugins and verifying them`);
     const manifest = getManifest(componentDir);
@@ -663,6 +771,7 @@ zowe:
 
 */
 export function processZisPluginInstall(componentDir: string): void {
+  loadConfig();
   if (os.platform == 'zos') {
     common.printTrace("- Checking for zis plugins and verifying them");
 
@@ -716,6 +825,7 @@ function addKeyValueAtEndOfString(pair: string, input: string): string|undefined
 
 export function zisPluginInstall(pluginPath: string, zisPluginlib: string, zisParmlib: string,
                                  zisParmlibMember: string, pluginId: string, componentDir: string, parmlibKeys: string): number {
+  loadConfig();
   const parmlibMemberAsUnixFile=fs.createTmpFile(zisParmlibMember);
 
   zosfs.copyMvsToUss(`${zisParmlib}(${zisParmlibMember})`, parmlibMemberAsUnixFile);
@@ -887,6 +997,7 @@ function resolveEnvParameter(input: string): string {
 
 
 export function processComponentAppfwPlugin(componentDir: string): boolean {
+  loadConfig();
   const manifest = getManifest(componentDir);
   if (manifest && manifest.appfwPlugins) {
     for (let i = 0; i < manifest.appfwPlugins.length; i++) {
@@ -924,6 +1035,7 @@ export function processComponentAppfwPlugin(componentDir: string): boolean {
  defined will be passed to install-app.sh for proper installation.
 */
 export function processComponentZaasSharedLibs(componentDir: string): boolean {
+  loadConfig();
   const zaasSharedLibs = std.getenv('ZWE_ZAAS_SHARED_LIBS');
   fs.mkdirp(zaasSharedLibs, 0o770);
 
@@ -974,6 +1086,7 @@ export function processComponentZaasSharedLibs(componentDir: string): boolean {
  defined will be passed to install-app.sh for proper installation.
 */
 export function processComponentGatewaySharedLibs(componentDir: string): boolean {
+  loadConfig();
   const gatewaySharedLibs = std.getenv('ZWE_GATEWAY_SHARED_LIBS');
   fs.mkdirp(gatewaySharedLibs, 0o770);
 
@@ -1026,6 +1139,7 @@ export function processComponentGatewaySharedLibs(componentDir: string): boolean
  defined will be passed to install-app.sh for proper installation.
 */
 export function processComponentDiscoverySharedLibs(componentDir: string): boolean {
+  loadConfig();
   const discoverySharedLibs = std.getenv('ZWE_DISCOVERY_SHARED_LIBS');
   fs.mkdirp(discoverySharedLibs, 0o770);
 

@@ -12,7 +12,7 @@ metadata:
     app.kubernetes.io/managed-by: manual
 spec:
   # FIXME: you can uncomment and modify this line if you have your own domain name.
-  # host: my-domain-name.com
+  # host: example.com
   to:
     kind: Service
     name: gateway-service
