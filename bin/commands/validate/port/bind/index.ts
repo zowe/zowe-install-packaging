@@ -101,5 +101,6 @@ export function execute(quitOnError?: boolean, componentName?: string): number {
   } else {
     common.printFormattedError(common.MSG_KEY, COMMAND_NAME, `Port bind validation failed. This check can be dismissed with YAML value "zowe.launchScript.startupChecks.ports: warn"`);
     common.printErrorAndExit(`${failedCount} port bind validation(s) failed, review output for action items before running Zowe.`, undefined, 8);
+    return failedCount;
   }
 }

@@ -55,6 +55,7 @@ describe(`${testSuiteName}`, () => {
   describe('(SHORT)', () => {
     it('compare .zowe-merged.yaml created by launcher and zwe', async () => {
       _.set(cfgYaml, 'node.home', REMOTE_SYSTEM_INFO.zosNodeHome);
+      _.set(defaultCfgYaml, 'zowe.launchScript.startupChecks.ports', 'disabled'); // can fail if services running
       const defaultsUpl = await testRunner.uploadDefaultsYaml(defaultCfgYaml);
       const zyUpl = await testRunner.uploadZoweYaml(cfgYaml);
       // we need to remove the components/zss dir so zowe_launcher fails and returns after creating env. otherwise test hangs.

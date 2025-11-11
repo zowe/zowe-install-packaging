@@ -74,6 +74,9 @@ zowe:
   launchScript:
     logLevel: "info"
     onComponentConfigureFail: "warn"
+    startupChecks:
+      default: "exit"
+      ports: "disabled"
   verifyCertificates: "STRICT"
   sysMessageTrim: false
   runtimeDirectory: "/test/dir"
@@ -257,6 +260,9 @@ zowe:
   launchScript:
     logLevel: "info"
     onComponentConfigureFail: "warn"
+    startupChecks:
+      default: "exit"
+      ports: "disabled"
   verifyCertificates: "STRICT"
   sysMessageTrim: false
   runtimeDirectory: "/test/dir"
