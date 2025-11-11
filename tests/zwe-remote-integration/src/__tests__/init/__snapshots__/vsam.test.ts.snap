@@ -707,11 +707,7 @@ exports[`init-vsam (SHORT) unset vsam mode 1`] = `
           "apiml": {
             "security": {
               "auth": {
-                "provider": "zosmf",
-                "zosmf": {
-                  "jwtAutoconfiguration": "jwt",
-                  "serviceId": "ibmzosmf"
-                }
+                "provider": "saf"
               },
               "authorization": {
                 "endpoint": {
@@ -914,11 +910,7 @@ exports[`init-vsam (SHORT) unset vsam mode 2`] = `
           "apiml": {
             "security": {
               "auth": {
-                "provider": "zosmf",
-                "zosmf": {
-                  "jwtAutoconfiguration": "jwt",
-                  "serviceId": "ibmzosmf"
-                }
+                "provider": "saf"
               },
               "authorization": {
                 "endpoint": {

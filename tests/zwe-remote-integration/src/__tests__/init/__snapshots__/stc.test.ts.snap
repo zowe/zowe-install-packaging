@@ -973,11 +973,7 @@ exports[`init-stc (SHORT) invalid stc configurations 3`] = `
           "apiml": {
             "security": {
               "auth": {
-                "provider": "zosmf",
-                "zosmf": {
-                  "jwtAutoconfiguration": "jwt",
-                  "serviceId": "ibmzosmf"
-                }
+                "provider": "saf"
               },
               "authorization": {
                 "endpoint": {
@@ -1193,11 +1189,7 @@ exports[`init-stc (SHORT) invalid stc configurations 4`] = `
           "apiml": {
             "security": {
               "auth": {
-                "provider": "zosmf",
-                "zosmf": {
-                  "jwtAutoconfiguration": "jwt",
-                  "serviceId": "ibmzosmf"
-                }
+                "provider": "saf"
               },
               "authorization": {
                 "endpoint": {
@@ -1413,11 +1405,7 @@ exports[`init-stc (SHORT) invalid stc configurations 5`] = `
           "apiml": {
             "security": {
               "auth": {
-                "provider": "zosmf",
-                "zosmf": {
-                  "jwtAutoconfiguration": "jwt",
-                  "serviceId": "ibmzosmf"
-                }
+                "provider": "saf"
               },
               "authorization": {
                 "endpoint": {
@@ -1634,11 +1622,7 @@ exports[`init-stc (SHORT) invalid stc configurations 6`] = `
           "apiml": {
             "security": {
               "auth": {
-                "provider": "zosmf",
-                "zosmf": {
-                  "jwtAutoconfiguration": "jwt",
-                  "serviceId": "ibmzosmf"
-                }
+                "provider": "saf"
               },
               "authorization": {
                 "endpoint": {
@@ -1855,11 +1839,7 @@ exports[`init-stc (SHORT) invalid stc configurations 7`] = `
           "apiml": {
             "security": {
               "auth": {
-                "provider": "zosmf",
-                "zosmf": {
-                  "jwtAutoconfiguration": "jwt",
-                  "serviceId": "ibmzosmf"
-                }
+                "provider": "saf"
               },
               "authorization": {
                 "endpoint": {
@@ -2179,11 +2159,7 @@ exports[`init-stc (SHORT) wrong proclib 3`] = `
           "apiml": {
             "security": {
               "auth": {
-                "provider": "zosmf",
-                "zosmf": {
-                  "jwtAutoconfiguration": "jwt",
-                  "serviceId": "ibmzosmf"
-                }
+                "provider": "saf"
               },
               "authorization": {
                 "endpoint": {
