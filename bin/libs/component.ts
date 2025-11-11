@@ -57,6 +57,66 @@ function loadConfig() {
   PLUGIN_DEF_SCHEMAS = `${runtimeDirectory}/components/app-server/schemas/plugindefinition-schema.json`;
 }
 
+const INDIVIDUAL_APIML_COMPONENTS = ['gateway', 'discovery', 'api-catalog', 'caching-service', 'zaas'];
+
+export function isComponentInAPIMLModulith(componentName: string): boolean {
+  loadConfig();
+  let apimlModulith = ZOWE_CONFIG.components.apiml?.enabled;
+  return apimlModulith && INDIVIDUAL_APIML_COMPONENTS.includes(componentName);
+}
+
+export function getJobnameForComponent(componentName: string, componentManifest?: any): string {
+  loadConfig();
+  let apimlModulith = ZOWE_CONFIG.components.apiml?.enabled;
+  let jobnamePrefix = ZOWE_CONFIG.zowe.job?.prefix || '';
+  if (componentManifest && componentManifest.jobnameSuffix) {
+    return jobnamePrefix + componentManifest.jobnameSuffix;
+  } else if (componentManifest && componentManifest.jobname) {
+    return componentManifest.jobname;
+  } else {    
+    switch (componentName) {
+    case 'gateway':
+      return jobnamePrefix+'AG';
+    case 'discovery':
+      if (apimlModulith) {
+        return jobnamePrefix+'AG';
+      } else {
+        return jobnamePrefix+'AD';
+      }
+    case 'api-catalog':
+      if (apimlModulith) {
+        return jobnamePrefix+'AG';
+      } else {
+        return jobnamePrefix+'AC';
+      }
+    case 'caching-service':
+      if (apimlModulith) {
+        return jobnamePrefix+'AG';
+      } else {
+        return jobnamePrefix+'CS';
+      }
+    case 'zaas':
+      if (apimlModulith) {
+        return jobnamePrefix+'AG';
+      } else {
+        return jobnamePrefix+'AZ';
+      }
+    case 'zss':
+      return jobnamePrefix+'SZ';
+    case 'app-server':
+      if ((std.getenv('ZLUX_NO_CLUSTER') == '1') || (ZOWE_CONFIG.zowe.environments?.ZLUX_NO_CLUSTER == 1)) {
+        return jobnamePrefix+'DS';
+      } else {
+        //its probably the current jobname, but we have no field to gather that.
+        return '';
+      }
+    default:
+      //we dont know
+      return '';
+    }
+  }
+}
+
 // This intentionally lies about individual apiml components for backward compatibility.
 // If the apiml modulith is enabled, all are considered enabled.
 export function getEnabledComponents() {
@@ -66,13 +126,13 @@ export function getEnabledComponents() {
   let components = Object.keys(haConfig.components);
   let enabled: string[] = [];
   let apimlModulithEnabled = haConfig.components.apiml.enabled == true;
-  let individualApimlComponents = ['gateway', 'discovery', 'api-catalog', 'caching-service', 'zaas'];
+
   
   if (apimlModulithEnabled) {
-    enabled = enabled.concat(individualApimlComponents);
+    enabled = enabled.concat(INDIVIDUAL_APIML_COMPONENTS);
     
     //do not process individual apiml components further
-    components = components.filter(name => !individualApimlComponents.includes(name));
+    components = components.filter(name => !INDIVIDUAL_APIML_COMPONENTS.includes(name));
   }
   
   components.forEach((key) => {
