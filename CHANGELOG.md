@@ -4,6 +4,8 @@ All notable changes to the Zowe Installer will be documented in this file.
 
 ## `3.4.0`
 
+- Enhacement: Command `zwe validate config` command has been added as an alias of `zwe config validate`, for naming consistency with future `zwe validate` commands. [#4447](https://github.com/zowe/zowe-install-packaging/pull/4447)
+- Enhancement: Command `zwe validate port bind` command has been added. It can be used to validate if a zowe component is likely to succeed at binding to a TCP socket, and is used at startup to reduce likelihood of misconfiguration. [#4447](https://github.com/zowe/zowe-install-packaging/pull/4447)
 - Enhancement: Configure z/OSMF static API definiton based on authentication provider [#4563](https://github.com/zowe/zowe-install-packaging/pull/4563)
 - Enhancement: API ML modulith mode is now enabled by default for new installations of Zowe. [#4565](https://github.com/zowe/zowe-install-packaging/pull/4565)
 - Enhancement: Detect if `SDSF` is available. [#4389](https://github.com/zowe/zowe-install-packaging/pull/4389)

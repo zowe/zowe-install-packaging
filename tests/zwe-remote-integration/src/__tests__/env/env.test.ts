@@ -34,6 +34,7 @@ describe(`${testSuiteName}`, () => {
   beforeEach(async () => {
     cfgYaml = ZoweConfig.getZoweYaml();
     _.set(cfgYaml, 'node.home', REMOTE_SYSTEM_INFO.zosNodeHome);
+    _.set(cfgYaml, 'zowe.launchScript.startupChecks.ports', 'disabled');
     defaultCfgYaml = ZoweConfig.getDefaultsYaml();
     const workspaceEnv: TestFile = {
       name: `${cfgYaml.zowe.workspaceDirectory}/.env`,

@@ -22,6 +22,7 @@ import * as YAML from 'yaml';
 import * as jobs from '@zowe/zos-jobs-for-zowe-sdk';
 import path, { basename } from 'path';
 import { FileType, TestFileActions } from './TestFileActions';
+import { getZoweVersion } from '../utils';
 
 /**
  * RemoteTestRunner is a class which drives actions on the backend test environment and
@@ -417,7 +418,6 @@ export class RemoteTestRunner {
       const HEADER_REMOVAL_PATTERN = new RegExp(`(//|)\\s*${escapeStringRegexp(header)}\\s*\n`, 'gm');
       cleanedOutput = cleanedOutput.replaceAll(HEADER_REMOVAL_PATTERN, replacePattern);
     }
-
     // built-in
     return cleanedOutput
       .replace(/(JOB[0-9]{5})/gim, 'JOB00000')
@@ -431,7 +431,12 @@ export class RemoteTestRunner {
       .replace(/\/tmp\/zowe-convert-for-k8s-\d{1,5}/g, '/tmp/zowe-convert-for-k8s-0000')
       .replaceAll(REMOTE_SYSTEM_INFO.volume, 'TSTVOL')
       .replaceAll(REMOTE_SYSTEM_INFO.hostname, this.dummyHostname)
-      .replaceAll(REMOTE_SYSTEM_INFO.zosmfPort, this.dummyPort);
+      .replaceAll(REMOTE_SYSTEM_INFO.zosmfPort, this.dummyPort)
+      .replaceAll(new RegExp(`Zowe Version: v${getZoweVersion()}`, 'g'), 'Zowe version: v0.0.0')
+      .replaceAll(/\d{4}-\d{2}-\d{2}.+?<.+?>/g, '')
+      .replaceAll(/z\/OS Version: \d\.\d/g, 'z/OS Version: 0.0')
+      .replaceAll(/NodeJS version: v.*?$/gm, 'NodeJS version: v0.0.0')
+      .replaceAll(/Java version: .*?$/gm, 'Java version: v0.0.0');
   }
 
   public getMask(maskType: string): string {

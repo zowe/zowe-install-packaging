@@ -28,6 +28,7 @@ import * as javaCI from '../../../../libs/java_ci';
 import * as node from '../../../../libs/node';
 import * as zosmf from '../../../../libs/zosmf';
 import * as zoslib from '../../../../libs/zos';
+import * as validateBind from '../../../validate/port/bind/index';
 
 //# This command prepares everything needed to start Zowe.
 const cliParameterConfig = std.getenv('ZWE_CLI_PARAMETER_CONFIG');
@@ -41,6 +42,34 @@ const INDIVIDUAL_APIML_COMPONENTS = ['gateway', 'discovery', 'api-catalog', 'cac
 const user = std.getenv('USER');
 
 const ZOWE_CONFIG=config.getZoweConfig();
+
+function getStartupCheckMode(property: string): {doCheck: boolean, warnOnly: boolean} {
+  let doCheck = true;
+  let warnOnly = false;
+
+  // set defaults
+  if (ZOWE_CONFIG.zowe.launchScript?.startupChecks?.default) {
+    let value = ZOWE_CONFIG.zowe.launchScript?.startupChecks.default;
+    if (value == 'disabled') {
+      doCheck = false;
+    } 
+    if (value == 'warn') {
+      warnOnly = true;
+    }
+  }
+
+  // per-startup-check override
+  if (ZOWE_CONFIG.zowe.launchScript?.startupChecks) {
+    let value = ZOWE_CONFIG.zowe.launchScript?.startupChecks[property];
+    if (value != null) {
+      doCheck = value != 'disabled';
+      warnOnly = value == 'warn';
+    }
+  }
+
+  return {doCheck, warnOnly};
+}
+
 
 const zosmfHost = ZOWE_CONFIG.zOSMF?.host;
 const zosmfPort = ZOWE_CONFIG.zOSMF?.port;
@@ -188,13 +217,15 @@ function globalValidate(enabledComponents:string[]): void {
   common.printFormattedInfo("ZWELS", "zwe-internal-start-prepare,global_validate", "global validations are successful");
 }
 
-
-
-
 // Validate component properties if script exists
 function validateComponents(enabledComponents:string[]): any {
   common.printFormattedInfo("ZWELS", "zwe-internal-start-prepare,validate_components", "process component validations ...");
 
+  const validateBindAction = getStartupCheckMode('ports');
+  if (validateBindAction.doCheck) {
+    validateBind.execute(!validateBindAction.warnOnly);
+  }
+  
   const componentEnvironments = {};
 
   // reset error counter
@@ -202,6 +233,7 @@ function validateComponents(enabledComponents:string[]): any {
   std.setenv('ZWE_PRIVATE_ERRORS_FOUND','0');
 
   let apimlModulithEnabled = enabledComponents.includes('apiml');
+  
   for (let i = 0; i < enabledComponents.length; i++) {
     let componentId = enabledComponents[i];
     common.printFormattedTrace("ZWELS", "zwe-internal-start-prepare,validate_components", `- checking ${componentId}`);
