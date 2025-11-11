@@ -201,7 +201,10 @@ data:
         apiml:
           security:
             auth:
-              provider: "saf"
+              provider: "zosmf"
+              zosmf:
+                jwtAutoconfiguration: "jwt"
+                serviceId: "ibmzosmf"
             authorization:
               endpoint:
                 enabled: false

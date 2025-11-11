@@ -1760,7 +1760,11 @@ exports[`zwe-install (SHORT) zwe install invalid dataset name 1`] = `
           "apiml": {
             "security": {
               "auth": {
-                "provider": "saf"
+                "provider": "zosmf",
+                "zosmf": {
+                  "jwtAutoconfiguration": "jwt",
+                  "serviceId": "ibmzosmf"
+                }
               },
               "authorization": {
                 "endpoint": {
