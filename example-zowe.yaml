@@ -487,8 +487,8 @@ components:
     apiml:
       security:
         auth:
-          # When the API Gateway is configured to use SAF authentication, z/OSMF APIs used by Desktop Explorer apps 
-          # authenticate using PassTickets instead of a JWT/LTPA token. As such, ensure that PassTickets are configured 
+          # When the API Gateway is configured to use SAF authentication, z/OSMF APIs used by Desktop Explorer apps
+          # authenticate using PassTickets instead of a JWT/LTPA token. As such, ensure that PassTickets are configured
           # and enabled for z/OSMF.
           provider: saf
         authorization:
