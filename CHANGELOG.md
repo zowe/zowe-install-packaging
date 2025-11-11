@@ -2,6 +2,9 @@
 
 All notable changes to the Zowe Installer will be documented in this file.
 
+## `3.5.0`
+- Enhancement: Added manifest property `apimlServices.static.once` which restricts APIML static definition files to exist only once per HA setup [#???]()
+
 ## `3.4.0`
 
 - Enhancement: Configure z/OSMF static API definiton based on authentication provider [#4563](https://github.com/zowe/zowe-install-packaging/pull/4563)
