@@ -119,7 +119,7 @@ components:
     apiml:
       security:
         auth:
-          provider: "jwt"
+          provider: "saf"
         authorization:
           endpoint:
             enabled: false
