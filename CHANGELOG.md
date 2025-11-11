@@ -4,7 +4,8 @@ All notable changes to the Zowe Installer will be documented in this file.
 
 ## `3.4.0`
 
-- Enhancement: Configure z/OSMF static API definiton based on authentication provider [#4563](https://github.com/zowe/zowe-install-packaging/pull/4563)
+- Enhancement: API ML now uses `saf` as it's default authentication provider for new installations of Zowe. [#4573](https://github.com/zowe/zowe-install-packaging/pull/4573)
+- Enhancement: Configure z/OSMF static API definition based on authentication provider [#4563](https://github.com/zowe/zowe-install-packaging/pull/4563)
 - Enhancement: API ML modulith mode is now enabled by default for new installations of Zowe. [#4565](https://github.com/zowe/zowe-install-packaging/pull/4565)
 - Enhancement: Detect if `SDSF` is available. [#4389](https://github.com/zowe/zowe-install-packaging/pull/4389)
 - Bugfix: internal routine `copy_to_data_set` did not correctly check if data set exists. [#4476](https://github.com/zowe/zowe-install-packaging/pull/4476)
