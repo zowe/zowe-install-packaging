@@ -137,11 +137,11 @@
       "artifact": "*.pax"
     },
     "org.zowe.keyring-utilities": {
-      "version": "^3.0.0-MASTER",
+      "version": "3.1.0",
       "artifact": "*.pax"
     },
     "org.zopencommunity.curl": {
-      "version": "^8.13.0",
+      "version": "8.13.0",
       "artifact": "*.pax.Z"
     },
     "org.zowe.utility-tools": {
@@ -271,7 +271,7 @@
       "componentGroup": "Zowe Desktop Data Sets UI Plugin",
       "entries": [{
         "repository": "explorer-mvs",
-        "tag": "v3.x/master",
+        "tag": "v3.0.4",
         "destinations": ["Zowe PAX"]
       }]
     }, {
