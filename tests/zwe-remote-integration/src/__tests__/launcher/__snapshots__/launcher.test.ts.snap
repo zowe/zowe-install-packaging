@@ -122,7 +122,7 @@ components:
     apiml:
       security:
         auth:
-          provider: "zosmf"
+          provider: "saf"
           zosmf:
             jwtAutoconfiguration: "jwt"
             serviceId: "ibmzosmf"
@@ -308,7 +308,7 @@ components:
     apiml:
       security:
         auth:
-          provider: "zosmf"
+          provider: "saf"
           zosmf:
             jwtAutoconfiguration: "jwt"
             serviceId: "ibmzosmf"
