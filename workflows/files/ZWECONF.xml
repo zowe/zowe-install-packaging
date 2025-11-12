@@ -616,13 +616,15 @@ How we want to verify SSL certificates of services. Valid values are:
         <string valueMustBeChoice="false" multiLine="false">
             <!-- Put validation here -->
             <!-- Specify choices here -->
-            <default>zosmf</default>
+            <choice>saf</choice>
+            <choice>zosmf</choice>
+            <default>saf</default>
         </string>
     </variable>
     <variable name="components_gateway_apiml_security_auth_zosmf_jwtAutoconfiguration" scope="instance" visibility="public">
         <label>API ML security auth z/OSMF jwtAutoconfiguration</label>
         <abstract>JWT auto configuration for Gateway security auth</abstract>
-        <description>JWT auto configuration for Gateway security auth</description>
+        <description>Used when API ML security auth provider is 'zosmf'. JWT auto configuration for Gateway security auth</description>
         <category>components</category>
         <string valueMustBeChoice="false" multiLine="false">
             <!-- Put validation here -->
@@ -635,7 +637,7 @@ How we want to verify SSL certificates of services. Valid values are:
     <variable name="components_gateway_apiml_security_auth_zosmf_serviceId" scope="instance" visibility="public">
         <label>API ML security auth z/OSMF serviceId</label>
         <abstract>Service ID for Gateway security auth</abstract>
-        <description>Service ID for Gateway security auth</description>
+        <description>Used when API ML security auth provider is 'zosmf'. Service ID for Gateway security auth</description>
         <category>components</category>
         <string valueMustBeChoice="false" multiLine="false">
             <!-- Put validation here -->
@@ -1232,8 +1234,8 @@ How we want to verify SSL certificates of services. Valid values are:
         <variableValue name="components_gateway_port" scope="instance" noPromptIfSet="false" required="true"/>
         <variableValue name="components_gateway_debug" scope="instance" noPromptIfSet="false" required="true"/>
         <variableValue name="components_gateway_apiml_security_auth_provider" scope="instance" noPromptIfSet="false" required="true"/>
-        <variableValue name="components_gateway_apiml_security_auth_zosmf_jwtAutoconfiguration" scope="instance" noPromptIfSet="false" required="true"/>
-        <variableValue name="components_gateway_apiml_security_auth_zosmf_serviceId" scope="instance" noPromptIfSet="false" required="true"/>
+        <variableValue name="components_gateway_apiml_security_auth_zosmf_jwtAutoconfiguration" scope="instance" noPromptIfSet="false" required="false"/>
+        <variableValue name="components_gateway_apiml_security_auth_zosmf_serviceId" scope="instance" noPromptIfSet="false" required="false"/>
         <variableValue name="components_gateway_apiml_security_authorization_endpoint_enabled" scope="instance" noPromptIfSet="false" required="true"/>
         <variableValue name="components_gateway_apiml_security_authorization_provider" scope="instance" noPromptIfSet="false" required="false"/>
         <variableValue name="components_gateway_apiml_security_x509_enabled" scope="instance" noPromptIfSet="false" required="true"/>
@@ -2007,10 +2009,15 @@ echo '    debug: ${instance-components_gateway_debug}' >> "${instance-zowe_works
 echo '    apiml:' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
 echo '      security:' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
 echo '        auth:' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
+echo '          # When the API Gateway is configured to use SAF authentication, z/OSMF APIs used by Desktop Explorer apps' >> "${instance-zowe_workspaceDirectory}/zowe.yaml" 
+echo '          # authenticate using PassTickets instead of a JWT/LTPA token. As such, ensure that PassTickets are configured' >> "${instance-zowe_workspaceDirectory}/zowe.yaml" 
+echo '          # and enabled for z/OSMF.' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
 echo '          provider: $!{instance-components_gateway_apiml_security_auth_provider}' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
+#if (${instance-components_gateway_apiml_security_auth_provider} == "zosmf" )
 echo '          zosmf:' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
-echo '            jwtAutoconfiguration: $!{instance-components_gateway_apiml_security_auth_zosmf_jwtAutoconfiguration}' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
-echo '            serviceId: $!{instance-components_gateway_apiml_security_auth_zosmf_serviceId}' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
+echo '            jwtAutoconfiguration: ${instance-components_gateway_apiml_security_auth_zosmf_jwtAutoconfiguration}' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
+echo '            serviceId: ${instance-components_gateway_apiml_security_auth_zosmf_serviceId}' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
+#end
 echo '        authorization:' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
 echo '          endpoint:' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
 echo '            enabled: ${instance-components_gateway_apiml_security_authorization_endpoint_enabled}' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
@@ -2026,7 +2033,7 @@ echo '    debug: false' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
 echo '    apiml:' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
 echo '      security:' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
 echo '        auth:' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
-echo '          provider: zosmf' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
+echo '          provider: saf' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
 echo '          zosmf:' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
 echo '            jwtAutoconfiguration: jwt' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
 echo '            serviceId: ibmzosmf' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
