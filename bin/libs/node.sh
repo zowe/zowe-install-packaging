@@ -55,8 +55,7 @@ shell_read_yaml_node_home() {
 detect_node_home() {
   node_home=
 
-  # do we have which?
-  node_bin_home=$(which node 2>/dev/null)
+  node_bin_home=$(whence node 2>/dev/null)
   if [ -n "${node_bin_home}" ]; then
     # extract node home from result like: /var/nodejs/node-v14.16.0-os390-s390x-202103142315/bin/node
     node_home=$(dirname "$(dirname "${node_bin_home}")")

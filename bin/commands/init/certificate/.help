@@ -11,6 +11,8 @@ These Zowe YAML configurations showing with sample values are used:
 ```yaml
 zowe:
   setup:
+    jcl:
+      header: "123456"
     dataset:
       prefix: IBMUSER.ZWE
       jcllib: IBMUSER.ZWE.CUST.JCLLIB
@@ -57,20 +59,20 @@ zowe:
           ca:
           user: IZUSVR
       san:
-        - zos.my-company.com
-        - internal-lpar1.zos.my-company.com
-        - internal-lpar2.zos.my-company.com
-        - internal-lpar3.zos.my-company.com
+        - zos.example.com
+        - internal-lpar1.zos.example.com
+        - internal-lpar2.zos.example.com
+        - internal-lpar3.zos.example.com
       importCertificateAuthorities:
         - 
   externalDomains:
-   - zos.my-company.com
+   - zos.example.com
   verifyCertificates: STRICT
 zOSMF:
-  host: zosmf.my-company.com
+  host: zosmf.example.com
   port: 443
 ```
-
+- `zowe.setup.jcl.header` is optional additional JCL fields used for submitting JCLs.
 - `zowe.setup.certificate.type` is the type of certificate. Valid values are
   "PKCS12" (USS keystore) or "JCEKS", "JCECCAKS", "JCERACFKS", "JCECCARACFKS",
   and "JCEHYBRIDRACFKS (z/OS keyring).

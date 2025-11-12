@@ -26,52 +26,52 @@ ERROR: ZWEL0319E: zowe.setup.dataset.jcllib does not exist, cannot run. Run 'zwe
 `;
 
 exports[`init-apfauth (SHORT) apf bad authLoadLib 1`] = `
-"Temporary directory '/tmp/.zweenv-0000' created.
-Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
--------------------------------------------------------------------------------
+"-------------------------------------------------------------------------------
 >> APF authorize load libraries
+Temporary directory '/tmp/.zweenv-0000' created.
+Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
 ERROR: ZWEL0324E: The dataset specified in 'zowe.setup.dataset.authLoadlib' does not exist."
 `;
 
 exports[`init-apfauth (SHORT) apf bad authPluginLib 1`] = `
-"Temporary directory '/tmp/.zweenv-0000' created.
-Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
--------------------------------------------------------------------------------
+"-------------------------------------------------------------------------------
 >> APF authorize load libraries
+Temporary directory '/tmp/.zweenv-0000' created.
+Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
 ERROR: ZWEL0324E: The dataset specified in 'zowe.setup.dataset.authPluginLib' does not exist."
 `;
 
 exports[`init-apfauth (SHORT) apf empty jcllib post-generate 1`] = `
-"Temporary directory '/tmp/.zweenv-0000' created.
-Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
--------------------------------------------------------------------------------
+"-------------------------------------------------------------------------------
 >> APF authorize load libraries
+Temporary directory '/tmp/.zweenv-0000' created.
+Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
 ERROR: ZWEL0319E: zowe.setup.dataset.jcllib does not exist, cannot run. Run 'zwe init', 'zwe init generate', or submit JCL TEST.DATASET.PFX.SZWESAMP(ZWEGENER) before running this command."
 `;
 
 exports[`init-apfauth (SHORT) apf empty loadlib 1`] = `
-"Temporary directory '/tmp/.zweenv-0000' created.
-Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
--------------------------------------------------------------------------------
+"-------------------------------------------------------------------------------
 >> APF authorize load libraries
+Temporary directory '/tmp/.zweenv-0000' created.
+Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
 ZWEL0158I: zowe.setup.dataset.authLoadlib is not defined in Zowe YAML configuration file. Using the default value TEST.DATASET.PFX.SZWEAUTH.
 ERROR: ZWEL0324E: The dataset specified in 'zowe.setup.dataset.authLoadlib' does not exist."
 `;
 
 exports[`init-apfauth (SHORT) apf empty loadlib 2`] = `
-"Temporary directory '/tmp/.zweenv-0000' created.
-Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
--------------------------------------------------------------------------------
+"-------------------------------------------------------------------------------
 >> APF authorize load libraries
+Temporary directory '/tmp/.zweenv-0000' created.
+Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
 ZWEL0158I: zowe.setup.dataset.authLoadlib is not defined in Zowe YAML configuration file. Using the default value TEST.DATASET.PFX.SZWEAUTH.
 ERROR: ZWEL0324E: The dataset specified in 'zowe.setup.dataset.authLoadlib' does not exist."
 `;
 
 exports[`init-apfauth (SHORT) apf empty loadlib 3`] = `
-"Temporary directory '/tmp/.zweenv-0000' created.
-Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
--------------------------------------------------------------------------------
+"-------------------------------------------------------------------------------
 >> APF authorize load libraries
+Temporary directory '/tmp/.zweenv-0000' created.
+Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
 ZWEL0158I: zowe.setup.dataset.authLoadlib is not defined in Zowe YAML configuration file. Using the default value TEST.DATASET.PFX.SZWEAUTH.
 Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWEIAPF2) , Executable JCL: TEST.DATASET.PFX.JCLLIB(ZWEIAPF2)
 --- JCL Content ---
@@ -125,10 +125,10 @@ To perform command, re-run command without "--dry-run" flag, or submit the JCL d
 `;
 
 exports[`init-apfauth (SHORT) apf empty loadlib 4`] = `
-"Temporary directory '/tmp/.zweenv-0000' created.
-Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
--------------------------------------------------------------------------------
+"-------------------------------------------------------------------------------
 >> APF authorize load libraries
+Temporary directory '/tmp/.zweenv-0000' created.
+Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
 ZWEL0158I: zowe.setup.dataset.authLoadlib is not defined in Zowe YAML configuration file. Using the default value TEST.DATASET.PFX.SZWEAUTH.
 Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWEIAPF2) , Executable JCL: TEST.DATASET.PFX.JCLLIB(ZWEIAPF2)
 --- JCL Content ---
@@ -182,28 +182,28 @@ To perform command, re-run command without "--dry-run" flag, or submit the JCL d
 `;
 
 exports[`init-apfauth (SHORT) apf empty loadlib and pluginlib 1`] = `
-"Temporary directory '/tmp/.zweenv-0000' created.
-Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
--------------------------------------------------------------------------------
+"-------------------------------------------------------------------------------
 >> APF authorize load libraries
+Temporary directory '/tmp/.zweenv-0000' created.
+Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
 ZWEL0158I: zowe.setup.dataset.authLoadlib is not defined in Zowe YAML configuration file. Using the default value TEST.DATASET.PFX.SZWEAUTH.
 ERROR: ZWEL0324E: The dataset specified in 'zowe.setup.dataset.authLoadlib' does not exist."
 `;
 
 exports[`init-apfauth (SHORT) apf empty loadlib and pluginlib 2`] = `
-"Temporary directory '/tmp/.zweenv-0000' created.
-Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
--------------------------------------------------------------------------------
+"-------------------------------------------------------------------------------
 >> APF authorize load libraries
+Temporary directory '/tmp/.zweenv-0000' created.
+Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
 ZWEL0158I: zowe.setup.dataset.authLoadlib is not defined in Zowe YAML configuration file. Using the default value TEST.DATASET.PFX.SZWEAUTH.
 ERROR: ZWEL0324E: The dataset specified in 'zowe.setup.dataset.authLoadlib' does not exist."
 `;
 
 exports[`init-apfauth (SHORT) apf empty loadlib and pluginlib 3`] = `
-"Temporary directory '/tmp/.zweenv-0000' created.
-Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
--------------------------------------------------------------------------------
+"-------------------------------------------------------------------------------
 >> APF authorize load libraries
+Temporary directory '/tmp/.zweenv-0000' created.
+Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
 ZWEL0158I: zowe.setup.dataset.authLoadlib is not defined in Zowe YAML configuration file. Using the default value TEST.DATASET.PFX.SZWEAUTH.
 ZWEL0159I: zowe.setup.dataset.authPluginLib is not defined in Zowe YAML configuration file. Skipping.
 Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWEIAPF2) , Executable JCL: TEST.DATASET.PFX.JCLLIB(ZWEIAPF2)
@@ -255,10 +255,10 @@ To perform command, re-run command without "--dry-run" flag, or submit the JCL d
 `;
 
 exports[`init-apfauth (SHORT) apf empty loadlib and pluginlib 4`] = `
-"Temporary directory '/tmp/.zweenv-0000' created.
-Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
--------------------------------------------------------------------------------
+"-------------------------------------------------------------------------------
 >> APF authorize load libraries
+Temporary directory '/tmp/.zweenv-0000' created.
+Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
 ZWEL0158I: zowe.setup.dataset.authLoadlib is not defined in Zowe YAML configuration file. Using the default value TEST.DATASET.PFX.SZWEAUTH.
 ZWEL0159I: zowe.setup.dataset.authPluginLib is not defined in Zowe YAML configuration file. Skipping.
 Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWEIAPF2) , Executable JCL: TEST.DATASET.PFX.JCLLIB(ZWEIAPF2)
@@ -310,10 +310,10 @@ To perform command, re-run command without "--dry-run" flag, or submit the JCL d
 `;
 
 exports[`init-apfauth (SHORT) apf empty pluginlib 1`] = `
-"Temporary directory '/tmp/.zweenv-0000' created.
-Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
--------------------------------------------------------------------------------
+"-------------------------------------------------------------------------------
 >> APF authorize load libraries
+Temporary directory '/tmp/.zweenv-0000' created.
+Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
 ZWEL0159I: zowe.setup.dataset.authPluginLib is not defined in Zowe YAML configuration file. Skipping.
 Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWEIAPF2) , Executable JCL: TEST.DATASET.PFX.JCLLIB(ZWEIAPF2)
 --- JCL Content ---
@@ -364,10 +364,10 @@ To perform command, re-run command without "--dry-run" flag, or submit the JCL d
 `;
 
 exports[`init-apfauth (SHORT) apf empty pluginlib 2`] = `
-"Temporary directory '/tmp/.zweenv-0000' created.
-Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
--------------------------------------------------------------------------------
+"-------------------------------------------------------------------------------
 >> APF authorize load libraries
+Temporary directory '/tmp/.zweenv-0000' created.
+Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
 ZWEL0159I: zowe.setup.dataset.authPluginLib is not defined in Zowe YAML configuration file. Skipping.
 Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWEIAPF2) , Executable JCL: TEST.DATASET.PFX.JCLLIB(ZWEIAPF2)
 --- JCL Content ---
@@ -418,10 +418,10 @@ To perform command, re-run command without "--dry-run" flag, or submit the JCL d
 `;
 
 exports[`init-apfauth (SHORT) apf simple --dry-run 1`] = `
-"Temporary directory '/tmp/.zweenv-0000' created.
-Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
--------------------------------------------------------------------------------
+"-------------------------------------------------------------------------------
 >> APF authorize load libraries
+Temporary directory '/tmp/.zweenv-0000' created.
+Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
 Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWEIAPF2) , Executable JCL: TEST.DATASET.PFX.JCLLIB(ZWEIAPF2)
 --- JCL Content ---
 //ZWEIAPF2 JOB
@@ -474,10 +474,10 @@ To perform command, re-run command without "--dry-run" flag, or submit the JCL d
 `;
 
 exports[`init-apfauth (SHORT) apf sms-managed authLoadLib 1`] = `
-"Temporary directory '/tmp/.zweenv-0000' created.
-Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
--------------------------------------------------------------------------------
+"-------------------------------------------------------------------------------
 >> APF authorize load libraries
+Temporary directory '/tmp/.zweenv-0000' created.
+Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
 Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWEIAPF2) , Executable JCL: TEST.DATASET.PFX.JCLLIB(ZWEIAPF2)
 --- JCL Content ---
 //ZWEIAPF2 JOB
@@ -530,10 +530,10 @@ To perform command, re-run command without "--dry-run" flag, or submit the JCL d
 `;
 
 exports[`init-apfauth (SHORT) apf sms-managed authLoadLib and authPluginLib 1`] = `
-"Temporary directory '/tmp/.zweenv-0000' created.
-Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
--------------------------------------------------------------------------------
+"-------------------------------------------------------------------------------
 >> APF authorize load libraries
+Temporary directory '/tmp/.zweenv-0000' created.
+Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
 Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWEIAPF2) , Executable JCL: TEST.DATASET.PFX.JCLLIB(ZWEIAPF2)
 --- JCL Content ---
 //ZWEIAPF2 JOB
@@ -586,10 +586,10 @@ To perform command, re-run command without "--dry-run" flag, or submit the JCL d
 `;
 
 exports[`init-apfauth (SHORT) apf sms-managed authPluginLib 1`] = `
-"Temporary directory '/tmp/.zweenv-0000' created.
-Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
--------------------------------------------------------------------------------
+"-------------------------------------------------------------------------------
 >> APF authorize load libraries
+Temporary directory '/tmp/.zweenv-0000' created.
+Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
 Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWEIAPF2) , Executable JCL: TEST.DATASET.PFX.JCLLIB(ZWEIAPF2)
 --- JCL Content ---
 //ZWEIAPF2 JOB
