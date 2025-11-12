@@ -1,10 +1,10 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`init-mvs (SHORT) authLoadLib negatives 1`] = `
-"Temporary directory '/tmp/.zweenv-0000' created.
-Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
--------------------------------------------------------------------------------
+"-------------------------------------------------------------------------------
 >> Initialize Zowe custom data sets
+Temporary directory '/tmp/.zweenv-0000' created.
+Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
 Create data sets if they do not exist
 Warning ZWEL0301W: TEST.DATASET.PFX.PARMLIB already exists and will not be overwritten. For upgrades, you must use --allow-overwrite.
 Warning ZWEL0301W: TEST.DATASET.PFX.ZWESAPL already exists and will not be overwritten. For upgrades, you must use --allow-overwrite.
@@ -13,10 +13,10 @@ Skipped writing to a dataset. To write, you must use --allow-overwrite.
 `;
 
 exports[`init-mvs (SHORT) authLoadLib negatives 2`] = `
-"Temporary directory '/tmp/.zweenv-0000' created.
-Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
--------------------------------------------------------------------------------
+"-------------------------------------------------------------------------------
 >> Initialize Zowe custom data sets
+Temporary directory '/tmp/.zweenv-0000' created.
+Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
 Create data sets if they do not exist
 Warning ZWEL0301W: TEST.DATASET.PFX.PARMLIB already exists and will not be overwritten. For upgrades, you must use --allow-overwrite.
 Warning ZWEL0301W: TEST.DATASET.PFX.ZWESAPL already exists and will not be overwritten. For upgrades, you must use --allow-overwrite.
@@ -25,10 +25,10 @@ Skipped writing to a dataset. To write, you must use --allow-overwrite.
 `;
 
 exports[`init-mvs (SHORT) authLoadLib negatives 3`] = `
-"Temporary directory '/tmp/.zweenv-0000' created.
-Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
--------------------------------------------------------------------------------
+"-------------------------------------------------------------------------------
 >> Initialize Zowe custom data sets
+Temporary directory '/tmp/.zweenv-0000' created.
+Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
 Create data sets if they do not exist
 Warning ZWEL0301W: TEST.DATASET.PFX.PARMLIB already exists and will not be overwritten. For upgrades, you must use --allow-overwrite.
 Warning ZWEL0301W: TEST.DATASET.PFX.ZWESAPL already exists and will not be overwritten. For upgrades, you must use --allow-overwrite.
@@ -37,10 +37,10 @@ Skipped writing to a dataset. To write, you must use --allow-overwrite.
 `;
 
 exports[`init-mvs (SHORT) authLoadLib negatives 4`] = `
-"Temporary directory '/tmp/.zweenv-0000' created.
-Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
--------------------------------------------------------------------------------
+"-------------------------------------------------------------------------------
 >> Initialize Zowe custom data sets
+Temporary directory '/tmp/.zweenv-0000' created.
+Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
 Create data sets if they do not exist
 Warning ZWEL0301W: TEST.DATASET.PFX.PARMLIB already exists and will not be overwritten. For upgrades, you must use --allow-overwrite.
 Warning ZWEL0301W: TEST.DATASET.PFX.ZWESAPL already exists and will not be overwritten. For upgrades, you must use --allow-overwrite.
@@ -49,10 +49,10 @@ Skipped writing to a dataset. To write, you must use --allow-overwrite.
 `;
 
 exports[`init-mvs (SHORT) authLoadLib negatives 5`] = `
-"Temporary directory '/tmp/.zweenv-0000' created.
-Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
--------------------------------------------------------------------------------
+"-------------------------------------------------------------------------------
 >> Initialize Zowe custom data sets
+Temporary directory '/tmp/.zweenv-0000' created.
+Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
 Create data sets if they do not exist
 Warning ZWEL0301W: TEST.DATASET.PFX.PARMLIB already exists and will not be overwritten. For upgrades, you must use --allow-overwrite.
 Warning ZWEL0301W: TEST.DATASET.PFX.ZWESAPL already exists and will not be overwritten. For upgrades, you must use --allow-overwrite.
@@ -61,10 +61,10 @@ Skipped writing to a dataset. To write, you must use --allow-overwrite.
 `;
 
 exports[`init-mvs (SHORT) authLoadLib negatives 6`] = `
-"Temporary directory '/tmp/.zweenv-0000' created.
-Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
--------------------------------------------------------------------------------
+"-------------------------------------------------------------------------------
 >> Initialize Zowe custom data sets
+Temporary directory '/tmp/.zweenv-0000' created.
+Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
 Create data sets if they do not exist
 Warning ZWEL0300W: TEST.DATASET.PFX.PARMLIB already exists. Members in this data set will be overwritten.
 Warning ZWEL0300W: TEST.DATASET.PFX.ZWESAPL already exists. Members in this data set will be overwritten.
@@ -228,10 +228,10 @@ To perform command, re-run command without "--dry-run" flag, or submit the JCL d
 `;
 
 exports[`init-mvs (SHORT) authLoadLib negatives 7`] = `
-"Temporary directory '/tmp/.zweenv-0000' created.
-Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
--------------------------------------------------------------------------------
+"-------------------------------------------------------------------------------
 >> Initialize Zowe custom data sets
+Temporary directory '/tmp/.zweenv-0000' created.
+Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
 Create data sets if they do not exist
 Warning ZWEL0300W: TEST.DATASET.PFX.PARMLIB already exists. Members in this data set will be overwritten.
 Warning ZWEL0300W: TEST.DATASET.PFX.ZWESAPL already exists. Members in this data set will be overwritten.
@@ -448,10 +448,10 @@ To perform command, re-run command without "--dry-run" flag, or submit the JCL d
 `;
 
 exports[`init-mvs (SHORT) authLoadLib negatives 8`] = `
-"Temporary directory '/tmp/.zweenv-0000' created.
-Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
--------------------------------------------------------------------------------
+"-------------------------------------------------------------------------------
 >> Initialize Zowe custom data sets
+Temporary directory '/tmp/.zweenv-0000' created.
+Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
 Create data sets if they do not exist
 Warning ZWEL0300W: TEST.DATASET.PFX.PARMLIB already exists. Members in this data set will be overwritten.
 Warning ZWEL0300W: TEST.DATASET.PFX.ZWESAPL already exists. Members in this data set will be overwritten.
@@ -615,10 +615,10 @@ To perform command, re-run command without "--dry-run" flag, or submit the JCL d
 `;
 
 exports[`init-mvs (SHORT) authPluginLib negatives  1`] = `
-"Temporary directory '/tmp/.zweenv-0000' created.
-Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
--------------------------------------------------------------------------------
+"-------------------------------------------------------------------------------
 >> Initialize Zowe custom data sets
+Temporary directory '/tmp/.zweenv-0000' created.
+Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
 Create data sets if they do not exist
 Warning ZWEL0301W: TEST.DATASET.PFX.PARMLIB already exists and will not be overwritten. For upgrades, you must use --allow-overwrite.
 Skipped writing to a dataset. To write, you must use --allow-overwrite.
@@ -626,10 +626,10 @@ Skipped writing to a dataset. To write, you must use --allow-overwrite.
 `;
 
 exports[`init-mvs (SHORT) authPluginLib negatives  2`] = `
-"Temporary directory '/tmp/.zweenv-0000' created.
-Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
--------------------------------------------------------------------------------
+"-------------------------------------------------------------------------------
 >> Initialize Zowe custom data sets
+Temporary directory '/tmp/.zweenv-0000' created.
+Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
 Create data sets if they do not exist
 Warning ZWEL0301W: TEST.DATASET.PFX.PARMLIB already exists and will not be overwritten. For upgrades, you must use --allow-overwrite.
 Skipped writing to a dataset. To write, you must use --allow-overwrite.
@@ -637,10 +637,10 @@ Skipped writing to a dataset. To write, you must use --allow-overwrite.
 `;
 
 exports[`init-mvs (SHORT) authPluginLib negatives  3`] = `
-"Temporary directory '/tmp/.zweenv-0000' created.
-Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
--------------------------------------------------------------------------------
+"-------------------------------------------------------------------------------
 >> Initialize Zowe custom data sets
+Temporary directory '/tmp/.zweenv-0000' created.
+Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
 Create data sets if they do not exist
 Warning ZWEL0301W: TEST.DATASET.PFX.PARMLIB already exists and will not be overwritten. For upgrades, you must use --allow-overwrite.
 Skipped writing to a dataset. To write, you must use --allow-overwrite.
@@ -648,10 +648,10 @@ Skipped writing to a dataset. To write, you must use --allow-overwrite.
 `;
 
 exports[`init-mvs (SHORT) authPluginLib negatives  4`] = `
-"Temporary directory '/tmp/.zweenv-0000' created.
-Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
--------------------------------------------------------------------------------
+"-------------------------------------------------------------------------------
 >> Initialize Zowe custom data sets
+Temporary directory '/tmp/.zweenv-0000' created.
+Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
 Create data sets if they do not exist
 Warning ZWEL0301W: TEST.DATASET.PFX.PARMLIB already exists and will not be overwritten. For upgrades, you must use --allow-overwrite.
 Warning ZWEL0301W: TEST.DATASET.PFX.PARMLIB already exists and will not be overwritten. For upgrades, you must use --allow-overwrite.
@@ -660,10 +660,10 @@ Skipped writing to a dataset. To write, you must use --allow-overwrite.
 `;
 
 exports[`init-mvs (SHORT) authPluginLib negatives  5`] = `
-"Temporary directory '/tmp/.zweenv-0000' created.
-Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
--------------------------------------------------------------------------------
+"-------------------------------------------------------------------------------
 >> Initialize Zowe custom data sets
+Temporary directory '/tmp/.zweenv-0000' created.
+Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
 Create data sets if they do not exist
 Warning ZWEL0300W: TEST.DATASET.PFX.PARMLIB already exists. Members in this data set will be overwritten.
 Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWERMVS) , Executable JCL: TEST.DATASET.PFX.JCLLIB(ZWERMVS)
@@ -792,10 +792,10 @@ To perform command, re-run command without "--dry-run" flag, or submit the JCL d
 `;
 
 exports[`init-mvs (SHORT) authPluginLib negatives  6`] = `
-"Temporary directory '/tmp/.zweenv-0000' created.
-Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
--------------------------------------------------------------------------------
+"-------------------------------------------------------------------------------
 >> Initialize Zowe custom data sets
+Temporary directory '/tmp/.zweenv-0000' created.
+Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
 Create data sets if they do not exist
 Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWEIMVS) , Executable JCL: TEST.DATASET.PFX.JCLLIB(ZWEIMVS)
 --- JCL Content ---
@@ -889,58 +889,58 @@ To perform command, re-run command without "--dry-run" flag, or submit the JCL d
 `;
 
 exports[`init-mvs (SHORT) bad ds prefix post-generate 1`] = `
-"Temporary directory '/tmp/.zweenv-0000' created.
-Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
--------------------------------------------------------------------------------
+"-------------------------------------------------------------------------------
 >> Initialize Zowe custom data sets
+Temporary directory '/tmp/.zweenv-0000' created.
+Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
 ERROR: Error ZWEL0157E: Zowe dataset prefix (zowe.setup.dataset.prefix) is not defined in Zowe YAML configuration file."
 `;
 
 exports[`init-mvs (SHORT) bad ds prefix post-generate 2`] = `
-"Temporary directory '/tmp/.zweenv-0000' created.
-Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
--------------------------------------------------------------------------------
+"-------------------------------------------------------------------------------
 >> Initialize Zowe custom data sets
+Temporary directory '/tmp/.zweenv-0000' created.
+Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
 ERROR: Error ZWEL0157E: Zowe dataset prefix (zowe.setup.dataset.prefix) is not defined in Zowe YAML configuration file."
 `;
 
 exports[`init-mvs (SHORT) jcllib fails verification 1`] = `
-"Temporary directory '/tmp/.zweenv-0000' created.
-Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
--------------------------------------------------------------------------------
+"-------------------------------------------------------------------------------
 >> Initialize Zowe custom data sets
+Temporary directory '/tmp/.zweenv-0000' created.
+Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
 ERROR: Error ZWEL0319E: zowe.setup.dataset.jcllib does not exist, cannot run. Run 'zwe init', 'zwe init generate', or submit JCL TEST.DATASET.PFX.SZWESAMP(ZWEGENER) before running this command."
 `;
 
 exports[`init-mvs (SHORT) jcllib fails verification 2`] = `
-"Temporary directory '/tmp/.zweenv-0000' created.
-Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
--------------------------------------------------------------------------------
+"-------------------------------------------------------------------------------
 >> Initialize Zowe custom data sets
+Temporary directory '/tmp/.zweenv-0000' created.
+Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
 ERROR: Error ZWEL0319E: zowe.setup.dataset.jcllib does not exist, cannot run. Run 'zwe init', 'zwe init generate', or submit JCL TEST.DATASET.PFX.SZWESAMP(ZWEGENER) before running this command."
 `;
 
 exports[`init-mvs (SHORT) parmlib negatives  1`] = `
-"Temporary directory '/tmp/.zweenv-0000' created.
-Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
--------------------------------------------------------------------------------
+"-------------------------------------------------------------------------------
 >> Initialize Zowe custom data sets
+Temporary directory '/tmp/.zweenv-0000' created.
+Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
 ERROR: Error ZWEL0157E: zowe.setup.dataset.parmlib is not defined in Zowe YAML configuration file."
 `;
 
 exports[`init-mvs (SHORT) parmlib negatives  2`] = `
-"Temporary directory '/tmp/.zweenv-0000' created.
-Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
--------------------------------------------------------------------------------
+"-------------------------------------------------------------------------------
 >> Initialize Zowe custom data sets
+Temporary directory '/tmp/.zweenv-0000' created.
+Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
 ERROR: Error ZWEL0157E: zowe.setup.dataset.parmlib is not defined in Zowe YAML configuration file."
 `;
 
 exports[`init-mvs (SHORT) parmlib negatives  3`] = `
-"Temporary directory '/tmp/.zweenv-0000' created.
-Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
--------------------------------------------------------------------------------
+"-------------------------------------------------------------------------------
 >> Initialize Zowe custom data sets
+Temporary directory '/tmp/.zweenv-0000' created.
+Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
 Create data sets if they do not exist
 Warning ZWEL0301W: TEST.DATASET.PFX.ZWESAPL already exists and will not be overwritten. For upgrades, you must use --allow-overwrite.
 Skipped writing to a dataset. To write, you must use --allow-overwrite.
@@ -948,10 +948,10 @@ Skipped writing to a dataset. To write, you must use --allow-overwrite.
 `;
 
 exports[`init-mvs (SHORT) parmlib negatives  4`] = `
-"Temporary directory '/tmp/.zweenv-0000' created.
-Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
--------------------------------------------------------------------------------
+"-------------------------------------------------------------------------------
 >> Initialize Zowe custom data sets
+Temporary directory '/tmp/.zweenv-0000' created.
+Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
 Create data sets if they do not exist
 Warning ZWEL0301W: TEST.DATASET.PFX.ZWESAPL already exists and will not be overwritten. For upgrades, you must use --allow-overwrite.
 Warning ZWEL0301W: TEST.DATASET.PFX.ZWESAPL already exists and will not be overwritten. For upgrades, you must use --allow-overwrite.
@@ -960,10 +960,10 @@ Skipped writing to a dataset. To write, you must use --allow-overwrite.
 `;
 
 exports[`init-mvs (SHORT) parmlib negatives  5`] = `
-"Temporary directory '/tmp/.zweenv-0000' created.
-Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
--------------------------------------------------------------------------------
+"-------------------------------------------------------------------------------
 >> Initialize Zowe custom data sets
+Temporary directory '/tmp/.zweenv-0000' created.
+Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
 Create data sets if they do not exist
 Warning ZWEL0300W: TEST.DATASET.PFX.ZWESAPL already exists. Members in this data set will be overwritten.
 Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWEIMVS) , Executable JCL: TEST.DATASET.PFX.JCLLIB(ZWEIMVS)
@@ -1092,10 +1092,10 @@ To perform command, re-run command without "--dry-run" flag, or submit the JCL d
 `;
 
 exports[`init-mvs (SHORT) parmlib negatives  6`] = `
-"Temporary directory '/tmp/.zweenv-0000' created.
-Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
--------------------------------------------------------------------------------
+"-------------------------------------------------------------------------------
 >> Initialize Zowe custom data sets
+Temporary directory '/tmp/.zweenv-0000' created.
+Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
 Create data sets if they do not exist
 Warning ZWEL0300W: TEST.DATASET.PFX.ZWESAPL already exists. Members in this data set will be overwritten.
 Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWEIMVS) , Executable JCL: TEST.DATASET.PFX.JCLLIB(ZWEIMVS)
@@ -1224,10 +1224,10 @@ To perform command, re-run command without "--dry-run" flag, or submit the JCL d
 `;
 
 exports[`init-mvs (SHORT) simple --dry-run 1`] = `
-"Temporary directory '/tmp/.zweenv-0000' created.
-Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
--------------------------------------------------------------------------------
+"-------------------------------------------------------------------------------
 >> Initialize Zowe custom data sets
+Temporary directory '/tmp/.zweenv-0000' created.
+Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
 Create data sets if they do not exist
 Warning ZWEL0301W: TEST.DATASET.PFX.PARMLIB already exists and will not be overwritten. For upgrades, you must use --allow-overwrite.
 Warning ZWEL0301W: TEST.DATASET.PFX.ZWESAPL already exists and will not be overwritten. For upgrades, you must use --allow-overwrite.
@@ -1236,10 +1236,10 @@ Skipped writing to a dataset. To write, you must use --allow-overwrite.
 `;
 
 exports[`init-mvs (SHORT) zwesip00 customization  1`] = `
-"Temporary directory '/tmp/.zweenv-0000' created.
-Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
--------------------------------------------------------------------------------
+"-------------------------------------------------------------------------------
 >> Initialize Zowe custom data sets
+Temporary directory '/tmp/.zweenv-0000' created.
+Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
 Create data sets if they do not exist
 Warning ZWEL0300W: TEST.DATASET.PFX.PARMLIB already exists. Members in this data set will be overwritten.
 Warning ZWEL0300W: TEST.DATASET.PFX.ZWESAPL already exists. Members in this data set will be overwritten.

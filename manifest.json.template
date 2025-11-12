@@ -137,11 +137,13 @@
       "artifact": "*.pax"
     },
     "org.zowe.keyring-utilities": {
-      "version": "1.0.4",
-      "artifact": "keyring-util-1.0.4",
-      "explode": "false",
-      "flat": "true"
-   },
+      "version": "3.1.0",
+      "artifact": "*.pax"
+    },
+    "org.zopencommunity.curl": {
+      "version": "8.13.0",
+      "artifact": "*.pax.Z"
+    },
     "org.zowe.utility-tools": {
       "version": "2.0.3"
     },
@@ -264,6 +266,13 @@
         "repository": "zowe-cli-ftp-plugin",
         "tag": "v3.0.0",
         "destinations": ["Zowe CLI Package"]
+      }]
+    }, {
+      "componentGroup": "Zowe Desktop Data Sets UI Plugin",
+      "entries": [{
+        "repository": "explorer-mvs",
+        "tag": "v3.0.4",
+        "destinations": ["Zowe PAX"]
       }]
     }, {
       "componentGroup": "Zowe Desktop Eclipse Orion-based React Editor",
