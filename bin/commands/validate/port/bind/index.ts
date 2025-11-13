@@ -19,7 +19,26 @@ const COMMAND_NAME = 'zwe-validate-port-available';
 
 export function execute(quitOnError?: boolean, componentName?: string): number {
   common.requireZoweYaml();
-  let enabledComponents = componentName ? [componentName] : component.getEnabledComponents();
+
+  const enabledComponents = component.getEnabledComponents();
+  let checkedComponents;
+  if (componentName && componentName.trim().length > 0) {
+    if (enabledComponents.includes(componentName)) {
+      checkedComponents = [componentName];
+    } else {
+      const errMsg = `Component '${componentName}' is not enabled. Skipping port validation.`;
+      if (!quitOnError) {
+        common.printError(`ZWEL0356W: ${errMsg}`);
+        return 1;
+      } else {
+        common.printErrorAndExit(`ZWEL0356E: ${errMsg}`);
+        return 1;
+      }
+    }
+  } else {
+    checkedComponents = enabledComponents;
+  }
+
   let hasErrors = false;
   const ZOWE_CONFIG = config.getZoweConfig();
   let bindUtilPath = ZOWE_CONFIG.zowe.runtimeDirectory;
@@ -30,10 +49,10 @@ export function execute(quitOnError?: boolean, componentName?: string): number {
 
   let myJobname = std.getenv('_BPX_JOBNAME');
 
-  common.printFormattedInfo(common.MSG_KEY, COMMAND_NAME, `Checking ports of ${enabledComponents.length} enabled components`);
+  common.printFormattedInfo(common.MSG_KEY, COMMAND_NAME, `Checking ports of ${checkedComponents.length} enabled components`);
   let failedCount = 0;
-  for (let i = 0; i < enabledComponents.length; i++) {
-    let componentName = enabledComponents[i];
+  for (let i = 0; i < checkedComponents.length; i++) {
+    let componentName = checkedComponents[i];
     let port = ZOWE_CONFIG.components[componentName].port;
     if (component.isComponentInAPIMLModulith(componentName)) {
       if (componentName == 'gateway') {
@@ -80,9 +99,9 @@ export function execute(quitOnError?: boolean, componentName?: string): number {
           common.printDebug(result.out);
         }
         if (jobname) {
-          common.printFormattedError(common.MSG_KEY, COMMAND_NAME, `${componentName}: Port ${port} not available for jobname ${jobname} or command failed.`);
+          common.printFormattedError(common.MSG_KEY, COMMAND_NAME, `ZWEL0357E: ${componentName} Port ${port} not available for jobname ${jobname} or command failed.`);
         } else {
-          common.printFormattedError(common.MSG_KEY, COMMAND_NAME, `${componentName}: Port ${port} not available or command failed.`);
+          common.printFormattedError(common.MSG_KEY, COMMAND_NAME, `ZWEL0357E: ${componentName} Port ${port} not available or command failed.`);
         }
         hasErrors = true;
       } else if (result.out) {
@@ -96,11 +115,11 @@ export function execute(quitOnError?: boolean, componentName?: string): number {
     common.printFormattedInfo(common.MSG_KEY, COMMAND_NAME, `Zowe port bind validation passed.`);
     return 0;
   } else if (!quitOnError) {
-    common.printFormattedError(common.MSG_KEY, COMMAND_NAME, `${failedCount} port bind validation(s) failed, review output for action items before running Zowe.`);
+    common.printFormattedError(common.MSG_KEY, COMMAND_NAME, `ZWEL0358E: ${failedCount} port bind validation(s) failed, review output for action items before running Zowe.`);
     return failedCount;
   } else {
     common.printFormattedError(common.MSG_KEY, COMMAND_NAME, `Port bind validation failed. This check can be dismissed with YAML value "zowe.launchScript.startupChecks.ports: warn"`);
-    common.printErrorAndExit(`${failedCount} port bind validation(s) failed, review output for action items before running Zowe.`, undefined, 8);
+    common.printErrorAndExit(`ZWEL0358E: ${failedCount} port bind validation(s) failed, review output for action items before running Zowe.`, undefined, 8);
     return failedCount;
   }
 }

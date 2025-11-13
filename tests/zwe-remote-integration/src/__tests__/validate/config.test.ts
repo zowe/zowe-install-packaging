@@ -48,6 +48,17 @@ describe(`${testSuiteName}`, () => {
         }
       });
 
+      it('negative component test cases', async () => {
+        cfgYaml.components.zss.enabled = false; // disable for test
+        // eslint-disable-next-line quotes
+        const componentCases = ['', 'app-servr', 'noexist', 'null', null, 'zss', "''", '""'];
+        for (const component of componentCases) {
+          const result = await testRunner.runZweTest(cfgYaml, `validate port bind -o ${component}`);
+          expect(`case: ${component}\n${result.cleanedStdout}`).toMatchSnapshot();
+          expect(result.rc).toBe(0); // quitOnError = false from cmd line, RC=0 w/ error text
+        }
+      });
+
       it('test port priority', async () => {
         // easier to see ports printed in a failure
         _.set(cfgYaml, 'zowe.network.server.listenAddresses', ['8.8.8.8']);
