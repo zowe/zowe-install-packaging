@@ -69,39 +69,39 @@
       "artifact": "explorer-ip*.pax"
     },
      "org.zowe.apiml.apiml-package": {
-       "version": "3.3.12",
+       "version": "3.4.0",
        "artifact": "apiml-*.zip"
      },
     "org.zowe.apiml.api-catalog-package": {
-      "version": "3.3.12",
+      "version": "3.4.0",
       "artifact": "api-catalog-*.zip"
     },
     "org.zowe.apiml.discovery-package": {
-      "version": "3.3.12",
+      "version": "3.4.0",
       "artifact": "discovery-*.zip"
     },
     "org.zowe.apiml.gateway-package": {
-      "version": "3.3.12",
+      "version": "3.4.0",
       "artifact": "gateway-*.zip"
     },
     "org.zowe.apiml.caching-service-package": {
-      "version": "3.3.12",
+      "version": "3.4.0",
       "artifact": "caching-service-*.zip"
     },
     "org.zowe.apiml.apiml-common-lib-package": {
-      "version": "3.3.12",
+      "version": "3.4.0",
       "artifact": "apiml-common-lib-*.zip"
     },
     "org.zowe.apiml.sdk.common-java-lib-package": {
-      "version": "2.0.6",
+      "version": "2.0.7",
       "artifact": "common-java-lib-*.zip"
     },
     "org.zowe.apiml.sdk.apiml-sample-extension-package": {
-      "version": "3.3.12",
+      "version": "3.4.0",
       "artifact": "apiml-sample-extension-*.zip"
     },
     "org.zowe.apiml.zaas-package": {
-      "version": "3.3.12",
+      "version": "3.4.0",
       "artifact": "zaas-package-*.zip"
 	},
 	"org.zowe.getesm": {
@@ -110,7 +110,7 @@
       "artifact": "getesm-3.4.0-2025110659.pax"
     },
     "org.zowe.apiml.sdk.certificate-analyser": {
-      "version": "^3.0.3-SNAPSHOT",
+      "version": "^3.4.0",
       "artifact": "certificate-analyser-*.jar",
       "exclusions": ["*PR*.jar"]
     },
@@ -164,14 +164,14 @@
       "componentGroup": "Zowe API Mediation Layer",
       "entries": [{
         "repository": "api-layer",
-        "tag": "v3.3.12",
+        "tag": "v3.4.0",
         "destinations": ["Zowe PAX"]
       }]
     }, {
        "componentGroup": "Zowe common java libraries",
        "entries": [{
          "repository": "common-java",
-         "tag": "v2.0.6",
+         "tag": "v2.0.7",
          "destinations": ["Zowe PAX"]
        }]
      }, {
@@ -407,28 +407,28 @@
     "api-catalog": {
       "registry": "zowe-docker-release.jfrog.io",
       "name": "ompzowe/api-catalog-services",
-      "tag" : "3.3.12-ubuntu"
+      "tag" : "3.4.0-ubuntu"
     },
 	  "gateway": {
       "registry": "zowe-docker-release.jfrog.io",
       "name": "ompzowe/gateway-service",
-      "tag" : "3.3.12-ubuntu"
+      "tag" : "3.4.0-ubuntu"
     },
     "caching": {
       "registry": "zowe-docker-release.jfrog.io",
       "name": "ompzowe/caching-service",
-      "tag" : "3.3.12-ubuntu"
+      "tag" : "3.4.0-ubuntu"
     },
     "discovery": {
       "kind": "statefulset",
       "registry": "zowe-docker-release.jfrog.io",
       "name": "ompzowe/discovery-service",
-      "tag" : "3.3.12-ubuntu"
+      "tag" : "3.4.0-ubuntu"
     },
     "zaas": {
         "registry": "zowe-docker-release.jfrog.io",
         "name": "ompzowe/zaas-service",
-        "tag" : "3.3.12-ubuntu"
+        "tag" : "3.4.0-ubuntu"
     },
     "app-server": {
       "registry": "zowe-docker-release.jfrog.io",
