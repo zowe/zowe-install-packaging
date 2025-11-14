@@ -661,17 +661,23 @@ export function processComponentApimlStaticDefinitions(componentDir: string): bo
  The supported manifest entry is ".appfwPlugins". All plugins
  defined will be passed to install-app.sh for proper installation.
 */
-export function testOrSetPcBit(path: string): boolean {
+export function testOrSetPcBit(path: string, exitOnError?: boolean, dryRun?: boolean): boolean {
   loadConfig();
 
   if (!hasPCBit(path)) {
-    common.printError("Plugin ZSS API not program controlled. Attempting to add PC bit.");
-    zos.changeExtAttr(path, zos.EXTATTR_PROGCTL, true);
-    const success = hasPCBit(path);
-    if (!success) {
-      common.printErrorAndExit(`PC bit not set. This must be set such as by executing 'extattr +p ${path}' as a user with sufficient privilege.`);
+    common.printError(`ZSS plugin "${path}" not program controlled. Adding PC bit.`);
+    if (!dryRun) {
+      zos.changeExtAttr(path, zos.EXTATTR_PROGCTL, true);
+      const success = hasPCBit(path);
+      if (!success) {
+        common.printError(`PC bit not set. This must be set such as by executing 'extattr +p ${path}' as a user with sufficient privilege.`);
+        if (exitOnError) {
+          std.exit(4);
+        }
+      }
+      return success;
     }
-    return success;
+    return true;
   } else {
     return true;
   }
@@ -692,8 +698,11 @@ export function hasPCBit(path: string): boolean {
 }
 
 
-export function checkZssPcBit(appfwPluginPath: string): void {
+export function checkZssPcBit(appfwPluginPath: string, exitOnError?: boolean, dryRun?: boolean): {serviceCount: number, errors: number} {
   loadConfig();
+
+  let serviceCount = 0;
+  let errors = 0;
 
   const pluginDefinition = getPluginDefinition(appfwPluginPath);
   if (pluginDefinition) {
@@ -701,34 +710,54 @@ export function checkZssPcBit(appfwPluginPath: string): void {
       common.printDebug(`Checking ZSS services in plugin path=${appfwPluginPath}`);
       pluginDefinition.dataServices.forEach(function(service: any){
         if (service.type == 'service') {
-          if (service.libraryName31) {
-            testOrSetPcBit(`${appfwPluginPath}/lib/${service.libraryName31}`);
-          }
-          if (service.libraryName64) {
-            testOrSetPcBit(`${appfwPluginPath}/lib/${service.libraryName64}`);
-          }
-          if (service.libraryName) {
-            testOrSetPcBit(`${appfwPluginPath}/lib/${service.libraryName}`);
+          serviceCount++;
+          if (os.platform == 'zos') {
+            if (service.libraryName31) {
+              if (!testOrSetPcBit(`${appfwPluginPath}/lib/${service.libraryName31}`, exitOnError, dryRun)) {
+                errors++;
+              }
+            }
+            if (service.libraryName64) {
+              if (!testOrSetPcBit(`${appfwPluginPath}/lib/${service.libraryName64}`, exitOnError, dryRun)) {
+                errors++;
+              }
+            }
+            if (service.libraryName) {
+              if (!testOrSetPcBit(`${appfwPluginPath}/lib/${service.libraryName}`, exitOnError, dryRun)) {
+                errors++;
+              }
+            }
           }
         }
       });
     }
+    return {serviceCount: serviceCount, errors: errors};
   } else {
-    common.printErrorAndExit(`Skipping ZSS PC bit check of plugin at ${appfwPluginPath} due to pluginDefinition missing or invalid`);
+    common.printError(`Skipping ZSS PC bit check of plugin at ${appfwPluginPath} due to pluginDefinition missing or invalid`);
+    if (exitOnError) {
+      std.exit(4);
+    }
+    return {serviceCount: 0, errors: 1};
   }
 }
 
-export function processZssPluginInstall(componentDir: string): void {
+export function processZssPluginInstall(componentDir: string, exitOnError?: boolean, dryRun?: boolean): void {
   loadConfig();
-  if (os.platform == 'zos') {
-    common.printDebug(`- Checking for zss plugins and verifying them`);
-    const manifest = getManifest(componentDir);
-    if (manifest && manifest.appfwPlugins) {
-      manifest.appfwPlugins.forEach(function(appfwPlugin: any) {
-        const path = appfwPlugin.path;
-        checkZssPcBit(`${componentDir}/${path}`);
-      });
-    }
+  common.printDebug(`- Checking for zss plugins and verifying them`);
+  let appfwPluginCount, serviceCount, errors = 0;
+  const manifest = getManifest(componentDir);
+  if (manifest && manifest.appfwPlugins) {
+    manifest.appfwPlugins.forEach(function(appfwPlugin: any) {
+      appfwPluginCount++;
+      const path = appfwPlugin.path;
+      let result = checkZssPcBit(`${componentDir}/${path}`, exitOnError, dryRun);
+      errors = errors + result.errors;
+      serviceCount = serviceCount + result.serviceCount;
+    });
+  }
+  if (serviceCount > 0 && (os.platform != 'zos')) {
+    common.printMessage(`Component includes ZSS plugins which cannot be handled because install is not on z/OS.`);
+    common.printMessage(`Run component installation on a Zowe z/OS installation as well to complete the ZSS plugin installs`);
   }
 }
 
@@ -770,7 +799,7 @@ zowe:
   extensionDirectory: "/u/user/zowe/inst/zistest/extensions"
 
 */
-export function processZisPluginInstall(componentDir: string, zisPluginDatasets?: string[]): void {
+export function processZisPluginInstall(componentDir: string, zisPluginDatasets?: string[], exitOnError?: boolean, dryRun?: boolean): void {
   loadConfig();
   if (os.platform == 'zos') {
     common.printTrace("- Checking for zis plugins and verifying them");

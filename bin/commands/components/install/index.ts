@@ -11,7 +11,9 @@
 
 import * as std from 'cm_std';
 import * as extract from './extract/index';
-import * as installHook from './process-hook/index';
+import * as installHook from './component-script/index';
+import * as zssPlugin from './zss-plugin/index';
+import * as zisPlugin from './zis-plugin/index';
 import * as componentEnable from '../enable/index';
 import * as common from '../../../libs/common';
 import * as fs from '../../../libs/fs';
@@ -48,20 +50,24 @@ export function execute(componentFile: string, autoEncoding?:string, skipEnable?
       common.printError("Error ZWEL0305E: Could not find one of the components' directories.");
     } else {
       common.printMessage(`Installing file or folder=${componentFile}`);
-      if (!dryRun) {
-        extract.execute(componentFile, autoEncoding, upgrade);
-        
-        // ZWE_COMPONENTS_INSTALL_EXTRACT_COMPONENT_NAME should be set after extract step
-        const componentName = std.getenv('ZWE_COMPONENTS_INSTALL_EXTRACT_COMPONENT_NAME');
-        if (componentName) {
-          installHook.execute(componentName, zisPluginDatasets);
-        } else {
-          common.printErrorAndExit("Error ZWEL0156E: Component name is not initialized after extract step.", undefined, 156);
-        }
+      extract.execute(componentFile, autoEncoding, upgrade, dryRun);
+      
+      // ZWE_COMPONENTS_INSTALL_EXTRACT_COMPONENT_NAME should be set after extract step
+      const componentName = std.getenv('ZWE_COMPONENTS_INSTALL_EXTRACT_COMPONENT_NAME');
+      if (componentName) {
+        installHook.execute(componentName, dryRun);
 
-        if (!skipEnable) {
-          componentEnable.execute(componentName);
-        }
+        zssPlugin.execute(componentName, dryRun);
+        zisPlugin.execute(componentName, dryRun);        
+      } else if (dryRun) {
+        common.printMessage("Archived component install cannot continue in dry run mode.");
+        std.exit(1);
+      } else {
+        common.printErrorAndExit("Error ZWEL0156E: Component name is not initialized after extract step.", undefined, 156);
+      }
+
+      if (!skipEnable) {
+        componentEnable.execute(componentName, undefined, dryRun);
       }
     }
   });

@@ -1,2 +1,3 @@
 component-name,component|o|string|required||||Component name to be enabled.
 ha-instance|i|string|||||Zowe high availability instance ID from zowe.yaml.
+dry-run|d|boolean|||||Whether or not to perform the upgrade versus just checking if an upgrade is available

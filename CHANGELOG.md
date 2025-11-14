@@ -2,6 +2,10 @@
 
 All notable changes to the Zowe Installer will be documented in this file.
 
+## `3.5.0`
+- Enhancement: Added dry-run option for `zwe components install` so that you can test an install before committing to it. [#???]()
+- Enhancement: Split `zwe components install` into subcommands with dry-run options to help you with each step of component installation. [#???]()
+
 ## `3.4.0`
 
 - Enhancement: API ML now uses `saf` as it's default authentication provider for new installations of Zowe. [#4573](https://github.com/zowe/zowe-install-packaging/pull/4573)

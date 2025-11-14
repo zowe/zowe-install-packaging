@@ -1,0 +1,1 @@
+zwe components install component-script -c /path/to/zowe.yaml -n component-name
