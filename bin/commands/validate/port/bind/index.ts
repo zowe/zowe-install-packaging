@@ -19,14 +19,19 @@ const COMMAND_NAME = 'zwe-validate-port-available';
 
 export function execute(quitOnError?: boolean, componentName?: string): number {
   common.requireZoweYaml();
-
+  let hasErrors = false;
+  const ZOWE_CONFIG = config.getZoweConfig();
   const enabledComponents = component.getEnabledComponents();
   let checkedComponents;
   if (componentName && componentName.trim().length > 0) {
     if (enabledComponents.includes(componentName)) {
       checkedComponents = [componentName];
     } else {
-      const errMsg = `Component '${componentName}' is not enabled. Skipping port validation.`;
+      let errMessageReason = 'enabled';
+      if (ZOWE_CONFIG.components[componentName] == null) {
+          errMessageReason = 'defined';
+      }
+      const errMsg = `Component '${componentName}' is not ${errMessageReason}. Skipping port validation.`;
       if (!quitOnError) {
         common.printError(`ZWEL0356W: ${errMsg}`);
         return 1;
@@ -39,14 +44,8 @@ export function execute(quitOnError?: boolean, componentName?: string): number {
     checkedComponents = enabledComponents;
   }
 
-  let hasErrors = false;
-  const ZOWE_CONFIG = config.getZoweConfig();
-  let bindUtilPath = ZOWE_CONFIG.zowe.runtimeDirectory;
-  if (!bindUtilPath.endsWith('/')) {
-    bindUtilPath += '/';
-  }
-  bindUtilPath += 'bin/utils/bind-test';
 
+  let bindUtilPath = std.getenv('ZWE_zowe_runtimeDirectory') + '/bin/utils/bind-test';
   let myJobname = std.getenv('_BPX_JOBNAME');
 
   common.printFormattedInfo(common.MSG_KEY, COMMAND_NAME, `Checking ports of ${checkedComponents.length} enabled components`);
