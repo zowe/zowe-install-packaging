@@ -17,15 +17,16 @@ jobs:
     steps:
 
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
 
       - name: Install Dependencies for verification script
-        run: npm install
+        run: npm ci
         working-directory: .github/scripts/holddata_verification
 
       - name: List changed files which are candidates for HOLDDATA
         id: changed-files-yaml
-        uses: tj-actions/changed-files@v45
+        uses: tj-actions/changed-files@6cb76d07bee4c9772c6882c06c37837bf82a04d3
         with:
           files_yaml: |
             hold:

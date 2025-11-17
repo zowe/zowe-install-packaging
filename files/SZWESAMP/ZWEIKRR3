@@ -1,4 +1,4 @@
-//ZWEIKRR3 JOB
+//ZWEIKRR3 JOB {zowe.setup.jcl.header}
 //*
 //* This program and the accompanying materials are made available
 //* under the terms of the Eclipse Public License v2.0 which
@@ -73,6 +73,9 @@
 //*      * Label of the intermediate CA of the Zowe certificate
 //*        if applicable
 //         SET ITRMZWCA=''
+//*      * Label of the root CA for z/OSMF. Can be auto-detected if
+//*        unset in the zowe.yaml
+//         SET ROOTZFCA='{zowe.setup.certificate.keyring.zOSMF.ca}'
 //*      * Label of the root CA of the Zowe certificate if applicable
 //         SET ROOTZWCA=''
 //*      * If you enable VERIFY_CERTIFICATES or
@@ -160,7 +163,7 @@ $$
 /* Connect the z/OSMF root CA signed by a recognized certificate ... */
 /* authority (CA) with the keyring ................................. */
    RACDCERT CONNECT(CERTAUTH +
-            LABEL('{zowe.setup.certificate.keyring.zOSMF.ca}') +
+            LABEL('&ROOTZFCA.') +
             RING({zowe.setup.certificate.keyring.name}) +
             USAGE(CERTAUTH)) +
             ID({zowe.setup.security.users.zowe})

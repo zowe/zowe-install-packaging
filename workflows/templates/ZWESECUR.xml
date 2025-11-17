@@ -259,7 +259,7 @@
 		<instructions substitution="false">Run this step to initialize variable values.&lt;br/&gt;
     Note(s):&lt;br/&gt;
        1. THE USER ID THAT RUNS THIS JOB MUST HAVE SUFFICIENT AUTHORITY &lt;br/&gt;
-       TO ALTER SECURITY DEFINITONS &lt;br/&gt;
+       TO ALTER SECURITY DEFINITIONS &lt;br/&gt;
        2. The sample ACF2 commands create ROLEs that match the group &lt;br/&gt;
        names. Due to permits assigned to the &amp;STCGRP ROLE, it is &lt;br/&gt;
        advised to ensure this ROLE has a unique identifier. &lt;br/&gt;

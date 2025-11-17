@@ -12,6 +12,7 @@ const path = require('path');
 const sc = require('string-comparison');
 const _ = require('lodash');
 const { getDocumentationTree } = require('../zwe_doc_generation/doc-tree');
+const { match } = require('assert');
 
 const zweRootDir = path.resolve(__dirname, '..','..', 'bin');
 const rootDocNode = getDocumentationTree({ dir: path.join(zweRootDir, 'commands'), command: 'zwe' });
@@ -27,7 +28,9 @@ for (const dir of dirs) {
 
 // second, collect all message ids listed in .errors
 const collectedMsgs = collectMessageIds(rootDocNode);
-const dupErrors = findDuplicates(collectedMsgs);
+const dupInfo = findDuplicates(collectedMsgs);
+const dupErrors = dupInfo.errors;
+const dupWarnings = dupInfo.warnings;
 console.log('---- Duplicate Message Content or IDs defined in .errors ----\n');
 if (dupErrors.length > 0) {
   statusFailed = true;
@@ -35,15 +38,23 @@ if (dupErrors.length > 0) {
     console.log(error.message);
   }
 }
+if (dupWarnings.length > 0) {
+  console.log(' --> Warnings <--\n')
+  for (const warning of dupWarnings) {
+    console.log(warning.message);
+  }
+}
 console.log('')
 
 const flatExpectedMessages = collectedMsgs.map((msg) => msg.id);
-const msgTally = {};
+const globalMsgTally = {};
+const localCmdMsgTally = {};
 for (const msg of flatExpectedMessages) {
-  msgTally[msg] = {count: 0};
+  globalMsgTally[msg] = {count: 0};
+  localCmdMsgTally[msg] = [];
 }
 
-console.log('---- Messages Used and Not Defined in .errors ----');
+console.log('---- Messages Used and Not Defined in any .errors ----');
 for(const msgSpec of discoveredMsgs) {
   for(const msg of msgSpec.messages) {
     if (!flatExpectedMessages.includes(msg.messageId)) {
@@ -51,24 +62,87 @@ for(const msgSpec of discoveredMsgs) {
       statusFailed = true;
       continue;
     }
-   msgTally[msg.messageId].count++
+   globalMsgTally[msg.messageId].count++
   }
 }
 console.log('')
-console.log('---- Unused Messages defined in .errors ----');
-for(const msgId of Object.keys(msgTally)) {
-  if (msgTally[msgId].count === 0 && msgId !== 'ZWEL0103E') { // ZWEL0103E is in 'zwe', which isn't scanned
+console.log('---- Unused Messages defined across any .errors ----');
+for(const msgId of Object.keys(globalMsgTally)) {
+  if (globalMsgTally[msgId].count === 0 && msgId !== 'ZWEL0103E') { // ZWEL0103E is in 'zwe', which isn't scanned
     const definition = collectedMsgs.find((it) => it.id === msgId);
     console.log(`Unused message: ${msgId} [${definition.source}]`);
     statusFailed = true;
   }
 }
-console.log()
+console.log();
+console.log(`---- Messages used and not defined in the command's .errors ----`);
+console.log(`****** bin/libs errors should go to common errors in bin/commands/.errors`);
+const noErrorsFiles = [];
+const forceCommonErrors = ['bin/libs/'];
+const commonErrors = collectedMsgs.filter((item) => {
+  return item.source == 'bin/commands/.errors';
+})
+const flattenedCommonErrors = commonErrors.map((msg) => msg.id);
+for(const msgSpec of discoveredMsgs) {
+  const cmdGroup = msgSpec.commandGroup;
+  const cmdErrors =cmdGroup+'.errors'; // path.sep in commandGroup
+  let commandGroupErrors 
+  if (forceCommonErrors.includes(cmdGroup)){ 
+    commandGroupErrors = commonErrors;
+  } else {
+    commandGroupErrors = collectedMsgs.filter((item) => {
+      return item.source == cmdErrors 
+    });
+  }
+  
+  if (commandGroupErrors.length > 0) {
+    const flattendCmdErrors = commandGroupErrors.map((msg) => msg.id);
+    for (const errMsg of flattendCmdErrors) {
+      let errCmd = localCmdMsgTally[errMsg].find((item) => item.command == cmdGroup);
+      if (errCmd == undefined){
+        errCmd = {command: cmdGroup, count: 0};
+        localCmdMsgTally[errMsg].push(errCmd);
+      }
+    }
+    for(const msg of msgSpec.messages) {
+      if (!flattendCmdErrors.includes(msg.messageId) && !flattenedCommonErrors.includes(msg.messageId)) {
+        console.log(`|${msg.messageId}:${msg.message}[${msgSpec.src}]|`);
+        statusFailed = true;
+      } else {
+        let errCmd = localCmdMsgTally[msg.messageId].find((item) => item.command == cmdGroup);
+        if (errCmd != undefined){
+          errCmd.count +=1;
+        }
+      }
+    
+    }
+  } else {
+    noErrorsFiles.push(cmdGroup);
+  }
+}
+
+console.log();
+// This won't set statusFailed. Too many false positives, but the information can still be useful
+console.log(`---- Unused Messages defined within a command's .errors ----`)
+const flattenLibMsgs = discoveredMsgs.filter((item) => item.commandGroup == 'bin/libs/').flatMap((it) => it.messages.flatMap((msg) => msg.messageId));
+for(const msgId of Object.keys(localCmdMsgTally)) {
+  if (msgId !== 'ZWEL0103E' && !flattenLibMsgs.includes(msgId)) {
+    const unusedGroups = localCmdMsgTally[msgId].filter((item) => item.count == 0 )
+    for (const cmdGroup of unusedGroups) {
+      // skip libs
+      if (cmdGroup.command == 'bin/libs/') {
+        continue;
+      }
+      console.log(`Unused message: ${msgId} [${cmdGroup.command}]`);
+    }
+  }
+}
+console.log();
 // this will not set 'statusFailed' since the results may not be accurate.
 // toggling the similarity threshold greatly impacts output... setting the threshold lower (closer to 0) suppresses
 //   output volume, while setting it higher (closer to 1) will display more messages in the log
 console.log('---- Experimental: Messages whose content differs from the definition in .errors ----');
-const similarityExceptions = ['The password for data set storing importing certificate (zowe.setup.certificate.keyring.import.password) is not defined in Zowe YAML configuration file.']
+const similarityExceptions = ['The password for data set storing importing certificate (zowe.setup.certificate.keyring.import.password) is not defined in Zowe YAML configuration file.', 'zowe.setup.dataset.jcllib does not exist, cannot run. Run']
 for(const msgSpec of discoveredMsgs) {
   for(const msg of msgSpec.messages) {
     const errorDef = collectedMsgs.find((item) => item.id === msg.messageId);
@@ -82,7 +156,12 @@ for(const msgSpec of discoveredMsgs) {
 
   }
 }
+
 console.log()
+console.log('***** Informational *****')
+for (const errMsg of noErrorsFiles) {
+  console.log('No .errors found for ' + errMsg);
+}
 
 if (statusFailed) {
   process.exit(1);
@@ -90,6 +169,7 @@ if (statusFailed) {
 
 function findDuplicates(collectedMsgs) {
   const errors = [];
+  const warnings = [];
   // flatten and get unique IDs
   const uniqIds = _.uniq(collectedMsgs.map((it) => it.id));
   for (const id of uniqIds) {
@@ -103,12 +183,19 @@ function findDuplicates(collectedMsgs) {
   const uniqMsgs = _.uniq(collectedMsgs.map((it) => it.message));
   for (const msg of uniqMsgs) {
     const matchingMsgs =  _.uniqBy(collectedMsgs.filter((it) => it.message === msg), 'id')
+    // get the unique count of error types present in the matching messages. 
+    //   If every message has a unique type; warn instead of error in the final automation output 
+    const msgTypes = matchingMsgs.reduce((prev, curr) => _.uniq([...prev, curr.id[curr.id.length-1]]), [])
     if (matchingMsgs.length > 1) {
       const errorText = matchingMsgs.reduce((prev, curr) => prev + `|${curr.id}[${curr.source}]|\n`, '');
-      errors.push({type: 'MSG', message: `Dup MSG: ${msg}, ${matchingMsgs.length} Locations: \n${errorText}`});
+      if (msgTypes.length != matchingMsgs.length) {
+        errors.push({type: 'MSG', message: `Dup MSG: ${msg}, ${matchingMsgs.length} Locations: \n${errorText}`});
+      } else {
+        warnings.push({type: 'MSG', message: `Dup MSG: ${msg}, ${matchingMsgs.length} Locations: \n${errorText}`})
+      }
     }
   }
-  return errors;
+  return { errors: errors, warnings: warnings};
 }  
 
 function collectMessageIds(docNode) {
@@ -157,7 +244,6 @@ function getMessagesUsedByImplementations(zweDir) {
       const srcFileShort = 'bin'+path.sep+srcFile.split('bin'+path.sep)[1];
       const content = fs.readFileSync(srcFile, 'utf8');
       const matches = content.matchAll(/(ZWEL\d{4}[EIDTW])(.*?)["'`]/gm);
-  
       for (const match of matches) {
         const message = match[2].replaceAll(/\${.*?}/gm,'%s');
         if (!messages.includes(message)) {
@@ -166,7 +252,8 @@ function getMessagesUsedByImplementations(zweDir) {
           if (existing) {
            existing.messages.push({messageId: match[1], message: message.substring(1).trim()});
           } else {
-            messages.push({ command: leafDir, src: srcFileShort, messages: [{messageId: match[1], message: message.substring(1).trim() }]});
+            const commandGroup = srcFileShort.replace(path.basename(srcFile), '')
+            messages.push({commandGroup: commandGroup, command: leafDir, src: srcFileShort, messages: [{messageId: match[1], message: message.substring(1).trim() }]});
           }
         }
       }

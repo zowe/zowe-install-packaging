@@ -1,0 +1,18 @@
+zowe:
+  setup:
+    dataset:
+      jcllib: ${{ zowe.setup.dataset.prefix }}.JCLLIB
+    vsam:
+      mode: NONRLS
+      volume: {@ volume @}
+      storageClass: {@ storclas @}
+  useConfigmgr: true
+components:
+  caching-service:
+    storage:
+      mode: VSAM
+      vsam:
+        name: ${{ zowe.setup.dataset.prefix }}.CACHE
+#        name: "DANGEROUS SYNTAX HERE"
+
+  

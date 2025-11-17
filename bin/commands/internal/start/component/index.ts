@@ -38,7 +38,7 @@ export function execute(componentId: string, runInBackground: boolean=false) {
   const runtimeDirectory = ZOWE_CONFIG.zowe.runtimeDirectory;
 
   // overwrite ZWE_PRIVATE_LOG_LEVEL_ZWELS with zowe.launchScript.logLevel config in YAML
-  if (ZOWE_CONFIG.zowe.launchScript) {
+  if (ZOWE_CONFIG.zowe.launchScript.logLevel) {
     std.setenv('ZWE_PRIVATE_LOG_LEVEL_ZWELS', ZOWE_CONFIG.zowe.launchScript.logLevel.toUpperCase());
   };
 

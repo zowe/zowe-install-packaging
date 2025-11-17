@@ -11,58 +11,74 @@
 # Copyright Contributors to the Zowe Project.
 #######################################################################
 
+CONFIGMGR_SYNTAX=$(check_configmgr_config_syntax)
+validate_zowe_yaml "${ZWE_CLI_PARAMETER_CONFIG}"
+USE_JCL=$(check_jcl_enabled)
+if [ "${USE_JCL}" = "true" ]; then
+  if [ -z "${ZWE_PRIVATE_TMP_MERGED_YAML_DIR}" ]; then
+
+    # user-facing command, use tmpdir to not mess up workspace permissions
+    export ZWE_PRIVATE_TMP_MERGED_YAML_DIR=1
+  fi
+  _CEE_RUNOPTS="XPLINK(ON),HEAPPOOLS(OFF),HEAPPOOLS64(OFF)" ${ZWE_zowe_runtimeDirectory}/bin/utils/configmgr -script "${ZWE_zowe_runtimeDirectory}/bin/commands/init/security/cli.js"
+elif [ "${CONFIGMGR_SYNTAX}" = "true" ]; then
+  print_error_and_exit "Error ZWEL0115E: This command was submitted with FILE() or PARMLIB() syntax, which is only supported when JCL is also enabled." "" 115
+else
+
+###############################
+# Old 3.2 code follows
+
+
+
+
 print_level1_message "Run Zowe security configurations"
 
 ###############################
 # constants
 
-###############################
-# validation
-require_zowe_yaml "skipnode"
-
 # read prefix and validate
-prefix=$(read_yaml_configmgr "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.dataset.prefix")
+prefix=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.dataset.prefix")
 if [ -z "${prefix}" ]; then
   print_error_and_exit "Error ZWEL0157E: Zowe dataset prefix (zowe.setup.dataset.prefix) is not defined in Zowe YAML configuration file." "" 157
 fi
 # read JCL library and validate
-jcllib=$(read_yaml_configmgr "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.dataset.jcllib")
+jcllib=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.dataset.jcllib")
 if [ -z "${jcllib}" ]; then
   print_error_and_exit "Error ZWEL0157E: Zowe custom JCL library (zowe.setup.dataset.jcllib) is not defined in Zowe YAML configuration file." "" 157
 fi
-security_product=$(read_yaml_configmgr "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.security.product")
+security_product=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.security.product")
 if [ -z "${security_product}" ]; then
   security_product=RACF
 fi
-security_groups_admin=$(read_yaml_configmgr "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.security.groups.admin")
+security_groups_admin=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.security.groups.admin")
 if [ -z "${security_groups_admin}" ]; then
   security_groups_admin=${ZWE_PRIVATE_DEFAULT_ADMIN_GROUP}
 fi
-security_groups_stc=$(read_yaml_configmgr "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.security.groups.stc")
+security_groups_stc=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.security.groups.stc")
 if [ -z "${security_groups_stc}" ]; then
   security_groups_stc=${ZWE_PRIVATE_DEFAULT_ADMIN_GROUP}
 fi
-security_groups_sysProg=$(read_yaml_configmgr "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.security.groups.sysProg")
+security_groups_sysProg=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.security.groups.sysProg")
 if [ -z "${security_groups_sysProg}" ]; then
   security_groups_sysProg=${ZWE_PRIVATE_DEFAULT_ADMIN_GROUP}
 fi
-security_users_zowe=$(read_yaml_configmgr "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.security.users.zowe")
+security_users_zowe=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.security.users.zowe")
 if [ -z "${security_users_zowe}" ]; then
   security_users_zowe=${ZWE_PRIVATE_DEFAULT_ZOWE_USER}
 fi
-security_users_zis=$(read_yaml_configmgr "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.security.users.zis")
+security_users_zis=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.security.users.zis")
 if [ -z "${security_users_zis}" ]; then
   security_users_zis=${ZWE_PRIVATE_DEFAULT_ZIS_USER}
 fi
-security_stcs_zowe=$(read_yaml_configmgr "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.security.stcs.zowe")
+security_stcs_zowe=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.security.stcs.zowe")
 if [ -z "${security_stcs_zowe}" ]; then
   security_stcs_zowe=${ZWE_PRIVATE_DEFAULT_ZOWE_STC}
 fi
-security_stcs_zis=$(read_yaml_configmgr "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.security.stcs.zis")
+security_stcs_zis=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.security.stcs.zis")
 if [ -z "${security_stcs_zis}" ]; then
   security_stcs_zis=${ZWE_PRIVATE_DEFAULT_ZIS_STC}
 fi
-security_stcs_aux=$(read_yaml_configmgr "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.security.stcs.aux")
+security_stcs_aux=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.security.stcs.aux")
 if [ -z "${security_stcs_aux}" ]; then
   security_stcs_aux=${ZWE_PRIVATE_DEFAULT_AUX_STC}
 fi
@@ -75,6 +91,7 @@ tmpdsm=$(create_data_set_tmp_member "${jcllib}" "ZW$(date +%H%M)")
 print_debug "- Copy ${prefix}.${ZWE_PRIVATE_DS_SZWESAMP}(ZWESECUR) to ${tmpfile}"
 # cat "//'IBMUSER.ZWEV2.SZWESAMP(ZWESECUR)'" | sed "s/^\\/\\/ \\+SET \\+PRODUCT=.*\\$/\\/\\         SET  PRODUCT=ACF2         * RACF, ACF2, or TSS/"
 result=$(cat "//'${prefix}.${ZWE_PRIVATE_DS_SZWESAMP}(ZWESECUR)'" | \
+        sed "s/{zowe\.setup\.jcl\.header}//" | \
         sed  "s/^\/\/ \+SET \+PRODUCT=.*\$/\/\/         SET  PRODUCT=${security_product}/" | \
         sed "s/^\/\/ \+SET \+ADMINGRP=.*\$/\/\/         SET  ADMINGRP=${security_groups_admin}/" | \
         sed   "s/^\/\/ \+SET \+STCGRP=.*\$/\/\/         SET  STCGRP=${security_groups_stc}/" | \
@@ -84,10 +101,13 @@ result=$(cat "//'${prefix}.${ZWE_PRIVATE_DS_SZWESAMP}(ZWESECUR)'" | \
         sed   "s/^\/\/ \+SET \+ZISSTC=.*\$/\/\/         SET  ZISSTC=${security_stcs_zis}/" | \
         sed   "s/^\/\/ \+SET \+AUXSTC=.*\$/\/\/         SET  AUXSTC=${security_stcs_aux}/" | \
         sed      "s/^\/\/ \+SET \+HLQ=.*\$/\/\/         SET  HLQ=${prefix}/" | \
-        sed  "s/^\/\/ \+SET \+SYSPROG=.*\$/\/\/         SET  SYSPROG=${security_groups_sysProg}/" \
-        > "${tmpfile}")
-code=$?
-chmod 700 "${tmpfile}"
+        sed  "s/^\/\/ \+SET \+SYSPROG=.*\$/\/\/         SET  SYSPROG=${security_groups_sysProg}/")
+if [ -n "${result}" ]; then
+  echo "${result}" > "${tmpfile}"
+  code=$?
+else
+  code=1
+fi
 if [ ${code} -eq 0 ]; then
   print_debug "  * Succeeded"
   print_trace "  * Exit code: ${code}"
@@ -106,6 +126,7 @@ fi
 if [ ! -f "${tmpfile}" ]; then
   print_error_and_exit "Error ZWEL0159E: Failed to modify ${prefix}.${ZWE_PRIVATE_DS_SZWESAMP}(ZWESECUR)" "" 159
 fi
+chmod 700 "${tmpfile}"
 print_trace "- ensure ${tmpfile} encoding before copying into data set"
 ensure_file_encoding "${tmpfile}" "SPDX-License-Identifier"
 print_trace "- ${tmpfile} created, copy to ${jcllib}(${tmpdsm})"
@@ -122,7 +143,7 @@ print_message
 ###############################
 # submit job
 job_has_failures=
-if [ "${ZWE_CLI_PARAMETER_SECURITY_DRY_RUN}" = "true" ]; then
+if [ "${ZWE_CLI_PARAMETER_SECURITY_DRY_RUN}" = "true" ] || [ "${ZWE_CLI_PARAMETER_DRY_RUN}" = "true" ]; then
   print_message "Dry-run mode, security setup is NOT performed on the system."
   print_message "Please submit ${jcllib}(${tmpdsm}) manually."
 else
@@ -132,7 +153,7 @@ else
   if [ ${code} -ne 0 ]; then
     job_has_failures=true
     if [ "${ZWE_CLI_PARAMETER_IGNORE_SECURITY_FAILURES}" = "true" ]; then
-      print_error "Warning ZWEL0161W: Failed to run JCL ${jcllib}(${tmpdsm})."
+      print_error "Warning ZWEL0160W: Failed to run JCL ${jcllib}(${tmpdsm})."
       # skip wait for job status step
       jobid=
     else
@@ -147,7 +168,7 @@ else
     if [ ${code} -eq 1 ]; then
       job_has_failures=true
       if [ "${ZWE_CLI_PARAMETER_IGNORE_SECURITY_FAILURES}" = "true" ]; then
-        print_error "Warning ZWEL0162W: Failed to find job ${jobid} result."
+        print_error "Warning ZWEL0158W: Failed to find job ${jobid} result."
       else
         print_error_and_exit "Error ZWEL0162E: Failed to find job ${jobid} result." "" 162
       fi
@@ -180,4 +201,5 @@ if [ "${job_has_failures}" = "true" ]; then
   print_level2_message "Failed to apply Zowe security configurations. Please check job log for details."
 else
   print_level2_message "Zowe security configurations are applied successfully."
+fi
 fi

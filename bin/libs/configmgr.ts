@@ -15,6 +15,7 @@ import * as xplatform from 'xplatform';
 import { ConfigManager } from 'Configuration';
 import * as fs from './fs';
 import * as stringlib from './string';
+import * as common from './common';
 
 import * as objUtils from '../utils/ObjUtils';
 
@@ -37,8 +38,8 @@ std.setenv('ZWE_PRIVATE_CONFIG_ORIG', parameterConfig);
   the config property of Zowe can take a few shapes:
   1. a single path, ex /my/zowe.yaml
   2. one or more file paths with FILE() syntax, ex FILE(/my/1.yaml):FILE(/my2.yaml)
-  3. one or more parmlib paths with PARMLIB() syntax, ex PARMLIB(my.zowe(yaml)):PARMLIB(my.other.zowe(yaml)) ... note the member names must be the same for every PARMLIB mentioned!
-  4. one or more of FILE and PARMLIB syntax combined, ex FILE(/my/1.yaml):FILE(/my2.yaml):PARMLIB(my.zowe(yaml)):PARMLIB(my.other.zowe(yaml))
+  3. one or more parmlib paths with PARMLIB() syntax, ex PARMLIB(my.zowe(yaml1)):PARMLIB(my.other.zowe(yaml2))
+  4. one or more of FILE and PARMLIB syntax combined, ex FILE(/my/1.yaml):FILE(/my2.yaml):PARMLIB(my.zowe(yaml1)):PARMLIB(my.other.zowe(yaml2))
  */
 const ZOWE_CONFIG_PATH = (parameterConfig && !parameterConfig.startsWith('FILE(') && !parameterConfig.startsWith('PARMLIB('))
                           ? `FILE(${parameterConfig}):FILE(${std.getenv('ZWE_zowe_runtimeDirectory')}/files/defaults.yaml)`
@@ -50,8 +51,15 @@ const ZOWE_SCHEMA = `${std.getenv('ZWE_zowe_runtimeDirectory')}/schemas/zowe-yam
 const ZOWE_SCHEMA_ID = 'https://zowe.org/schemas/v2/server-base';
 const ZOWE_SCHEMA_SET=`${ZOWE_SCHEMA}:${COMMON_SCHEMA}`;
 
-export let ZOWE_CONFIG=getZoweConfig();
+let ZOWE_CONFIG;
 let HA_CONFIGS = {};
+
+export function getZoweConfig() {
+  if (ZOWE_CONFIG == null) {
+    ZOWE_CONFIG = loadZoweConfig();
+  }
+  return ZOWE_CONFIG
+}
 
 export function getZoweBaseSchemas(): string {
   return ZOWE_SCHEMA_SET;
@@ -188,7 +196,7 @@ function getDiscoveryServiceUrl(config) {
   return getDiscoveryServiceUrlNonHa(config);
 }
 
-function writeZoweConfigUpdate(updateObj: any, arrayMergeStrategy: number): number {
+function writeZoweConfigUpdate(updateObj: any, arrayMergeStrategy: number, shouldValidate: boolean=true): number {
   let firstConfigPath = ZOWE_CONFIG_PATH.split(':')[0];
 
   if (!Number.isInteger(CONFIG_REVISIONS[firstConfigPath])) {
@@ -196,74 +204,88 @@ function writeZoweConfigUpdate(updateObj: any, arrayMergeStrategy: number): numb
     getConfig(firstConfigPath, firstConfigPath, ZOWE_SCHEMA_SET);
   }
   
-  let rc = updateConfig(firstConfigPath, updateObj, arrayMergeStrategy);
+  let rc = updateConfig(firstConfigPath, updateObj, arrayMergeStrategy, shouldValidate);
   if (rc == 0) {
     let [ yamlStatus, textOrNull ] = CONFIG_MGR.writeYAML(getConfigRevisionName(firstConfigPath));
     if (yamlStatus === 0) {
-      let destination = firstConfigPath;
-
-      if (destination.startsWith('FILE(')) {
-        destination = destination.substring(5, destination.length-1);
-        return xplatform.storeFileUTF8(destination, xplatform.AUTO_DETECT, textOrNull);
-
-      } else if (destination.startsWith('PARMLIB(')) {
-        destination = destination.substring(8, destination.length-1);
-
-        let zwePrivateWorkspaceEnvDir: string;
-        let dirResult = getTempMergedYamlDir();
-        if (typeof dirResult == 'string') {
-          zwePrivateWorkspaceEnvDir = dirResult;
-        } else if (dirResult === 0) {
-          const workspace = ZOWE_CONFIG.zowe.workspaceDirectory;
-
-          //need a temp file to do the cp into parmlib
-          //ensure .env folder exists
-          let zwePrivateWorkspaceEnvDir = std.getenv('ZWE_PRIVATE_WORKSPACE_ENV_DIR');
-          if (!zwePrivateWorkspaceEnvDir) {
-            zwePrivateWorkspaceEnvDir=`${workspace}/.env`;
-            std.setenv('ZWE_PRIVATE_WORKSPACE_ENV_DIR', zwePrivateWorkspaceEnvDir);
-          }
-          fs.mkdirp(workspace, 0o770);
-          rc = fs.mkdirp(zwePrivateWorkspaceEnvDir, 0o700);
-          if (rc) { return rc; }
-        } else {
-          return dirResult;
-        }
-
-        //make temp file
-        let tempFilePath:string;
-        let attempt=0;
-        while (!tempFilePath) {
-          let file = `${zwePrivateWorkspaceEnvDir}/zwe-parmlib-${Math.floor(Math.random()*10000)}`;
-
-          let returnArray = os.stat(file);
-          if (returnArray[1] === std.Error.ENOENT) {
-            tempFilePath=file;
-          }
-          ++attempt;
-          if (attempt>10000) {
-            console.log(`Error: Could not update PARMLIB, could not make temporarily file in ${zwePrivateWorkspaceEnvDir}`);
-            return 1;
-          }
-        }
-        rc = xplatform.storeFileUTF8(tempFilePath, xplatform.AUTO_DETECT, textOrNull);
-        if (rc) { return rc; }        
-          
-        const cpCommand=`cp -v "${tempFilePath}" "//'${stringlib.escapeDollar(destination)}'"`;
-        console.log('Writing temp file for PARMLIB update. Command= '+cpCommand);
-        rc = os.exec(['sh', '-c', cpCommand],
-                     {block: true, usePath: true});
-        if (rc != 0) {
-          console.log(`Error: Could not write PARMLIB update into ${destination}, copy rc=${rc}`); 
-        }
-        const removeRc = os.remove(tempFilePath);
-        if (removeRc !== 0) {
-          console.log(`Error: Could not remove temporary file edit of ${destination} as ${tempFilePath}, rc=${removeRc}`);
-        }
-      }
+      writeToCfgPath(firstConfigPath, textOrNull);
     }
   }
   return rc;
+}
+
+/**
+ * Writes content to the zweCfgPath, which must be of style 'FILE(<path>)' or 'PARMLIB(<path>)'
+ * 
+ * @param zweCfgPath 
+ * @param content 
+ * @returns 
+ */
+function writeToCfgPath(zweCfgPath: string, content: string): any {
+  let destination = zweCfgPath;
+  let rc = 0;
+  if (destination.startsWith('FILE(')) {
+    destination = destination.substring(5, destination.length-1);
+    return xplatform.storeFileUTF8(destination, xplatform.AUTO_DETECT, content);
+
+  } else if (destination.startsWith('PARMLIB(')) {
+    const isValidParmlib = common.isValidZoweYamlParmlib(destination);
+    if (!isValidParmlib.ok) {
+      common.printErrorAndExit(isValidParmlib.error.message, undefined, isValidParmlib.error.code);
+    }
+    destination = destination.substring(8, destination.length-1);
+    let zwePrivateWorkspaceEnvDir: string;
+    let dirResult = getTempMergedYamlDir();
+    if (typeof dirResult == 'string') {
+      zwePrivateWorkspaceEnvDir = dirResult;
+    } else if (dirResult === 0) {
+      const workspace = getZoweConfig().zowe.workspaceDirectory;
+
+      //need a temp file to do the cp into parmlib
+      //ensure .env folder exists
+      zwePrivateWorkspaceEnvDir = std.getenv('ZWE_PRIVATE_WORKSPACE_ENV_DIR');
+      if (!zwePrivateWorkspaceEnvDir) {
+        zwePrivateWorkspaceEnvDir=`${workspace}/.env`;
+        std.setenv('ZWE_PRIVATE_WORKSPACE_ENV_DIR', zwePrivateWorkspaceEnvDir);
+      }
+      fs.mkdirp(workspace, 0o770);
+      rc = fs.mkdirp(zwePrivateWorkspaceEnvDir, 0o700);
+      if (rc) { return rc; }
+    } else {
+      return dirResult;
+    }
+
+    //make temp file
+    let tempFilePath:string;
+    let attempt=0;
+    while (!tempFilePath) {
+      let file = `${zwePrivateWorkspaceEnvDir}/zwe-parmlib-${Math.floor(Math.random()*10000)}`;
+
+      let returnArray = os.stat(file);
+      if (returnArray[1] === std.Error.ENOENT) {
+        tempFilePath=file;
+      }
+      ++attempt;
+      if (attempt>10000) {
+        console.log(`Error: Could not update PARMLIB, could not make temporarily file in ${zwePrivateWorkspaceEnvDir}`);
+        return 1;
+      }
+    }
+    rc = xplatform.storeFileUTF8(tempFilePath, xplatform.AUTO_DETECT, content);
+    if (rc) { return rc; }        
+      
+    const cpCommand=`cp -v "${tempFilePath}" "//'${stringlib.escapeDollar(destination)}'"`;
+    console.log('Writing temp file for PARMLIB update. Command= '+cpCommand);
+    rc = os.exec(['sh', '-c', cpCommand],
+                  {block: true, usePath: true});
+    if (rc != 0) {
+      console.log(`Error: Could not write PARMLIB update into ${destination}, copy rc=${rc}`); 
+    }
+    const removeRc = os.remove(tempFilePath);
+    if (removeRc !== 0) {
+      console.log(`Error: Could not remove temporary file edit of ${destination} as ${tempFilePath}, rc=${removeRc}`);
+    }
+  }
 }
 
 export function cleanupTempDir() {
@@ -344,7 +366,42 @@ function getConfigRevisionName(configName: string, revision?: number): string {
   return configName+'_rev'+revision;
 }
 
-function updateConfig(configName: string, updateObj: any, arrayMergeStrategy: number=1): number {
+function deleteConfig(configName: string, deletePath: string, shouldValidate: boolean = true): number {
+  let revision = CONFIG_REVISIONS[configName];
+  if (!Number.isInteger(revision)) {
+    console.log(`Error: Cannot update config if config not yet loaded`);
+    return -1;
+  }
+  let currentName = getConfigRevisionName(configName, revision);
+  revision++;
+  let newName = getConfigRevisionName(configName, revision);
+  let status = CONFIG_MGR.copyConfigurationAndDeleteKey(currentName, newName, deletePath);
+  if (status == 0) {
+    if (shouldValidate) {
+      const validation = CONFIG_MGR.validate(newName);
+      if (validation.ok) {
+        if (validation.exceptionTree) {
+          console.log(`Error: Validation of delete operation on ${configName} resulted in invalid JSON Schema data`);
+          showExceptions(validation.exceptionTree, 0);
+          return 1;
+        } else {
+          CONFIG_REVISIONS[configName]=revision;
+          return status;
+        }
+      } else {
+        console.log(`Error: Error occurred on validation of delete operation to ${configName}`);
+      }
+    } else {
+      CONFIG_REVISIONS[configName]=revision;
+      return status;
+    }
+  } else {
+    console.log(`Error: Error occurred when deleting ${deletePath} from ${configName}`);
+  }
+  return status;
+}
+
+function updateConfig(configName: string, updateObj: any, arrayMergeStrategy: number=1, shouldValidate: boolean=true): number {
   let revision = CONFIG_REVISIONS[configName];
   if (!Number.isInteger(revision)) {
     console.log(`Error: Cannot update config if config not yet loaded`);
@@ -355,92 +412,101 @@ function updateConfig(configName: string, updateObj: any, arrayMergeStrategy: nu
   let newName = getConfigRevisionName(configName, revision);
   let status = CONFIG_MGR.makeModifiedConfiguration(currentName, newName, updateObj, arrayMergeStrategy);
   if (status == 0) {
-    const validation = CONFIG_MGR.validate(newName);
-    if (validation.ok) {
-      if (validation.exceptionTree) {
-        console.log(`Error: Validation of update to ${configName} found invalid JSON Schema data`);
-        showExceptions(validation.exceptionTree, 0);
+    if (shouldValidate) {
+      const validation = CONFIG_MGR.validate(newName);
+      if (validation.ok) {
+        if (validation.exceptionTree) {
+          console.log(`Error: Validation of update to ${configName} found invalid JSON Schema data`);
+          showExceptions(validation.exceptionTree, 0);
+          return 1;
+        } else {
+          CONFIG_REVISIONS[configName]=revision;
+          return status;
+        }
       } else {
-        CONFIG_REVISIONS[configName]=revision;
-        return status;
+        console.log(`Error: Error occurred on validation of update to ${configName}`);
+        return 1;
       }
     } else {
-      console.log(`Error: Error occurred on validation of update to ${configName}`);
+      CONFIG_REVISIONS[configName]=revision;
+      return status;
     }
   } else {
     console.log(`Error: Error occurred when making modified configuration of ${configName}`);
+    return status;
   }
-  return status;
 }
 
-export function updateZoweConfig(updateObj: any, writeUpdate: boolean, arrayMergeStrategy: number=1): [number, any] {
-  let rc = updateConfig(getZoweConfigName(), updateObj, arrayMergeStrategy);
+export function deleteFromZoweCfgFile(file: string, deleteKey: string, shouldValidate: boolean = true): [number, any] {
+  const fileCfg = getConfigMgrSyntax(file);
+  const zoweConfigName = 'zowe-delete-yaml';
+  const ZOWE_FILE_CONFIG = getConfig(zoweConfigName, fileCfg, ZOWE_SCHEMA_SET, shouldValidate); 
+  let rc = deleteConfig(zoweConfigName, deleteKey, shouldValidate);
+  if (rc == 0){ 
+    let [ yamlStatus, textOrNull ] = CONFIG_MGR.writeYAML(getConfigRevisionName(zoweConfigName));
+    if (yamlStatus == 0) {
+      writeToCfgPath(fileCfg, textOrNull);
+    }
+  }
+  return [rc, ZOWE_FILE_CONFIG];
+}
+
+export function getConfigMgrSyntax(file: string): string {
+  let cfgMgrFile = file;
+  if (!file.startsWith('PARMLIB(') && !file.startsWith('FILE(')) {
+    cfgMgrFile = `FILE(${file})`;
+  }
+  return cfgMgrFile;
+}
+
+export function updateZoweCfgFile(file: string, updateObj: any, arrayMergeStrategy: number=1, shouldValidate: boolean=true): [number, any] {
+  const fileCfg = getConfigMgrSyntax(file);
+  const zoweConfigName = 'zowe-update-yaml';
+  const ZOWE_FILE_CONFIG = getConfig(zoweConfigName, fileCfg, ZOWE_SCHEMA_SET, shouldValidate); 
+  let rc = updateConfig(zoweConfigName, updateObj, arrayMergeStrategy, shouldValidate);
+  if (rc == 0){ 
+    let [ yamlStatus, textOrNull ] = CONFIG_MGR.writeYAML(getConfigRevisionName(zoweConfigName));
+    if (yamlStatus == 0) {
+      writeToCfgPath(fileCfg, textOrNull);
+    }
+  }
+  return [rc, ZOWE_FILE_CONFIG];
+}
+
+export function updateZoweConfig(updateObj: any, writeUpdate: boolean, arrayMergeStrategy: number=1, shouldValidate:boolean=true): [number, any] {
+  let rc = updateConfig(getZoweConfigName(), updateObj, arrayMergeStrategy, shouldValidate);
   if (rc == 0) {
-    ZOWE_CONFIG=getZoweConfig();
+    ZOWE_CONFIG=loadZoweConfig();
     HA_CONFIGS = {}; //reset
     if (writeUpdate) {
-      writeZoweConfigUpdate(updateObj, arrayMergeStrategy);
+      writeZoweConfigUpdate(updateObj, arrayMergeStrategy, shouldValidate);
       writeMergedConfig(ZOWE_CONFIG);
     }
   }
   return [ rc, ZOWE_CONFIG ];
 }
 
-function getMemberNameFromConfigPath(configPath: string): string|undefined {
-  let indexParm = 0;
-  let member = undefined;
-  while (indexParm != -1) {
-    indexParm = configPath.indexOf('PARMLIB(', indexParm);
-    if (indexParm != -1) {
-      const memberStart = configPath.indexOf('(', indexParm+8);
-      if (memberStart == -1) {
-        console.log(`Error: malformed PARMLIB syntax for ${configPath}. Must use syntax PARMLIB(dataset.name(member))`);
-        return undefined;
-      }
-      const memberEnd = configPath.indexOf('))', memberStart+1);
-      if (memberEnd == -1) {
-        console.log(`Error: malformed PARMLIB syntax for ${configPath}. Must use syntax PARMLIB(dataset.name(member))`);
-        return undefined;
-      }
-      const thisMember = configPath.substring(memberStart+1, memberEnd);
-      if (!member) {
-        member = thisMember;
-      } else if (thisMember != member) {
-        console.log(`Error: configmgr does not yet support different member names for PARMLIB. You must use the same member names for all datasets mentioned`);
-        return undefined;
-      }
-      //skip over )):
-      indexParm = memberEnd+3; 
-    }
-  }
-  return member;
+export function loadConfig(configName: string, configPath: string, schemas: string, shouldValidate: boolean = true) : any {
+  return getConfig(configName, configPath, schemas, shouldValidate);
 }
 
-function stripMemberName(configPath: string, memberName: string): string {
-  //Turn PARMLIB(my.zowe(yaml)):PARMLIB(my.other.zowe(yaml))
-  //Into PARMLIB(my.zowe):FILE(/some/path.yaml):PARMLIB(my.other.zowe)
-  const replacer = new RegExp('\\('+stringlib.escapeDollar(memberName)+'\\)\\)', 'gi');
-  return configPath.replace(replacer, ")");
-}
-  
-function getConfig(configName: string, configPath: string, schemas: string): any {
+function getConfig(configName: string, configPath: string, schemas: string, shouldValidate: boolean = true): any {
   let configRevisionName = getConfigRevisionName(configName);
   if (Number.isInteger(CONFIG_REVISIONS[configName])) {
     //Already loaded
     return CONFIG_MGR.getConfigData(configRevisionName);
   }
 
-  let memberName;
   if (configPath) {
-    //In the form of PARMLIB(my.zowe(yaml)):PARMLIB(my.other.zowe(yaml))
-    //Member names must be same for all PARMLIB mentioned.
-    if (configPath.indexOf('PARMLIB(') != -1) {
-      memberName = getMemberNameFromConfigPath(configPath);
-      if (!memberName) {
-        console.log(`Error: Cannot continue due to missing or mixed member names for PARMLIB entries in ${configPath}`);
-        std.exit(1);
+    let parts = configPath.split(':').filter((part) => part.trim().length > 0);
+    for (let i = 0; i < parts.length; i++) {
+      const part = parts[i].trim();
+      if (part.startsWith('PARMLIB(')) {
+        const isValidParmlib = common.isValidZoweYamlParmlib(part);
+        if (!isValidParmlib.ok) {
+          common.printErrorAndExit(isValidParmlib.error.message, undefined, isValidParmlib.error.code);
+        }
       }
-      configPath = stripMemberName(configPath, memberName);
     }
     
     let status;
@@ -460,40 +526,42 @@ function getConfig(configName: string, configPath: string, schemas: string): any
       std.exit(1);
     }
 
-    if (memberName) {
-      if ((status = CONFIG_MGR.setParmlibMemberName(configRevisionName, memberName))) {
-        console.log(`Error: Could not set parmlib member name for ${memberName}, status=${status}`);
-        std.exit(1);
-      }
-    }
-
     if ((status = CONFIG_MGR.loadConfiguration(configRevisionName))) {
       console.log(`Error: Could not load config for ${configPath}, status=${status}`);
       std.exit(1);
     }
 
-    let validation = CONFIG_MGR.validate(configRevisionName);
-    if (validation.ok){
-      if (validation.exceptionTree){
-        console.log(`Error: Validation of ${configPath} against schema ${schemas} found invalid JSON Schema data`);
-        showExceptions(validation.exceptionTree, 0);
-        std.exit(1);
-      } else {
-        const config = CONFIG_MGR.getConfigData(configRevisionName);
-        if (!Number.isInteger(CONFIG_REVISIONS[configName])) {
-          //loaded, mark revision 0
-          CONFIG_REVISIONS[configName] = 0;
+    if (shouldValidate) {
+      let validation = CONFIG_MGR.validate(configRevisionName);
+      if (validation.ok){
+        if (validation.exceptionTree){
+          console.log(`Error: Validation of ${configPath} against schema ${schemas} found invalid JSON Schema data`);
+          showExceptions(validation.exceptionTree, 0);
+          std.exit(1);
+        } else {
+          const config = CONFIG_MGR.getConfigData(configRevisionName);
+          if (!Number.isInteger(CONFIG_REVISIONS[configName])) {
+            //loaded, mark revision 0
+            CONFIG_REVISIONS[configName] = 0;
+          }
+          return config;
         }
-        return config;
+      } else {
+        console.log(`Error: Error occurred on validation of ${configPath} against schema ${schemas}`);
+        std.exit(1);
       }
     } else {
-      console.log(`Error: Error occurred on validation of ${configPath} against schema ${schemas}`);
-      std.exit(1);
+      const config = CONFIG_MGR.getConfigData(configRevisionName);
+      if (!Number.isInteger(CONFIG_REVISIONS[configName])) {
+        //loaded, mark revision 0
+        CONFIG_REVISIONS[configName] = 0;
+      }
+      return config;
     }
   } else {
     console.log(`Error: Server config path not given`);
     std.exit(1);
-  }  
+  }
 }
 
 function makeHaConfig(haInstance: string): any {
@@ -509,7 +577,7 @@ function makeHaConfig(haInstance: string): any {
   return config;
 }
 
-export function getZoweConfig(haInstance?: string): any {
+export function loadZoweConfig(haInstance?: string): any {
   if (configLoaded && !haInstance) {
     return getConfig(ZOWE_CONFIG_NAME, ZOWE_CONFIG_PATH, ZOWE_SCHEMA_SET);
   } else if (configLoaded) {
@@ -536,7 +604,7 @@ const INSTANCE_KEYS_NOT_IN_BASE = [
 
 const keyNameRegex = /[^a-zA-Z0-9]/g;
 export function getZoweConfigEnv(haInstance: string): any {
-  let config = getZoweConfig();
+  let config = loadZoweConfig();
   let flattener = new objUtils.Flattener();
   flattener.setSeparator('_');
   flattener.setPrefix('ZWE_');
@@ -581,7 +649,9 @@ export function getZoweConfigEnv(haInstance: string): any {
 
   let specialKeys = Object.keys(SPECIAL_ENV_MAPS);
   specialKeys.forEach((key:string)=> {
-    envs[SPECIAL_ENV_MAPS[key]] = envs[key];
+    if (envs[key] != null) {
+      envs[SPECIAL_ENV_MAPS[key]] = envs[key];
+    }
   });
 
 

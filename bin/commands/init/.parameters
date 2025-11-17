@@ -1,5 +1,6 @@
 allow-overwrite,allow-overwritten||boolean|||||Allow overwritten existing MVS data set.
-skip-security-setup||boolean|||||Whether should skip security related setup.
-security-dry-run||boolean|||||Whether to dry run security related setup.
+skip-security-setup||boolean|||||Whether to skip security related setup.
+security-dry-run,dry-run||boolean|||||Generates JCL or displays actions to be taken on the system without modifying the system.
 ignore-security-failures||boolean|||||Whether to ignore security setup job failures.
 update-config||boolean|||||Whether to update YAML configuration file with initialization result.
+jcl||boolean|||||Generates and submits JCL to drive the init command, rather than using USS utilities.

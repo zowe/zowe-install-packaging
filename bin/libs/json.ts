@@ -70,14 +70,77 @@ export function readJsonString(input: string, key: string): any {
   return fakejq.jqget(JSON.parse(input), key);
 }
 
-export function updateZoweYaml(file: string, key: string, val: any) {
-  common.printMessage(`- update zowe config ${file}, key: "${key}" with value: ${val}`);
-  let [ success, updateObj ] = fakejq.jqset({}, key, val);
-  
+/**
+ * Deletes the YAML key in the zowe.yaml file passed by the caller. Always overwrites on-disk.
+ * 
+ * Example: `deleteZoweYaml('/path/to/zowe.yaml', 'components.zss.enabled');
+ * 
+ * @param file 
+ * @param key 
+ * @returns 
+ */
+export function deleteZoweYaml(file: string, key: string, shouldValidate: boolean = true): number {
+  common.printMessage(`- delete zowe config ${file}, key: ${key}`);
+  const deleteResult = config.deleteFromZoweCfgFile(file, key, shouldValidate);
+  return deleteResult[0];
+}
+
+function buildUpdateObjWithArrays(zoweConfig: any, key: string): any {
+  let updateObj = {};
+    // we have array indices to handle. we'll build out the entire array and set the value with jqset.
+    // Merge strategy: 4 = take overrides.
+    const jqParts = key.split('.');
+    let currObj = updateObj;
+    let currZoweCfg = zoweConfig;
+    for (const part of jqParts) {
+      const matches = /^(.+?)(\[\d+\])*$/.exec(part);
+      const matchKey = matches[1];
+      const matchArrIdx = matches[2];
+      if (matchArrIdx) {
+          currObj[matchKey] = currZoweCfg[matchKey];
+      } else {
+          currObj[matchKey] = {};
+      }
+      currObj = currObj[matchKey];
+      currZoweCfg = currZoweCfg[matchKey];
+    }
+    return updateObj;
+}
+
+/**
+ * Updates the YAML key in the zowe.yaml passed by the caller with val. Always overwrites on-disk.
+ * 
+ * Example: `updateZoweYaml('/path/to/zowe.yaml', 'components.zss.enabled', true);
+ * 
+ * @param file 
+ * @param key 
+ * @param val 
+ * @returns 
+ */
+export function updateZoweYaml(file: string, key: string, val: any, validate: boolean=true): number {
+  common.printMessage(`- update zowe config ${file}, key: "${key}" with value: ${val}, and validate: ${validate}`);
+  let mergeObj = {};
+  if (/\[\d+\]/.test(key)) {
+    const zoweConfig = config.getZoweConfigFromFile(file, validate);
+    mergeObj = buildUpdateObjWithArrays(zoweConfig, key)
+  }
+  let [ success, updateObj ] = fakejq.jqset(mergeObj, key, val);
   if (success) {
     common.printMessage(`  * Success`);
-    config.updateZoweConfig(updateObj, true, 1); //TODO externalize array merge strategy = 1
+    const updateResult = config.updateZoweCfgFile(file, updateObj, 4, validate);
+    return updateResult[0];
   } else {
     common.printError(`  * Error`); 
+    return -1;
   }
+}
+
+/**
+ * Updates the in-use zowe.yaml provided via ZWE_CLI_PARAMETER_CONFIG with the contents of `updateObj`
+ * 
+ * @param updateObj 
+ */
+export function updateZoweYamlFromObj(updateObj: any) {
+  common.printMessage(`- update zowe config ${std.getenv('ZWE_CLI_PARAMETER_CONFIG')} with obj=${JSON.stringify(updateObj, null, 2)}`);
+  config.updateZoweConfig(updateObj, true, 1); //TODO externalize array merge strategy = 1
 }

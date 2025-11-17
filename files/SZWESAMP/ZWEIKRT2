@@ -1,4 +1,4 @@
-//ZWEIKRT2 JOB
+//ZWEIKRT2 JOB {zowe.setup.jcl.header}
 //*
 //* This program and the accompanying materials are made available
 //* under the terms of the Eclipse Public License v2.0 which
@@ -69,6 +69,9 @@
 //*      * Label of the intermediate CA of the Zowe certificate
 //*        if applicable
 //         SET ITRMZWCA=''
+//*      * Label of the root CA for z/OSMF. Can be auto-detected if
+//*        unset in the zowe.yaml
+//         SET ROOTZFCA='{zowe.setup.certificate.keyring.zOSMF.ca}'
 //*      * Label of the root CA of the Zowe certificate if applicable
 //         SET ROOTZWCA=''
 //*      * If you enable VERIFY_CERTIFICATES or
@@ -97,7 +100,6 @@
       LABLRING({zowe.setup.certificate.keyring.name})
 $$
 //*
-//IFOPT2   IF (&OPTION EQ 2) THEN
 //RUNOPT2  EXEC PGM=IKJEFT01,REGION=0M
 //SYSTSPRT DD SYSOUT=*
 //SYSTSIN  DD DDNAME=TSS
@@ -111,7 +113,6 @@ $$
 
 /* Option 2 - END .................................................. */
 $$
-//IFOPT2ED ENDIF
 //*
 //IFZWCA   IF (&IFZOWECA EQ 1) THEN
 //RUNZWCA  EXEC PGM=IKJEFT01,REGION=0M
@@ -141,7 +142,7 @@ $$
 /* authority (CA) with the keyring ................................. */
    TSS ADD({zowe.setup.security.users.zowe}) KEYRING(ZOWERING) +
      LABLRING({zowe.setup.certificate.keyring.name}) +
-     RINGDATA(CERTAUTH,{zowe.setup.certificate.keyring.zOSMF.ca}) +
+     RINGDATA(CERTAUTH,&ROOTZFCA.) +
      USAGE(CERTAUTH)
 $$
 //IFZFCAED ENDIF

@@ -27,6 +27,8 @@ import * as java from '../../../../libs/java';
 import * as javaCI from '../../../../libs/java_ci';
 import * as node from '../../../../libs/node';
 import * as zosmf from '../../../../libs/zosmf';
+import * as zoslib from '../../../../libs/zos';
+import * as validateBind from '../../../validate/port/bind/index';
 
 //# This command prepares everything needed to start Zowe.
 const cliParameterConfig = std.getenv('ZWE_CLI_PARAMETER_CONFIG');
@@ -35,13 +37,42 @@ const containerComponentId = std.getenv('ZWE_PRIVATE_CONTAINER_COMPONENT_ID');
 //const installedComponentsEnv=std.getenv('ZWE_INSTALLED_COMPONENTS');
 //const installedComponents = installedComponentsEnv ? installedComponentsEnv.split(',') : null;
 
-const zosmfHost = std.getenv('ZOSMF_HOST');
-const zosmfPort = Number(std.getenv('ZOSMF_PORT'));
-
+const INDIVIDUAL_APIML_COMPONENTS = ['gateway', 'discovery', 'api-catalog', 'caching-service', 'zaas'];
 
 const user = std.getenv('USER');
 
 const ZOWE_CONFIG=config.getZoweConfig();
+
+function getStartupCheckMode(property: string): {doCheck: boolean, warnOnly: boolean} {
+  let doCheck = true;
+  let warnOnly = false;
+
+  // set defaults
+  if (ZOWE_CONFIG.zowe.launchScript?.startupChecks?.default) {
+    let value = ZOWE_CONFIG.zowe.launchScript?.startupChecks.default;
+    if (value == 'disabled') {
+      doCheck = false;
+    } 
+    if (value == 'warn') {
+      warnOnly = true;
+    }
+  }
+
+  // per-startup-check override
+  if (ZOWE_CONFIG.zowe.launchScript?.startupChecks) {
+    let value = ZOWE_CONFIG.zowe.launchScript?.startupChecks[property];
+    if (value != null) {
+      doCheck = value != 'disabled';
+      warnOnly = value == 'warn';
+    }
+  }
+
+  return {doCheck, warnOnly};
+}
+
+
+const zosmfHost = ZOWE_CONFIG.zOSMF?.host;
+const zosmfPort = ZOWE_CONFIG.zOSMF?.port;
 
 // Extra preparations for running in container
 // - link component runtime under zowe <runtime>/components
@@ -148,7 +179,7 @@ function globalValidate(enabledComponents:string[]): void {
 
     // validate java for some core components
     //TODO this should be a manifest parameter that you require java, not a hardcoded list. What if extensions require it?
-    if (enabledComponents.includes('gateway') || enabledComponents.includes('zaas') || enabledComponents.includes('discovery') || enabledComponents.includes('api-catalog') || enabledComponents.includes('caching-service')) {
+    if (enabledComponents.includes('apiml') || enabledComponents.includes('gateway') || enabledComponents.includes('zaas') || enabledComponents.includes('discovery') || enabledComponents.includes('api-catalog') || enabledComponents.includes('caching-service')) {
       let javaOk = javaCI.validateJavaHome();
       if (!javaOk) {
         privateErrors++;
@@ -167,7 +198,7 @@ function globalValidate(enabledComponents:string[]): void {
 
   // validate z/OSMF for some core components
   if (zosmfHost && zosmfPort) {
-    if (enabledComponents.includes('discovery')) {
+    if (enabledComponents.includes('discovery') || enabledComponents.includes('apiml')) {
       let zosmfOk = zosmf.validateZosmfHostAndPort(zosmfHost, zosmfPort);
       if (!zosmfOk) {
         privateErrors++;
@@ -186,20 +217,32 @@ function globalValidate(enabledComponents:string[]): void {
   common.printFormattedInfo("ZWELS", "zwe-internal-start-prepare,global_validate", "global validations are successful");
 }
 
-
-
-
 // Validate component properties if script exists
 function validateComponents(enabledComponents:string[]): any {
   common.printFormattedInfo("ZWELS", "zwe-internal-start-prepare,validate_components", "process component validations ...");
 
+  const validateBindAction = getStartupCheckMode('ports');
+  if (validateBindAction.doCheck) {
+    validateBind.execute(!validateBindAction.warnOnly);
+  }
+  
   const componentEnvironments = {};
 
   // reset error counter
   let privateErrors = 0;
   std.setenv('ZWE_PRIVATE_ERRORS_FOUND','0');
-  enabledComponents.forEach((componentId: string)=> {
+
+  let apimlModulithEnabled = enabledComponents.includes('apiml');
+  
+  for (let i = 0; i < enabledComponents.length; i++) {
+    let componentId = enabledComponents[i];
     common.printFormattedTrace("ZWELS", "zwe-internal-start-prepare,validate_components", `- checking ${componentId}`);
+    
+    if (apimlModulithEnabled && INDIVIDUAL_APIML_COMPONENTS.includes(componentId)) {
+      common.printFormattedTrace("ZWELS", "zwe-internal-start-prepare,validate_components", `- skipping ${componentId} because apiml modulith enabled`);
+      continue;
+    }
+
     const componentDir = component.findComponentDirectory(componentId);
     common.printFormattedTrace("ZWELS", "zwe-internal-start-prepare,validate_components", `- in directory ${componentDir}`);
     if (componentDir) {
@@ -242,7 +285,7 @@ function validateComponents(enabledComponents:string[]): any {
         }
       }
     }
-  });
+  }
 
   std.setenv('ZWE_PRIVATE_ERRORS_FOUND', ''+privateErrors);
   varlib.checkRuntimeValidationResult("zwe-internal-start-prepare,validate_components");
@@ -259,11 +302,18 @@ function configureComponents(componentEnvironments?: any, enabledComponents?:str
   const zwePrivateWorkspaceEnvDir = std.getenv('ZWE_PRIVATE_WORKSPACE_ENV_DIR');
   const zweCliParameterHaInstance = std.getenv('ZWE_CLI_PARAMETER_HA_INSTANCE');
 
-
-  enabledComponents.forEach((componentId: string)=> {
+  let apimlModulithEnabled = enabledComponents.includes('apiml');
+  for (let i = 0; i < enabledComponents.length; i++) {
+    let componentId = enabledComponents[i];
     common.printFormattedTrace("ZWELS", "zwe-internal-start-prepare,configure_components", `- checking ${componentId}`);
+
+    if (apimlModulithEnabled && INDIVIDUAL_APIML_COMPONENTS.includes(componentId)) {
+      common.printFormattedTrace("ZWELS", "zwe-internal-start-prepare,configure_components", `- skipping ${componentId} because apiml modulith enabled`);
+      continue;
+    }
+
     const componentDir = component.findComponentDirectory(componentId);
-    common.printFormattedTrace("ZWELS", "zwe-internal-start-prepare,validate_components", `- in directory ${componentDir}`);
+    common.printFormattedTrace("ZWELS", "zwe-internal-start-prepare,configure_components", `- in directory ${componentDir}`);
     if (componentDir) {
       const manifestPath = component.getManifestPath(componentDir);
       const manifest = component.getManifest(componentDir);
@@ -394,7 +444,7 @@ function configureComponents(componentEnvironments?: any, enabledComponents?:str
         }
       }
     }
-  });
+  }
 
   common.printFormattedDebug("ZWELS", "zwe-internal-start-prepare,configure_components", "component configurations are successful");
 }
@@ -420,14 +470,6 @@ if (fs.fileExists(`${workspaceDirectory}/.init-for-container`)) {
   std.setenv('ZWE_RUN_IN_CONTAINER', 'true');
 }
 
-// Fix node.js piles up in IPC message queue
-// run this before any node command we start
-if (os.platform == 'zos') {
-  common.printFormattedTrace("ZWELS", "zwe-internal-start-prepare", "Clean up IPC message queue before using node.js.");
-  shell.execSync('sh', `${runtimeDirectory}/bin/utils/cleanup-ipc-mq.sh`);
-}
-
-
 // display starting information
 let manifestReturn = shell.execOutSync('cat', `${runtimeDirectory}/manifest.json`);
 
@@ -440,20 +482,22 @@ if (zoweVersion) {
 export function execute() {
   common.printFormattedInfo("ZWELS", "zwe-internal-start-prepare", `Zowe version: v${zoweVersion}`);
   common.printFormattedInfo("ZWELS", "zwe-internal-start-prepare", `build and hash: ${runtimeManifest.build.branch}#${runtimeManifest.build.number} (${runtimeManifest.build.commitHash})`);
+  common.printFormattedInfo("ZWELS", "zwe-internal-start-prepare", `z/OS Version: ${zoslib.formatZosVersion('{major}.{minor}')}`);
+  common.printFormattedInfo("ZWELS", "zwe-internal-start-prepare", `ESM: ${zos.getEsm()}`);
 
   // validation
   if (stringlib.itemInList(std.getenv('ZWE_PRIVATE_CORE_COMPONENTS_REQUIRE_JAVA'), std.getenv('ZWE_CLI_PARAMETER_COMPONENT'))) {
     // other extensions need to specify `require_java` in their validate.sh
     java.requireJava();
   }
-  if (stringlib.itemInList('app-server', std.getenv('ZWE_CLI_PARAMETER_COMPONENT'))) {
+  if (stringlib.itemInList(std.getenv('ZWE_PRIVATE_CORE_COMPONENTS_REQUIRE_NODE'), std.getenv('ZWE_CLI_PARAMETER_COMPONENT'))) {
     // other extensions need to specify `require_node` in their validate.sh
     node.requireNode();
   }
   common.requireZoweYaml();
 
   // overwrite ZWE_PRIVATE_LOG_LEVEL_ZWELS with zowe.launchScript.logLevel config in YAML
-  if (ZOWE_CONFIG.zowe.launchScript) {
+  if (ZOWE_CONFIG.zowe.launchScript.logLevel) {
     std.setenv('ZWE_PRIVATE_LOG_LEVEL_ZWELS', ZOWE_CONFIG.zowe.launchScript.logLevel.toUpperCase());
   };
 
