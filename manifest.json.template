@@ -48,7 +48,7 @@
     "org.zowe.zlux.zlux-editor": {
       "version": "3.4.0-V3.X-RC",
       "repository": "libs-snapshot-local",
-      "artifact": "zlux-editor-3.4.0-20251110.191224.pax"
+      "artifact": "zlux-editor-3.4.0-20251117.155018.pax"
     },
     "org.zowe.zss": {
       "version": "3.4.0-RC",
@@ -345,7 +345,7 @@
       "componentGroup": "Zowe Desktop Editor Plugin-in",
       "entries": [{
         "repository": "zlux-editor",
-        "tag": "v3.4.0-RC1",
+        "tag": "v3.4.0-RC2",
         "destinations": ["Zowe PAX"]
       }]
     },
