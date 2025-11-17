@@ -316,5 +316,5 @@ Error ZWEL0326E: An error occurred while processing Zowe YAML config /test/dir/z
                 unequal constant value at /zowe/setup/certificate/type; expecting value 'PKCS12' of type 'integer'
               Validity Exceptions(s) with object at /zowe/setup/certificate
                 missing required property 'keyring' at '/zowe/setup/certificate'
-                no matching enum value at /zowe/setup/certificate/type; expecting one of values '[JCEKS, JCECCAKS, JCERACFKS, JCECCARACFKS, JCEHYBRIDRACFKno matching enum value at /zowe/setup/certificate/type; expecting one of values '[]' of type 'integer'"
+                no matching enum value at /zowe/setup/certificate/type; expecting one of values '[JCEKS, JCECCAKS, JCERACFKS, JCECCARACFKS, JCEHYBRIDRACFKS]' of type 'integer'"
 `;

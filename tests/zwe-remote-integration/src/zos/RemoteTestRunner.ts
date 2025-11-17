@@ -484,16 +484,26 @@ export class RemoteTestRunner {
     return this.runZweTest(zoweYaml, zweCommand, cwd);
   }
 
+  /**
+   * This function uploads a defaults.yaml file to the remote testing environment,
+   *  and if it replaces an existing defaults.yaml in the files directory, the existing file
+   *  will be automatically backed up and restored once the current test is complete.
+   * @param defaultsYaml The defaults yaml to upload
+   * @param cwd  Where to upload the defaults yaml, by default the files/ dir in the testing environment
+   * @param skipBackup Default: false. If set to "true", no longer backs up and restores existing defaults.yaml files.
+   * @returns the path to defaults.yaml on the remote system
+   */
   public async uploadDefaultsYaml(
     defaultsYaml: ZoweYamlType,
     cwd: string = `${REMOTE_SYSTEM_INFO.ussTestDir}/files`,
+    skipBackup: boolean = false,
   ): Promise<string> {
     const testName = expect.getState().currentTestName.replace(/\s/g, '_');
     const yamlUploadPath = `${cwd}/defaults.yaml`;
     const stringDefaultYaml = YAML.stringify(defaultsYaml, { nullStr: '', ...this.customYamlRenderOpts });
     const yamlOutputDir = this.yamlOutputTemplate.replace('{{ testInstance }}', testName);
     fs.mkdirpSync(yamlOutputDir);
-    if (cwd === `${REMOTE_SYSTEM_INFO.ussTestDir}/files`) {
+    if (cwd === `${REMOTE_SYSTEM_INFO.ussTestDir}/files` && !skipBackup) {
       await this.removeUssFileOrDirForTest('files/defaults.yaml');
     }
     const redundantFilePath = this.writeRedundant(`${yamlOutputDir}/defaults.yaml`, stringDefaultYaml);

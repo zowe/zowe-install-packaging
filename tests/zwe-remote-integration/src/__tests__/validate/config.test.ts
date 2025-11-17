@@ -34,7 +34,8 @@ describe(`${testSuiteName}`, () => {
     cleanupDatasets = [];
   });
 
-  afterAll(() => {
+  afterAll(async () => {
+    await testRunner.uploadDefaultsYaml(ZoweConfig.getDefaultsYaml(), undefined, true);
     testRunner.shutdown();
   });
 
