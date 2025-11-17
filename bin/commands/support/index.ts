@@ -94,6 +94,7 @@ export function execute(): void {
   const zosmfHost = ZOWE_CONFIG.zOSMF?.host;
   const zosmfPort = ZOWE_CONFIG.zOSMF?.port;
   if (discovery && zosmfHost && zosmfPort) {
+    //this checks with default tls and jobname settings, since this command is unlikely to be run under the STC account where ATTLS might be used
     environment["zosmf_check"] = `'https://${zosmfHost}:${zosmfPort}/zosmf/info' => ${zosmf.validateZosmfHostAndPort(zosmfHost, zosmfPort)}`;
   }
 

@@ -197,9 +197,27 @@ function globalValidate(enabledComponents:string[]): void {
   }
 
   // validate z/OSMF for some core components
-  if (zosmfHost && zosmfPort) {
+  let zosmfCheckAction = ZOWE_CONFIG.zowe.launchScript?.startupChecks?.zosmf || 'exit';
+  if (zosmfHost && zosmfPort && (zosmfCheckAction != 'disabled')) {
     if (enabledComponents.includes('discovery') || enabledComponents.includes('apiml')) {
-      let zosmfOk = zosmf.validateZosmfHostAndPort(zosmfHost, zosmfPort);
+      const gatewayJobname = (ZOWE_CONFIG.zowe.job?.prefix || 'ZWE1') + 'AG';
+      let checkScheme = 'https';
+      //if apiml's enabled and attls isnt explicitly false there...
+      if ((ZOWE_CONFIG.components?.apiml?.enabled === true &&
+           ZOWE_CONFIG.components.apiml?.zowe?.network?.server?.tls?.attls !== false) ||
+          (ZOWE_CONFIG.components?.gateway?.enabled === true &&
+           ZOWE_CONFIG.components.gateway?.zowe?.network?.server?.tls?.attls !== false)) {
+        //then if apiml's enabled and attls is true somewhere...
+        if ((ZOWE_CONFIG.components?.apiml?.enabled === true &&
+             ZOWE_CONFIG.components.apiml?.zowe?.network?.server?.tls?.attls === true) ||
+            (ZOWE_CONFIG.components?.gateway?.enabled === true &&
+             ZOWE_CONFIG.components.gateway?.zowe?.network?.server?.tls?.attls === true) ||
+            (ZOWE_CONFIG.zowe.network?.server?.tls?.attls == true)) {
+          //then we should act like we're apiml, and check using http.
+          checkScheme = 'http';
+        }
+      }
+      let zosmfOk = zosmf.validateZosmfHostAndPort(zosmfHost, zosmfPort, checkScheme, gatewayJobname, (zosmfCheckAction == 'exit'));
       if (!zosmfOk) {
         privateErrors++;
         common.printFormattedError('ZWELS', "zwe-internal-start-prepare,global_validate", "Zosmf validation failed");
