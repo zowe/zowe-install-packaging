@@ -814,11 +814,11 @@ export function processZisPluginInstall(componentDir: string, zisPluginDatasets?
       }
       manifest.zisPlugins.forEach((zisPlugin: {id: string, path: string})=> {
         common.printTrace(`Attempting to install ZIS plugin ${zisPlugin.id} at ${zisPlugin.path}`);
-        const rc = zisPluginInstall(zisPlugin.path, ZOWE_CONFIG.zowe.setup.dataset.authPluginLib,
+        const rc = zisPluginInstall(`${componentDir}/${zisPlugin.path}`, ZOWE_CONFIG.zowe.setup.dataset.authPluginLib,
                                     ZOWE_CONFIG.zowe.setup.dataset.parmlib, ZOWE_CONFIG.zowe.setup.dataset.parmlibMembers.zis,
-                                    zisPlugin.id, componentDir,
-                                    ZOWE_CONFIG.zowe?.setup?.zis?.parmlib?.keys || {},
-                                    zisPluginDatasets);
+                                    zisPlugin.id, 
+        ZOWE_CONFIG.zowe?.setup?.zis?.parmlib?.keys || {},
+      zisPluginDatasets);
         if (rc) {
           common.printMessage(`Failed to install ZIS plugin: ${zisPlugin.id}`);
           std.exit(1);
@@ -853,27 +853,74 @@ function addKeyValueAtEndOfString(pair: string, input: string): string|undefined
   return input;
 }
 
-export function zisPluginInstall(pluginPath: string, zisPluginlib: string, zisParmlib: string,
-                                 zisParmlibMember: string, pluginId: string, componentDir: string, parmlibKeys: string,
-                                 zisPluginDatasets?: string[]): number {
+export function zisParmlibRegister(pluginId: string, pluginRootPath: string, zisParmlib: string, zisParmlibMember: string, parmlibKeys:any, zisPluginDatasets?: string[]): number {
+  const samplibPath=`${pluginRootPath}/samplib`;
+  if (!fs.directoryExists(samplibPath)) {
+    common.printError(`Directory ${samplibPath} does not exist`);
+    return 1;
+  }
+
   loadConfig();
   const parmlibMemberAsUnixFile=fs.createTmpFile(zisParmlibMember);
-
   zosfs.copyMvsToUss(`${zisParmlib}(${zisParmlibMember})`, parmlibMemberAsUnixFile);
   let parmlibContents = xplatform.loadFileUTF8(parmlibMemberAsUnixFile, xplatform.AUTO_DETECT);
   common.printDebug(`Parmlib starts as \n${parmlibContents}`);
   let parmlibLines = parmlibContents.split('\n');
+
+
+
   
-  let changed=false;
+  let parmlibChanged = false; 
+  const files = fs.getFilesInDirectory(samplibPath)
+  for (let i = 0; i < files.length; i++) {
+    const params = files[i];
+    if (!fs.fileExists(`${samplibPath}/${params}`)) {
+      common.printError(`Error ZWEL0201E: File ${samplibPath}/${params} does not exist.`);
+      return 201;
+    }
+    const contents = xplatform.loadFileUTF8(`${samplibPath}/${params}`, xplatform.AUTO_DETECT);
+    contents.split('\n').forEach((samplibKeyvalue:string)=> {
+      const prefix=samplibKeyvalue.substring(0,2);
+      if (!(prefix == '//' || prefix == '* ' || prefix == '')) {
+        common.printDebug(`Checking existing parmlib line ${samplibKeyvalue} to see if it is in plugin parmlib lines`);
+        let lineIndex = parmlibLines.indexOf(samplibKeyvalue);
+        if (lineIndex != -1) {
+          common.printDebug(`The key-value pair ${samplibKeyvalue} is being skipped because it's already there and hasn't changed (index ${lineIndex}).`);
+        } else {
+          let result = updateUssParmlibKeyValue(samplibKeyvalue, parmlibKeys, parmlibContents);
+          if (result.error) {
+            common.printMessage(`Failed to install ZIS plugin: ${pluginId}`);
+            std.exit(1);
+          } else if (result.changed) {
+            parmlibContents = result.contents;
+            parmlibLines = parmlibContents.split('\n');
+            parmlibChanged = true;
+          }
+        }
+      }
+    });
+  }
 
-  const basePath=`${componentDir}/${pluginPath}`;
-  const samplibPath=`${basePath}/samplib`;
-  const loadlibPath=`${basePath}/loadlib`;
 
-  if (fs.directoryExists(basePath)) {
-    if (fs.directoryExists(loadlibPath) && fs.directoryExists(samplibPath)) {
-      // As an alternative to copying a zis plugin from unix into the apf plugin dataset, we update the steplib entries of zis stcs
-      // it's a success when both zis and aux stcs are updated.
+
+  if (parmlibChanged) {
+    common.printDebug(`Parmlib modified, writing as \n${parmlibContents}`);
+    xplatform.storeFileUTF8(parmlibMemberAsUnixFile, xplatform.AUTO_DETECT, parmlibContents);
+    const rc = zosdataset.copyToDataset(parmlibMemberAsUnixFile, `${zisParmlib}(${zisParmlibMember})`, "", true);
+    if (rc != 0) {
+      common.printError(`Error ZWEL0200E: Failed to copy USS file ${parmlibMemberAsUnixFile} to MVS data set ${zisParmlib}.`);
+      return 200;
+    }
+  }
+}
+
+export function zisPluginInstall(pluginRootPath: string, zisPluginlib: string, zisParmlib: string,
+                                 zisParmlibMember: string, pluginId: string, parmlibKeys: string, zisPluginDatasets?: string[]): number {
+  loadConfig();
+  
+  const loadlibPath=`${pluginRootPath}/loadlib`;                                   
+  if (fs.directoryExists(pluginRootPath)) {
+    if (fs.directoryExists(loadlibPath)) {
       if (zisPluginDatasets) {
         if(!updateZisStcs(zisPluginDatasets)) {
           common.printError(`Error in updating the zis stcs STEPLIB entries for zis plugin install`);
@@ -890,56 +937,23 @@ export function zisPluginInstall(pluginPath: string, zisPluginlib: string, zisPa
           }
         }
       }
-      const files = fs.getFilesInDirectory(samplibPath)
-      for (let i = 0; i < files.length; i++) {
-        const params = files[i];
-        if (!fs.fileExists(`${samplibPath}/${params}`)) {
-          common.printError(`Error ZWEL0201E: File ${samplibPath}/${params} does not exist.`);
-          return 201;
-        }
-        const contents = xplatform.loadFileUTF8(`${samplibPath}/${params}`, xplatform.AUTO_DETECT);
-        contents.split('\n').forEach((samplibKeyvalue:string)=> {
-          const prefix=samplibKeyvalue.substring(0,2);
-          if (!(prefix == '//' || prefix == '* ' || prefix == '')) {
-            common.printDebug(`Checking existing parmlib line ${samplibKeyvalue} to see if it is in plugin parmlib lines`);
-            let lineIndex = parmlibLines.indexOf(samplibKeyvalue);
-            if (lineIndex != -1) {
-              common.printDebug(`The key-value pair ${samplibKeyvalue} is being skipped because it's already there and hasn't changed (index ${lineIndex}).`);
-            } else {
-              let result = updateUssParmlibKeyValue(samplibKeyvalue, parmlibKeys, parmlibContents);
-              if (result.error) {
-                common.printMessage(`Failed to install ZIS plugin: ${pluginId}`);
-                std.exit(1);
-              } else if (result.changed) {
-                parmlibContents = result.contents;
-                parmlibLines = parmlibContents.split('\n');
-                changed = true;
-              }
-            }
-          }
-        });
-      }
+      zisParmlibRegister(pluginId, pluginRootPath, zisParmlib, zisParmlibMember, parmlibKeys);
       common.printMessage(`Successfully installed ZIS plugin: ${pluginId}`);
     } else {
-      common.printError(`Directory ${loadlibPath} or ${samplibPath} does not exist`);
+      common.printError(`Directory ${loadlibPath} does not exist`);
       return 1;
     }
   } else {
-    common.printError(`Error ZWEL0201E: Directory ${basePath} does not exist`);
+    common.printError(`Error ZWEL0201E: Directory ${pluginRootPath} does not exist`);
     return 201;
   }
 
-  if (changed) {
-    common.printDebug(`Parmlib modified, writing as \n${parmlibContents}`);
-    xplatform.storeFileUTF8(parmlibMemberAsUnixFile, xplatform.AUTO_DETECT, parmlibContents);
-    const rc = zosdataset.copyToDataset(parmlibMemberAsUnixFile, `${zisParmlib}(${zisParmlibMember})`, "", true);
-    if (rc != 0) {
-      common.printError(`Error ZWEL0200E: Failed to copy USS file ${parmlibMemberAsUnixFile} to MVS data set ${zisParmlib}.`);
-      return 200;
-    }
-  }
+
   return 0;
 }
+
+export function copyZisPluginToAuthLoadLib(){}
+export function addZisLoadlibToStcJcl(){}
 
 /*
   Used to write a plugin's parmlib entries into the zis parmlib.
