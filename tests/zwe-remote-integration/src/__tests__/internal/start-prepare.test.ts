@@ -58,6 +58,48 @@ describe(`${testSuiteName}`, () => {
   });
 
   describe('(SHORT)', () => {
+    it('various combinations of settings impacting z/osmf scheme', async () => {
+      /* eslint-disable max-len */
+      // prettier-ignore
+      const testCases = [
+        // envs override expected result
+        { 'aml.enabled': true, 'gw.enabled': false, 'aml.attls': false, 'gw.attls': false, 'net.attls': false, 'cmd.env': { ZOSMF_SCHEME: 'http' }, 'result': 'http' },
+        { 'aml.enabled': true, 'gw.enabled': false, 'aml.attls': true, 'gw.attls': true, 'net.attls': false, 'cmd.env': { ZWE_zOSMF_scheme: 'https' }, 'result': 'https' },
+        { 'aml.enabled': true, 'gw.enabled': false, 'aml.attls': false, 'gw.attls': false, 'net.attls': false, 'cmd.env': { ZOSMF_SCHEME: 'http', ZWE_zOSMF_scheme: 'https' }, 'result': 'http' },
+        // no envs override rest. nulls are "no value"
+        { 'aml.enabled': true, 'gw.enabled': false, 'aml.attls': false, 'gw.attls': false, 'net.attls': false, 'cmd.env': {}, 'result': 'https' },
+        { 'aml.enabled': true, 'gw.enabled': false, 'aml.attls': true, 'gw.attls': false, 'net.attls': false, 'cmd.env': {}, 'result': 'https' }, // gw > apiml
+        { 'aml.enabled': true, 'gw.enabled': false, 'aml.attls': true, 'gw.attls': null, 'net.attls': false, 'cmd.env': {}, 'result': 'http' }, 
+        { 'aml.enabled': true, 'gw.enabled': false, 'aml.attls': false, 'gw.attls': true, 'net.attls': false, 'cmd.env': {}, 'result': 'http' },
+        { 'aml.enabled': true, 'gw.enabled': false, 'aml.attls': false, 'gw.attls': null, 'net.attls': true, 'cmd.env': {}, 'result': 'https' },
+        { 'aml.enabled': true, 'gw.enabled': false, 'aml.attls': null, 'gw.attls': null, 'net.attls': true, 'cmd.env': {}, 'result': 'http' },
+        { 'aml.enabled': false, 'gw.enabled': true, 'aml.attls': true, 'gw.attls': false, 'net.attls': false, 'cmd.env': {}, 'result': 'https' }, // gw doesn't register aml setting
+        { 'aml.enabled': false, 'gw.enabled': true, 'aml.attls': false, 'gw.attls': true, 'net.attls': false, 'cmd.env': {}, 'result': 'http' },
+        { 'aml.enabled': false, 'gw.enabled': true, 'aml.attls': false, 'gw.attls': null, 'net.attls': true, 'cmd.env': {}, 'result': 'http' },
+      ];
+
+      /* eslint-enable max-len */
+      for (const test of testCases) {
+        cfgYaml = ZoweConfig.getZoweYaml(); // reset every test
+        delete cfgYaml.zowe.network.server.tls;
+        _.set(cfgYaml, 'node.home', REMOTE_SYSTEM_INFO.zosNodeHome);
+        _.set(cfgYaml, 'zowe.launchScript.startupChecks.zosmf', 'exit');
+        cfgYaml.zOSMF.port = Number(cfgYaml.zOSMF.port) + 1; // intentionally bad port: quit early and print z/osmf URL
+
+        _.set(cfgYaml, 'components.apiml.enabled', test['aml.enabled']);
+        _.set(cfgYaml, 'components.apiml.zowe.network.server.tls.attls', test['aml.attls']);
+        _.set(cfgYaml, 'components.gateway.enabled', test['gw.enabled']);
+        _.set(cfgYaml, 'components.gateway.zowe.network.server.tls.attls', test['gw.attls']);
+        _.set(cfgYaml, 'zowe.network.server.tls.attls', test['net.attls']);
+        _.set(cfgYaml, 'zowe.environments', test['cmd.env']);
+
+        const result = await testRunner.runZweTest(cfgYaml, 'internal start prepare');
+        console.log(JSON.stringify(test));
+        const verifyResult = new RegExp(`Could not validate if z/OSMF is available on.*${test['result']}://.*?$`, 'gm');
+        expect(verifyResult.exec(result.cleanedStdout)).not.toBeNull();
+      }
+    });
+
     it('z/OSMF with mode: exit', async () => {
       _.set(cfgYaml, 'node.home', REMOTE_SYSTEM_INFO.zosNodeHome);
       _.set(cfgYaml, 'zowe.launchScript.startupChecks.zosmf', 'exit');

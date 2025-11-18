@@ -96,23 +96,22 @@ export function execute(): void {
   if (discovery && zosmfHost && zosmfPort) {
     const gatewayJobname = (ZOWE_CONFIG.zowe.job?.prefix || 'ZWE1') + 'AG';
     let checkScheme = 'https';
-      //if apiml's enabled and attls isnt explicitly false there...
-      // NOTE: apiml will read properties from either apiml or gateway components
-      if ((ZOWE_CONFIG.components?.apiml?.enabled === true &&
-           (ZOWE_CONFIG.components.apiml?.zowe?.network?.server?.tls?.attls !== false && ZOWE_CONFIG.components.gateway?.zowe?.network?.server?.tls?.attls !== false)) ||
-          (ZOWE_CONFIG.components?.gateway?.enabled === true &&
-           ZOWE_CONFIG.components.gateway?.zowe?.network?.server?.tls?.attls !== false)) {
-        //then if apiml's enabled and attls is true somewhere...
-        if ((ZOWE_CONFIG.components?.apiml?.enabled === true &&               
-             (ZOWE_CONFIG.components.apiml?.zowe?.network?.server?.tls?.attls === true || ZOWE_CONFIG.components.gateway?.zowe?.network?.server?.tls?.attls === true )) ||
-            (ZOWE_CONFIG.components?.gateway?.enabled === true &&
-             ZOWE_CONFIG.components.gateway?.zowe?.network?.server?.tls?.attls === true) ||
-            (ZOWE_CONFIG.zowe.network?.server?.tls?.attls == true)) {
-          //then we should act like we're apiml, and check using http.
-          checkScheme = 'http';
+    const apimlTlsPolicy = ZOWE_CONFIG.components.gateway?.zowe?.network?.server?.tls?.attls ?? 
+                            ZOWE_CONFIG.components.apiml?.zowe?.network?.server?.tls?.attls ?? 
+                            ZOWE_CONFIG.zowe.network?.server?.tls?.attls ?? false;
+    const gatewayTlsPolicy = ZOWE_CONFIG.components.gateway?.zowe?.network?.server?.tls?.attls ?? 
+                            ZOWE_CONFIG.zowe.network?.server?.tls?.attls ?? false;
+    //if apiml's enabled and attls isnt explicitly false there...
+    // NOTE: apiml will read properties from either apiml or gateway components
+    common.printMessage(`Gateway Policy: ${ZOWE_CONFIG.components.gateway?.zowe?.network?.server?.tls?.attls}`);
+    if (ZOWE_CONFIG.components?.apiml?.enabled === true) {
+        if (apimlTlsPolicy === true) {
+            checkScheme = 'http';
         }
-      }
-      // envs should overrule attls settings
+    } else if (ZOWE_CONFIG.components?.gateway?.enabled === true && gatewayTlsPolicy === true) {
+        checkScheme = 'http';
+    }
+    // envs should overrule attls settings
     const finalScheme =  std.getenv('ZOSMF_SCHEME') || std.getenv('ZWE_zOSMF_scheme') || checkScheme;
     const zosmfCheckAction = ZOWE_CONFIG.zowe.launchScript?.startupChecks?.zosmf || ZOWE_CONFIG.zowe.launchScript?.startupChecks?.default || 'warn';
     //this checks with default tls and jobname settings, since this command is unlikely to be run under the STC account where ATTLS might be used
