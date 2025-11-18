@@ -34,7 +34,8 @@ describe(`${testSuiteName}`, () => {
     cleanupDatasets = [];
   });
 
-  afterAll(() => {
+  afterAll(async () => {
+    await testRunner.uploadDefaultsYaml(ZoweConfig.getDefaultsYaml(), undefined, true);
     testRunner.shutdown();
   });
 
@@ -45,6 +46,17 @@ describe(`${testSuiteName}`, () => {
           if (component.port) {
             component.port = (Number(component.port) + 15000) % 65535;
           }
+        }
+      });
+
+      it('negative component test cases', async () => {
+        cfgYaml.components.zss.enabled = false; // disable for test
+        // eslint-disable-next-line quotes
+        const componentCases = ['', 'app-servr', 'noexist', 'null', null, 'zss', "''", '""'];
+        for (const component of componentCases) {
+          const result = await testRunner.runZweTest(cfgYaml, `validate port bind -o ${component}`);
+          expect(`case: ${component}\n${result.cleanedStdout}`).toMatchSnapshot();
+          expect(result.rc).toBe(0); // quitOnError = false from cmd line, RC=0 w/ error text
         }
       });
 
