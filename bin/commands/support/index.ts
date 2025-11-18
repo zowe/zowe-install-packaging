@@ -111,7 +111,7 @@ export function execute(): void {
         checkScheme = 'http';
       }
     }
-    const zosmfCheckAction = ZOWE_CONFIG.zowe.launchScript?.startupChecks?.zosmf || ZOWE_CONFIG.zowe.launchScript?.startupChecks?.default || 'exit';
+    const zosmfCheckAction = ZOWE_CONFIG.zowe.launchScript?.startupChecks?.zosmf || ZOWE_CONFIG.zowe.launchScript?.startupChecks?.default || 'warn';
     //this checks with default tls and jobname settings, since this command is unlikely to be run under the STC account where ATTLS might be used
     environment["zosmf_check"] = `'${checkScheme}://${zosmfHost}:${zosmfPort}/zosmf/info' => ${zosmf.validateZosmfHostAndPort(zosmfHost, zosmfPort,  checkScheme, gatewayJobname, (zosmfCheckAction == 'warn'))}`;
   }
