@@ -197,7 +197,7 @@ function globalValidate(enabledComponents:string[]): void {
   }
 
   // validate z/OSMF for some core components
-  let zosmfCheckAction = ZOWE_CONFIG.zowe.launchScript?.startupChecks?.zosmf || 'exit';
+  let zosmfCheckAction = ZOWE_CONFIG.zowe.launchScript?.startupChecks?.zosmf || ZOWE_CONFIG.zowe.launchScript?.startupChecks?.default || 'exit';
   if (zosmfHost && zosmfPort && (zosmfCheckAction != 'disabled')) {
     if (enabledComponents.includes('discovery') || enabledComponents.includes('apiml')) {
       const gatewayJobname = (ZOWE_CONFIG.zowe.job?.prefix || 'ZWE1') + 'AG';

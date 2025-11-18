@@ -94,8 +94,26 @@ export function execute(): void {
   const zosmfHost = ZOWE_CONFIG.zOSMF?.host;
   const zosmfPort = ZOWE_CONFIG.zOSMF?.port;
   if (discovery && zosmfHost && zosmfPort) {
+    const gatewayJobname = (ZOWE_CONFIG.zowe.job?.prefix || 'ZWE1') + 'AG';
+    let checkScheme = 'https';
+    //if apiml's enabled and attls isnt explicitly false there...
+    if ((ZOWE_CONFIG.components?.apiml?.enabled === true &&
+          ZOWE_CONFIG.components.apiml?.zowe?.network?.server?.tls?.attls !== false) ||
+        (ZOWE_CONFIG.components?.gateway?.enabled === true &&
+          ZOWE_CONFIG.components.gateway?.zowe?.network?.server?.tls?.attls !== false)) {
+      //then if apiml's enabled and attls is true somewhere...
+      if ((ZOWE_CONFIG.components?.apiml?.enabled === true &&
+            ZOWE_CONFIG.components.apiml?.zowe?.network?.server?.tls?.attls === true) ||
+          (ZOWE_CONFIG.components?.gateway?.enabled === true &&
+            ZOWE_CONFIG.components.gateway?.zowe?.network?.server?.tls?.attls === true) ||
+          (ZOWE_CONFIG.zowe.network?.server?.tls?.attls == true)) {
+        //then we should act like we're apiml, and check using http.
+        checkScheme = 'http';
+      }
+    }
+    const zosmfCheckAction = ZOWE_CONFIG.zowe.launchScript?.startupChecks?.zosmf || ZOWE_CONFIG.zowe.launchScript?.startupChecks?.default || 'exit';
     //this checks with default tls and jobname settings, since this command is unlikely to be run under the STC account where ATTLS might be used
-    environment["zosmf_check"] = `'https://${zosmfHost}:${zosmfPort}/zosmf/info' => ${zosmf.validateZosmfHostAndPort(zosmfHost, zosmfPort)}`;
+    environment["zosmf_check"] = `'${checkScheme}://${zosmfHost}:${zosmfPort}/zosmf/info' => ${zosmf.validateZosmfHostAndPort(zosmfHost, zosmfPort,  checkScheme, gatewayJobname, (zosmfCheckAction == 'warn'))}`;
   }
 
   java.requireJava();
