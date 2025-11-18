@@ -58,6 +58,53 @@ describe(`${testSuiteName}`, () => {
   });
 
   describe('(SHORT)', () => {
+    it('z/OSMF with mode: exit', async () => {
+      _.set(cfgYaml, 'node.home', REMOTE_SYSTEM_INFO.zosNodeHome);
+      _.set(cfgYaml, 'zowe.launchScript.startupChecks.zosmf', 'exit');
+      let result = await testRunner.runZweTest(cfgYaml, 'internal start prepare');
+      expect(result.stdout).not.toBeNull();
+      expect(result.stdout.includes('Successfully checked z/OSMF is available')).toBe(true);
+
+      cfgYaml.zOSMF.port = Number(cfgYaml.zOSMF.port) + 1; // bad port
+      result = await testRunner.runZweTest(cfgYaml, 'internal start prepare');
+      expect(result.stdout).not.toBeNull();
+      expect(result.stdout.includes('Could not validate if z/OSMF is available on')).toBe(true);
+      expect(result.stdout.includes('Zosmf validation failed')).toBe(true);
+    });
+
+    // with warn mode, global validations should succeed when z/osmf check fails
+    it('z/OSMF with mode: warn', async () => {
+      _.set(cfgYaml, 'node.home', REMOTE_SYSTEM_INFO.zosNodeHome);
+      _.set(cfgYaml, 'zowe.launchScript.startupChecks.zosmf', 'warn');
+      let result = await testRunner.runZweTest(cfgYaml, 'internal start prepare');
+      expect(result.stdout).not.toBeNull();
+      expect(result.stdout.includes('Successfully checked z/OSMF is available')).toBe(true);
+
+      cfgYaml.zOSMF.port = Number(cfgYaml.zOSMF.port) + 1; // bad port
+      result = await testRunner.runZweTest(cfgYaml, 'internal start prepare');
+      expect(result.stdout).not.toBeNull();
+      expect(result.stdout.includes('Could not validate if z/OSMF is available on')).toBe(true);
+      expect(result.stdout.includes('global validations are successful')).toBe(true);
+    });
+
+    // test when disabled, there's no messages about z/osmf and global validations pass
+    it('z/OSMF with mode: disabled', async () => {
+      _.set(cfgYaml, 'node.home', REMOTE_SYSTEM_INFO.zosNodeHome);
+      _.set(cfgYaml, 'zowe.launchScript.startupChecks.zosmf', 'disabled');
+      let result = await testRunner.runZweTest(cfgYaml, 'internal start prepare');
+      expect(result.stdout).not.toBeNull();
+      expect(result.stdout.includes('Successfully checked z/OSMF is available')).toBe(false);
+      expect(result.stdout.includes('Could not validate if z/OSMF is available on')).toBe(false);
+      expect(result.stdout.includes('global validations are successful')).toBe(true);
+
+      cfgYaml.zOSMF.port = Number(cfgYaml.zOSMF.port) + 1; // bad port
+      result = await testRunner.runZweTest(cfgYaml, 'internal start prepare');
+      expect(result.stdout).not.toBeNull();
+      expect(result.stdout.includes('Successfully checked z/OSMF is available')).toBe(false);
+      expect(result.stdout.includes('Could not validate if z/OSMF is available on')).toBe(false);
+      expect(result.stdout.includes('global validations are successful')).toBe(true);
+    });
+
     it('modulith disabled', async () => {
       cfgYaml.components.apiml.enabled = false;
       const result = await testRunner.runZweTest(cfgYaml, 'internal start prepare');
