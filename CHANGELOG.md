@@ -7,13 +7,18 @@ All notable changes to the Zowe Installer will be documented in this file.
 
 ## `3.4.0`
 
-- Enhancement: Configure z/OSMF static API definiton based on authentication provider [#4563](https://github.com/zowe/zowe-install-packaging/pull/4563)
+- Enhancement: API ML now uses `saf` as it's default authentication provider for new installations of Zowe. [#4573](https://github.com/zowe/zowe-install-packaging/pull/4573)
+- Enhancement: Configure z/OSMF static API definition based on authentication provider [#4563](https://github.com/zowe/zowe-install-packaging/pull/4563)
+- Enhancement: Command `zwe validate config` command has been added as an alias of `zwe config validate`, for naming consistency with future `zwe validate` commands. [#4447](https://github.com/zowe/zowe-install-packaging/pull/4447)
+- Enhancement: Command `zwe validate port bind` command has been added. It can be used to validate if a zowe component is likely to succeed at binding to a TCP socket, and is used at startup to reduce likelihood of misconfiguration. [#4447](https://github.com/zowe/zowe-install-packaging/pull/4447)
 - Enhancement: API ML modulith mode is now enabled by default for new installations of Zowe. [#4565](https://github.com/zowe/zowe-install-packaging/pull/4565)
 - Enhancement: Detect if `SDSF` is available. [#4389](https://github.com/zowe/zowe-install-packaging/pull/4389)
 - Bugfix: internal routine `copy_to_data_set` did not correctly check if data set exists. [#4476](https://github.com/zowe/zowe-install-packaging/pull/4476)
 - Enhancement: `ZWEGEN00` supports long path by continuation character, which can be used in JCL `ZWEGENER` [#4459](https://github.com/zowe/zowe-install-packaging/pull/4459)
 - Bugfix: Zowe startup now removes outdated static definition files from workspace/api-mediation/api-defs, which previously caused wrong or duplicate registrations of servers to APIML. [#4526](https://github.com/zowe/zowe-install-packaging/pull/4526)
 - Bugfix: `--update-config` might fail if the specified config file is a symbolic link. [#4492](https://github.com/zowe/zowe-install-packaging/pull/4492)
+- Bugfix: The Zowe PSWI installation now creates `zowe.yaml` in the `workspaceDirectory` rather than `runtimeDirectory`. [#4397](https://github.com/zowe/zowe-install-packaging/pull/4397)
+- Enhancement: Node.JS is no longer required to run `zwe migrate for kubernetes`, or any other `zwe` command. [#4307](https://github.com/zowe/zowe-install-packaging/pull/4307)
 
 ## `3.3.1`
 
