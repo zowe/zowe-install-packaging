@@ -3,7 +3,7 @@
 All notable changes to the Zowe Installer will be documented in this file.
 
 ## `3.5.0`
-- Enhancement: Environment variable `ZWE_DISCOVERY_SERVICES_LIST` is now sorted to have each HA instance's local discovery server listed first. [#4568](https://github.com/zowe/zowe-install-packaging/issues/4568)
+- Enhancement: Environment variable `ZWE_DISCOVERY_SERVICES_LIST` is now sorted to have each HA instance's local discovery server listed first. [#4586](https://github.com/zowe/zowe-install-packaging/issues/4586)
 
 ## `3.4.0`
 
