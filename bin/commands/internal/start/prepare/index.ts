@@ -217,7 +217,7 @@ function globalValidate(enabledComponents:string[]): void {
           checkScheme = 'http';
         }
       }
-      let zosmfOk = zosmf.validateZosmfHostAndPort(zosmfHost, zosmfPort, checkScheme, gatewayJobname, (zosmfCheckAction == 'exit'));
+      let zosmfOk = zosmf.validateZosmfHostAndPort(zosmfHost, zosmfPort, checkScheme, gatewayJobname, (zosmfCheckAction == 'warn'));
       if (!zosmfOk) {
         privateErrors++;
         common.printFormattedError('ZWELS', "zwe-internal-start-prepare,global_validate", "Zosmf validation failed");
