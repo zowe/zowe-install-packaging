@@ -1,1 +1,15 @@
-""
+{
+  "lockAcquiredTime": "Tue Nov 18 2025 11:50:07 GMT+0000 (Coordinated Universal Time)",
+  "uid": "1763466607544643204",
+  "repository": {
+    "owner": "zowe",
+    "repo": "zowe-install-packaging"
+  },
+  "branch": "bugfix/v3/attls-zosmf-preflight",
+  "workflow": "Zowe CICD Integration Tests",
+  "job": "cicd-test",
+  "actor": "zowe-robot",
+  "runId": 19465049008,
+  "runNumber": 7821,
+  "link": "https://github.com/zowe/zowe-install-packaging/actions/runs/19465049008"
+}
