@@ -203,13 +203,14 @@ function globalValidate(enabledComponents:string[]): void {
       const gatewayJobname = (ZOWE_CONFIG.zowe.job?.prefix || 'ZWE1') + 'AG';
       let checkScheme = 'https';
       //if apiml's enabled and attls isnt explicitly false there...
+      // NOTE: apiml will read properties from either apiml or gateway components
       if ((ZOWE_CONFIG.components?.apiml?.enabled === true &&
-           ZOWE_CONFIG.components.apiml?.zowe?.network?.server?.tls?.attls !== false) ||
+           (ZOWE_CONFIG.components.apiml?.zowe?.network?.server?.tls?.attls !== false && ZOWE_CONFIG.components.gateway?.zowe?.network?.server?.tls?.attls !== false)) ||
           (ZOWE_CONFIG.components?.gateway?.enabled === true &&
            ZOWE_CONFIG.components.gateway?.zowe?.network?.server?.tls?.attls !== false)) {
         //then if apiml's enabled and attls is true somewhere...
-        if ((ZOWE_CONFIG.components?.apiml?.enabled === true &&
-             ZOWE_CONFIG.components.apiml?.zowe?.network?.server?.tls?.attls === true) ||
+        if ((ZOWE_CONFIG.components?.apiml?.enabled === true &&               
+             (ZOWE_CONFIG.components.apiml?.zowe?.network?.server?.tls?.attls === true || ZOWE_CONFIG.components.gateway?.zowe?.network?.server?.tls?.attls === true )) ||
             (ZOWE_CONFIG.components?.gateway?.enabled === true &&
              ZOWE_CONFIG.components.gateway?.zowe?.network?.server?.tls?.attls === true) ||
             (ZOWE_CONFIG.zowe.network?.server?.tls?.attls == true)) {
@@ -217,7 +218,9 @@ function globalValidate(enabledComponents:string[]): void {
           checkScheme = 'http';
         }
       }
-      let zosmfOk = zosmf.validateZosmfHostAndPort(zosmfHost, zosmfPort, checkScheme, gatewayJobname, (zosmfCheckAction == 'warn'));
+      // envs should overrule attls settings
+      const finalScheme =  std.getenv('ZOSMF_SCHEME') || std.getenv('ZWE_zOSMF_scheme') || checkScheme;
+      let zosmfOk = zosmf.validateZosmfHostAndPort(zosmfHost, zosmfPort, finalScheme, gatewayJobname, (zosmfCheckAction == 'warn'));
       if (!zosmfOk) {
         privateErrors++;
         common.printFormattedError('ZWELS', "zwe-internal-start-prepare,global_validate", "Zosmf validation failed");
