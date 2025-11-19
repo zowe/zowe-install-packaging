@@ -103,7 +103,6 @@ export function execute(): void {
                             ZOWE_CONFIG.zowe.network?.server?.tls?.attls ?? false;
     //if apiml's enabled and attls isnt explicitly false there...
     // NOTE: apiml will read properties from either apiml or gateway components
-    common.printMessage(`Gateway Policy: ${ZOWE_CONFIG.components.gateway?.zowe?.network?.server?.tls?.attls}`);
     if (ZOWE_CONFIG.components?.apiml?.enabled === true) {
         if (apimlTlsPolicy === true) {
             checkScheme = 'http';
