@@ -69,7 +69,7 @@ describe(`${testSuiteName}`, () => {
         // no envs override rest. nulls are "no value"
         { 'aml.enabled': true, 'gw.enabled': false, 'aml.attls': false, 'gw.attls': false, 'net.attls': false, 'cmd.env': {}, 'result': 'https' },
         { 'aml.enabled': true, 'gw.enabled': false, 'aml.attls': true, 'gw.attls': false, 'net.attls': false, 'cmd.env': {}, 'result': 'https' }, // gw > apiml
-        { 'aml.enabled': true, 'gw.enabled': false, 'aml.attls': true, 'gw.attls': null, 'net.attls': false, 'cmd.env': {}, 'result': 'http' }, 
+        { 'aml.enabled': true, 'gw.enabled': false, 'aml.attls': true, 'gw.attls': null, 'net.attls': false, 'cmd.env': {}, 'result': 'http' },
         { 'aml.enabled': true, 'gw.enabled': false, 'aml.attls': false, 'gw.attls': true, 'net.attls': false, 'cmd.env': {}, 'result': 'http' },
         { 'aml.enabled': true, 'gw.enabled': false, 'aml.attls': false, 'gw.attls': null, 'net.attls': true, 'cmd.env': {}, 'result': 'https' },
         { 'aml.enabled': true, 'gw.enabled': false, 'aml.attls': null, 'gw.attls': null, 'net.attls': true, 'cmd.env': {}, 'result': 'http' },
