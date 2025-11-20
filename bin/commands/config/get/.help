@@ -1,2 +1,5 @@
 Return value of a configuration defined in YAML configuration.
-This command requires zowe.useConfigmgr=true or --configmgr to be used.
+
+If the value
+* is undefined, returns empty string
+* is compound, returns JSON object
