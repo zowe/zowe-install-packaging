@@ -9,6 +9,7 @@
   Copyright Contributors to the Zowe Project.
 */
 
+import * as std from 'cm_std';
 import * as common from '../../../../libs/common';
 import * as config from '../../../../libs/config';
 import * as fakejq from '../../../../libs/fakejq';
@@ -21,6 +22,7 @@ export function execute(configPath:string, haInstance?: string) {
   common.requireZoweYaml();
   const ZOWE_CONFIG=config.getZoweConfig();
   let output;
+  const spaces = std.getenv('ZWE_CLI_PARAMETER_FORMAT') == 'true' ? 2 : 0;
   if (haInstance) {
     haInstance=config.sanitizeHaInstanceId();
   }
@@ -40,14 +42,14 @@ export function execute(configPath:string, haInstance?: string) {
       if (typeof line != 'object') {
         common.printMessage(line);
       } else {
-        common.printMessage(JSON.stringify(line));
+        common.printMessage(JSON.stringify(line, null, spaces));
       }
     });
   } else {
     if (typeof output != 'object') {
       common.printMessage(output);
     } else {
-      common.printMessage(JSON.stringify(output));
+      common.printMessage(JSON.stringify(output, null, spaces));
     }
   }
 }

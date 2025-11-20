@@ -2,6 +2,10 @@
 
 All notable changes to the Zowe Installer will be documented in this file.
 
+## `3.5.0`
+
+- Enhancement: `zwe config get` command uses new `--format` option to format the output. [#45??](https://github.com/zowe/zowe-install-packaging/pull/45??)
+
 ## `3.4.0`
 
 - Enhancement: API ML now uses `saf` as it's default authentication provider for new installations of Zowe. [#4573](https://github.com/zowe/zowe-install-packaging/pull/4573)
