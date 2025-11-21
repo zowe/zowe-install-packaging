@@ -29,7 +29,7 @@ import * as objUtils from '../utils/ObjUtils';
 const cliParameterConfig: string = function () {
   let value = std.getenv('ZWE_CLI_PARAMETER_CONFIG');
   if (!value) {
-    std.out.printf("No ZWE_CLI_PARAMETER_CONFIG env var, exiting");
+    common.printMessage("No ZWE_CLI_PARAMETER_CONFIG env var, exiting");
     std.exit(0);
   }
   return (value as string);
@@ -117,14 +117,18 @@ export function generateInstanceEnvFromYamlConfig(haInstance: string) {
   let envFileArray: string[] = [];
 
   envFileArray.push('#!/bin/sh');
-  envKeys.forEach((key: string) => {
+  for (const key of envKeys) {
+    // drop null values from env (can happen with zowe.setup.certificate combinations)
+    if (envs[key] == null) {
+        continue;
+    } 
     // quote values with spaces, since the final output may be used by 'source' command
     if (envs[key].toString().trim().includes(" ")) {
       envFileArray.push(`${key}="${envs[key]}"`);
     } else {
       envFileArray.push(`${key}=${envs[key]}`);
     }
-  });
+  }
 
   components.forEach((currentComponent: string) => {
     const componentAlpha = stringlib.sanitizeAlpha(currentComponent);
