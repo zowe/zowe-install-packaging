@@ -863,7 +863,7 @@ const zoweSchema = zoweYamlSchema as {
                 };
                 zosmf: {
                   type: 'string';
-                  default: 'warn';
+                  default: 'exit';
                   description: "Checks z/OSMF to see if it is running and meet's Zowe's requirements";
                   enum: ['exit', 'warn', 'disabled'];
                 };

@@ -137,7 +137,7 @@ zowe:
       # Individual startup checks will override the default behavior
       ports: "exit"
       # z/OSMF startup check - defaults to "warn"
-      zosmf: "warn"
+      zosmf: "exit"
 
   # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   # How we want to verify SSL certificates of services. Valid values are:

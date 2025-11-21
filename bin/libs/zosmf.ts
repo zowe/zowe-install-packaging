@@ -26,7 +26,7 @@ export function validateZosmfHostAndPort(zosmfHost: string, zosmfPort: number, s
 
   let backupJobname = std.getenv('_BPX_JOBNAME');
   std.setenv('_BPX_JOBNAME', jobname);
-  const execReturn = shell.execOutSync(`${std.getenv('ZWE_zowe_runtimeDirectory')}/bin/utils/curl`, `${scheme}://${zosmfHost}:${zosmfPort}/zosmf/info`, `-k`, `-H`, `X-CSRF-ZOSMF-HEADER: true`, `-w`, `%{http_code}`, `-s`, `-o`, `/dev/null`);
+  const execReturn = shell.execOutSync(`${std.getenv('ZWE_zowe_runtimeDirectory')}/bin/utils/curl`, `${scheme}://${zosmfHost}:${zosmfPort}/zosmf/info`, `-k`, `-H`, `X-CSRF-ZOSMF-HEADER: true`, `-w`, `%{http_code}`, `--max-time`, `10`, `-s`, `-o`, `/dev/null`);
   //restore jobname
   if (backupJobname) {
     std.setenv('_BPX_JOBNAME', backupJobname);
