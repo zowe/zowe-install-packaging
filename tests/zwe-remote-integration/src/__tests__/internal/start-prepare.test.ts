@@ -59,23 +59,28 @@ describe(`${testSuiteName}`, () => {
 
   describe('(SHORT)', () => {
     it('various combinations of settings impacting z/osmf scheme', async () => {
+      // All combinations relevant fields are 3^6 or 3^7, too many to test in integration. Cover more common subset.
       /* eslint-disable max-len */
       // prettier-ignore
       const testCases = [
         // envs override expected result
-        { 'aml.enabled': true, 'gw.enabled': false, 'aml.attls': false, 'gw.attls': false, 'net.attls': false, 'cmd.env': { ZOSMF_SCHEME: 'http' }, 'result': 'http' },
-        { 'aml.enabled': true, 'gw.enabled': false, 'aml.attls': true, 'gw.attls': true, 'net.attls': false, 'cmd.env': { ZWE_zOSMF_scheme: 'https' }, 'result': 'https' },
-        { 'aml.enabled': true, 'gw.enabled': false, 'aml.attls': false, 'gw.attls': false, 'net.attls': false, 'cmd.env': { ZOSMF_SCHEME: 'http', ZWE_zOSMF_scheme: 'https' }, 'result': 'http' },
+        { 'aml.enabled': true, 'gw.enabled': false, 'zaas.client.attls': false, 'net.client.attls': false, 'net.server.attls': false, 'cmd.env': { ZOSMF_SCHEME: 'http' }, 'result': 'http' },
+        { 'aml.enabled': true, 'gw.enabled': false, 'zaas.client.attls': true, 'net.client.attls': false, 'net.server.attls': false, 'cmd.env': { ZWE_zOSMF_scheme: 'https' }, 'result': 'https' },
+        { 'aml.enabled': true, 'gw.enabled': false, 'zaas.client.attls': false, 'net.client.attls': false, 'net.server.attls': false, 'cmd.env': { ZOSMF_SCHEME: 'http', ZWE_zOSMF_scheme: 'https' }, 'result': 'http' },
         // no envs override rest. nulls are "no value"
-        { 'aml.enabled': true, 'gw.enabled': false, 'aml.attls': false, 'gw.attls': false, 'net.attls': false, 'cmd.env': {}, 'result': 'https' },
-        { 'aml.enabled': true, 'gw.enabled': false, 'aml.attls': true, 'gw.attls': false, 'net.attls': false, 'cmd.env': {}, 'result': 'https' }, // gw > apiml
-        { 'aml.enabled': true, 'gw.enabled': false, 'aml.attls': true, 'gw.attls': null, 'net.attls': false, 'cmd.env': {}, 'result': 'http' },
-        { 'aml.enabled': true, 'gw.enabled': false, 'aml.attls': false, 'gw.attls': true, 'net.attls': false, 'cmd.env': {}, 'result': 'http' },
-        { 'aml.enabled': true, 'gw.enabled': false, 'aml.attls': false, 'gw.attls': null, 'net.attls': true, 'cmd.env': {}, 'result': 'https' },
-        { 'aml.enabled': true, 'gw.enabled': false, 'aml.attls': null, 'gw.attls': null, 'net.attls': true, 'cmd.env': {}, 'result': 'http' },
-        { 'aml.enabled': false, 'gw.enabled': true, 'aml.attls': true, 'gw.attls': false, 'net.attls': false, 'cmd.env': {}, 'result': 'https' }, // gw doesn't register aml setting
-        { 'aml.enabled': false, 'gw.enabled': true, 'aml.attls': false, 'gw.attls': true, 'net.attls': false, 'cmd.env': {}, 'result': 'http' },
-        { 'aml.enabled': false, 'gw.enabled': true, 'aml.attls': false, 'gw.attls': null, 'net.attls': true, 'cmd.env': {}, 'result': 'http' },
+        { 'aml.enabled': true, 'gw.enabled': true, 'zaas.client.attls': false, 'net.client.attls': false, 'net.server.attls': false, 'cmd.env': {}, 'result': 'https' },
+        { 'aml.enabled': true, 'gw.enabled': true, 'zaas.client.attls': false, 'net.client.attls': false, 'net.server.attls': false, 'cmd.env': {}, 'result': 'https' },
+        { 'aml.enabled': true, 'gw.enabled': true, 'zaas.client.attls': true, 'net.client.attls': false, 'net.server.attls': false, 'cmd.env': {}, 'result': 'http' },
+        { 'aml.enabled': false, 'gw.enabled': true, 'zaas.client.attls': false, 'net.client.attls': false, 'net.server.attls': true, 'cmd.env': {}, 'result': 'https' },
+        { 'aml.enabled': false, 'gw.enabled': true, 'zaas.client.attls': true, 'net.client.attls': false, 'net.server.attls': false, 'cmd.env': {}, 'result': 'http' },
+        { 'aml.enabled': true, 'gw.enabled': false, 'zaas.client.attls': false, 'net.client.attls': true, 'net.server.attls': false, 'cmd.env': {}, 'result': 'http' },
+        { 'aml.enabled': true, 'gw.enabled': false, 'zaas.client.attls': false, 'net.client.attls': false, 'net.server.attls': true, 'cmd.env': {}, 'result': 'https' },
+        { 'aml.enabled': true, 'gw.enabled': false, 'zaas.client.attls': null, 'net.client.attls': null, 'net.server.attls': true, 'cmd.env': {}, 'result': 'http' },
+        { 'aml.enabled': true, 'gw.enabled': false, 'zaas.client.attls': null, 'net.client.attls': null, 'net.server.attls': null, 'cmd.env': {}, 'result': 'https' },
+        { 'aml.enabled': false, 'gw.enabled': true, 'zaas.client.attls': null, 'net.client.attls': false, 'net.server.attls': false, 'cmd.env': {}, 'result': 'https' },
+        { 'aml.enabled': false, 'gw.enabled': true, 'zaas.client.attls': true, 'net.client.attls': null, 'net.server.attls': false, 'cmd.env': {}, 'result': 'http' },
+        { 'aml.enabled': false, 'gw.enabled': true, 'zaas.client.attls': false, 'net.client.attls': true, 'net.server.attls': null, 'cmd.env': {}, 'result': 'http' },
+        { 'aml.enabled': false, 'gw.enabled': true, 'zaas.client.attls': null, 'net.client.attls': null, 'net.server.attls': false, 'cmd.env': {}, 'result': 'https' },
       ];
 
       /* eslint-enable max-len */
@@ -87,10 +92,10 @@ describe(`${testSuiteName}`, () => {
         cfgYaml.zOSMF.port = Number(cfgYaml.zOSMF.port) + 1; // intentionally bad port: quit early and print z/osmf URL
 
         _.set(cfgYaml, 'components.apiml.enabled', test['aml.enabled']);
-        _.set(cfgYaml, 'components.apiml.zowe.network.server.tls.attls', test['aml.attls']);
+        _.set(cfgYaml, 'components.zaas.zowe.network.client.tls.attls', test['zaas.client.attls']);
         _.set(cfgYaml, 'components.gateway.enabled', test['gw.enabled']);
-        _.set(cfgYaml, 'components.gateway.zowe.network.server.tls.attls', test['gw.attls']);
-        _.set(cfgYaml, 'zowe.network.server.tls.attls', test['net.attls']);
+        _.set(cfgYaml, 'zowe.network.server.tls.attls', test['net.server.attls']);
+        _.set(cfgYaml, 'zowe.network.client.tls.attls', test['net.client.attls']);
         _.set(cfgYaml, 'zowe.environments', test['cmd.env']);
 
         const result = await testRunner.runZweTest(cfgYaml, 'internal start prepare');

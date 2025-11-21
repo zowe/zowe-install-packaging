@@ -197,23 +197,17 @@ function globalValidate(enabledComponents:string[]): void {
   }
 
   // validate z/OSMF for some core components
-  let zosmfCheckAction = ZOWE_CONFIG.zowe.launchScript?.startupChecks?.zosmf || ZOWE_CONFIG.zowe.launchScript?.startupChecks?.default || 'warn';
+  let zosmfCheckAction = ZOWE_CONFIG.zowe.launchScript?.startupChecks?.zosmf || ZOWE_CONFIG.zowe.launchScript?.startupChecks?.default || 'exit';
   if (zosmfHost && zosmfPort && (zosmfCheckAction != 'disabled')) {
     if (enabledComponents.includes('discovery') || enabledComponents.includes('apiml')) {
-      const gatewayJobname = (ZOWE_CONFIG.zowe.job?.prefix || 'ZWE1') + 'AG';
+      let jobSuffix = 'AG';
+      if (enabledComponents.includes('zaas') && !enabledComponents.includes('apiml')) {
+        jobSuffix = 'AZ';
+      }
+      const gatewayJobname = (ZOWE_CONFIG.zowe.job?.prefix || 'ZWE1') + jobSuffix;
       let checkScheme = 'https';
-      const apimlTlsPolicy = ZOWE_CONFIG.components.gateway?.zowe?.network?.server?.tls?.attls ?? 
-                              ZOWE_CONFIG.components.apiml?.zowe?.network?.server?.tls?.attls ?? 
-                              ZOWE_CONFIG.zowe.network?.server?.tls?.attls ?? false;
-      const gatewayTlsPolicy = ZOWE_CONFIG.components.gateway?.zowe?.network?.server?.tls?.attls ?? 
-                              ZOWE_CONFIG.zowe.network?.server?.tls?.attls ?? false;
-      //if apiml's enabled and attls isnt explicitly false there...
-      // NOTE: apiml will read properties from either apiml or gateway components
-      if (ZOWE_CONFIG.components?.apiml?.enabled === true) {
-          if (apimlTlsPolicy === true) {
-              checkScheme = 'http';
-          }
-      } else if (ZOWE_CONFIG.components?.gateway?.enabled === true && gatewayTlsPolicy === true) {
+      const tlsPolicy = component.isClientAttls(); // does not allow for components.(apiml|gateway)...tls settings. only global/zaas
+      if ((ZOWE_CONFIG.components?.apiml?.enabled === true || ZOWE_CONFIG.components?.gateway?.enabled === true) && tlsPolicy === true ) {
           checkScheme = 'http';
       }
       // envs should overrule attls settings
