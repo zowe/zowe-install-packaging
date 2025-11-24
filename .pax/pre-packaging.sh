@@ -223,6 +223,9 @@ fi
 # FIXME: remove/comment this debug code
 # cd "${BASE_DIR}" && rm -fr content && rm -fr smpe && rm -fr templates && cp -r content.bak content
 
+echo "[$SCRIPT_NAME] unpack utility-tools njq ..."
+
+
 echo "[$SCRIPT_NAME] change scripts to be executable ..."
 chmod +x "${ZOWE_ROOT_DIR}"/bin/zwe
 chmod +x "${ZOWE_ROOT_DIR}"/bin/utils/*.sh
@@ -234,6 +237,7 @@ cd "${ZOWE_ROOT_DIR}/bin/utils"
 pax -ppx -rf "${curl_pax}"
 mv "${ZOWE_ROOT_DIR}"/bin/utils/curl-*/bin/curl ./curl
 rm -rf "${ZOWE_ROOT_DIR}"/bin/utils/curl-*
+rm -rf "${curl_pax}"
 
 echo "[$SCRIPT_NAME] change curl to be executable ..."
 chmod +x "${ZOWE_ROOT_DIR}"/bin/utils/curl
