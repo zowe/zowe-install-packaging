@@ -19,7 +19,7 @@ All notable changes to the Zowe Installer will be documented in this file.
 
 ## `3.3.1`
 
-- Bugfix: z/OSMF static definition is missing scheme information, this is needed for AT-TLS hybrid scenarios where connections to z/OSMF do not follow AT-TLS rules [#4512](https://github.com/zowe/zowe-install-packaging/pull/4512)
+- Bugfix: z/OSMF static definition is missing scheme information, this is needed for AT-TLS hybrid scenarios where connections TO z/OSMF do not follow AT-TLS rules [#4512](https://github.com/zowe/zowe-install-packaging/pull/4512)
 
 ## `3.3.0`
 
