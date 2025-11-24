@@ -147,6 +147,23 @@ mkdir -p "${CONTENT_DIR}/licenses"
 echo "[${SCRIPT_NAME}] copy license file ..."
 mv "${PAX_BINARY_DEPENDENCIES}/zowe_licenses_full.zip" "${CONTENT_DIR}/licenses"
 
+# extract packaging utility tools to bin/utils
+echo "[${SCRIPT_NAME}] prepare utility tools ..."
+cd "${ROOT_DIR}" && cd "${CONTENT_DIR}/bin/utils"
+echo "[${SCRIPT_NAME}] extract zowe-utility-tools.zip ..."
+jar -xf "${PAX_BINARY_DEPENDENCIES}"/zowe-utility-tools*.zip
+# extract njq and delete the rest
+echo "[${SCRIPT_NAME}] extract zowe-njq ..."
+tar zxf zowe-njq-*.tgz
+mv package njq
+rm zowe-fconv-*.tgz
+rm zowe-config-converter-*.tgz
+rm zowe-njq-*.tgz
+rm zowe-ncert-*.pax
+cd "${ROOT_DIR}"
+rm -f "${PAX_BINARY_DEPENDENCIES}"/zowe-utility-tools*.zip
+
+
 # put text files into ascii folder (recursive & verbose)
 echo "[${SCRIPT_NAME}] move ASCII files out of CONTENT directory for encoding conversion ..."
 rsync -rv \
