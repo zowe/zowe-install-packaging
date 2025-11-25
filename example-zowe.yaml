@@ -275,9 +275,9 @@ zowe:
   # runtime z/OS job name
   job:
     # Zowe JES job name
-    name: ZWE1SV
+    name: "${{ std.getenv('ZWE_components_gateway_port') }}SV"
     # Prefix of component address space
-    prefix: ZWE1
+    prefix: ZWE3
 
   # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   # This is an ID you use to separate multiple Zowe installs when determining
@@ -296,14 +296,14 @@ zowe:
   # address bar.
   externalDomains:
     # this should be the domain name to access Zowe APIML Gateway
-    - example.com
+    - "${{ zos.resolveSymbol('&SYSNAME') }}.example.com"
 
   # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   # This is the port you use to access Zowe Gateway from your web browser.
   #
   # In many use cases, this should be same as `components.gateway.port`. But in
   # some use cases, like containerization, this port could be different.
-  externalPort: 7554
+  externalPort:  "${{ std.getenv('ZWE_components_gateway_port') }}"
 
   # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   #
@@ -318,13 +318,14 @@ zowe:
     server:
       tls:
         attls: false
-        # TLS settings only apply when attls=false
-        # Else you must use AT-TLS configuration for TLS customization.
+        # If you have changed 'attls: true' above, the TLS and SSL levels are defined in the AT-TLS policy, 
+        # see https://docs.zowe.org/stable/user-guide/configuring-at-tls-for-zowe-server/
+        # Only include the two lines below that control the min and max TLS if 'attls: false' above
         minTls: "TLSv1.2"
         maxTls: "TLSv1.3"
     client:
       tls:
-        attls: false
+        attls: "${{ std.getenv('ZWE_network_server_tls_attls')}}"
 
   # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   # You can un-comment and define any extra environment variables as key/value
@@ -454,7 +455,7 @@ node:
 #-------------------------------------------------------------------------------
 zOSMF:
   # Host name of your z/OSMF instance
-  host: dvipa.example.com
+  host:  "${{ zos.resolveSymbol('&SYSNAME') }}.example.com"
   port: 443
   applId: IZUDFLT
 
@@ -526,7 +527,7 @@ components:
 
   # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   caching-service:
-    enabled: true
+    enabled: false
     port: 7555
     debug: false
 
