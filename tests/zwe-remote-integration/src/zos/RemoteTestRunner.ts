@@ -22,6 +22,7 @@ import * as YAML from 'yaml';
 import * as jobs from '@zowe/zos-jobs-for-zowe-sdk';
 import path, { basename } from 'path';
 import { FileType, TestFileActions } from './TestFileActions';
+import { getZoweVersion } from '../utils';
 
 /**
  * RemoteTestRunner is a class which drives actions on the backend test environment and
@@ -417,7 +418,6 @@ export class RemoteTestRunner {
       const HEADER_REMOVAL_PATTERN = new RegExp(`(//|)\\s*${escapeStringRegexp(header)}\\s*\n`, 'gm');
       cleanedOutput = cleanedOutput.replaceAll(HEADER_REMOVAL_PATTERN, replacePattern);
     }
-
     // built-in
     return cleanedOutput
       .replace(/(JOB[0-9]{5})/gim, 'JOB00000')
@@ -428,9 +428,15 @@ export class RemoteTestRunner {
       .replaceAll(`${this.session.ISession.user}`, 'TESTUSR0')
       .replace(/\/tmp\/\.zweenv-\d{1,5}/g, '/tmp/.zweenv-0000')
       .replace(/\/tmp\/zwe-\d{1,5}/g, '/tmp/zwe-0000')
+      .replace(/\/tmp\/zowe-convert-for-k8s-\d{1,5}/g, '/tmp/zowe-convert-for-k8s-0000')
       .replaceAll(REMOTE_SYSTEM_INFO.volume, 'TSTVOL')
       .replaceAll(REMOTE_SYSTEM_INFO.hostname, this.dummyHostname)
-      .replaceAll(REMOTE_SYSTEM_INFO.zosmfPort, this.dummyPort);
+      .replaceAll(REMOTE_SYSTEM_INFO.zosmfPort, this.dummyPort)
+      .replaceAll(new RegExp(`Zowe Version: v${getZoweVersion()}`, 'g'), 'Zowe version: v0.0.0')
+      .replaceAll(/\d{4}-\d{2}-\d{2}.+?<.+?>/g, '')
+      .replaceAll(/z\/OS Version: \d\.\d/g, 'z/OS Version: 0.0')
+      .replaceAll(/NodeJS version: v.*?$/gm, 'NodeJS version: v0.0.0')
+      .replaceAll(/Java version: .*?$/gm, 'Java version: v0.0.0');
   }
 
   public getMask(maskType: string): string {
@@ -478,16 +484,26 @@ export class RemoteTestRunner {
     return this.runZweTest(zoweYaml, zweCommand, cwd);
   }
 
+  /**
+   * This function uploads a defaults.yaml file to the remote testing environment,
+   *  and if it replaces an existing defaults.yaml in the files directory, the existing file
+   *  will be automatically backed up and restored once the current test is complete.
+   * @param defaultsYaml The defaults yaml to upload
+   * @param cwd  Where to upload the defaults yaml, by default the files/ dir in the testing environment
+   * @param skipBackup Default: false. If set to "true", no longer backs up and restores existing defaults.yaml files.
+   * @returns the path to defaults.yaml on the remote system
+   */
   public async uploadDefaultsYaml(
     defaultsYaml: ZoweYamlType,
     cwd: string = `${REMOTE_SYSTEM_INFO.ussTestDir}/files`,
+    skipBackup: boolean = false,
   ): Promise<string> {
     const testName = expect.getState().currentTestName.replace(/\s/g, '_');
     const yamlUploadPath = `${cwd}/defaults.yaml`;
     const stringDefaultYaml = YAML.stringify(defaultsYaml, { nullStr: '', ...this.customYamlRenderOpts });
     const yamlOutputDir = this.yamlOutputTemplate.replace('{{ testInstance }}', testName);
     fs.mkdirpSync(yamlOutputDir);
-    if (cwd === `${REMOTE_SYSTEM_INFO.ussTestDir}/files`) {
+    if (cwd === `${REMOTE_SYSTEM_INFO.ussTestDir}/files` && !skipBackup) {
       await this.removeUssFileOrDirForTest('files/defaults.yaml');
     }
     const redundantFilePath = this.writeRedundant(`${yamlOutputDir}/defaults.yaml`, stringDefaultYaml);

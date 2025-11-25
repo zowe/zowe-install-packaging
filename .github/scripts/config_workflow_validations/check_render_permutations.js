@@ -184,6 +184,7 @@ const configBranches = [
   { field: 'zowe_setup_jcl_enable', values: [true, false], dependentBranches: { field: 'zowe_setup_jcl_header', values: [ '', 'abc', 123, 'this_is\nmultiline\nheader']}},
   { field: 'zowe_externalDomains', values: ['localhost', 'localhost\nsome.other.host\n.dns.magic']},
   { field: 'zowe_setup_vsam_mode', values: ['NONRLS', 'RLS', ''] },
+  { field: 'components_gateway_apiml_security_auth_provider', values: ['saf', 'zosmf']},
   { field: 'components_gateway_enabled', values: [true, false] },
   { field: 'components_zaas_enabled', values: [true, false] },
   { field: 'components_api_catalog_enabled', values: [true, false] },

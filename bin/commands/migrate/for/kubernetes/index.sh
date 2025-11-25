@@ -20,7 +20,6 @@ temp_dir="$(get_tmp_dir)/zowe-convert-for-k8s-$(echo ${rnd})"
 ###############################
 # validation
 require_java
-require_node
 require_zowe_yaml
 
 ###############################
@@ -131,8 +130,7 @@ if [ "${ZWE_zowe_setup_certificate_type}" = "PKCS12" -a "${ZWE_zowe_verifyCertif
   cp -r "${ZWE_zowe_setup_certificate_pkcs12_directory}/${ZWE_zowe_setup_certificate_pkcs12_caAlias}" "${temp_dir}/keystore"
 
   # create new certificate
-  # we use node utility to generate certificate because keytool doesn't support * in SAN
-  pkcs12_create_certificate_and_sign_with_node \
+  pkcs12_create_certificate_and_sign \
     "${temp_dir}/keystore" \
     "${ZWE_zowe_setup_certificate_pkcs12_name}" \
     "${ZWE_zowe_setup_certificate_pkcs12_name}" \
@@ -199,7 +197,7 @@ update_zowe_yaml "${temp_dir}/zowe.yaml" "zowe.logDirectory" "${ZWE_PRIVATE_CONT
 iterator_index=0
 for host in $(echo "${ZWE_CLI_PARAMETER_DOMAINS}" | sed 's#[,]# #g'); do
   update_zowe_yaml "${temp_dir}/zowe.yaml" "zowe.externalDomains[${iterator_index}]" "${host}"
-  iterator_index=`expr $iterator_index + 1`
+  iterator_index=$(expr $iterator_index + 1)
 done
 
 update_zowe_yaml "${temp_dir}/zowe.yaml" "zowe.externalPort" "${ZWE_CLI_PARAMETER_EXTERNAL_PORT}"

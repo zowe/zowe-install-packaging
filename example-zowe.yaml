@@ -487,10 +487,10 @@ components:
     apiml:
       security:
         auth:
-          provider: zosmf
-          zosmf:
-            jwtAutoconfiguration: jwt
-            serviceId: ibmzosmf
+          # When the API Gateway is configured to use SAF authentication, z/OSMF APIs used by Desktop Explorer apps
+          # authenticate using PassTickets instead of a JWT/LTPA token. As such, ensure that PassTickets are configured
+          # and enabled for z/OSMF.
+          provider: saf
         authorization:
           endpoint:
             enabled: false

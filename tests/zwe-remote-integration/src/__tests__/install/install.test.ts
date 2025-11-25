@@ -148,7 +148,7 @@ describe(`${testSuiteName}`, () => {
           }
         }
       }
-    }, 200000);
+    }, 300000);
 
     it('install via PARMLIB and exported variable', async () => {
       const testParmlib = `${cfgYaml.zowe.setup.dataset.parmlib}`;

@@ -31,7 +31,7 @@ POD_DNS_COOL_DOWN=15
 ################################################################################
 # Functions
 check_instance() {
-  result=$(node "${ZWE_zowe_runtimeDirectory}"/bin/utils/curl.js "$1" -k 2>&1 | grep -E '(ENOTFOUND|EHOSTUNREACH)')
+  result=$("${ZWE_zowe_runtimeDirectory}"/bin/utils/curl "$1" -k 2>&1 | grep -E '(Could not resolve host|Could not connect)')
   if [ -n "${result}" ]; then
     print_message "    - ${result}"
     return 1
@@ -39,9 +39,6 @@ check_instance() {
 }
  
 ###############################
-# validation
-require_node
-
 # check static definitions
 modified=
 for one in $(find "${ZWE_STATIC_DEFINITIONS_DIR}" -type f -mmin "+${POD_DNS_COOL_DOWN}"); do
