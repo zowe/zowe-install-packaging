@@ -561,7 +561,7 @@ export function processComponentApimlStaticDefinitions(componentDir: string): bo
       const file=staticDef.file;
       const once = staticDef.once !== undefined ? staticDef.once : false;
 
-      const haInstanceName = once ? firstInstance ? firstInstance : currentHaInstanceName : currentHaInstanceName);
+      const haInstanceName = once ? firstInstance ? firstInstance : currentHaInstanceName : currentHaInstanceName;
 
       const path = `${componentDir}/${file}`
       if (!fs.fileExists(path)){
