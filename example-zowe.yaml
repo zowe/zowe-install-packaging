@@ -266,11 +266,6 @@ zowe:
   # Where extensions are installed
   extensionDirectory: /global/zowe/extensions
 
-  configmgr:
-    # STRICT=quit on any error, including missing schema
-    # COMPONENT-COMPAT=if component missing schema, skip it with warning instead of quit
-    validation: "STRICT"
-
   # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   # runtime z/OS job name
   job:
@@ -322,9 +317,6 @@ zowe:
         # Else you must use AT-TLS configuration for TLS customization.
         minTls: "TLSv1.2"
         maxTls: "TLSv1.3"
-    client:
-      tls:
-        attls: false
 
   # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   # You can un-comment and define any extra environment variables as key/value
@@ -546,14 +538,6 @@ components:
     enabled: true
     port: 7556
     debug: false
-    # we can customize any component with custom certificate
-    # the missing definitions will be picked from "zowe.certificate"
-    # certificate:
-    #   keystore:
-    #     alias: app-server
-    #   pem:
-    #     key: /global/zowe/keystore/localhost/localhost.keystore.app-server.key
-    #     certificate: /global/zowe/keystore/localhost/localhost.keystore.app-server.cer-ebcdic
 
   # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   zss:
@@ -565,16 +549,47 @@ components:
 
   # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   explorer-jes:
-    enabled: true
+    # Disabled by default
+    # Requires change of apiml security auth provider to 'zosmf'
+    enabled: ${{ components.gateway.apiml.security.auth.provider == 'zosmf' }}
 
   # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   explorer-mvs:
-    enabled: true
+    # Disabled by default
+    # Requires change of apiml security auth provider to 'zosmf'
+    enabled: ${{ components.gateway.apiml.security.auth.provider == 'zosmf' }}
 
   # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   explorer-uss:
-    enabled: true
+    # Disabled by default
+    # Requires change of apiml security auth provider to 'zosmf'
+    enabled: ${{ components.gateway.apiml.security.auth.provider == 'zosmf' }}
 
+  # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+  explorer-ip:
+    # Enabled by default
+    # Requires ZSS
+    enabled: ${{ components.zss.enabled }}
+
+  # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+  zlux-editor:
+    # Enabled by default
+    # Requires app-server and zss
+    enabled: ${{ components['app-server'].enabled && components.zss.enabled }}
+
+  # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+  tn3270-ng2:
+    # Enabled by default
+    # Requires app-server
+    enabled: ${{ components['app-server'].enabled }}
+
+  # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+  vt-ng2:
+    # Enabled by default    
+    # Requires app-server
+    enabled: ${{ components['app-server'].enabled }}
+
+    
   # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   # Each extension can have dedicated definition similar to core components.
   # my-extension:
