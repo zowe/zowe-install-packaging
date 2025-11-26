@@ -23,25 +23,9 @@ export function execute(configPath:string, haInstance?: string) {
   const ZOWE_CONFIG=config.getZoweConfig();
   let output;
   const spaces = std.getenv('ZWE_CLI_PARAMETER_FORMAT') == 'true' ? 2 : 0;
-  
-  // It is possible to define HA instance in mixed case, so we'll search for:
-  //   - original instance ID
-  //   - sanitized ID
-  //   - 1st lowercased match
-  if (haInstance && ZOWE_CONFIG.haInstances) {
-    if (!ZOWE_CONFIG.haInstances[`${haInstance}`]) {
-      haInstance = config.sanitizeHaInstanceId();
-      if (!ZOWE_CONFIG.haInstances[`${haInstance}`]) {
-        for (const haInstaceID in ZOWE_CONFIG['haInstances']) {
-          if (haInstance == haInstaceID.toLowerCase()) {
-            haInstance = haInstaceID;
-            break;
-          }
-        }
-      }
-    }
+  if (haInstance) {
+    haInstance=config.sanitizeHaInstanceId();
   }
-
   if (haInstance && (!configPath.startsWith(`haInstances.${haInstance}.`))) {
     output=fakejq.jqget(ZOWE_CONFIG, `.haInstances[${haInstance}].${configPath}`); //TODO expand path
     if (!output) { //if the instance doesnt specify this config, we'll fallback to the base config.
