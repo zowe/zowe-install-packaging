@@ -130,7 +130,7 @@ else
       validate_this "validate_node_home 2>&1" "zwe-internal-start-prepare,global_validate:${LINENO}"
 
       # validate java for some core components
-      if [[ ${ZWE_ENABLED_COMPONENTS} == *"gateway"* || ${ZWE_ENABLED_COMPONENTS} == *"zaas"* || ${ZWE_ENABLED_COMPONENTS} == *"discovery"* || ${ZWE_ENABLED_COMPONENTS} == *"api-catalog"* || ${ZWE_ENABLED_COMPONENTS} == *"caching-service"* ]]; then
+      if [[ ${ZWE_ENABLED_COMPONENTS} == *"apiml"* || ${ZWE_ENABLED_COMPONENTS} == *"gateway"* || ${ZWE_ENABLED_COMPONENTS} == *"zaas"* || ${ZWE_ENABLED_COMPONENTS} == *"discovery"* || ${ZWE_ENABLED_COMPONENTS} == *"api-catalog"* || ${ZWE_ENABLED_COMPONENTS} == *"caching-service"* ]]; then
         validate_this "validate_java_home 2>&1" "zwe-internal-start-prepare,global_validate:${LINENO}"
       fi
     else
@@ -144,7 +144,7 @@ else
 
     # validate z/OSMF for some core components
     if [ -n "${ZOSMF_HOST}" -a -n "${ZOSMF_PORT}" ]; then
-      if [[ ${ZWE_ENABLED_COMPONENTS} == *"discovery"* ]]; then
+      if [[ ${ZWE_ENABLED_COMPONENTS} == *"discovery"* || ${ZWE_ENABLED_COMPONENTS} == *"apiml"* ]]; then
         validate_this "validate_zosmf_host_and_port \"${ZOSMF_HOST}\" \"${ZOSMF_PORT}\" 2>&1" "zwe-internal-start-prepare,global_validate:${LINENO}"
       else
         if [ "${ZWE_components_gateway_apiml_security_auth_provider}" = "zosmf" ]; then
@@ -355,20 +355,23 @@ else
     export ZWE_RUN_IN_CONTAINER=true
   fi
 
-###############################
-# display starting information
-export ZWE_VERSION=$(shell_read_json_config "${ZWE_zowe_runtimeDirectory}/manifest.json" 'version' 'version')
-print_formatted_info "ZWELS" "zwe-internal-start-prepare:${LINENO}" "Zowe version: v${ZWE_VERSION}"
-print_formatted_info "ZWELS" "zwe-internal-start-prepare:${LINENO}" "build and hash: $(shell_read_json_config ${ZWE_zowe_runtimeDirectory}/manifest.json 'build' 'branch')#$(shell_read_json_config ${ZWE_zowe_runtimeDirectory}/manifest.json 'build' 'number') ($(shell_read_json_config ${ZWE_zowe_runtimeDirectory}/manifest.json 'build' 'commitHash'))"
+  ###############################
+  # display starting information
+  export ZWE_VERSION=$(shell_read_json_config "${ZWE_zowe_runtimeDirectory}/manifest.json" 'version' 'version')
+  print_formatted_info "ZWELS" "zwe-internal-start-prepare:${LINENO}" "Zowe version: v${ZWE_VERSION}"
+  print_formatted_info "ZWELS" "zwe-internal-start-prepare:${LINENO}" "build and hash: $(shell_read_json_config ${ZWE_zowe_runtimeDirectory}/manifest.json 'build' 'branch')#$(shell_read_json_config ${ZWE_zowe_runtimeDirectory}/manifest.json 'build' 'number') ($(shell_read_json_config ${ZWE_zowe_runtimeDirectory}/manifest.json 'build' 'commitHash'))"
 
-###############################
-# validation
-if [ "$(item_in_list "${ZWE_PRIVATE_CORE_COMPONENTS_REQUIRE_JAVA}" "${ZWE_CLI_PARAMETER_COMPONENT}")" = "true" ]; then
-  # other extensions need to specify `require_java` in their validate.sh
-  require_java
-fi
-require_node
-require_zowe_yaml
+  ###############################
+  # validation
+  if [ "$(item_in_list "${ZWE_PRIVATE_CORE_COMPONENTS_REQUIRE_JAVA}" "${ZWE_CLI_PARAMETER_COMPONENT}")" = "true" ]; then
+    # other extensions need to specify `require_java` in their validate.sh
+    require_java
+  fi
+
+  if [ "$(item_in_list "${ZWE_PRIVATE_CORE_COMPONENTS_REQUIRE_NODE}" "${ZWE_CLI_PARAMETER_COMPONENT}")" = "true"]; then
+    require_node
+  fi
+  require_zowe_yaml
 
   # overwrite ZWE_PRIVATE_LOG_LEVEL_ZWELS with zowe.launchScript.logLevel config in YAML
   ZWE_PRIVATE_LOG_LEVEL_ZWELS="$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.launchScript.logLevel" | upper_case)"

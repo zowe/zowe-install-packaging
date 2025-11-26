@@ -21,7 +21,8 @@ import * as fs from 'fs-extra';
 import * as YAML from 'yaml';
 import * as jobs from '@zowe/zos-jobs-for-zowe-sdk';
 import path, { basename } from 'path';
-import { FileType } from './TestFileActions';
+import { FileType, TestFileActions } from './TestFileActions';
+import { getZoweVersion } from '../utils';
 
 /**
  * RemoteTestRunner is a class which drives actions on the backend test environment and
@@ -39,6 +40,11 @@ export class RemoteTestRunner {
   private readonly spoolOutputTemplate: string;
   private readonly otherOutputTemplate: string;
   private readonly session: Session;
+  private customYamlRenderOpts: YAML.DocumentOptions &
+    YAML.SchemaOptions &
+    YAML.ParseOptions &
+    YAML.CreateNodeOptions &
+    YAML.ToStringOptions = null;
   private trackedFiles: TrackedFile[] = [];
   private trackedJobs: jobs.IDownloadAllSpoolContentParms[] = [];
   private readonly cleanFns: ((stdout: string) => string)[] = [];
@@ -71,6 +77,22 @@ export class RemoteTestRunner {
     console.log(`Avg time spent per uss command: ${this.totalRuntime / this.totalRuns / 1000} seconds`);
     this.cleanFns.length = 0; // reset cleanFns
     this.uss.shutdown();
+  }
+
+  public async downloadMaskedPdsMember(memberName: string): Promise<string> {
+    fs.mkdirpSync(this.tmpDir);
+    const tmpFile = `${this.tmpDir}/${memberName}-${Date.now()}`;
+    // const writeStream = fs.createWriteStream(tmpFile, { autoClose: true, mode: 0o775 });
+    const dlResp = await files.Download.dataSet(this.session, memberName, {
+      file: tmpFile,
+    });
+    if (!dlResp.success) {
+      console.log('Failed');
+    }
+    const fileContents = fs.readFileSync(tmpFile).toString();
+    const cleanedContents = this.cleanOutput(fileContents, []);
+    fs.writeFileSync(tmpFile, cleanedContents);
+    return tmpFile;
   }
 
   public async downloadMaskedUssFilesMatching(
@@ -106,7 +128,13 @@ export class RemoteTestRunner {
   }
 
   public async runRaw(command: string, cwd: string = REMOTE_SYSTEM_INFO.ussTestDir): Promise<TestOutput> {
+    const start = performance.now();
     const output = await this.uss.runCommand(`${command}`, cwd);
+    const end = performance.now();
+    const duration = end - start;
+    this.totalRuntime += duration;
+    this.totalRuns++;
+    this.maxRuntime = Math.max(this.maxRuntime, duration);
     // Any non-deterministic output should be cleaned up for test snapshots.
     const cleanedOutput = this.cleanOutput(output.consoleLog, []);
     return {
@@ -114,6 +142,14 @@ export class RemoteTestRunner {
       cleanedStdout: cleanedOutput,
       rc: output.rc,
     };
+  }
+
+  public collectTestContent(content: string, fileName: string) {
+    const tempDir = fs.mkdtempSync('zwe_tmp');
+    const tempFile = path.resolve(tempDir, fileName);
+    fs.writeFileSync(tempFile, content);
+    this.collectTestFile(tempFile);
+    fs.rmSync(tempDir, { recursive: true, force: true });
   }
 
   /**
@@ -144,6 +180,7 @@ export class RemoteTestRunner {
    *  Collects spool, restores files tracked by #removeFileForTest, and cleans up local work dirs
    */
   public async postTest() {
+    this.customYamlRenderOpts = null;
     if (TEST_COLLECT_SPOOL) {
       await this.collectSpool();
     }
@@ -174,13 +211,29 @@ export class RemoteTestRunner {
     const spoolOutputDir = this.spoolOutputTemplate.replace('{{ testInstance }}', testName);
     fs.mkdirpSync(spoolOutputDir);
     for (const job of this.trackedJobs) {
-      await jobs.DownloadJobs.downloadAllSpoolContentCommon(getSession(), {
-        ...job,
-        outDir: spoolOutputDir,
-        extension: '.txt', // arbitrarily chosen to keep things readable...
-      });
+      try {
+        await jobs.DownloadJobs.downloadAllSpoolContentCommon(getSession(), {
+          ...job,
+          outDir: spoolOutputDir,
+          extension: '.txt', // arbitrarily chosen to keep things readable...
+        });
+      } catch (err) {
+        console.log(`Warning: Could not download spool information for ${job.jobname}(${job.jobid})`);
+      }
     }
     this.trackedJobs = [];
+  }
+
+  public async deleteDs(ds: string) {
+    try {
+      await files.Delete.dataSet(this.session, ds, {});
+    } catch (error: unknown) {
+      // if we didn't find the dataset, it's safe to ignore the problem.
+      // The test could've failed to create a dataset for example.
+      if (!JSON.stringify(error).includes('status 404')) {
+        throw error;
+      }
+    }
   }
 
   public async restoreFiles() {
@@ -191,17 +244,15 @@ export class RemoteTestRunner {
           await this.runRaw(`mv ${trackedFile.tmpFile} ${trackedFile.srcFile}`);
           break;
         case FileType.DS_NON_CLUSTER:
-          try {
-            await files.Delete.dataSet(this.session, trackedFile.srcFile, {});
-          } catch (error: unknown) {
-            // if we didn't find the dataset, it's safe to ignore the problem.
-            // The test could've failed to create a dataset for example.
-            if (!JSON.stringify(error).includes('status 404')) {
-              throw error;
-            }
-          }
+          await this.deleteDs(trackedFile.srcFile);
           if (trackedFile.tmpFile != null) {
             await files.Rename.dataSet(this.session, trackedFile.tmpFile, trackedFile.srcFile);
+          }
+          break;
+        case FileType.DS_MEMBER:
+          await this.deleteDs(trackedFile.srcFile);
+          if (trackedFile.tmpFile != null) {
+            await this.runRaw(`cp ${trackedFile.tmpFile} "//'${trackedFile.srcFile}'"`);
           }
           break;
         case FileType.DS_VSAM:
@@ -230,62 +281,112 @@ export class RemoteTestRunner {
    * The dataset is restored with either the #postTest or #restore operations.
    */
   public async removeDatasetForTest(dataset: string) {
-    try {
-      const dsList = await files.List.dataSetsMatchingPattern(this.session, [dataset]);
-
-      console.log(JSON.stringify(dsList));
-      if (dsList.success) {
-        // cleanup old backups if they're on the system
-        const bkupDs = `${dataset}.TEST.BKUP`;
-        const bkupList = await files.List.dataSetsMatchingPattern(this.session, [bkupDs]);
-        if (bkupList.success) {
+    if (TestFileActions.hasMember(dataset)) {
+      const matches = /(.*)\((.*?)\)$/gim.exec(dataset);
+      const ds = matches[1];
+      const member = matches[2];
+      const listResponse = await files.List.membersMatchingPattern(this.session, ds, [member], {});
+      if (listResponse.success && listResponse.apiResponse.length > 0) {
+        // already exists
+        const flattenedTmpName = dataset.replaceAll('.', '_');
+        await this.runRaw(`mkdir -p ${this.REMOTE_TEST_TMP_DIR}`);
+        await this.runRaw(`cp -f "//'${dataset}'" ${flattenedTmpName}`);
+        this.trackedFiles.push({
+          srcFile: dataset,
+          tmpFile: flattenedTmpName,
+          type: FileType.DS_MEMBER,
+        });
+        await files.Delete.dataSet(this.session, dataset);
+      }
+    } else {
+      try {
+        const dsList = await files.List.dataSetsMatchingPattern(this.session, [dataset]);
+        console.log(JSON.stringify(dsList));
+        if (dsList.success) {
+          // cleanup old backups if they're on the system
+          const bkupDs = `${dataset}.TEST.BKUP`;
+          const bkupList = await files.List.dataSetsMatchingPattern(this.session, [bkupDs]);
+          if (bkupList.success) {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            const match = bkupList.apiResponse.find((ds: any) => ds.dsname === bkupDs);
+            if (match != null) {
+              await files.Delete.dataSet(this.session, bkupDs);
+            }
+          }
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          const match = bkupList.apiResponse.find((ds: any) => ds.dsname === bkupDs);
-          if (match != null) {
-            await files.Delete.dataSet(this.session, bkupDs);
+          const matchedItem = dsList.apiResponse.find((ds: any) => ds.dsname === dataset);
+          console.log(`Search: ${dataset} | Matched: ${matchedItem}`);
+          if (matchedItem == null) {
+            this.trackedFiles.push({
+              srcFile: dataset,
+              tmpFile: null, // null indicates there is no 'restore' op later
+              type: FileType.DS_NON_CLUSTER,
+            });
+          } else {
+            await files.Rename.dataSet(this.session, dataset, bkupDs, {});
+            this.trackedFiles.push({
+              srcFile: dataset,
+              tmpFile: bkupDs,
+              type: FileType.DS_NON_CLUSTER,
+            });
           }
         }
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const matchedItem = dsList.apiResponse.find((ds: any) => ds.dsname === dataset);
-        console.log(`Search: ${dataset} | Matched: ${matchedItem}`);
-        if (matchedItem == null) {
-          this.trackedFiles.push({
-            srcFile: dataset,
-            tmpFile: null, // null indicates there is no 'restore' op later
-            type: FileType.DS_NON_CLUSTER,
-          });
-        } else {
-          await files.Rename.dataSet(this.session, dataset, bkupDs, {});
-          this.trackedFiles.push({
-            srcFile: dataset,
-            tmpFile: bkupDs,
-            type: FileType.DS_NON_CLUSTER,
-          });
-        }
-      }
-    } catch (error) {
-      console.log('[TestRunner] Error trying to rename dataset. ' + error);
-      console.log(`[TestRunner] Input dataset: ${dataset}`);
-      console.log(
-        `[TestRunner] !!!IMPORTANT!!! Tests will continue to run so 
+      } catch (error) {
+        console.log('[TestRunner] Error trying to rename dataset. ' + error);
+        console.log(`[TestRunner] Input dataset: ${dataset}`);
+        console.log(
+          `[TestRunner] !!!IMPORTANT!!! Tests will continue to run so 
         cleanup can be run post-test, but will likely have invalid results.`,
-      );
+        );
+      }
     }
   }
 
-  public async removeUssFileForTest(filePath: string) {
+  public async uploadUssFileForTest(
+    localFile: string,
+    remoteFile: string,
+    opts: { binary: boolean; mode: number } = { binary: true, mode: 0o644 },
+  ) {
+    const fullRemoteFilePath = `${REMOTE_SYSTEM_INFO.ussTestDir}/${remoteFile}`;
+    await this.removeUssFileOrDirForTest(remoteFile); // this tracks/restores
+    await files.Upload.fileToUssFile(this.session, localFile, fullRemoteFilePath, {
+      binary: opts.binary,
+    });
+    await this.runRaw(`chmod ${opts.mode.toString(8)} ${fullRemoteFilePath}`);
+  }
+
+  public async removeUssFileOrDirForTest(filePath: String) {
     const flattenedTmpName = filePath.replaceAll('/', '_');
     await this.runRaw(`mkdir -p ${this.REMOTE_TEST_TMP_DIR}`);
     await this.runRaw(`mv ${filePath} ${this.REMOTE_TEST_TMP_DIR}/${flattenedTmpName}`);
     this.trackedFiles.push({
-      srcFile: filePath,
+      srcFile: `${filePath}`,
       tmpFile: `${this.REMOTE_TEST_TMP_DIR}/${flattenedTmpName}`,
       type: FileType.USS_FILE,
     });
   }
 
+  public setYamlRenderOptions(
+    opts: YAML.DocumentOptions & YAML.SchemaOptions & YAML.ParseOptions & YAML.CreateNodeOptions & YAML.ToStringOptions,
+  ) {
+    this.customYamlRenderOpts = opts;
+  }
+
   public addCleanFn(replaceFn: (output: string) => string) {
     this.cleanFns.push(replaceFn);
+  }
+
+  /**
+   * Utility to mask sensitive data from input data. Returns a new masked string. This will not mask against job
+   * headers present in zowe.yaml or defaults.yaml.
+   *
+   * In general, calls to this function should be rare - the testRunner's cleanedOutput is already masked.
+   *
+   * @param data
+   * @returns
+   */
+  public maskSensitiveData(data: string): string {
+    return this.cleanOutput(data, []);
   }
 
   private cleanOutput(stdout: string, customJobHeaders: string[]): string {
@@ -317,7 +418,6 @@ export class RemoteTestRunner {
       const HEADER_REMOVAL_PATTERN = new RegExp(`(//|)\\s*${escapeStringRegexp(header)}\\s*\n`, 'gm');
       cleanedOutput = cleanedOutput.replaceAll(HEADER_REMOVAL_PATTERN, replacePattern);
     }
-
     // built-in
     return cleanedOutput
       .replace(/(JOB[0-9]{5})/gim, 'JOB00000')
@@ -328,9 +428,15 @@ export class RemoteTestRunner {
       .replaceAll(`${this.session.ISession.user}`, 'TESTUSR0')
       .replace(/\/tmp\/\.zweenv-\d{1,5}/g, '/tmp/.zweenv-0000')
       .replace(/\/tmp\/zwe-\d{1,5}/g, '/tmp/zwe-0000')
+      .replace(/\/tmp\/zowe-convert-for-k8s-\d{1,5}/g, '/tmp/zowe-convert-for-k8s-0000')
       .replaceAll(REMOTE_SYSTEM_INFO.volume, 'TSTVOL')
       .replaceAll(REMOTE_SYSTEM_INFO.hostname, this.dummyHostname)
-      .replaceAll(REMOTE_SYSTEM_INFO.zosmfPort, this.dummyPort);
+      .replaceAll(REMOTE_SYSTEM_INFO.zosmfPort, this.dummyPort)
+      .replaceAll(new RegExp(`Zowe Version: v${getZoweVersion()}`, 'g'), 'Zowe version: v0.0.0')
+      .replaceAll(/\d{4}-\d{2}-\d{2}.+?<.+?>/g, '')
+      .replaceAll(/z\/OS Version: \d\.\d/g, 'z/OS Version: 0.0')
+      .replaceAll(/NodeJS version: v.*?$/gm, 'NodeJS version: v0.0.0')
+      .replaceAll(/Java version: .*?$/gm, 'Java version: v0.0.0');
   }
 
   public getMask(maskType: string): string {
@@ -359,10 +465,10 @@ export class RemoteTestRunner {
    */
   private writeRedundant(filePath: string, content: string): string {
     let tgtFile = filePath;
-    const iter = 0;
+    let iter = 0;
     // TODO: replace with single readDir, find highest idx, write to idx+1
     while (fs.existsSync(tgtFile) && iter < 1000) {
-      tgtFile = `${tgtFile}.${iter}`;
+      tgtFile = `${filePath}.${iter++}`;
     }
     fs.writeFileSync(tgtFile, content);
     return tgtFile;
@@ -378,18 +484,57 @@ export class RemoteTestRunner {
     return this.runZweTest(zoweYaml, zweCommand, cwd);
   }
 
-  public async uploadDefaultsYaml(defaultsYaml: ZoweYamlType): Promise<string> {
+  /**
+   * This function uploads a defaults.yaml file to the remote testing environment,
+   *  and if it replaces an existing defaults.yaml in the files directory, the existing file
+   *  will be automatically backed up and restored once the current test is complete.
+   * @param defaultsYaml The defaults yaml to upload
+   * @param cwd  Where to upload the defaults yaml, by default the files/ dir in the testing environment
+   * @param skipBackup Default: false. If set to "true", no longer backs up and restores existing defaults.yaml files.
+   * @returns the path to defaults.yaml on the remote system
+   */
+  public async uploadDefaultsYaml(
+    defaultsYaml: ZoweYamlType,
+    cwd: string = `${REMOTE_SYSTEM_INFO.ussTestDir}/files`,
+    skipBackup: boolean = false,
+  ): Promise<string> {
     const testName = expect.getState().currentTestName.replace(/\s/g, '_');
-    const yamlUploadPath = `${REMOTE_SYSTEM_INFO.ussTestDir}/files/defaults.yaml`;
-    const stringDefaultYaml = YAML.stringify(defaultsYaml, { nullStr: '' });
+    const yamlUploadPath = `${cwd}/defaults.yaml`;
+    const stringDefaultYaml = YAML.stringify(defaultsYaml, { nullStr: '', ...this.customYamlRenderOpts });
     const yamlOutputDir = this.yamlOutputTemplate.replace('{{ testInstance }}', testName);
     fs.mkdirpSync(yamlOutputDir);
-    await this.removeUssFileForTest('files/defaults.yaml');
+    if (cwd === `${REMOTE_SYSTEM_INFO.ussTestDir}/files` && !skipBackup) {
+      await this.removeUssFileOrDirForTest('files/defaults.yaml');
+    }
     const redundantFilePath = this.writeRedundant(`${yamlOutputDir}/defaults.yaml`, stringDefaultYaml);
     await files.Upload.fileToUssFile(this.session, redundantFilePath, yamlUploadPath, {
       binary: false,
     });
     return yamlUploadPath;
+  }
+
+  public async uploadToDatasetForTest(content: string, dsPath: string): Promise<void> {
+    await this.removeDatasetForTest(dsPath);
+    await files.Upload.bufferToDataSet(this.session, Buffer.from(content), dsPath);
+  }
+
+  /**
+   * Uploads a given file directly as the zowe.yaml to be used in a test case (zowe.test.yaml).
+   *
+   * @param filePath
+   * @param remoteCwd
+   * @returns the full path to the uploaded zowe.yaml
+   */
+  public async uploadZoweYamlFromFile(filePath: string, remoteCwd: string = REMOTE_SYSTEM_INFO.ussTestDir): Promise<string> {
+    const testName = expect.getState().currentTestName.replace(/\s/g, '_');
+    const uploadPath = `${remoteCwd}/zowe.test.yaml`;
+    const yamlOutputDir = this.yamlOutputTemplate.replace('{{ testInstance }}', testName);
+    fs.mkdirpSync(yamlOutputDir);
+    const redundantFilePath = this.writeRedundant(`${yamlOutputDir}/zowe.yaml`, fs.readFileSync(filePath, 'utf-8'));
+    await files.Upload.fileToUssFile(this.session, redundantFilePath, uploadPath, {
+      binary: false,
+    });
+    return uploadPath;
   }
 
   public async uploadZoweYaml(
@@ -402,7 +547,7 @@ export class RemoteTestRunner {
     if (addCustomJobHeaders) {
       finalZoweYaml = this.addAnyCustomJobStatements(zoweYaml).yaml;
     }
-    const stringZoweYaml = YAML.stringify(finalZoweYaml, { nullStr: '' });
+    const stringZoweYaml = YAML.stringify(finalZoweYaml, { nullStr: '', ...this.customYamlRenderOpts });
     const uploadPath = `${cwd}/zowe.test.yaml`;
     const yamlOutputDir = this.yamlOutputTemplate.replace('{{ testInstance }}', testName);
     fs.mkdirpSync(yamlOutputDir);
@@ -414,22 +559,31 @@ export class RemoteTestRunner {
   }
 
   /**
+   *  If cfgYaml is set to null, the `--config <path-to-zowe-yaml>` parameter is omitted.
    *
-   * @param zoweYaml
+   * @param cfgYaml
    * @param zweCommand
    * @param cwd
    */
   public async runZweTest(
-    zoweYaml: ZoweYamlType,
+    cfgYaml: ZoweYamlType,
     zweCommand: string,
     cwd: string = REMOTE_SYSTEM_INFO.ussTestDir,
   ): Promise<TestOutput> {
+    let shouldOmitConfigParm;
+    let zoweYaml = cfgYaml;
+
+    if (zoweYaml == null) {
+      zoweYaml = {};
+      shouldOmitConfigParm = true;
+    }
+
     let command = zweCommand.trim();
     if (command.startsWith('zwe')) {
       command = command.replace(/zwe/, '');
     }
     let defaultConfig = `--config ${REMOTE_SYSTEM_INFO.ussTestDir}/zowe.test.yaml`;
-    if (this.containsConfigString(zweCommand)) {
+    if (this.containsConfigString(zweCommand) || shouldOmitConfigParm) {
       defaultConfig = ''; // the runCommand's ${command} will have the config
     }
     const finalZwe = this.addAnyCustomJobStatements(zoweYaml);
@@ -462,9 +616,8 @@ export class RemoteTestRunner {
   }
 
   private addAnyCustomJobStatements(zoweYaml: ZoweYamlType): { yaml: ZoweYamlType; headers: string[] } {
-    const jclHeader = zoweYaml.zowe?.environments?.jclHeader;
+    const jclHeader = zoweYaml.zowe?.setup?.jcl?.header;
     // jclHeader is either an array or string, so .length works in both cases
-    // @ts-expect-error incomplete schema
     if (jclHeader != null && jclHeader.length > 0) {
       return { yaml: zoweYaml, headers: [] };
     }
@@ -484,10 +637,10 @@ export class RemoteTestRunner {
     }
 
     const jclLines = this.convertParamsToLines(fullParams);
-    if (cloneYaml.zowe?.environments == null) {
-      cloneYaml.zowe.environments = {};
+    if (cloneYaml.zowe?.setup?.jcl?.header == null) {
+      _.set(cloneYaml, 'zowe.setup.jcl.header', '');
     }
-    cloneYaml.zowe.environments.jclHeader = jclLines;
+    cloneYaml.zowe.setup.jcl.header = jclLines.join('\n');
     return { yaml: cloneYaml, headers: jclLines };
   }
 

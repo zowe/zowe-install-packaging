@@ -61,6 +61,14 @@ describe(`${testSuiteName}`, () => {
       await TestFileActions.deleteAll([jcllib]);
     });
 
+    it(`run with proclib that doesn't exist`, async () => {
+      cfgYaml.zowe.setup.dataset.proclib = 'DOES.NOT.EXIST';
+      const result = await testRunner.runZweTest(cfgYaml, 'init stc --allow-overwrite');
+      expect(result.stdout).not.toBeNull();
+      expect(result.cleanedStdout).toMatchSnapshot();
+      expect(result.rc).toBe(162);
+    });
+
     // implicit 'init generate'
     it('run setup with defaults', async () => {
       const proc: string = cfgYaml.zowe.setup.dataset.proclib as string;
@@ -104,13 +112,13 @@ describe(`${testSuiteName}`, () => {
       let result = await testRunner.runZweTest(cfgYaml, 'init stc --dry-run');
       expect(result.stdout).not.toBeNull();
       expect(result.cleanedStdout).toMatchSnapshot();
-      expect(result.rc).toBe(1);
+      expect(result.rc).toBe(157);
 
       cfgYaml.zowe.setup.dataset.prefix = '';
       result = await testRunner.runZweTest(cfgYaml, 'init stc --dry-run');
       expect(result.stdout).not.toBeNull();
       expect(result.cleanedStdout).toMatchSnapshot();
-      expect(result.rc).toBe(1);
+      expect(result.rc).toBe(157);
     });
 
     it('wrong proclib', async () => {
@@ -118,19 +126,19 @@ describe(`${testSuiteName}`, () => {
       let result = await testRunner.runZweTest(cfgYaml, 'init stc --dry-run');
       expect(result.stdout).not.toBeNull();
       expect(result.cleanedStdout).toMatchSnapshot();
-      expect(result.rc).toBe(1);
+      expect(result.rc).toBe(157);
 
       cfgYaml.zowe.setup.dataset.proclib = '';
       result = await testRunner.runZweTest(cfgYaml, 'init stc --dry-run');
       expect(result.stdout).not.toBeNull();
       expect(result.cleanedStdout).toMatchSnapshot();
-      expect(result.rc).toBe(1);
+      expect(result.rc).toBe(157);
 
       cfgYaml.zowe.setup.dataset.proclib = 'INVALID.PROCLIB.DEFINITION1';
       result = await testRunner.runZweTest(cfgYaml, 'init stc --dry-run');
       expect(result.stdout).not.toBeNull();
       expect(result.cleanedStdout).toMatchSnapshot();
-      expect(result.rc).toBe(1);
+      expect(result.rc).toBe(70);
     });
 
     it('wrong jcllib', async () => {
@@ -138,13 +146,13 @@ describe(`${testSuiteName}`, () => {
       let result = await testRunner.runZweTest(cfgYaml, 'init stc --dry-run');
       expect(result.stdout).not.toBeNull();
       expect(result.cleanedStdout).toMatchSnapshot();
-      expect(result.rc).toBe(1);
+      expect(result.rc).toBe(63);
 
       cfgYaml.zowe.setup.dataset.jcllib = '';
       result = await testRunner.runZweTest(cfgYaml, 'init stc --dry-run');
       expect(result.stdout).not.toBeNull();
       expect(result.cleanedStdout).toMatchSnapshot();
-      expect(result.rc).toBe(1);
+      expect(result.rc).toBe(63);
     });
 
     it('invalid stc configurations', async () => {
@@ -152,43 +160,43 @@ describe(`${testSuiteName}`, () => {
       let result = await testRunner.runZweTest(cfgYaml, 'init stc --dry-run');
       expect(result.stdout).not.toBeNull();
       expect(result.cleanedStdout).toMatchSnapshot();
-      expect(result.rc).toBe(1);
+      expect(result.rc).toBe(0);
 
       cfgYaml.zowe.setup.security.stcs.aux = '';
       result = await testRunner.runZweTest(cfgYaml, 'init stc --dry-run');
       expect(result.stdout).not.toBeNull();
       expect(result.cleanedStdout).toMatchSnapshot();
-      expect(result.rc).toBe(1);
+      expect(result.rc).toBe(0);
 
       cfgYaml.zowe.setup.security.stcs.aux = 'TOOLONGTOO';
       result = await testRunner.runZweTest(cfgYaml, 'init stc --dry-run');
       expect(result.stdout).not.toBeNull();
       expect(result.cleanedStdout).toMatchSnapshot();
-      expect(result.rc).toBe(1);
+      expect(result.rc).toBe(70);
 
       cfgYaml.zowe.setup.security.stcs.zis = null;
       result = await testRunner.runZweTest(cfgYaml, 'init stc --dry-run');
       expect(result.stdout).not.toBeNull();
       expect(result.cleanedStdout).toMatchSnapshot();
-      expect(result.rc).toBe(1);
+      expect(result.rc).toBe(70);
 
       cfgYaml.zowe.setup.security.stcs.zis = '';
       result = await testRunner.runZweTest(cfgYaml, 'init stc --dry-run');
       expect(result.stdout).not.toBeNull();
       expect(result.cleanedStdout).toMatchSnapshot();
-      expect(result.rc).toBe(1);
+      expect(result.rc).toBe(70);
 
       cfgYaml.zowe.setup.security.stcs.zowe = null;
       result = await testRunner.runZweTest(cfgYaml, 'init stc --dry-run');
       expect(result.stdout).not.toBeNull();
       expect(result.cleanedStdout).toMatchSnapshot();
-      expect(result.rc).toBe(1);
+      expect(result.rc).toBe(70);
 
       cfgYaml.zowe.setup.security.stcs.zowe = '';
       result = await testRunner.runZweTest(cfgYaml, 'init stc --dry-run');
       expect(result.stdout).not.toBeNull();
       expect(result.cleanedStdout).toMatchSnapshot();
-      expect(result.rc).toBe(1);
+      expect(result.rc).toBe(70);
     });
 
     it('zos stc exists', async () => {

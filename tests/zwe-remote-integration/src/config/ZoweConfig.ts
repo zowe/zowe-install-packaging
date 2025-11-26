@@ -16,6 +16,8 @@ import _ from 'lodash';
 import path from 'path';
 import Mustache from 'mustache';
 
+Mustache.escape = (i) => i; // don't escape html characters, return text as-is
+
 export class ZoweConfig {
   /* public updateField(field: string, value: string) {
     // this.zoweYaml[field] = value;
@@ -38,6 +40,10 @@ export class ZoweConfig {
     const fileContents = fs.readFileSync(THIS_TEST_BASE_DEFAULTS_YAML, 'utf8');
     const defaultsYaml = yaml.parse(fileContents);
     return defaultsYaml as ZoweYamlType;
+  }
+
+  static render(cfg: ZoweYamlType): string {
+    return yaml.stringify(cfg, { nullStr: '' });
   }
 
   /**

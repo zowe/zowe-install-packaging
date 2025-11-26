@@ -36,6 +36,14 @@ zowe:
   # https://docs.zowe.org/stable/user-guide/zos-components-installation-checklist
   #-------------------------------------------------------------------------------
   setup:
+    jcl:
+      # When enabled, "zwe install & init" will use job submission for system changes
+      # instead of shell commands. A `--dry-run` option is also enabled
+      # which allows you to see jobs instead of submitting.
+      enable: true
+      # Edit to set a header for job cards. Some systems need this, but not all.
+      # See `zwe init generate --help` for examples.
+      header: ""
     # MVS data set related configurations
     dataset:
       # where Zowe MVS data sets will be installed
@@ -195,7 +203,7 @@ zowe:
   # address bar.
   externalDomains:
     # this should be the domain name to access Zowe APIML Gateway
-    - sample-domain.com
+    - example.com
 
   # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   # This is the port you use to access Zowe Gateway from your web browser.
@@ -328,7 +336,7 @@ node:
 #-------------------------------------------------------------------------------
 zOSMF:
   # Host name of your z/OSMF instance
-  host: dvipa.my-company.com
+  host: dvipa.example.com
   port: 443
   applId: IZUDFLT
 
@@ -349,6 +357,11 @@ zOSMF:
 components:
 
   # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+  apiml:
+    enabled: true
+    debug: false
+
+  # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   gateway:
     enabled: true
     port: 7554
@@ -356,10 +369,10 @@ components:
     apiml:
       security:
         auth:
-          provider: zosmf
-          zosmf:
-            jwtAutoconfiguration: jwt
-            serviceId: ibmzosmf
+          # When the API Gateway is configured to use SAF authentication, z/OSMF APIs used by Desktop Explorer apps
+          # authenticate using PassTickets instead of a JWT/LTPA token. As such, ensure that PassTickets are configured
+          # and enabled for z/OSMF.
+          provider: saf
         authorization:
           endpoint:
             enabled: false
@@ -378,6 +391,7 @@ components:
     enabled: true
     port: 7558
     debug: false
+
   # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   api-catalog:
     enabled: true
@@ -461,7 +475,7 @@ components:
 #   # HA instance ID
 #   lpar1:
 #     # hostname where this instance will be started
-#     hostname: lpar1.my-company.com
+#     hostname: lpar1.example.com
 #     # Your &SYSNAME for this LPAR
 #     # This sysname will be used to route your JES command to target system.
 #     sysname: LPR1
@@ -471,7 +485,7 @@ components:
 #   # **NOTE**, we can only start one Gateway in same LPAR.
 #   lpar2a:
 #     # hostname where this instance will be started
-#     hostname: lpar2.my-company.com
+#     hostname: lpar2.example.com
 #     # Your &SYSNAME for this LPAR
 #     # This sysname will be used to route your JES command to target system.
 #     sysname: LPR2
@@ -493,7 +507,7 @@ components:
 #         port: 17555
 #
 #   lpar2b:
-#     hostname: lpar2.my-company.com
+#     hostname: lpar2.example.com
 #     # your &SYSNAME for this LPAR
 #     sysname: LPR2
 

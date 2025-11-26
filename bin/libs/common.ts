@@ -52,6 +52,8 @@ function getLogLevel(name:string, defaultLevel:LOG_LEVEL):LOG_LEVEL {
     }
 }
 
+export const MSG_KEY = 'ZWELS';
+
 
 export function requireZoweYaml() {
   const configFiles = std.getenv('ZWE_CLI_PARAMETER_CONFIG');
@@ -408,6 +410,6 @@ std.setenv('ZWE_PRIVATE_DEFAULT_ZIS_USER', 'ZWESIUSR');
 std.setenv('ZWE_PRIVATE_DEFAULT_ZOWE_STC', 'ZWESLSTC');
 std.setenv('ZWE_PRIVATE_DEFAULT_ZIS_STC', 'ZWESISTC');
 std.setenv('ZWE_PRIVATE_DEFAULT_AUX_STC', 'ZWESASTC');
-std.setenv('ZWE_PRIVATE_CORE_COMPONENTS_REQUIRE_JAVA', 'gateway,zaas,discovery,api-catalog,caching-service');
+std.setenv('ZWE_PRIVATE_CORE_COMPONENTS_REQUIRE_JAVA', 'apiml,gateway,zaas,discovery,api-catalog,caching-service');
 
 std.setenv('ZWE_PRIVATE_CLI_LIBRARY_LOADED', 'true');

@@ -12,6 +12,8 @@ import * as util from 'util';
 import * as crypto from 'crypto';
 import * as path from 'path';
 import * as semver from 'semver';
+import * as fs from 'fs-extra';
+import { REPO_ROOT_DIR } from './config/TestConfig';
 
 export function findDirWalkingUpOrThrow(dirName: string) {
   let tries = 10; // max walk-back of 10 directories
@@ -45,6 +47,10 @@ export function calculateHash(obj: unknown): string {
   return crypto.createHash('md5').update(util.format('%j', obj)).digest('hex');
 }
 
+export function getZoweVersion(): string {
+  return fs.readJSONSync(path.resolve(REPO_ROOT_DIR, 'manifest.json.template'), 'utf8').version;
+}
+
 export function processManifestVersion(version: string, repository: string = undefined): DownloadSpec {
   /* Lifted from zowe-actions */
   const REPOSITORY_SNAPSHOT = 'libs-snapshot-local';
@@ -67,7 +73,9 @@ export function processManifestVersion(version: string, repository: string = und
     // parse semantic version, this may throw exception if version is invalid
     if (semver.prerelease(version)) {
       repoOut = `${repository ? repository : REPOSITORY_SNAPSHOT}`;
-      versionOut = `${semver.major(version)}.${semver.minor(version)}.${semver.patch(version)}-${semver.prerelease(version)}/`;
+      // semver turns ..-3.X-RC to ..-3,X-RC
+      const prerelease = `${semver.prerelease(version, false)}`.replaceAll(',', '.');
+      versionOut = `${semver.major(version)}.${semver.minor(version)}.${semver.patch(version)}-${prerelease}`;
     } else {
       // this is formal release
       repoOut = `${repository ? repository : REPOSITORY_RELEASE}`;

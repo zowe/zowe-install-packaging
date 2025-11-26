@@ -68,7 +68,20 @@ operator_command() {
 }
 
 verify_generated_jcl() {
-  jcllib=$(read_yaml_configmgr "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.dataset.jcllib")
+
+  use_jcl="${1}"
+  jcllib=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.dataset.jcllib")
+
+  if [ -z "${jcllib}" ]; then
+    return 2
+  fi
+
+  # If we don't use new JCL, return (matching <=3.2 behavior). 
+  if [ "${use_jcl}" = "false" ]; then
+    echo "${jcllib}"
+    return 0;
+  fi
+  
   # read JCL library and validate
   does_jcl_exist=$(is_data_set_exists "${jcllib}")
   if [ -z "${does_jcl_exist}" ]; then

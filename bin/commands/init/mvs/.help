@@ -5,6 +5,8 @@ These Zowe YAML configurations showing with sample values are used:
 ```yaml
 zowe:
   setup:
+    jcl:
+      header: "123456"
     dataset:
       prefix: IBMUSER.ZWE
       parmlib: IBMUSER.ZWE.CUST.PARMLIB
@@ -18,6 +20,7 @@ installed.
 
 Below data sets will be initialized by this command:
 
+- `zowe.setup.jcl.header` is optional additional JCL fields used for submitting JCLs.
 - `zowe.setup.dataset.parmlib` is the user custom parameter library. Zowe server
   command may generate sample PARMLIB members and stores here.
 - `zowe.setup.dataset.jcllib` is the custom JCL library. Zowe server command may

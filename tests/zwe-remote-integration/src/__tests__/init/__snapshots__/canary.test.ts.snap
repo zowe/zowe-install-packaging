@@ -36,7 +36,7 @@ Global parameters
         Path to Zowe configuration zowe.yaml file. 
 
     --configmgr  (optional)
-        Enable use of configmgr capabilities. 
+        Deprecated. This behavior is always enabled. 
 
 ------------------
 Available sub-command(s)

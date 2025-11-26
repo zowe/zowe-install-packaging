@@ -35,6 +35,13 @@ export function isDatasetExists(datasetName: string): boolean {
   return result.rc === 0;
 }
 
+export function tsoDeleteDataset(datasetName: string): number {
+  common.printTrace(`  * tsoDeleteDataset: ${datasetName}`);
+  const result = zoslib.tsoCommand(`delete '${stringlib.escapeDollar(datasetName)}'`);
+  common.printTrace(`  * tsoDeleteDataset: output- ${result.out}`);
+  return result.rc;
+}
+
 // Check if data set exists using TSO command (listds)
 // @return        0: exist
 //                1: data set is not in catalog

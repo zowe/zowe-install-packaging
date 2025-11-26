@@ -43,7 +43,14 @@ export function tsoCommand(...args:string[]): { rc: number, out: string } {
   return { rc: result.rc, out: result.out ? result.out : '' };
 }
 
+export const OPER_CMD_NO_SDSF = -1;
+
 export function operatorCommand(command: string): { rc: number, out: string } {
+
+  if (!isSDSF()) {
+    return { rc: OPER_CMD_NO_SDSF, out: 'failed to initilize SDSF' }
+  }
+
   const opercmd=std.getenv('ZWE_zowe_runtimeDirectory')+'/bin/utils/opercmd.rex';
 
   let message=`- opercmd ${command}`;
@@ -108,6 +115,7 @@ export function verifyGeneratedJcl(config:any): string | undefined {
 
 export function formatZosVersion(format?: string, versionNumber?: string | number): string {
   const ZOS_VERS = {
+    'Z1030200': { 'osname': 'z/OS', 'hbb': 'HBB77F0', 'major': '3', 'minor': '2' },
     'Z1030100': { 'osname': 'z/OS', 'hbb': 'HBB77E0', 'major': '3', 'minor': '1' },
     'Z1020500': { 'osname': 'z/OS', 'hbb': 'HBB77D0', 'major': '2', 'minor': '5' },
     'Z1020400': { 'osname': 'z/OS', 'hbb': 'HBB77C0', 'major': '2', 'minor': '4' },
@@ -143,4 +151,14 @@ export function formatZosVersion(format?: string, versionNumber?: string | numbe
     .replace(/\{\s*hbb\s*\}/g, zosVer.hbb)
     .replace(/\{\s*major\s*\}/g, zosVer.major)
     .replace(/\{\s*minor\s*\}/g, zosVer.minor);
+}
+
+export function isSDSF(): Boolean {
+    common.printDebug(`- Test if SDSF is accessible.`);
+    // We need only return code, if no SDSF, suppress possible error message
+    const result = shell.execSync('sh', '-c', `${std.getenv('ZWE_zowe_runtimeDirectory')}/bin/utils/getSDSF.rex 2>&1 >/dev/null`);
+    if (result.rc == 0) {
+        return true;
+    }
+    return false;
 }

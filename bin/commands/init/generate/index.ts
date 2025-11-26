@@ -15,13 +15,19 @@ import * as xplatform from "xplatform";
 import * as fs from '../../../libs/fs';
 import * as config from '../../../libs/config';
 import * as common from '../../../libs/common';
-import * as zosDataset from '../../../libs/zos-dataset';
+import * as stringLib from '../../../libs/string';
 import * as zosFs from '../../../libs/zos-fs';
 import * as zosJes from '../../../libs/zos-jes';
 
+const JCL_SPLIT_LEN = 71;
+// 5 = length of "FILE "
+// 30 = length of "/schemas/zowe-yaml-schema.json"
+const MAX_RUNTIME_LEN = JCL_SPLIT_LEN - 5 - 30;
+const BACKSLASH_NEWLINE = '\\\n';
+
 export function execute(dryRun?: boolean) {
   common.requireZoweYaml();
-  const ZOWE_CONFIG=config.getZoweConfig();
+  const ZOWE_CONFIG = config.getZoweConfig();
 
   // zowe.setup.dataset defined in defaults
   const prefix = ZOWE_CONFIG.zowe.setup.dataset.prefix;
@@ -39,26 +45,18 @@ export function execute(dryRun?: boolean) {
     common.printErrorAndExit(`Error ZWEL0157E: Zowe runtime directory (zowe.runtimeDirectory) is not defined in Zowe YAML configuration file.`, undefined, 157);
   }
 
-  let jclPostProcessing = false;
-  let jclHeaderJoined = '';
-  const jclHeader = ZOWE_CONFIG.zowe?.environments?.jclHeader == null ? '' : ZOWE_CONFIG.zowe.environments.jclHeader;
-  if (Array.isArray(jclHeader)) {
-    jclPostProcessing = true;
-    jclHeaderJoined = jclHeader.join("\n");
-  } else {
-    jclHeaderJoined = jclHeader.toString();
-    if (jclHeaderJoined && (jclHeaderJoined.match(/\n/g) || []).length) {
-      jclPostProcessing = true;
-    }
+  // zowe.setup.jcl.header defined in defaults
+  let jclHeader = ZOWE_CONFIG.zowe.setup.jcl.header;
+  if (jclHeader.trim().length > 0 && jclHeader.includes('\n')) {
+    // Remove empty lines
+    jclHeader = jclHeader.split('\n').filter((jclLine: string) => jclLine.trim().length > 0).join('\n');
   }
-  // check header lengths
-  const headerLines = jclHeaderJoined.split('\n');
-  for (let i = 0; i < headerLines.length; i++) {
-    const maxLen = 80 - ((i==0) ? '//ZWEGENER JOB '.length : 0);
-    if (headerLines[i].length >= maxLen) {
-      common.printErrorAndExit(`ZWEL0326E JCL header line ${i+1} will be longer than 80 characters. Please split this line into multiple lines.\n${headerLines[i]}\n`, undefined, 326);
+  jclHeader.split('\n').forEach((line, i) => {
+    // ideally this is a schema check. 80 - 15 is the length of "//abcdefgh job "
+    if (line.length > 80 || (0 === i && line.length > (80 - 15))) {
+      common.printErrorAndExit(`ZWEL0144E Cannot generate JCL with a header line greater than 80 characters. Line in error: ${line}. Please adjust this line in 'zowe.setup.jcl.header'.`, undefined, 144);
     }
-  }
+  });
 
   const tempFile = fs.createTmpFile();
   if (zosFs.copyMvsToUss(ZOWE_CONFIG.zowe.setup.dataset.prefix + '.SZWESAMP(ZWEGENER)', tempFile) !== 0) {
@@ -69,16 +67,29 @@ export function execute(dryRun?: boolean) {
   // Replace is using special replacement patterns, by doubling '$' we will avoid that
   // Otherwise: let d4 = '$$$$'; console.log('a'.replace(/a/gi, d4)); --> '$$' (we want '$$$$')
   // $$ inserts a '$', replace(/[$]/g, '$$$$') => double each '$' occurence
-  jclContents = jclContents.replace(/\{zowe\.setup\.dataset\.prefix\}/gi, prefix.replace(/[$]/g, '$$$$'));
-  jclContents = jclContents.replace(/\{zowe\.runtimeDirectory\}/gi, runtimeDirectory.replace(/[$]/g, '$$$$'));
-  jclContents = jclContents.replace(/\{zowe\.environments\.jclHeader\}/i,jclHeaderJoined.replace(/[$]/g, '$$$$'));
+  jclContents = jclContents.replace(/DSN\=\{zowe\.setup\.dataset\.prefix\}/gi, 'DSN=' + prefix.replace(/[$]/g, '$$$$'));
+
+  if (runtimeDirectory.length <= MAX_RUNTIME_LEN) {
+    jclContents = jclContents.replace(/FILE \{zowe\.runtimeDirectory\}/gi, 'FILE ' + runtimeDirectory.replace(/[$]/g, '$$$$'));
+  } else {
+    const SCHEMAS = [ '/schemas/zowe-yaml-schema.json', '/schemas/server-common.json' ];
+    SCHEMAS.forEach((schema) => {
+      let schemaEntry = `FILE ${runtimeDirectory}${schema}`;
+      let schemaEntryArray = stringLib.splitStringByLength(schemaEntry, JCL_SPLIT_LEN);
+      schemaEntry = schemaEntryArray.join(BACKSLASH_NEWLINE);
+      const schemaRE = new RegExp(`FILE {zowe.runtimeDirectory}${schema}`, "i");
+      jclContents = jclContents.replace(schemaRE, schemaEntry.replace(/[$]/g, '$$$$'));
+    })
+  }
+
+  jclContents = jclContents.replace(/\{zowe\.setup\.jcl\.header\}/i, jclHeader.replace(/[$]/g, '$$$$'));
   if (std.getenv('ZWE_PRIVATE_LOG_LEVEL_ZWELS') !== 'INFO') {
     jclContents = jclContents.replace('noverbose -', 'verbose -');
   }
   let originalConfig = std.getenv('ZWE_PRIVATE_CONFIG_ORIG');
   let startingConfig = originalConfig;
   if ((originalConfig.indexOf('FILE(') == -1) && (originalConfig.indexOf('PARMLIB(') == -1)) {
-    startingConfig = 'FILE('+originalConfig+')';
+    startingConfig = 'FILE(' + originalConfig + ')';
   }
 
   // we are guaranteed to have FILE() or PARMLIB() formatted config concatenated with ':'
@@ -89,14 +100,19 @@ export function execute(dryRun?: boolean) {
   for (let i = 0; i < parts.length; i++) {
     let part = parts[i].trim();
     if (part.startsWith('FILE(')) {
-      let filename = part.substring(part.indexOf('(')+1, part.indexOf(')'));
-      configLines.push('FILE ' + fs.convertToAbsolutePath(filename).replace(/[$]/g, '$$$$'));
+      let filename = part.substring(part.indexOf('(') + 1, part.indexOf(')'));
+      let fileEntry = 'FILE ' + fs.convertToAbsolutePath(filename).replace(/[$]/g, '$$$$');
+      if (fileEntry.length > JCL_SPLIT_LEN) {
+        const fileEntryArray = stringLib.splitStringByLength(fileEntry, JCL_SPLIT_LEN);
+        fileEntry = fileEntryArray.join(BACKSLASH_NEWLINE);
+      }
+      configLines.push(fileEntry);
     } else if (part.startsWith('PARMLIB(')) {
       const isValidParmlib = common.isValidZoweYamlParmlib(part);
       if (!isValidParmlib.ok) {
         common.printErrorAndExit(isValidParmlib.error.message, undefined, isValidParmlib.error.code);
       }
-      const parmlib = part.substring(part.indexOf('(')+1, part.lastIndexOf(')'));
+      const parmlib = part.substring(part.indexOf('(') + 1, part.lastIndexOf(')'));
       configLines.push(`PARMLIB ${parmlib}`);
     }
   }
@@ -109,42 +125,24 @@ export function execute(dryRun?: boolean) {
   common.printMessage('--- JCL content ---');
   common.printMessage(jclContents);
   common.printMessage('--- End of JCL ---');
-
+  let genRc = 0;
   if (dryRun) {
     common.printMessage('JCL not submitted, command run with "--dry-run" flag.');
     common.printMessage('To perform command, re-run command without "--dry-run" flag, or submit the JCL directly.');
-    os.remove(tempFile);
-
   } else { //TODO can we generate just for one step, or no reason?
     common.printMessage('Submitting Job ZWEGENER');
     const jobid = zosJes.submitJob(tempFile);
     const result = zosJes.waitForJob(jobid);
-    if (!jclPostProcessing) {
-      os.remove(tempFile);
-    }
     common.printMessage(`Job ZWEGENER(${jobid}) completed with RC=${result.rc}`);
     if (result.rc == 0) {
-      let jobHeaderResult = 0;
-      if (jclHeaderJoined != '') {
-        let replaceRC = zosDataset.replaceInMember(`${ZOWE_CONFIG.zowe.setup.dataset.jcllib}(ZWESECUR)`, tempFile, /^\/\/ZWESECUR JOB/i, '//ZWESECUR JOB ' + jclHeaderJoined);
-        jobHeaderResult += replaceRC;
-      }
-      if (jclPostProcessing) {
-        const memList = zosDataset.listDatasetMembers(ZOWE_CONFIG.zowe.setup.dataset.jcllib);
-        for (let m = 0; m < memList.length; m++) {
-          let replaceRC = zosDataset.replaceInMember(`${ZOWE_CONFIG.zowe.setup.dataset.jcllib}(${memList[m]})`, tempFile, /\{zowe\.environments\.jclHeader\}/i, jclHeaderJoined);
-          jobHeaderResult += replaceRC;
-        }
-      os.remove(tempFile);
-      }
-      if (jobHeaderResult) {
-        common.printMessage("Zowe JCL JOB statement update failed. Review the JOBs before submitting.");
-      } else {
-        common.printMessage("Zowe JCL generated successfully");
-      }
+      common.printMessage("Zowe JCL generated successfully");
     } else {
-      common.printMessage(`Zowe JCL generated with errors, check job log. Job completion code=${result.jobcccode}, Job completion text=${result.jobcctext}`);
+      common.printMessage(`Zowe JCL generated with errors, check job log. Job completion code=${result.jobcccode}.`);
+      genRc = 1;
     }
-    // print if succesful
+  }
+  os.remove(tempFile);
+  if (genRc) {
+    std.exit(genRc);
   }
 }

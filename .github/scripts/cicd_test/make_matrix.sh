@@ -38,6 +38,10 @@ case $install_test_choice in
   test_file="$KEYRING_TESTFILE"
   ;;
 
+"ATTLS")
+  test_file="$ATTLS_TESTFILE"
+  ;;
+
 "Java 21")
   test_file="$JAVA_V21_TESTFILE"
   ;;
@@ -74,8 +78,16 @@ case $install_test_choice in
   test_file="$GENERAL_API_DOCUMENTATION_TESTFILE"
   ;;
 
-"Config Manager")
-  test_file="$CONFIG_MANAGER_TESTFILE"
+"JCL Installation")
+  test_file="$JCL_INSTALL_TESTFILE"
+  ;;
+
+"APIML Modulith Mode")
+  test_file="$APIML_MODULITH_TESTFILE"
+  ;;
+
+"APIML zOSMF AuthN Provider")
+  test_file="$APIML_ZOSMF_AUTHN_TESTFILE"
   ;;
 
 "Zowe Nightly Tests")
