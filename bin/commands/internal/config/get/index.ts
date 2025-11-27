@@ -21,9 +21,16 @@ export function execute(configPath:string, haInstance?: string) {
   common.requireZoweYaml();
   const ZOWE_CONFIG=config.getZoweConfig();
   let output;
-  if (haInstance) {
-    haInstance=config.sanitizeHaInstanceId();
+  
+  if (haInstance && ZOWE_CONFIG.haInstances) {
+    haInstance = config.sanitizeHaInstanceId();
+      for (const haInstanceID in ZOWE_CONFIG.haInstances) {    
+        if (haInstanceID.toLowerCase() == haInstance) {
+          haInstance = haInstanceID;
+        }
+    }
   }
+
   if (haInstance && (!configPath.startsWith(`haInstances.${haInstance}.`))) {
     output=fakejq.jqget(ZOWE_CONFIG, `.haInstances[${haInstance}].${configPath}`); //TODO expand path
     if (!output) { //if the instance doesnt specify this config, we'll fallback to the base config.
