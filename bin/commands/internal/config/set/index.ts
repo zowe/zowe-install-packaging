@@ -3,9 +3,9 @@
   under the terms of the Eclipse Public License v2.0 which
   accompanies this distribution, and is available at
   https://www.eclipse.org/legal/epl-v20.html
- 
+
   SPDX-License-Identifier: EPL-2.0
- 
+
   Copyright Contributors to the Zowe Project.
 */
 
@@ -26,9 +26,16 @@ export function execute(configPath:string, newValue: any, haInstance?: string, v
       newValue = Number(newValue);
     }
   }
-  
+
   if (haInstance) {
     haInstance=config.sanitizeHaInstanceId();
+    if (ZOWE_CONFIG.haInstances) {
+      for (const haInstanceID in ZOWE_CONFIG.haInstances) {
+        if (haInstanceID.toLowerCase() == haInstance) {
+          haInstance = haInstanceID;
+        }
+      }
+    }
     if (!configPath.startsWith(`haInstances.${haInstance}.`)) {
       json.updateZoweYaml(configFiles, `haInstances.${haInstance}.${configPath}`, newValue);
     } else {
