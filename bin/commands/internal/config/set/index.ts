@@ -13,7 +13,6 @@ import * as std from 'cm_std';
 import * as common from '../../../../libs/common';
 import * as config from '../../../../libs/config';
 import * as json from '../../../../libs/json';
-import * as fakejq from '../../../../libs/fakejq';
 
 export function execute(configPath:string, newValue: any, haInstance?: string, valueAsString?: boolean) {
   common.requireZoweYaml();
@@ -21,17 +20,13 @@ export function execute(configPath:string, newValue: any, haInstance?: string, v
   const ZOWE_CONFIG=config.getZoweConfig();
 
   if (!valueAsString) {
-    let numCheck = new Number(newValue);
-    if (newValue.toLowerCase() == 'false') {
-      newValue = false;
-    } else if (newValue.toLowerCase() == 'true') {
-      newValue = true;
-    } else if (!Number.isNaN(numCheck)) {
-      newValue = numCheck;
+    if (['true', 'false'].includes(newValue.toLowerCase())) {
+      newValue = newValue.toLowerCase() == 'true';
+    } else if (!isNaN(Number(newValue))) {
+      newValue = Number(newValue);
     }
   }
   
-  let output;
   if (haInstance) {
     haInstance=config.sanitizeHaInstanceId();
     if (!configPath.startsWith(`haInstances.${haInstance}.`)) {
