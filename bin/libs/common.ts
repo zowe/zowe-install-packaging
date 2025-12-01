@@ -206,6 +206,13 @@ export function printTrace(message: string, writeTo?:string[]): boolean {
   return false;
 }
 
+export function printErrorAndConditionallyExit(message: string, writeTo:string[]=['console','log'], exitCode:number=1, shouldExit?: boolean): void {
+  printError(message, writeTo);
+  if (shouldExit) {
+    std.exit(exitCode);
+  }
+}
+
 export function printErrorAndExit(message: string, writeTo:string[]=['console','log'], exitCode:number=1): void {
   printError(message, writeTo);
   std.exit(exitCode);
