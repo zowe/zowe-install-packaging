@@ -55,9 +55,12 @@ export function execute(componentId: string, haInstance?: string, dryRun?: boole
 
   const firstConfigFile = configmgr.getFirstConfigFile();
   common.printMessage(`Setting ${componentConfigPath}.enabled: true`);
-  common.printMessage(`Updating ${firstConfigFile}`);
+
   
   if (!dryRun) {
+    common.printMessage(`Updating ${firstConfigFile}`);
     jsonlib.updateZoweYaml(firstConfigFile, `${componentConfigPath}.enabled`, true);
+  } else {
+    common.printMessage(`Dry-run mode, YAML not updated.`);
   }
 }

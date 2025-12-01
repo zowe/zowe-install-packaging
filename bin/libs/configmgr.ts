@@ -57,7 +57,7 @@ let HA_CONFIGS = {};
 export function getFirstConfigFile() {
   let configPath = std.getenv('ZWE_PRIVATE_CONFIG_ORIG');
   if (!configPath) {
-    std.getenv('ZWE_PRIVATE_CONFIG');
+    configPath = std.getenv('ZWE_PRIVATE_CONFIG');
   }
   let configFile = configPath;
   if (!configFile.startsWith('/')) {
