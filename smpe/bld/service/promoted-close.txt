@@ -8,7 +8,7 @@
       ****************************************************************
       * RECOMMENDATION: Apply provided service                       *
       ****************************************************************
-      The Zowe community version was updated to 2.18.3.
+      The Zowe community version was updated to 2.18.4.
       This PTF provides the community changes in SMP/E format.
       Follow this link for more details on the community changes:
       https://docs.zowe.org/stable/
@@ -24,7 +24,7 @@
       ****************************************************************
       * RECOMMENDATION: Apply provided service                       *
       ****************************************************************
-      The Zowe community version was updated to 2.18.3.
+      The Zowe community version was updated to 2.18.4.
       This PTF provides the community changes in SMP/E format.
       Follow this link for more details on the community changes:
       https://docs.zowe.org/stable/
@@ -40,7 +40,7 @@
       ****************************************************************
       * RECOMMENDATION: Apply provided service                       *
       ****************************************************************
-      The Zowe community version was updated to 2.18.3.
+      The Zowe community version was updated to 2.18.4.
       This PTF provides the community changes in SMP/E format.
       Follow this link for more details on the community changes:
       https://docs.zowe.org/stable/
