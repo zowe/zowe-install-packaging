@@ -10,26 +10,15 @@
 */
 
 import * as std from 'cm_std';
-import * as common from '../../../../libs/common';
-import * as stringlib from '../../../../libs/string';
-import * as shell from '../../../../libs/shell';
-import * as config from '../../../../libs/config';
-import * as component from '../../../../libs/component';
-import * as varlib from '../../../../libs/var';
-import { PathAPI as pathoid } from '../../../../libs/pathoid';
+import * as common from '../../../../../libs/common';
+import * as stringlib from '../../../../../libs/string';
+import * as shell from '../../../../../libs/shell';
+import * as config from '../../../../../libs/config';
+import * as component from '../../../../../libs/component';
+import * as varlib from '../../../../../libs/var';
+import { PathAPI as pathoid } from '../../../../../libs/pathoid';
 
-export function execute(componentName: string, dryRun?: boolean) {
-  common.requireZoweYaml();
-  const ZOWE_CONFIG=config.getZoweConfig();
-  // read extensionDirectory
-  const extensionDir=ZOWE_CONFIG.zowe.extensionDirectory;
-  if (!extensionDir) {
-    common.printErrorAndExit("Error ZWEL0180E: Zowe extension directory (zowe.extensionDirectory) is not defined in Zowe YAML configuration file.", undefined, 180);
-  }
-
-  const targetDir = stringlib.removeTrailingSlash(extensionDir);
-  const componentDir = pathoid.join(targetDir, componentName);
-
+export function execute(componentName: string, zisPluginDatasets?: string[], dryRun?: boolean) {
   component.processZisPluginInstall(componentDir, false, dryRun);
   /*
     zisPluginInstall()

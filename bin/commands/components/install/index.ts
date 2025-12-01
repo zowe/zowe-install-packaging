@@ -12,8 +12,7 @@
 import * as std from 'cm_std';
 import * as extract from './extract/index';
 import * as installHook from './component-script/index';
-import * as zssPlugin from './zss-plugin/index';
-import * as zisPlugin from './zis-plugin/index';
+import * as register from './register/index';
 import * as componentEnable from '../enable/index';
 import * as common from '../../../libs/common';
 import * as fs from '../../../libs/fs';
@@ -57,8 +56,7 @@ export function execute(componentFile: string, autoEncoding?:string, skipEnable?
       if (componentName) {
         installHook.execute(componentName, dryRun);
 
-        zssPlugin.execute(componentName, dryRun);
-        zisPlugin.execute(componentName, dryRun);        
+        register.execute(componentName, zisPluginDatasets, dryRun);
       } else if (dryRun) {
         common.printMessage("Archived component install cannot continue in dry run mode.");
         std.exit(1);

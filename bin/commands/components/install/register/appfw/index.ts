@@ -9,6 +9,8 @@
   Copyright Contributors to the Zowe Project.
 */
 
-import * as std from 'cm_std';
-import * as index from './index';
-index.execute(std.getenv('ZWE_CLI_PARAMETER_COMPONENT_NAME'), std.getenv('ZWE_CLI_PARAMETER_ZIS_PLUGIN_DATASETS') ? std.getenv('ZWE_CLI_PARAMETER_ZIS_PLUGIN_DATASETS').split(",") : undefined, (std.getenv('ZWE_CLI_PARAMETER_DRY_RUN') === 'true'));
+import * as zssRegister from './zss';
+
+export function execute(componentName: string, dryRun?: boolean) {
+  zssRegister.execute(componentName, dryRun);
+}

@@ -1,0 +1,9 @@
+zwe components install register zis -c /path/to/zowe.yaml -o /path/to/component/package
+
+zwe components install register zis -c /path/to/zowe.yaml -o /path/to/component/package --dry-run
+
+zwe components install register zis -c /path/to/zowe.yaml -o /path/to/component/package  --zis-plugin-datasets PROGA.ZOWE.ZIS.LD1,PROGA.ZOWE.ZIS.LD2
+
+zwe components install register zis loadlib -c /path/to/zowe.yaml -o /path/to/component/package
+
+zwe components install register zis parmlib -c /path/to/zowe.yaml -o /path/to/component/package

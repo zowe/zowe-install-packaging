@@ -1,4 +1,5 @@
-Deprecated. Alias of the command `zwe components install component-script`.
+Registers plugins for the Zowe Application Framework found within the specified component.
+
 
 NOTE: this sub-command will be automatically executed by `zwe components install`,
       so usually you don't need to execute this manually.

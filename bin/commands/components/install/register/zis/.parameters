@@ -1,3 +1,3 @@
-component-name|n|string|required||||Component name.
+component-file,component|o|string|required||||Path to the component package or directory.
 dry-run|d|boolean|||||Whether or not to perform the upgrade versus just checking if an upgrade is available
 zis-plugin-datasets|d|string|||||Comma separated list of datasets to reference as ZIS STEPLIB entries for loading plugins. Requires that the datasets exist prior and are APF authorized. If not provided when installing a component containing ZIS plugins, the plugins will be copied into the ZIS APF Plugin dataset.

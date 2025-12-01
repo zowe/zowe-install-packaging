@@ -18,7 +18,7 @@ import * as component from '../../../../libs/component';
 import * as varlib from '../../../../libs/var';
 import { PathAPI as pathoid } from '../../../../libs/pathoid';
 
-export function execute(componentName: string, zisPluginDatasets: string[], dryRun?: boolean) {
+export function execute(componentName: string, dryRun?: boolean) {
   common.requireZoweYaml();
   const ZOWE_CONFIG=config.getZoweConfig();
   // read extensionDirectory

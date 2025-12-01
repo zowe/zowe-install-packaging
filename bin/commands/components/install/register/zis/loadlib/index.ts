@@ -10,13 +10,13 @@
 */
 
 import * as std from 'cm_std';
-import * as common from '../../../../libs/common';
-import * as stringlib from '../../../../libs/string';
-import * as shell from '../../../../libs/shell';
-import * as config from '../../../../libs/config';
-import * as component from '../../../../libs/component';
-import * as varlib from '../../../../libs/var';
-import { PathAPI as pathoid } from '../../../../libs/pathoid';
+import * as common from '../../../../../../libs/common';
+import * as stringlib from '../../../../../../libs/string';
+import * as shell from '../../../../../../libs/shell';
+import * as config from '../../../../../../libs/config';
+import * as component from '../../../../../../libs/component';
+import * as varlib from '../../../../../../libs/var';
+import { PathAPI as pathoid } from '../../../../../../libs/pathoid';
 
 export function execute(componentName: string, dryRun?: boolean) {
   common.requireZoweYaml();
@@ -32,13 +32,8 @@ export function execute(componentName: string, dryRun?: boolean) {
 
   component.processZisPluginInstall(componentDir, false, dryRun);
   /*
-    zisPluginInstall()
-      copyZisPluginToAuthloadlib
+      copyZisPluginToAuthloadlib()
         or
-      addZisLoadLibToStcJcl
-        then
-      zisParmlibRegister
-        editZisParmlibContents
-          updateUssParmlibKeyValue
+      addZisLoadLibToStcJcl()
    */
 }
