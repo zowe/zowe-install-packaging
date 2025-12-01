@@ -85,15 +85,16 @@ export function execute(): void {
     const nodeVersion = shell.execOutSync('sh', '-c', '${NODE_HOME}/bin/node -v 2>&1 | head -n 1');
     if (nodeVersion.rc == 0 && nodeVersion.out) {
       environment["node"] = `${nodeVersion.out}`;
-      const discovery = ZOWE_CONFIG.components?.discovery?.enabled || ZOWE_CONFIG.components?.apiml?.enabled;
-      const zosmfHost = ZOWE_CONFIG.zOSMF?.host;
-      const zosmfPort = ZOWE_CONFIG.zOSMF?.port;
-      if (discovery && zosmfHost && zosmfPort) {
-        environment["zosmf_check"] = `'https://${zosmfHost}:${zosmfPort}/zosmf/info' => ${zosmf.validateZosmfHostAndPort(zosmfHost, zosmfPort)}`;
-      }
     }
   } else {
     environment["node"] = `not found`;
+  }
+
+  const discovery = ZOWE_CONFIG.components?.discovery?.enabled || ZOWE_CONFIG.components?.apiml?.enabled;
+  const zosmfHost = ZOWE_CONFIG.zOSMF?.host;
+  const zosmfPort = ZOWE_CONFIG.zOSMF?.port;
+  if (discovery && zosmfHost && zosmfPort) {
+    environment["zosmf_check"] = `'https://${zosmfHost}:${zosmfPort}/zosmf/info' => ${zosmf.validateZosmfHostAndPort(zosmfHost, zosmfPort)}`;
   }
 
   java.requireJava();
@@ -193,7 +194,16 @@ export function execute(): void {
   common.printMessage("");
 
   // zowe.job.name + prefix are in defaults
-  const jobName = ZOWE_CONFIG.zowe.job.name;
+  // zowe.job.name could be possibly null/empty
+  let jobName = ZOWE_CONFIG.zowe.job.name;
+  if (!jobName) {
+    const launcherSTC = ZOWE_CONFIG.zowe.setup.security.stcs.zowe;
+    if (launcherSTC) {
+      jobName = launcherSTC;
+    } else {
+      jobName = std.getenv('ZWE_PRIVATE_DEFAULT_ZOWE_STC');
+    }
+  }
   const jobPrefix = ZOWE_CONFIG.zowe.job.prefix;
 
   common.printLevel1Message(`Collecting current process information based on the job prefix ${jobPrefix} and job name ${jobName}`);

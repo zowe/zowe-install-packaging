@@ -64,26 +64,36 @@ describe(`${testSuiteName}`, () => {
       result = await testRunner.runZweTest(cfgYaml, 'init certificate --dry-run');
       expect(result.stdout).not.toBeNull();
       expect(result.cleanedStdout).toMatchSnapshot();
-      expect(result.rc).toBe(201);
+      expect(result.rc).toBe(70);
     });
   });
 
   describe('(LONG)', () => {
+    const defaultKeystoreLocations: TestFile[] = [
+      {
+        // @ts-expect-error incomplete schema
+        name: ZoweConfig.getZoweYaml().zowe.setup.certificate.pkcs12.directory + '/local_ca/',
+        type: FileType.USS_DIR,
+      },
+      {
+        // @ts-expect-error incomplete schema
+        name: ZoweConfig.getZoweYaml().zowe.setup.certificate.pkcs12.directory + '/localhost/',
+        type: FileType.USS_DIR,
+      },
+    ];
+
+    // run during beforeEach in case a test abended and system isn't clean
+    beforeEach(async () => {
+      await TestFileActions.deleteAll(defaultKeystoreLocations);
+    });
+
+    afterEach(async () => {
+      await TestFileActions.deleteAll(defaultKeystoreLocations);
+    });
+
     it('passing init', async () => {
       cfgYaml.zowe.verifyCertificates = 'NONSTRICT';
       const result = await testRunner.runZweTest(cfgYaml, 'init certificate');
-      cleanupFiles.push(
-        {
-          // @ts-expect-error incomplete schema
-          name: cfgYaml.zowe.setup.certificate.pkcs12.directory + '/local_ca/',
-          type: FileType.USS_DIR,
-        },
-        {
-          // @ts-expect-error incomplete schema
-          name: cfgYaml.zowe.setup.certificate.pkcs12.directory + '/localhost/',
-          type: FileType.USS_DIR,
-        },
-      );
       expect(result.stdout).not.toBeNull();
       expect(result.cleanedStdout).toMatchSnapshot();
       expect(result.rc).toBe(0);
@@ -93,18 +103,6 @@ describe(`${testSuiteName}`, () => {
       cfgYaml.zowe.useConfigmgr = true;
       cfgYaml.zOSMF.host = 'doesnt-exist.anywhere.cloud';
       const result = await testRunner.runZweTest(cfgYaml, 'init certificate');
-      cleanupFiles.push(
-        {
-          // @ts-expect-error incomplete schema
-          name: cfgYaml.zowe.setup.certificate.pkcs12.directory + '/local_ca/',
-          type: FileType.USS_DIR,
-        },
-        {
-          // @ts-expect-error incomplete schema
-          name: cfgYaml.zowe.setup.certificate.pkcs12.directory + '/localhost/',
-          type: FileType.USS_DIR,
-        },
-      );
       expect(result.stdout).not.toBeNull();
       expect(result.cleanedStdout).toMatchSnapshot();
       expect(result.rc).toBe(170);
