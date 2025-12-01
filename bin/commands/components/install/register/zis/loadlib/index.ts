@@ -31,4 +31,14 @@ export function execute(componentName: string, dryRun?: boolean) {
   const componentDir = pathoid.join(targetDir, componentName);
 
   component.processZisPluginInstall(componentDir, false, dryRun);
+  /*
+    zisPluginInstall()
+      copyZisPluginToAuthloadlib
+        or
+      addZisLoadLibToStcJcl
+        then
+      zisParmlibRegister
+        editZisParmlibContents
+          updateUssParmlibKeyValue
+   */
 }

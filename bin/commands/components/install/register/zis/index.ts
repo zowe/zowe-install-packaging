@@ -30,5 +30,15 @@ export function execute(componentName: string, dryRun?: boolean) {
   const targetDir = stringlib.removeTrailingSlash(extensionDir);
   const componentDir = pathoid.join(targetDir, componentName);
 
-  component.processZssPluginInstall(componentDir, false, dryRun);
+  component.processZisPluginInstall(componentDir, false, dryRun);
+  /*
+    zisPluginInstall()
+      copyZisPluginToAuthloadlib
+        or
+      addZisLoadLibToStcJcl
+        then
+      zisParmlibRegister
+        editZisParmlibContents
+          updateUssParmlibKeyValue
+   */
 }
