@@ -173,11 +173,16 @@
           "description": "When the component is statically registered under the Discovery service, this tells Zowe where to find these static definitions. This information is for the Zowe runtime. When Zowe is starting, the launch script will check this field and put the parse static definition file into the directory defined as 'ZWE_STATIC_DEFINITIONS_DIR' in the Zowe instance.",
           "items": {
             "type": "object",
-            "additionalProperties": false,
+            "additionalProperties": true,
             "properties": {
               "file": {
                 "type": "string",
                 "description": "Defines the path to the static definition file. This file is supposed to be a template."
+              },
+              "once": {
+                "type": "boolean",
+                "default": false,
+                "description": "When true, only one static definition file per HA setup will be made."
               }
             }
           }
