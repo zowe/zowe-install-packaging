@@ -55,6 +55,7 @@ RUN set -ex \
   curl \
   gnupg \
   xz-utils \
+  yq \
   # upgrade
   && apt-get upgrade -y \
   && ARCH=${NODE_CPU_ARCH} \
@@ -87,7 +88,6 @@ RUN set -ex \
   # remove unused pacakges
   && apt-get purge --auto-remove -y \
   bzip2 \
-  curl \
   gnupg \
   tini \
   xz-utils \
