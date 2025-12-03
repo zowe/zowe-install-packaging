@@ -21,7 +21,7 @@ describe('test oidc mapping via gateway', function() {
   it('obtain Okta token', async function() {
     hq = new HTTPRequest();
     apiml = new APIMLAuth(hq);
-    token = await apiml.loginViaOkta();
+    token = await apiml.loginViaAuth0();
   });
 
   it('call endpoint with valid Okta token', async function() {
