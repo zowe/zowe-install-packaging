@@ -2,6 +2,9 @@
 
 All notable changes to the Zowe Installer will be documented in this file.
 
+## `3.5.0`
+- Enhancement: Added manifest property `apimlServices.static.once` which restricts APIML static definition files to exist only once per HA setup [#4587](https://github.com/zowe/zowe-install-packaging/pull/4587)
+
 ## `3.4.0`
 
 - Enhancement: API ML now uses `saf` as it's default authentication provider for new installations of Zowe. [#4573](https://github.com/zowe/zowe-install-packaging/pull/4573)
