@@ -472,8 +472,12 @@ export function findAllLaunchComponents2(): string[] {
   if (!enabledComponents) {
     enabledComponents = findAllEnabledComponents2();
   }
-
+  const usingApimlModulith = enabledComponents.includes('apiml');
+  
   return enabledComponents.filter(function(component: string) {
+    if (usingApimlModulith && INDIVIDUAL_APIML_COMPONENTS.includes(component)) {
+      return false;
+    }
     const componentDir = findComponentDirectory(component);
     if (componentDir) {
       const manifest = getManifest(componentDir);
@@ -531,6 +535,17 @@ export function processComponentApimlStaticDefinitions(componentDir: string): bo
     return false;
   }
 
+  let firstInstance;
+  if (ZOWE_CONFIG.haInstances) {
+    common.printDebug(`Checking for z/osmf HA duplicates`);
+    let sortedKeys = Object.keys(ZOWE_CONFIG.haInstances).sort();
+    if (sortedKeys.length > 0) {
+      firstInstance = configUtils.sanitizeHaInstanceId(sortedKeys[0]);
+    }
+    //ensure first exists, swap values if necessary to do so. do not allow others to be created if once is set.
+  }
+  
+  
   let allSucceed=true;
   const componentName = manifest.name;
   if (manifest.apimlServices && manifest.apimlServices.static) {
@@ -544,9 +559,14 @@ export function processComponentApimlStaticDefinitions(componentDir: string): bo
     const currentHaInstanceName = configUtils.sanitizeHaInstanceId();
     const haInstanceNames = definedHaInstanceNames.includes(currentHaInstanceName) ? definedHaInstanceNames : [currentHaInstanceName].concat(definedHaInstanceNames);
 
+    
     for (let i = 0; i < staticDefs.length; i++) {
       const staticDef = staticDefs[i];
       const file=staticDef.file;
+      const once = staticDef.once !== undefined ? staticDef.once : false;
+
+      const haInstanceName = once ? firstInstance ? firstInstance : currentHaInstanceName : currentHaInstanceName;
+
       const path = `${componentDir}/${file}`
       if (!fs.fileExists(path)){
         common.printError("Error: static definition file ${file} of ${componentName} is not accessible");
@@ -599,7 +619,7 @@ export function processComponentApimlStaticDefinitions(componentDir: string): bo
 
           
           //discovery static code requires specifically .yml. Not .yaml
-          const outFileName = `${componentName}.${sanitizedDefName}.${currentHaInstanceName}.yml`;
+          const outFileName = `${componentName}.${sanitizedDefName}.${haInstanceName}.yml`;
           const outPath=`${STATIC_DEF_DIR}/${outFileName}`;
 
           common.printDebug(`- writing ${outPath}`);
@@ -630,6 +650,9 @@ export function processComponentApimlStaticDefinitions(componentDir: string): bo
                   let haInstanceFound = existingFile.substring(prefix.length, existingFile.length - suffix.length);
                   if (!haInstanceNames.includes(haInstanceFound) && existingFile != outFileName) {
                     common.printDebug(`Removing outdated static def ${existingFile}`);
+                    os.remove(`${STATIC_DEF_DIR}/${existingFile}`);
+                  } else if (once && (existingFile != outFileName)) {
+                    common.printDebug(`Removing duplicate of once static def ${existingFile}`);
                     os.remove(`${STATIC_DEF_DIR}/${existingFile}`);
                   } else {
                     common.printDebug(`Ignored static def ${existingFile}`);
