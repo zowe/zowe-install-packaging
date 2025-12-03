@@ -472,8 +472,12 @@ export function findAllLaunchComponents2(): string[] {
   if (!enabledComponents) {
     enabledComponents = findAllEnabledComponents2();
   }
-
+  const usingApimlModulith = enabledComponents.includes('apiml');
+  
   return enabledComponents.filter(function(component: string) {
+    if (usingApimlModulith && INDIVIDUAL_APIML_COMPONENTS.includes(component)) {
+      return false;
+    }
     const componentDir = findComponentDirectory(component);
     if (componentDir) {
       const manifest = getManifest(componentDir);
