@@ -417,6 +417,7 @@ jobs:
           OIDC_USER: ${{ secrets.OIDC_USER }}
           OIDC_PASSWORD: ${{ secrets.OIDC_PASSWORD }}
           OIDC_REGISTRY: ${{ secrets.OIDC_REGISTRY }}
+          OIDC_JWKS_ENDPOINT: ${{ secrets.OIDC_JWKS_ENDPOINT }}
           ZOS_NODE_HOME: ${{ steps.more-test-prep.outputs.NODE_HOME_PATTERN }}
       #     # ANSIBLE_VERBOSE: -vvv
 
