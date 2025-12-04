@@ -34,7 +34,8 @@
       "rule_type": "wf_missing_vars",
       "rule_entry": [
         "zowe_launchScript_startupChecks_default",
-        "zowe_launchScript_startupChecks_ports"
+        "zowe_launchScript_startupChecks_ports",
+        "zowe_launchScript_startupChecks_zosmf"
       ]
     },
     {
