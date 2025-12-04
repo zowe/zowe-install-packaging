@@ -18,6 +18,7 @@ export function execute(configPath:string, newValue: any, haInstance?: string, v
   common.requireZoweYaml();
   const configFiles=std.getenv('ZWE_PRIVATE_CONFIG_ORIG');
   const ZOWE_CONFIG=config.getZoweConfig();
+  let rc = 0;
 
   if (!valueAsString) {
     if (['true', 'false'].includes(newValue.toLowerCase())) {
@@ -37,12 +38,12 @@ export function execute(configPath:string, newValue: any, haInstance?: string, v
       }
     }
     if (!configPath.startsWith(`haInstances.${haInstance}.`)) {
-      json.updateZoweYaml(configFiles, `haInstances.${haInstance}.${configPath}`, newValue);
+      rc = json.updateZoweYaml(configFiles, `haInstances.${haInstance}.${configPath}`, newValue);
     } else {
-      json.updateZoweYaml(configFiles, '.'+configPath, newValue);
+      rc = json.updateZoweYaml(configFiles, '.'+configPath, newValue);
     }
   } else {
-    json.updateZoweYaml(configFiles, '.'+configPath, newValue);
+    rc = json.updateZoweYaml(configFiles, '.'+configPath, newValue);
   }
+  std.exit(rc);
 }
-
