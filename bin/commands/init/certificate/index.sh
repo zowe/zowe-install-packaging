@@ -413,7 +413,7 @@ if [ "${cert_type}" = "PKCS12" ]; then
     update_zowe_yaml "${ZWE_CLI_PARAMETER_CONFIG}" "zowe.certificate.truststore.password" "${pkcs12_password}" false
     update_zowe_yaml "${ZWE_CLI_PARAMETER_CONFIG}" "zowe.certificate.pem.key" "${pkcs12_directory}/${pkcs12_name}/${pkcs12_name_lc}.key" false
     update_zowe_yaml "${ZWE_CLI_PARAMETER_CONFIG}" "zowe.certificate.pem.certificate" "${pkcs12_directory}/${pkcs12_name}/${pkcs12_name_lc}.cer" false
-    update_zowe_yaml "${ZWE_CLI_PARAMETER_CONFIG}" "zowe.certificate.pem.certificateAuthorities" "${yaml_pem_cas}" false
+    update_zowe_yaml "${ZWE_CLI_PARAMETER_CONFIG}" "zowe.certificate.pem.certificateAuthorities" "${yaml_pem_cas}" true
     print_level2_message "Zowe configuration is updated successfully."
   else
     print_level1_message "Update certificate configuration to ${ZWE_CLI_PARAMETER_CONFIG}"
@@ -503,7 +503,7 @@ else # JCE* content
     update_zowe_yaml "${ZWE_CLI_PARAMETER_CONFIG}" "zowe.certificate.truststore.type" "${cert_type}" false
     update_zowe_yaml "${ZWE_CLI_PARAMETER_CONFIG}" "zowe.certificate.truststore.file" "safkeyring://${keyring_owner}/${keyring_name}" false
     # we must set a dummy value here, other JDK will complain wrong parameter
-    update_zowe_yaml "${ZWE_CLI_PARAMETER_CONFIG}" "zowe.certificate.truststore.password" "password" false
+    update_zowe_yaml "${ZWE_CLI_PARAMETER_CONFIG}" "zowe.certificate.truststore.password" "password" true
     print_level2_message "Zowe configuration is updated successfully."
   else
     print_level1_message "Update certificate configuration to ${ZWE_CLI_PARAMETER_CONFIG}"
