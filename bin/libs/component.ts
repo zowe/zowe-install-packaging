@@ -14,7 +14,7 @@ import * as os from 'cm_os';
 import * as zos from 'zos';
 import * as xplatform from 'xplatform';
 import { ConfigManager } from 'Configuration';
-
+import { PathAPI as pathoid } from './pathoid';
 import * as common from './common';
 import * as fs from './fs';
 import * as zosfs from './zos-fs';
@@ -670,10 +670,7 @@ export function testOrSetPcBit(path: string, exitOnError?: boolean, dryRun?: boo
       zos.changeExtAttr(path, zos.EXTATTR_PROGCTL, true);
       const success = hasPCBit(path);
       if (!success) {
-        common.printError(`PC bit not set. This must be set such as by executing 'extattr +p ${path}' as a user with sufficient privilege.`);
-        if (exitOnError) {
-          std.exit(4);
-        }
+        common.printErrorAndConditionallyExit(`PC bit not set. This must be set such as by executing 'extattr +p ${path}' as a user with sufficient privilege.`, undefined, 4, exitOnError);
       }
       return success;
     }
@@ -733,17 +730,17 @@ export function checkZssPcBit(appfwPluginPath: string, exitOnError?: boolean, dr
     }
     return {serviceCount: serviceCount, errors: errors};
   } else {
-    common.printError(`Skipping ZSS PC bit check of plugin at ${appfwPluginPath} due to pluginDefinition missing or invalid`);
-    if (exitOnError) {
-      std.exit(4);
-    }
+    common.printErrorAndConditionallyExit(`Skipping ZSS PC bit check of plugin at ${appfwPluginPath} due to pluginDefinition missing or invalid`, undefined, 4, exitOnError);
     return {serviceCount: 0, errors: 1};
   }
 }
 
 export function processZssPluginInstall(componentDir: string, exitOnError?: boolean, dryRun?: boolean): void {
   loadConfig();
-  common.printDebug(`- Checking for zss plugins and verifying them`);
+  common.printDebug(`Checking for zss plugins and verifying them`);
+  if (!fs.directoryExists(componentDir)) {
+    common.printErrorAndConditionallyExit(`Component directory ${componentDir} not found or insufficient permission.`, undefined, 4, exitOnError);
+  }
   let appfwPluginCount, serviceCount, errors = 0;
   const manifest = getManifest(componentDir);
   if (manifest && manifest.appfwPlugins) {
@@ -754,6 +751,8 @@ export function processZssPluginInstall(componentDir: string, exitOnError?: bool
       errors = errors + result.errors;
       serviceCount = serviceCount + result.serviceCount;
     });
+  } else if (!manifest) {
+    common.printErrorAndConditionallyExit(`Invalid component. Component manifest not found in ${componentDir}.`, undefined, 4, exitOnError);
   }
   if (serviceCount > 0 && (os.platform != 'zos')) {
     common.printMessage(`Component includes ZSS plugins which cannot be handled because install is not on z/OS.`);
@@ -799,32 +798,37 @@ zowe:
   extensionDirectory: "/u/user/zowe/inst/zistest/extensions"
 
 */
-export function processZisPluginInstall(componentDir: string, zisPluginDatasets?: string[], exitOnError?: boolean, dryRun?: boolean): void {
+export function processZisPluginInstall(componentDir: string, zisPluginDatasets?: string[], exitOnError?: boolean, dryRun?: boolean): number {
   loadConfig();
-  if (os.platform == 'zos') {
-    common.printTrace("- Checking for zis plugins and verifying them");
+  let highestRc = 0;
 
-    const manifest = getManifest(componentDir);
-
-    if (manifest.zisPlugins) {
-      if (!ZOWE_CONFIG.zowe?.setup?.dataset || !ZOWE_CONFIG.zowe.setup.dataset.authPluginLib
-        || !ZOWE_CONFIG.zowe.setup.dataset.parmlib || !ZOWE_CONFIG.zowe.setup.dataset.parmlibMembers?.zis) {
-        common.printError(`One or more configuration parameters for ZIS plugin install are missing. Define zowe.setup.dataset to have authPluginLib, parmlib, and parmlibMembers entries.`);
-        std.exit(1);
-      }
-      manifest.zisPlugins.forEach((zisPlugin: {id: string, path: string})=> {
-        common.printTrace(`Attempting to install ZIS plugin ${zisPlugin.id} at ${zisPlugin.path}`);
-        const rc = zisPluginInstall(`${componentDir}/${zisPlugin.path}`, ZOWE_CONFIG.zowe.setup.dataset.authPluginLib,
-                                    ZOWE_CONFIG.zowe.setup.dataset.parmlib, ZOWE_CONFIG.zowe.setup.dataset.parmlibMembers.zis,
-                                    zisPlugin.id, 
-        ZOWE_CONFIG.zowe?.setup?.zis?.parmlib?.keys || {},
-      zisPluginDatasets);
-        if (rc) {
-          common.printMessage(`Failed to install ZIS plugin: ${zisPlugin.id}`);
-          std.exit(1);
-        }
-      });
+  if (zisPluginDatasets) {
+    if(!addPluginToZisSteplib(zisPluginDatasets, dryRun)) {
+      common.printError(`Error in updating the zis stcs STEPLIB entries for zis plugin install`);
+      return 1;
     }
+  } else {
+    let errors = addPluginsToZisAuthLoadlib(componentDir, dryRun);
+    errors.forEach((error)=> {
+      common.printError(`Failed to add loadlib for ZIS plugin ${error.plugin}, rc=${error.rc}`);
+      if (error.rc > highestRc) {
+        highestRc = error.rc;
+      }
+    })
+  }
+
+  if (highestRc) {
+    return highestRc;
+  } else {
+    let errors = zisParmlibRegister(componentDir, exitOnError, dryRun);
+    errors.forEach((error)=> {
+      common.printError(`Failed to register ZIS plugin ${error.plugin} into ZIS parmlib, rc=${error.rc}`);
+      if (error.rc > highestRc) {
+        highestRc = error.rc;
+      }
+    });
+    
+    return highestRc;
   }
 }
 
@@ -853,30 +857,98 @@ function addKeyValueAtEndOfString(pair: string, input: string): string|undefined
   return input;
 }
 
-export function zisParmlibRegister(pluginId: string, pluginRootPath: string, zisParmlib: string, zisParmlibMember: string, parmlibKeys:any, zisPluginDatasets?: string[]): number {
-  const samplibPath=`${pluginRootPath}/samplib`;
-  if (!fs.directoryExists(samplibPath)) {
-    common.printError(`Directory ${samplibPath} does not exist`);
-    return 1;
+export function zisParmlibRegister(componentDir: string, exitOnError?: boolean, dryRun?: boolean): {rc: number, plugin: string}[] {
+  let errors: {rc: number, plugin: string}[] = [];
+
+  const manifest = getManifest(componentDir);
+  if (manifest?.zisPlugins) {
+    if (os.platform != 'zos') {
+      common.printError(`ZIS plugin installation must be done on z/OS.`);
+      return [{rc: 1, plugin: ''}]
+    }
+
+    const ZOWE_CONFIG = configUtils.getZoweConfig();
+    let zoweParmlib = ZOWE_CONFIG.zowe.setup?.dataset?.parmlib;
+    if (!zoweParmlib && ZOWE_CONFIG.zowe.setup?.dataset?.prefix) {
+      zoweParmlib = ZOWE_CONFIG.zowe.setup.dataset.prefix + '.CUST.PARMLIB';
+    }
+    if (!zoweParmlib) {
+      common.printError(`Property zowe.setup.dataset.parmlib not defined in YAML`);
+      return [{rc: 1, plugin: ''}];
+    }
+    let zisParmlibMember = ZOWE_CONFIG.zowe.setup?.dataset?.parmlibMembers?.zis;
+    if (!zisParmlibMember) {
+      zisParmlibMember = 'ZWESIP00';
+      common.printMessage(`Property zowe.setup.dataset.parmlibMembers.zis not defined in YAML\nDefaulting to ${zisParmlibMember}`);
+    }
+
+    let rc = zosdataset.isDatasetExistsRC(`${zoweParmlib}(${zisParmlibMember})`);
+    if (rc) {
+      common.printError(`Parmlib member defined in zowe.setup.dataset.parmlib and zowe.setup.dataset.parmlibMembers.zis not found\nDataset: ${zoweParmlib}, member: ${zisParmlibMember} rc: ${rc}`);
+      return [{rc: rc, plugin: ''}]
+    }
+
+    for (let i = 0; i < manifest.zisPlugins.length; i++) {
+      const zisPlugin: {path: string, id: string} = manifest.zisPlugins[i];
+      const pluginRootPath = pathoid.join(componentDir, zisPlugin.path);
+      const samplibPath=`${pluginRootPath}/samplib`;
+
+      if (!fs.directoryExists(samplibPath)) {
+        common.printError(`Directory ${samplibPath} does not exist`);
+        errors.push({rc: 1, plugin: zisPlugin.id});
+        continue;
+      }
+
+      common.printMessage(`Registering ZIS plugin ${zisPlugin.id} into PARMLIB ${zoweParmlib}(${zisParmlibMember})`);
+
+      const parmlibMemberAsUnixFile=fs.createTmpFile(zisParmlibMember);
+      zosfs.copyMvsToUss(`${zoweParmlib}(${zisParmlibMember})`, parmlibMemberAsUnixFile);
+      let parmlibContents = xplatform.loadFileUTF8(parmlibMemberAsUnixFile, xplatform.AUTO_DETECT);
+      common.printMessage(`PARMLIB is currently: \n${parmlibContents}`);
+
+      let result = editZisParmlibContents(parmlibContents, ZOWE_CONFIG.zowe.setup?.zis?.parmlib?.keys, samplibPath);
+
+      if (result.rc) {
+        common.printMessage(`Failed to update ZIS PARMLIB for plugin: ${zisPlugin.id}, rc=${rc}`);
+        errors.push({rc: result.rc, plugin: zisPlugin.id});
+        continue;
+      } else if (result.changed) {
+        xplatform.storeFileUTF8(parmlibMemberAsUnixFile, xplatform.AUTO_DETECT, result.content);
+        common.printDebug(`PARMLIB with edits: \n${result.content}`);
+
+        if (!dryRun) {
+          rc = zosdataset.copyToDataset(parmlibMemberAsUnixFile, `${zoweParmlib}(${zisParmlibMember})`, "", true);
+          if (rc != 0) {
+            common.printError(`Error ZWEL0200E: Failed to copy USS file ${parmlibMemberAsUnixFile} to MVS data set ${zoweParmlib}.`);
+          }
+          errors.push({rc: rc, plugin: zisPlugin.id});
+          continue;
+        } else {
+          common.printMessage(`Dry run: no update performed. Edited PARMLIB available as unix file ${parmlibMemberAsUnixFile}`);
+        }
+      } else {
+        common.printMessage(`No change to PARMLIB needed.`);
+      }
+    }
+    return errors;
+  } else {
+    common.printDebug(`Component ${manifest.name} does not have ZIS plugins, action skipped`);
+    return [];
   }
+}
 
-  loadConfig();
-  const parmlibMemberAsUnixFile=fs.createTmpFile(zisParmlibMember);
-  zosfs.copyMvsToUss(`${zisParmlib}(${zisParmlibMember})`, parmlibMemberAsUnixFile);
-  let parmlibContents = xplatform.loadFileUTF8(parmlibMemberAsUnixFile, xplatform.AUTO_DETECT);
-  common.printDebug(`Parmlib starts as \n${parmlibContents}`);
+function editZisParmlibContents(parmlibContents: string, parmlibKeys: any, samplibPath: string): {rc:number, changed:boolean, content: string}{
+  let rc = 0;
   let parmlibLines = parmlibContents.split('\n');
-
-
-
   
-  let parmlibChanged = false; 
-  const files = fs.getFilesInDirectory(samplibPath)
+  let changed = false; 
+  const files = fs.getFilesInDirectory(samplibPath);
+  
   for (let i = 0; i < files.length; i++) {
     const params = files[i];
     if (!fs.fileExists(`${samplibPath}/${params}`)) {
       common.printError(`Error ZWEL0201E: File ${samplibPath}/${params} does not exist.`);
-      return 201;
+      rc = 201;
     }
     const contents = xplatform.loadFileUTF8(`${samplibPath}/${params}`, xplatform.AUTO_DETECT);
     contents.split('\n').forEach((samplibKeyvalue:string)=> {
@@ -889,71 +961,82 @@ export function zisParmlibRegister(pluginId: string, pluginRootPath: string, zis
         } else {
           let result = updateUssParmlibKeyValue(samplibKeyvalue, parmlibKeys, parmlibContents);
           if (result.error) {
-            common.printMessage(`Failed to install ZIS plugin: ${pluginId}`);
-            std.exit(1);
+            rc = 1;
           } else if (result.changed) {
             parmlibContents = result.contents;
             parmlibLines = parmlibContents.split('\n');
-            parmlibChanged = true;
+            changed = true;
           }
         }
       }
     });
   }
 
-
-
-  if (parmlibChanged) {
-    common.printDebug(`Parmlib modified, writing as \n${parmlibContents}`);
-    xplatform.storeFileUTF8(parmlibMemberAsUnixFile, xplatform.AUTO_DETECT, parmlibContents);
-    const rc = zosdataset.copyToDataset(parmlibMemberAsUnixFile, `${zisParmlib}(${zisParmlibMember})`, "", true);
-    if (rc != 0) {
-      common.printError(`Error ZWEL0200E: Failed to copy USS file ${parmlibMemberAsUnixFile} to MVS data set ${zisParmlib}.`);
-      return 200;
-    }
-  }
+  return {rc: rc, changed: changed, content: parmlibContents};
 }
 
-export function zisPluginInstall(pluginRootPath: string, zisPluginlib: string, zisParmlib: string,
-                                 zisParmlibMember: string, pluginId: string, parmlibKeys: string, zisPluginDatasets?: string[]): number {
-  loadConfig();
+export function addPluginsToZisAuthLoadlib(componentDir: string, dryRun?: boolean): {rc: number, plugin: string}[] {
+  let errors: {rc: number, plugin: string}[] = [];
   
-  const loadlibPath=`${pluginRootPath}/loadlib`;                                   
-  if (fs.directoryExists(pluginRootPath)) {
-    if (fs.directoryExists(loadlibPath)) {
-      if (zisPluginDatasets) {
-        if(!updateZisStcs(zisPluginDatasets)) {
-          common.printError(`Error in updating the zis stcs STEPLIB entries for zis plugin install`);
-          return 1;
-        }
-      } else {
-        const modules = fs.getFilesInDirectory(loadlibPath) || [];
-        for (let i = 0; i < modules.length; i++) {
-          const module = modules[i];
-          const rc = zosdataset.copyToDataset(`${loadlibPath}/${module}`, zisPluginlib, "", true);
-          if (rc != 0) {
-            common.printError(`Error ZWEL0200E: Failed to copy USS file ${loadlibPath}/${module} to MVS data set ${zisPluginlib}.`);
-            return 200;
+  const manifest = getManifest(componentDir);
+  if (manifest?.zisPlugins) {
+    if (os.platform != 'zos') {
+      common.printError(`ZIS plugin installation must be done on z/OS.`);
+      return [{rc: 1, plugin: ''}]
+    }
+
+    const ZOWE_CONFIG = configUtils.getZoweConfig();
+    let zisPluginLib = ZOWE_CONFIG.zowe.setup?.dataset?.authLoadlib;
+    if (!zisPluginLib && ZOWE_CONFIG.zowe.setup?.dataset?.prefix) {
+      zisPluginLib = ZOWE_CONFIG.zowe.setup.dataset.prefix + '.SZWEAPL';
+      common.printMessage(`Property zowe.setup.dataset.authLoadlib not defined in YAML\nDefaulting to ${zisPluginLib}`);
+    }
+    if (!zisPluginLib) {
+      common.printError(`Property zowe.setup.dataset.authLoadlib not defined in YAML`);
+      return [{rc: 1, plugin: ''}]
+    } else {
+      let rc = zosdataset.isDatasetExistsRC(zisPluginLib);
+      if (rc) {
+        common.printError(`Dataset defined in zowe.setup.dataset.authLoadlib not found\nDataset: ${zisPluginLib}, rc: ${rc}`);
+        return [{rc: rc, plugin: ''}]
+      }
+    }
+
+
+    common.printMessage(`Copying ZIS plugins from component ${manifest.name} into Zowe instance`);
+    
+    for (let i = 0; i < manifest.zisPlugins.length; i++) {
+      const zisPlugin: {path: string, id: string} = manifest.zisPlugins[i];
+      const pluginRootPath = pathoid.join(componentDir, zisPlugin.path);      
+      const loadLibPath=`${pluginRootPath}/loadLib`;
+      
+      const plugins = fs.getFilesInDirectory(loadLibPath) || [];
+      if (!plugins) {
+        common.printError(`No ZIS plugin content found within ${loadLibPath} for ${zisPlugin.id}`);
+        errors.push({rc: 1, plugin: zisPlugin.id});
+        continue;
+      }
+      common.printMessage(`- Copying ZIS plugin ${zisPlugin.id} loadlib ${loadLibPath} into ${zisPluginLib}`);
+
+      for (let i = 0; i < plugins.length; i++) {
+        const plugin = plugins[i];
+        let sourcePath = `${loadLibPath}/${plugin}`;
+        common.printMessage(`-- Copying ${sourcePath}`);
+        if (!dryRun) {
+          let rc = zosdataset.copyToDataset(sourcePath, zisPluginLib, "", true);
+          if (rc) {
+            errors.push({rc: rc, plugin: plugin});
           }
         }
       }
-      zisParmlibRegister(pluginId, pluginRootPath, zisParmlib, zisParmlibMember, parmlibKeys);
-      common.printMessage(`Successfully installed ZIS plugin: ${pluginId}`);
-    } else {
-      common.printError(`Directory ${loadlibPath} does not exist`);
-      return 1;
     }
+    return errors;
   } else {
-    common.printError(`Error ZWEL0201E: Directory ${pluginRootPath} does not exist`);
-    return 201;
+    common.printDebug(`Component ${manifest.name} does not have ZIS plugins, action skipped`);
+    return [];
   }
-
-
-  return 0;
 }
 
-export function copyZisPluginToAuthLoadLib(){}
-export function addZisLoadlibToStcJcl(){}
 
 /*
   Used to write a plugin's parmlib entries into the zis parmlib.
@@ -1239,70 +1322,109 @@ export function processComponentDiscoverySharedLibs(componentDir: string): boole
 }
 
 
-function updateZisStcs(zisPluginDatasets: string[]) : boolean {
+export function addPluginToZisSteplib(zisPluginDatasets: string[], dryRun?: boolean) : boolean {
+  if (os.platform != 'zos') {
+    common.printError(`ZIS plugin installation must be done on z/OS.`);
+    return false;
+  }
   const ZOWE_CONFIG = configUtils.getZoweConfig();
   const proclib = ZOWE_CONFIG.zowe.setup?.dataset?.proclib;
   const zisMember = ZOWE_CONFIG.zowe.setup?.security?.stcs?.zis;
   const auxMember = ZOWE_CONFIG.zowe.setup?.security?.stcs?.aux;
 
+  if (!proclib) {
+    common.printError(`zowe.setup.dataset.proclib is not defined in Zowe YAML, cannot add ZIS plugin to STC JCLs`);
+    return false;
+  } else if (!zisMember) {
+    common.printError(`zowe.setup.security.stcs.zis is not defined in Zowe YAML cannot add ZIS plugin to STC JCL`);
+    return false;
+  } else if (!zosdataset.isDatasetExists(`${proclib}(${zisMember})`)) {
+    common.printError(`ZIS proclib member ${proclib}(${zisMember}) not found.`);
+    common.printError(`ZIS plugin cannot be added.`);
+    common.printError(`Review Zowe YAML entries:`);
+    common.printError(`- zowe.setup.dataset.proclib`);
+    common.printError(`- zowe.setup.security.stcs.zis`);
+    return false;
+  } else if (!auxMember) {
+    common.printError(`zowe.setup.security.stcs.aux is not defined in Zowe YAML, cannot add ZIS plugin to STC JCL`);
+    return false;
+  } else if (!zosdataset.isDatasetExists(`${proclib}(${auxMember})`)) {
+    common.printError(`ZIS AUX proclib member ${proclib}(${auxMember}) not found.`);
+    common.printError(`ZIS plugin cannot be added.`);
+    common.printError(`Review Zowe YAML entries:`);
+    common.printError(`- zowe.setup.dataset.proclib`);
+    common.printError(`- zowe.setup.security.stcs.aux`);
+    return false;
+
+  }
+
+  let datasetMissing = false;
+  zisPluginDatasets.forEach((datasetName)=> {
+    let rc = zosdataset.isDatasetExistsRC(datasetName);
+    if (rc) {
+      common.printError(`Plugin dataset does not exist\nDataset: ${datasetName}, rc: ${rc}`);
+    }
+  });
+  if (datasetMissing) {
+    return false;
+  }
+
+
   // process zis plugin dataset arguements with multiple checks, eg Regex, duplicates etc
   const stepLibEntries = processZisPluginDatasetArgs(zisPluginDatasets);
 
+  common.printMessage(`Adding STEPLIB entries for ZIS plugin datasets:`);
+  zisPluginDatasets.forEach((dataset:string)=> {
+    common.printMessage(`- ${dataset}`);
+  });
+  
   // Update the ZIS STC
-  if (zosdataset.isDatasetExists(`${proclib}(${zisMember})`)) {
-    if (!updateStcSteplibEntries(proclib, zisMember, stepLibEntries)) {
-      common.printError(`${proclib}(${zisMember}) could not be updated`);
-      return false;
-    }
+  common.printMessage(`Updating ZIS STC ${proclib}(${zisMember})`);
+  if (!updateStcSteplibEntries(proclib, zisMember, stepLibEntries, dryRun)) {
+    common.printError(`${proclib}(${zisMember}) could not be updated`);
+    return false;
   }
+
   // Update the AUX STC
-  if (zosdataset.isDatasetExists(`${proclib}(${auxMember})`)) {
-    if (!updateStcSteplibEntries(proclib, auxMember, stepLibEntries)) {
-      common.printError(`${proclib}(${zisMember}) could not be updated`);
-      return false;
-    }
+  common.printMessage(`Updating AUX STC ${proclib}(${auxMember})`);
+  if (!updateStcSteplibEntries(proclib, auxMember, stepLibEntries, dryRun)) {
+    common.printError(`${proclib}(${zisMember}) could not be updated`);
+    return false;
   }
+
   return true;
 }
 
-function updateStcSteplibEntries(proclib: string, member: string, stepLibEntries: string[]): boolean {
-  const ZOWE_CONFIG = configUtils.getZoweConfig();
-  const jclLib = ZOWE_CONFIG.zowe.setup.dataset.jcllib;
-  const prefix = ZOWE_CONFIG.zowe.setup.dataset.prefix;
-  let update = false;
+function updateStcSteplibEntries(proclib: string, member: string, stepLibEntries: string[], dryRun?: boolean): boolean {
+  let success = true;
 
   // 1. create temporary Unix file
   const proclibMemberAsUnixFile = fs.createTmpFile(`${proclib}`);
   zosfs.copyMvsToUss(`${proclib}(${member})`, proclibMemberAsUnixFile);
-
+    
   // 2. Get the updated content
   const updatedContent = updateStepLib(proclibMemberAsUnixFile, stepLibEntries);
 
   // 3. store the updated content in the same temporary Unix file
   let rc = xplatform.storeFileUTF8(proclibMemberAsUnixFile, xplatform.AUTO_DETECT, updatedContent);
-  if(!rc) {
-    // 4. Copy the contents from the temporary file into a temporary dataset
-    const tmpDataset = zosdataset.createDatasetTmpMember(jclLib);
-    rc = zosdataset.copyToDataset(proclibMemberAsUnixFile, `${jclLib}(${tmpDataset})`, "", true);
-    if (rc) {
-      common.printError(`Error ZWEL0200E: Failed to copy USS file ${proclibMemberAsUnixFile} to MVS data set ${tmpDataset}.`);
-    }
-    else {
-      // 5. Copy the dataset using PREFIX.SZWEEXEC(ZWEMCOPY)
-      rc = zosdataset.datasetCopyToDataset(prefix, `${jclLib}(${tmpDataset})`, `${proclib}(${member})`, true);
+  if (!rc) {
+    if (!dryRun) { 
+      // 4. Copy the file to destination
+      rc = zosdataset.copyToDataset(proclibMemberAsUnixFile, `${proclib}(${member})`, "", true);
       if (rc) {
         common.printError(`Copy of temporary to dataset to ${proclib}(${member}) did not happen`);
-      }
-      else {
-        update = true;
+        success = false;
+      } else {
         common.printMessage(`${proclib}(${member}) updated successfully with new stepLib entries`);
       }
+    } else {
+      common.printMessage(`Dry run: no update performed. Edited JCL available as unix file ${proclibMemberAsUnixFile}`);
     }
-  }
-  else {
+  } else {
     common.printError(`Error: Could not store updated contents in tmp unix file ${proclibMemberAsUnixFile}.`);
+    success = false;
   }
-  return update;
+  return success;
 }
 
 function processZisPluginDatasetArgs(inputArgs: string[]): string[] {
@@ -1325,8 +1447,10 @@ const regexCheckDataset = (word: string): boolean => {
 
 // Goes through the steplib section and adds entries, skipping blank lines and commented lines. However if an entry is commented and is
 // part of new list of entries, then we uncomment that entry/line.
-function updateStepLib(procLibfile: string, newStepLibEntries:  string[]) : any {
+function updateStepLib(procLibfile: string, newStepLibEntries:  string[], dryRun?: boolean) : any {
   let procJcl = xplatform.loadFileUTF8(procLibfile, xplatform.AUTO_DETECT);
+  common.printMessage(`JCL is currently: \n${procJcl}`);
+
   let lines = procJcl.split("\n");
 
   // find index of start of STEPLIB section
@@ -1364,7 +1488,9 @@ function updateStepLib(procLibfile: string, newStepLibEntries:  string[]) : any 
     lines.splice(i, 0, `//         DD   DSNAME=${newEntry},DISP=SHR`);
   });
 
-  return lines.join("\n");
+  let result = lines.join("\n");
+  common.printMessage(`JCL with edits: \n${result}`);
+  return result;
 }
 
 /*

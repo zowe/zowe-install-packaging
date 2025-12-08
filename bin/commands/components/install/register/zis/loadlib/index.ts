@@ -21,47 +21,27 @@ export function execute(componentName?: string, zisPluginDatasets?: string[], dr
   common.requireZoweYaml();
 
   if (zisPluginDatasets) {
-    let success = component.addZisLoadLibToStcJcl(zisPluginDatasets, dryRun);
+    let success = component.addPluginToZisSteplib(zisPluginDatasets, dryRun);
     if (!success) {
       common.printErrorAndExit(`ZIS plugin installation failed.`);
     }
-  } else if (!componentName) {
-    common.printErrorAndExit(`Input component name (-o) or ZIS plugin datasets (-z) required`);
   } else {
-    
-  }
-
-
-
-
-
-  const ZOWE_CONFIG=config.getZoweConfig();
-  // read extensionDirectory
-  const extensionDir=ZOWE_CONFIG.zowe.extensionDirectory;
-  if (!extensionDir) {
-    common.printErrorAndExit("Error ZWEL0180E: Zowe extension directory (zowe.extensionDirectory) is not defined in Zowe YAML configuration file.", undefined, 180);
-  }
-
-  const targetDir = stringlib.removeTrailingSlash(extensionDir);
-  const componentDir = pathoid.join(targetDir, componentName);
-
-
-  const manifest = component.getManifest(componentDir);
-  if (manifest.zisPlugins) {
-    if (os.platform != 'zos') {
-      common.printErrorAndExit(`ZIS plugin installation must be done on z/OS. Rerun commmand on a Zowe instance on z/OS to complete install`, undefined, 999);
-      
-    } else {
-      if (zisPluginDatasets) {
-        let success = component.addZisLoadLibToStcJcl(zisPluginDatasets, dryRun);
-        if (!success) {
-          common.printErrorAndExit(`ZIS plugin installation failed.`);
-        }
-      } else {
-        component.copyZisPluginsToAuthLoadLib(zisPlugins, dryRun);
-      }
+    const ZOWE_CONFIG=config.getZoweConfig();
+    // read extensionDirectory
+    const extensionDir=ZOWE_CONFIG.zowe.extensionDirectory;
+    if (!extensionDir) {
+      common.printErrorAndExit("Error ZWEL0180E: Zowe extension directory (zowe.extensionDirectory) is not defined in Zowe YAML configuration file.", undefined, 180);
     }
-  } else {
-    common.printDebug(`Component ${componentName} does not have ZIS plugins, action skipped`);
+
+    const targetDir = stringlib.removeTrailingSlash(extensionDir);
+    const componentDir = pathoid.join(targetDir, componentName);
+
+    let errors = component.addPluginsToZisAuthLoadlib(componentDir, dryRun);
+    if (errors.length > 0) {
+      errors.forEach((error: {rc: number, plugin: string})=> {
+        common.printError(`Error copying plugin ${error.plugin}, rc: ${error.rc}`);
+      });
+      common.printErrorAndExit(`ZIS plugin installation failed.`);
+    }
   }
 }

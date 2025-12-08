@@ -12,10 +12,8 @@
 import * as std from 'cm_std';
 import * as common from '../../../../../../libs/common';
 import * as stringlib from '../../../../../../libs/string';
-import * as shell from '../../../../../../libs/shell';
 import * as config from '../../../../../../libs/config';
 import * as component from '../../../../../../libs/component';
-import * as varlib from '../../../../../../libs/var';
 import { PathAPI as pathoid } from '../../../../../../libs/pathoid';
 
 export function execute(componentName: string, dryRun?: boolean) {
@@ -30,10 +28,11 @@ export function execute(componentName: string, dryRun?: boolean) {
   const targetDir = stringlib.removeTrailingSlash(extensionDir);
   const componentDir = pathoid.join(targetDir, componentName);
 
-  component.processZisPluginInstall(componentDir, false, dryRun);
-  /*
-      zisParmlibRegister()
-        editZisParmlibContents
-          updateUssParmlibKeyValue
-   */
+  let errors = component.zisParmlibRegister(componentDir, false, dryRun);
+  if (errors.length > 0) {
+    errors.forEach((error: {rc: number, plugin: string})=> {
+      common.printError(`Failed to register ZIS plugin ${error.plugin} into ZIS parmlib, rc=${error.rc}`);
+    });
+    common.printErrorAndExit(`ZIS plugin installation failed.`);
+  }
 }
