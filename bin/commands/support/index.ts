@@ -94,7 +94,21 @@ export function execute(): void {
   const zosmfHost = ZOWE_CONFIG.zOSMF?.host;
   const zosmfPort = ZOWE_CONFIG.zOSMF?.port;
   if (discovery && zosmfHost && zosmfPort) {
-    environment["zosmf_check"] = `'https://${zosmfHost}:${zosmfPort}/zosmf/info' => ${zosmf.validateZosmfHostAndPort(zosmfHost, zosmfPort)}`;
+    let jobSuffix = 'AG';
+    if (enabledComponents.includes('zaas') && !enabledComponents.includes('apiml')) {
+      jobSuffix = 'AZ';
+    }
+    const gatewayJobname = (ZOWE_CONFIG.zowe.job?.prefix || 'ZWE1') + jobSuffix;
+    let checkScheme = 'https';
+    const tlsPolicy = component.isClientAttls(); // does not allow for components.(apiml|gateway)...tls settings. only global/zaas
+    if ((ZOWE_CONFIG.components?.apiml?.enabled === true || ZOWE_CONFIG.components?.gateway?.enabled === true) && tlsPolicy === true ) {
+        checkScheme = 'http';
+    }
+    // envs should overrule attls settings
+    const finalScheme =  std.getenv('ZOSMF_SCHEME') || std.getenv('ZWE_zOSMF_scheme') || checkScheme;
+    const zosmfCheckAction = ZOWE_CONFIG.zowe.launchScript?.startupChecks?.zosmf || ZOWE_CONFIG.zowe.launchScript?.startupChecks?.default || 'exit';
+    //this checks with default tls and jobname settings, since this command is unlikely to be run under the STC account where ATTLS might be used
+    environment["zosmf_check"] = `'${checkScheme}://${zosmfHost}:${zosmfPort}/zosmf/info' => ${zosmf.validateZosmfHostAndPort(zosmfHost, zosmfPort,  finalScheme, gatewayJobname, (zosmfCheckAction == 'warn'))}`;
   }
 
   java.requireJava();
