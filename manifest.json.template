@@ -106,7 +106,7 @@
     },
     "org.zowe.apiml.sdk.certificate-analyser": {
       "version": "^3.0.3-SNAPSHOT",
-      "artifact": "certificate-analyser-*20251205.00451*.jar",
+      "artifact": "certificate-analyser-*.jar",
       "exclusions": ["*PR*.jar"]
     },
     "org.zowe.getesm": {
