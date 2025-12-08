@@ -15,8 +15,10 @@ import * as fs from 'fs-extra';
 import { FileType, TestFile, TestFileActions } from '../../zos/TestFileActions';
 import { REMOTE_SYSTEM_INFO } from '../../config/TestConfig';
 import _ from 'lodash';
+import * as path from 'path';
 
 const testSuiteName = 'generated-env-tests';
+const resourceDir = path.resolve('src', '__tests__', 'env', '__resources__');
 describe(`${testSuiteName}`, () => {
   let testRunner: RemoteTestRunner;
   let cfgYaml: ZoweYamlType;
@@ -31,6 +33,7 @@ describe(`${testSuiteName}`, () => {
     };
     testRunner.addCleanFn(cleanSecurityManager);
   });
+
   beforeEach(async () => {
     cfgYaml = ZoweConfig.getZoweYaml();
     _.set(cfgYaml, 'node.home', REMOTE_SYSTEM_INFO.zosNodeHome);
@@ -68,6 +71,16 @@ describe(`${testSuiteName}`, () => {
         expect(fs.readFileSync(envFile, 'utf8')).toMatchSnapshot();
       }
     }
+
+    it('env with null values', async () => {
+      const testFiles = ['setup_cert_keyring.yaml'];
+      for (const file of testFiles) {
+        const zoweYaml = ZoweConfig.loadZoweYaml(resourceDir, file, true);
+        const result = await testRunner.runZweTest(zoweYaml, `internal start prepare`);
+        snapEnvFiles(zoweYaml);
+        expect(result.rc).toBe(0);
+      }
+    });
 
     it('env no node', async () => {
       delete cfgYaml.node;

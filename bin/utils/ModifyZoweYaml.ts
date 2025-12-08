@@ -57,7 +57,7 @@ if (modType == MOD_TYPES.update) {
 
   common.printTrace(`Updating: ${file}, ${key}, ${newValue}, ${validate}`)
 
-  rc = jsonlib.updateZoweYaml(file, key, newValue, validate);
+  rc = jsonlib.updateZoweYamlFileOnly(file, key, newValue, validate);
 } else if (modType == MOD_TYPES.delete) {
   const validate: boolean = setValidate(pgmArgs[3]); 
   common.printTrace(`Deleting: ${file}, ${key}`);
