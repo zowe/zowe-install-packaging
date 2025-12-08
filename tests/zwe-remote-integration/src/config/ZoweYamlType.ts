@@ -866,6 +866,11 @@ const zoweSchema = zoweYamlSchema as {
                   default: 'exit';
                   description: 'Checks properties of certificates to verify that they are valid for use by Zowe';
                   enum: ['exit', 'warn', 'disabled'];
+                zosmf: {
+                  type: 'string';
+                  default: 'exit';
+                  description: "Checks z/OSMF to see if it is running and meet's Zowe's requirements";
+                  enum: ['exit', 'warn', 'disabled'];
                 };
               };
             };
