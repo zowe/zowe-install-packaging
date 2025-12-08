@@ -91,11 +91,11 @@ export function execute(quitOnError?: boolean, level?: string): number {
   let configLines = [];
   let output = '';
   if (result.out) {
-    configLines.concat(result.out.split('\n'));
+    configLines = configLines.concat(result.out.split('\n'));
     output += result.out;
   }
   if (result.err) {
-    configLines.concat(result.err.split('\n'));
+    configLines = configLines.concat(result.err.split('\n'));
     output += result.err;
   }
 
