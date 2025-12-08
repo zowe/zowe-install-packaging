@@ -97,12 +97,12 @@ function buildUpdateObjWithArrays(zoweConfig: any, key: string): any {
       const matchKey = matches[1];
       const matchArrIdx = matches[2];
       if (matchArrIdx) {
-          currObj[matchKey] = currZoweCfg[matchKey] || [];
+          currObj[matchKey] = currZoweCfg?.matchKey ? currZoweCfg[matchKey] : [];
       } else {
           currObj[matchKey] = {};
       }
       currObj = currObj[matchKey];
-      currZoweCfg = currZoweCfg[matchKey];
+      currZoweCfg = currZoweCfg[matchKey] || {};
     }
     return updateObj;
 }
