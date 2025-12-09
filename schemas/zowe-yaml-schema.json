@@ -786,6 +786,7 @@
     },
     "java": {
       "type": "object",
+      "additionalProperties": false,
       "properties": {
         "home": {
           "$ref": "/schemas/v2/server-common#zoweOptionalPath",
@@ -795,6 +796,7 @@
     },
     "node": {
       "type": "object",
+      "additionalProperties": false,
       "properties": {
         "home": {
           "$ref": "/schemas/v2/server-common#zoweOptionalPath",
