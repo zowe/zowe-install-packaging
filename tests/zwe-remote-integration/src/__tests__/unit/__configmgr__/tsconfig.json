@@ -1,0 +1,38 @@
+{
+  "compilerOptions": {
+    "lib": [ "ES2021" ],
+    "module": "ES2020",
+    "target": "ES2021",
+    "esModuleInterop": true,
+    "moduleResolution": "node",
+    "removeComments": false,
+    "preserveConstEnums": true,
+    "sourceMap": false,
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
+    "pretty": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": false,
+    "allowUnreachableCode": false,
+    "allowJs": false,
+    "listEmittedFiles": true,
+    "strict": false,
+    "outDir": "./lib",
+    "baseUrl": "./",
+    
+    "preserveSymlinks": false,
+    "paths": {
+	    // A series of entries which re-map imports to lookup locations relative to the baseUrl,
+	    // there is a larger coverage of paths in the handbook.
+	    // See: https://www.typescriptlang.org/tsconfig
+	    "*": [ "../../../../../../build/zwe/types/@qjstypes/*" ],
+	  }
+  },
+  "include": [
+    // "../../../../../../bin",
+    "./tests",
+  ],
+  "exclude": [
+    "**/bin",
+  ]
+}
