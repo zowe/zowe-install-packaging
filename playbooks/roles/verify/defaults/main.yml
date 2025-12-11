@@ -29,4 +29,4 @@ zowe_instance_id: 1
 # ports will be tested
 zowe_apiml_zaas_port: 7558
 zowe_apiml_gateway_port: 7554
-zowe_zlux_port: 7556
+zowe_zlux_port: 7554
