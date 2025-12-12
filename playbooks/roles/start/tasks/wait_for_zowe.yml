@@ -89,6 +89,10 @@
     follow_redirects: all
     method: GET
     validate_certs: false
+    status_code:
+    - 200
+    - 204
+    - 302
   register: _result
   until: _result.status == 200
   retries: "{{ wait_for_zowe_service_retries | int }}"
