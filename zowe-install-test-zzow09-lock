@@ -1,1 +1,15 @@
-""
+{
+  "lockAcquiredTime": "Fri Dec 12 2025 16:23:21 GMT+0000 (Coordinated Universal Time)",
+  "uid": "1765556601824675828",
+  "repository": {
+    "owner": "zowe",
+    "repo": "zowe-install-packaging"
+  },
+  "branch": "user/markackert/finalize-attls-automation",
+  "workflow": "Zowe CICD Integration Tests",
+  "job": "cicd-test",
+  "actor": "MarkAckert",
+  "runId": 20172950059,
+  "runNumber": 7940,
+  "link": "https://github.com/zowe/zowe-install-packaging/actions/runs/20172950059"
+}
