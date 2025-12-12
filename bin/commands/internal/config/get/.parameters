@@ -1,3 +1,2 @@
 ha-instance|i|string|||||Zowe high availability instance ID.
 path|p|string|required||||Path of the configuration. For example, `components.gateway.port`.
-list-ha-instances||boolean||||Returns the list of HA instances names (keys).

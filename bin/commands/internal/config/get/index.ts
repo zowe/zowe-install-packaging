@@ -13,58 +13,41 @@ import * as common from '../../../../libs/common';
 import * as config from '../../../../libs/config';
 import * as fakejq from '../../../../libs/fakejq';
 
-export function execute(configPath:string, haInstance?: string, listHaInstances?: boolean) {
+export function execute(configPath:string, haInstance?: string) {
   if ((configPath.endsWith('.') && configPath.length != 1)
       || (configPath.indexOf('..') != -1)) {
     common.printErrorAndExit(`Error ZWEL0303E: Invalid config path syntax for ${configPath}. Get only supports single period delimiters between values.`, undefined, 303);
   }
   common.requireZoweYaml();
   const ZOWE_CONFIG=config.getZoweConfig();
-
-  if (listHaInstances) {
-    if (ZOWE_CONFIG.haInstances) {
-        let haList = '';
-        let haSanitizedList = '';
-        for (let haId in ZOWE_CONFIG.haInstances) {
-            haList += haId + ',';
-            haSanitizedList += config.sanitizeHaInstanceId(haId) + ',';
-        }
-        haList = haList.slice(0, -1);
-        haSanitizedList = haSanitizedList.slice(0, -1);
-        common.printMessage(haList);
-        common.printMessage(haSanitizedList);
-    }
-  } else {
-
-    let output;
-    if (haInstance) {
-      haInstance=config.sanitizeHaInstanceId();
-    }
-    if (haInstance && (!configPath.startsWith(`haInstances.${haInstance}.`))) {
-      output=fakejq.jqget(ZOWE_CONFIG, `.haInstances[${haInstance}].${configPath}`); //TODO expand path
-      if (!output) { //if the instance doesnt specify this config, we'll fallback to the base config.
-        output=fakejq.jqget(ZOWE_CONFIG, `.${configPath}`); //TODO expand path
-      }
-    } else {
+  let output;
+  if (haInstance) {
+    haInstance=config.sanitizeHaInstanceId();
+  }
+  if (haInstance && (!configPath.startsWith(`haInstances.${haInstance}.`))) {
+    output=fakejq.jqget(ZOWE_CONFIG, `.haInstances[${haInstance}].${configPath}`); //TODO expand path
+    if (!output) { //if the instance doesnt specify this config, we'll fallback to the base config.
       output=fakejq.jqget(ZOWE_CONFIG, `.${configPath}`); //TODO expand path
     }
-    if (output===undefined) {
-      output = '';
-    }
-    if (Array.isArray(output)) {
-      output.forEach((line)=> {
-        if (typeof line != 'object') {
-          common.printMessage(line);
-        } else {
-          common.printMessage(JSON.stringify(line));
-        }
-      });
-    } else {
-      if (typeof output != 'object') {
-        common.printMessage(output);
+  } else {
+    output=fakejq.jqget(ZOWE_CONFIG, `.${configPath}`); //TODO expand path
+  }
+  if (output===undefined) {
+    output = '';
+  }
+  if (Array.isArray(output)) {
+    output.forEach((line)=> {
+      if (typeof line != 'object') {
+        common.printMessage(line);
       } else {
-        common.printMessage(JSON.stringify(output));
+        common.printMessage(JSON.stringify(line));
       }
+    });
+  } else {
+    if (typeof output != 'object') {
+      common.printMessage(output);
+    } else {
+      common.printMessage(JSON.stringify(output));
     }
   }
 }
