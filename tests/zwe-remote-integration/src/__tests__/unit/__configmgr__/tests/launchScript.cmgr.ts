@@ -8,10 +8,10 @@
  * Copyright Contributors to the Zowe Project.
  */
 
-import * as config from '../bin/libs/config';
-import { _unit_test } from '../bin/commands/internal/start/prepare/index';
+import * as config from '@bin/libs/config';
+import { _unit_test } from '@bin/commands/internal/start/prepare/index';
 import { assertEqualsStrict } from './common/assert';
-import * as common from '../bin/libs/common';
+import * as common from '@bin/libs/common';
 
 const ZOWE_CONFIG = config.getZoweConfig();
 common.printMessage('Starting "getStartupCheckMode" test cases.');

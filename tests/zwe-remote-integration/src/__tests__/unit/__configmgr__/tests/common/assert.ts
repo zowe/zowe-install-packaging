@@ -8,7 +8,7 @@
  * Copyright Contributors to the Zowe Project.
  */
 
-import * as common from '../../bin/libs/common';
+import * as common from '@bin/libs/common';
 
 export function assertEqualsStrict(val1, val2): number {
   if (val1 !== val2) {
