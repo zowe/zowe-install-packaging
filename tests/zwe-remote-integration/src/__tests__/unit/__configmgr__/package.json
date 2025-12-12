@@ -4,7 +4,7 @@
   "description": "A CLI and set of libraries that constitute the Zowe server infrastructure",
   "scripts": {
     "prebuild": "cd ../../../../../../build/zwe && npm run dev",
-    "build": "tsc --build tsconfig.json --force"
+    "build": "tsc --build tsconfig.json --force && tsc-alias -p tsconfig.json"
   },
   "repository": {
     "type": "git",
@@ -20,6 +20,7 @@
   },
   "homepage": "https://github.com/zowe/zowe-install-packaging#readme",
   "devDependencies": {
+    "tsc-alias": "^1.8.10",
     "typescript": "5.4.5"
   }
 }
