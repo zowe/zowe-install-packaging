@@ -19,7 +19,6 @@
     "strict": false,
     "outDir": "./lib",
     "baseUrl": "./",
-    
     "preserveSymlinks": false,
     "paths": {
 	    // A series of entries which re-map imports to lookup locations relative to the baseUrl,
@@ -29,9 +28,18 @@
 	    "*": [ "../../../../../../build/zwe/types/@qjstypes/*" ],
 	  }
   },
+  "tsc-alias": {
+    "resolveFullPaths": false,
+    "verbose": true,
+    "replacers": {
+      "bin-replacer": {
+        "enabled": true,
+        "file": "./hack/bin-replacer.js"
+      }
+    }
+  },
   "include": [
-    "../../../../../../bin",
-    "./tests",
+    "tests/**/*",
   ],
   "exclude": [
   ]
