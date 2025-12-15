@@ -9,6 +9,7 @@
   Copyright Contributors to the Zowe Project.
 */
 
+import * as std from 'cm_std';
 import * as common from '../../../../libs/common';
 import * as config from '../../../../libs/config';
 import * as fakejq from '../../../../libs/fakejq';
@@ -24,11 +25,14 @@ export function execute(configPath:string, haInstance?: string) {
   
   if (haInstance && ZOWE_CONFIG.haInstances) {
     haInstance = config.sanitizeHaInstanceId();
-      for (const haInstanceID in ZOWE_CONFIG.haInstances) {    
-        if (haInstanceID.toLowerCase() == haInstance) {
-          haInstance = haInstanceID;
-        }
-    }
+    for (const haInstanceID in ZOWE_CONFIG.haInstances) {    
+      if (haInstanceID.toLowerCase() == haInstance) {
+        haInstance = haInstanceID;
+      }
+  }
+  const spaces = std.getenv('ZWE_CLI_PARAMETER_FORMAT') == 'true' ? 2 : 0;
+  if (haInstance) {
+    haInstance=config.sanitizeHaInstanceId();
   }
 
   if (haInstance && (!configPath.startsWith(`haInstances.${haInstance}.`))) {
@@ -47,14 +51,14 @@ export function execute(configPath:string, haInstance?: string) {
       if (typeof line != 'object') {
         common.printMessage(line);
       } else {
-        common.printMessage(JSON.stringify(line));
+        common.printMessage(JSON.stringify(line, null, spaces));
       }
     });
   } else {
     if (typeof output != 'object') {
       common.printMessage(output);
     } else {
-      common.printMessage(JSON.stringify(output));
+      common.printMessage(JSON.stringify(output, null, spaces));
     }
   }
 }

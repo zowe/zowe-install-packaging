@@ -501,7 +501,7 @@ function getBooleanEnv(variableName) {
 }
 
 
-function isClientAttls() {
+export function isClientAttls() {
   const clientGlobalAttls = getBooleanEnv('ZWE_zowe_network_client_tls_attls');
   const serverGlobalAttls = getBooleanEnv('ZWE_zowe_network_server_tls_attls');
   const clientLocalAttls = getBooleanEnv('ZWE_components_zaas_zowe_network_client_tls_attls');
@@ -579,7 +579,7 @@ export function processComponentApimlStaticDefinitions(componentDir: string): bo
         const contents = xplatform.loadFileUTF8(path,xplatform.AUTO_DETECT);
         if (contents) {
           const zosmfScheme = std.getenv("ZOSMF_SCHEME");
-          const attls = isClientAttls()
+          const attls = isClientAttls();
           const schemeEnv = std.getenv("ZWE_zOSMF_scheme");
 
           let scheme = "https";

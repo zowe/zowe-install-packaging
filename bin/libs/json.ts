@@ -104,16 +104,17 @@ function buildUpdateObjWithArrays(zoweConfig: any, key: string): any {
 }
 
 /**
- * Updates the YAML key in the zowe.yaml passed by the caller with val. Always overwrites on-disk.
+ * Updates the provided zowe.yaml file ONLY with the YAML key and value passed by the caller. Always overwrites on-disk. 
+ * Schema validation after update is optional, and defaults to true.
  * 
- * Example: `updateZoweYaml('/path/to/zowe.yaml', 'components.zss.enabled', true);
+ * Example: `updateZoweYamlFileOnly('/path/to/zowe.yaml', 'components.zss.enabled', true);
  * 
  * @param file 
  * @param key 
  * @param val 
  * @returns 
  */
-export function updateZoweYaml(file: string, key: string, val: any, validate: boolean=true): number {
+export function updateZoweYamlFileOnly(file: string, key: string, val: any, validate: boolean=true): number {
   common.printMessage(`- update zowe config ${file}, key: "${key}" with value: ${val}, and validate: ${validate}`);
   let mergeObj = {};
   if (/\[\d+\]/.test(key)) {
@@ -128,6 +129,30 @@ export function updateZoweYaml(file: string, key: string, val: any, validate: bo
   } else {
     common.printError(`  * jqset error`); 
     return -1;
+  }
+}
+
+/**
+ * Updates the YAML key in the zowe.yaml passed by the caller with val, AND updates the zowe.yaml which can be found via ZOWE_CONFIG_PATH. 
+ * This can result in multiple zowe.yaml file updates, typically in both a private merged file and the original zowe.yaml.
+ * 
+ * Example: `updateZoweYaml('/path/to/zowe.merged.yaml', 'components.zss.enabled', true);
+ *   --> This will update both zowe.merged.yaml, and whatever YAML was passed to the calling program via ("-c my.zowe.yaml").
+ * 
+ * @param file 
+ * @param key 
+ * @param val 
+ * @returns 
+ */
+export function updateZoweYaml(file: string, key: string, val: any) {
+  common.printMessage(`- update zowe config ${file}, key: "${key}" with value: ${val}`);
+  let [ success, updateObj ] = fakejq.jqset({}, key, val);
+  
+  if (success) {
+    common.printMessage(`  * Success`);
+    config.updateZoweConfig(updateObj, true, 1); //TODO externalize array merge strategy = 1
+  } else {
+    common.printError(`  * Error`); 
   }
 }
 

@@ -1,2 +1,25 @@
 Return value of a configuration defined in YAML configuration.
-This command requires zowe.useConfigmgr=true or --configmgr to be used.
+
+If the value is undefined, empty string is returned. Otherwise return
+value, array or JSON object.
+
+To get the complete configuration, use dot as a path, for example:
+`zwe config get --config zowe.yaml --path .`
+
+To get subset of configuration or specific value, use comma separated path:
+
+`zwe config get --config zowe.yaml --path zowe.setup`
+`zwe config get --config zowe.yaml --path zowe.setup.dataset.prefix`
+
+To get specific item in array, use square brackets. Array starts with index 0.
+
+```yaml
+zowe:
+  externalDomains:
+    - zero.example.com
+    - one.example.com
+    - two.example.com
+```
+`zwe config get -c 'PARMLIB(ZOWE.PARMS(YAML))' -p zowe.externalDomains[1]` returns `one.example.com`.
+`zwe config get -c 'PARMLIB(ZOWE.PARMS(YAML))' -p zowe.externalDomains[]` returns all items.
+`zwe config get -c 'PARMLIB(ZOWE.PARMS(YAML))' -p zowe.externalDomains` returns all items too.
