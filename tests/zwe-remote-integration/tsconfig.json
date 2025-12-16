@@ -105,6 +105,7 @@
     "exclude": [
         "lib",
         "node_modules",
+        "**/__configmgr__/**",
         "**/__mocks__/*",
         "**/*.spec.ts",
         "**/*-spec.ts",

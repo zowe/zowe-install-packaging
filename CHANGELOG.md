@@ -6,6 +6,7 @@ All notable changes to the Zowe Installer will be documented in this file.
 
 - Enhancement: Added dry-run option for `zwe components install` so that you can test an install before committing to it. [#4582](https://github.com/zowe/zowe-install-packaging/pull/4582)
 - Enhancement: Split `zwe components install` into subcommands with dry-run options to help you with each step of component installation. [#4582](https://github.com/zowe/zowe-install-packaging/pull/4582)
+- Enhancement: `zwe config get` command uses new `--format` option to format the output. [#4591](https://github.com/zowe/zowe-install-packaging/pull/4591)
 - Enhancement: Added manifest property `apimlServices.static.once` which restricts APIML static definition files to exist only once per HA setup [#4587](https://github.com/zowe/zowe-install-packaging/pull/4587)
 
 ## `3.4.0`
