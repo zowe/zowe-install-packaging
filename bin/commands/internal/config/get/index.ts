@@ -20,6 +20,7 @@ export function execute(configPath:string, haInstance?: string) {
     common.printErrorAndExit(`Error ZWEL0303E: Invalid config path syntax for ${configPath}. Get only supports single period delimiters between values.`, undefined, 303);
   }
   common.requireZoweYaml();
+  const spaces = std.getenv('ZWE_CLI_PARAMETER_FORMAT') == 'true' ? 2 : 0;
   const ZOWE_CONFIG=config.getZoweConfig();
   let output;
   
@@ -29,10 +30,7 @@ export function execute(configPath:string, haInstance?: string) {
       if (haInstanceID.toLowerCase() == haInstance) {
         haInstance = haInstanceID;
       }
-  }
-  const spaces = std.getenv('ZWE_CLI_PARAMETER_FORMAT') == 'true' ? 2 : 0;
-  if (haInstance) {
-    haInstance=config.sanitizeHaInstanceId();
+    }
   }
 
   if (haInstance && (!configPath.startsWith(`haInstances.${haInstance}.`))) {
