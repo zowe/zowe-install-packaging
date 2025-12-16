@@ -21,7 +21,13 @@ import * as componentlib from '../../../libs/component';
 import { HandlerCaller, getHandler, getRegistry } from '../handlerutils';
 
 export function execute(componentFile: string, autoEncoding?:string, skipEnable?:boolean, handler?: string, registry?: string, dryRun?: boolean, upgrade?: boolean, zisPluginDatasets?: string[]) {
-  if (!fs.fileExists(componentFile) && !fs.directoryExists(componentFile)) {
+  const isFile = fs.fileExists(componentFile);
+  const isDir = fs.directoryExists(componentFile);
+  if (!isFile && !isDir) {
+    // Limiting component names to not starting with / to distinguish between user input of directory vs registry lookup
+    if (componentFile.startsWith('/')) {
+      common.printErrorAndExit(`Directory ${componentFile} does not exist or read permission denied.`, undefined, 999);
+    }
     common.requireZoweYaml();
     if (componentFile && !upgrade) {
       const componentDir = componentlib.findComponentDirectory(componentFile);
@@ -36,6 +42,11 @@ export function execute(componentFile: string, autoEncoding?:string, skipEnable?
 
     if (componentFile==='null' && !dryRun) {
       common.printErrorAndExit("Error ZWEL0304E: Handler install failure, cannot continue.", undefined, 304);
+    }
+  } else if (isDir) {
+    const manifestLocation = componentlib.getManifestPath(componentFile);
+    if (!manifestLocation) {
+      common.printErrorAndExit(`Cannot find manifest for ${componentFile}, not a valid Zowe component directory.`, undefined, 999);
     }
   }
 

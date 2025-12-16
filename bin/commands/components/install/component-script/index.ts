@@ -18,6 +18,8 @@ import * as component from '../../../../libs/component';
 import * as varlib from '../../../../libs/var';
 import { PathAPI as pathoid } from '../../../../libs/pathoid';
 
+const COMMAND_NAME = 'zwe-components-install-component-script';
+
 export function execute(componentName: string, dryRun?: boolean) {
   common.requireZoweYaml();
   const ZOWE_CONFIG=config.getZoweConfig();
@@ -37,22 +39,22 @@ export function execute(componentName: string, dryRun?: boolean) {
     const componentRoot = pathoid.join(targetDir, componentName);
 
     const command = `. ${ZOWE_CONFIG.zowe.runtimeDirectory}/bin/libs/configmgr-index.sh && cd ${componentRoot} && . ${scriptPath} ; export rc=$? ; export -p`;
-    common.printFormattedInfo("ZWELS", "zwe-components-install-process-hook", `Running component install script "${scriptPath}"`);
-    common.printFormattedInfo("ZWELS", "zwe-components-install-process-hook", `Running command ${command}`);
+    common.printFormattedInfo(common.MSG_KEY, COMMAND_NAME, `Running component install script "${scriptPath}"`);
+    common.printFormattedInfo(common.MSG_KEY, COMMAND_NAME, `Running command ${command}`);
     if (!dryRun) {
       // run commands
       const result = shell.execOutSync('sh', '-c', command);
       if (result.rc==0) {
         varlib.getEnvironmentExports(result.out, true);
         const outLines = result.out.split('\n');
-        common.printFormattedInfo("ZWELS", "zwe-components-install-process-hook", `- commands.install output from ${componentName} is:`);
+        common.printFormattedInfo(common.MSG_KEY, COMMAND_NAME, `- commands.install output from ${componentName} is:`);
         common.printMessage(outLines.filter(line => !line.startsWith('export ')).join('\n'));
-        common.printFormattedDebug("ZWELS", "zwe-components-install-process-hook", outLines.filter(line => line.startsWith('export ')).join('\n'));
+        common.printFormattedDebug(common.MSG_KEY, COMMAND_NAME, outLines.filter(line => line.startsWith('export ')).join('\n'));
       } else {
         common.printError(`install script ended with error, rc=${result.rc}`);
         if (result.out) {
           const outLines = result.out.split('\n');
-          common.printFormattedInfo("ZWELS", "zwe-components-install-process-hook", `- commands.install output from ${componentName} is:`);
+          common.printFormattedInfo(common.MSG_KEY, COMMAND_NAME, `- commands.install output from ${componentName} is:`);
           common.printMessage(outLines.filter(line => !line.startsWith('export ')).join('\n'));
         }
         std.exit(result.rc);

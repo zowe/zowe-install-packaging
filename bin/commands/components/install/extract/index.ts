@@ -22,6 +22,8 @@ import * as java from '../../../../libs/java';
 import { PathAPI as pathoid } from '../../../../libs/pathoid';
 
 
+const COMMAND_NAME = `zwe-components-install-extract`;
+
 //TODO does this handle componentFile relative paths correctly or not
 export function execute(componentFile: string, autoEncoding?: string, upgrade?: boolean, dryRun?: boolean): string|undefined {
   //////////////////////////////////////////////////////////////
@@ -51,7 +53,7 @@ export function execute(componentFile: string, autoEncoding?: string, upgrade?: 
   //////////////////////////////////////////////////////////////
   // check existence of extension directory, create if it's not there
   if (!fs.directoryExists(targetDir)) {
-    common.printMessage(`zowe.extensionDirectory (${targetDir}) does not exist and will be created`);
+    common.printFormattedInfo(common.MSG_KEY, COMMAND_NAME, `zowe.extensionDirectory (${targetDir}) does not exist and will be created`);
     if (!dryRun) {
       fs.mkdirp(targetDir);
       if (!fs.directoryExists(targetDir)) {
@@ -78,9 +80,10 @@ export function execute(componentFile: string, autoEncoding?: string, upgrade?: 
     fs.rmrf(tmpDir);
   }
   
-  common.printMessage(`Install ${moduleFileShort}`);
+  common.printFormattedInfo(common.MSG_KEY, COMMAND_NAME, `Installing ${moduleFileShort}`);
 
   let dryRunDir;
+  // if input is a directory, use symlink to add to zowe
   if (fs.directoryExists(componentFile)) {
     dryRunDir = componentFile;
     common.printMessage(`- Module ${componentFile} is a directory`);
@@ -91,6 +94,7 @@ export function execute(componentFile: string, autoEncoding?: string, upgrade?: 
         common.printErrorAndExit(`Error ZWEL0204E: Symlink creation failure, error=${rc}`, undefined, 204);
       }
     }
+  // otherwise, extract it.
   } else if (fs.fileExists(componentFile) || dryRun) {
     // create temporary directory to lay down extension files in
     fs.mkdirp(tmpDir);
@@ -99,18 +103,22 @@ export function execute(componentFile: string, autoEncoding?: string, upgrade?: 
 
     let command: string;
 
-    if (componentFile.endsWith('.pax')) {
+    // we can extract even if extensions are in upper case
+    let componentFileLower = componentFile.toLowerCase();
+    if (componentFileLower.endsWith('.pax')) {
       command = `cd ${tmpDir} && pax -ppx -rf ${componentFile}`;
-    } else if (componentFile.endsWith('.zip')) {
+    } else if (componentFileLower.endsWith('.pax.z')) {
+      command = `cd ${tmpDir} && pax -ppx -X -rf ${componentFile}`;
+    } else if (componentFileLower.endsWith('.zip')) {
       java.requireJava();
       command = `cd ${tmpDir} && jar xf ${componentFile}`;
-    } else if (componentFile.endsWith('.tar')) {
+    } else if (componentFileLower.endsWith('.tar')) {
       command = `_CEE_RUNOPTS="FILETAG() POSIX(ON)" cd ${tmpDir} && pax -x tar -rf "${componentFile}"`;
     } else {
-      common.printErrorAndExit(`Error ZWEL0318E File extension invalid. Supported file extensions: .pax, .tar, .zip`, undefined, 318);
+      common.printErrorAndExit(`Error ZWEL0318E File extension invalid. Supported file extensions: .pax, .pax.z, .tar, .zip`, undefined, 318);
     }
 
-    common.printMessage(`Running command ${command}`);
+    common.printFormattedInfo(common.MSG_KEY, COMMAND_NAME, `- Running command ${command}`);
     if (!dryRun) {
       result = shell.execSync('sh', '-c', command);
       if (result.rc) {
@@ -127,7 +135,7 @@ export function execute(componentFile: string, autoEncoding?: string, upgrade?: 
 
   let manifestDir = dryRun ? dryRunDir ? dryRunDir : undefined : tmpDir;
 
-  // automatically tag files
+  // tag files if requested. only valid for zos
   if (os.platform == 'zos') {
 
     let manifestEncoding:number;
@@ -151,9 +159,9 @@ export function execute(componentFile: string, autoEncoding?: string, upgrade?: 
     }
     if (autoEncoding != 'no' && autotag == 'yes') {
       // automatically tag files
-      common.printMessage("- Automatically tag files");
+      common.printFormattedInfo(common.MSG_KEY, COMMAND_NAME, "- Automatically tag files");
       let command = `"${ZOWE_CONFIG.zowe.runtimeDirectory}/bin/utils/tag-files.sh" "${tmpDir}" 2>&1`;
-      common.printMessage(`- Running command ${command}`);
+      common.printFormattedInfo(common.MSG_KEY, COMMAND_NAME`- Running command ${command}`);
 
       if (!dryRun) {
         result = shell.execOutSync('sh', '-c', command);
@@ -204,21 +212,22 @@ export function execute(componentFile: string, autoEncoding?: string, upgrade?: 
         }
         common.printErrorAndExit(`Error ZWEL0155E: Component ${componentName} already exists in ${targetDir}. If you meant to upgrade this component, run the command 'zwe components upgrade' instead.`, undefined, 155);
       } else {
-        common.printMessage(`Creating backup of upgraded component`);
+        common.printFormattedInfo(common.MSG_KEY, COMMAND_NAME, `Creating backup of upgraded component`);
         if (fs.pathExists(bkpDir)) {
-          common.printMessage(`Removing older backup, "${bkpDir}"`);
+          common.printFormattedInfo(common.MSG_KEY, COMMAND_NAME, `- Removing older backup, "${bkpDir}"`);
           if (!dryRun) {
             fs.rmrf(bkpDir);
           }
         }
-        common.printMessage(`Renaming "${destinationDir}" to backup "${bkpDir}"`);
+        common.printFormattedInfo(common.MSG_KEY, COMMAND_NAME, `- Renaming "${destinationDir}" to backup "${bkpDir}"`);
         if (!dryRun) {
           os.rename(destinationDir, bkpDir);
         }
       }
     }
 
-    common.printMessage(`- Completing extract by renaming "${tmpDir}" to "${destinationDir}".`);
+    // extract complete, commit tmp dir as final dir
+    common.printFormattedInfo(common.MSG_KEY, COMMAND_NAME, `- Completing extract by renaming "${tmpDir}" to "${destinationDir}".`);
     if (!dryRun) {
       const renameResult = os.rename(tmpDir, destinationDir);
       if (renameResult < 0) {

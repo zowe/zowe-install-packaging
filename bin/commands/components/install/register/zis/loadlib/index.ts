@@ -23,7 +23,7 @@ export function execute(componentName?: string, zisPluginDatasets?: string[], dr
   if (zisPluginDatasets) {
     let success = component.addPluginToZisSteplib(zisPluginDatasets, dryRun);
     if (!success) {
-      common.printErrorAndExit(`ZIS plugin installation failed.`);
+      common.printErrorAndExit(`ZIS plugin installation failed.`, undefined, 999);
     }
   } else {
     const ZOWE_CONFIG=config.getZoweConfig();
@@ -41,7 +41,7 @@ export function execute(componentName?: string, zisPluginDatasets?: string[], dr
       errors.forEach((error: {rc: number, plugin: string})=> {
         common.printError(`Error copying plugin ${error.plugin}, rc: ${error.rc}`);
       });
-      common.printErrorAndExit(`ZIS plugin installation failed.`);
+      common.printErrorAndExit(`ZIS plugin installation failed.`, undefined, 999);
     }
   }
 }

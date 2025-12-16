@@ -6,4 +6,4 @@ ZWEL0167E|167|Cannot find component name from %s package manifest.
 ZWEL0180E|180|Zowe property %s is not defined in Zowe YAML configuration file.
 ZWEL0204E|204|Symlink creation failure, error=%s
 ZWEL0313E|313|Cannot find component file %s.
-ZWEL0318E|318|File extension invalid. Supported file extensions: .pax, .tar, .zip
+ZWEL0318E|318|File extension invalid. Supported file extensions: .pax, .pax.z, .tar, .zip

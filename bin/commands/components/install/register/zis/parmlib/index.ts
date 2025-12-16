@@ -33,6 +33,6 @@ export function execute(componentName: string, dryRun?: boolean) {
     errors.forEach((error: {rc: number, plugin: string})=> {
       common.printError(`Failed to register ZIS plugin ${error.plugin} into ZIS parmlib, rc=${error.rc}`);
     });
-    common.printErrorAndExit(`ZIS plugin installation failed.`);
+    common.printErrorAndExit(`ZIS plugin installation failed.`, undefined, 999);
   }
 }
