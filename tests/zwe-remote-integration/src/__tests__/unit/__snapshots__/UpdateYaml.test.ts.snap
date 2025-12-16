@@ -11,7 +11,7 @@ exports[`unit-updateyaml (SHORT) update_yaml different config syntaxes 4`] = `
   * Exit code: 1
   * Output:
     - update zowe config PARMLIB(TEST.DATASET.PFX.PRMTST(ZWECONF)), key: "zowe.notexist" with value: /a/b/c, and validate: true
-      * Success
+      * jqset success
     Error: Validation of update to zowe-update-yaml found invalid JSON Schema data
     Validity Exceptions(s) with object at 
       Validity Exceptions(s) with object at /zowe
@@ -24,7 +24,7 @@ exports[`unit-updateyaml (SHORT) update_yaml different config syntaxes 5`] = `
   * Exit code: 1
   * Output:
     - update zowe config PARMLIB(TEST.DATASET.PFX.PRMTST(ZWECONF)), key: "zowe.setup.jcl.enable" with value: badvalue, and validate: true
-      * Success
+      * jqset success
     Error: Validation of update to zowe-update-yaml found invalid JSON Schema data
     Validity Exceptions(s) with object at 
       Validity Exceptions(s) with object at /zowe
@@ -45,7 +45,7 @@ exports[`unit-updateyaml (SHORT) update_yaml different config syntaxes 9`] = `
   * Exit code: 1
   * Output:
     - update zowe config FILE(/test/dir/zowe.test.yaml), key: "zowe.notexist" with value: /a/b/c, and validate: true
-      * Success
+      * jqset success
     Error: Validation of update to zowe-update-yaml found invalid JSON Schema data
     Validity Exceptions(s) with object at 
       Validity Exceptions(s) with object at /zowe
@@ -58,7 +58,7 @@ exports[`unit-updateyaml (SHORT) update_yaml different config syntaxes 10`] = `
   * Exit code: 1
   * Output:
     - update zowe config FILE(/test/dir/zowe.test.yaml), key: "zowe.setup.jcl.enable" with value: badvalue, and validate: true
-      * Success
+      * jqset success
     Error: Validation of update to zowe-update-yaml found invalid JSON Schema data
     Validity Exceptions(s) with object at 
       Validity Exceptions(s) with object at /zowe
@@ -79,7 +79,7 @@ exports[`unit-updateyaml (SHORT) update_yaml different config syntaxes 14`] = `
   * Exit code: 1
   * Output:
     - update zowe config /test/dir/zowe.test.yaml, key: "zowe.notexist" with value: /a/b/c, and validate: true
-      * Success
+      * jqset success
     Error: Validation of update to zowe-update-yaml found invalid JSON Schema data
     Validity Exceptions(s) with object at 
       Validity Exceptions(s) with object at /zowe
@@ -92,7 +92,7 @@ exports[`unit-updateyaml (SHORT) update_yaml different config syntaxes 15`] = `
   * Exit code: 1
   * Output:
     - update zowe config /test/dir/zowe.test.yaml, key: "zowe.setup.jcl.enable" with value: badvalue, and validate: true
-      * Success
+      * jqset success
     Error: Validation of update to zowe-update-yaml found invalid JSON Schema data
     Validity Exceptions(s) with object at 
       Validity Exceptions(s) with object at /zowe

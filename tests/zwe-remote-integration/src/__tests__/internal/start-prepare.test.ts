@@ -197,7 +197,6 @@ describe(`${testSuiteName}`, () => {
       result = await testRunner.runZweTestWithDefaults(cfgYaml, defaultCfgYaml, 'internal start prepare');
       expect(result.cleanedStdout).toMatchSnapshot();
       expect(result.rc).toBe(0);
-
       defaultCfgYaml.zowe.launchScript.startupChecks.default = 'disabled';
       defaultCfgYaml.zowe.launchScript.startupChecks.ports = 'exit';
       result = await testRunner.runZweTestWithDefaults(cfgYaml, defaultCfgYaml, 'internal start prepare');
