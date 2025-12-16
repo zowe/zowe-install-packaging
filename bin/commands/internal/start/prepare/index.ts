@@ -70,7 +70,6 @@ function getStartupCheckMode(property: string): {doCheck: boolean, warnOnly: boo
   return {doCheck, warnOnly};
 }
 
-
 const zosmfHost = ZOWE_CONFIG.zOSMF?.host;
 const zosmfPort = ZOWE_CONFIG.zOSMF?.port;
 
@@ -552,4 +551,8 @@ export function execute() {
 
   // display instance prepared info
   common.printFormattedInfo("ZWELS", "zwe-internal-start-prepare", "Zowe runtime environment prepared");
+}
+
+export const _unit_test = {
+  getStartupCheckMode
 }
