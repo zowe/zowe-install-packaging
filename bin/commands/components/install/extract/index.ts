@@ -161,7 +161,7 @@ export function execute(componentFile: string, autoEncoding?: string, upgrade?: 
       // automatically tag files
       common.printFormattedInfo(common.MSG_KEY, COMMAND_NAME, "- Automatically tag files");
       let command = `"${ZOWE_CONFIG.zowe.runtimeDirectory}/bin/utils/tag-files.sh" "${tmpDir}" 2>&1`;
-      common.printFormattedInfo(common.MSG_KEY, COMMAND_NAME`- Running command ${command}`);
+      common.printFormattedInfo(common.MSG_KEY, COMMAND_NAME, `- Running command ${command}`);
 
       if (!dryRun) {
         result = shell.execOutSync('sh', '-c', command);
