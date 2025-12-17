@@ -12,7 +12,6 @@ import * as uss from './zos/Uss';
 import * as _ from 'lodash';
 import * as path from 'path';
 import * as files from '@zowe/zos-files-for-zowe-sdk';
-import EBCDIC from 'ebcdic-ascii';
 import * as tar from 'tar';
 import {
   DOWNLOAD_CONFIGMGR,
@@ -38,6 +37,7 @@ import { JfrogClient } from 'jfrog-client-js';
 import { processManifestVersion } from './utils';
 import { execSync } from 'child_process';
 import { createPds, LOADLIB_PARAMS, SIMPLE_PDS_PARAMS } from './zos/Files';
+import { convertDirToEbcdicInPlace } from './zos/EbcdicTools';
 
 const zosmfSession = getSession();
 const buildDir = path.resolve(THIS_TEST_ROOT_DIR, '.build');
@@ -530,28 +530,3 @@ module.exports = async () => {
     console.log('Remote server setup complete');
   }
 };
-
-function convertDirToEbcdicInPlace(dir: string) {
-  const dirContents = fs.readdirSync(dir, { recursive: true });
-  const converter = new EBCDIC('1047');
-  for (const entry of dirContents) {
-    const filePath = path.resolve(dir, entry.toString());
-    const file = fs.lstatSync(filePath);
-    if (file.isFile()) {
-      const asHex = fs.readFileSync(filePath).toString('hex');
-      const asciiChars = converter.splitHex(asHex).map((a) => a.toUpperCase());
-      const asEbcdic = asciiChars
-        .map((code: string) => {
-          // Replace line feeds with new line, ignore carriage returns.
-          // Both ascii characters ignored by converter out of the box.
-          if (code === '0A') {
-            return '15';
-          } else {
-            return converter.charToEBCDIC(code);
-          }
-        })
-        .join('');
-      fs.writeFileSync(filePath, Buffer.from(asEbcdic, 'hex'));
-    }
-  }
-}
