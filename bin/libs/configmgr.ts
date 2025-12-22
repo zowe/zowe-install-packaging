@@ -150,7 +150,8 @@ function getDiscoveryServiceUrlHa(config) {
       std.exit(1);
     }
 
-    const url = `https://${haInstance.hostname}:${port}/eureka/`;
+    //Accomodate ipv6 in hostname in url by wrapping in '[ ]'
+    const url = `https://${haInstance.hostname.includes(':') ? '['+haInstance.hostname+']' : haInstance.hostname}:${port}/eureka/`;
 
     if (list.includes(url)) {
       console.log(`Warn: Multiple haInstances reffers to the same hostname: ${haInstance.hostname}`);
@@ -176,7 +177,8 @@ function getDiscoveryServiceUrlNonHa(config) {
   }
 
   config.zowe.externalDomains.forEach((domain: string) => {
-    const url = `https://${domain}:${port}/eureka/`;
+    //Accomodate ipv6 in hostname in url by wrapping in '[ ]'
+    const url = `https://${domain.includes(':') ? '['+domain+']' : domain}:${port}/eureka/`;
     if (list.includes(url)) {
       console.log(`Warn: External domains are not unique: ${domain}`);
     } else {

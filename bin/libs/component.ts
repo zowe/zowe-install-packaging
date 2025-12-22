@@ -25,6 +25,7 @@ import * as configmgr from './configmgr';
 import * as varlib from './var';
 import * as fakejq from './fakejq';
 import * as configUtils from './config';
+import * as network from './network';
 
 const CONFIG_MGR=configmgr.CONFIG_MGR;
 
@@ -602,7 +603,7 @@ export function processComponentApimlStaticDefinitions(componentDir: string): bo
           std.setenv('ZOSMF_SCHEME', scheme);
           std.setenv('ZOSMF_NON_SECURE_PORT_ENABLED', `${nonSecurePortEnabled}`);
           std.setenv('ZOSMF_SECURE_PORT_ENABLED', `${securePortEnabled}`);
-
+          
           const zosmfAuthenticationScheme = ([ 'zosmf', 'httpBasicPassTicket' ].includes(std.getenv('ZOSMF_AUTHENTICATION_SCHEME'))) ? std.getenv('ZOSMF_AUTHENTICATION_SCHEME') : std.getenv('ZWE_zOSMF_authentication_scheme');
           let authProvider = (['saf', 'zosmf', 'dummy'].includes(std.getenv('ZWE_components_apiml_apiml_security_auth_provider'))) ? std.getenv('ZWE_components_apiml_apiml_security_auth_provider') : std.getenv('ZWE_components_gateway_apiml_security_auth_provider');
           // default auth provider to z/osmf for 3.x, consistent with apiml
@@ -614,8 +615,38 @@ export function processComponentApimlStaticDefinitions(componentDir: string): bo
             authScheme = 'httpBasicPassTicket';
           }
           std.setenv('ZOSMF_AUTHENTICATION_SCHEME', authScheme);
+          
+          let resolvedContents = varlib.resolveShellTemplate(contents);
+          let rest = resolvedContents;
+          let ipv6ResolvedContents = '';
 
-          const resolvedContents = varlib.resolveShellTemplate(contents);
+          let urlRegexp = new RegExp(/\w+:\/\/\S+/);
+          let whitespaceRegexp = new RegExp(/\s+/);
+          let indexOfUrl = rest.search(urlRegexp);
+          //no urls, no change
+          if (indexOfUrl == -1) { ipv6ResolvedContents = resolvedContents; }
+
+          // env vars such as ZWE_haInstance_hostname or ZWE_zowe_externalDomains_0 may need to be wrapped in "[]"
+          // if they are ipv6 strings, as noted in RFC 3986
+          while (indexOfUrl != -1) {
+            let beginning = rest.substring(0, indexOfUrl);
+            rest = rest.substring(indexOfUrl);
+            let stopIndex = rest.search(whitespaceRegexp);
+            if (stopIndex == -1) { stopIndex = undefined; }
+
+            let urlString = rest.substring(0, stopIndex);
+            let wrappedUrlString = network.wrapIpv6Url(urlString);
+            
+            ipv6ResolvedContents += beginning + wrappedUrlString;
+
+            if (stopIndex) {
+              rest = rest.substring(stopIndex);
+              indexOfUrl = rest.search(urlRegexp);
+              if (indexOfUrl == -1) {
+                ipv6ResolvedContents += rest;
+              }
+            } else { break; }
+          }
 
           
           //discovery static code requires specifically .yml. Not .yaml
@@ -629,7 +660,7 @@ export function processComponentApimlStaticDefinitions(componentDir: string): bo
           let errorObj;
           let fileReturn = std.open(outPath, 'w', errorObj);
           if (fileReturn && !errorObj) {
-            fileReturn.puts(resolvedContents);
+            fileReturn.puts(ipv6ResolvedContents);
             fileReturn.close();
             shell.execSync(`chmod`, `770`, outPath);
           } else {

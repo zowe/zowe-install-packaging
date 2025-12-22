@@ -179,3 +179,54 @@ export function getIpAddress(hostname: string): string|undefined {
 
   return ip;
 }
+
+
+/*
+  This function wraps the ipv6 portion of a url in square brackets []
+*/
+export function wrapIpv6Url(urlString: string): string {
+  let slashIndex = urlString.indexOf('://');
+  if (slashIndex == -1) {
+    // not url
+    return urlString;
+  }
+  let colonIndex = urlString.indexOf(':', slashIndex+1);
+  if (colonIndex == -1) {
+    // not ipv6
+    return urlString;
+  }
+  let bracketIndex = urlString.indexOf('[', slashIndex+1);
+  if (bracketIndex != -1 && (bracketIndex < colonIndex)) {
+    //  string already in format of foo://[thing: ... 
+    //  no need to convert
+    return urlString; 
+  }
+
+  let endSlashIndex = urlString.indexOf('/', slashIndex+3);
+  let path = '';
+  if (endSlashIndex == -1) {
+    endSlashIndex = urlString.length;
+  } else {
+    path = urlString.substring(endSlashIndex);
+  }
+  
+  let hostnameAndPortSection = urlString.substring(slashIndex+3, endSlashIndex);
+  let lastColonIndex = hostnameAndPortSection.lastIndexOf(':');
+  if (lastColonIndex == -1) {
+    // no ipv6 spotted because no colon spotted at all
+    return urlString;
+  }
+  if (hostnameAndPortSection.indexOf(':') == lastColonIndex) {
+    // no ipv6 spotted because only colon spotted is port separator
+    return urlString;
+  }
+  let port = hostnameAndPortSection.substring(lastColonIndex+1);
+
+  let beginning = urlString.substring(0, slashIndex+3);
+  if (Number.isNaN(Number(port))) {
+    //format like https://::ffff:127.0.0.1/ seen - end is not a port, no port, just wrap.
+    return beginning + '[' + hostnameAndPortSection.substring(0, lastColonIndex) + port + ']' + path;
+  } else {
+    return beginning + '[' + hostnameAndPortSection.substring(0, lastColonIndex) + ']:' + port + path;
+  }
+}

@@ -281,6 +281,9 @@ pkcs12_create_certificate_and_sign() {
       # test if it's IP
       if expr "${item}" : '[0-9][0-9]*\.[0-9][0-9]*\.[0-9][0-9]*\.[0-9][0-9]*$' >/dev/null; then
         san="${san}ip:${item},"
+      elif expr "${item}" : '.*\:.*' > /dev/null; then
+        # this does not work on java 8, but does on java 17.
+        san="${san}ip:[${item}],"
       else
         san="${san}dns:${item},"
       fi
