@@ -1,4 +1,5 @@
 .build/*
 lib/
+lib-ebcdic/
 reports/*
 resources/custom_config*

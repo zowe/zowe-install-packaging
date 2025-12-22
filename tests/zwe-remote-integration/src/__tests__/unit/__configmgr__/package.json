@@ -1,0 +1,28 @@
+{
+  "name": "configmgr-unit-tests",
+  "version": "2.0.0",
+  "description": "A CLI and set of libraries that constitute the Zowe server infrastructure",
+  "scripts": {
+    "prebuild": "cd ../../../../../../build/zwe && npm run prod",
+    "clean": "rm -rf lib",
+    "buildOnly": "tsc --build tsconfig.json --force",
+    "build": "tsc --build tsconfig.json --force && tsc-alias -p tsconfig.json && node hack/move-lib.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/zowe/zowe-install-packaging.git"
+  },
+  "keywords": [
+    "zowe"
+  ],
+  "author": "Zowe",
+  "license": "EPL-2.0",
+  "bugs": {
+    "url": "https://github.com/zowe/zowe-install-packaging/issues"
+  },
+  "homepage": "https://github.com/zowe/zowe-install-packaging#readme",
+  "devDependencies": {
+    "tsc-alias": "1.8.16",
+    "typescript": "5.4.5"
+  }
+}

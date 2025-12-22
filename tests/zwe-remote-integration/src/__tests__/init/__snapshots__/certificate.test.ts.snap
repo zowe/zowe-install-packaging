@@ -218,9 +218,6 @@ Error ZWEL0326E: An error occurred while processing Zowe YAML config /test/dir/z
       "java": {
         "home": "/test/java/home"
       },
-      "node": {
-        "home": "/test/node/home"
-      },
       "zOSMF": {
         "host": "some.test.hostname",
         "port": 12321,
@@ -228,7 +225,7 @@ Error ZWEL0326E: An error occurred while processing Zowe YAML config /test/dir/z
       },
       "components": {
         "apiml": {
-          "enabled": false,
+          "enabled": true,
           "debug": false
         },
         "gateway": {
@@ -238,11 +235,7 @@ Error ZWEL0326E: An error occurred while processing Zowe YAML config /test/dir/z
           "apiml": {
             "security": {
               "auth": {
-                "provider": "zosmf",
-                "zosmf": {
-                  "jwtAutoconfiguration": "jwt",
-                  "serviceId": "ibmzosmf"
-                }
+                "provider": "saf"
               },
               "authorization": {
                 "endpoint": {
@@ -323,5 +316,5 @@ Error ZWEL0326E: An error occurred while processing Zowe YAML config /test/dir/z
                 unequal constant value at /zowe/setup/certificate/type; expecting value 'PKCS12' of type 'integer'
               Validity Exceptions(s) with object at /zowe/setup/certificate
                 missing required property 'keyring' at '/zowe/setup/certificate'
-                no matching enum value at /zowe/setup/certificate/type; expecting one of values '[JCEKS, JCECCAKS, JCERACFKS, JCECCARACFKS, JCEHYBRIDRACFKno matching enum value at /zowe/setup/certificate/type; expecting one of values '[]' of type 'integer'"
+                no matching enum value at /zowe/setup/certificate/type; expecting one of values '[JCEKS, JCECCAKS, JCERACFKS, JCECCARACFKS, JCEHYBRIDRACFKS]' of type 'integer'"
 `;
