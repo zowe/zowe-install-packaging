@@ -126,8 +126,11 @@
       "artifact": "*.pax"
     },
     "org.zowe.keyring-utilities": {
-      "version": "^3.2.0-MASTER",
-      "artifact": "*.pax"
+      "version": "1.0.4",
+      "artifact": "keyring-util-*",
+      "explode": "false",
+      "flat": "true",
+      "exclusions": ["*PR*"]
     },
     "org.zopencommunity.curl": {
       "version": "^8.17.0",
