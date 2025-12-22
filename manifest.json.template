@@ -134,7 +134,7 @@
       "artifact": "*.pax"
     },
     "org.zowe.keyring-utilities": {
-      "version": "^3.2.0-MASTER",
+      "version": "^3.2.0-SNAPSHOT",
       "artifact": "*.pax"
     },
     "org.zopencommunity.curl": {
