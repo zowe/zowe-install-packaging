@@ -37,48 +37,48 @@ print_level1_message "Run Zowe security configurations"
 # constants
 
 # read prefix and validate
-prefix=$(read_yaml_configmgr "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.dataset.prefix")
+prefix=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.dataset.prefix")
 if [ -z "${prefix}" ]; then
   print_error_and_exit "Error ZWEL0157E: Zowe dataset prefix (zowe.setup.dataset.prefix) is not defined in Zowe YAML configuration file." "" 157
 fi
 # read JCL library and validate
-jcllib=$(read_yaml_configmgr "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.dataset.jcllib")
+jcllib=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.dataset.jcllib")
 if [ -z "${jcllib}" ]; then
   print_error_and_exit "Error ZWEL0157E: Zowe custom JCL library (zowe.setup.dataset.jcllib) is not defined in Zowe YAML configuration file." "" 157
 fi
-security_product=$(read_yaml_configmgr "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.security.product")
+security_product=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.security.product")
 if [ -z "${security_product}" ]; then
   security_product=RACF
 fi
-security_groups_admin=$(read_yaml_configmgr "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.security.groups.admin")
+security_groups_admin=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.security.groups.admin")
 if [ -z "${security_groups_admin}" ]; then
   security_groups_admin=${ZWE_PRIVATE_DEFAULT_ADMIN_GROUP}
 fi
-security_groups_stc=$(read_yaml_configmgr "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.security.groups.stc")
+security_groups_stc=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.security.groups.stc")
 if [ -z "${security_groups_stc}" ]; then
   security_groups_stc=${ZWE_PRIVATE_DEFAULT_ADMIN_GROUP}
 fi
-security_groups_sysProg=$(read_yaml_configmgr "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.security.groups.sysProg")
+security_groups_sysProg=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.security.groups.sysProg")
 if [ -z "${security_groups_sysProg}" ]; then
   security_groups_sysProg=${ZWE_PRIVATE_DEFAULT_ADMIN_GROUP}
 fi
-security_users_zowe=$(read_yaml_configmgr "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.security.users.zowe")
+security_users_zowe=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.security.users.zowe")
 if [ -z "${security_users_zowe}" ]; then
   security_users_zowe=${ZWE_PRIVATE_DEFAULT_ZOWE_USER}
 fi
-security_users_zis=$(read_yaml_configmgr "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.security.users.zis")
+security_users_zis=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.security.users.zis")
 if [ -z "${security_users_zis}" ]; then
   security_users_zis=${ZWE_PRIVATE_DEFAULT_ZIS_USER}
 fi
-security_stcs_zowe=$(read_yaml_configmgr "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.security.stcs.zowe")
+security_stcs_zowe=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.security.stcs.zowe")
 if [ -z "${security_stcs_zowe}" ]; then
   security_stcs_zowe=${ZWE_PRIVATE_DEFAULT_ZOWE_STC}
 fi
-security_stcs_zis=$(read_yaml_configmgr "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.security.stcs.zis")
+security_stcs_zis=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.security.stcs.zis")
 if [ -z "${security_stcs_zis}" ]; then
   security_stcs_zis=${ZWE_PRIVATE_DEFAULT_ZIS_STC}
 fi
-security_stcs_aux=$(read_yaml_configmgr "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.security.stcs.aux")
+security_stcs_aux=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.security.stcs.aux")
 if [ -z "${security_stcs_aux}" ]; then
   security_stcs_aux=${ZWE_PRIVATE_DEFAULT_AUX_STC}
 fi
@@ -101,10 +101,13 @@ result=$(cat "//'${prefix}.${ZWE_PRIVATE_DS_SZWESAMP}(ZWESECUR)'" | \
         sed   "s/^\/\/ \+SET \+ZISSTC=.*\$/\/\/         SET  ZISSTC=${security_stcs_zis}/" | \
         sed   "s/^\/\/ \+SET \+AUXSTC=.*\$/\/\/         SET  AUXSTC=${security_stcs_aux}/" | \
         sed      "s/^\/\/ \+SET \+HLQ=.*\$/\/\/         SET  HLQ=${prefix}/" | \
-        sed  "s/^\/\/ \+SET \+SYSPROG=.*\$/\/\/         SET  SYSPROG=${security_groups_sysProg}/" \
-        > "${tmpfile}")
-code=$?
-chmod 700 "${tmpfile}"
+        sed  "s/^\/\/ \+SET \+SYSPROG=.*\$/\/\/         SET  SYSPROG=${security_groups_sysProg}/")
+if [ -n "${result}" ]; then
+  echo "${result}" > "${tmpfile}"
+  code=$?
+else
+  code=1
+fi
 if [ ${code} -eq 0 ]; then
   print_debug "  * Succeeded"
   print_trace "  * Exit code: ${code}"
@@ -123,6 +126,7 @@ fi
 if [ ! -f "${tmpfile}" ]; then
   print_error_and_exit "Error ZWEL0159E: Failed to modify ${prefix}.${ZWE_PRIVATE_DS_SZWESAMP}(ZWESECUR)" "" 159
 fi
+chmod 700 "${tmpfile}"
 print_trace "- ensure ${tmpfile} encoding before copying into data set"
 ensure_file_encoding "${tmpfile}" "SPDX-License-Identifier"
 print_trace "- ${tmpfile} created, copy to ${jcllib}(${tmpdsm})"

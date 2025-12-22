@@ -70,7 +70,7 @@ operator_command() {
 verify_generated_jcl() {
 
   use_jcl="${1}"
-  jcllib=$(read_yaml_configmgr "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.dataset.jcllib")
+  jcllib=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.dataset.jcllib")
 
   if [ -z "${jcllib}" ]; then
     return 2

@@ -11,6 +11,7 @@
 import * as files from '@zowe/zos-files-for-zowe-sdk';
 import { getSession } from './ZosmfSession';
 import _ from 'lodash';
+import { REMOTE_SYSTEM_INFO } from '../config/TestConfig';
 
 export async function uploadMember(pdsName: string, memberName: string, content: string) {
   const listPdsResp = await files.List.dataSet(getSession(), pdsName, {
@@ -26,6 +27,9 @@ export async function uploadMember(pdsName: string, memberName: string, content:
     throw new Error(`Failed to upload content to ${pdsName}(${memberName}), details: ${uplResp.apiResponse}`);
   }
 }
+
+export const SIMPLE_PDS_PARAMS = { primary: 5, secondary: 1, volser: REMOTE_SYSTEM_INFO.volume };
+export const LOADLIB_PARAMS = { primary: 5, recfm: 'U', lrecl: 0, secondary: 1, volser: REMOTE_SYSTEM_INFO.volume };
 
 export async function createPds(pdsName: string, createOpts: Partial<files.ICreateDataSetOptions>) {
   const defaultPdsOpts: files.ICreateDataSetOptions = {
