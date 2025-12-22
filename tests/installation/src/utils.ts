@@ -240,7 +240,7 @@ async function installAndVerifyZowe(testcase: string, installPlaybook: string, s
   } else {
 
     let attlsTest = false;
-    if (extraVars && extraVars['zowe_attls_enabled'] == true) {
+    if (extraVars && extraVars['zowe_attls_enabled'] === 'true') {
       attlsTest = true;
     }
     // verify zowe instance with sanity test

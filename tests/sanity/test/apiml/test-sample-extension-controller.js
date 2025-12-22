@@ -22,7 +22,7 @@ describe('test api gateway sample extension controller', function() {
 
   it('should return the greeting message from the gateway sample extension controller', async function() {
     const isAttlsEnabled = process.env['ZOWE_IS_ATTLS_ENABLED'];
-    if (isAttlsEnabled && isAttlsEnabled == true) {
+    if (isAttlsEnabled && isAttlsEnabled === 'true') {
       debug('Skipping sample extension verification: see https://github.com/zowe/api-layer/issues/4340');
     } else {
       debug('Verify access to greeting endpoint via /api/v1/greeting');
