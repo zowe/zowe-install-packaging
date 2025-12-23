@@ -57,6 +57,23 @@
   vars:
     filename: USER-cert.cer
     method: scp
+# Upload auth0 certificate
+# This will be added to pkcs12 truststore when we're running with pkcs12
+- include_role:
+    name: custom_for_test
+    tasks_from: upload_certificate
+  vars:
+    filename: Auth0_Public_Cert.cer
+    method: scp
+# Upload auth0 certificate as p12 ( no priv key )
+# This will be added to keyring when we're running with keyrings
+- include_role:
+    name: custom_for_test
+    tasks_from: upload_certificate
+  vars:
+    filename: Auth0_Public_Cert.p12
+    method: sftp
+
 # Upload CA certificate
 # This certificate will be configured in task Add DigiCert Global Root CA to the truststore
 - include_role:
@@ -142,6 +159,41 @@
     when: zos_security_system == 'RACF'
     raw: tsocmd 'SETROPTS RACLIST(DIGTCERT,DIGTRING) REFRESH'
     ignore_errors: True
+
+# ============================================================================
+# Add external API ML CA to the truststore
+- name: Add Auth0 public cert to the truststore
+  include_role:
+    name: zos
+    tasks_from: run_script
+  vars:
+    script_chdir: "{{ zowe_root_dir }}/bin"
+    script_filename: keytool
+    script_parameters: >-
+      -importcert -v
+      -trustcacerts -noprompt
+      -file "{{ work_dir_remote }}/Auth0_Public_Cert.cer"
+      -alias "auth0cer"
+      -keystore "{{ zowe_keystore_dir }}/{{ zowe_keystore_alias }}/{{ zowe_keystore_alias }}.truststore.p12"
+      -storepass "{{ zowe_keystore_password }}"
+      -storetype "PKCS12"
+  when: zos_keystore_mode is undefined or zos_keystore_mode != 'KEYSTORE_MODE_KEYRING'
+
+- name: Add the external CA to the keyring
+  when: zos_keystore_mode is defined and zos_keystore_mode == 'KEYSTORE_MODE_KEYRING'
+  block:
+  - name: Import the external CA to the keyring
+    raw: "{{ zowe_root_dir }}/bin/utils/keyring-util/keyring-util IMPORT {{ zowe_runtime_user }} {{ zowe_keyring_alias }} -l auth0cer -u CERTAUTH -f {{ work_dir_remote }}/Auth0_Public_Cert.p12 -p password"
+  # Potential response:
+  #   Could not encode priv key: rc = 14CE01C
+  #   Function code: 08, SAF rc: 4, RACF rc: 4, RACF rsn: 4
+  # REF: https://www.ibm.com/docs/en/zos/2.3.0?topic=library-return-reason-codes
+  # cause: Success but the DIGTCERT class needs to be refreshed to reflect the update.
+  - name: Refresh DIGTCERT,DIGTRING
+    when: zos_security_system == 'RACF'
+    raw: tsocmd 'SETROPTS RACLIST(DIGTCERT,DIGTRING) REFRESH'
+    ignore_errors: True
+
 
 # ============================================================================
 # Enable APIML.SERVICES profile for current user
