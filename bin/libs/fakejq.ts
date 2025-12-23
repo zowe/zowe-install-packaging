@@ -73,13 +73,14 @@ export function jqset(obj: any, path: string, value: any): [ boolean, any ] {
       if (start != -1) {
         let firstPart = part.substring(0, start);
         let arrayIndex = part.substring(start+1, part.length-1);
-        obj = obj.firstPart;
-        if (obj) {
-          if (obj[arrayIndex] === undefined) {
-            obj[arrayIndex] = [];
-          }
-          obj = obj[arrayIndex];
+        if (!obj[firstPart]) {
+          obj[firstPart] = [];
         }
+        obj = obj[firstPart];
+        if (obj[arrayIndex] === undefined) {
+          obj[arrayIndex] = [];
+        }
+        obj = obj[arrayIndex];
       } else {
         if (obj[part] === undefined) {
           obj[part] = {};
@@ -101,11 +102,22 @@ export function jqset(obj: any, path: string, value: any): [ boolean, any ] {
       if (start != -1) {
         let firstPart = part.substring(0, start);
         let arrayIndex = part.substring(start+1, part.length-1);
-        obj = obj.firstPart;
-        if (obj) {
-          obj[arrayIndex] = value;
-          return [true, topObj];
+        if (!obj[firstPart]) {
+          obj[firstPart] = [];
         }
+        obj = obj[firstPart];
+        if (Number(arrayIndex) < 0) {
+            throw new Error('Negative array indices are not supported.');
+        }
+        if (isNaN(Number(arrayIndex))) {
+            throw new Error('Array indices must be a positive integer.');
+        }
+        if (Number(arrayIndex) > obj.length) {
+            obj[obj.length] = value;
+        } else {
+            obj[arrayIndex] = value;
+        }
+        return [true, topObj];
       } else {
         obj[part] = value;
         return [true,topObj];

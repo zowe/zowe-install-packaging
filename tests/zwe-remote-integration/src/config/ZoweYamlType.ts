@@ -700,7 +700,7 @@ const zoweSchema = zoweYamlSchema as {
               properties: {
                 enable: {
                   type: 'boolean';
-                  description: 'Whether to restrict the permissions of the keystore after creation';
+                  description: 'Controls whether zwe install and zwe init commands and subcommands will utilize jobs for executing system changes instead of shell commands.';
                 };
                 header: {
                   type: 'string';
@@ -719,15 +719,15 @@ const zoweSchema = zoweYamlSchema as {
         };
         logDirectory: {
           $ref: '/schemas/v2/server-common#zowePath';
-          description: 'Path to where you want to store Zowe log files.';
+          description: 'Path to where you want to store Zowe log files. This cannot reside within the runtime directory.';
         };
         workspaceDirectory: {
           $ref: '/schemas/v2/server-common#zowePath';
-          description: 'Path to where you want to store Zowe workspace files. Zowe workspace are used by Zowe component runtime to store temporary files.';
+          description: 'Path to where you want to store Zowe workspace files. Zowe workspace are used by Zowe component runtime to store temporary files. This cannot reside within the runtime directory.';
         };
         extensionDirectory: {
           $ref: '/schemas/v2/server-common#zowePath';
-          description: 'Path to where you want to store Zowe extensions. "zwe components install" will install new extensions into this directory.';
+          description: 'Path to where you want to store Zowe extensions. "zwe components install" will install new extensions into this directory. This cannot reside within the runtime directory.';
         };
         job: {
           type: 'object';
@@ -735,7 +735,15 @@ const zoweSchema = zoweYamlSchema as {
           description: 'Customize your Zowe z/OS JES job.';
           properties: {
             name: {
-              $ref: '/schemas/v2/server-common#zoweJobname';
+              oneOf: [
+                {
+                  $ref: '/schemas/v2/server-common#zoweJobname';
+                },
+                {
+                  type: 'string';
+                  maxLength: 0;
+                },
+              ];
               description: 'Job name of Zowe primary ZWESLSTC started task.';
             };
             prefix: {
@@ -824,6 +832,7 @@ const zoweSchema = zoweYamlSchema as {
         launchScript: {
           type: 'object';
           description: 'Customize Zowe launch scripts (zwe commands) behavior.';
+          additionalProperties: false;
           properties: {
             logLevel: {
               type: 'string';
@@ -835,6 +844,30 @@ const zoweSchema = zoweYamlSchema as {
               description: "Chooses how 'zwe start' behaves if a component configure script fails";
               enum: ['warn', 'exit'];
               default: 'warn';
+            };
+            startupChecks: {
+              type: 'object';
+              description: 'Startup check configuration options';
+              properties: {
+                default: {
+                  type: 'string';
+                  default: 'exit';
+                  description: 'Sets the default runtime behavior for all startup checks';
+                  enum: ['exit', 'warn', 'disabled'];
+                };
+                ports: {
+                  type: 'string';
+                  default: 'exit';
+                  description: 'Checks the port for each enabled component to ensure Zowe can bind to it and that it is not already occupied by some other program';
+                  enum: ['exit', 'warn', 'disabled'];
+                };
+                zosmf: {
+                  type: 'string';
+                  default: 'exit';
+                  description: "Checks z/OSMF to see if it is running and meet's Zowe's requirements";
+                  enum: ['exit', 'warn', 'disabled'];
+                };
+              };
             };
           };
         };
@@ -920,6 +953,16 @@ const zoweSchema = zoweYamlSchema as {
         applId: {
           type: 'string';
           description: 'Appl ID of your z/OSMF instance.';
+        };
+        authentication: {
+          type: 'object';
+          properties: {
+            scheme: {
+              type: 'string';
+              description: 'Authentication scheme for z/OSMF.';
+              enum: ['httpBasicPassTicket', 'zosmf'];
+            };
+          };
         };
       };
     };

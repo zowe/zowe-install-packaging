@@ -40,6 +40,7 @@
     chdir: "{{ zowe_sanity_test_root_dir }}"
   environment:
     ZOWE_ROOT_DIR: "{{ zowe_root_dir }}"
+    ZOWE_IS_ATTLS_ENABLED: "{{ zowe_attls_enabled | lower }}"
     ZOWE_WORKSPACE_DIR: "{{ zowe_instance_dir }}/workspace"
     ZOWE_EXTERNAL_HOST: "{{ zowe_external_domain_name }}"
     ZOWE_ZOS_HOST: "{{ zowe_zos_host }}"
