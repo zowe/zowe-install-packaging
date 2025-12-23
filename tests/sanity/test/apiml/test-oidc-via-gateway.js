@@ -18,13 +18,13 @@ describe('test oidc mapping via gateway', function() {
   let apiml;
   let token;
 
-  it('obtain Okta token', async function() {
+  it('obtain access token', async function() {
     hq = new HTTPRequest();
     apiml = new APIMLAuth(hq);
-    token = await apiml.loginViaOkta();
+    token = await apiml.loginViaAuth0();
   });
 
-  it('call endpoint with valid Okta token', async function() {
+  it('call endpoint with valid access token', async function() {
     if (!token) {
       this.skip();
     }
