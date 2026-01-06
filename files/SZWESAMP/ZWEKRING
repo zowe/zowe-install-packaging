@@ -53,7 +53,8 @@
 //*    user ID for the Zowe started task.
 //*
 //* 4) Update the SET ZOWERING= statement to match the desired
-//*    name of the keyring owned by the &ZOWEUSER user ID.
+//*    name of the keyring containing the private key owned by 
+//*    the &ZOWEUSER user ID.
 //*
 //* 5) Update the SET ZOWETRST= statement to match the desired
 //*    name of the keyring with trusted certificates owned by 
@@ -132,7 +133,7 @@
 //*      * Keyring that holds private key for the Zowe userid
 //         SET ZOWERING='ZoweKeyring'
 //*      * Keyring that holds trusted certificates for the Zowe userid
-//.        SET ZOWETRST='ZoweTrstRing'
+//.        SET ZOWETRST='ZoweTrustRing'
 //*      * Option number to configure Zowe certificate
 //*      * Valid options: 1,2,3
 //*      * Default option is 1
@@ -376,7 +377,6 @@ $$
 
 /* Define profiles that control certificate access ................. */
    RDEFINE RDATALIB &ZOWEUSER..&ZOWERING..LST UACC(NONE)
-   RDEFINE RDATALIB &ZOWEUSER..&ZOWETRST..LST UACC(NONE)
 
 /* Permit server user ID to access key ring and related ............ */
 /* private keys. ................................................... */
@@ -485,7 +485,7 @@ ACF
 * Connect a Zowe's certificate with the keyring ................... */
    SET PROFILE(USER) DIVISION(CERTDATA)
    CONNECT CERTDATA(&ZOWEUSER..ZOWECERT) -
-   KEYRING(&ZOWEUSER..ZOWERING) USAGE(PERSONAL)
+   KEYRING(&ZOWEUSER..ZOWERING) USAGE(PERSONAL) DEFAULT
    CHKCERT &ZOWEUSER..ZOWECERT
 *
 * Option 1 - Default Option - END ................................. */
