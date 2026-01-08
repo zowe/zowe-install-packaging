@@ -132,7 +132,7 @@ export function execute(allowOverwrite?: boolean, dryRun?: boolean, ignoreSecuri
     common.printMessage(`---------`);
     common.printMessage(`If you want Zowe to assist in certificate creation, the command "zwe init certificate" can be run with YAML properties from "zowe.setup.certificate"`);
     common.printMessage(` Examples of "zowe.setup.certificate" are included in "${std.getenv('ZWE_zowe_runtimeDirectory')}/files/examples/setup/certificate"`);
-    common.printMessage(` After reviewing the included examples and selecting one, append the contents of the example file into your Zowe YAML and proceed with "zwe init certificate".`);
+    common.printMessage(` After reviewing the included examples and selecting one, append the contents of the example file into your Zowe YAML and run "zwe init certificate".`);
     common.printMessage(`---------`);
   }
   initStc.execute(allowOverwrite);
