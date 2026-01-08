@@ -1,1 +1,15 @@
-""
+{
+  "lockAcquiredTime": "Thu Jan 08 2026 19:36:43 GMT+0000 (Coordinated Universal Time)",
+  "uid": "1767901003455994248",
+  "repository": {
+    "owner": "zowe",
+    "repo": "zowe-install-packaging"
+  },
+  "branch": "user/markackert/port-attls-oidc-automation-fixes",
+  "workflow": "Zowe CICD Integration Tests",
+  "job": "cicd-test",
+  "actor": "zowe-robot",
+  "runId": 20829285407,
+  "runNumber": 8013,
+  "link": "https://github.com/zowe/zowe-install-packaging/actions/runs/20829285407"
+}
