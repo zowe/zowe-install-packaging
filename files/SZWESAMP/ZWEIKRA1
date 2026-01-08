@@ -80,6 +80,10 @@
 //*      * IFROZFCA to 1 to connect z/OSMF certificate authority to
 //*      * Zowe keyring. Otherwise set to 0.
 //         SET IFROZFCA=0
+//*      * If you enable splitting of keyring and truststore keyring
+//*      * set to 1 and define the property
+//*      * zowe.setup.certificate.keyring.truststore.name in zowe.yaml
+//         SET IFTRSTST=0
 //*******************************************************************
 //*
 //*      * You do NOT need to set USERNAME when running ZWEGENER.
@@ -97,7 +101,7 @@
 //ACF2     DD DATA,DLM=$$,SYMBOLS=JCLONLY
 ACF
 //
-* Create the keyring .............................................. */
+* Create Zowe keyring ............................................. */
   SET PROFILE(USER) DIVISION(KEYRING)
   INSERT {zowe.setup.security.users.zowe}.ZOWERING +
   RINGNAME({zowe.setup.certificate.keyring.name})
@@ -155,6 +159,7 @@ ACF
 *
 * Option 1 - Default Option - END ................................. */
 $$
+
 //*
 //IFZWCA   IF (&IFZOWECA EQ 1) THEN
 //RUNZWCA  EXEC PGM=IKJEFT01,REGION=0M
@@ -176,6 +181,62 @@ ACF
 $$
 //IFZWCAED ENDIF
 //*
+
+//* If truststore is selected, create keyring for it
+//* If truststore is selected, connect z/OSMF certificate to it,
+//* otherwise, connect to keyring
+//IFTRST IF (&IFTRSTST EQ 1) THEN
+//RUNACF2  EXEC PGM=IKJEFT01,REGION=0M
+//SYSTSPRT DD SYSOUT=*
+//SYSTSIN  DD DDNAME=ACF2
+//ACF2     DD DATA,DLM=$$,SYMBOLS=JCLONLY
+ACF
+//
+* Create Zowe truststore keyring .................................. */
+  SET PROFILE(USER) DIVISION(KEYRING)
+  INSERT {zowe.setup.security.users.zowe}.ZOWETRST +
+  RINGNAME({zowe.setup.certificate.keyring.truststore.name})
+
+* Connect all CAs of the Zowe certificate's signing chain with the  */
+* keyring ......................................................... */
+   SET PROFILE(USER) DIVISION(CERTDATA)
+   CONNECT CERTDATA(CERTAUTH.&ITRMZWCA.) -
+   RINGNAME({zowe.setup.certificate.keyring.truststore.name}) -
+   KEYRING({zowe.setup.security.users.zowe}.ZOWETRST) USAGE(CERTAUTH)
+*
+   CONNECT CERTDATA(CERTAUTH.&ROOTZWCA.) -
+   RINGNAME({zowe.setup.certificate.keyring.truststore.name}) -
+   KEYRING({zowe.setup.security.users.zowe}.ZOWETRST) USAGE(CERTAUTH)
+
+* Connect the z/OSMF root CA signed by a recognized certificate ...*/
+* authority (CA) with the keyring ................................. */
+   SET PROFILE(USER) DIVISION(CERTDATA)
+   CONNECT -
+     CERTDATA(CERTAUTH.&ROOTZFCA.) -
+     RINGNAME({zowe.setup.certificate.keyring.truststore.name}) -
+     KEYRING({zowe.setup.security.users.zowe}.ZOWETRST) -
+     USAGE(CERTAUTH)
+
+  F ACF2,REBUILD(USR),CLASS(P),DIVISION(KEYRING)
+$$
+//IFTRSTEL ELSE
+//RUNZFCA  EXEC PGM=IKJEFT01,REGION=0M
+//SYSTSPRT DD SYSOUT=*
+//SYSTSIN  DD DDNAME=ACF2
+//ACF2     DD DATA,DLM=$$,SYMBOLS=JCLONLY
+ACF
+//
+* Connect the z/OSMF root CA signed by a recognized certificate ...*/
+* authority (CA) with the keyring ................................. */
+   SET PROFILE(USER) DIVISION(CERTDATA)
+   CONNECT -
+     CERTDATA(CERTAUTH.&ROOTZFCA.) -
+     RINGNAME({zowe.setup.certificate.keyring.name}) -
+     KEYRING({zowe.setup.security.users.zowe}.ZOWERING) -
+     USAGE(CERTAUTH)
+$$
+//IFTRSTED ENDIF
+
 //IFZFCA   IF (&IFROZFCA EQ 1) THEN
 //RUNZFCA  EXEC PGM=IKJEFT01,REGION=0M
 //SYSTSPRT DD SYSOUT=*
@@ -183,7 +244,7 @@ $$
 //ACF2     DD DATA,DLM=$$,SYMBOLS=JCLONLY
 ACF
 //
-* Connect the z/OSMF root CA signed by a recognized certificate ... */
+* Connect the z/OSMF root CA signed by a recognized certificate ...*/
 * authority (CA) with the keyring ................................. */
    SET PROFILE(USER) DIVISION(CERTDATA)
    CONNECT -
@@ -193,6 +254,7 @@ ACF
      USAGE(CERTAUTH)
 $$
 //IFZFCAED ENDIF
+
 //*
 //COMACF2  EXEC PGM=IKJEFT01,REGION=0M
 //SYSTSPRT DD SYSOUT=*
@@ -220,4 +282,18 @@ ACF
   LIST {zowe.setup.security.users.zowe}.ZOWERING
 * Common part - END ............................................... */
 $$
+//*
+
+//* If truststore is selected, list it
+//IFTRST IF (&IFTRSTST EQ 1) THEN
+//COMACF2  EXEC PGM=IKJEFT01,REGION=0M
+//SYSTSPRT DD SYSOUT=*
+//SYSTSIN  DD DDNAME=ACF2
+//ACF2     DD DATA,DLM=$$,SYMBOLS=JCLONLY
+ACF
+//
+* List the keyring ................................................ */
+  SET PROFILE(USER) DIVISION(KEYRING)
+  LIST {zowe.setup.security.users.zowe}.ZOWETRST
+//IFTRSTED ENDIF
 //*
