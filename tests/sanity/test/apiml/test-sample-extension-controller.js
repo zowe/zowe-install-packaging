@@ -21,16 +21,22 @@ describe('test api gateway sample extension controller', function() {
   });
 
   it('should return the greeting message from the gateway sample extension controller', async function() {
-    debug('Verify access to greeting endpoint via /api/v1/greeting');
+    
+    const isAttlsEnabled = process.env['ZOWE_IS_ATTLS_ENABLED'];
+    if (isAttlsEnabled === true || isAttlsEnabled === 'true' ) {
+      debug('Skipping sample extension verification: see https://github.com/zowe/api-layer/issues/4340');
+    } else {
+      debug('Verify access to greeting endpoint via /api/v1/greeting');
 
-    const res = await hq.request({
-      url: '/api/v1/greeting',
-      method: 'get',
-    });
+      const res = await hq.request({
+        url: '/api/v1/greeting',
+        method: 'get',
+      });
 
-    expect(res).to.have.property('status');
-    expect(res.status).to.equal(HTTP_STATUS.SUCCESS);
-    expect(res.data).to.not.be.empty;
+      expect(res).to.have.property('status');
+      expect(res.status).to.equal(HTTP_STATUS.SUCCESS);
+      expect(res.data).to.not.be.empty;
+    }
   });
 
 });

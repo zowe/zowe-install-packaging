@@ -19,7 +19,10 @@ zowe_attls_policy_file:
 zowe_attls_full_keyring: safkeyring://ZWESVUSR/ZWEATTLS
 zowe_attls_cert_alias: ZOWE_ATTLS_CERT
 # use apiml modulith mode
-zowe_apiml_modulith_mode: false
+zowe_apiml_modulith_mode: true
+# oidc + auth0
+zowe_apiml_security_oidc_enabled: true
+
 # use new jcl path for install
 zowe_setup_jcl_enable: false
 zowe_jcllib: ZOWEAD3.ZWE.JCLLIB

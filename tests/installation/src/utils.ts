@@ -226,8 +226,13 @@ async function installAndVerifyZowe(testcase: string, installPlaybook: string, s
     debug(`running ${installPlaybook} playbook with skip_start=true, skip verify`);
 
   } else {
+
+    let attlsTest = false;
+    if (extraVars && extraVars['zowe_attls_enabled'] === 'true') {
+      attlsTest = true;
+    }
     // verify zowe instance with sanity test
-    const resultVerify = await verifyZowe(testcase, serverId, {});
+    const resultVerify = await verifyZowe(testcase, serverId, { 'zowe_attls_enabled': attlsTest });
 
     // copy sanity test result to install test report folder
     copySanityTestReport(resultVerify.reportHash);

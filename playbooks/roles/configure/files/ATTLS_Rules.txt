@@ -46,7 +46,7 @@ TTLSEnvironmentAdvancedParms ServerEnvironmentAdvParms
   TLSv1                            Off
   TLSv1.1                          Off
   TLSv1.2                          On
-  TLSv1.3                          Off
+  TLSv1.3                          On
 }
 
 TTLSConnectionAction ZoweServerConnectionAction
@@ -90,7 +90,7 @@ TTLSConnectionAdvancedParms ApimlClientX509ConnAdvParms
   SecondaryMap Off
   TLSv1.1                         Off
   TLSv1.2                         On
-  TLSv1.3                         Off
+  TLSv1.3                         On
 }
 
 TTLSConnectionAdvancedParms ZoweConnectionAdvParms
@@ -110,6 +110,5 @@ TTLSKeyringParms ZoweAttlsKeyring
 TTLSCipherParms CipherParms
 {
   V3CipherSuites                  TLS_CHACHA20_POLY1305_SHA256
-  V3CipherSuites                  TLS_AES_256_GCM_SHA384
-  V3CipherSuites                  TLS_RSA_WITH_AES_256_CBC_SHA
+  V3CipherSuites                  TLS_RSA_WITH_AES_256_CBC_SHA256
 }
