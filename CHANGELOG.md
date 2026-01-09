@@ -5,10 +5,10 @@ All notable changes to the Zowe Installer will be documented in this file.
 ## `3.5.0`
 - Bugfix: `zwe config get` HA instance lookup is case insensitive. [#4609](https://github.com/zowe/zowe-install-packaging/pull/4609)
 - Enhancement: `zwe config get` command uses new `--format` option to format the output. [#4591](https://github.com/zowe/zowe-install-packaging/pull/4591)
-- Enhancement: Added manifest property `apimlServices.static.once` which restricts APIML static definition files to exist only once per HA setup [#4587](https://github.com/zowe/zowe-install-packaging/pull/4587)
 
 ## `3.4.0`
 
+- Enhancement: Added manifest property `apimlServices.static.once` which restricts APIML static definition files to exist only once per HA setup [#4587](https://github.com/zowe/zowe-install-packaging/pull/4587)
 - Enhancement: API ML now uses `saf` as it's default authentication provider for new installations of Zowe. [#4573](https://github.com/zowe/zowe-install-packaging/pull/4573)
 - Enhancement: Configure z/OSMF static API definition based on authentication provider [#4563](https://github.com/zowe/zowe-install-packaging/pull/4563)
 - Enhancement: Command `zwe validate config` command has been added as an alias of `zwe config validate`, for naming consistency with future `zwe validate` commands. [#4447](https://github.com/zowe/zowe-install-packaging/pull/4447)
