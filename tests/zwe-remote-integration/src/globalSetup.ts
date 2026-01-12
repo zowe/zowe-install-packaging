@@ -59,8 +59,6 @@ function setupBaseYaml() {
   zoweYaml.zowe.setup.vsam.volume = REMOTE_SYSTEM_INFO.volume;
   zoweYaml.zOSMF.host = REMOTE_SYSTEM_INFO.hostname;
   zoweYaml.zOSMF.port = Number(REMOTE_SYSTEM_INFO.zosmfPort);
-  // @ts-expect-error incomplete schema
-  zoweYaml.zowe.setup.certificate.pkcs12.directory = `${REMOTE_SYSTEM_INFO.ussTestDir}/pkcs12`;
   zoweYaml.zowe.setup.dataset.authLoadlib = REMOTE_SYSTEM_INFO.authLoadLib;
   zoweYaml.zowe.setup.dataset.authPluginLib = REMOTE_SYSTEM_INFO.authPluginLib;
   zoweYaml.zowe.setup.dataset.parmlib = REMOTE_SYSTEM_INFO.parmlib;
@@ -341,9 +339,22 @@ module.exports = async () => {
     // archive without compression (issues on some backends)
     const tarFile = path.resolve(buildDir, 'zwe.tar');
     fs.cpSync(path.resolve(REPO_ROOT_DIR, 'bin'), path.resolve(buildDir, 'bin'), { force: true, recursive: true });
+    fs.cpSync(path.resolve(REPO_ROOT_DIR, 'files'), path.resolve(buildDir, 'files'), {
+      force: true,
+      recursive: true,
+      filter: (src) => {
+        if (!src.includes('/zlux') && !src.includes('/sca')) {
+          return true;
+        }
+        return false;
+      },
+    });
+    fs.cpSync(path.resolve(REPO_ROOT_DIR, 'schemas'), path.resolve(buildDir, 'schemas'), { force: true, recursive: true });
     console.log('Converting bin to ebcdic locally, then uploading and unpacking...');
     convertDirToEbcdicInPlace(path.resolve(buildDir, 'bin'));
-    tar.c({ gzip: false, file: tarFile, sync: true, cwd: buildDir }, ['bin']);
+    convertDirToEbcdicInPlace(path.resolve(buildDir, 'files'));
+    convertDirToEbcdicInPlace(path.resolve(buildDir, 'schemas'));
+    tar.c({ gzip: false, file: tarFile, sync: true, cwd: buildDir }, ['bin', 'files', 'schemas']);
     await files.Upload.fileToUssFile(zosmfSession, tarFile, `${ussWorkDir}/zwe.tar`, {
       binary: true,
     });
@@ -379,50 +390,6 @@ module.exports = async () => {
     await uss.runCommand(
       `pax -ppx -rf ${keyringUtilPax} && cp -f keyring-util ${REMOTE_SYSTEM_INFO.ussTestDir}/bin/utils`,
       ussWorkDir,
-    );
-
-    console.log(`Uploading ${REPO_ROOT_DIR}/schemas to ${REMOTE_SYSTEM_INFO.ussTestDir}/schemas...`);
-    await files.Upload.dirToUSSDirRecursive(
-      zosmfSession,
-      path.resolve(REPO_ROOT_DIR, 'schemas'),
-      `${REMOTE_SYSTEM_INFO.ussTestDir}/schemas/`,
-      {
-        binary: false,
-        includeHidden: true,
-      },
-    );
-
-    console.log(`Uploading ${REPO_ROOT_DIR}/files/defaults.yaml to ${REMOTE_SYSTEM_INFO.ussTestDir}...`);
-    await uss.runCommand(`mkdir -p ${REMOTE_SYSTEM_INFO.ussTestDir}/files`);
-    await files.Upload.fileToUssFile(
-      zosmfSession,
-      path.resolve(REPO_ROOT_DIR, 'files', 'defaults.yaml'),
-      `${REMOTE_SYSTEM_INFO.ussTestDir}/files/defaults.yaml`,
-      {
-        binary: false,
-      },
-    );
-
-    console.log(
-      `Uploading ${REPO_ROOT_DIR}/files/SZWESAMP and ${REPO_ROOT_DIR}/files/SZWEEXEC to ${REMOTE_SYSTEM_INFO.ussTestDir}...`,
-    );
-
-    await files.Upload.dirToUSSDir(
-      zosmfSession,
-      path.resolve(REPO_ROOT_DIR, 'files', 'SZWESAMP'),
-      `${REMOTE_SYSTEM_INFO.ussTestDir}/files/SZWESAMP`,
-      {
-        binary: false,
-      },
-    );
-
-    await files.Upload.dirToUSSDir(
-      zosmfSession,
-      path.resolve(REPO_ROOT_DIR, 'files', 'SZWEEXEC'),
-      `${REMOTE_SYSTEM_INFO.ussTestDir}/files/SZWEEXEC`,
-      {
-        binary: false,
-      },
     );
 
     console.log(`Uploading ${REPO_ROOT_DIR}/workflows/templates/ZWESECUR.vtl and ZWESECUR.properties to ${ussWorkDir}...`);

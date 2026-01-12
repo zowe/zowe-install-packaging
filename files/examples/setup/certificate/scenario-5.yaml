@@ -11,34 +11,18 @@
 # >>>> Certificate setup scenario 5
 # Zowe generated z/OS Keyring with importing certificate stored in data set
 #
-# This example is for use with the command "zwe init certificate"
-# If you plan to use "zwe init --create-certificate" instead,
-# Then add the "zowe.setup.certificate" section contents into your main YAML 
-
-
-# You must define the location of Java to use "zwe init certificate"
-java:
-  # If Java is installed to /usr/lpp/java/bin/java
-  # Then put "/usr/lpp/java" here, excluding "/bin/java".
-  home: ""
+# Pre-requisite: your main zowe.yaml file is configured.
+#
+# To use this example, complete the configuration below and run 
+#  `zwe init --create-certificate` or `zwe init certificate` with either:
+#    - The contents of this file appended to your main 'zowe.yaml' file
+#      OR
+#    - The following configuration parameter, quotes included:
+#      -c "FILE(/path/to/this/scenario-5.yaml):FILE(/path/to/zowe.yaml)"  
+####
 
 zowe:
   setup:
-    dataset:
-      # The prefix where datasets such as SZWESAMP can be found.
-      prefix: IBMUSER.ZWEV3
-      # JCL library where Zowe will store temporary JCLs during initialization
-      jcllib: IBMUSER.ZWEV3.CUST.JCLLIB
-
-    security:
-      # This can be RACF, TSS, or ACF2
-      product: RACF
-      # Provide the user and group that will own the keyring
-      users:
-        zowe: ZWESVUSR
-      groups:
-        admin: ZWEADMIN
-
     certificate:
       type: JCERACFKS
       keyring:

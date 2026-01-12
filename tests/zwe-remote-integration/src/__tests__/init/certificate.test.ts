@@ -12,12 +12,19 @@ import ZoweYamlType from '../../config/ZoweYamlType';
 import { RemoteTestRunner } from '../../zos/RemoteTestRunner';
 import { ZoweConfig } from '../../config/ZoweConfig';
 import { FileType, TestFileActions, TestFile } from '../../zos/TestFileActions';
+import * as _ from 'lodash';
+import { REMOTE_SYSTEM_INFO, REPO_ROOT_DIR, THIS_TEST_ROOT_DIR } from '../../config/TestConfig';
+import * as path from 'path';
 
 const testSuiteName = 'init-cert';
 describe(`${testSuiteName}`, () => {
   let testRunner: RemoteTestRunner;
   let cfgYaml: ZoweYamlType;
   let cleanupFiles: TestFile[] = []; // a list of datasets deleted after every test
+
+  const localScenarioDir: string = path.resolve(REPO_ROOT_DIR, 'files', 'examples', 'setup', 'certificate');
+  const remoteScenarioDir: string = path.resolve(REMOTE_SYSTEM_INFO.ussTestDir, 'files', 'examples', 'setup', 'certificate');
+  const scenarioYamls: string[] = ['scenario-1.yaml', 'scenario-2.yaml', 'scenario-3.yaml', 'scenario-4.yaml', 'scenario-5.yaml'];
 
   beforeAll(async () => {
     testRunner = new RemoteTestRunner(testSuiteName);
@@ -43,7 +50,18 @@ describe(`${testSuiteName}`, () => {
   });
 
   describe('(SHORT)', () => {
+    it('run each scenario', async () => {
+      for (const scenario of scenarioYamls) {
+        const testYaml = ZoweConfig.loadAndOverlay(cfgYaml, localScenarioDir, scenario);
+        const result = await testRunner.runZweTest(testYaml, 'init certificate --dry-run');
+        expect(result.stdout).not.toBeNull();
+        expect(result.cleanedStdout).toMatchSnapshot();
+        expect(result.rc).not.toBe(0);
+      }
+    });
+
     it('cert missing zowe.yaml vars', async () => {
+      cfgYaml = ZoweConfig.loadAndOverlay(cfgYaml, localScenarioDir, scenarioYamls[0]);
       cfgYaml.zowe.setup.certificate.type = 'JCERACFKS';
       cfgYaml.zowe.setup.certificate.keyring = { name: 'safkeyring://some.keyring' };
       cfgYaml.zowe.setup.dataset.jcllib = 'DOES.NOT.EXIST'; // only an error when !pkcs12
@@ -53,6 +71,7 @@ describe(`${testSuiteName}`, () => {
       expect(result.rc).toBe(63);
 
       cfgYaml = ZoweConfig.getZoweYaml(); // reset
+      cfgYaml = ZoweConfig.loadAndOverlay(cfgYaml, localScenarioDir, scenarioYamls[0]);
       delete cfgYaml.zowe.setup.dataset.prefix;
       result = await testRunner.runZweTest(cfgYaml, 'init certificate --dry-run');
       expect(result.stdout).not.toBeNull();
@@ -60,6 +79,7 @@ describe(`${testSuiteName}`, () => {
       expect(result.rc).toBe(157);
 
       cfgYaml = ZoweConfig.getZoweYaml();
+      cfgYaml = ZoweConfig.loadAndOverlay(cfgYaml, localScenarioDir, scenarioYamls[0]);
       cfgYaml.zowe.setup.certificate.type = null;
       result = await testRunner.runZweTest(cfgYaml, 'init certificate --dry-run');
       expect(result.stdout).not.toBeNull();
@@ -71,24 +91,48 @@ describe(`${testSuiteName}`, () => {
   describe('(LONG)', () => {
     const defaultKeystoreLocations: TestFile[] = [
       {
-        // @ts-expect-error incomplete schema
-        name: ZoweConfig.getZoweYaml().zowe.setup.certificate.pkcs12.directory + '/local_ca/',
+        name: `${REMOTE_SYSTEM_INFO.ussTestDir}/pkcs12/local_ca/`,
         type: FileType.USS_DIR,
       },
       {
-        // @ts-expect-error incomplete schema
-        name: ZoweConfig.getZoweYaml().zowe.setup.certificate.pkcs12.directory + '/localhost/',
+        name: `${REMOTE_SYSTEM_INFO.ussTestDir}/pkcs12/localhost/`,
         type: FileType.USS_DIR,
       },
     ];
 
     // run during beforeEach in case a test abended and system isn't clean
     beforeEach(async () => {
+      cfgYaml = ZoweConfig.loadAndOverlay(cfgYaml, localScenarioDir, scenarioYamls[0]);
+      // @ts-expect-error incomplete schema
+      cfgYaml.zowe.setup.certificate.pkcs12.directory = `${REMOTE_SYSTEM_INFO.ussTestDir}/pkcs12`;
       await TestFileActions.deleteAll(defaultKeystoreLocations);
     });
 
     afterEach(async () => {
       await TestFileActions.deleteAll(defaultKeystoreLocations);
+    });
+
+    it('cert ways to use scenario.yaml', async () => {
+      cfgYaml.zowe.verifyCertificates = 'NONSTRICT';
+      let result = await testRunner.runZweTest(cfgYaml, 'init certificate');
+      expect(result.stdout).not.toBeNull();
+      expect(result.cleanedStdout).toMatchSnapshot();
+      expect(result.rc).toBe(0);
+      const remoteCfgYaml = await testRunner.uploadZoweYaml(cfgYaml);
+      result = await testRunner.runZweTest(
+        cfgYaml,
+        `init certificate -c "FILE(${remoteScenarioDir}/${scenarioYamls[0]}):FILE("${remoteCfgYaml})"`,
+      );
+      expect(result.stdout).not.toBeNull();
+      expect(result.cleanedStdout).toMatchSnapshot();
+      expect(result.rc).toBe(0);
+
+      await testRunner.runRaw(`cat ${remoteScenarioDir}/${scenarioYamls[0]} >> ${remoteCfgYaml}`);
+
+      result = await testRunner.runZweTest(cfgYaml, 'init certificate');
+      expect(result.stdout).not.toBeNull();
+      expect(result.cleanedStdout).toMatchSnapshot();
+      expect(result.rc).toBe(0);
     });
 
     it('passing init', async () => {
