@@ -1,1 +1,15 @@
-""
+{
+  "lockAcquiredTime": "Mon Jan 12 2026 20:02:50 GMT+0000 (Coordinated Universal Time)",
+  "uid": "1768248170210715292",
+  "repository": {
+    "owner": "zowe",
+    "repo": "zowe-install-packaging"
+  },
+  "branch": "user/markackert/update-auth0-root-ca",
+  "workflow": "Zowe CICD Integration Tests",
+  "job": "cicd-test",
+  "actor": "zowe-robot",
+  "runId": 20933139266,
+  "runNumber": 8033,
+  "link": "https://github.com/zowe/zowe-install-packaging/actions/runs/20933139266"
+}
