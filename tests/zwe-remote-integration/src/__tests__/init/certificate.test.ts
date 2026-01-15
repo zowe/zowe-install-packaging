@@ -12,8 +12,7 @@ import ZoweYamlType from '../../config/ZoweYamlType';
 import { RemoteTestRunner } from '../../zos/RemoteTestRunner';
 import { ZoweConfig } from '../../config/ZoweConfig';
 import { FileType, TestFileActions, TestFile } from '../../zos/TestFileActions';
-import * as _ from 'lodash';
-import { REMOTE_SYSTEM_INFO, REPO_ROOT_DIR, THIS_TEST_ROOT_DIR } from '../../config/TestConfig';
+import { REMOTE_SYSTEM_INFO, REPO_ROOT_DIR } from '../../config/TestConfig';
 import * as path from 'path';
 
 const testSuiteName = 'init-cert';
