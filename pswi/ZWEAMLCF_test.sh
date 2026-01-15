@@ -1,7 +1,7 @@
 export ZOSMF_URL="https://zzow10.zowe.marist.cloud"
 export ZOSMF_PORT=10443
 export ZOSMF_SYSTEM="S0W1"
-export JOBNAME="ZWECONF1"
+export JOBNAME="ZWEAMLCF1"
 #export HOST=${ZOSMF_URL#https:\/\/}
 export BASE_URL="${ZOSMF_URL}:${ZOSMF_PORT}"
 CURR_TIME=$(date +%s)
@@ -9,27 +9,27 @@ export LOG_DIR="logs/$CURR_TIME"
 mkdir -p $LOG_DIR
 WORK_MOUNT="/tmp"
 
-echo "Changing runtime path in ZWECONF.properties."
+echo "Changing runtime path in ZWECONF.properties, and renaming ZWEAMLCF.properties."
 
-cp ../workflows/files/ZWECONF.properties ./ZWECONF.properties
-sed "s|runtimeDirectory=|runtimeDirectory=${WORK_MOUNT}|g" ./ZWECONF.properties >_ZWECONF.properties
-sed "s|workspaceDirectory=.*$|workspaceDirectory=${WORK_MOUNT}|g" ./_ZWECONF.properties >_ZWECONF
-sed "s|java_home=|java_home=#delete_me#|g" _ZWECONF >ZWECONF
-sed "s|node_home=|node_home=#delete_me#|g" ZWECONF >_ZWECONF
+cp ../workflows/files/ZWECONF.properties ./ZWEAMLCF.properties
+sed "s|runtimeDirectory=|runtimeDirectory=${WORK_MOUNT}|g" ./ZWEAMLCF.properties >_ZWEAMLCF.properties
+sed "s|workspaceDirectory=.*$|workspaceDirectory=${WORK_MOUNT}|g" ./_ZWEAMLCF.properties >_ZWEAMLCF
+sed "s|java_home=|java_home=#delete_me#|g" _ZWEAMLCF >ZWEAMLCF
+sed "s|node_home=|node_home=#delete_me#|g" ZWEAMLCF >_ZWEAMLCF
 
 echo "Changing the configuration workflow to be fully automated."
 
-cp ../workflows/files/ZWECONF.xml ./ZWECONF.xml
-sed "s|<autoEnable>false|<autoEnable>true|g" ./ZWECONF.xml >ZWECONFX
+cp ../workflows/files/ZWEAMLCF.xml ./ZWEAMLCF.xml
+sed "s|<autoEnable>false|<autoEnable>true|g" ./ZWEAMLCF.xml >ZWEAMLCFX
 
 sshpass -p${ZOSMF_PASS} sftp -o HostKeyAlgorithms=+ssh-rsa -o BatchMode=no -o StrictHostKeyChecking=no -o PubkeyAuthentication=no -b - -P ${ZZOW_SSH_PORT} ${ZOSMF_USER}@${HOST} <<EOF
 cd ${WORK_MOUNT}
-put _ZWECONF
-put ZWECONFX
+put _ZWEAMLCF
+put ZWEAMLCFX
 EOF
 
-echo "Testing the configuration workflow ${WORK_MOUNT}/ZWECONFX"
-sh scripts/wf_run_test.sh "${WORK_MOUNT}/ZWECONFX" "run" "ZWECONF" "${WORK_MOUNT}/_ZWECONF"
+echo "Testing the configuration workflow ${WORK_MOUNT}/ZWEAMLCFX"
+sh scripts/wf_run_test.sh "${WORK_MOUNT}/ZWEAMLCFX" "run" "ZWEAMLCF" "${WORK_MOUNT}/_ZWEAMLCF"
 if [ $? -gt 0 ]; then exit -1; fi
 
 echo "Converting zowe.yaml"
@@ -61,14 +61,14 @@ cp ../example-zowe.yaml example-zowe.yaml
 
 diff example-zowe.yaml zowe_.yaml >diff.txt || true
 
-diff diff.txt scripts/base_diff.txt >final_diff.txt || true
+diff diff.txt scripts/aml_base_diff.txt >final_diff.txt || true
 
 concat=$(cat final_diff.txt)
 
 if [ -n "$concat" ]
 then
-  echo "There are some discrepancies between the example-zowe.yaml and the zowe.yaml created by ZWECONF.xml workflow."
-  echo "Please add to or delete from the ZWECONF.xml workflow what needs or doesn't need to be there."
+  echo "There are some discrepancies between the example-zowe.yaml and the zowe.yaml created by ZWEAMLCF.xml workflow."
+  echo "Please add to or delete from the ZWEAMLCF.xml workflow what needs or doesn't need to be there."
   echo "E.g. if there is a new variable you need to add it first to the workflow variables, then add the variable to the" 
   echo "'main_variables' step and then also to the step where the zowe.yaml is created."
   echo "If there was added/deleted just a comment in the example-zowe.yaml please add it also to the workflow so"
@@ -82,7 +82,7 @@ then
   cat final_final_diff.txt
   echo "------------------------------------------------------------------------"
   echo "First line is from the example-zowe.yaml and the line bellow is from the"
-  echo "zowe.yaml created by the ZWECONF.xm workflow."
+  echo "zowe.yaml created by the ZWEAMLCF.xml workflow."
   cp final_final_diff.txt $LOG_DIR/diff_output.txt
   exit -1
 fi

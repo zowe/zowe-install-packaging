@@ -100,7 +100,7 @@ zowe:
       volume: ""
       # Storage class name if you are using VSAM in RLS mode
       storageClass: ""
-    
+
     # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
     # Certificate creation
     #
@@ -116,7 +116,7 @@ zowe:
     # If you want Zowe to create valid certificates and keyrings for you,
     # Then you can can use the example YAML content within
     #  the "zowe/files/examples/setup/certificate" directory.
-    # There, you will find 5 scenarios covering common 
+    # There, you will find 5 scenarios covering common
     #  certificate and keyring configurations.
     # To create certificates, edit the scenario that suits you
     #  and follow the instructions in the scenario.

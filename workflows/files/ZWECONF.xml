@@ -385,7 +385,7 @@ some use cases, like containerization, this port could be different.</descriptio
             <choice>JCERACFKS</choice>
             <choice>JCECCARACFKS</choice>
             <choice>JCEHYBRIDRACFKS</choice>
-            <default>PKCS12</default>
+            <default>JCERACFKS</default>
         </string>
     </variable>
     <variable name="zowe_certificate_truststore_file" scope="instance" visibility="public">
@@ -1585,16 +1585,17 @@ echo '    #' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
 echo '    # (Recommended)' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
 echo '    # If you already have a Keyring (z/OS) or PKCS12 files (z/OS, Containers)' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
 echo '    # Then you can provide them in the section after the end of "zowe.setup"' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
-echo '    # As long as they meet Zowe's requirements' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
+echo '    # As long as they meet Zowe'\''s requirements' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
 echo '    # Requirements: https://docs.zowe.org/stable/user-guide/configure-certificates/#zowe-certificate-requirements' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
 echo '    #' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
 echo '    # (Not Recommended)' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
 echo '    # If you want Zowe to create valid certificates and keyrings for you,' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
 echo '    # Then you can can use the example YAML content within' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
-echo '    #     zowe/files/examples/setup/certificate' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
-echo '    # Within, you will find 5 scenarios that you can edit' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
+echo '    #  the "zowe/files/examples/setup/certificate" directory.' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
+echo '    # There, you will find 5 scenarios covering common' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
+echo '    #  certificate and keyring configurations.' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
 echo '    # To create certificates, edit the scenario that suits you' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
-echo '    # And then run "zwe init certificate -c <path_to_yaml> --update-config"' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
+echo '    #  and follow the instructions in the scenario.' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
 echo '  #-------------------------------------------------------------------------------' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
 echo '  # End of "zowe.setup" section' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
 echo '  #-------------------------------------------------------------------------------' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
@@ -1608,15 +1609,18 @@ echo '  # Do not confuse this with "zowe.setup.certificate"' >> "${instance-zowe
 echo '  # That is for creation of certificates, this is for stating which Zowe should use.' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
 echo '  certificate:' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
 echo '    keystore:' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
+echo '      # Type of certificate storage. Valid values are: PKCS12, JCERACFKS. APIML additionally supports: JCEKS, JCECCAKS, JCECCARACFKS, or JCEHYBRIDRACFKS' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
 echo '      type: $!{instance-zowe_certificate_keystore_type}' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
 echo '      # if keyrings, the format is safkeyring://stcusername/KeyName' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
+echo '      # for PKCS12, it is instead the path to the PKCS12 file.' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
 echo '      file: $!{instance-zowe_certificate_keystore_file}' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
 echo '      # "password" should either be the value you set when PKCS12, or literally "password" for keyrings.' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
 echo '      password: $!{instance-zowe_certificate_keystore_password}' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
 echo '      # alias is the name of your key/cert. When using keyrings, get the Case Sensitive, Space Sensitive value in a TSO list ring.' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
 echo '      alias: $!{instance-zowe_certificate_keystore_alias}' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
 echo '    truststore:' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
-echo '      # truststore usually has same values as keystore (minus alias), but can be different if desired.' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
+echo '      # Truststore usually has same values as keystore (minus alias), but can be different if desired.' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
+echo '      # In this example, we link the truststore values to match the keystore values.' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
 echo '      type: $!{instance-zowe_certificate_truststore_type}' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
 echo '      file: $!{instance-zowe_certificate_truststore_file}' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
 echo '      password: $!{instance-zowe_certificate_truststore_password}' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
