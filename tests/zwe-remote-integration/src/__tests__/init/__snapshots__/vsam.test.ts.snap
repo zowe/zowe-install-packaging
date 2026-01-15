@@ -1,10 +1,10 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`init-vsam (LONG) creates vsam 1`] = `
-"Temporary directory '/tmp/.zweenv-0000' created.
-Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
--------------------------------------------------------------------------------
+"-------------------------------------------------------------------------------
 >> Initialize Zowe custom data sets
+Temporary directory '/tmp/.zweenv-0000' created.
+Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
 Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWEGENER)
 --- JCL content ---
 //ZWEGENER JOB
@@ -453,17 +453,24 @@ exports[`init-vsam (SHORT) skip undefined caching service 1`] = `
             "authLoadlib": "TEST.DATASET.PFX.SZWEAUTH",
             "authPluginLib": "TEST.DATASET.PFX.ZWESAPL"
           },
-          "certificate": {
-            "type": "PKCS12",
-            "pkcs12": {
-              "directory": "/test/dir/pkcs12"
-            }
-          },
           "vsam": {
             "mode": "NONRLS",
             "volume": "TSTVOL",
             "storageClass": "",
             "name": "TEST.DATASET.PFX.VSAMTEST"
+          }
+        },
+        "certificate": {
+          "keystore": {
+            "type": "JCERACFKS",
+            "file": "safkeyring://<stc_username>/<keyring_name>",
+            "password": "password",
+            "alias": "localhost"
+          },
+          "truststore": {
+            "type": "JCERACFKS",
+            "file": "safkeyring://<stc_username>/<keyring_name>",
+            "password": "password"
           }
         },
         "runtimeDirectory": "/test/dir",
@@ -514,24 +521,6 @@ exports[`init-vsam (SHORT) skip undefined caching service 1`] = `
         "launchScript": {
           "logLevel": "info",
           "onComponentConfigureFail": "warn"
-        },
-        "certificate": {
-          "keystore": {
-            "type": "PKCS12",
-            "file": "/global/zowe/keystore/localhost/localhost.keystore.p12",
-            "password": "password",
-            "alias": "localhost"
-          },
-          "truststore": {
-            "type": "PKCS12",
-            "file": "/global/zowe/keystore/localhost/localhost.truststore.p12",
-            "password": "password"
-          },
-          "pem": {
-            "key": "/global/zowe/keystore/localhost/localhost.key",
-            "certificate": "/global/zowe/keystore/localhost/localhost.cer",
-            "certificateAuthorities": "/global/zowe/keystore/local_ca/local_ca.cer"
-          }
         },
         "verifyCertificates": "STRICT"
       },
@@ -605,17 +594,24 @@ exports[`init-vsam (SHORT) unset vsam mode 1`] = `
             "authLoadlib": "TEST.DATASET.PFX.SZWEAUTH",
             "authPluginLib": "TEST.DATASET.PFX.ZWESAPL"
           },
-          "certificate": {
-            "type": "PKCS12",
-            "pkcs12": {
-              "directory": "/test/dir/pkcs12"
-            }
-          },
           "vsam": {
             "mode": null,
             "volume": "TSTVOL",
             "storageClass": "",
             "name": "TEST.DATASET.PFX.VSAMTEST"
+          }
+        },
+        "certificate": {
+          "keystore": {
+            "type": "JCERACFKS",
+            "file": "safkeyring://<stc_username>/<keyring_name>",
+            "password": "password",
+            "alias": "localhost"
+          },
+          "truststore": {
+            "type": "JCERACFKS",
+            "file": "safkeyring://<stc_username>/<keyring_name>",
+            "password": "password"
           }
         },
         "runtimeDirectory": "/test/dir",
@@ -666,24 +662,6 @@ exports[`init-vsam (SHORT) unset vsam mode 1`] = `
         "launchScript": {
           "logLevel": "info",
           "onComponentConfigureFail": "warn"
-        },
-        "certificate": {
-          "keystore": {
-            "type": "PKCS12",
-            "file": "/global/zowe/keystore/localhost/localhost.keystore.p12",
-            "password": "password",
-            "alias": "localhost"
-          },
-          "truststore": {
-            "type": "PKCS12",
-            "file": "/global/zowe/keystore/localhost/localhost.truststore.p12",
-            "password": "password"
-          },
-          "pem": {
-            "key": "/global/zowe/keystore/localhost/localhost.key",
-            "certificate": "/global/zowe/keystore/localhost/localhost.cer",
-            "certificateAuthorities": "/global/zowe/keystore/local_ca/local_ca.cer"
-          }
         },
         "verifyCertificates": "STRICT"
       },
@@ -808,17 +786,24 @@ exports[`init-vsam (SHORT) unset vsam mode 2`] = `
             "authLoadlib": "TEST.DATASET.PFX.SZWEAUTH",
             "authPluginLib": "TEST.DATASET.PFX.ZWESAPL"
           },
-          "certificate": {
-            "type": "PKCS12",
-            "pkcs12": {
-              "directory": "/test/dir/pkcs12"
-            }
-          },
           "vsam": {
             "mode": "",
             "volume": "TSTVOL",
             "storageClass": "",
             "name": "TEST.DATASET.PFX.VSAMTEST"
+          }
+        },
+        "certificate": {
+          "keystore": {
+            "type": "JCERACFKS",
+            "file": "safkeyring://<stc_username>/<keyring_name>",
+            "password": "password",
+            "alias": "localhost"
+          },
+          "truststore": {
+            "type": "JCERACFKS",
+            "file": "safkeyring://<stc_username>/<keyring_name>",
+            "password": "password"
           }
         },
         "runtimeDirectory": "/test/dir",
@@ -869,24 +854,6 @@ exports[`init-vsam (SHORT) unset vsam mode 2`] = `
         "launchScript": {
           "logLevel": "info",
           "onComponentConfigureFail": "warn"
-        },
-        "certificate": {
-          "keystore": {
-            "type": "PKCS12",
-            "file": "/global/zowe/keystore/localhost/localhost.keystore.p12",
-            "password": "password",
-            "alias": "localhost"
-          },
-          "truststore": {
-            "type": "PKCS12",
-            "file": "/global/zowe/keystore/localhost/localhost.truststore.p12",
-            "password": "password"
-          },
-          "pem": {
-            "key": "/global/zowe/keystore/localhost/localhost.key",
-            "certificate": "/global/zowe/keystore/localhost/localhost.cer",
-            "certificateAuthorities": "/global/zowe/keystore/local_ca/local_ca.cer"
-          }
         },
         "verifyCertificates": "STRICT"
       },

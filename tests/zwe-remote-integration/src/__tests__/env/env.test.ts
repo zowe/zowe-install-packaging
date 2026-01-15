@@ -29,7 +29,7 @@ describe(`${testSuiteName}`, () => {
     testRunner = new RemoteTestRunner(testSuiteName);
     cfgYaml = ZoweConfig.getZoweYaml();
     const cleanSecurityManager = (input: string) => {
-      return input.replaceAll(/TSS|ACF2|RACF/gi, 'ESMT'); // ESM TEST
+      return input.replaceAll(/(?<!JCE)(TSS|ACF2|RACF)/gi, 'ESMT'); // ESM TEST
     };
     testRunner.addCleanFn(cleanSecurityManager);
   });

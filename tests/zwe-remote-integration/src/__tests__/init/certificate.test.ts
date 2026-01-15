@@ -25,6 +25,8 @@ describe(`${testSuiteName}`, () => {
   const remoteScenarioDir: string = path.resolve(REMOTE_SYSTEM_INFO.ussTestDir, 'files', 'examples', 'setup', 'certificate');
   const scenarioYamls: string[] = ['scenario-1.yaml', 'scenario-2.yaml', 'scenario-3.yaml', 'scenario-4.yaml', 'scenario-5.yaml'];
 
+  const remotePkcs12Dir: string = `${REMOTE_SYSTEM_INFO.ussTestDir}/pkcs12`;
+
   beforeAll(async () => {
     testRunner = new RemoteTestRunner(testSuiteName);
     cfgYaml = ZoweConfig.getZoweYaml();
@@ -52,6 +54,7 @@ describe(`${testSuiteName}`, () => {
     it('run each scenario', async () => {
       for (const scenario of scenarioYamls) {
         const testYaml = ZoweConfig.loadAndOverlay(cfgYaml, localScenarioDir, scenario);
+        testYaml.zowe.setup.certificate.directory = remotePkcs12Dir;
         const result = await testRunner.runZweTest(testYaml, 'init certificate --dry-run');
         expect(result.stdout).not.toBeNull();
         expect(result.cleanedStdout).toMatchSnapshot();
@@ -90,11 +93,11 @@ describe(`${testSuiteName}`, () => {
   describe('(LONG)', () => {
     const defaultKeystoreLocations: TestFile[] = [
       {
-        name: `${REMOTE_SYSTEM_INFO.ussTestDir}/pkcs12/local_ca/`,
+        name: `${remotePkcs12Dir}/local_ca/`,
         type: FileType.USS_DIR,
       },
       {
-        name: `${REMOTE_SYSTEM_INFO.ussTestDir}/pkcs12/localhost/`,
+        name: `${remotePkcs12Dir}/localhost/`,
         type: FileType.USS_DIR,
       },
     ];
@@ -103,7 +106,7 @@ describe(`${testSuiteName}`, () => {
     beforeEach(async () => {
       cfgYaml = ZoweConfig.loadAndOverlay(cfgYaml, localScenarioDir, scenarioYamls[0]);
       // @ts-expect-error incomplete schema
-      cfgYaml.zowe.setup.certificate.pkcs12.directory = `${REMOTE_SYSTEM_INFO.ussTestDir}/pkcs12`;
+      cfgYaml.zowe.setup.certificate.pkcs12.directory = remotePkcs12Dir;
       await TestFileActions.deleteAll(defaultKeystoreLocations);
     });
 

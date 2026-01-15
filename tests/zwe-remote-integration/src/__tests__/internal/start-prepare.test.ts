@@ -99,7 +99,6 @@ describe(`${testSuiteName}`, () => {
         _.set(cfgYaml, 'zowe.environments', test['cmd.env']);
 
         const result = await testRunner.runZweTest(cfgYaml, 'internal start prepare');
-        console.log(JSON.stringify(test));
         const verifyResult = new RegExp(`Could not validate if z/OSMF is available on.*${test['result']}://.*?$`, 'gm');
         expect(verifyResult.exec(result.cleanedStdout)).not.toBeNull();
       }

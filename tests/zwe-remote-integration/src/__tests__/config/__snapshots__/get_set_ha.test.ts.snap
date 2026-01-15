@@ -79,15 +79,21 @@ exports[`internal-config-get-and-set (SHORT) config set operations 2`] = `
       loadlib: TEST.DATASET.PFX.SZWEEXEC
       authLoadlib: TEST.DATASET.PFX.SZWEAUTH
       authPluginLib: TEST.DATASET.PFX.ZWESAPL
-    certificate:
-      type: PKCS12
-      pkcs12:
-        directory: /test/dir/pkcs12
     vsam:
       mode: NONRLS
       volume: TSTVOL
       storageClass: ""
       name: TEST.DATASET.PFX.VSAM
+  certificate:
+    keystore:
+      type: JCERACFKS
+      file: safkeyring://<stc_username>/<keyring_name>
+      password: password
+      alias: localhost
+    truststore:
+      type: \${{ zowe.certificate.keystore.type }}
+      file: \${{ zowe.certificate.keystore.file }}
+      password: \${{ zowe.certificate.keystore.password }}
   runtimeDirectory: /test/dir
   logDirectory: /test/dir/logs
   workspaceDirectory: /test/dir/workspace
@@ -127,20 +133,6 @@ exports[`internal-config-get-and-set (SHORT) config set operations 2`] = `
   launchScript:
     logLevel: info
     onComponentConfigureFail: warn
-  certificate:
-    keystore:
-      type: PKCS12
-      file: /global/zowe/keystore/localhost/localhost.keystore.p12
-      password: password
-      alias: localhost
-    truststore:
-      type: PKCS12
-      file: /global/zowe/keystore/localhost/localhost.truststore.p12
-      password: password
-    pem:
-      key: /global/zowe/keystore/localhost/localhost.key
-      certificate: /global/zowe/keystore/localhost/localhost.cer
-      certificateAuthorities: /global/zowe/keystore/local_ca/local_ca.cer
   verifyCertificates: STRICT
 java:
   home: /test/java/home
@@ -250,15 +242,21 @@ zowe:
       loadlib: "TEST.DATASET.PFX.SZWEEXEC"
       authLoadlib: "TEST.DATASET.PFX.SZWEAUTH"
       authPluginLib: "TEST.DATASET.PFX.ZWESAPL"
-    certificate:
-      type: "PKCS12"
-      pkcs12:
-        directory: "/test/dir/pkcs12"
     vsam:
       mode: "NONRLS"
       volume: "TSTVOL"
       storageClass: ""
       name: "TEST.DATASET.PFX.VSAM"
+  certificate:
+    keystore:
+      type: "JCERACFKS"
+      file: "safkeyring://<stc_username>/<keyring_name>"
+      password: "password"
+      alias: "localhost"
+    truststore:
+      type: "JCERACFKS"
+      file: "safkeyring://<stc_username>/<keyring_name>"
+      password: "password"
   runtimeDirectory: "/test/dir"
   logDirectory: "/test/dir/logs"
   workspaceDirectory: "/test/dir/workspace"
@@ -298,20 +296,6 @@ zowe:
   launchScript:
     logLevel: "info"
     onComponentConfigureFail: "warn"
-  certificate:
-    keystore:
-      type: "PKCS12"
-      file: "/global/zowe/keystore/localhost/localhost.keystore.p12"
-      password: "password"
-      alias: "localhost"
-    truststore:
-      type: "PKCS12"
-      file: "/global/zowe/keystore/localhost/localhost.truststore.p12"
-      password: "password"
-    pem:
-      key: "/global/zowe/keystore/localhost/localhost.key"
-      certificate: "/global/zowe/keystore/localhost/localhost.cer"
-      certificateAuthorities: "/global/zowe/keystore/local_ca/local_ca.cer"
   verifyCertificates: "STRICT"
 java:
   home: "/test/java/home"
@@ -422,15 +406,21 @@ zowe:
       loadlib: "TEST.DATASET.PFX.SZWEEXEC"
       authLoadlib: "TEST.DATASET.PFX.SZWEAUTH"
       authPluginLib: "TEST.DATASET.PFX.ZWESAPL"
-    certificate:
-      type: "PKCS12"
-      pkcs12:
-        directory: "/test/dir/pkcs12"
     vsam:
       mode: "NONRLS"
       volume: "TSTVOL"
       storageClass: ""
       name: "TEST.DATASET.PFX.VSAM"
+  certificate:
+    keystore:
+      type: "JCERACFKS"
+      file: "safkeyring://<stc_username>/<keyring_name>"
+      password: "password"
+      alias: "localhost"
+    truststore:
+      type: "JCERACFKS"
+      file: "safkeyring://<stc_username>/<keyring_name>"
+      password: "password"
   runtimeDirectory: "/test/dir"
   logDirectory: "/test/dir/logs"
   workspaceDirectory: "/test/dir/workspace"
@@ -470,20 +460,6 @@ zowe:
   launchScript:
     logLevel: "info"
     onComponentConfigureFail: "warn"
-  certificate:
-    keystore:
-      type: "PKCS12"
-      file: "/global/zowe/keystore/localhost/localhost.keystore.p12"
-      password: "password"
-      alias: "localhost"
-    truststore:
-      type: "PKCS12"
-      file: "/global/zowe/keystore/localhost/localhost.truststore.p12"
-      password: "password"
-    pem:
-      key: "/global/zowe/keystore/localhost/localhost.key"
-      certificate: "/global/zowe/keystore/localhost/localhost.cer"
-      certificateAuthorities: "/global/zowe/keystore/local_ca/local_ca.cer"
   verifyCertificates: "STRICT"
 java:
   home: "/test/java/home"
