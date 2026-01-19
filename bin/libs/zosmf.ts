@@ -10,8 +10,6 @@
 */
 
 import * as std from 'cm_std';
-import * as os from 'cm_os';
-import * as zos from 'zos';
 
 import * as common from './common';
 import * as shell from './shell';
@@ -26,12 +24,13 @@ export function validateZosmfHostAndPort(zosmfHost: string, zosmfPort: number): 
     return false;
   }
   let zosmfCheckPassed=true;
+  let execReturn: any;
 
   if (!std.getenv('NODE_HOME')) {
     common.printError(`Warning: Could not validate if z/OS MF is available on 'https://${zosmfHost}:${zosmfPort}/zosmf/info'. NODE_HOME is not defined.`);
     zosmfCheckPassed=false;
   } else {
-    const execReturn = shell.execOutSync(`${std.getenv('NODE_HOME')}/bin/node`, `${std.getenv('ZWE_zowe_runtimeDirectory')}/bin/utils/curl.js`, `https://${zosmfHost}:${zosmfPort}/zosmf/info`, `-k`, `-H`, `X-CSRF-ZOSMF-HEADER: true`, `--response-type`, `status`);
+    execReturn = shell.execOutSync(`${std.getenv('NODE_HOME')}/bin/node`, `${std.getenv('ZWE_zowe_runtimeDirectory')}/bin/utils/curl.js`, `https://${zosmfHost}:${zosmfPort}/zosmf/info`, `-k`, `-H`, `X-CSRF-ZOSMF-HEADER: true`, `--response-type`, `status`);
     if (execReturn.rc || !execReturn.out) {
       common.printError(`Warning: Could not validate if z/OS MF is available on 'https://${zosmfHost}:${zosmfPort}/zosmf/info'. No response code from z/OSMF server.`);
       zosmfCheckPassed=false
@@ -44,7 +43,7 @@ export function validateZosmfHostAndPort(zosmfHost: string, zosmfPort: number): 
   }
 
   if (zosmfCheckPassed) {
-    common.printMessage(`Successfully checked z/OS MF is available on 'https://${zosmfHost}:${zosmfPort}/zosmf/info'`)
+    common.printMessage(`Successfully checked z/OS MF is available on 'https://${zosmfHost}:${zosmfPort}/zosmf/info' - ${execReturn.out}`);
   }
   return zosmfCheckPassed;
 }

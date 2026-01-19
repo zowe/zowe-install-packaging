@@ -47,6 +47,6 @@ validate_zosmf_host_and_port() {
   fi
 
   if [ "${zosmf_check_passed}" = "true" ]; then
-    print_message "Successfully checked z/OS MF is available on 'https://${zosmf_host}:${zosmf_port}/zosmf/info'"
+    print_message "Successfully checked z/OS MF is available on 'https://${zosmf_host}:${zosmf_port}/zosmf/info' - ${http_response_code}"
   fi
 }
