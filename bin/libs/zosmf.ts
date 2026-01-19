@@ -42,9 +42,8 @@ export function validateZosmfHostAndPort(zosmfHost: string, zosmfPort: number, s
     zosmfCheckPassed=false
   }
   
-
   if (zosmfCheckPassed) {
-    common.printMessage(`Successfully checked z/OSMF is available on '${scheme}://${zosmfHost}:${zosmfPort}/zosmf/info'`)
+    common.printMessage(`Successfully checked z/OSMF is available on '${scheme}://${zosmfHost}:${zosmfPort}/zosmf/info' - ${execReturn.out}`);
   }
   return zosmfCheckPassed || warnOnly;
 }
