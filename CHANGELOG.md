@@ -3,6 +3,7 @@
 All notable changes to the Zowe Installer will be documented in this file.
 
 ## `3.5.0`
+- Bugfix: Running z/OSMF is returning 401, if RSU2512 was applied. [#46??](https://github.com/zowe/zowe-install-packaging/pull/46??)
 - Bugfix: `zwe config get` HA instance lookup is case insensitive. [#4609](https://github.com/zowe/zowe-install-packaging/pull/4609)
 - Enhancement: `zwe config get` command uses new `--format` option to format the output. [#4591](https://github.com/zowe/zowe-install-packaging/pull/4591)
 
