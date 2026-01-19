@@ -38,7 +38,8 @@ validate_zosmf_host_and_port() {
     if [ -z "${http_response_code}" ]; then
       print_error "Warning: Could not validate if z/OS MF is available on 'https://${zosmf_host}:${zosmf_port}/zosmf/info'. No response code from z/OSMF server."
       zosmf_check_passed=false
-    elif [ ${http_response_code} != 200 ]; then
+    # RSU2512 -> running z/OSMF is returning 401
+    elif [ ${http_response_code} != 200 -a ${http_response_code} != 401 ]; then
       print_error "Could not contact z/OS MF on 'https://${zosmf_host}:${zosmf_port}/zosmf/info' - ${http_response_code}"
       zosmf_check_passed=false
       return 1

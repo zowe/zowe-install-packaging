@@ -35,7 +35,8 @@ export function validateZosmfHostAndPort(zosmfHost: string, zosmfPort: number): 
     if (execReturn.rc || !execReturn.out) {
       common.printError(`Warning: Could not validate if z/OS MF is available on 'https://${zosmfHost}:${zosmfPort}/zosmf/info'. No response code from z/OSMF server.`);
       zosmfCheckPassed=false
-    } else if (execReturn.out != '200') {
+    // RSU2512 -> running z/OSMF is returning 401
+    } else if (['200', '401'].includes(execReturn.out) == false) {
       common.printError(`Could not contact z/OS MF on 'https://${zosmfHost}:${zosmfPort}/zosmf/info' - ${execReturn.out}`);
       zosmfCheckPassed=false
       return false;
