@@ -51,6 +51,9 @@ describe(`${testSuiteName}`, () => {
   afterEach(async () => {
     await testRunner.postTest();
     await TestFileActions.deleteAll([workspaceEnv]);
+    defaultCfgYaml = ZoweConfig.getDefaultsYaml();
+    // always reset defaults yaml
+    await testRunner.uploadDefaultsYaml(defaultCfgYaml, undefined, true);
   });
 
   afterAll(() => {
