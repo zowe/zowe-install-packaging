@@ -16,7 +16,7 @@
       "artifact": "zowe-server-*.pax.Z"
     },
     "org.zowe.zlux.zlux-core": {
-      "version": "3.4.0-zlux-server-framework-PR-651",
+      "version": "^3.4.0-zlux-server-framework-PR-651",
       "artifact": "zlux-core-3.4.0-20251221.123936.pax"
     },
     "org.zowe.zlux.sample-angular-app": {
