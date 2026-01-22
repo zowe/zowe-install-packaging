@@ -106,7 +106,17 @@ export function jqset(obj: any, path: string, value: any): [ boolean, any ] {
           obj[firstPart] = [];
         }
         obj = obj[firstPart];
-        obj[arrayIndex] = value;
+        if (Number(arrayIndex) < 0) {
+            throw new Error('Negative array indices are not supported.');
+        }
+        if (isNaN(Number(arrayIndex))) {
+            throw new Error('Array indices must be a positive integer.');
+        }
+        if (Number(arrayIndex) > obj.length) {
+            obj[obj.length] = value;
+        } else {
+            obj[arrayIndex] = value;
+        }
         return [true, topObj];
       } else {
         obj[part] = value;

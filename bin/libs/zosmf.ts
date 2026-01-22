@@ -13,7 +13,7 @@ import * as std from 'cm_std';
 import * as common from './common';
 import * as shell from './shell';
 
-export function validateZosmfHostAndPort(zosmfHost: string, zosmfPort: number): boolean {
+export function validateZosmfHostAndPort(zosmfHost: string, zosmfPort: number, scheme:string='https', jobname?: string, warnOnly: boolean=false): boolean {
   if (!zosmfHost) {
     common.printError('z/OSMF host is not set.');
     return false;
@@ -24,19 +24,26 @@ export function validateZosmfHostAndPort(zosmfHost: string, zosmfPort: number): 
   }
   let zosmfCheckPassed=true;
 
-
-  const execReturn = shell.execOutSync(`${std.getenv('ZWE_zowe_runtimeDirectory')}/bin/utils/curl`, `https://${zosmfHost}:${zosmfPort}/zosmf/info`, `-k`, `-H`, `X-CSRF-ZOSMF-HEADER: true`, `-w`, `%{http_code}`, `-s`, `-o`, `/dev/null`);
+  let backupJobname = std.getenv('_BPX_JOBNAME');
+  std.setenv('_BPX_JOBNAME', jobname);
+  const execReturn = shell.execOutSync(`${std.getenv('ZWE_zowe_runtimeDirectory')}/bin/utils/curl`, `${scheme}://${zosmfHost}:${zosmfPort}/zosmf/info`, `-k`, `-H`, `X-CSRF-ZOSMF-HEADER: true`, `-w`, `%{http_code}`, `--max-time`, `10`, `-s`, `-o`, `/dev/null`);
+  //restore jobname
+  if (backupJobname) {
+    std.setenv('_BPX_JOBNAME', backupJobname);
+  } else {
+    std.unsetenv('_BPX_JOBNAME');
+  }
   if (execReturn.rc || !execReturn.out) {
-    common.printError(`Warning: Could not validate if z/OSMF is available on 'https://${zosmfHost}:${zosmfPort}/zosmf/info'. No response code from z/OSMF server.`);
+    common.printError(`Warning: Could not validate if z/OSMF is available on '${scheme}://${zosmfHost}:${zosmfPort}/zosmf/info'. No response code from z/OSMF server.`);
     zosmfCheckPassed=false
-  } else if (execReturn.out != '200') {
-    common.printError(`Could not contact z/OSMF on 'https://${zosmfHost}:${zosmfPort}/zosmf/info' - ${execReturn.out}`);
+  // RSU2512 -> running z/OSMF is returning 401
+  } else if (['200', '401'].includes(execReturn.out) == false) {
+    common.printError(`Could not contact z/OSMF on '${scheme}://${zosmfHost}:${zosmfPort}/zosmf/info' - ${execReturn.out}`);
     zosmfCheckPassed=false
   }
   
-
   if (zosmfCheckPassed) {
-    common.printMessage(`Successfully checked z/OSMF is available on 'https://${zosmfHost}:${zosmfPort}/zosmf/info'`)
+    common.printMessage(`Successfully checked z/OSMF is available on '${scheme}://${zosmfHost}:${zosmfPort}/zosmf/info' - ${execReturn.out}`);
   }
-  return zosmfCheckPassed;
+  return zosmfCheckPassed || warnOnly;
 }

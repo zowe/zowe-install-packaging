@@ -62,6 +62,10 @@
 <   runtimeDirectory: ""
 ---
 >   runtimeDirectory: "/tmp"
+264c264
+<   workspaceDirectory: /global/zowe/workspace
+---
+>   workspaceDirectory: /tmp
 430c430
 <   home: ""
 ---

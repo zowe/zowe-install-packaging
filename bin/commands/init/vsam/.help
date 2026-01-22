@@ -27,7 +27,7 @@ components:
 - `zowe.setup.jcl.header` is optional additional JCL fields used for submitting JCLs.
 - `zowe.setup.dataset.prefix` shows where the `SZWESAMP` data set is installed.
 - `zowe.setup.dataset.jcllib` is the custom JCL library. Zowe server command may
-  generate sample JCLs and put into this data set.
+  generate sample JCLs and put into this data set. 
 - `zowe.setup.vsam.mode` indicates whether the VSAM will utilize Record Level
   Sharing (RLS) services or not. Valid value is `RLS` or `NONRLS`.
 - `zowe.setup.vsam.volume` indicates the name of volume.

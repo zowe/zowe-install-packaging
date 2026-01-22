@@ -72,6 +72,20 @@ describe(`${testSuiteName}`, () => {
       }
     }
 
+    it('env with HA instances', async () => {
+      const zoweYaml = ZoweConfig.loadAndOverlay(cfgYaml, resourceDir, 'ha_instances.yaml');
+      zoweYaml.zowe.environments = { ZWE_PRIVATE_LOG_LEVEL_ZWELS: 'TRACE' };
+      const result = await testRunner.runZweTest(zoweYaml, 'internal start prepare');
+      snapEnvFiles(zoweYaml);
+      expect(result.rc).toBe(0);
+      // Get ZWE_PRIVATE_HA_LIST and ZWE_PRIVATE_HA_LIST_SANITIZED from cleanedStdout. Do not capture all of cleanedStdout,
+      //   since the trace logs dump connection-specific settings that are hard to mask
+      const haList = /"ZWE_PRIVATE_HA_LIST":".*?"/gim.exec(result.cleanedStdout)[0];
+      const sanitizedHaList = /"ZWE_PRIVATE_HA_LIST_SANITIZED":".*?"/gim.exec(result.cleanedStdout)[0];
+      expect(haList).toMatchSnapshot();
+      expect(sanitizedHaList).toMatchSnapshot();
+    });
+
     it('env with null values', async () => {
       const testFiles = ['setup_cert_keyring.yaml'];
       for (const file of testFiles) {
