@@ -1,15 +1,1 @@
-{
-  "lockAcquiredTime": "Mon Jan 26 2026 14:55:32 GMT+0000 (Coordinated Universal Time)",
-  "uid": "1769439332519532855",
-  "repository": {
-    "owner": "zowe",
-    "repo": "zowe-install-packaging"
-  },
-  "branch": "v2.x/rc",
-  "workflow": "Zowe Build and Packaging",
-  "job": "regular-build",
-  "actor": "MarkAckert",
-  "runId": 21361220621,
-  "runNumber": 9587,
-  "link": "https://github.com/zowe/zowe-install-packaging/actions/runs/21361220621"
-}
+""
