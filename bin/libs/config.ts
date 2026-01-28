@@ -359,5 +359,18 @@ export function loadEnvironmentVariables(componentId?: string) {
     });
   }
 
+  if (getZoweConfig().haInstances) {
+    let haList = '';
+    let haSanitizedList = '';
+    for (let haId in getZoweConfig().haInstances) {
+      haList += haId + ',';
+      haSanitizedList += sanitizeHaInstanceId(haId) + ',';
+    }
+    haList = haList.slice(0, -1);
+    haSanitizedList = haSanitizedList.slice(0, -1);
+    std.setenv('ZWE_PRIVATE_HA_LIST', haList);
+    std.setenv('ZWE_PRIVATE_HA_LIST_SANITIZED', haSanitizedList);
+  }
+
   return std.getenviron();
 }

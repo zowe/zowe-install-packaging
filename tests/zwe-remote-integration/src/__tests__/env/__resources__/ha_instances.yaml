@@ -1,0 +1,19 @@
+haInstances:
+  lpar1:
+    hostname: lpr1.example.com
+    sysname: lpr1
+  elpardva:
+    hostname: lpr2.example.com
+    sysname: lpr2
+  LPAR3:
+    hostname: lpr3.example.com
+    sysname: lpr3
+  LPAR-4:
+    hostname: lpr4.example.com
+    sysname: lpr4
+  lpar_4:
+    hostname: lpr5.example.com
+    sysname: lpr5
+  lpar#4:
+    hostname: lpr6.example.com
+    sysname: lpr6
