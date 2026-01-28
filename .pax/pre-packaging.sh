@@ -223,11 +223,31 @@ fi
 # FIXME: remove/comment this debug code
 # cd "${BASE_DIR}" && rm -fr content && rm -fr smpe && rm -fr templates && cp -r content.bak content
 
+echo "[$SCRIPT_NAME] unpack utility-tools njq ..."
+
+
 echo "[$SCRIPT_NAME] change scripts to be executable ..."
 chmod +x "${ZOWE_ROOT_DIR}"/bin/zwe
 chmod +x "${ZOWE_ROOT_DIR}"/bin/utils/*.sh
 chmod +x "${ZOWE_ROOT_DIR}"/bin/utils/*.rex
 
+echo "[$SCRIPT_NAME] extract curl ..."
+curl_pax=$(find "${ZOWE_ROOT_DIR}/files" -type f \( -name "curl-*.pax.Z" \) | head -n 1)
+cd "${ZOWE_ROOT_DIR}/bin/utils"
+pax -ppx -rf "${curl_pax}"
+mv "${ZOWE_ROOT_DIR}"/bin/utils/curl-*/bin/curl ./curl
+rm -rf "${ZOWE_ROOT_DIR}"/bin/utils/curl-*
+rm -rf "${curl_pax}"
+
+echo "[$SCRIPT_NAME] change curl to be executable ..."
+chmod +x "${ZOWE_ROOT_DIR}"/bin/utils/curl
+
+echo "[$SCRIPT_NAME] extract keyring-util ..."
+keyring_util=$(find "${ZOWE_ROOT_DIR}/files" -type f \( -name "keyring-util*.pax" \) | head -n 1)
+mkdir -p "${ZOWE_ROOT_DIR}/bin/utils/keyring-util"
+cd "${ZOWE_ROOT_DIR}/bin/utils/keyring-util"
+pax -ppx -rf "${keyring_util}"
+rm "${keyring_util}"
 echo "[$SCRIPT_NAME] extract zowex ..."
 zowex_components=$(find "${ZOWE_ROOT_DIR}/files" -type f \( -name "zowe-server-*.pax.Z" \) | head -n 1)
 mkdir -p "${ZOWE_ROOT_DIR}/bin/utils/zowe-server"
@@ -245,12 +265,6 @@ rm -rf "${zowex_components}"
 echo "[$SCRIPT_NAME] change keyring-util to be executable ..."
 chmod +x "${ZOWE_ROOT_DIR}"/bin/utils/keyring-util/keyring-util
 
-echo "[$SCRIPT_NAME] extract zowe-ncert ..."
-cd "${ZOWE_ROOT_DIR}/bin/utils"
-mkdir -p ncert
-cd ncert
-pax -ppx -rf ../zowe-ncert-*.pax
-rm -f ../zowe-ncert-*.pax
 cd "${BASE_DIR}"
 
 # prepare for SMPE

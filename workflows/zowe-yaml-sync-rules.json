@@ -29,6 +29,16 @@
       ]
     },
     {
+      "description": "startupChecks are hard-coded to defaults in defaults.yaml.",
+      "rule_target": "all",
+      "rule_type": "wf_missing_vars",
+      "rule_entry": [
+        "zowe_launchScript_startupChecks_default",
+        "zowe_launchScript_startupChecks_ports",
+        "zowe_launchScript_startupChecks_zosmf"
+      ]
+    },
+    {
       "description": "sysMessageTrim is hard-coded to defaults in example-zowe.yaml.",
       "rule_target": "all",
       "rule_type": "wf_missing_vars",
@@ -47,7 +57,7 @@
     },
     {
       "description": "component settings disabled by default in defaults.yaml (technical-preview of API Mediation Layer in single-service mode)",
-      "rule_target": "all",
+      "rule_target": "ZWEAMLCF",
       "rule_type": "wf_missing_vars",
       "rule_entry": [
         "components_apiml_enabled",

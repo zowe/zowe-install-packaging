@@ -16,7 +16,7 @@ import {
 import { TEST_TIMEOUT_CONVENIENCE_BUILD } from '../../../constants';
 
 const testServer = process.env.TEST_SERVER;
-const testSuiteName = 'Test convenience build installation with the APIML monolith enabled';
+const testSuiteName = 'Test convenience build installation with the APIML monolith disabled';
 describe(testSuiteName, () => {
   beforeAll(() => {
     // validate variables
@@ -32,7 +32,7 @@ describe(testSuiteName, () => {
       {
         'zowe_build_local': process.env['ZOWE_BUILD_LOCAL'],
         'zowe_custom_for_test': 'true',
-        'zowe_apiml_modulith_mode': 'true',
+        'zowe_apiml_modulith_mode': 'false',
         'zowe_lock_keystore': 'false',
       }
     );

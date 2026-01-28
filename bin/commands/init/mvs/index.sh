@@ -44,7 +44,7 @@ if [ -n "${ZWE_CLI_PARAMETER_DRY_RUN}" ] || [ -n "${ZWE_CLI_PARAMETER_SECURITY_D
 fi
 
 # read prefix and validate
-prefix=$(read_yaml_configmgr "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.dataset.prefix")
+prefix=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.dataset.prefix")
 if [ -z "${prefix}" ]; then
   print_error_and_exit "Error ZWEL0157E: Zowe dataset prefix (zowe.setup.dataset.prefix) is not defined in Zowe YAML configuration file." "" 157
 fi
@@ -58,7 +58,7 @@ while read -r line; do
   spec=$(echo "${line}" | awk -F"|" '{print $3}')
   
   # read def and validate
-  ds=$(read_yaml_configmgr "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.dataset.${key}")
+  ds=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.dataset.${key}")
   if [ -z "${ds}" ]; then
     # authLoadlib can be empty
     if [ "${key}" = "authLoadlib" ]; then
@@ -100,7 +100,7 @@ if [ "${any_existence}" = "true" ] && [ "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITE}" !
 else
   ###############################
   # copy sample lib members
-  parmlib=$(read_yaml_configmgr "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.dataset.parmlib")
+  parmlib=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.dataset.parmlib")
   for mb in ZWESIP00; do
     print_message "Copy ${prefix}.${ZWE_PRIVATE_DS_SZWESAMP}(${mb}) to ${parmlib}(${mb})"
     if [ -z "${DRY_RUN}" ]; then
@@ -115,7 +115,7 @@ else
 
   ###############################
   # copy auth lib members
-  authLoadlib=$(read_yaml_configmgr "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.dataset.authLoadlib")
+  authLoadlib=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.dataset.authLoadlib")
   if [ -n "${authLoadlib}" ]; then
     for mb in ZWESIS01 ZWESAUX ZWESISDL; do
       print_message "Copy components/zss/LOADLIB/${mb} to ${authLoadlib}(${mb})"

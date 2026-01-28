@@ -86,6 +86,10 @@ case $install_test_choice in
   test_file="$APIML_MODULITH_TESTFILE"
   ;;
 
+"APIML zOSMF AuthN Provider")
+  test_file="$APIML_ZOSMF_AUTHN_TESTFILE"
+  ;;
+
 "Zowe Nightly Tests")
   test_file="$ZOWE_NIGHTLY_TESTS_FULL"
   dont_parse_test_server=true

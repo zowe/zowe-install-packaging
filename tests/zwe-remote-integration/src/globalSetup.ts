@@ -12,7 +12,6 @@ import * as uss from './zos/Uss';
 import * as _ from 'lodash';
 import * as path from 'path';
 import * as files from '@zowe/zos-files-for-zowe-sdk';
-import EBCDIC from 'ebcdic-ascii';
 import * as tar from 'tar';
 import {
   DOWNLOAD_CONFIGMGR,
@@ -37,8 +36,8 @@ import ZoweYamlType from './config/ZoweYamlType';
 import { JfrogClient } from 'jfrog-client-js';
 import { processManifestVersion } from './utils';
 import { execSync } from 'child_process';
-import { createPds } from './zos/Files';
-import * as yauzl from 'yauzl';
+import { createPds, LOADLIB_PARAMS, SIMPLE_PDS_PARAMS } from './zos/Files';
+import { convertDirToEbcdicInPlace } from './zos/EbcdicTools';
 
 const zosmfSession = getSession();
 const buildDir = path.resolve(THIS_TEST_ROOT_DIR, '.build');
@@ -49,11 +48,10 @@ function setupBaseYaml() {
   const zoweYaml: ZoweYamlType = yaml.parse(fs.readFileSync(path.resolve(REPO_ROOT_DIR, 'example-zowe.yaml'), 'utf8')) as ZoweYamlType;
 
   zoweYaml.java.home = REMOTE_SYSTEM_INFO.zosJavaHome;
-  zoweYaml.node.home = REMOTE_SYSTEM_INFO.zosNodeHome;
+  delete zoweYaml.node;
   zoweYaml.zowe.runtimeDirectory = REMOTE_SYSTEM_INFO.ussTestDir;
   zoweYaml.zowe.logDirectory = REMOTE_SYSTEM_INFO.zweLogDir;
   zoweYaml.zowe.workspaceDirectory = REMOTE_SYSTEM_INFO.zweWorkspaceDir;
-  zoweYaml.zowe.setup.jcl.enable = true; // we only test JCL version of init/install
   zoweYaml.zowe.setup.dataset.prefix = REMOTE_SYSTEM_INFO.prefix;
   zoweYaml.zowe.setup.dataset.jcllib = REMOTE_SYSTEM_INFO.jcllib;
   zoweYaml.zowe.setup.dataset.proclib = REMOTE_SYSTEM_INFO.proclib;
@@ -122,6 +120,14 @@ async function downloadManifestDep(binaryName: string): Promise<string> {
   // get folders so we can regex against
   const pathMatch = `${binaryName.replace(/\./g, '/')}/${dlSpec.versionPattern}`;
 
+  // Debug AQLs
+  // console.log(`
+  // items.find({
+  // "repo": "${dlSpec.repository}",
+  // "path": {"$match": "${pathMatch}"},
+  // "name": {"$match": "${nameMatch}" }
+  // }).sort({"$desc" : ["created"]}).limit(1)
+  // `);
   const searchResults = await jf
     .artifactory()
     .search()
@@ -192,16 +198,15 @@ module.exports = async () => {
     }
 
     if (DOWNLOAD_ZOWE_TOOLS) {
-      await downloadManifestDep('org.zowe.utility-tools');
+      await downloadManifestDep('org.zowe.keyring-utilities');
+      await downloadManifestDep('org.zopencommunity.curl');
       await downloadManifestDep('org.zowe.getesm');
+      await downloadArtifact('libs-snapshot-local', 'org/zowe/vtl-cli/zowe-cli-package/1.0.7-SNAPSHOT', 'vtl.tar.gz');
+      await downloadManifestDep('org.zowe.zis-test');
+      await downloadManifestDep('org.zowe.bind-test');
     }
 
-    await downloadArtifact(
-      'libs-snapshot-local',
-      'org/zowe/zowe-native-proto/Server/Nightly',
-      'zowe-server-0.1.2-2025-07-15-013657.pax.Z',
-    );
-    await downloadArtifact('libs-snapshot-local', 'org/zowe/vtl-cli/zowe-cli-package/1.0.7-SNAPSHOT', 'vtl.tar.gz');
+    await downloadManifestDep('org.zowe.zowe-native-proto');
 
     const downloadsDirContents = fs.readdirSync(downloadsDir);
 
@@ -225,9 +230,14 @@ module.exports = async () => {
       throw new Error('Could not locate a zss pax in the .build directory');
     }
 
-    const zoweToolsZip = downloadsDirContents.find((item) => /zowe-utility-tools.*\.zip/g.test(item));
-    if (zoweToolsZip == null) {
-      throw new Error('Could not locate zowe-utility-tools zip in the .build directory');
+    const curlPax = downloadsDirContents.find((item) => /curl.*\.pax.Z/g.test(item));
+    if (curlPax == null) {
+      throw new Error('Could not locate the curl pax in the .build directory');
+    }
+
+    const keyringUtilPax = downloadsDirContents.find((item) => /keyring-util.*\.pax/g.test(item));
+    if (keyringUtilPax == null) {
+      throw new Error('Could not locate keyring-utilities pax in the .build directory');
     }
 
     const vtlArchive = downloadsDirContents.find((item) => /vtl.tar.gz/g.test(item));
@@ -245,13 +255,23 @@ module.exports = async () => {
       throw new Error('Could not locate the getesm pax in the .build directory');
     }
 
+    const zisTestArchive = downloadsDirContents.find((item) => /zis-test.*.pax/g.test(item));
+    if (zisTestArchive == null) {
+      throw new Error('Could not locate the zis-test pax in the .build directory');
+    }
+
+    const bindTestArchive = downloadsDirContents.find((item) => /bind-test.*.pax/g.test(item));
+    if (bindTestArchive == null) {
+      throw new Error('Could not locate the bind-test pax in the .build directory');
+    }
+
     console.log(`Setting up remote server on ${REMOTE_SYSTEM_INFO.hostname}...`);
     await uss.runCommand(
       `rm -rf ${REMOTE_SYSTEM_INFO.ussTestDir} && mkdir -p ${REMOTE_SYSTEM_INFO.ussTestDir} && mkdir -p ${ussWorkDir}`,
     );
 
     // zowe-install-packaging-tools and vtl-cli
-    const utilsDir = path.resolve(buildDir, 'utility-tools');
+    const utilsDir = path.resolve(buildDir, 'utils');
     fs.mkdirpSync(`${utilsDir}`);
 
     console.log(`Repacking vtl-cli....`);
@@ -263,28 +283,6 @@ module.exports = async () => {
     console.log(`Uploading ${finalVtlPkg} to ${ussWorkDir}/${path.basename(finalVtlPkg)}...`);
     await files.Upload.fileToUssFile(zosmfSession, finalVtlPkg, `${ussWorkDir}/${path.basename(finalVtlPkg)}`, {
       binary: true,
-    });
-
-    console.log(`Unzipping zowe-tools.zip on local machine`);
-    const zipFile = path.resolve(downloadsDir, zoweToolsZip);
-    yauzl.open(zipFile, { autoClose: true, lazyEntries: false }, (err, zipContents) => {
-      if (err) throw err;
-      zipContents.on('entry', async (entry) => {
-        // not a directory
-        if (!/\/$/.test(entry.fileName)) {
-          zipContents.openReadStream(entry, async (errZip, stream) => {
-            if (errZip) throw errZip;
-            console.log(`Unzipping ${entry.fileName}`);
-            const zipFilePath = `${utilsDir}/${entry.fileName}`;
-            if (fs.existsSync(zipFilePath)) {
-              fs.unlinkSync(zipFilePath);
-            }
-            fs.createFileSync(zipFilePath);
-            const zipFile = fs.createWriteStream(zipFilePath, { flags: 'as' });
-            stream.pipe(zipFile);
-          });
-        }
-      });
     });
 
     console.log(`Uploading ${configmgrPax} to ${ussWorkDir}/configmgr.pax ...`);
@@ -303,12 +301,32 @@ module.exports = async () => {
     });
 
     console.log(`Uploading ${launcherPax} to ${ussWorkDir}/launcher.pax ...`);
-    await files.Upload.fileToUssFile(zosmfSession, path.resolve(downloadsDir, launcherPax), `${ussWorkDir}/launcher.pax`, {
+    await files.Upload.fileToUssFile(zosmfSession, path.resolve(downloadsDir, launcherPax), `${ussWorkDir}/${launcherPax}`, {
+      binary: true,
+    });
+
+    console.log(`Uploading ${curlPax} to ${ussWorkDir}/curl.pax.Z ...`);
+    await files.Upload.fileToUssFile(zosmfSession, path.resolve(downloadsDir, curlPax), `${ussWorkDir}/${curlPax}`, {
+      binary: true,
+    });
+
+    console.log(`Uploading ${keyringUtilPax} to ${ussWorkDir}/keyring-util.pax...`);
+    await files.Upload.fileToUssFile(zosmfSession, path.resolve(downloadsDir, keyringUtilPax), `${ussWorkDir}/${keyringUtilPax}`, {
       binary: true,
     });
 
     console.log(`Uploading ${zowexArchive} to ${ussWorkDir}/zowex.pax.Z ...`);
     await files.Upload.fileToUssFile(zosmfSession, path.resolve(downloadsDir, zowexArchive), `${ussWorkDir}/zowex.pax.Z`, {
+      binary: true,
+    });
+
+    console.log(`Uploading ${zisTestArchive} to ${ussWorkDir}/zis-test.pax ...`);
+    await files.Upload.fileToUssFile(zosmfSession, path.resolve(downloadsDir, zisTestArchive), `${ussWorkDir}/zis-test.pax`, {
+      binary: true,
+    });
+
+    console.log(`Upload ${bindTestArchive} to ${ussWorkDir}/bind-test.pax ...`);
+    await files.Upload.fileToUssFile(zosmfSession, path.resolve(downloadsDir, bindTestArchive), `${ussWorkDir}/bind-test.pax`, {
       binary: true,
     });
 
@@ -331,46 +349,37 @@ module.exports = async () => {
     });
     await uss.runCommand(`tar -xfo ${ussWorkDir}/zwe.tar`, REMOTE_SYSTEM_INFO.ussTestDir);
 
-    for (const file of fs.readdirSync(utilsDir)) {
-      const match = file.match(/zowe-(.*)-[0-9]?.*tgz/im);
-      if (match) {
-        const fileName = match[0];
-        const pkgName = match[1];
-
-        console.log(`Uploading ${pkgName} to ${REMOTE_SYSTEM_INFO.ussTestDir}/bin/utils...`);
-        // re-archive without compression (issues on some backends)
-        const finalPkg = path.resolve(utilsDir, `${pkgName}.tar`);
-        tar.x({ cwd: utilsDir, file: path.resolve(utilsDir, fileName), sync: true });
-        tar.c({ gzip: false, file: finalPkg, cwd: utilsDir, sync: true }, ['package']);
-        await files.Upload.fileToUssFile(zosmfSession, finalPkg, `${ussWorkDir}/${pkgName}.tar`, {
-          binary: true,
-        });
-        await uss.runCommand(`tar xf ${pkgName}.tar`, ussWorkDir);
-        await uss.runCommand(`mv package ${REMOTE_SYSTEM_INFO.ussTestDir}/bin/utils/${pkgName}`, ussWorkDir);
-      }
-    }
-    let ncertPax = '';
-    console.log(`Uploading ncert to ${REMOTE_SYSTEM_INFO.ussTestDir}/bin/utils...`);
-    fs.readdirSync(`${utilsDir}`).forEach((item) => {
-      const match = item.match(/zowe-ncert-([0-9]?.*)\.pax/im);
-      if (match && match[1]) {
-        ncertPax = match[0];
-      }
-    });
-    await files.Upload.fileToUssFile(zosmfSession, path.resolve(utilsDir, ncertPax), `${ussWorkDir}/ncert.pax`, {
-      binary: true,
-    });
-
     await uss.runCommand(
-      `chmod 755 ${REMOTE_SYSTEM_INFO.ussTestDir}/bin/zwe && ` + `chmod 755 ${REMOTE_SYSTEM_INFO.ussTestDir}/bin/utils/opercmd.rex `,
+      `chmod 755 ${REMOTE_SYSTEM_INFO.ussTestDir}/bin/zwe ${REMOTE_SYSTEM_INFO.ussTestDir}/bin/utils/opercmd.rex ${REMOTE_SYSTEM_INFO.ussTestDir}/bin/utils/getSDSF.rex`,
       REMOTE_SYSTEM_INFO.ussTestDir,
     );
 
-    console.log(`Uploading getesm pax tp ${ussWorkDir}/${getEsmArchive}...`);
+    console.log(`Uploading getesm pax to ${ussWorkDir}/${getEsmArchive}...`);
     await files.Upload.fileToUssFile(zosmfSession, path.resolve(downloadsDir, getEsmArchive), `${ussWorkDir}/${getEsmArchive}`, {
       binary: true,
     });
     await uss.runCommand(`pax -ppx -rf ${getEsmArchive} && cp -f getesm ${REMOTE_SYSTEM_INFO.ussTestDir}/bin/utils`, ussWorkDir);
+
+    console.log(`Unpacking ${curlPax} and moving curl to ${REMOTE_SYSTEM_INFO.ussTestDir}/bin/utils...`);
+    await uss.runCommand(`pax -ppx -rf ${curlPax} && cp -f curl-*/bin/curl ${REMOTE_SYSTEM_INFO.ussTestDir}/bin/utils`, ussWorkDir);
+
+    console.debug(`Unpacking ${zisTestArchive} and moving zis-test to ${REMOTE_SYSTEM_INFO.ussTestDir}/bin/utils...`);
+    await uss.runCommand(
+      `pax -ppx -rf zis-test.pax && cp -f zis-test ${REMOTE_SYSTEM_INFO.ussTestDir}/bin/utils && chmod +x ${REMOTE_SYSTEM_INFO.ussTestDir}/bin/utils/zis-test`,
+      ussWorkDir,
+    );
+
+    console.debug(`Unpacking ${bindTestArchive} and moving bind-test to ${REMOTE_SYSTEM_INFO.ussTestDir}/bin/utils...`);
+    await uss.runCommand(
+      `pax -ppx -rf bind-test.pax && cp -f bind-test ${REMOTE_SYSTEM_INFO.ussTestDir}/bin/utils && chmod +x ${REMOTE_SYSTEM_INFO.ussTestDir}/bin/utils/bind-test`,
+      ussWorkDir,
+    );
+
+    console.log(`Unpacking ${keyringUtilPax} and moving keyring-util to ${REMOTE_SYSTEM_INFO.ussTestDir}/bin/utils...`);
+    await uss.runCommand(
+      `pax -ppx -rf ${keyringUtilPax} && cp -f keyring-util ${REMOTE_SYSTEM_INFO.ussTestDir}/bin/utils`,
+      ussWorkDir,
+    );
 
     console.log(`Uploading ${REPO_ROOT_DIR}/schemas to ${REMOTE_SYSTEM_INFO.ussTestDir}/schemas...`);
     await files.Upload.dirToUSSDirRecursive(
@@ -435,15 +444,13 @@ module.exports = async () => {
       },
     );
 
-    const simplePdsParams = { primary: 5, secondary: 1, volser: REMOTE_SYSTEM_INFO.volume };
-    const loadlibParams = { primary: 5, recfm: 'U', lrecl: 0, secondary: 1, volser: REMOTE_SYSTEM_INFO.volume };
-    await createPds(REMOTE_SYSTEM_INFO.szweexec, simplePdsParams);
-    await createPds(REMOTE_SYSTEM_INFO.szwesamp, simplePdsParams);
-    await createPds(REMOTE_SYSTEM_INFO.szweload, loadlibParams);
-    await createPds(REMOTE_SYSTEM_INFO.proclib, simplePdsParams);
-    await createPds(REMOTE_SYSTEM_INFO.parmlib, simplePdsParams);
-    await createPds(REMOTE_SYSTEM_INFO.authLoadLib, loadlibParams);
-    await createPds(REMOTE_SYSTEM_INFO.authPluginLib, loadlibParams);
+    await createPds(REMOTE_SYSTEM_INFO.szweexec, SIMPLE_PDS_PARAMS);
+    await createPds(REMOTE_SYSTEM_INFO.szwesamp, SIMPLE_PDS_PARAMS);
+    await createPds(REMOTE_SYSTEM_INFO.szweload, LOADLIB_PARAMS);
+    await createPds(REMOTE_SYSTEM_INFO.proclib, SIMPLE_PDS_PARAMS);
+    await createPds(REMOTE_SYSTEM_INFO.parmlib, SIMPLE_PDS_PARAMS);
+    await createPds(REMOTE_SYSTEM_INFO.authLoadLib, LOADLIB_PARAMS);
+    await createPds(REMOTE_SYSTEM_INFO.authPluginLib, LOADLIB_PARAMS);
 
     console.log(`Unpacking configmgr and placing it in bin/utils ...`);
     await uss.runCommand(`pax -ppx -rf configmgr.pax && mv configmgr ${REMOTE_SYSTEM_INFO.ussTestDir}/bin/utils/`, ussWorkDir);
@@ -483,19 +490,15 @@ module.exports = async () => {
 
     console.log(`Unpacking launcher pax and placing SAMPLIB in ${REMOTE_SYSTEM_INFO.szwesamp} ...`);
     await uss.runCommand(`mkdir -p ${REMOTE_SYSTEM_INFO.ussTestDir}/components/launcher`);
-    await uss.runCommand(`cp launcher.pax ${REMOTE_SYSTEM_INFO.ussTestDir}/components/launcher`, ussWorkDir);
-    await uss.runCommand(`pax -ppx -rf launcher.pax`, `${REMOTE_SYSTEM_INFO.ussTestDir}/components/launcher`);
-    await uss.runCommand(`rm launcher.pax`, `${REMOTE_SYSTEM_INFO.ussTestDir}/components/launcher`);
+    await uss.runCommand(`cp ${launcherPax} ${REMOTE_SYSTEM_INFO.ussTestDir}/components/launcher`, ussWorkDir);
+    await uss.runCommand(`pax -ppx -rf ${launcherPax}`, `${REMOTE_SYSTEM_INFO.ussTestDir}/components/launcher`);
+    await uss.runCommand(`rm ${launcherPax}`, `${REMOTE_SYSTEM_INFO.ussTestDir}/components/launcher`);
     for (const pgm of ['ZWESLSTC']) {
       await uss.runCommand(
         `cp samplib/${pgm} "//'${REMOTE_SYSTEM_INFO.szwesamp}(${pgm})'"`,
         `${REMOTE_SYSTEM_INFO.ussTestDir}/components/launcher`,
       );
     }
-
-    console.log(`Unpacking ncert.pax from zowe-install-packaging-tools and placing it in bin/utils/...`);
-    await uss.runCommand(`pax -ppx -rf ncert.pax -s#^#${REMOTE_SYSTEM_INFO.ussTestDir}/bin/utils/ncert/#g`, ussWorkDir);
-
     console.log(`Unpacking vtl-cli, generating ZWESECUR, and copying it to SZWESAMP`);
     await uss.runCommand(`tar -xf vtl-cli.tar && rm -rf vtl-cli && mkdir -p vtl-cli && mv vtl vtl-cli.jar zos vtl-cli`, ussWorkDir);
     await uss.runCommand(
@@ -527,28 +530,3 @@ module.exports = async () => {
     console.log('Remote server setup complete');
   }
 };
-
-function convertDirToEbcdicInPlace(dir: string) {
-  const dirContents = fs.readdirSync(dir, { recursive: true });
-  const converter = new EBCDIC('1047');
-  for (const entry of dirContents) {
-    const filePath = path.resolve(dir, entry.toString());
-    const file = fs.lstatSync(filePath);
-    if (file.isFile()) {
-      const asHex = fs.readFileSync(filePath).toString('hex');
-      const asciiChars = converter.splitHex(asHex).map((a) => a.toUpperCase());
-      const asEbcdic = asciiChars
-        .map((code: string) => {
-          // Replace line feeds with new line, ignore carriage returns.
-          // Both ascii characters ignored by converter out of the box.
-          if (code === '0A') {
-            return '15';
-          } else {
-            return converter.charToEBCDIC(code);
-          }
-        })
-        .join('');
-      fs.writeFileSync(filePath, Buffer.from(asEbcdic, 'hex'));
-    }
-  }
-}

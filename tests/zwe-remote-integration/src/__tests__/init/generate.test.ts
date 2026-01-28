@@ -184,6 +184,32 @@ describe(`${testSuiteName}`, () => {
       expect(result.cleanedStdout).toMatchSnapshot();
       expect(result.rc).toBe(0);
     });
+
+    it('paths >71 characters in zowe.yaml and schema files', async () => {
+      const fixedPathLen = 45;
+      const PATH_LEN_TESTS = [71, 72, 141, 142, 143, 144, 240];
+      if (REMOTE_SYSTEM_INFO.ussTestDir.length > fixedPathLen) {
+        console.log(`This test requires the base test dir be less than ${fixedPathLen} characters long.`);
+      }
+      const testDir = `${REMOTE_SYSTEM_INFO.ussTestDir}/${'z'.repeat(fixedPathLen - REMOTE_SYSTEM_INFO.ussTestDir.length - 1)}`;
+      cleanupFiles.push({
+        name: testDir,
+        type: FileType.USS_DIR,
+      });
+      testRunner.addCleanFn((output) => {
+        return output.replaceAll(`${testDir.slice(1)}`, 'z'.repeat(testDir.length - 1));
+      });
+      for (const testCase of PATH_LEN_TESTS) {
+        const dirLen = testCase - `${testDir}/`.length - '/zowe.test.yaml'.length - 'FILE '.length;
+        const evilDir = `${testDir}/${'a'.repeat(dirLen)}`;
+        await testRunner.runRaw(`mkdir -p ${evilDir}`, REMOTE_SYSTEM_INFO.ussTestDir);
+        await testRunner.uploadZoweYaml(cfgYaml, false, `${evilDir}`);
+        const result = await testRunner.runZweTest(cfgYaml, `init generate -c ${evilDir}/zowe.test.yaml --dry-run`);
+        expect(result.stdout).not.toBeNull();
+        expect(result.rc).toBe(0);
+        expect(result.cleanedStdout).toMatchSnapshot();
+      }
+    });
   });
 
   describe('FLAKY', () => {
@@ -240,7 +266,7 @@ describe(`${testSuiteName}`, () => {
     /**
      * This test cannot accurately capture the output of ZWESLSTC as a snapshot, because the
      *  test directory may vary from system to system which changes the output. We check that the correct
-     *  config choices are ordered in the final ZWESLSTC and that the lonest lines in STDENV end with backslash
+     *  config choices are ordered in the final ZWESLSTC and that the longest lines in STDENV end with backslash
      */
     it('test adversarial paths and concatenations', async () => {
       const MAX_DIR_LEN = 255; // USS restriction

@@ -70,8 +70,13 @@ $$
 //* entries. The lower entries have their values
 //* overridden by the higher entries.
 //*
+//* Note: Use backslash in MYCONFIG or MYSCHEMA as continuation char.
+//*
 //* Ex. PARMLIB MY.ZOWE.CUSTOM.PARMLIB(YAML)
 //*     FILE /some/other/zowe.yaml
+//*     FILE /long/path/to/another/configuration/\
+//*     zowe.yaml
+//*
 //MYCONFIG DD   *,DLM=$$
 FILE <full path to zowe.yaml file>
 $$

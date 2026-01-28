@@ -19,7 +19,6 @@
     "@types/tar": "6.1.13",
     "@types/xml2js": "0.4.14",
     "@types/yaml": "1.9.7",
-    "@types/yauzl": "2.10.3",
     "@types/yn": "3.1.0",
     "@typescript-eslint/eslint-plugin": "7.7.0",
     "@typescript-eslint/parser": "7.7.0",
@@ -54,7 +53,6 @@
     "typescript": "5.4.5",
     "xml2js": "0.6.2",
     "yaml": "2.7.0",
-    "yauzl": "3.2.0",
     "yn": "4.0.0"
   },
   "scripts": {

@@ -4,5 +4,5 @@ To run test case of external certificate, need to upload the `tests/installation
 
 Example:
 ```
-generate-dummy-certificates.sh my-domain-name.com
+generate-dummy-certificates.sh example.com
 ```

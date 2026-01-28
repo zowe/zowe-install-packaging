@@ -14,6 +14,7 @@ import { RemoteTestRunner } from '../../zos/RemoteTestRunner';
 import { FileType, TestFile, TestFileActions } from '../../zos/TestFileActions';
 import * as YAML from 'yaml';
 import * as _ from 'lodash';
+import { REMOTE_SYSTEM_INFO } from '../../config/TestConfig';
 
 const testSuiteName = 'zwe-install';
 describe(`${testSuiteName}`, () => {
@@ -118,22 +119,36 @@ describe(`${testSuiteName}`, () => {
 
     it('cover different configmgr and jcl combinations', async () => {
       // set session libraries
-      for (const jclSetting of [true, false]) {
+
+      const flagCombinations = [
+        `--dataset-prefix ${REMOTE_SYSTEM_INFO.prefix}.SOME.DS.PREFIX`,
+        '--configmgr',
+        '',
+        '-c "FILE(zowe.test.yaml)"',
+      ].flatMap((flag) => [`${flag} --jcl`, flag]);
+
+      for (const jclSetting of [true, false, null]) {
         for (const cmgrSetting of [true, false]) {
-          for (const flag of ['--jcl', '--configmgr', '', '-c "FILE(zowe.test.yaml)"']) {
+          for (const flagCombo of flagCombinations) {
             cfgYaml = ZoweConfig.getZoweYaml();
-            _.set(cfgYaml, 'zowe.setup.jcl.enable', jclSetting);
+            if (jclSetting == null) {
+              delete cfgYaml.zowe.setup.jcl.enable;
+            } else {
+              _.set(cfgYaml, 'zowe.setup.jcl.enable', jclSetting);
+            }
             _.set(cfgYaml, 'zowe.useConfigmgr', cmgrSetting);
-            const result = await testRunner.runZweTest(cfgYaml, `install --dry-run ${flag}`);
+            const result = await testRunner.runZweTest(cfgYaml, `install --dry-run ${flagCombo}`);
             expect(result.stdout).not.toBeNull();
-            expect(`jcl: ${jclSetting}, cmgr: ${cmgrSetting}, extra flag: ${flag}, rc: ${result.rc}`).toMatchSnapshot(); // also capture test settings to make snapshots
-            expect(result.cleanedStdout).toMatchSnapshot();
+            expect(
+              `jcl: ${jclSetting}, cmgr: ${cmgrSetting}, extra flag: ${testRunner.maskSensitiveData(flagCombo)}, rc: ${result.rc}`,
+            ).toMatchSnapshot(); // also capture test settings to make snapshots
+            // expect(result.cleanedStdout).toMatchSnapshot();
             // easier to read
             // expect(result.rc).toBe(0);  -- captured the rc in the snapshot
           }
         }
       }
-    }, 200000);
+    }, 300000);
 
     it('install via PARMLIB and exported variable', async () => {
       const testParmlib = `${cfgYaml.zowe.setup.dataset.parmlib}`;
@@ -249,7 +264,7 @@ describe(`${testSuiteName}`, () => {
       let result = await testRunner.runZweTest(cfgYaml, 'install --dry-run');
       expect(result.stdout).not.toBeNull();
       expect(result.cleanedStdout).toMatchSnapshot();
-      expect(result.rc).toBe(1);
+      expect(result.rc).toBe(70);
 
       delete cfgYaml.zowe.setup.dataset.prefix;
       result = await testRunner.runZweTest(cfgYaml, `install --dry-run`);

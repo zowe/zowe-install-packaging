@@ -52,6 +52,8 @@ function getLogLevel(name:string, defaultLevel:LOG_LEVEL):LOG_LEVEL {
     }
 }
 
+export const MSG_KEY = 'ZWELS';
+
 
 export function requireZoweYaml() {
   const configFiles = std.getenv('ZWE_CLI_PARAMETER_CONFIG');

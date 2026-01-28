@@ -26,6 +26,7 @@ is_data_set_exists() {
 # @return        0: exist
 #                1: data set is not in catalog
 #                2: data set member doesn't exist
+#                9: unknown error
 # @output        tso listds label output
 tso_is_data_set_exists() {
   ds="${1}"
@@ -41,9 +42,9 @@ tso_is_data_set_exists() {
     print_trace "$(padding_left "${result}" "    ")"
   else
     print_debug "  * Failed"
-    print_error "  * Exit code: ${code}"
-    print_error "  * Output:"
-    print_error "$(padding_left "${result}" "    ")"
+    print_trace "  * Exit code: ${code}"
+    print_trace "  * Output:"
+    print_trace "$(padding_left "${result}" "    ")"
 
     not_in_catalog=$(echo "${result}" | grep 'NOT IN CATALOG')
     if [ -n "${not_in_catalog}" ]; then

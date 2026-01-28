@@ -2,19 +2,40 @@
 
 All notable changes to the Zowe Installer will be documented in this file.
 
+## `3.5.0`
+- Bugfix: Running z/OSMF is returning 401, if RSU2512 was applied. [#4657](https://github.com/zowe/zowe-install-packaging/pull/4657)
+- Bugfix: `zwe config get` HA instance lookup is case insensitive. [#4609](https://github.com/zowe/zowe-install-packaging/pull/4609)
+- Enhancement: `zwe config get` command uses new `--format` option to format the output. [#4591](https://github.com/zowe/zowe-install-packaging/pull/4591)
+
 ## `3.4.0`
+
+- Enhancement: Added manifest property `apimlServices.static.once` which restricts APIML static definition files to exist only once per HA setup [#4587](https://github.com/zowe/zowe-install-packaging/pull/4587)
+- Enhancement: API ML now uses `saf` as it's default authentication provider for new installations of Zowe. [#4573](https://github.com/zowe/zowe-install-packaging/pull/4573)
+- Enhancement: Configure z/OSMF static API definition based on authentication provider [#4563](https://github.com/zowe/zowe-install-packaging/pull/4563)
+- Enhancement: Command `zwe validate config` command has been added as an alias of `zwe config validate`, for naming consistency with future `zwe validate` commands. [#4447](https://github.com/zowe/zowe-install-packaging/pull/4447)
+- Enhancement: Command `zwe validate port bind` command has been added. It can be used to validate if a zowe component is likely to succeed at binding to a TCP socket, and is used at startup to reduce likelihood of misconfiguration. [#4447](https://github.com/zowe/zowe-install-packaging/pull/4447)
+- Enhancement: API ML modulith mode is now enabled by default for new installations of Zowe. [#4565](https://github.com/zowe/zowe-install-packaging/pull/4565)
+- Enhancement: Detect if `SDSF` is available. [#4389](https://github.com/zowe/zowe-install-packaging/pull/4389)
 - Bugfix: internal routine `copy_to_data_set` did not correctly check if data set exists. [#4476](https://github.com/zowe/zowe-install-packaging/pull/4476)
+- Enhancement: `ZWEGEN00` supports long path by continuation character, which can be used in JCL `ZWEGENER` [#4459](https://github.com/zowe/zowe-install-packaging/pull/4459)
+- Bugfix: Zowe startup now removes outdated static definition files from workspace/api-mediation/api-defs, which previously caused wrong or duplicate registrations of servers to APIML. [#4526](https://github.com/zowe/zowe-install-packaging/pull/4526)
+- Bugfix: `--update-config` might fail if the specified config file is a symbolic link. [#4492](https://github.com/zowe/zowe-install-packaging/pull/4492)
+- Bugfix: The Zowe PSWI installation now creates `zowe.yaml` in the `workspaceDirectory` rather than `runtimeDirectory`. [#4397](https://github.com/zowe/zowe-install-packaging/pull/4397)
+- Enhancement: Node.JS is no longer required to run `zwe migrate for kubernetes`, or any other `zwe` command. [#4307](https://github.com/zowe/zowe-install-packaging/pull/4307)
+
+## `3.3.1`
+
+- Bugfix: z/OSMF static definition is missing scheme information, this is needed for AT-TLS hybrid scenarios where connections TO z/OSMF do not follow AT-TLS rules [#4512](https://github.com/zowe/zowe-install-packaging/pull/4512)
 
 ## `3.3.0`
 
 - Bugfix: YAML lookup for HA instances within "haInstances" was not working when HA instance names were uppercase. Now, the lookup is case insensitive to allow for any casing of HA instance names. [#4370](https://github.com/zowe/zowe-install-packaging/pull/4370)
 - Bugfix: stop processing `ZWEGENER` if `zowe.setup.dataset.prefix` or `zowe.setup.dataset.jcllib` is undefined or identical [#4337](https://github.com/zowe/zowe-install-packaging/pull/4337)
-- Enhancement: Add a utility "certificate-analyser.jar" to the folder zowe/bin/utils. This tool can be used to verify correct certificates for use by zowe, as well as correct connectivity to servers Zowe communicates with such as z/OSMF. It will be used by Zowe under specific circumstances to verify that network setup is correct. [#4354](https://github.com/zowe/zowe-install-packaging/pull/4354)
+- Enhancement: Added a utility "certificate-analyser.jar" to the folder zowe/bin/utils. This tool can be used to verify correct certificates for use by Zowe, as well as correct connectivity to servers Zowe communicates with such as z/OSMF. It will be used by Zowe under specific circumstances to verify that network setup is correct. [#4354](https://github.com/zowe/zowe-install-packaging/pull/4354)
 - Enhancement: Support different parmlib members when using JCL `ZWEGENER` [#4332](https://github.com/zowe/zowe-install-packaging/pull/4332)
 - Enhancement: Updated the `zowe-yaml-schema.json` and `defaults.yaml` to support new configuration parameter `zowe.sysMessageTrim` and set default value. This parameter will be used to trim syslog messages and print only from the sys-message-id. [#4294](https://github.com/zowe/zowe-install-packaging/pull/4294)
-- Enhancement: `zwe init` commands now use `ZWEGENER` to create and submit JCL which modify the system during Zowe's install and configuration, rather than using USS commands and utilities. `--dry-run` can be used on `init` commands to generate JCL without submitting it, allowing users to review it and optionally submit it themselves.
+- Enhancement: `zwe install` and `zwe init` commands can alternatively use `ZWEGENER` to create and submit JCL during Zowe's install and configuration, rather than using USS commands and utilities. `--dry-run` can be used to generate JCL without submitting it, allowing users to review the JCL and optionally submit it themselves. This is a technical preview feature. [#4282](https://github.com/zowe/zowe-install-packaging/pull/4282), [#4107](https://github.com/zowe/zowe-install-packaging/pull/4107), [#4429](https://github.com/zowe/zowe-install-packaging/pull/4429), [#4427](https://github.com/zowe/zowe-install-packaging/pull/4427)
 - Enhancement: `zowe.setup.jcl.header` can now be used to specify Job Card information used in JCL generated by `ZWEGENER`.
-- Enhancement: `zwe install` now uses configmgr and JCL, and the previous shell-script implementation was removed. [#4282](https://github.com/zowe/zowe-install-packaging/pull/4282)
 - Enhancement: Enable support for API ML in modulith mode, using a single JVM process. This is a technical preview feature.
 
 ## `3.2.0`

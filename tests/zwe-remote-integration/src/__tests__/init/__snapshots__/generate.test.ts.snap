@@ -47,12 +47,12 @@ Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWEGENER)
 //   DCB=(RECFM=FB,LRECL=80,BLKSIZE=3120,DSORG=PO),
 //   SPACE=(3120,(20,5,10))
 //*
-//* Replace TEST.DATASET.PFX with the
+//* Replace {zowe.setup.dataset.prefix} with the
 //* Value as seen in zowe.yaml
 //*
 //SYSPROC  DD DSN=TEST.DATASET.PFX.SZWEEXEC,DISP=SHR
 //*
-//* Replace TEST.DATASET.PFX with the
+//* Replace {zowe.setup.dataset.prefix} with the
 //* Value as seen in zowe.yaml
 //*
 //STEPLIB  DD DSN=TEST.DATASET.PFX.SZWELOAD,DISP=SHR
@@ -68,7 +68,7 @@ Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWEGENER)
 //* zowe-yaml-schema.json
 //* server-common.json
 //*
-//* Replace /test/dir with where your Zowe run time
+//* Replace {zowe.runtimeDirectory} with where your Zowe run time
 //* directory is, as seen in zowe.yaml
 //*
 //MYSCHEMA DD   *,DLM=$$
@@ -80,8 +80,13 @@ $$
 //* entries. The lower entries have their values
 //* overridden by the higher entries.
 //*
+//* Note: Use backslash in MYCONFIG or MYSCHEMA as continuation char.
+//*
 //* Ex. PARMLIB MY.ZOWE.CUSTOM.PARMLIB(YAML)
 //*     FILE /some/other/zowe.yaml
+//*     FILE /long/path/to/another/configuration/\\
+//*     zowe.yaml
+//*
 //MYCONFIG DD   *,DLM=$$
 FILE /test/dir/zowe.test.yaml
 $$
@@ -163,12 +168,12 @@ Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWEGENER)
 //   DCB=(RECFM=FB,LRECL=80,BLKSIZE=3120,DSORG=PO),
 //   SPACE=(3120,(20,5,10))
 //*
-//* Replace TEST.DATASET.PFX with the
+//* Replace {zowe.setup.dataset.prefix} with the
 //* Value as seen in zowe.yaml
 //*
 //SYSPROC  DD DSN=TEST.DATASET.PFX.SZWEEXEC,DISP=SHR
 //*
-//* Replace TEST.DATASET.PFX with the
+//* Replace {zowe.setup.dataset.prefix} with the
 //* Value as seen in zowe.yaml
 //*
 //STEPLIB  DD DSN=TEST.DATASET.PFX.SZWELOAD,DISP=SHR
@@ -184,7 +189,7 @@ Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWEGENER)
 //* zowe-yaml-schema.json
 //* server-common.json
 //*
-//* Replace /test/dir with where your Zowe run time
+//* Replace {zowe.runtimeDirectory} with where your Zowe run time
 //* directory is, as seen in zowe.yaml
 //*
 //MYSCHEMA DD   *,DLM=$$
@@ -196,8 +201,13 @@ $$
 //* entries. The lower entries have their values
 //* overridden by the higher entries.
 //*
+//* Note: Use backslash in MYCONFIG or MYSCHEMA as continuation char.
+//*
 //* Ex. PARMLIB MY.ZOWE.CUSTOM.PARMLIB(YAML)
 //*     FILE /some/other/zowe.yaml
+//*     FILE /long/path/to/another/configuration/\\
+//*     zowe.yaml
+//*
 //MYCONFIG DD   *,DLM=$$
 FILE /test/dir/zowe.test.yaml
 $$
@@ -276,12 +286,12 @@ Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWEGENER)
 //   DCB=(RECFM=FB,LRECL=80,BLKSIZE=3120,DSORG=PO),
 //   SPACE=(3120,(20,5,10))
 //*
-//* Replace TEST.DATASET.PFX with the
+//* Replace {zowe.setup.dataset.prefix} with the
 //* Value as seen in zowe.yaml
 //*
 //SYSPROC  DD DSN=TEST.DATASET.PFX.SZWEEXEC,DISP=SHR
 //*
-//* Replace TEST.DATASET.PFX with the
+//* Replace {zowe.setup.dataset.prefix} with the
 //* Value as seen in zowe.yaml
 //*
 //STEPLIB  DD DSN=TEST.DATASET.PFX.SZWELOAD,DISP=SHR
@@ -297,7 +307,7 @@ Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWEGENER)
 //* zowe-yaml-schema.json
 //* server-common.json
 //*
-//* Replace /test/dir with where your Zowe run time
+//* Replace {zowe.runtimeDirectory} with where your Zowe run time
 //* directory is, as seen in zowe.yaml
 //*
 //MYSCHEMA DD   *,DLM=$$
@@ -309,8 +319,13 @@ $$
 //* entries. The lower entries have their values
 //* overridden by the higher entries.
 //*
+//* Note: Use backslash in MYCONFIG or MYSCHEMA as continuation char.
+//*
 //* Ex. PARMLIB MY.ZOWE.CUSTOM.PARMLIB(YAML)
 //*     FILE /some/other/zowe.yaml
+//*     FILE /long/path/to/another/configuration/\\
+//*     zowe.yaml
+//*
 //MYCONFIG DD   *,DLM=$$
 FILE /test/dir/zowe.test.yaml
 $$
@@ -389,12 +404,12 @@ Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWEGENER)
 //   DCB=(RECFM=FB,LRECL=80,BLKSIZE=3120,DSORG=PO),
 //   SPACE=(3120,(20,5,10))
 //*
-//* Replace TEST.DATASET.PFX with the
+//* Replace {zowe.setup.dataset.prefix} with the
 //* Value as seen in zowe.yaml
 //*
 //SYSPROC  DD DSN=TEST.DATASET.PFX.SZWEEXEC,DISP=SHR
 //*
-//* Replace TEST.DATASET.PFX with the
+//* Replace {zowe.setup.dataset.prefix} with the
 //* Value as seen in zowe.yaml
 //*
 //STEPLIB  DD DSN=TEST.DATASET.PFX.SZWELOAD,DISP=SHR
@@ -410,7 +425,7 @@ Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWEGENER)
 //* zowe-yaml-schema.json
 //* server-common.json
 //*
-//* Replace /test/dir with where your Zowe run time
+//* Replace {zowe.runtimeDirectory} with where your Zowe run time
 //* directory is, as seen in zowe.yaml
 //*
 //MYSCHEMA DD   *,DLM=$$
@@ -422,13 +437,24 @@ $$
 //* entries. The lower entries have their values
 //* overridden by the higher entries.
 //*
+//* Note: Use backslash in MYCONFIG or MYSCHEMA as continuation char.
+//*
 //* Ex. PARMLIB MY.ZOWE.CUSTOM.PARMLIB(YAML)
 //*     FILE /some/other/zowe.yaml
+//*     FILE /long/path/to/another/configuration/\\
+//*     zowe.yaml
+//*
 //MYCONFIG DD   *,DLM=$$
 PARMLIB TEST.DATASET.PFX.PARMLIB(ZWECFG01)
 PARMLIB TEST.DATASET.PFX.PARMLIB(ZWECFG02)
-FILE /test/dir/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/zowe.test.yam
-FILE /test/dir/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/defaults.yaml
+FILE /test/dir/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\\
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\\
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\\
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/zowe.test.yam
+FILE /test/dir/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\\
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\\
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\\
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/defaults.yaml
 $$
 //CMGROUT  DD   SYSOUT=*
 //SYSPRINT DD   SYSOUT=*
@@ -505,12 +531,12 @@ Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWEGENER)
 //   DCB=(RECFM=FB,LRECL=80,BLKSIZE=3120,DSORG=PO),
 //   SPACE=(3120,(20,5,10))
 //*
-//* Replace TEST.DATASET.PFX with the
+//* Replace {zowe.setup.dataset.prefix} with the
 //* Value as seen in zowe.yaml
 //*
 //SYSPROC  DD DSN=TEST.DATASET.PFX.SZWEEXEC,DISP=SHR
 //*
-//* Replace TEST.DATASET.PFX with the
+//* Replace {zowe.setup.dataset.prefix} with the
 //* Value as seen in zowe.yaml
 //*
 //STEPLIB  DD DSN=TEST.DATASET.PFX.SZWELOAD,DISP=SHR
@@ -526,7 +552,7 @@ Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWEGENER)
 //* zowe-yaml-schema.json
 //* server-common.json
 //*
-//* Replace /test/dir with where your Zowe run time
+//* Replace {zowe.runtimeDirectory} with where your Zowe run time
 //* directory is, as seen in zowe.yaml
 //*
 //MYSCHEMA DD   *,DLM=$$
@@ -538,10 +564,18 @@ $$
 //* entries. The lower entries have their values
 //* overridden by the higher entries.
 //*
+//* Note: Use backslash in MYCONFIG or MYSCHEMA as continuation char.
+//*
 //* Ex. PARMLIB MY.ZOWE.CUSTOM.PARMLIB(YAML)
 //*     FILE /some/other/zowe.yaml
+//*     FILE /long/path/to/another/configuration/\\
+//*     zowe.yaml
+//*
 //MYCONFIG DD   *,DLM=$$
-FILE /test/dir/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/zowe.test.yam
+FILE /test/dir/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\\
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\\
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\\
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/zowe.test.yam
 $$
 //CMGROUT  DD   SYSOUT=*
 //SYSPRINT DD   SYSOUT=*
@@ -618,12 +652,12 @@ Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWEGENER)
 //   DCB=(RECFM=FB,LRECL=80,BLKSIZE=3120,DSORG=PO),
 //   SPACE=(3120,(20,5,10))
 //*
-//* Replace TEST.DATASET.PFX with the
+//* Replace {zowe.setup.dataset.prefix} with the
 //* Value as seen in zowe.yaml
 //*
 //SYSPROC  DD DSN=TEST.DATASET.PFX.SZWEEXEC,DISP=SHR
 //*
-//* Replace TEST.DATASET.PFX with the
+//* Replace {zowe.setup.dataset.prefix} with the
 //* Value as seen in zowe.yaml
 //*
 //STEPLIB  DD DSN=TEST.DATASET.PFX.SZWELOAD,DISP=SHR
@@ -639,7 +673,7 @@ Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWEGENER)
 //* zowe-yaml-schema.json
 //* server-common.json
 //*
-//* Replace /test/dir with where your Zowe run time
+//* Replace {zowe.runtimeDirectory} with where your Zowe run time
 //* directory is, as seen in zowe.yaml
 //*
 //MYSCHEMA DD   *,DLM=$$
@@ -651,10 +685,18 @@ $$
 //* entries. The lower entries have their values
 //* overridden by the higher entries.
 //*
+//* Note: Use backslash in MYCONFIG or MYSCHEMA as continuation char.
+//*
 //* Ex. PARMLIB MY.ZOWE.CUSTOM.PARMLIB(YAML)
 //*     FILE /some/other/zowe.yaml
+//*     FILE /long/path/to/another/configuration/\\
+//*     zowe.yaml
+//*
 //MYCONFIG DD   *,DLM=$$
-FILE /test/dir/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/zowe.test.yaml
+FILE /test/dir/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\\
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\\
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\\
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/zowe.test.yaml
 $$
 //CMGROUT  DD   SYSOUT=*
 //SYSPRINT DD   SYSOUT=*
@@ -731,12 +773,12 @@ Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWEGENER)
 //   DCB=(RECFM=FB,LRECL=80,BLKSIZE=3120,DSORG=PO),
 //   SPACE=(3120,(20,5,10))
 //*
-//* Replace TEST.DATASET.PFX with the
+//* Replace {zowe.setup.dataset.prefix} with the
 //* Value as seen in zowe.yaml
 //*
 //SYSPROC  DD DSN=TEST.DATASET.PFX.SZWEEXEC,DISP=SHR
 //*
-//* Replace TEST.DATASET.PFX with the
+//* Replace {zowe.setup.dataset.prefix} with the
 //* Value as seen in zowe.yaml
 //*
 //STEPLIB  DD DSN=TEST.DATASET.PFX.SZWELOAD,DISP=SHR
@@ -752,7 +794,7 @@ Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWEGENER)
 //* zowe-yaml-schema.json
 //* server-common.json
 //*
-//* Replace /test/dir with where your Zowe run time
+//* Replace {zowe.runtimeDirectory} with where your Zowe run time
 //* directory is, as seen in zowe.yaml
 //*
 //MYSCHEMA DD   *,DLM=$$
@@ -764,13 +806,24 @@ $$
 //* entries. The lower entries have their values
 //* overridden by the higher entries.
 //*
+//* Note: Use backslash in MYCONFIG or MYSCHEMA as continuation char.
+//*
 //* Ex. PARMLIB MY.ZOWE.CUSTOM.PARMLIB(YAML)
 //*     FILE /some/other/zowe.yaml
+//*     FILE /long/path/to/another/configuration/\\
+//*     zowe.yaml
+//*
 //MYCONFIG DD   *,DLM=$$
 PARMLIB TEST.DATASET.PFX.PARMLIB(ZWECFG01)
 PARMLIB TEST.DATASET.PFX.PARMLIB(ZWECFG02)
-FILE /test/dir/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/zowe.test.yaml
-FILE /test/dir/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/defaults.yaml
+FILE /test/dir/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\\
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\\
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\\
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/zowe.test.yaml
+FILE /test/dir/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\\
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\\
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\\
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/defaults.yaml
 $$
 //CMGROUT  DD   SYSOUT=*
 //SYSPRINT DD   SYSOUT=*
@@ -847,12 +900,12 @@ Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWEGENER)
 //   DCB=(RECFM=FB,LRECL=80,BLKSIZE=3120,DSORG=PO),
 //   SPACE=(3120,(20,5,10))
 //*
-//* Replace TEST.DATASET.PFX with the
+//* Replace {zowe.setup.dataset.prefix} with the
 //* Value as seen in zowe.yaml
 //*
 //SYSPROC  DD DSN=TEST.DATASET.PFX.SZWEEXEC,DISP=SHR
 //*
-//* Replace TEST.DATASET.PFX with the
+//* Replace {zowe.setup.dataset.prefix} with the
 //* Value as seen in zowe.yaml
 //*
 //STEPLIB  DD DSN=TEST.DATASET.PFX.SZWELOAD,DISP=SHR
@@ -868,7 +921,7 @@ Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWEGENER)
 //* zowe-yaml-schema.json
 //* server-common.json
 //*
-//* Replace /test/dir with where your Zowe run time
+//* Replace {zowe.runtimeDirectory} with where your Zowe run time
 //* directory is, as seen in zowe.yaml
 //*
 //MYSCHEMA DD   *,DLM=$$
@@ -880,11 +933,22 @@ $$
 //* entries. The lower entries have their values
 //* overridden by the higher entries.
 //*
+//* Note: Use backslash in MYCONFIG or MYSCHEMA as continuation char.
+//*
 //* Ex. PARMLIB MY.ZOWE.CUSTOM.PARMLIB(YAML)
 //*     FILE /some/other/zowe.yaml
+//*     FILE /long/path/to/another/configuration/\\
+//*     zowe.yaml
+//*
 //MYCONFIG DD   *,DLM=$$
-FILE /test/dir/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/zowe.test.yaml
-FILE /test/dir/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/defaults.yaml
+FILE /test/dir/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\\
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\\
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\\
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/zowe.test.yaml
+FILE /test/dir/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\\
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\\
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\\
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/defaults.yaml
 PARMLIB TEST.DATASET.PFX.PARMLIB(ZWECFG01)
 PARMLIB TEST.DATASET.PFX.PARMLIB(ZWECFG02)
 $$
@@ -963,12 +1027,12 @@ Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWEGENER)
 //   DCB=(RECFM=FB,LRECL=80,BLKSIZE=3120,DSORG=PO),
 //   SPACE=(3120,(20,5,10))
 //*
-//* Replace TEST.DATASET.PFX with the
+//* Replace {zowe.setup.dataset.prefix} with the
 //* Value as seen in zowe.yaml
 //*
 //SYSPROC  DD DSN=TEST.DATASET.PFX.SZWEEXEC,DISP=SHR
 //*
-//* Replace TEST.DATASET.PFX with the
+//* Replace {zowe.setup.dataset.prefix} with the
 //* Value as seen in zowe.yaml
 //*
 //STEPLIB  DD DSN=TEST.DATASET.PFX.SZWELOAD,DISP=SHR
@@ -984,7 +1048,7 @@ Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWEGENER)
 //* zowe-yaml-schema.json
 //* server-common.json
 //*
-//* Replace /test/dir with where your Zowe run time
+//* Replace {zowe.runtimeDirectory} with where your Zowe run time
 //* directory is, as seen in zowe.yaml
 //*
 //MYSCHEMA DD   *,DLM=$$
@@ -996,10 +1060,18 @@ $$
 //* entries. The lower entries have their values
 //* overridden by the higher entries.
 //*
+//* Note: Use backslash in MYCONFIG or MYSCHEMA as continuation char.
+//*
 //* Ex. PARMLIB MY.ZOWE.CUSTOM.PARMLIB(YAML)
 //*     FILE /some/other/zowe.yaml
+//*     FILE /long/path/to/another/configuration/\\
+//*     zowe.yaml
+//*
 //MYCONFIG DD   *,DLM=$$
-FILE /test/dir/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/zowe.test.yaml
+FILE /test/dir/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\\
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\\
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\\
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/zowe.test.yaml
 PARMLIB TEST.DATASET.PFX.PARMLIB(ZWECFG02)
 $$
 //CMGROUT  DD   SYSOUT=*
@@ -1077,12 +1149,12 @@ Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWEGENER)
 //   DCB=(RECFM=FB,LRECL=80,BLKSIZE=3120,DSORG=PO),
 //   SPACE=(3120,(20,5,10))
 //*
-//* Replace TEST.DATASET.PFX with the
+//* Replace {zowe.setup.dataset.prefix} with the
 //* Value as seen in zowe.yaml
 //*
 //SYSPROC  DD DSN=TEST.DATASET.PFX.SZWEEXEC,DISP=SHR
 //*
-//* Replace TEST.DATASET.PFX with the
+//* Replace {zowe.setup.dataset.prefix} with the
 //* Value as seen in zowe.yaml
 //*
 //STEPLIB  DD DSN=TEST.DATASET.PFX.SZWELOAD,DISP=SHR
@@ -1098,7 +1170,7 @@ Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWEGENER)
 //* zowe-yaml-schema.json
 //* server-common.json
 //*
-//* Replace /test/dir with where your Zowe run time
+//* Replace {zowe.runtimeDirectory} with where your Zowe run time
 //* directory is, as seen in zowe.yaml
 //*
 //MYSCHEMA DD   *,DLM=$$
@@ -1110,8 +1182,13 @@ $$
 //* entries. The lower entries have their values
 //* overridden by the higher entries.
 //*
+//* Note: Use backslash in MYCONFIG or MYSCHEMA as continuation char.
+//*
 //* Ex. PARMLIB MY.ZOWE.CUSTOM.PARMLIB(YAML)
 //*     FILE /some/other/zowe.yaml
+//*     FILE /long/path/to/another/configuration/\\
+//*     zowe.yaml
+//*
 //MYCONFIG DD   *,DLM=$$
 FILE /test/dir/zowe.test.yaml
 $$
@@ -1219,12 +1296,12 @@ Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWEGENER)
 //   DCB=(RECFM=FB,LRECL=80,BLKSIZE=3120,DSORG=PO),
 //   SPACE=(3120,(20,5,10))
 //*
-//* Replace TEST.DATASET.PFX with the
+//* Replace {zowe.setup.dataset.prefix} with the
 //* Value as seen in zowe.yaml
 //*
 //SYSPROC  DD DSN=TEST.DATASET.PFX.SZWEEXEC,DISP=SHR
 //*
-//* Replace TEST.DATASET.PFX with the
+//* Replace {zowe.setup.dataset.prefix} with the
 //* Value as seen in zowe.yaml
 //*
 //STEPLIB  DD DSN=TEST.DATASET.PFX.SZWELOAD,DISP=SHR
@@ -1240,7 +1317,7 @@ Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWEGENER)
 //* zowe-yaml-schema.json
 //* server-common.json
 //*
-//* Replace /test/dir with where your Zowe run time
+//* Replace {zowe.runtimeDirectory} with where your Zowe run time
 //* directory is, as seen in zowe.yaml
 //*
 //MYSCHEMA DD   *,DLM=$$
@@ -1252,8 +1329,13 @@ $$
 //* entries. The lower entries have their values
 //* overridden by the higher entries.
 //*
+//* Note: Use backslash in MYCONFIG or MYSCHEMA as continuation char.
+//*
 //* Ex. PARMLIB MY.ZOWE.CUSTOM.PARMLIB(YAML)
 //*     FILE /some/other/zowe.yaml
+//*     FILE /long/path/to/another/configuration/\\
+//*     zowe.yaml
+//*
 //MYCONFIG DD   *,DLM=$$
 FILE /test/dir/zowe.test.yaml
 $$
@@ -1340,12 +1422,12 @@ Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWEGENER)
 //   DCB=(RECFM=FB,LRECL=80,BLKSIZE=3120,DSORG=PO),
 //   SPACE=(3120,(20,5,10))
 //*
-//* Replace TEST.DATASET.PFX with the
+//* Replace {zowe.setup.dataset.prefix} with the
 //* Value as seen in zowe.yaml
 //*
 //SYSPROC  DD DSN=TEST.DATASET.PFX.SZWEEXEC,DISP=SHR
 //*
-//* Replace TEST.DATASET.PFX with the
+//* Replace {zowe.setup.dataset.prefix} with the
 //* Value as seen in zowe.yaml
 //*
 //STEPLIB  DD DSN=TEST.DATASET.PFX.SZWELOAD,DISP=SHR
@@ -1361,7 +1443,7 @@ Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWEGENER)
 //* zowe-yaml-schema.json
 //* server-common.json
 //*
-//* Replace /test/dir with where your Zowe run time
+//* Replace {zowe.runtimeDirectory} with where your Zowe run time
 //* directory is, as seen in zowe.yaml
 //*
 //MYSCHEMA DD   *,DLM=$$
@@ -1373,8 +1455,13 @@ $$
 //* entries. The lower entries have their values
 //* overridden by the higher entries.
 //*
+//* Note: Use backslash in MYCONFIG or MYSCHEMA as continuation char.
+//*
 //* Ex. PARMLIB MY.ZOWE.CUSTOM.PARMLIB(YAML)
 //*     FILE /some/other/zowe.yaml
+//*     FILE /long/path/to/another/configuration/\\
+//*     zowe.yaml
+//*
 //MYCONFIG DD   *,DLM=$$
 FILE /test/dir/zowe.test.yaml
 $$
@@ -1452,12 +1539,12 @@ Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWEGENER)
 //   DCB=(RECFM=FB,LRECL=80,BLKSIZE=3120,DSORG=PO),
 //   SPACE=(3120,(20,5,10))
 //*
-//* Replace TEST.DATASET.PFX with the
+//* Replace {zowe.setup.dataset.prefix} with the
 //* Value as seen in zowe.yaml
 //*
 //SYSPROC  DD DSN=TEST.DATASET.PFX.SZWEEXEC,DISP=SHR
 //*
-//* Replace TEST.DATASET.PFX with the
+//* Replace {zowe.setup.dataset.prefix} with the
 //* Value as seen in zowe.yaml
 //*
 //STEPLIB  DD DSN=TEST.DATASET.PFX.SZWELOAD,DISP=SHR
@@ -1473,7 +1560,7 @@ Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWEGENER)
 //* zowe-yaml-schema.json
 //* server-common.json
 //*
-//* Replace /test/dir with where your Zowe run time
+//* Replace {zowe.runtimeDirectory} with where your Zowe run time
 //* directory is, as seen in zowe.yaml
 //*
 //MYSCHEMA DD   *,DLM=$$
@@ -1485,8 +1572,13 @@ $$
 //* entries. The lower entries have their values
 //* overridden by the higher entries.
 //*
+//* Note: Use backslash in MYCONFIG or MYSCHEMA as continuation char.
+//*
 //* Ex. PARMLIB MY.ZOWE.CUSTOM.PARMLIB(YAML)
 //*     FILE /some/other/zowe.yaml
+//*     FILE /long/path/to/another/configuration/\\
+//*     zowe.yaml
+//*
 //MYCONFIG DD   *,DLM=$$
 FILE /test/dir/zowe.test.yaml
 $$
@@ -1576,12 +1668,12 @@ Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWEGENER)
 //   DCB=(RECFM=FB,LRECL=80,BLKSIZE=3120,DSORG=PO),
 //   SPACE=(3120,(20,5,10))
 //*
-//* Replace TEST.DATASET.PFX with the
+//* Replace {zowe.setup.dataset.prefix} with the
 //* Value as seen in zowe.yaml
 //*
 //SYSPROC  DD DSN=TEST.DATASET.PFX.SZWEEXEC,DISP=SHR
 //*
-//* Replace TEST.DATASET.PFX with the
+//* Replace {zowe.setup.dataset.prefix} with the
 //* Value as seen in zowe.yaml
 //*
 //STEPLIB  DD DSN=TEST.DATASET.PFX.SZWELOAD,DISP=SHR
@@ -1597,7 +1689,7 @@ Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWEGENER)
 //* zowe-yaml-schema.json
 //* server-common.json
 //*
-//* Replace /test/dir with where your Zowe run time
+//* Replace {zowe.runtimeDirectory} with where your Zowe run time
 //* directory is, as seen in zowe.yaml
 //*
 //MYSCHEMA DD   *,DLM=$$
@@ -1609,8 +1701,13 @@ $$
 //* entries. The lower entries have their values
 //* overridden by the higher entries.
 //*
+//* Note: Use backslash in MYCONFIG or MYSCHEMA as continuation char.
+//*
 //* Ex. PARMLIB MY.ZOWE.CUSTOM.PARMLIB(YAML)
 //*     FILE /some/other/zowe.yaml
+//*     FILE /long/path/to/another/configuration/\\
+//*     zowe.yaml
+//*
 //MYCONFIG DD   *,DLM=$$
 FILE /test/dir/zowe.test.yaml
 $$
@@ -1639,6 +1736,828 @@ generate -
 noverbose -
 )
 
+--- End of JCL ---
+JCL not submitted, command run with "--dry-run" flag.
+To perform command, re-run command without "--dry-run" flag, or submit the JCL directly."
+`;
+
+exports[`init-generate (SHORT) paths >71 characters in zowe.yaml and schema files 1`] = `
+"Temporary directory '/tmp/.zweenv-0000' created.
+Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
+Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWEGENER)
+--- JCL content ---
+//ZWEGENER JOB
+//*
+//* This program and the accompanying materials are made available
+//* under the terms of the Eclipse Public License v2.0 which
+//* accompanies this distribution, and is available at
+//* https://www.eclipse.org/legal/epl-v20.html
+//*
+//* SPDX-License-Identifier: EPL-2.0
+//*
+//* Copyright Contributors to the Zowe Project. 2020, 2020
+//*
+//*********************************************************************
+//*
+//* This job is responsible for generating other jobs required
+//* to configure Zowe.
+//*
+//* The method of validating your configuration is using
+//* JSON Schema <https://json-schema.org>. Zowe provides
+//* the ConfigMgr to assist in this. This job will invoke
+//* the ConfigMgr to validate your current configuration
+//* before generating any jobs. If there are any values
+//* that are incorrect, you will be notified. You should
+//* fix the value and then run this job again. You can run
+//* this job as many times as you need.
+//*
+//* Configmgr documentation:
+//* https://docs.zowe.org/stable/user-guide/configmgr-using
+//*
+//* Note: Any string with braces has an associated yaml value
+//*       in one of the yaml definitions for Zowe.
+//*       You must find the value and substitute it.
+//*
+//*       {key} -> value
+//*
+//GENER    EXEC PGM=IKJEFT1B
+//ISPPROF  DD   DSN=,DISP=(NEW,DELETE),UNIT=VIO,
+//   DCB=(RECFM=FB,LRECL=80,BLKSIZE=3120,DSORG=PO),
+//   SPACE=(3120,(20,5,10))
+//*
+//* Replace {zowe.setup.dataset.prefix} with the
+//* Value as seen in zowe.yaml
+//*
+//SYSPROC  DD DSN=TEST.DATASET.PFX.SZWEEXEC,DISP=SHR
+//*
+//* Replace {zowe.setup.dataset.prefix} with the
+//* Value as seen in zowe.yaml
+//*
+//STEPLIB  DD DSN=TEST.DATASET.PFX.SZWELOAD,DISP=SHR
+//ISPPLIB  DD DSN=ISP.SISPPENU,DISP=SHR
+//ISPMLIB  DD DSN=ISP.SISPMENU,DISP=SHR
+//ISPTLIB  DD DSN=ISP.SISPTENU,DISP=SHR
+//ISPSLIB  DD DSN=ISP.SISPSENU,DISP=SHR
+//ISPLOG   DD UNIT=SYSDA,SPACE=(CYL,(10,1,1),RLSE),
+//   DCB=(RECFM=VA,LRECL=125,BLKSIZE=129)
+//*
+//* The order must be as follows.
+//*
+//* zowe-yaml-schema.json
+//* server-common.json
+//*
+//* Replace {zowe.runtimeDirectory} with where your Zowe run time
+//* directory is, as seen in zowe.yaml
+//*
+//MYSCHEMA DD   *,DLM=$$
+FILE /test/dir/schemas/zowe-yaml-schema.json
+FILE /test/dir/schemas/server-common.json
+$$
+//*
+//* The DD below must include one or more FILE or PARMLIB
+//* entries. The lower entries have their values
+//* overridden by the higher entries.
+//*
+//* Note: Use backslash in MYCONFIG or MYSCHEMA as continuation char.
+//*
+//* Ex. PARMLIB MY.ZOWE.CUSTOM.PARMLIB(YAML)
+//*     FILE /some/other/zowe.yaml
+//*     FILE /long/path/to/another/configuration/\\
+//*     zowe.yaml
+//*
+//MYCONFIG DD   *,DLM=$$
+FILE /zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz/aaaaa/zowe.test.yaml
+$$
+//CMGROUT  DD   SYSOUT=*
+//SYSPRINT DD   SYSOUT=*
+//SYSTSPRT DD   SYSOUT=*
+//*
+//* Change 'generate' to 'nogenerate' if you only
+//* want to validate your configuration. The default
+//* option, 'generate', will validate and then generate
+//* jobs based on your configuration.
+//*
+//*   - generate
+//*   - nogenerate
+//*
+//* Change 'noverbose' to 'verbose' below for
+//* advanced logging. This is not needed unless
+//* there is an error.
+//*
+//*   - verbose
+//*   - noverbose
+//*
+//SYSTSIN  DD   *
+ISPSTART CMD(%ZWEGEN00 -
+generate -
+noverbose -
+)
+--- End of JCL ---
+JCL not submitted, command run with "--dry-run" flag.
+To perform command, re-run command without "--dry-run" flag, or submit the JCL directly."
+`;
+
+exports[`init-generate (SHORT) paths >71 characters in zowe.yaml and schema files 2`] = `
+"Temporary directory '/tmp/.zweenv-0000' created.
+Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
+Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWEGENER)
+--- JCL content ---
+//ZWEGENER JOB
+//*
+//* This program and the accompanying materials are made available
+//* under the terms of the Eclipse Public License v2.0 which
+//* accompanies this distribution, and is available at
+//* https://www.eclipse.org/legal/epl-v20.html
+//*
+//* SPDX-License-Identifier: EPL-2.0
+//*
+//* Copyright Contributors to the Zowe Project. 2020, 2020
+//*
+//*********************************************************************
+//*
+//* This job is responsible for generating other jobs required
+//* to configure Zowe.
+//*
+//* The method of validating your configuration is using
+//* JSON Schema <https://json-schema.org>. Zowe provides
+//* the ConfigMgr to assist in this. This job will invoke
+//* the ConfigMgr to validate your current configuration
+//* before generating any jobs. If there are any values
+//* that are incorrect, you will be notified. You should
+//* fix the value and then run this job again. You can run
+//* this job as many times as you need.
+//*
+//* Configmgr documentation:
+//* https://docs.zowe.org/stable/user-guide/configmgr-using
+//*
+//* Note: Any string with braces has an associated yaml value
+//*       in one of the yaml definitions for Zowe.
+//*       You must find the value and substitute it.
+//*
+//*       {key} -> value
+//*
+//GENER    EXEC PGM=IKJEFT1B
+//ISPPROF  DD   DSN=,DISP=(NEW,DELETE),UNIT=VIO,
+//   DCB=(RECFM=FB,LRECL=80,BLKSIZE=3120,DSORG=PO),
+//   SPACE=(3120,(20,5,10))
+//*
+//* Replace {zowe.setup.dataset.prefix} with the
+//* Value as seen in zowe.yaml
+//*
+//SYSPROC  DD DSN=TEST.DATASET.PFX.SZWEEXEC,DISP=SHR
+//*
+//* Replace {zowe.setup.dataset.prefix} with the
+//* Value as seen in zowe.yaml
+//*
+//STEPLIB  DD DSN=TEST.DATASET.PFX.SZWELOAD,DISP=SHR
+//ISPPLIB  DD DSN=ISP.SISPPENU,DISP=SHR
+//ISPMLIB  DD DSN=ISP.SISPMENU,DISP=SHR
+//ISPTLIB  DD DSN=ISP.SISPTENU,DISP=SHR
+//ISPSLIB  DD DSN=ISP.SISPSENU,DISP=SHR
+//ISPLOG   DD UNIT=SYSDA,SPACE=(CYL,(10,1,1),RLSE),
+//   DCB=(RECFM=VA,LRECL=125,BLKSIZE=129)
+//*
+//* The order must be as follows.
+//*
+//* zowe-yaml-schema.json
+//* server-common.json
+//*
+//* Replace {zowe.runtimeDirectory} with where your Zowe run time
+//* directory is, as seen in zowe.yaml
+//*
+//MYSCHEMA DD   *,DLM=$$
+FILE /test/dir/schemas/zowe-yaml-schema.json
+FILE /test/dir/schemas/server-common.json
+$$
+//*
+//* The DD below must include one or more FILE or PARMLIB
+//* entries. The lower entries have their values
+//* overridden by the higher entries.
+//*
+//* Note: Use backslash in MYCONFIG or MYSCHEMA as continuation char.
+//*
+//* Ex. PARMLIB MY.ZOWE.CUSTOM.PARMLIB(YAML)
+//*     FILE /some/other/zowe.yaml
+//*     FILE /long/path/to/another/configuration/\\
+//*     zowe.yaml
+//*
+//MYCONFIG DD   *,DLM=$$
+FILE /zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz/aaaaaa/zowe.test.yam\\
+l
+$$
+//CMGROUT  DD   SYSOUT=*
+//SYSPRINT DD   SYSOUT=*
+//SYSTSPRT DD   SYSOUT=*
+//*
+//* Change 'generate' to 'nogenerate' if you only
+//* want to validate your configuration. The default
+//* option, 'generate', will validate and then generate
+//* jobs based on your configuration.
+//*
+//*   - generate
+//*   - nogenerate
+//*
+//* Change 'noverbose' to 'verbose' below for
+//* advanced logging. This is not needed unless
+//* there is an error.
+//*
+//*   - verbose
+//*   - noverbose
+//*
+//SYSTSIN  DD   *
+ISPSTART CMD(%ZWEGEN00 -
+generate -
+noverbose -
+)
+--- End of JCL ---
+JCL not submitted, command run with "--dry-run" flag.
+To perform command, re-run command without "--dry-run" flag, or submit the JCL directly."
+`;
+
+exports[`init-generate (SHORT) paths >71 characters in zowe.yaml and schema files 3`] = `
+"Temporary directory '/tmp/.zweenv-0000' created.
+Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
+Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWEGENER)
+--- JCL content ---
+//ZWEGENER JOB
+//*
+//* This program and the accompanying materials are made available
+//* under the terms of the Eclipse Public License v2.0 which
+//* accompanies this distribution, and is available at
+//* https://www.eclipse.org/legal/epl-v20.html
+//*
+//* SPDX-License-Identifier: EPL-2.0
+//*
+//* Copyright Contributors to the Zowe Project. 2020, 2020
+//*
+//*********************************************************************
+//*
+//* This job is responsible for generating other jobs required
+//* to configure Zowe.
+//*
+//* The method of validating your configuration is using
+//* JSON Schema <https://json-schema.org>. Zowe provides
+//* the ConfigMgr to assist in this. This job will invoke
+//* the ConfigMgr to validate your current configuration
+//* before generating any jobs. If there are any values
+//* that are incorrect, you will be notified. You should
+//* fix the value and then run this job again. You can run
+//* this job as many times as you need.
+//*
+//* Configmgr documentation:
+//* https://docs.zowe.org/stable/user-guide/configmgr-using
+//*
+//* Note: Any string with braces has an associated yaml value
+//*       in one of the yaml definitions for Zowe.
+//*       You must find the value and substitute it.
+//*
+//*       {key} -> value
+//*
+//GENER    EXEC PGM=IKJEFT1B
+//ISPPROF  DD   DSN=,DISP=(NEW,DELETE),UNIT=VIO,
+//   DCB=(RECFM=FB,LRECL=80,BLKSIZE=3120,DSORG=PO),
+//   SPACE=(3120,(20,5,10))
+//*
+//* Replace {zowe.setup.dataset.prefix} with the
+//* Value as seen in zowe.yaml
+//*
+//SYSPROC  DD DSN=TEST.DATASET.PFX.SZWEEXEC,DISP=SHR
+//*
+//* Replace {zowe.setup.dataset.prefix} with the
+//* Value as seen in zowe.yaml
+//*
+//STEPLIB  DD DSN=TEST.DATASET.PFX.SZWELOAD,DISP=SHR
+//ISPPLIB  DD DSN=ISP.SISPPENU,DISP=SHR
+//ISPMLIB  DD DSN=ISP.SISPMENU,DISP=SHR
+//ISPTLIB  DD DSN=ISP.SISPTENU,DISP=SHR
+//ISPSLIB  DD DSN=ISP.SISPSENU,DISP=SHR
+//ISPLOG   DD UNIT=SYSDA,SPACE=(CYL,(10,1,1),RLSE),
+//   DCB=(RECFM=VA,LRECL=125,BLKSIZE=129)
+//*
+//* The order must be as follows.
+//*
+//* zowe-yaml-schema.json
+//* server-common.json
+//*
+//* Replace {zowe.runtimeDirectory} with where your Zowe run time
+//* directory is, as seen in zowe.yaml
+//*
+//MYSCHEMA DD   *,DLM=$$
+FILE /test/dir/schemas/zowe-yaml-schema.json
+FILE /test/dir/schemas/server-common.json
+$$
+//*
+//* The DD below must include one or more FILE or PARMLIB
+//* entries. The lower entries have their values
+//* overridden by the higher entries.
+//*
+//* Note: Use backslash in MYCONFIG or MYSCHEMA as continuation char.
+//*
+//* Ex. PARMLIB MY.ZOWE.CUSTOM.PARMLIB(YAML)
+//*     FILE /some/other/zowe.yaml
+//*     FILE /long/path/to/another/configuration/\\
+//*     zowe.yaml
+//*
+//MYCONFIG DD   *,DLM=$$
+FILE /zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz/aaaaaaaaaaaaaaaaaaaa\\
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/zowe.test.yaml
+$$
+//CMGROUT  DD   SYSOUT=*
+//SYSPRINT DD   SYSOUT=*
+//SYSTSPRT DD   SYSOUT=*
+//*
+//* Change 'generate' to 'nogenerate' if you only
+//* want to validate your configuration. The default
+//* option, 'generate', will validate and then generate
+//* jobs based on your configuration.
+//*
+//*   - generate
+//*   - nogenerate
+//*
+//* Change 'noverbose' to 'verbose' below for
+//* advanced logging. This is not needed unless
+//* there is an error.
+//*
+//*   - verbose
+//*   - noverbose
+//*
+//SYSTSIN  DD   *
+ISPSTART CMD(%ZWEGEN00 -
+generate -
+noverbose -
+)
+--- End of JCL ---
+JCL not submitted, command run with "--dry-run" flag.
+To perform command, re-run command without "--dry-run" flag, or submit the JCL directly."
+`;
+
+exports[`init-generate (SHORT) paths >71 characters in zowe.yaml and schema files 4`] = `
+"Temporary directory '/tmp/.zweenv-0000' created.
+Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
+Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWEGENER)
+--- JCL content ---
+//ZWEGENER JOB
+//*
+//* This program and the accompanying materials are made available
+//* under the terms of the Eclipse Public License v2.0 which
+//* accompanies this distribution, and is available at
+//* https://www.eclipse.org/legal/epl-v20.html
+//*
+//* SPDX-License-Identifier: EPL-2.0
+//*
+//* Copyright Contributors to the Zowe Project. 2020, 2020
+//*
+//*********************************************************************
+//*
+//* This job is responsible for generating other jobs required
+//* to configure Zowe.
+//*
+//* The method of validating your configuration is using
+//* JSON Schema <https://json-schema.org>. Zowe provides
+//* the ConfigMgr to assist in this. This job will invoke
+//* the ConfigMgr to validate your current configuration
+//* before generating any jobs. If there are any values
+//* that are incorrect, you will be notified. You should
+//* fix the value and then run this job again. You can run
+//* this job as many times as you need.
+//*
+//* Configmgr documentation:
+//* https://docs.zowe.org/stable/user-guide/configmgr-using
+//*
+//* Note: Any string with braces has an associated yaml value
+//*       in one of the yaml definitions for Zowe.
+//*       You must find the value and substitute it.
+//*
+//*       {key} -> value
+//*
+//GENER    EXEC PGM=IKJEFT1B
+//ISPPROF  DD   DSN=,DISP=(NEW,DELETE),UNIT=VIO,
+//   DCB=(RECFM=FB,LRECL=80,BLKSIZE=3120,DSORG=PO),
+//   SPACE=(3120,(20,5,10))
+//*
+//* Replace {zowe.setup.dataset.prefix} with the
+//* Value as seen in zowe.yaml
+//*
+//SYSPROC  DD DSN=TEST.DATASET.PFX.SZWEEXEC,DISP=SHR
+//*
+//* Replace {zowe.setup.dataset.prefix} with the
+//* Value as seen in zowe.yaml
+//*
+//STEPLIB  DD DSN=TEST.DATASET.PFX.SZWELOAD,DISP=SHR
+//ISPPLIB  DD DSN=ISP.SISPPENU,DISP=SHR
+//ISPMLIB  DD DSN=ISP.SISPMENU,DISP=SHR
+//ISPTLIB  DD DSN=ISP.SISPTENU,DISP=SHR
+//ISPSLIB  DD DSN=ISP.SISPSENU,DISP=SHR
+//ISPLOG   DD UNIT=SYSDA,SPACE=(CYL,(10,1,1),RLSE),
+//   DCB=(RECFM=VA,LRECL=125,BLKSIZE=129)
+//*
+//* The order must be as follows.
+//*
+//* zowe-yaml-schema.json
+//* server-common.json
+//*
+//* Replace {zowe.runtimeDirectory} with where your Zowe run time
+//* directory is, as seen in zowe.yaml
+//*
+//MYSCHEMA DD   *,DLM=$$
+FILE /test/dir/schemas/zowe-yaml-schema.json
+FILE /test/dir/schemas/server-common.json
+$$
+//*
+//* The DD below must include one or more FILE or PARMLIB
+//* entries. The lower entries have their values
+//* overridden by the higher entries.
+//*
+//* Note: Use backslash in MYCONFIG or MYSCHEMA as continuation char.
+//*
+//* Ex. PARMLIB MY.ZOWE.CUSTOM.PARMLIB(YAML)
+//*     FILE /some/other/zowe.yaml
+//*     FILE /long/path/to/another/configuration/\\
+//*     zowe.yaml
+//*
+//MYCONFIG DD   *,DLM=$$
+FILE /zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz/aaaaaaaaaaaaaaaaaaaa\\
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/zowe.test.yaml
+$$
+//CMGROUT  DD   SYSOUT=*
+//SYSPRINT DD   SYSOUT=*
+//SYSTSPRT DD   SYSOUT=*
+//*
+//* Change 'generate' to 'nogenerate' if you only
+//* want to validate your configuration. The default
+//* option, 'generate', will validate and then generate
+//* jobs based on your configuration.
+//*
+//*   - generate
+//*   - nogenerate
+//*
+//* Change 'noverbose' to 'verbose' below for
+//* advanced logging. This is not needed unless
+//* there is an error.
+//*
+//*   - verbose
+//*   - noverbose
+//*
+//SYSTSIN  DD   *
+ISPSTART CMD(%ZWEGEN00 -
+generate -
+noverbose -
+)
+--- End of JCL ---
+JCL not submitted, command run with "--dry-run" flag.
+To perform command, re-run command without "--dry-run" flag, or submit the JCL directly."
+`;
+
+exports[`init-generate (SHORT) paths >71 characters in zowe.yaml and schema files 5`] = `
+"Temporary directory '/tmp/.zweenv-0000' created.
+Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
+Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWEGENER)
+--- JCL content ---
+//ZWEGENER JOB
+//*
+//* This program and the accompanying materials are made available
+//* under the terms of the Eclipse Public License v2.0 which
+//* accompanies this distribution, and is available at
+//* https://www.eclipse.org/legal/epl-v20.html
+//*
+//* SPDX-License-Identifier: EPL-2.0
+//*
+//* Copyright Contributors to the Zowe Project. 2020, 2020
+//*
+//*********************************************************************
+//*
+//* This job is responsible for generating other jobs required
+//* to configure Zowe.
+//*
+//* The method of validating your configuration is using
+//* JSON Schema <https://json-schema.org>. Zowe provides
+//* the ConfigMgr to assist in this. This job will invoke
+//* the ConfigMgr to validate your current configuration
+//* before generating any jobs. If there are any values
+//* that are incorrect, you will be notified. You should
+//* fix the value and then run this job again. You can run
+//* this job as many times as you need.
+//*
+//* Configmgr documentation:
+//* https://docs.zowe.org/stable/user-guide/configmgr-using
+//*
+//* Note: Any string with braces has an associated yaml value
+//*       in one of the yaml definitions for Zowe.
+//*       You must find the value and substitute it.
+//*
+//*       {key} -> value
+//*
+//GENER    EXEC PGM=IKJEFT1B
+//ISPPROF  DD   DSN=,DISP=(NEW,DELETE),UNIT=VIO,
+//   DCB=(RECFM=FB,LRECL=80,BLKSIZE=3120,DSORG=PO),
+//   SPACE=(3120,(20,5,10))
+//*
+//* Replace {zowe.setup.dataset.prefix} with the
+//* Value as seen in zowe.yaml
+//*
+//SYSPROC  DD DSN=TEST.DATASET.PFX.SZWEEXEC,DISP=SHR
+//*
+//* Replace {zowe.setup.dataset.prefix} with the
+//* Value as seen in zowe.yaml
+//*
+//STEPLIB  DD DSN=TEST.DATASET.PFX.SZWELOAD,DISP=SHR
+//ISPPLIB  DD DSN=ISP.SISPPENU,DISP=SHR
+//ISPMLIB  DD DSN=ISP.SISPMENU,DISP=SHR
+//ISPTLIB  DD DSN=ISP.SISPTENU,DISP=SHR
+//ISPSLIB  DD DSN=ISP.SISPSENU,DISP=SHR
+//ISPLOG   DD UNIT=SYSDA,SPACE=(CYL,(10,1,1),RLSE),
+//   DCB=(RECFM=VA,LRECL=125,BLKSIZE=129)
+//*
+//* The order must be as follows.
+//*
+//* zowe-yaml-schema.json
+//* server-common.json
+//*
+//* Replace {zowe.runtimeDirectory} with where your Zowe run time
+//* directory is, as seen in zowe.yaml
+//*
+//MYSCHEMA DD   *,DLM=$$
+FILE /test/dir/schemas/zowe-yaml-schema.json
+FILE /test/dir/schemas/server-common.json
+$$
+//*
+//* The DD below must include one or more FILE or PARMLIB
+//* entries. The lower entries have their values
+//* overridden by the higher entries.
+//*
+//* Note: Use backslash in MYCONFIG or MYSCHEMA as continuation char.
+//*
+//* Ex. PARMLIB MY.ZOWE.CUSTOM.PARMLIB(YAML)
+//*     FILE /some/other/zowe.yaml
+//*     FILE /long/path/to/another/configuration/\\
+//*     zowe.yaml
+//*
+//MYCONFIG DD   *,DLM=$$
+FILE /zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz/aaaaaaaaaaaaaaaaaaaa\\
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/zowe.test.yam\\
+l
+$$
+//CMGROUT  DD   SYSOUT=*
+//SYSPRINT DD   SYSOUT=*
+//SYSTSPRT DD   SYSOUT=*
+//*
+//* Change 'generate' to 'nogenerate' if you only
+//* want to validate your configuration. The default
+//* option, 'generate', will validate and then generate
+//* jobs based on your configuration.
+//*
+//*   - generate
+//*   - nogenerate
+//*
+//* Change 'noverbose' to 'verbose' below for
+//* advanced logging. This is not needed unless
+//* there is an error.
+//*
+//*   - verbose
+//*   - noverbose
+//*
+//SYSTSIN  DD   *
+ISPSTART CMD(%ZWEGEN00 -
+generate -
+noverbose -
+)
+--- End of JCL ---
+JCL not submitted, command run with "--dry-run" flag.
+To perform command, re-run command without "--dry-run" flag, or submit the JCL directly."
+`;
+
+exports[`init-generate (SHORT) paths >71 characters in zowe.yaml and schema files 6`] = `
+"Temporary directory '/tmp/.zweenv-0000' created.
+Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
+Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWEGENER)
+--- JCL content ---
+//ZWEGENER JOB
+//*
+//* This program and the accompanying materials are made available
+//* under the terms of the Eclipse Public License v2.0 which
+//* accompanies this distribution, and is available at
+//* https://www.eclipse.org/legal/epl-v20.html
+//*
+//* SPDX-License-Identifier: EPL-2.0
+//*
+//* Copyright Contributors to the Zowe Project. 2020, 2020
+//*
+//*********************************************************************
+//*
+//* This job is responsible for generating other jobs required
+//* to configure Zowe.
+//*
+//* The method of validating your configuration is using
+//* JSON Schema <https://json-schema.org>. Zowe provides
+//* the ConfigMgr to assist in this. This job will invoke
+//* the ConfigMgr to validate your current configuration
+//* before generating any jobs. If there are any values
+//* that are incorrect, you will be notified. You should
+//* fix the value and then run this job again. You can run
+//* this job as many times as you need.
+//*
+//* Configmgr documentation:
+//* https://docs.zowe.org/stable/user-guide/configmgr-using
+//*
+//* Note: Any string with braces has an associated yaml value
+//*       in one of the yaml definitions for Zowe.
+//*       You must find the value and substitute it.
+//*
+//*       {key} -> value
+//*
+//GENER    EXEC PGM=IKJEFT1B
+//ISPPROF  DD   DSN=,DISP=(NEW,DELETE),UNIT=VIO,
+//   DCB=(RECFM=FB,LRECL=80,BLKSIZE=3120,DSORG=PO),
+//   SPACE=(3120,(20,5,10))
+//*
+//* Replace {zowe.setup.dataset.prefix} with the
+//* Value as seen in zowe.yaml
+//*
+//SYSPROC  DD DSN=TEST.DATASET.PFX.SZWEEXEC,DISP=SHR
+//*
+//* Replace {zowe.setup.dataset.prefix} with the
+//* Value as seen in zowe.yaml
+//*
+//STEPLIB  DD DSN=TEST.DATASET.PFX.SZWELOAD,DISP=SHR
+//ISPPLIB  DD DSN=ISP.SISPPENU,DISP=SHR
+//ISPMLIB  DD DSN=ISP.SISPMENU,DISP=SHR
+//ISPTLIB  DD DSN=ISP.SISPTENU,DISP=SHR
+//ISPSLIB  DD DSN=ISP.SISPSENU,DISP=SHR
+//ISPLOG   DD UNIT=SYSDA,SPACE=(CYL,(10,1,1),RLSE),
+//   DCB=(RECFM=VA,LRECL=125,BLKSIZE=129)
+//*
+//* The order must be as follows.
+//*
+//* zowe-yaml-schema.json
+//* server-common.json
+//*
+//* Replace {zowe.runtimeDirectory} with where your Zowe run time
+//* directory is, as seen in zowe.yaml
+//*
+//MYSCHEMA DD   *,DLM=$$
+FILE /test/dir/schemas/zowe-yaml-schema.json
+FILE /test/dir/schemas/server-common.json
+$$
+//*
+//* The DD below must include one or more FILE or PARMLIB
+//* entries. The lower entries have their values
+//* overridden by the higher entries.
+//*
+//* Note: Use backslash in MYCONFIG or MYSCHEMA as continuation char.
+//*
+//* Ex. PARMLIB MY.ZOWE.CUSTOM.PARMLIB(YAML)
+//*     FILE /some/other/zowe.yaml
+//*     FILE /long/path/to/another/configuration/\\
+//*     zowe.yaml
+//*
+//MYCONFIG DD   *,DLM=$$
+FILE /zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz/aaaaaaaaaaaaaaaaaaaa\\
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/zowe.test.ya\\
+ml
+$$
+//CMGROUT  DD   SYSOUT=*
+//SYSPRINT DD   SYSOUT=*
+//SYSTSPRT DD   SYSOUT=*
+//*
+//* Change 'generate' to 'nogenerate' if you only
+//* want to validate your configuration. The default
+//* option, 'generate', will validate and then generate
+//* jobs based on your configuration.
+//*
+//*   - generate
+//*   - nogenerate
+//*
+//* Change 'noverbose' to 'verbose' below for
+//* advanced logging. This is not needed unless
+//* there is an error.
+//*
+//*   - verbose
+//*   - noverbose
+//*
+//SYSTSIN  DD   *
+ISPSTART CMD(%ZWEGEN00 -
+generate -
+noverbose -
+)
+--- End of JCL ---
+JCL not submitted, command run with "--dry-run" flag.
+To perform command, re-run command without "--dry-run" flag, or submit the JCL directly."
+`;
+
+exports[`init-generate (SHORT) paths >71 characters in zowe.yaml and schema files 7`] = `
+"Temporary directory '/tmp/.zweenv-0000' created.
+Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
+Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWEGENER)
+--- JCL content ---
+//ZWEGENER JOB
+//*
+//* This program and the accompanying materials are made available
+//* under the terms of the Eclipse Public License v2.0 which
+//* accompanies this distribution, and is available at
+//* https://www.eclipse.org/legal/epl-v20.html
+//*
+//* SPDX-License-Identifier: EPL-2.0
+//*
+//* Copyright Contributors to the Zowe Project. 2020, 2020
+//*
+//*********************************************************************
+//*
+//* This job is responsible for generating other jobs required
+//* to configure Zowe.
+//*
+//* The method of validating your configuration is using
+//* JSON Schema <https://json-schema.org>. Zowe provides
+//* the ConfigMgr to assist in this. This job will invoke
+//* the ConfigMgr to validate your current configuration
+//* before generating any jobs. If there are any values
+//* that are incorrect, you will be notified. You should
+//* fix the value and then run this job again. You can run
+//* this job as many times as you need.
+//*
+//* Configmgr documentation:
+//* https://docs.zowe.org/stable/user-guide/configmgr-using
+//*
+//* Note: Any string with braces has an associated yaml value
+//*       in one of the yaml definitions for Zowe.
+//*       You must find the value and substitute it.
+//*
+//*       {key} -> value
+//*
+//GENER    EXEC PGM=IKJEFT1B
+//ISPPROF  DD   DSN=,DISP=(NEW,DELETE),UNIT=VIO,
+//   DCB=(RECFM=FB,LRECL=80,BLKSIZE=3120,DSORG=PO),
+//   SPACE=(3120,(20,5,10))
+//*
+//* Replace {zowe.setup.dataset.prefix} with the
+//* Value as seen in zowe.yaml
+//*
+//SYSPROC  DD DSN=TEST.DATASET.PFX.SZWEEXEC,DISP=SHR
+//*
+//* Replace {zowe.setup.dataset.prefix} with the
+//* Value as seen in zowe.yaml
+//*
+//STEPLIB  DD DSN=TEST.DATASET.PFX.SZWELOAD,DISP=SHR
+//ISPPLIB  DD DSN=ISP.SISPPENU,DISP=SHR
+//ISPMLIB  DD DSN=ISP.SISPMENU,DISP=SHR
+//ISPTLIB  DD DSN=ISP.SISPTENU,DISP=SHR
+//ISPSLIB  DD DSN=ISP.SISPSENU,DISP=SHR
+//ISPLOG   DD UNIT=SYSDA,SPACE=(CYL,(10,1,1),RLSE),
+//   DCB=(RECFM=VA,LRECL=125,BLKSIZE=129)
+//*
+//* The order must be as follows.
+//*
+//* zowe-yaml-schema.json
+//* server-common.json
+//*
+//* Replace {zowe.runtimeDirectory} with where your Zowe run time
+//* directory is, as seen in zowe.yaml
+//*
+//MYSCHEMA DD   *,DLM=$$
+FILE /test/dir/schemas/zowe-yaml-schema.json
+FILE /test/dir/schemas/server-common.json
+$$
+//*
+//* The DD below must include one or more FILE or PARMLIB
+//* entries. The lower entries have their values
+//* overridden by the higher entries.
+//*
+//* Note: Use backslash in MYCONFIG or MYSCHEMA as continuation char.
+//*
+//* Ex. PARMLIB MY.ZOWE.CUSTOM.PARMLIB(YAML)
+//*     FILE /some/other/zowe.yaml
+//*     FILE /long/path/to/another/configuration/\\
+//*     zowe.yaml
+//*
+//MYCONFIG DD   *,DLM=$$
+FILE /zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz/aaaaaaaaaaaaaaaaaaaa\\
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\\
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\\
+aaaaaaaaaaaa/zowe.test.yaml
+$$
+//CMGROUT  DD   SYSOUT=*
+//SYSPRINT DD   SYSOUT=*
+//SYSTSPRT DD   SYSOUT=*
+//*
+//* Change 'generate' to 'nogenerate' if you only
+//* want to validate your configuration. The default
+//* option, 'generate', will validate and then generate
+//* jobs based on your configuration.
+//*
+//*   - generate
+//*   - nogenerate
+//*
+//* Change 'noverbose' to 'verbose' below for
+//* advanced logging. This is not needed unless
+//* there is an error.
+//*
+//*   - verbose
+//*   - noverbose
+//*
+//SYSTSIN  DD   *
+ISPSTART CMD(%ZWEGEN00 -
+generate -
+noverbose -
+)
 --- End of JCL ---
 JCL not submitted, command run with "--dry-run" flag.
 To perform command, re-run command without "--dry-run" flag, or submit the JCL directly."
@@ -1688,12 +2607,12 @@ Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWEGENER)
 //   DCB=(RECFM=FB,LRECL=80,BLKSIZE=3120,DSORG=PO),
 //   SPACE=(3120,(20,5,10))
 //*
-//* Replace TEST.DATASET.PFX with the
+//* Replace {zowe.setup.dataset.prefix} with the
 //* Value as seen in zowe.yaml
 //*
 //SYSPROC  DD DSN=TEST.DATASET.PFX.SZWEEXEC,DISP=SHR
 //*
-//* Replace TEST.DATASET.PFX with the
+//* Replace {zowe.setup.dataset.prefix} with the
 //* Value as seen in zowe.yaml
 //*
 //STEPLIB  DD DSN=TEST.DATASET.PFX.SZWELOAD,DISP=SHR
@@ -1709,7 +2628,7 @@ Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWEGENER)
 //* zowe-yaml-schema.json
 //* server-common.json
 //*
-//* Replace /test/dir with where your Zowe run time
+//* Replace {zowe.runtimeDirectory} with where your Zowe run time
 //* directory is, as seen in zowe.yaml
 //*
 //MYSCHEMA DD   *,DLM=$$
@@ -1721,8 +2640,13 @@ $$
 //* entries. The lower entries have their values
 //* overridden by the higher entries.
 //*
+//* Note: Use backslash in MYCONFIG or MYSCHEMA as continuation char.
+//*
 //* Ex. PARMLIB MY.ZOWE.CUSTOM.PARMLIB(YAML)
 //*     FILE /some/other/zowe.yaml
+//*     FILE /long/path/to/another/configuration/\\
+//*     zowe.yaml
+//*
 //MYCONFIG DD   *,DLM=$$
 FILE /test/dir/zowe.test.yaml
 $$
@@ -1799,12 +2723,12 @@ Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWEGENER)
 //   DCB=(RECFM=FB,LRECL=80,BLKSIZE=3120,DSORG=PO),
 //   SPACE=(3120,(20,5,10))
 //*
-//* Replace TEST.DATASET.PFX with the
+//* Replace {zowe.setup.dataset.prefix} with the
 //* Value as seen in zowe.yaml
 //*
 //SYSPROC  DD DSN=TEST.DATASET.PFX.SZWEEXEC,DISP=SHR
 //*
-//* Replace TEST.DATASET.PFX with the
+//* Replace {zowe.setup.dataset.prefix} with the
 //* Value as seen in zowe.yaml
 //*
 //STEPLIB  DD DSN=TEST.DATASET.PFX.SZWELOAD,DISP=SHR
@@ -1820,7 +2744,7 @@ Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWEGENER)
 //* zowe-yaml-schema.json
 //* server-common.json
 //*
-//* Replace /test/dir with where your Zowe run time
+//* Replace {zowe.runtimeDirectory} with where your Zowe run time
 //* directory is, as seen in zowe.yaml
 //*
 //MYSCHEMA DD   *,DLM=$$
@@ -1832,8 +2756,13 @@ $$
 //* entries. The lower entries have their values
 //* overridden by the higher entries.
 //*
+//* Note: Use backslash in MYCONFIG or MYSCHEMA as continuation char.
+//*
 //* Ex. PARMLIB MY.ZOWE.CUSTOM.PARMLIB(YAML)
 //*     FILE /some/other/zowe.yaml
+//*     FILE /long/path/to/another/configuration/\\
+//*     zowe.yaml
+//*
 //MYCONFIG DD   *,DLM=$$
 FILE /test/dir/zowe.test.yaml
 $$
@@ -1912,12 +2841,12 @@ Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWEGENER)
 //   DCB=(RECFM=FB,LRECL=80,BLKSIZE=3120,DSORG=PO),
 //   SPACE=(3120,(20,5,10))
 //*
-//* Replace TEST.DATASET.PFX with the
+//* Replace {zowe.setup.dataset.prefix} with the
 //* Value as seen in zowe.yaml
 //*
 //SYSPROC  DD DSN=TEST.DATASET.PFX.SZWEEXEC,DISP=SHR
 //*
-//* Replace TEST.DATASET.PFX with the
+//* Replace {zowe.setup.dataset.prefix} with the
 //* Value as seen in zowe.yaml
 //*
 //STEPLIB  DD DSN=TEST.DATASET.PFX.SZWELOAD,DISP=SHR
@@ -1933,7 +2862,7 @@ Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWEGENER)
 //* zowe-yaml-schema.json
 //* server-common.json
 //*
-//* Replace /test/dir with where your Zowe run time
+//* Replace {zowe.runtimeDirectory} with where your Zowe run time
 //* directory is, as seen in zowe.yaml
 //*
 //MYSCHEMA DD   *,DLM=$$
@@ -1945,8 +2874,13 @@ $$
 //* entries. The lower entries have their values
 //* overridden by the higher entries.
 //*
+//* Note: Use backslash in MYCONFIG or MYSCHEMA as continuation char.
+//*
 //* Ex. PARMLIB MY.ZOWE.CUSTOM.PARMLIB(YAML)
 //*     FILE /some/other/zowe.yaml
+//*     FILE /long/path/to/another/configuration/\\
+//*     zowe.yaml
+//*
 //MYCONFIG DD   *,DLM=$$
 FILE /test/dir/zowe.test.yaml
 $$

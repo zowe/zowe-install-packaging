@@ -15,7 +15,8 @@
     {{ zowe_environment_variable_overrides | default('') }} && \
     test -f "{{ zowe_root_dir }}/bin/libs/index.sh" && \
     export ZWE_zowe_runtimeDirectory="{{ zowe_root_dir }}" && \
+    export ZWE_CLI_PARAMETER_CONFIG="{{ zowe_instance_dir }}/zowe.yaml" && \
     . "{{ zowe_root_dir }}/bin/libs/index.sh" && \
     cd "{{ zowe_root_dir }}" && \
-    update_zowe_yaml "{{ zowe_instance_dir }}/zowe.yaml" "{{ item }}" "{{ configs[item] | default('') }}"
+    update_zowe_yaml "{{ zowe_instance_dir }}/zowe.yaml" "{{ item }}" "{{ configs[item] | default('') }}" "false"
   with_items: "{{ configs.keys() | list }}"

@@ -74,6 +74,9 @@ zowe:
   launchScript:
     logLevel: "info"
     onComponentConfigureFail: "warn"
+    startupChecks:
+      default: "exit"
+      ports: "disabled"
   verifyCertificates: "STRICT"
   sysMessageTrim: false
   runtimeDirectory: "/test/dir"
@@ -81,7 +84,7 @@ zowe:
   workspaceDirectory: "/test/dir/workspace"
   extensionDirectory: "/global/zowe/extensions"
   externalDomains:
-  - "sample-domain.com"
+  - "example.com"
   sysMessages:
   - "ZWEL0021I"
   - "ZWEL0018I"
@@ -110,7 +113,7 @@ zowe:
       certificateAuthorities: "/global/zowe/keystore/local_ca/local_ca.cer"
 components:
   apiml:
-    enabled: false
+    enabled: true
     debug: false
   gateway:
     enabled: true
@@ -119,7 +122,7 @@ components:
     apiml:
       security:
         auth:
-          provider: "zosmf"
+          provider: "saf"
           zosmf:
             jwtAutoconfiguration: "jwt"
             serviceId: "ibmzosmf"
@@ -173,12 +176,12 @@ components:
     enabled: true
 java:
   home: "/test/java/home"
-node:
-  home: "/test/node/home"
 zOSMF:
   host: "some.test.hostname"
   port: 12321
   applId: "IZUDFLT"
+node:
+  home: "/test/node/home"
 ...
 "
 `;
@@ -257,6 +260,9 @@ zowe:
   launchScript:
     logLevel: "info"
     onComponentConfigureFail: "warn"
+    startupChecks:
+      default: "exit"
+      ports: "disabled"
   verifyCertificates: "STRICT"
   sysMessageTrim: false
   runtimeDirectory: "/test/dir"
@@ -264,7 +270,7 @@ zowe:
   workspaceDirectory: "/test/dir/workspace"
   extensionDirectory: "/global/zowe/extensions"
   externalDomains:
-  - "sample-domain.com"
+  - "example.com"
   sysMessages:
   - "ZWEL0021I"
   - "ZWEL0018I"
@@ -293,7 +299,7 @@ zowe:
       certificateAuthorities: "/global/zowe/keystore/local_ca/local_ca.cer"
 components:
   apiml:
-    enabled: false
+    enabled: true
     debug: false
   gateway:
     enabled: true
@@ -302,7 +308,7 @@ components:
     apiml:
       security:
         auth:
-          provider: "zosmf"
+          provider: "saf"
           zosmf:
             jwtAutoconfiguration: "jwt"
             serviceId: "ibmzosmf"
@@ -356,12 +362,12 @@ components:
     enabled: true
 java:
   home: "/test/java/home"
-node:
-  home: "/test/node/home"
 zOSMF:
   host: "some.test.hostname"
   port: 12321
   applId: "IZUDFLT"
+node:
+  home: "/test/node/home"
 ...
 "
 `;

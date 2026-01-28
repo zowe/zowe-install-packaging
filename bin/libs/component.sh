@@ -892,18 +892,20 @@ refresh_static_registration() {
   auth_cert="${4:-${ZWE_zowe_certificate_pem_certificate}}"
   ca_cert="${5:-${ZWE_zowe_certificate_pem_certificateAuthorities}}"
 
-  require_node
-
   utils_dir="${ZWE_zowe_runtimeDirectory}/bin/utils"
 
   print_trace "- calling API Catalog /static-api/refresh to refresh static registrations"
-  result=$("${NODE_HOME}/bin/node" \
-            "${utils_dir}/curl.js" \
-            "https://${apicatalog_host}:${apicatalog_port}/apicatalog/static-api/refresh" \
-            -X POST \
-            --key "${auth_key}" \
-            --cert "${auth_cert}" \
-            --cacert "${ca_cert}")
+  curl_bin="${utils_dir}/curl"
+  if [ "${ZWE_RUN_IN_CONTAINER}" = "true"]; then
+    curl_bin="curl" # if not on z, rely on container curl
+  fi
+
+  result=$("${curl_bin}" \
+    "https://${apicatalog_host}:${apicatalog_port}/apicatalog/static-api/refresh" \
+    -X POST \
+    --key "${auth_key}" \
+    --cert "${auth_cert}" \
+    --cacert "${ca_cert}")
   code=$?
   if [ ${code} -eq 0 ]; then
     print_trace "  * Exit code: ${code}"

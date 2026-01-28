@@ -355,20 +355,23 @@ else
     export ZWE_RUN_IN_CONTAINER=true
   fi
 
-###############################
-# display starting information
-export ZWE_VERSION=$(shell_read_json_config "${ZWE_zowe_runtimeDirectory}/manifest.json" 'version' 'version')
-print_formatted_info "ZWELS" "zwe-internal-start-prepare:${LINENO}" "Zowe version: v${ZWE_VERSION}"
-print_formatted_info "ZWELS" "zwe-internal-start-prepare:${LINENO}" "build and hash: $(shell_read_json_config ${ZWE_zowe_runtimeDirectory}/manifest.json 'build' 'branch')#$(shell_read_json_config ${ZWE_zowe_runtimeDirectory}/manifest.json 'build' 'number') ($(shell_read_json_config ${ZWE_zowe_runtimeDirectory}/manifest.json 'build' 'commitHash'))"
+  ###############################
+  # display starting information
+  export ZWE_VERSION=$(shell_read_json_config "${ZWE_zowe_runtimeDirectory}/manifest.json" 'version' 'version')
+  print_formatted_info "ZWELS" "zwe-internal-start-prepare:${LINENO}" "Zowe version: v${ZWE_VERSION}"
+  print_formatted_info "ZWELS" "zwe-internal-start-prepare:${LINENO}" "build and hash: $(shell_read_json_config ${ZWE_zowe_runtimeDirectory}/manifest.json 'build' 'branch')#$(shell_read_json_config ${ZWE_zowe_runtimeDirectory}/manifest.json 'build' 'number') ($(shell_read_json_config ${ZWE_zowe_runtimeDirectory}/manifest.json 'build' 'commitHash'))"
 
-###############################
-# validation
-if [ "$(item_in_list "${ZWE_PRIVATE_CORE_COMPONENTS_REQUIRE_JAVA}" "${ZWE_CLI_PARAMETER_COMPONENT}")" = "true" ]; then
-  # other extensions need to specify `require_java` in their validate.sh
-  require_java
-fi
-require_node
-require_zowe_yaml
+  ###############################
+  # validation
+  if [ "$(item_in_list "${ZWE_PRIVATE_CORE_COMPONENTS_REQUIRE_JAVA}" "${ZWE_CLI_PARAMETER_COMPONENT}")" = "true" ]; then
+    # other extensions need to specify `require_java` in their validate.sh
+    require_java
+  fi
+
+  if [ "$(item_in_list "${ZWE_PRIVATE_CORE_COMPONENTS_REQUIRE_NODE}" "${ZWE_CLI_PARAMETER_COMPONENT}")" = "true"]; then
+    require_node
+  fi
+  require_zowe_yaml
 
   # overwrite ZWE_PRIVATE_LOG_LEVEL_ZWELS with zowe.launchScript.logLevel config in YAML
   ZWE_PRIVATE_LOG_LEVEL_ZWELS="$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.launchScript.logLevel" | upper_case)"

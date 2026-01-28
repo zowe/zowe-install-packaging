@@ -37,10 +37,10 @@ zowe:
   #-------------------------------------------------------------------------------
   setup:
     jcl:
-      # When enabled, "zwe init" will use job submission for system changes
+      # When enabled, "zwe install & init" will use job submission for system changes
       # instead of shell commands. A `--dry-run` option is also enabled
       # which allows you to see jobs instead of submitting.
-      enable: false
+      enable: true
       # Edit to set a header for job cards. Some systems need this, but not all.
       # See `zwe init generate --help` for examples.
       header: ""
@@ -130,7 +130,7 @@ zowe:
       # # `zowe.externalDomains`.
       # san:
       #  # sample domain name
-      #  - dvipa.my-company.com
+      #  - dvipa.example.com
       #  # sample IP address
       #  - 12.34.56.78
 
@@ -189,7 +189,7 @@ zowe:
     #   # # **NOTE**: due to the limitation of RACDCERT command, this field should
     #   # #           contain exactly 2 entries with the domain name and IP address.
     #   # san:
-    #   #   - dvipa.my-company.com
+    #   #   - dvipa.example.com
     #   #   - 12.34.56.78
 
     # # >>>> Certificate setup scenario 4
@@ -296,7 +296,7 @@ zowe:
   # address bar.
   externalDomains:
     # this should be the domain name to access Zowe APIML Gateway
-    - sample-domain.com
+    - example.com
 
   # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   # This is the port you use to access Zowe Gateway from your web browser.
@@ -454,7 +454,7 @@ node:
 #-------------------------------------------------------------------------------
 zOSMF:
   # Host name of your z/OSMF instance
-  host: dvipa.my-company.com
+  host: dvipa.example.com
   port: 443
   applId: IZUDFLT
 
@@ -476,7 +476,7 @@ components:
 
   # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   apiml:
-    enabled: false
+    enabled: true
     debug: false
 
   # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -487,10 +487,18 @@ components:
     apiml:
       security:
         auth:
-          provider: zosmf
-          zosmf:
-            jwtAutoconfiguration: jwt
-            serviceId: ibmzosmf
+          # Provider can be "saf" or "zosmf".
+          # See documentation at https://docs.zowe.org/stable/user-guide/authentication-providers-for-apiml/
+          #
+          # When provider is "saf", z/OSMF is not needed for Zowe login,
+          # but then z/OSMF APIs authenticate using PassTickets, which requires setup in z/OSMF.
+          provider: saf
+          # If provider is "zosmf", uncomment the following.
+          # jwtAutoconfiguration can be "jwt" or "ltpa", but jwt is recommended. jwt requires zosmf configuration.
+          #
+          # zosmf:
+          #   jwtAutoconfiguration: jwt
+          #   serviceId: ibmzosmf
         authorization:
           endpoint:
             enabled: false
@@ -564,14 +572,23 @@ components:
       64bit: true
 
   # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+  # Requires z/OSMF APIs. Ensure z/OSMF is available,
+  # And ensure gateway auth provider is either "saf" with z/OSMF passtickets enabled,
+  # Or that the provider is set to "zosmf"
   explorer-jes:
     enabled: true
 
   # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+  # Requires z/OSMF APIs. Ensure z/OSMF is available,
+  # And ensure gateway auth provider is either "saf" with z/OSMF passtickets enabled,
+  # Or that the provider is set to "zosmf"
   explorer-mvs:
     enabled: true
 
   # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+  # Requires z/OSMF APIs. Ensure z/OSMF is available,
+  # And ensure gateway auth provider is either "saf" with z/OSMF passtickets enabled,
+  # Or that the provider is set to "zosmf"
   explorer-uss:
     enabled: true
 
@@ -593,7 +610,7 @@ components:
 #   # HA instance ID
 #   lpar1:
 #     # hostname where this instance will be started
-#     hostname: lpar1.my-company.com
+#     hostname: lpar1.example.com
 #     # Your &SYSNAME for this LPAR
 #     # This sysname will be used to route your JES command to target system.
 #     sysname: LPR1
@@ -603,7 +620,7 @@ components:
 #   # **NOTE**, we can only start one Gateway in same LPAR.
 #   lpar2a:
 #     # hostname where this instance will be started
-#     hostname: lpar2.my-company.com
+#     hostname: lpar2.example.com
 #     # Your &SYSNAME for this LPAR
 #     # This sysname will be used to route your JES command to target system.
 #     sysname: LPR2
@@ -625,7 +642,7 @@ components:
 #         port: 17555
 #
 #   lpar2b:
-#     hostname: lpar2.my-company.com
+#     hostname: lpar2.example.com
 #     # your &SYSNAME for this LPAR
 #     sysname: LPR2
 

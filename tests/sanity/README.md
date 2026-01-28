@@ -61,7 +61,7 @@ Example command:
   ZOWE_DS_MEMBER=ZWESVSTC \
   ZOWE_JOB_PREFIX=ZWE \
   ZOWE_INSTANCE_ID=1 \
-  ZOWE_ZLUX_HTTPS_PORT=7556 \
+  ZOWE_ZLUX_HTTPS_PORT=7554 \
   ZOWE_API_MEDIATION_GATEWAY_HTTP_PORT=7554 \
   npm test
 ```
@@ -97,7 +97,7 @@ In Jenkins Pipeline, we have pre-defined build parameter `TEST_CASE_DEBUG_INFORM
 
 ### Add Extra Information To HTML Result
 
-We use [mochawesome](https://www.npmjs.com/package/mochawesome) to render HTMl test report. To show more test information, like CLI result, we can use [addContext](https://www.npmjs.com/package/mochawesome#addcontexttestobj-context). For example:
+We use [mochawesome](https://www.npmjs.com/package/mochawesome) to render HTML test report. To show more test information, like CLI result, we can use [addContext](https://www.npmjs.com/package/mochawesome#addcontexttestobj-context). For example:
 
 ```javascript
 // declare addContext
@@ -179,7 +179,7 @@ Then switch back to IFrame Application content by locating the application iFram
 
 This section will provide brief example how to add new CLI test cases.
 
-- Use `createDefaultZOSMFProfile` function to create dafault z/OSMF profile with name `defaultZOSMFProfileName`.
+- Use `createDefaultZOSMFProfile` function to create default z/OSMF profile with name `defaultZOSMFProfileName`.
 - Use `execZoweCli` to issue a CLI command and get `result`.
 - Verify `result.stdout`, or `result.stderr`.
 
@@ -237,7 +237,7 @@ describe('my test suite', function() {
   before('prepare axios', function() {
     // create axios object, set base url
     REQ = axios.create({
-      baseURL: 'https://my.host-name.com:api-port/',
+      baseURL: 'https://example.com:api-port/',
       timeout: 30000,
     });
   });
@@ -309,7 +309,7 @@ describe('my test suite', function() {
     // login to MVD
     await loginMVD(
       driver,
-      'https://my.host-name.com:zlux-port/',
+      'https://example.com:zlux-port/',
       username,
       password
     );

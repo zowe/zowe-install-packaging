@@ -58,7 +58,7 @@ else
     # second validate/require, at this point we cannot ignore an undefined config
     validate_zowe_yaml "${ZWE_CLI_PARAMETER_CONFIG}" 
     # read prefix and validate
-    prefix=$(read_yaml_configmgr "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.dataset.prefix")
+    prefix=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.dataset.prefix")
     if [ -z "${prefix}" ]; then
       print_error_and_exit "Error ZWEL0157E: Zowe dataset prefix (zowe.setup.dataset.prefix) is not defined in Zowe YAML configuration file." "" 157
     fi

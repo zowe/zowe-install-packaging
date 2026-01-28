@@ -9,6 +9,7 @@
  */
 
 import * as _ from 'lodash';
+import * as tar from 'tar';
 import * as minimatch from 'minimatch';
 import escapeStringRegexp from 'escape-string-regexp';
 import { Session } from '@zowe/imperative';
@@ -22,6 +23,9 @@ import * as YAML from 'yaml';
 import * as jobs from '@zowe/zos-jobs-for-zowe-sdk';
 import path, { basename } from 'path';
 import { FileType, TestFileActions } from './TestFileActions';
+import { getZoweVersion } from '../utils';
+import { execSync } from 'child_process';
+import { convertDirToEbcdicInPlace } from './EbcdicTools';
 
 /**
  * RemoteTestRunner is a class which drives actions on the backend test environment and
@@ -341,12 +345,25 @@ export class RemoteTestRunner {
     }
   }
 
-  public async removeUssFileOrDirForTest(filePath: string) {
+  public async uploadUssFileForTest(
+    localFile: string,
+    remoteFile: string,
+    opts: { binary: boolean; mode: number } = { binary: true, mode: 0o644 },
+  ) {
+    const fullRemoteFilePath = `${REMOTE_SYSTEM_INFO.ussTestDir}/${remoteFile}`;
+    await this.removeUssFileOrDirForTest(remoteFile); // this tracks/restores
+    await files.Upload.fileToUssFile(this.session, localFile, fullRemoteFilePath, {
+      binary: opts.binary,
+    });
+    await this.runRaw(`chmod ${opts.mode.toString(8)} ${fullRemoteFilePath}`);
+  }
+
+  public async removeUssFileOrDirForTest(filePath: String) {
     const flattenedTmpName = filePath.replaceAll('/', '_');
     await this.runRaw(`mkdir -p ${this.REMOTE_TEST_TMP_DIR}`);
     await this.runRaw(`mv ${filePath} ${this.REMOTE_TEST_TMP_DIR}/${flattenedTmpName}`);
     this.trackedFiles.push({
-      srcFile: filePath,
+      srcFile: `${filePath}`,
       tmpFile: `${this.REMOTE_TEST_TMP_DIR}/${flattenedTmpName}`,
       type: FileType.USS_FILE,
     });
@@ -360,6 +377,19 @@ export class RemoteTestRunner {
 
   public addCleanFn(replaceFn: (output: string) => string) {
     this.cleanFns.push(replaceFn);
+  }
+
+  /**
+   * Utility to mask sensitive data from input data. Returns a new masked string. This will not mask against job
+   * headers present in zowe.yaml or defaults.yaml.
+   *
+   * In general, calls to this function should be rare - the testRunner's cleanedOutput is already masked.
+   *
+   * @param data
+   * @returns
+   */
+  public maskSensitiveData(data: string): string {
+    return this.cleanOutput(data, []);
   }
 
   private cleanOutput(stdout: string, customJobHeaders: string[]): string {
@@ -391,7 +421,6 @@ export class RemoteTestRunner {
       const HEADER_REMOVAL_PATTERN = new RegExp(`(//|)\\s*${escapeStringRegexp(header)}\\s*\n`, 'gm');
       cleanedOutput = cleanedOutput.replaceAll(HEADER_REMOVAL_PATTERN, replacePattern);
     }
-
     // built-in
     return cleanedOutput
       .replace(/(JOB[0-9]{5})/gim, 'JOB00000')
@@ -402,9 +431,15 @@ export class RemoteTestRunner {
       .replaceAll(`${this.session.ISession.user}`, 'TESTUSR0')
       .replace(/\/tmp\/\.zweenv-\d{1,5}/g, '/tmp/.zweenv-0000')
       .replace(/\/tmp\/zwe-\d{1,5}/g, '/tmp/zwe-0000')
+      .replace(/\/tmp\/zowe-convert-for-k8s-\d{1,5}/g, '/tmp/zowe-convert-for-k8s-0000')
       .replaceAll(REMOTE_SYSTEM_INFO.volume, 'TSTVOL')
       .replaceAll(REMOTE_SYSTEM_INFO.hostname, this.dummyHostname)
-      .replaceAll(REMOTE_SYSTEM_INFO.zosmfPort, this.dummyPort);
+      .replaceAll(REMOTE_SYSTEM_INFO.zosmfPort, this.dummyPort)
+      .replaceAll(new RegExp(`Zowe version: v${getZoweVersion()}`, 'g'), 'Zowe version: v0.0.0')
+      .replaceAll(/\d{4}-\d{2}-\d{2}.+?<.+?>/g, '')
+      .replaceAll(/z\/OS Version: \d\.\d/g, 'z/OS Version: 0.0')
+      .replaceAll(/NodeJS version: v.*?$/gm, 'NodeJS version: v0.0.0')
+      .replaceAll(/Java version: .*?$/gm, 'Java version: v0.0.0');
   }
 
   public getMask(maskType: string): string {
@@ -452,16 +487,26 @@ export class RemoteTestRunner {
     return this.runZweTest(zoweYaml, zweCommand, cwd);
   }
 
+  /**
+   * This function uploads a defaults.yaml file to the remote testing environment,
+   *  and if it replaces an existing defaults.yaml in the files directory, the existing file
+   *  will be automatically backed up and restored once the current test is complete.
+   * @param defaultsYaml The defaults yaml to upload
+   * @param cwd  Where to upload the defaults yaml, by default the files/ dir in the testing environment
+   * @param skipBackup Default: false. If set to "true", no longer backs up and restores existing defaults.yaml files.
+   * @returns the path to defaults.yaml on the remote system
+   */
   public async uploadDefaultsYaml(
     defaultsYaml: ZoweYamlType,
     cwd: string = `${REMOTE_SYSTEM_INFO.ussTestDir}/files`,
+    skipBackup: boolean = false,
   ): Promise<string> {
     const testName = expect.getState().currentTestName.replace(/\s/g, '_');
     const yamlUploadPath = `${cwd}/defaults.yaml`;
     const stringDefaultYaml = YAML.stringify(defaultsYaml, { nullStr: '', ...this.customYamlRenderOpts });
     const yamlOutputDir = this.yamlOutputTemplate.replace('{{ testInstance }}', testName);
     fs.mkdirpSync(yamlOutputDir);
-    if (cwd === `${REMOTE_SYSTEM_INFO.ussTestDir}/files`) {
+    if (cwd === `${REMOTE_SYSTEM_INFO.ussTestDir}/files` && !skipBackup) {
       await this.removeUssFileOrDirForTest('files/defaults.yaml');
     }
     const redundantFilePath = this.writeRedundant(`${yamlOutputDir}/defaults.yaml`, stringDefaultYaml);
@@ -571,6 +616,39 @@ export class RemoteTestRunner {
       cleanedStdout: cleanedOutput,
       rc: output.rc,
     };
+  }
+
+  public async runUnitTests(cfgYaml: ZoweYamlType, localResourceDir: string) {
+    // list files locally for tests, then adapt and run in uss
+    const testFiles = fs
+      .readdirSync(path.resolve(localResourceDir, 'lib', 'tests'), { encoding: 'utf8', recursive: true })
+      .filter((item) => item.endsWith('.cmgr.js'));
+    const cfgPath = await this.uploadZoweYaml(cfgYaml);
+    const results = [];
+    for (const testFile of testFiles) {
+      results.push(
+        await this.runRaw(
+          `ZWE_CLI_PARAMETER_CONFIG="${cfgPath}" ZWE_zowe_runtimeDirectory="${REMOTE_SYSTEM_INFO.ussTestDir}" ./bin/utils/configmgr -script ${path.join(REMOTE_SYSTEM_INFO.ussTestDir, '.unit_tests', testFile)}`,
+        ),
+      );
+    }
+    return results;
+  }
+
+  public async buildAndUploadUnitTests(localResourceDir: string) {
+    console.log(localResourceDir);
+    execSync('npm ci', { cwd: localResourceDir });
+    execSync('npm run build', { cwd: localResourceDir });
+    const ebcdicDir = path.resolve(localResourceDir, 'lib-ebcdic');
+    execSync(`mkdir -p ${ebcdicDir} && cp -Rf ${path.join(localResourceDir, 'lib', '*')} ${ebcdicDir}`);
+    convertDirToEbcdicInPlace(path.resolve(localResourceDir, 'lib-ebcdic'));
+
+    const finalTestPkg = path.resolve(localResourceDir, 'unit-tests.tar');
+    tar.c({ gzip: false, file: finalTestPkg, cwd: path.join(localResourceDir, 'lib-ebcdic'), sync: true }, ['tests']);
+    await this.uploadUssFileForTest(finalTestPkg, 'unit-tests.tar', { binary: true, mode: 0o775 });
+    await this.runRaw(
+      'rm -rf .unit_tests && mkdir -p .unit_tests && tar -xf unit-tests.tar && mv tests/* .unit_tests && rm -rf tests',
+    );
   }
 
   private addAnyCustomJobStatements(zoweYaml: ZoweYamlType): { yaml: ZoweYamlType; headers: string[] } {

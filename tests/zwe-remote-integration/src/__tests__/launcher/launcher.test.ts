@@ -14,6 +14,8 @@ import { ZoweConfig } from '../../config/ZoweConfig';
 import * as fs from 'fs-extra';
 import * as yaml from 'yaml';
 import { FileType, TestFile, TestFileActions } from '../../zos/TestFileActions';
+import { REMOTE_SYSTEM_INFO } from '../../config/TestConfig';
+import _ from 'lodash';
 
 const testSuiteName = 'compare-zwe-output-with-launcher';
 describe(`${testSuiteName}`, () => {
@@ -52,6 +54,8 @@ describe(`${testSuiteName}`, () => {
 
   describe('(SHORT)', () => {
     it('compare .zowe-merged.yaml created by launcher and zwe', async () => {
+      _.set(cfgYaml, 'node.home', REMOTE_SYSTEM_INFO.zosNodeHome);
+      _.set(defaultCfgYaml, 'zowe.launchScript.startupChecks.ports', 'disabled'); // can fail if services running
       const defaultsUpl = await testRunner.uploadDefaultsYaml(defaultCfgYaml);
       const zyUpl = await testRunner.uploadZoweYaml(cfgYaml);
       // we need to remove the components/zss dir so zowe_launcher fails and returns after creating env. otherwise test hangs.
@@ -74,6 +78,7 @@ describe(`${testSuiteName}`, () => {
       expect(launchZoweMerged.length).toBe(1);
       testRunner.collectTestFile(launchZoweMerged[0]);
 
+      await testRunner.removeUssFileOrDirForTest('components/zss/bin/validate.sh'); // causes rc=1
       const prepRes = await testRunner.runZweTest(cfgYaml, 'internal start prepare');
       expect(prepRes.rc).toBe(0);
 
