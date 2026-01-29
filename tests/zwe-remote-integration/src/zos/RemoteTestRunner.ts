@@ -435,7 +435,7 @@ export class RemoteTestRunner {
       .replaceAll(REMOTE_SYSTEM_INFO.volume, 'TSTVOL')
       .replaceAll(REMOTE_SYSTEM_INFO.hostname, this.dummyHostname)
       .replaceAll(REMOTE_SYSTEM_INFO.zosmfPort, this.dummyPort)
-      .replaceAll(new RegExp(`Zowe Version: v${getZoweVersion()}`, 'g'), 'Zowe version: v0.0.0')
+      .replaceAll(new RegExp(`Zowe version: v${getZoweVersion()}`, 'g'), 'Zowe version: v0.0.0')
       .replaceAll(/\d{4}-\d{2}-\d{2}.+?<.+?>/g, '')
       .replaceAll(/z\/OS Version: \d\.\d/g, 'z/OS Version: 0.0')
       .replaceAll(/NodeJS version: v.*?$/gm, 'NodeJS version: v0.0.0')
