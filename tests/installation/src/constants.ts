@@ -40,10 +40,10 @@ export const KEYSTORE_MODE_KEYSTORE = 'KEYSTORE_MODE_KEYSTORE';
 export const KEYSTORE_MODE_KEYRING = 'KEYSTORE_MODE_KEYRING';
 
 export const DEFAULT_PLAYBOOK_VARS =  {
-  'zowe_apiml_security_oidc_client_id': process.env['OKTA_CLIENT_ID'] || 'dummy_id_from_constants_ts',
-  'zowe_apiml_security_oidc_client_secret': process.env['OKTA_CLIENT_SECRET'] || 'dummy_secret_from_constants_ts',
+  'zowe_apiml_security_oidc_client_id': process.env['OIDC_CLIENT_ID'] || 'dummy_id_from_constants_ts',
+  'zowe_apiml_security_oidc_client_secret': process.env['OIDC_CLIENT_SECRET'] || 'dummy_secret_from_constants_ts',
   'zowe_apiml_security_oidc_registry': process.env['OIDC_REGISTRY'] || 'dummy_registry_from_constants_ts',
-  'zowe_apiml_security_oidc_jwks_uri': `https://${process.env['OKTA_HOSTNAME']}/oauth2/default/v1/keys`,
+  'zowe_apiml_security_oidc_jwks_uri': `https://${process.env['OIDC_HOSTNAME']}/${process.env['OIDC_JWKS_ENDPOINT']}`,
   'zowe_attls_policy_file': process.env['ZOWE_ATTLS_POLICY_FILE']
 };
 
