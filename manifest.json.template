@@ -1,6 +1,6 @@
 {
   "name": "Zowe",
-  "version": "3.4.0",
+  "version": "3.4.1",
   "description": "Zowe is an open source project created to host technologies that benefit the Z platform from all members of the Z community (Integrated Software Vendors, System Integrators and z/OS consumers). Zowe, like Mac or Windows, comes with a set of APIs and OS capabilities that applications build on and also includes some applications out of the box. Zowe offers modern interfaces to interact with z/OS and allows you to work with z/OS in a way that is similar to what you experience on cloud platforms today. You can use these interfaces as delivered or through plug-ins and extensions that are created by clients or third-party vendors.",
   "license": "EPL-2.0",
   "homepage": "https://zowe.org",
@@ -69,27 +69,27 @@
       "artifact": "explorer-ip*.pax"
     },
      "org.zowe.apiml.apiml-package": {
-       "version": "3.4.10",
+       "version": "3.5.3",
        "artifact": "apiml-*.zip"
      },
     "org.zowe.apiml.api-catalog-package": {
-      "version": "3.4.10",
+      "version": "3.5.3",
       "artifact": "api-catalog-*.zip"
     },
     "org.zowe.apiml.discovery-package": {
-      "version": "3.4.10",
+      "version": "3.5.3",
       "artifact": "discovery-*.zip"
     },
     "org.zowe.apiml.gateway-package": {
-      "version": "3.4.10",
+      "version": "3.5.3",
       "artifact": "gateway-*.zip"
     },
     "org.zowe.apiml.caching-service-package": {
-      "version": "3.4.10",
+      "version": "3.5.3",
       "artifact": "caching-service-*.zip"
     },
     "org.zowe.apiml.apiml-common-lib-package": {
-      "version": "3.4.10",
+      "version": "3.5.3",
       "artifact": "apiml-common-lib-*.zip"
     },
     "org.zowe.apiml.sdk.common-java-lib-package": {
@@ -97,11 +97,11 @@
       "artifact": "common-java-lib-*.zip"
     },
     "org.zowe.apiml.sdk.apiml-sample-extension-package": {
-      "version": "3.4.10",
+      "version": "3.5.3",
       "artifact": "apiml-sample-extension-*.zip"
     },
     "org.zowe.apiml.zaas-package": {
-      "version": "3.4.10",
+      "version": "3.5.3",
       "artifact": "zaas-package-*.zip"
 	},
 	"org.zowe.getesm": {
@@ -137,7 +137,7 @@
       "artifact": "*.pax"
     },
     "org.zowe.keyring-utilities": {
-      "version": "3.2.0",
+      "version": "3.1.0",
       "artifact": "*.pax"
     },
     "org.zopencommunity.curl": {
@@ -164,7 +164,7 @@
       "componentGroup": "Zowe API Mediation Layer",
       "entries": [{
         "repository": "api-layer",
-        "tag": "v3.4.10",
+        "tag": "v3.5.3",
         "destinations": ["Zowe PAX"]
       }]
     }, {
@@ -236,14 +236,14 @@
       "componentGroup": "Zowe CLI",
       "entries": [{
         "repository": "zowe-cli",
-        "tag": "v8.29.5",
+        "tag": "v8.29.12",
         "destinations": ["Zowe CLI Package"]
       }]
     }, {
       "componentGroup": "IBM&reg CICS&reg Plug-in for Zowe CLI",
       "entries": [{
         "repository": "cics-for-zowe-client",
-        "tag": "v6.13.2",
+        "tag": "v6.17.0",
         "destinations": ["Zowe CLI Package"]
       }]
     }, {
@@ -407,28 +407,28 @@
     "api-catalog": {
       "registry": "zowe-docker-release.jfrog.io",
       "name": "ompzowe/api-catalog-services",
-      "tag" : "3.4.10-ubuntu"
+      "tag" : "3.5.3-ubuntu"
     },
 	  "gateway": {
       "registry": "zowe-docker-release.jfrog.io",
       "name": "ompzowe/gateway-service",
-      "tag" : "3.4.10-ubuntu"
+      "tag" : "3.5.3-ubuntu"
     },
     "caching": {
       "registry": "zowe-docker-release.jfrog.io",
       "name": "ompzowe/caching-service",
-      "tag" : "3.4.10-ubuntu"
+      "tag" : "3.5.3-ubuntu"
     },
     "discovery": {
       "kind": "statefulset",
       "registry": "zowe-docker-release.jfrog.io",
       "name": "ompzowe/discovery-service",
-      "tag" : "3.4.10-ubuntu"
+      "tag" : "3.5.3-ubuntu"
     },
     "zaas": {
         "registry": "zowe-docker-release.jfrog.io",
         "name": "ompzowe/zaas-service",
-        "tag" : "3.4.10-ubuntu"
+        "tag" : "3.5.3-ubuntu"
     },
     "app-server": {
       "registry": "zowe-docker-release.jfrog.io",
