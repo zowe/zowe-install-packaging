@@ -509,9 +509,9 @@ export function execute() {
   }
   common.requireZoweYaml();
 
-  const validateBindAction = getStartupCheckMode('certificate');
-  if (validateBindAction.doCheck) {
-    const certRc = validateCertificate.execute(!validateBindAction.warnOnly);
+  const validateCertificateAction = getStartupCheckMode('certificate');
+  if (validateCertificateAction.doCheck) {
+    const certRc = validateCertificate.execute(!validateCertificateAction.warnOnly);
     if (certRc != 0) {
       common.printErrorAndExit("Error ZWEL0323E: Certificate validation failed. Fix errors listed before starting Zowe.", undefined, 323);
     }
