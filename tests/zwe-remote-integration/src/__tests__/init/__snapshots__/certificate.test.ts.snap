@@ -322,10 +322,10 @@ exports[`init-cert (SHORT) run each scenario 1`] = `
 >>>> Generate PKCS12 format local CA with alias local_ca:
 >> Certificate authority local_ca is created successfully.
 -------------------------------------------------------------------------------
->> Export keystore /var/zowe/keystore/local_ca/local_ca.keystore.p12
->>>> List content of keystore "/var/zowe/keystore/local_ca/local_ca.keystore.p12":
+>> Export keystore /test/dir/pkcs12/local_ca/local_ca.keystore.p12
+>>>> List content of keystore "/test/dir/pkcs12/local_ca/local_ca.keystore.p12":
 >>>> Export certificate "local_ca" to PEM format
->> Keystore /var/zowe/keystore/local_ca/local_ca.keystore.p12 is exported successfully.
+>> Keystore /test/dir/pkcs12/local_ca/local_ca.keystore.p12 is exported successfully.
 -------------------------------------------------------------------------------
 >> Creating certificate "localhost"
 >>>> Generate certificate "localhost" in the keystore localhost:
@@ -342,26 +342,26 @@ exports[`init-cert (SHORT) run each scenario 1`] = `
 >>>> Import a certificate "zosmf01" to the truststore:
 >> Certificate zosmf is added to truststore successfully.
 -------------------------------------------------------------------------------
->> Export keystore /var/zowe/keystore/localhost/localhost.keystore.p12
->>>> List content of keystore "/var/zowe/keystore/localhost/localhost.keystore.p12":
+>> Export keystore /test/dir/pkcs12/localhost/localhost.keystore.p12
+>>>> List content of keystore "/test/dir/pkcs12/localhost/localhost.keystore.p12":
 >>>> Export certificate "localhost" to PEM format
 >>>> Export certificate "local_ca" to PEM format
->>>> Certificate "/var/zowe/keystore/localhost/local_ca.cer is in EBCDIC.
+>>>> Certificate "/test/dir/pkcs12/localhost/local_ca.cer is in EBCDIC.
 >>>> Exporting certificate "localhost" private key
->> Keystore /var/zowe/keystore/localhost/localhost.keystore.p12 is exported successfully.
+>> Keystore /test/dir/pkcs12/localhost/localhost.keystore.p12 is exported successfully.
 -------------------------------------------------------------------------------
->> Export keystore /var/zowe/keystore/localhost/localhost.truststore.p12
->>>> List content of keystore "/var/zowe/keystore/localhost/localhost.truststore.p12":
+>> Export keystore /test/dir/pkcs12/localhost/localhost.truststore.p12
+>>>> List content of keystore "/test/dir/pkcs12/localhost/localhost.truststore.p12":
 >>>> Export certificate "local_ca" to PEM format
->>>> Certificate "/var/zowe/keystore/localhost/local_ca.cer is in EBCDIC.
+>>>> Certificate "/test/dir/pkcs12/localhost/local_ca.cer is in EBCDIC.
 >>>> Export certificate "zosmf00" to PEM format
->>>> Certificate "/var/zowe/keystore/localhost/zosmf00.cer is in EBCDIC.
+>>>> Certificate "/test/dir/pkcs12/localhost/zosmf00.cer is in EBCDIC.
 >>>> Export certificate "zosmf01" to PEM format
->>>> Certificate "/var/zowe/keystore/localhost/zosmf01.cer is in EBCDIC.
->> Keystore /var/zowe/keystore/localhost/localhost.truststore.p12 is exported successfully.
+>>>> Certificate "/test/dir/pkcs12/localhost/zosmf01.cer is in EBCDIC.
+>> Keystore /test/dir/pkcs12/localhost/localhost.truststore.p12 is exported successfully.
 -------------------------------------------------------------------------------
->> Lock keystore directory /var/zowe/keystore
->> Keystore directory /var/zowe/keystore is locked.
+>> Lock keystore directory /test/dir/pkcs12
+>> Keystore directory /test/dir/pkcs12 is locked.
 -------------------------------------------------------------------------------
 >> Update certificate configuration to /test/dir/zowe.test.yaml
 Please manually update to these values:
@@ -369,17 +369,17 @@ zowe:
   certificate:
     keystore:
       type: PKCS12
-      file: "/var/zowe/keystore/localhost/localhost.keystore.p12"
+      file: "/test/dir/pkcs12/localhost/localhost.keystore.p12"
       password: "password"
       alias: "localhost"
     truststore:
       type: PKCS12
-      file: "/var/zowe/keystore/localhost/localhost.truststore.p12"
+      file: "/test/dir/pkcs12/localhost/localhost.truststore.p12"
       password: "password"
     pem:
-      key: "/var/zowe/keystore/localhost/localhost.key"
-      certificate: "/var/zowe/keystore/localhost/localhost.cer"
-      certificateAuthorities: "/var/zowe/keystore/local_ca/local_ca.cer"
+      key: "/test/dir/pkcs12/localhost/localhost.key"
+      certificate: "/test/dir/pkcs12/localhost/localhost.cer"
+      certificateAuthorities: "/test/dir/pkcs12/local_ca/local_ca.cer"
 >> Zowe configuration requires manual updates.
 -------------------------------------------------------------------------------
 >> Verify certificate of "some.test.hostname:12321"
@@ -391,26 +391,73 @@ Error ZWEL0171E: Failed to verify certificate (CN and SAN) of "some.test.hostnam
 exports[`init-cert (SHORT) run each scenario 2`] = `
 "-------------------------------------------------------------------------------
 >> Generate certificate
-Error ZWEL0157E: (zowe.setup.certificate.pkcs12.name) is not defined in Zowe YAML configuration file."
+-------------------------------------------------------------------------------
+>> Import certificate into keystore /test/dir/pkcs12_scen2/localhost/localhost.keystore.p12
+>>>> Import localhost from keystore "/test/dir/pkcs12/localhost/localhost.keystore.p12" to "/test/dir/pkcs12_scen2/localhost/localhost.keystore.p12" as localhost:
+>> Certificate is imported successfully.
+-------------------------------------------------------------------------------
+>> Trust z/OSMF "some.test.hostname:12321"
+>>>> Getting certificates from service host
+>>>> Import a certificate "zosmf00" to the truststore:
+>>>> Import a certificate "zosmf01" to the truststore:
+>> Certificate zosmf is added to truststore successfully.
+-------------------------------------------------------------------------------
+>> Export keystore /test/dir/pkcs12_scen2/localhost/localhost.keystore.p12
+>>>> List content of keystore "/test/dir/pkcs12_scen2/localhost/localhost.keystore.p12":
+>>>> Export certificate "localhost" to PEM format
+>>>> Exporting certificate "localhost" private key
+>> Keystore /test/dir/pkcs12_scen2/localhost/localhost.keystore.p12 is exported successfully.
+-------------------------------------------------------------------------------
+>> Export keystore /test/dir/pkcs12_scen2/localhost/localhost.truststore.p12
+>>>> List content of keystore "/test/dir/pkcs12_scen2/localhost/localhost.truststore.p12":
+>>>> Export certificate "zosmf00" to PEM format
+>>>> Certificate "/test/dir/pkcs12_scen2/localhost/zosmf00.cer is in EBCDIC.
+>>>> Export certificate "zosmf01" to PEM format
+>>>> Certificate "/test/dir/pkcs12_scen2/localhost/zosmf01.cer is in EBCDIC.
+>> Keystore /test/dir/pkcs12_scen2/localhost/localhost.truststore.p12 is exported successfully.
+-------------------------------------------------------------------------------
+>> Lock keystore directory /test/dir/pkcs12_scen2
+>> Keystore directory /test/dir/pkcs12_scen2 is locked.
+-------------------------------------------------------------------------------
+>> Update certificate configuration to /test/dir/zowe.test.yaml
+Please manually update to these values:
+zowe:
+  certificate:
+    keystore:
+      type: PKCS12
+      file: "/test/dir/pkcs12_scen2/localhost/localhost.keystore.p12"
+      password: "password"
+      alias: "localhost"
+    truststore:
+      type: PKCS12
+      file: "/test/dir/pkcs12_scen2/localhost/localhost.truststore.p12"
+      password: "password"
+    pem:
+      key: "/test/dir/pkcs12_scen2/localhost/localhost.key"
+      certificate: "/test/dir/pkcs12_scen2/localhost/localhost.cer"
+      certificateAuthorities: ""
+>> Zowe configuration requires manual updates.
+-------------------------------------------------------------------------------
+>> Verify certificate of "some.test.hostname:12321"
+>>>> Validate certificate of some.test.hostname:12321
+Error: some.test.hostname certificate doesn't have subject alternate name(s)
+Error ZWEL0171E: Failed to verify certificate (CN and SAN) of "some.test.hostname:12321"."
 `;
 
 exports[`init-cert (SHORT) run each scenario 3`] = `
 "-------------------------------------------------------------------------------
 >> Generate certificate
-cp: FSUM6258 cannot open file "//'IBMUSER.ZWEV3.SZWESAMP(ZWEGENER)'": EDC5049I The specified file name could not be located. (errno2=0xC00B0641)
-Error ZWEL0319E: zowe.setup.dataset.jcllib does not exist, cannot run. Run 'zwe init', 'zwe init generate', or submit JCL IBMUSER.ZWEV3.SZWESAMP(ZWEGENER) before running this command."
+Error ZWEL0157E: (zowe.setup.certificate.keyring.caLabel) is not defined in Zowe YAML configuration file."
 `;
 
 exports[`init-cert (SHORT) run each scenario 4`] = `
 "-------------------------------------------------------------------------------
 >> Generate certificate
-cp: FSUM6258 cannot open file "//'IBMUSER.ZWEV3.SZWESAMP(ZWEGENER)'": EDC5049I The specified file name could not be located. (errno2=0xC00B0641)
-Error ZWEL0319E: zowe.setup.dataset.jcllib does not exist, cannot run. Run 'zwe init', 'zwe init generate', or submit JCL IBMUSER.ZWEV3.SZWESAMP(ZWEGENER) before running this command."
+Error ZWEL0157E: (zowe.setup.certificate.keyring.caLabel) is not defined in Zowe YAML configuration file."
 `;
 
 exports[`init-cert (SHORT) run each scenario 5`] = `
 "-------------------------------------------------------------------------------
 >> Generate certificate
-cp: FSUM6258 cannot open file "//'IBMUSER.ZWEV3.SZWESAMP(ZWEGENER)'": EDC5049I The specified file name could not be located. (errno2=0xC00B0641)
-Error ZWEL0319E: zowe.setup.dataset.jcllib does not exist, cannot run. Run 'zwe init', 'zwe init generate', or submit JCL IBMUSER.ZWEV3.SZWESAMP(ZWEGENER) before running this command."
+Error ZWEL0157E: (zowe.setup.certificate.keyring.caLabel) is not defined in Zowe YAML configuration file."
 `;

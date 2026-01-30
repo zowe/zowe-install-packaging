@@ -28,7 +28,7 @@ zowe:
       keyring:
         name: ZoweKeyring
         # # Label of Zowe certificate. Optional, default value is localhost.
-        # label: localhost
+        label: localhost
         import:
           # Name of the data set holds the certificate issued by other CA.
           # This data set should be in PKCS12 format and contain private key.

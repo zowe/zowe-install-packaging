@@ -23,28 +23,14 @@
 
 zowe:
   setup:
-    dataset:
-      # The prefix where datasets such as SZWESAMP can be found.
-      prefix: IBMUSER.ZWEV3
-      # JCL library where Zowe will store temporary JCLs during initialization
-      jcllib: IBMUSER.ZWEV3.CUST.JCLLIB
-
-    security:
-      # This can be RACF, TSS, or ACF2
-      product: RACF
-      # Provide the user and group that will own the keyring
-      users:
-        zowe: ZWESVUSR
-      groups:
-        admin: ZWEADMIN
-
     certificate:
       type: JCERACFKS
       keyring:
         name: ZoweKeyring
-        # label: localhost
-        # # label of Zowe CA certificate. Optional, default value is localca.
-        # caLabel: localca
+        # label of Zowe certificate. Defaults to localhost.
+        label: localhost
+        # label of Zowe CA certificate. Defaults to localca.
+        caLabel: localca
       # # Distinguished name for Zowe generated certificates. All optional.
       # dname:
       #   caCommonName: ""

@@ -14,6 +14,7 @@ import { ZoweConfig } from '../../config/ZoweConfig';
 import { FileType, TestFileActions, TestFile } from '../../zos/TestFileActions';
 import { REMOTE_SYSTEM_INFO, REPO_ROOT_DIR } from '../../config/TestConfig';
 import * as path from 'path';
+import _ from 'lodash';
 
 const testSuiteName = 'init-cert';
 describe(`${testSuiteName}`, () => {
@@ -24,7 +25,6 @@ describe(`${testSuiteName}`, () => {
   const localScenarioDir: string = path.resolve(REPO_ROOT_DIR, 'files', 'examples', 'setup', 'certificate');
   const remoteScenarioDir: string = path.resolve(REMOTE_SYSTEM_INFO.ussTestDir, 'files', 'examples', 'setup', 'certificate');
   const scenarioYamls: string[] = ['scenario-1.yaml', 'scenario-2.yaml', 'scenario-3.yaml', 'scenario-4.yaml', 'scenario-5.yaml'];
-
   const remotePkcs12Dir: string = `${REMOTE_SYSTEM_INFO.ussTestDir}/pkcs12`;
 
   beforeAll(async () => {
@@ -51,16 +51,71 @@ describe(`${testSuiteName}`, () => {
   });
 
   describe('(SHORT)', () => {
+    /**
+     * Runs all 5 init certificate scenarios. PKCS12 scenarios are "live" and certificate scenarios are dry-run.
+     *
+     * After scenario 1, this uses the output keystore as input to scenario 2.
+     *
+     */
     it('run each scenario', async () => {
-      for (const scenario of scenarioYamls) {
-        const testYaml = ZoweConfig.loadAndOverlay(cfgYaml, localScenarioDir, scenario);
-        testYaml.zowe.setup.certificate.directory = remotePkcs12Dir;
-        const result = await testRunner.runZweTest(testYaml, 'init certificate --dry-run');
+      const keyringScenarios = scenarioYamls.slice(2);
+      const scenarioSettings = {
+        'scenario-1.yaml': {
+          'zowe.setup.certificate.pkcs12.directory': remotePkcs12Dir,
+        },
+        'scenario-2.yaml': {
+          'zowe.setup.certificate.pkcs12.directory': remotePkcs12Dir + '_scen2',
+          // generated in step 1
+          'zowe.setup.certificate.pkcs12.import.keystore': remotePkcs12Dir + '/localhost/localhost.keystore.p12',
+          'zowe.setup.certificate.pkcs12.import.password': 'password',
+          'zowe.setup.certificate.pkcs12.import.alias': 'localhost',
+        },
+        'scenario-3.yaml': {},
+        'scenario-4.yaml': {},
+        'scenario-5.yaml': {},
+      };
+
+      let testYaml = ZoweConfig.loadAndOverlay(cfgYaml, localScenarioDir, 'scenario-1.yaml');
+      for (const setting of Object.entries(scenarioSettings['scenario-1.yaml'])) {
+        _.set(testYaml, setting[0], setting[1]);
+      }
+      let result = await testRunner.runZweTest(testYaml, 'init certificate --dry-run');
+      expect(result.stdout).not.toBeNull();
+      expect(result.cleanedStdout).toMatchSnapshot();
+      expect(result.rc).not.toBe(0);
+
+      testYaml = ZoweConfig.loadAndOverlay(cfgYaml, localScenarioDir, 'scenario-2.yaml');
+      for (const setting of Object.entries(scenarioSettings['scenario-2.yaml'])) {
+        _.set(testYaml, setting[0], setting[1]);
+      }
+      result = await testRunner.runZweTest(testYaml, 'init certificate --dry-run');
+      expect(result.stdout).not.toBeNull();
+      expect(result.cleanedStdout).toMatchSnapshot();
+      expect(result.rc).not.toBe(0);
+
+      await TestFileActions.deleteAll([
+        {
+          name: remotePkcs12Dir,
+          type: FileType.USS_DIR,
+        },
+        {
+          name: remotePkcs12Dir + '_scen2',
+          type: FileType.USS_DIR,
+        },
+      ]);
+
+      for (const krScenario of keyringScenarios) {
+        testYaml = ZoweConfig.loadAndOverlay(cfgYaml, localScenarioDir, krScenario);
+        // @ts-expect-error incomplete schema
+        for (const setting of Object.entries(scenarioSettings[krScenario])) {
+          _.set(testYaml, setting[0], setting[1]);
+        }
+        result = await testRunner.runZweTest(testYaml, 'init certificate --dry-run');
         expect(result.stdout).not.toBeNull();
         expect(result.cleanedStdout).toMatchSnapshot();
         expect(result.rc).not.toBe(0);
       }
-    });
+    }, 500000);
 
     it('cert missing zowe.yaml vars', async () => {
       cfgYaml = ZoweConfig.loadAndOverlay(cfgYaml, localScenarioDir, scenarioYamls[0]);

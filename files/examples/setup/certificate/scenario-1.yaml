@@ -29,16 +29,17 @@ zowe:
         directory: /var/zowe/keystore
         # # Lock the keystore directory to only accessible by Zowe runtime user and group.
         # lock: true
-        # # Certificate alias name. Optional, default value is localhost.
-        # # Note: please use all lower cases as alias.
-        # name: localhost
-        # # Keystore password. Optional, default value is password.
-        # password: password
-        # # Alias name of self-signed certificate authority. Optional, default value is local_ca.
-        # # Note: please use all lower cases as alias.
-        # caAlias: local_ca
-        # # Password of keystore stored self-signed certificate authority. Optional, default value is local_ca_password.
-        # caPassword: local_ca_password
+        # Certificate alias name. Optional, default value is localhost.
+        # Note: please use all lower cases as alias.
+        name: localhost
+        # Keystore password. Optional, default value is password.
+        password: password
+        # Alias name of self-signed certificate authority. Optional, default value is local_ca.
+        # Note: please use all lower cases as alias.
+        caAlias: local_ca
+        # Password of keystore stored self-signed certificate authority. Optional, default value is local_ca_password.
+        caPassword: local_ca_password
+      validity: 3650
       # # Distinguished name for Zowe generated certificates. All optional.
       # dname:
       #   caCommonName: ""
@@ -49,7 +50,6 @@ zowe:
       #   state: ""
       #   country: ""
       # # Validity days for Zowe generated certificates
-      # validity: 3650
       # # Domain names and IPs should be added into certificate SAN
       # # If this field is not defined, `zwe init` command will use
       # # `zowe.externalDomains`.
