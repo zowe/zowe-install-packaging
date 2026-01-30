@@ -1,2 +1,23 @@
 Validates whether required Zowe keystore and truststore exist and meet Zowe's requirements.
 This command can be used to prove that Zowe's keystore and truststore are correct before starting zowe.
+
+These Zowe YAML configurations showing with sample values are used:
+
+```yaml
+zowe:
+  certificate:
+    keystore:
+      type: JCERACFKS
+      file: safkeyring://ZWESVUSR/ZOWERING
+      password: password
+      alias: IZUDFLT
+    truststore:
+      type: JCERACFKS
+      file: safkeyring://ZWESVUSR/ZOWERING
+      password: password
+  externalDomains:
+    - host1.example.com
+    - host2.example.com
+java:
+  home: /path/to/java
+```
