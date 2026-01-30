@@ -27,7 +27,7 @@ zowe:
       type: JCERACFKS
       keyring:
         name: ZoweKeyring
-        # # Label of Zowe certificate. Optional, default value is localhost.
+        # Label of Zowe certificate. Optional, default value is localhost.
         label: localhost
         import:
           # Name of the data set holds the certificate issued by other CA.
