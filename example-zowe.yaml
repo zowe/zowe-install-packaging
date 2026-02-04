@@ -100,7 +100,7 @@ zowe:
       volume: ""
       # Storage class name if you are using VSAM in RLS mode
       storageClass: ""
-    
+
     # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
     # Certificate creation
     #
@@ -115,10 +115,11 @@ zowe:
     # (Not Recommended)
     # If you want Zowe to create valid certificates and keyrings for you,
     # Then you can can use the example YAML content within
-    #     zowe/files/examples/setup/certificate
-    # Within, you will find 5 scenarios that you can edit
+    #  the "zowe/files/examples/setup/certificate" directory.
+    # There, you will find 5 scenarios covering common
+    #  certificate and keyring configurations.
     # To create certificates, edit the scenario that suits you
-    # And then run "zwe init certificate -c <path_to_yaml> --update-config"
+    #  and follow the instructions in the scenario.
   #-------------------------------------------------------------------------------
   # End of "zowe.setup" section
   #-------------------------------------------------------------------------------
@@ -148,7 +149,6 @@ zowe:
       file: "${{ zowe.certificate.keystore.file }}"
       password: "${{ zowe.certificate.keystore.password }}"
 
-    
   # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   # Zowe runtime (root) directory
   #
