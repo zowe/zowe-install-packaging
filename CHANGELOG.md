@@ -3,6 +3,9 @@
 All notable changes to the Zowe Installer will be documented in this file.
 <!--Add the PR or issue number to the entry if available.-->
 
+## `2.18.5`
+- Bugfix: Incorrect keyword was used for ACF2 key ring statement. [#4680](https://github.com/zowe/zowe-install-packaging/pull/4680)
+
 ## `2.18.4`
 - Bugfix: Running z/OSMF is returning 401, if RSU2512 was applied. [#4658](https://github.com/zowe/zowe-install-packaging/pull/4658)
 - Bugfix: `detect_java_home` and `detect_node_home` routines used incorrect shell command [#4572](https://github.com/zowe/zowe-install-packaging/pull/4572)
