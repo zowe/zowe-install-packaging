@@ -77,7 +77,6 @@ zowe:
     startupChecks:
       default: "exit"
       ports: "disabled"
-      zosmf: "exit"
   verifyCertificates: "STRICT"
   sysMessageTrim: false
   runtimeDirectory: "/test/dir"
@@ -264,7 +263,6 @@ zowe:
     startupChecks:
       default: "exit"
       ports: "disabled"
-      zosmf: "exit"
   verifyCertificates: "STRICT"
   sysMessageTrim: false
   runtimeDirectory: "/test/dir"

@@ -311,7 +311,7 @@ Zowe will remove it on success, but if zwe exits with a non-zero code manual cle
 `;
 
 exports[`zwe-validate-commands (SHORT) config validate alias 1`] = `
-"TESTUSR0 INFO (zwe-internal-start-prepare) Zowe version: v3.4.0
+"TESTUSR0 INFO (zwe-internal-start-prepare) Zowe version: v0.0.0
 TESTUSR0 INFO (zwe-internal-start-prepare) build and hash: {BUILD_BRANCH}#{BUILD_NUMBER} ({BUILD_COMMIT_HASH})
 Validating Zowe core configuration for file(s)=/test/dir/zowe.test.yaml
 Temporary directory '/tmp/.zweenv-0000' created.
@@ -320,7 +320,7 @@ Zowe core configuration is valid"
 `;
 
 exports[`zwe-validate-commands (SHORT) config validate alias 2`] = `
-"TESTUSR0 INFO (zwe-internal-start-prepare) Zowe version: v3.4.0
+"TESTUSR0 INFO (zwe-internal-start-prepare) Zowe version: v0.0.0
 TESTUSR0 INFO (zwe-internal-start-prepare) build and hash: {BUILD_BRANCH}#{BUILD_NUMBER} ({BUILD_COMMIT_HASH})
 Validating Zowe core configuration for file(s)=/test/dir/zowe.test.yaml
 Temporary directory '/tmp/.zweenv-0000' created.

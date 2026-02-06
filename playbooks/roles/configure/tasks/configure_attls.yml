@@ -88,3 +88,4 @@
     configs:
       "components.zss.agent.http.ipAddresses[0]" : "0.0.0.0"
       "zowe.environments.ZOSMF_SCHEME": "https"
+      "components.apiml.enabled": "false"

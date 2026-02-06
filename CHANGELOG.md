@@ -4,13 +4,16 @@ All notable changes to the Zowe Installer will be documented in this file.
 
 ## `3.5.0`
 
-- Enhancement: Added dry-run option for `zwe components install` so that you can test an install before committing to it. [#4582](https://github.com/zowe/zowe-install-packaging/pull/4582)
 - Enhancement: Split `zwe components install` into subcommands with dry-run options to help you with each step of component installation. [#4582](https://github.com/zowe/zowe-install-packaging/pull/4582)
+- Bugfix: `zwe config get` HA instance lookup is case insensitive. [#4609](https://github.com/zowe/zowe-install-packaging/pull/4609)
 - Enhancement: `zwe config get` command uses new `--format` option to format the output. [#4591](https://github.com/zowe/zowe-install-packaging/pull/4591)
-- Enhancement: Added manifest property `apimlServices.static.once` which restricts APIML static definition files to exist only once per HA setup [#4587](https://github.com/zowe/zowe-install-packaging/pull/4587)
 
+## `3.4.1`
+- Bugfix: Running z/OSMF is returning 401, if RSU2512 was applied. [#4657](https://github.com/zowe/zowe-install-packaging/pull/4657)
+  
 ## `3.4.0`
 
+- Enhancement: Added manifest property `apimlServices.static.once` which restricts APIML static definition files to exist only once per HA setup [#4587](https://github.com/zowe/zowe-install-packaging/pull/4587)
 - Enhancement: API ML now uses `saf` as it's default authentication provider for new installations of Zowe. [#4573](https://github.com/zowe/zowe-install-packaging/pull/4573)
 - Enhancement: Configure z/OSMF static API definition based on authentication provider [#4563](https://github.com/zowe/zowe-install-packaging/pull/4563)
 - Enhancement: Command `zwe validate config` command has been added as an alias of `zwe config validate`, for naming consistency with future `zwe validate` commands. [#4447](https://github.com/zowe/zowe-install-packaging/pull/4447)
