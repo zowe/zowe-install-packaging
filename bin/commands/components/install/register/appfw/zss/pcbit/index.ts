@@ -10,6 +10,7 @@
 */
 
 import * as std from 'cm_std';
+import * as fs from '../../../../../../../libs/fs';
 import * as common from '../../../../../../../libs/common';
 import * as stringlib from '../../../../../../../libs/string';
 import * as config from '../../../../../../../libs/config';
@@ -28,5 +29,12 @@ export function execute(componentName: string, dryRun?: boolean) {
   const targetDir = stringlib.removeTrailingSlash(extensionDir);
   const componentDir = pathoid.join(targetDir, componentName);
 
-  component.processZssPluginInstall(componentDir, false, dryRun);
+  const componentArg = std.getenv('ZWE_CLI_PARAMETER_COMPONENT_FILE');
+  let dryRunDir;
+  if (componentArg && fs.directoryExists(componentArg) && dryRun) {
+    dryRunDir = componentArg;
+  }
+
+  
+  component.processZssPluginInstall((dryRun && dryRunDir) ? dryRunDir : componentDir, false, dryRun);
 }

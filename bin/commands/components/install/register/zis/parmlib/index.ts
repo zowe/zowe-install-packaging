@@ -10,6 +10,7 @@
 */
 
 import * as std from 'cm_std';
+import * as fs from '../../../../../../libs/fs';
 import * as common from '../../../../../../libs/common';
 import * as stringlib from '../../../../../../libs/string';
 import * as config from '../../../../../../libs/config';
@@ -28,7 +29,14 @@ export function execute(componentName: string, dryRun?: boolean) {
   const targetDir = stringlib.removeTrailingSlash(extensionDir);
   const componentDir = pathoid.join(targetDir, componentName);
 
-  let errors = component.zisParmlibRegister(componentDir, false, dryRun);
+  const componentArg = std.getenv('ZWE_CLI_PARAMETER_COMPONENT_FILE');
+  let dryRunDir;
+  if (componentArg && fs.directoryExists(componentArg) && dryRun) {
+    dryRunDir = componentArg;
+  }
+
+  
+  let errors = component.zisParmlibRegister(dryRun ? dryRunDir : componentDir, false, dryRun);
   if (errors.length > 0) {
     errors.forEach((error: {rc: number, plugin: string})=> {
       common.printError(`Failed to register ZIS plugin ${error.plugin} into ZIS parmlib, rc=${error.rc}`);

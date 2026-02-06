@@ -36,7 +36,13 @@ export function execute(componentName?: string, zisPluginDatasets?: string[], dr
     const targetDir = stringlib.removeTrailingSlash(extensionDir);
     const componentDir = pathoid.join(targetDir, componentName);
 
-    let errors = component.addPluginsToZisAuthLoadlib(componentDir, dryRun);
+    const componentArg = std.getenv('ZWE_CLI_PARAMETER_COMPONENT_FILE');
+    let dryRunDir;
+    if (componentArg && fs.directoryExists(componentArg) && dryRun) {
+      dryRunDir = componentArg;
+    }
+    
+    let errors = component.addPluginsToZisAuthLoadlib((dryRun && dryRunDir) ? dryRunDir : componentDir, dryRun);
     if (errors.length > 0) {
       errors.forEach((error: {rc: number, plugin: string})=> {
         common.printError(`Error copying plugin ${error.plugin}, rc: ${error.rc}`);

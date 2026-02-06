@@ -10,6 +10,7 @@
 */
 
 import * as std from 'cm_std';
+import * as fs from '../../../../libs/fs';
 import * as common from '../../../../libs/common';
 import * as stringlib from '../../../../libs/string';
 import * as shell from '../../../../libs/shell';
@@ -31,12 +32,18 @@ export function execute(componentName: string, dryRun?: boolean) {
 
   const targetDir = stringlib.removeTrailingSlash(extensionDir);
   const componentDir = pathoid.join(targetDir, componentName);
-  const manifest = component.getManifest(componentDir);
+  const componentArg = std.getenv('ZWE_CLI_PARAMETER_COMPONENT_FILE');
+  let dryRunDir;
+  if (componentArg && fs.directoryExists(componentArg) && dryRun) {
+    dryRunDir = componentArg;
+  }
+  
+  const manifest = component.getManifest((dryRun && dryRunDir) ? dryRunDir : componentDir);
   const installScript = manifest.commands ? manifest.commands.install : undefined;
   if (installScript) {
     common.printMessage(`Process ${installScript} defined in manifest commands.install:`);
-    const scriptPath = pathoid.join(targetDir, componentName, installScript);
-    const componentRoot = pathoid.join(targetDir, componentName);
+    const scriptPath = (dryRun && dryRunDir) ? pathoid.join(dryRunDir, installScript) : pathoid.join(targetDir, componentName, installScript);
+    const componentRoot = (dryRun && dryRunDir) ? dryRunDir : pathoid.join(targetDir, componentName);
 
     const command = `. ${ZOWE_CONFIG.zowe.runtimeDirectory}/bin/libs/configmgr-index.sh && cd ${componentRoot} && . ${scriptPath} ; export rc=$? ; export -p`;
     common.printFormattedInfo(common.MSG_KEY, COMMAND_NAME, `Running component install script "${scriptPath}"`);

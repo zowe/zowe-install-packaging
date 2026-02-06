@@ -191,7 +191,7 @@ export function execute(componentFile: string, autoEncoding?: string, upgrade?: 
     //   If invalid, the installation will exit with an error message.
     if (manifest.appfwPlugins) {
       manifest.appfwPlugins.forEach((appfwPlugin: {path: string})=> {
-        let result = component.getPluginDefinition(pathoid.resolve(tmpDir, appfwPlugin.path), true);
+        let result = component.getPluginDefinition(pathoid.resolve(dryRun ? dryRunDir : tmpDir, appfwPlugin.path), true);
         //Normally, getPluginDefinition would quit upon failure. But we want to cleanup the tmpDir before that.
         // So, we pass true to allow it to continue, check for null, and then remove the tmpdir and exit if so.
         if (result === null && !dryRun) {
