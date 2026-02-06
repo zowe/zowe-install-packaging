@@ -9,7 +9,7 @@
   Copyright Contributors to the Zowe Project.
 */
 
-import * as zssRegister from './zss';
+import * as zssRegister from './zss/index';
 
 export function execute(componentName: string, dryRun?: boolean) {
   zssRegister.execute(componentName, dryRun);

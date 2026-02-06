@@ -9,8 +9,8 @@
   Copyright Contributors to the Zowe Project.
 */
 
-import * as appfwRegister from './appfw';
-import * as zisRegister from './zis';
+import * as appfwRegister from './appfw/index';
+import * as zisRegister from './zis/index';
 
 export function execute(componentName: string, zisPluginDatasets?: string[], dryRun?: boolean) {
   appfwRegister.execute(componentName, dryRun);

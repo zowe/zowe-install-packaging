@@ -9,7 +9,7 @@
   Copyright Contributors to the Zowe Project.
 */
 
-import * as pcbitCheck from './pcbit';
+import * as pcbitCheck from './pcbit/index';
 
 export function execute(componentName: string, dryRun?: boolean) {
   pcbitCheck.execute(componentName, dryRun);

@@ -9,8 +9,8 @@
   Copyright Contributors to the Zowe Project.
 */
 
-import * as loadlibRegister from './loadlib';
-import * as parmlibRegister from './parmlib';
+import * as loadlibRegister from './loadlib/index';
+import * as parmlibRegister from './parmlib/index';
 
 export function execute(componentName: string, zisPluginDatasets?: string[], dryRun?: boolean) {
   loadlibRegister.execute(componentName, zisPluginDatasets, dryRun);
