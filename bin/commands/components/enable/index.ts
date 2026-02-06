@@ -17,9 +17,15 @@ import * as configmgr from '../../../libs/configmgr';
 export function execute(componentId: string, haInstance?: string, dryRun?: boolean) {
   common.requireZoweYaml();
 
+  const componentArg = std.getenv('ZWE_CLI_PARAMETER_COMPONENT_FILE');
+  let dryRunDir;
+  if (componentArg && fs.directoryExists(componentArg) && dryRun) {
+    dryRunDir = componentArg;
+  }
+  
   const componentDir = component.findComponentDirectory(componentId);
 
-  if (!componentDir) {
+  if (!componentDir || (dryRun && !dryRunDir)) {
     common.printErrorAndExit(`Error ZWEL0152E: Cannot find component ${componentId}.`, undefined, 152);
   }
 
