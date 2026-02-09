@@ -9,6 +9,7 @@
   Copyright Contributors to the Zowe Project.
 */
 
+import * as std from 'cm_std';
 import * as zos from 'zos';
 import * as common from '../../../libs/common';
 import * as config from '../../../libs/config';
@@ -80,7 +81,7 @@ export function execute(quitOnError?: boolean, level?: string): number {
     common.printFormattedWarn(common.MSG_KEY, COMMAND_NAME, `Truststore unknown type ${truststoreType}`);
   }
   
-  const argsString = `-Djava.protocol.handler.pkgs=com.ibm.crypto.provider -jar ${ZOWE_CONFIG.zowe.runtimeDirectory}/bin/utils/certificate-analyser.jar `+
+  const argsString = `-Djava.protocol.handler.pkgs=com.ibm.crypto.provider -jar ${std.getenv('ZWE_zowe_runtimeDirectory')}/bin/utils/certificate-analyser.jar ` +
     `-k ${keystoreLocation} -kt ${keystoreType} -kp ${keystorePass} -a ${keystoreAlias} ` +
     `-t ${truststoreLocation} -tt ${truststoreType} -tp ${truststorePass} ` +
     `-d ${ZOWE_CONFIG.zowe.externalDomains.join(',')}`;
