@@ -49,6 +49,15 @@ export function execute(quitOnError?: boolean, level?: string): number {
 
   java.requireJava();
 
+  // Due to schema validation zowe.certificate.* is either missing or complete
+  // Check if zowe.certificate is present
+  if (!ZOWE_CONFIG.zowe.certificate) {
+    common.printErrorAndExit(`Error ZWEL0106E: zowe.certificate.* parameter is required.`, undefined, 106);
+  }
+  if (!ZOWE_CONFIG.zowe.externalDomains) {
+    common.printErrorAndExit(`Error ZWEL0106E: zowe.externalDomains parameter is required.`, undefined, 106);
+  }
+
   const keystoreType = ZOWE_CONFIG.zowe.certificate.keystore.type;
   const keystoreAlias = ZOWE_CONFIG.zowe.certificate.keystore.alias;
   const keystorePass = ZOWE_CONFIG.zowe.certificate.keystore.password;
