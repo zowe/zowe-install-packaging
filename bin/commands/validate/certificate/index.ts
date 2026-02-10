@@ -204,17 +204,18 @@ export function execute(quitOnError?: boolean, level?: string): number {
     if (output.includes("IRRSDL00")) {
       configInvalid = VALIDATION_ERROR;
 
-      const irrLine = configLines.filter((line)=> line.includes('IRRSDL00'))[0];
-      const codes = irrLine.substring(0,irrLine[0].length-1).split(':')[1].split('(')[1].split(', ');
+      const irrLine = configLines.filter((line) => line.includes('IRRSDL00'))[0];
+      const codes = irrLine.substring(0, irrLine.length - 1).split(':')[1].split('(')[1].split(', ');
       const esm = zos.getEsm();
       common.printFormattedError(common.MSG_KEY, COMMAND_NAME, `Could not load keyring. SAF rc=${codes[0]}, ${esm} rc=${codes[1]}, ${esm} rsn=${codes[2]}`);
       common.printFormattedError(common.MSG_KEY, COMMAND_NAME, `Verify that keystore and truststore are valid and accessible to the Zowe STC.`);
       common.printFormattedError(common.MSG_KEY, COMMAND_NAME, `Review Zowe YAML properties:`);
       common.printFormattedError(common.MSG_KEY, COMMAND_NAME, `  zowe.certificate.keystore.file: ${ZOWE_CONFIG.zowe.certificate.keystore.file}`);
       common.printFormattedError(common.MSG_KEY, COMMAND_NAME, `  zowe.certificate.truststore.file: ${ZOWE_CONFIG.zowe.certificate.truststore.file}`);
-      if (codes[2] == 8) {
+      // codes are strings
+      if (codes[2] == '8') {
         common.printFormattedError(common.MSG_KEY, COMMAND_NAME, `Possible cause: User ${keyringUser} does not exist, or Zowe STC does not have permission to read that user's keyring`);
-      } else if (codes[2] == 84) {
+      } else if (codes[2] == '84') {
         common.printFormattedError(common.MSG_KEY, COMMAND_NAME, `Possible cause: Keyring may not exist`);
       }
     }
