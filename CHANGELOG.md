@@ -3,6 +3,7 @@
 All notable changes to the Zowe Installer will be documented in this file.
 
 ## `3.5.0`
+- Bugfix: PSWI "Create Configuration" step calls wrong `zwe` command causing a failure of entire step. [#4654](https://github.com/zowe/zowe-install-packaging/pull/4654)
 - Bugfix: `zwe config get` HA instance lookup is case insensitive. [#4609](https://github.com/zowe/zowe-install-packaging/pull/4609)
 - Enhancement: `zwe config get` command uses new `--format` option to format the output. [#4591](https://github.com/zowe/zowe-install-packaging/pull/4591)
 
