@@ -10,14 +10,17 @@
 */
 
 import * as std from 'cm_std';
-
+import * as os from 'cm_os';
 import * as common from './common';
 import * as shell from './shell';
 import * as stringlib from './string';
+import * as zosDataset from './zos-dataset';
+import * as initGenerate from '../commands/init/generate/index';
 import * as zos from 'zos';
 
+
 export function tsoCommand(...args:string[]): { rc: number, out: string } {
-  let message = "tsocmd " + '"' + args.join(' ') + '"';
+  let message = "tsocmd " + '"' + args.join(' ') + '" < /dev/null';
   common.printDebug('- '+message);
   //we echo at the end to avoid a configmgr quirk where trying to read stdout when empty can hang waiting for bytes
   const result = shell.execOutSync('sh', '-c', `${message} 2>&1 && echo '.'`);
@@ -40,13 +43,26 @@ export function tsoCommand(...args:string[]): { rc: number, out: string } {
   return { rc: result.rc, out: result.out ? result.out : '' };
 }
 
+export const OPER_CMD_NO_SDSF = -1;
+
 export function operatorCommand(command: string): { rc: number, out: string } {
+
+  if (!isSDSF()) {
+    return { rc: OPER_CMD_NO_SDSF, out: 'failed to initilize SDSF' }
+  }
+
   const opercmd=std.getenv('ZWE_zowe_runtimeDirectory')+'/bin/utils/opercmd.rex';
 
   let message=`- opercmd ${command}`;
   common.printDebug(message);
   //we echo at the end to avoid a configmgr quirk where trying to read stdout when empty can hang waiting for bytes
-  const result = shell.execOutSync('sh', '-c', `${opercmd} "${command}" 2>&1 && echo '.'`);
+  const result = shell.execOutSync('sh', '-c', `'${opercmd}' '${command}' 2>&1 && echo '.'`);
+  if (result.out) {
+    //we strip the '.' we added above
+    result.out = result.out.substring(0, result.out.length - 1);
+  } else {
+    result.out = '';
+  }
   if (result.rc == 0) {
     common.printDebug("  * Succeeded");
     common.printTrace(`  * Exit code: ${result.rc}`);
@@ -62,12 +78,44 @@ export function operatorCommand(command: string): { rc: number, out: string } {
       common.printError(stringlib.paddingLeft(result.out, "    "));
     }
   }
-  //we strip the '.' we added above
-  return { rc: result.rc, out: result.out ? result.out.substring(0, result.out.length-1) : '' };
+  return { rc: result.rc, out: result.out };
+}
+
+export function verifyGeneratedJcl(config:any): string | undefined {
+  const jcllib = config.zowe.setup.dataset.jcllib;
+  if (!jcllib) {
+    return undefined;
+  }
+  const expectedMember = jcllib+'(ZWEIMVS2)';
+  // read JCL library and validate using expected member ZWEIMVS2 (init mvs command)
+  let doesJclExist: boolean = zosDataset.isDatasetExists(expectedMember);
+  if (!doesJclExist) {
+    initGenerate.execute();
+  }
+
+  // should be created, but may take time to discover.
+  if (!doesJclExist) {
+    const interval = [1,5,10,30];
+    for (let i = 0; i < interval.length; i++) {
+      let secs = interval[i];
+      doesJclExist=zosDataset.isDatasetExists(expectedMember);
+      if (!doesJclExist) {
+        os.sleep(secs*1000);
+      } else {
+        break;
+      }
+    }
+
+    if (!doesJclExist) {      
+      return undefined;
+    }
+  }
+  return jcllib;
 }
 
 export function formatZosVersion(format?: string, versionNumber?: string | number): string {
   const ZOS_VERS = {
+    'Z1030200': { 'osname': 'z/OS', 'hbb': 'HBB77F0', 'major': '3', 'minor': '2' },
     'Z1030100': { 'osname': 'z/OS', 'hbb': 'HBB77E0', 'major': '3', 'minor': '1' },
     'Z1020500': { 'osname': 'z/OS', 'hbb': 'HBB77D0', 'major': '2', 'minor': '5' },
     'Z1020400': { 'osname': 'z/OS', 'hbb': 'HBB77C0', 'major': '2', 'minor': '4' },
@@ -103,4 +151,14 @@ export function formatZosVersion(format?: string, versionNumber?: string | numbe
     .replace(/\{\s*hbb\s*\}/g, zosVer.hbb)
     .replace(/\{\s*major\s*\}/g, zosVer.major)
     .replace(/\{\s*minor\s*\}/g, zosVer.minor);
+}
+
+export function isSDSF(): Boolean {
+    common.printDebug(`- Test if SDSF is accessible.`);
+    // We need only return code, if no SDSF, suppress possible error message
+    const result = shell.execSync('sh', '-c', `${std.getenv('ZWE_zowe_runtimeDirectory')}/bin/utils/getSDSF.rex 2>&1 >/dev/null`);
+    if (result.rc == 0) {
+        return true;
+    }
+    return false;
 }

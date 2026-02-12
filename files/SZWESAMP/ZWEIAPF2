@@ -1,4 +1,4 @@
-//ZWEIAPF2 JOB
+//ZWEIAPF2 JOB {zowe.setup.jcl.header}
 //*
 //* This program and the accompanying materials are made available
 //* under the terms of the Eclipse Public License v2.0 which
@@ -12,12 +12,17 @@
 //*********************************************************************
 //*
 //*  This JCL is used to set APF for the two datasets of Zowe
-//*  Which need it. You can issue this, or use another
-//*  Way to accomplish the task.
+//*  which need it. You can issue this, or use another
+//*  way to accomplish the task.
 //*
 //*  The following variables are derived from the zowe YAML config:
-//*  LOADLIB: the dataset that holds the APF portion of Zowe
-//*  PLUGLIB: The dataset that holds the extensions for ZIS.
+//*  LOADLIB: the dataset that holds the APF portion of Zowe.
+//*    If not set, zowe.setup.dataset.prefix + SZWEAUTH is used.
+//*  PLUGLIB: the dataset that holds the extensions for ZIS.
+//*    If not set, no PLUGLIB authorization is done.
+//*
+//*  Note: if you plan NOT to use Zowe Cross Memory Server at all,
+//*    you can skip this step.
 //*
 //*********************************************************************
 //*
@@ -28,10 +33,10 @@
 //STDPARM DD *
 SH cd '{zowe.runtimeDirectory}' &&
 cd bin/utils &&
-export LOADLIB='{zowe.setup.dataset.authLoadlib}' &&
-export LOADLOC=SMS &&
-export PLUGLIB='{zowe.setup.dataset.authPluginLib}' &&
-export PLUGLOC=SMS &&
+LOADLIB='{zowe.setup.dataset.authLoadlib}' &&
+LOADLOC=SMS &&
 ./opercmd.rex "SETPROG APF,ADD,DSN=$LOADLIB,$LOADLOC" &&
+PLUGLIB='{zowe.setup.dataset.authPluginLib}' &&
+PLUGLOC=SMS &&
 ./opercmd.rex "SETPROG APF,ADD,DSN=$PLUGLIB,$PLUGLOC"
 //*

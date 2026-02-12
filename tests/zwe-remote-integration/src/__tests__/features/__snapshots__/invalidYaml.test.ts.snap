@@ -1,0 +1,57 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`feat-invalidYaml (SHORT) run commands with bad config 1`] = `
+"Error ZWEL0326E: An error occurred while processing Zowe YAML config /test/dir/zowe.test.yaml:
+    ZWEL0318E - Couldn't scan file '/test/dir/zowe.test.yaml': while scanning a simple key at line 5, column 7, could not find expected ':' at line 6, column 5.
+    ZWEL0319E - Failed to load configuration, element may be bad, or less likely a bad merge."
+`;
+
+exports[`feat-invalidYaml (SHORT) run commands with bad config 2`] = `
+"Error ZWEL0326E: An error occurred while processing Zowe YAML config /test/dir/zowe.test.yaml:
+    ZWEL0318E - Couldn't scan file '/test/dir/zowe.test.yaml': while scanning a simple key at line 5, column 7, could not find expected ':' at line 6, column 5.
+    ZWEL0319E - Failed to load configuration, element may be bad, or less likely a bad merge."
+`;
+
+exports[`feat-invalidYaml (SHORT) run commands with bad config 3`] = `
+"Error ZWEL0326E: An error occurred while processing Zowe YAML config /test/dir/zowe.test.yaml:
+    ZWEL0318E - Couldn't scan file '/test/dir/zowe.test.yaml': while scanning a simple key at line 5, column 7, could not find expected ':' at line 6, column 5.
+    ZWEL0319E - Failed to load configuration, element may be bad, or less likely a bad merge."
+`;
+
+exports[`feat-invalidYaml (SHORT) run commands with bad config 4`] = `
+"-------------------------------------------------------------------------------
+>> Generate certificate
+
+Error ZWEL0326E: An error occurred while processing Zowe YAML config /test/dir/zowe.test.yaml:
+    ZWEL0318E - Couldn't scan file '/test/dir/zowe.test.yaml': while scanning a simple key at line 5, column 7, could not find expected ':' at line 6, column 5.
+    ZWEL0319E - Failed to load configuration, element may be bad, or less likely a bad merge."
+`;
+
+exports[`feat-invalidYaml (SHORT) run commands with bad config 5`] = `
+"Error: Could not load config for FILE(/test/dir/zowe.test.yaml):FILE(/test/dir/files/defaults.yaml), status=7
+ZWEL0318E - Couldn't scan file '/test/dir/zowe.test.yaml': while scanning a simple key at line 5, column 7, could not find expected ':' at line 6, column 5."
+`;
+
+exports[`feat-invalidYaml (SHORT) run commands with bad config 6`] = `
+"Error ZWEL0326E: An error occurred while processing Zowe YAML config /test/dir/zowe.test.yaml:
+    ZWEL0318E - Couldn't scan file '/test/dir/zowe.test.yaml': while scanning a simple key at line 5, column 7, could not find expected ':' at line 6, column 5.
+    ZWEL0319E - Failed to load configuration, element may be bad, or less likely a bad merge."
+`;
+
+exports[`feat-invalidYaml (SHORT) run commands with bad config 7`] = `
+"Error ZWEL0326E: An error occurred while processing Zowe YAML config /test/dir/zowe.test.yaml:
+    ZWEL0318E - Couldn't scan file '/test/dir/zowe.test.yaml': while scanning a simple key at line 5, column 7, could not find expected ':' at line 6, column 5.
+    ZWEL0319E - Failed to load configuration, element may be bad, or less likely a bad merge."
+`;
+
+exports[`feat-invalidYaml (SHORT) run commands with bad config 8`] = `
+"Error ZWEL0326E: An error occurred while processing Zowe YAML config /test/dir/zowe.test.yaml:
+    ZWEL0318E - Couldn't scan file '/test/dir/zowe.test.yaml': while scanning a simple key at line 5, column 7, could not find expected ':' at line 6, column 5.
+    ZWEL0319E - Failed to load configuration, element may be bad, or less likely a bad merge."
+`;
+
+exports[`feat-invalidYaml (SHORT) run commands with bad config 9`] = `
+"Error ZWEL0326E: An error occurred while processing Zowe YAML config /test/dir/zowe.test.yaml:
+    ZWEL0318E - Couldn't scan file '/test/dir/zowe.test.yaml': while scanning a simple key at line 5, column 7, could not find expected ':' at line 6, column 5.
+    ZWEL0319E - Failed to load configuration, element may be bad, or less likely a bad merge."
+`;

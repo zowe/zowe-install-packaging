@@ -273,7 +273,7 @@ EOF
     if [ -f "${command_path}/.help" ]; then
       echo "------------------"
       echo "Description"
-      padding_left "$(cat "${command_path}/.help")" "    "
+      padding_left "$(sed 's/^```yaml$/```/g' "${command_path}/.help")" "    "
       echo
     fi
 
@@ -309,7 +309,7 @@ EOF
     # find sub-commands
     command_path=$(zwecli_calculate_command_path)
     subdirs=$(find_sub_directories "${command_path}")
-    if [ -n "${subdirs}" ]; then 
+    if [ -n "${subdirs}" ]; then
       echo "------------------"
       echo "Available sub-command(s)"
       while read -r line; do
@@ -326,7 +326,7 @@ EOF
       echo "Example(s)"
       padding_left "$(cat "${command_path}/.examples")" "    "
       echo
-    fi  
+    fi
     exit 100
   fi
 }

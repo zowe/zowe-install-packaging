@@ -1,5 +1,7 @@
 name: Update zwe documentation
 
+permissions: read-all
+
 on:
   # Will run this on push when v2 is out
   push:
@@ -20,12 +22,12 @@ jobs:
 
     steps:
       - name: Set up Node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
         with:
           node-version: '14'
       
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
 
       - name: Set up git
         run: |
@@ -66,7 +68,7 @@ jobs:
 
       - name: Create PR if doesn't exist
         if: ${{ steps.commitChanges.outputs.createPr == 'true' }}
-        uses: actions/github-script@v5
+        uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7.0.1
         with:
           github-token: ${{ secrets.ZOWE_ROBOT_TOKEN }}
           script: |

@@ -174,6 +174,13 @@ class APIMLAuth {
     }
   }
 
+  _extractAuth0AccessToken(res) {
+    if (!res.data.access_token) {
+      throw new Error('There was no access token return; authentication was unsuccessful');
+    }
+    return res.data.access_token;
+  }
+
   _extractAuthToken(res) {
     const authCookie = this.httpRequest.findCookieInResponse(res, APIML_AUTH_COOKIE);  
     // Example:
@@ -195,7 +202,7 @@ class APIMLAuth {
     return token;
   }
 
-  _extractAccessToken(res) {
+  _extractOauthAccessToken(res) {
     let token;
     // Example: <html><response name="access_token" value="tokenvalue1234"/></html>
     const matches = res.data.toString().match(/name="access_token" value="(.*)"/i);
@@ -254,23 +261,64 @@ class APIMLAuth {
     return this._extractAuthToken(res);
   }
 
-  async loginViaOkta(clientId, username, password) {
-    debug('================================= APIMLAuth.loginViaOkta');
-    expect(process.env.OKTA_HOSTNAME, 'OKTA_HOSTNAME is empty').to.not.be.empty;
+  async loginViaAuth0(clientId, clientSecret, username, password) {
+    debug('================================= APIMLAuth.loginViaAuth0');
+    expect(process.env.OIDC_HOSTNAME, 'OIDC_HOSTNAME is empty').to.not.be.empty;
     if (!clientId) {
-      expect(process.env.OKTA_CLIENT_ID, 'OKTA_CLIENT_ID is empty').to.not.be.empty;
-      clientId = process.env.OKTA_CLIENT_ID;
+      expect(process.env.OIDC_CLIENT_ID, 'OIDC_CLIENT_ID is empty').to.not.be.empty;
+      clientId = process.env.OIDC_CLIENT_ID;
+    }
+    if (!clientSecret) {
+      expect(process.env.OIDC_CLIENT_SECRET, 'OIDC_CLIENT_SECRET is empty').to.not.be.empty;
+      clientSecret = process.env.OIDC_CLIENT_SECRET;
     }
     if (!username) {
-      expect(process.env.OKTA_USER, 'OKTA_USER is not defined').to.not.be.empty;
-      username = process.env.OKTA_USER;
+      expect(process.env.OIDC_USER, 'OIDC_USER is not defined').to.not.be.empty;
+      username = process.env.OIDC_USER;
     }
     if (!password) {
-      expect(process.env.OKTA_PASSWORD, 'OKTA_PASSWORD is not defined').to.not.be.empty;
-      password = process.env.OKTA_PASSWORD;
+      expect(process.env.OIDC_PASSWORD, 'OIDC_PASSWORD is not defined').to.not.be.empty;
+      password = process.env.OIDC_PASSWORD;
+    }
+    const auth0HttpReq = new HTTPRequest(`https://${process.env.OIDC_HOSTNAME}`);
+    const authRes = await auth0HttpReq.request({
+      url: '/oauth/token',
+      headers: {
+        'Content-Type': 'application/json', 
+        'Accept': 'application/json'
+      },
+      method: 'POST',
+      data: {
+        'grant_type': 'password',
+        'client_id': clientId,
+        'client_secret': clientSecret,
+        'username': username,
+        'password': password,
+        'audience': 'https://apiml',
+      }
+    });
+    return this._extractAuth0AccessToken(authRes);
+  }
+
+  // deprecated, test okta tenant no longer supported. 
+  //  Code should work if a new tenant is created.
+  async loginViaOkta(clientId, username, password) {
+    debug('================================= APIMLAuth.loginViaOkta');
+    expect(process.env.OIDC_HOSTNAME, 'OIDC_HOSTNAME is empty').to.not.be.empty;
+    if (!clientId) {
+      expect(process.env.OIDC_CLIENT_ID, 'OIDC_CLIENT_ID is empty').to.not.be.empty;
+      clientId = process.env.OIDC_CLIENT_ID;
+    }
+    if (!username) {
+      expect(process.env.OIDC_USER, 'OIDC_USER is not defined').to.not.be.empty;
+      username = process.env.OIDC_USER;
+    }
+    if (!password) {
+      expect(process.env.OIDC_PASSWORD, 'OIDC_PASSWORD is not defined').to.not.be.empty;
+      password = process.env.OIDC_PASSWORD;
     }
 
-    const oktaHttpReq = new HTTPRequest(`https://${process.env.OKTA_HOSTNAME}`);
+    const oktaHttpReq = new HTTPRequest(`https://${process.env.OIDC_HOSTNAME}`);
     
     const sessionRes = await oktaHttpReq.request({
       url: '/api/v1/authn',

@@ -33,10 +33,18 @@ ARG NODE_CPU_ARCH=x64
 ##################################
 # environments
 ENV NODE_VERSION=18.20.4
+ENV YQ_VERSION=4.45.4 
 
 ##################################
 # customize
 RUN set -ex \
+  && uarch=`uname -m` && \
+  export YQ_ARCH="$uarch"; \
+  if [[ "$uarch" == "aarch64" ]]; then \
+      export YQ_ARCH="arm64"; \ 
+  elif [[ "$uarch" == "x86_64" ]]; then \
+      export YQ_ARCH="amd64"; \
+  fi \
   # shadow-utils is needed for having adduser groupadd commands
   && microdnf install --nodocs shadow-utils \
   # define zowe user/group
@@ -77,7 +85,12 @@ RUN set -ex \
   && tar -xJf "node-v$NODE_VERSION-linux-$ARCH.tar.xz" -C /usr/local --strip-components=1 --no-same-owner \
   && rm "node-v$NODE_VERSION-linux-$ARCH.tar.xz" SHASUMS256.txt.asc SHASUMS256.txt \
   && ln -s /usr/local/bin/node /usr/local/bin/nodejs \
+  # yq download
+  && curl -fsSLO --compressed "https://github.com/mikefarah/yq/releases/download/v4.45.4/yq_linux_$YQ_ARCH" \
+  && mv "yq_linux_$YQ_ARCH" /usr/local/bin/yq \
+  && chmod +x /usr/local/bin/yq \
   # smoke tests
+  && yq --version \
   && node --version \
   && npm --version \
   # remove unused pacakges

@@ -21,7 +21,7 @@ import {
   ANSIBLE_ROOT_DIR,
   SANITY_TEST_REPORTS_DIR,
   INSTALL_TEST_REPORTS_DIR,
-  APIML_OIDC_VARS,
+  DEFAULT_PLAYBOOK_VARS,
 } from './constants';
 
 /**
@@ -222,7 +222,7 @@ async function installAndVerifyZowe(testcase: string, installPlaybook: string, s
     testcase,
     installPlaybook,
     serverId,
-    { ...APIML_OIDC_VARS , ...extraVars}
+    { ...DEFAULT_PLAYBOOK_VARS , ...extraVars}
   );
 
   expect(resultInstall.code).toBe(0);
@@ -238,8 +238,13 @@ async function installAndVerifyZowe(testcase: string, installPlaybook: string, s
     debug(`running ${installPlaybook} playbook with skip_start=true, skip verify`);
 
   } else {
+
+    let attlsTest = false;
+    if (extraVars && extraVars['zowe_attls_enabled'] === 'true') {
+      attlsTest = true;
+    }
     // verify zowe instance with sanity test
-    const resultVerify = await verifyZowe(testcase, serverId, {});
+    const resultVerify = await verifyZowe(testcase, serverId, { 'zowe_attls_enabled': attlsTest });
 
     // copy sanity test result to install test report folder
     copySanityTestReport(resultVerify.reportHash);
@@ -348,7 +353,7 @@ export async function installAndVerifyDockerBuild(testcase: string, serverId: st
     testcase,
     'install-docker.yml',
     serverId,
-    { ...extraVars, ...APIML_OIDC_VARS }
+    { ...extraVars, ...DEFAULT_PLAYBOOK_VARS }
   );
 
   expect(resultInstall.code).toBe(0);
@@ -428,7 +433,7 @@ export async function installAndVerifySmpePtf(testcase: string, serverId: string
     {
       'zowe_build_remote': ZOWE_FMID,
       'skip_start': 'true',
-      ...APIML_OIDC_VARS
+      ...DEFAULT_PLAYBOOK_VARS
     }
   );
 
@@ -439,7 +444,7 @@ export async function installAndVerifySmpePtf(testcase: string, serverId: string
     testcase,
     'install-ptf.yml',
     serverId,
-    { ...extraPtfVars, ...APIML_OIDC_VARS }
+    { ...extraPtfVars, ...DEFAULT_PLAYBOOK_VARS }
   );
 
   expect(resultPtf.code).toBe(0);
@@ -479,7 +484,7 @@ export async function installAndGenerateApiDocs(testcase: string, serverId: stri
     testcase,
     'install.yml',
     serverId,
-    { ...extraVars, ...APIML_OIDC_VARS }
+    { ...extraVars, ...DEFAULT_PLAYBOOK_VARS }
   );
 
   expect(resultInstall.code).toBe(0);
@@ -525,7 +530,7 @@ export async function showZoweRuntimeLogs(serverId: string, extraVars: {[key: st
       'doesn\'t matter',
       'show-logs.yml',
       serverId,
-      { ...extraVars, ...APIML_OIDC_VARS }
+      { ...extraVars, ...DEFAULT_PLAYBOOK_VARS }
     );
   } catch (e) {
     debug(`showZoweRuntimeLogs failed: ${e}`);

@@ -32,7 +32,7 @@ describe(testSuiteName, () => {
       {
         'zowe_build_local': process.env['ZOWE_BUILD_LOCAL'],
         'zowe_custom_for_test': 'true',
-        'zos_node_home': '/ZOWE/node/node-v22.10.0',
+        'zos_node_home': '/ZOWE/node/node-v22.16.0',
         'zowe_lock_keystore': 'false',
       }
     );

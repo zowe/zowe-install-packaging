@@ -1,0 +1,114 @@
+TTLSRule ZoweServerInboundRule
+{
+  LocalAddr All
+  RemoteAddr All
+  LocalPortRange 7550-7560 # Range covers all Zowe services
+  Jobname ZWE1* # Jobname according to zowe.job.prefix in zowe.yaml
+  Direction Inbound
+  TTLSGroupActionRef ServerGroupAction
+  TTLSEnvironmentActionRef ZoweServerEnvironmentAction
+  TTLSConnectionActionRef ZoweServerConnectionAction
+}
+
+TTLSRule ZoweServerOutboundRule
+{
+  LocalAddr All
+  RemoteAddr All
+  LocalPortRange 1024-65535
+  Direction Outbound
+  RemotePortRange 7550-7560
+  Jobname ZWE1*
+  TTLSGroupActionRef ServerGroupAction
+  TTLSEnvironmentActionRef ApimlClientEnvironmentAction
+  TTLSConnectionActionRef ApimlX509ClientConnAction
+}
+
+TTLSGroupAction ServerGroupAction
+{
+  TTLSEnabled ON
+}
+
+TTLSEnvironmentAction ZoweServerEnvironmentAction
+{
+  HandshakeRole ServerWithClientAuth
+  EnvironmentUserInstance 0
+  TTLSEnvironmentAdvancedParmsRef ServerEnvironmentAdvParms
+  TTLSKeyringParmsRef ZoweAttlsKeyring
+}
+
+TTLSEnvironmentAdvancedParms ServerEnvironmentAdvParms
+{
+  ClientAuthType Full # Support optional Client Certificate auth
+  ApplicationControlled            Off
+  Renegotiation Disabled
+  SSLv2                            Off
+  SSLv3                            Off
+  TLSv1                            Off
+  TLSv1.1                          Off
+  TLSv1.2                          On
+  TLSv1.3                          On
+}
+
+TTLSConnectionAction ZoweServerConnectionAction
+{
+  HandshakeRole ServerWithClientAuth
+  TTLSCipherParmsRef CipherParms
+  TTLSConnectionAdvancedParmsRef ZoweConnectionAdvParms
+}
+
+TTLSEnvironmentAction ApimlClientEnvironmentAction
+{
+  HandshakeRole Client
+  TTLSCipherParmsRef CipherParms
+  TTLSEnvironmentAdvancedParmsRef ClientEnvironmentAdvParms
+  TTLSKeyringParmsRef ZoweAttlsKeyring
+}
+
+TTLSEnvironmentAdvancedParms ClientEnvironmentAdvParms
+{
+  Renegotiation Disabled
+  3DESKEYCHECK OFF
+  CLIENTEDHGROUPSIZE legacy
+  SERVEREDHGROUPSIZE legacy
+  PEERMINCERTVERSION any
+  SERVERSCSV OFF
+  MIDDLEBOXCOMPATMODE Off
+  CertValidationMode Any
+}
+
+TTLSConnectionAction ApimlX509ClientConnAction
+{
+  HandshakeRole Client
+  TTLSCipherParmsRef CipherParms
+  TTLSConnectionAdvancedParmsRef ApimlClientX509ConnAdvParms
+}
+
+TTLSConnectionAdvancedParms ApimlClientX509ConnAdvParms
+{
+  ApplicationControlled Off
+  CertificateLabel ZOWE_ATTLS_CERT
+  SecondaryMap Off
+  TLSv1.1                         Off
+  TLSv1.2                         On
+  TLSv1.3                         On
+}
+
+TTLSConnectionAdvancedParms ZoweConnectionAdvParms
+{
+  ApplicationControlled Off
+  ServerCertificateLabel ZOWE_ATTLS_CERT
+  CertificateLabel ZOWE_ATTLS_CERT
+  SecondaryMap Off
+}
+
+# Keyring, used for TLS, will be used also to load trusted certificates
+TTLSKeyringParms ZoweAttlsKeyring
+{
+  Keyring ZWEATTLS
+}
+
+TTLSCipherParms CipherParms
+{
+  V3CipherSuites                  TLS_CHACHA20_POLY1305_SHA256
+  V3CipherSuites                  TLS_RSA_WITH_AES_256_CBC_SHA256
+}

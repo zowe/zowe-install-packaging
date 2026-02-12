@@ -1,0 +1,280 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`migrate-for-kubernetes (SHORT) run migrate for kubernetes 1`] = `
+"===============================================================================
+>> PREPARE KUBERNETES MANIFESTS
+SECURITY WARNING: This script will generate information with sensitive certificate
+                  private keys. Please make sure the content will not be left on any
+                  devices after the process is done.
+                  During the process, this command will generate temporary files under
+                    /tmp/zowe-convert-for-k8s-0000/.
+                  Normally those files will be deleted automatically before the script
+                  exits. If the script exits with an error, please verify if any of
+                  those files are left on the system and they MUST be manually deleted
+                  for security purposes.
+- generate env for "convert-for-k8s"
+-------------------------------------------------------------------------------
+>> Re-generate Zowe certificate to include proper domains.
+To make the certificates working properly in Kubernetes, we need to generate
+a new certificate with proper domains.
+You can customize domains by passing --domains option to this command.
+>>>> Generate certificate "localhost" in the keystore localhost:
+>>>> Generate CSR for the certificate "localhost" in the keystore "localhost":
+>>>> Sign the CSR using the Certificate Authority "local_ca":
+>>>> Import the Certificate Authority "local_ca" to the keystore "localhost":
+>>>> Import the Certificate Authority "local_ca" to the truststore "localhost":
+>>>> Import the signed CSR to the keystore "localhost":
+>>>> Import localhost from keystore "/tmp/zowe-convert-for-k8s-0000/keystore/localhost/localhost.keystore.p12-k8s" to "/tmp/zowe-convert-for-k8s-0000/keystore/localhost/localhost.keystore.p12" as localhost:
+>>>> List content of keystore "/tmp/zowe-convert-for-k8s-0000/keystore/localhost/localhost.keystore.p12":
+>>>> Export certificate "localhost" to PEM format
+>>>> Export certificate "local_ca" to PEM format
+>>>> Certificate "/tmp/zowe-convert-for-k8s-0000/keystore/localhost/local_ca.cer is in EBCDIC.
+>>>> Exporting certificate "localhost" private key
+-------------------------------------------------------------------------------
+>> Update zowe.yaml configuration for Kubernetes
+- delete "java.home"
+- delete "node.home"
+- delete "haInstances"
+- delete "zowe.externalDomains"
+- update "zowe.useConfigmgr" with value: false
+- update "zowe.runtimeDirectory" with value: /home/zowe/runtime
+- update "zowe.workspaceDirectory" with value: /home/zowe/instance/workspace
+- update "zowe.logDirectory" with value: /home/zowe/instance/logs
+- update "zowe.externalDomains[0]" with value: localhost
+- update "zowe.externalPort" with value: 7554
+- update "components.gateway.port" with value: 7554
+- update "components.zaas.port" with value: 7558
+- update "components.discovery.port" with value: 7553
+- update "components.api-catalog.port" with value: 7552
+- update "components.caching-service.port" with value: 7555
+- update "components.app-server.port" with value: 7556
+- update "components.gateway.enabled" with value: true
+- update "components.zaas.enabled" with value: true
+- update "components.discovery.enabled" with value: true
+- update "components.api-catalog.enabled" with value: true
+- update "components.caching-service.enabled" with value: true
+- update "components.app-server.enabled" with value: true
+- update "components.explorer-jes.enabled" with value: true
+- update "components.explorer-mvs.enabled" with value: true
+- update "components.explorer-uss.enabled" with value: true
+- update "components.gateway.apiml.security.x509.externalMapperUrl" with value:
+- update "components.gateway.apiml.security.authorization.endpoint.url" with value:
+- update "components.gateway.apiml.security.authorization.endpoint.provider" with value:
+- update "components.discovery.replicas" with value: 1
+- update "components.caching-service.storage.mode" with value:
+- update "zowe.environments.ZWED_agent_host" with value: example.com
+- update "zowe.environments.ZWED_agent_https_port" with value: 7557
+- update "zowe.environments.ZOWE_ZLUX_TELNET_HOST" with value: example.com
+- update "zowe.environments.ZOWE_ZLUX_SSH_HOST" with value: example.com
+- update "zowe.certificate.keystore.file" with value: /home/zowe/keystore/keystore.p12
+- update "zowe.certificate.truststore.file" with value: /home/zowe/keystore/truststore.p12
+- update "zowe.certificate.pem.certificateAuthorities" with value: /home/zowe/keystore/ca.cer
+- update "zowe.certificate.pem.key" with value: /home/zowe/keystore/keystore.key
+- update "zowe.certificate.pem.certificate" with value: /home/zowe/keystore/keystore.cer
+- update "zowe.certificate.keystore.alias" with value: localhost
+- update "zowe.certificate.keystore.password" with value: password
+- update "zowe.certificate.keystore.type" with value: PKCS12
+- update "zowe.certificate.truststore.password" with value: password
+- update "zowe.certificate.truststore.type" with value: PKCS12
+-------------------------------------------------------------------------------
+>> Output Kubernetes ConfigMap and Secret manifests
+Please copy content between >>> START and <<< END, save them as a YAML file on your local
+computer, then apply it to your Kubernetes cluster. After apply, you MUST delete
+and destroy the temporary file from your local computer.
+  Example: kubectl apply -f /path/to/my/local-saved.yaml
+>>> START
+---
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: zowe-config
+  namespace: zowe
+  labels:
+    app.kubernetes.io/name: zowe
+    app.kubernetes.io/instance: zowe
+    app.kubernetes.io/managed-by: manual
+data:
+  zowe.yaml: |
+    ---
+    zowe:
+      setup:
+        jcl:
+          enable: true
+          header: ""
+        dataset:
+          prefix: "TEST.DATASET.PFX"
+          proclib: "TEST.DATASET.PFX.TEST.PROCLIB"
+          parmlib: "TEST.DATASET.PFX.PARMLIB"
+          parmlibMembers:
+            zis: "ZWESIP00"
+          jcllib: "TEST.DATASET.PFX.JCLLIB"
+          loadlib: "TEST.DATASET.PFX.SZWEEXEC"
+          authLoadlib: "TEST.DATASET.PFX.SZWEAUTH"
+          authPluginLib: "TEST.DATASET.PFX.ZWESAPL"
+        certificate:
+          type: "PKCS12"
+          pkcs12:
+            directory: "/test/dir/pkcs12"
+            name: "localhost"
+            password: "password"
+            caAlias: "local_ca"
+            caPassword: "local_ca_password"
+          validity: 3650
+        vsam:
+          mode: "NONRLS"
+          volume: "TSTVOL"
+          storageClass: ""
+          name: "TEST.DATASET.PFX.VSAM"
+      runtimeDirectory: "/home/zowe/runtime"
+      logDirectory: "/home/zowe/instance/logs"
+      workspaceDirectory: "/home/zowe/instance/workspace"
+      extensionDirectory: "/global/zowe/extensions"
+      configmgr:
+        validation: "STRICT"
+      job:
+        name: "ZWE1SV"
+        prefix: "ZWE1"
+      rbacProfileIdentifier: "1"
+      cookieIdentifier: "1"
+      externalPort: 7554
+      network:
+        server:
+          tls:
+            attls: false
+            minTls: "TLSv1.2"
+            maxTls: "TLSv1.3"
+        client:
+          tls:
+            attls: false
+      sysMessageTrim: false
+      sysMessages:
+      - "ZWEL0021I"
+      - "ZWEL0018I"
+      - "ZWEL0006I"
+      - "ZWES1601I"
+      - "ZWEL0008I"
+      - "ZWEL0022I"
+      - "ZWEL0001I"
+      - "ZWEL0002I"
+      - "ZWEAM000I"
+      - "ZWED0031I"
+      - "ZWES1013I"
+      launchScript:
+        logLevel: "info"
+        onComponentConfigureFail: "warn"
+      certificate:
+        keystore:
+          type: "PKCS12"
+          file: "/home/zowe/keystore/keystore.p12"
+          password: "password"
+          alias: "localhost"
+        truststore:
+          type: "PKCS12"
+          file: "/home/zowe/keystore/truststore.p12"
+          password: "password"
+        pem:
+          key: "/home/zowe/keystore/keystore.key"
+          certificate: "/home/zowe/keystore/keystore.cer"
+          certificateAuthorities: "/home/zowe/keystore/ca.cer"
+      verifyCertificates: "STRICT"
+      useConfigmgr: false
+      externalDomains:
+      - "localhost"
+      environments:
+        ZWED_agent_host: "example.com"
+        ZWED_agent_https_port: 7557
+        ZOWE_ZLUX_TELNET_HOST: "example.com"
+        ZOWE_ZLUX_SSH_HOST: "example.com"
+    java: {}
+    zOSMF:
+      host: "some.test.hostname"
+      port: 12321
+      applId: "IZUDFLT"
+    components:
+      apiml:
+        enabled: true
+        debug: false
+      gateway:
+        enabled: true
+        port: 7554
+        debug: false
+        apiml:
+          security:
+            auth:
+              provider: "saf"
+            authorization:
+              endpoint:
+                enabled: false
+                url: ""
+                provider: ""
+              provider: "native"
+            x509:
+              enabled: false
+              externalMapperUrl: ""
+      zaas:
+        enabled: true
+        port: 7558
+        debug: false
+      api-catalog:
+        enabled: true
+        port: 7552
+        debug: false
+      discovery:
+        enabled: true
+        port: 7553
+        debug: false
+        replicas: 1
+      caching-service:
+        enabled: true
+        port: 7555
+        debug: false
+        storage:
+          evictionStrategy: "reject"
+          mode: ""
+          infinispan:
+            jgroups:
+              port: 7600
+              keyExchange:
+                port: 7601
+      app-server:
+        enabled: true
+        port: 7556
+        debug: false
+      zss:
+        enabled: true
+        port: 7557
+        crossMemoryServerName: "ZWESIS_STD"
+        agent:
+          64bit: true
+      explorer-jes:
+        enabled: true
+      explorer-mvs:
+        enabled: true
+      explorer-uss:
+        enabled: true
+    ...
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: zowe-certificates-secret
+  namespace: zowe
+  labels:
+    app.kubernetes.io/name: zowe
+    app.kubernetes.io/instance: zowe
+    app.kubernetes.io/managed-by: manual
+type: Opaque
+data:
+  keystore.p12: [MASKED]
+  truststore.p12: [MASKED]
+stringData:
+  keystore.key: |
+    [MASKED]
+  keystore.cer: |
+    [MASKED]
+  ca.cer: |
+    [MASKED]
+<<< END
+-------------------------------------------------------------------------------
+>> Kubernetes manifests to run Zowe in containers are ready."
+`;

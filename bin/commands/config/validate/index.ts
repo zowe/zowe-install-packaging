@@ -30,6 +30,7 @@ export function execute(configPath: string, includeComponents?: boolean, onlyEna
   }
 
   common.printMessage(`Validating Zowe core configuration for file(s)=${configPath}`);
+  common.requireZoweYaml();
   const ZOWE_CONFIG=config.getZoweConfig();
   //validation complete from here
   common.printMessage(`Zowe core configuration is valid`);

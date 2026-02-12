@@ -1,4 +1,4 @@
-//ZWEISTC JOB
+//ZWEISTC JOB {zowe.setup.jcl.header}
 //*
 //* This program and the accompanying materials are made available
 //* under the terms of the Eclipse Public License v2.0 which
@@ -16,19 +16,31 @@
 //* Instances represent a configuration of Zowe, different from the
 //* "runtime" datasets that are created upon install of Zowe / SMPE.
 //*
+//* If you plan NOT to use Zowe Cross Memory Server, consider to
+//* copy Zowe Launcher STC only (ZWESLSTC).
+//*
 //*********************************************************************
 //*
-//MCOPY EXEC PGM=IEBCOPY
-//SYSPRINT DD SYSOUT=A
-//SYSUT1 DD DSN={zowe.setup.dataset.jcllib},DISP=SHR
-//SYSUT2 DD DSN={zowe.setup.dataset.proclib},DISP=SHR
-//SYSIN DD *
-  COPY OUTDD=SYSUT2,INDD=SYSUT1
-  SELECT MEMBER=((ZWESLSTC,{zowe.setup.security.stcs.zowe},R))
+//MCOPY EXEC PGM=IKJEFT01
+//SYSTSPRT DD SYSOUT=A
+//  SET PROCLIB={zowe.setup.dataset.proclib}
+//STCZOWE DD DISP=SHR,
+// DSN=&PROCLIB.({zowe.setup.security.stcs.zowe})
+//STCZIS DD DISP=SHR,
+// DSN=&PROCLIB.({zowe.setup.security.stcs.zis})
+//STCAUX DD DISP=SHR,
+// DSN=&PROCLIB.({zowe.setup.security.stcs.aux})
+//*
+//SYSTSIN DD *
+REPRO +
+INDATASET('{zowe.setup.dataset.jcllib}(ZWESLSTC)') +
+OUTFILE(STCZOWE)
 
-  COPY OUTDD=SYSUT2,INDD=SYSUT1
-  SELECT MEMBER=((ZWESISTC,{zowe.setup.security.stcs.zis},R))
+REPRO +
+INDATASET('{zowe.setup.dataset.jcllib}(ZWESISTC)') +
+OUTFILE(STCZIS)
 
-  COPY OUTDD=SYSUT2,INDD=SYSUT1
-  SELECT MEMBER=((ZWESASTC,{zowe.setup.security.stcs.aux},R))
+REPRO +
+INDATASET('{zowe.setup.dataset.jcllib}(ZWESASTC)') +
+OUTFILE(STCAUX)
 //*

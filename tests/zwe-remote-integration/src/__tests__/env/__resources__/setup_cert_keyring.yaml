@@ -1,0 +1,30 @@
+# yaml setup so 'zowe.setup.certificate' will have null PKCS12 values
+#   expected rc from internal start prepare still 0
+zowe:
+  externalDomains:
+  - {@ hostname @}
+  setup:
+    certificate:
+      type: JCERACFKS
+      keyring:
+        caLabel: localca
+        label: localhost
+        name: ZoweKeyring
+      san:
+      - {@ hostname @}
+    dataset:
+      prefix: ZOWE.PR#4444
+    jcl:
+      enable: true
+      header: '12345'
+  runtimeDirectory: {@ ussTestDir @}
+  workspaceDirectory: {@ zweWorkspaceDir @}
+  launchScript:
+    startupChecks:
+      default: "disabled"
+      ports: "disabled"
+java:
+  home: {@ zosJavaHome @}
+node:
+  home: {@ zosNodeHome @}
+

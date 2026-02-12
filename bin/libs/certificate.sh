@@ -30,7 +30,7 @@ ZWE_PRIVATE_DEFAULT_CERTIFICATE_EXTENDED_KEY_USAGE="clientAuth,serverAuth"
 
 JAVA_KEYTOOL_FLAG=" -J-Dkeystore.pkcs12.legacy "
 # COMPAT uses native.encoding, required for Java 21 which defaults to utf-8 instead of ebcdic
-JAVA_KEYTOOL_ENCODING=" -J-Dfile.encoding=COMPAT " 
+JAVA_KEYTOOL_ENCODING=" -J-Dfile.encoding=COMPAT "
 
 #######################################################################
 # Notes: some keyring related functions, like ncert, are using R_datalib behind the scene. It requires proper
@@ -93,20 +93,21 @@ pkeytool() {
   return ${code}
 }
 
-ncert_utility() {
+keyring_util() {
   args=$@
 
   utils_dir="${ZWE_zowe_runtimeDirectory}/bin/utils"
-  zct="${utils_dir}/ncert/src/cli.js"
+  keyring_exec="keyring-util"
 
-  print_debug "- Calling ncert ${args}"
-  # show we enable verbose mode of ncert command?
-  result=$(node "${zct}" "$@" 2>&1)
+  print_debug "- Calling keyring-util ${args}"
+  result=$(
+    "${utils_dir}/${keyring_exec}" "${args}" 2>&1
+  )
   code=$?
 
   if [ ${code} -eq 0 ]; then
     echo "${result}"
-    print_debug "  * ncert succeeded"
+    print_debug "  * keyring-util succeeded"
     print_trace "  * Exit code: ${code}"
     print_trace "  * Output:"
     if [ -n "${result}" ]; then
@@ -206,17 +207,17 @@ pkcs12_create_certificate_authority() {
   print_message ">>>> Generate PKCS12 format local CA with alias ${alias}:"
   mkdir -p "${keystore_dir}/${alias}"
   result=$(pkeytool -genkeypair -v \
-            -alias "${alias}" \
-            -keyalg RSA -keysize 2048 \
-            -dname "CN=${common_name}, OU=${ZWE_PRIVATE_CERTIFICATE_CA_ORG_UNIT:-${ZWE_PRIVATE_DEFAULT_CERTIFICATE_CA_ORG_UNIT}}, O=${ZWE_PRIVATE_CERTIFICATE_CA_ORG:-${ZWE_PRIVATE_DEFAULT_CERTIFICATE_CA_ORG}}, L=${ZWE_PRIVATE_CERTIFICATE_CA_LOCALITY:-${ZWE_PRIVATE_DEFAULT_CERTIFICATE_CA_LOCALITY}}, S=${ZWE_PRIVATE_CERTIFICATE_CA_STATE:-${ZWE_PRIVATE_DEFAULT_CERTIFICATE_CA_STATE}}, C=${ZWE_PRIVATE_CERTIFICATE_CA_COUNTRY:-${ZWE_PRIVATE_DEFAULT_CERTIFICATE_CA_COUNTRY}}" \
-            -keystore "${keystore_dir}/${alias}/${alias}.keystore.p12" \
-            -keypass "${password}" \
-            -storepass "${password}" \
-            -storetype "PKCS12" \
-            -validity "${ZWE_PRIVATE_CERTIFICATE_CA_VALIDITY:-${ZWE_PRIVATE_DEFAULT_CERTIFICATE_CA_VALIDITY}}" \
-            ${JAVA_KEYTOOL_FLAG} \
-            -ext KeyUsage="keyCertSign" \
-            -ext BasicConstraints:"critical=ca:true")
+    -alias "${alias}" \
+    -keyalg RSA -keysize 2048 \
+    -dname "CN=${common_name}, OU=${ZWE_PRIVATE_CERTIFICATE_CA_ORG_UNIT:-${ZWE_PRIVATE_DEFAULT_CERTIFICATE_CA_ORG_UNIT}}, O=${ZWE_PRIVATE_CERTIFICATE_CA_ORG:-${ZWE_PRIVATE_DEFAULT_CERTIFICATE_CA_ORG}}, L=${ZWE_PRIVATE_CERTIFICATE_CA_LOCALITY:-${ZWE_PRIVATE_DEFAULT_CERTIFICATE_CA_LOCALITY}}, S=${ZWE_PRIVATE_CERTIFICATE_CA_STATE:-${ZWE_PRIVATE_DEFAULT_CERTIFICATE_CA_STATE}}, C=${ZWE_PRIVATE_CERTIFICATE_CA_COUNTRY:-${ZWE_PRIVATE_DEFAULT_CERTIFICATE_CA_COUNTRY}}" \
+    -keystore "${keystore_dir}/${alias}/${alias}.keystore.p12" \
+    -keypass "${password}" \
+    -storepass "${password}" \
+    -storetype "PKCS12" \
+    -validity "${ZWE_PRIVATE_CERTIFICATE_CA_VALIDITY:-${ZWE_PRIVATE_DEFAULT_CERTIFICATE_CA_VALIDITY}}" \
+    ${JAVA_KEYTOOL_FLAG} \
+    -ext KeyUsage="keyCertSign" \
+    -ext BasicConstraints:"critical=ca:true")
   if [ $? -ne 0 ]; then
     return 1
   fi
@@ -241,15 +242,15 @@ pkcs12_create_certificate_and_sign() {
 
   mkdir -p "${keystore_dir}/${keystore_name}"
   result=$(pkeytool -genkeypair -v \
-            ${JAVA_KEYTOOL_FLAG} \
-            -alias "${alias}" \
-            -keyalg RSA -keysize 2048 \
-            -keystore "${keystore_dir}/${keystore_name}/${keystore_name}.keystore.p12" \
-            -keypass "${password}" \
-            -storepass "${password}" \
-            -storetype "PKCS12" \
-            -dname "CN=${common_name}, OU=${ZWE_PRIVATE_CERTIFICATE_ORG_UNIT:-${ZWE_PRIVATE_DEFAULT_CERTIFICATE_ORG_UNIT}}, O=${ZWE_PRIVATE_CERTIFICATE_ORG:-${ZWE_PRIVATE_DEFAULT_CERTIFICATE_ORG}}, L=${ZWE_PRIVATE_CERTIFICATE_LOCALITY:-${ZWE_PRIVATE_DEFAULT_CERTIFICATE_LOCALITY}}, S=${ZWE_PRIVATE_CERTIFICATE_STATE:-${ZWE_PRIVATE_DEFAULT_CERTIFICATE_STATE}}, C=${ZWE_PRIVATE_CERTIFICATE_COUNTRY:-${ZWE_PRIVATE_DEFAULT_CERTIFICATE_COUNTRY}}" \
-            -validity "${ZWE_PRIVATE_CERTIFICATE_VALIDITY:-${ZWE_PRIVATE_DEFAULT_CERTIFICATE_VALIDITY}}")
+    ${JAVA_KEYTOOL_FLAG} \
+    -alias "${alias}" \
+    -keyalg RSA -keysize 2048 \
+    -keystore "${keystore_dir}/${keystore_name}/${keystore_name}.keystore.p12" \
+    -keypass "${password}" \
+    -storepass "${password}" \
+    -storetype "PKCS12" \
+    -dname "CN=${common_name}, OU=${ZWE_PRIVATE_CERTIFICATE_ORG_UNIT:-${ZWE_PRIVATE_DEFAULT_CERTIFICATE_ORG_UNIT}}, O=${ZWE_PRIVATE_CERTIFICATE_ORG:-${ZWE_PRIVATE_DEFAULT_CERTIFICATE_ORG}}, L=${ZWE_PRIVATE_CERTIFICATE_LOCALITY:-${ZWE_PRIVATE_DEFAULT_CERTIFICATE_LOCALITY}}, S=${ZWE_PRIVATE_CERTIFICATE_STATE:-${ZWE_PRIVATE_DEFAULT_CERTIFICATE_STATE}}, C=${ZWE_PRIVATE_CERTIFICATE_COUNTRY:-${ZWE_PRIVATE_DEFAULT_CERTIFICATE_COUNTRY}}" \
+    -validity "${ZWE_PRIVATE_CERTIFICATE_VALIDITY:-${ZWE_PRIVATE_DEFAULT_CERTIFICATE_VALIDITY}}")
   if [ $? -ne 0 ]; then
     return 1
   fi
@@ -260,15 +261,15 @@ pkcs12_create_certificate_and_sign() {
 
   print_message ">>>> Generate CSR for the certificate \"${alias}\" in the keystore \"${keystore_name}\":"
   result=$(pkeytool ${JAVA_KEYTOOL_FLAG} \
-            -certreq -v \
-            -alias "${alias}" \
-            -keystore "${keystore_dir}/${keystore_name}/${keystore_name}.keystore.p12" \
-            -storepass "${password}" \
-            -file "${keystore_dir}/${keystore_name}/${alias}.csr" \
-            -keyalg RSA \
-            -storetype "PKCS12" \
-            -dname "CN=${common_name}, OU=${ZWE_PRIVATE_CERTIFICATE_ORG_UNIT:-${ZWE_PRIVATE_DEFAULT_CERTIFICATE_ORG_UNIT}}, O=${ZWE_PRIVATE_CERTIFICATE_ORG:-${ZWE_PRIVATE_DEFAULT_CERTIFICATE_ORG}}, L=${ZWE_PRIVATE_CERTIFICATE_LOCALITY:-${ZWE_PRIVATE_DEFAULT_CERTIFICATE_LOCALITY}}, S=${ZWE_PRIVATE_CERTIFICATE_STATE:-${ZWE_PRIVATE_DEFAULT_CERTIFICATE_STATE}}, C=${ZWE_PRIVATE_CERTIFICATE_COUNTRY:-${ZWE_PRIVATE_DEFAULT_CERTIFICATE_COUNTRY}}" \
-            -validity "${ZWE_PRIVATE_CERTIFICATE_VALIDITY:-${ZWE_PRIVATE_DEFAULT_CERTIFICATE_VALIDITY}}")
+    -certreq -v \
+    -alias "${alias}" \
+    -keystore "${keystore_dir}/${keystore_name}/${keystore_name}.keystore.p12" \
+    -storepass "${password}" \
+    -file "${keystore_dir}/${keystore_name}/${alias}.csr" \
+    -keyalg RSA \
+    -storetype "PKCS12" \
+    -dname "CN=${common_name}, OU=${ZWE_PRIVATE_CERTIFICATE_ORG_UNIT:-${ZWE_PRIVATE_DEFAULT_CERTIFICATE_ORG_UNIT}}, O=${ZWE_PRIVATE_CERTIFICATE_ORG:-${ZWE_PRIVATE_DEFAULT_CERTIFICATE_ORG}}, L=${ZWE_PRIVATE_CERTIFICATE_LOCALITY:-${ZWE_PRIVATE_DEFAULT_CERTIFICATE_LOCALITY}}, S=${ZWE_PRIVATE_CERTIFICATE_STATE:-${ZWE_PRIVATE_DEFAULT_CERTIFICATE_STATE}}, C=${ZWE_PRIVATE_CERTIFICATE_COUNTRY:-${ZWE_PRIVATE_DEFAULT_CERTIFICATE_COUNTRY}}" \
+    -validity "${ZWE_PRIVATE_CERTIFICATE_VALIDITY:-${ZWE_PRIVATE_DEFAULT_CERTIFICATE_VALIDITY}}")
   if [ $? -ne 0 ]; then
     return 1
   fi
@@ -289,19 +290,19 @@ pkcs12_create_certificate_and_sign() {
 
   print_message ">>>> Sign the CSR using the Certificate Authority \"${ca_alias}\":"
   result=$(pkeytool ${JAVA_KEYTOOL_FLAG} \
-            -gencert -v \
-            -infile "${keystore_dir}/${keystore_name}/${alias}.csr" \
-            -outfile "${keystore_dir}/${keystore_name}/${alias}.signed.cer" \
-            -keystore "${keystore_dir}/${ca_alias}/${ca_alias}.keystore.p12" \
-            -alias "${ca_alias}" \
-            -keypass "${ca_password}" \
-            -storepass "${ca_password}" \
-            -storetype "PKCS12" \
-            -ext "${san}" \
-            -ext "KeyUsage:critical=${ZWE_PRIVATE_CERTIFICATE_KEY_USAGE:-${ZWE_PRIVATE_DEFAULT_CERTIFICATE_KEY_USAGE}}" \
-            -ext "ExtendedKeyUsage=${ZWE_PRIVATE_CERTIFICATE_EXTENDED_KEY_USAGE:-${ZWE_PRIVATE_DEFAULT_CERTIFICATE_EXTENDED_KEY_USAGE}}" \
-            -rfc \
-            -validity "${ZWE_PRIVATE_CERTIFICATE_VALIDITY:-${ZWE_PRIVATE_DEFAULT_CERTIFICATE_VALIDITY}}")
+    -gencert -v \
+    -infile "${keystore_dir}/${keystore_name}/${alias}.csr" \
+    -outfile "${keystore_dir}/${keystore_name}/${alias}.signed.cer" \
+    -keystore "${keystore_dir}/${ca_alias}/${ca_alias}.keystore.p12" \
+    -alias "${ca_alias}" \
+    -keypass "${ca_password}" \
+    -storepass "${ca_password}" \
+    -storetype "PKCS12" \
+    -ext "${san}" \
+    -ext "KeyUsage:critical=${ZWE_PRIVATE_CERTIFICATE_KEY_USAGE:-${ZWE_PRIVATE_DEFAULT_CERTIFICATE_KEY_USAGE}}" \
+    -ext "ExtendedKeyUsage=${ZWE_PRIVATE_CERTIFICATE_EXTENDED_KEY_USAGE:-${ZWE_PRIVATE_DEFAULT_CERTIFICATE_EXTENDED_KEY_USAGE}}" \
+    -rfc \
+    -validity "${ZWE_PRIVATE_CERTIFICATE_VALIDITY:-${ZWE_PRIVATE_DEFAULT_CERTIFICATE_VALIDITY}}")
   if [ $? -ne 0 ]; then
     return 1
   fi
@@ -326,13 +327,13 @@ pkcs12_create_certificate_and_sign() {
   if [ "$?" != "0" ]; then
     print_message ">>>> Import the Certificate Authority \"${ca_alias}\" to the keystore \"${keystore_name}\":"
     result=$(pkeytool ${JAVA_KEYTOOL_FLAG} \
-              -importcert -v \
-              -trustcacerts -noprompt \
-              -file "${ca_cert_file}" \
-              -alias "${ca_alias}" \
-              -keystore "${keystore_dir}/${keystore_name}/${keystore_name}.keystore.p12" \
-              -storepass "${password}" \
-              -storetype "PKCS12")
+      -importcert -v \
+      -trustcacerts -noprompt \
+      -file "${ca_cert_file}" \
+      -alias "${ca_alias}" \
+      -keystore "${keystore_dir}/${keystore_name}/${keystore_name}.keystore.p12" \
+      -storepass "${password}" \
+      -storetype "PKCS12")
   fi
 
   # test if we need to import CA into truststore
@@ -345,13 +346,13 @@ pkcs12_create_certificate_and_sign() {
   if [ "$?" != "0" ]; then
     print_message ">>>> Import the Certificate Authority \"${ca_alias}\" to the truststore \"${keystore_name}\":"
     result=$(pkeytool ${JAVA_KEYTOOL_FLAG} \
-              -importcert -v \
-              -trustcacerts -noprompt \
-              -file "${ca_cert_file}" \
-              -alias "${ca_alias}" \
-              -keystore "${keystore_dir}/${keystore_name}/${keystore_name}.truststore.p12" \
-              -storepass "${password}" \
-              -storetype "PKCS12")
+      -importcert -v \
+      -trustcacerts -noprompt \
+      -file "${ca_cert_file}" \
+      -alias "${ca_alias}" \
+      -keystore "${keystore_dir}/${keystore_name}/${keystore_name}.truststore.p12" \
+      -storepass "${password}" \
+      -storetype "PKCS12")
 
     pkcs12_ensure_binary_tag "${keystore_dir}/${keystore_name}/${keystore_name}.truststore.p12"
     if [ $? -ne 0 ]; then
@@ -361,92 +362,19 @@ pkcs12_create_certificate_and_sign() {
 
   print_message ">>>> Import the signed CSR to the keystore \"${keystore_name}\":"
   result=$(pkeytool ${JAVA_KEYTOOL_FLAG} \
-            -importcert -v \
-            -trustcacerts -noprompt \
-            -file "${keystore_dir}/${keystore_name}/${alias}.signed.cer" \
-            -alias "${alias}" \
-            -keystore "${keystore_dir}/${keystore_name}/${keystore_name}.keystore.p12" \
-            -storepass "${password}" \
-            -storetype "PKCS12")
+    -importcert -v \
+    -trustcacerts -noprompt \
+    -file "${keystore_dir}/${keystore_name}/${alias}.signed.cer" \
+    -alias "${alias}" \
+    -keystore "${keystore_dir}/${keystore_name}/${keystore_name}.keystore.p12" \
+    -storepass "${password}" \
+    -storetype "PKCS12")
   if [ $? -ne 0 ]; then
     return 1
   fi
 
   # delete signed CSR
   rm -f "${keystore_dir}/${keystore_name}/${alias}.signed.cer"
-}
-
-# This function acts similar pkcs12_create_certificate_and_sign but doesn't use keytool
-# JDK8 keytool does not support SAN dns with * in it.
-# TODO: allow to customize dname
-pkcs12_create_certificate_and_sign_with_node() {
-  keystore_dir="${1}"
-  keystore_name="${2}"
-  alias="${3}"
-  password="${4}"
-  common_name=${5:-${ZWE_PRIVATE_DEFAULT_CERTIFICATE_COMMON_NAME}}
-  domains=${6}
-  ca_alias=${7}
-  ca_password=${8}
-
-  ca_alias_lc=$(echo "${ca_alias}" | lower_case)
-
-  print_message ">>>> Generate certificate \"${alias}\" in the keystore ${keystore_name}:"
-  mkdir -p "${keystore_dir}/${keystore_name}"
-
-  # generate --alt list from domains list
-  alt_names=
-  for item in $(echo "${domains}" | lower_case | tr "," " "); do
-    if [ -n "${item}" ]; then
-      alt_names="${alt_names} --alt ${item}"
-    fi
-  done
-
-  # make sure keystore file is tagged as binary
-  pkcs12_ensure_binary_tag "${keystore_dir}/${ca_alias}/${ca_alias}.keystore.p12"
-  if [ $? -ne 0 ]; then
-    return 1
-  fi
-  pkcs12_ensure_binary_tag "${keystore_dir}/${keystore_name}/${keystore_name}.keystore.p12"
-  if [ $? -ne 0 ]; then
-    return 1
-  fi
-
-  # generate cert
-  result=$(ncert_utility pkcs12 generate "${alias}" \
-            --ca "${keystore_dir}/${ca_alias}/${ca_alias}.keystore.p12" \
-            --cap "${ca_password}" \
-            --caa "${ca_alias_lc}" \
-            -f "${keystore_dir}/${keystore_name}/${keystore_name}.keystore.p12" \
-            -p "${password}" \
-            ${alt_names})
-  if [ $? -ne 0 ]; then
-    return 1
-  fi
-
-  ca_cert_file="${keystore_dir}/${ca_alias}/${ca_alias_lc}.cer"
-  if [ ! -f "${ca_cert_file}" ]; then
-    print_error "Error: CA certificate is not exported. Check \"zwe certificate pkcs12 export --help\" to find more details."
-    return 1
-  fi
-
-  # test if we need to import CA into keystore
-  keytool -list -v -noprompt \
-    -alias "${ca_alias}" \
-    -keystore "${keystore_dir}/${keystore_name}/${keystore_name}.keystore.p12" \
-    -storepass "${password}" \
-    -storetype "PKCS12" \
-    >/dev/null 2>/dev/null
-  if [ "$?" != "0" ]; then
-    print_message ">>>> Import the Certificate Authority \"${ca_alias}\" to the keystore \"${keystore_name}\":"
-    result=$(pkeytool -importcert -v \
-              -trustcacerts -noprompt \
-              -file "${ca_cert_file}" \
-              -alias "${ca_alias}" \
-              -keystore "${keystore_dir}/${keystore_name}/${keystore_name}.keystore.p12" \
-              -storepass "${password}" \
-              -storetype "PKCS12")
-  fi
 }
 
 pkcs12_import_pkcs12_keystore() {
@@ -478,17 +406,17 @@ pkcs12_import_pkcs12_keystore() {
   fi
 
   result=$(pkeytool ${JAVA_KEYTOOL_FLAG} \
-            -importkeystore -v \
-            -noprompt \
-            -deststoretype "PKCS12" \
-            -destkeystore "${dest_keystore}" \
-            -deststorepass "${dest_password}" \
-            -destkeypass "${dest_password}" \
-            -destalias "${dest_alias}" \
-            -srcstoretype "PKCS12" \
-            -srckeystore "${source_keystore}" \
-            -srcstorepass "${source_password}" \
-            -srcalias "${source_alias}")
+    -importkeystore -v \
+    -noprompt \
+    -deststoretype "PKCS12" \
+    -destkeystore "${dest_keystore}" \
+    -deststorepass "${dest_password}" \
+    -destkeypass "${dest_password}" \
+    -destalias "${dest_alias}" \
+    -srcstoretype "PKCS12" \
+    -srckeystore "${source_keystore}" \
+    -srcstorepass "${source_password}" \
+    -srcalias "${source_alias}")
   if [ $? -ne 0 ]; then
     return 1
   fi
@@ -512,13 +440,13 @@ pkcs12_import_certificates() {
     if [ -n "${ca_file}" ]; then
       print_message ">>>> Import \"${ca_file}\" to the keystore \"${dest_keystore}\":"
       result=$(pkeytool ${JAVA_KEYTOOL_FLAG} \
-                -importcert -v \
-                -trustcacerts -noprompt \
-                -file "${ca_file}" \
-                -alias "${alias}${ca_index}" \
-                -keystore "${dest_keystore}" \
-                -storepass "${dest_password}" \
-                -storetype "PKCS12")
+        -importcert -v \
+        -trustcacerts -noprompt \
+        -file "${ca_file}" \
+        -alias "${alias}${ca_index}" \
+        -keystore "${dest_keystore}" \
+        -storepass "${dest_password}" \
+        -storetype "PKCS12")
       if [ $? -ne 0 ]; then
         return 1
       fi
@@ -573,14 +501,14 @@ pkcs12_trust_service() {
     cert_alias=${cert_file%.cer}
     echo ">>>> Import a certificate \"${cert_alias}\" to the truststore:"
     result=$(pkeytool ${JAVA_KEYTOOL_FLAG} \
-              -importcert -v \
-              -trustcacerts \
-              -noprompt \
-              -file "${cert}" \
-              -alias "${cert_alias}" \
-              -keystore "${keystore_dir}/${keystore_name}/${keystore_name}.truststore.p12" \
-              -storepass "${password}" \
-              -storetype "PKCS12")
+      -importcert -v \
+      -trustcacerts \
+      -noprompt \
+      -file "${cert}" \
+      -alias "${cert_alias}" \
+      -keystore "${keystore_dir}/${keystore_name}/${keystore_name}.truststore.p12" \
+      -storepass "${password}" \
+      -storetype "PKCS12")
     if [ $? -ne 0 ]; then
       return 1
     fi
@@ -605,9 +533,9 @@ pkcs12_export_pem() {
 
   print_message ">>>> List content of keystore \"${keystore_file}\":"
   keystore_content=$(pkeytool -list \
-            -keystore "${keystore_file}" \
-            -storepass "${password}" \
-            -storetype "PKCS12")
+    -keystore "${keystore_file}" \
+    -storepass "${password}" \
+    -storetype "PKCS12")
   if [ $? -ne 0 ]; then
     return 1
   fi
@@ -618,12 +546,12 @@ pkcs12_export_pem() {
       alias_lc=$(echo "${alias}" | lower_case)
       print_message ">>>> Export certificate \"${alias}\" to PEM format"
       result=$(pkeytool ${JAVA_KEYTOOL_ENCODING} -exportcert -v \
-                -alias "${alias}" \
-                -keystore "${keystore_file}" \
-                -storepass "${password}" \
-                -storetype "PKCS12" \
-                -rfc \
-                -file "${keystore_dir}/${alias_lc}.cer")
+        -alias "${alias}" \
+        -keystore "${keystore_file}" \
+        -storepass "${password}" \
+        -storetype "PKCS12" \
+        -rfc \
+        -file "${keystore_dir}/${alias_lc}.cer")
       if [ $? -ne 0 ]; then
         return 1
       fi
@@ -638,18 +566,24 @@ EOF
       alias_lc=$(echo "${alias}" | lower_case)
       print_message ">>>> Export certificate \"${alias}\" to PEM format"
       result=$(pkeytool -exportcert -v \
-                -alias "${alias}" \
-                -keystore "${keystore_file}" \
-                -storepass "${password}" \
-                -storetype "PKCS12" \
-                -rfc \
-                -file "${keystore_dir}/${alias_lc}.cer")
+        -alias "${alias}" \
+        -keystore "${keystore_file}" \
+        -storepass "${password}" \
+        -storetype "PKCS12" \
+        -rfc \
+        -file "${keystore_dir}/${alias_lc}.cer")
       if [ $? -ne 0 ]; then
         return 1
       fi
       if [ `uname` = "OS/390" ]; then
-        iconv -f ISO8859-1 -t IBM-1047 "${keystore_dir}/${alias_lc}.cer" > "${keystore_dir}/${alias_lc}.cer-ebcdic"
-        mv "${keystore_dir}/${alias_lc}.cer-ebcdic" "${keystore_dir}/${alias_lc}.cer"
+        # check if certificate is in EBCDIC before converting
+        if [[ "$(head -c 10 ${keystore_dir}/${alias_lc}.cer)" = "-----BEGIN" ]]; then
+          print_message ">>>> Certificate \"${keystore_dir}/${alias_lc}.cer is in EBCDIC."
+        else
+          print_message ">>>> Converting certificate \"${keystore_dir}/${alias_lc}.cer\" to EBCDIC."
+          iconv -f ISO8859-1 -t IBM-1047 "${keystore_dir}/${alias_lc}.cer" >"${keystore_dir}/${alias_lc}.cer-ebcdic"
+          mv "${keystore_dir}/${alias_lc}.cer-ebcdic" "${keystore_dir}/${alias_lc}.cer"
+        fi
         ensure_file_encoding "${keystore_dir}/${alias_lc}.cer" "CERTIFICATE"
       fi
     fi
@@ -704,10 +638,10 @@ pkcs12_show_info() {
 
   print_debug ">>>> Show certificate information of ${alias}:"
   result=$(pkeytool -list -v \
-            -alias "${alias}" \
-            -keystore "${keystore_file}" \
-            -storepass "${password}" \
-            -storetype "PKCS12")
+    -alias "${alias}" \
+    -keystore "${keystore_file}" \
+    -storepass "${password}" \
+    -storetype "PKCS12")
   if [ $? -ne 0 ]; then
     return 1
   fi
@@ -723,10 +657,10 @@ pkcs12_delete_cert() {
   print_message ">>>> Delete ${alias} from keystore \"${keystore_file}\":"
 
   result=$(pkeytool -delete -v \
-            -storetype "PKCS12" \
-            -keystore "${keystore_file}" \
-            -storepass "${password}" \
-            -alias "${alias}")
+    -storetype "PKCS12" \
+    -keystore "${keystore_file}" \
+    -storepass "${password}" \
+    -alias "${alias}")
   if [ $? -ne 0 ]; then
     return 1
   fi
@@ -735,7 +669,7 @@ pkcs12_delete_cert() {
 compare_domain_with_wildcards() {
   pattern=$(echo "$1" | lower_case)
   domain=$(echo "$2" | lower_case)
-  
+
   if [ "${pattern}" = "${domain}" ] || [[ ${domain} == ${pattern} ]]; then
     echo "true"
   fi
@@ -805,27 +739,23 @@ keyring_run_zwekring_jcl() {
   jcllib="${2}"
   # should be 1, 2 or 3
   jcloption="${3}"
-  keyring_owner="${4}"
-  keyring_name="${5}"
-  domains="${6}"
-  alias="${7}"
-  ca_alias="${8}"
+  domains="${4}"
   # external CA labels separated by comma (label can have spaces)
-  ext_cas="${9}"
-  # set to 1 or true to import z/OSMF CA
-  trust_zosmf=0
-  if [ "${10}" = "true" -o "${10}" = "1" ]; then
-    trust_zosmf=1
+  ext_cas="${5}"
+  # set to 1 to import z/OSMF CA
+  trust_zosmf="${6}"
+  zosmf_root_ca="${7}"
+  validity="${8}"
+  security_product="${9}"
+
+  member_prefix="ZWEIKR"
+  if [ "${security_product}" = "TSS" ]; then
+    member_name="${member_prefix}T${jcloption}"
+  elif [ "${security_product}" = "ACF2" ]; then
+    member_name="${member_prefix}A${jcloption}"
+  else
+    member_name="${member_prefix}R${jcloption}"
   fi
-  zosmf_root_ca="${11}"
-  # option 2 - connect existing
-  connect_user="${12}"
-  connect_label="${13}"
-  # option 3 - import from data set
-  import_ds_name="${14}"
-  import_ds_password="${15}"
-  validity="${16:-${ZWE_PRIVATE_DEFAULT_CERTIFICATE_VALIDITY}}"
-  security_product=${17:-RACF}
 
   # generate from domains list
   domain_name=
@@ -845,6 +775,10 @@ keyring_run_zwekring_jcl() {
     fi
   done
 
+  if [ -z "${ip_address}" ]; then
+    print_error_and_exit "Error ZWEL0173E: Please enter an IP address in either the subject alternative name (zowe.setup.certificate.san) or external domain (zowe.externalDomains) in the Zowe YAML configuration file." "" 173
+  fi
+
   import_ext_ca=0
   import_ext_intermediate_ca_label=
   import_ext_root_ca_label=
@@ -862,9 +796,10 @@ keyring_run_zwekring_jcl() {
   done <<EOF
 $(echo "${ext_cas}" | tr "," "\n")
 EOF
-
+  zosmf_root_auto_detect="false"
   if [ "${trust_zosmf}" = "1" ]; then
     if [ "${zosmf_root_ca}" = "_auto_" ]; then
+      zosmf_root_auto_detect="true"
       if [ "${security_product}" = "RACF" ]; then
         zosmf_root_ca=$(detect_zosmf_root_ca_racf "${ZWE_PRIVATE_ZOSMF_USER}")
       fi
@@ -884,72 +819,33 @@ EOF
   validity_ymd=$("${date_add_util}" ${validity} YYYY-MM-DD)
   validity_mdy=$("${date_add_util}" ${validity} MM/DD/YY)
 
-  # option 2 needs further changes on JCL
-  racf_connect1="s/dummy/dummy/"
-  racf_connect2="s/dummy/dummy/"
-  acf2_connect="s/dummy/dummy/"
-  tss_connect="s/dummy/dummy/"
-  if [ "${jcloption}" =  "2" ]; then
-    if [ "${connect_user}" = "SITE" ]; then
-      racf_connect1="s/^ \+RACDCERT CONNECT[(]SITE | ID[(]userid[)].*\$/   RACDCERT CONNECT(SITE +/"
-      acf2_connect="s/^ \+CONNECT CERTDATA[(]SITECERT\.digicert | userid\.digicert[)].*\$/   CONNECT CERTDATA(SITECERT.${connect_label}) -/"
-      tss_connect="s/^ \+RINGDATA[(]CERTSITE|userid,digicert[)].*\$/       RINGDATA(CERTSITE,${connect_label}) +/"
-    elif [ -n "${connect_user}" ]; then
-      racf_connect1="s/^ \+RACDCERT CONNECT[(]SITE | ID[(]userid[)].*\$/   RACDCERT CONNECT(ID(${connect_user}) +/"
-      acf2_connect="s/^ \+CONNECT CERTDATA[(]SITECERT\.digicert | userid\.digicert[)].*\$/   CONNECT CERTDATA(${connect_user}.${connect_label}) -/"
-      tss_connect="s/^ \+RINGDATA[(]CERTSITE|userid,digicert[)].*\$/       RINGDATA(${connect_user},${connect_label}) +/"
-    fi
-    racf_connect2="s/^ \+LABEL[(]'certlabel'[)].*\$/            LABEL('${connect_label}') +/"
-  fi
-
-  # used by ACF2  
-  stc_group=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.security.groups.stc")
-  if [ -z "${stc_group}" ]; then
-    stc_group=${ZWE_PRIVATE_DEFAULT_ADMIN_GROUP}
-  fi
-
   ###############################
   # prepare ZWEKRING JCL
-  print_message ">>>> Modify ZWEKRING"
+  print_debug ">>>> Prepare ${member_name}"
   print_debug "- Create temp file"
   tmpfile=$(create_tmp_file $(echo "zwe ${ZWE_CLI_COMMANDS_LIST}" | sed "s# #-#g"))
-  print_debug "  > temp file: ${tmpfile}"
-  print_debug "- Create temp data set member"
-  tmpdsm=$(create_data_set_tmp_member "${jcllib}" "ZW$(date +%H%M)")
-  print_debug "  > data set member: ${jcllib}(tmpdsm)"
-  print_debug "- Copy ${prefix}.${ZWE_PRIVATE_DS_SZWESAMP}(ZWEKRING) to ${tmpfile}"
-  result=$(cat "//'${prefix}.${ZWE_PRIVATE_DS_SZWESAMP}(ZWEKRING)'" | \
-          sed  "s/^\/\/ \+SET \+PRODUCT=.*\$/\/\/         SET  PRODUCT=${security_product}/" | \
-          sed "s/^\/\/ \+SET \+ZOWEUSER=.*\$/\/\/         SET  ZOWEUSER=${keyring_owner:-${ZWE_PRIVATE_DEFAULT_ZOWE_USER}}/" | \
-          sed "s/^\/\/ \+SET \+ZOWERING=.*\$/\/\/         SET  ZOWERING='${keyring_name}'/" | \
-          sed   "s/^\/\/ \+SET \+OPTION=.*\$/\/\/         SET  OPTION=${jcloption}/" | \
-          sed    "s/^\/\/ \+SET \+LABEL=.*\$/\/\/         SET  LABEL='${alias}'/" | \
-          sed  "s/^\/\/ \+SET \+LOCALCA=.*\$/\/\/         SET  LOCALCA='${ca_alias}'/" | \
-          sed       "s/^\/\/ \+SET \+CN=.*\$/\/\/         SET  CN='${ZWE_PRIVATE_CERTIFICATE_COMMON_NAME:-${ZWE_PRIVATE_DEFAULT_CERTIFICATE_COMMON_NAME}}'/" | \
-          sed       "s/^\/\/ \+SET \+OU=.*\$/\/\/         SET  OU='${ZWE_PRIVATE_CERTIFICATE_ORG_UNIT:-${ZWE_PRIVATE_DEFAULT_CERTIFICATE_ORG_UNIT}}'/" | \
-          sed        "s/^\/\/ \+SET \+O=.*\$/\/\/         SET  O='${ZWE_PRIVATE_CERTIFICATE_ORG:-${ZWE_PRIVATE_DEFAULT_CERTIFICATE_ORG}}'/" | \
-          sed        "s/^\/\/ \+SET \+L=.*\$/\/\/         SET  L='${ZWE_PRIVATE_CERTIFICATE_LOCALITY:-${ZWE_PRIVATE_DEFAULT_CERTIFICATE_LOCALITY}}'/" | \
-          sed       "s/^\/\/ \+SET \+SP=.*\$/\/\/         SET  SP='${ZWE_PRIVATE_CERTIFICATE_STATE:-${ZWE_PRIVATE_DEFAULT_CERTIFICATE_STATE}}'/" | \
-          sed        "s/^\/\/ \+SET \+C=.*\$/\/\/         SET  C='${ZWE_PRIVATE_CERTIFICATE_COUNTRY:-${ZWE_PRIVATE_DEFAULT_CERTIFICATE_COUNTRY}}'/" | \
-          sed "s/^\/\/ \+SET \+HOSTNAME=.*\$/\/\/         SET  HOSTNAME='${domain_name}'/" | \
+  print_debug "  > data set member: ${jcllib}(${member_name})"
+  print_debug "- Copy ${jcllib}(${member_name}) to ${tmpfile}"
+  # result = modified JCL
+  result=$(cat "//'${jcllib}(${member_name})'" | \
           sed "s/^\/\/ \+SET \+IPADDRES=.*\$/\/\/         SET  IPADDRES='${ip_address}'/" | \
-          sed   "s/^\/\/ \+SET \+DSNAME=.*\$/\/\/         SET  DSNAME=${import_ds_name}/" | \
-          sed "s/^\/\/ \+SET \+PKCSPASS=.*\$/\/\/         SET  PKCSPASS='${import_ds_password}'/" | \
           sed "s/^\/\/ \+SET \+IFZOWECA=.*\$/\/\/         SET  IFZOWECA=${import_ext_ca}/" | \
           sed "s/^\/\/ \+SET \+ITRMZWCA=.*\$/\/\/         SET  ITRMZWCA='${import_ext_intermediate_ca_label}'/" | \
           sed "s/^\/\/ \+SET \+ROOTZWCA=.*\$/\/\/         SET  ROOTZWCA='${import_ext_root_ca_label}'/" | \
           sed "s/^\/\/ \+SET \+IFROZFCA=.*\$/\/\/         SET  IFROZFCA=${trust_zosmf}/" | \
-          sed "s/^\/\/ \+SET \+ROOTZFCA=.*\$/\/\/         SET  ROOTZFCA='${zosmf_root_ca}'/" | \
-          sed   "s/^\/\/ \+SET \+STCGRP=.*\$/\/\/         SET  STCGRP=${stc_group}/" | \
-          sed "${racf_connect1}" | \
-          sed "${racf_connect2}" | \
-          sed "${acf2_connect}" | \
-          sed "${tss_connect}" | \
           sed  "s/2030-05-01/${validity_ymd}/g" | \
-          sed  "s#05/01/30#${validity_mdy}#g" \
-          > "${tmpfile}")
-  code=$?
-  chmod 700 "${tmpfile}"
+          sed  "s#05/01/30#${validity_mdy}#g")
+  if [ "${zosmf_root_auto_detect}" = "true" ]; then
+    result=$(echo "${result}" | 
+          sed "s/^\/\/ \+SET \+ROOTZFCA=.*\$/\/\/         SET  ROOTZFCA='${zosmf_root_ca}'/")
+  fi
+  # code = no result or error writing to tmpfile
+  if [ -n "${result}" ]; then
+    echo "${result}" > "${tmpfile}"
+    code=$?
+  else
+    code=1
+  fi
   if [ ${code} -eq 0 ]; then
     print_debug "  * Succeeded"
     print_trace "  * Exit code: ${code}"
@@ -966,34 +862,35 @@ EOF
     fi
   fi
   if [ ! -f "${tmpfile}" ]; then
-    print_error "Error ZWEL0159E: Failed to modify ${prefix}.${ZWE_PRIVATE_DS_SZWESAMP}(ZWEKRING)"
+    print_error "Error ZWEL0159E: Failed to modify ${jcllib}(${member_name})"
     return 159
   fi
-  print_trace "- Ensure ${tmpfile} encoding before copying into data set"
-  ensure_file_encoding "${tmpfile}" "SPDX-License-Identifier"
-  print_trace "- ${tmpfile} created, copy to ${jcllib}(${tmpdsm})"
-  copy_to_data_set "${tmpfile}" "${jcllib}(${tmpdsm})" "" "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITE}"
-  code=$?
-  print_trace "- Delete ${tmpfile}"
-  rm -f "${tmpfile}"
-  if [ ${code} -ne 0 ]; then
-    print_error "Error ZWEL0160E: Failed to write to ${jcllib}(${tmpdsm}). Please check if target data set is opened by others."
-    return 160
-  fi
-  print_message "    - ${jcllib}(${tmpdsm}) is prepared"
-  print_message
+  chmod 700 "${tmpfile}"
 
-  ###############################
-  # submit job
+  jcl_contents=$(cat "${tmpfile}")
+
+  print_message "Template JCL: ${prefix}.${ZWE_PRIVATE_DS_SZWESAMP}(${member_name}) , Executable JCL: ${jcllib}(${member_name})"
+  print_message "--- JCL Content ---"
+  print_message "$jcl_contents"
+  print_message "--- End of JCL ---"
+
   if [ "${ZWE_CLI_PARAMETER_SECURITY_DRY_RUN}" = "true" ]; then
-    print_message "Dry-run mode, JCL will NOT be submitted on the system."
-    print_message "Please submit ${jcllib}(${tmpdsm}) manually."
+    print_message "JCL not submitted, command run with dry run flag."
+    print_message "To perform command, re-run command without dry run flag, or submit the JCL directly"
+    print_trace "- Delete ${tmpfile}"
+    rm "${tmpfile}"
   else
-    print_message ">>>> Submit ${jcllib}(${tmpdsm})"
-    jobid=$(submit_job "//'${jcllib}(${tmpdsm})'")
+    print_debug "    - ${jcllib}(${member_name}) is prepared"
+
+    ###############################
+    # submit job
+    print_message "Submitting Job ${member_name}"
+    jobid=$(submit_job "${tmpfile}")
     code=$?
     if [ ${code} -ne 0 ]; then
-      print_error "Error ZWEL0161E: Failed to run JCL ${jcllib}(${tmpdsm})."
+      print_error "Error ZWEL0161E: Failed to run JCL ${jcllib}(${member_name})."
+      print_trace "- Delete ${tmpfile}"
+      rm -f "${tmpfile}"
       return 161
     fi
     print_debug "- job id ${jobid}"
@@ -1001,6 +898,8 @@ EOF
     code=$?
     if [ ${code} -eq 1 ]; then
       print_error "Error ZWEL0162E: Failed to find job ${jobid} result."
+      print_trace "- Delete ${tmpfile}"
+      rm -f "${tmpfile}"
       return 162
     fi
     jobname=$(echo "${jobstate}" | awk -F, '{print $2}')
@@ -1010,52 +909,55 @@ EOF
       print_message "    - Job ${jobname}(${jobid}) ends with code ${jobcccode} (${jobcctext})."
 
       print_message ""
-      print_message "WARNING: Due to the limitation of the ZWEKRING job, exit with 0 does not mean"
+      print_message "WARNING: Due to the limitation of the ${member_name} job, exit with 0 does not mean"
       print_message "         the job is fully successful. Please check the job log to determine"
       print_message "         if there are any inline errors."
       print_message ""
     else
       print_error "Error ZWEL0163E: Job ${jobname}(${jobid}) ends with code ${jobcccode} (${jobcctext})."
+      print_trace "- Delete ${tmpfile}"
+      rm -f "${tmpfile}"
       return 163
     fi
+    print_trace "- Delete ${tmpfile}"
+    rm -f "${tmpfile}"
   fi
 }
 
 keyring_run_zwenokyr_jcl() {
   prefix="${1}"
   jcllib="${2}"
-  keyring_owner="${3}"
-  keyring_name="${4}"
-  alias="${5}"
-  ca_alias="${6}"
-  security_product=${7:-RACF}
+  security_product="${3}"
+  cert_label="${4}"
+  ca_label="${5}"
 
-  # used by ACF2
-  stc_group=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.security.groups.stc")
-  if [ -z "${stc_group}" ]; then
-    stc_group=${ZWE_PRIVATE_DEFAULT_ADMIN_GROUP}
+  member_prefix="ZWENOKR"
+  if [ "${security_product}" = "TSS" ]; then
+    member_name="${member_prefix}T"
+  elif [ "${security_product}" = "ACF2" ]; then
+    member_name="${member_prefix}A"
+  else
+    member_name="${member_prefix}R"
   fi
 
   ###############################
-  # prepare ZWENOKYR JCL
-  print_message ">>>> Modify ZWENOKYR"
+  # prepare ZWENOKR* JCL
+  print_debug ">>>> Prepare ${member_name}"
   print_debug "- Create temp file"
   tmpfile=$(create_tmp_file $(echo "zwe ${ZWE_CLI_COMMANDS_LIST}" | sed "s# #-#g"))
-  print_debug "  > temp file: ${tmpfile}"
-  print_debug "- Create temp data set member"
-  tmpdsm=$(create_data_set_tmp_member "${jcllib}" "ZW$(date +%H%M)")
-  print_debug "  > data set member: ${jcllib}(tmpdsm)"
-  print_debug "- Copy ${prefix}.${ZWE_PRIVATE_DS_SZWESAMP}(ZWENOKYR) to ${tmpfile}"
-  result=$(cat "//'${prefix}.${ZWE_PRIVATE_DS_SZWESAMP}(ZWENOKYR)'" | \
-          sed  "s/^\/\/ \+SET \+PRODUCT=.*\$/\/\/         SET  PRODUCT=${security_product}/" | \
-          sed "s/^\/\/ \+SET \+ZOWEUSER=.*\$/\/\/         SET  ZOWEUSER=${keyring_owner:-${ZWE_PRIVATE_DEFAULT_ZOWE_USER}}/" | \
-          sed "s/^\/\/ \+SET \+ZOWERING=.*\$/\/\/         SET  ZOWERING='${keyring_name}'/" | \
-          sed    "s/^\/\/ \+SET \+LABEL=.*\$/\/\/         SET  LABEL='${alias}'/" | \
-          sed  "s/^\/\/ \+SET \+LOCALCA=.*\$/\/\/         SET  LOCALCA='${ca_alias}'/" | \
-          sed   "s/^\/\/ \+SET \+STCGRP=.*\$/\/\/         SET  STCGRP=${stc_group}/" \
-          > "${tmpfile}")
-  code=$?
-  chmod 700 "${tmpfile}"
+  print_debug "  > data set member: ${jcllib}(${member_name})"
+  print_debug "- Copy ${jcllib}(${member_name}) to ${tmpfile}"
+  # result = modified JCL
+  result=$(cat "//'${jcllib}(${member_name})'" | \
+          sed "s/^\/\/ \+SET \+ROOTZWCA=.*\$/\/\/         SET  ROOTZWCA='${ca_label}'/" | \
+          sed "s/^\/\/ \+SET \+ZOWECERT=.*\$/\/\/         SET  ZOWECERT='${cert_label}'/")
+  # code = no result or error writing to tmpfile
+  if [ -n "${result}" ]; then
+    echo "${result}" > "${tmpfile}"
+    code=$?
+  else
+    code=1
+  fi
   if [ ${code} -eq 0 ]; then
     print_debug "  * Succeeded"
     print_trace "  * Exit code: ${code}"
@@ -1072,34 +974,31 @@ keyring_run_zwenokyr_jcl() {
     fi
   fi
   if [ ! -f "${tmpfile}" ]; then
-    print_error "Error ZWEL0159E: Failed to modify ${prefix}.${ZWE_PRIVATE_DS_SZWESAMP}(ZWENOKYR)"
+    print_error "Error ZWEL0159E: Failed to modify ${jcllib}(${member_name})"
     return 159
   fi
-  print_trace "- Ensure ${tmpfile} encoding before copying into data set"
-  ensure_file_encoding "${tmpfile}" "SPDX-License-Identifier"
-  print_trace "- ${tmpfile} created, copy to ${jcllib}(${tmpdsm})"
-  copy_to_data_set "${tmpfile}" "${jcllib}(${tmpdsm})" "" "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITE}"
-  code=$?
-  print_trace "- Delete ${tmpfile}"
-  rm -f "${tmpfile}"
-  if [ ${code} -ne 0 ]; then
-    print_error "Error ZWEL0160E: Failed to write to ${jcllib}(${tmpdsm}). Please check if target data set is opened by others."
-    return 160
-  fi
-  print_message "    - ${jcllib}(${tmpdsm}) is prepared"
-  print_message
+  chmod 700 "${tmpfile}"
+
+  jcl_contents=$(cat "${tmpfile}")
+
+  print_message "Template JCL: ${prefix}.SZWESAMP(${member_name}) , Executable JCL: ${jcllib}(${member_name})"
+  print_message "--- JCL Content ---"
+  print_message "$jcl_contents"
+  print_message "--- End of JCL ---"
 
   ###############################
   # submit job
   if [ "${ZWE_CLI_PARAMETER_SECURITY_DRY_RUN}" = "true" ]; then
-    print_message "Dry-run mode, JCL will NOT be submitted on the system."
-    print_message "Please submit ${jcllib}(${tmpdsm}) manually."
+    print_message "JCL not submitted, command run with dry run flag."
+    print_message "To perform command, re-run command without dry run flag, or submit the JCL directly"
   else
-    print_message ">>>> Submit ${jcllib}(${tmpdsm})"
-    jobid=$(submit_job "//'${jcllib}(${tmpdsm})'")
+    print_message "Submitting Job ${member_name}"
+    jobid=$(submit_job "//'${jcllib}(${member_name})'")
     code=$?
     if [ ${code} -ne 0 ]; then
-      print_error "Error ZWEL0161E: Failed to run JCL ${jcllib}(${tmpdsm})."
+      print_error "Error ZWEL0161E: Failed to run JCL ${jcllib}(${member_name})."
+      print_trace "- Delete ${tmpfile}"
+      rm -f "${tmpfile}"
       return 161
     fi
     print_debug "- job id ${jobid}"
@@ -1107,6 +1006,8 @@ keyring_run_zwenokyr_jcl() {
     code=$?
     if [ ${code} -eq 1 ]; then
       print_error "Error ZWEL0162E: Failed to find job ${jobid} result."
+      print_trace "- Delete ${tmpfile}"
+      rm -f "${tmpfile}"
       return 162
     fi
     jobname=$(echo "${jobstate}" | awk -F, '{print $2}')
@@ -1116,26 +1017,16 @@ keyring_run_zwenokyr_jcl() {
       print_message "    - Job ${jobname}(${jobid}) ends with code ${jobcccode} (${jobcctext})."
     else
       print_error "Error ZWEL0163E: Job ${jobname}(${jobid}) ends with code ${jobcccode} (${jobcctext})."
+      print_trace "- Delete ${tmpfile}"
+      rm -f "${tmpfile}"
       return 163
     fi
+    print_trace "- Delete ${tmpfile}"
+    rm -f "${tmpfile}"
   fi
 }
 
-# FIXME: this only works for RACF
 keyring_show_info() {
-  keyring_owner="${1}"
-  keyring_name="${2}"
-
-  print_debug ">>>> Show certificate information of safkeyring:////${keyring_owner}/${keyring_name}:"
-  result=$(tso_command "RACDCERT LIST(LABEL('${keyring_name}')) ID(${keyring_owner})")
-  if [ $? -ne 0 ]; then
-    return 1
-  fi
-
-  echo "${result}"
-}
-
-keyring_show_info_node() {
   keyring_owner="${1}"
   keyring_name="${2}"
   # usage of the certificate: PERSONAL or CERTAUTH
@@ -1155,9 +1046,9 @@ keyring_show_info_node() {
   elif [ "${output}" = "owner" ]; then
     opts="${opts} --owner-only"
   fi
-  
+
   print_debug ">>>> Show certificate information of safkeyring:////${keyring_owner}/${keyring_name}&${label}"
-  result=$(ncert_utility keyring info "${keyring_owner}" "${keyring_name}" ${opts})
+  result=$(keyring_util LISTRING "${keyring_owner}" "${keyring_name}" ${opts})
   if [ $? -ne 0 ]; then
     return 1
   fi
@@ -1184,19 +1075,18 @@ keyring_export_to_pkcs12() {
 
   print_debug ">>>> Export certificate \"${label}\" from safkeyring:////${keyring_owner}/${keyring_name} to PKCS#12 keystore ${keystore_file}"
 
-
   # create keystore if it doesn't exist
   if [ -f "${keystore_file}" ]; then
     print_debug "- Create keystore with dummy certificate ${dummy_cert}"
     result=$(pkeytool ${JAVA_KEYTOOL_FLAG} \
-            -genkeypair \
-            -alias "${dummy_cert}" \
-            -dname "CN=Zowe Dummy Cert, OU=ZWELS, O=Zowe, C=US" \
-            -keystore "${keystore_file}" \
-            -storetype PKCS12 \
-            -storepass "${keystore_password}" \
-            -validity 90 \
-            -keyalg RSA -keysize 2048)
+      -genkeypair \
+      -alias "${dummy_cert}" \
+      -dname "CN=Zowe Dummy Cert, OU=ZWELS, O=Zowe, C=US" \
+      -keystore "${keystore_file}" \
+      -storetype PKCS12 \
+      -storepass "${keystore_password}" \
+      -validity 90 \
+      -keyalg RSA -keysize 2048)
     if [ $? -ne 0 ]; then
       return 1
     fi
@@ -1210,13 +1100,13 @@ keyring_export_to_pkcs12() {
   fi
 
   # QUESTION: do we need to know cert owner?
-  cert_owner=$(keyring_show_info_node "${keyring_owner}" "${keyring_name}" "PERSONAL" "${cert}" "owner")
+  cert_owner=$(keyring_show_info "${keyring_owner}" "${keyring_name}" "PERSONAL" "${cert}" "owner")
   if [ $? -ne 0 ]; then
     return 1
   fi
 
   print_debug "- Export certificate \"${label}\" in PEM format"
-  result=$(ncert_utility keyring export "${keyring_owner}" "${keyring_name}" "${label}" -f "${uss_temp_target}.cer")
+  result=$(keyring_util EXPORT "${keyring_owner}" "${keyring_name}" -l "${label}" -f "${uss_temp_target}.cer")
   if [ $? -ne 0 ]; then
     return 1
   fi
@@ -1226,31 +1116,23 @@ keyring_export_to_pkcs12() {
     # use keytool to import certificate
     print_debug "- Import certificate into keystore as \"${label}\""
     result=$(pkeytool ${JAVA_KEYTOOL_FLAG} \
-            -import -v \
-            -trustcacerts -noprompt \
-            -alias "${label}" \
-            -file "${uss_temp_target}.cer" \
-            -keystore "${keystore_file}" \
-            -storetype PKCS12 \
-            -keypass "${keystore_password}" \
-            -storepass "${keystore_password}")
+      -import -v \
+      -trustcacerts -noprompt \
+      -alias "${label}" \
+      -file "${uss_temp_target}.cer" \
+      -keystore "${keystore_file}" \
+      -storetype PKCS12 \
+      -keypass "${keystore_password}" \
+      -storepass "${keystore_password}")
     if [ $? -ne 0 ]; then
       return 1
     fi
   else
-    # keytool cannot import PEM private key, use ncert utility
+    # keytool cannot import PEM private key, must use p12
 
     # export private key
     print_debug "- Export private key of \"${label}\" in PEM format"
-    result=$(ncert_utility keyring export "${keyring_owner}" "${keyring_name}" "${label}" -k -f "${uss_temp_target}.key")
-    if [ $? -ne 0 ]; then
-      return 1
-    fi
-    chmod 700 "${uss_temp_target}.key"
-
-    # convert PEM format into temporary PKCS#12 keystore
-    print_debug "- Generate PKCS#12 keystore from the certificate and private key in PEM format"
-    result=$(ncert_utility pkcs12 create-from-pem "${label}" -f "${uss_temp_target}.p12" -p "${keystore_password}" --cert "${uss_temp_target}.cer" --key "${uss_temp_target}.key")
+    result=$(keyring_util EXPORT "${keyring_owner}" "${keyring_name}" -l "${label}" -k -f "${uss_temp_target}.p12" -p "${keystore_password}")
     if [ $? -ne 0 ]; then
       return 1
     fi
@@ -1277,10 +1159,10 @@ keyring_export_to_pkcs12() {
   if [ "${dummy_cert_created}" = "true" ]; then
     print_debug "- Delete dummy certificate ${dummy_cert} from keystore"
     result=$(pkeytool -delete \
-            -alias "${dummy_cert}" \
-            -keystore "${keystore_file}" \
-            -storetype PKCS12 \
-            -storepass "${keystore_password}")
+      -alias "${dummy_cert}" \
+      -keystore "${keystore_file}" \
+      -storetype PKCS12 \
+      -storepass "${keystore_password}")
   fi
 
   print_debug
@@ -1300,18 +1182,18 @@ keyring_export_all_to_pkcs12() {
 
   # converting keystore
   print_debug ">>>> Listing PERSONAL certificates"
-  certs=$(keyring_show_info_node "${keyring_owner}" "${keyring_name}" "PERSONAL" "" "label")
+  certs=$(keyring_show_info "${keyring_owner}" "${keyring_name}" "PERSONAL" "" "label")
   print_debug "- Found these certificates: ${certs}"
   print_debug
   while read -r cert; do
     if [ -n "${cert}" ]; then
       keyring_export_to_pkcs12 \
-         "${keyring_owner}" \
-         "${keyring_name}" \
-         "${cert}" \
-         "${uss_temp_dir}" \
-         "${temp_keystore_file}" \
-         "${keystore_password}"
+        "${keyring_owner}" \
+        "${keyring_name}" \
+        "${cert}" \
+        "${uss_temp_dir}" \
+        "${temp_keystore_file}" \
+        "${keystore_password}"
       if [ $? -ne 0 ]; then
         return 1
       fi
@@ -1335,7 +1217,7 @@ EOF
 
   # converting truststore
   print_debug ">>>> Listing CERTAUTH certificates"
-  certs=$(keyring_show_info_node "${keyring_owner}" "${keyring_name}" "CERTAUTH" "" "label")
+  certs=$(keyring_show_info "${keyring_owner}" "${keyring_name}" "CERTAUTH" "" "label")
   print_debug "- Found these certificates: ${certs}"
   print_debug
   while read -r cert; do
@@ -1444,7 +1326,7 @@ detect_zosmf_root_ca_acf2() {
   zosmf_root_ca=
 
   print_trace "- Detect z/OSMF keyring by listing ID(${zosmf_user}) [ACF2]"
-  echo "${zosmf_root_ca}"
+  echo "${zosmf_root_ca}"  
   return 1
 }
 
@@ -1526,6 +1408,341 @@ is_certificate_generated_by_zowe() {
     found=$(echo "${issuer}" | grep "${issuer_keyword}")
     if [ -n "${found}" ]; then
       echo "true"
+    fi
+  fi
+}
+
+
+keyring_run_zwekring_jcl_legacy_mode() {
+  prefix="${1}"
+  jcllib="${2}"
+  # should be 1, 2 or 3
+  jcloption="${3}"
+  keyring_owner="${4}"
+  keyring_name="${5}"
+  domains="${6}"
+  alias="${7}"
+  ca_alias="${8}"
+  # external CA labels separated by comma (label can have spaces)
+  ext_cas="${9}"
+  # set to 1 or true to import z/OSMF CA
+  trust_zosmf=0
+  if [ "${10}" = "true" -o "${10}" = "1" ]; then
+    trust_zosmf=1
+  fi
+  zosmf_root_ca="${11}"
+  # option 2 - connect existing
+  connect_user="${12}"
+  connect_label="${13}"
+  # option 3 - import from data set
+  import_ds_name="${14}"
+  import_ds_password="${15}"
+  validity="${16:-${ZWE_PRIVATE_DEFAULT_CERTIFICATE_VALIDITY}}"
+  security_product=${17:-RACF}
+
+  # generate from domains list
+  domain_name=
+  ip_address=
+  for item in $(echo "${domains}" | lower_case | tr "," " "); do
+    if [ -n "${item}" ]; then
+      # test if it's IP
+      if expr "${item}" : '[0-9][0-9]*\.[0-9][0-9]*\.[0-9][0-9]*\.[0-9][0-9]*$' >/dev/null; then
+        if [ -z "${ip_address}" ]; then
+          ip_address="${item}"
+        fi
+      else
+        if [ -z "${domain_name}" ]; then
+          domain_name="${item}"
+        fi
+      fi
+    fi
+  done
+
+  if [ -z "${ip_address}" ]; then
+    print_error_and_exit "Error ZWEL0173E: Please enter an IP address in either the subject alternative name (zowe.setup.certificate.san) or external domain (zowe.externalDomains) in the Zowe YAML configuration file." "" 173
+  fi
+
+  import_ext_ca=0
+  import_ext_intermediate_ca_label=
+  import_ext_root_ca_label=
+  while read -r item; do
+    item=$(echo "${item}" | trim)
+    if [ -n "${item}" ]; then
+      if [ -z "${import_ext_intermediate_ca_label}" ]; then
+        import_ext_intermediate_ca_label="${item}"
+        import_ext_ca=1
+      elif [ -z "${import_ext_root_ca_label}" ]; then
+        import_ext_root_ca_label="${item}"
+        import_ext_ca=1
+      fi
+    fi
+  done <<EOF
+$(echo "${ext_cas}" | tr "," "\n")
+EOF
+
+  if [ "${trust_zosmf}" = "1" ]; then
+    if [ "${zosmf_root_ca}" = "_auto_" ]; then
+      if [ "${security_product}" = "RACF" ]; then
+        zosmf_root_ca=$(detect_zosmf_root_ca_racf "${ZWE_PRIVATE_ZOSMF_USER}")
+      fi
+      if [ "${security_product}" = "TSS" ]; then
+        zosmf_root_ca=$(detect_zosmf_root_ca_tss "${ZWE_PRIVATE_ZOSMF_USER}")
+      fi
+      if [ "${security_product}" = "ACF2" ]; then
+        zosmf_root_ca=$(detect_zosmf_root_ca_acf2 "${ZWE_PRIVATE_ZOSMF_USER}")
+      fi
+    fi
+    if [ -z "${zosmf_root_ca}" ]; then
+      print_error_and_exit "Error ZWEL0137E: z/OSMF root certificate authority is not provided (or cannot be detected) with trusting z/OSMF option enabled." "" 137
+    fi
+  fi
+
+  date_add_util="${ZWE_zowe_runtimeDirectory}/bin/utils/date-add.rex"
+  validity_ymd=$("${date_add_util}" ${validity} YYYY-MM-DD)
+  validity_mdy=$("${date_add_util}" ${validity} MM/DD/YY)
+
+  # option 2 needs further changes on JCL
+  racf_connect1="s/dummy/dummy/"
+  racf_connect2="s/dummy/dummy/"
+  acf2_connect="s/dummy/dummy/"
+  tss_connect="s/dummy/dummy/"
+  if [ "${jcloption}" =  "2" ]; then
+    if [ "${connect_user}" = "SITE" ]; then
+      racf_connect1="s/^ \+RACDCERT CONNECT[(]SITE | ID[(]userid[)].*\$/   RACDCERT CONNECT(SITE +/"
+      acf2_connect="s/^ \+CONNECT CERTDATA[(]SITECERT\.digicert | userid\.digicert[)].*\$/   CONNECT CERTDATA(SITECERT.${connect_label}) -/"
+      tss_connect="s/^ \+RINGDATA[(]CERTSITE|userid,digicert[)].*\$/       RINGDATA(CERTSITE,${connect_label}) +/"
+    elif [ -n "${connect_user}" ]; then
+      racf_connect1="s/^ \+RACDCERT CONNECT[(]SITE | ID[(]userid[)].*\$/   RACDCERT CONNECT(ID(${connect_user}) +/"
+      acf2_connect="s/^ \+CONNECT CERTDATA[(]SITECERT\.digicert | userid\.digicert[)].*\$/   CONNECT CERTDATA(${connect_user}.${connect_label}) -/"
+      tss_connect="s/^ \+RINGDATA[(]CERTSITE|userid,digicert[)].*\$/       RINGDATA(${connect_user},${connect_label}) +/"
+    fi
+    racf_connect2="s/^ \+LABEL[(]'certlabel'[)].*\$/            LABEL('${connect_label}') +/"
+  fi
+
+  # used by ACF2  
+  stc_group=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.security.groups.stc")
+  if [ -z "${stc_group}" ]; then
+    stc_group=${ZWE_PRIVATE_DEFAULT_ADMIN_GROUP}
+  fi
+
+  ###############################
+  # prepare ZWEKRING JCL
+  print_message ">>>> Modify ZWEKRING"
+  print_debug "- Create temp file"
+  tmpfile=$(create_tmp_file $(echo "zwe ${ZWE_CLI_COMMANDS_LIST}" | sed "s# #-#g"))
+  print_debug "  > temp file: ${tmpfile}"
+  print_debug "- Create temp data set member"
+  tmpdsm=$(create_data_set_tmp_member "${jcllib}" "ZW$(date +%H%M)")
+  print_debug "  > data set member: ${jcllib}(${tmpdsm})"
+  print_debug "- Copy ${prefix}.${ZWE_PRIVATE_DS_SZWESAMP}(ZWEKRING) to ${tmpfile}"
+
+  result=$(cat "//'${prefix}.${ZWE_PRIVATE_DS_SZWESAMP}(ZWEKRING)'" | \
+          sed  "s/^\/\/ \+SET \+PRODUCT=.*\$/\/\/         SET  PRODUCT=${security_product}/" | \
+          sed "s/^\/\/ \+SET \+ZOWEUSER=.*\$/\/\/         SET  ZOWEUSER=${keyring_owner}/" | \
+          sed "s/^\/\/ \+SET \+ZOWERING=.*\$/\/\/         SET  ZOWERING='${keyring_name}'/" | \
+          sed   "s/^\/\/ \+SET \+OPTION=.*\$/\/\/         SET  OPTION=${jcloption}/" | \
+          sed    "s/^\/\/ \+SET \+LABEL=.*\$/\/\/         SET  LABEL='${alias}'/" | \
+          sed  "s/^\/\/ \+SET \+LOCALCA=.*\$/\/\/         SET  LOCALCA='${ca_alias}'/" | \
+          sed       "s/^\/\/ \+SET \+CN=.*\$/\/\/         SET  CN='${ZWE_PRIVATE_CERTIFICATE_COMMON_NAME:-${ZWE_PRIVATE_DEFAULT_CERTIFICATE_COMMON_NAME}}'/" | \
+          sed       "s/^\/\/ \+SET \+OU=.*\$/\/\/         SET  OU='${ZWE_PRIVATE_CERTIFICATE_ORG_UNIT:-${ZWE_PRIVATE_DEFAULT_CERTIFICATE_ORG_UNIT}}'/" | \
+          sed        "s/^\/\/ \+SET \+O=.*\$/\/\/         SET  O='${ZWE_PRIVATE_CERTIFICATE_ORG:-${ZWE_PRIVATE_DEFAULT_CERTIFICATE_ORG}}'/" | \
+          sed        "s/^\/\/ \+SET \+L=.*\$/\/\/         SET  L='${ZWE_PRIVATE_CERTIFICATE_LOCALITY:-${ZWE_PRIVATE_DEFAULT_CERTIFICATE_LOCALITY}}'/" | \
+          sed       "s/^\/\/ \+SET \+SP=.*\$/\/\/         SET  SP='${ZWE_PRIVATE_CERTIFICATE_STATE:-${ZWE_PRIVATE_DEFAULT_CERTIFICATE_STATE}}'/" | \
+          sed        "s/^\/\/ \+SET \+C=.*\$/\/\/         SET  C='${ZWE_PRIVATE_CERTIFICATE_COUNTRY:-${ZWE_PRIVATE_DEFAULT_CERTIFICATE_COUNTRY}}'/" | \
+          sed "s/^\/\/ \+SET \+HOSTNAME=.*\$/\/\/         SET  HOSTNAME='${domain_name}'/" | \
+          sed "s/^\/\/ \+SET \+IPADDRES=.*\$/\/\/         SET  IPADDRES='${ip_address}'/" | \
+          sed   "s/^\/\/ \+SET \+DSNAME=.*\$/\/\/         SET  DSNAME=${import_ds_name}/" | \
+          sed "s/^\/\/ \+SET \+PKCSPASS=.*\$/\/\/         SET  PKCSPASS='${import_ds_password}'/" | \
+          sed "s/^\/\/ \+SET \+IFZOWECA=.*\$/\/\/         SET  IFZOWECA=${import_ext_ca}/" | \
+          sed "s/^\/\/ \+SET \+ITRMZWCA=.*\$/\/\/         SET  ITRMZWCA='${import_ext_intermediate_ca_label}'/" | \
+          sed "s/^\/\/ \+SET \+ROOTZWCA=.*\$/\/\/         SET  ROOTZWCA='${import_ext_root_ca_label}'/" | \
+          sed "s/^\/\/ \+SET \+IFROZFCA=.*\$/\/\/         SET  IFROZFCA=${trust_zosmf}/" | \
+          sed "s/^\/\/ \+SET \+ROOTZFCA=.*\$/\/\/         SET  ROOTZFCA='${zosmf_root_ca}'/" | \
+          sed   "s/^\/\/ \+SET \+STCGRP=.*\$/\/\/         SET  STCGRP=${stc_group}/" | \
+          sed "${racf_connect1}" | \
+          sed "${racf_connect2}" | \
+          sed "${acf2_connect}" | \
+          sed "${tss_connect}" | \
+          sed  "s/2030-05-01/${validity_ymd}/g" | \
+          sed  "s#05/01/30#${validity_mdy}#g")
+  if [ -n "${result}" ]; then
+    echo "${result}" > "${tmpfile}"
+    code=$?
+  else
+    code=1
+  fi
+  if [ ${code} -eq 0 ]; then
+    print_debug "  * Succeeded"
+    print_trace "  * Exit code: ${code}"
+    print_trace "  * Output:"
+    if [ -n "${result}" ]; then
+      print_trace "$(padding_left "${result}" "    ")"
+    fi
+  else
+    print_debug "  * Failed"
+    print_error "  * Exit code: ${code}"
+    print_error "  * Output:"
+    if [ -n "${result}" ]; then
+      print_error "$(padding_left "${result}" "    ")"
+    fi
+  fi
+  if [ ! -f "${tmpfile}" ]; then
+    print_error "Error ZWEL0159E: Failed to modify ${prefix}.${ZWE_PRIVATE_DS_SZWESAMP}(ZWEKRING)"
+    return 159
+  fi
+  chmod 700 "${tmpfile}"
+  print_trace "- Ensure ${tmpfile} encoding before copying into data set"
+  ensure_file_encoding "${tmpfile}" "SPDX-License-Identifier"
+  print_trace "- ${tmpfile} created, copy to ${jcllib}(${tmpdsm})"
+  copy_to_data_set "${tmpfile}" "${jcllib}(${tmpdsm})" "" "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITE}"
+  code=$?
+  print_trace "- Delete ${tmpfile}"
+  rm -f "${tmpfile}"
+  if [ ${code} -ne 0 ]; then
+    print_error "Error ZWEL0160E: Failed to write to ${jcllib}(${tmpdsm}). Please check if target data set is opened by others."
+    return 160
+  fi
+  print_message "    - ${jcllib}(${tmpdsm}) is prepared"
+  print_message
+
+  ###############################
+  # submit job
+  if [ "${ZWE_CLI_PARAMETER_SECURITY_DRY_RUN}" = "true" ]; then
+    print_message "Dry-run mode, JCL will NOT be submitted on the system."
+    print_message "Please submit ${jcllib}(${tmpdsm}) manually."
+  else
+    print_message ">>>> Submit ${jcllib}(${tmpdsm})"
+    jobid=$(submit_job "//'${jcllib}(${tmpdsm})'")
+    code=$?
+    if [ ${code} -ne 0 ]; then
+      print_error "Error ZWEL0161E: Failed to run JCL ${jcllib}(${tmpdsm})."
+      return 161
+    fi
+    print_debug "- job id ${jobid}"
+    jobstate=$(wait_for_job "${jobid}")
+    code=$?
+    if [ ${code} -eq 1 ]; then
+      print_error "Error ZWEL0162E: Failed to find job ${jobid} result."
+      return 162
+    fi
+    jobname=$(echo "${jobstate}" | awk -F, '{print $2}')
+    jobcctext=$(echo "${jobstate}" | awk -F, '{print $3}')
+    jobcccode=$(echo "${jobstate}" | awk -F, '{print $4}')
+    if [ ${code} -eq 0 ]; then
+      print_message "    - Job ${jobname}(${jobid}) ends with code ${jobcccode} (${jobcctext})."
+
+      print_message ""
+      print_message "WARNING: Due to the limitation of the ZWEKRING job, exit with 0 does not mean"
+      print_message "         the job is fully successful. Please check the job log to determine"
+      print_message "         if there are any inline errors."
+      print_message ""
+    else
+      print_error "Error ZWEL0163E: Job ${jobname}(${jobid}) ends with code ${jobcccode} (${jobcctext})."
+      return 163
+    fi
+  fi
+}
+
+keyring_run_zwenokyr_jcl_legacy_mode() {
+  prefix="${1}"
+  jcllib="${2}"
+  keyring_owner="${3}"
+  keyring_name="${4}"
+  alias="${5}"
+  ca_alias="${6}"
+  security_product=${7:-RACF}
+
+  # used by ACF2
+  stc_group=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.security.groups.stc")
+  if [ -z "${stc_group}" ]; then
+    stc_group=${ZWE_PRIVATE_DEFAULT_ADMIN_GROUP}
+  fi
+
+  ###############################
+  # prepare ZWENOKYR JCL
+  print_message ">>>> Modify ZWENOKYR"
+  print_debug "- Create temp file"
+  tmpfile=$(create_tmp_file $(echo "zwe ${ZWE_CLI_COMMANDS_LIST}" | sed "s# #-#g"))
+  print_debug "  > temp file: ${tmpfile}"
+  print_debug "- Create temp data set member"
+  tmpdsm=$(create_data_set_tmp_member "${jcllib}" "ZW$(date +%H%M)")
+  print_debug "  > data set member: ${jcllib}(tmpdsm)"
+  print_debug "- Copy ${prefix}.${ZWE_PRIVATE_DS_SZWESAMP}(ZWENOKYR) to ${tmpfile}"
+  result=$(cat "//'${prefix}.${ZWE_PRIVATE_DS_SZWESAMP}(ZWENOKYR)'" | \
+          sed  "s/^\/\/ \+SET \+PRODUCT=.*\$/\/\/         SET  PRODUCT=${security_product}/" | \
+          sed "s/^\/\/ \+SET \+ZOWEUSER=.*\$/\/\/         SET  ZOWEUSER=${keyring_owner:-${ZWE_PRIVATE_DEFAULT_ZOWE_USER}}/" | \
+          sed "s/^\/\/ \+SET \+ZOWERING=.*\$/\/\/         SET  ZOWERING='${keyring_name}'/" | \
+          sed    "s/^\/\/ \+SET \+LABEL=.*\$/\/\/         SET  LABEL='${alias}'/" | \
+          sed  "s/^\/\/ \+SET \+LOCALCA=.*\$/\/\/         SET  LOCALCA='${ca_alias}'/" | \
+          sed   "s/^\/\/ \+SET \+STCGRP=.*\$/\/\/         SET  STCGRP=${stc_group}/")
+  if [ -n "${result}" ]; then
+    echo "${result}" > "${tmpfile}"
+    code=$?
+  else
+    code=1
+  fi
+  if [ ${code} -eq 0 ]; then
+    print_debug "  * Succeeded"
+    print_trace "  * Exit code: ${code}"
+    print_trace "  * Output:"
+    if [ -n "${result}" ]; then
+      print_trace "$(padding_left "${result}" "    ")"
+    fi
+  else
+    print_debug "  * Failed"
+    print_error "  * Exit code: ${code}"
+    print_error "  * Output:"
+    if [ -n "${result}" ]; then
+      print_error "$(padding_left "${result}" "    ")"
+    fi
+  fi
+  if [ ! -f "${tmpfile}" ]; then
+    print_error "Error ZWEL0159E: Failed to modify ${prefix}.${ZWE_PRIVATE_DS_SZWESAMP}(ZWENOKYR)"
+    return 159
+  fi
+  chmod 700 "${tmpfile}"
+  print_trace "- Ensure ${tmpfile} encoding before copying into data set"
+  ensure_file_encoding "${tmpfile}" "SPDX-License-Identifier"
+  print_trace "- ${tmpfile} created, copy to ${jcllib}(${tmpdsm})"
+  copy_to_data_set "${tmpfile}" "${jcllib}(${tmpdsm})" "" "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITE}"
+  code=$?
+  print_trace "- Delete ${tmpfile}"
+  rm -f "${tmpfile}"
+  if [ ${code} -ne 0 ]; then
+    print_error "Error ZWEL0160E: Failed to write to ${jcllib}(${tmpdsm}). Please check if target data set is opened by others."
+    return 160
+  fi
+  print_message "    - ${jcllib}(${tmpdsm}) is prepared"
+  print_message
+
+  ###############################
+  # submit job
+  if [ "${ZWE_CLI_PARAMETER_SECURITY_DRY_RUN}" = "true" ]; then
+    print_message "Dry-run mode, JCL will NOT be submitted on the system."
+    print_message "Please submit ${jcllib}(${tmpdsm}) manually."
+  else
+    print_message ">>>> Submit ${jcllib}(${tmpdsm})"
+    jobid=$(submit_job "//'${jcllib}(${tmpdsm})'")
+    code=$?
+    if [ ${code} -ne 0 ]; then
+      print_error "Error ZWEL0161E: Failed to run JCL ${jcllib}(${tmpdsm})."
+      return 161
+    fi
+    print_debug "- job id ${jobid}"
+    jobstate=$(wait_for_job "${jobid}")
+    code=$?
+    if [ ${code} -eq 1 ]; then
+      print_error "Error ZWEL0162E: Failed to find job ${jobid} result."
+      return 162
+    fi
+    jobname=$(echo "${jobstate}" | awk -F, '{print $2}')
+    jobcctext=$(echo "${jobstate}" | awk -F, '{print $3}')
+    jobcccode=$(echo "${jobstate}" | awk -F, '{print $4}')
+    if [ ${code} -eq 0 ]; then
+      print_message "    - Job ${jobname}(${jobid}) ends with code ${jobcccode} (${jobcctext})."
+    else
+      print_error "Error ZWEL0163E: Job ${jobname}(${jobid}) ends with code ${jobcccode} (${jobcctext})."
+      return 163
     fi
   fi
 }

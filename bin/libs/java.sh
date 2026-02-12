@@ -21,11 +21,11 @@ shell_read_yaml_java_home() {
   yaml="${1}"
 
   java_home=$(shell_read_yaml_config "${yaml}" 'java' 'home')
-  # validate NODE_HOME
+  # validate JAVA_HOME
   result=$(validate_java_home "${java_home}" 2>/dev/null)
   code=$?
   if [ ${code} -ne 0 ]; then
-    # incorrect NODE_HOME, reset and try again
+    # incorrect JAVA_HOME, reset and try again
     # this could be caused by failing to read java.home correctly from zowe.yaml
     java_home=
   fi
@@ -38,15 +38,13 @@ shell_read_yaml_java_home() {
 detect_java_home() {
   java_home=
 
-  # do we have which?
-  java_bin_home=$(which java 2>/dev/null)
+  java_bin_home=$(whence java 2>/dev/null)
   if [ -n "${java_bin_home}" ]; then
     # extract java home from result like: /var/jdk/bin/java
     java_home=$(dirname "$(dirname "${java_bin_home}")")
   fi
 
   # fall back to check PATH
-  java_home=$(which java 2>/dev/null)
   if [ -z "${java_home}" ]; then
     java_home=$(
       IFS=:

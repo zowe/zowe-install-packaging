@@ -1,0 +1,152 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`start-prepare-tests (SHORT) default startupChecks behavior 1`] = `
+" TESTUSR0 INFO (zwe-internal-start-prepare) Zowe version: v0.0.0
+ TESTUSR0 INFO (zwe-internal-start-prepare) build and hash: {BUILD_BRANCH}#{BUILD_NUMBER} ({BUILD_COMMIT_HASH})
+ TESTUSR0 INFO (zwe-internal-start-prepare) z/OS Version: 0.0
+ TESTUSR0 INFO (zwe-internal-start-prepare) ESM: ESMT
+ TESTUSR0 INFO (zwe-internal-start-prepare) starting Zowe instance SYS0 with /test/dir/zowe.test.yaml ...
+ TESTUSR0 INFO (zwe-internal-start-prepare,global_validate) process global validations ...
+ TESTUSR0 INFO (validateNodeHome) NodeJS version: v0.0.0
+ TESTUSR0 INFO (validateJavaHome) Java version: v0.0.0
+Successfully checked z/OSMF is available on 'https://some.test.hostname:12321/zosmf/info' - 200
+ TESTUSR0 INFO (zwe-internal-start-prepare,global_validate) global validations are successful
+ TESTUSR0 INFO (zwe-internal-start-prepare,validate_components) process component validations ...
+ TESTUSR0 INFO (zwe-validate-port-available) Checking ports of 11 enabled components
+ TESTUSR0 INFO (zwe-validate-port-available) Zowe port bind validation passed.
+ERROR:  TESTUSR0 ERROR (zwe-internal-start-prepare,validate_components) Error ZWEL0172E: Component zss has commands.validate defined but the file is missing.
+ TESTUSR0 INFO (zwe-internal-start-prepare,configure_components) process component configurations ...
+ TESTUSR0 INFO (zwe-internal-start-prepare,configure_components) - commands.configure output from zss is:
+ TESTUSR0 INFO (zwe-internal-start-prepare) Zowe runtime environment prepared"
+`;
+
+exports[`start-prepare-tests (SHORT) modulith disabled 1`] = `
+" TESTUSR0 INFO (zwe-internal-start-prepare) Zowe version: v0.0.0
+ TESTUSR0 INFO (zwe-internal-start-prepare) build and hash: {BUILD_BRANCH}#{BUILD_NUMBER} ({BUILD_COMMIT_HASH})
+ TESTUSR0 INFO (zwe-internal-start-prepare) z/OS Version: 0.0
+ TESTUSR0 INFO (zwe-internal-start-prepare) ESM: ESMT
+ TESTUSR0 INFO (zwe-internal-start-prepare) starting Zowe instance SYS0 with /test/dir/zowe.test.yaml ...
+ TESTUSR0 INFO (zwe-internal-start-prepare,global_validate) process global validations ...
+ TESTUSR0 INFO (validateNodeHome) NodeJS version: v0.0.0
+ TESTUSR0 INFO (validateJavaHome) Java version: v0.0.0
+Successfully checked z/OSMF is available on 'https://some.test.hostname:12321/zosmf/info' - 200
+ TESTUSR0 INFO (zwe-internal-start-prepare,global_validate) global validations are successful
+ TESTUSR0 INFO (zwe-internal-start-prepare,validate_components) process component validations ...
+ TESTUSR0 INFO (zwe-validate-port-available) Checking ports of 10 enabled components
+ TESTUSR0 INFO (zwe-validate-port-available) Zowe port bind validation passed.
+ERROR:  TESTUSR0 ERROR (zwe-internal-start-prepare,validate_components) Error ZWEL0172E: Component zss has commands.validate defined but the file is missing.
+ TESTUSR0 INFO (zwe-internal-start-prepare,configure_components) process component configurations ...
+ TESTUSR0 INFO (zwe-internal-start-prepare,configure_components) - commands.configure output from zss is:
+ TESTUSR0 INFO (zwe-internal-start-prepare) Zowe runtime environment prepared"
+`;
+
+exports[`start-prepare-tests (SHORT) set startupChecks disabled 1`] = `
+" TESTUSR0 INFO (zwe-internal-start-prepare) Zowe version: v0.0.0
+ TESTUSR0 INFO (zwe-internal-start-prepare) build and hash: {BUILD_BRANCH}#{BUILD_NUMBER} ({BUILD_COMMIT_HASH})
+ TESTUSR0 INFO (zwe-internal-start-prepare) z/OS Version: 0.0
+ TESTUSR0 INFO (zwe-internal-start-prepare) ESM: ESMT
+ TESTUSR0 INFO (zwe-internal-start-prepare) starting Zowe instance SYS0 with /test/dir/zowe.test.yaml ...
+ TESTUSR0 INFO (zwe-internal-start-prepare,global_validate) process global validations ...
+ TESTUSR0 INFO (validateNodeHome) NodeJS version: v0.0.0
+ TESTUSR0 INFO (validateJavaHome) Java version: v0.0.0
+ TESTUSR0 INFO (zwe-internal-start-prepare,global_validate) global validations are successful
+ TESTUSR0 INFO (zwe-internal-start-prepare,validate_components) process component validations ...
+ERROR:  TESTUSR0 ERROR (zwe-internal-start-prepare,validate_components) Error ZWEL0172E: Component zss has commands.validate defined but the file is missing.
+ TESTUSR0 INFO (zwe-internal-start-prepare,configure_components) process component configurations ...
+ TESTUSR0 INFO (zwe-internal-start-prepare,configure_components) - commands.configure output from zss is:
+ TESTUSR0 INFO (zwe-internal-start-prepare) Zowe runtime environment prepared"
+`;
+
+exports[`start-prepare-tests (SHORT) set startupChecks warn 1`] = `
+" TESTUSR0 INFO (zwe-internal-start-prepare) Zowe version: v0.0.0
+ TESTUSR0 INFO (zwe-internal-start-prepare) build and hash: {BUILD_BRANCH}#{BUILD_NUMBER} ({BUILD_COMMIT_HASH})
+ TESTUSR0 INFO (zwe-internal-start-prepare) z/OS Version: 0.0
+ TESTUSR0 INFO (zwe-internal-start-prepare) ESM: ESMT
+ TESTUSR0 INFO (zwe-internal-start-prepare) starting Zowe instance SYS0 with /test/dir/zowe.test.yaml ...
+ TESTUSR0 INFO (zwe-internal-start-prepare,global_validate) process global validations ...
+ TESTUSR0 INFO (validateNodeHome) NodeJS version: v0.0.0
+ TESTUSR0 INFO (validateJavaHome) Java version: v0.0.0
+Successfully checked z/OSMF is available on 'https://some.test.hostname:12321/zosmf/info' - 200
+ TESTUSR0 INFO (zwe-internal-start-prepare,global_validate) global validations are successful
+ TESTUSR0 INFO (zwe-internal-start-prepare,validate_components) process component validations ...
+ TESTUSR0 INFO (zwe-validate-port-available) Checking ports of 11 enabled components
+ TESTUSR0 INFO (zwe-validate-port-available) Zowe port bind validation passed.
+ERROR:  TESTUSR0 ERROR (zwe-internal-start-prepare,validate_components) Error ZWEL0172E: Component zss has commands.validate defined but the file is missing.
+ TESTUSR0 INFO (zwe-internal-start-prepare,configure_components) process component configurations ...
+ TESTUSR0 INFO (zwe-internal-start-prepare,configure_components) - commands.configure output from zss is:
+ TESTUSR0 INFO (zwe-internal-start-prepare) Zowe runtime environment prepared"
+`;
+
+exports[`start-prepare-tests (SHORT) test combinations of startup default and ports 1`] = `
+" TESTUSR0 INFO (zwe-internal-start-prepare) Zowe version: v0.0.0
+ TESTUSR0 INFO (zwe-internal-start-prepare) build and hash: {BUILD_BRANCH}#{BUILD_NUMBER} ({BUILD_COMMIT_HASH})
+ TESTUSR0 INFO (zwe-internal-start-prepare) z/OS Version: 0.0
+ TESTUSR0 INFO (zwe-internal-start-prepare) ESM: ESMT
+ TESTUSR0 INFO (zwe-internal-start-prepare) starting Zowe instance SYS0 with /test/dir/zowe.test.yaml ...
+ TESTUSR0 INFO (zwe-internal-start-prepare,global_validate) process global validations ...
+ TESTUSR0 INFO (validateNodeHome) NodeJS version: v0.0.0
+ TESTUSR0 INFO (validateJavaHome) Java version: v0.0.0
+Successfully checked z/OSMF is available on 'https://some.test.hostname:12321/zosmf/info' - 200
+ TESTUSR0 INFO (zwe-internal-start-prepare,global_validate) global validations are successful
+ TESTUSR0 INFO (zwe-internal-start-prepare,validate_components) process component validations ...
+ERROR:  TESTUSR0 ERROR (zwe-internal-start-prepare,validate_components) Error ZWEL0172E: Component zss has commands.validate defined but the file is missing.
+ TESTUSR0 INFO (zwe-internal-start-prepare,configure_components) process component configurations ...
+ TESTUSR0 INFO (zwe-internal-start-prepare,configure_components) - commands.configure output from zss is:
+ TESTUSR0 INFO (zwe-internal-start-prepare) Zowe runtime environment prepared"
+`;
+
+exports[`start-prepare-tests (SHORT) test combinations of startup default and ports 2`] = `
+" TESTUSR0 INFO (zwe-internal-start-prepare) Zowe version: v0.0.0
+ TESTUSR0 INFO (zwe-internal-start-prepare) build and hash: {BUILD_BRANCH}#{BUILD_NUMBER} ({BUILD_COMMIT_HASH})
+ TESTUSR0 INFO (zwe-internal-start-prepare) z/OS Version: 0.0
+ TESTUSR0 INFO (zwe-internal-start-prepare) ESM: ESMT
+ TESTUSR0 INFO (zwe-internal-start-prepare) starting Zowe instance SYS0 with /test/dir/zowe.test.yaml ...
+ TESTUSR0 INFO (zwe-internal-start-prepare,global_validate) process global validations ...
+ TESTUSR0 INFO (validateNodeHome) NodeJS version: v0.0.0
+ TESTUSR0 INFO (validateJavaHome) Java version: v0.0.0
+Successfully checked z/OSMF is available on 'https://some.test.hostname:12321/zosmf/info' - 200
+ TESTUSR0 INFO (zwe-internal-start-prepare,global_validate) global validations are successful
+ TESTUSR0 INFO (zwe-internal-start-prepare,validate_components) process component validations ...
+ERROR:  TESTUSR0 ERROR (zwe-internal-start-prepare,validate_components) Error ZWEL0172E: Component zss has commands.validate defined but the file is missing.
+ TESTUSR0 INFO (zwe-internal-start-prepare,configure_components) process component configurations ...
+ TESTUSR0 INFO (zwe-internal-start-prepare,configure_components) - commands.configure output from zss is:
+ TESTUSR0 INFO (zwe-internal-start-prepare) Zowe runtime environment prepared"
+`;
+
+exports[`start-prepare-tests (SHORT) test combinations of startup default and ports 3`] = `
+" TESTUSR0 INFO (zwe-internal-start-prepare) Zowe version: v0.0.0
+ TESTUSR0 INFO (zwe-internal-start-prepare) build and hash: {BUILD_BRANCH}#{BUILD_NUMBER} ({BUILD_COMMIT_HASH})
+ TESTUSR0 INFO (zwe-internal-start-prepare) z/OS Version: 0.0
+ TESTUSR0 INFO (zwe-internal-start-prepare) ESM: ESMT
+ TESTUSR0 INFO (zwe-internal-start-prepare) starting Zowe instance SYS0 with /test/dir/zowe.test.yaml ...
+ TESTUSR0 INFO (zwe-internal-start-prepare,global_validate) process global validations ...
+ TESTUSR0 INFO (validateNodeHome) NodeJS version: v0.0.0
+ TESTUSR0 INFO (validateJavaHome) Java version: v0.0.0
+ TESTUSR0 INFO (zwe-internal-start-prepare,global_validate) global validations are successful
+ TESTUSR0 INFO (zwe-internal-start-prepare,validate_components) process component validations ...
+ TESTUSR0 INFO (zwe-validate-port-available) Checking ports of 11 enabled components
+ TESTUSR0 INFO (zwe-validate-port-available) Zowe port bind validation passed.
+ERROR:  TESTUSR0 ERROR (zwe-internal-start-prepare,validate_components) Error ZWEL0172E: Component zss has commands.validate defined but the file is missing.
+ TESTUSR0 INFO (zwe-internal-start-prepare,configure_components) process component configurations ...
+ TESTUSR0 INFO (zwe-internal-start-prepare,configure_components) - commands.configure output from zss is:
+ TESTUSR0 INFO (zwe-internal-start-prepare) Zowe runtime environment prepared"
+`;
+
+exports[`start-prepare-tests (SHORT) test combinations of startup default and ports 4`] = `
+" TESTUSR0 INFO (zwe-internal-start-prepare) Zowe version: v0.0.0
+ TESTUSR0 INFO (zwe-internal-start-prepare) build and hash: {BUILD_BRANCH}#{BUILD_NUMBER} ({BUILD_COMMIT_HASH})
+ TESTUSR0 INFO (zwe-internal-start-prepare) z/OS Version: 0.0
+ TESTUSR0 INFO (zwe-internal-start-prepare) ESM: ESMT
+ TESTUSR0 INFO (zwe-internal-start-prepare) starting Zowe instance SYS0 with /test/dir/zowe.test.yaml ...
+ TESTUSR0 INFO (zwe-internal-start-prepare,global_validate) process global validations ...
+ TESTUSR0 INFO (validateNodeHome) NodeJS version: v0.0.0
+ TESTUSR0 INFO (validateJavaHome) Java version: v0.0.0
+ TESTUSR0 INFO (zwe-internal-start-prepare,global_validate) global validations are successful
+ TESTUSR0 INFO (zwe-internal-start-prepare,validate_components) process component validations ...
+ TESTUSR0 INFO (zwe-validate-port-available) Checking ports of 11 enabled components
+ TESTUSR0 INFO (zwe-validate-port-available) Zowe port bind validation passed.
+ERROR:  TESTUSR0 ERROR (zwe-internal-start-prepare,validate_components) Error ZWEL0172E: Component zss has commands.validate defined but the file is missing.
+ TESTUSR0 INFO (zwe-internal-start-prepare,configure_components) process component configurations ...
+ TESTUSR0 INFO (zwe-internal-start-prepare,configure_components) - commands.configure output from zss is:
+ TESTUSR0 INFO (zwe-internal-start-prepare) Zowe runtime environment prepared"
+`;
