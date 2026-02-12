@@ -1,5 +1,5 @@
-Display Zowe version.
+Displays Zowe version.
 
-If `--config` parameter is:
-* Not used: displays version of Zowe, where `zwe` command is located.
-* Used: displays version of Zowe, which is located by configuration key `zowe.runtimeDirectory`.
+When the `--config` parameter is used, this command displays the version of Zowe found at the path specified by the `zowe.runtimeDirectory` configuration key.
+
+Otherwise, the command displays the version of Zowe associated with the location of the `zwe` command.

@@ -9,21 +9,12 @@
   Copyright Contributors to the Zowe Project.
 */
 
-import * as std from 'cm_std';
 import * as xplatform from 'xplatform';
 
 import * as common from '../../libs/common';
 import * as fs from '../../libs/fs';
 
-export function execute(): void {
-
-  let zoweRuntimeDirectory: string;
-
-  if (std.getenv('ZWE_CLI_PARAMETER_CONFIG')) {
-    zoweRuntimeDirectory = std.getenv('ZWE_PRIVATE_COMMANDS_VERSION_ZOWE_RUNTIMEDIRECTORY');
-  } else {
-    zoweRuntimeDirectory = std.getenv('ZWE_zowe_runtimeDirectory');
-  }
+export function execute(zoweRuntimeDirectory: string): void {
 
   if (!zoweRuntimeDirectory) {
     common.printErrorAndExit("Error ZWEL0106E: zowe.runtimeDirectory parameter is required.", undefined, 106);

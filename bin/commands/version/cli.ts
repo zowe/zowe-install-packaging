@@ -11,4 +11,10 @@
 
 import * as index from './index';
 
-index.execute();
+// scriptArgs is an array of arguments used to execute this script from index.sh
+// [0] ${ZWE_zowe_runtimeDirectory}/bin/utils/configmgr
+// [1] -script
+// [2] "${ZWE_zowe_runtimeDirectory}/bin/commands/version/cli.js"
+// [3] "${zoweRuntime}"
+
+index.execute(scriptArgs[3]);

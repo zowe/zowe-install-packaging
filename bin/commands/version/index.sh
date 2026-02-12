@@ -12,10 +12,9 @@
 #######################################################################
 
 if [ -n "${ZWE_CLI_PARAMETER_CONFIG}" ]; then
-  result=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.runtimeDirectory")
-  if [ -n "${result}" ]; then
-    export ZWE_PRIVATE_COMMANDS_VERSION_ZOWE_RUNTIMEDIRECTORY="${result}"
-  fi
+  zoweRuntime=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.runtimeDirectory")
+else
+  zoweRuntime="${ZWE_zowe_runtimeDirectory}"
 fi
 
-_CEE_RUNOPTS="XPLINK(ON),HEAPPOOLS(OFF),HEAPPOOLS64(OFF)" ${ZWE_zowe_runtimeDirectory}/bin/utils/configmgr -script "${ZWE_zowe_runtimeDirectory}/bin/commands/version/cli.js"
+_CEE_RUNOPTS="XPLINK(ON),HEAPPOOLS(OFF),HEAPPOOLS64(OFF)" ${ZWE_zowe_runtimeDirectory}/bin/utils/configmgr -script "${ZWE_zowe_runtimeDirectory}/bin/commands/version/cli.js" "${zoweRuntime}"
