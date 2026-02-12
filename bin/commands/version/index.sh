@@ -12,7 +12,7 @@
 #######################################################################
 
 if [ -n "${ZWE_CLI_PARAMETER_CONFIG}" ]; then
-  result=$(read_yaml_configmgr "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.runtimeDirectory")
+  result=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.runtimeDirectory")
   if [ -n "${result}" ]; then
     export ZWE_PRIVATE_COMMANDS_VERSION_ZOWE_RUNTIMEDIRECTORY="${result}"
   fi
