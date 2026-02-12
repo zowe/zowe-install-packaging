@@ -30,8 +30,9 @@ validate_zosmf_host_and_port() {
   zosmf_check_passed=true
 
   http_response_code=$("${ZWE_zowe_runtimeDirectory}/bin/utils/curl" "https://${zosmf_host}:${zosmf_port}/zosmf/info" -k -H "X-CSRF-ZOSMF-HEADER: true" -w "%{http_code}" -s -o /dev/null)
-  if [ -z "${http_response_code}" ]; then
-    print_error "Warning: Could not validate if z/OSMF is available on 'https://${zosmf_host}:${zosmf_port}/zosmf/info'. No response code from z/OSMF server."
+  curl_rc=$?
+  if [ "${curl_rc}" != 0 ]; then
+    print_error "Warning: Could not validate if z/OSMF is available on 'https://${zosmf_host}:${zosmf_port}/zosmf/info'. No response code from z/OSMF server - curl(${curl_rc}) - ${http_response_code}"
     zosmf_check_passed=false
   # RSU2512 -> running z/OSMF is returning 401
   elif [ ${http_response_code} != 200 -a ${http_response_code} != 401 ]; then

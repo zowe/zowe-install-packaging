@@ -34,7 +34,10 @@ export function validateZosmfHostAndPort(zosmfHost: string, zosmfPort: number, s
     std.unsetenv('_BPX_JOBNAME');
   }
   if (execReturn.rc || !execReturn.out) {
-    common.printError(`Warning: Could not validate if z/OSMF is available on '${scheme}://${zosmfHost}:${zosmfPort}/zosmf/info'. No response code from z/OSMF server.`);
+    // Typical scenario:
+    //  - curl(6) - 000 => wrong host (typo or not defined in /etc/hosts)
+    const printHTTPCode = execReturn.out ? ` - ${execReturn.out}` : '';
+    common.printError(`Warning: Could not validate if z/OSMF is available on '${scheme}://${zosmfHost}:${zosmfPort}/zosmf/info'. No response code from z/OSMF server - curl(${execReturn.rc})${printHTTPCode}`);
     zosmfCheckPassed=false
   // RSU2512 -> running z/OSMF is returning 401
   } else if (['200', '401'].includes(execReturn.out) == false) {
