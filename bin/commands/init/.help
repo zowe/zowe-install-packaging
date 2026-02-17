@@ -111,7 +111,7 @@ zowe:
         zis: ZWESISTC
         aux: ZWESASTC
   externalDomains:
-   - zos.my-company.com
+   - zos.example.com
 ```
 
 - `zowe.setup.dataset.prefix` shows where the `SZWEAUTH` data set is installed.

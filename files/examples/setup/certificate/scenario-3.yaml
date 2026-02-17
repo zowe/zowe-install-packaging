@@ -48,5 +48,5 @@ zowe:
       # # **NOTE**: due to the limitation of RACDCERT command, this field should
       # #           contain exactly 2 entries with the domain name and IP address.
       # san:
-      #   - dvipa.my-company.com
+      #   - dvipa.example.com
       #   - 12.34.56.78
