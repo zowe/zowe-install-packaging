@@ -40,10 +40,13 @@ if rc = 0 then do
 /*   indent is the smallest indentation                               */
 /*--------------------------------------------------------------------*/
   comments = 0
+  emptyLines = 0
   do i = first to last
     "(CONFIG) = LINE (I)"
     if substr(strip(config), 1, 1) = '#' then
       comments = comments + 1
+    if length(strip(config)) = 0 then
+      emptyLines = emptyLines + 1
     currentIndent = length(config) - length(strip(config, 'L'))
     if i = first then
       indent = currentIndent
@@ -55,7 +58,7 @@ if rc = 0 then do
 /*   reclen is returned as for example '00080'                        */
 /*   reclen * 1 => string to number                                   */
 /*--------------------------------------------------------------------*/
-  if (last - first + 1) = comments then
+  if last - first + 1 = comments + emptyLines then
     comments = "DEL"
   else do
     "ISREDIT (RECLEN) = LRECL"
@@ -63,25 +66,28 @@ if rc = 0 then do
   end
 /*--------------------------------------------------------------------*/
 /* Second pass: either delete or add comment                          */
+/*              skip empty lines                                      */
 /*--------------------------------------------------------------------*/
   do i = first to last
     "(CONFIG) = LINE (I)"
-    if comments = "DEL" then do
-      delete = 1
-      if pos('#', config) = pos('# ', config) then
-        delete = 2
-      newLine = delstr(config, pos('#', config), delete)
-      "LINE (I) = (NEWLINE)"
-    end
-    else do
-      newLine = insert('# ', config, indent)
-      newLine = strip(newLine, 'T')
-      if length(newLine) > reclen then do
-        warning = "Following line exceeded the record length "||reclen||":"
-        "LINE_BEFORE (I) = INFOLINE (WARNING)"
-        "LINE_BEFORE (i) = INFOLINE (CONFIG)"
+    if length(strip(config)) > 0 then do
+      if comments = "DEL" then do
+        delete = 1
+        if pos('#', config) = pos('# ', config) then
+          delete = 2
+        newLine = delstr(config, pos('#', config), delete)
+        "LINE (I) = (NEWLINE)"
       end
-      "LINE (i) = (NEWLINE)"
+      else do
+        newLine = insert('# ', config, indent)
+        newLine = strip(newLine, 'T')
+        if length(newLine) > reclen then do
+          warning = "Following line exceeded the record length "||reclen||":"
+          "LINE_BEFORE (I) = INFOLINE (WARNING)"
+          "LINE_BEFORE (i) = INFOLINE (CONFIG)"
+        end
+        "LINE (i) = (NEWLINE)"
+      end
     end
   end
 end
