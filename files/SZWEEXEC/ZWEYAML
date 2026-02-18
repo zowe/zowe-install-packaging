@@ -1,0 +1,87 @@
+/* REXX */
+
+/**********************************************************************/
+/* This program and the accompanying materials are made available     */
+/* under the terms of the Eclipse Public License v2.0 which           */
+/* accompanies this distribution, and is available at                 */
+/* https://www.eclipse.org/legal/epl-v20.html                         */
+/*                                                                    */
+/* SPDX-License-Identifier: EPL-2.0                                   */
+/*                                                                    */
+/* Copyright Contributors to the Zowe Project. 2023, 2023             */
+/**********************************************************************/
+
+/*--------------------------------------------------------------------*/
+/*                                                                    */
+/*                     YAML: Comment or uncomment                     */
+/*                                                                    */
+/* Line command Y or Yn, where n is a number to select lines.         */
+/* Or pair of YY to select a block. Then ZWEYAML as command.          */
+/*                                                                    */
+/* Notes: Place this member in DD SYSEXEC or SYSPROC.                 */
+/*                                                                    */
+/* Customizations, if needed:                                         */
+/*    1) Rename this member.                                          */
+/*    2) Change 'lineCommandChar' to preferred character.             */
+/*       Do not use ISPF default line commands.                       */
+/*--------------------------------------------------------------------*/
+/* --- CUSTOMIZE --- */
+lineCommandChar = 'Y'
+/* --- CUSTOMIZE --- */
+address ISREDIT
+  "MACRO NOPROCESS"
+  "PROCESS RANGE "||lineCommandChar
+if rc = 0 then do
+  "(FIRST) = LINENUM .ZFRANGE"
+  "(LAST) = LINENUM .ZLRANGE"
+/*--------------------------------------------------------------------*/
+/* First pass:                                                        */
+/*   check if every line is a comment                                 */
+/*   indent is the smallest indentation                               */
+/*--------------------------------------------------------------------*/
+  comments = 0
+  do i = first to last
+    "(CONFIG) = LINE (I)"
+    if substr(strip(config), 1, 1) = '#' then
+      comments = comments + 1
+    currentIndent = length(config) - length(strip(config, 'L'))
+    if i = first then
+      indent = currentIndent
+    if currentIndent < indent then
+      indent = currentIndent
+  end
+/*--------------------------------------------------------------------*/
+/* Decide to comment or uncomment                                     */
+/*   reclen is returned as for example '00080'                        */
+/*   reclen * 1 => string to number                                   */
+/*--------------------------------------------------------------------*/
+  if (last - first + 1) = comments then
+    comments = "DEL"
+  else do
+    "ISREDIT (RECLEN) = LRECL"
+    reclen = 1 * reclen
+  end
+/*--------------------------------------------------------------------*/
+/* Second pass: either delete or add comment                          */
+/*--------------------------------------------------------------------*/
+  do i = first to last
+    "(CONFIG) = LINE (I)"
+    if comments = "DEL" then do
+      delete = 1
+      if pos('#', config) = pos('# ', config) then
+        delete = 2
+      newLine = delstr(config, pos('#', config), delete)
+      "LINE (I) = (NEWLINE)"
+    end
+    else do
+      newLine = insert('# ', config, indent)
+      newLine = strip(newLine, 'T')
+      if length(newLine) > reclen then do
+        warning = "Following line exceeded the record length "||reclen||":"
+        "LINE_BEFORE (I) = INFOLINE (WARNING)"
+        "LINE_BEFORE (i) = INFOLINE (CONFIG)"
+      end
+      "LINE (i) = (NEWLINE)"
+    end
+  end
+end
