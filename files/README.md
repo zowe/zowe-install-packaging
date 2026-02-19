@@ -1,4 +1,4 @@
-# ZWEYAML
+# SZWEEXEC/ZWEYAML
 
 ## Purpose
 
