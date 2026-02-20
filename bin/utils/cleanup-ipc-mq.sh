@@ -10,7 +10,6 @@
 # Copyright IBM Corporation 2020
 ################################################################################
 
-
 # node.js instance is not fully cleaned up when exits. As time going, the message
 # queue will be full and any node.js command will generate this error:
 #
@@ -27,19 +26,24 @@
 # This is proper way to cleanup IPC message queues.
 
 id=$(id -nu)
-for s in $(ipcs -a | awk 'match($1,"q|m|s") && $5 == "'${id}'" {print $1","$2":"$16}'); do
-    x=${s%%:*}
-    pid=${s##*:}
-    type=${x%%,*}
-    num=${x##*,}
-    if [[ $pid -gt 0 ]]; then
-        kill -0 "$pid" 1>/dev/null 2>&1
-        if [ $? -eq 0 ]; then
-            true
-        else
-            ipcrm -$type $num
+# Trying to capture columns T, ID, and second to last column, which for q=LSPID, m=CPID
+for s in $(ipcs -a | awk 'match($1,"q|m") && $5 == "'${id}'" { print "type=\""$1"\";num=\""$2"\";pidOne=\""$(NF-1)"\";pidTwo=\""$(NF)"\"" }'); do    
+    eval "${s}"
+    if [ $pidOne -gt 0 ] && [ $pidTwo -gt 0 ]; then
+        kill -0 "$pidOne" 1>/dev/null 2>&1
+        if [ $? -ne 0 ]; then
+            kill -0 "$pidTwo" 1>/dev/null 2>&1
+            if [ $? -ne 0 ]; then   # Neither pid exists, safe to remove q/m
+                ipcrm -$type $num
+            fi
         fi
-    else
-        ipcrm -$type $num
+    fi
+done
+
+# Trying to capture columns T, ID, WTRPID. When WTRPID is empty, semaphore is orphaned.
+for s in $(ipcs -sw | awk 'match($1,"s") && $3 == "'${id}'" { print "sem=\""$2"\";pid=\""$5"\"" }'); do
+    eval "${s}"
+    if [[ $pid -eq 0 ]]; then
+        ipcrm -s $sem
     fi
 done
