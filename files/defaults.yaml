@@ -29,7 +29,7 @@ zowe:
   #-------------------------------------------------------------------------------
   setup:
     # MVS data set related configurations
-    dataset:      
+    dataset:
       parmlibMembers:
         # For ZIS plugins
         zis: ZWESIP00
@@ -37,7 +37,7 @@ zowe:
     # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
     security:
       # security product name. Can be RACF, ACF2 or TSS
-      product: RACF
+      product: "${{ [ 'RACF', 'ACF2', 'TSS' ].includes(zos.getEsm()) ? zos.getEsm() : 'RACF' }}"
       groups:
         admin: ZWEADMIN
         stc: ZWEADMIN
@@ -60,7 +60,7 @@ zowe:
     # This section fully defines a default for certificate scenario 1, but makes way when detecting any other scenarios.
     certificate:
       type: PKCS12
-      pkcs12: 
+      pkcs12:
         directory: "${{ zowe.setup.certificate.type != 'PKCS12' ? null : '/var/zowe/keystore' }}"
         lock: "${{ zowe.setup.certificate.type != 'PKCS12' ? null : true }}"
         name: "${{ zowe.setup.certificate.type == 'PKCS12' && !zowe.setup.certificate.pkcs12.import ? 'localhost' : null }}"
@@ -69,7 +69,7 @@ zowe:
         caPassword: "${{ zowe.setup.certificate.type == 'PKCS12' && !zowe.setup.certificate.pkcs12.import ? 'local_ca_password' : null }}"
 
       # Distinguished name for Zowe generated certificates.
-      dname: 
+      dname:
         caCommonName: "${{ (zowe.setup.certificate.pkcs12?.name || zowe.setup.certificate.keyring?.name) ? 'Zowe Development Instances CA' : null }}"
         commonName: "${{ (zowe.setup.certificate.pkcs12?.name || zowe.setup.certificate.keyring?.name) ? 'Zowe Development Instances Certificate' : null }}"
         orgUnit: "${{ (zowe.setup.certificate.pkcs12?.name || zowe.setup.certificate.keyring?.name) ? 'API Mediation Layer' : null }}"
@@ -78,42 +78,24 @@ zowe:
         state: "${{ (zowe.setup.certificate.pkcs12?.name || zowe.setup.certificate.keyring?.name) ? 'Prague' : null }}"
         country: "${{ (zowe.setup.certificate.pkcs12?.name || zowe.setup.certificate.keyring?.name) ? 'CZ' : null }}"
       # Validity days for Zowe generated certificates
-      validity: "${{ (zowe.setup.certificate.pkcs12?.import || zowe.setup.certificate.keyring?.name) ? null : 3650 }}"
+      validity: 3650
 
     vsam:
       # Default to caching service entry as it predates this one
       name: "${{ ()=> { if (components['caching-service']?.storage?.vsam?.name) { return components['caching-service'].storage.vsam.name } else { return '' } }() }}"
 
-    sysMessages:
-  #   # Zowe starting
-    - "ZWEL0021I"
-  #   # Zowe started
-    - "ZWEL0018I"
-    - "ZWEL0006I"
-  #   # Zowe ready to use
-    - "ZWES1601I"
-  #   # Zowe stopping
-    - "ZWEL0008I"
-  #   # Zowe stopped
-    - "ZWEL0022I"
-  #   # Zowe components starting
-    - "ZWEL0001I"
-  #   # Zowe components stopped
-    - "ZWEL0002I"
-  #   # API ML components started
-    - "ZWEAM000I"
-  #   # API ML components ready
-    - "ZWEAM001I"
-  #   # App server ready
-    - "ZWED0031I"
-  #   # ZSS ready
-    - "ZWES1013I"
+    # The default JCL header used by zwe install and init
+    jcl:
+      header: ''
 
+  network:
+    # This is a variable derived from gateway's ATTLS state to be used by servers proxied through it in eureka or static definitions.
+    proxyType: "${{ components.gateway?.zowe?.network?.server?.tls?.attls == true ? 'http' : zowe.network?.server?.tls?.attls == true ? 'http' : 'https' }}"
 
   configmgr:
     # STRICT=quit on any error, including missing schema
     # COMPONENT-COMPAT=if component missing schema, skip it with warning instead of quit
-    validation: "COMPONENT-COMPAT"
+    validation: "STRICT"
 
   # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   # runtime z/OS job name
@@ -126,14 +108,14 @@ zowe:
   # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   # This is an ID you use to separate multiple Zowe installs when determining
   # resource names used in RBAC authorization checks such as dataservices with RBAC
-  # expects this ID in SAF resources 
+  # expects this ID in SAF resources
   rbacProfileIdentifier: "1"
 
   # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-  # This is an ID that can be used by servers that distinguish their cookies from unrelated Zowe installs, 
+  # This is an ID that can be used by servers that distinguish their cookies from unrelated Zowe installs,
   # for purposes such as to allow multiple copies of Zowe to be used within the same client
   cookieIdentifier: "1"
-  
+
   # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   # This is the port you use to access Zowe Gateway from your web browser.
   #
@@ -148,6 +130,15 @@ zowe:
     logLevel: "info"
     # Set to "exit" if you'd like startup to exit if any component has an error in the configure stage, otherwise zwe will warn but continue.
     onComponentConfigureFail: "warn"
+    # Startup checks which run as part of the Zowe STC, prior to Zowe component startup.
+    startupChecks:
+      # Default check behavior may be one of "exit", "warn", or "disabled"
+      default: "exit"
+      # Individual startup checks will override the default behavior
+      # Port check - defaults to zowe.launchScript.startupChecks.default, or "exit" if this is unset
+      # ports: exit
+      # z/OSMF startup check - defaults to zowe.launchScript.startupChecks.default, or "exit" if this is unset
+      # zosmf: exit
 
   # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   # How we want to verify SSL certificates of services. Valid values are:
@@ -158,13 +149,22 @@ zowe:
   #              This mode does not validate certificate Common Name and Subject
   #              Alternative Name (SAN).
   # - DISABLED:  disable certificate validation. This is NOT recommended for
-  #              security. 
+  #              security.
   verifyCertificates: STRICT
+
+  # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+  # To determine whether to trim the syslog message in order to print from message-id, disabled by default
+  sysMessageTrim: false
 
 #-------------------------------------------------------------------------------
 # Zowe components default configurations
 #-------------------------------------------------------------------------------
 components:
+
+  # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+  apiml:
+    enabled: false
+    debug: false
 
   # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   gateway:
@@ -235,18 +235,6 @@ components:
     agent:
       jwt:
         fallback: true
-
-  # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-  jobs-api:
-    enabled: false
-    debug: false
-    port: 7558
-
-  # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-  files-api:
-    enabled: false
-    debug: false
-    port: 7559
 
   # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   explorer-jes:
