@@ -5,7 +5,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  *
- * Copyright Zowe Contributors 2024
+ * Copyright IBM Corporation 2022
  */
 
 import {
@@ -13,14 +13,18 @@ import {
   installAndVerifyConvenienceBuild,
   showZoweRuntimeLogs,
 } from '../../../utils';
-import { TEST_TIMEOUT_CONVENIENCE_BUILD } from '../../../constants';
+import {
+  KEYSTORE_MODE_KEYRING,
+  TEST_TIMEOUT_CONVENIENCE_BUILD,
+} from '../../../constants';
 
 const testServer = process.env.TEST_SERVER;
-const testSuiteName = 'Test convenience build installation with node.js v22';
+const testSuiteName = 'Test convenience build installation with enabling config manager';
 describe(testSuiteName, () => {
   beforeAll(() => {
     // validate variables
     checkMandatoryEnvironmentVariables([
+      'TEST_SERVER',
       'ZOWE_BUILD_LOCAL',
     ]);
   });
@@ -31,9 +35,10 @@ describe(testSuiteName, () => {
       testServer,
       {
         'zowe_build_local': process.env['ZOWE_BUILD_LOCAL'],
-        'zowe_custom_for_test': 'true',
-        'zos_node_home': '/ZOWE/node/node-v22.16.0',
+        'zowe_attls_enabled': 'true',
+        'zos_keystore_mode': KEYSTORE_MODE_KEYRING,
         'zowe_lock_keystore': 'false',
+        // attls-policy-file is lifted from the defaults on every playbook run
       }
     );
   }, TEST_TIMEOUT_CONVENIENCE_BUILD);

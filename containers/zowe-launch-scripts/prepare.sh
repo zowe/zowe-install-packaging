@@ -46,8 +46,14 @@ fi
 ################################################################################
 # CONSTANTS
 # this should be containers/zowe-launch-scripts
-BASE_DIR=$(cd $(dirname $0);pwd)
-REPO_ROOT_DIR=$(cd $(dirname $0)/../../;pwd)
+BASE_DIR=$(
+  cd $(dirname $0)
+  pwd
+)
+REPO_ROOT_DIR=$(
+  cd $(dirname $0)/../../
+  pwd
+)
 WORK_DIR=tmp
 JFROG_REPO_SNAPSHOT=libs-snapshot-local
 JFROG_REPO_RELEASE=libs-release-local
@@ -127,7 +133,7 @@ if [ ! -f Dockerfile ]; then
   echo "Error: Dockerfile file is missing."
   exit 2
 fi
-cat Dockerfile | sed -e "s#version=\"0\.0\.0\"#version=\"${package_version}\"#" -e "s#release=\"0\"#release=\"${package_release}\"#" > "${linux_distro}/${cpu_arch}/Dockerfile"
+cat Dockerfile | sed -e "s#version=\"0\.0\.0\"#version=\"${package_version}\"#" -e "s#release=\"0\"#release=\"${package_release}\"#" >"${linux_distro}/${cpu_arch}/Dockerfile"
 
 ###############################
 echo ">>>>> clean up folder"
@@ -154,12 +160,12 @@ echo "    - branch: ${GITHUB_BRANCH}"
 echo "    - build number: ${GITHUB_RUN_NUMBER}"
 echo "    - commit hash: ${GITHUB_SHA}"
 # assume to run in Github Actions
-cat manifest.json.template | \
+cat manifest.json.template |
   sed -e "s#{BUILD_BRANCH}#${GITHUB_BRANCH}#" \
-      -e "s#{BUILD_NUMBER}#${GITHUB_RUN_NUMBER}#" \
-      -e "s#{BUILD_COMMIT_HASH}#${GITHUB_SHA}#" \
-      -e "s#{BUILD_TIMESTAMP}#$(date +%s)#" \
-  > "${BASE_DIR}/${WORK_DIR}/manifest.json"
+    -e "s#{BUILD_NUMBER}#${GITHUB_RUN_NUMBER}#" \
+    -e "s#{BUILD_COMMIT_HASH}#${GITHUB_SHA}#" \
+    -e "s#{BUILD_TIMESTAMP}#$(date +%s)#" \
+    >"${BASE_DIR}/${WORK_DIR}/manifest.json"
 
 ###############################
 echo ">>>>> prepare bin directory"
@@ -178,7 +184,7 @@ if [ -z "${util_zip}" ]; then
 fi
 echo "    - artifact found: ${util_zip}"
 echo "    - download and extract"
-curl -s ${JFROG_URL}${util_zip} --output zowe-utility-tools.zip
+curl -sL ${JFROG_URL}${util_zip} --output zowe-utility-tools.zip
 unzip zowe-utility-tools.zip
 rm zowe-utility-tools.zip
 echo "    - extract zowe-fconv ..."
@@ -210,7 +216,7 @@ if [ -z "${zlux_tar}" ]; then
 fi
 echo "    - artifact found: ${zlux_tar}"
 echo "    - download and extract"
-curl -s ${JFROG_URL}${zlux_tar} --output zlux-core.tar
+curl -sL ${JFROG_URL}${zlux_tar} --output zlux-core.tar
 mkdir -p "${BASE_DIR}/${WORK_DIR}/components/app-server/share"
 cd "${BASE_DIR}/${WORK_DIR}/components/app-server/share"
 tar xf "${REPO_ROOT_DIR}/zlux-core.tar"

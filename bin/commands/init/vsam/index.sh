@@ -72,24 +72,20 @@ if [ "${jcl_existence}" = "true" ]; then
 fi
 
 # VSAM cache cannot be overwritten, must delete manually
-# FIXME: cat cannot be used to test VSAM data set
-vsam_existence=$(is_data_set_exists "${vsam_name}")
-if [ "${vsam_existence}" = "true" ]; then
-  # error
-  print_error_and_exit "Error ZWEL0158E: ${vsam_name} already exists." "" 158
-fi
-if [ "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITE}" = "true" ]; then
-  # delete blindly and ignore errors
-  result=$(tso_command delete "'${vsam_name}'")
+tso_is_data_set_exists "${vsam_name}"
+vsam_existence=$?
+if [ "${vsam_existence}" -eq 0 ]; then
+  if [ "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITE}" = "true" ]; then
+    result=$(tso_command delete "'${vsam_name}'")
+  else
+    print_error_and_exit "Error ZWEL0158E: ${vsam_name} already exists." "" 158
+  fi
 fi
 
-
-if [ "${jcl_existence}" = "true" ] &&  [ "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITE}" != "true" ]; then
+if [ "${jcl_existence}" = "true" ] && [ "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITE}" != "true" ]; then
   print_message "Skipped writing to ${jcllib}(ZWECSVSM). To write, you must use --allow-overwrite."
 else
-  ###############################
-  # prepare STCs
-  # ZWESLSTC
+  # ZWECSVSM
   print_message "Modify ZWECSVSM"
   tmpfile=$(create_tmp_file $(echo "zwe ${ZWE_CLI_COMMANDS_LIST}" | sed "s# #-#g"))
   print_debug "- Copy ${prefix}.${ZWE_PRIVATE_DS_SZWESAMP}(ZWECSVSM) to ${tmpfile}"
@@ -133,29 +129,29 @@ else
   fi
   print_message "- ${jcllib}(ZWECSVSM) is prepared"
   print_message
-fi
 
-###############################
-# submit job
-print_message "Submit ${jcllib}(ZWECSVSM)"
-jobid=$(submit_job "//'${jcllib}(ZWECSVSM)'")
-code=$?
-if [ ${code} -ne 0 ]; then
-  print_error_and_exit "Error ZWEL0161E: Failed to run JCL ${jcllib}(ZWECSVSM)." "" 161
-fi
-print_debug "- job id ${jobid}"
-jobstate=$(wait_for_job "${jobid}")
-code=$?
-if [ ${code} -eq 1 ]; then
-  print_error_and_exit "Error ZWEL0162E: Failed to find job ${jobid} result." "" 162
-fi
-jobname=$(echo "${jobstate}" | awk -F, '{print $2}')
-jobcctext=$(echo "${jobstate}" | awk -F, '{print $3}')
-jobcccode=$(echo "${jobstate}" | awk -F, '{print $4}')
-if [ ${code} -eq 0 ]; then
-  print_message "- Job ${jobname}(${jobid}) ends with code ${jobcccode} (${jobcctext})."
-else
-  print_error_and_exit "Error ZWEL0163E: Job ${jobname}(${jobid}) ends with code ${jobcccode} (${jobcctext})." "" 163
+  ###############################
+  # submit job
+  print_message "Submit ${jcllib}(ZWECSVSM)"
+  jobid=$(submit_job "//'${jcllib}(ZWECSVSM)'")
+  code=$?
+  if [ ${code} -ne 0 ]; then
+    print_error_and_exit "Error ZWEL0161E: Failed to run JCL ${jcllib}(ZWECSVSM)." "" 161
+  fi
+  print_debug "- job id ${jobid}"
+  jobstate=$(wait_for_job "${jobid}")
+  code=$?
+  if [ ${code} -eq 1 ]; then
+    print_error_and_exit "Error ZWEL0162E: Failed to find job ${jobid} result." "" 162
+  fi
+  jobname=$(echo "${jobstate}" | awk -F, '{print $2}')
+  jobcctext=$(echo "${jobstate}" | awk -F, '{print $3}')
+  jobcccode=$(echo "${jobstate}" | awk -F, '{print $4}')
+  if [ ${code} -eq 0 ]; then
+    print_message "- Job ${jobname}(${jobid}) ends with code ${jobcccode} (${jobcctext})."
+  else
+    print_error_and_exit "Error ZWEL0163E: Job ${jobname}(${jobid}) ends with code ${jobcccode} (${jobcctext})." "" 163
+  fi
 fi
 
 ###############################

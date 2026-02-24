@@ -12,6 +12,19 @@ zowe_apiml_verify_certficates_of_services: false
 zos_java_home: /ZOWE/node/J8.0_64
 # enable Non-Strict verify certificates by default
 zowe_apiml_nonstrict_verify_certficates_of_services: true
+# If you want to use attls on Marist, update the two variables below. By default, attls is disabled
+##  and the policy file is passed as an environment variable. The policy file is the dataset member picked up by PAGENT REFRESH.
+zowe_attls_enabled: false
+zowe_attls_policy_file: 
+zowe_attls_full_keyring: safkeyring://ZWESVUSR/ZWEATTLS
+zowe_attls_cert_alias: ZOWE_ATTLS_CERT
+# use apiml modulith mode
+zowe_apiml_modulith_mode: true
+# oidc + auth0
+zowe_apiml_security_oidc_enabled: true
+
+# use new jcl path for install
+zowe_setup_jcl_enable: false
 zowe_jcllib: ZOWEAD3.ZWE.JCLLIB
 zowe_xmem_proclib: VENDOR.PROCLIB
 zowe_xmem_loadlib: ZOWEAD3.ZWE.LOADLIB

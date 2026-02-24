@@ -100,29 +100,28 @@ sh scripts/submit_jcl.sh "$(cat JCL)"
 # Not checking results so the script doesn't fail
 rm JCL
 
-if [ "$ZOSMF_V" = "2.3" ]; then
-  # Unmount and delete
-  echo "Unmounting and deleting zFS ${WORK_ZFS}."
 
-  echo ${JOBST1} >JCL
-  echo ${JOBST2} >>JCL
-  echo "//UNMNTZFS EXEC PGM=IKJEFT01,REGION=4096K,DYNAMNBR=50" >>JCL
-  echo "//SYSTSPRT DD SYSOUT=*" >>JCL
-  echo "//SYSTSOUT DD SYSOUT=*" >>JCL
-  echo "//SYSTSIN DD * " >>JCL
-  echo "UNMOUNT FILESYSTEM('${WORK_ZFS}') +  " >>JCL
-  echo "IMMEDIATE" >>JCL
-  echo "/*" >>JCL
-  echo "//DELTZFST EXEC PGM=IDCAMS" >>JCL
-  echo "//SYSPRINT DD SYSOUT=*" >>JCL
-  echo "//SYSIN    DD *" >>JCL
-  echo " DELETE ${WORK_ZFS}" >>JCL
-  echo "/*" >>JCL
+# Unmount and delete
+echo "Unmounting and deleting zFS ${WORK_ZFS}."
 
-  sh scripts/submit_jcl.sh "$(cat JCL)"
-  # Not checking results so the script doesn't fail
-  rm JCL
-fi
+echo ${JOBST1} >JCL
+echo ${JOBST2} >>JCL
+echo "//UNMNTZFS EXEC PGM=IKJEFT01,REGION=4096K,DYNAMNBR=50" >>JCL
+echo "//SYSTSPRT DD SYSOUT=*" >>JCL
+echo "//SYSTSOUT DD SYSOUT=*" >>JCL
+echo "//SYSTSIN DD * " >>JCL
+echo "UNMOUNT FILESYSTEM('${WORK_ZFS}') +  " >>JCL
+echo "IMMEDIATE" >>JCL
+echo "/*" >>JCL
+echo "//DELTZFST EXEC PGM=IDCAMS" >>JCL
+echo "//SYSPRINT DD SYSOUT=*" >>JCL
+echo "//SYSIN    DD *" >>JCL
+echo " DELETE ${WORK_ZFS}" >>JCL
+echo "/*" >>JCL
+
+sh scripts/submit_jcl.sh "$(cat JCL)"
+# Not checking results so the script doesn't fail
+rm JCL
 
 echo "Invoking REST API to unmount Zowe zFS ${ZOWE_ZFS} from its mountpoint."
 

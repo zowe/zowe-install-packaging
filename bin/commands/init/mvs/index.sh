@@ -50,6 +50,7 @@ while read -r line; do
   fi
   # check existence
   ds_existence=$(is_data_set_exists "${ds}")
+  any_existence="true"
   if [ "${ds_existence}" = "true" ]; then
     if [ "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITE}" = "true" ]; then
       # warning
@@ -71,7 +72,7 @@ $(echo "${cust_ds_list}")
 EOF
 print_message
 
-if [ "${ds_existence}" = "true" ] &&  [ "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITE}" != "true" ]; then
+if [ "${any_existence}" = "true" ] &&  [ "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITE}" != "true" ]; then
   print_message "Skipped writing to ${ds}. To write, you must use --allow-overwrite."
 else
   ###############################

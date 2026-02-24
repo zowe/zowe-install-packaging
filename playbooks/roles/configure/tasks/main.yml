@@ -52,6 +52,7 @@
     - zowe_zlux_terminal_telnet_port
     - zos_security_system
     - zowe_lock_keystore
+    - zowe_attls_policy_file
 - name: Show value of zowe_root_dir
   debug:
     msg: zowe_root_dir is {{ zowe_root_dir }}
@@ -68,7 +69,7 @@
       opercmd: "$D PROCLIB"
   - name: Find the first proclib
     set_fact:
-      zowe_proclib_dsname: "{{ opercmd_result.stdout | regex_search(qry, '\\1') | first }}"
+      zowe_proclib_dsname: "{{ opercmd_result.stdout | regex_search(qry, '\\1') | default([], True) | first }}"
     vars:
       qry: \$HASP319 +DD\(1\)=\(DSNAME=(.+),
 
@@ -329,6 +330,11 @@
         "components.{{ item }}.enabled": "true"
     with_items: "{{ zowe_launch_components.split(',') }}"
 
+- name: Update AT-TLS zowe configuration
+  include_role: 
+    name: configure
+    tasks_from: configure_attls
+
 # ============================================================================
 - name: Show zowe.yaml before zwe init
   raw: cat "{{ zowe_instance_dir }}/zowe.yaml" | grep -v '^ *#' | sed '/^[[:space:]]*$/d'
@@ -355,4 +361,54 @@
     name: zos
     tasks_from: run_zwe
   vars:
-    parameters: "init {{ zwe_init_params }}"
+    parameters: "init mvs {{ zwe_init_params }}"
+
+- name: Init Zowe vsam
+  import_role:
+    name: zos
+    tasks_from: run_zwe
+  vars:
+    parameters: "init vsam {{ zwe_init_params }}"
+
+- name: Init Zowe security
+  import_role:
+    name: zos
+    tasks_from: run_zwe
+  vars:
+    parameters: "init security {{ zwe_init_params }}"
+
+- name: Init Zowe apfauth
+  import_role:
+    name: zos
+    tasks_from: run_zwe
+  vars:
+    parameters: "init apfauth {{ zwe_init_params }}"
+
+- name: Init Zowe certificate
+  import_role:
+    name: zos
+    tasks_from: run_zwe
+  vars:
+    parameters: "init certificate {{ zwe_init_params }}"
+
+- name: Init Zowe stc
+  import_role:
+    name: zos
+    tasks_from: run_zwe
+  vars:
+    parameters: "init stc {{ zwe_init_params }}"
+
+- name: Set AT-TLS Certificate Fields
+  when: zowe_attls_enabled|bool
+  import_role:
+    name: zos
+    tasks_from: update_zowe_yaml
+  vars:
+    configs:
+      "zowe.certificate.keystore.type": "JCERACFKS"
+      "zowe.certificate.keystore.file": "{{ zowe_attls_full_keyring }}"
+      "zowe.certificate.keystore.password": "password" # dummy value
+      "zowe.certificate.keystore.alias": "{{ zowe_attls_cert_alias }}"
+      "zowe.certificate.truststore.type": "JCERACFKS"
+      "zowe.certificate.truststore.file": "{{ zowe_attls_full_keyring }}"
+      "zowe.certificate.truststore.password": "password" # dummy value

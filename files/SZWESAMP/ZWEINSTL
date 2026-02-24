@@ -11,7 +11,7 @@
 //*
 //*********************************************************************
 //*
-//MKPDSE EXEC PGM=IKJEFT01
+//MKPDSE EXEC PGM=IKJEFT01,DYNAMNBR=4
 //SYSTSPRT DD SYSOUT=A
 //SYSTSIN DD *
 ALLOC NEW DA('{zowe.setup.dataset.prefix}.SZWESAMP') +
@@ -46,6 +46,8 @@ cp * "//'{zowe.setup.dataset.prefix}.SZWELOAD'" &&
 cd '../../components/launcher/bin' &&
 cp zowe_launcher
    "//'{zowe.setup.dataset.prefix}.SZWEAUTH(ZWELNCH)'" &&
+cd ../samplib/ &&
+cp * "//'{zowe.setup.dataset.prefix}.SZWESAMP'" &&
 cd '../../zss/SAMPLIB' &&
 cp ZWESIP00 ZWESISCH
    "//'{zowe.setup.dataset.prefix}.SZWESAMP'" &&

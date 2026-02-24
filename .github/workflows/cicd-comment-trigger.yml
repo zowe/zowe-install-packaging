@@ -20,11 +20,14 @@ jobs:
     outputs:
       issue_run_ci: ${{ steps.check-comment.outputs.issue_run_ci }}
     steps:
+
       - name: Check for a comment triggering a build
+        env:
+          ISSUE_COMMENT: ${{ github.event.comment.body }}
         id: check-comment
         run: |
           echo "issue_run_ci=false" >> $GITHUB_OUTPUT
-          if [[ ! -z "${{ github.event.issue.pull_request }}" && ${{ github.event_name == 'issue_comment' }} && "${{ github.event.comment.body }}" = '/ci' ]]; then
+          if [[ ! -z "${{ github.event.issue.pull_request }}" && ${{ github.event_name == 'issue_comment' }} && "$ISSUE_COMMENT" = '/ci' ]]; then
             echo "issue_run_ci=true" >> $GITHUB_OUTPUT
           fi     
 

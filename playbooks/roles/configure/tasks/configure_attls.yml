@@ -1,0 +1,90 @@
+---
+# Configures AT-TLS on the remote system
+
+- include_role:
+    name: common
+    tasks_from: validate_variables
+  vars:
+    variable_list:
+    - work_dir_remote
+    - zowe_root_dir
+    - zowe_attls_policy_file
+    - zos_node_home
+
+- name: Copy ATTLS_Rules.txt to local tmp folder
+  copy:
+    src: ATTLS_Rules.txt
+    dest: "{{ work_dir_local }}/{{ inventory_hostname }}/"
+  delegate_to: localhost
+  
+- name: Copy zwe-setup-attls.js to local tmp folder
+  copy:
+    src: zwe-setup-attls.js
+    dest: "{{ work_dir_local }}/{{ inventory_hostname }}/"
+  delegate_to: localhost
+
+- name: Remove and upload AT-TLS automation files
+  include_role: 
+    name: common
+    tasks_from: upload_file
+  vars:
+    file_upload_method: scp
+    file_upload_hashcheck: false
+  loop:
+    - ATTLS_Rules.txt
+    - zwe-setup-attls.js
+  loop_control:
+    loop_var: filename_to_upload
+
+# !!! Important
+# This runs the script that sets the at-tls rules for the system.
+# If zowe_attls_enabled is not defined or empty, the default will be false (AT-TLS disabled).
+# If the zowe_attls_policy_file is not the system's active AT-TLS policy agent config, then this effectively does nothing.
+- name: Make AT-TLS PAGENT rule updates
+  raw: >-
+    touch {{ zos_uss_user_profile }} && \
+    . {{ zos_uss_user_profile }} \
+    {{ zowe_environment_variable_overrides | default('') }} && \
+    cd "{{ work_dir_remote }}" && \
+    node zwe-setup-attls.js {{ zowe_attls_enabled | default('false', true) }} ATTLS_Rules.txt "{{ zowe_attls_policy_file }}"
+
+- name: Refresh the policy agent with the updated rules
+  import_role:
+    name: zos
+    tasks_from: opercmd
+  vars:
+    opercmd: "F PAGENT,REFRESH"
+
+- name: Update zowe.yaml min and max tls settings when AT-TLS is enabled
+  when: zowe_attls_enabled|bool
+  block:
+  - name: Delete server tls enablement
+    import_role:
+      name: zos
+      tasks_from: delete_zowe_yaml
+    vars:
+      configs:
+      - zowe.network.server.tls.maxTls
+      - zowe.network.server.tls.minTls
+
+# Note these updates assume the default state of zowe.yaml includes maxTls, minTls, 
+#   and no ZOSMF_SCHEME env variable.
+# This is not intended to be re-runnable.
+- name: Update the zowe.yaml 
+  import_role:
+    name: zos
+    tasks_from: update_zowe_yaml
+  vars:
+    configs:
+      "zowe.network.server.tls.attls": "{{ zowe_attls_enabled|string|lower | default('false', true) }}"
+      "zowe.network.client.tls.attls": "{{ zowe_attls_enabled|string|lower | default('false', true) }}"
+
+- name: When AT-TLS is set, add ZOSMF_SCHEME environment variable
+  when: zowe_attls_enabled|bool
+  import_role:
+    name: zos
+    tasks_from: update_zowe_yaml
+  vars:
+    configs:
+      "components.zss.agent.http.ipAddresses.0" : "0.0.0.0"
+      "zowe.environments.ZOSMF_SCHEME": "https"
