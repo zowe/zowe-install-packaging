@@ -1,0 +1,9 @@
+zowe:
+  setup:
+    dataset:
+      prefix: ZOWE.PR#4444
+      jcllib ZOWE.PR#4444.JCLLIB
+    jcl:
+      enable: true
+      header: '12345'
+  runtimeDirectory: /zowe/4444

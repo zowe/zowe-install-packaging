@@ -12,6 +12,12 @@
 
 case $install_test_choice in
 
+"ZWE_CI_Build")
+  test_file="ZWE_CI_Build"
+  ;;
+"ZWE_Full_Tests")
+  test_file="ZWE_Full_Tests"
+  ;;
 "Convenience Pax")
   test_file="$CONVENIENCE_PAX_TESTFILE"
   ;;
@@ -32,13 +38,24 @@ case $install_test_choice in
   test_file="$KEYRING_TESTFILE"
   ;;
 
-"z/OS node v18")
-  test_file="$ZOS_NODE_V18_TESTFILE"
-  test_force_system="zzow08"
+"ATTLS")
+  test_file="$ATTLS_TESTFILE"
+  ;;
+
+"Java 21")
+  test_file="$JAVA_V21_TESTFILE"
+  ;;
+
+"Java 21 Keyring")
+  test_file="$JAVA_V21_KEYRING_TESTFILE"
   ;;
 
 "z/OS node v20")
   test_file="$ZOS_NODE_V20_TESTFILE"
+  ;;
+
+"z/OS node v22")
+  test_file="$ZOS_NODE_V22_TESTFILE"
   ;;
 
 "Non-strict Verify External Certificate")
@@ -61,8 +78,16 @@ case $install_test_choice in
   test_file="$GENERAL_API_DOCUMENTATION_TESTFILE"
   ;;
 
-"Config Manager")
-  test_file="$CONFIG_MANAGER_TESTFILE"
+"JCL Installation")
+  test_file="$JCL_INSTALL_TESTFILE"
+  ;;
+
+"APIML Modulith Mode")
+  test_file="$APIML_MODULITH_TESTFILE"
+  ;;
+
+"APIML zOSMF AuthN Provider")
+  test_file="$APIML_ZOSMF_AUTHN_TESTFILE"
   ;;
 
 "Zowe Nightly Tests")
@@ -87,18 +112,26 @@ if [[ ! -z "$test_force_system" ]]; then
 else
   if [[ -z "$dont_parse_test_server" ]]; then
     if [[ "$test_server" == "Any zzow servers" ]]; then
-      test_server="zzow0"$(echo $(($RANDOM % 3 + 6)))
+      test_server="zzow"$(printf %02d $(($RANDOM % 3 + 9)))
+    elif [[ "$test_server" == "Any("* ]]; then
+      # keeping this all posix compliant
+      any_options=$(echo "$test_server" | cut -d ")" -f1 | cut -d "(" -f2) # Any(x,y,z) -> x,y,z
+      anyopts_comma_count=$(echo "$any_options" | tr -cd ',' | wc -c)
+      num_choices=$(($anyopts_comma_count + 1))
+      #  add 1 to RANDOM % num_choices because cut won't handle 0-indexed elements
+      server_choice=$(printf %01d $(($RANDOM % $num_choices + 1)))
+      test_server=$(echo $any_options | cut -d "," -f$server_choice) # pick one of x,y,z at random
     fi
     TEST_FILE_SERVER="$test_file($test_server)"
   else
     any_occurrence=$(echo $test_file | grep -o "(any)" | wc -l)
     interim_test_file_server=$test_file
     for i in $(seq $any_occurrence); do
-      # Generates zzow06, zzow07, zzow08
-      interim_test_file_server=$(echo $interim_test_file_server | sed "s#(any)#(zzow0$(echo $(($RANDOM % 3 + 6))))#")
+      # Generates zzow09, zzow10, zzow11
+      interim_test_file_server=$(echo $interim_test_file_server | sed "s#(any)#(zzow$(printf %02d $(($RANDOM % 3 + 9))))#")
     done
 
-    TEST_FILE_SERVER=$(echo $interim_test_file_server | sed "s#(all)#(zzow06,zzow07,zzow08)#g")
+    TEST_FILE_SERVER=$(echo $interim_test_file_server | sed "s#(all)#(zzow09,zzow10,zzow11)#g")
   fi
 fi
 

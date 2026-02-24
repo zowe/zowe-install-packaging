@@ -28,7 +28,7 @@
 
 - name: Get Job name
   set_fact:
-    jcl_job_name: "{{ opercmd_result.stdout | regex_search(qry, multiline=True, ignorecase=True) }}"
+    jcl_job_name: "{{ opercmd_result.stdout | regex_search(qry, multiline=True, ignorecase=True) | default('', True) }}"
   vars:
     qry: (?<=\$HASP890 JOB\()[^)]+(?=\))
 
@@ -37,13 +37,13 @@
 # ... $HASP890 JOB(GIMUNZIP)  CC=()  <-- reject this value
 - name: Get Job completion
   set_fact:
-    jcl_job_completion: "{{ opercmd_result.stdout | regex_search(qry, multiline=True, ignorecase=True) }}"
+    jcl_job_completion: "{{ opercmd_result.stdout | regex_search(qry, multiline=True, ignorecase=True) | default('', True) }}"
   vars:
     qry: (?<=CC=\()[^)]+(?<!\))
 
 - name: Get Job return code
   set_fact:
-    jcl_job_rc: "{{ jcl_job_completion | regex_search(qry, ignorecase=True) }}"
+    jcl_job_rc: "{{ jcl_job_completion | regex_search(qry, ignorecase=True) | default('', True) }}"
   vars:
     qry: (?<=RC=).+
 

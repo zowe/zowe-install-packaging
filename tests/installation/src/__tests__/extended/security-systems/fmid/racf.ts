@@ -18,9 +18,9 @@ import {TEST_TIMEOUT_SMPE_FMID} from '../../../../constants';
 /**
  * Define this test should run in a specific worker
  *
- * @worker marist-8
+ * @worker marist-11
  */
-const testServer = 'marist-8';
+const testServer = 'marist-11';
 const testSuiteName = 'Test SMPE FMID installation with RACF';
 describe(testSuiteName, () => {
   beforeAll(() => {

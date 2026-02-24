@@ -11,15 +11,34 @@
 # Copyright Contributors to the Zowe Project.
 #######################################################################
 
+CONFIGMGR_SYNTAX=$(check_configmgr_config_syntax)
+validate_zowe_yaml "${ZWE_CLI_PARAMETER_CONFIG}"
+USE_JCL=$(check_jcl_enabled)
+if [ "${USE_JCL}" = "true" ]; then
+  if [ -z "${ZWE_PRIVATE_TMP_MERGED_YAML_DIR}" ]; then
+
+    # user-facing command, use tmpdir to not mess up workspace permissions
+    export ZWE_PRIVATE_TMP_MERGED_YAML_DIR=1
+  fi
+  _CEE_RUNOPTS="XPLINK(ON),HEAPPOOLS(OFF),HEAPPOOLS64(OFF)" ${ZWE_zowe_runtimeDirectory}/bin/utils/configmgr -script "${ZWE_zowe_runtimeDirectory}/bin/commands/init/apfauth/cli.js"
+elif [ "${CONFIGMGR_SYNTAX}" = "true" ]; then
+  print_error_and_exit "Error ZWEL0115E: This command was submitted with FILE() or PARMLIB() syntax, which is only supported when JCL is also enabled." "" 115
+else
+
+###############################
+# Old 3.2 code follows
+
+
+
 print_level1_message "APF authorize load libraries"
 
 ###############################
 # constants
 auth_libs="authLoadlib authPluginLib"
-
-###############################
-# validation
-require_zowe_yaml
+DRY_RUN=
+if [ -n "${ZWE_CLI_PARAMETER_DRY_RUN}" ] || [ -n "${ZWE_CLI_PARAMETER_SECURITY_DRY_RUN}" ]; then
+  DRY_RUN="true"
+fi
 
 # read prefix and validate
 prefix=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.dataset.prefix")
@@ -43,16 +62,20 @@ for key in ${auth_libs}; do
   fi
 
   print_message "APF authorize ${ds}"
-  apf_authorize_data_set "${ds}"
-  code=$?
-  if [ $code -ne 0 ]; then
-    if [ "${ZWE_CLI_PARAMETER_IGNORE_SECURITY_FAILURES}" = "true" ]; then
-      job_has_failures=true
+  if [ -z "${DRY_RUN}" ]; then
+    apf_authorize_data_set "${ds}"
+    code=$?
+    if [ $code -ne 0 ]; then
+      if [ "${ZWE_CLI_PARAMETER_IGNORE_SECURITY_FAILURES}" = "true" ]; then
+        job_has_failures=true
+      else
+        exit $code
+      fi
     else
-      exit $code
+      print_debug "- APF authorized successfully."
     fi
   else
-    print_debug "- APF authorized successfully."
+    print_message "Skipping APF authorize due to --dry-run parameter."
   fi
 done
 
@@ -62,4 +85,5 @@ if [ "${job_has_failures}" = "true" ]; then
   print_level2_message "Failed to APF authorize Zowe load libraries. Please check log for details."
 else
   print_level2_message "Zowe load libraries are APF authorized successfully."
+fi
 fi

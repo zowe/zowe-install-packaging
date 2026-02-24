@@ -1,6 +1,9 @@
 # zowe-install-packaging 
 
+
 This repository includes Zowe installation script and pipelines to build Zowe.
+
+If you are looking for a Zowe server installation guide, check out [docs.zowe.org](https://docs.zowe.org) or [INSTALLATION.md](https://github.com/zowe/zowe-install-packaging/blob/feature/v3/jcl/INSTALLATION.md)
 
 - [Branches](#branches)
 - [Manifest File](#manifest-file)
@@ -179,6 +182,12 @@ If your changes are in components, it may depend on how the Zowe build picks you
       "explode": "true"
     },
   ```
+
+### Writing HOLDDATA
+
+If your changes require end-users to take action on their system beyond applying maintenance and recycling the Zowe address space, you will need to write HOLDDATA detailing what steps the user should take once the maintenance is applied. 
+
+HOLDDATA should be written in a `smpe/bld/service/current-hold-*.txt` file. More details on this file format can be found in [the SMP/e service doc](./smpe/bld/service/_README.txt).
 
 ## Automate Install / Uninstall of Zowe with Ansible
 

@@ -100,19 +100,54 @@ export function ensureFileEncoding(file: string, expectedSample: string, expecte
     expectedEncoding=1047;
   }
 
+  let readlinkFile = shell.execSync('sh', '-c', `readlink ${file}`);
+  let fileToCvt = file;
+  if (!readlinkFile.rc) {
+    fileToCvt = `${readlinkFile.out}`;
+  }
+
   let fileEncoding=detectFileEncoding(file, expectedSample);
   if (fileEncoding) {
     // TODO  any cases we cannot find encoding?
     if (fileEncoding != expectedEncoding) {
-      common.printTrace(`- Convert encoding of ${file} from ${fileEncoding} to ${expectedEncoding}.`);
-      let shellReturn = shell.execSync('sh', '-c', `iconv -f "${fileEncoding}" -t "${expectedEncoding}" "${file}" > "${file}.tmp"`);
+      common.printTrace(`- Convert encoding of ${fileToCvt} from ${fileEncoding} to ${expectedEncoding}.`);
+      let shellReturn = shell.execSync('sh', '-c', `iconv -f "${fileEncoding}" -t "${expectedEncoding}" "${fileToCvt}" > "${fileToCvt}.tmp"`);
       if (!shellReturn.rc) {
-        os.rename(`${file}.tmp`, file);
+        os.rename(`${fileToCvt}.tmp`, fileToCvt);
       }
     }
-    common.printTrace(`- Remove encoding tag of ${file}.`);
-    shell.execSync('sh', '-c', `chtag -r "${file}"`);
+    common.printTrace(`- Remove encoding tag of ${fileToCvt}.`);
+    shell.execSync('sh', '-c', `chtag -r "${fileToCvt}"`);
   } else {
-    common.printTrace(`- Failed to detect encoding of ${file}.`);
+    common.printTrace(`- Failed to detect encoding of ${fileToCvt}.`);
   }
+}
+
+export type fileSystemFlagsReturn = {
+  rc: number,
+  exported?: boolean,
+  rdonly?: boolean,
+  nosuid?: boolean,
+  nosecurity?: boolean,
+};
+
+export function getFileSystemFlags(path: string): fileSystemFlagsReturn {
+  const ST_OEEXPORTED = 0x40000000
+  const ST_RDONLY     = 0x00000001
+  const ST_NOSUID     = 0x00000002
+  const ST_NOSECURITY = 0x00000004
+  let flags : fileSystemFlagsReturn = { rc: 1 };
+  if (path) {
+    const result = zos.getStatvfs(path);
+    if (result[1] == 0) {
+        flags = {
+          rc: 0,
+          exported: !!(result[0].flag & ST_OEEXPORTED),
+          rdonly: !!(result[0].flag & ST_RDONLY),
+          nosuid: !!(result[0].flag & ST_NOSUID),
+          nosecurity: !!(result[0].flag & ST_NOSECURITY)
+        }
+    }
+  }
+  return flags;
 }

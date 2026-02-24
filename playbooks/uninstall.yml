@@ -16,7 +16,7 @@
   # ============================================================================
   # uninstall zowe
   - name: Uninstall Zowe
-    when: zowe_uninstall_before_install|default(True)
+    when: zowe_uninstall_before_install|bool|default(True)
     block:
     - import_role:
         name: zowe

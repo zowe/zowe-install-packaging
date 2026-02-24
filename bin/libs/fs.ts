@@ -328,3 +328,15 @@ export function areDirectoriesSame(dir1: string, dir2: string): boolean {
   let abs2 = convertToAbsolutePath(dir2);
   return (abs1 === abs2) && abs1 !== undefined;
 }
+
+export function fileSize(file: string): number {
+  common.printDebug(`fs.fileSize path="${file}"`);
+  if (file && typeof(file) == 'string') {
+      const result = zos.zstat(file);
+      common.printDebug(`fs.fileSize result="${JSON.stringify(result)}"`);
+      if (result[1] == 0) {
+          return result[0].size;
+      }
+  }
+  return -1;
+}

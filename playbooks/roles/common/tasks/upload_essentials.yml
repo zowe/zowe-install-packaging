@@ -35,4 +35,4 @@
     . {{ zos_uss_user_profile }} \
     {{ zowe_environment_variable_overrides | default('') }} && \
     cd "{{ work_dir_remote }}" && \
-    javac MD5Checksum.java
+    javac -encoding IBM-1047 MD5Checksum.java

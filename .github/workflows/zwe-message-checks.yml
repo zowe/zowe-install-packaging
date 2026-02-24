@@ -1,0 +1,41 @@
+name: ZWE Message Analysis
+
+permissions: read-all
+
+
+on:
+
+  pull_request:
+    types: [opened, synchronize]
+  workflow_dispatch:
+
+env:
+  ZWE_MESSAGE_CHECKS_DIR: .dependency/zwe_message_checks
+
+jobs:
+  run-tests:
+    name: Run the ZWE Message Analysis
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Set up Node
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: '20'
+      
+      - name: Checkout repository
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Set up git
+        run: |
+          git config --global user.email "zowe-robot@users.noreply.github.com"
+          git config --global user.name "Zowe Robot"
+          git config --global pull.rebase false # configure to merge in changes from remote branches
+
+      - name: Prepare node project
+        working-directory: ${{ env.ZWE_MESSAGE_CHECKS_DIR }}
+        run: npm ci 
+
+      - name: Check zwe messages for issues and print them to the log
+        id: duplicates
+        run: node ${{ env.ZWE_MESSAGE_CHECKS_DIR }}/index.js 

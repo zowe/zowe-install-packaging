@@ -1,0 +1,19 @@
+haInstances:
+  LPAR1:
+    hostname: LPAR1.example.com
+    sysname: LPAR1
+  lpar1:
+    hostname: lpar1.example.com
+    sysname: lpar1
+  LPAR-2:
+    hostname: LPAR-2.example.com
+    sysname: LPAR-2
+  LPAR_2:
+    hostname: LPAR_2.example.com
+    sysname: LPAR_2
+  LPAR-3:
+    hostname: LPAR-3.example.com
+    sysname: LPAR-3
+  lpar_3:
+    hostname: lpar_3.example.com
+    sysname: lpar_3

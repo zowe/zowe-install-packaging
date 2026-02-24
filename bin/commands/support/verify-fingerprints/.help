@@ -1,0 +1,11 @@
+This command will gather the hash (fingerprint) of every file in the `zowe.runtimeDirectory`.
+The result is then compared with existing hashes.
+
+Java is required to run the hash utility. Make sure the environment variable `JAVA_HOME`
+is set to the directory containing `bin/java`.
+
+For example, if java is at '/usr/lpp/java/current/bin/java', then set `JAVA_HOME` to '/usr/lpp/java/current'.
+
+NOTE: For best results, it is recommended to set all directories in the `zowe.yaml` configuration file
+which reside outside the `zowe.runtimeDirectory`. These are typically `zowe.workspaceDirectory`,
+`zowe.logDirectory` and certificates directories.

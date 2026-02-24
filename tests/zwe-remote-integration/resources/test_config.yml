@@ -1,0 +1,92 @@
+#######################################################################
+# This program and the accompanying materials are made available
+# under the terms of the Eclipse Public License v2.0 which
+# accompanies this distribution, and is available at
+# https://www.eclipse.org/legal/epl-v20.html
+#
+# SPDX-License-Identifier: EPL-2.0
+#
+# Copyright Contributors to the Zowe Project. 2018, 2024
+#######################################################################
+
+######
+# This file should be copied and modified in a custom_config.yml to prevent committing config data.
+## Set the test suite to run use custom_config.yml with env TEST_CONFIG_FILE=./path/to/custom_config.yml
+##
+## Any variable below can be specified and superseded by an env of the same name, 
+##  i.e. ZOS_HOST=some.host.name 
+## This is useful for sensitive fields such as ZOS_PASSWORD
+##
+######
+
+# Host to run the test on and associated params
+zos_host: 
+ssh_port: 
+zosmf_port: 
+# Expect user and password to be the same for zosmf and ssh
+zos_user: 
+zos_password: 
+# Remote USS dir where all data will be stored. Recommend mounting a ZFS; automation will not check.
+remote_test_dir: 
+# Required fields; this suite will not attempt to auto-detect Java/Node homes
+zos_java_home:
+zos_node_home: 
+
+# remote_setup is required for first-time runs and can be disabled afterwards to speed up test dev/iteration.
+remote_setup: true
+# remote_teardown purges job logs and removes any lingering tracked datasets; not strictly required to run.
+remote_teardown: true
+# All test suite and test case datasets are created under the below HLQ. HLQ only, prefix not supported.
+test_ds_hlq: 
+# All test suite and test case datasets use the volume specified below
+test_volume:
+# Storclas is used when tests require an SMS managed DS. If missing, SMS tests will be skipped.
+test_storclas:
+# If set to false, allows self-signed z/OSMF connections
+zosmf_reject_unauthorized: 
+# Download configmgr and zowe-install-packaging-tools using the manifest.json in this repo.
+## If set to false, you can use a custom build of either artifact by placing them in the .build/ dir 
+download_configmgr: true
+download_szwesamp: true  # launcher and zss
+download_zowe_tools: true
+# Required if download_configmgr or download_zowe_tools is true. (You may request an ID from Systems Squad)
+jfrog_user:
+jfrog_token:
+# Collects spool after every test and downloads it to the .build/output/<testcase>/spool dir.
+collect_test_spool: true
+
+# custom_jcl_parameters is used when your test system requires specific JCL positional 
+#   or keyword parameters to run zwe JCLs.
+## Each field is defined individually so the test framework can manage this in combination with parameters passed
+##  by individual test cases. If a test case defines a jclHeader section, all of these parameters will be ignored.
+##  In general, test cases which specify jclHeader are dry-run tests which won't require these parameters.
+## These fields will be stripped out of the final snapshot results from tests.
+# custom_jcl_parameters:
+#   positional:
+#     - (*)
+#     - MYZUSER
+#   keywords:
+#     - MSGCLASS=X
+#     - NOTIFY=USER
+#     - SYSAFF=SYS1
+
+# zowe_yaml_overrides is primarily for debug or environment specific purposes. 
+#  Be cautious; this may invalidate test case snapshot results
+###  Always overrides any computed values in globalSetup.
+###  Only use to debug or write tests initially;
+###    these values are __not__ substituted in command response snapshots.
+#zowe_yaml_overrides:
+#  zowe:
+#    setup:
+#  zOSMF:
+#    host: some-other.host.value
+#    port: 10443
+
+# sensitive_data is used to mask sensitive data in command response snapshots
+## Use this only when there's data in your snapshots that isn't being masked by default within RemoteTestRunner
+## For type=hostname, a baked-in host value will be used to mask the data. For any other type, '*****' is used.
+#sensitive_data:
+#  - key: mask.my.host
+#    type: hostname
+#  - key: some.other.dataset.pops.up
+#    type: dataset

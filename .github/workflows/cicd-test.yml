@@ -1,10 +1,6 @@
 name: Zowe CICD Integration Tests
 
-permissions:
-  contents: write
-  issues: write
-  pull-requests: write
-  statuses: write
+permissions: read-all
   
 on:   
   workflow_dispatch:
@@ -16,10 +12,10 @@ on:
         default: 'Any zzow servers'
         options: 
           - Any zzow servers
-          - zzow06
-          - zzow07
-          - zzow08
-          - zzow06,zzow07,zzow08
+          - zzow09
+          - zzow10
+          - zzow11
+          - zzow09,zzow10,zzow11
       install-test:
         description: 'Choose Install Test'
         type: choice
@@ -31,14 +27,19 @@ on:
           - SMPE PTF
           - Extensions
           - Keyring
-          - z/OS node v18
+          - ATTLS
+          - Java 21
+          - Java 21 Keyring
           - z/OS node v20
+          - z/OS node v22
           - Non-strict Verify External Certificate
           - Install PTF Twice
           - VSAM Caching Storage Method
           - Infinispan Caching Storage Method
-          - Config Manager
+          - JCL Installation
           - Generate API Documentation
+          - APIML Modulith Mode
+          - APIML zOSMF AuthN Provider
           - Zowe Nightly Tests
           - Zowe Release Tests
       custom-zowe-artifactory-pattern-or-build-number:
@@ -52,11 +53,16 @@ on:
         required: false
         # FIXME: too slow to test 2, temporarily only test 1
         # default: 'sample-node-api;sample-trial-app'
-        default: 'sample-node-api'
+        default: 'sample-node-api(3.0.0-SNAPSHOT)'
       RANDOM_DISPATCH_EVENT_ID:
         description: 'random dispatch event id'
         required: false
         type: string
+      origin-event:
+        description: '[Automation] if caller was a pull request' # caller sets var to 'pull_request'
+        type: string
+        required: false
+        default: ''
 
 # create a new branch to overwrite following defaults if necessary
 env:
@@ -65,12 +71,12 @@ env:
   SANITY_TEST_PATH: tests/sanity
   DEFAULT_ZOWE_PAX_ARTIFACTORY_PATTERN: libs-snapshot-local/org/zowe/*zowe*{branch-name}*.pax
   DEFAULT_ZOWE_SMPE_ARTIFACTORY_PATTERN: libs-snapshot-local/org/zowe/*zowe-smpe*{branch-name}*.zip
-  DEFAULT_ZOWE_CLI_ARTIFACTORY_PATTERN: PLACE_HOLDER/org/zowe/cli/zowe-cli-package/*zowe-cli-package-2*.zip
-  DEFAULT_ZOWE_EXT_ARTIFACTORY_PATTERN: libs-snapshot-local/org/zowe/{ext-name}/*/{ext-name}-*.pax
+  DEFAULT_ZOWE_CLI_ARTIFACTORY_PATTERN: PLACE_HOLDER/org/zowe/cli/zowe-cli-package/*zowe-cli-package-3*.zip
+  DEFAULT_ZOWE_EXT_ARTIFACTORY_PATTERN: libs-snapshot-local/org/zowe/{ext-name}/{ext-version}/{ext-name}-*.pax
 
   # below block can be overwritten, adjusted by DevOps only
-  # ZOS_NODE_VERSION more to choose from: v16.20.1,  v18.16.0
-  ZOS_NODE_VERSION: v16.20.1
+  # ZOS_NODE_VERSION more to choose from: v18.16.0, v20.11.0
+  ZOS_NODE_VERSION: v18.16.0
   CLIENT_NODE_VERSION: v12.18.3
   INSTALL_TEST_DEBUG_INFORMATION: zowe-install-test:*
   SANITY_TEST_DEBUG_INFORMATION: zowe-sanity-test:*
@@ -80,19 +86,54 @@ env:
   SMPE_FMID_TESTFILE: basic/install-fmid.ts
   SMPE_PTF_TESTFILE: basic/install-ptf.ts
   EXTENSIONS_TESTFILE: basic/install-ext.ts
+  ATTLS_TESTFILE: extended/at-tls/basic-install.ts
   KEYRING_TESTFILE: extended/keyring.ts
-  ZOS_NODE_V18_TESTFILE: extended/node-versions/node-v18.ts
+  JAVA_V21_TESTFILE: extended/java-versions/java-21.ts
+  JAVA_V21_KEYRING_TESTFILE: extended/java-versions/java-21-keyring.ts
+  JCL_INSTALL_TESTFILE: extended/install-jcl/install-with-jcl.ts
   ZOS_NODE_V20_TESTFILE: extended/node-versions/node-v20.ts
+  ZOS_NODE_V22_TESTFILE: extended/node-versions/node-v22.ts
+  APIML_MODULITH_TESTFILE: extended/apiml-monolith/disable-monolith.ts
+  APIML_ZOSMF_AUTHN_TESTFILE: extended/apiml-authn-zosmf/zosmf-provider.ts
   NON_STRICT_VERIFY_EXTERNAL_CERTIFICATE_TESTFILE: extended/certificates/nonstrict-verify-external-certificate.ts
   INSTALL_PTF_TWICE_TESTFILE: extended/install-ptf-two-times.ts
   VSAM_CACHING_STORAGE_METHOD_TESTFILE: extended/caching-storages/vsam-storage.ts
   INFINISPAN_CACHING_STORAGE_METHOD_TESTFILE: extended/caching-storages/infinispan-storage.ts
-  CONFIG_MANAGER_TESTFILE: extended/config-manager/enable-config-manager.ts
   GENERAL_API_DOCUMENTATION_TESTFILE: basic/install-api-gen.ts
-  ZOWE_NIGHTLY_TESTS_FULL: basic/install.ts(all);basic/install-fmid.ts(all)
-  ZOWE_RELEASE_TESTS_FULL: basic/install.ts(all);basic/install-fmid.ts(all);basic/install-ext.ts(any);extended/keyring.ts(all);extended/node-versions/node-v18.ts(zzow08):extended/certificates/nonstrict-verify-external-certificate.ts(any);extended/caching-storages/infinispan-storage.ts(any);extended/config-manager/enable-config-manager.ts(any)
+  ZOWE_NIGHTLY_TESTS_FULL: basic/install.ts(all);basic/install-ptf.ts(all);extended/install-jcl/install-with-jcl.ts(any)
+  ZOWE_RELEASE_TESTS_FULL: basic/install.ts(all);basic/install-ptf.ts(all);basic/install-ext.ts(any);extended/keyring.ts(all);extended/java-versions/java-21.ts(any);extended/java-versions/java-21-keyring.ts(any);extended/node-versions/node-v20.ts(any);extended/node-versions/node-v22.ts(any);extended/certificates/nonstrict-verify-external-certificate.ts(any);extended/caching-storages/infinispan-storage.ts(any);extended/install-jcl/install-with-jcl.ts(any);extended/apiml-monolith/disable-monolith.ts(any);extended/at-tls/basic-install.ts(any);extended/apiml-authn-zosmf/zosmf-provider.ts(any)
 
 jobs:
+
+  set-run-conditions:
+    runs-on: ubuntu-latest
+    outputs:
+      pr-labels: ${{ steps.get-labels.outputs.result }}
+    steps:
+      - name: 'Get labels'
+        id: get-labels
+        uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7.0.1
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            if ('${{ github.event_name}}' == 'pull_request') {
+              return JSON.stringify(${{ toJson(github.event.pull_request.labels) }})
+            }  
+            else if ('${{ github.event.inputs.origin-event }}' == 'pull_request') {
+              const res = await github.rest.pulls.list({
+                state: 'open',
+                head: 'zowe:${{ github.ref_name }}',
+                owner: 'zowe',
+                repo: 'zowe-install-packaging'
+              }).then((resp) => {
+                const pr = resp.data.find((item) => item.head.ref == '${{ github.ref_name }}')
+                return JSON.stringify(pr.labels)
+              })
+              return res;
+            } else {
+              return '[]'
+            }
+
   display-dispatch-event-id:
     if: github.event.inputs.RANDOM_DISPATCH_EVENT_ID != ''
     runs-on: ubuntu-latest
@@ -105,7 +146,7 @@ jobs:
     steps:
       # this action will fail the whole workflow if permission check fails
       - name: check permission
-        uses: zowe-actions/shared-actions/permission-check@main
+        uses: zowe-actions/shared-actions/permission-check@54a9b36cf54e61fefea2801008788d81e1e3a560 # main 06/17/25
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
@@ -114,7 +155,7 @@ jobs:
     needs: check-permission
     steps:
       - name: '[Prep 1] Checkout'
-        uses: actions/checkout@v2
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
 
       - name: Make matrix
         id: set-matrix
@@ -130,22 +171,27 @@ jobs:
 
   cicd-test:
     runs-on: ubuntu-latest
-    needs: make-matrix
+    needs: [set-run-conditions, make-matrix]
+    permissions:
+      contents: write
+      issues: write
+      pull-requests: write
+      statuses: write
     strategy:
       matrix: ${{ fromJson(needs.make-matrix.outputs.matrix) }}
       fail-fast: false
     environment: ${{ matrix.server }}
     steps:
       - name: '[Prep 1] Checkout'
-        uses: actions/checkout@v2
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
 
       - name: '[Prep 2] Setup Node'
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
         with:
           node-version: '18'
 
       - name: '[Prep 3] Cache node modules'
-        uses: actions/cache@v2
+        uses: actions/cache@5a3ec84eff668545956fd18022155c47e93e2684 # v4.2.3
         with:
           # npm cache files are stored in `~/.npm` on Linux/macOS
           path: |
@@ -157,15 +203,15 @@ jobs:
             ${{ runner.os }}-build-cache-node-modules-
 
       - name: '[Prep 4] Setup jFrog CLI'
-        uses: jfrog/setup-jfrog-cli@v2
+        uses: jfrog/setup-jfrog-cli@11ee3f9bb82595485cb55670e4f93885080e183b # v2.4.1 (FIXME: upgrade to v4)
         env:
           JF_ENV_1: ${{ secrets.JF_ARTIFACTORY_TOKEN }}
 
       - name: '[Prep 5] Validate package.json'
-        uses: zowe-actions/shared-actions/validate-package-json@main
+        uses: zowe-actions/shared-actions/validate-package-json@54a9b36cf54e61fefea2801008788d81e1e3a560 # main 06/17/25
 
       - name: '[Prep 6] Prepare workflow'
-        uses: zowe-actions/shared-actions/prepare-workflow@main
+        uses: zowe-actions/shared-actions/prepare-workflow@54a9b36cf54e61fefea2801008788d81e1e3a560 # main 06/17/25
 
       - name: '[Prep 7] Additional Prep work'
         id: more-test-prep
@@ -211,7 +257,7 @@ jobs:
           npm run lint
 
       - name: '[Download 1] Download zowe.pax or smpe-zowe.zip'
-        uses: zowe-actions/shared-actions/jfrog-download@main
+        uses: zowe-actions/shared-actions/jfrog-download@54a9b36cf54e61fefea2801008788d81e1e3a560 # main 06/17/25
         with:
           source-path-or-pattern: ${{ steps.more-test-prep.outputs.ZOWE_ARTIFACTORY_FINAL }}
           default-target-path: ${{ runner.temp }}/zowe/
@@ -219,7 +265,7 @@ jobs:
           expected-count: 1
 
       - name: '[Download 2] Download cli package'
-        uses: zowe-actions/shared-actions/jfrog-download@main
+        uses: zowe-actions/shared-actions/jfrog-download@54a9b36cf54e61fefea2801008788d81e1e3a560 # main 06/17/25
         with:
           source-path-or-pattern: ${{ steps.more-test-prep.outputs.ZOWE_CLI_ARTIFACTORY_FINAL }}
           default-target-path: ${{ runner.temp }}/cli/
@@ -232,9 +278,9 @@ jobs:
         run: npm install -g zowe-cli*.tgz
       
       - name: '[Comment] Post comments on PR about what tests are gonna be run'
-        uses: actions/github-script@v5
+        uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7.0.1
         id: create-comment
-        if: startsWith(env.CURRENT_BRANCH, 'PR-')
+        if: startsWith(env.CURRENT_BRANCH, 'PR-') && !contains(fromJson(needs.set-run-conditions.outputs.pr-labels), 'CICD_Quiet')
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
@@ -264,7 +310,7 @@ jobs:
             return comment.id;
 
       - name: '[LOCK] Lock marist servers'
-        uses: zowe-actions/shared-actions/lock-resource@main
+        uses: zowe-actions/shared-actions/lock-resource@54a9b36cf54e61fefea2801008788d81e1e3a560 # main 06/17/25
         with:
           lock-repository: ${{ github.repository }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
@@ -272,8 +318,8 @@ jobs:
           lock-avg-retry-interval: 60
       
       - name: '[Comment] Update comment after lock is acquired'
-        uses: actions/github-script@v5
-        if: steps.create-comment.outputs.result != ''
+        uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7.0.1
+        if: steps.create-comment.outputs.result != '' && !contains(fromJson(needs.set-run-conditions.outputs.pr-labels), 'CICD_Quiet')
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
@@ -297,9 +343,6 @@ jobs:
                 break;
               case 'Keyring':
                 eta = 53
-                break;
-              case 'z/OS node v18':
-                eta = 45
                 break;
               case 'z/OS node v20':
                 eta = 45
@@ -358,6 +401,7 @@ jobs:
         env:
           ANSIBLE_FORCE_COLOR: true
           TEST_SERVER: ${{ steps.more-test-prep.outputs.TEST_SERVER_NICKNAME }}
+          ZOWE_ATTLS_POLICY_FILE: ${{ secrets.ATTLS_POLICY_FILE }}
           ZOWE_BUILD_LOCAL: "${{ runner.temp }}/zowe/${{ steps.more-test-prep.outputs.ZOWE_ARTIFACTORY_FINAL_FILENAME }}"
           ZOWE_DOCKER_URL: ${{ steps.more-test-prep.outputs.ZOWE_TP_DOCKER_ARTIFACTORY_URL }}
           EXTENSIONS_LIST: ${{ steps.more-test-prep.outputs.EXTENSION_LIST }}
@@ -367,12 +411,13 @@ jobs:
           SSH_PORT: ${{ secrets.SSH_PORT }}
           SSH_USER: ${{ secrets.SSH_USER }}
           SSH_PASSWORD: ${{ secrets.SSH_PASSWORD }}
-          OKTA_HOSTNAME: ${{ secrets.OKTA_HOSTNAME }}
-          OKTA_CLIENT_ID: ${{ secrets.OKTA_CLIENT_ID }}
-          OKTA_CLIENT_SECRET: ${{ secrets.OKTA_CLIENT_SECRET }}
-          OKTA_USER: ${{ secrets.OKTA_USER }}
-          OKTA_PASSWORD: ${{ secrets.OKTA_PASSWORD }}
+          OIDC_HOSTNAME: ${{ secrets.OIDC_HOSTNAME }}
+          OIDC_CLIENT_ID: ${{ secrets.OIDC_CLIENT_ID }}
+          OIDC_CLIENT_SECRET: ${{ secrets.OIDC_CLIENT_SECRET }}
+          OIDC_USER: ${{ secrets.OIDC_USER }}
+          OIDC_PASSWORD: ${{ secrets.OIDC_PASSWORD }}
           OIDC_REGISTRY: ${{ secrets.OIDC_REGISTRY }}
+          OIDC_JWKS_ENDPOINT: ${{ secrets.OIDC_JWKS_ENDPOINT }}
           ZOS_NODE_HOME: ${{ steps.more-test-prep.outputs.NODE_HOME_PATTERN }}
       #     # ANSIBLE_VERBOSE: -vvv
 
@@ -385,14 +430,14 @@ jobs:
 
       - name: '[After Test 2] Upload test report'
         if: always()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           name: InstallTestReports-${{ env.TEST_NAME }}-${{ steps.more-test-prep.outputs.TEST_SERVER_NICKNAME }}-${{ github.run_id }}-${{ env.CURRENT_TIME }}
           path: ${{ env.INSTALL_TEST_PATH }}/reports/
 
       - name: '[Comment] Update PR comment to indicate test succeeded'
-        uses: actions/github-script@v5
-        if: steps.create-comment.outputs.result != '' && success()
+        uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7.0.1
+        if: steps.create-comment.outputs.result != '' && success() && !contains(fromJson(needs.set-run-conditions.outputs.pr-labels), 'CICD_Quiet')
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
@@ -418,8 +463,8 @@ jobs:
             });
 
       - name: '[Comment] Update PR comment to indicate test failed'
-        uses: actions/github-script@v5
-        if: steps.create-comment.outputs.result != '' && failure()
+        uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7.0.1
+        if: steps.create-comment.outputs.result != '' && failure() && !contains(fromJson(needs.set-run-conditions.outputs.pr-labels), 'CICD_Quiet')
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
@@ -445,8 +490,8 @@ jobs:
             });
 
       - name: '[Comment] Update PR comment to indicate test cancelled'
-        uses: actions/github-script@v5
-        if: steps.create-comment.outputs.result != '' && cancelled()
+        uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7.0.1
+        if: steps.create-comment.outputs.result != '' && cancelled() && !contains(fromJson(needs.set-run-conditions.outputs.pr-labels), 'CICD_Quiet')
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |

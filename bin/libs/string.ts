@@ -3,9 +3,9 @@
   under the terms of the Eclipse Public License v2.0 which
   accompanies this distribution, and is available at
   https://www.eclipse.org/legal/epl-v20.html
- 
+
   SPDX-License-Identifier: EPL-2.0
- 
+
   Copyright Contributors to the Zowe Project.
 */
 
@@ -179,12 +179,12 @@ export function stringToBuffer(input: string) {
     let charcode = input.charCodeAt(i);
     if (charcode < 0x80) utf8.push(charcode);
     else if (charcode < 0x800) {
-      utf8.push(0xc0 | (charcode >> 6), 
+      utf8.push(0xc0 | (charcode >> 6),
                 0x80 | (charcode & 0x3f));
     }
     else if (charcode < 0xd800 || charcode >= 0xe000) {
-      utf8.push(0xe0 | (charcode >> 12), 
-                0x80 | ((charcode>>6) & 0x3f), 
+      utf8.push(0xe0 | (charcode >> 12),
+                0x80 | ((charcode>>6) & 0x3f),
                 0x80 | (charcode & 0x3f));
     }
     // surrogate pair
@@ -195,9 +195,9 @@ export function stringToBuffer(input: string) {
       // 20 bits of 0x0-0xFFFFF into two halves
       charcode = 0x10000 + (((charcode & 0x3ff)<<10)
                             | (input.charCodeAt(i) & 0x3ff))
-      utf8.push(0xf0 | (charcode >>18), 
-                0x80 | ((charcode>>12) & 0x3f), 
-                0x80 | ((charcode>>6) & 0x3f), 
+      utf8.push(0xf0 | (charcode >>18),
+                0x80 | ((charcode>>12) & 0x3f),
+                0x80 | ((charcode>>6) & 0x3f),
                 0x80 | (charcode & 0x3f));
     }
   }
@@ -208,16 +208,16 @@ export function trim(input: string): string {
   return input.trim();
 }
 
-// Replace all occurrences of a string with another	
+// Replace all occurrences of a string with another
 export function replace(sourceString: string, searchTerm: string, replaceTerm: string): string {
   const all = new RegExp(searchTerm, 'g')
   return sourceString.replace(all, replaceTerm);
-}	
+}
 
-// Return true if searchString is substring of string	
+// Return true if searchString is substring of string
 export function isSubstrOf(sourceString: string, searchString: string): boolean {
 	return sourceString.includes(searchString);
-}	
+}
 
 //TODO this is a way to not have lossy output https://github.com/zowe/zlux-server-framework/blob/v2.x/staging/utils/argumentParser.js
 export function sanitizeAlphanum(input: string): string {
@@ -301,7 +301,7 @@ const binToB64 =[0x41,0x42,0x43,0x44,0x45,0x46,0x47,0x48,0x49,0x4A,0x4B,0x4C,0x4
 //TODO may be more complex than this, we have more thorough functions elsewhere in zlux
 export function base64Encode(input: string): string {
   let out = [];
-  
+
   const inputLen = input.length;
   const numFullGroups = Math.floor(inputLen / 3);
   const numBytesInPartialGroup = inputLen - 3 * numFullGroups;
@@ -353,7 +353,14 @@ export function escapeDollar(str: string): string | undefined {
 
 export function escapeRegExp(str: string): string | undefined {
   if (str === null || str === undefined)
-      return undefined;
+    return undefined;
   return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
 
+export function splitStringByLength(str: string, len: number = 71): Array<string> {
+  let result: string[] = [];
+  for (let i = 0; i < str.length; i += len) {
+    result.push(str.substring(i, i + len));
+  }
+  return result;
+}

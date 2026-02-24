@@ -50,7 +50,8 @@ const parameterTable = {
         },
         {
             position: 8,
-            meaning: 'Help message'
+            meaning: 'Help message',
+            transform: (content) => content.replace(/\\n/g, ' ')
         }
     ]
 }

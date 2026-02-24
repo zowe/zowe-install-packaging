@@ -1,4 +1,4 @@
-//ZWEIACF JOB
+//ZWEIACF JOB {zowe.setup.jcl.header}
 //*
 //* This program and the accompanying materials are made available
 //* under the terms of the Eclipse Public License v2.0 which
@@ -31,7 +31,7 @@
 //* Note(s):
 //*
 //* 1. THE USER ID THAT RUNS THIS JOB MUST HAVE SUFFICIENT AUTHORITY
-//*    TO ALTER SECURITY DEFINITONS
+//*    TO ALTER SECURITY DEFINITIONS
 //*
 //* 2. The sample ACF2 commands create ROLEs that match the group
 //*    names. Due to permits assigned to the &STCGRP ROLE, it is
@@ -238,8 +238,17 @@ LIST {zowe.setup.dataset.prefix}
 *
 * DEFINE ZOWE RESOURCE PROTECTION .................................
 *
+* - Defines new resource class for Zowe that protects access to
+*   sensitive Zowe resources.
 * - Defines resource APIML.SERVICES that controls access to
 *   detailed information about API services to Zowe users.
+
+* skip this section if the ZOWE resource class already exists
+SET CONTROL(GSO)
+INSERT CLASMAP.ZOWE RESOURCE(ZOWE) RSRCTYPE(ZWE)
+F ACF2,REFRESH(CLASMAP),TYPE(GSO)
+CHANGE INFODIR TYPES(R-RZWE)
+F ACF2,REFRESH(INFODIR)
 
 * uncomment and replace "user" to permit Zowe users to access
 * the resource:
@@ -247,6 +256,9 @@ LIST {zowe.setup.dataset.prefix}
 * RECKEY APIML ADD(SERVICES -
 * UID(user) SERVICE(READ) ALLOW)
 * F ACF2,REBUILD(ZWE)
-
+*
+* show results
+* SET RESOURCE(ZWE)
+* LIST LIKE(-)
 $$
 //*

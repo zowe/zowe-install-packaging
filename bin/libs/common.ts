@@ -12,6 +12,7 @@
 import * as std from 'cm_std';
 import * as os from 'cm_os';
 import * as xplatform from 'xplatform';
+import * as zos from 'zos';
 
 import * as fs from './fs';
 //import * as stringlib from './string';
@@ -50,6 +51,8 @@ function getLogLevel(name:string, defaultLevel:LOG_LEVEL):LOG_LEVEL {
         default: return defaultLevel;
     }
 }
+
+export const MSG_KEY = 'ZWELS';
 
 
 export function requireZoweYaml() {
@@ -129,35 +132,35 @@ export function date(...args: string[]): string|undefined {
 
 let logExists = false;
 let logFile:std.File|null = null;
+export function finishLogFile() {
+  if (logFile) {
+    logFile.close();
+    zos.changeTag(std.getenv('ZWE_PRIVATE_LOG_FILE'), 819);
+  }
+}
 
 function writeLog(message: string): boolean {
+  const filename = std.getenv('ZWE_PRIVATE_LOG_FILE');
+  if (!filename) {
+      return false;
+  }
+  logExists = fs.fileExists(filename);
   if (!logExists) {
-    const filename = std.getenv('ZWE_PRIVATE_LOG_FILE');
-    if (filename) {
+      fs.createFile(filename, 0o640, message);
       logExists = fs.fileExists(filename);
-      if (!logExists) {
-        fs.createFile(filename, 0o640, message);
-        logExists = fs.fileExists(filename);
+      let errObj = {errno:undefined};
+      logFile = std.open(filename, 'w', errObj);
+      if (errObj.errno) {
+        printError(`Error opening file ${filename}, errno=${errObj.errno}`);
+        logFile=null;
+        logExists=false;
+        return false;
       }
-      if (logExists) {
-        let errObj = {errno:undefined};
-        logFile = std.open(filename, 'w', errObj);
-        if (errObj.errno) {
-          printError(`Error opening file ${filename}, errno=${errObj.errno}`);
-          logFile=null;
-          logExists=false;
-          return false;
-        }
-      }
-    }
-  }
-  if (logFile===undefined || logFile===null) {
-    return false;
   } else {
-    //TODO this does utf8. should we flip it to 1047 on zos?
-    logFile.puts(message);
-    return true;
+      xplatform.appendFileUTF8(filename, xplatform.AUTO_DETECT, message);
+      return true;
   }
+  return logExists;
 }
 
 
@@ -173,7 +176,7 @@ export function printRawMessage(message: string, isError: boolean, writeTo:strin
     }
   }
   if (writeTo.includes('log')) {
-    writeLog(message+'\n');
+    writeLog(message);
   }
   return true;
 }
@@ -345,7 +348,7 @@ export function getZoweRuntimeManifest(): any|undefined {
   if (!runtimeManifest) {
     const manifestFileName = `${std.getenv('ZWE_zowe_runtimeDirectory')}/manifest.json`;
     const result = xplatform.loadFileUTF8(manifestFileName,xplatform.AUTO_DETECT);
-    if (result){
+    if (!result) {
       printError('Could not read runtime manifest in '+manifestFileName);
     } else {
       runtimeManifest=JSON.parse(result);
@@ -364,6 +367,39 @@ export function getZoweVersion(): string|undefined {
   return std.getenv('ZWE_VERSION');
 }
 
+/**
+ * Checks if the zowe.yaml provided via "PARMLIB" syntax will be accepted by configmgr.
+ * 
+ * Accepts both PARMLIB(MY.PARM(MEMBER)) and MY.PARM(MEMBER)
+ * 
+ * @param parmlib 
+ * 
+ */
+export function isValidZoweYamlParmlib(parmlib: string): {ok: boolean; error: { message: string; code: number }} {
+  let finalParmlib = parmlib.trim();
+  const errorContent = {message: `ZWEL0316E Invalid PARMLIB format ${parmlib}.`, code: 316}
+  if (finalParmlib.startsWith('PARMLIB(')) {
+    // unbalanced paren, PARMLIB(A.B.C
+    if (finalParmlib.slice(-1) != ')') {
+      return {ok: false, error: errorContent}
+    }
+    finalParmlib = parmlib.substring(8, parmlib.lastIndexOf(')')); // cover cases where a trailing colon may be present
+  }
+  if (finalParmlib.indexOf('(') != -1) {
+    // Case where PARMLIB is A.B.C(D, which covers unbalanced paren e.g. PARMLIB(A.B.C(D) 
+    if (finalParmlib.slice(-1) != ')') {
+      return {ok: false, error: errorContent}
+    }
+    const member = finalParmlib.substring(finalParmlib.indexOf('(')+1, finalParmlib.indexOf(')'));
+    // This regex ported from server-common.json#zoweDatasetMember
+    if (/^([A-Z$#@])([A-Z0-9$#@]){0,7}$/gi.test(member) === false) {
+      return { ok: false, error: errorContent};
+    }
+    return {ok: true, error: {message: '', code: 0}};
+  }
+
+  return {ok: false, error: errorContent};
+}
 
 //From 'index.sh'
 std.setenv('ZWE_PRIVATE_DS_SZWESAMP', 'SZWESAMP');
@@ -374,6 +410,6 @@ std.setenv('ZWE_PRIVATE_DEFAULT_ZIS_USER', 'ZWESIUSR');
 std.setenv('ZWE_PRIVATE_DEFAULT_ZOWE_STC', 'ZWESLSTC');
 std.setenv('ZWE_PRIVATE_DEFAULT_ZIS_STC', 'ZWESISTC');
 std.setenv('ZWE_PRIVATE_DEFAULT_AUX_STC', 'ZWESASTC');
-std.setenv('ZWE_PRIVATE_CORE_COMPONENTS_REQUIRE_JAVA', 'gateway,zaas,discovery,api-catalog,caching-service');
+std.setenv('ZWE_PRIVATE_CORE_COMPONENTS_REQUIRE_JAVA', 'apiml,gateway,zaas,discovery,api-catalog,caching-service');
 
 std.setenv('ZWE_PRIVATE_CLI_LIBRARY_LOADED', 'true');

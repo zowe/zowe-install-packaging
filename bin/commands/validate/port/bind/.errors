@@ -1,0 +1,4 @@
+ZWEL0356W||Component %s is not %s. Skipping port validation.
+ZWEL0356E|356|Component %s is not %s. Skipping port validation.
+ZWEL0357E|357|%s: Port %d not available %s or command failed.
+ZWEL0358E|358|%d port bind validation(s) failed, review output for action items before running Zowe.

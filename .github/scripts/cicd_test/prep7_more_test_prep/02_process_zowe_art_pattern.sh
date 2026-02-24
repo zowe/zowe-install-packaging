@@ -82,12 +82,17 @@ if [[ -z "$custom_build_number" ]]; then
     ZOWE_ARTIFACTORY_FINAL=$(jfrog_search_latest $zowe_artifactory_pattern_final)
 else
     # we will search according to the build number provided (on current running branch)
-    ZOWE_ARTIFACTORY_FINAL=$(jfrog_search_build $zowe_artifactory_pattern_final "zowe-install-packaging/$CURRENT_BRANCH" $custom_build_number)
+    # if it's a pr-*, uppercase it
+    SEARCH_BRANCH=$CURRENT_BRANCH
+    if [[ "$SEARCH_BRANCH" =~ ^pr\-[0-9]+$ ]]; then
+      SEARCH_BRANCH=$(echo "$SEARCH_BRANCH" | tr a-z A-Z) 
+    fi
+    ZOWE_ARTIFACTORY_FINAL=$(jfrog_search_build $zowe_artifactory_pattern_final "zowe-install-packaging/$SEARCH_BRANCH" $custom_build_number)
 fi
 
 # try to know if this SMPE artifact comes from latest or older build
 if [[ "$ZOWE_ARTIFACTORY_FINAL" == *"zowe-smpe"*zip ]]; then
-    smpe_out=$(jfrog rt search "$ZOWE_ARTIFACTORY_FINAL")
+    smpe_out=$(jfrog rt search --retries 10 --retry-wait-time 5s "$ZOWE_ARTIFACTORY_FINAL")
     smpe_bld_name=$(echo "$smpe_out" | jq -r '.[].props."build.name"[]')
     smpe_bld_num=$(echo "$smpe_out" | jq -r '.[].props."build.number"[]')
 

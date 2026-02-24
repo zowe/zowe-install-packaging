@@ -1,0 +1,273 @@
+    IO29488 -
+      PROBLEM SUMMARY:
+      ****************************************************************
+      * USERS AFFECTED: All Zowe users                               *
+      ****************************************************************
+      * PROBLEM DESCRIPTION: Update Zowe FMID AZWE003 to match the   *
+      *                      community release                       *
+      ****************************************************************
+      * RECOMMENDATION: Apply provided service                       *
+      ****************************************************************
+      The Zowe community version was updated to 3.4.1.
+      This PTF provides the community changes in SMP/E format.
+      Follow this link for more details on the community changes:
+      https://docs.zowe.org/stable/
+
+    IO29489 -
+      PROBLEM SUMMARY:
+      ****************************************************************
+      * USERS AFFECTED: All Zowe users                               *
+      ****************************************************************
+      * PROBLEM DESCRIPTION: Update Zowe FMID AZWE003 to match the   *
+      *                      community release                       *
+      ****************************************************************
+      * RECOMMENDATION: Apply provided service                       *
+      ****************************************************************
+      The Zowe community version was updated to 3.4.1.
+      This PTF provides the community changes in SMP/E format.
+      Follow this link for more details on the community changes:
+      https://docs.zowe.org/stable/
+
+    IO29490 -
+      PROBLEM SUMMARY:
+      ****************************************************************
+      * USERS AFFECTED: All Zowe users                               *
+      ****************************************************************
+      * PROBLEM DESCRIPTION: Update Zowe FMID AZWE003 to match the   *
+      *                      community release                       *
+      ****************************************************************
+      * RECOMMENDATION: Apply provided service                       *
+      ****************************************************************
+      The Zowe community version was updated to 3.4.1.
+      This PTF provides the community changes in SMP/E format.
+      Follow this link for more details on the community changes:
+      https://docs.zowe.org/stable/
+
+    IO29484 -
+      PROBLEM SUMMARY:
+      ****************************************************************
+      * USERS AFFECTED: All Zowe users                               *
+      ****************************************************************
+      * PROBLEM DESCRIPTION: Update Zowe FMID AZWE003 to match the   *
+      *                      community release                       *
+      ****************************************************************
+      * RECOMMENDATION: Apply provided service                       *
+      ****************************************************************
+      The Zowe community version was updated to 3.4.0.
+      This PTF provides the community changes in SMP/E format.
+      Follow this link for more details on the community changes:
+      https://docs.zowe.org/stable/
+
+    IO29486 -
+      PROBLEM SUMMARY:
+      ****************************************************************
+      * USERS AFFECTED: All Zowe users                               *
+      ****************************************************************
+      * PROBLEM DESCRIPTION: Update Zowe FMID AZWE003 to match the   *
+      *                      community release                       *
+      ****************************************************************
+      * RECOMMENDATION: Apply provided service                       *
+      ****************************************************************
+      The Zowe community version was updated to 3.4.0.
+      This PTF provides the community changes in SMP/E format.
+      Follow this link for more details on the community changes:
+      https://docs.zowe.org/stable/
+
+    IO29487 -
+      PROBLEM SUMMARY:
+      ****************************************************************
+      * USERS AFFECTED: All Zowe users                               *
+      ****************************************************************
+      * PROBLEM DESCRIPTION: Update Zowe FMID AZWE003 to match the   *
+      *                      community release                       *
+      ****************************************************************
+      * RECOMMENDATION: Apply provided service                       *
+      ****************************************************************
+      The Zowe community version was updated to 3.4.0.
+      This PTF provides the community changes in SMP/E format.
+      Follow this link for more details on the community changes:
+      https://docs.zowe.org/stable/
+
+    IO29481 -
+      PROBLEM SUMMARY:
+      ****************************************************************
+      * USERS AFFECTED: All Zowe users                               *
+      ****************************************************************
+      * PROBLEM DESCRIPTION: Update Zowe FMID AZWE003 to match the   *
+      *                      community release                       *
+      ****************************************************************
+      * RECOMMENDATION: Apply provided service                       *
+      ****************************************************************
+      The Zowe community version was updated to 3.3.1.
+      This PTF provides the community changes in SMP/E format.
+      Follow this link for more details on the community changes:
+      https://docs.zowe.org/stable/
+
+    IO29482 -
+      PROBLEM SUMMARY:
+      ****************************************************************
+      * USERS AFFECTED: All Zowe users                               *
+      ****************************************************************
+      * PROBLEM DESCRIPTION: Update Zowe FMID AZWE003 to match the   *
+      *                      community release                       *
+      ****************************************************************
+      * RECOMMENDATION: Apply provided service                       *
+      ****************************************************************
+      The Zowe community version was updated to 3.3.1.
+      This PTF provides the community changes in SMP/E format.
+      Follow this link for more details on the community changes:
+      https://docs.zowe.org/stable/
+
+    IO29483 -
+      PROBLEM SUMMARY:
+      ****************************************************************
+      * USERS AFFECTED: All Zowe users                               *
+      ****************************************************************
+      * PROBLEM DESCRIPTION: Update Zowe FMID AZWE003 to match the   *
+      *                      community release                       *
+      ****************************************************************
+      * RECOMMENDATION: Apply provided service                       *
+      ****************************************************************
+      The Zowe community version was updated to 3.3.1.
+      This PTF provides the community changes in SMP/E format.
+      Follow this link for more details on the community changes:
+      https://docs.zowe.org/stable/
+
+    IO29478 -
+      PROBLEM SUMMARY:
+      ****************************************************************
+      * USERS AFFECTED: All Zowe users                               *
+      ****************************************************************
+      * PROBLEM DESCRIPTION: Update Zowe FMID AZWE003 to match the   *
+      *                      community release                       *
+      ****************************************************************
+      * RECOMMENDATION: Apply provided service                       *
+      ****************************************************************
+      The Zowe community version was updated to 3.3.0.
+      This PTF provides the community changes in SMP/E format.
+      Follow this link for more details on the community changes:
+      https://docs.zowe.org/stable/
+      FIXCAT: ZOS0302T/K
+
+    IO29479 -
+      PROBLEM SUMMARY:
+      ****************************************************************
+      * USERS AFFECTED: All Zowe users                               *
+      ****************************************************************
+      * PROBLEM DESCRIPTION: Update Zowe FMID AZWE003 to match the   *
+      *                      community release                       *
+      ****************************************************************
+      * RECOMMENDATION: Apply provided service                       *
+      ****************************************************************
+      The Zowe community version was updated to 3.3.0.
+      This PTF provides the community changes in SMP/E format.
+      Follow this link for more details on the community changes:
+      https://docs.zowe.org/stable/
+      FIXCAT: ZOS0302T/K
+
+    IO29480 -
+      PROBLEM SUMMARY:
+      ****************************************************************
+      * USERS AFFECTED: All Zowe users                               *
+      ****************************************************************
+      * PROBLEM DESCRIPTION: Update Zowe FMID AZWE003 to match the   *
+      *                      community release                       *
+      ****************************************************************
+      * RECOMMENDATION: Apply provided service                       *
+      ****************************************************************
+      The Zowe community version was updated to 3.3.0.
+      This PTF provides the community changes in SMP/E format.
+      Follow this link for more details on the community changes:
+      https://docs.zowe.org/stable/
+      FIXCAT: ZOS0302T/K
+
+    IO29471 -
+      PROBLEM SUMMARY:
+      ****************************************************************
+      * USERS AFFECTED: All Zowe users                               *
+      ****************************************************************
+      * PROBLEM DESCRIPTION: Update Zowe FMID AZWE003 to match the   *
+      *                      community release                       *
+      ****************************************************************
+      * RECOMMENDATION: Apply provided service                       *
+      ****************************************************************
+      The Zowe community version was updated to 3.2.0.
+      This PTF provides the community changes in SMP/E format.
+      Follow this link for more details on the community changes:
+      https://docs.zowe.org/stable/
+
+    IO29472 -
+      PROBLEM SUMMARY:
+      ****************************************************************
+      * USERS AFFECTED: All Zowe users                               *
+      ****************************************************************
+      * PROBLEM DESCRIPTION: Update Zowe FMID AZWE003 to match the   *
+      *                      community release                       *
+      ****************************************************************
+      * RECOMMENDATION: Apply provided service                       *
+      ****************************************************************
+      The Zowe community version was updated to 3.2.0.
+      This PTF provides the community changes in SMP/E format.
+      Follow this link for more details on the community changes:
+      https://docs.zowe.org/stable/
+
+    IO29473 -
+      PROBLEM SUMMARY:
+      ****************************************************************
+      * USERS AFFECTED: All Zowe users                               *
+      ****************************************************************
+      * PROBLEM DESCRIPTION: Update Zowe FMID AZWE003 to match the   *
+      *                      community release                       *
+      ****************************************************************
+      * RECOMMENDATION: Apply provided service                       *
+      ****************************************************************
+      The Zowe community version was updated to 3.2.0.
+      This PTF provides the community changes in SMP/E format.
+      Follow this link for more details on the community changes:
+      https://docs.zowe.org/stable/
+
+    IO29468 -
+      PROBLEM SUMMARY:
+      ****************************************************************
+      * USERS AFFECTED: All Zowe users                               *
+      ****************************************************************
+      * PROBLEM DESCRIPTION: Update Zowe FMID AZWE003 to match the   *
+      *                      community release                       *
+      ****************************************************************
+      * RECOMMENDATION: Apply provided service                       *
+      ****************************************************************
+      The Zowe community version was updated to 3.1.0.
+      This PTF provides the community changes in SMP/E format.
+      Follow this link for more details on the community changes:
+      https://docs.zowe.org/stable/
+
+    IO29469 -
+      PROBLEM SUMMARY:
+      ****************************************************************
+      * USERS AFFECTED: All Zowe users                               *
+      ****************************************************************
+      * PROBLEM DESCRIPTION: Update Zowe FMID AZWE003 to match the   *
+      *                      community release                       *
+      ****************************************************************
+      * RECOMMENDATION: Apply provided service                       *
+      ****************************************************************
+      The Zowe community version was updated to 3.1.0.
+      This PTF provides the community changes in SMP/E format.
+      Follow this link for more details on the community changes:
+      https://docs.zowe.org/stable/
+
+    IO29470 -
+      PROBLEM SUMMARY:
+      ****************************************************************
+      * USERS AFFECTED: All Zowe users                               *
+      ****************************************************************
+      * PROBLEM DESCRIPTION: Update Zowe FMID AZWE003 to match the   *
+      *                      community release                       *
+      ****************************************************************
+      * RECOMMENDATION: Apply provided service                       *
+      ****************************************************************
+      The Zowe community version was updated to 3.1.0.
+      This PTF provides the community changes in SMP/E format.
+      Follow this link for more details on the community changes:
+      https://docs.zowe.org/stable/
+

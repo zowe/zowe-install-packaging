@@ -26,6 +26,7 @@ is_data_set_exists() {
 # @return        0: exist
 #                1: data set is not in catalog
 #                2: data set member doesn't exist
+#                9: unknown error
 # @output        tso listds label output
 tso_is_data_set_exists() {
   ds="${1}"
@@ -41,9 +42,9 @@ tso_is_data_set_exists() {
     print_trace "$(padding_left "${result}" "    ")"
   else
     print_debug "  * Failed"
-    print_error "  * Exit code: ${code}"
-    print_error "  * Output:"
-    print_error "$(padding_left "${result}" "    ")"
+    print_trace "  * Exit code: ${code}"
+    print_trace "  * Output:"
+    print_trace "$(padding_left "${result}" "    ")"
 
     not_in_catalog=$(echo "${result}" | grep 'NOT IN CATALOG')
     if [ -n "${not_in_catalog}" ]; then
@@ -75,7 +76,7 @@ copy_to_data_set() {
   allow_overwrite="${4}"
 
   if [ "${allow_overwrite}" != "true" ]; then
-    if [ "$(is_data_set_exists "//'${ds_name}'")" = "true" ]; then
+    if [ "$(is_data_set_exists "${ds_name}")" = "true" ]; then
       print_error_and_exit "Error ZWEL0133E: Data set ${ds_name} already exists" "" 133
     fi
   fi
@@ -105,7 +106,7 @@ data_set_copy_to_data_set() {
   allow_overwrite="${4}"
 
   if [ "${allow_overwrite}" != "true" ]; then
-    if [ "$(is_data_set_exists "//'${ds_to}'")" = "true" ]; then
+    if [ "$(is_data_set_exists "${ds_to}")" = "true" ]; then
       print_error_and_exit "Error ZWEL0133E: Data set ${ds_to} already exists" "" 133
     fi
   fi

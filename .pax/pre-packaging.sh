@@ -34,7 +34,7 @@
 #              If unset, conversion happens in-place
 #              If set, conversion will mirror directory structure in output
 # (output) converted files or directory following $2
-# TODO: is this replacable with autoconv?
+# TODO: is this replaceable with autoconv?
 # ---------------------------------------------------------------------
 function _convertEbcdicToAscii {
     input=$1
@@ -190,8 +190,8 @@ BASE_DIR=$(
   pwd
 ) # <something>/.pax
 
-# use node v16 to build
-export NODE_HOME=/ZOWE/node/node-v16.20.1-os390-s390x
+# use node v18 to build
+export NODE_HOME=/ZOWE/node/node-v18.20.8
 export JAVA_HOME=/ZOWE/node/J17.0_64
 export PATH=$JAVA_HOME/bin:$PATH
 ZOWE_ROOT_DIR="${BASE_DIR}/content"
@@ -223,20 +223,48 @@ fi
 # FIXME: remove/comment this debug code
 # cd "${BASE_DIR}" && rm -fr content && rm -fr smpe && rm -fr templates && cp -r content.bak content
 
+echo "[$SCRIPT_NAME] unpack utility-tools njq ..."
+
+
 echo "[$SCRIPT_NAME] change scripts to be executable ..."
 chmod +x "${ZOWE_ROOT_DIR}"/bin/zwe
 chmod +x "${ZOWE_ROOT_DIR}"/bin/utils/*.sh
 chmod +x "${ZOWE_ROOT_DIR}"/bin/utils/*.rex
 
+echo "[$SCRIPT_NAME] extract curl ..."
+curl_pax=$(find "${ZOWE_ROOT_DIR}/files" -type f \( -name "curl-*.pax.Z" \) | head -n 1)
+cd "${ZOWE_ROOT_DIR}/bin/utils"
+pax -ppx -rf "${curl_pax}"
+mv "${ZOWE_ROOT_DIR}"/bin/utils/curl-*/bin/curl ./curl
+rm -rf "${ZOWE_ROOT_DIR}"/bin/utils/curl-*
+rm -rf "${curl_pax}"
+
+echo "[$SCRIPT_NAME] change curl to be executable ..."
+chmod +x "${ZOWE_ROOT_DIR}"/bin/utils/curl
+
+echo "[$SCRIPT_NAME] extract keyring-util ..."
+keyring_util=$(find "${ZOWE_ROOT_DIR}/files" -type f \( -name "keyring-util*.pax" \) | head -n 1)
+mkdir -p "${ZOWE_ROOT_DIR}/bin/utils/keyring-util"
+cd "${ZOWE_ROOT_DIR}/bin/utils/keyring-util"
+pax -ppx -rf "${keyring_util}"
+rm "${keyring_util}"
+echo "[$SCRIPT_NAME] extract zowex ..."
+zowex_components=$(find "${ZOWE_ROOT_DIR}/files" -type f \( -name "zowe-server-*.pax.Z" \) | head -n 1)
+mkdir -p "${ZOWE_ROOT_DIR}/bin/utils/zowe-server"
+cd "${ZOWE_ROOT_DIR}/bin/utils/zowe-server"
+pax -ppx -rf "${zowex_components}"
+
+echo "[$SCRIPT_NAME] place zowex in bin/utils and change zowex to be executable ..."
+# If we want zowed and zoweax, copy them now
+cp "${ZOWE_ROOT_DIR}/bin/utils/zowe-server/zowex" "${ZOWE_ROOT_DIR}/bin/utils/zowex"
+chmod +x "${ZOWE_ROOT_DIR}/bin/utils/zowex"
+cd "${ZOWE_ROOT_DIR}/bin/utils"
+rm -rf "${ZOWE_ROOT_DIR}/bin/utils/zowe-server"
+rm -rf "${zowex_components}"
+
 echo "[$SCRIPT_NAME] change keyring-util to be executable ..."
 chmod +x "${ZOWE_ROOT_DIR}"/bin/utils/keyring-util/keyring-util
 
-echo "[$SCRIPT_NAME] extract zowe-ncert ..."
-cd "${ZOWE_ROOT_DIR}/bin/utils"
-mkdir -p ncert
-cd ncert
-pax -ppx -rf ../zowe-ncert-*.pax
-rm -f ../zowe-ncert-*.pax
 cd "${BASE_DIR}"
 
 # prepare for SMPE
@@ -257,6 +285,21 @@ pax -ppx -rf "${getesm}"
 rm "${getesm}"
 cd "${BASE_DIR}"
 
+bind_test=$(find "${ZOWE_ROOT_DIR}/files" -type f \( -name "bind-test*.pax" \) | head -n 1)
+echo "[$SCRIPT_NAME] extract bind-test $bind_test"
+cd "${ZOWE_ROOT_DIR}/bin/utils"
+pax -ppx -rf "${bind_test}"
+rm "${bind_test}"
+cd "${BASE_DIR}"
+
+zis_test=$(find "${ZOWE_ROOT_DIR}/files" -type f \( -name "zis-test*.pax" \) | head -n 1)
+echo "[$SCRIPT_NAME] extract zis-test $zis_test"
+cd "${ZOWE_ROOT_DIR}/bin/utils"
+pax -ppx -rf "${zis_test}"
+rm "${zis_test}"
+cd "${BASE_DIR}"
+
+
 configmgr=$(find "${ZOWE_ROOT_DIR}/files" -type f \( -name "configmgr-3*.pax" \) | head -n 1)
 echo "[$SCRIPT_NAME] extract configmgr $configmgr"
 cd "${ZOWE_ROOT_DIR}/bin/utils"
@@ -272,17 +315,25 @@ pax -ppx -rf "${configmgr_rexx}"
 rm "${configmgr_rexx}"
 cd "${BASE_DIR}"
 
+certificate_analyser=$(find "${ZOWE_ROOT_DIR}/files" -type f \( -name "certificate-analyser*.jar" \) | head -n 1)
+echo "[$SCRIPT_NAME] move certificate_analyser $certificate_analyser"
+mkdir -p "${ZOWE_ROOT_DIR}/bin/utils"
+mv "${certificate_analyser}" "${ZOWE_ROOT_DIR}/bin/utils/certificate-analyser.jar"
+
+
 echo "[$SCRIPT_NAME] create dummy zowe.yaml for install"
 cat <<EOT >>"${BASE_DIR}/zowe.yaml"
 zowe:
+  runtimeDirectory: "${ZOWE_ROOT_DIR}"
   extensionDirectory: "${ZOWE_ROOT_DIR}/components"
-  useConfigmgr: false
+  logDirectory: "${BASE_DIR}/logs"
+  workspaceDirectory: "${BASE_DIR}/logs/workspace"
 EOT
 
 echo "[$SCRIPT_NAME] extract components"
 mkdir -p "${BASE_DIR}/logs"
 mkdir -p "${ZOWE_ROOT_DIR}/components"
-for component in launcher zlux-core zss apiml-common-lib common-java-lib apiml-sample-extension zaas gateway caching-service discovery api-catalog explorer-jes explorer-mvs explorer-uss; do
+for component in launcher zlux-core zss apiml-common-lib common-java-lib apiml-sample-extension apiml zaas gateway caching-service discovery api-catalog explorer-jes explorer-mvs explorer-uss; do
   echo "[$SCRIPT_NAME] - ${component}"
   component_file=$(find "${ZOWE_ROOT_DIR}/files" -type f \( -name "${component}*.pax" -o -name "${component}*.zip" \) | head -n 1)
   "${ZOWE_ROOT_DIR}/bin/zwe" \

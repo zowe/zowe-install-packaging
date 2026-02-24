@@ -11,23 +11,43 @@
 # Copyright Contributors to the Zowe Project.
 #######################################################################
 
+CONFIGMGR_SYNTAX=$(check_configmgr_config_syntax)
+validate_zowe_yaml "${ZWE_CLI_PARAMETER_CONFIG}"
+USE_JCL=$(check_jcl_enabled)
+if [ "${USE_JCL}" = "true" ]; then
+  if [ -z "${ZWE_PRIVATE_TMP_MERGED_YAML_DIR}" ]; then
+
+    # user-facing command, use tmpdir to not mess up workspace permissions
+    export ZWE_PRIVATE_TMP_MERGED_YAML_DIR=1
+  fi
+  _CEE_RUNOPTS="XPLINK(ON),HEAPPOOLS(OFF),HEAPPOOLS64(OFF)" ${ZWE_zowe_runtimeDirectory}/bin/utils/configmgr -script "${ZWE_zowe_runtimeDirectory}/bin/commands/init/cli.js"
+elif [ "${CONFIGMGR_SYNTAX}" = "true" ]; then
+  print_error_and_exit "Error ZWEL0115E: This command was submitted with FILE() or PARMLIB() syntax, which is only supported when JCL is also enabled." "" 115
+else
+
+###############################
+# Old 3.2 code follows
+
 print_level0_message "Configure Zowe"
 
 ###############################
 print_level1_message "Check if need to update runtime directory, Java and/or node.js settings in Zowe YAML configuration"
 # node.home
 update_node_home=
-yaml_node_home="$(shell_read_yaml_node_home "${ZWE_CLI_PARAMETER_CONFIG}")"
+yaml_node_home="$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".node.home")"
 # only try to update if it's not defined
-if [ -z "${yaml_node_home}" ]; then
-  require_node
-  if [ -n "${NODE_HOME}" ]; then
-    update_node_home="${NODE_HOME}"
+appServerEnabled="$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".components.app-server.enabled")"
+if [ "${appServerEnabled}" = "true" ]; then
+  if [ -z "${yaml_node_home}" ]; then
+    require_node
+    if [ -n "${NODE_HOME}" ]; then
+      update_node_home="${NODE_HOME}"
+    fi
   fi
 fi
 # java.home
 update_java_home=
-yaml_java_home="$(shell_read_yaml_java_home "${ZWE_CLI_PARAMETER_CONFIG}")"
+yaml_java_home="$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".java.home")"
 # only try to update if it's not defined
 if [ -z "${yaml_java_home}" ]; then
   require_java
@@ -36,7 +56,6 @@ if [ -z "${yaml_java_home}" ]; then
   fi
 fi
 # zowe.runtimeDirectory
-require_zowe_yaml
 update_zowe_runtime_dir=
 # do we have zowe.runtimeDirectory defined in zowe.yaml?
 yaml_runtime_dir=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.runtimeDirectory")
@@ -97,3 +116,4 @@ zwecli_inline_execute_command init certificate
 zwecli_inline_execute_command init stc
 
 print_level1_message "Zowe is configured successfully."
+fi

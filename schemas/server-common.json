@@ -24,6 +24,14 @@
       "minLength": 3,
       "maxLength": 44
     },
+    "datasetPrefix": {
+      "$anchor": "zoweDatasetPrefix",
+      "type": "string",
+      "description": "A 35-char all caps dotted ZOS name (space for '.SZWEnnnn')",
+      "pattern": "^([A-Z\\$\\#\\@]){1}([A-Z0-9\\$\\#\\@\\-]){0,7}(\\.([A-Z\\$\\#\\@]){1}([A-Z0-9\\$\\#\\@\\-]){0,7}){0,11}$",
+      "minLength": 3,
+      "maxLength": 35
+    },
     "datasetVsam": {
       "$anchor": "zoweDatasetVsam",
       "type": "string",
@@ -38,6 +46,14 @@
       "description": "A 1-8-char all caps dataset member name",
       "pattern": "^([A-Z\\$\\#\\@]){1}([A-Z0-9\\$\\#\\@]){0,7}$",
       "minLength": 1,
+      "maxLength": 8
+    },
+    "datasetZISMember": {
+      "$anchor": "zoweDatasetZISMember",
+      "type": "string",
+      "description": "A 'ZWESIP' prefix followed by 2 characters",
+      "pattern": "^ZWESIP([0-9A-Z\\$\\#\\@]){2}$",
+      "minLength": 8,
       "maxLength": 8
     },
     "jobname": {
@@ -60,6 +76,12 @@
       "pattern": "^([A-Z0-9$#@.]){1,32}$",
       "minLength": 1,
       "maxLength": 32
+    },
+    "optionalPath": {
+      "$anchor": "zoweOptionalPath",
+      "type": "string",
+      "minLength": 0,
+      "maxLength": 1024
     },
     "path": {
       "$anchor": "zowePath",

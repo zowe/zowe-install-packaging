@@ -26,10 +26,29 @@ export type ZStat = {
     ccsid: number;
 };
 
+export type Statvfs = {
+  bsize: number;
+  blocks: number;
+  bavail: number;
+  fsid: number;
+  flag: number;
+  frsize: number;
+  bfree: number;
+  files: number;
+  ffree: number;
+  favail: number;
+  namemax: number;
+  OEmaxfilesizehw: number;
+  OEmaxfilesizelw: number;
+  OEusedspace: number;
+  OEinvarsec: number;
+}
+
 export function getEsm(): string;
 export function getZosVersion(): number;
 export function changeTag(path:string, ccsid:number):number;
 export function changeExtAttr(path: string, extattr:number, onOff:boolean):number;
 export function zstat(path:string):[ZStat, number];
+export function getStatvfs(path: string): [Statvfs, number];
 export var EXTATTR_SHARELIB:number;
 export var EXTATTR_PROGCTL:number;
