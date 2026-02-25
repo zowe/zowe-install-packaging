@@ -34,7 +34,7 @@ for s in $(ipcs -a | awk 'match($1,"q|m") && $5 == "'${id}'" { print "type=\""$1
         if [ $? -ne 0 ]; then
             kill -0 "$pidTwo" 1>/dev/null 2>&1
             if [ $? -ne 0 ]; then   # Neither pid exists, safe to remove q/m
-                ipcrm -$type $num
+                ipcrm -$type $num 1>/dev/null 2>&1
             fi
         fi
     fi
@@ -44,6 +44,6 @@ done
 for s in $(ipcs -sw | awk 'match($1,"s") && $3 == "'${id}'" { print "sem=\""$2"\";pid=\""$5"\"" }'); do
     eval "${s}"
     if [[ $pid -eq 0 ]]; then
-        ipcrm -s $sem
+        ipcrm -s $sem 1>/dev/null 2>&1
     fi
 done
