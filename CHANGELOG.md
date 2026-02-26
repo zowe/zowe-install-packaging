@@ -5,6 +5,7 @@ All notable changes to the Zowe Installer will be documented in this file.
 
 ## `2.18.5`
 - Bugfix: Incorrect keyword was used for ACF2 key ring statement. [#4680](https://github.com/zowe/zowe-install-packaging/pull/4680)
+- Bugfix: `cleanup-ipc.mq.sh` script updated to reflect changes in `ipcs` command output. [#4690](https://github.com/zowe/zowe-install-packaging/pull/4690)
 
 ## `2.18.4`
 - Bugfix: Running z/OSMF is returning 401, if RSU2512 was applied. [#4658](https://github.com/zowe/zowe-install-packaging/pull/4658)
