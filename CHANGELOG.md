@@ -4,6 +4,7 @@ All notable changes to the Zowe Installer will be documented in this file.
 <!--Add the PR or issue number to the entry if available.-->
 
 ## `2.18.5`
+- Bugfix: Incorrect keyword was used for ACF2 key ring statement. [#4680](https://github.com/zowe/zowe-install-packaging/pull/4680)
 - Bugfix: `cleanup-ipc.mq.sh` script updated to reflect changes in `ipcs` command output. [#4690](https://github.com/zowe/zowe-install-packaging/pull/4690)
 
 ## `2.18.4`
