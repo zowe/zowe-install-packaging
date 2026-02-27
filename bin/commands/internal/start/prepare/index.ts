@@ -39,7 +39,7 @@ const containerComponentId = std.getenv('ZWE_PRIVATE_CONTAINER_COMPONENT_ID');
 
 const INDIVIDUAL_APIML_COMPONENTS = ['gateway', 'discovery', 'api-catalog', 'caching-service', 'zaas'];
 
-const user = std.getenv('USER');
+const user = common.getUserId();
 
 const ZOWE_CONFIG=config.getZoweConfig();
 
