@@ -464,6 +464,14 @@ function configureComponents(componentEnvironments?: any, enabledComponents?:str
 
 // Few early steps even before initialization
 
+// Check if user is UID 0, this is not recommended
+const userID = shell.execOutSync('sh', '-c', 'id -u');
+if (userID.rc == 0 && userID.out) {
+  if (userID.out == "0") {
+    common.printFormattedInfo("ZWELS", "zwe-internal-start-prepare", `${user} running as UID 0. This is NOT recommended!"`);
+  }
+}
+
 // init ZWE_RUN_IN_CONTAINER variable
 const runtimeDirectory=ZOWE_CONFIG.zowe.runtimeDirectory;
 std.setenv('ZWE_zowe_runtimeDirectory', runtimeDirectory);
