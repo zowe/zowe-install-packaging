@@ -468,7 +468,7 @@ function configureComponents(componentEnvironments?: any, enabledComponents?:str
 const userID = shell.execOutSync('sh', '-c', 'id -u');
 if (userID.rc == 0 && userID.out) {
   if (userID.out == "0") {
-    common.printFormattedInfo("ZWELS", "zwe-internal-start-prepare", `${user} running as UID 0. This is NOT recommended!"`);
+    common.printFormattedError("ZWELS", "zwe-internal-start-prepare", `${user} running as UID 0. This is NOT recommended!"`);
   }
 }
 
