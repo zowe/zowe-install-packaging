@@ -487,10 +487,18 @@ components:
     apiml:
       security:
         auth:
-          # When the API Gateway is configured to use SAF authentication, z/OSMF APIs used by Desktop Explorer apps
-          # authenticate using PassTickets instead of a JWT/LTPA token. As such, ensure that PassTickets are configured
-          # and enabled for z/OSMF.
+          # Provider can be "saf" or "zosmf".
+          # See documentation at https://docs.zowe.org/stable/user-guide/authentication-providers-for-apiml/
+          #
+          # When provider is "saf", z/OSMF is not needed for Zowe login,
+          # but then z/OSMF APIs authenticate using PassTickets, which requires setup in z/OSMF.
           provider: saf
+          # If provider is "zosmf", uncomment the following.
+          # jwtAutoconfiguration can be "jwt" or "ltpa", but jwt is recommended. jwt requires zosmf configuration.
+          #
+          # zosmf:
+          #   jwtAutoconfiguration: jwt
+          #   serviceId: ibmzosmf
         authorization:
           endpoint:
             enabled: false
@@ -564,14 +572,23 @@ components:
       64bit: true
 
   # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+  # Requires z/OSMF APIs. Ensure z/OSMF is available,
+  # And ensure gateway auth provider is either "saf" with z/OSMF passtickets enabled,
+  # Or that the provider is set to "zosmf"
   explorer-jes:
     enabled: true
 
   # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+  # Requires z/OSMF APIs. Ensure z/OSMF is available,
+  # And ensure gateway auth provider is either "saf" with z/OSMF passtickets enabled,
+  # Or that the provider is set to "zosmf"
   explorer-mvs:
     enabled: true
 
   # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+  # Requires z/OSMF APIs. Ensure z/OSMF is available,
+  # And ensure gateway auth provider is either "saf" with z/OSMF passtickets enabled,
+  # Or that the provider is set to "zosmf"
   explorer-uss:
     enabled: true
 

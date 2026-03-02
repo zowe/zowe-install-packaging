@@ -9,6 +9,7 @@
  */
 
 import * as _ from 'lodash';
+import * as tar from 'tar';
 import * as minimatch from 'minimatch';
 import escapeStringRegexp from 'escape-string-regexp';
 import { Session } from '@zowe/imperative';
@@ -23,6 +24,8 @@ import * as jobs from '@zowe/zos-jobs-for-zowe-sdk';
 import path, { basename } from 'path';
 import { FileType, TestFileActions } from './TestFileActions';
 import { getZoweVersion } from '../utils';
+import { execSync } from 'child_process';
+import { convertDirToEbcdicInPlace } from './EbcdicTools';
 
 /**
  * RemoteTestRunner is a class which drives actions on the backend test environment and
@@ -432,7 +435,7 @@ export class RemoteTestRunner {
       .replaceAll(REMOTE_SYSTEM_INFO.volume, 'TSTVOL')
       .replaceAll(REMOTE_SYSTEM_INFO.hostname, this.dummyHostname)
       .replaceAll(REMOTE_SYSTEM_INFO.zosmfPort, this.dummyPort)
-      .replaceAll(new RegExp(`Zowe Version: v${getZoweVersion()}`, 'g'), 'Zowe version: v0.0.0')
+      .replaceAll(new RegExp(`Zowe version: v${getZoweVersion()}`, 'g'), 'Zowe version: v0.0.0')
       .replaceAll(/\d{4}-\d{2}-\d{2}.+?<.+?>/g, '')
       .replaceAll(/z\/OS Version: \d\.\d/g, 'z/OS Version: 0.0')
       .replaceAll(/NodeJS version: v.*?$/gm, 'NodeJS version: v0.0.0')
@@ -613,6 +616,39 @@ export class RemoteTestRunner {
       cleanedStdout: cleanedOutput,
       rc: output.rc,
     };
+  }
+
+  public async runUnitTests(cfgYaml: ZoweYamlType, localResourceDir: string) {
+    // list files locally for tests, then adapt and run in uss
+    const testFiles = fs
+      .readdirSync(path.resolve(localResourceDir, 'lib', 'tests'), { encoding: 'utf8', recursive: true })
+      .filter((item) => item.endsWith('.cmgr.js'));
+    const cfgPath = await this.uploadZoweYaml(cfgYaml);
+    const results = [];
+    for (const testFile of testFiles) {
+      results.push(
+        await this.runRaw(
+          `ZWE_CLI_PARAMETER_CONFIG="${cfgPath}" ZWE_zowe_runtimeDirectory="${REMOTE_SYSTEM_INFO.ussTestDir}" ./bin/utils/configmgr -script ${path.join(REMOTE_SYSTEM_INFO.ussTestDir, '.unit_tests', testFile)}`,
+        ),
+      );
+    }
+    return results;
+  }
+
+  public async buildAndUploadUnitTests(localResourceDir: string) {
+    console.log(localResourceDir);
+    execSync('npm ci', { cwd: localResourceDir });
+    execSync('npm run build', { cwd: localResourceDir });
+    const ebcdicDir = path.resolve(localResourceDir, 'lib-ebcdic');
+    execSync(`mkdir -p ${ebcdicDir} && cp -Rf ${path.join(localResourceDir, 'lib', '*')} ${ebcdicDir}`);
+    convertDirToEbcdicInPlace(path.resolve(localResourceDir, 'lib-ebcdic'));
+
+    const finalTestPkg = path.resolve(localResourceDir, 'unit-tests.tar');
+    tar.c({ gzip: false, file: finalTestPkg, cwd: path.join(localResourceDir, 'lib-ebcdic'), sync: true }, ['tests']);
+    await this.uploadUssFileForTest(finalTestPkg, 'unit-tests.tar', { binary: true, mode: 0o775 });
+    await this.runRaw(
+      'rm -rf .unit_tests && mkdir -p .unit_tests && tar -xf unit-tests.tar && mv tests/* .unit_tests && rm -rf tests',
+    );
   }
 
   private addAnyCustomJobStatements(zoweYaml: ZoweYamlType): { yaml: ZoweYamlType; headers: string[] } {

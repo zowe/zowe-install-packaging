@@ -851,14 +851,20 @@ const zoweSchema = zoweYamlSchema as {
               properties: {
                 default: {
                   type: 'string';
-                  default: 'false';
+                  default: 'exit';
                   description: 'Sets the default runtime behavior for all startup checks';
                   enum: ['exit', 'warn', 'disabled'];
                 };
                 ports: {
                   type: 'string';
-                  default: 'true';
+                  default: 'exit';
                   description: 'Checks the port for each enabled component to ensure Zowe can bind to it and that it is not already occupied by some other program';
+                  enum: ['exit', 'warn', 'disabled'];
+                };
+                zosmf: {
+                  type: 'string';
+                  default: 'exit';
+                  description: "Checks z/OSMF to see if it is running and meet's Zowe's requirements";
                   enum: ['exit', 'warn', 'disabled'];
                 };
               };
@@ -915,7 +921,7 @@ const zoweSchema = zoweYamlSchema as {
       properties: {
         home: {
           $ref: '/schemas/v2/server-common#zoweOptionalPath';
-          description: "Path to Java home directory. If java is at '/java/home/bin/java', than this would be '/java/home'";
+          description: "Path to Java home directory. If java is at '/java/home/bin/java', then this would be '/java/home'";
         };
       };
     };
@@ -924,7 +930,7 @@ const zoweSchema = zoweYamlSchema as {
       properties: {
         home: {
           $ref: '/schemas/v2/server-common#zoweOptionalPath';
-          description: "Path to node.js home directory. If node is at '/node/home/bin/node', than this would be '/node/home'";
+          description: "Path to node.js home directory. If node is at '/node/home/bin/node', then this would be '/node/home'";
         };
       };
     };

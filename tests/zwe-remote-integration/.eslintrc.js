@@ -18,7 +18,16 @@ module.exports = {
   root: true,
   plugins: ['node', 'prettier', 'header'],
   extends: ['eslint:recommended', 'plugin:node/recommended', 'prettier'],
-  ignorePatterns: ['.github/**/*.yml', '**/.build', '**/build', '**/dist', '**/node_modules', '**/release', '**/lib'],
+  ignorePatterns: [
+    '.github/**/*.yml',
+    '**/.build',
+    '**/build',
+    '**/dist',
+    '**/node_modules',
+    '**/release',
+    '**/lib',
+    '**/__configmgr__',
+  ],
   rules: {
     'header/header': [
       2,

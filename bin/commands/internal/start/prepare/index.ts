@@ -70,7 +70,6 @@ function getStartupCheckMode(property: string): {doCheck: boolean, warnOnly: boo
   return {doCheck, warnOnly};
 }
 
-
 const zosmfHost = ZOWE_CONFIG.zOSMF?.host;
 const zosmfPort = ZOWE_CONFIG.zOSMF?.port;
 
@@ -197,9 +196,22 @@ function globalValidate(enabledComponents:string[]): void {
   }
 
   // validate z/OSMF for some core components
-  if (zosmfHost && zosmfPort) {
+  let zosmfCheckAction = ZOWE_CONFIG.zowe.launchScript?.startupChecks?.zosmf || ZOWE_CONFIG.zowe.launchScript?.startupChecks?.default || 'exit';
+  if (zosmfHost && zosmfPort && (zosmfCheckAction != 'disabled')) {
     if (enabledComponents.includes('discovery') || enabledComponents.includes('apiml')) {
-      let zosmfOk = zosmf.validateZosmfHostAndPort(zosmfHost, zosmfPort);
+      let jobSuffix = 'AG';
+      if (enabledComponents.includes('zaas') && !enabledComponents.includes('apiml')) {
+        jobSuffix = 'AZ';
+      }
+      const gatewayJobname = (ZOWE_CONFIG.zowe.job?.prefix || 'ZWE1') + jobSuffix;
+      let checkScheme = 'https';
+      const tlsPolicy = component.isClientAttls(); // does not allow for components.(apiml|gateway)...tls settings. only global/zaas
+      if ((ZOWE_CONFIG.components?.apiml?.enabled === true || ZOWE_CONFIG.components?.gateway?.enabled === true) && tlsPolicy === true ) {
+          checkScheme = 'http';
+      }
+      // envs should overrule attls settings
+      const finalScheme =  std.getenv('ZOSMF_SCHEME') || std.getenv('ZWE_zOSMF_scheme') || checkScheme;
+      let zosmfOk = zosmf.validateZosmfHostAndPort(zosmfHost, zosmfPort, finalScheme, gatewayJobname, (zosmfCheckAction == 'warn'));
       if (!zosmfOk) {
         privateErrors++;
         common.printFormattedError('ZWELS', "zwe-internal-start-prepare,global_validate", "Zosmf validation failed");
@@ -539,4 +551,8 @@ export function execute() {
 
   // display instance prepared info
   common.printFormattedInfo("ZWELS", "zwe-internal-start-prepare", "Zowe runtime environment prepared");
+}
+
+export const _unit_test = {
+  getStartupCheckMode
 }

@@ -12,7 +12,8 @@ WORK_MOUNT="/tmp"
 echo "Changing runtime path in ZWECONF.properties."
 
 cp ../workflows/files/ZWECONF.properties ./ZWECONF.properties
-sed "s|runtimeDirectory=|runtimeDirectory=${WORK_MOUNT}|g" ./ZWECONF.properties >_ZWECONF
+sed "s|runtimeDirectory=|runtimeDirectory=${WORK_MOUNT}|g" ./ZWECONF.properties >_ZWECONF.properties
+sed "s|workspaceDirectory=.*$|workspaceDirectory=${WORK_MOUNT}|g" ./_ZWECONF.properties >_ZWECONF
 sed "s|java_home=|java_home=#delete_me#|g" _ZWECONF >ZWECONF
 sed "s|node_home=|node_home=#delete_me#|g" ZWECONF >_ZWECONF
 

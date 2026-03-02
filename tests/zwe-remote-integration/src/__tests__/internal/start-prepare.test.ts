@@ -51,6 +51,9 @@ describe(`${testSuiteName}`, () => {
   afterEach(async () => {
     await testRunner.postTest();
     await TestFileActions.deleteAll([workspaceEnv]);
+    defaultCfgYaml = ZoweConfig.getDefaultsYaml();
+    // always reset defaults yaml
+    await testRunner.uploadDefaultsYaml(defaultCfgYaml, undefined, true);
   });
 
   afterAll(() => {
@@ -58,6 +61,100 @@ describe(`${testSuiteName}`, () => {
   });
 
   describe('(SHORT)', () => {
+    it('various combinations of settings impacting z/osmf scheme', async () => {
+      // All combinations relevant fields are 3^6 or 3^7, too many to test in integration. Cover more common subset.
+      /* eslint-disable max-len */
+      // prettier-ignore
+      const testCases = [
+        // envs override expected result
+        { 'aml.enabled': true, 'gw.enabled': false, 'zaas.client.attls': false, 'net.client.attls': false, 'net.server.attls': false, 'cmd.env': { ZOSMF_SCHEME: 'http' }, 'result': 'http' },
+        { 'aml.enabled': true, 'gw.enabled': false, 'zaas.client.attls': true, 'net.client.attls': false, 'net.server.attls': false, 'cmd.env': { ZWE_zOSMF_scheme: 'https' }, 'result': 'https' },
+        { 'aml.enabled': true, 'gw.enabled': false, 'zaas.client.attls': false, 'net.client.attls': false, 'net.server.attls': false, 'cmd.env': { ZOSMF_SCHEME: 'http', ZWE_zOSMF_scheme: 'https' }, 'result': 'http' },
+        // no envs override rest. nulls are "no value"
+        { 'aml.enabled': true, 'gw.enabled': true, 'zaas.client.attls': false, 'net.client.attls': false, 'net.server.attls': false, 'cmd.env': {}, 'result': 'https' },
+        { 'aml.enabled': true, 'gw.enabled': true, 'zaas.client.attls': false, 'net.client.attls': false, 'net.server.attls': false, 'cmd.env': {}, 'result': 'https' },
+        { 'aml.enabled': true, 'gw.enabled': true, 'zaas.client.attls': true, 'net.client.attls': false, 'net.server.attls': false, 'cmd.env': {}, 'result': 'http' },
+        { 'aml.enabled': false, 'gw.enabled': true, 'zaas.client.attls': false, 'net.client.attls': false, 'net.server.attls': true, 'cmd.env': {}, 'result': 'https' },
+        { 'aml.enabled': false, 'gw.enabled': true, 'zaas.client.attls': true, 'net.client.attls': false, 'net.server.attls': false, 'cmd.env': {}, 'result': 'http' },
+        { 'aml.enabled': true, 'gw.enabled': false, 'zaas.client.attls': false, 'net.client.attls': true, 'net.server.attls': false, 'cmd.env': {}, 'result': 'http' },
+        { 'aml.enabled': true, 'gw.enabled': false, 'zaas.client.attls': false, 'net.client.attls': false, 'net.server.attls': true, 'cmd.env': {}, 'result': 'https' },
+        { 'aml.enabled': true, 'gw.enabled': false, 'zaas.client.attls': null, 'net.client.attls': null, 'net.server.attls': true, 'cmd.env': {}, 'result': 'http' },
+        { 'aml.enabled': true, 'gw.enabled': false, 'zaas.client.attls': null, 'net.client.attls': null, 'net.server.attls': null, 'cmd.env': {}, 'result': 'https' },
+        { 'aml.enabled': false, 'gw.enabled': true, 'zaas.client.attls': null, 'net.client.attls': false, 'net.server.attls': false, 'cmd.env': {}, 'result': 'https' },
+        { 'aml.enabled': false, 'gw.enabled': true, 'zaas.client.attls': true, 'net.client.attls': null, 'net.server.attls': false, 'cmd.env': {}, 'result': 'http' },
+        { 'aml.enabled': false, 'gw.enabled': true, 'zaas.client.attls': false, 'net.client.attls': true, 'net.server.attls': null, 'cmd.env': {}, 'result': 'http' },
+        { 'aml.enabled': false, 'gw.enabled': true, 'zaas.client.attls': null, 'net.client.attls': null, 'net.server.attls': false, 'cmd.env': {}, 'result': 'https' },
+      ];
+
+      /* eslint-enable max-len */
+      for (const test of testCases) {
+        cfgYaml = ZoweConfig.getZoweYaml(); // reset every test
+        delete cfgYaml.zowe.network.server.tls;
+        _.set(cfgYaml, 'node.home', REMOTE_SYSTEM_INFO.zosNodeHome);
+        _.set(cfgYaml, 'zowe.launchScript.startupChecks.zosmf', 'exit');
+        cfgYaml.zOSMF.port = Number(cfgYaml.zOSMF.port) + 1; // intentionally bad port: quit early and print z/osmf URL
+
+        _.set(cfgYaml, 'components.apiml.enabled', test['aml.enabled']);
+        _.set(cfgYaml, 'components.zaas.zowe.network.client.tls.attls', test['zaas.client.attls']);
+        _.set(cfgYaml, 'components.gateway.enabled', test['gw.enabled']);
+        _.set(cfgYaml, 'zowe.network.server.tls.attls', test['net.server.attls']);
+        _.set(cfgYaml, 'zowe.network.client.tls.attls', test['net.client.attls']);
+        _.set(cfgYaml, 'zowe.environments', test['cmd.env']);
+
+        const result = await testRunner.runZweTest(cfgYaml, 'internal start prepare');
+        console.log(JSON.stringify(test));
+        const verifyResult = new RegExp(`Could not validate if z/OSMF is available on.*${test['result']}://.*?$`, 'gm');
+        expect(verifyResult.exec(result.cleanedStdout)).not.toBeNull();
+      }
+    });
+
+    it('z/OSMF with mode: exit', async () => {
+      _.set(cfgYaml, 'node.home', REMOTE_SYSTEM_INFO.zosNodeHome);
+      _.set(cfgYaml, 'zowe.launchScript.startupChecks.zosmf', 'exit');
+      let result = await testRunner.runZweTest(cfgYaml, 'internal start prepare');
+      expect(result.stdout).not.toBeNull();
+      expect(result.stdout.includes('Successfully checked z/OSMF is available')).toBe(true);
+
+      cfgYaml.zOSMF.port = Number(cfgYaml.zOSMF.port) + 1; // bad port
+      result = await testRunner.runZweTest(cfgYaml, 'internal start prepare');
+      expect(result.stdout).not.toBeNull();
+      expect(result.stdout.includes('Could not validate if z/OSMF is available on')).toBe(true);
+      expect(result.stdout.includes('Zosmf validation failed')).toBe(true);
+    });
+
+    // with warn mode, global validations should succeed when z/osmf check fails
+    it('z/OSMF with mode: warn', async () => {
+      _.set(cfgYaml, 'node.home', REMOTE_SYSTEM_INFO.zosNodeHome);
+      _.set(cfgYaml, 'zowe.launchScript.startupChecks.zosmf', 'warn');
+      let result = await testRunner.runZweTest(cfgYaml, 'internal start prepare');
+      expect(result.stdout).not.toBeNull();
+      expect(result.stdout.includes('Successfully checked z/OSMF is available')).toBe(true);
+
+      cfgYaml.zOSMF.port = Number(cfgYaml.zOSMF.port) + 1; // bad port
+      result = await testRunner.runZweTest(cfgYaml, 'internal start prepare');
+      expect(result.stdout).not.toBeNull();
+      expect(result.stdout.includes('Could not validate if z/OSMF is available on')).toBe(true);
+      expect(result.stdout.includes('global validations are successful')).toBe(true);
+    });
+
+    // test when disabled, there's no messages about z/osmf and global validations pass
+    it('z/OSMF with mode: disabled', async () => {
+      _.set(cfgYaml, 'node.home', REMOTE_SYSTEM_INFO.zosNodeHome);
+      _.set(cfgYaml, 'zowe.launchScript.startupChecks.zosmf', 'disabled');
+      let result = await testRunner.runZweTest(cfgYaml, 'internal start prepare');
+      expect(result.stdout).not.toBeNull();
+      expect(result.stdout.includes('Successfully checked z/OSMF is available')).toBe(false);
+      expect(result.stdout.includes('Could not validate if z/OSMF is available on')).toBe(false);
+      expect(result.stdout.includes('global validations are successful')).toBe(true);
+
+      cfgYaml.zOSMF.port = Number(cfgYaml.zOSMF.port) + 1; // bad port
+      result = await testRunner.runZweTest(cfgYaml, 'internal start prepare');
+      expect(result.stdout).not.toBeNull();
+      expect(result.stdout.includes('Successfully checked z/OSMF is available')).toBe(false);
+      expect(result.stdout.includes('Could not validate if z/OSMF is available on')).toBe(false);
+      expect(result.stdout.includes('global validations are successful')).toBe(true);
+    });
+
     it('modulith disabled', async () => {
       cfgYaml.components.apiml.enabled = false;
       const result = await testRunner.runZweTest(cfgYaml, 'internal start prepare');
@@ -103,7 +200,6 @@ describe(`${testSuiteName}`, () => {
       result = await testRunner.runZweTestWithDefaults(cfgYaml, defaultCfgYaml, 'internal start prepare');
       expect(result.cleanedStdout).toMatchSnapshot();
       expect(result.rc).toBe(0);
-
       defaultCfgYaml.zowe.launchScript.startupChecks.default = 'disabled';
       defaultCfgYaml.zowe.launchScript.startupChecks.ports = 'exit';
       result = await testRunner.runZweTestWithDefaults(cfgYaml, defaultCfgYaml, 'internal start prepare');
