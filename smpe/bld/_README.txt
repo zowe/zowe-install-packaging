@@ -26,7 +26,7 @@ New FMID
    requires a specific format, which might have changed since the last
    update.
 Note: The program directory holds allocation and FTP file sizes, so the
-      final update should happened just before code freeze to ensure we
+      final update should happen just before code freeze to ensure we
       have the correct sizes.
 2. Add previous FMID to SUP and DELETE statements in smpe/bld/SMPMCS.txt
 Note: SUP should only be updated if most products depending on the
