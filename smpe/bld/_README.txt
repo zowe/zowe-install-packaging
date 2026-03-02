@@ -26,7 +26,7 @@ New FMID
    requires a specific format, which might have changed since the last
    update.
 Note: The program directory holds allocation and FTP file sizes, so the
-      final update should happend just before code freeze to ensure we
+      final update should happen just before code freeze to ensure we
       have the correct sizes.
 2. Add previous FMID to SUP and DELETE statements in smpe/bld/SMPMCS.txt
 Note: SUP should only be updated if most products depending on the
@@ -52,8 +52,8 @@ Add product data set to build
 -----------------------------
 Note: Build currently does not support empty data sets, so one or more
       members must be added also
-1. Update community build to create dat set during install.
-2. Add SZWExxxx data set alloction to ALLOCT PROC in
+1. Update community build to create data set during install.
+2. Add SZWExxxx data set allocation to ALLOCT PROC in
    workflows/templates/smpe-install/ZWE3ALOC.vtl (alphabetical order)
    Note: Allocation details must match those from community install
          see bin/commands/install/index.sh
@@ -216,13 +216,13 @@ Actual removal:
 1. Ensure this is NOT the last member of a data set. If it is, replace
    member content with a note saying it is obsolete, and then let it be
    for this FMID. Remove in next FMID.
-2. Add DELETE keyword to member definiton in smpe/bld/SMPMCS.txt
+2. Add DELETE keyword to member definition in smpe/bld/SMPMCS.txt
 +SAMP(ZWENOSSO) SYSLIB(SZWESAMP) DISTLIB(AZWESAMP) RELFILE(2) DELETE .
 3. Notify an IBM-employed build engineer to update the IBM processes
 4. WAIT UNTIL AFTER THE PTF WITH THIS UPDATE SHIPPED
 5. Remove member from files/...
 6. Update community build to remove member from install
-7. Remove member definiton from smpe/bld/SMPMCS.txt
+7. Remove member definition from smpe/bld/SMPMCS.txt
 8. Notify an IBM-employed build engineer to update the IBM processes
 
 Remove SMPE-only member/file from build
