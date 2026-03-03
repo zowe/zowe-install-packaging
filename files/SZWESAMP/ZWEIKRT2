@@ -160,7 +160,7 @@ $$
 
 /* Uncomment this command if SITE acid owns the Zowe certificate ... */
 /* TSS PERMIT({zowe.setup.security.users.zowe}) +
-       IBMFAC(IRR.DIGTCERT.GENCERT) ACCESS(CONTROL)
+       IBMFAC(IRR.DIGTCERT.GENCERT) ACCESS(UPDATE)
 
 /* List the keyring ................................................ */
   TSS LIST({zowe.setup.security.users.zowe}) KEYRING(ZOWERING) +
