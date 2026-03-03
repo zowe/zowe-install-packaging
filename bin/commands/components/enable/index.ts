@@ -9,10 +9,12 @@
 // Copyright Contributors to the Zowe Project.
 */
 
+import * as std from 'cm_std';
 import * as common from '../../../libs/common';
 import * as component from '../../../libs/component';
 import * as jsonlib from '../../../libs/json';
 import * as configmgr from '../../../libs/configmgr';
+import * as fs from '../../../libs/fs';
 
 export function execute(componentId: string, haInstance?: string, dryRun?: boolean) {
   common.requireZoweYaml();

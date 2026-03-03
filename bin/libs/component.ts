@@ -696,6 +696,8 @@ export function testOrSetPcBit(path: string, exitOnError?: boolean, dryRun?: boo
         common.printErrorAndConditionallyExit(`PC bit not set. This must be set such as by executing 'extattr +p ${path}' as a user with sufficient privilege.`, undefined, 4, exitOnError);
       }
       return success;
+    } else {
+      common.printMessage(`Dry run: Operation skipped. Operation can be performed manually via command 'extattr +p ${path}'`);
     }
     return true;
   } else {
@@ -884,7 +886,7 @@ export function zisParmlibRegister(componentDir: string, exitOnError?: boolean, 
   let errors: {rc: number, plugin: string}[] = [];
 
   const manifest = getManifest(componentDir);
-  if (manifest?.zisPlugins) {
+  if (manifest?.zisPlugins && (manifest.zisPlugins.length > 0)) {
     if (os.platform != 'zos') {
       common.printError(`ZIS plugin installation must be done on z/OS.`);
       return [{rc: 1, plugin: ''}]
@@ -911,6 +913,14 @@ export function zisParmlibRegister(componentDir: string, exitOnError?: boolean, 
       return [{rc: rc, plugin: ''}]
     }
 
+
+
+    const parmlibMemberAsUnixFile=fs.createTmpFile(zisParmlibMember);
+    zosfs.copyMvsToUss(`${zoweParmlib}(${zisParmlibMember})`, parmlibMemberAsUnixFile);
+    let parmlibContents = xplatform.loadFileUTF8(parmlibMemberAsUnixFile, xplatform.AUTO_DETECT);
+    let parmlibChanged = false;
+    common.printMessage(`PARMLIB is currently: \n${parmlibContents}`);
+
     for (let i = 0; i < manifest.zisPlugins.length; i++) {
       const zisPlugin: {path: string, id: string} = manifest.zisPlugins[i];
       const pluginRootPath = pathoid.join(componentDir, zisPlugin.path);
@@ -924,11 +934,6 @@ export function zisParmlibRegister(componentDir: string, exitOnError?: boolean, 
 
       common.printMessage(`Registering ZIS plugin ${zisPlugin.id} into PARMLIB ${zoweParmlib}(${zisParmlibMember})`);
 
-      const parmlibMemberAsUnixFile=fs.createTmpFile(zisParmlibMember);
-      zosfs.copyMvsToUss(`${zoweParmlib}(${zisParmlibMember})`, parmlibMemberAsUnixFile);
-      let parmlibContents = xplatform.loadFileUTF8(parmlibMemberAsUnixFile, xplatform.AUTO_DETECT);
-      common.printMessage(`PARMLIB is currently: \n${parmlibContents}`);
-
       let result = editZisParmlibContents(parmlibContents, ZOWE_CONFIG.zowe.setup?.zis?.parmlib?.keys, samplibPath);
 
       if (result.rc) {
@@ -936,23 +941,28 @@ export function zisParmlibRegister(componentDir: string, exitOnError?: boolean, 
         errors.push({rc: result.rc, plugin: zisPlugin.id});
         continue;
       } else if (result.changed) {
-        xplatform.storeFileUTF8(parmlibMemberAsUnixFile, xplatform.AUTO_DETECT, result.content);
-        common.printDebug(`PARMLIB with edits: \n${result.content}`);
+        parmlibChanged = true;
+        parmlibContents = result.content;
+        common.printDebug(`PARMLIB with edits: \n${parmlibContents}`);
 
-        if (!dryRun) {
-          rc = zosdataset.copyToDataset(parmlibMemberAsUnixFile, `${zoweParmlib}(${zisParmlibMember})`, "", true);
-          if (rc != 0) {
-            common.printError(`Error ZWEL0200E: Failed to copy USS file ${parmlibMemberAsUnixFile} to MVS data set ${zoweParmlib}.`);
-          }
-          errors.push({rc: rc, plugin: zisPlugin.id});
-          continue;
-        } else {
-          common.printMessage(`Dry run: no update performed. Edited PARMLIB available as unix file ${parmlibMemberAsUnixFile}`);
-        }
       } else {
         common.printMessage(`No change to PARMLIB needed.`);
       }
     }
+
+    if (!dryRun && (parmlibChanged === true)) {
+      xplatform.storeFileUTF8(parmlibMemberAsUnixFile, xplatform.AUTO_DETECT, parmlibContents);
+      rc = zosdataset.copyToDataset(parmlibMemberAsUnixFile, `${zoweParmlib}(${zisParmlibMember})`, "", true);
+      if (rc != 0) {
+        common.printError(`Error ZWEL0200E: Failed to copy USS file ${parmlibMemberAsUnixFile} to MVS data set ${zoweParmlib}.`);
+      }
+      errors.push({rc: rc, plugin: ''});
+    } else {
+      common.printMessage(`Dry run: no update performed. Edited PARMLIB available as unix file ${parmlibMemberAsUnixFile}`);
+      common.printMessage(`PARMLIB content preview: \n${parmlibContents}`);
+    }
+
+    
     return errors;
   } else {
     common.printDebug(`Component ${manifest.name} does not have ZIS plugins, action skipped`);
@@ -1026,12 +1036,12 @@ export function addPluginsToZisAuthLoadlib(componentDir: string, dryRun?: boolea
     }
 
 
-    common.printMessage(`Copying ZIS plugins from component ${manifest.name} into Zowe instance`);
+    common.printMessage(`Copying ZIS plugins from component ${manifest.name} into LOADLIB ${zisPluginLib}`);
     
     for (let i = 0; i < manifest.zisPlugins.length; i++) {
       const zisPlugin: {path: string, id: string} = manifest.zisPlugins[i];
       const pluginRootPath = pathoid.join(componentDir, zisPlugin.path);      
-      const loadLibPath=`${pluginRootPath}/loadLib`;
+      const loadLibPath=`${pluginRootPath}/loadlib`;
       
       const plugins = fs.getFilesInDirectory(loadLibPath) || [];
       if (!plugins) {
@@ -1039,12 +1049,12 @@ export function addPluginsToZisAuthLoadlib(componentDir: string, dryRun?: boolea
         errors.push({rc: 1, plugin: zisPlugin.id});
         continue;
       }
-      common.printMessage(`- Copying ZIS plugin ${zisPlugin.id} loadlib ${loadLibPath} into ${zisPluginLib}`);
+      common.printMessage(`- Copying ${zisPlugin.id} at ${loadLibPath}`);
 
       for (let i = 0; i < plugins.length; i++) {
         const plugin = plugins[i];
         let sourcePath = `${loadLibPath}/${plugin}`;
-        common.printMessage(`-- Copying ${sourcePath}`);
+        common.printMessage(`--- Member ${sourcePath}`);
         if (!dryRun) {
           let rc = zosdataset.copyToDataset(sourcePath, zisPluginLib, "", true);
           if (rc) {
@@ -1103,6 +1113,9 @@ function updateUssParmlibKeyValue(samplibKeyValue: string, parmlibKeys: string, 
 
   if (num) {
     const replacer = new RegExp('\\.', 'g');
+    if (!parmlibKeys) {
+      throw new Error(`YAML section zowe.setup.zis.parmlib.keys missing value for ${samplibKey}`);
+    }
     const parsedParmlibKeys = JSON.stringify(parmlibKeys).replace(replacer, '_'); // replace . with _ in keyname for working key search
     const parsedSamplibKey = samplibKey.replace(replacer, '_'); // replace . with _ in keyname for working key search
     const configSamplibKeyValue = fakejq.jqget(JSON.parse(parsedParmlibKeys), `.${parsedSamplibKey}`);
