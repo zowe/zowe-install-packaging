@@ -920,7 +920,7 @@ export function zisParmlibRegister(componentDir: string, exitOnError?: boolean, 
     let parmlibContents = xplatform.loadFileUTF8(parmlibMemberAsUnixFile, xplatform.AUTO_DETECT);
     let parmlibChanged = false;
     common.printMessage(`Registering ZIS plugins into PARMLIB`);
-    common.printMessage(`\n========== ORIGINAL PARMLIB ${zoweParmlib}(${zisParmlibMember}) ==========\n${parmlibContents}========== END ==========\n`);
+    common.printMessage(`\n========== ORIGINAL PARMLIB ${zoweParmlib}(${zisParmlibMember}) ==========\n${parmlibContents}\n========== END ==========\n`);
 
     for (let i = 0; i < manifest.zisPlugins.length; i++) {
       const zisPlugin: {path: string, id: string} = manifest.zisPlugins[i];
@@ -957,11 +957,11 @@ export function zisParmlibRegister(componentDir: string, exitOnError?: boolean, 
       if (rc != 0) {
         common.printError(`Error ZWEL0200E: Failed to copy USS file ${parmlibMemberAsUnixFile} to MVS data set ${zoweParmlib}.`);
       } else {
-        common.printMessage(`\n========== EDITED PARMLIB ${zoweParmlib}(${zisParmlibMember}) ==========\n${parmlibContents}========== END ==========\n`);
+        common.printMessage(`\n========== EDITED PARMLIB ${zoweParmlib}(${zisParmlibMember}) ==========\n${parmlibContents}\n========== END ==========\n`);
       }
       errors.push({rc: rc, plugin: ''});
     } else {
-      common.printMessage(`\n========== PREVIEW PARMLIB ${zoweParmlib}(${zisParmlibMember}) ==========\n${parmlibContents}========== END ==========\n`);
+      common.printMessage(`\n========== PREVIEW PARMLIB ${zoweParmlib}(${zisParmlibMember}) ==========\n${parmlibContents}\n========== END ==========\n`);
       common.printMessage(`Dry run: no update performed. Edited PARMLIB available as unix file ${parmlibMemberAsUnixFile}`);
     }
 
@@ -1442,7 +1442,7 @@ function updateStcSteplibEntries(proclib: string, member: string, stepLibEntries
   const proclibMemberAsUnixFile = fs.createTmpFile(`${proclib}`);
   zosfs.copyMvsToUss(`${proclib}(${member})`, proclibMemberAsUnixFile);
   let procJcl = xplatform.loadFileUTF8(proclibMemberAsUnixFile, xplatform.AUTO_DETECT);
-  common.printMessage(`\n========== ORIGINAL STC JCL ${proclib}(${member})) ==========\n${procJcl}========== END ==========\n`);
+  common.printMessage(`\n========== ORIGINAL STC JCL ${proclib}(${member})) ==========\n${procJcl}\n========== END ==========\n`);
   
   // 2. Get the updated content
   const updatedContent = updateStepLib(procJcl, stepLibEntries);
@@ -1458,11 +1458,11 @@ function updateStcSteplibEntries(proclib: string, member: string, stepLibEntries
         common.printError(`Copy of temporary to dataset to ${proclib}(${member}) did not happen`);
         success = false;
       } else {
-        common.printMessage(`\n========== EDITED STC JCL ${proclib}(${member})) ==========\n${updatedContent}========== END ==========\n`);
+        common.printMessage(`\n========== EDITED STC JCL ${proclib}(${member})) ==========\n${updatedContent}\n========== END ==========\n`);
         common.printMessage(`${proclib}(${member}) updated successfully with new stepLib entries`);
       }
     } else {
-      common.printMessage(`\n========== PREVIEW STC JCL ${proclib}(${member})) ==========\n${updatedContent}========== END ==========\n`);
+      common.printMessage(`\n========== PREVIEW STC JCL ${proclib}(${member})) ==========\n${updatedContent}\n========== END ==========\n`);
       common.printMessage(`Dry run: no update performed. Edited JCL available as unix file ${proclibMemberAsUnixFile}`);
     }
   } else {

@@ -27,7 +27,7 @@ export function execute(componentId: string, haInstance?: string, dryRun?: boole
   
   const componentDir = component.findComponentDirectory(componentId);
 
-  if (!componentDir || (dryRun && !dryRunDir)) {
+  if (!(componentDir || (dryRun && dryRunDir))) {
     common.printErrorAndExit(`Error ZWEL0152E: Cannot find component ${componentId}.`, undefined, 152);
   }
 
