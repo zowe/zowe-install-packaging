@@ -43,7 +43,7 @@ export function execute(componentName?: string, zisPluginDatasets?: string[], dr
       dryRunDir = componentArg;
     }
     
-    let errors = component.addPluginsToZisAuthLoadlib((dryRun && dryRunDir) ? dryRunDir : componentDir, dryRun);
+    let errors = component.addPluginsToZisAuthPluginLib((dryRun && dryRunDir) ? dryRunDir : componentDir, dryRun);
     if (errors.length > 0) {
       errors.forEach((error: {rc: number, plugin: string})=> {
         common.printError(`Error copying plugin ${error.plugin}, rc: ${error.rc}`);

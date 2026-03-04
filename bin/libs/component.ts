@@ -833,7 +833,7 @@ export function processZisPluginInstall(componentDir: string, zisPluginDatasets?
       return 1;
     }
   } else {
-    let errors = addPluginsToZisAuthLoadlib(componentDir, dryRun);
+    let errors = addPluginsToZisAuthPluginLib(componentDir, dryRun);
     errors.forEach((error)=> {
       common.printError(`Failed to add loadlib for ZIS plugin ${error.plugin}, rc=${error.rc}`);
       if (error.rc > highestRc) {
@@ -919,7 +919,8 @@ export function zisParmlibRegister(componentDir: string, exitOnError?: boolean, 
     zosfs.copyMvsToUss(`${zoweParmlib}(${zisParmlibMember})`, parmlibMemberAsUnixFile);
     let parmlibContents = xplatform.loadFileUTF8(parmlibMemberAsUnixFile, xplatform.AUTO_DETECT);
     let parmlibChanged = false;
-    common.printMessage(`PARMLIB is currently: \n${parmlibContents}`);
+    common.printMessage(`Registering ZIS plugins into PARMLIB`);
+    common.printMessage(`\n========== ORIGINAL PARMLIB ${zoweParmlib}(${zisParmlibMember}) ==========\n${parmlibContents}========== END ==========\n`);
 
     for (let i = 0; i < manifest.zisPlugins.length; i++) {
       const zisPlugin: {path: string, id: string} = manifest.zisPlugins[i];
@@ -955,13 +956,16 @@ export function zisParmlibRegister(componentDir: string, exitOnError?: boolean, 
       rc = zosdataset.copyToDataset(parmlibMemberAsUnixFile, `${zoweParmlib}(${zisParmlibMember})`, "", true);
       if (rc != 0) {
         common.printError(`Error ZWEL0200E: Failed to copy USS file ${parmlibMemberAsUnixFile} to MVS data set ${zoweParmlib}.`);
+      } else {
+        common.printMessage(`\n========== EDITED PARMLIB ${zoweParmlib}(${zisParmlibMember}) ==========\n${parmlibContents}========== END ==========\n`);
       }
       errors.push({rc: rc, plugin: ''});
     } else {
+      common.printMessage(`\n========== PREVIEW PARMLIB ${zoweParmlib}(${zisParmlibMember}) ==========\n${parmlibContents}========== END ==========\n`);
       common.printMessage(`Dry run: no update performed. Edited PARMLIB available as unix file ${parmlibMemberAsUnixFile}`);
-      common.printMessage(`PARMLIB content preview: \n${parmlibContents}`);
     }
 
+    
     
     return errors;
   } else {
@@ -1008,7 +1012,7 @@ function editZisParmlibContents(parmlibContents: string, parmlibKeys: any, sampl
   return {rc: rc, changed: changed, content: parmlibContents};
 }
 
-export function addPluginsToZisAuthLoadlib(componentDir: string, dryRun?: boolean): {rc: number, plugin: string}[] {
+export function addPluginsToZisAuthPluginLib(componentDir: string, dryRun?: boolean): {rc: number, plugin: string}[] {
   let errors: {rc: number, plugin: string}[] = [];
   
   const manifest = getManifest(componentDir);
@@ -1019,18 +1023,18 @@ export function addPluginsToZisAuthLoadlib(componentDir: string, dryRun?: boolea
     }
 
     const ZOWE_CONFIG = configUtils.getZoweConfig();
-    let zisPluginLib = ZOWE_CONFIG.zowe.setup?.dataset?.authLoadlib;
+    let zisPluginLib = ZOWE_CONFIG.zowe.setup?.dataset?.authPluginLib;
     if (!zisPluginLib && ZOWE_CONFIG.zowe.setup?.dataset?.prefix) {
       zisPluginLib = ZOWE_CONFIG.zowe.setup.dataset.prefix + '.SZWEAPL';
-      common.printMessage(`Property zowe.setup.dataset.authLoadlib not defined in YAML\nDefaulting to ${zisPluginLib}`);
+      common.printMessage(`Property zowe.setup.dataset.authPluginLib not defined in YAML\nDefaulting to ${zisPluginLib}`);
     }
     if (!zisPluginLib) {
-      common.printError(`Property zowe.setup.dataset.authLoadlib not defined in YAML`);
+      common.printError(`Property zowe.setup.dataset.authPluginLib not defined in YAML`);
       return [{rc: 1, plugin: ''}]
     } else {
       let rc = zosdataset.isDatasetExistsRC(zisPluginLib);
       if (rc) {
-        common.printError(`Dataset defined in zowe.setup.dataset.authLoadlib not found\nDataset: ${zisPluginLib}, rc: ${rc}`);
+        common.printError(`Dataset defined in zowe.setup.dataset.authPluginLib not found\nDataset: ${zisPluginLib}, rc: ${rc}`);
         return [{rc: rc, plugin: ''}]
       }
     }
@@ -1437,9 +1441,12 @@ function updateStcSteplibEntries(proclib: string, member: string, stepLibEntries
   // 1. create temporary Unix file
   const proclibMemberAsUnixFile = fs.createTmpFile(`${proclib}`);
   zosfs.copyMvsToUss(`${proclib}(${member})`, proclibMemberAsUnixFile);
-    
+  let procJcl = xplatform.loadFileUTF8(proclibMemberAsUnixFile, xplatform.AUTO_DETECT);
+  common.printMessage(`\n========== ORIGINAL STC JCL ${proclib}(${member})) ==========\n${procJcl}========== END ==========\n`);
+  
   // 2. Get the updated content
-  const updatedContent = updateStepLib(proclibMemberAsUnixFile, stepLibEntries);
+  const updatedContent = updateStepLib(procJcl, stepLibEntries);
+
 
   // 3. store the updated content in the same temporary Unix file
   let rc = xplatform.storeFileUTF8(proclibMemberAsUnixFile, xplatform.AUTO_DETECT, updatedContent);
@@ -1451,9 +1458,11 @@ function updateStcSteplibEntries(proclib: string, member: string, stepLibEntries
         common.printError(`Copy of temporary to dataset to ${proclib}(${member}) did not happen`);
         success = false;
       } else {
+        common.printMessage(`\n========== EDITED STC JCL ${proclib}(${member})) ==========\n${updatedContent}========== END ==========\n`);
         common.printMessage(`${proclib}(${member}) updated successfully with new stepLib entries`);
       }
     } else {
+      common.printMessage(`\n========== PREVIEW STC JCL ${proclib}(${member})) ==========\n${updatedContent}========== END ==========\n`);
       common.printMessage(`Dry run: no update performed. Edited JCL available as unix file ${proclibMemberAsUnixFile}`);
     }
   } else {
@@ -1483,10 +1492,7 @@ const regexCheckDataset = (word: string): boolean => {
 
 // Goes through the steplib section and adds entries, skipping blank lines and commented lines. However if an entry is commented and is
 // part of new list of entries, then we uncomment that entry/line.
-function updateStepLib(procLibfile: string, newStepLibEntries:  string[], dryRun?: boolean) : any {
-  let procJcl = xplatform.loadFileUTF8(procLibfile, xplatform.AUTO_DETECT);
-  common.printMessage(`JCL is currently: \n${procJcl}`);
-
+function updateStepLib(procJcl: string, newStepLibEntries:  string[], dryRun?: boolean) : any {
   let lines = procJcl.split("\n");
 
   // find index of start of STEPLIB section
@@ -1525,7 +1531,7 @@ function updateStepLib(procLibfile: string, newStepLibEntries:  string[], dryRun
   });
 
   let result = lines.join("\n");
-  common.printMessage(`JCL with edits: \n${result}`);
+  common.printDebug(`JCL with edits: \n${result}`);
   return result;
 }
 
