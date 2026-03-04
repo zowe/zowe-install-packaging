@@ -956,10 +956,10 @@ export function zisParmlibRegister(componentDir: string, exitOnError?: boolean, 
       rc = zosdataset.copyToDataset(parmlibMemberAsUnixFile, `${zoweParmlib}(${zisParmlibMember})`, "", true);
       if (rc != 0) {
         common.printError(`Error ZWEL0200E: Failed to copy USS file ${parmlibMemberAsUnixFile} to MVS data set ${zoweParmlib}.`);
+        errors.push({rc: rc, plugin: ''});
       } else {
         common.printMessage(`\n========== EDITED PARMLIB ${zoweParmlib}(${zisParmlibMember}) ==========\n${parmlibContents}\n========== END ==========\n`);
       }
-      errors.push({rc: rc, plugin: ''});
     } else {
       common.printMessage(`\n========== PREVIEW PARMLIB ${zoweParmlib}(${zisParmlibMember}) ==========\n${parmlibContents}\n========== END ==========\n`);
       common.printMessage(`Dry run: no update performed. Edited PARMLIB available as unix file ${parmlibMemberAsUnixFile}`);
