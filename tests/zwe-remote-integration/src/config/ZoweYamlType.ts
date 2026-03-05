@@ -867,6 +867,12 @@ const zoweSchema = zoweYamlSchema as {
                   description: "Checks z/OSMF to see if it is running and meet's Zowe's requirements";
                   enum: ['exit', 'warn', 'disabled'];
                 };
+                user: {
+                  type: 'string';
+                  default: 'exit';
+                  description: "Checks if zowe.setup.security.users.zowe (ZWESVUSR) is configured as a superuser (UID 0). Such a setting is strongly discouraged.";
+                  enum: ['exit', 'warn', 'disabled'];
+                }
               };
             };
           };
