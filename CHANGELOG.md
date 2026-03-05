@@ -5,6 +5,8 @@ All notable changes to the Zowe Installer will be documented in this file.
 ## `3.5.0`
 
 - Enhancement: `zwe init` no longer creates certificates by default. Use `zwe init --create-certificate` or `zwe init certificate` after defining the "zowe.setup.certificate" section of the YAML. You can use the examples provided within zowe/files/examples/setup/certificate. [#4238](https://github.com/zowe/zowe-install-packaging/pull/4238)
+- Enhancement: Utility to toggle comments in provided YAML examples. [#4689](https://github.com/zowe/zowe-install-packaging/pull/4689)
+- Bugfix: Incorrect keyword was used for ACF2 key ring statement. [#4671](https://github.com/zowe/zowe-install-packaging/pull/4671)
 - Bugfix: `zwe config get` HA instance lookup is case insensitive. [#4609](https://github.com/zowe/zowe-install-packaging/pull/4609)
 - Enhancement: `zwe config get` command uses new `--format` option to format the output. [#4591](https://github.com/zowe/zowe-install-packaging/pull/4591)
 

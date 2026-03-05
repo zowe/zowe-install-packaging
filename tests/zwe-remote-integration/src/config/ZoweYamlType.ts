@@ -921,7 +921,7 @@ const zoweSchema = zoweYamlSchema as {
       properties: {
         home: {
           $ref: '/schemas/v2/server-common#zoweOptionalPath';
-          description: "Path to Java home directory. If java is at '/java/home/bin/java', than this would be '/java/home'";
+          description: "Path to Java home directory. If java is at '/java/home/bin/java', then this would be '/java/home'";
         };
       };
     };
@@ -930,7 +930,7 @@ const zoweSchema = zoweYamlSchema as {
       properties: {
         home: {
           $ref: '/schemas/v2/server-common#zoweOptionalPath';
-          description: "Path to node.js home directory. If node is at '/node/home/bin/node', than this would be '/node/home'";
+          description: "Path to node.js home directory. If node is at '/node/home/bin/node', then this would be '/node/home'";
         };
       };
     };
