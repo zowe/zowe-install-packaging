@@ -465,10 +465,16 @@ function configureComponents(componentEnvironments?: any, enabledComponents?:str
 // Few early steps even before initialization
 
 // Check if user is UID 0, this is not recommended
-const userID = shell.execOutSync('sh', '-c', 'id -u');
-if (userID.rc == 0 && userID.out) {
-  if (userID.out == "0") {
-    common.printFormattedError("ZWELS", "zwe-internal-start-prepare", `${user} running as UID 0. This is NOT recommended!"`);
+let userCheckAction = ZOWE_CONFIG.zowe.launchScript?.startupChecks?.user || ZOWE_CONFIG.zowe.launchScript?.startupChecks?.default || 'exit';
+if (userCheckAction != 'disabled') {
+  const userID = shell.execOutSync('sh', '-c', 'id -u');
+  if (userID.rc == 0 && userID.out) {
+    if (userID.out == "0") {
+      common.printFormattedError("ZWELS", "zwe-internal-start-prepare", `${user} running as UID 0. Such a setting is strongly discouraged."`);
+      if (userCheckAction = 'exit') {
+        std.exit(1);
+      }
+    }
   }
 }
 
