@@ -1,15 +1,1 @@
-{
-  "lockAcquiredTime": "Thu Mar 05 2026 15:00:06 GMT+0000 (Coordinated Universal Time)",
-  "uid": "1772722806713396813",
-  "repository": {
-    "owner": "zowe",
-    "repo": "zowe-install-packaging"
-  },
-  "branch": "hrishikesh-nalawade/GH4419/file-encoding",
-  "workflow": "Zowe CICD Integration Tests",
-  "job": "cicd-test",
-  "actor": "zowe-robot",
-  "runId": 22723736048,
-  "runNumber": 8211,
-  "link": "https://github.com/zowe/zowe-install-packaging/actions/runs/22723736048"
-}
+""
