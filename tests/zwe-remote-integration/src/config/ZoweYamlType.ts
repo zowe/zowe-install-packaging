@@ -870,9 +870,9 @@ const zoweSchema = zoweYamlSchema as {
                 user: {
                   type: 'string';
                   default: 'exit';
-                  description: "Checks if zowe.setup.security.users.zowe (ZWESVUSR) is configured as a superuser (UID 0). Such a setting is strongly discouraged.";
+                  description: 'Checks if zowe.setup.security.users.zowe (ZWESVUSR) is configured as a superuser (UID 0). Such a setting is strongly discouraged.';
                   enum: ['exit', 'warn', 'disabled'];
-                }
+                };
               };
             };
           };
