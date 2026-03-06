@@ -23,7 +23,8 @@ const COMMAND_NAME = 'zwe-validate-components';
  * @param quitOnError      - When true, exits the process on failure. When false,
  *                           logs a warning and returns a non-zero exit code.
  * @param componentNames   - Optional comma-separated list of component IDs to check.
- *                           When omitted every component defined in zowe.yaml is checked.
+ *                           When omitted, only enabled components are checked. Disabled
+ *                           components that are missing a directory or manifest are not an error.
  * @returns 0 on success, 1 if any component is invalid.
  */
 export function execute(quitOnError?: boolean, componentNames?: string): number {
@@ -60,7 +61,15 @@ export function execute(quitOnError?: boolean, componentNames?: string): number 
     }
     checkedComponents = requested;
   } else {
-    checkedComponents = allComponents;
+    // When no specific components are requested, only check enabled ones.
+    // Disabled components that are missing a directory or manifest are not an error.
+    checkedComponents = allComponents.filter(id => {
+      if (ZOWE_CONFIG.components[id]?.enabled === true) {
+        return true;
+      }
+      common.printFormattedDebug(common.MSG_KEY, COMMAND_NAME, `Skipping component '${id}' because it is not enabled.`);
+      return false;
+    });
   }
 
   common.printFormattedInfo(common.MSG_KEY, COMMAND_NAME, `Validating manifests for ${checkedComponents.length} component(s).`);
