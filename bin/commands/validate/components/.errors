@@ -1,0 +1,8 @@
+ZWEL0327E||Component '%s' is missing a valid manifest file (manifest.yaml, manifest.yml, or manifest.json) in %s.
+ZWEL0328E|1|The following component(s) are missing a valid manifest file and cannot be started: %s
+ZWEL0328W||The following component(s) are missing a valid manifest file and cannot be started: %s
+ZWEL0329E|1|No components are defined in zowe.yaml. Zowe cannot start without at least one component.
+ZWEL0329W||No components are defined in zowe.yaml. Zowe cannot start without at least one component.
+ZWEL0330E||Component '%s' directory was not found in the runtime or extension directories.
+ZWEL0331E|1|The following requested component(s) are not defined in zowe.yaml: %s
+ZWEL0331W||The following requested component(s) are not defined in zowe.yaml: %s
