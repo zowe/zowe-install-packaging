@@ -734,6 +734,12 @@
                   "default": "exit",
                   "description": "Checks z/OSMF to see if it is running and meet's Zowe's requirements",
                   "enum": ["exit", "warn", "disabled"]
+                },
+                "components": {
+                  "type": "string",
+                  "default": "exit",
+                  "description": "Checks that every component listed under 'components' in zowe.yaml has a valid manifest file (manifest.yaml, manifest.yml, or manifest.json). Components missing a manifest cannot be started.",
+                  "enum": ["exit", "warn", "disabled"]
                 }
               }
             }

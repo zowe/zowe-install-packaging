@@ -7,6 +7,7 @@ All notable changes to the Zowe Installer will be documented in this file.
 - Bugfix: Incorrect keyword was used for ACF2 key ring statement. [#4671](https://github.com/zowe/zowe-install-packaging/pull/4671)
 - Bugfix: `zwe config get` HA instance lookup is case insensitive. [#4609](https://github.com/zowe/zowe-install-packaging/pull/4609)
 - Enhancement: `zwe config get` command uses new `--format` option to format the output. [#4591](https://github.com/zowe/zowe-install-packaging/pull/4591)
+- Enhancement: Added command `zwe validate components` which can be used to check if a component in the YAML exists. [#4700](https://github.com/zowe/zowe-install-packaging/pull/4700)
 
 ## `3.4.1`
 - Bugfix: Running z/OSMF is returning 401, if RSU2512 was applied. [#4657](https://github.com/zowe/zowe-install-packaging/pull/4657)

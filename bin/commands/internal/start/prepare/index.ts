@@ -29,6 +29,7 @@ import * as node from '../../../../libs/node';
 import * as zosmf from '../../../../libs/zosmf';
 import * as zoslib from '../../../../libs/zos';
 import * as validateBind from '../../../validate/port/bind/index';
+import * as validateComponentManifests from '../../../validate/components/index';
 
 //# This command prepares everything needed to start Zowe.
 const cliParameterConfig = std.getenv('ZWE_CLI_PARAMETER_CONFIG');
@@ -163,6 +164,12 @@ function globalValidate(enabledComponents:string[]): void {
   if (!writable) {
     privateErrors++;
     common.printFormattedError('ZWELS', "zwe-internal-start-prepare,global_validate", `Workspace directory ${workspaceDirectory} is not writable`);
+  }
+
+  // validate component manifests before proceeding with component validation
+  const manifestCheckAction = getStartupCheckMode('components');
+  if (manifestCheckAction.doCheck) {
+    validateComponentManifests.execute(!manifestCheckAction.warnOnly);
   }
 
   if (runInContainer != 'true') {
