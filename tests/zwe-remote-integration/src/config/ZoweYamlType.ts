@@ -130,6 +130,11 @@ const serverCommonSchema = serverYamlSchema as {
       minimum: 1;
       maximum: 1023;
     };
+    startupCheck: {
+      $anchor: 'startupCheck';
+      type: 'string';
+      enum: ['exit', 'warn', 'disabled'];
+    };
   };
 };
 
@@ -850,28 +855,24 @@ const zoweSchema = zoweYamlSchema as {
               description: 'Startup check configuration options';
               properties: {
                 default: {
-                  type: 'string';
+                  $ref: '/schemas/v2/server-common#startupCheck';
                   default: 'exit';
                   description: 'Sets the default runtime behavior for all startup checks';
-                  enum: ['exit', 'warn', 'disabled'];
                 };
                 ports: {
-                  type: 'string';
+                  $ref: '/schemas/v2/server-common#startupCheck';
                   default: 'exit';
                   description: 'Checks the port for each enabled component to ensure Zowe can bind to it and that it is not already occupied by some other program';
-                  enum: ['exit', 'warn', 'disabled'];
                 };
                 zosmf: {
-                  type: 'string';
+                  $ref: '/schemas/v2/server-common#startupCheck';
                   default: 'exit';
                   description: "Checks z/OSMF to see if it is running and meet's Zowe's requirements";
-                  enum: ['exit', 'warn', 'disabled'];
                 };
                 user: {
-                  type: 'string';
+                  $ref: '/schemas/v2/server-common#startupCheck';
                   default: 'exit';
                   description: 'Checks if zowe.setup.security.users.zowe (ZWESVUSR) is configured as a superuser (UID 0). Such a setting is strongly discouraged.';
-                  enum: ['exit', 'warn', 'disabled'];
                 };
               };
             };
