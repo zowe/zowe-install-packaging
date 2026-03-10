@@ -1992,12 +1992,10 @@ echo '  # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>' >> "${instance-zowe_workspaceDi
 #if (${instance-components_apiml_enabled} == "true" )
 echo '  apiml:' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
 echo '    enabled: ${instance-components_apiml_enabled}' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
-echo '    debug: ${instance-components_apiml_debug}' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
 #end
 #if (${instance-components_apiml_enabled} == "false" )
 echo '  apiml:' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
 echo '    enabled: false' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
-echo '    debug: false' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
 #end
 echo '' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
 echo '  # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
