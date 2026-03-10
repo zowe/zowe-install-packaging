@@ -272,11 +272,13 @@ jobs:
 
       - name: '[PAX/SMPE Download 1] Download from jfrog according to manifest'
         timeout-minutes: 5
-        uses: zowe-actions/shared-actions/jfrog-download@54a9b36cf54e61fefea2801008788d81e1e3a560 # main 06/17/25
+        uses: zowe-actions/shared-actions/jfrog-download@90074a64d373c4ca9a0d9ccb4d38b5d6ad74c5c4 # main 06/17/25
         with:
           manifest-file-path: ${{ github.workspace }}/manifest.json
           default-target-path: .pax/binaryDependencies/
           expected-count: 33
+        env:
+          DEBUG: 'zowe-actions:shared-actions:jfrog-download'
       
       # this step is not doing a publish, we are just utilizing this actions to get the PUBLISH_TARGET_PATH, 
       # and it will be used in the next step: [Download 3] Download SMPE build log
