@@ -11,8 +11,8 @@
     "timestamp": "{BUILD_TIMESTAMP}"
   },
   "binaryDependencies": {
-    "org.zowe.zowe-native-proto": {
-      "version": "Server",
+    "org.zowe.zowe-native-proto.Server": {
+      "version": "Nightly",
       "artifact": "zowe-server-0.2.4-2026-02-25-013850.pax.Z"
     },
     "org.zowe.zlux.zlux-core": {
