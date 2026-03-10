@@ -130,7 +130,7 @@
       "artifact": "*.pax"
     },
     "org.zowe.launcher": {
-      "version": "3.5.0-PR-179",
+      "version": "^3.5.0-PR-179",
       "artifact": "*.pax"
     },
     "org.zowe.keyring-utilities": {
