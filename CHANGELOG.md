@@ -4,6 +4,8 @@ All notable changes to the Zowe Installer will be documented in this file.
 
 ## `3.5.0`
 - Enhancement: `zwe version` supports displaying Zowe version defined in the configuration. [#4322](https://github.com/zowe/zowe-install-packaging/pull/4322)
+- Enhancement: Utility to toggle comments in provided YAML examples. [#4689](https://github.com/zowe/zowe-install-packaging/pull/4689)
+- Bugfix: Incorrect keyword was used for ACF2 key ring statement. [#4671](https://github.com/zowe/zowe-install-packaging/pull/4671)
 - Bugfix: `zwe config get` HA instance lookup is case insensitive. [#4609](https://github.com/zowe/zowe-install-packaging/pull/4609)
 - Enhancement: `zwe config get` command uses new `--format` option to format the output. [#4591](https://github.com/zowe/zowe-install-packaging/pull/4591)
 
