@@ -33,7 +33,7 @@ JAVA_KEYTOOL_FLAG=" -J-Dkeystore.pkcs12.legacy "
 JAVA_KEYTOOL_ENCODING=" -J-Dfile.encoding=COMPAT "
 
 #######################################################################
-# Notes: some keyring related functions, like ncert, are using R_datalib behind the scene. It requires proper
+# Notes: some keyring related functions, like keyring-util, are using R_datalib behind the scene. It requires proper
 #        permission setup on the server.
 #
 # If you see error message like this, that means your user id doesn't have proper permission:
@@ -114,7 +114,7 @@ keyring_util() {
       print_trace "$(padding_left "${result}" "    ")"
     fi
   else
-    print_debug "  * ncert failed"
+    print_debug "  * keyring-util failed"
     print_error "  * Exit code: ${code}"
     print_error "  * Output:"
     if [ -n "${result}" ]; then
