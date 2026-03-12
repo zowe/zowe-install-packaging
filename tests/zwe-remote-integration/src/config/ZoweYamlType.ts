@@ -133,7 +133,7 @@ const serverCommonSchema = serverYamlSchema as {
     startupCheck: {
       $anchor: 'startupCheck';
       type: 'string';
-      // ??? enum: ['exit', 'warn', 'disabled'];
+      enum: ['exit', 'warn', 'disabled'];
     };
   };
 };
