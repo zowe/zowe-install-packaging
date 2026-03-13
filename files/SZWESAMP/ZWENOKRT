@@ -49,7 +49,7 @@
 
 /* Remove permit to use SITE owned certificate's private key */
    TSS REVOKE({zowe.setup.security.users.zowe}) +
-       IBMFAC(IRR.DIGTCERT.GENCERT) ACCESS(CONTROL)
+       IBMFAC(IRR.DIGTCERT.GENCERT) ACCESS(UPDATE)
 
 /* Remove permit to read keyring ................................... */
    TSS REVOKE({zowe.setup.security.users.zowe}) +
