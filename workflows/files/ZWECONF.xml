@@ -531,17 +531,6 @@ How we want to verify SSL certificates of services. Valid values are:
         <default>true</default>
       </boolean>
     </variable>
-    <variable name="components_apiml_debug" scope="instance" visibility="public">
-      <label>API ML debug</label>
-      <abstract>Switch on the debug mode for API ML</abstract>
-      <description>Switch on the debug mode for API ML</description>
-      <category>components</category>
-      <boolean>
-        <!-- Put validation here -->
-        <!-- Specify choices here -->
-        <default>false</default>
-      </boolean>
-    </variable>
     <variable name="components_gateway_enabled" scope="instance" visibility="public">
         <label>Enable Gateway</label>
         <abstract>Check this option to enable Gateway</abstract>
@@ -1193,29 +1182,7 @@ How we want to verify SSL certificates of services. Valid values are:
             <canMarkAsFailed>false</canMarkAsFailed>
             <!--template-->
         </step>
-      <step name="apiml_component" optional="false">
-        <title>API ML variables</title>
-        <description>Specify the variables for the API ML component</description>
-        <prereqStep name="main_variables"/>
-        <condition>
-          <expression>1 == 1</expression>
-          <description>Always true</description>
-          <targetStateSet>
-            <extendStateExpression>
-              <description>Skipped if the Gateway was not selected</description>
-              <expression>!${instance-components_apiml_enabled}</expression>
-              <targetState>skipped</targetState>
-            </extendStateExpression>
-          </targetStateSet>
-        </condition>
-        <variableValue name="components_apiml_debug" scope="instance" noPromptIfSet="false" required="true"/>
-        <instructions substitution="false">Run this step to specify the Gateway variables</instructions>
-        <weight>1</weight>
-        <skills>z/OS System Programmer</skills>
-        <autoEnable>false</autoEnable>
-        <canMarkAsFailed>false</canMarkAsFailed>
-        <!--template-->
-      </step>
+
       <step name="gateway_component" optional="false">
         <title>Gateway variables</title>
         <description>Specify the variables for the Gateway component</description>
@@ -1992,12 +1959,10 @@ echo '  # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>' >> "${instance-zowe_workspaceDi
 #if (${instance-components_apiml_enabled} == "true" )
 echo '  apiml:' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
 echo '    enabled: ${instance-components_apiml_enabled}' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
-echo '    debug: ${instance-components_apiml_debug}' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
 #end
 #if (${instance-components_apiml_enabled} == "false" )
 echo '  apiml:' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
 echo '    enabled: false' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
-echo '    debug: false' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
 #end
 echo '' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
 echo '  # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
