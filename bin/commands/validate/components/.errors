@@ -6,3 +6,5 @@ ZWEL0329W||No components are defined in zowe.yaml. Zowe cannot start without at 
 ZWEL0330E||Component '%s' directory was not found in the runtime or extension directories.
 ZWEL0331E|1|The following requested component(s) are not defined in zowe.yaml: %s
 ZWEL0331W||The following requested component(s) are not defined in zowe.yaml: %s
+ZWEL0332E|1|Zowe YAML property zowe.runtimeDirectory is not defined. Zowe cannot validate component existence without knowing the runtime location.
+ZWEL0332W||Zowe YAML property zowe.runtimeDirectory is not defined. Zowe cannot validate component existence without knowing the runtime location.

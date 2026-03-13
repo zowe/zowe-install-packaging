@@ -23,13 +23,24 @@ const COMMAND_NAME = 'zwe-validate-components';
  * @param quitOnError      - When true, exits the process on failure. When false,
  *                           logs a warning and returns a non-zero exit code.
  * @param componentNames   - Optional comma-separated list of component IDs to check.
- *                           When omitted, only enabled components are checked — disabled
+ *                           When omitted, only enabled components are checked - disabled
  *                           components that are missing a directory or manifest are not an error.
  * @returns 0 on success, 1 if any component is invalid.
  */
 export function execute(quitOnError?: boolean, componentNames?: string): number {
   common.requireZoweYaml();
   const ZOWE_CONFIG = config.getZoweConfig();
+
+  if (!ZOWE_CONFIG.runtimeDirectory) {
+    const errMsg = `ZWEL0332E: Zowe YAML property zowe.runtimeDirectory is not defined. Zowe cannot validate component existence without knowing the runtime location.`;
+    if (quitOnError) {
+      common.printFormattedError(common.MSG_KEY, COMMAND_NAME, errMsg);
+      std.exit(1);
+    } else {
+      common.printFormattedWarn(common.MSG_KEY, COMMAND_NAME, errMsg.replace('ZWEL0332E', 'ZWEL0332W'));
+      return 1;
+    }
+  }
 
   const allComponents = ZOWE_CONFIG.components ? Object.keys(ZOWE_CONFIG.components) : [];
 
