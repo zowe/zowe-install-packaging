@@ -74,6 +74,11 @@ export function execute(quitOnError?: boolean, level?: string): number {
     } catch (e) {
       common.printFormattedWarn(common.MSG_KEY, COMMAND_NAME, `Unexpected keyring format ${keystoreLocation}`);
     }
+
+    if (/^safkeyring[a-z]*:\/\/\/\/.*/.test(keystoreLocation)) {
+      common.printFormattedWarn(common.MSG_KEY, COMMAND_NAME, `Zowe YAML property zowe.certificate.keystore.file has 4 slashes in the URI and this is not supported in Zowe v3+. Change this to 2 slashes: ${ZOWE_CONFIG.zowe.certificate.keystore.file}`);
+    }    
+
   } else if (keystoreType != 'PKCS12') {
     common.printFormattedWarn(common.MSG_KEY, COMMAND_NAME, `Keystore unknown type ${keystoreType}`);
   }
@@ -86,7 +91,12 @@ export function execute(quitOnError?: boolean, level?: string): number {
         common.printFormattedWarn(common.MSG_KEY, COMMAND_NAME, `Unexpected keyring format ${truststoreLocation}`);
       }
     }
-  } else if (keystoreType != 'PKCS12') {
+
+    if (/^safkeyring[a-z]*:\/\/\/\/.*/.test(truststoreLocation)) {
+      common.printFormattedWarn(common.MSG_KEY, COMMAND_NAME, `Zowe YAML property zowe.certificate.truststore.file has 4 slashes in the URI and this is not supported in Zowe v3+. Change this to 2 slashes: ${ZOWE_CONFIG.zowe.certificate.truststore.file}`);
+    }
+    
+  } else if (truststoreType != 'PKCS12') {
     common.printFormattedWarn(common.MSG_KEY, COMMAND_NAME, `Truststore unknown type ${truststoreType}`);
   }
   
@@ -117,6 +127,20 @@ export function execute(quitOnError?: boolean, level?: string): number {
     common.printFormattedInfo(common.MSG_KEY, COMMAND_NAME, "Certificate checks passed.");
   } else {
 
+    if (output.includes('unknown protocol: ')) {
+      configInvalid = VALIDATION_ERROR;
+      const protocolLine = configLines.filter((line) => line.includes('IRRSDL00'))[0];
+      
+      common.printFormattedError(common.MSG_KEY, COMMAND_NAME, protocolLine);
+      let matchesTruststore = protocolLine.indexOf('safkeyring'+truststoreType.toLowerCase().substring(0, truststoreType.length - 'RACFKS'.length)) != -1;
+      let matchesKeystore = protocolLine.indexOf('safkeyring'+keystoreType.toLowerCase().substring(0, keystoreType.length - 'RACFKS'.length)) != -1;
+      if (matchesTruststore) {
+        common.printFormattedError(common.MSG_KEY, COMMAND_NAME, `Verify support for Zowe YAML zowe.certificate.truststore.type: ${ZOWE_CONFIG.zowe.certificate.truststore.type}`);
+      }
+      if (matchesKeystore) {
+        common.printFormattedError(common.MSG_KEY, COMMAND_NAME, `Verify support for Zowe YAML zowe.certificate.keystore.type: ${ZOWE_CONFIG.zowe.certificate.keystore.type}`);
+      }
+    }
 
     // From cert-analyser codebase
     // Only happens if keyring pattern is not matched, should be impossible due with proper schema checking.
