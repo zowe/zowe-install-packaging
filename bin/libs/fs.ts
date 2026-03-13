@@ -25,19 +25,19 @@ import { PathAPI as pathoid } from './pathoid';
 //const S_ISGID = 0x0400;
 //const S_ISVTX = 0x0200;
 /* User permissions, rwx */
-//const S_IRUSR = 0x0100;
+const S_IRUSR = 0x0100;
 const S_IWUSR = 0x0080;
-//const S_IXUSR = 0x0040;
+const S_IXUSR = 0x0040;
 //const S_IRWXU = 0x01C0;
 /* group permissions, rwx */
-//const S_IRGRP = 0x0020;
-//const S_IWGRP = 0x0010;
-//const S_IXGRP = 0x0008;
+const S_IRGRP = 0x0020;
+const S_IWGRP = 0x0010;
+const S_IXGRP = 0x0008;
 //const S_IRWXG = 0x0038;
 /* other permissions, rwx */
-//const S_IROTH = 0x0004;
-//const S_IWOTH = 0x0002;
-//const S_IXOTH = 0x0001;
+const S_IROTH = 0x0004;
+const S_IWOTH = 0x0002;
+const S_IXOTH = 0x0001;
 //const S_IRWXO = 0x0007;
 
 const ENOTDIR = 135; //error for not a directory
@@ -321,6 +321,70 @@ export function isDirectoryWritable(directory: string): boolean {
 
 export function isFileWritable(file: string): boolean {
   return pathHasPermissions(file, os.S_IFREG | S_IWUSR);
+}
+
+/**
+ * Returns true when the path has ALL of the given mode bits set.
+ * Build the mask from standard POSIX permission constants, e.g.:
+ *   hasPermissions(path, 0x0100 | 0x0020)  // owner-read AND group-read
+ */
+export function hasPermissions(path: string, bits: number): boolean {
+  const returnArray = os.stat(path);
+  if (returnArray[1]) {
+    return false; // stat error — do not false-positive
+  }
+  return (returnArray[0].mode & bits) === bits;
+}
+
+/**
+ * Returns true when the path's user (owner) permission bits match the
+ * requested combination.  Pass `true` to require a bit set, `false` to
+ * require it absent, or omit / pass `undefined` to ignore it.
+ */
+export function hasUserPermissions(path: string, read?: boolean, write?: boolean, execute?: boolean): boolean {
+  const returnArray = os.stat(path);
+  if (returnArray[1]) {
+    return false;
+  }
+  const mode = returnArray[0].mode;
+  if (read    !== undefined && !!(mode & S_IRUSR) !== read)    return false;
+  if (write   !== undefined && !!(mode & S_IWUSR) !== write)   return false;
+  if (execute !== undefined && !!(mode & S_IXUSR) !== execute) return false;
+  return true;
+}
+
+/**
+ * Returns true when the path's group permission bits match the requested
+ * combination.  Pass `true` to require a bit set, `false` to require it
+ * absent, or omit / pass `undefined` to ignore it.
+ */
+export function hasGroupPermissions(path: string, read?: boolean, write?: boolean, execute?: boolean): boolean {
+  const returnArray = os.stat(path);
+  if (returnArray[1]) {
+    return false;
+  }
+  const mode = returnArray[0].mode;
+  if (read    !== undefined && !!(mode & S_IRGRP) !== read)    return false;
+  if (write   !== undefined && !!(mode & S_IWGRP) !== write)   return false;
+  if (execute !== undefined && !!(mode & S_IXGRP) !== execute) return false;
+  return true;
+}
+
+/**
+ * Returns true when the path's world (other) permission bits match the
+ * requested combination.  Pass `true` to require a bit set, `false` to
+ * require it absent, or omit / pass `undefined` to ignore it.
+ */
+export function hasWorldPermissions(path: string, read?: boolean, write?: boolean, execute?: boolean): boolean {
+  const returnArray = os.stat(path);
+  if (returnArray[1]) {
+    return false;
+  }
+  const mode = returnArray[0].mode;
+  if (read    !== undefined && !!(mode & S_IROTH) !== read)    return false;
+  if (write   !== undefined && !!(mode & S_IWOTH) !== write)   return false;
+  if (execute !== undefined && !!(mode & S_IXOTH) !== execute) return false;
+  return true;
 }
 
 export function areDirectoriesSame(dir1: string, dir2: string): boolean {

@@ -1,0 +1,5 @@
+ZWEL0360E|360|%d directory validation(s) failed, review output for action items before running Zowe.
+ZWEL0361E|361|The following instance directories are globally (world) writable, which is a security risk: %s
+ZWEL0362E|362|The following instance directories are not readable by the current user: %s
+ZWEL0363E|363|The following Zowe directories share the same path, which is not allowed: %s
+ZWEL0364E|364|The following Zowe directories reside within another Zowe directory, which is not allowed: %s

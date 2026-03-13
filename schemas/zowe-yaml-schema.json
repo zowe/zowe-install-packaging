@@ -734,6 +734,12 @@
                   "default": "exit",
                   "description": "Checks z/OSMF to see if it is running and meet's Zowe's requirements",
                   "enum": ["exit", "warn", "disabled"]
+                },
+                "directories": {
+                  "type": "string",
+                  "default": "exit",
+                  "description": "Checks that zowe.workspaceDirectory, zowe.logDirectory, and zowe.extensionDirectory do not reside within zowe.runtimeDirectory",
+                  "enum": ["exit", "warn", "disabled"]
                 }
               }
             }

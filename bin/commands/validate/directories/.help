@@ -1,0 +1,3 @@
+Validates that the Zowe instance directories (workspaceDirectory, logDirectory, extensionDirectory) do not reside within the Zowe runtime directory.
+When any of those directories are found inside the runtime directory, the command fails with an error listing the offending YAML properties and their current values.
+This check can be configured via the YAML property "zowe.launchScript.startupChecks.directories".

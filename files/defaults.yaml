@@ -139,6 +139,8 @@ zowe:
       # ports: exit
       # z/OSMF startup check - defaults to zowe.launchScript.startupChecks.default, or "exit" if this is unset
       # zosmf: exit
+      # Directory permission check - defaults to zowe.launchScript.startupChecks.default, or "exit" if this is unset
+      # directories: exit
 
   # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   # How we want to verify SSL certificates of services. Valid values are:
