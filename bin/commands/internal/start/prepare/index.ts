@@ -471,7 +471,7 @@ if (userCheckAction != 'disabled') {
   if (userID.rc == 0 && userID.out) {
     if (userID.out == "0") {
       common.printFormattedError("ZWELS", "zwe-internal-start-prepare", `${user} running as UID 0. Such a setting is strongly discouraged."`);
-      if (userCheckAction = 'exit') {
+      if (userCheckAction == 'exit') {
         std.exit(1);
       }
     }
