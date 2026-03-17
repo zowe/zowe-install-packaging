@@ -1,0 +1,4 @@
+Validates that runtime dependencies meet Zowe's supported version ranges.
+
+Which checks are performed depends upon which components are enabled and what dependencies they have.
+For example, if APIML is enabled, java will be checked.

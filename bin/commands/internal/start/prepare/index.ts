@@ -169,20 +169,26 @@ function globalValidate(enabledComponents:string[]): void {
     // only do these check when it's not running in container
 
     if (enabledComponents.includes('app-server')) {
-      let nodeOk = node.validateNodeHome();
-      if (!nodeOk) {
-        privateErrors++;
-        common.printFormattedError('ZWELS', "zwe-internal-start-prepare,global_validate", `Could not validate node home`);
+      let nodeCheck = getStartupCheckMode('node');
+      if (nodeCheck.doCheck) {
+        let nodeOk = node.validateNodeHome(undefined, nodeCheck.warnOnly);
+        if (!nodeOk) {
+          privateErrors++;
+          common.printFormattedError('ZWELS', "zwe-internal-start-prepare,global_validate", `Could not validate node home`);
+        }
       }
     }
 
     // validate java for some core components
     //TODO this should be a manifest parameter that you require java, not a hardcoded list. What if extensions require it?
     if (enabledComponents.includes('apiml') || enabledComponents.includes('gateway') || enabledComponents.includes('zaas') || enabledComponents.includes('discovery') || enabledComponents.includes('api-catalog') || enabledComponents.includes('caching-service')) {
-      let javaOk = javaCI.validateJavaHome();
-      if (!javaOk) {
-        privateErrors++;
-        common.printFormattedError('ZWELS', "zwe-internal-start-prepare,global_validate", `Could not validate java home`);
+      let javaCheck = getStartupCheckMode('java');
+      if (javaCheck.doCheck) {
+        let javaOk = javaCI.validateJavaHome(undefined, javaCheck.warnOnly);
+        if (!javaOk) {
+          privateErrors++;
+          common.printFormattedError('ZWELS', "zwe-internal-start-prepare,global_validate", `Could not validate java home`);
+        }
       }
     }
   } else {

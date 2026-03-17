@@ -139,6 +139,10 @@ zowe:
       # ports: exit
       # z/OSMF startup check - defaults to zowe.launchScript.startupChecks.default, or "exit" if this is unset
       # zosmf: exit
+      # Java version check (>= 17 and <= 21) - defaults to zowe.launchScript.startupChecks.default, or "exit" if this is unset
+      # java: exit
+      # Node.js version check (>= 18 and <= 24) - defaults to zowe.launchScript.startupChecks.default, or "exit" if this is unset
+      # node: exit
 
   # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   # How we want to verify SSL certificates of services. Valid values are:

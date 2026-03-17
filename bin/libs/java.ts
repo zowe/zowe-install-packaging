@@ -29,7 +29,7 @@ export function readConfigJavaHome(configList?: string, skipValidate?: boolean):
   const zoweConfig = config.getZoweConfig();
   if (zoweConfig && zoweConfig.java && zoweConfig.java.home) {
     if (!skipValidate) {
-      if (!javaCI.validateJavaHome(zoweConfig.java.home)) {
+      if (!javaCI.validateJavaHome(zoweConfig.java.home, true)) {
         return '';
       }
     }
@@ -47,8 +47,12 @@ export function detectJavaHome(): string|undefined {
     }
   }
 
-  if (!javaBinHome && fs.fileExists('/usr/lpp/java/J17.0_64/bin/java')) {
-    return '/usr/lpp/java/J17.0_64';
+  const versions = ['17', '21'];
+
+  for (let i = 0; i < versions.length; i++) {
+    if (!javaBinHome && fs.fileExists(`/usr/lpp/java/J${versions[i]}.0_64/bin/java`)) {
+      return `/usr/lpp/java/J${versions[i]}.0_64`;
+    }
   }
   return undefined;
 }
