@@ -8,7 +8,7 @@ All notable changes to the Zowe Installer will be documented in this file.
 - Bugfix: Incorrect keyword was used for ACF2 key ring statement. [#4671](https://github.com/zowe/zowe-install-packaging/pull/4671)
 - Bugfix: `zwe config get` HA instance lookup is case insensitive. [#4609](https://github.com/zowe/zowe-install-packaging/pull/4609)
 - Enhancement: `zwe config get` command uses new `--format` option to format the output. [#4591](https://github.com/zowe/zowe-install-packaging/pull/4591)
-- Enhancement: Removed the unused `components.apiml.debug` debug property for the APIML Single-Service deployment mode (Modulith) in favor of the `components.gateway.debug`, to keep consistency with the rest of the current configuration. [#4702](https://github.com/zowe/zowe-install-packaging/pull/4702)
+- Enhancement: Removed the unused `components.apiml.debug` debug property for the APIML Single-Service deployment mode (Modulith) in favour of the `components.gateway.debug`, to keep consistency with the rest of the current configuration. [#4702](https://github.com/zowe/zowe-install-packaging/pull/4702)
 
 ## `3.4.1`
 - Bugfix: Running z/OSMF is returning 401, if RSU2512 was applied. [#4657](https://github.com/zowe/zowe-install-packaging/pull/4657)
