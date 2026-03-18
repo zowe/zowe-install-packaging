@@ -31,7 +31,7 @@ export function execute(quitOnError?: boolean, componentNames?: string): number 
   common.requireZoweYaml();
   const ZOWE_CONFIG = config.getZoweConfig();
 
-  if (!ZOWE_CONFIG.runtimeDirectory) {
+  if (!ZOWE_CONFIG.zowe.runtimeDirectory) {
     const errMsg = `ZWEL0332E: Zowe YAML property zowe.runtimeDirectory is not defined. Zowe cannot validate component existence without knowing the runtime location.`;
     if (quitOnError) {
       common.printFormattedError(common.MSG_KEY, COMMAND_NAME, errMsg);
