@@ -100,12 +100,17 @@ export function execute(quitOnError?: boolean, level?: string): number {
     common.printFormattedWarn(common.MSG_KEY, COMMAND_NAME, `Truststore unknown type ${truststoreType}`);
   }
   
-  const argsString = `-Djava.protocol.handler.pkgs=com.ibm.crypto.provider -jar ${std.getenv('ZWE_zowe_runtimeDirectory')}/bin/utils/certificate-analyser.jar ` +
-    `-k ${keystoreLocation} -kt ${keystoreType} -kp ${keystorePass} -a ${keystoreAlias} ` +
-    `-t ${truststoreLocation} -tt ${truststoreType} -tp ${truststorePass} ` +
-    `-d ${ZOWE_CONFIG.zowe.externalDomains.join(',')}`;
-  
-  const result = shell.execOutErrSync('java', ...argsString.split(' '));
+  const argsString = [
+    '-Djava.protocol.handler.pkgs=com.ibm.crypto.provider', '-jar', `${std.getenv('ZWE_zowe_runtimeDirectory')}/bin/utils/certificate-analyser.jar`,
+    '-k', `${keystoreLocation}`, '-kt', `${keystoreType}`, '-kp', `${keystorePass}`, '-a', `${keystoreAlias}`,
+    '-t', `${truststoreLocation}`, '-tt', `${truststoreType}`, '-tp', `${truststorePass}`,
+    '-d', `${ZOWE_CONFIG.zowe.externalDomains.join(',')}`
+  ];
+
+  common.printTrace('Certificate-analyser command:');
+  common.printTrace('java ' + argsString.join(' '));
+
+  const result = shell.execOutErrSync('java', ...argsString);
   const rc = result.rc;
   
   let configLines = [];
