@@ -16,7 +16,7 @@
 # To use this example, complete the configuration below and run
 # `zwe init --create-certificate` or `zwe init certificate`
 # with following configuration parameter, quotes included:
-# -c "FILE(/path/to/this/scenario-1.yaml):FILE(/path/to/zowe.yaml)"
+# -c "FILE(/path/to/this/scenario-3.yaml):FILE(/path/to/zowe.yaml)"
 ####
 
 zowe:
