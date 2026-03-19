@@ -82,7 +82,7 @@
     },
     "org.zowe.apiml.apiml-common-lib-package": {
       "version": "3.5.11-PR-1903-SNAPSHOT",
-      "artifact": "apiml-common-lib-package-3.5.11-PR-1903-20260319.140004-2.zip"
+      "artifact": "apiml-common-lib-package-3.5.11-PR-1903-20260319.140004-1.zip"
     },
     "org.zowe.apiml.sdk.common-java-lib-package": {
       "version": "^2.0.0-SNAPSHOT",
