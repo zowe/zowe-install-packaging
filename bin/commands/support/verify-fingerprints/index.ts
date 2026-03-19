@@ -42,7 +42,7 @@ export function execute(doNotExit: Boolean, javaHome: string): void {
 
   if (!javaHome) {
     javaHome = std.getenv('JAVA_HOME');
-    const validJava = javaCI.validateJavaHome(javaHome, true);
+    const validJava = javaCI.validateJavaHome(javaHome, true, true);
     if (!validJava) {
       common.printErrorAndExit('Error ZWEL0122E Cannot find java. Please define JAVA_HOME environment variable.', undefined, 122);
     }

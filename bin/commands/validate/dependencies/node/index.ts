@@ -16,7 +16,7 @@ import * as node from '../../../../libs/node';
 
 const COMMAND_NAME = 'zwe-validate-dependencies-node';
 
-export function execute(quitOnErrorMin: boolean = true, quitOnErrorMax: boolean = true): boolean {
+export function execute(quitOnErrorMin: boolean = true, quitOnErrorMax: boolean = true): boolean|void {
   common.requireZoweYaml();
 
   const ZOWE_CONFIG = config.getZoweConfig();

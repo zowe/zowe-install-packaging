@@ -112,7 +112,7 @@ export function execute(): void {
   }
 
   java.requireJava();
-  javaCI.validateJavaHome(undefined, true);
+  javaCI.validateJavaHome(undefined, true, true);
   const javaVersion = shell.execOutSync('sh', '-c', '${JAVA_HOME}/bin/java -version 2>&1 | head -n 1');
   if (javaVersion.rc == 0 && javaVersion.out) {
     environment["java"] = javaVersion.out.replace(/\"/g, '');

@@ -19,7 +19,7 @@ const COMMAND_NAME = 'zwe-validate-dependencies-java';
 
 const JAVA_DEPENDENT_COMPONENTS = ['apiml', 'gateway', 'discovery', 'zaas', 'api-catalog', 'caching-service'];
 
-export function execute(quitOnErrorMin: boolean = true, quitOnErrorMax: boolean = true): boolean {
+export function execute(quitOnErrorMin: boolean = true, quitOnErrorMax: boolean = true): boolean|void {
   common.requireZoweYaml();
 
   const ZOWE_CONFIG = config.getZoweConfig();
