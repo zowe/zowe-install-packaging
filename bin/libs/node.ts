@@ -43,7 +43,10 @@ export function readConfigNodeHome(configList?: string, skipValidate?: boolean):
   const zoweConfig = config.getZoweConfig();
   if (zoweConfig && zoweConfig.node && zoweConfig.node.home) {
     if (!skipValidate) {
-      if (!validateNodeHome(zoweConfig.node.home, true)) {
+      let nodeCheckMin = config.getStartupCheckMode('nodeMin');
+      let nodeCheckMax = config.getStartupCheckMode('nodeMax');
+
+      if (!validateNodeHome(zoweConfig.node.home, nodeCheckMin.warnOnly || !nodeCheckMin.doCheck, nodeCheckMax.warnOnly || !nodeCheckMax.doCheck)) {
         return '';
       }
     }

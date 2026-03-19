@@ -29,7 +29,10 @@ export function readConfigJavaHome(configList?: string, skipValidate?: boolean):
   const zoweConfig = config.getZoweConfig();
   if (zoweConfig && zoweConfig.java && zoweConfig.java.home) {
     if (!skipValidate) {
-      if (!javaCI.validateJavaHome(zoweConfig.java.home, true)) {
+      let javaCheckMin = config.getStartupCheckMode('javaMin');
+      let javaCheckMax = config.getStartupCheckMode('javaMax');
+
+      if (!javaCI.validateJavaHome(zoweConfig.java.home, javaCheckMin.warnOnly || !javaCheckMin.doCheck, javaCheckMax.warnOnly || !javaCheckMax.doCheck)) {
         return '';
       }
     }

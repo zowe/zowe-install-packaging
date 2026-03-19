@@ -139,9 +139,9 @@ zowe:
       # ports: exit
       # zosmf: exit
       # javaMin: exit
-      # javaMax: warn
+      javaMax: warn
       # nodeMin: exit
-      # nodeMax: warn
+      nodeMax: warn
 
 
   # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
