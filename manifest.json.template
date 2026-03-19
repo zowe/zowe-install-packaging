@@ -62,27 +62,27 @@
     },
     "org.zowe.apiml.apiml-package": {
       "version": "3.5.11-PR-1903-SNAPSHOT",
-      "artifact": "apiml-*.zip"
+      "artifact": "apiml-package-3.5.11-PR-1903-20260319.140004-2.zip"
     },
     "org.zowe.apiml.api-catalog-package": {
       "version": "3.5.11-PR-1903-SNAPSHOT",
-      "artifact": "api-catalog-*.zip"
+      "artifact": "api-catalog-package-3.5.11-PR-1903-20260319.140004-2.zip"
     },
     "org.zowe.apiml.discovery-package": {
       "version": "3.5.11-PR-1903-SNAPSHOT",
-      "artifact": "discovery-*.zip"
+      "artifact": "discovery-package-3.5.11-PR-1903-20260319.140004-2.zip"
     },
     "org.zowe.apiml.gateway-package": {
       "version": "3.5.11-PR-1903-SNAPSHOT",
-      "artifact": "gateway-*.zip"
+      "artifact": "gateway-package-3.5.11-PR-1903-20260319.140004-2.zip"
     },
     "org.zowe.apiml.caching-service-package": {
       "version": "3.5.11-PR-1903-SNAPSHOT",
-      "artifact": "caching-service-*.zip"
+      "artifact": "caching-service-package-3.5.11-PR-1903-20260319.140004-2.zip"
     },
     "org.zowe.apiml.apiml-common-lib-package": {
       "version": "3.5.11-PR-1903-SNAPSHOT",
-      "artifact": "apiml-common-lib-*.zip"
+      "artifact": "apiml-common-lib-package-3.5.11-PR-1903-20260319.140004-2.zip"
     },
     "org.zowe.apiml.sdk.common-java-lib-package": {
       "version": "^2.0.0-SNAPSHOT",
@@ -91,11 +91,11 @@
     },
     "org.zowe.apiml.sdk.apiml-sample-extension-package": {
       "version": "3.5.11-PR-1903-SNAPSHOT",
-      "artifact": "apiml-sample-extension-*.zip"
+      "artifact": "apiml-sample-extension-package-3.5.11-PR-1903-20260319.140004-2.zip"
     },
     "org.zowe.apiml.zaas-package": {
       "version": "3.5.11-PR-1903-SNAPSHOT",
-      "artifact": "zaas-package-*.zip"
+      "artifact": "zaas-package-3.5.11-PR-1903-20260319.140004-2.zip"
     },
     "org.zowe.apiml.sdk.certificate-analyser": {
       "version": "^3.0.3-SNAPSHOT",
