@@ -17,14 +17,6 @@ import * as nodeCmd from './node/index';
 
 const COMMAND_NAME = 'zwe-validate-dependencies';
 
-function resolveQuitOnError(checkKey: string): boolean | undefined {
-  const ZOWE_CONFIG = config.getZoweConfig();
-  const startupChecks = ZOWE_CONFIG?.zowe?.launchScript?.startupChecks as any;
-  const level: string = (startupChecks?.[checkKey]) || (startupChecks?.default) || 'exit';
-  if (level === 'disabled') return undefined;
-  return level !== 'warn';
-}
-
 export function execute(): void {
   common.printFormattedInfo('ZWELS', COMMAND_NAME, 'Validating runtime dependencies...');
 
