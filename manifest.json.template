@@ -104,7 +104,7 @@
     },
     "org.zowe.getesm": {
       "version": "^3.0.0-V3.X-STAGING",
-      "artifact": "*.pax"
+      "artifact": "getesm-3.5.0-2026031158.pax"
     },
     "org.zowe.bind-test": {
       "version": "^3.0.0-V3.X-STAGING",
