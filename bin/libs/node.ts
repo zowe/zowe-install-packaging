@@ -87,7 +87,7 @@ export function requireNode() {
 }
 
 export function validateNodeHome(nodeHome:string|undefined=std.getenv("NODE_HOME"),
-    warnOnly?: boolean): boolean {
+    warnOnlyMin?: boolean, warnOnlyMax?: boolean): boolean {
   if (!nodeHome) {
     common.printError("Cannot find node. Please define NODE_HOME environment variable.");
     return false;
@@ -118,8 +118,8 @@ export function validateNodeHome(nodeHome:string|undefined=std.getenv("NODE_HOME
 
       if (nodeMajorVersion < NODE_MIN_VERSION) {
         let msg = `Node ${version} is less than the minimum level required of v${NODE_MIN_VERSION}.`;
-        if (!warnOnly) {
-          msg += ` This check can be set to a warning via zowe.launchScript.startupChecks.node`;
+        if (!warnOnlyMin) {
+          msg += ` This check can be set to a warning via zowe.launchScript.startupChecks.nodeMin`;
           common.printError(msg);
           return false;
         } else {
@@ -128,8 +128,8 @@ export function validateNodeHome(nodeHome:string|undefined=std.getenv("NODE_HOME
       }
       if (nodeMajorVersion > NODE_MAX_VERSION) {
         let msg = `Node ${version} is greater than the maximum supported version of v${NODE_MAX_VERSION}.`;
-        if (!warnOnly) {
-          msg += ` This check can be set to a warning via zowe.launchScript.startupChecks.node`;
+        if (!warnOnlyMax) {
+          msg += ` This check can be set to a warning via zowe.launchScript.startupChecks.nodeMax`;
           common.printError(msg);
           return false;
         } else {

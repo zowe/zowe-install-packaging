@@ -16,7 +16,7 @@ import * as node from '../../../../libs/node';
 
 const COMMAND_NAME = 'zwe-validate-dependencies-node';
 
-export function execute(quitOnError: boolean = true): void {
+export function execute(quitOnErrorMin: boolean = true, quitOnErrorMax: boolean = true): boolean {
   common.requireZoweYaml();
 
   const ZOWE_CONFIG = config.getZoweConfig();
@@ -27,23 +27,24 @@ export function execute(quitOnError: boolean = true): void {
 
   node.requireNode();
 
-  const result = node.validateNodeHome(undefined, !quitOnError);
+  const result = node.validateNodeHome(undefined, !quitOnErrorMin, !quitOnErrorMax);
   if (!result) {
-    const baseMsg = `Node.js version validation failed. Ensure Node.js >= ${node.NODE_MIN_VERSION} and <= ${node.NODE_MAX_VERSION} is installed.`;
+    const baseMsg = `Node.js version validation failed. Ensure Node.js >= ${node.NODE_MIN_VERSION} and <= ${node.NODE_MAX_VERSION} is used wth Zowe.`;
     let msg: string;
     if (appServerEnabled) {
       msg = `${baseMsg} Node.js is required for app-server functionality.`;
     } else {
       msg = `${baseMsg} Note: app-server is not enabled, so Node.js may not be required. ` +
-        `If Node.js is not needed, set 'zowe.launchScript.startupChecks.node' to 'warn' or 'disabled' in your zowe.yaml to bypass this error.`;
+        `If Node.js is not needed, set 'zowe.launchScript.startupChecks.nodeMin' and 'zowe.launchScript.startupChecks.nodeMax' to 'warn' or 'disabled' in your zowe.yaml to bypass this error.`;
     }
-    if (quitOnError) {
-      common.printFormattedError('ZWELS', COMMAND_NAME, `ZWEL0361E: ${msg}`);
+    common.printFormattedError('ZWELS', COMMAND_NAME, `ZWEL0361E: ${msg}`);
+    if (quitOnErrorMin || quitOnErrorMax) {
       std.exit(1);
     } else {
-      common.printFormattedWarn('ZWELS', COMMAND_NAME, `ZWEL0361W: ${msg}`);
+      return false;
     }
   } else {
     common.printFormattedInfo('ZWELS', COMMAND_NAME, 'Node.js dependency check passed.');
+    return true;
   }
 }

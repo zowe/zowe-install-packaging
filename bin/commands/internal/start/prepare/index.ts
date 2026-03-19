@@ -169,9 +169,10 @@ function globalValidate(enabledComponents:string[]): void {
     // only do these check when it's not running in container
 
     if (enabledComponents.includes('app-server')) {
-      let nodeCheck = getStartupCheckMode('node');
-      if (nodeCheck.doCheck) {
-        let nodeOk = node.validateNodeHome(undefined, nodeCheck.warnOnly);
+      let nodeCheckMin = getStartupCheckMode('nodeMin');
+      let nodeCheckMax = getStartupCheckMode('nodeMax');
+      if (nodeCheckMin.doCheck || nodeCheckMax.doCheck) {
+        let nodeOk = node.validateNodeHome(undefined, nodeCheckMin.warnOnly || !nodeCheckMin.doCheck, nodeCheckMax.warnOnly || !nodeCheckMax.doCheck);
         if (!nodeOk) {
           privateErrors++;
           common.printFormattedError('ZWELS', "zwe-internal-start-prepare,global_validate", `Could not validate node home`);
@@ -182,9 +183,10 @@ function globalValidate(enabledComponents:string[]): void {
     // validate java for some core components
     //TODO this should be a manifest parameter that you require java, not a hardcoded list. What if extensions require it?
     if (enabledComponents.includes('apiml') || enabledComponents.includes('gateway') || enabledComponents.includes('zaas') || enabledComponents.includes('discovery') || enabledComponents.includes('api-catalog') || enabledComponents.includes('caching-service')) {
-      let javaCheck = getStartupCheckMode('java');
-      if (javaCheck.doCheck) {
-        let javaOk = javaCI.validateJavaHome(undefined, javaCheck.warnOnly);
+      let javaCheckMin = getStartupCheckMode('javaMin');
+      let javaCheckMax = getStartupCheckMode('javaMax');
+      if (javaCheckMin.doCheck || javaCheckMax.doCheck) {
+        let javaOk = javaCI.validateJavaHome(undefined, javaCheckMin.warnOnly || !javaCheckMin.doCheck, javaCheckMax.warnOnly || !javaCheckMax.doCheck);
         if (!javaOk) {
           privateErrors++;
           common.printFormattedError('ZWELS', "zwe-internal-start-prepare,global_validate", `Could not validate java home`);

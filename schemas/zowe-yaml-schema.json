@@ -735,16 +735,28 @@
                   "description": "Checks z/OSMF to see if it is running and meet's Zowe's requirements",
                   "enum": ["exit", "warn", "disabled"]
                 },
-                "java": {
+                "javaMin": {
                   "type": "string",
                   "default": "exit",
-                  "description": "Checks that the Java runtime version is within the supported range (>= 17 and <= 21). Defaults to zowe.launchScript.startupChecks.default, or 'exit' if unset.",
+                  "description": "Checks that the Java runtime version meets the minimum required version. Defaults to zowe.launchScript.startupChecks.default, or 'exit' if unset.",
                   "enum": ["exit", "warn", "disabled"]
                 },
-                "node": {
+                "javaMax": {
+                  "type": "string",
+                  "default": "warn",
+                  "description": "Checks that the Java runtime version does not exceed the maximum supported version. Defaults to zowe.launchScript.startupChecks.default, or 'warn' if unset.",
+                  "enum": ["exit", "warn", "disabled"]
+                },
+                "nodeMin": {
                   "type": "string",
                   "default": "exit",
-                  "description": "Checks that the Node.js runtime version is within the supported range (>= 18 and <= 24). Defaults to zowe.launchScript.startupChecks.default, or 'exit' if unset.",
+                  "description": "Checks that the Node runtime version meets the minimum required version. Defaults to zowe.launchScript.startupChecks.default, or 'exit' if unset.",
+                  "enum": ["exit", "warn", "disabled"]
+                },
+                "nodeMax": {
+                  "type": "string",
+                  "default": "warn",
+                  "description": "Checks that the Node runtime version does not exceed the maximum supported version. Defaults to zowe.launchScript.startupChecks.default, or 'warn' if unset.",
                   "enum": ["exit", "warn", "disabled"]
                 }
               }

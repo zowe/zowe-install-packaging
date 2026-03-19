@@ -19,7 +19,7 @@ const COMMAND_NAME = 'zwe-validate-dependencies-java';
 
 const JAVA_DEPENDENT_COMPONENTS = ['apiml', 'gateway', 'discovery', 'zaas', 'api-catalog', 'caching-service'];
 
-export function execute(quitOnError: boolean = true): void {
+export function execute(quitOnErrorMin: boolean = true, quitOnErrorMax: boolean = true): boolean {
   common.requireZoweYaml();
 
   const ZOWE_CONFIG = config.getZoweConfig();
@@ -32,21 +32,21 @@ export function execute(quitOnError: boolean = true): void {
 
   java.requireJava();
 
-  const result = javaCI.validateJavaHome(undefined, !quitOnError);
+  const result = javaCI.validateJavaHome(undefined, !quitOnErrorMin, !quitOnErrorMax);
   if (!result) {
-    const baseMsg = `Java version validation failed. Ensure Java >= ${javaCI.JAVA_MIN_VERSION} and <= ${javaCI.JAVA_MAX_VERSION} is installed.`;
+    const baseMsg = `Java version validation failed. Ensure Java >= ${javaCI.JAVA_MIN_VERSION} and <= ${javaCI.JAVA_MAX_VERSION} is used with Zowe.`;
     let msg: string = baseMsg;
     if (enabledJavaComponents.length > 0) {
       msg = `${baseMsg} Java is required for the following enabled component(s): ${enabledJavaComponents.join(', ')}.`;
     } else {
       msg = `${baseMsg} Note: none of the Java-dependent components (${JAVA_DEPENDENT_COMPONENTS.join(', ')}) are currently enabled, so Java may not be required. ` +
-        `If Java is not needed, set 'zowe.launchScript.startupChecks.java' to 'warn' or 'disabled' in your zowe.yaml to bypass this error.`;
+        `If Java is not needed, set 'zowe.launchScript.startupChecks.javaMin' and 'zowe.launchScript.startupChecks.javaMax' to 'warn' or 'disabled' in your zowe.yaml to bypass this error.`;
     }
-    if (quitOnError) {
-      common.printFormattedError('ZWELS', COMMAND_NAME, `ZWEL0360E: ${msg}`);
+    common.printFormattedError('ZWELS', COMMAND_NAME, `ZWEL0360E: ${msg}`);
+    if (quitOnErrorMin || quitOnErrorMax) {
       std.exit(1);
     } else {
-      common.printFormattedWarn('ZWELS', COMMAND_NAME, `ZWEL0360W: ${msg}`);
+      return false;
     }
   } else {
     if (enabledJavaComponents.length > 0) {
@@ -54,5 +54,6 @@ export function execute(quitOnError: boolean = true): void {
     } else {
       common.printFormattedInfo('ZWELS', COMMAND_NAME, 'Java dependency check passed.');
     }
+    return true;
   }
 }
