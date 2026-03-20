@@ -348,7 +348,7 @@ else
 
   # Check if user is UID 0, this is not recommended
   if [ "$(id -u)" = "0" ]; then
-    print_formatted_error "ZWELS" "zwe-internal-start-prepare:${LINENO}" "$(id -nu) running as UID 0. Such a setting is strongly discouraged."
+    print_formatted_error "ZWELS" "zwe-internal-start-prepare:${LINENO}" "Running as UID 0. Such a setting is strongly discouraged."
   fi
 
   # init ZWE_RUN_IN_CONTAINER variable
