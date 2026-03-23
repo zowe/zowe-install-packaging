@@ -131,7 +131,7 @@ ACF
 * Remove permit to use SITE owned certificate's private key
   SET RESOURCE(FAC)
   RECKEY IRR DEL(DIGTCERT.GENCERT ROLE(&STCGRP) +
-  SERVICE(CONTROL) ALLOW)
+  SERVICE(UPDATE) ALLOW)
 
 * Remove permit to read keyring ....................................*/
   RECKEY IRR DEL(DIGTCERT.LISTRING ROLE(&STCGRP) +
@@ -161,7 +161,7 @@ $$
 //TSS      DD DATA,DLM=$$,SYMBOLS=JCLONLY
 
 /* Remove permit to use SITE owned certificate's private key */
-   TSS REVOKE(&ZOWEUSER.) IBMFAC(IRR.DIGTCERT.GENCERT) ACCESS(CONTROL)
+   TSS REVOKE(&ZOWEUSER.) IBMFAC(IRR.DIGTCERT.GENCERT) ACCESS(UPDATE)
 
 /* Remove permit to read keyring ................................... */
    TSS REVOKE(&ZOWEUSER.) IBMFAC(IRR.DIGTCERT.LISTRING) ACCESS(READ)
