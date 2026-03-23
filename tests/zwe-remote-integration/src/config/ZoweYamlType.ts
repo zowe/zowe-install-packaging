@@ -869,7 +869,7 @@ const zoweSchema = zoweYamlSchema as {
                   description: 'Checks the port for each enabled component to ensure Zowe can bind to it and that it is not already occupied by some other program';
                   enum: ['exit', 'warn', 'disabled'];
                 };
-                ports: {
+                certificate: {
                   type: 'string';
                   default: 'exit';
                   description: 'Checks properties of certificates to verify that they are valid for use by Zowe';
