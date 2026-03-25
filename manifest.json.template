@@ -16,8 +16,8 @@
       "artifact": "zowe-server-*.pax.Z"
     },
     "org.zowe.zlux.zlux-core": {
-      "version": "3.5.0-BUGFIX-FIX-DESKTOP-HREF-NAVIGATION-POPUP1-ZLUX-CORE",
-      "artifact": "zlux-core-3.5.0-20260320.151457.pax"
+      "version": "3.5.0-1547-v3.x-staging-zlux-build",
+      "artifact": "zlux-core-3.5.0-20260325.113141.pax"
     },
     "org.zowe.zlux.sample-angular-app": {
       "version": "^3.0.0-V3.X-STAGING",
