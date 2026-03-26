@@ -1750,8 +1750,7 @@ exports[`zwe-install (SHORT) zwe install invalid dataset name 1`] = `
       },
       "components": {
         "apiml": {
-          "enabled": true,
-          "debug": false
+          "enabled": true
         },
         "gateway": {
           "enabled": true,
