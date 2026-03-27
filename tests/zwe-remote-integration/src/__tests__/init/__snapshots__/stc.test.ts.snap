@@ -1045,17 +1045,17 @@ exports[`init-stc (SHORT) invalid stc configurations 3`] = `
     validate status = 4
     Validity Exceptions:
     Validity Exceptions(s) with object at
-      Validity Exceptions(s) with object at /zowe
-        Validity Exceptions(s) with object at /zowe/setup
-          Validity Exceptions(s) with object at /zowe/setup/security
-            Validity Exceptions(s) with object at /zowe/setup/security/stcs
-              Schema at '/zowe/setup/security/stcs/aux' invalid
-                not oneOf schemas at '/zowe/setup/security/stcs/aux' are valid, 0 are
-                  Validity Exceptions(s) with string at /zowe/setup/security/stcs/aux
-                    string too long (len=10) 'TOOLONGTOO' 10 > MAX=8 at /zowe/setup/security/stcs/aux
-                    string pattern match fail s='TOOLONGTOO', pat='^([A-Z\\$\\#\\@]){1}([A-Z0-9\\$\\#\\@]){0,7}$', at /zowe/setup/security/stcs/aux
-                  Validity Exceptions(s) with string at /zowe/setup/security/stcs/aux
-                    string too long (len=10) 'TOOLONGTOO' 10 > MAX=0 at /zowe/setup/security/stcs/aux"
+      Validity Exceptions(s) with object at zowe
+        Validity Exceptions(s) with object at zowe.setup
+          Validity Exceptions(s) with object at zowe.setup.security
+            Validity Exceptions(s) with object at zowe.setup.security.stcs
+              Schema at 'zowe.setup.security.stcs.aux' invalid
+                not oneOf schemas at 'zowe.setup.security.stcs.aux' are valid, 0 are
+                  Validity Exceptions(s) with string at zowe.setup.security.stcs.aux
+                    string too long (len=10) 'TOOLONGTOO' 10 > MAX=8 at zowe.setup.security.stcs.aux
+                    string pattern match fail s='TOOLONGTOO', pat='^([A-Z\\$\\#\\@]){1}([A-Z0-9\\$\\#\\@]){0,7}$', at zowe.setup.security.stcs.aux
+                  Validity Exceptions(s) with string at zowe.setup.security.stcs.aux
+                    string too long (len=10) 'TOOLONGTOO' 10 > MAX=0 at zowe.setup.security.stcs.aux"
 `;
 
 exports[`init-stc (SHORT) invalid stc configurations 4`] = `
@@ -1260,17 +1260,17 @@ exports[`init-stc (SHORT) invalid stc configurations 4`] = `
     validate status = 4
     Validity Exceptions:
     Validity Exceptions(s) with object at
-      Validity Exceptions(s) with object at /zowe
-        Validity Exceptions(s) with object at /zowe/setup
-          Validity Exceptions(s) with object at /zowe/setup/security
-            Validity Exceptions(s) with object at /zowe/setup/security/stcs
-              Schema at '/zowe/setup/security/stcs/aux' invalid
-                not oneOf schemas at '/zowe/setup/security/stcs/aux' are valid, 0 are
-                  Validity Exceptions(s) with string at /zowe/setup/security/stcs/aux
-                    string too long (len=10) 'TOOLONGTOO' 10 > MAX=8 at /zowe/setup/security/stcs/aux
-                    string pattern match fail s='TOOLONGTOO', pat='^([A-Z\\$\\#\\@]){1}([A-Z0-9\\$\\#\\@]){0,7}$', at /zowe/setup/security/stcs/aux
-                  Validity Exceptions(s) with string at /zowe/setup/security/stcs/aux
-                    string too long (len=10) 'TOOLONGTOO' 10 > MAX=0 at /zowe/setup/security/stcs/aux"
+      Validity Exceptions(s) with object at zowe
+        Validity Exceptions(s) with object at zowe.setup
+          Validity Exceptions(s) with object at zowe.setup.security
+            Validity Exceptions(s) with object at zowe.setup.security.stcs
+              Schema at 'zowe.setup.security.stcs.aux' invalid
+                not oneOf schemas at 'zowe.setup.security.stcs.aux' are valid, 0 are
+                  Validity Exceptions(s) with string at zowe.setup.security.stcs.aux
+                    string too long (len=10) 'TOOLONGTOO' 10 > MAX=8 at zowe.setup.security.stcs.aux
+                    string pattern match fail s='TOOLONGTOO', pat='^([A-Z\\$\\#\\@]){1}([A-Z0-9\\$\\#\\@]){0,7}$', at zowe.setup.security.stcs.aux
+                  Validity Exceptions(s) with string at zowe.setup.security.stcs.aux
+                    string too long (len=10) 'TOOLONGTOO' 10 > MAX=0 at zowe.setup.security.stcs.aux"
 `;
 
 exports[`init-stc (SHORT) invalid stc configurations 5`] = `
@@ -1475,17 +1475,17 @@ exports[`init-stc (SHORT) invalid stc configurations 5`] = `
     validate status = 4
     Validity Exceptions:
     Validity Exceptions(s) with object at
-      Validity Exceptions(s) with object at /zowe
-        Validity Exceptions(s) with object at /zowe/setup
-          Validity Exceptions(s) with object at /zowe/setup/security
-            Validity Exceptions(s) with object at /zowe/setup/security/stcs
-              Schema at '/zowe/setup/security/stcs/aux' invalid
-                not oneOf schemas at '/zowe/setup/security/stcs/aux' are valid, 0 are
-                  Validity Exceptions(s) with string at /zowe/setup/security/stcs/aux
-                    string too long (len=10) 'TOOLONGTOO' 10 > MAX=8 at /zowe/setup/security/stcs/aux
-                    string pattern match fail s='TOOLONGTOO', pat='^([A-Z\\$\\#\\@]){1}([A-Z0-9\\$\\#\\@]){0,7}$', at /zowe/setup/security/stcs/aux
-                  Validity Exceptions(s) with string at /zowe/setup/security/stcs/aux
-                    string too long (len=10) 'TOOLONGTOO' 10 > MAX=0 at /zowe/setup/security/stcs/aux"
+      Validity Exceptions(s) with object at zowe
+        Validity Exceptions(s) with object at zowe.setup
+          Validity Exceptions(s) with object at zowe.setup.security
+            Validity Exceptions(s) with object at zowe.setup.security.stcs
+              Schema at 'zowe.setup.security.stcs.aux' invalid
+                not oneOf schemas at 'zowe.setup.security.stcs.aux' are valid, 0 are
+                  Validity Exceptions(s) with string at zowe.setup.security.stcs.aux
+                    string too long (len=10) 'TOOLONGTOO' 10 > MAX=8 at zowe.setup.security.stcs.aux
+                    string pattern match fail s='TOOLONGTOO', pat='^([A-Z\\$\\#\\@]){1}([A-Z0-9\\$\\#\\@]){0,7}$', at zowe.setup.security.stcs.aux
+                  Validity Exceptions(s) with string at zowe.setup.security.stcs.aux
+                    string too long (len=10) 'TOOLONGTOO' 10 > MAX=0 at zowe.setup.security.stcs.aux"
 `;
 
 exports[`init-stc (SHORT) invalid stc configurations 6`] = `
@@ -1691,17 +1691,17 @@ exports[`init-stc (SHORT) invalid stc configurations 6`] = `
     validate status = 4
     Validity Exceptions:
     Validity Exceptions(s) with object at
-      Validity Exceptions(s) with object at /zowe
-        Validity Exceptions(s) with object at /zowe/setup
-          Validity Exceptions(s) with object at /zowe/setup/security
-            Validity Exceptions(s) with object at /zowe/setup/security/stcs
-              Schema at '/zowe/setup/security/stcs/aux' invalid
-                not oneOf schemas at '/zowe/setup/security/stcs/aux' are valid, 0 are
-                  Validity Exceptions(s) with string at /zowe/setup/security/stcs/aux
-                    string too long (len=10) 'TOOLONGTOO' 10 > MAX=8 at /zowe/setup/security/stcs/aux
-                    string pattern match fail s='TOOLONGTOO', pat='^([A-Z\\$\\#\\@]){1}([A-Z0-9\\$\\#\\@]){0,7}$', at /zowe/setup/security/stcs/aux
-                  Validity Exceptions(s) with string at /zowe/setup/security/stcs/aux
-                    string too long (len=10) 'TOOLONGTOO' 10 > MAX=0 at /zowe/setup/security/stcs/aux"
+      Validity Exceptions(s) with object at zowe
+        Validity Exceptions(s) with object at zowe.setup
+          Validity Exceptions(s) with object at zowe.setup.security
+            Validity Exceptions(s) with object at zowe.setup.security.stcs
+              Schema at 'zowe.setup.security.stcs.aux' invalid
+                not oneOf schemas at 'zowe.setup.security.stcs.aux' are valid, 0 are
+                  Validity Exceptions(s) with string at zowe.setup.security.stcs.aux
+                    string too long (len=10) 'TOOLONGTOO' 10 > MAX=8 at zowe.setup.security.stcs.aux
+                    string pattern match fail s='TOOLONGTOO', pat='^([A-Z\\$\\#\\@]){1}([A-Z0-9\\$\\#\\@]){0,7}$', at zowe.setup.security.stcs.aux
+                  Validity Exceptions(s) with string at zowe.setup.security.stcs.aux
+                    string too long (len=10) 'TOOLONGTOO' 10 > MAX=0 at zowe.setup.security.stcs.aux"
 `;
 
 exports[`init-stc (SHORT) invalid stc configurations 7`] = `
@@ -1907,17 +1907,17 @@ exports[`init-stc (SHORT) invalid stc configurations 7`] = `
     validate status = 4
     Validity Exceptions:
     Validity Exceptions(s) with object at
-      Validity Exceptions(s) with object at /zowe
-        Validity Exceptions(s) with object at /zowe/setup
-          Validity Exceptions(s) with object at /zowe/setup/security
-            Validity Exceptions(s) with object at /zowe/setup/security/stcs
-              Schema at '/zowe/setup/security/stcs/aux' invalid
-                not oneOf schemas at '/zowe/setup/security/stcs/aux' are valid, 0 are
-                  Validity Exceptions(s) with string at /zowe/setup/security/stcs/aux
-                    string too long (len=10) 'TOOLONGTOO' 10 > MAX=8 at /zowe/setup/security/stcs/aux
-                    string pattern match fail s='TOOLONGTOO', pat='^([A-Z\\$\\#\\@]){1}([A-Z0-9\\$\\#\\@]){0,7}$', at /zowe/setup/security/stcs/aux
-                  Validity Exceptions(s) with string at /zowe/setup/security/stcs/aux
-                    string too long (len=10) 'TOOLONGTOO' 10 > MAX=0 at /zowe/setup/security/stcs/aux"
+      Validity Exceptions(s) with object at zowe
+        Validity Exceptions(s) with object at zowe.setup
+          Validity Exceptions(s) with object at zowe.setup.security
+            Validity Exceptions(s) with object at zowe.setup.security.stcs
+              Schema at 'zowe.setup.security.stcs.aux' invalid
+                not oneOf schemas at 'zowe.setup.security.stcs.aux' are valid, 0 are
+                  Validity Exceptions(s) with string at zowe.setup.security.stcs.aux
+                    string too long (len=10) 'TOOLONGTOO' 10 > MAX=8 at zowe.setup.security.stcs.aux
+                    string pattern match fail s='TOOLONGTOO', pat='^([A-Z\\$\\#\\@]){1}([A-Z0-9\\$\\#\\@]){0,7}$', at zowe.setup.security.stcs.aux
+                  Validity Exceptions(s) with string at zowe.setup.security.stcs.aux
+                    string too long (len=10) 'TOOLONGTOO' 10 > MAX=0 at zowe.setup.security.stcs.aux"
 `;
 
 exports[`init-stc (SHORT) valid config empty proclib 1`] = `
@@ -2226,15 +2226,15 @@ exports[`init-stc (SHORT) wrong proclib 3`] = `
     validate status = 4
     Validity Exceptions:
     Validity Exceptions(s) with object at
-      Validity Exceptions(s) with object at /zowe
-        Validity Exceptions(s) with object at /zowe/setup
-          Validity Exceptions(s) with object at /zowe/setup/dataset
-            Schema at '/zowe/setup/dataset/proclib' invalid
-              not oneOf schemas at '/zowe/setup/dataset/proclib' are valid, 0 are
-                Validity Exceptions(s) with string at /zowe/setup/dataset/proclib
-                  string pattern match fail s='INVALID.PROCLIB.DEFINITION1', pat='^([A-Z\\$\\#\\@]){1}([A-Z0-9\\$\\#\\@\\-]){0,7}(\\.([A-Z\\$\\#\\@]){1}([A-Z0-9\\$\\#\\@\\-]){0,7}){0,11}$', at /zowe/setup/dataset/proclib
-                Validity Exceptions(s) with string at /zowe/setup/dataset/proclib
-                  string too long (len=27) 'INVALID.PROCLIB.DEFINITION1' 27 > MAX=0 at /zowe/setup/dataset/proclib"
+      Validity Exceptions(s) with object at zowe
+        Validity Exceptions(s) with object at zowe.setup
+          Validity Exceptions(s) with object at zowe.setup.dataset
+            Schema at 'zowe.setup.dataset.proclib' invalid
+              not oneOf schemas at 'zowe.setup.dataset.proclib' are valid, 0 are
+                Validity Exceptions(s) with string at zowe.setup.dataset.proclib
+                  string pattern match fail s='INVALID.PROCLIB.DEFINITION1', pat='^([A-Z\\$\\#\\@]){1}([A-Z0-9\\$\\#\\@\\-]){0,7}(\\.([A-Z\\$\\#\\@]){1}([A-Z0-9\\$\\#\\@\\-]){0,7}){0,11}$', at zowe.setup.dataset.proclib
+                Validity Exceptions(s) with string at zowe.setup.dataset.proclib
+                  string too long (len=27) 'INVALID.PROCLIB.DEFINITION1' 27 > MAX=0 at zowe.setup.dataset.proclib"
 `;
 
 exports[`init-stc (SHORT) zis stc exists 1`] = `
