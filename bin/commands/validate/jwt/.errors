@@ -1,0 +1,3 @@
+ZWEL0180E|180|z/OSMF JWK endpoint pre-flight check failed. The endpoint may not be reachable or the certificate configuration may be incorrect.
+ZWEL0181E|181|Auth provider is "%s", not "zosmf". JWK endpoint validation is only applicable when using zosmf as the auth provider.
+ZWEL0182E|182|jwtAutoconfiguration is "ltpa". The z/OSMF JWK endpoint may not be available. Consider switching to "jwt" mode.

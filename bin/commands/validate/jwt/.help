@@ -1,0 +1,15 @@
+Validates z/OSMF JWK endpoint connectivity as a pre-flight check before starting Zowe.
+
+This command reads the Zowe YAML configuration to determine the z/OSMF host, port,
+authentication provider, JWT autoconfiguration mode, and certificate verification
+settings. It then invokes the pre-flight-check tool to verify that the z/OSMF JWK
+endpoint at /jwt/ibm/api/zOSMFBuilder/jwk is reachable.
+
+Pre-validation checks performed before calling the JWK endpoint:
+- Verifies the gateway auth provider is "zosmf" (skips if "saf")
+- Verifies jwtAutoconfiguration is "jwt" (warns if "ltpa")
+- Reads verifyCertificates and passes it to the pre-flight check
+- Resolves truststore path from the Zowe certificate configuration
+
+A successful result means the z/OSMF JWK endpoint is reachable and will be
+available when Zowe API ML starts.
