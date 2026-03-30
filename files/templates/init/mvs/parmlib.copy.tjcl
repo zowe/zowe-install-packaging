@@ -1,0 +1,12 @@
+//*********************************************************************
+//*
+//* Copies the parmlib member 
+//*
+//*********************************************************************
+//PARMCOPY EXEC PGM=IKJEFT01
+//SYSTSPRT DD SYSOUT=A
+//SYSTSIN  DD *
+REPRO +
+  INDATASET('${this.zowe.setup.dataset.prefix}.SZWESAMP(ZWESIP00)') +
+  OUTDATASET('${this.zowe.setup.dataset.parmlib}(${this.zowe.setup.dataset.parmlibMembers.zis})')
+/*

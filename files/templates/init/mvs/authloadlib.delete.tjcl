@@ -1,0 +1,13 @@
+//*********************************************************************
+//*
+//* Deletes the data set members from authorized load library
+//*
+//*********************************************************************
+//AUTHCOPY EXEC PGM=IKJEFT01                          
+//SYSTSPRT DD SYSOUT=A                              
+//SYSTSIN  DD * 
+DELETE '${this.zowe.setup.dataset.authLoadlib}(ZWELNCH)'
+DELETE '${this.zowe.setup.dataset.authLoadlib}(ZWESAUX)'
+DELETE '${this.zowe.setup.dataset.authLoadlib}(ZWESISDL)'
+DELETE '${this.zowe.setup.dataset.authLoadlib}(ZWESIS01)'
+/*

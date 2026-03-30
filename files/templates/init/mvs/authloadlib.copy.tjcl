@@ -1,0 +1,21 @@
+//*********************************************************************
+//*
+//* Copies the data set members to authorized load library
+//*
+//*********************************************************************
+//AUTHCOPY EXEC PGM=IKJEFT01
+//SYSTSPRT DD SYSOUT=A
+//SYSTSIN  DD *
+REPRO +
+  INDATASET('${this.zowe.setup.dataset.prefix}.SZWEAUTH(ZWELNCH)') +
+  OUTDATASET('${this.zowe.setup.dataset.authLoadlib}(ZWELNCH)')
+REPRO +
+  INDATASET('${this.zowe.setup.dataset.prefix}.SZWEAUTH(ZWESAUX)') +
+  OUTDATASET('${this.zowe.setup.dataset.authLoadlib}(ZWESAUX)')
+REPRO +
+  INDATASET('${this.zowe.setup.dataset.prefix}.SZWEAUTH(ZWESISDL)') +
+  OUTDATASET('${this.zowe.setup.dataset.authLoadlib}(ZWESISDL)')
+REPRO +
+  INDATASET('${this.zowe.setup.dataset.prefix}.SZWEAUTH(ZWESIS01)') +
+  OUTDATASET('${this.zowe.setup.dataset.authLoadlib}(ZWESIS01)')
+/*

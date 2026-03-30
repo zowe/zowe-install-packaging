@@ -1,0 +1,12 @@
+//*********************************************************************
+//*
+//* Allocates the data set for authorized load library
+//*
+//*********************************************************************
+//AUTHALOC EXEC PGM=IKJEFT01
+//SYSTSPRT DD SYSOUT=A
+//SYSTSIN  DD *
+ALLOC NEW DA('${this.zowe.setup.dataset.authLoadlib}') +
+  dsntype(library) dsorg(po) recfm(u) lrecl(0) +
+  blksize(32760) unit(sysallda) space(30,15) tracks
+/*

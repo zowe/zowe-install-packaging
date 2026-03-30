@@ -1,0 +1,12 @@
+//*********************************************************************
+//*
+//* Allocates the data set for parmlib member 
+//*
+//*********************************************************************
+//PARMALOC EXEC PGM=IKJEFT01
+//SYSTSPRT DD SYSOUT=A
+//SYSTSIN  DD *
+ALLOC NEW DA('${this.zowe.setup.dataset.parmlib}') +
+  dsntype(library) dsorg(po) recfm(f b) lrecl(80) +
+  unit(sysallda) space(15,15) tracks
+/*

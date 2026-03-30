@@ -10,12 +10,15 @@
 */
 
 import * as std from 'cm_std';
+import * as xplatform from 'xplatform';
+
 import * as zoslib from '../../../libs/zos';
 import * as zosJes from '../../../libs/zos-jes';
 import * as zosdataset from '../../../libs/zos-dataset';
 import * as common from '../../../libs/common';
 import * as config from '../../../libs/config';
 import * as initGenerate from '../generate/index';
+import * as template from '../../../libs/template';
 
 export function execute(allowOverwrite?: boolean) {
   common.printLevel1Message(`Initialize Zowe custom data sets`);
@@ -46,73 +49,79 @@ export function execute(allowOverwrite?: boolean) {
 
   common.printMessage(`Create data sets if they do not exist`);
 
-  // If authLoadlib is not defined, we'll use "zowe.setup.dataset.prefix.SZWEAUTH"
-  // This dataset will be kept (allow-overwrite has no effect)
-  const authLoadlibDefaults = `${prefix}.SZWEAUTH`
-  const authLoadlibConfig = ZOWE_CONFIG.zowe.setup?.dataset ? ZOWE_CONFIG.zowe.setup.dataset.authLoadlib : undefined;
-  let authPluginLib = ZOWE_CONFIG.zowe.setup?.dataset ? ZOWE_CONFIG.zowe.setup.dataset.authPluginLib : undefined;
-  // If authPluginLib defined, it must be different from defaults and authLoadlib
-  if (authPluginLib) {
-    if (authPluginLib == authLoadlibDefaults || authPluginLib == authLoadlibConfig) {
-      authPluginLib = undefined;
-    }
-  }
-
-  let actions = {
-    parmlib: {
-      ds: parmlib,
-      jclSuffix: '',
-      exist: false, create: false, delete: false
-    },
-    authloadlib: {
-      ds: authLoadlibDefaults == authLoadlibConfig ? undefined : authLoadlibConfig,
-      jclSuffix: '2',
-      exist: false, create: false, delete: false
-    },
-    authpluginlib: {
-      ds: authPluginLib,
-      jclSuffix: '1',
-      exist: false, create: false, delete: false
-    }
-  }
-
-  let skipDatasets = false;
-  for (let a in actions) {
-    if (actions[a].ds) {
-      actions[a].exist = zosdataset.isDatasetExists(actions[a].ds);
-    }
-    actions[a].delete = actions[a].exist && allowOverwrite;
-    if (actions[a].delete) {
-      actions[a].create = true;
-      common.printMessage(`Warning ZWEL0300W: ${actions[a].ds} already exists. Members in this data set will be overwritten.`);
+  const runtime = std.getenv('ZWE_zowe_runtimeDirectory');
+  const pathTemplates = `${runtime}/files/templates`;
+  const pathTemplatesMvs = `${pathTemplates}/init/mvs`
+  const license = xplatform.loadFileUTF8(`${pathTemplates}/license.tjcl`, xplatform.AUTO_DETECT);
+  const sourceZWESIP = `${prefix}.SZWESAMP(ZWESIP00)`;
+  const targetZWESIP = `${parmlib}(${ZOWE_CONFIG.zowe.setup.dataset.parmlibMembers.zis})`; // parmlibMembers.zis - in defaults && regex len = 8, can't be empty or null
+  let mvsJCL = template.resolveString(`//ZWEMVS   JOB \${this.zowe.setup.jcl.header}\n`, ZOWE_CONFIG);
+  mvsJCL += license;
+  let submitParmlib = true;
+    
+  if (!zosdataset.isDatasetExists(ZOWE_CONFIG.zowe.setup.dataset.parmlib)) {
+    mvsJCL += template.resolveFile(`${pathTemplatesMvs}/parmlib.allocate.tjcl`, ZOWE_CONFIG);
+    mvsJCL += template.resolveFile(`${pathTemplatesMvs}/parmlib.copy.tjcl`, ZOWE_CONFIG);
+  } else {
+    if (sourceZWESIP == targetZWESIP) {
+      submitParmlib = false;
     } else {
-      if (actions[a].ds) {
-        if (actions[a].exist) {
-          common.printMessage(`Warning ZWEL0301W: ${actions[a].ds} already exists and will not be overwritten. For upgrades, you must use --allow-overwrite.`);
-          skipDatasets = true;
+      if (zosdataset.isDatasetExists(targetZWESIP)) {
+        if (allowOverwrite) {
+          mvsJCL += template.resolveFile(`${pathTemplatesMvs}/parmlib.delete.tjcl`, ZOWE_CONFIG);
+          mvsJCL += template.resolveFile(`${pathTemplatesMvs}/parmlib.copy.tjcl`, ZOWE_CONFIG);
+          common.printMessage(`Warning ZWEL0300W: ${targetZWESIP} already exists. Members in this data set will be overwritten.`);
         } else {
-          actions[a].create = true;
+          common.printMessage(`Warning ZWEL0301W: ${targetZWESIP} already exists and will not be overwritten. For upgrades, you must use --allow-overwrite.`);
+          submitParmlib = false;
         }
+      } else {
+        mvsJCL += template.resolveFile(`${pathTemplatesMvs}/parmlib.copy.tjcl`, ZOWE_CONFIG);
       }
     }
   }
 
-  if (skipDatasets) {
-    common.printMessage(`Skipped writing to a dataset. To write, you must use --allow-overwrite.`);
-    common.printLevel2Message(`Zowe custom data sets are initialized successfully.`);
-    std.exit(0);
+  const szweauth = ZOWE_CONFIG.zowe.setup.dataset.prefix + '.SZWEAUTH';
+  const authLoadlib = ZOWE_CONFIG.zowe.setup.dataset.authLoadlib;    
+  let submitAuthLoadlib = true;
+
+  if (authLoadlib) {
+    if (authLoadlib != szweauth) {
+      if (!zosdataset.isDatasetExists(authLoadlib)) {
+        mvsJCL += template.resolveFile(`${pathTemplatesMvs}/authloadlib.allocate.tjcl`, ZOWE_CONFIG);
+        mvsJCL += template.resolveFile(`${pathTemplatesMvs}/authloadlib.copy.tjcl`, ZOWE_CONFIG);
+      } else {
+        if (allowOverwrite) {
+          mvsJCL += template.resolveFile(`${pathTemplatesMvs}/authloadlib.delete.tjcl`, ZOWE_CONFIG);
+          mvsJCL += template.resolveFile(`${pathTemplatesMvs}/authloadlib.copy.tjcl`, ZOWE_CONFIG);
+          common.printMessage(`Warning ZWEL0300W: ${authLoadlib} already exists. Members in this data set will be overwritten.`);
+        } else {
+          common.printMessage(`Warning ZWEL0301W: ${authLoadlib} already exists and will not be overwritten. For upgrades, you must use --allow-overwrite.`);
+          submitParmlib = false;
+        }
+      }
+    } else { // Same as SZWEAUTH, no action
+      submitAuthLoadlib = false;    
+    }
+  } else { // If undefined, use SZWEAUTH => no action
+    submitAuthLoadlib = false;
   }
 
-  for (let a in actions) {
-    if (actions[a].delete) {
-      const jclJobName = `ZWERMVS${actions[a].jclSuffix}`
-      zosJes.printAndHandleJcl(`//'${jcllib}(${jclJobName})'`, jclJobName, jcllib, prefix);
+  let submitAuthPluginLib = true;
+
+  const authPluginLib = ZOWE_CONFIG.zowe.setup.dataset.authPluginLib;
+  if (authPluginLib) {
+    if (authPluginLib != szweauth && authPluginLib != authLoadlib) {
+      if (!zosdataset.isDatasetExists(authPluginLib)) {
+        mvsJCL += template.resolveFile(`${pathTemplatesMvs}/authpluginlib.allocate.tjcl`, ZOWE_CONFIG)
+      }
     }
-    if (actions[a].create) {
-      const jclJobName = `ZWEIMVS${actions[a].jclSuffix}`
-      zosJes.printAndHandleJcl(`//'${jcllib}(${jclJobName})'`, jclJobName, jcllib, prefix);
-    }
+  } else { // If undefined, use SZWEAUTH => no action
+    submitAuthPluginLib = false;
   }
+  
+  console.log(`PARM = ${submitParmlib}, AUTH = ${submitAuthLoadlib}, APPL = ${submitAuthPluginLib}`);
+  console.log(mvsJCL);
 
   common.printLevel2Message(`Zowe custom data sets are initialized successfully.`);
 }
