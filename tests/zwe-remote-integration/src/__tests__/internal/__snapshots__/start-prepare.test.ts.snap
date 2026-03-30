@@ -1,8 +1,7 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`start-prepare-tests (SHORT) default startupChecks behavior 1`] = `
-"ERROR:  TESTUSR0 ERROR (zwe-internal-start-prepare) Running as UID 0. Such a setting is strongly discouraged.
- TESTUSR0 INFO (zwe-internal-start-prepare) Zowe version: v0.0.0
+" TESTUSR0 INFO (zwe-internal-start-prepare) Zowe version: v0.0.0
  TESTUSR0 INFO (zwe-internal-start-prepare) build and hash: {BUILD_BRANCH}#{BUILD_NUMBER} ({BUILD_COMMIT_HASH})
  TESTUSR0 INFO (zwe-internal-start-prepare) z/OS Version: 0.0
  TESTUSR0 INFO (zwe-internal-start-prepare) ESM: ESMT
@@ -22,8 +21,7 @@ ERROR:  TESTUSR0 ERROR (zwe-internal-start-prepare,validate_components) Error ZW
 `;
 
 exports[`start-prepare-tests (SHORT) modulith disabled 1`] = `
-"ERROR:  TESTUSR0 ERROR (zwe-internal-start-prepare) Running as UID 0. Such a setting is strongly discouraged.
- TESTUSR0 INFO (zwe-internal-start-prepare) Zowe version: v0.0.0
+" TESTUSR0 INFO (zwe-internal-start-prepare) Zowe version: v0.0.0
  TESTUSR0 INFO (zwe-internal-start-prepare) build and hash: {BUILD_BRANCH}#{BUILD_NUMBER} ({BUILD_COMMIT_HASH})
  TESTUSR0 INFO (zwe-internal-start-prepare) z/OS Version: 0.0
  TESTUSR0 INFO (zwe-internal-start-prepare) ESM: ESMT
@@ -43,8 +41,7 @@ ERROR:  TESTUSR0 ERROR (zwe-internal-start-prepare,validate_components) Error ZW
 `;
 
 exports[`start-prepare-tests (SHORT) set startupChecks disabled 1`] = `
-"ERROR:  TESTUSR0 ERROR (zwe-internal-start-prepare) Running as UID 0. Such a setting is strongly discouraged.
- TESTUSR0 INFO (zwe-internal-start-prepare) Zowe version: v0.0.0
+" TESTUSR0 INFO (zwe-internal-start-prepare) Zowe version: v0.0.0
  TESTUSR0 INFO (zwe-internal-start-prepare) build and hash: {BUILD_BRANCH}#{BUILD_NUMBER} ({BUILD_COMMIT_HASH})
  TESTUSR0 INFO (zwe-internal-start-prepare) z/OS Version: 0.0
  TESTUSR0 INFO (zwe-internal-start-prepare) ESM: ESMT
@@ -61,8 +58,7 @@ ERROR:  TESTUSR0 ERROR (zwe-internal-start-prepare,validate_components) Error ZW
 `;
 
 exports[`start-prepare-tests (SHORT) set startupChecks warn 1`] = `
-"ERROR:  TESTUSR0 ERROR (zwe-internal-start-prepare) Running as UID 0. Such a setting is strongly discouraged.
- TESTUSR0 INFO (zwe-internal-start-prepare) Zowe version: v0.0.0
+" TESTUSR0 INFO (zwe-internal-start-prepare) Zowe version: v0.0.0
  TESTUSR0 INFO (zwe-internal-start-prepare) build and hash: {BUILD_BRANCH}#{BUILD_NUMBER} ({BUILD_COMMIT_HASH})
  TESTUSR0 INFO (zwe-internal-start-prepare) z/OS Version: 0.0
  TESTUSR0 INFO (zwe-internal-start-prepare) ESM: ESMT
@@ -82,8 +78,7 @@ ERROR:  TESTUSR0 ERROR (zwe-internal-start-prepare,validate_components) Error ZW
 `;
 
 exports[`start-prepare-tests (SHORT) test combinations of startup default and ports 1`] = `
-"ERROR:  TESTUSR0 ERROR (zwe-internal-start-prepare) Running as UID 0. Such a setting is strongly discouraged.
- TESTUSR0 INFO (zwe-internal-start-prepare) Zowe version: v0.0.0
+" TESTUSR0 INFO (zwe-internal-start-prepare) Zowe version: v0.0.0
  TESTUSR0 INFO (zwe-internal-start-prepare) build and hash: {BUILD_BRANCH}#{BUILD_NUMBER} ({BUILD_COMMIT_HASH})
  TESTUSR0 INFO (zwe-internal-start-prepare) z/OS Version: 0.0
  TESTUSR0 INFO (zwe-internal-start-prepare) ESM: ESMT
@@ -101,8 +96,7 @@ ERROR:  TESTUSR0 ERROR (zwe-internal-start-prepare,validate_components) Error ZW
 `;
 
 exports[`start-prepare-tests (SHORT) test combinations of startup default and ports 2`] = `
-"ERROR:  TESTUSR0 ERROR (zwe-internal-start-prepare) Running as UID 0. Such a setting is strongly discouraged.
- TESTUSR0 INFO (zwe-internal-start-prepare) Zowe version: v0.0.0
+" TESTUSR0 INFO (zwe-internal-start-prepare) Zowe version: v0.0.0
  TESTUSR0 INFO (zwe-internal-start-prepare) build and hash: {BUILD_BRANCH}#{BUILD_NUMBER} ({BUILD_COMMIT_HASH})
  TESTUSR0 INFO (zwe-internal-start-prepare) z/OS Version: 0.0
  TESTUSR0 INFO (zwe-internal-start-prepare) ESM: ESMT
@@ -120,8 +114,7 @@ ERROR:  TESTUSR0 ERROR (zwe-internal-start-prepare,validate_components) Error ZW
 `;
 
 exports[`start-prepare-tests (SHORT) test combinations of startup default and ports 3`] = `
-"ERROR:  TESTUSR0 ERROR (zwe-internal-start-prepare) Running as UID 0. Such a setting is strongly discouraged.
- TESTUSR0 INFO (zwe-internal-start-prepare) Zowe version: v0.0.0
+" TESTUSR0 INFO (zwe-internal-start-prepare) Zowe version: v0.0.0
  TESTUSR0 INFO (zwe-internal-start-prepare) build and hash: {BUILD_BRANCH}#{BUILD_NUMBER} ({BUILD_COMMIT_HASH})
  TESTUSR0 INFO (zwe-internal-start-prepare) z/OS Version: 0.0
  TESTUSR0 INFO (zwe-internal-start-prepare) ESM: ESMT
@@ -140,8 +133,7 @@ ERROR:  TESTUSR0 ERROR (zwe-internal-start-prepare,validate_components) Error ZW
 `;
 
 exports[`start-prepare-tests (SHORT) test combinations of startup default and ports 4`] = `
-"ERROR:  TESTUSR0 ERROR (zwe-internal-start-prepare) Running as UID 0. Such a setting is strongly discouraged.
- TESTUSR0 INFO (zwe-internal-start-prepare) Zowe version: v0.0.0
+" TESTUSR0 INFO (zwe-internal-start-prepare) Zowe version: v0.0.0
  TESTUSR0 INFO (zwe-internal-start-prepare) build and hash: {BUILD_BRANCH}#{BUILD_NUMBER} ({BUILD_COMMIT_HASH})
  TESTUSR0 INFO (zwe-internal-start-prepare) z/OS Version: 0.0
  TESTUSR0 INFO (zwe-internal-start-prepare) ESM: ESMT

@@ -43,13 +43,13 @@ Zowe will remove it on success, but if zwe exits with a non-zero code manual cle
   "parmlibMembers": {
     "zis": "ZWESIP00"
   },
-  "authPluginLib": "TEST.DATASET.PFX.ZWESAPL",
   "prefix": "TEST.DATASET.PFX",
   "proclib": "TEST.DATASET.PFX.TEST.PROCLIB",
   "parmlib": "TEST.DATASET.PFX.PARMLIB",
   "jcllib": "TEST.DATASET.PFX.JCLLIB",
   "loadlib": "TEST.DATASET.PFX.SZWEEXEC",
-  "authLoadlib": "TEST.DATASET.PFX.SZWEAUTH"
+  "authLoadlib": "TEST.DATASET.PFX.SZWEAUTH",
+  "authPluginLib": "TEST.DATASET.PFX.ZWESAPL"
 }"
 `;
 

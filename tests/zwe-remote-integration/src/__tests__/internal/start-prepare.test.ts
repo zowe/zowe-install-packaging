@@ -37,7 +37,7 @@ describe(`${testSuiteName}`, () => {
   });
   beforeEach(async () => {
     cfgYaml = ZoweConfig.getZoweYaml();
-    _.set(cfgYaml, 'zowe.launchScript.startupChecks.user', 'warn');
+    _.set(cfgYaml, 'zowe.launchScript.startupChecks.user', 'disabled');
     for (const component of Object.values(cfgYaml.components)) {
       if (component.port) {
         component.port = (Number(component.port) + 15000) % 65535;
@@ -105,7 +105,7 @@ describe(`${testSuiteName}`, () => {
         delete cfgYaml.zowe.network.server.tls;
         _.set(cfgYaml, 'node.home', REMOTE_SYSTEM_INFO.zosNodeHome);
         _.set(cfgYaml, 'zowe.launchScript.startupChecks.zosmf', 'exit');
-        _.set(cfgYaml, 'zowe.launchScript.startupChecks.user', 'warn');
+        _.set(cfgYaml, 'zowe.launchScript.startupChecks.user', 'disabled');
         cfgYaml.zOSMF.port = Number(cfgYaml.zOSMF.port) + 1; // intentionally bad port: quit early and print z/osmf URL
 
         _.set(cfgYaml, 'components.apiml.enabled', test['aml.enabled']);
