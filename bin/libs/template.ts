@@ -37,7 +37,6 @@ export function resolveMember(dataset: string, data: any): string | undefined {
     const memberContent = zosDs.readMember(dataset);
     if (memberContent == undefined || memberContent == null) {
         return undefined;
-
     }
     return resolveString(memberContent, data);
 }
