@@ -55,73 +55,61 @@ export function execute(allowOverwrite?: boolean) {
   const license = xplatform.loadFileUTF8(`${pathTemplates}/license.tjcl`, xplatform.AUTO_DETECT);
   const sourceZWESIP = `${prefix}.SZWESAMP(ZWESIP00)`;
   const targetZWESIP = `${parmlib}(${ZOWE_CONFIG.zowe.setup.dataset.parmlibMembers.zis})`; // parmlibMembers.zis - in defaults && regex len = 8, can't be empty or null
-  let mvsJCL = template.resolveString(`//ZWEMVS   JOB \${this.zowe.setup.jcl.header}\n`, ZOWE_CONFIG);
-  mvsJCL += license;
-  let submitParmlib = true;
-    
+
+  let mvsJcl = template.resolveString(`//ZWEMVS   JOB \${this.zowe.setup.jcl.header}\n`, ZOWE_CONFIG);
+  mvsJcl += license;
+  let mvsJclParmlib = ''
+
   if (!zosdataset.isDatasetExists(ZOWE_CONFIG.zowe.setup.dataset.parmlib)) {
-    mvsJCL += template.resolveFile(`${pathTemplatesMvs}/parmlib.allocate.tjcl`, ZOWE_CONFIG);
-    mvsJCL += template.resolveFile(`${pathTemplatesMvs}/parmlib.copy.tjcl`, ZOWE_CONFIG);
+    mvsJclParmlib += template.resolveFile(`${pathTemplatesMvs}/parmlib.allocate.tjcl`, ZOWE_CONFIG);
+    mvsJclParmlib += template.resolveFile(`${pathTemplatesMvs}/parmlib.copy.tjcl`, ZOWE_CONFIG);
   } else {
-    if (sourceZWESIP == targetZWESIP) {
-      submitParmlib = false;
-    } else {
+    if (sourceZWESIP != targetZWESIP) {
       if (zosdataset.isDatasetExists(targetZWESIP)) {
         if (allowOverwrite) {
-          mvsJCL += template.resolveFile(`${pathTemplatesMvs}/parmlib.delete.tjcl`, ZOWE_CONFIG);
-          mvsJCL += template.resolveFile(`${pathTemplatesMvs}/parmlib.copy.tjcl`, ZOWE_CONFIG);
+          mvsJclParmlib += template.resolveFile(`${pathTemplatesMvs}/parmlib.delete.tjcl`, ZOWE_CONFIG);
+          mvsJclParmlib += template.resolveFile(`${pathTemplatesMvs}/parmlib.copy.tjcl`, ZOWE_CONFIG);
           common.printMessage(`Warning ZWEL0300W: ${targetZWESIP} already exists. Members in this data set will be overwritten.`);
         } else {
           common.printMessage(`Warning ZWEL0301W: ${targetZWESIP} already exists and will not be overwritten. For upgrades, you must use --allow-overwrite.`);
-          submitParmlib = false;
         }
-      } else {
-        mvsJCL += template.resolveFile(`${pathTemplatesMvs}/parmlib.copy.tjcl`, ZOWE_CONFIG);
       }
     }
   }
 
   const szweauth = ZOWE_CONFIG.zowe.setup.dataset.prefix + '.SZWEAUTH';
-  const authLoadlib = ZOWE_CONFIG.zowe.setup.dataset.authLoadlib;    
-  let submitAuthLoadlib = true;
+  const authLoadlib = ZOWE_CONFIG.zowe.setup.dataset.authLoadlib;
+  let mvsJclAuthLoadlib = '';
 
   if (authLoadlib) {
     if (authLoadlib != szweauth) {
       if (!zosdataset.isDatasetExists(authLoadlib)) {
-        mvsJCL += template.resolveFile(`${pathTemplatesMvs}/authloadlib.allocate.tjcl`, ZOWE_CONFIG);
-        mvsJCL += template.resolveFile(`${pathTemplatesMvs}/authloadlib.copy.tjcl`, ZOWE_CONFIG);
+        mvsJclAuthLoadlib += template.resolveFile(`${pathTemplatesMvs}/authloadlib.allocate.tjcl`, ZOWE_CONFIG);
+        mvsJclAuthLoadlib += template.resolveFile(`${pathTemplatesMvs}/authloadlib.copy.tjcl`, ZOWE_CONFIG);
       } else {
         if (allowOverwrite) {
-          mvsJCL += template.resolveFile(`${pathTemplatesMvs}/authloadlib.delete.tjcl`, ZOWE_CONFIG);
-          mvsJCL += template.resolveFile(`${pathTemplatesMvs}/authloadlib.copy.tjcl`, ZOWE_CONFIG);
+          mvsJclAuthLoadlib += template.resolveFile(`${pathTemplatesMvs}/authloadlib.delete.tjcl`, ZOWE_CONFIG);
+          mvsJclAuthLoadlib += template.resolveFile(`${pathTemplatesMvs}/authloadlib.copy.tjcl`, ZOWE_CONFIG);
           common.printMessage(`Warning ZWEL0300W: ${authLoadlib} already exists. Members in this data set will be overwritten.`);
         } else {
           common.printMessage(`Warning ZWEL0301W: ${authLoadlib} already exists and will not be overwritten. For upgrades, you must use --allow-overwrite.`);
-          submitParmlib = false;
         }
       }
-    } else { // Same as SZWEAUTH, no action
-      submitAuthLoadlib = false;    
     }
-  } else { // If undefined, use SZWEAUTH => no action
-    submitAuthLoadlib = false;
   }
 
-  let submitAuthPluginLib = true;
+  let mvsJclAuthPluginLib = '';
 
   const authPluginLib = ZOWE_CONFIG.zowe.setup.dataset.authPluginLib;
   if (authPluginLib) {
     if (authPluginLib != szweauth && authPluginLib != authLoadlib) {
       if (!zosdataset.isDatasetExists(authPluginLib)) {
-        mvsJCL += template.resolveFile(`${pathTemplatesMvs}/authpluginlib.allocate.tjcl`, ZOWE_CONFIG)
+        mvsJclAuthPluginLib += template.resolveFile(`${pathTemplatesMvs}/authpluginlib.allocate.tjcl`, ZOWE_CONFIG)
       }
     }
-  } else { // If undefined, use SZWEAUTH => no action
-    submitAuthPluginLib = false;
   }
-  
-  console.log(`PARM = ${submitParmlib}, AUTH = ${submitAuthLoadlib}, APPL = ${submitAuthPluginLib}`);
-  console.log(mvsJCL);
+
+  console.log(`${mvsJcl}${mvsJclParmlib}${mvsJclAuthLoadlib}${mvsJclAuthPluginLib}`);
 
   common.printLevel2Message(`Zowe custom data sets are initialized successfully.`);
 }
