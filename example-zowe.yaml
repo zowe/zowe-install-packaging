@@ -475,7 +475,7 @@ zOSMF:
 components:
 
   # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-  # Set apiml.enabled to "true", to enable single-service API ML deployment. 
+  # Set apiml.enabled to "true", to enable single-service API ML deployment.
   apiml:
     enabled: true
 
