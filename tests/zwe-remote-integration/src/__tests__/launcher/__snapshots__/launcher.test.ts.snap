@@ -77,6 +77,7 @@ zowe:
     startupChecks:
       default: "exit"
       ports: "disabled"
+      user: "disabled"
   verifyCertificates: "STRICT"
   sysMessageTrim: false
   runtimeDirectory: "/test/dir"
@@ -114,7 +115,6 @@ zowe:
 components:
   apiml:
     enabled: true
-    debug: false
   gateway:
     enabled: true
     port: 7554
@@ -263,6 +263,7 @@ zowe:
     startupChecks:
       default: "exit"
       ports: "disabled"
+      user: "disabled"
   verifyCertificates: "STRICT"
   sysMessageTrim: false
   runtimeDirectory: "/test/dir"
@@ -300,7 +301,6 @@ zowe:
 components:
   apiml:
     enabled: true
-    debug: false
   gateway:
     enabled: true
     port: 7554
