@@ -39,7 +39,7 @@ const containerComponentId = std.getenv('ZWE_PRIVATE_CONTAINER_COMPONENT_ID');
 
 const INDIVIDUAL_APIML_COMPONENTS = ['gateway', 'discovery', 'api-catalog', 'caching-service', 'zaas'];
 
-const user = std.getenv('USER');
+const user = common.getUserId();
 
 const ZOWE_CONFIG=config.getZoweConfig();
 
@@ -463,6 +463,18 @@ function configureComponents(componentEnvironments?: any, enabledComponents?:str
 
 
 // Few early steps even before initialization
+
+// Check if user is UID 0, this is not recommended
+let userCheckAction = ZOWE_CONFIG.zowe.launchScript?.startupChecks?.user || ZOWE_CONFIG.zowe.launchScript?.startupChecks?.default || 'exit';
+if (userCheckAction != 'disabled') {
+  const userID = shell.execOutSync('sh', '-c', 'id -u');
+  if (userID.rc == 0 && userID.out && userID.out == "0") {
+    common.printFormattedError("ZWELS", "zwe-internal-start-prepare", 'Running as UID 0. Such a setting is strongly discouraged.');
+    if (userCheckAction == 'exit') {
+      std.exit(1);
+    }
+  }
+}
 
 // init ZWE_RUN_IN_CONTAINER variable
 const runtimeDirectory=ZOWE_CONFIG.zowe.runtimeDirectory;
