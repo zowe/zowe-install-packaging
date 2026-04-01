@@ -191,6 +191,7 @@ mv *.pax.Z "${CONTENT_DIR}/files/"
 mv *.pax "${CONTENT_DIR}/files/"
 mv *.zip "${CONTENT_DIR}/files/"
 mv certificate-analyser-* "${CONTENT_DIR}/files/"
+mv zosmf-jwt-check-* "${CONTENT_DIR}/files/"
 # PAX_BINARY_DEPENDENCIES should be empty now
 if [ -n "$(ls -1)" ]; then
   echo "[$SCRIPT_NAME] Error: binaryDependencies directory is not clean"

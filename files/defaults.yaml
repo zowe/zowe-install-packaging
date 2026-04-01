@@ -141,6 +141,8 @@ zowe:
       # zosmf: exit
       # # Superuser startup check - defaults to zowe.launchScript.startupChecks.default, or "exit" if this is unset
       # user: exit
+      # z/OSMF JWT support check - checks whether z/OSMF JWT support is usable when Zowe is configured to use it
+      zosmfjwt: "exit"
 
   # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   # How we want to verify SSL certificates of services. Valid values are:

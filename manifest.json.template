@@ -109,6 +109,11 @@
       "artifact": "certificate-analyser-*.jar",
       "exclusions": ["*PR*.jar"]
     },
+    "org.zowe.apiml.sdk.zosmf-jwt-check": {
+      "version": "^3.0.3-SNAPSHOT",
+      "artifact": "zosmf-jwt-check-*.jar",
+      "exclusions": ["*PR*.jar"]
+    },
     "org.zowe.getesm": {
       "version": "^3.0.0-V3.X-STAGING",
       "artifact": "*.pax"

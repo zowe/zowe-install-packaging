@@ -29,6 +29,7 @@ import * as node from '../../../../libs/node';
 import * as zosmf from '../../../../libs/zosmf';
 import * as zoslib from '../../../../libs/zos';
 import * as validateBind from '../../../validate/port/bind/index';
+import * as validateZosmfJwt from '../../../validate/zosmf/jwt/index';
 
 //# This command prepares everything needed to start Zowe.
 const cliParameterConfig = std.getenv('ZWE_CLI_PARAMETER_CONFIG');
@@ -215,6 +216,14 @@ function globalValidate(enabledComponents:string[]): void {
       if (!zosmfOk) {
         privateErrors++;
         common.printFormattedError('ZWELS', "zwe-internal-start-prepare,global_validate", "Zosmf validation failed");
+      }
+      const validateZosmfJwtAction = getStartupCheckMode('zosmfjwt');
+      if (validateZosmfJwtAction.doCheck) {
+        const jwtOk = validateZosmfJwt.execute(!validateZosmfJwtAction.warnOnly);
+        if (!jwtOk) {
+          privateErrors++;
+          common.printFormattedError('ZWELS', "zwe-internal-start-prepare,global_validate", "Zosmf JWTvalidation failed");
+        }
       }
     } else if (enabledComponents.includes('gateway') && std.getenv('ZWE_components_gateway_apiml_security_auth_provider') == "zosmf") {
         privateErrors++;

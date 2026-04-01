@@ -320,6 +320,11 @@ echo "[$SCRIPT_NAME] move certificate_analyser $certificate_analyser"
 mkdir -p "${ZOWE_ROOT_DIR}/bin/utils"
 mv "${certificate_analyser}" "${ZOWE_ROOT_DIR}/bin/utils/certificate-analyser.jar"
 
+zosmf_jwt_check=$(find "${ZOWE_ROOT_DIR}/files" -type f \( -name "zosmf-jwt-check*.jar" \) | head -n 1)
+echo "[$SCRIPT_NAME] move zosmf_jwt_check $zosmf_jwt_check"
+mkdir -p "${ZOWE_ROOT_DIR}/bin/utils"
+mv "${zosmf_jwt_check}" "${ZOWE_ROOT_DIR}/bin/utils/zosmf-jwt-check.jar"
+
 
 echo "[$SCRIPT_NAME] create dummy zowe.yaml for install"
 cat <<EOT >>"${BASE_DIR}/zowe.yaml"
