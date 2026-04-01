@@ -10,7 +10,6 @@
 
 import java.io.*;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
@@ -41,12 +40,14 @@ public class HashFiles {
     }
 
     public static void main(String args[]) throws IOException {
-        BufferedReader br = Files.newBufferedReader(Paths.get(args[0]), StandardCharsets.UTF_8);
+        File file = new File(args[0]);
+        FileReader fr = new FileReader(file);
+        BufferedReader br = new BufferedReader(fr);
         String line;
         while ((line = br.readLine()) != null) {
             byte[] content = readFileBytes(line);
             System.out.println(line + " " + RSHash(content));
         }
-        br.close();
+        fr.close();
     }
 }
