@@ -4,9 +4,11 @@ All notable changes to the Zowe Installer will be documented in this file.
 
 ## `3.5.0`
 - Enhancement: `zwe version` supports displaying Zowe version defined in the configuration. [#4322](https://github.com/zowe/zowe-install-packaging/pull/4322)
+- Enhancement: Superuser (UID=0) check of `ZWESVUSR` added. [#4693](https://github.com/zowe/zowe-install-packaging/pull/4693)
 - Enhancement: Utility to toggle comments in provided YAML examples. [#4689](https://github.com/zowe/zowe-install-packaging/pull/4689)
 - Bugfix: Incorrect keyword was used for ACF2 key ring statement. [#4671](https://github.com/zowe/zowe-install-packaging/pull/4671)
 - Bugfix: `zwe config get` HA instance lookup is case insensitive. [#4609](https://github.com/zowe/zowe-install-packaging/pull/4609)
+- Bugfix: Fixed error preventing startup which reported that z/OSMF gateway configuration was invalid despite the gateway being disabled [#4718](https://github.com/zowe/zowe-install-packaging/pull/4718)
 - Enhancement: `zwe config get` command uses new `--format` option to format the output. [#4591](https://github.com/zowe/zowe-install-packaging/pull/4591)
 - Enhancement: Removed the unused `components.apiml.debug` debug property for the APIML Single-Service deployment mode (Modulith) in favour of the `components.gateway.debug`, to keep consistency with the rest of the current configuration. [#4702](https://github.com/zowe/zowe-install-packaging/pull/4702)
 
