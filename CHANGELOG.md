@@ -3,6 +3,7 @@
 All notable changes to the Zowe Installer will be documented in this file.
 
 ## `3.5.0`
+- Enhancement: `zwe version` supports displaying Zowe version defined in the configuration. [#4322](https://github.com/zowe/zowe-install-packaging/pull/4322)
 - Enhancement: Superuser (UID=0) check of `ZWESVUSR` added. [#4693](https://github.com/zowe/zowe-install-packaging/pull/4693)
 - Enhancement: Utility to toggle comments in provided YAML examples. [#4689](https://github.com/zowe/zowe-install-packaging/pull/4689)
 - Bugfix: Incorrect keyword was used for ACF2 key ring statement. [#4671](https://github.com/zowe/zowe-install-packaging/pull/4671)
