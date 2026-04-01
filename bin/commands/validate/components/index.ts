@@ -25,7 +25,7 @@ const COMMAND_NAME = 'zwe-validate-components';
  * @param componentNames   - Optional comma-separated list of component IDs to check.
  *                           When omitted, only enabled components are checked - disabled
  *                           components that are missing a directory or manifest are not an error.
- * @returns 0 on success, 1 if any component is invalid.
+ * @returns 0 on success or a number corresponding to the issue encountered.
  */
 export function execute(quitOnError?: boolean, componentNames?: string): number {
   common.requireZoweYaml();
@@ -35,10 +35,10 @@ export function execute(quitOnError?: boolean, componentNames?: string): number 
     const errMsg = `ZWEL0332E: Zowe YAML property zowe.runtimeDirectory is not defined. Zowe cannot validate component existence without knowing the runtime location.`;
     if (quitOnError) {
       common.printFormattedError(common.MSG_KEY, COMMAND_NAME, errMsg);
-      std.exit(1);
+      std.exit(332);
     } else {
       common.printFormattedWarn(common.MSG_KEY, COMMAND_NAME, errMsg.replace('ZWEL0332E', 'ZWEL0332W'));
-      return 1;
+      return 332;
     }
   }
 
@@ -48,10 +48,10 @@ export function execute(quitOnError?: boolean, componentNames?: string): number 
     const errMsg = `ZWEL0329E: No components are defined in zowe.yaml. Zowe cannot start without at least one component.`;
     if (quitOnError) {
       common.printFormattedError(common.MSG_KEY, COMMAND_NAME, errMsg);
-      std.exit(1);
+      std.exit(329);
     } else {
       common.printFormattedWarn(common.MSG_KEY, COMMAND_NAME, errMsg.replace('ZWEL0329E', 'ZWEL0329W'));
-      return 1;
+      return 329;
     }
   }
 
@@ -64,10 +64,10 @@ export function execute(quitOnError?: boolean, componentNames?: string): number 
       const errMsg = `ZWEL0331${quitOnError ? 'E' : 'W'}: The following requested component(s) are not defined in zowe.yaml: ${notInYaml.join(', ')}`;
       if (quitOnError) {
         common.printFormattedError(common.MSG_KEY, COMMAND_NAME, errMsg);
-        std.exit(1);
+        std.exit(331);
       } else {
         common.printFormattedWarn(common.MSG_KEY, COMMAND_NAME, errMsg);
-        return 1;
+        return 331;
       }
     }
     checkedComponents = requested;
@@ -104,10 +104,10 @@ export function execute(quitOnError?: boolean, componentNames?: string): number 
     const errMsg = `ZWEL0328${quitOnError ? 'E' : 'W'}: The following component(s) are missing a valid manifest file and cannot be started: ${invalidComponents.join(', ')}`;
     if (quitOnError) {
       common.printFormattedError(common.MSG_KEY, COMMAND_NAME, errMsg);
-      std.exit(1);
+      std.exit(328);
     } else {
       common.printFormattedWarn(common.MSG_KEY, COMMAND_NAME, errMsg);
-      return 1;
+      return 328;
     }
   }
 
