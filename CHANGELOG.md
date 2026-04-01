@@ -4,7 +4,6 @@ All notable changes to the Zowe Installer will be documented in this file.
 
 ## `3.5.0`
 - Enhancement: Added command `zwe vadlidate certificate` which checks Zowe's keystore and truststore and reports action items to resolve any issues found. This is run automatically every Zowe setup but that can be changed via the parameter `zowe.launchScript.startupChecks.certificate`, which can be changed to "warn" to warn only, or "disabled" to bypass the check. [#4554](https://github.com/zowe/zowe-install-packaging/pull/4554)
-This command can be disabled with zowe.launchScript.startupChecks.certificate: false.
 - Enhancement: Superuser (UID=0) check of `ZWESVUSR` added. [#4693](https://github.com/zowe/zowe-install-packaging/pull/4693)
 - Enhancement: Utility to toggle comments in provided YAML examples. [#4689](https://github.com/zowe/zowe-install-packaging/pull/4689)
 - Bugfix: Incorrect keyword was used for ACF2 key ring statement. [#4671](https://github.com/zowe/zowe-install-packaging/pull/4671)
