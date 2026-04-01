@@ -1,1 +1,15 @@
-""
+{
+  "lockAcquiredTime": "Wed Apr 01 2026 13:50:52 GMT+0000 (Coordinated Universal Time)",
+  "uid": "1775051452334101959",
+  "repository": {
+    "owner": "zowe",
+    "repo": "zowe-install-packaging"
+  },
+  "branch": "fix/GH4716/hashfiles-java21-compatibility",
+  "workflow": "Zowe CICD Integration Tests",
+  "job": "cicd-test",
+  "actor": "zowe-robot",
+  "runId": 23851966164,
+  "runNumber": 8343,
+  "link": "https://github.com/zowe/zowe-install-packaging/actions/runs/23851966164"
+}
