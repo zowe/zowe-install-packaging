@@ -3,7 +3,7 @@
 All notable changes to the Zowe Installer will be documented in this file.
 
 ## `3.5.0`
-- Enhancement: Added command `zwe validate zosmf jwt` which checks whether a Zowe configured to use z/OSMF is able to use z/OSMF's JWT authentication method or not. This command runs every startup if the conditions are met, but can be disabled or turned into only a warning via YAML property `zowe.launchScript.startupChecks.zosmfjwt` being set to "warn" or "disabled". []()
+- Enhancement: Added command `zwe validate zosmf jwt` which checks whether a Zowe configured to use z/OSMF is able to use z/OSMF's JWT authentication method or not. This command runs every startup if the conditions are met, but can be disabled or turned into only a warning via YAML property `zowe.launchScript.startupChecks.zosmfjwt` being set to "warn" or "disabled". [#4727](https://github.com/zowe/zowe-install-packaging/pull/4727)
 - Enhancement: Superuser (UID=0) check of `ZWESVUSR` added. [#4693](https://github.com/zowe/zowe-install-packaging/pull/4693)
 - Enhancement: Utility to toggle comments in provided YAML examples. [#4689](https://github.com/zowe/zowe-install-packaging/pull/4689)
 - Bugfix: Incorrect keyword was used for ACF2 key ring statement. [#4671](https://github.com/zowe/zowe-install-packaging/pull/4671)
