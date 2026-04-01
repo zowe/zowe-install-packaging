@@ -9,9 +9,7 @@
  */
 
 import java.io.*;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.nio.charset.Charset;
 
 public class HashFiles {
 
@@ -29,25 +27,29 @@ public class HashFiles {
         return hash;
     }
 
-    public static byte[] readFileBytes(String filePath) {
-        try {
-            return Files.readAllBytes(Paths.get(filePath));
+    public static byte[] readFileBytes(String filePath) throws IOException {
+        try (FileInputStream fis = new FileInputStream(filePath)) {
+            return fis.readAllBytes();
         } catch (IOException e) {
             System.err.println("IOException reading file " + filePath);
             System.err.println(e.getMessage());
-            return new byte[0];
+            throw e;
         }
     }
 
     public static void main(String args[]) throws IOException {
         File file = new File(args[0]);
-        FileReader fr = new FileReader(file);
-        BufferedReader br = new BufferedReader(fr);
+        String nativeEnc = System.getProperty("native.encoding");
+        Charset nativeCharset = nativeEnc != null
+            ? Charset.forName(nativeEnc)
+            : Charset.defaultCharset();
+        BufferedReader br = new BufferedReader(
+            new InputStreamReader(new FileInputStream(file), nativeCharset));
         String line;
         while ((line = br.readLine()) != null) {
             byte[] content = readFileBytes(line);
             System.out.println(line + " " + RSHash(content));
         }
-        fr.close();
+        br.close();
     }
 }
