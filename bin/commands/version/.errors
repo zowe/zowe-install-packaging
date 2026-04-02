@@ -1,1 +1,2 @@
 ZWEL0150E|150|Failed to find file %s. Zowe runtimeDirectory is invalid.
+ZWEL0327E|327|Failed to read JSON file %s - %s.
