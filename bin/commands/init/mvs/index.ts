@@ -55,10 +55,10 @@ export function execute(allowOverwrite?: boolean) {
   const license = xplatform.loadFileUTF8(`${pathTemplates}/license.tjcl`, xplatform.AUTO_DETECT);
   const sourceZWESIP = `${prefix}.SZWESAMP(ZWESIP00)`;
   const targetZWESIP = `${parmlib}(${ZOWE_CONFIG.zowe.setup.dataset.parmlibMembers.zis})`; // parmlibMembers.zis - in defaults && regex len = 8, can't be empty or null
-
   let skipJcl = false;
   let mvsJcl = template.resolveString(`//ZWEMVS   JOB \${this.zowe.setup.jcl.header}\n`, ZOWE_CONFIG);
   mvsJcl += license;
+
   let mvsJclParmlib = ''
 
   if (!zosdataset.isDatasetExists(ZOWE_CONFIG.zowe.setup.dataset.parmlib)) {
@@ -66,15 +66,15 @@ export function execute(allowOverwrite?: boolean) {
     mvsJclParmlib += template.resolveFile(`${pathTemplatesMvs}/parmlib.copy.tjcl`, ZOWE_CONFIG);
   } else {
     if (sourceZWESIP != targetZWESIP) {
-      if (zosdataset.isDatasetExists(targetZWESIP)) {
-        if (allowOverwrite) {
+      if (allowOverwrite) {
+        if (zosdataset.isDatasetExists(targetZWESIP)) {
           mvsJclParmlib += template.resolveFile(`${pathTemplatesMvs}/parmlib.delete.tjcl`, ZOWE_CONFIG);
-          mvsJclParmlib += template.resolveFile(`${pathTemplatesMvs}/parmlib.copy.tjcl`, ZOWE_CONFIG);
-          common.printMessage(`Warning ZWEL0300W: ${targetZWESIP} already exists. Members in this data set will be overwritten.`);
-        } else {
-          common.printMessage(`Warning ZWEL0301W: ${targetZWESIP} already exists and will not be overwritten. For upgrades, you must use --allow-overwrite.`);
-          skipJcl = true;
         }
+        mvsJclParmlib += template.resolveFile(`${pathTemplatesMvs}/parmlib.copy.tjcl`, ZOWE_CONFIG);
+        common.printMessage(`Warning ZWEL0300W: ${targetZWESIP} already exists. Members in this data set will be overwritten.`);
+      } else {
+        common.printMessage(`Warning ZWEL0301W: ${targetZWESIP} already exists and will not be overwritten. For upgrades, you must use --allow-overwrite.`);
+        skipJcl = true;
       }
     }
   }
@@ -126,7 +126,7 @@ export function execute(allowOverwrite?: boolean) {
 
   zosdataset.updateMember(`${jcllib}(ZWEMVS)`, mvsJcl);
 
-  console.log(`${mvsJcl}${mvsJclParmlib}${mvsJclAuthLoadlib}${mvsJclAuthPluginLib}`);
+  zosJes.printAndHandleJcl(`//'${jcllib}(ZWEMVS)'`, 'ZWEMVS', jcllib, prefix);
 
   common.printLevel2Message(`Zowe custom data sets are initialized successfully.`);
 }
