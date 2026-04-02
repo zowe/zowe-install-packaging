@@ -56,6 +56,7 @@ export function execute(allowOverwrite?: boolean) {
   const sourceZWESIP = `${prefix}.SZWESAMP(ZWESIP00)`;
   const targetZWESIP = `${parmlib}(${ZOWE_CONFIG.zowe.setup.dataset.parmlibMembers.zis})`; // parmlibMembers.zis - in defaults && regex len = 8, can't be empty or null
 
+  let skipJcl = false;
   let mvsJcl = template.resolveString(`//ZWEMVS   JOB \${this.zowe.setup.jcl.header}\n`, ZOWE_CONFIG);
   mvsJcl += license;
   let mvsJclParmlib = ''
@@ -72,6 +73,7 @@ export function execute(allowOverwrite?: boolean) {
           common.printMessage(`Warning ZWEL0300W: ${targetZWESIP} already exists. Members in this data set will be overwritten.`);
         } else {
           common.printMessage(`Warning ZWEL0301W: ${targetZWESIP} already exists and will not be overwritten. For upgrades, you must use --allow-overwrite.`);
+          skipJcl = true;
         }
       }
     }
@@ -93,6 +95,7 @@ export function execute(allowOverwrite?: boolean) {
           common.printMessage(`Warning ZWEL0300W: ${authLoadlib} already exists. Members in this data set will be overwritten.`);
         } else {
           common.printMessage(`Warning ZWEL0301W: ${authLoadlib} already exists and will not be overwritten. For upgrades, you must use --allow-overwrite.`);
+          skipJcl = true;
         }
       }
     }
@@ -104,10 +107,24 @@ export function execute(allowOverwrite?: boolean) {
   if (authPluginLib) {
     if (authPluginLib != szweauth && authPluginLib != authLoadlib) {
       if (!zosdataset.isDatasetExists(authPluginLib)) {
-        mvsJclAuthPluginLib += template.resolveFile(`${pathTemplatesMvs}/authpluginlib.allocate.tjcl`, ZOWE_CONFIG)
+        mvsJclAuthPluginLib += template.resolveFile(`${pathTemplatesMvs}/authpluginlib.allocate.tjcl`, ZOWE_CONFIG);
       }
     }
   }
+
+  if ((mvsJclParmlib.length == 0 && mvsJclAuthLoadlib.length == 0 && mvsJclAuthPluginLib.length == 0) || skipJcl == true) {
+    if (skipJcl == true) {
+      common.printMessage(`Skipped writing to a dataset. To write, you must use --allow-overwrite.`);
+    }
+    common.printLevel2Message(`Zowe custom data sets are initialized successfully.`);
+    std.exit(0);
+  }
+
+  mvsJcl += mvsJclParmlib;
+  mvsJcl += mvsJclAuthLoadlib;
+  mvsJcl += mvsJclAuthPluginLib;
+
+  zosdataset.updateMember(`${jcllib}(ZWEMVS)`, mvsJcl);
 
   console.log(`${mvsJcl}${mvsJclParmlib}${mvsJclAuthLoadlib}${mvsJclAuthPluginLib}`);
 
