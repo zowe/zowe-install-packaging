@@ -346,6 +346,11 @@ else
   ###############################
   # Few early steps even before initialization
 
+  # Check if user is UID 0, this is not recommended
+  if [ "$(id -u)" = "0" ]; then
+    print_formatted_error "ZWELS" "zwe-internal-start-prepare:${LINENO}" "Running as UID 0. Such a setting is strongly discouraged."
+  fi
+
   # init ZWE_RUN_IN_CONTAINER variable
   ZWE_zowe_workspaceDirectory=$(shell_read_yaml_config "${ZWE_CLI_PARAMETER_CONFIG}" 'zowe' 'workspaceDirectory')
   if [ -z "${ZWE_zowe_workspaceDirectory}" ]; then

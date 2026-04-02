@@ -358,8 +358,10 @@ zowe:
     - "ZWEL0001I"
   #   # Zowe components stopped
     - "ZWEL0002I"
-  #   # API ML components ready
+  #   # API ML components started
     - "ZWEAM000I"
+  #   # API ML components ready
+    - "ZWEAM001I"
   #   # App server ready
     - "ZWED0031I"
   #   # ZSS ready
@@ -475,6 +477,7 @@ zOSMF:
 components:
 
   # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+  # Set apiml.enabled to "true", to enable single-service API ML deployment.
   apiml:
     enabled: true
 
