@@ -109,9 +109,9 @@
       "artifact": "certificate-analyser-*.jar",
       "exclusions": ["*PR*.jar"]
     },
-    "org.zowe.apiml.sdk.pre-flight-check": {
+    "org.zowe.apiml.sdk.zosmf-jwt-check": {
       "version": "^3.0.3-SNAPSHOT",
-      "artifact": "pre-flight-check-*.jar",
+      "artifact": "zosmf-jwt-check-*.jar",
       "exclusions": ["*PR*.jar"]
     },
     "org.zowe.getesm": {

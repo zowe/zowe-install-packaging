@@ -11,7 +11,7 @@
 # Copyright Contributors to the Zowe Project.
 #######################################################################
 
-print_level1_message "Validate z/OSMF JWK endpoint (pre-flight check)"
+print_level1_message "Validate z/OSMF JWK endpoint"
 
 ###############################
 # validation
@@ -58,9 +58,9 @@ verify_certificates=$(echo "${verify_certificates}" | upper_case)
 
 ###############################
 # build java -jar arguments
-jar_path="${ZWE_zowe_runtimeDirectory}/bin/utils/pre-flight-check.jar"
+jar_path="${ZWE_zowe_runtimeDirectory}/bin/utils/zosmf-jwt-check.jar"
 if [ ! -f "${jar_path}" ]; then
-  print_error_and_exit "Error ZWEL0180E: pre-flight-check.jar not found at ${jar_path}." "" 180
+  print_error_and_exit "Error ZWEL0180E: zosmf-jwt-check.jar not found at ${jar_path}." "" 180
 fi
 
 java_cmd="${JAVA_HOME}/bin/java -jar ${jar_path}"
@@ -80,7 +80,7 @@ if [ "${verify_certificates}" != "DISABLED" ]; then
     print_error_and_exit "Error ZWEL0180E: Truststore password (zowe.certificate.truststore.password) is not defined in Zowe YAML configuration file. Required when verifyCertificates is ${verify_certificates}." "" 180
   fi
 
-  java_args="${java_args} --truststore ${truststore_file} --truststore-password ${truststore_password}"
+  java_args="${java_args} --truststore-file ${truststore_file} --truststore-password ${truststore_password}"
 
   if [ -n "${truststore_type}" ]; then
     java_args="${java_args} --truststore-type ${truststore_type}"
@@ -94,27 +94,27 @@ keystore_password=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.certificate.k
 keystore_type=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.certificate.keystore.type")
 
 if [ -n "${keystore_file}" ] && [ -n "${keystore_password}" ]; then
-  java_args="${java_args} --keystore ${keystore_file} --keystore-password ${keystore_password}"
+  java_args="${java_args} --keystore-file ${keystore_file} --keystore-password ${keystore_password}"
   if [ -n "${keystore_type}" ]; then
     java_args="${java_args} --keystore-type ${keystore_type}"
   fi
 fi
 
 ###############################
-# execute pre-flight check
-print_message "Running pre-flight check against z/OSMF at ${zosmf_host}:${zosmf_port} (verifyCertificates=${verify_certificates})"
+# execute z/OSMF JWT check
+print_message "Running z/OSMF JWT check against z/OSMF at ${zosmf_host}:${zosmf_port} (verifyCertificates=${verify_certificates})"
 print_trace "Command: ${java_cmd} ${java_args}"
 
 eval "${java_cmd} ${java_args}"
 rc=$?
 
 if [ ${rc} -eq 0 ]; then
-  print_level2_message "z/OSMF JWK endpoint pre-flight check passed."
+  print_level2_message "z/OSMF JWK endpoint check passed."
 elif [ ${rc} -eq 4 ]; then
-  print_error_and_exit "Error ZWEL0180E: z/OSMF JWK endpoint pre-flight check failed. The endpoint may not be reachable or the certificate configuration may be incorrect." "" 180
+  print_error_and_exit "Error ZWEL0180E: z/OSMF JWK endpoint check failed. The endpoint may not be reachable or the certificate configuration may be incorrect." "" 180
 elif [ ${rc} -eq 8 ]; then
   # help was displayed by the jar, not an error
   exit 0
 else
-  print_error_and_exit "Error ZWEL0180E: z/OSMF JWK endpoint pre-flight check failed with unexpected exit code ${rc}." "" 180
+  print_error_and_exit "Error ZWEL0180E: z/OSMF JWK endpoint check failed with unexpected exit code ${rc}." "" 180
 fi
