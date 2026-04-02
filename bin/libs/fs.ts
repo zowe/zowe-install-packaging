@@ -192,7 +192,7 @@ export function getSubdirectories(path: string): string[]|undefined {
   let subdirs:string[] = [];
   if (!returnArray[1]) { //no error
     returnArray[0].forEach((dir:string)=> {
-      if (directoryExists(pathoid.join(path,dir))) {
+      if (directoryExists(pathoid.join(path,dir)) && dir !== '.' && dir !== '..') {
         subdirs.push(dir);
       }
     });
