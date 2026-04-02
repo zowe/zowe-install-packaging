@@ -1,1 +1,2 @@
 zwe version
+zwe version --config 'PARMLIB(ZOWE.PARM(ZOWE))'
