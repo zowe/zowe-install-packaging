@@ -11,16 +11,10 @@
 # Copyright Contributors to the Zowe Project.
 #######################################################################
 
-if [ -f "${ZWE_zowe_runtimeDirectory}/manifest.json" ]; then
-  manifest="${ZWE_zowe_runtimeDirectory}/manifest.json"
-elif [ -f "${ZWE_zowe_runtimeDirectory}/manifest.json.template" ]; then
-  manifest="${ZWE_zowe_runtimeDirectory}/manifest.json.template"
+if [ -n "${ZWE_CLI_PARAMETER_CONFIG}" ]; then
+  zoweRuntime=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.runtimeDirectory")
 else
-  print_error_and_exit "Error ZWEL0150E: Failed to find file manifest.json. Zowe runtimeDirectory is invalid." "" 150
+  zoweRuntime="${ZWE_zowe_runtimeDirectory}"
 fi
 
-ZOWE_VERSION=$(shell_read_json_config "${manifest}" version version)
-# $(shell_read_json_config ${ROOT_DIR}/manifest.json 'version' 'version')
-print_message "Zowe v${ZOWE_VERSION}"
-print_debug "build and hash: $(shell_read_json_config "${manifest}" 'build' 'branch')#$(shell_read_json_config "${manifest}" 'build' 'number') ($(shell_read_json_config "${manifest}" 'build' 'commitHash'))"
-print_trace "Zowe directory: ${ZWE_zowe_runtimeDirectory}"
+_CEE_RUNOPTS="XPLINK(ON),HEAPPOOLS(OFF),HEAPPOOLS64(OFF)" ${ZWE_zowe_runtimeDirectory}/bin/utils/configmgr -script "${ZWE_zowe_runtimeDirectory}/bin/commands/version/cli.js" "${zoweRuntime}"
