@@ -19,7 +19,7 @@ import * as config from '../../../libs/config';
 import * as componentlib from '../../../libs/component';
 import { HandlerCaller, getHandler, getRegistry } from '../handlerutils';
 
-export function execute(componentFile: string, autoEncoding?:string, skipEnable?:boolean, handler?: string, registry?: string, dryRun?: boolean, upgrade?: boolean) {
+export function execute(componentFile: string, autoEncoding?:string, skipEnable?:boolean, handler?: string, registry?: string, dryRun?: boolean, upgrade?: boolean, zisPluginDatasets?: string[]) {
   if (!fs.fileExists(componentFile) && !fs.directoryExists(componentFile)) {
     common.requireZoweYaml();
     if (componentFile && !upgrade) {
@@ -54,7 +54,7 @@ export function execute(componentFile: string, autoEncoding?:string, skipEnable?
         // ZWE_COMPONENTS_INSTALL_EXTRACT_COMPONENT_NAME should be set after extract step
         const componentName = std.getenv('ZWE_COMPONENTS_INSTALL_EXTRACT_COMPONENT_NAME');
         if (componentName) {
-          installHook.execute(componentName);
+          installHook.execute(componentName, zisPluginDatasets);
         } else {
           common.printErrorAndExit("Error ZWEL0156E: Component name is not initialized after extract step.", undefined, 156);
         }

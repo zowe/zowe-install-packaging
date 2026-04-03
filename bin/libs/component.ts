@@ -793,7 +793,7 @@ zowe:
   extensionDirectory: "/u/user/zowe/inst/zistest/extensions"
 
 */
-export function processZisPluginInstall(componentDir: string): void {
+export function processZisPluginInstall(componentDir: string, zisPluginDatasets?: string[]): void {
   loadConfig();
   if (os.platform == 'zos') {
     common.printTrace("- Checking for zis plugins and verifying them");
@@ -811,7 +811,8 @@ export function processZisPluginInstall(componentDir: string): void {
         const rc = zisPluginInstall(zisPlugin.path, ZOWE_CONFIG.zowe.setup.dataset.authPluginLib,
                                     ZOWE_CONFIG.zowe.setup.dataset.parmlib, ZOWE_CONFIG.zowe.setup.dataset.parmlibMembers.zis,
                                     zisPlugin.id, componentDir,
-                                    ZOWE_CONFIG.zowe?.setup?.zis?.parmlib?.keys || {});
+                                    ZOWE_CONFIG.zowe?.setup?.zis?.parmlib?.keys || {},
+                                    zisPluginDatasets);
         if (rc) {
           common.printMessage(`Failed to install ZIS plugin: ${zisPlugin.id}`);
           std.exit(1);
@@ -847,7 +848,8 @@ function addKeyValueAtEndOfString(pair: string, input: string): string|undefined
 }
 
 export function zisPluginInstall(pluginPath: string, zisPluginlib: string, zisParmlib: string,
-                                 zisParmlibMember: string, pluginId: string, componentDir: string, parmlibKeys: string): number {
+                                 zisParmlibMember: string, pluginId: string, componentDir: string, parmlibKeys: string,
+                                 zisPluginDatasets?: string[]): number {
   loadConfig();
   const parmlibMemberAsUnixFile=fs.createTmpFile(zisParmlibMember);
 
@@ -864,13 +866,22 @@ export function zisPluginInstall(pluginPath: string, zisPluginlib: string, zisPa
 
   if (fs.directoryExists(basePath)) {
     if (fs.directoryExists(loadlibPath) && fs.directoryExists(samplibPath)) {
-      const modules = fs.getFilesInDirectory(loadlibPath) || [];
-      for (let i = 0; i < modules.length; i++) {
-        const module = modules[i];
-        const rc = zosdataset.copyToDataset(`${loadlibPath}/${module}`, zisPluginlib, "", true);
-        if (rc != 0) {
-          common.printError(`Error ZWEL0200E: Failed to copy USS file ${loadlibPath}/${module} to MVS data set ${zisPluginlib}.`);
-          return 200;
+      // As an alternative to copying a zis plugin from unix into the apf plugin dataset, we update the steplib entries of zis stcs
+      // it's a success when both zis and aux stcs are updated.
+      if (zisPluginDatasets) {
+        if(!updateZisStcs(zisPluginDatasets)) {
+          common.printError(`Error in updating the zis stcs STEPLIB entries for zis plugin install`);
+          return 1;
+        }
+      } else {
+        const modules = fs.getFilesInDirectory(loadlibPath) || [];
+        for (let i = 0; i < modules.length; i++) {
+          const module = modules[i];
+          const rc = zosdataset.copyToDataset(`${loadlibPath}/${module}`, zisPluginlib, "", true);
+          if (rc != 0) {
+            common.printError(`Error ZWEL0200E: Failed to copy USS file ${loadlibPath}/${module} to MVS data set ${zisPluginlib}.`);
+            return 200;
+          }
         }
       }
       const files = fs.getFilesInDirectory(samplibPath)
@@ -1206,6 +1217,136 @@ export function processComponentDiscoverySharedLibs(componentDir: string): boole
   }
   return true;
 }
+
+
+function updateZisStcs(zisPluginDatasets: string[]) : boolean {
+  const ZOWE_CONFIG = configUtils.getZoweConfig();
+  const proclib = ZOWE_CONFIG.zowe.setup?.dataset?.proclib;
+  const zisMember = ZOWE_CONFIG.zowe.setup?.security?.stcs?.zis;
+  const auxMember = ZOWE_CONFIG.zowe.setup?.security?.stcs?.aux;
+
+  // process zis plugin dataset arguements with multiple checks, eg Regex, duplicates etc
+  const stepLibEntries = processZisPluginDatasetArgs(zisPluginDatasets);
+
+  // Update the ZIS STC
+  if (zosdataset.isDatasetExists(`${proclib}(${zisMember})`)) {
+    if (!updateStcSteplibEntries(proclib, zisMember, stepLibEntries)) {
+      common.printError(`${proclib}(${zisMember}) could not be updated`);
+      return false;
+    }
+  }
+  // Update the AUX STC
+  if (zosdataset.isDatasetExists(`${proclib}(${auxMember})`)) {
+    if (!updateStcSteplibEntries(proclib, auxMember, stepLibEntries)) {
+      common.printError(`${proclib}(${zisMember}) could not be updated`);
+      return false;
+    }
+  }
+  return true;
+}
+
+function updateStcSteplibEntries(proclib: string, member: string, stepLibEntries: string[]): boolean {
+  const ZOWE_CONFIG = configUtils.getZoweConfig();
+  const jclLib = ZOWE_CONFIG.zowe.setup.dataset.jcllib;
+  const prefix = ZOWE_CONFIG.zowe.setup.dataset.prefix;
+  let update = false;
+
+  // 1. create temporary Unix file
+  const proclibMemberAsUnixFile = fs.createTmpFile(`${proclib}`);
+  zosfs.copyMvsToUss(`${proclib}(${member})`, proclibMemberAsUnixFile);
+
+  // 2. Get the updated content
+  const updatedContent = updateStepLib(proclibMemberAsUnixFile, stepLibEntries);
+
+  // 3. store the updated content in the same temporary Unix file
+  let rc = xplatform.storeFileUTF8(proclibMemberAsUnixFile, xplatform.AUTO_DETECT, updatedContent);
+  if(!rc) {
+    // 4. Copy the contents from the temporary file into a temporary dataset
+    const tmpDataset = zosdataset.createDatasetTmpMember(jclLib);
+    rc = zosdataset.copyToDataset(proclibMemberAsUnixFile, `${jclLib}(${tmpDataset})`, "", true);
+    if (rc) {
+      common.printError(`Error ZWEL0200E: Failed to copy USS file ${proclibMemberAsUnixFile} to MVS data set ${tmpDataset}.`);
+    }
+    else {
+      // 5. Copy the dataset using PREFIX.SZWEEXEC(ZWEMCOPY)
+      rc = zosdataset.datasetCopyToDataset(prefix, `${jclLib}(${tmpDataset})`, `${proclib}(${member})`, true);
+      if (rc) {
+        common.printError(`Copy of temporary to dataset to ${proclib}(${member}) did not happen`);
+      }
+      else {
+        update = true;
+        common.printMessage(`${proclib}(${member}) updated successfully with new stepLib entries`);
+      }
+    }
+  }
+  else {
+    common.printError(`Error: Could not store updated contents in tmp unix file ${proclibMemberAsUnixFile}.`);
+  }
+  return update;
+}
+
+function processZisPluginDatasetArgs(inputArgs: string[]): string[] {
+  return Array.from(
+    new Set(
+      inputArgs
+        .map(word => word.trim())
+        .map(word => word.toUpperCase())
+        .filter(word => word !== "")
+        .filter(word => regexCheckDataset(word) && word.length <= 44)
+        .filter(word => zosdataset.isDatasetExists(word))
+    )
+  );
+}
+
+const regexCheckDataset = (word: string): boolean => {
+  const datasetRegex = /^([A-Z\$\#\@]){1}([A-Z0-9\$\#\@\-]){0,7}(\.([A-Z\$\#\@]){1}([A-Z0-9\$\#\@\-]){0,7}){0,11}$/
+  return datasetRegex.test(word);
+}
+
+// Goes through the steplib section and adds entries, skipping blank lines and commented lines. However if an entry is commented and is
+// part of new list of entries, then we uncomment that entry/line.
+function updateStepLib(procLibfile: string, newStepLibEntries:  string[]) : any {
+  let procJcl = xplatform.loadFileUTF8(procLibfile, xplatform.AUTO_DETECT);
+  let lines = procJcl.split("\n");
+
+  // find index of start of STEPLIB section
+  let stepLibIndex = lines.findIndex((line => line.trim().startsWith('//STEPLIB')));
+  let i = stepLibIndex+1;
+  // go through the STEPLIB section
+  while(i < lines.length)
+  {
+    let line = lines[i].trim();
+    if (line.startsWith('//') && !line.startsWith('// ') && !line.startsWith('//*')) {
+          // end of STEPLIB section, break and add remaining entries
+          break;
+    }
+    else {
+        // extract the existing STEPLIB entry and check if it is in the new list, if so remove it from the list to avoid duplicates
+        // or if it is commented then uncomment it
+        let dsnString =  line.match(/DSNAME=([\w.@#$-]+)/);
+        if(dsnString) {
+          let removeIndex = newStepLibEntries.indexOf(dsnString[1]);
+          if (removeIndex !== -1) {
+            // Check to see if it is commented
+            if (line.startsWith('//*')) {
+              lines.splice(i, 1); // remove the line
+              lines.splice(i, 0, `//         DD   DSNAME=${dsnString[1]},DISP=SHR`); // add the uncommented version
+            }
+            // remove entry to avoid duplicates
+            newStepLibEntries.splice(removeIndex, 1);
+          }
+        }
+    }
+    i++;
+  }
+  // adding the remaining of entries at the end of STEPLIB section
+  newStepLibEntries.reverse().forEach((newEntry) => {
+    lines.splice(i, 0, `//         DD   DSNAME=${newEntry},DISP=SHR`);
+  });
+
+  return lines.join("\n");
+}
+
 /*
 const gatewayHost = std.getenv('ZWE_GATEWAY_HOST');
 const haInstanceHostname = std.getenv('ZWE_haInstance_hostname');

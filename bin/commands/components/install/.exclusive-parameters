@@ -3,3 +3,4 @@ auto-encoding|e|string||auto|||If we want to automatically tagging the module fi
 skip-enable||boolean|||||Install component without enabling it for use.
 registry|r|string|||||Specifies the registry to searh within instead of the default. The registry must be compatible with the manager used.
 handler||string|||||Specifies the registry handler name used with the package registry, instead of the default. The handler must be compatible with the registry used.
+zis-plugin-datasets|d|string|||||Comma separated list of datasets to reference as ZIS STEPLIB entries for loading plugins. Requires that the datasets exist prior and are APF authorized. If not provided when installing a component containing ZIS plugins, the plugins will be copied into the ZIS APF Plugin dataset.
