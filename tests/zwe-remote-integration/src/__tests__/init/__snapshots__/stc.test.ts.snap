@@ -926,6 +926,7 @@ exports[`init-stc (SHORT) invalid stc configurations 3`] = `
           "ZWEL0001I",
           "ZWEL0002I",
           "ZWEAM000I",
+          "ZWEAM001I",
           "ZWED0031I",
           "ZWES1013I"
         ],
@@ -1141,6 +1142,7 @@ exports[`init-stc (SHORT) invalid stc configurations 4`] = `
           "ZWEL0001I",
           "ZWEL0002I",
           "ZWEAM000I",
+          "ZWEAM001I",
           "ZWED0031I",
           "ZWES1013I"
         ],
@@ -1356,6 +1358,7 @@ exports[`init-stc (SHORT) invalid stc configurations 5`] = `
           "ZWEL0001I",
           "ZWEL0002I",
           "ZWEAM000I",
+          "ZWEAM001I",
           "ZWED0031I",
           "ZWES1013I"
         ],
@@ -1572,6 +1575,7 @@ exports[`init-stc (SHORT) invalid stc configurations 6`] = `
           "ZWEL0001I",
           "ZWEL0002I",
           "ZWEAM000I",
+          "ZWEAM001I",
           "ZWED0031I",
           "ZWES1013I"
         ],
@@ -1788,6 +1792,7 @@ exports[`init-stc (SHORT) invalid stc configurations 7`] = `
           "ZWEL0001I",
           "ZWEL0002I",
           "ZWEAM000I",
+          "ZWEAM001I",
           "ZWED0031I",
           "ZWES1013I"
         ],
@@ -2107,6 +2112,7 @@ exports[`init-stc (SHORT) wrong proclib 3`] = `
           "ZWEL0001I",
           "ZWEL0002I",
           "ZWEAM000I",
+          "ZWEAM001I",
           "ZWED0031I",
           "ZWES1013I"
         ],
