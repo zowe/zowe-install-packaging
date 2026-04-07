@@ -40,8 +40,8 @@
       "artifact": "*.pax"
     },
     "org.zowe.zlux.zlux-editor": {
-      "version": "^3.0.0-V3.X-STAGING",
-      "artifact": "*.pax"
+      "version": "^3.5.0-PR-372",
+      "artifact": "zlux-editor-3.5.0-20260407.181349.pax"
     },
     "org.zowe.zss": {
       "version": "^3.0.0-STAGING",
