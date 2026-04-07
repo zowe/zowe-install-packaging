@@ -1245,6 +1245,7 @@ echo '  # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>' >> "${instance-zowe_workspaceDi
 echo '  # Set apiml.enabled to "true", to enable single-service API ML deployment.' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
 echo '  apiml:' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
 echo '    enabled: true' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
+echo '    debug: false' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
 echo '' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
 echo '' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
 echo '  # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"

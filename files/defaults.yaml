@@ -166,6 +166,7 @@ components:
   # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   apiml:
     enabled: false
+    debug: false
 
   # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   gateway:
