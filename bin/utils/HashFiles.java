@@ -9,47 +9,47 @@
  */
 
 import java.io.*;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.nio.charset.Charset;
 
 public class HashFiles {
 
 // input is a filename; file contains a list of filenames to be hashed
 
-    public static long RSHash(String str) {
+    public static long RSHash(byte[] data) {
         int b = 378551;
         int a = 63689;
         long hash = 0;
 
-        for (int i = 0; i < str.length(); i++) {
-            hash = hash * a + str.charAt(i);
+        for (int i = 0; i < data.length; i++) {
+            hash = hash * a + (data[i] & 0xFF);
             a = a * b;
         }
         return hash;
     }
 
-    public static String readAllBytesJava7(String filePath) {
-        String content = "";
-
-        try {
-            content = new String(Files.readAllBytes(Paths.get(filePath)));
+    public static byte[] readFileBytes(String filePath) throws IOException {
+        try (FileInputStream fis = new FileInputStream(filePath)) {
+            return fis.readAllBytes();
         } catch (IOException e) {
             System.err.println("IOException reading file " + filePath);
             System.err.println(e.getMessage());
+            throw e;
         }
-        return content;
     }
 
     public static void main(String args[]) throws IOException {
         File file = new File(args[0]);
-        FileReader fr = new FileReader(file);
-        BufferedReader br = new BufferedReader(fr);
+        String nativeEnc = System.getProperty("native.encoding");
+        Charset nativeCharset = nativeEnc != null
+            ? Charset.forName(nativeEnc)
+            : Charset.defaultCharset();
+        BufferedReader br = new BufferedReader(
+            new InputStreamReader(new FileInputStream(file), nativeCharset));
         String line;
         while ((line = br.readLine()) != null) {
-            String key = readAllBytesJava7(line);
-            System.out.println(line + " " + RSHash(key));
+            byte[] content = readFileBytes(line);
+            System.out.println(line + " " + RSHash(content));
         }
-        fr.close();
+        br.close();
     }
 }
