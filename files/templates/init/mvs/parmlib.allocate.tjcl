@@ -1,6 +1,6 @@
 //*********************************************************************
 //*
-//* Allocates the data set for parmlib member 
+//* Allocate the data set for PARMLIB member
 //*
 //*********************************************************************
 //PARMALOC EXEC PGM=IKJEFT01

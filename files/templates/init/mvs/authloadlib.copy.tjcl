@@ -1,6 +1,6 @@
 //*********************************************************************
 //*
-//* Copies the data set members to authorized load library
+//* Copy the data set members to authorized load library
 //*
 //*********************************************************************
 //AUTHCOPY EXEC PGM=IKJEFT01

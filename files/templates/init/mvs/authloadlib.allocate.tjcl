@@ -1,6 +1,6 @@
 //*********************************************************************
 //*
-//* Allocates the data set for authorized load library
+//* Allocate the data set for authorized load library
 //*
 //*********************************************************************
 //AUTHALOC EXEC PGM=IKJEFT01

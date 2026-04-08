@@ -1,6 +1,6 @@
 //*********************************************************************
 //*
-//* Allocates the data set for plugins
+//* Allocate the data set for plug-ins
 //*
 //*********************************************************************
 //APPLALOC EXEC PGM=IKJEFT01

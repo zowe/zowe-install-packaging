@@ -1,6 +1,6 @@
 //*********************************************************************
 //*
-//* Deletes the data set members from authorized load library
+//* Delete the data set members from authorized load library
 //*
 //*********************************************************************
 //AUTHCOPY EXEC PGM=IKJEFT01                          

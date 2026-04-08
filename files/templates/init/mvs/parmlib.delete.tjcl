@@ -1,6 +1,6 @@
 //*********************************************************************
 //*
-//* Deletes the parmlib member from the data set
+//* Delete the PARMLIB member from the data set
 //*
 //*********************************************************************
 //PARMDEL  EXEC PGM=IKJEFT01
