@@ -53,3 +53,4 @@ ZWEL0316E|316|Invalid PARMLIB format %s.
 ZWEL0322E|322|%s is not a valid directory.
 ZWEL0323E|323|Certificate validation failed. Fix errors listed before starting Zowe.
 ZWEL0326E|326|An error occurred while processing Zowe YAML config %s:
+ZWEL0327E|327|Failed to read %s - %s.
