@@ -35,6 +35,13 @@ export function isDatasetExists(datasetName: string): boolean {
   return result.rc === 0;
 }
 
+export function isDatasetExistsRC(datasetName: string): number {
+  common.printTrace(`  * isDatasetExists: '${stringlib.escapeDollar(datasetName)}'`);
+  const result = shell.execSync('sh', '-c', `cat "//'${stringlib.escapeDollar(datasetName)}'" 1>/dev/null 2>&1`);
+  return result.rc;
+}
+
+
 export function tsoDeleteDataset(datasetName: string): number {
   common.printTrace(`  * tsoDeleteDataset: ${datasetName}`);
   const result = zoslib.tsoCommand(`delete '${stringlib.escapeDollar(datasetName)}'`);
