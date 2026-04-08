@@ -29,6 +29,7 @@ import * as node from '../../../../libs/node';
 import * as zosmf from '../../../../libs/zosmf';
 import * as zoslib from '../../../../libs/zos';
 import * as validateBind from '../../../validate/port/bind/index';
+import * as validateCertificate from '../../../validate/certificate/index';
 
 //# This command prepares everything needed to start Zowe.
 const cliParameterConfig = std.getenv('ZWE_CLI_PARAMETER_CONFIG');
@@ -519,6 +520,14 @@ export function execute() {
     node.requireNode();
   }
   common.requireZoweYaml();
+
+  const validateCertificateAction = getStartupCheckMode('certificate');
+  if (validateCertificateAction.doCheck) {
+    const certRc = validateCertificate.execute(!validateCertificateAction.warnOnly);
+    if (certRc != 0) {
+      common.printErrorAndExit("Error ZWEL0323E: Certificate validation failed. Fix errors listed before starting Zowe.", undefined, 323);
+    }
+  }
 
   // overwrite ZWE_PRIVATE_LOG_LEVEL_ZWELS with zowe.launchScript.logLevel config in YAML
   if (ZOWE_CONFIG.zowe.launchScript.logLevel) {
