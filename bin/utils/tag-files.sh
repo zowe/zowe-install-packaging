@@ -192,6 +192,18 @@ find . \( \
 -name "*.WOFF" -o \
 -name "*.woff2" -o \
 -name "*.WOFF2" -o \
+-name "*.node" -o \
+-name "*.NODE" -o \
+-name "*.swf" -o \
+-name "*.SWF" -o \
+-name "*.ico" -o \
+-name "*.ICO" -o \
+-name "*.wasm" -o \
+-name "*.WASM" -o \
+-name "*.so" -o \
+-name "*.SO" -o \
+-name "*.dylib" -o \
+-name "*.DYLIB" -o \
 -name "zssServer" \
 \) -exec chtag -b {} \;
 
