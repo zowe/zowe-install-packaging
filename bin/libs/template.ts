@@ -15,28 +15,30 @@ import * as common from './common';
 import * as zosDs from './zos-dataset';
 
 export function resolveString(templateString: string, data: any): string | undefined {
-    common.printTrace(` - resolveString:\n${templateString}\n`);
-    const template = new Function('return `' + templateString + '`;');
     if (templateString == undefined || templateString == null) {
-        return undefined;
+        common.printErrorAndExit(`Error ZWEL0327E: Failed to read template string 'undefined' - no string defined.`, undefined, 327);
     }
+    common.printTrace(` - template.resolveString:\n${templateString}\n`);
+    const template = new Function('return `' + templateString + '`;');
     return template.call(data);
 }
 
 export function resolveFile(file: string, data: any): string | undefined {
-    common.printTrace(` - resolveFile "${file}"`);
-    const fileContent = xplatform.loadFileUTF8(file, xplatform.AUTO_DETECT);
-    if (fileContent == undefined || fileContent == null) {
-        return undefined;
+    common.printTrace(` - template.resolveFile "${file}"`);
+    let fileContent = undefined;
+    try {
+        fileContent = xplatform.loadFileUTF8(file, xplatform.AUTO_DETECT);
+    } catch (err) {
+        common.printErrorAndExit(`Error ZWEL0327E: Failed to read template ${file} - ${err}.`, undefined, 327);
     }
     return resolveString(fileContent, data);
 }
 
 export function resolveMember(dataset: string, data: any): string | undefined {
-    common.printTrace(` - resolveMember "${dataset}"`);
+    common.printTrace(` - template.resolveMember "${dataset}"`);
     const memberContent = zosDs.readMember(dataset);
     if (memberContent == undefined || memberContent == null) {
-        return undefined;
+        common.printErrorAndExit(`Error ZWEL0327E: Failed to read data set member ${dataset} - content undefined.`, undefined, 327);
     }
     return resolveString(memberContent, data);
 }
