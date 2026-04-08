@@ -60,8 +60,7 @@
       "rule_target": "ZWEAMLCF",
       "rule_type": "wf_missing_vars",
       "rule_entry": [
-        "components_apiml_enabled",
-        "components_apiml_debug"
+        "components_apiml_enabled"
       ]
     },
     {
