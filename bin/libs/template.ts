@@ -38,7 +38,7 @@ export function resolveMember(dataset: string, data: any): string | undefined {
     common.printTrace(` - template.resolveMember "${dataset}"`);
     const memberContent = zosDs.readMember(dataset);
     if (memberContent == undefined || memberContent == null) {
-        common.printErrorAndExit(`Error ZWEL0327E: Failed to read data set member ${dataset} - content undefined.`, undefined, 327);
+        common.printErrorAndExit(`Error ZWEL0327E: Failed to read template ${dataset} - no content.`, undefined, 327);
     }
     return resolveString(memberContent, data);
 }
