@@ -1,2 +1,2 @@
 ZWEL0150E|150|Failed to find file %s. Zowe runtimeDirectory is invalid.
-ZWEL0327E|327|Failed to read %s file %s - %s.
+ZWEL0327E|327|Failed to read %s %s - %s.
