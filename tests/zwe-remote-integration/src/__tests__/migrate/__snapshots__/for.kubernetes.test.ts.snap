@@ -194,6 +194,7 @@ data:
     components:
       apiml:
         enabled: true
+        debug: false
       gateway:
         enabled: true
         port: 7554
