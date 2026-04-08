@@ -699,7 +699,8 @@ exports[`init-vsam (SHORT) unset vsam mode 1`] = `
       },
       "components": {
         "apiml": {
-          "enabled": true
+          "enabled": true,
+          "debug": false
         },
         "gateway": {
           "enabled": true,
@@ -902,7 +903,8 @@ exports[`init-vsam (SHORT) unset vsam mode 2`] = `
       },
       "components": {
         "apiml": {
-          "enabled": true
+          "enabled": true,
+          "debug": false
         },
         "gateway": {
           "enabled": true,
