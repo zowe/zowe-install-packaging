@@ -29,16 +29,16 @@ export function execute(zoweRuntimeDirectory: string): void {
     manifest = JSON.parse(contents);
   } catch (e) {
     // encoding issue etc.
-    common.printErrorAndExit(`Error ZWEL0327: Failed to read JSON file ${manifestPath} - ${e}`, undefined, 327);
+    common.printErrorAndExit(`Error ZWEL0327E: Failed to read JSON file ${manifestPath} - ${e}`, undefined, 327);
   }
   
   if (!manifest.version) {
-    common.printErrorAndExit(`Error ZWEL0327: Failed to read JSON file ${manifestPath} - "version" not defined.`, undefined, 327);
+    common.printErrorAndExit(`Error ZWEL0327E: Failed to read JSON file ${manifestPath} - "version" not defined.`, undefined, 327);
   }
   common.printMessage("Zowe v" + manifest.version);
 
   if (!manifest.build?.branch || !manifest.build?.number || !manifest.build?.commitHash) {
-    common.printErrorAndExit(`Error ZWEL0327: Failed to read JSON file ${manifestPath} - "build" section not defined or incomplete.`, undefined, 327);
+    common.printErrorAndExit(`Error ZWEL0327E: Failed to read JSON file ${manifestPath} - "build" section not defined or incomplete.`, undefined, 327);
   }
   common.printDebug(`build and hash: ${manifest.build.branch}#${manifest.build.number} (${manifest.build.commitHash})`);
   
