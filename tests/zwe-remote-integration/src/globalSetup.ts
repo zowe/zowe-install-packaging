@@ -191,7 +191,7 @@ const REMOTE_SETUP_DOWNLOADS: DownloadSpec[] = [
   { kind: 'manifest', name: 'org.zowe.zis-test', when: () => DOWNLOAD_ZOWE_TOOLS },
   { kind: 'manifest', name: 'org.zowe.bind-test', when: () => DOWNLOAD_ZOWE_TOOLS },
   { kind: 'manifest', name: 'org.zowe.apiml.sdk.certificate-analyser', when: () => DOWNLOAD_ZOWE_TOOLS },
-  { kind: 'manifest', name: 'org.zowe.zowe-native-proto' },
+  { kind: 'manifest', name: 'org.zowe.zowe-native-proto', when: () => DOWNLOAD_ZOWE_TOOLS },
 ];
 
 /** Pax/tar members uploaded to ussWorkDir before zwe build. */
