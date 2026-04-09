@@ -66,15 +66,17 @@ export function execute(allowOverwrite?: boolean) {
     mvsJclParmlib += template.resolveFile(`${pathTemplatesMvs}/parmlib.copy.tjcl`, ZOWE_CONFIG);
   } else {
     if (sourceZWESIP != targetZWESIP) {
-      if (allowOverwrite) {
-        if (zosdataset.isDatasetExists(targetZWESIP)) {
+      if (zosdataset.isDatasetExists(targetZWESIP)) {
+        if (allowOverwrite) {
           mvsJclParmlib += template.resolveFile(`${pathTemplatesMvs}/parmlib.delete.tjcl`, ZOWE_CONFIG);
+          mvsJclParmlib += template.resolveFile(`${pathTemplatesMvs}/parmlib.copy.tjcl`, ZOWE_CONFIG);
+          common.printMessage(`Warning ZWEL0300W: ${targetZWESIP} already exists. Members in this data set will be overwritten.`);
+        } else {
+          common.printMessage(`Warning ZWEL0301W: ${targetZWESIP} already exists and will not be overwritten. For upgrades, you must use --allow-overwrite.`);
+          skipJcl = true;
         }
-        mvsJclParmlib += template.resolveFile(`${pathTemplatesMvs}/parmlib.copy.tjcl`, ZOWE_CONFIG);
-        common.printMessage(`Warning ZWEL0300W: ${targetZWESIP} already exists. Members in this data set will be overwritten.`);
       } else {
-        common.printMessage(`Warning ZWEL0301W: ${targetZWESIP} already exists and will not be overwritten. For upgrades, you must use --allow-overwrite.`);
-        skipJcl = true;
+        mvsJclParmlib += template.resolveFile(`${pathTemplatesMvs}/parmlib.copy.tjcl`, ZOWE_CONFIG);
       }
     }
   }
