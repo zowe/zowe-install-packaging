@@ -141,6 +141,7 @@ zowe:
       # zosmf: exit
       # # Superuser startup check - defaults to zowe.launchScript.startupChecks.default, or "exit" if this is unset
       # user: exit
+      # # Certificate check - defaults to zowe.launchScript.startupChecks.default, or "exit" if this is unset
       # certificate: exit
 
   # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
