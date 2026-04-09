@@ -964,7 +964,8 @@ exports[`init-stc (SHORT) invalid stc configurations 3`] = `
       },
       "components": {
         "apiml": {
-          "enabled": true
+          "enabled": true,
+          "debug": false
         },
         "gateway": {
           "enabled": true,
@@ -1180,7 +1181,8 @@ exports[`init-stc (SHORT) invalid stc configurations 4`] = `
       },
       "components": {
         "apiml": {
-          "enabled": true
+          "enabled": true,
+          "debug": false
         },
         "gateway": {
           "enabled": true,
@@ -1396,7 +1398,8 @@ exports[`init-stc (SHORT) invalid stc configurations 5`] = `
       },
       "components": {
         "apiml": {
-          "enabled": true
+          "enabled": true,
+          "debug": false
         },
         "gateway": {
           "enabled": true,
@@ -1613,7 +1616,8 @@ exports[`init-stc (SHORT) invalid stc configurations 6`] = `
       },
       "components": {
         "apiml": {
-          "enabled": true
+          "enabled": true,
+          "debug": false
         },
         "gateway": {
           "enabled": true,
@@ -1830,7 +1834,8 @@ exports[`init-stc (SHORT) invalid stc configurations 7`] = `
       },
       "components": {
         "apiml": {
-          "enabled": true
+          "enabled": true,
+          "debug": false
         },
         "gateway": {
           "enabled": true,
@@ -2150,7 +2155,8 @@ exports[`init-stc (SHORT) wrong proclib 3`] = `
       },
       "components": {
         "apiml": {
-          "enabled": true
+          "enabled": true,
+          "debug": false
         },
         "gateway": {
           "enabled": true,

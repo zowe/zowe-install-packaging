@@ -152,6 +152,7 @@ zOSMF:
 components:
   apiml:
     enabled: true
+    debug: false
   gateway:
     enabled: true
     port: 7554
@@ -323,6 +324,7 @@ zOSMF:
 components:
   apiml:
     enabled: true
+    debug: false
   gateway:
     enabled: true
     port: 7554
@@ -495,6 +497,7 @@ zOSMF:
 components:
   apiml:
     enabled: true
+    debug: false
   gateway:
     enabled: true
     port: 7554
