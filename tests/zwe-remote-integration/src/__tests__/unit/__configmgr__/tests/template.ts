@@ -93,6 +93,9 @@ const DEFAULT = {
 const testCases = [
   { templateString: "", data: { nothing: true }, expected: "" },
   { templateString: ' ', data: { something: null }, expected: ' ' },
+  { templateString: `\`\n\${this.command}`, data: {command: 'AHOY'}, expected: '`\nAHOY' },
+  { templateString: '\\\\\\', data: {}, expected: '\\\\\\' },
+  { templateString: 'This is a backtick test: `', data: { test: 'ignored' }, expected: 'This is a backtick test: `' },
   { templateString: 'This is a test with no placeholders.', data: {}, expected: 'This is a test with no placeholders.' },
 
   { templateString: 'Hello, ${this.name}!', data: { name: 'Alice' }, expected: 'Hello, Alice!' },
