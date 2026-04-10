@@ -66,11 +66,11 @@
 <   workspaceDirectory: /global/zowe/workspace
 ---
 >   workspaceDirectory: /tmp
-432c432
+446c446
 <   home: ""
 ---
 >   home: "#delete_me#"
-448c448
+462c462
 <   home: ""
 ---
 >   home: "#delete_me#"

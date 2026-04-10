@@ -31,6 +31,7 @@ ZWEL0139E|139|Failed to create directory %s.
 ZWEL0140E|140|Failed to translate Zowe configuration (%s).
 ZWEL0142E|142|Failed to refresh APIML static registrations.
 ZWEL0144E|144|Cannot generate JCL with a header line greater than 80 characters. Line in error: %s. Please adjust this line in 'zowe.setup.jcl.header'.
+ZWEL0150E|150|Failed to find file %s. Zowe runtimeDirectory is invalid.
 ZWEL0151E|151|Failed to create temporary file %s. Please check permission or volume free space.
 ZWEL0157E|157|%s (%s) is not defined in Zowe YAML configuration file.
 ZWEL0158W||Failed to find job %s result.
@@ -43,6 +44,7 @@ ZWEL0163E|163|Job %s ends with code %s.
 ZWEL0164W||Job %s(%s) ends with code %s (%s).
 ZWEL0172E||Component %s has %s defined but the file is missing.
 ZWEL0173E|173|Please enter an IP address in either the subject alternative name (zowe.setup.certificate.san) or external domain (zowe.externalDomains) in the Zowe YAML configuration file.
+ZWEL0180E|180|Zowe property %s is not defined in Zowe YAML configuration file.
 ZWEL0200E||Failed to copy USS file %s to MVS data set %s.
 ZWEL0201E||File %s does not exist.
 ZWEL0202E||Unable to find samplib key for %s.

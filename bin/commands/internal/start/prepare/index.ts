@@ -525,7 +525,11 @@ export function execute() {
   if (validateCertificateAction.doCheck) {
     const certRc = validateCertificate.execute(!validateCertificateAction.warnOnly);
     if (certRc != 0) {
-      common.printErrorAndExit("Error ZWEL0323E: Certificate validation failed. Fix errors listed before starting Zowe.", undefined, 323);
+      if (validateCertificateAction.warnOnly) {
+        common.printError("WARN ZWEL0324W: Certificate validation failed. Strict validation for certificates is disabled. Zowe startup will continue.");
+      } else {
+        common.printErrorAndExit("ERROR ZWEL0323E: Certificate validation failed. Fix errors listed before starting Zowe.", undefined, 323);
+      }
     }
   }
 
