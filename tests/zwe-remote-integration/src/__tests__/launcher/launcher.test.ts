@@ -57,6 +57,7 @@ describe(`${testSuiteName}`, () => {
       _.set(cfgYaml, 'node.home', REMOTE_SYSTEM_INFO.zosNodeHome);
       _.set(defaultCfgYaml, 'zowe.launchScript.startupChecks.ports', 'disabled'); // can fail if services running
       _.set(cfgYaml, 'zowe.launchScript.startupChecks.user', 'disabled'); // some test runners may be uid(0)
+      _.set(cfgYaml, 'zowe.launchScript.startupChecks.certificate', 'disabled'); // always fails in CI
 
       const defaultsUpl = await testRunner.uploadDefaultsYaml(defaultCfgYaml);
       const zyUpl = await testRunner.uploadZoweYaml(cfgYaml);
