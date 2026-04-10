@@ -78,6 +78,7 @@ zowe:
       default: "exit"
       ports: "disabled"
       user: "disabled"
+      certificate: "disabled"
   verifyCertificates: "STRICT"
   sysMessageTrim: false
   runtimeDirectory: "/test/dir"
@@ -266,6 +267,7 @@ zowe:
       default: "exit"
       ports: "disabled"
       user: "disabled"
+      certificate: "disabled"
   verifyCertificates: "STRICT"
   sysMessageTrim: false
   runtimeDirectory: "/test/dir"
