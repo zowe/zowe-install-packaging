@@ -1,0 +1,5 @@
+Checks that each ZSS plugin found in the specified component has the PC extended attribute bit set.
+If the bit is found to be missing, this command attempts to add it.
+
+NOTE: this sub-command will be automatically executed by `zwe components install`,
+      so usually you don't need to execute this manually.

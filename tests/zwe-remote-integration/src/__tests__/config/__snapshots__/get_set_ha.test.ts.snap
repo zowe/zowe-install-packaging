@@ -58,9 +58,9 @@ exports[`internal-config-get-and-set (SHORT) config set operations 1`] = `
   * Success
 Error: Validation of update to zowe-server-base found invalid JSON Schema data
 Validity Exceptions(s) with object at
-  Validity Exceptions(s) with object at /haInstances
-    Validity Exceptions(s) with object at /haInstances/lpar2
-      missing required property 'sysname' at '/haInstances/lpar2'"
+  Validity Exceptions(s) with object at haInstances
+    Validity Exceptions(s) with object at haInstances.lpar2
+      missing required property 'sysname' at 'haInstances.lpar2'"
 `;
 
 exports[`internal-config-get-and-set (SHORT) config set operations 2`] = `
@@ -122,6 +122,7 @@ exports[`internal-config-get-and-set (SHORT) config set operations 2`] = `
     - ZWEL0001I
     - ZWEL0002I
     - ZWEAM000I
+    - ZWEAM001I
     - ZWED0031I
     - ZWES1013I
   launchScript:
@@ -293,6 +294,7 @@ zowe:
   - "ZWEL0001I"
   - "ZWEL0002I"
   - "ZWEAM000I"
+  - "ZWEAM001I"
   - "ZWED0031I"
   - "ZWES1013I"
   launchScript:
@@ -465,6 +467,7 @@ zowe:
   - "ZWEL0001I"
   - "ZWEL0002I"
   - "ZWEAM000I"
+  - "ZWEAM001I"
   - "ZWED0031I"
   - "ZWES1013I"
   launchScript:

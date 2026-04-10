@@ -1,0 +1,16 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`zwe-version (SHORT) zwe version - corrupt manifest json 1`] = `"ERROR: Error ZWEL0327E: Failed to read JSON file /test/dir/manifest.json - SyntaxError: expecting property name"`;
+
+exports[`zwe-version (SHORT) zwe version - manifest missing build section 1`] = `
+"Zowe v99.0.0
+ERROR: Error ZWEL0327E: Failed to read JSON file /test/dir/manifest.json - "build" section not defined or incomplete."
+`;
+
+exports[`zwe-version (SHORT) zwe version - manifest missing version field 1`] = `"ERROR: Error ZWEL0327E: Failed to read JSON file /test/dir/manifest.json - "version" not defined."`;
+
+exports[`zwe-version (SHORT) zwe version - missing runtimeDir 1`] = `"ERROR: Error ZWEL0106E: zowe.runtimeDirectory parameter is required."`;
+
+exports[`zwe-version (SHORT) zwe version - no manifest 1`] = `"ERROR: Error ZWEL0150E: Failed to find Zowe manifest.json. Zowe runtimeDirectory is invalid."`;
+
+exports[`zwe-version (SHORT) zwe version 1`] = `"Zowe v0.0.0"`;
