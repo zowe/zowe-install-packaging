@@ -29,6 +29,7 @@ import * as node from '../../../../libs/node';
 import * as zosmf from '../../../../libs/zosmf';
 import * as zoslib from '../../../../libs/zos';
 import * as validateBind from '../../../validate/port/bind/index';
+import * as validateAttls from '../../../validate/port/attls/index';
 import * as validateCertificate from '../../../validate/certificate/index';
 
 //# This command prepares everything needed to start Zowe.
@@ -237,6 +238,11 @@ function validateComponents(enabledComponents:string[]): any {
   const validateBindAction = getStartupCheckMode('ports');
   if (validateBindAction.doCheck) {
     validateBind.execute(!validateBindAction.warnOnly);
+  }
+
+  const validateAttlsAction = getStartupCheckMode('attls');
+  if (validateAttlsAction.doCheck) {
+    validateAttls.execute(!validateAttlsAction.warnOnly);
   }
   
   const componentEnvironments = {};

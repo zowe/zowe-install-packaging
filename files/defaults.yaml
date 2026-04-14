@@ -143,6 +143,8 @@ zowe:
       # user: exit
       # # Certificate (zowe.certificate) validation check - defaults to zowe.launchScript.startupChecks.default, or "exit" if this is unset
       # certificate: exit
+      # # ATTLS (Application Transparent Transport Layer Security) port check - defaults to zowe.launchScript.startupChecks.default, or "exit" if this is unset
+      # attls: exit
 
   # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   # How we want to verify SSL certificates of services. Valid values are:

@@ -1,0 +1,4 @@
+ZWEL0363W||%s is not %s. Skipping port ATTLS validation. Or %s is not configured. Cannot validate ATTLS port.
+ZWEL0364E|364|%s is not %s. Skipping port ATTLS validation. Or %s is not configured. Cannot validate ATTLS port.
+ZWEL0365E|365|%s: No AT-TLS rule identified on %s:%d for user %s and jobname %s
+ZWEL0366E|366|%d Zowe port ATTLS validation(s) failed, review output for action items before running Zowe.
