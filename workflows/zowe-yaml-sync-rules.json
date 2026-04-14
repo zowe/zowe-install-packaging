@@ -41,6 +41,7 @@
         "zowe_launchScript_startupChecks_javaMax",
         "zowe_launchScript_startupChecks_nodeMin",
         "zowe_launchScript_startupChecks_nodeMax"
+        "zowe_launchScript_startupChecks_attls"
       ]
     },
     {
