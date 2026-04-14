@@ -10,7 +10,10 @@
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileWriter;
+import java.io.FileOutputStream;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
+import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.security.KeyStore;
 import java.util.Base64;
@@ -28,7 +31,7 @@ public class ExportPrivateKeyLinux {
         keystore.load(new FileInputStream(keystoreFile), keyStorePassword);
         Key key = keystore.getKey(alias, keyPassword);
         String encoded = Base64.getEncoder().encodeToString(key.getEncoded());
-        FileWriter fw = new FileWriter(exportedFile);
+        Writer fw = new OutputStreamWriter(new FileOutputStream(exportedFile), StandardCharsets.ISO_8859_1);
         fw.write("-----BEGIN PRIVATE KEY-----");
         for (int i = 0; i < encoded.length(); i++) {
             if (((i % 64) == 0) && (i != (encoded.length() - 1))) {
