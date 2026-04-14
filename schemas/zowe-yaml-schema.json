@@ -851,8 +851,9 @@
     },
     "haInstances": {
       "type": "object",
+      "additionalProperties": false,
       "patternProperties": {
-        "^.*$": {
+        "^[a_z0-9]+[a-z0-9_]+$": {
           "type": "object",
           "description": "Configuration of Zowe high availability instance.",
           "required": ["hostname", "sysname"],
