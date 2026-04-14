@@ -14,22 +14,220 @@
 /*--------------------------------------------------------------------*/
 /*                                                                    */
 /*                     YAML: Comment or uncomment                     */
+/*              YAML: Set dotpath as structure (lineCommandCharSet)   */
+/*              YAML: Fix indentation (lineCommandCharIndent/Align)   */
 /*                                                                    */
 /* Line command Y or Yn, where n is a number to select lines.         */
 /* Or pair of YY to select a block. Then ZWEYAML as command.          */
+/*                                                                    */
+/* Line command YS (default) on a dotpath line converts it to nested  */
+/* YAML. Example: 'zowe.job.name: ZWESLSTC' becomes the correct       */
+/* structure under 'zowe: job: name:' wherever that parent exists.    */
+/* Intermediate keys are created as needed. Then ZWEYAML as command.  */
+/*                                                                    */
+/* Line command YI (default) fixes indentation of a single line.      */
+/* Line command YA pair (YAYA) fixes indentation of a block.          */
+/* Lines whose indent is not a multiple of the detected indent unit   */
+/* are rounded down to the nearest valid level. Pure comment lines    */
+/* are not modified.                                                  */
 /*                                                                    */
 /* Notes: Place this member in DD SYSEXEC or SYSPROC.                 */
 /*                                                                    */
 /* Customizations, if needed:                                         */
 /*    1) Rename this member.                                          */
 /*    2) Change 'lineCommandChar' to preferred character.             */
+/*    3) Change 'lineCommandCharSet' to preferred dotpath command.     */
+/*    4) Change 'lineCommandCharIndent' to preferred single-line fix.  */
+/*    5) Change 'lineCommandCharAlign' to preferred block fix command.  */
 /*       Do not use ISPF default line commands.                       */
 /*--------------------------------------------------------------------*/
 /* --- CUSTOMIZE --- */
 lineCommandChar = 'Y'
+lineCommandCharSet = 'YS'
+lineCommandCharIndent = 'YI'
+lineCommandCharAlign = 'YA'
 /* --- CUSTOMIZE --- */
 address ISREDIT
   "MACRO NOPROCESS"
+
+/*--------------------------------------------------------------------*/
+/* Handle YS: convert a dotpath entry to nested YAML structure.       */
+/*   Parses 'a.b.c: value', finds or creates each parent key, and     */
+/*   either inserts the leaf key/value or updates it in place.        */
+/*   The original dotpath line is removed once the value is placed.   */
+/*--------------------------------------------------------------------*/
+  "PROCESS RANGE "||lineCommandCharSet
+  if rc = 0 then do
+    "(ysLineNum) = LINENUM .ZFRANGE"
+    "(ysLine) = LINE (ysLineNum)"
+    ysLn = strip(ysLine)
+
+    /* Strip any trailing inline YAML comment */
+    commentPos = pos(' #', ysLn)
+    if commentPos > 0 then
+      ysLn = strip(substr(ysLn, 1, commentPos - 1))
+
+    /* Parse 'dotpath.key: value' or 'dotpath.key:' (no value) */
+    colonPos = pos(': ', ysLn)
+    if colonPos > 0 then do
+      keyPath = strip(substr(ysLn, 1, colonPos - 1))
+      yamlValue = strip(substr(ysLn, colonPos + 2))
+    end
+    else if right(ysLn, 1) = ':' then do
+      keyPath = strip(substr(ysLn, 1, length(ysLn) - 1))
+      yamlValue = ''
+    end
+    else do
+      zispfMsg = "YS: expected format 'dotpath.key: value'"
+      return
+    end
+
+    /* Dotpath requires at least one dot separator */
+    if pos('.', keyPath) = 0 then do
+      zispfMsg = "YS: '"||keyPath||"' has no dots - not a dotpath"
+      return
+    end
+
+    /* Split dotpath into keys.1 ... keys.keysCount */
+    keysCount = 0
+    remainKey = keyPath
+    do while length(remainKey) > 0
+      dotPos = pos('.', remainKey)
+      if dotPos = 0 then do
+        keysCount = keysCount + 1
+        keys.keysCount = remainKey
+        remainKey = ''
+      end
+      else do
+        keysCount = keysCount + 1
+        keys.keysCount = substr(remainKey, 1, dotPos - 1)
+        remainKey = substr(remainKey, dotPos + 1)
+      end
+    end
+
+    /* Remove the original dotpath line, then refresh the line count */
+    "DELETE (ysLineNum)"
+    "(totalLines) = LINENUM .ZLAST"
+
+    /* Detect the indent unit by finding the first indented data line */
+    indentUnit = 2
+    do scanIdx = 1 to totalLines
+      "(scanLine) = LINE (scanIdx)"
+      if length(strip(scanLine)) = 0 then iterate
+      if left(strip(scanLine), 1) = '#' then iterate
+      lineIndent = length(scanLine) - length(strip(scanLine, 'L'))
+      if lineIndent > 0 then do
+        indentUnit = lineIndent
+        leave
+      end
+    end
+
+    /* Walk the key hierarchy level by level */
+    searchStart = 1
+    lastFoundLine = 0  /* line number of deepest key found so far */
+    notFoundLevel = 0  /* first level where the key was absent */
+
+    do keyLevel = 1 to keysCount
+      targetIndent = (keyLevel - 1) * indentUnit
+      keyName = keys.keyLevel
+      keyPrefix = keyName||':'
+
+      foundLine = 0
+      do scanIdx = searchStart to totalLines
+        "(scanLine) = LINE (scanIdx)"
+        scanStripped = strip(scanLine)
+        if length(scanStripped) = 0 then iterate
+        if left(scanStripped, 1) = '#' then iterate
+        lineIndent = length(scanLine) - length(strip(scanLine, 'L'))
+        /* A shallower indent means we have left the parent block */
+        if keyLevel > 1 & lineIndent < targetIndent then leave
+        if lineIndent = targetIndent then do
+          if left(scanStripped, length(keyPrefix)) = keyPrefix then do
+            /* Confirm exact key match: nothing follows, or a space/value */
+            afterKey = substr(scanStripped, length(keyPrefix) + 1)
+            if length(afterKey) = 0 | left(afterKey, 1) = ' ' then do
+              foundLine = scanIdx
+              leave
+            end
+          end
+        end
+      end
+
+      if foundLine > 0 then do
+        lastFoundLine = foundLine
+        searchStart = foundLine + 1
+        if keyLevel = keysCount then do
+          /* Final key found: update its value in place */
+          indentSpaces = copies(' ', targetIndent)
+          if yamlValue = '' then
+            newLine = indentSpaces||keyName||':'
+          else
+            newLine = indentSpaces||keyName||': '||yamlValue
+          "LINE (foundLine) = (NEWLINE)"
+          leave
+        end
+      end
+      else do
+        notFoundLevel = keyLevel
+        leave
+      end
+    end
+
+    /* Insert any keys that were not found, starting from notFoundLevel */
+    if notFoundLevel > 0 then do
+      /* Insert right after the parent key line, or at end for top level */
+      if notFoundLevel = 1 then
+        insertAfter = totalLines
+      else
+        insertAfter = lastFoundLine
+
+      do insertLevel = notFoundLevel to keysCount
+        insertIndent = (insertLevel - 1) * indentUnit
+        insertSpaces = copies(' ', insertIndent)
+        insertKey = keys.insertLevel
+        if insertLevel < keysCount then
+          newLine = insertSpaces||insertKey||':'
+        else if yamlValue = '' then
+          newLine = insertSpaces||insertKey||':'
+        else
+          newLine = insertSpaces||insertKey||': '||yamlValue
+        "LINE_AFTER (insertAfter) = DATALINE (NEWLINE)"
+        insertAfter = insertAfter + 1
+      end
+    end
+    return
+  end
+
+/*--------------------------------------------------------------------*/
+/* Handle YI: fix indentation of a single line.                       */
+/* Handle YA/YAYA: fix indentation of a block range.                  */
+/*   Lines whose indent is not a multiple of the file's indent unit   */
+/*   are rounded down to the nearest multiple. Pure comment lines     */
+/*   (starting with #) are not modified.                              */
+/*--------------------------------------------------------------------*/
+  "PROCESS RANGE "||lineCommandCharIndent
+  if rc = 0 then do
+    "(fixFirst) = LINENUM .ZFRANGE"
+    "(fixLast) = LINENUM .ZLRANGE"
+    if fixFirst \= fixLast then do
+      zispfMsg = lineCommandCharIndent||": single line only -",
+                 "use "||lineCommandCharAlign||" for a block"
+      return
+    end
+    call fixIndentRange fixFirst, fixLast
+    return
+  end
+  "PROCESS RANGE "||lineCommandCharAlign
+  if rc = 0 then do
+    "(fixFirst) = LINENUM .ZFRANGE"
+    "(fixLast) = LINENUM .ZLRANGE"
+    call fixIndentRange fixFirst, fixLast
+    return
+  end
+
+/*--------------------------------------------------------------------*/
+/* Handle Y/Yn/YY: comment or uncomment the selected lines            */
+/*--------------------------------------------------------------------*/
   "PROCESS RANGE "||lineCommandChar
 if rc = 0 then do
   "(FIRST) = LINENUM .ZFRANGE"
@@ -91,3 +289,37 @@ if rc = 0 then do
     end
   end
 end
+return
+
+/*--------------------------------------------------------------------*/
+/* fixIndentRange: round indentation of lines first..last to the      */
+/*   nearest lower multiple of the file's detected indent unit.       */
+/*--------------------------------------------------------------------*/
+fixIndentRange:
+  parse arg fixFirst, fixLast
+  /* Detect indent unit: smallest positive indentation in the file */
+  "(fixTotalLines) = LINENUM .ZLAST"
+  fixIndentUnit = 2
+  do fixScan = 1 to fixTotalLines
+    "(fixScanLine) = LINE (fixScan)"
+    if length(strip(fixScanLine)) = 0 then iterate
+    if left(strip(fixScanLine), 1) = '#' then iterate
+    fixScanIndent = length(fixScanLine) - length(strip(fixScanLine, 'L'))
+    if fixScanIndent > 0 then do
+      fixIndentUnit = fixScanIndent
+      leave
+    end
+  end
+  /* Correct each line in the range */
+  do fixIdx = fixFirst to fixLast
+    "(fixLine) = LINE (fixIdx)"
+    if length(strip(fixLine)) = 0 then iterate
+    if left(strip(fixLine), 1) = '#' then iterate
+    fixCurrentIndent = length(fixLine) - length(strip(fixLine, 'L'))
+    if (fixCurrentIndent // fixIndentUnit) \= 0 then do
+      fixNewIndent = fixCurrentIndent - (fixCurrentIndent // fixIndentUnit)
+      fixLine = copies(' ', fixNewIndent) || strip(fixLine, 'L')
+      "LINE (fixIdx) = (FIXLINE)"
+    end
+  end
+return
