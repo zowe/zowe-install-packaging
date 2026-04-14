@@ -20,8 +20,8 @@
       "artifact": "*.pax"
     },
     "org.zowe.zlux.sample-angular-app": {
-      "version": "^3.0.0-V3.X-STAGING",
-      "artifact": "*.pax"
+      "version": "3.0.0-PR-130",
+      "artifact": "sample-angular-app-3.0.0-20260313.201010.pax"
     },
     "org.zowe.zlux.sample-iframe-app": {
       "version": "^3.0.0-V3.X-STAGING",
