@@ -122,6 +122,7 @@ exports[`internal-config-get-and-set (SHORT) config set operations 2`] = `
     - ZWEL0001I
     - ZWEL0002I
     - ZWEAM000I
+    - ZWEAM001I
     - ZWED0031I
     - ZWES1013I
   launchScript:
@@ -151,6 +152,7 @@ zOSMF:
 components:
   apiml:
     enabled: true
+    debug: false
   gateway:
     enabled: true
     port: 7554
@@ -292,6 +294,7 @@ zowe:
   - "ZWEL0001I"
   - "ZWEL0002I"
   - "ZWEAM000I"
+  - "ZWEAM001I"
   - "ZWED0031I"
   - "ZWES1013I"
   launchScript:
@@ -321,6 +324,7 @@ zOSMF:
 components:
   apiml:
     enabled: true
+    debug: false
   gateway:
     enabled: true
     port: 7554
@@ -463,6 +467,7 @@ zowe:
   - "ZWEL0001I"
   - "ZWEL0002I"
   - "ZWEAM000I"
+  - "ZWEAM001I"
   - "ZWED0031I"
   - "ZWES1013I"
   launchScript:
@@ -492,6 +497,7 @@ zOSMF:
 components:
   apiml:
     enabled: true
+    debug: false
   gateway:
     enabled: true
     port: 7554

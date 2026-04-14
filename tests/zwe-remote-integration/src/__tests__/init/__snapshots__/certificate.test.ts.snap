@@ -188,6 +188,7 @@ Error ZWEL0326E: An error occurred while processing Zowe YAML config /test/dir/z
           "ZWEL0001I",
           "ZWEL0002I",
           "ZWEAM000I",
+          "ZWEAM001I",
           "ZWED0031I",
           "ZWES1013I"
         ],
@@ -225,7 +226,8 @@ Error ZWEL0326E: An error occurred while processing Zowe YAML config /test/dir/z
       },
       "components": {
         "apiml": {
-          "enabled": true
+          "enabled": true,
+          "debug": false
         },
         "gateway": {
           "enabled": true,

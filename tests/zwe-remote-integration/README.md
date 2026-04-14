@@ -8,6 +8,49 @@ Runs integration-style tests for the `zwe` command line utility on a backend sys
 - Makes heavy use of [@zowe/cli](https://github.com/zowe/zowe-cli) Node SDKs
 - [Jest](https://jestjs.io/)
 
+## System Requirements
+
+Your z/OS system must meet the following requirements:
+- z/OS 2.5.0 or higher
+- z/OSMF installed and configured with REST APIs enabled
+- Java installation (17 or 21)
+- Node.js installation (20 or higher)
+- SDSF or another tool capable of running operator commands (e.g. Sysview, Omegamon)
+
+### Disk space (approximate)
+
+- ~300MB of free space in the target test directory (`remote_test_dir`)
+- ~100MB of free space on the test volume and/or storage class (`test_volume`, optional `test_storclas`)
+
+### Remote user (ACID) authorizations
+
+#### MVS data sets
+
+- **Broad ALTER/CONTROL (or your ESM equivalent) on `{test_ds_hlq}.ZWETEST.**`**: setup creates and loads multiple libraries; tests delete, rename, back up, and recreate data sets and members ([`src/globalSetup.ts`](./src/globalSetup.ts), [`RemoteTestRunner.removeDatasetForTest`](./src/zos/RemoteTestRunner.ts), [`install`](./src/__tests__/install/install.test.ts), [`init`](./src/__tests__/init/) suites).
+- **`test_volume`** is required; **`test_storclas`** is optional and enables SMS-only cases in [`init/apfauth`](./src/__tests__/init/apfauth.test.ts).
+
+#### JES / batch
+
+With **`zowe.setup.jcl.enable: true`**, many flows **submit jobs** (non–dry-run `zwe install`, `zwe init generate`, `zwe init certificate`, `zwe init vsam`, `zwe init stc`, `zwe start` / `zwe stop`, and related suites). The user must be able to **submit** those jobs, allow steps to **allocate and update** the test HLQ libraries (JCLLIB, PROCLIB, PARMLIB, and others), and **read job output** where spool collection is enabled.
+
+#### Operator commands / SDSF (for LONG start/stop and typical `opercmd` use)
+
+From [`bin/utils/opercmd.rex`](../../bin/utils/opercmd.rex) (RACF-oriented names; use ACF2 or Top Secret equivalents as appropriate):
+
+- **OPERCMDS**: `MVS.MCSOPER.console`, `MVS.**`, `JES%.**` (and **OPERPARM AUTH** command groups if the EMCS path applies).
+- **SDSF** (when using the SDSF REXX interface): profiles such as **`ISFOPER.SYSTEM`** and **`ISFCMD.ODSP.ULOG.jesx`** (JES name may differ).
+
+Without these, **(LONG)** `zwe start` / `zwe stop` in [`start-stop`](./src/__tests__/start-stop/startstop.test.ts) is expected to fail; **(SHORT)** explicitly covers the stubbed SDSF case.
+
+#### Network / ports
+
+[`validate/config`](./src/__tests__/validate/config.test.ts) runs **`zwe validate port bind`** with ports shifted to reduce collisions; the user should be allowed to **bind** to those ports (typically non-reserved; no superuser bind should be required).
+
+#### Additional Notes
+
+- **JFrog** (`jfrog_user` / `jfrog_token` in [test configuration](./resources/test_config.yml)): required on the **machine that runs Jest**, not on the z/OS user profile.
+- **RACDCERT / key rings**: current **PKCS12** certificate tests ([`init/certificate`](./src/__tests__/init/certificate.test.ts)) do not exercise SAF key rings; if you switch to **JCERACFKS**, add the appropriate keyring and certificate profiles.
+
 ## Running Tests
 
 In order to run these tests, you must first modify the [test configuration](./resources/test_config.yml) according to the instructions in that file.

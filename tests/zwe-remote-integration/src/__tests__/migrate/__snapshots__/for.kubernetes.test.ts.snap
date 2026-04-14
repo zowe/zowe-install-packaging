@@ -157,6 +157,7 @@ data:
       - "ZWEL0001I"
       - "ZWEL0002I"
       - "ZWEAM000I"
+      - "ZWEAM001I"
       - "ZWED0031I"
       - "ZWES1013I"
       launchScript:
@@ -193,6 +194,7 @@ data:
     components:
       apiml:
         enabled: true
+        debug: false
       gateway:
         enabled: true
         port: 7554
