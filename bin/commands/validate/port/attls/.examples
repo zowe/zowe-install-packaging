@@ -1,0 +1,3 @@
+zwe validate port attls -c /path/to/zowe.yaml
+zwe validate port attls -c 'FILE(/customizations/zowe.yaml):FILE(/defaults/zowe.yaml)' -o componentName
+zwe validate port attls -c 'FILE(/path/to/zowe.yaml):PARMLIB(ZOWE.PARMLIB(YAML))'
