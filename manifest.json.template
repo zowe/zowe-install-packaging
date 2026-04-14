@@ -17,11 +17,11 @@
     },
     "org.zowe.zlux.zlux-core": {
       "version": "3.5.0-ANGULARI8N-ZLUX-CORE",
-      "artifact": "zlux-core-3.5.0-20260414.080002.pax"
+      "artifact": "zlux-core-3.5.0-20260414.113701.pax"
     },
     "org.zowe.zlux.sample-angular-app": {
       "version": "3.0.0-I8NANGULAR",
-      "artifact": "sample-angular-app-3.0.0-20260414.082956.pax"
+      "artifact": "sample-angular-app-3.0.0-20260414.112724.pax"
     },
     "org.zowe.zlux.sample-iframe-app": {
       "version": "^3.0.0-V3.X-STAGING",
