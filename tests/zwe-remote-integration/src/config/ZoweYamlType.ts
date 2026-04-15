@@ -872,6 +872,11 @@ const zoweSchema = zoweYamlSchema as {
                   default: 'exit';
                   description: 'Checks the port for each enabled component to ensure Zowe can bind to it and that it is not already occupied by some other program';
                 };
+                certificate: {
+                  $ref: '/schemas/v2/server-common#startupCheck';
+                  default: 'exit';
+                  description: 'Checks properties of certificates to verify that they are valid for use by Zowe';
+                };
                 zosmf: {
                   $ref: '/schemas/v2/server-common#startupCheck';
                   default: 'exit';

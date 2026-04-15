@@ -143,6 +143,8 @@ zowe:
       components: "warn"
       # # Superuser startup check - defaults to zowe.launchScript.startupChecks.default, or "exit" if this is unset
       # user: exit
+      # # Certificate (zowe.certificate) validation check - defaults to zowe.launchScript.startupChecks.default, or "exit" if this is unset
+      # certificate: exit
 
   # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   # How we want to verify SSL certificates of services. Valid values are:
@@ -168,6 +170,7 @@ components:
   # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   apiml:
     enabled: false
+    debug: false
 
   # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   gateway:
