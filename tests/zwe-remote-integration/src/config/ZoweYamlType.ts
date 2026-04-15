@@ -887,6 +887,30 @@ const zoweSchema = zoweYamlSchema as {
                   default: 'exit';
                   description: 'Checks if zowe.setup.security.users.zowe (ZWESVUSR) is configured as a superuser (UID 0). Such a setting is strongly discouraged.';
                 };
+                javaMin: {
+                  type: 'string';
+                  default: 'exit';
+                  description: "Checks that the Java runtime version meets the minimum required version. Defaults to zowe.launchScript.startupChecks.default, or 'exit' if unset.";
+                  enum: ['exit', 'warn', 'disabled'];
+                };
+                javaMax: {
+                  type: 'string';
+                  default: 'warn';
+                  description: "Checks that the Java runtime version does not exceed the maximum supported version. Defaults to zowe.launchScript.startupChecks.default, or 'warn' if unset.";
+                  enum: ['exit', 'warn', 'disabled'];
+                };
+                nodeMin: {
+                  type: 'string';
+                  default: 'exit';
+                  description: "Checks that the Node runtime version meets the minimum required version. Defaults to zowe.launchScript.startupChecks.default, or 'exit' if unset.";
+                  enum: ['exit', 'warn', 'disabled'];
+                };
+                nodeMax: {
+                  type: 'string';
+                  default: 'warn';
+                  description: "Checks that the Node runtime version does not exceed the maximum supported version. Defaults to zowe.launchScript.startupChecks.default, or 'warn' if unset.";
+                  enum: ['exit', 'warn', 'disabled'];
+                };
               };
             };
           };
