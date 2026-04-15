@@ -2240,7 +2240,7 @@ echo '# You can start each HA instance with `zwe start --ha-instance <ha-instanc
 echo '#-------------------------------------------------------------------------------' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
 echo '# haInstances:' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
 echo '#' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
-echo '#   # HA instance ID' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
+echo '#   # HA instance ID: lowercased, numbers and underscores are allowed.' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
 echo '#   lpar1:' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
 echo '#     # hostname where this instance will be started' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
 echo '#     hostname: lpar1.example.com' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
