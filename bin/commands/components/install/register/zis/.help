@@ -1,0 +1,10 @@
+Registers plugins for ZIS found within the specified component.
+This involves registering the plugins into the ZIS PARMLIB,
+as well as making the software available to ZIS either by
+adding its content to the ZIS APF authorized plugin LOADLIB,
+or by adding a reference to the component's provided LOADLIBs
+into the ZIS STC JCL via STEPLIB entries.
+
+
+NOTE: this sub-command will be automatically executed by `zwe components install`,
+      so usually you don't need to execute this manually.

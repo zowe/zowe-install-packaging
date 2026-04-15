@@ -66,6 +66,14 @@ const serverCommonSchema = serverYamlSchema as {
       minLength: 1;
       maxLength: 8;
     };
+    datasetZISMember: {
+      $anchor: 'zoweDatasetZISMember';
+      type: 'string';
+      description: "A 'ZWESIP' prefix followed by 2 characters";
+      pattern: '^ZWESIP([0-9A-Z\\$\\#\\@]){2}$';
+      minLength: 8;
+      maxLength: 8;
+    };
     jobname: {
       $anchor: 'zoweJobname';
       type: 'string';
@@ -129,6 +137,11 @@ const serverCommonSchema = serverYamlSchema as {
       deprecated: true;
       minimum: 1;
       maximum: 1023;
+    };
+    startupCheck: {
+      $anchor: 'startupCheck';
+      type: 'string';
+      enum: ['exit', 'warn', 'disabled'];
     };
   };
 };
@@ -850,22 +863,29 @@ const zoweSchema = zoweYamlSchema as {
               description: 'Startup check configuration options';
               properties: {
                 default: {
-                  type: 'string';
+                  $ref: '/schemas/v2/server-common#startupCheck';
                   default: 'exit';
                   description: 'Sets the default runtime behavior for all startup checks';
-                  enum: ['exit', 'warn', 'disabled'];
                 };
                 ports: {
-                  type: 'string';
+                  $ref: '/schemas/v2/server-common#startupCheck';
                   default: 'exit';
                   description: 'Checks the port for each enabled component to ensure Zowe can bind to it and that it is not already occupied by some other program';
-                  enum: ['exit', 'warn', 'disabled'];
+                };
+                certificate: {
+                  $ref: '/schemas/v2/server-common#startupCheck';
+                  default: 'exit';
+                  description: 'Checks properties of certificates to verify that they are valid for use by Zowe';
                 };
                 zosmf: {
-                  type: 'string';
+                  $ref: '/schemas/v2/server-common#startupCheck';
                   default: 'exit';
                   description: "Checks z/OSMF to see if it is running and meet's Zowe's requirements";
-                  enum: ['exit', 'warn', 'disabled'];
+                };
+                user: {
+                  $ref: '/schemas/v2/server-common#startupCheck';
+                  default: 'exit';
+                  description: 'Checks if zowe.setup.security.users.zowe (ZWESVUSR) is configured as a superuser (UID 0). Such a setting is strongly discouraged.';
                 };
               };
             };

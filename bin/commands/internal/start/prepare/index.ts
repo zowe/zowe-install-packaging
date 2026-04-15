@@ -29,6 +29,7 @@ import * as node from '../../../../libs/node';
 import * as zosmf from '../../../../libs/zosmf';
 import * as zoslib from '../../../../libs/zos';
 import * as validateBind from '../../../validate/port/bind/index';
+import * as validateCertificate from '../../../validate/certificate/index';
 
 //# This command prepares everything needed to start Zowe.
 const cliParameterConfig = std.getenv('ZWE_CLI_PARAMETER_CONFIG');
@@ -39,7 +40,7 @@ const containerComponentId = std.getenv('ZWE_PRIVATE_CONTAINER_COMPONENT_ID');
 
 const INDIVIDUAL_APIML_COMPONENTS = ['gateway', 'discovery', 'api-catalog', 'caching-service', 'zaas'];
 
-const user = std.getenv('USER');
+const user = common.getUserId();
 
 const ZOWE_CONFIG=config.getZoweConfig();
 
@@ -199,7 +200,7 @@ function globalValidate(enabledComponents:string[]): void {
         privateErrors++;
         common.printFormattedError('ZWELS', "zwe-internal-start-prepare,global_validate", "Zosmf validation failed");
       }
-    } else if (std.getenv('ZWE_components_gateway_apiml_security_auth_provider') == "zosmf") {
+    } else if (enabledComponents.includes('gateway') && std.getenv('ZWE_components_gateway_apiml_security_auth_provider') == "zosmf") {
         privateErrors++;
         common.printError("Using z/OSMF as 'components.gateway.apiml.security.auth.provider' is not possible: discovery is disabled.");
         common.printFormattedError('ZWELS', "zwe-internal-start-prepare,global_validate", "Zosmf validation failed");
@@ -447,6 +448,18 @@ function configureComponents(componentEnvironments?: any, enabledComponents?:str
 
 // Few early steps even before initialization
 
+// Check if user is UID 0, this is not recommended
+let userCheckAction = ZOWE_CONFIG.zowe.launchScript?.startupChecks?.user || ZOWE_CONFIG.zowe.launchScript?.startupChecks?.default || 'exit';
+if (userCheckAction != 'disabled') {
+  const userID = shell.execOutSync('sh', '-c', 'id -u');
+  if (userID.rc == 0 && userID.out && userID.out == "0") {
+    common.printFormattedError("ZWELS", "zwe-internal-start-prepare", 'Running as UID 0. Such a setting is strongly discouraged.');
+    if (userCheckAction == 'exit') {
+      std.exit(1);
+    }
+  }
+}
+
 // init ZWE_RUN_IN_CONTAINER variable
 const runtimeDirectory=ZOWE_CONFIG.zowe.runtimeDirectory;
 std.setenv('ZWE_zowe_runtimeDirectory', runtimeDirectory);
@@ -490,6 +503,18 @@ export function execute() {
     node.requireNode();
   }
   common.requireZoweYaml();
+
+  const validateCertificateAction = getStartupCheckMode('certificate');
+  if (validateCertificateAction.doCheck) {
+    const certRc = validateCertificate.execute(!validateCertificateAction.warnOnly);
+    if (certRc != 0) {
+      if (validateCertificateAction.warnOnly) {
+        common.printError("WARN ZWEL0324W: Certificate validation failed. Strict validation for certificates is disabled. Zowe startup will continue.");
+      } else {
+        common.printErrorAndExit("ERROR ZWEL0323E: Certificate validation failed. Fix errors listed before starting Zowe.", undefined, 323);
+      }
+    }
+  }
 
   // overwrite ZWE_PRIVATE_LOG_LEVEL_ZWELS with zowe.launchScript.logLevel config in YAML
   if (ZOWE_CONFIG.zowe.launchScript.logLevel) {
