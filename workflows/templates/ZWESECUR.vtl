@@ -416,19 +416,20 @@
 /* SETROPTS CLASSACT(CDT) RACLIST(CDT)                               */
 
 /* define ZOWE resource class                                        */
-/* skip this command if the ZOWE resource class already exists       */
+/* Uncomment this command if the ZOWE resource class does not        */
+/* exist.                                                            */
 /* use a unique value in POSIT                                       */
-  RDEFINE CDT ZOWE -
-    UACC(NONE) -
-    CDTINFO(DEFAULTUACC(NONE) -
-      FIRST(ALPHA) -
-      OTHER(ALPHA,NATIONAL,NUMERIC,SPECIAL) -
-      MAXLENGTH(246) -
-      POSIT(607) -
-      RACLIST(DISALLOWED))
+/*  RDEFINE CDT ZOWE -                                               */
+/*    UACC(NONE) -                                                   */
+/*    CDTINFO(DEFAULTUACC(NONE) -                                    */
+/*      FIRST(ALPHA) -                                               */
+/*      OTHER(ALPHA,NATIONAL,NUMERIC,SPECIAL) -                      */
+/*      MAXLENGTH(246) -                                             */
+/*      POSIT(607) -                                                 */
+/*      RACLIST(DISALLOWED))                                         */
 
-  SETROPTS RACLIST(CDT) REFRESH
-  SETROPTS CLASSACT(ZOWE)
+/*  SETROPTS RACLIST(CDT) REFRESH                                    */
+/*  SETROPTS CLASSACT(ZOWE)                                          */
 
 /* define resource for information about API services                */
   RDEFINE ZOWE APIML.SERVICES UACC(NONE)
@@ -625,13 +626,14 @@ LIST &HLQ.
 *   detailed information about API services to Zowe users.
 
 * define ZOWE resource type and class mapping
-* skip this section if the ZOWE resource class already exists
-SET CONTROL(GSO)
-INSERT CLASMAP.ZOWE RESOURCE(ZOWE) RSRCTYPE(ZWE)
-F ACF2,REFRESH(CLASMAP),TYPE(GSO)
-CHANGE INFODIR TYPES(R-RZWE)
-F ACF2,REFRESH(INFODIR)
-SET CONTROL(GSO)
+* Uncomment this section if the ZOWE resource class does not
+* exist.
+* SET CONTROL(GSO)
+* INSERT CLASMAP.ZOWE RESOURCE(ZOWE) RSRCTYPE(ZOW)
+* F ACF2,REFRESH(CLASMAP),TYPE(GSO)
+* CHANGE INFODIR TYPES(R-RZWE)
+* F ACF2,REFRESH(INFODIR)
+* SET CONTROL(GSO)
 
 * uncomment and replace "user" to permit Zowe users to access
 * the resource:
@@ -820,9 +822,10 @@ TSS PERMIT(&ZOWEUSER.) APPL(OMVSAPPL)
 /*   detailed information about API services to Zowe users.          */
 
 /* define ZOWE resource class                                        */
-/* skip this command if the ZOWE resource class already exists       */
-  TSS ADDTO(RDT) RESCLASS(ZOWE) MAXLEN(246) +
-    ACLST(NONE,READ,UPDATE,CONTROL) DEFACC(NONE)
+/* Uncomment this command if the ZOWE resource class does not        */
+/* exist.                                                            */
+/* TSS ADDTO(RDT) RESCLASS(ZOWE) MAXLEN(246) +                       */
+/*  ACLST(NONE,READ,UPDATE,CONTROL) DEFACC(NONE)                     */
 
 /* define resource for information about API services                */
   TSS ADDTO(&ZOWEDEP.) ZOWE(APIML.)
