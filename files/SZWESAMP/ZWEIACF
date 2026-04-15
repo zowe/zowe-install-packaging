@@ -235,21 +235,6 @@ ADD(- UID({zowe.setup.security.groups.sysProg}) +
 LIST {zowe.setup.dataset.prefix}
 *
 
-*
-* DEFINE ZOWE RESOURCE PROTECTION .................................
-*
-* - Defines new resource class for Zowe that protects access to
-*   sensitive Zowe resources.
-* - Defines resource APIML.SERVICES that controls access to
-*   detailed information about API services to Zowe users.
-
-* skip this section if the ZOWE resource class already exists
-SET CONTROL(GSO)
-INSERT CLASMAP.ZOWE RESOURCE(ZOWE) RSRCTYPE(ZWE)
-F ACF2,REFRESH(CLASMAP),TYPE(GSO)
-CHANGE INFODIR TYPES(R-RZWE)
-F ACF2,REFRESH(INFODIR)
-
 * uncomment and replace "user" to permit Zowe users to access
 * the resource:
 * SET RESOURCE(ZWE)
