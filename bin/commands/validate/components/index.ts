@@ -93,7 +93,7 @@ export function execute(quitOnError?: boolean, componentNames?: string): number 
     const manifestPath = component.getManifestPath(componentDir);
     if (!manifestPath) {
       common.printFormattedError(common.MSG_KEY, COMMAND_NAME,
-        `ZWEL0327E: Component '${componentId}' is missing a valid manifest file (manifest.yaml, manifest.yml, or manifest.json) in ${componentDir}.`);
+        `ZWEL0333E: Component '${componentId}' is missing a valid manifest file (manifest.yaml, manifest.yml, or manifest.json) in ${componentDir}.`);
       invalidComponents.push(componentId);
     } else {
       common.printFormattedDebug(common.MSG_KEY, COMMAND_NAME, `Component '${componentId}' manifest found at ${manifestPath}.`);
