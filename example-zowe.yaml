@@ -624,7 +624,7 @@ components:
 #-------------------------------------------------------------------------------
 # haInstances:
 #
-#   # HA instance ID
+#   # HA instance ID: lowercased, numbers and underscores are allowed.
 #   lpar1:
 #     # hostname where this instance will be started
 #     hostname: lpar1.example.com
