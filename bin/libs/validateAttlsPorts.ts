@@ -10,14 +10,12 @@
 */
 
 import * as std from 'cm_std';
-import * as common from '../../../../libs/common';
-import * as config from '../../../../libs/config';
-import * as component from '../../../../libs/component';
-import * as shell from '../../../../libs/shell';
+import * as common from './common';
+import * as config from './config';
+import * as component from './component';
+import * as shell from './shell';
 
-const COMMAND_NAME = 'zwe-validate-port-attls';
-
-export function execute(quitOnError?: boolean, componentName?: string): number {
+export function validateAttlsPorts(quitOnError?: boolean, componentName?: string): number {
   common.requireZoweYaml();
   let hasErrors = false;
   const ZOWE_CONFIG = config.getZoweConfig();
@@ -60,7 +58,7 @@ export function execute(quitOnError?: boolean, componentName?: string): number {
   let detectAttlsPortPath = std.getenv('ZWE_zowe_runtimeDirectory') + '/bin/utils/detect-attls-port';
   let myJobname = std.getenv('_BPX_JOBNAME');
 
-  common.printFormattedInfo(common.MSG_KEY, COMMAND_NAME, `Checking ATTLS ports of ${checkedComponents.length} enabled components`);
+  common.printFormattedInfo(common.MSG_KEY, 'validateAttlsPorts', `Checking ATTLS ports of ${checkedComponents.length} enabled components`);
   let failedCount = 0;
   
   for (let i = 0; i < checkedComponents.length; i++) {
@@ -69,7 +67,7 @@ export function execute(quitOnError?: boolean, componentName?: string): number {
     
     // Skip if component doesn't have port configured
     if (!port) {
-      common.printFormattedDebug(common.MSG_KEY, COMMAND_NAME, `${componentName}: Component has no port, skipped.`);
+      common.printFormattedDebug(common.MSG_KEY, 'validateAttlsPorts', `${componentName}: Component has no port, skipped.`);
       continue;
     }
 
@@ -93,10 +91,10 @@ export function execute(quitOnError?: boolean, componentName?: string): number {
     
     if (jobname) {
       std.setenv('_BPX_JOBNAME', jobname);
-      common.printFormattedDebug(common.MSG_KEY, COMMAND_NAME, 
+      common.printFormattedDebug(common.MSG_KEY, 'validateAttlsPorts', 
         `${componentName}: Checking if ATTLS is enabled for port ${port} for userid ${zoweUserId} on host ${listenAddress}, jobname ${jobname}`);
     } else {
-      common.printFormattedDebug(common.MSG_KEY, COMMAND_NAME, 
+      common.printFormattedDebug(common.MSG_KEY, 'validateAttlsPorts', 
         `${componentName}: Checking if ATTLS is enabled for port ${port} for userid ${zoweUserId} on host ${listenAddress} with default jobname`);
     }
     
@@ -117,10 +115,10 @@ export function execute(quitOnError?: boolean, componentName?: string): number {
         common.printDebug(result.out);
       }
       if (jobname) {
-        common.printFormattedError(common.MSG_KEY, COMMAND_NAME, 
+        common.printFormattedError(common.MSG_KEY, 'validateAttlsPorts', 
           `ZWEL0365E: ${componentName}: No AT-TLS rule identified on ${listenAddress}:${port} for user ${zoweUserId} and jobname ${jobname}`);
       } else {
-        common.printFormattedError(common.MSG_KEY, COMMAND_NAME, 
+        common.printFormattedError(common.MSG_KEY, 'validateAttlsPorts', 
           `ZWEL0365E: ${componentName}: No AT-TLS rule identified on ${listenAddress}:${port} for user ${zoweUserId}`);
       }
       hasErrors = true;
@@ -130,15 +128,15 @@ export function execute(quitOnError?: boolean, componentName?: string): number {
   }
 
   if (!hasErrors) {
-    common.printFormattedInfo(common.MSG_KEY, COMMAND_NAME, `Zowe port ATTLS validation passed.`);
+    common.printFormattedInfo(common.MSG_KEY, 'validateAttlsPorts', `Zowe port ATTLS validation passed.`);
     return 0;
   } else if (!quitOnError) {
-    common.printFormattedError(common.MSG_KEY, COMMAND_NAME, 
+    common.printFormattedError(common.MSG_KEY, 'validateAttlsPorts', 
       `ZWEL0366E: ${failedCount} Zowe port ATTLS validation(s) failed, review output for action items before running Zowe.`);
     return failedCount;
   } else {
     // It is possible that the ATTLS check failed due to missing detect-attls-port binary or other unexpected error, so we want to provide a hint about how to bypass the check if needed instead of just exiting with error code.
-    common.printFormattedError(common.MSG_KEY, COMMAND_NAME, 
+    common.printFormattedError(common.MSG_KEY, 'validateAttlsPorts', 
       `Zowe port ATTLS validation failed. This check can be dismissed with YAML value "zowe.launchScript.startupChecks.attls: warn"`);
     common.printErrorAndExit(
       `ZWEL0366E: ${failedCount} Zowe port ATTLS validation(s) failed, review output for action items before running Zowe.`, 
