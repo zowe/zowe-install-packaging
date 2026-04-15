@@ -237,13 +237,13 @@ LIST {zowe.setup.dataset.prefix}
 
 * uncomment and replace "user" to permit Zowe users to access
 * the resource:
-* SET RESOURCE(ZWE)
+* SET RESOURCE(ZOW)
 * RECKEY APIML ADD(SERVICES -
 * UID(user) SERVICE(READ) ALLOW)
-* F ACF2,REBUILD(ZWE)
+* F ACF2,REBUILD(ZOW)
 *
 * show results
-* SET RESOURCE(ZWE)
+* SET RESOURCE(ZOW)
 * LIST LIKE(-)
 $$
 //*
