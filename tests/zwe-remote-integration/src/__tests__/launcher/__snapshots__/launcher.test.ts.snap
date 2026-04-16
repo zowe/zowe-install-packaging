@@ -77,6 +77,8 @@ zowe:
     startupChecks:
       default: "exit"
       ports: "disabled"
+      user: "disabled"
+      certificate: "disabled"
   verifyCertificates: "STRICT"
   sysMessageTrim: false
   certificate:
@@ -105,6 +107,7 @@ zowe:
   - "ZWEL0001I"
   - "ZWEL0002I"
   - "ZWEAM000I"
+  - "ZWEAM001I"
   - "ZWED0031I"
   - "ZWES1013I"
 components:
@@ -259,6 +262,8 @@ zowe:
     startupChecks:
       default: "exit"
       ports: "disabled"
+      user: "disabled"
+      certificate: "disabled"
   verifyCertificates: "STRICT"
   sysMessageTrim: false
   certificate:
@@ -287,6 +292,7 @@ zowe:
   - "ZWEL0001I"
   - "ZWEL0002I"
   - "ZWEAM000I"
+  - "ZWEAM001I"
   - "ZWED0031I"
   - "ZWES1013I"
 components:

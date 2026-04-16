@@ -38,6 +38,9 @@ describe(`${testSuiteName}`, () => {
     cfgYaml = ZoweConfig.getZoweYaml();
     _.set(cfgYaml, 'node.home', REMOTE_SYSTEM_INFO.zosNodeHome);
     _.set(cfgYaml, 'zowe.launchScript.startupChecks.ports', 'disabled');
+    _.set(cfgYaml, 'zowe.launchScript.startupChecks.user', 'disabled'); // some test runners may be uid(0)
+    _.set(cfgYaml, 'zowe.launchScript.startupChecks.certificate', 'disabled'); // always fails in CI
+
     defaultCfgYaml = ZoweConfig.getDefaultsYaml();
     const workspaceEnv: TestFile = {
       name: `${cfgYaml.zowe.workspaceDirectory}/.env`,

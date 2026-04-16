@@ -37,6 +37,8 @@ describe(`${testSuiteName}`, () => {
   });
   beforeEach(async () => {
     cfgYaml = ZoweConfig.getZoweYaml();
+    _.set(cfgYaml, 'zowe.launchScript.startupChecks.user', 'disabled');
+    _.set(cfgYaml, 'zowe.launchScript.startupChecks.certificate', 'disabled');
     for (const component of Object.values(cfgYaml.components)) {
       if (component.port) {
         component.port = (Number(component.port) + 15000) % 65535;
@@ -61,6 +63,18 @@ describe(`${testSuiteName}`, () => {
   });
 
   describe('(SHORT)', () => {
+    it('test startup user if uid=0', async () => {
+      const uid = await testRunner.runRaw('id -u');
+      // only run test if we're uid 0
+      if (Number(uid) === 0) {
+        _.set(cfgYaml, 'zowe.launchScript.startupChecks.user', 'exit');
+        const result = await testRunner.runZweTest(cfgYaml, 'internal start prepare');
+        expect(result.cleanedStdout.includes('Running as UID 0. Such a setting is strongly discouraged'));
+      } else {
+        expect(1).toBe(1);
+      }
+    });
+
     it('various combinations of settings impacting z/osmf scheme', async () => {
       // All combinations relevant fields are 3^6 or 3^7, too many to test in integration. Cover more common subset.
       /* eslint-disable max-len */
@@ -92,6 +106,8 @@ describe(`${testSuiteName}`, () => {
         delete cfgYaml.zowe.network.server.tls;
         _.set(cfgYaml, 'node.home', REMOTE_SYSTEM_INFO.zosNodeHome);
         _.set(cfgYaml, 'zowe.launchScript.startupChecks.zosmf', 'exit');
+        _.set(cfgYaml, 'zowe.launchScript.startupChecks.user', 'disabled');
+        _.set(cfgYaml, 'zowe.launchScript.startupChecks.certificate', 'disabled');
         cfgYaml.zOSMF.port = Number(cfgYaml.zOSMF.port) + 1; // intentionally bad port: quit early and print z/osmf URL
 
         _.set(cfgYaml, 'components.apiml.enabled', test['aml.enabled']);
@@ -100,7 +116,6 @@ describe(`${testSuiteName}`, () => {
         _.set(cfgYaml, 'zowe.network.server.tls.attls', test['net.server.attls']);
         _.set(cfgYaml, 'zowe.network.client.tls.attls', test['net.client.attls']);
         _.set(cfgYaml, 'zowe.environments', test['cmd.env']);
-
         const result = await testRunner.runZweTest(cfgYaml, 'internal start prepare');
         const verifyResult = new RegExp(`Could not validate if z/OSMF is available on.*${test['result']}://.*?$`, 'gm');
         expect(verifyResult.exec(result.cleanedStdout)).not.toBeNull();
@@ -162,7 +177,15 @@ describe(`${testSuiteName}`, () => {
     });
 
     it('default startupChecks behavior', async () => {
-      const result = await testRunner.runZweTest(cfgYaml, 'internal start prepare');
+      cfgYaml.zowe.launchScript = ZoweConfig.getZoweYaml().zowe.launchScript; // reset launchScript to defaults
+      _.set(cfgYaml, 'zowe.launchScript.startupChecks.user', 'disabled');
+      let result = await testRunner.runZweTest(cfgYaml, 'internal start prepare');
+      expect(result.cleanedStdout).toMatchSnapshot();
+      expect(result.rc).toBe(67); // ZWEL0323E: Certificate validation failed. Fix errors listed before starting Zowe.
+
+      _.set(cfgYaml, 'node.home', REMOTE_SYSTEM_INFO.zosNodeHome);
+      _.set(cfgYaml, 'zowe.launchScript.startupChecks.certificate', 'warn'); // lets the command complete
+      result = await testRunner.runZweTest(cfgYaml, 'internal start prepare');
       expect(result.cleanedStdout).toMatchSnapshot();
       expect(result.rc).toBe(0);
     });

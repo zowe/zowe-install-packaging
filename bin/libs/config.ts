@@ -25,6 +25,7 @@ import * as zosfs from './zos-fs';
 import * as sys from './sys';
 import * as container from './container';
 import * as objUtils from '../utils/ObjUtils';
+import * as fakejq from './fakejq';
 
 const cliParameterConfig: string = function () {
   let value = std.getenv('ZWE_CLI_PARAMETER_CONFIG');
@@ -44,6 +45,14 @@ export function getZoweConfig(): any {
   common.requireZoweYaml();
 
   return configmgr.getZoweConfig();
+}
+
+export function ensureProperty(jqKey: string): any {
+  const ZOWE_CONFIG = getZoweConfig();
+  // read extensionDirectory
+  if (!fakejq.jqget(ZOWE_CONFIG, jqKey)) {
+    common.printErrorAndExit(`Error ZWEL0180E: Zowe property ${jqKey.substring(1)} is not defined in Zowe YAML configuration file.`, undefined, 180);
+  }
 }
 
 export function deleteFromZoweCfgFile(file: string, deleteKey: string, shouldValidate: boolean = true): any {
