@@ -896,58 +896,6 @@
       "additionalProperties": false,
       "required": ["keystore", "truststore", "pem"],
       "properties": {
-        "client": {
-          "type": "object",
-          "additionalProperties": true,
-          "properties": {
-            "keystore": {
-              "type": "object",
-              "additionalProperties": false,
-              "description": "Certificate keystore.",
-              "properties": {
-                "type": {
-                  "type": "string",
-                  "description": "Keystore type.",
-                  "enum": ["JCEKS", "JCECCAKS", "JCERACFKS", "JCECCARACFKS", "JCEHYBRIDRACFKS"]
-                },
-                "file": {
-                  "type": "string",
-                  "description": "Path of your z/OS keyring, including ring owner and ring name. Case sensitivity and spaces matter.",
-                  "pattern": "^safkeyring[a-z]*:\/\/.*"
-                },
-                "password": {
-                  "type": "string",
-                  "description": "Literally 'password' may be needed when using keyrings for compatibility with java servers.",
-                  "enum": ["", "password"]
-                },
-                "alias": {
-                  "type": "string",
-                  "description": "Certificate label of z/OS keyring. Case sensitivity and spaces matter."
-                }
-              }
-            },
-            "truststore": {
-              "type": "object",
-              "additionalProperties": false,
-              "description": "Certificate truststore.",
-              "properties": {
-                "type": {
-                  "type": "string",
-                  "description": "Truststore type.",
-                  "const": "PKCS12"
-                },
-                "file": {
-                  "$ref": "/schemas/v2/server-common#zowePath",
-                  "description": "Path to your PKCS#12 keystore."
-                },
-                "password": {
-                  "type": "string",
-                  "description": "Password of your PKCS#12 keystore."
-                }
-              }
-            }
-          }
-        },
         "keystore": {
           "type": "object",
           "additionalProperties": false,
@@ -970,6 +918,10 @@
             "alias": {
               "type": "string",
               "description": "Certificate alias name of defined in your PKCS#12 keystore"
+            },
+            "clientCertificateAlias": {
+              "type": "string",
+              "description": "Client certificate alias name of defined in your PKCS#12 keystore"
             }
           }
         },
@@ -1032,60 +984,6 @@
       "additionalProperties": false,
       "required": ["keystore", "truststore"],
       "properties": {
-        "client": {
-          "type": "object",
-          "additionalProperties": true,
-          "properties": {
-            "keystore": {
-              "type": "object",
-              "additionalProperties": false,
-              "description": "Certificate keystore.",
-              "properties": {
-                "type": {
-                  "type": "string",
-                  "description": "Keystore type.",
-                  "enum": ["JCEKS", "JCECCAKS", "JCERACFKS", "JCECCARACFKS", "JCEHYBRIDRACFKS"]
-                },
-                "file": {
-                  "type": "string",
-                  "description": "Path of your z/OS keyring, including ring owner and ring name. Case sensitivity and spaces matter.",
-                  "pattern": "^safkeyring[a-z]*:\/\/.*"
-                },
-                "password": {
-                  "type": "string",
-                  "description": "Literally 'password' may be needed when using keyrings for compatibility with java servers.",
-                  "enum": ["", "password"]
-                },
-                "alias": {
-                  "type": "string",
-                  "description": "Certificate label of z/OS keyring. Case sensitivity and spaces matter."
-                }
-              }
-            },
-            "truststore": {
-              "type": "object",
-              "additionalProperties": false,
-              "description": "Certificate truststore.",
-              "properties": {
-                "type": {
-                  "type": "string",
-                  "description": "Truststore type.",
-                  "enum": ["JCEKS", "JCECCAKS", "JCERACFKS", "JCECCARACFKS", "JCEHYBRIDRACFKS"]
-                },
-                "file": {
-                  "type": "string",
-                  "description": "Path of your z/OS keyring, including ring owner and ring name. Case sensitivity and spaces matter.",
-                  "pattern": "^safkeyring[a-z]*:\/\/.*"
-                },
-                "password": {
-                  "type": "string",
-                  "description": "Literally 'password' may be needed when using keyrings for compatibility with java servers.",
-                  "enum": ["", "password"]
-                }
-              }
-            }
-          }
-        },
         "keystore": {
           "type": "object",
           "additionalProperties": false,
@@ -1110,6 +1008,10 @@
             "alias": {
               "type": "string",
               "description": "Certificate label of z/OS keyring. Case sensitivity and spaces matter."
+            },
+            "clientCertificateAlias": {
+              "type": "string",
+              "description": "Client certificate label of z/OS keyring. Case sensitivity and spaces matter."
             }
           }
         },
