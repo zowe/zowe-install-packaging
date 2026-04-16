@@ -16,7 +16,7 @@ import * as node from '../../../../libs/node';
 
 const COMMAND_NAME = 'zwe-validate-dependencies-node';
 
-export function execute(quitOnErrorMin: boolean = true, quitOnErrorMax: boolean = true): boolean|void {
+export function execute(quitOnError: boolean = true): boolean|void {
   common.requireZoweYaml();
 
   const ZOWE_CONFIG = config.getZoweConfig();
@@ -26,8 +26,9 @@ export function execute(quitOnErrorMin: boolean = true, quitOnErrorMax: boolean 
   common.printFormattedInfo('ZWELS', COMMAND_NAME, `Validating Node.js dependency (required: >= ${node.NODE_MIN_VERSION}, <= ${node.NODE_MAX_VERSION})...`);
 
   node.requireNode();
-
-  const result = node.validateNodeHome(undefined, !quitOnErrorMin, !quitOnErrorMax);
+  
+  const nodeHome = ZOWE_CONFIG?.node?.home;
+  const result = node.validateNodeHome(nodeHome, false, false);
   if (!result) {
     const baseMsg = `Node.js version validation failed. Ensure Node.js >= ${node.NODE_MIN_VERSION} and <= ${node.NODE_MAX_VERSION} is used wth Zowe.`;
     let msg: string;
@@ -38,7 +39,7 @@ export function execute(quitOnErrorMin: boolean = true, quitOnErrorMax: boolean 
         `If Node.js is not needed, set 'zowe.launchScript.startupChecks.nodeMin' and 'zowe.launchScript.startupChecks.nodeMax' to 'warn' or 'disabled' in your zowe.yaml to bypass this error.`;
     }
     common.printFormattedError('ZWELS', COMMAND_NAME, `ZWEL0361E: ${msg}`);
-    if (quitOnErrorMin || quitOnErrorMax) {
+    if (quitOnError) {
       std.exit(1);
     } else {
       return false;

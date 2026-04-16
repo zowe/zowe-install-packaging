@@ -19,7 +19,7 @@ const COMMAND_NAME = 'zwe-validate-dependencies-java';
 
 const JAVA_DEPENDENT_COMPONENTS = ['apiml', 'gateway', 'discovery', 'zaas', 'api-catalog', 'caching-service'];
 
-export function execute(quitOnErrorMin: boolean = true, quitOnErrorMax: boolean = true): boolean|void {
+export function execute(quitOnError: boolean = true): boolean|void {
   common.requireZoweYaml();
 
   const ZOWE_CONFIG = config.getZoweConfig();
@@ -31,8 +31,8 @@ export function execute(quitOnErrorMin: boolean = true, quitOnErrorMax: boolean 
   common.printFormattedInfo('ZWELS', COMMAND_NAME, `Validating Java dependency (required: >= ${javaCI.JAVA_MIN_VERSION}, <= ${javaCI.JAVA_MAX_VERSION})...`);
 
   java.requireJava();
-
-  const result = javaCI.validateJavaHome(undefined, !quitOnErrorMin, !quitOnErrorMax);
+  const javaHome = ZOWE_CONFIG?.java?.home;
+  const result = javaCI.validateJavaHome(javaHome, false, false);
   if (!result) {
     const baseMsg = `Java version validation failed. Ensure Java >= ${javaCI.JAVA_MIN_VERSION} and <= ${javaCI.JAVA_MAX_VERSION} is used with Zowe.`;
     let msg: string = baseMsg;
@@ -43,7 +43,7 @@ export function execute(quitOnErrorMin: boolean = true, quitOnErrorMax: boolean 
         `If Java is not needed, set 'zowe.launchScript.startupChecks.javaMin' and 'zowe.launchScript.startupChecks.javaMax' to 'warn' or 'disabled' in your zowe.yaml to bypass this error.`;
     }
     common.printFormattedError('ZWELS', COMMAND_NAME, `ZWEL0360E: ${msg}`);
-    if (quitOnErrorMin || quitOnErrorMax) {
+    if (quitOnError) {
       std.exit(1);
     } else {
       return false;

@@ -20,8 +20,8 @@ const COMMAND_NAME = 'zwe-validate-dependencies';
 export function execute(): void {
   common.printFormattedInfo('ZWELS', COMMAND_NAME, 'Validating runtime dependencies...');
 
-  const javaGood = javaCmd.execute(false, false);
-  const nodeGood = nodeCmd.execute(false, false);
+  const javaGood = javaCmd.execute(false);
+  const nodeGood = nodeCmd.execute(false);
 
   common.printFormattedInfo('ZWELS', COMMAND_NAME, 'Runtime dependency validation complete.');
   if (!javaGood || !nodeGood) {
