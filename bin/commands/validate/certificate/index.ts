@@ -159,10 +159,10 @@ export function execute(quitOnError?: boolean, level?: string): number {
       common.printFormattedError(common.MSG_KEY, COMMAND_NAME, `  zowe.certificate.truststore.file: ${ZOWE_CONFIG.zowe.certificate.truststore.file}`);
     }
 
-
-    // From java, when trying to read a key using type JCECCARACFKS
-    if (output.includes('no such provider:')) {
-      // TODO we just dont validate ICSF keys at this time.
+    // From java, when trying to read a key using type JCECCARACFKS or JCEHYBRIDRACFKS
+    if (output.includes('no such provider:') ||
+        output.includes(keystoreType + ' not found') ||
+        output.includes(truststoreType + ' not found')) {
       configInvalid = VALIDATION_WARN;
 
       common.printFormattedWarn(common.MSG_KEY, COMMAND_NAME, `Java is unable to read either keystore or truststore due to type.`);
@@ -171,10 +171,8 @@ export function execute(quitOnError?: boolean, level?: string): number {
       common.printFormattedWarn(common.MSG_KEY, COMMAND_NAME, `  zowe.certificate.keystore.type: ${ZOWE_CONFIG.zowe.certificate.keystore.type}`);
       common.printFormattedWarn(common.MSG_KEY, COMMAND_NAME, `  zowe.certificate.truststore.type: ${ZOWE_CONFIG.zowe.certificate.truststore.type}`);
     }
-    // From java, when trying to use type JCEHYBRIDRACFKS when not appropriate
-    if (output.includes('Invalid keystore format') ||
-        output.includes(keystoreType+' not found') ||
-        output.includes(truststoreType+' not found')) {
+
+    if (output.includes('Invalid keystore format')) {
       configInvalid = VALIDATION_ERROR;
 
       common.printFormattedError(common.MSG_KEY, COMMAND_NAME, `Incorrect type given for keystore or truststore.`);
