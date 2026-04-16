@@ -16,8 +16,8 @@
       "artifact": "zowe-server-*.pax.Z"
     },
     "org.zowe.zlux.zlux-core": {
-      "version": "^3.0.0-V3.X-STAGING-ZLUX-CORE",
-      "artifact": "*.pax"
+      "version": "^3.5.0-1598-v3.x-staging-zlux-build",
+      "artifact": "zlux-core-3.5.0-20260416.173232.pax"
     },
     "org.zowe.zlux.sample-angular-app": {
       "version": "^3.0.0-V3.X-STAGING",
@@ -44,8 +44,8 @@
       "artifact": "*.pax"
     },
     "org.zowe.zss": {
-      "version": "^3.0.0-STAGING",
-      "artifact": "*.pax"
+      "version": "^3.5.0-PR-821",
+      "artifact": "zss-3.5.0-pr-821-1440-20260416162249.pax"
     },
     "org.zowe.explorer-jes": {
       "version": "^3.0.0-SNAPSHOT"
@@ -110,8 +110,8 @@
       "exclusions": ["*PR*.jar"]
     },
     "org.zowe.getesm": {
-      "version": "^3.0.0-V3.X-STAGING",
-      "artifact": "*.pax"
+      "version": "^3.5.0-FEATURE-V3-DUAL-CERT",
+      "artifact": "getesm-3.5.0-2026041632.pax"
     },
     "org.zowe.bind-test": {
       "version": "^3.0.0-V3.X-STAGING",
@@ -122,12 +122,12 @@
       "artifact": "*.pax"
     },
     "org.zowe.configmgr": {
-      "version": "^3.0.0-V3.X-STAGING",
-      "artifact": "*.pax"
+      "version": "^3.5.0-FEATURE-V3-DUAL-CERT",
+      "artifact": "configmgr-3.5.0-2026041634.pax"
     },
     "org.zowe.configmgr-rexx": {
-      "version": "^3.0.0-V3.X-STAGING",
-      "artifact": "*.pax"
+      "version": "^3.5.0-FEATURE-V3-DUAL-CERT",
+      "artifact": "configmgr-rexx-3.5.0-2026041632.pax"
     },
     "org.zowe.launcher": {
       "version": "^3.0.0-STAGING",
