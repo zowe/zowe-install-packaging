@@ -77,6 +77,8 @@ zowe:
     startupChecks:
       default: "exit"
       ports: "disabled"
+      javaMax: "warn"
+      nodeMax: "warn"
       user: "disabled"
       certificate: "disabled"
   verifyCertificates: "STRICT"
@@ -262,6 +264,8 @@ zowe:
     startupChecks:
       default: "exit"
       ports: "disabled"
+      javaMax: "warn"
+      nodeMax: "warn"
       user: "disabled"
       certificate: "disabled"
   verifyCertificates: "STRICT"

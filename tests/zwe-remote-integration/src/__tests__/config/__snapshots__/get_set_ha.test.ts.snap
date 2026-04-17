@@ -134,6 +134,9 @@ exports[`internal-config-get-and-set (SHORT) config set operations 2`] = `
   launchScript:
     logLevel: info
     onComponentConfigureFail: warn
+    startupChecks:
+      javaMax: warn
+      nodeMax: warn
   verifyCertificates: STRICT
 java:
   home: /test/java/home
@@ -298,6 +301,9 @@ zowe:
   launchScript:
     logLevel: "info"
     onComponentConfigureFail: "warn"
+    startupChecks:
+      javaMax: "warn"
+      nodeMax: "warn"
   verifyCertificates: "STRICT"
 java:
   home: "/test/java/home"
@@ -463,6 +469,9 @@ zowe:
   launchScript:
     logLevel: "info"
     onComponentConfigureFail: "warn"
+    startupChecks:
+      javaMax: "warn"
+      nodeMax: "warn"
   verifyCertificates: "STRICT"
 java:
   home: "/test/java/home"

@@ -177,6 +177,9 @@ data:
       launchScript:
         logLevel: "info"
         onComponentConfigureFail: "warn"
+        startupChecks:
+          javaMax: "warn"
+          nodeMax: "warn"
       verifyCertificates: "STRICT"
       useConfigmgr: false
       externalDomains:

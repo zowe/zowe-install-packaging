@@ -18,7 +18,8 @@ import * as shell from './shell';
 import * as config from './config';
 import { PathAPI as pathoid } from './pathoid';
 
-const NODE_MIN_VERSION=18;
+export const NODE_MIN_VERSION = 18;
+export const NODE_MAX_VERSION = 24;
 
 // enforce encoding of stdio/stdout/stderr
 // sometimes /dev/tty* ($SSH_TTY) are not configured properly, for example tagged as binary or wrong encoding
@@ -42,7 +43,10 @@ export function readConfigNodeHome(configList?: string, skipValidate?: boolean):
   const zoweConfig = config.getZoweConfig();
   if (zoweConfig && zoweConfig.node && zoweConfig.node.home) {
     if (!skipValidate) {
-      if (!validateNodeHome(zoweConfig.node.home)) {
+      let nodeCheckMin = config.getStartupCheckMode('nodeMin');
+      let nodeCheckMax = config.getStartupCheckMode('nodeMax');
+
+      if (!validateNodeHome(zoweConfig.node.home, nodeCheckMin.warnOnly || !nodeCheckMin.doCheck, nodeCheckMax.warnOnly || !nodeCheckMax.doCheck)) {
         return '';
       }
     }
@@ -85,7 +89,8 @@ export function requireNode() {
   _checkComplete = true;
 }
 
-export function validateNodeHome(nodeHome:string|undefined=std.getenv("NODE_HOME")): boolean {
+export function validateNodeHome(nodeHome:string|undefined=std.getenv("NODE_HOME"),
+    warnOnlyMin?: boolean, warnOnlyMax?: boolean): boolean {
   if (!nodeHome) {
     common.printError("Cannot find node. Please define NODE_HOME environment variable.");
     return false;
@@ -115,8 +120,24 @@ export function validateNodeHome(nodeHome:string|undefined=std.getenv("NODE_HOME
       }
 
       if (nodeMajorVersion < NODE_MIN_VERSION) {
-        common.printError(`Node ${version} is less than the minimum level required of v${NODE_MIN_VERSION}.`);
-        return false;
+        let msg = `Node ${version} is less than the minimum level required of v${NODE_MIN_VERSION}.`;
+        if (!warnOnlyMin) {
+          msg += ` This check can be set to a warning via zowe.launchScript.startupChecks.nodeMin`;
+          common.printError(msg);
+          return false;
+        } else {
+          common.printError(msg);
+        }
+      }
+      if (nodeMajorVersion > NODE_MAX_VERSION) {
+        let msg = `Node ${version} is greater than the maximum supported version of v${NODE_MAX_VERSION}.`;
+        if (!warnOnlyMax) {
+          msg += ` This check can be set to a warning via zowe.launchScript.startupChecks.nodeMax`;
+          common.printError(msg);
+          return false;
+        } else {
+          common.printError(msg);
+        }
       }
       common.printDebug(`Node ${version} is supported.`)
 
