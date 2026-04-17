@@ -214,7 +214,6 @@ const REMOTE_PAX_UPLOAD_AFTER_ZWE: RemotePaxUploadSpec[] = [
     match: /certificate-analyser.*\.jar/,
     remoteName: 'certificate-analyser.jar',
     uploadRoot: 'binUtils',
-    when: () => DOWNLOAD_ZOWE_TOOLS,
   },
   { label: 'getesm pax', match: /getesm.*\.pax/, useSourceBasename: true, trackAs: 'getEsmArchive' },
 ];
