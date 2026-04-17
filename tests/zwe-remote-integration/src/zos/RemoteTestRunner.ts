@@ -39,6 +39,7 @@ import { convertDirToEbcdicInPlace } from './EbcdicTools';
 export class RemoteTestRunner {
   private readonly REMOTE_TEST_TMP_DIR: string = `${REMOTE_SYSTEM_INFO.ussTestDir}/.test_tmp`;
   private readonly yamlOutputTemplate: string;
+  private readonly consoleOutputTemplate: string;
   private readonly tmpDir: string;
   private readonly spoolOutputTemplate: string;
   private readonly otherOutputTemplate: string;
@@ -66,6 +67,7 @@ export class RemoteTestRunner {
     this.yamlOutputTemplate = `${baseOutputDir}/yaml`;
     this.spoolOutputTemplate = `${baseOutputDir}/spool`;
     this.otherOutputTemplate = `${baseOutputDir}/other`;
+    this.consoleOutputTemplate = `${baseOutputDir}/console`;
     this.getSysName();
   }
 
@@ -138,6 +140,9 @@ export class RemoteTestRunner {
     this.totalRuntime += duration;
     this.totalRuns++;
     this.maxRuntime = Math.max(this.maxRuntime, duration);
+
+    this.writeConsoleOutputArtifact(command, cwd, output.consoleLog, output.rc, []);
+
     // Any non-deterministic output should be cleaned up for test snapshots.
     const cleanedOutput = this.cleanOutput(output.consoleLog, []);
     return {
@@ -478,6 +483,20 @@ export class RemoteTestRunner {
     return tgtFile;
   }
 
+  /**
+   * Persists masked console output under {@link TEST_OUTPUT_DIR}/&lt;testGroup&gt;/&lt;testName&gt;/console,
+   * same layout as yaml and spool artifacts. Uses {@link #writeRedundant} so repeated commands in one test
+   * do not overwrite prior files.
+   */
+  private writeConsoleOutputArtifact(command: string, cwd: string, stdout: string, rc: number, customJobHeaders: string[] = []): void {
+    const testId = expect.getState().currentTestName?.replace(/\s/g, '_') ?? 'unknown_test';
+    const consoleOutputDir = this.consoleOutputTemplate.replace('{{ testInstance }}', testId);
+    fs.mkdirpSync(consoleOutputDir);
+    const cleanedCmd = this.cleanOutput(command, customJobHeaders);
+    const body = [`cwd: ${cwd}`, `command: ${command}`, `cleanedCommand: ${cleanedCmd}`, `rc: ${rc}`, '', stdout].join('\n');
+    this.writeRedundant(`${consoleOutputDir}/console.txt`, body);
+  }
+
   public async runZweTestWithDefaults(
     zoweYaml: ZoweYamlType,
     defaultYaml: ZoweYamlType,
@@ -593,15 +612,18 @@ export class RemoteTestRunner {
     const finalZwe = this.addAnyCustomJobStatements(zoweYaml);
     await this.uploadZoweYaml(finalZwe.yaml, false, cwd);
     const start = performance.now();
-    const output = await this.uss.runCommand(`./bin/zwe ${command} ${defaultConfig}`, cwd);
+    const shellCommand = `./bin/zwe ${command} ${defaultConfig}`.trim();
+    const output = await this.uss.runCommand(`${shellCommand}`, cwd);
     // default per-test should always be off. If you want tty, run this.useTty() in a beforeEach() block
     const end = performance.now();
     const duration = end - start;
     this.totalRuntime += duration;
     this.totalRuns++;
     this.maxRuntime = Math.max(this.maxRuntime, duration);
-    const matches = output.consoleLog.matchAll(/([A-Za-z0-9]{4,8})\((JOB[0-9]{1,5})\) completed with RC=(.*)$/gim);
 
+    this.writeConsoleOutputArtifact(shellCommand, cwd, output.consoleLog, output.rc, finalZwe.headers);
+
+    const matches = output.consoleLog.matchAll(/([A-Za-z0-9]{4,8})\((JOB[0-9]{1,5})\) completed with RC=(.*)$/gim);
     // for each match, 0=full matched string, 1=jobname, 2=jobid, 3=rc
     for (const match of matches) {
       fs.appendFileSync(TEST_JOBS_RUN_FILE, `${match[1]}:${match[2]}\n`);
