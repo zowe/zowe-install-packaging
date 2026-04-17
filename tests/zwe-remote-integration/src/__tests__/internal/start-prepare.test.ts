@@ -14,6 +14,7 @@ import { ZoweConfig } from '../../config/ZoweConfig';
 import { FileType, TestFile, TestFileActions } from '../../zos/TestFileActions';
 import { REMOTE_SYSTEM_INFO } from '../../config/TestConfig';
 import * as _ from 'lodash';
+import { cleanupFakeJava, cleanupFakeNode, setupFakeJava, setupFakeNode } from '../common/common';
 
 const testSuiteName = 'start-prepare-tests';
 describe(`${testSuiteName}`, () => {
@@ -21,6 +22,10 @@ describe(`${testSuiteName}`, () => {
   let cfgYaml: ZoweYamlType;
   let defaultCfgYaml: ZoweYamlType;
   let workspaceEnv: TestFile;
+  let FAKE_NODE_PATH: string;
+  let FAKE_JAVA_PATH: string;
+  const CONTROLLED_NODE_VERSION_ENV: string = 'NODE_TESTENV_VERSION';
+  const CONTROLLED_JAVA_VERSION_ENV: string = 'JAVA_TESTENV_VERSION';
 
   beforeAll(async () => {
     testRunner = new RemoteTestRunner(testSuiteName);
@@ -34,6 +39,8 @@ describe(`${testSuiteName}`, () => {
       return input.replaceAll(/TSS|ACF2|RACF/gi, 'ESMT'); // ESM TEST
     };
     testRunner.addCleanFn(cleanSecurityManager);
+    FAKE_NODE_PATH = await setupFakeNode(testRunner);
+    FAKE_JAVA_PATH = await setupFakeJava(testRunner);
   });
   beforeEach(async () => {
     cfgYaml = ZoweConfig.getZoweYaml();
@@ -58,8 +65,10 @@ describe(`${testSuiteName}`, () => {
     await testRunner.uploadDefaultsYaml(defaultCfgYaml, undefined, true);
   });
 
-  afterAll(() => {
+  afterAll(async () => {
     testRunner.shutdown();
+    await cleanupFakeNode();
+    await cleanupFakeJava();
   });
 
   describe('(SHORT)', () => {
@@ -202,6 +211,63 @@ describe(`${testSuiteName}`, () => {
       const result = await testRunner.runZweTestWithDefaults(cfgYaml, defaultCfgYaml, 'internal start prepare');
       expect(result.cleanedStdout).toMatchSnapshot();
       expect(result.rc).toBe(0);
+    });
+
+    it('test startupChecks warn with node and java', async () => {
+      _.set(cfgYaml, 'node.home', FAKE_NODE_PATH);
+      _.set(cfgYaml, 'java.home', FAKE_JAVA_PATH);
+      _.set(cfgYaml, 'zowe.launchScript.startupChecks.javaMin', 'warn');
+      let result = await testRunner.runZweTest(cfgYaml, 'internal start prepare', undefined, {
+        [CONTROLLED_JAVA_VERSION_ENV]: '1.1.2',
+      });
+      expect(result.cleanedStdout).toMatchSnapshot();
+      expect(result.rc).toBe(0);
+      _.set(cfgYaml, 'zowe.launchScript.startupChecks.javaMin', 'exit');
+      result = await testRunner.runZweTest(cfgYaml, 'internal start prepare', undefined, {
+        [CONTROLLED_JAVA_VERSION_ENV]: '1.1.2',
+      });
+      expect(result.cleanedStdout).toMatchSnapshot();
+      expect(result.rc).toBe(1);
+
+      _.set(cfgYaml, 'zowe.launchScript.startupChecks.nodeMin', 'warn');
+      result = await testRunner.runZweTest(cfgYaml, 'internal start prepare', undefined, {
+        [CONTROLLED_NODE_VERSION_ENV]: '1.1.2',
+      });
+      expect(result.cleanedStdout).toMatchSnapshot();
+      expect(result.rc).toBe(0);
+      _.set(cfgYaml, 'zowe.launchScript.startupChecks.nodeMin', 'exit');
+      result = await testRunner.runZweTest(cfgYaml, 'internal start prepare', undefined, {
+        [CONTROLLED_NODE_VERSION_ENV]: '1.1.2',
+      });
+      expect(result.cleanedStdout).toMatchSnapshot();
+      expect(result.rc).toBe(1);
+
+      _.set(cfgYaml, 'zowe.launchScript.startupChecks.nodeMax', 'warn');
+      result = await testRunner.runZweTest(cfgYaml, 'internal start prepare', undefined, {
+        [CONTROLLED_NODE_VERSION_ENV]: '99.1.2',
+      });
+      expect(result.cleanedStdout).toMatchSnapshot();
+      expect(result.rc).toBe(0);
+      _.set(cfgYaml, 'zowe.launchScript.startupChecks.nodeMax', 'exit');
+      result = await testRunner.runZweTest(cfgYaml, 'internal start prepare', undefined, {
+        [CONTROLLED_NODE_VERSION_ENV]: '99.1.2',
+      });
+      expect(result.cleanedStdout).toMatchSnapshot();
+      expect(result.rc).toBe(1);
+
+      _.set(cfgYaml, 'zowe.launchScript.startupChecks.javaMax', 'warn');
+      result = await testRunner.runZweTest(cfgYaml, 'internal start prepare', undefined, {
+        [CONTROLLED_JAVA_VERSION_ENV]: '99.1.2',
+      });
+      expect(result.cleanedStdout).toMatchSnapshot();
+      expect(result.rc).toBe(0);
+
+      _.set(cfgYaml, 'zowe.launchScript.startupChecks.javaMax', 'exit');
+      result = await testRunner.runZweTest(cfgYaml, 'internal start prepare', undefined, {
+        [CONTROLLED_JAVA_VERSION_ENV]: '99.1.2',
+      });
+      expect(result.cleanedStdout).toMatchSnapshot();
+      expect(result.rc).toBe(1);
     });
 
     it('test combinations of startup default and ports', async () => {
