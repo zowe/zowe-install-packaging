@@ -967,6 +967,14 @@
               "$ref": "/schemas/v2/server-common#zowePath",
               "description": "Path to the certificate stored in PEM format."
             },
+            "clientKey": {
+              "type": [ "string", "null" ],
+              "description": "Path to the client certificate private key stored in PEM format."
+            },
+            "clientCertificate": {
+              "type": [ "string", "null" ],
+              "description": "Path to the client certificate stored in PEM format."
+            },
             "certificateAuthorities": {
               "description": "List of paths to the certificate authorities stored in PEM format.",
               "oneOf": [{
@@ -1057,6 +1065,14 @@
             "certificate": {
               "type": [ "string", "null" ],
               "description": "Path to the certificate stored in PEM format."
+            },
+            "clientKey": {
+              "type": [ "string", "null" ],
+              "description": "Path to the client certificate private key stored in PEM format."
+            },
+            "clientCertificate": {
+              "type": [ "string", "null" ],
+              "description": "Path to the client certificate stored in PEM format."
             },
             "certificateAuthorities": {
               "description": "List of paths to the certificate authorities stored in PEM format.",
