@@ -62,27 +62,27 @@
     },
     "org.zowe.apiml.apiml-package": {
       "version": "3.5.11-PR-2233-SNAPSHOT",
-      "artifact": "apiml-package-3.5.11-PR-1903-20260319.140004-2.zip"
+      "artifact": "apiml-package-3.5.11-PR-2233-20260417.070713-1.zip"
     },
     "org.zowe.apiml.api-catalog-package": {
       "version": "3.5.11-PR-2233-SNAPSHOT",
-      "artifact": "api-catalog-package-3.5.11-PR-1903-20260319.140004-2.zip"
-    },
+      "artifact": "api-catalog-package-3.5.11-PR-2233-20260417.070713-1.zip"
+    }, 
     "org.zowe.apiml.discovery-package": {
       "version": "3.5.11-PR-2233-SNAPSHOT",
-      "artifact": "discovery-package-3.5.11-PR-1903-20260319.140004-2.zip"
+      "artifact": "discovery-package-3.5.11-PR-2233-20260417.070713-1.zip"
     },
     "org.zowe.apiml.gateway-package": {
       "version": "3.5.11-PR-2233-SNAPSHOT",
-      "artifact": "gateway-package-3.5.11-PR-1903-20260319.140004-2.zip"
+      "artifact": "gateway-package-3.5.11-PR-2233-20260417.070713-1.zip"
     },
     "org.zowe.apiml.caching-service-package": {
       "version": "3.5.11-PR-2233-SNAPSHOT",
-      "artifact": "caching-service-package-3.5.11-PR-1903-20260319.140004-2.zip"
+      "artifact": "caching-service-package-3.5.11-PR-2233-20260417.070713-1.zip"
     },
     "org.zowe.apiml.apiml-common-lib-package": {
       "version": "3.5.11-PR-2233-SNAPSHOT",
-      "artifact": "apiml-common-lib-package-3.5.11-PR-1903-20260319.140004-1.zip"
+      "artifact": "apiml-common-lib-package-3.5.11-PR-2233-20260417.070713-1.zip"
     },
     "org.zowe.apiml.sdk.common-java-lib-package": {
       "version": "^2.0.0-SNAPSHOT",
@@ -91,11 +91,11 @@
     },
     "org.zowe.apiml.sdk.apiml-sample-extension-package": {
       "version": "3.5.11-PR-2233-SNAPSHOT",
-      "artifact": "apiml-sample-extension-package-3.5.11-PR-1903-20260319.140004-2.zip"
+      "artifact": "apiml-sample-extension-package-3.5.11-PR-2233-20260417.070713-1.zip"
     },
     "org.zowe.apiml.zaas-package": {
       "version": "3.5.11-PR-2233-SNAPSHOT",
-      "artifact": "zaas-package-3.5.11-PR-1903-20260319.140004-2.zip"
+      "artifact": "zaas-package-3.5.11-PR-2233-20260417.070713-1.zip"
     },
     "org.zowe.apiml.sdk.certificate-analyser": {
       "version": "^3.0.3-SNAPSHOT",
