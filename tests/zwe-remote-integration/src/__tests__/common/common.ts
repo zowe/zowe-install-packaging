@@ -28,11 +28,11 @@ export async function setupFakeJava(testRunner: RemoteTestRunner): Promise<strin
 }
 
 export async function cleanupFakeJava(): Promise<void> {
-  await TestFileActions.deleteAll([{ name: FAKE_JAVA_PATH, type: FileType.USS_FILE }]);
+  await TestFileActions.deleteAll([{ name: FAKE_JAVA_PATH, type: FileType.USS_DIR }]);
 }
 
 export async function cleanupFakeNode(): Promise<void> {
-  await TestFileActions.deleteAll([{ name: FAKE_NODE_PATH, type: FileType.USS_FILE }]);
+  await TestFileActions.deleteAll([{ name: FAKE_NODE_PATH, type: FileType.USS_DIR }]);
 }
 
 export async function setupFakeNode(testRunner: RemoteTestRunner): Promise<string> {
