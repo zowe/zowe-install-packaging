@@ -632,7 +632,7 @@ export class RemoteTestRunner {
     for (const testFile of testFiles) {
       results.push(
         await this.runRaw(
-          `ZWE_CLI_PARAMETER_CONFIG="${cfgPath}" ZWE_zowe_runtimeDirectory="${REMOTE_SYSTEM_INFO.ussTestDir}" ./bin/utils/configmgr -script ${path.join(REMOTE_SYSTEM_INFO.ussTestDir, '.unit_tests', testFile)}`,
+          `ZWE_CLI_PARAMETER_CONFIG="${cfgPath}" ZWE_zowe_runtimeDirectory="${REMOTE_SYSTEM_INFO.ussTestDir}" ./bin/utils/configmgr -script ${path.posix.join(REMOTE_SYSTEM_INFO.ussTestDir, '.unit_tests', testFile)}`,
         ),
       );
     }

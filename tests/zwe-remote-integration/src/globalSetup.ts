@@ -247,9 +247,9 @@ async function uploadRemotePaxSpecs(
     const localPath = path.resolve(ctx.downloadsDirPath, base);
     let remoteUssPath: string;
     if ('useSourceBasename' in spec && spec.useSourceBasename === true) {
-      remoteUssPath = path.join(uploadRoot, base);
+      remoteUssPath = path.posix.join(uploadRoot, base);
     } else {
-      remoteUssPath = path.join(uploadRoot, spec.remoteName);
+      remoteUssPath = path.posix.join(uploadRoot, spec.remoteName);
     }
     await uploadFileToUss(localPath, remoteUssPath, { binary: true });
   }
