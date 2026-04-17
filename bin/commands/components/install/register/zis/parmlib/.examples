@@ -1,0 +1,3 @@
+zwe components install register zis parmlib -c /path/to/zowe.yaml -o /path/to/component/package
+
+zwe components install register zis parmlib -c /path/to/zowe.yaml -o /path/to/component/package --dry-run
