@@ -55,7 +55,7 @@ export function validateAttlsPorts(quitOnError?: boolean, componentName?: string
     }
   }
 
-  let detectAttlsPortPath = std.getenv('ZWE_zowe_runtimeDirectory') + '/bin/utils/detect-attls-port';
+  let detectAttlsPortPath = std.getenv('ZWE_zowe_runtimeDirectory') + '/bin/utils/attls-test';
   let myJobname = std.getenv('_BPX_JOBNAME');
 
   common.printFormattedInfo(common.MSG_KEY, 'validateAttlsPorts', `Checking ATTLS ports of ${checkedComponents.length} enabled components`);
@@ -98,7 +98,7 @@ export function validateAttlsPorts(quitOnError?: boolean, componentName?: string
         `${componentName}: Checking if ATTLS is enabled for port ${port} for userid ${zoweUserId} on host ${listenAddress} with default jobname`);
     }
     
-    // Call detect-attls-port binary
+    // Call attls-test binary
     let result = shell.execOutSync(detectAttlsPortPath, 
       '--serverPort', port.toString(), 
       '--serverHost', listenAddress,
@@ -135,7 +135,7 @@ export function validateAttlsPorts(quitOnError?: boolean, componentName?: string
       `ZWEL0366E: ${failedCount} Zowe port ATTLS validation(s) failed, review output for action items before running Zowe.`);
     return failedCount;
   } else {
-    // It is possible that the ATTLS check failed due to missing detect-attls-port binary or other unexpected error, so we want to provide a hint about how to bypass the check if needed instead of just exiting with error code.
+    // It is possible that the ATTLS check failed due to missing attls-test binary or other unexpected error, so we want to provide a hint about how to bypass the check if needed instead of just exiting with error code.
     common.printFormattedError(common.MSG_KEY, 'validateAttlsPorts', 
       `Zowe port ATTLS validation failed. This check can be dismissed with YAML value "zowe.launchScript.startupChecks.attls: warn"`);
     common.printErrorAndExit(

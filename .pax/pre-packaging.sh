@@ -292,6 +292,13 @@ pax -ppx -rf "${bind_test}"
 rm "${bind_test}"
 cd "${BASE_DIR}"
 
+attls_test=$(find "${ZOWE_ROOT_DIR}/files" -type f \( -name "attls-test*.pax" \) | head -n 1)
+echo "[$SCRIPT_NAME] extract attls-test $attls_test"
+cd "${ZOWE_ROOT_DIR}/bin/utils"
+pax -ppx -rf "${attls_test}"
+rm "${attls_test}"
+cd "${BASE_DIR}"
+
 zis_test=$(find "${ZOWE_ROOT_DIR}/files" -type f \( -name "zis-test*.pax" \) | head -n 1)
 echo "[$SCRIPT_NAME] extract zis-test $zis_test"
 cd "${ZOWE_ROOT_DIR}/bin/utils"
