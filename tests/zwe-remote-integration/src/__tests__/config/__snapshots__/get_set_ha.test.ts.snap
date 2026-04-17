@@ -128,6 +128,9 @@ exports[`internal-config-get-and-set (SHORT) config set operations 2`] = `
   launchScript:
     logLevel: info
     onComponentConfigureFail: warn
+    startupChecks:
+      javaMax: warn
+      nodeMax: warn
   certificate:
     keystore:
       type: PKCS12
@@ -300,6 +303,9 @@ zowe:
   launchScript:
     logLevel: "info"
     onComponentConfigureFail: "warn"
+    startupChecks:
+      javaMax: "warn"
+      nodeMax: "warn"
   certificate:
     keystore:
       type: "PKCS12"
@@ -473,6 +479,9 @@ zowe:
   launchScript:
     logLevel: "info"
     onComponentConfigureFail: "warn"
+    startupChecks:
+      javaMax: "warn"
+      nodeMax: "warn"
   certificate:
     keystore:
       type: "PKCS12"

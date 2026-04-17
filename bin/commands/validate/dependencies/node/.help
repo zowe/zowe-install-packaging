@@ -1,0 +1,1 @@
+Validates that the Node.js runtime installed at NODE_HOME (or discovered via PATH or zowe.yaml) meets Zowe's supported version range.
