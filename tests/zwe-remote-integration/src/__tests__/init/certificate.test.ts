@@ -51,6 +51,16 @@ describe(`${testSuiteName}`, () => {
   });
 
   describe('(SHORT)', () => {
+    beforeAll(async () => {
+      // make sure the keystore directory is clean
+      await TestFileActions.deleteAll([
+        {
+          name: remotePkcs12Dir,
+          type: FileType.USS_DIR,
+        },
+      ]);
+    });
+
     /**
      * Runs all 5 init certificate scenarios. PKCS12 scenarios are "live" and certificate scenarios are dry-run.
      *

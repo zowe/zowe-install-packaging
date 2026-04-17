@@ -452,17 +452,17 @@ Error ZWEL0171E: Failed to verify certificate (CN and SAN) of "some.test.hostnam
 exports[`init-cert (SHORT) run each scenario 3`] = `
 "-------------------------------------------------------------------------------
 >> Generate certificate
-Error ZWEL0157E: (zowe.setup.certificate.keyring.caLabel) is not defined in Zowe YAML configuration file."
+Error ZWEL0173E: Please enter an IP address in either the subject alternative name (zowe.setup.certificate.san) or external domain (zowe.externalDomains) in the Zowe YAML configuration file."
 `;
 
 exports[`init-cert (SHORT) run each scenario 4`] = `
 "-------------------------------------------------------------------------------
 >> Generate certificate
-Error ZWEL0157E: (zowe.setup.certificate.keyring.caLabel) is not defined in Zowe YAML configuration file."
+Error ZWEL0173E: Please enter an IP address in either the subject alternative name (zowe.setup.certificate.san) or external domain (zowe.externalDomains) in the Zowe YAML configuration file."
 `;
 
 exports[`init-cert (SHORT) run each scenario 5`] = `
 "-------------------------------------------------------------------------------
 >> Generate certificate
-Error ZWEL0157E: (zowe.setup.certificate.keyring.caLabel) is not defined in Zowe YAML configuration file."
+Error ZWEL0173E: Please enter an IP address in either the subject alternative name (zowe.setup.certificate.san) or external domain (zowe.externalDomains) in the Zowe YAML configuration file."
 `;
