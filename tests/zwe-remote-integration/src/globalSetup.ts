@@ -214,7 +214,6 @@ const REMOTE_PAX_UPLOAD_AFTER_ZWE: RemotePaxUploadSpec[] = [
     match: /certificate-analyser.*\.jar/,
     remoteName: 'certificate-analyser.jar',
     uploadRoot: 'binUtils',
-    when: () => DOWNLOAD_ZOWE_TOOLS,
   },
   { label: 'getesm pax', match: /getesm.*\.pax/, useSourceBasename: true, trackAs: 'getEsmArchive' },
 ];
@@ -248,9 +247,9 @@ async function uploadRemotePaxSpecs(
     const localPath = path.resolve(ctx.downloadsDirPath, base);
     let remoteUssPath: string;
     if ('useSourceBasename' in spec && spec.useSourceBasename === true) {
-      remoteUssPath = path.join(uploadRoot, base);
+      remoteUssPath = path.posix.join(uploadRoot, base);
     } else {
-      remoteUssPath = path.join(uploadRoot, spec.remoteName);
+      remoteUssPath = path.posix.join(uploadRoot, spec.remoteName);
     }
     await uploadFileToUss(localPath, remoteUssPath, { binary: true });
   }

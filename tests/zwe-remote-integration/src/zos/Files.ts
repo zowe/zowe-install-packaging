@@ -13,6 +13,11 @@ import { getSession } from './ZosmfSession';
 import _ from 'lodash';
 import { REMOTE_SYSTEM_INFO } from '../config/TestConfig';
 
+export async function uploadFileToUss(localPath: string, remoteUssPath: string, options: { binary: boolean }): Promise<void> {
+  console.log(`Uploading ${localPath} to ${remoteUssPath}...`);
+  await files.Upload.fileToUssFile(getSession(), localPath, remoteUssPath, { binary: options.binary });
+}
+
 export async function uploadMember(pdsName: string, memberName: string, content: string) {
   const listPdsResp = await files.List.dataSet(getSession(), pdsName, {
     pattern: pdsName,

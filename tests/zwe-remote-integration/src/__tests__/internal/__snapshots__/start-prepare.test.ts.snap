@@ -179,3 +179,147 @@ ERROR:  TESTUSR0 ERROR (zwe-internal-start-prepare,validate_components) Error ZW
  TESTUSR0 INFO (zwe-internal-start-prepare,configure_components) - commands.configure output from zss is:
  TESTUSR0 INFO (zwe-internal-start-prepare) Zowe runtime environment prepared"
 `;
+
+exports[`start-prepare-tests (SHORT) test startupChecks warn with node and java 1`] = `
+" TESTUSR0 INFO (zwe-internal-start-prepare) Zowe version: v0.0.0
+ TESTUSR0 INFO (zwe-internal-start-prepare) build and hash: {BUILD_BRANCH}#{BUILD_NUMBER} ({BUILD_COMMIT_HASH})
+ TESTUSR0 INFO (zwe-internal-start-prepare) z/OS Version: 0.0
+ TESTUSR0 INFO (zwe-internal-start-prepare) ESM: ESMT
+ TESTUSR0 INFO (zwe-internal-start-prepare) starting Zowe instance SYS0 with /test/dir/zowe.test.yaml ...
+ TESTUSR0 INFO (zwe-internal-start-prepare,global_validate) process global validations ...
+ TESTUSR0 INFO (validateNodeHome) NodeJS version: v0.0.0
+ TESTUSR0 INFO (validateJavaHome) Java version: v0.0.0
+ERROR: Java 1.1.2 2024-01-16 is less than the minimum level required of Java 17.
+Successfully checked z/OSMF is available on 'https://some.test.hostname:12321/zosmf/info' - 200
+ TESTUSR0 INFO (zwe-internal-start-prepare,global_validate) global validations are successful
+ TESTUSR0 INFO (zwe-internal-start-prepare,validate_components) process component validations ...
+ TESTUSR0 INFO (zwe-validate-port-available) Checking ports of 11 enabled components
+ TESTUSR0 INFO (zwe-validate-port-available) Zowe port bind validation passed.
+ERROR:  TESTUSR0 ERROR (zwe-internal-start-prepare,validate_components) Error ZWEL0172E: Component zss has commands.validate defined but the file is missing.
+ TESTUSR0 INFO (zwe-internal-start-prepare,configure_components) process component configurations ...
+ TESTUSR0 INFO (zwe-internal-start-prepare,configure_components) - commands.configure output from zss is:
+ TESTUSR0 INFO (zwe-internal-start-prepare) Zowe runtime environment prepared"
+`;
+
+exports[`start-prepare-tests (SHORT) test startupChecks warn with node and java 2`] = `
+" TESTUSR0 INFO (zwe-internal-start-prepare) Zowe version: v0.0.0
+ TESTUSR0 INFO (zwe-internal-start-prepare) build and hash: {BUILD_BRANCH}#{BUILD_NUMBER} ({BUILD_COMMIT_HASH})
+ TESTUSR0 INFO (zwe-internal-start-prepare) z/OS Version: 0.0
+ TESTUSR0 INFO (zwe-internal-start-prepare) ESM: ESMT
+ TESTUSR0 INFO (zwe-internal-start-prepare) starting Zowe instance SYS0 with /test/dir/zowe.test.yaml ...
+ TESTUSR0 INFO (zwe-internal-start-prepare,global_validate) process global validations ...
+ TESTUSR0 INFO (validateNodeHome) NodeJS version: v0.0.0
+ TESTUSR0 INFO (validateJavaHome) Java version: v0.0.0
+ERROR: Java 1.1.2 2024-01-16 is less than the minimum level required of Java 17. This check can be set to a warning via zowe.launchScript.startupChecks.javaMin
+ERROR:  TESTUSR0 ERROR (zwe-internal-start-prepare,global_validate) Could not validate java home
+Successfully checked z/OSMF is available on 'https://some.test.hostname:12321/zosmf/info' - 200
+ TESTUSR0 WARN (zwe-internal-start-prepare,global_validate) 1 errors were found during validation, please check the message, correct any properties required in /test/dir/workspace/.env/.zowe-merged.yaml and re-launch Zowe."
+`;
+
+exports[`start-prepare-tests (SHORT) test startupChecks warn with node and java 3`] = `
+" TESTUSR0 INFO (zwe-internal-start-prepare) Zowe version: v0.0.0
+ TESTUSR0 INFO (zwe-internal-start-prepare) build and hash: {BUILD_BRANCH}#{BUILD_NUMBER} ({BUILD_COMMIT_HASH})
+ TESTUSR0 INFO (zwe-internal-start-prepare) z/OS Version: 0.0
+ TESTUSR0 INFO (zwe-internal-start-prepare) ESM: ESMT
+ TESTUSR0 INFO (zwe-internal-start-prepare) starting Zowe instance SYS0 with /test/dir/zowe.test.yaml ...
+ TESTUSR0 INFO (zwe-internal-start-prepare,global_validate) process global validations ...
+ TESTUSR0 INFO (validateNodeHome) NodeJS version: v0.0.0
+ERROR: Node v1.1.2 is less than the minimum level required of v18.
+ TESTUSR0 INFO (validateJavaHome) Java version: v0.0.0
+Successfully checked z/OSMF is available on 'https://some.test.hostname:12321/zosmf/info' - 200
+ TESTUSR0 INFO (zwe-internal-start-prepare,global_validate) global validations are successful
+ TESTUSR0 INFO (zwe-internal-start-prepare,validate_components) process component validations ...
+ TESTUSR0 INFO (zwe-validate-port-available) Checking ports of 11 enabled components
+ TESTUSR0 INFO (zwe-validate-port-available) Zowe port bind validation passed.
+ERROR:  TESTUSR0 ERROR (zwe-internal-start-prepare,validate_components) Error ZWEL0172E: Component zss has commands.validate defined but the file is missing.
+ TESTUSR0 INFO (zwe-internal-start-prepare,configure_components) process component configurations ...
+ TESTUSR0 INFO (zwe-internal-start-prepare,configure_components) - commands.configure output from zss is:
+ TESTUSR0 INFO (zwe-internal-start-prepare) Zowe runtime environment prepared"
+`;
+
+exports[`start-prepare-tests (SHORT) test startupChecks warn with node and java 4`] = `
+" TESTUSR0 INFO (zwe-internal-start-prepare) Zowe version: v0.0.0
+ TESTUSR0 INFO (zwe-internal-start-prepare) build and hash: {BUILD_BRANCH}#{BUILD_NUMBER} ({BUILD_COMMIT_HASH})
+ TESTUSR0 INFO (zwe-internal-start-prepare) z/OS Version: 0.0
+ TESTUSR0 INFO (zwe-internal-start-prepare) ESM: ESMT
+ TESTUSR0 INFO (zwe-internal-start-prepare) starting Zowe instance SYS0 with /test/dir/zowe.test.yaml ...
+ TESTUSR0 INFO (zwe-internal-start-prepare,global_validate) process global validations ...
+ TESTUSR0 INFO (validateNodeHome) NodeJS version: v0.0.0
+ERROR: Node v1.1.2 is less than the minimum level required of v18. This check can be set to a warning via zowe.launchScript.startupChecks.nodeMin
+ERROR:  TESTUSR0 ERROR (zwe-internal-start-prepare,global_validate) Could not validate node home
+ TESTUSR0 INFO (validateJavaHome) Java version: v0.0.0
+Successfully checked z/OSMF is available on 'https://some.test.hostname:12321/zosmf/info' - 200
+ TESTUSR0 WARN (zwe-internal-start-prepare,global_validate) 1 errors were found during validation, please check the message, correct any properties required in /test/dir/workspace/.env/.zowe-merged.yaml and re-launch Zowe."
+`;
+
+exports[`start-prepare-tests (SHORT) test startupChecks warn with node and java 5`] = `
+" TESTUSR0 INFO (zwe-internal-start-prepare) Zowe version: v0.0.0
+ TESTUSR0 INFO (zwe-internal-start-prepare) build and hash: {BUILD_BRANCH}#{BUILD_NUMBER} ({BUILD_COMMIT_HASH})
+ TESTUSR0 INFO (zwe-internal-start-prepare) z/OS Version: 0.0
+ TESTUSR0 INFO (zwe-internal-start-prepare) ESM: ESMT
+ TESTUSR0 INFO (zwe-internal-start-prepare) starting Zowe instance SYS0 with /test/dir/zowe.test.yaml ...
+ TESTUSR0 INFO (zwe-internal-start-prepare,global_validate) process global validations ...
+ TESTUSR0 INFO (validateNodeHome) NodeJS version: v0.0.0
+ERROR: Node v99.1.2 is greater than the maximum supported version of v24.
+ TESTUSR0 INFO (validateJavaHome) Java version: v0.0.0
+Successfully checked z/OSMF is available on 'https://some.test.hostname:12321/zosmf/info' - 200
+ TESTUSR0 INFO (zwe-internal-start-prepare,global_validate) global validations are successful
+ TESTUSR0 INFO (zwe-internal-start-prepare,validate_components) process component validations ...
+ TESTUSR0 INFO (zwe-validate-port-available) Checking ports of 11 enabled components
+ TESTUSR0 INFO (zwe-validate-port-available) Zowe port bind validation passed.
+ERROR:  TESTUSR0 ERROR (zwe-internal-start-prepare,validate_components) Error ZWEL0172E: Component zss has commands.validate defined but the file is missing.
+ TESTUSR0 INFO (zwe-internal-start-prepare,configure_components) process component configurations ...
+ TESTUSR0 INFO (zwe-internal-start-prepare,configure_components) - commands.configure output from zss is:
+ TESTUSR0 INFO (zwe-internal-start-prepare) Zowe runtime environment prepared"
+`;
+
+exports[`start-prepare-tests (SHORT) test startupChecks warn with node and java 6`] = `
+" TESTUSR0 INFO (zwe-internal-start-prepare) Zowe version: v0.0.0
+ TESTUSR0 INFO (zwe-internal-start-prepare) build and hash: {BUILD_BRANCH}#{BUILD_NUMBER} ({BUILD_COMMIT_HASH})
+ TESTUSR0 INFO (zwe-internal-start-prepare) z/OS Version: 0.0
+ TESTUSR0 INFO (zwe-internal-start-prepare) ESM: ESMT
+ TESTUSR0 INFO (zwe-internal-start-prepare) starting Zowe instance SYS0 with /test/dir/zowe.test.yaml ...
+ TESTUSR0 INFO (zwe-internal-start-prepare,global_validate) process global validations ...
+ TESTUSR0 INFO (validateNodeHome) NodeJS version: v0.0.0
+ERROR: Node v99.1.2 is greater than the maximum supported version of v24. This check can be set to a warning via zowe.launchScript.startupChecks.nodeMax
+ERROR:  TESTUSR0 ERROR (zwe-internal-start-prepare,global_validate) Could not validate node home
+ TESTUSR0 INFO (validateJavaHome) Java version: v0.0.0
+Successfully checked z/OSMF is available on 'https://some.test.hostname:12321/zosmf/info' - 200
+ TESTUSR0 WARN (zwe-internal-start-prepare,global_validate) 1 errors were found during validation, please check the message, correct any properties required in /test/dir/workspace/.env/.zowe-merged.yaml and re-launch Zowe."
+`;
+
+exports[`start-prepare-tests (SHORT) test startupChecks warn with node and java 7`] = `
+" TESTUSR0 INFO (zwe-internal-start-prepare) Zowe version: v0.0.0
+ TESTUSR0 INFO (zwe-internal-start-prepare) build and hash: {BUILD_BRANCH}#{BUILD_NUMBER} ({BUILD_COMMIT_HASH})
+ TESTUSR0 INFO (zwe-internal-start-prepare) z/OS Version: 0.0
+ TESTUSR0 INFO (zwe-internal-start-prepare) ESM: ESMT
+ TESTUSR0 INFO (zwe-internal-start-prepare) starting Zowe instance SYS0 with /test/dir/zowe.test.yaml ...
+ TESTUSR0 INFO (zwe-internal-start-prepare,global_validate) process global validations ...
+ TESTUSR0 INFO (validateNodeHome) NodeJS version: v0.0.0
+ TESTUSR0 INFO (validateJavaHome) Java version: v0.0.0
+ERROR: Java 99.1.2 2024-01-16 is greater than the maximum supported version of Java 21.
+Successfully checked z/OSMF is available on 'https://some.test.hostname:12321/zosmf/info' - 200
+ TESTUSR0 INFO (zwe-internal-start-prepare,global_validate) global validations are successful
+ TESTUSR0 INFO (zwe-internal-start-prepare,validate_components) process component validations ...
+ TESTUSR0 INFO (zwe-validate-port-available) Checking ports of 11 enabled components
+ TESTUSR0 INFO (zwe-validate-port-available) Zowe port bind validation passed.
+ERROR:  TESTUSR0 ERROR (zwe-internal-start-prepare,validate_components) Error ZWEL0172E: Component zss has commands.validate defined but the file is missing.
+ TESTUSR0 INFO (zwe-internal-start-prepare,configure_components) process component configurations ...
+ TESTUSR0 INFO (zwe-internal-start-prepare,configure_components) - commands.configure output from zss is:
+ TESTUSR0 INFO (zwe-internal-start-prepare) Zowe runtime environment prepared"
+`;
+
+exports[`start-prepare-tests (SHORT) test startupChecks warn with node and java 8`] = `
+" TESTUSR0 INFO (zwe-internal-start-prepare) Zowe version: v0.0.0
+ TESTUSR0 INFO (zwe-internal-start-prepare) build and hash: {BUILD_BRANCH}#{BUILD_NUMBER} ({BUILD_COMMIT_HASH})
+ TESTUSR0 INFO (zwe-internal-start-prepare) z/OS Version: 0.0
+ TESTUSR0 INFO (zwe-internal-start-prepare) ESM: ESMT
+ TESTUSR0 INFO (zwe-internal-start-prepare) starting Zowe instance SYS0 with /test/dir/zowe.test.yaml ...
+ TESTUSR0 INFO (zwe-internal-start-prepare,global_validate) process global validations ...
+ TESTUSR0 INFO (validateNodeHome) NodeJS version: v0.0.0
+ TESTUSR0 INFO (validateJavaHome) Java version: v0.0.0
+ERROR: Java 99.1.2 2024-01-16 is greater than the maximum supported version of Java 21. This check can be set to a warning via zowe.launchScript.startupChecks.javaMax
+ERROR:  TESTUSR0 ERROR (zwe-internal-start-prepare,global_validate) Could not validate java home
+Successfully checked z/OSMF is available on 'https://some.test.hostname:12321/zosmf/info' - 200
+ TESTUSR0 WARN (zwe-internal-start-prepare,global_validate) 1 errors were found during validation, please check the message, correct any properties required in /test/dir/workspace/.env/.zowe-merged.yaml and re-launch Zowe."
+`;
