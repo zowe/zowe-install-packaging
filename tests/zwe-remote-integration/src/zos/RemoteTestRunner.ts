@@ -592,10 +592,13 @@ export class RemoteTestRunner {
     cfgYaml: ZoweYamlType,
     zweCommand: string,
     cwd: string = REMOTE_SYSTEM_INFO.ussTestDir,
+    envs: Record<string, string> = {},
   ): Promise<TestOutput> {
     let shouldOmitConfigParm;
     let zoweYaml = cfgYaml;
-
+    const envVarsString = Object.entries(envs)
+      .map(([key, value]) => `${key}=${value}`)
+      .join(' ');
     if (zoweYaml == null) {
       zoweYaml = {};
       shouldOmitConfigParm = true;
@@ -612,7 +615,7 @@ export class RemoteTestRunner {
     const finalZwe = this.addAnyCustomJobStatements(zoweYaml);
     await this.uploadZoweYaml(finalZwe.yaml, false, cwd);
     const start = performance.now();
-    const shellCommand = `./bin/zwe ${command} ${defaultConfig}`.trim();
+    const shellCommand = `${envVarsString} ./bin/zwe ${command} ${defaultConfig}`.trim();
     const output = await this.uss.runCommand(`${shellCommand}`, cwd);
     // default per-test should always be off. If you want tty, run this.useTty() in a beforeEach() block
     const end = performance.now();

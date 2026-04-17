@@ -1,0 +1,2 @@
+ZWEL0360E|360|Java version validation failed. Ensure Java >= %s and <= %s is used with Zowe. %s
+ZWEL0361E|361|Node version validation failed. Ensure Node.js >= %s and <= %s is used with Zowe. %s
