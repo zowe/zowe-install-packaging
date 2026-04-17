@@ -305,7 +305,6 @@ zowe:
       # nodeMin: exit
       nodeMax: warn
 
-
   # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   # How we want to verify SSL certificates of services. Valid values are:
   # - STRICT:    will validate if the certificate is trusted in our trust store and
