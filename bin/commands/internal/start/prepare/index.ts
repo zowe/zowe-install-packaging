@@ -220,8 +220,8 @@ function globalValidate(enabledComponents:string[]): void {
       }
       const validateZosmfJwtAction = getStartupCheckMode('zosmfjwt');
       if (validateZosmfJwtAction.doCheck) {
-        const jwtOk = validateZosmfJwt.execute(!validateZosmfJwtAction.warnOnly);
-        if (!jwtOk) {
+        const jwtRc = validateZosmfJwt.execute(!validateZosmfJwtAction.warnOnly);
+        if (jwtRc !== 0) {
           privateErrors++;
           common.printFormattedError('ZWELS', "zwe-internal-start-prepare,global_validate", "Zosmf JWT validation failed");
         }
