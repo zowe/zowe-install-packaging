@@ -16,12 +16,12 @@
       "artifact": "zowe-server-*.pax.Z"
     },
     "org.zowe.zlux.zlux-core": {
-      "version": "3.5.0-1023-v3.x-staging-zlux-app-manager",
-      "artifact": "zlux-core-3.5.0-20260415.072333.pax"
+      "version": "3.5.0-1070-v3.x-staging-zlux-app-manager",
+      "artifact": "zlux-core-3.5.0-20260420.081059.pax"
     },
     "org.zowe.zlux.sample-angular-app": {
-      "version": "3.0.0-I8NANGULAR",
-      "artifact": "sample-angular-app-3.0.0-20260414.112724.pax"
+      "version": "3.0.0-PR-132",
+      "artifact": "sample-angular-app-3.0.0-20260415.094416.pax"
     },
     "org.zowe.zlux.sample-iframe-app": {
       "version": "^3.0.0-V3.X-STAGING",
