@@ -51,16 +51,6 @@ describe(`${testSuiteName}`, () => {
   });
 
   describe('(SHORT)', () => {
-    beforeAll(async () => {
-      // make sure the keystore directory is clean
-      await TestFileActions.deleteAll([
-        {
-          name: remotePkcs12Dir,
-          type: FileType.USS_DIR,
-        },
-      ]);
-    });
-
     /**
      * Runs all 5 init certificate scenarios. PKCS12 scenarios are "live" and certificate scenarios are dry-run.
      *
@@ -103,18 +93,18 @@ describe(`${testSuiteName}`, () => {
       expect(result.cleanedStdout).toMatchSnapshot();
       expect(result.rc).not.toBe(0);
 
-      await TestFileActions.deleteAll([
-        {
-          name: remotePkcs12Dir,
-          type: FileType.USS_DIR,
-        },
-        {
-          name: remotePkcs12Dir + '_scen2',
-          type: FileType.USS_DIR,
-        },
-      ]);
-
       for (const krScenario of keyringScenarios) {
+        await TestFileActions.deleteAll([
+          {
+            name: remotePkcs12Dir,
+            type: FileType.USS_DIR,
+          },
+          {
+            name: remotePkcs12Dir + '_scen2',
+            type: FileType.USS_DIR,
+          },
+        ]);
+
         testYaml = ZoweConfig.loadAndOverlay(cfgYaml, localScenarioDir, krScenario);
         // @ts-expect-error incomplete schema
         for (const setting of Object.entries(scenarioSettings[krScenario])) {

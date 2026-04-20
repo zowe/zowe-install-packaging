@@ -142,8 +142,13 @@ Error ZWEL0326E: An error occurred while processing Zowe YAML config /test/dir/z
           "certificate": {
             "type": null,
             "pkcs12": {
-              "directory": "/var/zowe/keystore"
-            }
+              "directory": "/var/zowe/keystore",
+              "name": "localhost",
+              "password": "password",
+              "caAlias": "local_ca",
+              "caPassword": "local_ca_password"
+            },
+            "validity": 3650
           }
         },
         "certificate": {
