@@ -47,6 +47,34 @@ export function getZoweConfig(): any {
   return configmgr.getZoweConfig();
 }
 
+export function getStartupCheckMode(property: string): {doCheck: boolean, warnOnly: boolean} {
+  const zoweConfig = getZoweConfig();
+  let doCheck = true;
+  let warnOnly = false;
+
+  // set defaults
+  if (zoweConfig.zowe.launchScript?.startupChecks?.default) {
+    let value = zoweConfig.zowe.launchScript?.startupChecks.default;
+    if (value == 'disabled') {
+      doCheck = false;
+    } 
+    if (value == 'warn') {
+      warnOnly = true;
+    }
+  }
+
+  // per-startup-check override
+  if (zoweConfig.zowe.launchScript?.startupChecks) {
+    let value = zoweConfig.zowe.launchScript?.startupChecks[property];
+    if (value != null) {
+      doCheck = value != 'disabled';
+      warnOnly = value == 'warn';
+    }
+  }
+
+  return {doCheck, warnOnly};
+}
+
 export function ensureProperty(jqKey: string): any {
   const ZOWE_CONFIG = getZoweConfig();
   // read extensionDirectory
