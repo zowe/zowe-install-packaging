@@ -42,7 +42,7 @@ export function execute(doNotExit: Boolean, javaHome: string): void {
 
   if (!javaHome) {
     javaHome = std.getenv('JAVA_HOME');
-    const validJava = javaCI.validateJavaHome(javaHome);
+    const validJava = javaCI.validateJavaHome(javaHome, true, true);
     if (!validJava) {
       common.printErrorAndExit('Error ZWEL0122E Cannot find java. Please define JAVA_HOME environment variable.', undefined, 122);
     }
@@ -91,7 +91,7 @@ export function execute(doNotExit: Boolean, javaHome: string): void {
   common.printMessage('- Calculate hashes of Zowe files');
 
   const customHashes = fs.createTmpFile(tmpFilePrefix);
-  const javaHash = shell.execOutSync('sh', '-c', `cd '${zoweRuntime}' && '${javaHome}/bin/java' -cp '${zoweRuntime}/bin/utils/' HashFiles '${allFiles}' | sort > '${customHashes}'`);
+  const javaHash = shell.execOutSync('sh', '-c', `cd '${zoweRuntime}' && _BPXK_AUTOCVT=OFF '${javaHome}/bin/java' -Dfile.encoding=COMPAT -cp '${zoweRuntime}/bin/utils/' HashFiles '${allFiles}' | sort > '${customHashes}'`);
 
   if (javaHash.rc != 0 || !fs.fileExists(customHashes) || fs.fileSize(customHashes) < 1) {
     common.printError(`  * Error ZWEL0151E: Failed to create temporary file ${customHashes}. Please check permission or volume free space.`);

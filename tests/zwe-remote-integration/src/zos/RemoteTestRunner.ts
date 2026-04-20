@@ -436,6 +436,7 @@ export class RemoteTestRunner {
       .replaceAll(REMOTE_SYSTEM_INFO.hostname, this.dummyHostname)
       .replaceAll(REMOTE_SYSTEM_INFO.zosmfPort, this.dummyPort)
       .replaceAll(new RegExp(`Zowe version: v${getZoweVersion()}`, 'g'), 'Zowe version: v0.0.0')
+      .replaceAll(new RegExp(`Zowe v${getZoweVersion()}`, 'g'), 'Zowe v0.0.0')
       .replaceAll(/\d{4}-\d{2}-\d{2}.+?<.+?>/g, '')
       .replaceAll(/z\/OS Version: \d\.\d/g, 'z/OS Version: 0.0')
       .replaceAll(/NodeJS version: v.*?$/gm, 'NodeJS version: v0.0.0')
@@ -572,10 +573,13 @@ export class RemoteTestRunner {
     cfgYaml: ZoweYamlType,
     zweCommand: string,
     cwd: string = REMOTE_SYSTEM_INFO.ussTestDir,
+    envs: Record<string, string> = {},
   ): Promise<TestOutput> {
     let shouldOmitConfigParm;
     let zoweYaml = cfgYaml;
-
+    const envVarsString = Object.entries(envs)
+      .map(([key, value]) => `${key}=${value}`)
+      .join(' ');
     if (zoweYaml == null) {
       zoweYaml = {};
       shouldOmitConfigParm = true;
@@ -592,7 +596,7 @@ export class RemoteTestRunner {
     const finalZwe = this.addAnyCustomJobStatements(zoweYaml);
     await this.uploadZoweYaml(finalZwe.yaml, false, cwd);
     const start = performance.now();
-    const output = await this.uss.runCommand(`./bin/zwe ${command} ${defaultConfig}`, cwd);
+    const output = await this.uss.runCommand(`${envVarsString} ./bin/zwe ${command} ${defaultConfig}`, cwd);
     // default per-test should always be off. If you want tty, run this.useTty() in a beforeEach() block
     const end = performance.now();
     const duration = end - start;
@@ -628,7 +632,7 @@ export class RemoteTestRunner {
     for (const testFile of testFiles) {
       results.push(
         await this.runRaw(
-          `ZWE_CLI_PARAMETER_CONFIG="${cfgPath}" ZWE_zowe_runtimeDirectory="${REMOTE_SYSTEM_INFO.ussTestDir}" ./bin/utils/configmgr -script ${path.join(REMOTE_SYSTEM_INFO.ussTestDir, '.unit_tests', testFile)}`,
+          `ZWE_CLI_PARAMETER_CONFIG="${cfgPath}" ZWE_zowe_runtimeDirectory="${REMOTE_SYSTEM_INFO.ussTestDir}" ./bin/utils/configmgr -script ${path.posix.join(REMOTE_SYSTEM_INFO.ussTestDir, '.unit_tests', testFile)}`,
         ),
       );
     }

@@ -29,6 +29,7 @@ import * as node from '../../../../libs/node';
 import * as zosmf from '../../../../libs/zosmf';
 import * as zoslib from '../../../../libs/zos';
 import * as validateBind from '../../../validate/port/bind/index';
+import * as validateCertificate from '../../../validate/certificate/index';
 
 //# This command prepares everything needed to start Zowe.
 const cliParameterConfig = std.getenv('ZWE_CLI_PARAMETER_CONFIG');
@@ -39,39 +40,14 @@ const containerComponentId = std.getenv('ZWE_PRIVATE_CONTAINER_COMPONENT_ID');
 
 const INDIVIDUAL_APIML_COMPONENTS = ['gateway', 'discovery', 'api-catalog', 'caching-service', 'zaas'];
 
-const user = std.getenv('USER');
+const user = common.getUserId();
 
 const ZOWE_CONFIG=config.getZoweConfig();
 
-function getStartupCheckMode(property: string): {doCheck: boolean, warnOnly: boolean} {
-  let doCheck = true;
-  let warnOnly = false;
-
-  // set defaults
-  if (ZOWE_CONFIG.zowe.launchScript?.startupChecks?.default) {
-    let value = ZOWE_CONFIG.zowe.launchScript?.startupChecks.default;
-    if (value == 'disabled') {
-      doCheck = false;
-    } 
-    if (value == 'warn') {
-      warnOnly = true;
-    }
-  }
-
-  // per-startup-check override
-  if (ZOWE_CONFIG.zowe.launchScript?.startupChecks) {
-    let value = ZOWE_CONFIG.zowe.launchScript?.startupChecks[property];
-    if (value != null) {
-      doCheck = value != 'disabled';
-      warnOnly = value == 'warn';
-    }
-  }
-
-  return {doCheck, warnOnly};
-}
-
 const zosmfHost = ZOWE_CONFIG.zOSMF?.host;
 const zosmfPort = ZOWE_CONFIG.zOSMF?.port;
+
+let getStartupCheckMode = config.getStartupCheckMode;
 
 // Extra preparations for running in container
 // - link component runtime under zowe <runtime>/components
@@ -169,20 +145,28 @@ function globalValidate(enabledComponents:string[]): void {
     // only do these check when it's not running in container
 
     if (enabledComponents.includes('app-server')) {
-      let nodeOk = node.validateNodeHome();
-      if (!nodeOk) {
-        privateErrors++;
-        common.printFormattedError('ZWELS', "zwe-internal-start-prepare,global_validate", `Could not validate node home`);
+      let nodeCheckMin = config.getStartupCheckMode('nodeMin');
+      let nodeCheckMax = config.getStartupCheckMode('nodeMax');
+      if (nodeCheckMin.doCheck || nodeCheckMax.doCheck) {
+        let nodeOk = node.validateNodeHome(undefined, nodeCheckMin.warnOnly || !nodeCheckMin.doCheck, nodeCheckMax.warnOnly || !nodeCheckMax.doCheck);
+        if (!nodeOk) {
+          privateErrors++;
+          common.printFormattedError('ZWELS', "zwe-internal-start-prepare,global_validate", `Could not validate node home`);
+        }
       }
     }
 
     // validate java for some core components
     //TODO this should be a manifest parameter that you require java, not a hardcoded list. What if extensions require it?
     if (enabledComponents.includes('apiml') || enabledComponents.includes('gateway') || enabledComponents.includes('zaas') || enabledComponents.includes('discovery') || enabledComponents.includes('api-catalog') || enabledComponents.includes('caching-service')) {
-      let javaOk = javaCI.validateJavaHome();
-      if (!javaOk) {
-        privateErrors++;
-        common.printFormattedError('ZWELS', "zwe-internal-start-prepare,global_validate", `Could not validate java home`);
+      let javaCheckMin = config.getStartupCheckMode('javaMin');
+      let javaCheckMax = config.getStartupCheckMode('javaMax');
+      if (javaCheckMin.doCheck || javaCheckMax.doCheck) {
+        let javaOk = javaCI.validateJavaHome(undefined, javaCheckMin.warnOnly || !javaCheckMin.doCheck, javaCheckMax.warnOnly || !javaCheckMax.doCheck);
+        if (!javaOk) {
+          privateErrors++;
+          common.printFormattedError('ZWELS', "zwe-internal-start-prepare,global_validate", `Could not validate java home`);
+        }
       }
     }
   } else {
@@ -216,7 +200,7 @@ function globalValidate(enabledComponents:string[]): void {
         privateErrors++;
         common.printFormattedError('ZWELS', "zwe-internal-start-prepare,global_validate", "Zosmf validation failed");
       }
-    } else if (std.getenv('ZWE_components_gateway_apiml_security_auth_provider') == "zosmf") {
+    } else if (enabledComponents.includes('gateway') && std.getenv('ZWE_components_gateway_apiml_security_auth_provider') == "zosmf") {
         privateErrors++;
         common.printError("Using z/OSMF as 'components.gateway.apiml.security.auth.provider' is not possible: discovery is disabled.");
         common.printFormattedError('ZWELS', "zwe-internal-start-prepare,global_validate", "Zosmf validation failed");
@@ -233,7 +217,7 @@ function globalValidate(enabledComponents:string[]): void {
 function validateComponents(enabledComponents:string[]): any {
   common.printFormattedInfo("ZWELS", "zwe-internal-start-prepare,validate_components", "process component validations ...");
 
-  const validateBindAction = getStartupCheckMode('ports');
+  const validateBindAction = config.getStartupCheckMode('ports');
   if (validateBindAction.doCheck) {
     validateBind.execute(!validateBindAction.warnOnly);
   }
@@ -464,6 +448,18 @@ function configureComponents(componentEnvironments?: any, enabledComponents?:str
 
 // Few early steps even before initialization
 
+// Check if user is UID 0, this is not recommended
+let userCheckAction = ZOWE_CONFIG.zowe.launchScript?.startupChecks?.user || ZOWE_CONFIG.zowe.launchScript?.startupChecks?.default || 'exit';
+if (userCheckAction != 'disabled') {
+  const userID = shell.execOutSync('sh', '-c', 'id -u');
+  if (userID.rc == 0 && userID.out && userID.out == "0") {
+    common.printFormattedError("ZWELS", "zwe-internal-start-prepare", 'Running as UID 0. Such a setting is strongly discouraged.');
+    if (userCheckAction == 'exit') {
+      std.exit(1);
+    }
+  }
+}
+
 // init ZWE_RUN_IN_CONTAINER variable
 const runtimeDirectory=ZOWE_CONFIG.zowe.runtimeDirectory;
 std.setenv('ZWE_zowe_runtimeDirectory', runtimeDirectory);
@@ -507,6 +503,18 @@ export function execute() {
     node.requireNode();
   }
   common.requireZoweYaml();
+
+  const validateCertificateAction = getStartupCheckMode('certificate');
+  if (validateCertificateAction.doCheck) {
+    const certRc = validateCertificate.execute(!validateCertificateAction.warnOnly);
+    if (certRc != 0) {
+      if (validateCertificateAction.warnOnly) {
+        common.printError("WARN ZWEL0324W: Certificate validation failed. Strict validation for certificates is disabled. Zowe startup will continue.");
+      } else {
+        common.printErrorAndExit("ERROR ZWEL0323E: Certificate validation failed. Fix errors listed before starting Zowe.", undefined, 323);
+      }
+    }
+  }
 
   // overwrite ZWE_PRIVATE_LOG_LEVEL_ZWELS with zowe.launchScript.logLevel config in YAML
   if (ZOWE_CONFIG.zowe.launchScript.logLevel) {
@@ -552,6 +560,7 @@ export function execute() {
   // display instance prepared info
   common.printFormattedInfo("ZWELS", "zwe-internal-start-prepare", "Zowe runtime environment prepared");
 }
+
 
 export const _unit_test = {
   getStartupCheckMode

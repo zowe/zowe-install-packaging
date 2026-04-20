@@ -96,12 +96,12 @@ describe(`${testSuiteName}`, () => {
       _.set(cfgYaml, 'node.home', REMOTE_SYSTEM_INFO.zosNodeHome);
       let result = await testRunner.runZweTest(cfgYaml, `support --target-dir ${fingerprintDir}`);
       expect(result.stdout).not.toBeNull();
-      expect(result.stdout.includes('No response code from z/OSMF server.')).toBe(true);
+      expect(result.stdout.includes('No response code from z/OSMF server')).toBe(true);
       expect(result.rc).toBe(0);
 
       cfgYaml.zOSMF.host = 'does-not.exist.com';
       result = await testRunner.runZweTest(cfgYaml, `support --target-dir ${fingerprintDir}`);
-      expect(result.stdout.includes('No response code from z/OSMF server.')).toBe(true);
+      expect(result.stdout.includes('No response code from z/OSMF server')).toBe(true);
       expect(result.rc).toBe(0);
     });
   });

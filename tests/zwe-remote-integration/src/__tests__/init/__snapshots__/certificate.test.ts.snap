@@ -188,12 +188,17 @@ Error ZWEL0326E: An error occurred while processing Zowe YAML config /test/dir/z
           "ZWEL0001I",
           "ZWEL0002I",
           "ZWEAM000I",
+          "ZWEAM001I",
           "ZWED0031I",
           "ZWES1013I"
         ],
         "launchScript": {
           "logLevel": "info",
-          "onComponentConfigureFail": "warn"
+          "onComponentConfigureFail": "warn",
+          "startupChecks": {
+            "javaMax": "warn",
+            "nodeMax": "warn"
+          }
         },
         "certificate": {
           "keystore": {
@@ -308,13 +313,13 @@ Error ZWEL0326E: An error occurred while processing Zowe YAML config /test/dir/z
     validate status = 4
     Validity Exceptions:
     Validity Exceptions(s) with object at
-      Validity Exceptions(s) with object at /zowe
-        Validity Exceptions(s) with object at /zowe/setup
-          Schema at '/zowe/setup/certificate' invalid
-            not oneOf schemas at '/zowe/setup/certificate' are valid, 0 are
-              Validity Exceptions(s) with object at /zowe/setup/certificate
-                unequal constant value at /zowe/setup/certificate/type; expecting value 'PKCS12' of type 'integer'
-              Validity Exceptions(s) with object at /zowe/setup/certificate
-                missing required property 'keyring' at '/zowe/setup/certificate'
-                no matching enum value at /zowe/setup/certificate/type; expecting one of values '[JCEKS, JCECCAKS, JCERACFKS, JCECCARACFKS, JCEHYBRIDRACFKS]' of type 'integer'"
+      Validity Exceptions(s) with object at zowe
+        Validity Exceptions(s) with object at zowe.setup
+          Schema at 'zowe.setup.certificate' invalid
+            not oneOf schemas at 'zowe.setup.certificate' are valid, 0 are
+              Validity Exceptions(s) with object at zowe.setup.certificate
+                unequal constant value at zowe.setup.certificate.type; expecting value 'PKCS12' of type 'integer'
+              Validity Exceptions(s) with object at zowe.setup.certificate
+                missing required property 'keyring' at 'zowe.setup.certificate'
+                no matching enum value at zowe.setup.certificate.type; expecting one of values '[JCEKS, JCECCAKS, JCERACFKS, JCECCARACFKS, JCEHYBRIDRACFKS]' of type 'integer'"
 `;

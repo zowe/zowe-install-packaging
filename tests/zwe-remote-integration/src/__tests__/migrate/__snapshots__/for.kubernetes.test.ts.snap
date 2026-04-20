@@ -157,11 +157,15 @@ data:
       - "ZWEL0001I"
       - "ZWEL0002I"
       - "ZWEAM000I"
+      - "ZWEAM001I"
       - "ZWED0031I"
       - "ZWES1013I"
       launchScript:
         logLevel: "info"
         onComponentConfigureFail: "warn"
+        startupChecks:
+          javaMax: "warn"
+          nodeMax: "warn"
       certificate:
         keystore:
           type: "PKCS12"

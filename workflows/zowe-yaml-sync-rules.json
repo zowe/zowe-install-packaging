@@ -35,7 +35,11 @@
       "rule_entry": [
         "zowe_launchScript_startupChecks_default",
         "zowe_launchScript_startupChecks_ports",
-        "zowe_launchScript_startupChecks_zosmf"
+        "zowe_launchScript_startupChecks_zosmf",
+        "zowe_launchScript_startupChecks_javaMin",
+        "zowe_launchScript_startupChecks_javaMax",
+        "zowe_launchScript_startupChecks_nodeMin",
+        "zowe_launchScript_startupChecks_nodeMax"
       ]
     },
     {
@@ -60,7 +64,8 @@
       "rule_target": "ZWEAMLCF",
       "rule_type": "wf_missing_vars",
       "rule_entry": [
-        "components_apiml_enabled"
+        "components_apiml_enabled",
+        "components_apiml_debug"
       ]
     },
     {

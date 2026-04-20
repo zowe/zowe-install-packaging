@@ -1,0 +1,3 @@
+zwe validate dependencies -c /path/to/zowe.yaml
+zwe validate dependencies -c 'FILE(/customizations/zowe.yaml):FILE(/defaults/zowe.yaml)'
+zwe validate dependencies -c 'FILE(/path/to/zowe.yaml):PARMLIB(ZOWE.PARMLIB(YAML))'

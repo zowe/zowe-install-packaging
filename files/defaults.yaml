@@ -134,11 +134,21 @@ zowe:
     startupChecks:
       # Default check behavior may be one of "exit", "warn", or "disabled"
       default: "exit"
-      # Individual startup checks will override the default behavior
-      # Port check - defaults to zowe.launchScript.startupChecks.default, or "exit" if this is unset
+      # # Individual startup checks will override the default behavior
+      # # Port check - defaults to zowe.launchScript.startupChecks.default, or "exit" if this is unset
       # ports: exit
-      # z/OSMF startup check - defaults to zowe.launchScript.startupChecks.default, or "exit" if this is unset
+      # # z/OSMF startup check - defaults to zowe.launchScript.startupChecks.default, or "exit" if this is unset
       # zosmf: exit
+      # # Superuser startup check - defaults to zowe.launchScript.startupChecks.default, or "exit" if this is unset
+      # user: exit
+      # # Certificate (zowe.certificate) validation check - defaults to zowe.launchScript.startupChecks.default, or "exit" if this is unset
+      # certificate: exit
+      # # Java runtime version checks - max version is set to warn by default to allow for future Java versions to be supported.
+      # javaMin: exit
+      # javaMax: warn
+      # # Node runtime version checks - max version is set to warn by default to allow for future Node versions to be supported.
+      # nodeMin: exit
+      # nodeMax: warn
 
   # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   # How we want to verify SSL certificates of services. Valid values are:
@@ -164,6 +174,7 @@ components:
   # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   apiml:
     enabled: false
+    debug: false
 
   # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   gateway:

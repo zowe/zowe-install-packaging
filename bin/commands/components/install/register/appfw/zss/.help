@@ -1,0 +1,5 @@
+Registers plugins for ZSS found within the specified component.
+
+
+NOTE: this sub-command will be automatically executed by `zwe components install`,
+      so usually you don't need to execute this manually.
