@@ -395,7 +395,13 @@ module.exports = async () => {
         binary: false,
       });
     }
-
+    
+    console.log(`Uploading ${REPO_ROOT_DIR}/files/templates/init/mvs to ${ussRoot}...`);
+    await uss.runCommand(`mkdir -p ${ussRoot}/files/templates/init/mvs`);
+    await files.Upload.dirToUSSDir(zosmfSession, path.resolve(REPO_ROOT_DIR, 'files', 'templates', 'init', 'mvs'), `${ussRoot}/files/templates/init/mvs`, {
+      binary: false,
+    });
+    
     console.log(`Uploading ${REPO_ROOT_DIR}/workflows/templates/ZWESECUR.vtl and ZWESECUR.properties to ${ussWorkDir}...`);
     for (const name of ['ZWESECUR.vtl', 'ZWESECUR.properties'] as const) {
       await uploadFileToUss(path.resolve(REPO_ROOT_DIR, 'workflows', 'templates', name), `${ussWorkDir}/${name}`, {
