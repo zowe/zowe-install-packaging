@@ -44,7 +44,6 @@ export ZWE_PRIVATE_CORE_COMPONENTS_REQUIRE_NODE=app-server
 . "${ZWE_zowe_runtimeDirectory}/bin/libs/string.sh"
 . "${ZWE_zowe_runtimeDirectory}/bin/libs/sys.sh"
 . "${ZWE_zowe_runtimeDirectory}/bin/libs/var.sh"
-. "${ZWE_zowe_runtimeDirectory}/bin/libs/vallidateAttltPorts.sh"
 . "${ZWE_zowe_runtimeDirectory}/bin/libs/zos.sh"
 . "${ZWE_zowe_runtimeDirectory}/bin/libs/zos-dataset.sh"
 . "${ZWE_zowe_runtimeDirectory}/bin/libs/zos-fs.sh"
