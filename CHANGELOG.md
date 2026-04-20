@@ -4,6 +4,7 @@ All notable changes to the Zowe Installer will be documented in this file.
 
 ## `3.5.0`
 
+- Enhancement: `zwe init` no longer creates certificates by default. Use `zwe init --create-certificate` or `zwe init certificate` after defining the "zowe.setup.certificate" section of the YAML. You can use the examples provided within zowe/files/examples/setup/certificate. [#4238](https://github.com/zowe/zowe-install-packaging/pull/4238)
 - Enhancement: Split `zwe components install` into subcommands with dry-run options to help you with each step of component installation. [#4582](https://github.com/zowe/zowe-install-packaging/pull/4582)
 - Enhancement: Added command `zwe vadlidate certificate` which checks Zowe's keystore and truststore and reports action items to resolve any issues found. This is run automatically every Zowe setup but that can be changed via the parameter `zowe.launchScript.startupChecks.certificate`, which can be changed to "warn" to warn only, or "disabled" to bypass the check. [#4554](https://github.com/zowe/zowe-install-packaging/pull/4554)
 - Enhancement: `zwe version` supports displaying Zowe version defined in the configuration. [#4322](https://github.com/zowe/zowe-install-packaging/pull/4322)

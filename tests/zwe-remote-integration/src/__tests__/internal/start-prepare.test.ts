@@ -188,6 +188,7 @@ describe(`${testSuiteName}`, () => {
     it('default startupChecks behavior', async () => {
       cfgYaml.zowe.launchScript = ZoweConfig.getZoweYaml().zowe.launchScript; // reset launchScript to defaults
       _.set(cfgYaml, 'zowe.launchScript.startupChecks.user', 'disabled');
+      _.set(cfgYaml, 'zowe.launchScript.startupChecks.certificate', 'disabled');
       let result = await testRunner.runZweTest(cfgYaml, 'internal start prepare');
       expect(result.cleanedStdout).toMatchSnapshot();
       expect(result.rc).toBe(67); // ZWEL0323E: Certificate validation failed. Fix errors listed before starting Zowe.

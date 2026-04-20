@@ -5,17 +5,19 @@ exports[`start-prepare-tests (SHORT) default startupChecks behavior 1`] = `
  TESTUSR0 INFO (zwe-internal-start-prepare) build and hash: {BUILD_BRANCH}#{BUILD_NUMBER} ({BUILD_COMMIT_HASH})
  TESTUSR0 INFO (zwe-internal-start-prepare) z/OS Version: 0.0
  TESTUSR0 INFO (zwe-internal-start-prepare) ESM: ESMT
+ TESTUSR0 INFO (zwe-internal-start-prepare) starting Zowe instance SYS0 with /test/dir/zowe.test.yaml ...
+ TESTUSR0 INFO (zwe-internal-start-prepare,global_validate) process global validations ...
+ TESTUSR0 INFO (validateNodeHome) NodeJS version: v0.0.0
  TESTUSR0 INFO (validateJavaHome) Java version: v0.0.0
-ERROR:  TESTUSR0 ERROR (zwe-validate-certificate) Keystore or truststore does not exist.
-ERROR:  TESTUSR0 ERROR (zwe-validate-certificate) Review Zowe YAML properties:
-ERROR:  TESTUSR0 ERROR (zwe-validate-certificate)   zowe.certificate.keystore.file: /global/zowe/keystore/localhost/localhost.keystore.p12
-ERROR:  TESTUSR0 ERROR (zwe-validate-certificate)   zowe.certificate.truststore.file: /global/zowe/keystore/localhost/localhost.truststore.p12
-ERROR:  TESTUSR0 ERROR (zwe-validate-certificate) Correct the zowe.certificate YAML configuration before using Zowe.
-ERROR:  TESTUSR0 ERROR (zwe-validate-certificate) Configuration is invalid.
- TESTUSR0 INFO (zwe-validate-certificate) Output follows:
-Error while loading keystore file. Error message: /global/zowe/keystore/localhost/localhost.keystore.p12 (EDC5129I No such file or directory. (errno2=0x0594003D))
-Possible solution: Verify correct path to the keystore. Change owner or permission to the keystore file.
-ERROR: Error ZWEL0323E: Certificate validation failed. Fix errors listed before starting Zowe."
+Successfully checked z/OSMF is available on 'https://some.test.hostname:12321/zosmf/info' - 200
+ TESTUSR0 INFO (zwe-internal-start-prepare,global_validate) global validations are successful
+ TESTUSR0 INFO (zwe-internal-start-prepare,validate_components) process component validations ...
+ TESTUSR0 INFO (zwe-validate-port-available) Checking ports of 11 enabled components
+ TESTUSR0 INFO (zwe-validate-port-available) Zowe port bind validation passed.
+ERROR:  TESTUSR0 ERROR (zwe-internal-start-prepare,validate_components) Error ZWEL0172E: Component zss has commands.validate defined but the file is missing.
+ TESTUSR0 INFO (zwe-internal-start-prepare,configure_components) process component configurations ...
+ TESTUSR0 INFO (zwe-internal-start-prepare,configure_components) - commands.configure output from zss is:
+ TESTUSR0 INFO (zwe-internal-start-prepare) Zowe runtime environment prepared"
 `;
 
 exports[`start-prepare-tests (SHORT) default startupChecks behavior 2`] = `
@@ -24,15 +26,14 @@ exports[`start-prepare-tests (SHORT) default startupChecks behavior 2`] = `
  TESTUSR0 INFO (zwe-internal-start-prepare) z/OS Version: 0.0
  TESTUSR0 INFO (zwe-internal-start-prepare) ESM: ESMT
  TESTUSR0 INFO (validateJavaHome) Java version: v0.0.0
-ERROR:  TESTUSR0 ERROR (zwe-validate-certificate) Keystore or truststore does not exist.
+ERROR:  TESTUSR0 ERROR (zwe-validate-certificate) Error in Ring_name length
 ERROR:  TESTUSR0 ERROR (zwe-validate-certificate) Review Zowe YAML properties:
-ERROR:  TESTUSR0 ERROR (zwe-validate-certificate)   zowe.certificate.keystore.file: /global/zowe/keystore/localhost/localhost.keystore.p12
-ERROR:  TESTUSR0 ERROR (zwe-validate-certificate)   zowe.certificate.truststore.file: /global/zowe/keystore/localhost/localhost.truststore.p12
+ERROR:  TESTUSR0 ERROR (zwe-validate-certificate)   zowe.certificate.keystore.file: safkeyring://<stc_username>/<keyring_name>
+ERROR:  TESTUSR0 ERROR (zwe-validate-certificate)   zowe.certificate.truststore.file: safkeyring://<stc_username>/<keyring_name>
 ERROR:  TESTUSR0 ERROR (zwe-validate-certificate) Correct the zowe.certificate YAML configuration before using Zowe.
 ERROR:  TESTUSR0 ERROR (zwe-validate-certificate) Configuration is invalid.
  TESTUSR0 INFO (zwe-validate-certificate) Output follows:
-Error while loading keystore file. Error message: /global/zowe/keystore/localhost/localhost.keystore.p12 (EDC5129I No such file or directory. (errno2=0x0594003D))
-Possible solution: Verify correct path to the keystore. Change owner or permission to the keystore file.
+Error in Ring_name length or ESMT_userid length
 ERROR: WARN ZWEL0324W: Certificate validation failed. Strict validation for certificates is disabled. Zowe startup will continue.
  TESTUSR0 INFO (zwe-internal-start-prepare) starting Zowe instance SYS0 with /test/dir/zowe.test.yaml ...
  TESTUSR0 INFO (zwe-internal-start-prepare,global_validate) process global validations ...
