@@ -29,7 +29,7 @@ import * as node from '../../../../libs/node';
 import * as zosmf from '../../../../libs/zosmf';
 import * as zoslib from '../../../../libs/zos';
 import * as validateBind from '../../../validate/port/bind/index';
-import * as validateAttls from '../../../libs/validateAttls';
+import * as attls from '../../../../libs/attls';
 import * as validateCertificate from '../../../validate/certificate/index';
 
 //# This command prepares everything needed to start Zowe.
@@ -241,10 +241,9 @@ function validateComponents(enabledComponents:string[]): any {
   }
 
   // global setting for AT-TLS validation
-  const attlsRequested = ZOWE_CONFIG.zowe.network?.server?.tls?.attls === true;
   const attlsValidationAction = getStartupCheckMode('attls');
   if (attlsValidationAction.doCheck) {
-    validateAttls.validateAttlsPorts(attlsRequested, !attlsValidationAction.warnOnly);
+    attls.validateAttlsPorts(!attlsValidationAction.warnOnly);
   }
   
   const componentEnvironments = {};
