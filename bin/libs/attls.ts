@@ -72,7 +72,7 @@ export function validateAttlsPorts(quitOnError?: boolean): number {
       return {
         listenAddress: listenAddress, 
         name: name,
-        ports: [ports],
+        ports: ports,
         jobname: jobname,
         attlsEnabled: attlsEnabled
       }
@@ -102,9 +102,11 @@ export function validateAttlsPorts(quitOnError?: boolean): number {
 
     component.ports.forEach((port) => {
 
-      std.setenv('_BPX_JOBNAME', component.jobname);
+      if (component.jobname && component.jobname.length > 0) {
+        std.setenv('_BPX_JOBNAME', component.jobname);
+      }
       common.printFormattedDebug(common.MSG_KEY, 'validateAttlsPorts', 
-        `${component.name}: Checking if ATTLS is enabled for port ${port} for userid ${zoweUserId} on host ${component.listenAddress}, jobname ${component.jobname}`);
+        `${component.name}: Checking if ATTLS is enabled for port ${port} for userid ${zoweUserId} on host ${component.listenAddress}, jobname ${component.jobname && component.jobname.length > 0 ? component.jobname : 'of started task'}`);
       
       // Call attls-test binary
       let result = shell.execOutSync(detectAttlsPortPath, 
