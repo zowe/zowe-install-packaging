@@ -25,16 +25,18 @@
 # - None
 #
 # Parameters:
-# - $1: quit_on_error (true/false) - if true, exit on first error
-# - $2: component_name (optional) - validate only a specific component
+# - $1: attls_requested (true/false) - global ATTLS setting from config
+# - $2: quit_on_error (true/false) - if true, exit on first error
+# - $3: component_name (optional) - validate only a specific component
 #
 # Returns:
 # Return code 0 if all validations passed
 # Return code > 0 if any validation failed
 #
 validate_attls_ports() {
-  quit_on_error="${1:-false}"
-  component_name_filter="${2}"
+  attls_requested="${1:-false}"
+  quit_on_error="${2:-false}"
+  component_name_filter="${3}"
   
   if [ ! -f "${ZWE_CLI_PARAMETER_CONFIG}" ]; then
     print_error "ZWEL0363W: Configuration file not found"
@@ -104,6 +106,14 @@ validate_attls_ports() {
       continue
     fi
     
+    # Check for per-component override, otherwise use global setting
+    component_attls_override=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".components.${component_name}.zowe.network.server.tls.attls" || true)
+    if [ -n "${component_attls_override}" ]; then
+      component_attls_config="${component_attls_override}"
+    else
+      component_attls_config="${attls_requested}"
+    fi
+
     # ATTLS direction is hardcoded to Inbound (1) for now
     attls_direction=1
     
@@ -161,7 +171,9 @@ validate_attls_ports() {
       export _BPX_JOBNAME="${my_jobname}"
     fi
     
-    if [ ${result_rc} -ne 0 ]; then
+    # Check for mismatch: ATTLS enabled in config but no rules found, or ATTLS not enabled but rules found
+    if [ "${component_attls_config}" = "true" ] && [ ${result_rc} -ne 0 ]; then
+      # ATTLS is enabled but no rules found
       failed_count=$((failed_count + 1))
       if [ -n "${detect_output}" ]; then
         print_debug "${detect_output}"
@@ -172,6 +184,20 @@ validate_attls_ports() {
       else
         print_formatted_error "validateAttlsPorts" \
           "ZWEL0365E: ${component_name}: No AT-TLS rule identified on ${listen_address}:${port} for user ${zowe_user_id}"
+      fi
+      has_errors=true
+    elif [ "${component_attls_config}" = "false" ] && [ ${result_rc} -eq 0 ]; then
+      # ATTLS is not enabled but rules are found - configuration mismatch
+      failed_count=$((failed_count + 1))
+      if [ -n "${detect_output}" ]; then
+        print_debug "${detect_output}"
+      fi
+      if [ -n "${jobname}" ]; then
+        print_formatted_error "validateAttlsPorts" \
+          "ZWEL0367E: ${component_name}: AT-TLS rule found but ATTLS is not enabled in configuration on ${listen_address}:${port} for user ${zowe_user_id} and jobname ${jobname}"
+      else
+        print_formatted_error "validateAttlsPorts" \
+          "ZWEL0367E: ${component_name}: AT-TLS rule found but ATTLS is not enabled in configuration on ${listen_address}:${port} for user ${zowe_user_id}"
       fi
       has_errors=true
     elif [ -n "${detect_output}" ]; then
