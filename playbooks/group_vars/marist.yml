@@ -9,6 +9,7 @@ zowe_keystore_dir: /ZOWE/tmp/keystore
 zowe_install_logs_dir: /ZOWE/tmp/logs
 zowe_dataset_prefix: ZOWEAD3.ZWE
 zowe_apiml_verify_certficates_of_services: false
+zowe_launch_script_startup_checks_certificate: warn
 # enable Non-Strict verify certificates by default
 zowe_apiml_nonstrict_verify_certficates_of_services: true
 # If you want to use attls on Marist, update the two variables below. By default, attls is disabled
