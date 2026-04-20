@@ -111,6 +111,11 @@ data:
           loadlib: "TEST.DATASET.PFX.SZWEEXEC"
           authLoadlib: "TEST.DATASET.PFX.SZWEAUTH"
           authPluginLib: "TEST.DATASET.PFX.ZWESAPL"
+        vsam:
+          mode: "NONRLS"
+          volume: "TSTVOL"
+          storageClass: ""
+          name: "TEST.DATASET.PFX.VSAM"
         certificate:
           type: "PKCS12"
           pkcs12:
@@ -120,11 +125,20 @@ data:
             caAlias: "local_ca"
             caPassword: "local_ca_password"
           validity: 3650
-        vsam:
-          mode: "NONRLS"
-          volume: "TSTVOL"
-          storageClass: ""
-          name: "TEST.DATASET.PFX.VSAM"
+      certificate:
+        keystore:
+          type: "PKCS12"
+          file: "/home/zowe/keystore/keystore.p12"
+          password: "password"
+          alias: "localhost"
+        truststore:
+          type: "PKCS12"
+          file: "/home/zowe/keystore/truststore.p12"
+          password: "password"
+        pem:
+          key: "/home/zowe/keystore/keystore.key"
+          certificate: "/home/zowe/keystore/keystore.cer"
+          certificateAuthorities: "/home/zowe/keystore/ca.cer"
       runtimeDirectory: "/home/zowe/runtime"
       logDirectory: "/home/zowe/instance/logs"
       workspaceDirectory: "/home/zowe/instance/workspace"
@@ -166,20 +180,6 @@ data:
         startupChecks:
           javaMax: "warn"
           nodeMax: "warn"
-      certificate:
-        keystore:
-          type: "PKCS12"
-          file: "/home/zowe/keystore/keystore.p12"
-          password: "password"
-          alias: "localhost"
-        truststore:
-          type: "PKCS12"
-          file: "/home/zowe/keystore/truststore.p12"
-          password: "password"
-        pem:
-          key: "/home/zowe/keystore/keystore.key"
-          certificate: "/home/zowe/keystore/keystore.cer"
-          certificateAuthorities: "/home/zowe/keystore/ca.cer"
       verifyCertificates: "STRICT"
       useConfigmgr: false
       externalDomains:
