@@ -25,8 +25,10 @@ export function convertDirToEbcdicInPlace(dir: string) {
         .map((code: string) => {
           // Replace line feeds with new line, ignore carriage returns.
           // Both ascii characters ignored by converter out of the box.
-          if (code === '0A') {
+          if (code === '0A') { // Line feed
             return '15';
+          } else if (code === '0D') { // Carriage return
+            return '';
           } else {
             return converter.charToEBCDIC(code);
           }
