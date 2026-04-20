@@ -396,8 +396,13 @@ module.exports = async () => {
       });
     }
     
-    console.log(`Uploading ${REPO_ROOT_DIR}/files/templates/init/mvs to ${ussRoot}...`);
     await uss.runCommand(`mkdir -p ${ussRoot}/files/templates/init/mvs`);
+    console.log(`Uploading ${REPO_ROOT_DIR}/files/templates/license.tjcl to ${ussRoot}...`);
+    await uploadFileToUss(path.resolve(REPO_ROOT_DIR, 'files', 'templates', 'license.tjcl'), `${ussRoot}/files/templates/license.tjcl`, {
+      binary: false,
+    });
+    
+    console.log(`Uploading ${REPO_ROOT_DIR}/files/templates/init/mvs to ${ussRoot}...`);
     await files.Upload.dirToUSSDir(zosmfSession, path.resolve(REPO_ROOT_DIR, 'files', 'templates', 'init', 'mvs'), `${ussRoot}/files/templates/init/mvs`, {
       binary: false,
     });
