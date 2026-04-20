@@ -13,6 +13,7 @@ All notable changes to the Zowe Installer will be documented in this file.
 - Bugfix: `zwe config get` HA instance lookup is case insensitive. [#4609](https://github.com/zowe/zowe-install-packaging/pull/4609)
 - Bugfix: Fixed error preventing startup which reported that z/OSMF gateway configuration was invalid despite the gateway being disabled [#4718](https://github.com/zowe/zowe-install-packaging/pull/4718)
 - Enhancement: `zwe config get` command uses new `--format` option to format the output. [#4591](https://github.com/zowe/zowe-install-packaging/pull/4591)
+- Enhancement: Added command `zwe validate dependencies` which can be used to validate that Zowe is using supported versions of dependencies such as node and java. The behavior of these checks can be customized via YAML properties `zowe.launchScript.startupChecks.java` and `zowe.launchScript.startupChecks.node`. [#4713](https://github.com/zowe/zowe-install-packaging/pull/4713)
 - Bugfix: The `components.apiml.debug` debug property for the APIML Single-Service deployment mode (Modulith) was not working. [#4540](https://github.com/zowe/api-layer/pull/4540)
 - Bugfix: `zwe support verify-fingerprints` now produces consistent hashes across Java 17 and Java 21 by hashing raw bytes instead of charset-dependent strings. [#4726](https://github.com/zowe/zowe-install-packaging/pull/4726)
 

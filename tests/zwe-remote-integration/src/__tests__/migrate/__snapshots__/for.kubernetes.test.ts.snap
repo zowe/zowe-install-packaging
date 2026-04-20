@@ -163,6 +163,9 @@ data:
       launchScript:
         logLevel: "info"
         onComponentConfigureFail: "warn"
+        startupChecks:
+          javaMax: "warn"
+          nodeMax: "warn"
       certificate:
         keystore:
           type: "PKCS12"
