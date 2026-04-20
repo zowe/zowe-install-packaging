@@ -15,7 +15,7 @@ import * as config from './config';
 import * as component from './component';
 import * as shell from './shell';
 
-export function validateAttlsPorts(quitOnError?: boolean, componentName?: string): number {
+export function validateAttlsPorts(attlsRequested?: boolean, quitOnError?: boolean, componentName?: string): number {
   common.requireZoweYaml();
   let hasErrors = false;
   const ZOWE_CONFIG = config.getZoweConfig();
@@ -71,6 +71,10 @@ export function validateAttlsPorts(quitOnError?: boolean, componentName?: string
       continue;
     }
 
+    // Check for per-component override, otherwise use global setting
+    const componentAttlsOverride = ZOWE_CONFIG.components[componentName].zowe?.network?.server?.tls?.attls;
+    const componentAttlsConfig = componentAttlsOverride !== undefined ? componentAttlsOverride : attlsRequested;
+
     // ATTLS direction is hardcoded to Inbound (1) for now
     let attlsDirection = 1; // Inbound
 
@@ -109,7 +113,9 @@ export function validateAttlsPorts(quitOnError?: boolean, componentName?: string
       std.setenv('_BPX_JOBNAME', myJobname);
     }
 
-    if (result.rc) {
+    // Check for mismatch: ATTLS enabled in config but no rules found, or ATTLS not enabled but rules found
+    if (componentAttlsConfig && result.rc) {
+      // ATTLS is enabled but no rules found
       failedCount++;
       if (result.out) {
         common.printDebug(result.out);
@@ -120,6 +126,20 @@ export function validateAttlsPorts(quitOnError?: boolean, componentName?: string
       } else {
         common.printFormattedError(common.MSG_KEY, 'validateAttlsPorts', 
           `ZWEL0365E: ${componentName}: No AT-TLS rule identified on ${listenAddress}:${port} for user ${zoweUserId}`);
+      }
+      hasErrors = true;
+    } else if (!componentAttlsConfig && !result.rc) {
+      // ATTLS is not enabled but rules are found - configuration mismatch
+      failedCount++;
+      if (result.out) {
+        common.printDebug(result.out);
+      }
+      if (jobname) {
+        common.printFormattedError(common.MSG_KEY, 'validateAttlsPorts',
+          `ZWEL0367E: ${componentName}: AT-TLS rule found but ATTLS is not enabled in configuration on ${listenAddress}:${port} for user ${zoweUserId} and jobname ${jobname}`);
+      } else {
+        common.printFormattedError(common.MSG_KEY, 'validateAttlsPorts',
+          `ZWEL0367E: ${componentName}: AT-TLS rule found but ATTLS is not enabled in configuration on ${listenAddress}:${port} for user ${zoweUserId}`);
       }
       hasErrors = true;
     } else if (result.out) {
@@ -136,7 +156,7 @@ export function validateAttlsPorts(quitOnError?: boolean, componentName?: string
     return failedCount;
   } else {
     // It is possible that the ATTLS check failed due to missing attls-test binary or other unexpected error, so we want to provide a hint about how to bypass the check if needed instead of just exiting with error code.
-    common.printFormattedError(common.MSG_KEY, 'validateAttlsPorts', 
+    common.printFormattedError(common.MSG_KEY, 'validateAttlsPorts',
       `Zowe port ATTLS validation failed. This check can be dismissed with YAML value "zowe.launchScript.startupChecks.attls: warn"`);
     common.printErrorAndExit(
       `ZWEL0366E: ${failedCount} Zowe port ATTLS validation(s) failed, review output for action items before running Zowe.`, 

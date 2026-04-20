@@ -240,9 +240,11 @@ function validateComponents(enabledComponents:string[]): any {
     validateBind.execute(!validateBindAction.warnOnly);
   }
 
-  const validateAttlsAction = getStartupCheckMode('attls');
-  if (validateAttlsAction.doCheck) {
-    validateAttls.validateAttlsPorts(!validateAttlsAction.warnOnly);
+  // global setting for AT-TLS validation
+  const attlsRequested = ZOWE_CONFIG.zowe.network?.server?.tls?.attls === true;
+  const attlsValidationAction = getStartupCheckMode('attls');
+  if (attlsValidationAction.doCheck) {
+    validateAttls.validateAttlsPorts(attlsRequested, !attlsValidationAction.warnOnly);
   }
   
   const componentEnvironments = {};
