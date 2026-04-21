@@ -104,7 +104,7 @@ TEST_CONFIG_FILE="$(pwd)/resources/custom_config_you_created.yml" \
 ```
 Note: powershell command for the previous one:
 ```powershell
-$env:TEST_CONFIG_FILE="${pwd}\resources\custom_config_you_created.yml; `
+$env:TEST_CONFIG_FILE="${pwd}\resources\custom_config_you_created.yml"; `
   npx jest --testNamePattern='init-mvs.*SHORT.*'
 ```
 
