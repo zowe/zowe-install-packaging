@@ -10,10 +10,18 @@
 
 import * as common from '@bin/libs/common';
 
+export function assertContains(text: string, expected: string) {
+  if (!text.includes(expected)) {
+    common.printMessage(`Expected text to contain:\n\t${expected}\n\t${text}`);
+    throw new Error(`Expected text to contain:\n\t${expected}\n\t${text}`);
+  }
+  return 0;
+}
+
 export function assertEqualsStrict(val1, val2): number {
   if (val1 !== val2) {
     common.printMessage(`Expected values to be strictly equals:\n\t${JSON.stringify(val1)}\n\t${JSON.stringify(val2)}`);
-    return 1;
+    throw new Error(`Expected values to be strictly equals:\n\t${JSON.stringify(val1)}\n\t${JSON.stringify(val2)}`);
   }
   return 0;
 }

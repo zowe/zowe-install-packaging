@@ -1,0 +1,16 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`unit-test-suite (SHORT) run all unit tests 1`] = `"Starting "getStartupCheckMode" test cases."`;
+
+exports[`unit-test-suite (SHORT) run all unit tests 2`] = `
+"Starting "processCertificateAnalyserNonZeroOutput" test cases.
+ TESTUSR0 WARN (zwe-validate-certificate) Java is unable to read either keystore or truststore due to type.
+ TESTUSR0 WARN (zwe-validate-certificate) Review Zowe YAML properties:
+ TESTUSR0 WARN (zwe-validate-certificate)   java.home: /test/java/home
+ TESTUSR0 WARN (zwe-validate-certificate)   zowe.certificate.keystore.type: JCERACFKS
+ TESTUSR0 WARN (zwe-validate-certificate)   zowe.certificate.truststore.type: JCERACFKS
+ERROR:  TESTUSR0 ERROR (zwe-validate-certificate) Correct the zowe.certificate YAML configuration before using Zowe.
+ TESTUSR0 WARN (zwe-validate-certificate) Configuration could not be fully validated.
+ TESTUSR0 INFO (zwe-validate-certificate) Output follows:
+There is no such provider:"
+`;
