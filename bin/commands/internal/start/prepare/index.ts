@@ -31,7 +31,6 @@ import * as zoslib from '../../../../libs/zos';
 import * as validateBind from '../../../validate/port/bind/index';
 import * as attls from '../../../../libs/attls';
 import * as validateComponentManifests from '../../../validate/components/index';
-import * as attls from '../../../../libs/attls';
 import * as validateCertificate from '../../../validate/certificate/index';
 
 //# This command prepares everything needed to start Zowe.
