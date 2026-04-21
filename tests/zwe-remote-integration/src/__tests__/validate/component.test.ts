@@ -8,7 +8,6 @@
  * Copyright Contributors to the Zowe Project.
  */
 
-import _ from 'lodash';
 import { ZoweConfig } from '../../config/ZoweConfig';
 import ZoweYamlType from '../../config/ZoweYamlType';
 import { RemoteTestRunner } from '../../zos/RemoteTestRunner';
