@@ -307,7 +307,6 @@ zowe:
       # # ATTLS (Application Transparent Transport Layer Security) port check - defaults to "warn"
       attls: "warn"
 
-
   # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   # How we want to verify SSL certificates of services. Valid values are:
   # - STRICT:    will validate if the certificate is trusted in our trust store and
