@@ -28,7 +28,7 @@ export function validateAttlsPorts(quitOnError?: boolean): number {
 
   const myJobname = std.getenv('_BPX_JOBNAME');
   const globalAttlsEnabled = ZOWE_CONFIG.zowe.network?.server?.tls?.attls;
-  const globalListenAddress = ZOWE_CONFIG.zowe.network?.server?.listenAddresses[0]
+  const globalListenAddress = ZOWE_CONFIG.zowe.network?.server?.listenAddresses && ZOWE_CONFIG.zowe.network?.server?.listenAddresses[0]
     ? ZOWE_CONFIG.zowe.network.server.listenAddresses[0]
     : '0.0.0.0';
   
