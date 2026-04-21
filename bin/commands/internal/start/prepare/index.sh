@@ -111,6 +111,12 @@ else
   ########################################################
   # Global validations
   global_validate() {
+    # print system limits using ulimit -a command. This is to ease troubleshooting.
+    print_debug "Checking system limits (ulimit -a):"
+    if ulimit -a >/dev/null 2>&1; then
+      print_debug "$(ulimit -a)"
+    fi
+
     print_formatted_info "ZWELS" "zwe-internal-start-prepare,global_validate:${LINENO}" "process global validations ..."
 
     # validate_runtime_user
