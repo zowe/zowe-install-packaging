@@ -11,6 +11,7 @@
 import { assertEqualsStrict } from './common/assert';
 import * as template from '@bin/libs/template';
 import * as common from '@bin/libs/common';
+import * as std from 'cm_std';
 
 const DEFAULT = {
   "zowe": {
@@ -134,7 +135,10 @@ const testCases = [
 
 common.printMessage('Starting "bin/libs/template: resolveString" test cases.');
 
+let rc = 0;
 for (const test of testCases) {
   const result = template.resolveString(test.templateString, test.data);
-  assertEqualsStrict(result, test.expected);
+  rc += assertEqualsStrict(result, test.expected);
 }
+
+std.exit(rc);
