@@ -63,8 +63,8 @@ zowe:
       pkcs12:
         directory: "${{ zowe.setup.certificate.type != 'PKCS12' ? null : '/var/zowe/keystore' }}"
         lock: "${{ zowe.setup.certificate.type != 'PKCS12' ? null : true }}"
-        name: "${{ zowe.setup.certificate.type == 'PKCS12' && !zowe.setup.certificate.pkcs12.import ? 'localhost' : null }}"
-        password: "${{ zowe.setup.certificate.type == 'PKCS12' && !zowe.setup.certificate.pkcs12.import ? 'password' : null }}"
+        name: "${{ zowe.setup.certificate.type == 'PKCS12' ? 'localhost' : null }}"
+        password: "${{ zowe.setup.certificate.type == 'PKCS12' ? 'password' : null }}"
         caAlias: "${{ zowe.setup.certificate.type == 'PKCS12' && !zowe.setup.certificate.pkcs12.import ? 'local_ca' : null }}"
         caPassword: "${{ zowe.setup.certificate.type == 'PKCS12' && !zowe.setup.certificate.pkcs12.import ? 'local_ca_password' : null }}"
 
@@ -139,6 +139,8 @@ zowe:
       # ports: exit
       # # z/OSMF startup check - defaults to zowe.launchScript.startupChecks.default, or "exit" if this is unset
       # zosmf: exit
+      # Component manifest check - validates that each component defined in zowe.yaml has a manifest file.
+      components: "warn"
       # # Superuser startup check - defaults to zowe.launchScript.startupChecks.default, or "exit" if this is unset
       # user: exit
       # # Certificate (zowe.certificate) validation check - defaults to zowe.launchScript.startupChecks.default, or "exit" if this is unset

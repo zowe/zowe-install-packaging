@@ -66,6 +66,10 @@
 <   workspaceDirectory: /global/zowe/workspace
 ---
 >   workspaceDirectory: /tmp
+179c179
+<     validation: "STRICT"
+---
+>     validation: "COMPONENT-COMPAT"
 335c335
 <   home: ""
 ---
@@ -74,3 +78,30 @@
 <   home: ""
 ---
 >   home: "#delete_me#"
+413c413
+<           enabled: false
+---
+>           enabled: true
+460c460
+<     enabled: true
+---
+>     enabled: false
+474c474
+<     enabled: true
+---
+>     enabled: false
+477a478,479
+>       jwt:
+>         fallback: true
+485c487
+<     enabled: true
+---
+>     enabled: false
+492c494
+<     enabled: true
+---
+>     enabled: false
+499c501
+<     enabled: true
+---
+>     enabled: false
