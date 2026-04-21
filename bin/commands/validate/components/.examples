@@ -1,0 +1,4 @@
+zwe validate components -c /path/to/zowe.yaml
+zwe validate components -c /path/to/zowe.yaml -o gateway,discovery,zss
+zwe validate components -c 'FILE(/customizations/zowe.yaml):FILE(/defaults/zowe.yaml)'
+zwe validate components -c 'FILE(/path/to/zowe.yaml):PARMLIB(ZOWE.PARMLIB(YAML))'

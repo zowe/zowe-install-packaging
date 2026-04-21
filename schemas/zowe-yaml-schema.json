@@ -742,6 +742,11 @@
                   "default": "exit",
                   "description": "Checks if zowe.setup.security.users.zowe (ZWESVUSR) is configured as a superuser (UID 0). Such a setting is strongly discouraged."
                 },
+                "components": {
+                  "$ref": "/schemas/v2/server-common#startupCheck",
+                  "default": "warn",
+                  "description": "Checks that every component listed under 'components' in zowe.yaml has a valid manifest file (manifest.yaml, manifest.yml, or manifest.json). Components missing a manifest cannot be started."
+                },
                 "javaMin": {
                   "type": "string",
                   "default": "exit",

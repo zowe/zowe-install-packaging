@@ -294,6 +294,8 @@ zowe:
       # ports: exit
       # # z/OSMF startup check - defaults to zowe.launchScript.startupChecks.default, or "exit" if this is unset
       # zosmf: exit
+      # # Component manifest check - validates that each component defined in zowe.yaml has a manifest file.
+      # components: "warn"
       # # Superuser startup check - defaults to zowe.launchScript.startupChecks.default, or "exit" if this is unset
       # user: exit
       # # Certificate check - defaults to zowe.launchScript.startupChecks.default, or "exit" if this is unset
