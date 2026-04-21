@@ -127,6 +127,19 @@ function prepareWorkspaceDirectory() {
 function globalValidate(enabledComponents:string[]): void {
   common.printFormattedInfo("ZWELS", "zwe-internal-start-prepare,global_validate", "process global validations ...");
 
+  // if debug is true,  exec ulimit -a and print the output
+  const logLevel = std.getenv("ZWE_PRIVATE_LOG_LEVEL_ZWELS");
+  const isDebug = (logLevel == "DEBUG" || logLevel == "TRACE");
+  if (isDebug) { 
+    const ulimitResult = shell.execSync('ulimit', '-a');
+    if (ulimitResult.rc != 0) {
+      common.printFormattedDebug("ZWELS", "zwe-internal-start-prepare,global_validate", "Failed to execute ulimit -a.");
+      common.printFormattedDebug("ZWELS", "zwe-internal-start-prepare,global_validate", `ulimit stdout: ${ulimitResult.out}\nulimit stderr: ${ulimitResult.err}`);
+    } else {
+      common.printFormattedDebug("ZWELS", "zwe-internal-start-prepare,global_validate", `ulimit output: ${ulimitResult.out}`);
+    }
+  }
+
   // validate_runtime_user
   if (user == "IZUSVR") {
     common.printFormattedWarn("ZWELS", "zwe-internal-start-prepare,global_validate", "ZWEL0302W: You are running the Zowe process under user id IZUSVR. This is not recommended and may impact your z/OS MF server negatively.");
