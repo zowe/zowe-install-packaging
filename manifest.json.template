@@ -118,7 +118,7 @@
       "artifact": "*.pax"
     },
     "org.zowe.attls-test": {
-      "version": "^3.4.0-FEATURE-PREFLIGHT-ATTLS-CHECK",
+      "version": "^3.4.0-V3.X-STAGING",
       "artifact": "*.pax"
     },
     "org.zowe.zis-test": {
