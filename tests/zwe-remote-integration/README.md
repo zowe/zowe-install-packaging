@@ -102,6 +102,11 @@ To run a custom subset, e.g. only `init-mvs` tests marked `(SHORT)`:
 TEST_CONFIG_FILE="$(pwd)/resources/custom_config_you_created.yml" \
   npx jest --testNamePattern='init-mvs.*SHORT.*'
 ```
+Note: powershell command for the previous one:
+```powershell
+$env:TEST_CONFIG_FILE="${pwd}\resources\custom_config_you_created.yml; `
+  npx jest --testNamePattern='init-mvs.*SHORT.*'
+```
 
 ## Testing Behaviors and Constructs
 
