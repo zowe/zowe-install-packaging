@@ -61,24 +61,24 @@
       "artifact": "*.pax"
     },
     "org.zowe.apiml.apiml-package": {
-      "version": "3.5.11-PR-2233-SNAPSHOT",
-      "artifact": "apiml-package-3.5.11-PR-2233-20260417.070713-1.zip"
+      "version": "3.5.13-PR-1236-SNAPSHOT",
+      "artifact": "apiml-package-3.5.13-PR-1236-20260421.080708-1.zip"
     },
     "org.zowe.apiml.api-catalog-package": {
-      "version": "3.5.11-PR-2233-SNAPSHOT",
-      "artifact": "api-catalog-package-3.5.11-PR-2233-20260417.070713-1.zip"
+      "version": "3.5.13-PR-1236-SNAPSHOT",
+      "artifact": "api-catalog-package-3.5.13-PR-1236-20260421.080708-1.zip"
     }, 
     "org.zowe.apiml.discovery-package": {
-      "version": "3.5.11-PR-2233-SNAPSHOT",
-      "artifact": "discovery-package-3.5.11-PR-2233-20260417.070713-1.zip"
+      "version": "3.5.13-PR-1236-SNAPSHOT",
+      "artifact": "discovery-package-3.5.13-PR-1236-20260421.080708-1.zip"
     },
     "org.zowe.apiml.gateway-package": {
-      "version": "3.5.11-PR-2233-SNAPSHOT",
-      "artifact": "gateway-package-3.5.11-PR-2233-20260417.070713-1.zip"
+      "version": "3.5.13-PR-1236-SNAPSHOT",
+      "artifact": "gateway-package-3.5.13-PR-1236-20260421.080708-1.zip"
     },
     "org.zowe.apiml.caching-service-package": {
-      "version": "3.5.11-PR-2233-SNAPSHOT",
-      "artifact": "caching-service-package-3.5.11-PR-2233-20260417.070713-1.zip"
+      "version": "3.5.13-PR-1236-SNAPSHOT",
+      "artifact": "caching-service-package-3.5.13-PR-1236-20260421.080708-1.zip"
     },
     "org.zowe.apiml.apiml-common-lib-package": {
       "version": "3.5.11-PR-2233-SNAPSHOT",
@@ -94,8 +94,8 @@
       "artifact": "apiml-sample-extension-package-3.5.11-PR-2233-20260417.070713-1.zip"
     },
     "org.zowe.apiml.zaas-package": {
-      "version": "3.5.11-PR-2233-SNAPSHOT",
-      "artifact": "zaas-package-3.5.11-PR-2233-20260417.070713-1.zip"
+      "version": "3.5.13-PR-1236-SNAPSHOT",
+      "artifact": "zaas-package-3.5.13-PR-1236-20260421.080708-1.zip"
     },
     "org.zowe.apiml.sdk.certificate-analyser": {
       "version": "^3.0.3-SNAPSHOT",
