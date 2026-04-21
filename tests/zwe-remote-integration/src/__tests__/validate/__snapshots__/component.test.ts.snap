@@ -1,0 +1,48 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`zwe-validate-components (SHORT) validate components -o checks named components even when disabled in yaml 1`] = `
+"Temporary directory '/tmp/.zweenv-0000' created.
+Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
+ TESTUSR0 INFO (zwe-validate-components) Validating manifests for 1 component(s).
+ TESTUSR0 INFO (zwe-validate-components) All checked component(s) have valid manifest files."
+`;
+
+exports[`zwe-validate-components (SHORT) validate components -o rejects ids not defined in zowe.yaml 1`] = `
+"Temporary directory '/tmp/.zweenv-0000' created.
+Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
+ERROR:  TESTUSR0 ERROR (zwe-validate-components) ZWEL0331E: The following requested component(s) are not defined in zowe.yaml: not-a-real-component"
+`;
+
+exports[`zwe-validate-components (SHORT) validate components for enabled components only 1`] = `
+"Temporary directory '/tmp/.zweenv-0000' created.
+Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
+ TESTUSR0 INFO (zwe-validate-components) Validating manifests for 1 component(s).
+ TESTUSR0 INFO (zwe-validate-components) All checked component(s) have valid manifest files."
+`;
+
+exports[`zwe-validate-components (SHORT) validate components requires zowe.runtimeDirectory 1`] = `
+"Temporary directory '/tmp/.zweenv-0000' created.
+Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
+ERROR:  TESTUSR0 ERROR (zwe-validate-components) ZWEL0332E: Zowe YAML property zowe.runtimeDirectory is not defined. Zowe cannot validate component existence without knowing the runtime location."
+`;
+
+exports[`zwe-validate-components (SHORT) validate components returns 328 when a checked component directory is missing (ZWEL0330E) 1`] = `
+"Temporary directory '/tmp/.zweenv-0000' created.
+Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
+ TESTUSR0 INFO (zwe-validate-components) Validating manifests for 1 component(s).
+ERROR:  TESTUSR0 ERROR (zwe-validate-components) ZWEL0330E: Component 'gateway' directory was not found in the runtime or extension directories.
+ERROR:  TESTUSR0 ERROR (zwe-validate-components) ZWEL0328E: The following component(s) are missing a valid manifest file and cannot be started: gateway"
+`;
+
+exports[`zwe-validate-components (SHORT) validate components returns 329 when no components are defined in zowe.yaml 1`] = `
+"Temporary directory '/tmp/.zweenv-0000' created.
+Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
+ERROR:  TESTUSR0 ERROR (zwe-validate-components) ZWEL0329E: No components are defined in zowe.yaml. Zowe cannot start without at least one component."
+`;
+
+exports[`zwe-validate-components (SHORT) validate components with -o component subset (zss only on remote runtime) 1`] = `
+"Temporary directory '/tmp/.zweenv-0000' created.
+Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
+ TESTUSR0 INFO (zwe-validate-components) Validating manifests for 1 component(s).
+ TESTUSR0 INFO (zwe-validate-components) All checked component(s) have valid manifest files."
+`;
