@@ -1,0 +1,1 @@
+Validates that the Java runtime installed at JAVA_HOME (or discovered via PATH or zowe.yaml) meets Zowe's supported version range.

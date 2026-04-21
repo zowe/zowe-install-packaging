@@ -80,18 +80,18 @@ if [ "$run" = "run" ]; then
     if [ "$STATUS_NAME" = "in-progress" ]; then
       echo "Workflow ended with an error." >>$LOG_DIR/report.txt
       echo $RESP >>$LOG_DIR/report.txt
-      echo "Checking if the workflow is ZWECONF" >>$LOG_DIR/report.txt
-      if [ "$ZWECONF" = "ZWECONF" ]; then
+      echo "Checking if the workflow is ZWECONF or ZWEAMLCF" >>$LOG_DIR/report.txt
+      if [ "$ZWECONF" = "ZWECONF" -o "$ZWECONF" = "ZWEAMLCF" ]; then
         STEP_NAME=$(echo $RESP | grep -o '"currentStepName":".*"' | cut -f4 -d\")
         if [ "$STEP_NAME" = "configure" ]; then
-          echo "The workflow is ZWECONF and it should end in step 'configure', second step of the workflow. The workflow ends here when zowe.setup.jcl.enable is 'true', as the 'zwe init generate' command issued in the configure step will fail."
+          echo "The workflow is $ZWECONF and it should end in step 'configure', second step of the workflow. The workflow ends here when zowe.setup.jcl.enable is 'true', as the 'zwe init generate' command issued in the configure step will fail."
           STATUS="FINISHED"
         else
-          echo "The workflow is ZWECONF but ended in different step: '$STEP_NAME'" >>$LOG_DIR/report.txt
+          echo "The workflow is $ZWECONF but ended in different step: '$STEP_NAME'" >>$LOG_DIR/report.txt
           exit -1
         fi
       else
-        echo "Workflow ended with an error and it is not ZWECONF." >>$LOG_DIR/report.txt
+        echo "Workflow ended with an error and it is not $ZWECONF." >>$LOG_DIR/report.txt
         echo $RESP >>$LOG_DIR/report.txt
         exit -1
       fi

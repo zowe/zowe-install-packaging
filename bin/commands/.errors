@@ -56,3 +56,13 @@ ZWEL0322E|322|%s is not a valid directory.
 ZWEL0323E|323|Certificate validation failed. Fix errors listed before starting Zowe.
 ZWEL0326E|326|An error occurred while processing Zowe YAML config %s:
 ZWEL0327E|327|Failed to read %s - %s.
+ZWEL0328E|328|The following component(s) are missing a valid manifest file and cannot be started: %s
+ZWEL0328W||The following component(s) are missing a valid manifest file and cannot be started: %s
+ZWEL0329E|329|No components are defined in zowe.yaml. Zowe cannot start without at least one component.
+ZWEL0329W||No components are defined in zowe.yaml. Zowe cannot start without at least one component.
+ZWEL0330E|330|Component '%s' directory was not found in the runtime or extension directories.
+ZWEL0331E|331|The following requested component(s) are not defined in zowe.yaml: %s
+ZWEL0331W||The following requested component(s) are not defined in zowe.yaml: %s
+ZWEL0332E|332|Zowe YAML property zowe.runtimeDirectory is not defined. Zowe cannot validate component existence without knowing the runtime location.
+ZWEL0332W||Zowe YAML property zowe.runtimeDirectory is not defined. Zowe cannot validate component existence without knowing the runtime location.
+ZWEL0333E|333|Component '%s' is missing a valid manifest file (manifest.yaml, manifest.yml, or manifest.json) in %s.
