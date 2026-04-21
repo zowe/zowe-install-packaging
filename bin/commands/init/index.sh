@@ -112,7 +112,22 @@ if [ "${ZWE_CLI_PARAMETER_SKIP_SECURITY_SETUP}" != "true" ]; then
   zwecli_inline_execute_command init apfauth
   zwecli_inline_execute_command init security
 fi
-zwecli_inline_execute_command init certificate
+if [ "${ZWE_CLI_PARAMETER_CREATE_CERTIFICATE}" = "true" ]; then
+  zwecli_inline_execute_command init certificate
+else
+  certificate_keystore=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.certificate.keystore")
+  certificate_keystore_file=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.certificate.keystore.file")
+  if [ -z "${certificate_keystore}" -o "${certificate_keystore_file}" = "safkeyring://<stc_username>/<keyring_name>" ]; then
+    print_message "Zowe appears to be missing certificate setup. Complete zowe.certificate in your Zowe YAML before starting Zowe."
+    print_message "Zowe does not create certificates, keystores, or truststores by default, so verify that zowe.certificate in your Zowe YAML is valid."
+    print_message "You can review Zowe certificate requirements at https://docs.zowe.org/stable/user-guide/configure-certificates#zowe-certificate-requirements"
+    print_message "---------"
+    print_message "If you want Zowe to assist in certificate creation, the command \"zwe init certificate\" can be run with YAML properties from \"zowe.setup.certificate\""
+    print_message " Examples of \"zowe.setup.certificate\" are included in \"${ZWE_zowe_runtimeDirectory}/files/examples/setup/certificate\""
+    print_message " After reviewing the included examples and selecting one, append the contents of the example file into your Zowe YAML and run \"zwe init certificate\"."
+    print_message "---------"
+  fi
+fi
 zwecli_inline_execute_command init stc
 
 print_level1_message "Zowe is configured successfully."

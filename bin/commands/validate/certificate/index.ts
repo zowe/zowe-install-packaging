@@ -132,6 +132,14 @@ export function execute(quitOnError?: boolean, level?: string): number {
     common.printFormattedInfo(common.MSG_KEY, COMMAND_NAME, "Certificate checks passed.");
   } else {
 
+    if (output.includes('Error in Ring_name length')) {
+      configInvalid = VALIDATION_ERROR;
+      common.printFormattedError(common.MSG_KEY, COMMAND_NAME, `Error in Ring_name length`);
+      common.printFormattedError(common.MSG_KEY, COMMAND_NAME, `Review Zowe YAML properties:`);
+      common.printFormattedError(common.MSG_KEY, COMMAND_NAME, `  zowe.certificate.keystore.file: ${ZOWE_CONFIG.zowe.certificate.keystore.file}`);
+      common.printFormattedError(common.MSG_KEY, COMMAND_NAME, `  zowe.certificate.truststore.file: ${ZOWE_CONFIG.zowe.certificate.truststore.file}`);
+    }
+
     if (output.includes('unknown protocol: ')) {
       configInvalid = VALIDATION_ERROR;
       const protocolLine = configLines.filter((line) => line.includes('IRRSDL00'))[0];

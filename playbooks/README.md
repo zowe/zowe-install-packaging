@@ -33,6 +33,7 @@ You also need Java installed on z/OS. The `JAVA_HOME` should be defined in the u
 - Check variables defined for each host or create a host variable YAML for your server. For example: [host_vars/river-0.yml](host_vars/river-0.yml).
 - Setup `ansible_password` or `ansible_ssh_private_key_file` for your host you are working on.
 - Verify values of `zowe_zos_host`, `zowe_external_domain_name`, `zowe_external_ip_address`, `zowe_test_user` and `zowe_test_password` for your host.
+- **`zowe_launch_script_startup_checks_certificate`** (role default `warn`): written to `zowe.yaml` as `zowe.launchScript.startupChecks.certificate`. Controls whether Zowe runs certificate-analyser at startup and whether failures stop the STC (`exit`), log a warning (`warn`), or skip the check (`disabled`). Release automation defaults to `warn` so imported or long-lived test keystores do not fail the pipeline while issues still appear in logs. For a lane that must enforce analyser results, set this to `exit` in host vars or `--extra-vars` only after `zwe validate certificate` passes for that configuration.
 
 ### Other verifications or tools
 

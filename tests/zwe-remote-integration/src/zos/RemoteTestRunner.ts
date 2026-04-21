@@ -573,10 +573,13 @@ export class RemoteTestRunner {
     cfgYaml: ZoweYamlType,
     zweCommand: string,
     cwd: string = REMOTE_SYSTEM_INFO.ussTestDir,
+    envs: Record<string, string> = {},
   ): Promise<TestOutput> {
     let shouldOmitConfigParm;
     let zoweYaml = cfgYaml;
-
+    const envVarsString = Object.entries(envs)
+      .map(([key, value]) => `${key}=${value}`)
+      .join(' ');
     if (zoweYaml == null) {
       zoweYaml = {};
       shouldOmitConfigParm = true;
@@ -593,7 +596,7 @@ export class RemoteTestRunner {
     const finalZwe = this.addAnyCustomJobStatements(zoweYaml);
     await this.uploadZoweYaml(finalZwe.yaml, false, cwd);
     const start = performance.now();
-    const output = await this.uss.runCommand(`./bin/zwe ${command} ${defaultConfig}`, cwd);
+    const output = await this.uss.runCommand(`${envVarsString} ./bin/zwe ${command} ${defaultConfig}`, cwd);
     // default per-test should always be off. If you want tty, run this.useTty() in a beforeEach() block
     const end = performance.now();
     const duration = end - start;
@@ -629,7 +632,7 @@ export class RemoteTestRunner {
     for (const testFile of testFiles) {
       results.push(
         await this.runRaw(
-          `ZWE_CLI_PARAMETER_CONFIG="${cfgPath}" ZWE_zowe_runtimeDirectory="${REMOTE_SYSTEM_INFO.ussTestDir}" ./bin/utils/configmgr -script ${path.join(REMOTE_SYSTEM_INFO.ussTestDir, '.unit_tests', testFile)}`,
+          `ZWE_CLI_PARAMETER_CONFIG="${cfgPath}" ZWE_zowe_runtimeDirectory="${REMOTE_SYSTEM_INFO.ussTestDir}" ./bin/utils/configmgr -script ${path.posix.join(REMOTE_SYSTEM_INFO.ussTestDir, '.unit_tests', testFile)}`,
         ),
       );
     }
