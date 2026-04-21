@@ -132,7 +132,7 @@ const testCases = [
   },
 ];
 
-common.printMessage("Starting 'template.resolveString' test cases.");
+common.printMessage('Starting "bin/libs/template: resolveString" test cases.');
 
 for (const test of testCases) {
   const result = template.resolveString(test.templateString, test.data);
