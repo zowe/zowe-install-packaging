@@ -1,0 +1,1 @@
+components|o|string|||||Comma-separated list of component IDs to validate. When omitted, all components defined in zowe.yaml are checked.

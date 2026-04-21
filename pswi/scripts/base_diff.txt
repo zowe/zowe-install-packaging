@@ -46,31 +46,31 @@
 >         zis: ZWESISTC
 >         # STC name of Zowe ZIS Auxiliary Server
 >         aux: ZWESASTC
-100,104c100,104
-<     certificate:
-<       # Type of certificate storage. Valid values are: PKCS12, JCERACFKS. APIML additionally supports: JCEKS, JCECCAKS, JCECCARACFKS, or JCEHYBRIDRACFKS
-<       type: PKCS12
-<       pkcs12:
-<         directory: /var/zowe/keystore
+140c140
+<       file: safkeyring://<stc_username>/<keyring_name>
 ---
->     # certificate:
->       # Type of certificate storage. Valid values are: PKCS12, JCEKS, JCECCAKS, JCERACFKS, JCECCARACFKS, or JCEHYBRIDRACFKS
->       # type: 
->       # pkcs12:
->         # directory: 
-258c258
+>       file: safkeyring://OWNER/KEYRING
+148,150c148,150
+<       type: "${{ zowe.certificate.keystore.type }}"
+<       file: "${{ zowe.certificate.keystore.file }}"
+<       password: "${{ zowe.certificate.keystore.password }}"
+---
+>       type: JCERACFKS
+>       file: safkeyring://OWNER/KEYRING
+>       password: password
+165c165
 <   runtimeDirectory: ""
 ---
 >   runtimeDirectory: "/tmp"
-264c264
+171c171
 <   workspaceDirectory: /global/zowe/workspace
 ---
 >   workspaceDirectory: /tmp
-446c446
+335c335
 <   home: ""
 ---
 >   home: "#delete_me#"
-462c462
+351c351
 <   home: ""
 ---
 >   home: "#delete_me#"

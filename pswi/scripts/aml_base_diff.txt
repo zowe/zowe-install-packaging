@@ -1,0 +1,107 @@
+69,91c69,91
+<     # # Security related configurations. This setup is optional.
+<     # security:
+<     #   # security product name. Can be RACF, ACF2 or TSS
+<     #   product: RACF
+<     #   # security group name
+<     #   groups:
+<     #     admin: ZWEADMIN
+<     #     stc: ZWEADMIN
+<     #     sysProg: ZWEADMIN
+<     #   # security user name
+<     #   users:
+<     #     # Zowe runtime user name of main service
+<     #     zowe: ZWESVUSR
+<     #     # Zowe runtime user name of ZIS
+<     #     zis: ZWESIUSR
+<     #   # STC names
+<     #   stcs:
+<     #     # STC name of Zowe main service
+<     #     zowe: ZWESLSTC
+<     #     # STC name of Zowe ZIS
+<     #     zis: ZWESISTC
+<     #     # STC name of Zowe ZIS Auxiliary Server
+<     #     aux: ZWESASTC
+---
+>     # Security related configurations. This setup is optional.
+>     security:
+>       # security product name. Can be RACF, ACF2 or TSS
+>       product: RACF
+>       # security group name
+>       groups:
+>         admin: ZWEADMIN
+>         stc: ZWEADMIN
+>         sysProg: ZWEADMIN
+>       # security user name
+>       users:
+>         # Zowe runtime user name of main service
+>         zowe: ZWESVUSR
+>         # Zowe runtime user name of ZIS
+>         zis: ZWESIUSR
+>       # STC names
+>       stcs:
+>         # STC name of Zowe main service
+>         zowe: ZWESLSTC
+>         # STC name of Zowe ZIS
+>         zis: ZWESISTC
+>         # STC name of Zowe ZIS Auxiliary Server
+>         aux: ZWESASTC
+140c140
+<       file: safkeyring://<stc_username>/<keyring_name>
+---
+>       file: safkeyring://OWNER/KEYRING
+148,150c148,150
+<       type: "${{ zowe.certificate.keystore.type }}"
+<       file: "${{ zowe.certificate.keystore.file }}"
+<       password: "${{ zowe.certificate.keystore.password }}"
+---
+>       type: JCERACFKS
+>       file: safkeyring://OWNER/KEYRING
+>       password: password
+165c165
+<   runtimeDirectory: ""
+---
+>   runtimeDirectory: "/tmp"
+171c171
+<   workspaceDirectory: /global/zowe/workspace
+---
+>   workspaceDirectory: /tmp
+179c179
+<     validation: "STRICT"
+---
+>     validation: "COMPONENT-COMPAT"
+335c335
+<   home: ""
+---
+>   home: "#delete_me#"
+351c351
+<   home: ""
+---
+>   home: "#delete_me#"
+413c413
+<           enabled: false
+---
+>           enabled: true
+460c460
+<     enabled: true
+---
+>     enabled: false
+474c474
+<     enabled: true
+---
+>     enabled: false
+477a478,479
+>       jwt:
+>         fallback: true
+485c487
+<     enabled: true
+---
+>     enabled: false
+492c494
+<     enabled: true
+---
+>     enabled: false
+499c501
+<     enabled: true
+---
+>     enabled: false

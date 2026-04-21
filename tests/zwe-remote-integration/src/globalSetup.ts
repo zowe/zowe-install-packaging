@@ -59,8 +59,6 @@ function setupBaseYaml() {
   zoweYaml.zowe.setup.vsam.volume = REMOTE_SYSTEM_INFO.volume;
   zoweYaml.zOSMF.host = REMOTE_SYSTEM_INFO.hostname;
   zoweYaml.zOSMF.port = Number(REMOTE_SYSTEM_INFO.zosmfPort);
-  // @ts-expect-error incomplete schema
-  zoweYaml.zowe.setup.certificate.pkcs12.directory = `${REMOTE_SYSTEM_INFO.ussTestDir}/pkcs12`;
   zoweYaml.zowe.setup.dataset.authLoadlib = REMOTE_SYSTEM_INFO.authLoadLib;
   zoweYaml.zowe.setup.dataset.authPluginLib = REMOTE_SYSTEM_INFO.authPluginLib;
   zoweYaml.zowe.setup.dataset.parmlib = REMOTE_SYSTEM_INFO.parmlib;
@@ -214,7 +212,6 @@ const REMOTE_PAX_UPLOAD_AFTER_ZWE: RemotePaxUploadSpec[] = [
     match: /certificate-analyser.*\.jar/,
     remoteName: 'certificate-analyser.jar',
     uploadRoot: 'binUtils',
-    when: () => DOWNLOAD_ZOWE_TOOLS,
   },
   { label: 'getesm pax', match: /getesm.*\.pax/, useSourceBasename: true, trackAs: 'getEsmArchive' },
 ];
@@ -349,6 +346,17 @@ module.exports = async () => {
     // archive without compression (issues on some backends)
     const tarFile = path.resolve(buildDir, 'zwe.tar');
     fs.cpSync(path.resolve(REPO_ROOT_DIR, 'bin'), path.resolve(buildDir, 'bin'), { force: true, recursive: true });
+    fs.cpSync(path.resolve(REPO_ROOT_DIR, 'files'), path.resolve(buildDir, 'files'), {
+      force: true,
+      recursive: true,
+      filter: (src) => {
+        if (!src.includes('/zlux') && !src.includes('/sca')) {
+          return true;
+        }
+        return false;
+      },
+    });
+    fs.cpSync(path.resolve(REPO_ROOT_DIR, 'schemas'), path.resolve(buildDir, 'schemas'), { force: true, recursive: true });
     console.log('Converting bin to ebcdic locally, then uploading and unpacking...');
     convertDirToEbcdicInPlace(path.resolve(buildDir, 'bin'));
     tar.c({ gzip: false, file: tarFile, sync: true, cwd: buildDir }, ['bin']);

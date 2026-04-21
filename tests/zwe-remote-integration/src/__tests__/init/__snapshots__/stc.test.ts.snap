@@ -1,10 +1,10 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`init-stc (LONG) run setup with defaults 1`] = `
-"Temporary directory '/tmp/.zweenv-0000' created.
-Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
--------------------------------------------------------------------------------
+"-------------------------------------------------------------------------------
 >> Install Zowe main started task
+Temporary directory '/tmp/.zweenv-0000' created.
+Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
 Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWEGENER)
 --- JCL content ---
 //ZWEGENER JOB
@@ -170,10 +170,10 @@ Job ZWEISTC(JOB00000) completed with RC=0
 `;
 
 exports[`init-stc (LONG) run stc setup, then overwrite, then run again 1`] = `
-"Temporary directory '/tmp/.zweenv-0000' created.
-Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
--------------------------------------------------------------------------------
+"-------------------------------------------------------------------------------
 >> Install Zowe main started task
+Temporary directory '/tmp/.zweenv-0000' created.
+Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
 Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWEGENER)
 --- JCL content ---
 //ZWEGENER JOB
@@ -339,10 +339,10 @@ Job ZWEISTC(JOB00000) completed with RC=0
 `;
 
 exports[`init-stc (LONG) run stc setup, then overwrite, then run again 2`] = `
-"Temporary directory '/tmp/.zweenv-0000' created.
-Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
--------------------------------------------------------------------------------
+"-------------------------------------------------------------------------------
 >> Install Zowe main started task
+Temporary directory '/tmp/.zweenv-0000' created.
+Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
 Warning ZWEL0300W: TEST.DATASET.PFX.TEST.PROCLIB(ZWESLSTC) already exists. This data set member will be overwritten.
 Warning ZWEL0300W: TEST.DATASET.PFX.TEST.PROCLIB(ZWESISTC) already exists. This data set member will be overwritten.
 Warning ZWEL0300W: TEST.DATASET.PFX.TEST.PROCLIB(ZWESASTC) already exists. This data set member will be overwritten.
@@ -440,10 +440,10 @@ Job ZWEISTC(JOB00000) completed with RC=0
 `;
 
 exports[`init-stc (LONG) run stc setup, then overwrite, then run again 3`] = `
-"Temporary directory '/tmp/.zweenv-0000' created.
-Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
--------------------------------------------------------------------------------
+"-------------------------------------------------------------------------------
 >> Install Zowe main started task
+Temporary directory '/tmp/.zweenv-0000' created.
+Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
 Warning ZWEL0301W: TEST.DATASET.PFX.TEST.PROCLIB(ZWESLSTC) already exists and will not be overwritten. For upgrades, you must use --allow-overwrite.
 Warning ZWEL0301W: TEST.DATASET.PFX.TEST.PROCLIB(ZWESISTC) already exists and will not be overwritten. For upgrades, you must use --allow-overwrite.
 Warning ZWEL0301W: TEST.DATASET.PFX.TEST.PROCLIB(ZWESASTC) already exists and will not be overwritten. For upgrades, you must use --allow-overwrite.
@@ -451,10 +451,10 @@ Skipped writing to TEST.DATASET.PFX.TEST.PROCLIB. To write, you must use --allow
 `;
 
 exports[`init-stc (LONG) run with proclib that doesn't exist 1`] = `
-"Temporary directory '/tmp/.zweenv-0000' created.
-Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
--------------------------------------------------------------------------------
+"-------------------------------------------------------------------------------
 >> Install Zowe main started task
+Temporary directory '/tmp/.zweenv-0000' created.
+Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
 Template JCL: TEST.DATASET.PFX.SZWESAMP(ZWEGENER)
 --- JCL content ---
 //ZWEGENER JOB
@@ -866,12 +866,6 @@ exports[`init-stc (SHORT) invalid stc configurations 3`] = `
             "authLoadlib": "TEST.DATASET.PFX.SZWEAUTH",
             "authPluginLib": "TEST.DATASET.PFX.ZWESAPL"
           },
-          "certificate": {
-            "type": "PKCS12",
-            "pkcs12": {
-              "directory": "/test/dir/pkcs12"
-            }
-          },
           "vsam": {
             "mode": "NONRLS",
             "volume": "TSTVOL",
@@ -882,6 +876,19 @@ exports[`init-stc (SHORT) invalid stc configurations 3`] = `
             "stcs": {
               "aux": "TOOLONGTOO"
             }
+          }
+        },
+        "certificate": {
+          "keystore": {
+            "type": "JCERACFKS",
+            "file": "safkeyring://<stc_username>/<keyring_name>",
+            "password": "password",
+            "alias": "localhost"
+          },
+          "truststore": {
+            "type": "JCERACFKS",
+            "file": "safkeyring://<stc_username>/<keyring_name>",
+            "password": "password"
           }
         },
         "runtimeDirectory": "/test/dir",
@@ -932,24 +939,10 @@ exports[`init-stc (SHORT) invalid stc configurations 3`] = `
         ],
         "launchScript": {
           "logLevel": "info",
-          "onComponentConfigureFail": "warn"
-        },
-        "certificate": {
-          "keystore": {
-            "type": "PKCS12",
-            "file": "/global/zowe/keystore/localhost/localhost.keystore.p12",
-            "password": "password",
-            "alias": "localhost"
-          },
-          "truststore": {
-            "type": "PKCS12",
-            "file": "/global/zowe/keystore/localhost/localhost.truststore.p12",
-            "password": "password"
-          },
-          "pem": {
-            "key": "/global/zowe/keystore/localhost/localhost.key",
-            "certificate": "/global/zowe/keystore/localhost/localhost.cer",
-            "certificateAuthorities": "/global/zowe/keystore/local_ca/local_ca.cer"
+          "onComponentConfigureFail": "warn",
+          "startupChecks": {
+            "javaMax": "warn",
+            "nodeMax": "warn"
           }
         },
         "verifyCertificates": "STRICT"
@@ -1082,12 +1075,6 @@ exports[`init-stc (SHORT) invalid stc configurations 4`] = `
             "authLoadlib": "TEST.DATASET.PFX.SZWEAUTH",
             "authPluginLib": "TEST.DATASET.PFX.ZWESAPL"
           },
-          "certificate": {
-            "type": "PKCS12",
-            "pkcs12": {
-              "directory": "/test/dir/pkcs12"
-            }
-          },
           "vsam": {
             "mode": "NONRLS",
             "volume": "TSTVOL",
@@ -1099,6 +1086,19 @@ exports[`init-stc (SHORT) invalid stc configurations 4`] = `
               "aux": "TOOLONGTOO",
               "zis": null
             }
+          }
+        },
+        "certificate": {
+          "keystore": {
+            "type": "JCERACFKS",
+            "file": "safkeyring://<stc_username>/<keyring_name>",
+            "password": "password",
+            "alias": "localhost"
+          },
+          "truststore": {
+            "type": "JCERACFKS",
+            "file": "safkeyring://<stc_username>/<keyring_name>",
+            "password": "password"
           }
         },
         "runtimeDirectory": "/test/dir",
@@ -1149,24 +1149,10 @@ exports[`init-stc (SHORT) invalid stc configurations 4`] = `
         ],
         "launchScript": {
           "logLevel": "info",
-          "onComponentConfigureFail": "warn"
-        },
-        "certificate": {
-          "keystore": {
-            "type": "PKCS12",
-            "file": "/global/zowe/keystore/localhost/localhost.keystore.p12",
-            "password": "password",
-            "alias": "localhost"
-          },
-          "truststore": {
-            "type": "PKCS12",
-            "file": "/global/zowe/keystore/localhost/localhost.truststore.p12",
-            "password": "password"
-          },
-          "pem": {
-            "key": "/global/zowe/keystore/localhost/localhost.key",
-            "certificate": "/global/zowe/keystore/localhost/localhost.cer",
-            "certificateAuthorities": "/global/zowe/keystore/local_ca/local_ca.cer"
+          "onComponentConfigureFail": "warn",
+          "startupChecks": {
+            "javaMax": "warn",
+            "nodeMax": "warn"
           }
         },
         "verifyCertificates": "STRICT"
@@ -1299,12 +1285,6 @@ exports[`init-stc (SHORT) invalid stc configurations 5`] = `
             "authLoadlib": "TEST.DATASET.PFX.SZWEAUTH",
             "authPluginLib": "TEST.DATASET.PFX.ZWESAPL"
           },
-          "certificate": {
-            "type": "PKCS12",
-            "pkcs12": {
-              "directory": "/test/dir/pkcs12"
-            }
-          },
           "vsam": {
             "mode": "NONRLS",
             "volume": "TSTVOL",
@@ -1316,6 +1296,19 @@ exports[`init-stc (SHORT) invalid stc configurations 5`] = `
               "aux": "TOOLONGTOO",
               "zis": ""
             }
+          }
+        },
+        "certificate": {
+          "keystore": {
+            "type": "JCERACFKS",
+            "file": "safkeyring://<stc_username>/<keyring_name>",
+            "password": "password",
+            "alias": "localhost"
+          },
+          "truststore": {
+            "type": "JCERACFKS",
+            "file": "safkeyring://<stc_username>/<keyring_name>",
+            "password": "password"
           }
         },
         "runtimeDirectory": "/test/dir",
@@ -1366,24 +1359,10 @@ exports[`init-stc (SHORT) invalid stc configurations 5`] = `
         ],
         "launchScript": {
           "logLevel": "info",
-          "onComponentConfigureFail": "warn"
-        },
-        "certificate": {
-          "keystore": {
-            "type": "PKCS12",
-            "file": "/global/zowe/keystore/localhost/localhost.keystore.p12",
-            "password": "password",
-            "alias": "localhost"
-          },
-          "truststore": {
-            "type": "PKCS12",
-            "file": "/global/zowe/keystore/localhost/localhost.truststore.p12",
-            "password": "password"
-          },
-          "pem": {
-            "key": "/global/zowe/keystore/localhost/localhost.key",
-            "certificate": "/global/zowe/keystore/localhost/localhost.cer",
-            "certificateAuthorities": "/global/zowe/keystore/local_ca/local_ca.cer"
+          "onComponentConfigureFail": "warn",
+          "startupChecks": {
+            "javaMax": "warn",
+            "nodeMax": "warn"
           }
         },
         "verifyCertificates": "STRICT"
@@ -1516,12 +1495,6 @@ exports[`init-stc (SHORT) invalid stc configurations 6`] = `
             "authLoadlib": "TEST.DATASET.PFX.SZWEAUTH",
             "authPluginLib": "TEST.DATASET.PFX.ZWESAPL"
           },
-          "certificate": {
-            "type": "PKCS12",
-            "pkcs12": {
-              "directory": "/test/dir/pkcs12"
-            }
-          },
           "vsam": {
             "mode": "NONRLS",
             "volume": "TSTVOL",
@@ -1534,6 +1507,19 @@ exports[`init-stc (SHORT) invalid stc configurations 6`] = `
               "zis": "",
               "zowe": null
             }
+          }
+        },
+        "certificate": {
+          "keystore": {
+            "type": "JCERACFKS",
+            "file": "safkeyring://<stc_username>/<keyring_name>",
+            "password": "password",
+            "alias": "localhost"
+          },
+          "truststore": {
+            "type": "JCERACFKS",
+            "file": "safkeyring://<stc_username>/<keyring_name>",
+            "password": "password"
           }
         },
         "runtimeDirectory": "/test/dir",
@@ -1584,24 +1570,10 @@ exports[`init-stc (SHORT) invalid stc configurations 6`] = `
         ],
         "launchScript": {
           "logLevel": "info",
-          "onComponentConfigureFail": "warn"
-        },
-        "certificate": {
-          "keystore": {
-            "type": "PKCS12",
-            "file": "/global/zowe/keystore/localhost/localhost.keystore.p12",
-            "password": "password",
-            "alias": "localhost"
-          },
-          "truststore": {
-            "type": "PKCS12",
-            "file": "/global/zowe/keystore/localhost/localhost.truststore.p12",
-            "password": "password"
-          },
-          "pem": {
-            "key": "/global/zowe/keystore/localhost/localhost.key",
-            "certificate": "/global/zowe/keystore/localhost/localhost.cer",
-            "certificateAuthorities": "/global/zowe/keystore/local_ca/local_ca.cer"
+          "onComponentConfigureFail": "warn",
+          "startupChecks": {
+            "javaMax": "warn",
+            "nodeMax": "warn"
           }
         },
         "verifyCertificates": "STRICT"
@@ -1734,12 +1706,6 @@ exports[`init-stc (SHORT) invalid stc configurations 7`] = `
             "authLoadlib": "TEST.DATASET.PFX.SZWEAUTH",
             "authPluginLib": "TEST.DATASET.PFX.ZWESAPL"
           },
-          "certificate": {
-            "type": "PKCS12",
-            "pkcs12": {
-              "directory": "/test/dir/pkcs12"
-            }
-          },
           "vsam": {
             "mode": "NONRLS",
             "volume": "TSTVOL",
@@ -1752,6 +1718,19 @@ exports[`init-stc (SHORT) invalid stc configurations 7`] = `
               "zis": "",
               "zowe": ""
             }
+          }
+        },
+        "certificate": {
+          "keystore": {
+            "type": "JCERACFKS",
+            "file": "safkeyring://<stc_username>/<keyring_name>",
+            "password": "password",
+            "alias": "localhost"
+          },
+          "truststore": {
+            "type": "JCERACFKS",
+            "file": "safkeyring://<stc_username>/<keyring_name>",
+            "password": "password"
           }
         },
         "runtimeDirectory": "/test/dir",
@@ -1802,24 +1781,10 @@ exports[`init-stc (SHORT) invalid stc configurations 7`] = `
         ],
         "launchScript": {
           "logLevel": "info",
-          "onComponentConfigureFail": "warn"
-        },
-        "certificate": {
-          "keystore": {
-            "type": "PKCS12",
-            "file": "/global/zowe/keystore/localhost/localhost.keystore.p12",
-            "password": "password",
-            "alias": "localhost"
-          },
-          "truststore": {
-            "type": "PKCS12",
-            "file": "/global/zowe/keystore/localhost/localhost.truststore.p12",
-            "password": "password"
-          },
-          "pem": {
-            "key": "/global/zowe/keystore/localhost/localhost.key",
-            "certificate": "/global/zowe/keystore/localhost/localhost.cer",
-            "certificateAuthorities": "/global/zowe/keystore/local_ca/local_ca.cer"
+          "onComponentConfigureFail": "warn",
+          "startupChecks": {
+            "javaMax": "warn",
+            "nodeMax": "warn"
           }
         },
         "verifyCertificates": "STRICT"
@@ -2058,12 +2023,6 @@ exports[`init-stc (SHORT) wrong proclib 3`] = `
             "authLoadlib": "TEST.DATASET.PFX.SZWEAUTH",
             "authPluginLib": "TEST.DATASET.PFX.ZWESAPL"
           },
-          "certificate": {
-            "type": "PKCS12",
-            "pkcs12": {
-              "directory": "/test/dir/pkcs12"
-            }
-          },
           "vsam": {
             "mode": "NONRLS",
             "volume": "TSTVOL",
@@ -2073,6 +2032,19 @@ exports[`init-stc (SHORT) wrong proclib 3`] = `
           "security": {
             "stcs": {
             }
+          }
+        },
+        "certificate": {
+          "keystore": {
+            "type": "JCERACFKS",
+            "file": "safkeyring://<stc_username>/<keyring_name>",
+            "password": "password",
+            "alias": "localhost"
+          },
+          "truststore": {
+            "type": "JCERACFKS",
+            "file": "safkeyring://<stc_username>/<keyring_name>",
+            "password": "password"
           }
         },
         "runtimeDirectory": "/test/dir",
@@ -2123,24 +2095,10 @@ exports[`init-stc (SHORT) wrong proclib 3`] = `
         ],
         "launchScript": {
           "logLevel": "info",
-          "onComponentConfigureFail": "warn"
-        },
-        "certificate": {
-          "keystore": {
-            "type": "PKCS12",
-            "file": "/global/zowe/keystore/localhost/localhost.keystore.p12",
-            "password": "password",
-            "alias": "localhost"
-          },
-          "truststore": {
-            "type": "PKCS12",
-            "file": "/global/zowe/keystore/localhost/localhost.truststore.p12",
-            "password": "password"
-          },
-          "pem": {
-            "key": "/global/zowe/keystore/localhost/localhost.key",
-            "certificate": "/global/zowe/keystore/localhost/localhost.cer",
-            "certificateAuthorities": "/global/zowe/keystore/local_ca/local_ca.cer"
+          "onComponentConfigureFail": "warn",
+          "startupChecks": {
+            "javaMax": "warn",
+            "nodeMax": "warn"
           }
         },
         "verifyCertificates": "STRICT"
