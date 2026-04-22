@@ -131,20 +131,14 @@ function globalValidate(enabledComponents:string[]): void {
   const logLevel = std.getenv("ZWE_PRIVATE_LOG_LEVEL_ZWELS");
   const isDebug = (logLevel == "DEBUG" || logLevel == "TRACE");
   if (isDebug) {
-    const hardUlimitResult = shell.execOutErrSync('ulimit', '-Ha');
-    const softUlimitResult = shell.execOutErrSync('ulimit', '-a');
+    const hardUlimitResult = shell.execOutSync('ulimit', '-Ha');
+    const softUlimitResult = shell.execOutSync('ulimit', '-a');
 
-    if (hardUlimitResult.rc != 0) {
-      common.printFormattedDebug("ZWELS", "zwe-internal-start-prepare,global_validate", "Failed to execute ulimit -Ha.");
-      common.printFormattedDebug("ZWELS", "zwe-internal-start-prepare,global_validate", `ulimit -Ha stdout: ${hardUlimitResult.out}\nulimit -Ha stderr: ${hardUlimitResult.err}`);
-    } else {
-      common.printFormattedDebug("ZWELS", "zwe-internal-start-prepare,global_validate", `ulimit -Ha output: ${hardUlimitResult.out}`);
+    if (hardUlimitResult.rc == 0) {
+      common.printFormattedDebug("ZWELS", "zwe-internal-start-prepare,global_validate", `ulimit -Ha output:\n ${hardUlimitResult.out}`);
     }
-    if (softUlimitResult.rc != 0) {
-      common.printFormattedDebug("ZWELS", "zwe-internal-start-prepare,global_validate", "Failed to execute ulimit -a.");
-      common.printFormattedDebug("ZWELS", "zwe-internal-start-prepare,global_validate", `ulimit -a stdout: ${softUlimitResult.out}\nulimit -a stderr: ${softUlimitResult.err}`);
-    } else {
-      common.printFormattedDebug("ZWELS", "zwe-internal-start-prepare,global_validate", `ulimit -a output: ${softUlimitResult.out}`);
+    if (softUlimitResult.rc == 0) {
+      common.printFormattedDebug("ZWELS", "zwe-internal-start-prepare,global_validate", `ulimit -a output:\n ${softUlimitResult.out}`);
     }
   }
 
