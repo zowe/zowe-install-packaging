@@ -131,7 +131,7 @@ function globalValidate(enabledComponents:string[]): void {
   const logLevel = std.getenv("ZWE_PRIVATE_LOG_LEVEL_ZWELS");
   const isDebug = (logLevel == "DEBUG" || logLevel == "TRACE");
   if (isDebug) { 
-    const ulimitResult = shell.execSync('ulimit', '-a');
+    const ulimitResult = shell.execOutErrSync('ulimit', '-a');
     if (ulimitResult.rc != 0) {
       common.printFormattedDebug("ZWELS", "zwe-internal-start-prepare,global_validate", "Failed to execute ulimit -a.");
       common.printFormattedDebug("ZWELS", "zwe-internal-start-prepare,global_validate", `ulimit stdout: ${ulimitResult.out}\nulimit stderr: ${ulimitResult.err}`);
