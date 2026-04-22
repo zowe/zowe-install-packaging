@@ -4,6 +4,7 @@ All notable changes to the Zowe Installer will be documented in this file.
 
 ## `3.5.0`
 
+- Enhancement: Startup now checks each Zowe server for if ATTLS rules are defined and warns if any misconfiguration is identified to assist with TLS configuration. [#4741](https://github.com/zowe/zowe-install-packaging/pull/4741)
 - Enhancement: Allow users to specify client certificates within `zowe.certificate`. [#4687](https://github.com/zowe/zowe-install-packaging/pull/4687)
 - Enhancement: `zwe init` no longer creates certificates by default. Use `zwe init --create-certificate` or `zwe init certificate` after defining the "zowe.setup.certificate" section of the YAML. You can use the examples provided within zowe/files/examples/setup/certificate. [#4238](https://github.com/zowe/zowe-install-packaging/pull/4238)
 - Enhancement: Split `zwe components install` into subcommands with dry-run options to help you with each step of component installation. [#4582](https://github.com/zowe/zowe-install-packaging/pull/4582)
