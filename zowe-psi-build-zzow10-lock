@@ -1,1 +1,15 @@
-""
+{
+  "lockAcquiredTime": "Wed Apr 22 2026 19:53:13 GMT+0000 (Coordinated Universal Time)",
+  "uid": "1776887593320956671",
+  "repository": {
+    "owner": "zowe",
+    "repo": "zowe-install-packaging"
+  },
+  "branch": "refs/pull/4741/merge",
+  "workflow": "PSWI zowe.yaml sync check",
+  "job": "test-pswi-zowe-yaml",
+  "actor": "MarkAckert",
+  "runId": 24799028675,
+  "runNumber": 2459,
+  "link": "https://github.com/zowe/zowe-install-packaging/actions/runs/24799028675"
+}
