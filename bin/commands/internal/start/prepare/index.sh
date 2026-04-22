@@ -111,7 +111,7 @@ else
   ########################################################
   # Global validations
   global_validate() {
-    # print hard and soft system limits using ulimit with -Ha and -a options. This is to ease troubleshooting and see important system properties such as 'Maximum number of open file descriptors'.
+    # print hard and soft system limits using ulimit with -Ha and -a options. This is to assist in troubleshooting and see important system properties such as 'open files'.
     print_debug "Checking hard system limits (ulimit -Ha):"
     if ulimit -Ha >/dev/null 2>&1; then
       print_debug "$(ulimit -Ha)"
