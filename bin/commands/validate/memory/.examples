@@ -1,0 +1,5 @@
+zwe validate memory
+zwe validate memory --user-id ZWESVUSR
+zwe validate memory -u ZWESVUSR --min-assizemax 2147483647 --min-ulimit-address-space 250000
+zwe validate memory -u ZWESVUSR --min-memlimit 4G --min-tso-size 2096128
+zwe validate memory -u ZWESIUSR --min-assizemax NOLIMIT --min-memlimit 2G

@@ -1,0 +1,29 @@
+Validates memory constraints for a given z/OS user ID, checking ulimit settings for the current process as well as OMVS and TSO segment limits for the specified user via the active External Security Manager (ESM).
+
+The active ESM is auto-detected using the getesm utility. Supported ESMs are:
+  - RACF  : IBM Resource Access Control Facility
+  - TSS   : Broadcom CA Top Secret Security
+  - ACF2  : Broadcom CA-ACF2 for z/OS
+
+Reports the following constraints and compares each against a configurable minimum:
+  - ulimit -A            : Address space size limit for the current process (in KB).
+  - ulimit -d/s/v/m      : Data, stack, virtual, and resident set limits (informational only).
+  - OMVS ASSIZEMAX       : RACF: ASSIZEMAX field from LISTUSER ... OMVS.
+                           TSS : ASSSIZE field from TSS LIST(user) SEGMENT(OMVS).
+                           ACF2: ASSSIZE field from ACFCMD SHOW LID(user).
+  - OMVS MEMLIMIT        : Maximum above-the-bar (64-bit) memory — same field name across all ESMs.
+  - TSO SIZE             : TSO region size in KB — same field name across all ESMs.
+                           RACF: LISTUSER ... TSO; TSS: TSS LIST(user) SEGMENT(TSO);
+                           ACF2: included in the LID record.
+
+Zowe's recommended minimum values (used as defaults when no minimum is specified):
+  - ulimit -A      : 250000 KB  (~244 MB)
+  - OMVS ASSIZEMAX : 2147483647 bytes (~2 GB)
+  - OMVS MEMLIMIT  : 4G
+  - TSO SIZE       : 2096128 KB
+
+ESM query authority notes:
+  RACF : The calling user needs READ access to the target user's profile, or SPECIAL attribute.
+  TSS  : The calling ACID needs appropriate administrative authority for the target ACID.
+  ACF2 : Requires the ACF2 TSO command processor (ACFCMD) to be available and authorized.
+         If unavailable, the check is skipped with a warning and manual batch commands are shown.

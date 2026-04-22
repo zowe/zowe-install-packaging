@@ -1,0 +1,5 @@
+user-id,user|u|string|||||User ID whose RACF OMVS and TSO segment limits will be queried. Defaults to the current user.
+min-assizemax||string|||||Minimum acceptable OMVS ASSIZEMAX in bytes. Defaults to 2147483647. Use NOLIMIT to require no limit be set.
+min-ulimit-address-space||string|||||Minimum acceptable ulimit -A (address space) in KB for the current process. Defaults to 250000.
+min-tso-size||string|||||Minimum acceptable RACF TSO segment SIZE (4K blocks). Defaults to 2096128.
+min-memlimit||string|||||Minimum acceptable OMVS MEMLIMIT. Specify as a value with optional suffix G, M, or K (e.g. 4G, 512M). Defaults to 4G.

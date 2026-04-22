@@ -1,0 +1,7 @@
+ZWEL0370W||Memory constraint '%s' for user %s has value %s, which is below the recommended minimum of %s.
+ZWEL0370E|370|Memory constraint '%s' for user %s has value %s, which is below the required minimum of %s.
+ZWEL0371W||Could not retrieve %s OMVS segment for user %s. Insufficient privileges, user not found, or ESM not active. OMVS constraint checks skipped.
+ZWEL0372W||Could not retrieve %s TSO segment for user %s. Insufficient privileges, user not found, segment not defined, or ESM not active. TSO constraint checks skipped.
+ZWEL0373E|373|%d memory constraint validation(s) failed for user %s. Review output for corrective actions.
+ZWEL0374W||Field %s was not found in %s output for user %s. It may not be configured.
+ZWEL0375W||ESM type '%s' is not recognized (expected RACF, TSS, or ACF2). ESM-based memory checks skipped.
