@@ -127,16 +127,24 @@ function prepareWorkspaceDirectory() {
 function globalValidate(enabledComponents:string[]): void {
   common.printFormattedInfo("ZWELS", "zwe-internal-start-prepare,global_validate", "process global validations ...");
 
-  // if debug is true,  exec ulimit -a and print the output
+  // if debug is true, exec both ulimit -Ha (hard system limits) and ulimit -a (soft system limits) and print the output
   const logLevel = std.getenv("ZWE_PRIVATE_LOG_LEVEL_ZWELS");
   const isDebug = (logLevel == "DEBUG" || logLevel == "TRACE");
-  if (isDebug) { 
-    const ulimitResult = shell.execOutErrSync('ulimit', '-a');
-    if (ulimitResult.rc != 0) {
-      common.printFormattedDebug("ZWELS", "zwe-internal-start-prepare,global_validate", "Failed to execute ulimit -a.");
-      common.printFormattedDebug("ZWELS", "zwe-internal-start-prepare,global_validate", `ulimit stdout: ${ulimitResult.out}\nulimit stderr: ${ulimitResult.err}`);
+  if (isDebug) {
+    const hardUlimitResult = shell.execOutErrSync('ulimit', '-Ha');
+    const softUlimitResult = shell.execOutErrSync('ulimit', '-a');
+
+    if (hardUlimitResult.rc != 0) {
+      common.printFormattedDebug("ZWELS", "zwe-internal-start-prepare,global_validate", "Failed to execute ulimit -Ha.");
+      common.printFormattedDebug("ZWELS", "zwe-internal-start-prepare,global_validate", `ulimit -Ha stdout: ${hardUlimitResult.out}\nulimit -Ha stderr: ${hardUlimitResult.err}`);
     } else {
-      common.printFormattedDebug("ZWELS", "zwe-internal-start-prepare,global_validate", `ulimit output: ${ulimitResult.out}`);
+      common.printFormattedDebug("ZWELS", "zwe-internal-start-prepare,global_validate", `ulimit -Ha output: ${hardUlimitResult.out}`);
+    }
+    if (softUlimitResult.rc != 0) {
+      common.printFormattedDebug("ZWELS", "zwe-internal-start-prepare,global_validate", "Failed to execute ulimit -a.");
+      common.printFormattedDebug("ZWELS", "zwe-internal-start-prepare,global_validate", `ulimit -a stdout: ${softUlimitResult.out}\nulimit -a stderr: ${softUlimitResult.err}`);
+    } else {
+      common.printFormattedDebug("ZWELS", "zwe-internal-start-prepare,global_validate", `ulimit -a output: ${softUlimitResult.out}`);
     }
   }
 
