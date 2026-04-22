@@ -46,6 +46,7 @@ describe(`${testSuiteName}`, () => {
     cfgYaml = ZoweConfig.getZoweYaml();
     _.set(cfgYaml, 'zowe.launchScript.startupChecks.user', 'disabled');
     _.set(cfgYaml, 'zowe.launchScript.startupChecks.certificate', 'disabled');
+    _.set(cfgYaml, 'zowe.launchScript.startupChecks.components', 'disabled');
     for (const component of Object.values(cfgYaml.components)) {
       if (component.port) {
         component.port = (Number(component.port) + 15000) % 65535;
@@ -185,10 +186,19 @@ describe(`${testSuiteName}`, () => {
       expect(result.rc).toBe(0);
     });
 
+    it('startupChecks debug mode to print ulimit output', async () => {
+      cfgYaml.zowe.environments = { ZWE_PRIVATE_LOG_LEVEL_ZWELS: 'TRACE' };
+      const result = await testRunner.runZweTest(cfgYaml, 'internal start prepare');
+      // don't use a snapshot here, output contains sensitive system information that's not tracked in config
+      expect(result.cleanedStdout).toContain('ulimit -Ha output:');
+      expect(result.cleanedStdout).toContain('ulimit -a output:');
+      expect(result.rc).toBe(0);
+    });
+
     it('default startupChecks behavior', async () => {
       cfgYaml.zowe.launchScript = ZoweConfig.getZoweYaml().zowe.launchScript; // reset launchScript to defaults
       _.set(cfgYaml, 'zowe.launchScript.startupChecks.user', 'disabled');
-      _.set(cfgYaml, 'zowe.launchScript.startupChecks.certificate', 'disabled');
+      _.set(cfgYaml, 'zowe.launchScript.startupChecks.certificate', 'exit');
       let result = await testRunner.runZweTest(cfgYaml, 'internal start prepare');
       expect(result.cleanedStdout).toMatchSnapshot();
       expect(result.rc).toBe(67); // ZWEL0323E: Certificate validation failed. Fix errors listed before starting Zowe.

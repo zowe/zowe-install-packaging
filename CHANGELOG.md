@@ -19,6 +19,7 @@ All notable changes to the Zowe Installer will be documented in this file.
 - Enhancement: Added command `zwe validate dependencies` which can be used to validate that Zowe is using supported versions of dependencies such as node and java. The behavior of these checks can be customized via YAML properties `zowe.launchScript.startupChecks.java` and `zowe.launchScript.startupChecks.node`. [#4713](https://github.com/zowe/zowe-install-packaging/pull/4713)
 - Bugfix: The `components.apiml.debug` debug property for the APIML Single-Service deployment mode (Modulith) was not working. [#4540](https://github.com/zowe/api-layer/pull/4540)
 - Bugfix: `zwe support verify-fingerprints` now produces consistent hashes across Java 17 and Java 21 by hashing raw bytes instead of charset-dependent strings. [#4726](https://github.com/zowe/zowe-install-packaging/pull/4726)
+- Enhancement: When debug for service `ZWELS` is enabled, `zwe internal start prepare` will print the output of `ulimit -Ha` and `ulimit -a`. [#4730](https://github.com/zowe/zowe-install-packaging/pull/4730)
 
 ## `3.4.1`
 - Bugfix: Running z/OSMF is returning 401, if RSU2512 was applied. [#4657](https://github.com/zowe/zowe-install-packaging/pull/4657)

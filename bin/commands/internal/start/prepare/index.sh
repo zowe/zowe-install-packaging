@@ -111,6 +111,17 @@ else
   ########################################################
   # Global validations
   global_validate() {
+    # print hard and soft system limits using ulimit with -Ha and -a options. This is to assist in troubleshooting and see important system properties such as 'open files'.
+    print_debug "Checking hard system limits (ulimit -Ha):"
+    if ulimit -Ha >/dev/null 2>&1; then
+      print_debug "$(ulimit -Ha)"
+    fi
+
+    print_debug "Checking soft system limits (ulimit -a):"
+    if ulimit -a >/dev/null 2>&1; then
+      print_debug "$(ulimit -a)"
+    fi
+
     print_formatted_info "ZWELS" "zwe-internal-start-prepare,global_validate:${LINENO}" "process global validations ..."
 
     # validate_runtime_user
