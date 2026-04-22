@@ -4,6 +4,7 @@ All notable changes to the Zowe Installer will be documented in this file.
 
 ## `3.5.0`
 
+- Enhancement: Startup now checks each Zowe server for if ATTLS rules are defined and warns if any misconfiguration is identified to assist with TLS configuration. [#4741](https://github.com/zowe/zowe-install-packaging/pull/4741)
 - Enhancement: `zwe init` no longer creates certificates by default. Use `zwe init --create-certificate` or `zwe init certificate` after defining the "zowe.setup.certificate" section of the YAML. You can use the examples provided within zowe/files/examples/setup/certificate. [#4238](https://github.com/zowe/zowe-install-packaging/pull/4238)
 - Enhancement: Split `zwe components install` into subcommands with dry-run options to help you with each step of component installation. [#4582](https://github.com/zowe/zowe-install-packaging/pull/4582)
 - Enhancement: Added command `zwe validate certificate` which checks Zowe's keystore and truststore and reports action items to resolve any issues found. This is run automatically every Zowe setup but that can be changed via the parameter `zowe.launchScript.startupChecks.certificate`, which can be changed to "warn" to warn only, or "disabled" to bypass the check. [#4554](https://github.com/zowe/zowe-install-packaging/pull/4554)
@@ -17,7 +18,7 @@ All notable changes to the Zowe Installer will be documented in this file.
 - Enhancement: Added command `zwe validate components` which can be used to check if a component in the YAML exists. [#4700](https://github.com/zowe/zowe-install-packaging/pull/4700)
 - Enhancement: Added command `zwe validate dependencies` which can be used to validate that Zowe is using supported versions of dependencies such as node and java. The behavior of these checks can be customized via YAML properties `zowe.launchScript.startupChecks.java` and `zowe.launchScript.startupChecks.node`. [#4713](https://github.com/zowe/zowe-install-packaging/pull/4713)
 - Bugfix: The `components.apiml.debug` debug property for the APIML Single-Service deployment mode (Modulith) was not working. [#4540](https://github.com/zowe/api-layer/pull/4540)
-- Bugfix: `zwe support verify-fingerprints` now produces consistent hashes across Java 17 and Java 21 by hashing raw bytes instead of charset-dependent strings. [#4726]
+- Bugfix: `zwe support verify-fingerprints` now produces consistent hashes across Java 17 and Java 21 by hashing raw bytes instead of charset-dependent strings. [#4726](https://github.com/zowe/zowe-install-packaging/pull/4726)
 
 ## `3.4.1`
 - Bugfix: Running z/OSMF is returning 401, if RSU2512 was applied. [#4657](https://github.com/zowe/zowe-install-packaging/pull/4657)
