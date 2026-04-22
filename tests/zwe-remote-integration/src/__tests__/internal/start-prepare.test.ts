@@ -47,6 +47,7 @@ describe(`${testSuiteName}`, () => {
     _.set(cfgYaml, 'zowe.launchScript.startupChecks.user', 'disabled');
     _.set(cfgYaml, 'zowe.launchScript.startupChecks.certificate', 'disabled');
     _.set(cfgYaml, 'zowe.launchScript.startupChecks.components', 'disabled');
+    _.set(cfgYaml, 'zowe.launchScript.startupChecks.attls', 'disabled');
     for (const component of Object.values(cfgYaml.components)) {
       if (component.port) {
         component.port = (Number(component.port) + 15000) % 65535;
@@ -198,6 +199,7 @@ describe(`${testSuiteName}`, () => {
     it('default startupChecks behavior', async () => {
       cfgYaml.zowe.launchScript = ZoweConfig.getZoweYaml().zowe.launchScript; // reset launchScript to defaults
       _.set(cfgYaml, 'zowe.launchScript.startupChecks.user', 'disabled');
+      _.set(cfgYaml, 'zowe.launchScript.startupChecks.attls', 'disabled');
       _.set(cfgYaml, 'zowe.launchScript.startupChecks.certificate', 'exit');
       let result = await testRunner.runZweTest(cfgYaml, 'internal start prepare');
       expect(result.cleanedStdout).toMatchSnapshot();
