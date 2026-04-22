@@ -307,8 +307,7 @@ zowe:
       # nodeMin: exit
       nodeMax: warn
       # # ATTLS (Application Transparent Transport Layer Security) port check - defaults to "warn"
-      attls: "warn"
-
+      # attls: "warn"
 
   # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   # How we want to verify SSL certificates of services. Valid values are:
