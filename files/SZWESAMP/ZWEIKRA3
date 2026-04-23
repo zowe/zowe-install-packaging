@@ -186,7 +186,7 @@ ACF
 * Uncomment this command if SITE acid owns the Zowe certificate ... */
 *  RECKEY IRR ADD(DIGTCERT.GENCERT -
 *  ROLE({zowe.setup.security.groups.stc}) -
-*  SERVICE(CONTROL) ALLOW)
+*  SERVICE(UPDATE) ALLOW)
 *
   F ACF2,REBUILD(FAC)
 *

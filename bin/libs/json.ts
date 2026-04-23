@@ -10,14 +10,10 @@
 */
 
 import * as std from 'cm_std';
-import * as os from 'cm_os';
-import * as zos from 'zos';
 import * as common from './common';
-import * as stringlib from './string';
 import * as shell from './shell';
 import * as fakejq from './fakejq';
 import * as config from './config';
-import * as zosfs from './zos-fs';
 
 // Read JSON configuration from shell script
 //
@@ -131,11 +127,11 @@ export function updateZoweYamlFileOnly(file: string, key: string, val: any, vali
   }
   let [ success, updateObj ] = fakejq.jqset(mergeObj, key, val);
   if (success) {
-    common.printMessage(`  * Success`);
+    common.printMessage(`  * jqset success`);
     const updateResult = config.updateZoweCfgFile(file, updateObj, 4, validate);
     return updateResult[0];
   } else {
-    common.printError(`  * Error`); 
+    common.printError(`  * jqset error`); 
     return -1;
   }
 }
@@ -159,8 +155,10 @@ export function updateZoweYaml(file: string, key: string, val: any) {
   if (success) {
     common.printMessage(`  * Success`);
     config.updateZoweConfig(updateObj, true, 1); //TODO externalize array merge strategy = 1
+    return 0;
   } else {
     common.printError(`  * Error`); 
+    return -1;
   }
 }
 

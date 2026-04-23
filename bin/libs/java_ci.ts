@@ -14,9 +14,12 @@ import * as fs from './fs';
 import * as common from './common';
 import * as shell from './shell';
 
-const JAVA_MIN_VERSION=17;
+export const JAVA_MIN_VERSION = 17;
+export const JAVA_MAX_VERSION = 21;
 
-export function validateJavaHome(javaHome:string|undefined=std.getenv("JAVA_HOME")): boolean {
+export function validateJavaHome(javaHome: string | undefined = std.getenv("JAVA_HOME"),
+                                 warnOnlyMin?: boolean, warnOnlyMax?: boolean): boolean {
+
   if (!javaHome) {
     common.printError("Cannot find java. Please define JAVA_HOME environment variable.");
     return false;
@@ -66,8 +69,26 @@ export function validateJavaHome(javaHome:string|undefined=std.getenv("JAVA_HOME
     }
 
     if (tooLow) {
-      common.printError(`Java ${javaVersionShort} is less than the minimum level required of Java ${JAVA_MIN_VERSION}.`);
-      return false;
+      let msg = `Java ${javaVersionShort} is less than the minimum level required of Java ${JAVA_MIN_VERSION}.`;
+      if (!warnOnlyMin) {
+        msg += ` This check can be set to a warning via zowe.launchScript.startupChecks.javaMin`;
+        common.printError(msg);
+        return false;
+      } else {
+        common.printError(msg);
+      }
+    }
+
+
+    if (javaMajorVersion > JAVA_MAX_VERSION) {
+      let msg = `Java ${javaVersionShort} is greater than the maximum supported version of Java ${JAVA_MAX_VERSION}.`;
+      if (!warnOnlyMax) {
+        msg += ` This check can be set to a warning via zowe.launchScript.startupChecks.javaMax`;
+        common.printError(msg);
+        return false;
+      } else {
+        common.printError(msg);
+      }
     }
 
     common.printDebug(`Java ${javaVersionShort} is supported.`);

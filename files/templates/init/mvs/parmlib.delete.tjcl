@@ -1,0 +1,10 @@
+//*********************************************************************
+//*
+//* Delete the PARMLIB member from the data set
+//*
+//*********************************************************************
+//PARMDEL  EXEC PGM=IKJEFT01
+//SYSTSPRT DD SYSOUT=A
+//SYSTSIN  DD *
+DELETE '${this.zowe.setup.dataset.parmlib}(${this.zowe.setup.dataset.parmlibMembers.zis})'
+/*

@@ -122,6 +122,10 @@
       "version": "3.4.0-V3.X-RC",
       "artifact": "attls-test-3.4.0-2026042211.pax"
     },
+    "org.zowe.attls-test": {
+      "version": "^3.4.0-V3.X-STAGING",
+      "artifact": "*.pax"
+    },
     "org.zowe.zis-test": {
       "version": "3.4.0-V3.X-RC",
       "artifact": "zis-test-3.4.0-2026042210.pax"

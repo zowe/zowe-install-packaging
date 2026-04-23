@@ -1,0 +1,1 @@
+zis-plugin-datasets|z|string|||||Comma separated list of datasets to reference as ZIS STEPLIB entries for loading plugins. Requires that the datasets exist prior and are APF authorized. If not provided when installing a component containing ZIS plugins, the plugins will be copied into the ZIS APF Plugin dataset.

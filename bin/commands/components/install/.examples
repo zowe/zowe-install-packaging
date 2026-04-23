@@ -1,3 +1,27 @@
 zwe components install -c /path/to/zowe.yaml -o /path/to/component/package
 
+zwe components install -c /path/to/zowe.yaml -o /path/to/component/package --dry-run
+
+zwe components install -c /path/to/zowe.yaml -o /path/to/component/package --skip-enable
+
+zwe components install -c /path/to/zowe.yaml -o /path/to/component/package --zis-plugin-datasets PROGA.ZOWE.ZIS.LD1,PROGA.ZOWE.ZIS.LD2
+
 zwe components install extract -c /path/to/zowe.yaml -o /path/to/component/package
+
+zwe components install component-script -c /path/to/zowe.yaml -n component-name
+
+zwe components install register -c /path/to/zowe.yaml -n component-name
+
+zwe components install register appfw -c /path/to/zowe.yaml -n component-name
+
+zwe components install register appfw zss -c /path/to/zowe.yaml -n component-name
+
+zwe components install register appfw zss pcbit -c /path/to/zowe.yaml -n component-name
+
+zwe components install register zis -c /path/to/zowe.yaml -n component-name
+
+zwe components install register zis loadlib -c /path/to/zowe.yaml -n component-name
+
+zwe components install register zis loadlib -c /path/to/zowe.yaml -n component-name --zis-plugin-datasets PROGA.ZOWE.ZIS.LD1,PROGA.ZOWE.ZIS.LD2
+
+zwe components install register zis parmlib -c /path/to/zowe.yaml -n component-name

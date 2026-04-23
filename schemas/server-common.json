@@ -119,6 +119,11 @@
       "deprecated": true,
       "minimum": 1,
       "maximum": 1023
+    },
+    "startupCheck": {
+      "$anchor": "startupCheck",
+      "type": "string",
+      "enum": ["exit", "warn", "disabled"]
     }
   }
 }

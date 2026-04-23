@@ -35,6 +35,13 @@ export function isDatasetExists(datasetName: string): boolean {
   return result.rc === 0;
 }
 
+export function isDatasetExistsRC(datasetName: string): number {
+  common.printTrace(`  * isDatasetExists: '${stringlib.escapeDollar(datasetName)}'`);
+  const result = shell.execSync('sh', '-c', `cat "//'${stringlib.escapeDollar(datasetName)}'" 1>/dev/null 2>&1`);
+  return result.rc;
+}
+
+
 export function tsoDeleteDataset(datasetName: string): number {
   common.printTrace(`  * tsoDeleteDataset: ${datasetName}`);
   const result = zoslib.tsoCommand(`delete '${stringlib.escapeDollar(datasetName)}'`);
@@ -239,31 +246,9 @@ export function readMember(member: string): string | undefined {
       if (jclContent.out) {
           common.printError(stringlib.paddingLeft(jclContent.out, "    "));
       }
+      return undefined;
   }
   return jclContent.out;
-}
-
-export function replaceInMember(member: string, tempFile: string, regexFind: RegExp, replaceTo: string): number {
-  common.printTrace(`  * replaceInMember: ${member}, ${tempFile}, ${regexFind} -> ${replaceTo}`);
-  let memberContent = readMember(member);
-  if (memberContent) {
-      memberContent = memberContent.replace(regexFind, replaceTo.replace(/[$]/g, '$$$$'));
-      let storeResult = xplatform.storeFileUTF8(tempFile, xplatform.AUTO_DETECT, memberContent);
-      if (storeResult) {
-        common.printTrace(`  * replaceInMember: xplatform.storeFileUTF8 failed with: ${storeResult}`);
-        return 2;
-      }
-      const cpCommand = `cp "${stringlib.escapeDollar(tempFile)}" "//'${stringlib.escapeDollar(member)}'" 2>&1`;
-      let cpResult = shell.execSync('sh', '-c', cpCommand);
-      if (cpResult.rc) {
-        common.printTrace(`  * replaceInMember: shell.execSync(${cpCommand}) failed with: ${cpResult.rc}`);
-        return 3;
-      }
-      return 0;
-  }
-  else {
-      return 1;
-  }
 }
 
 export function updateMember(member: string, newContent: string, tempFile?: string, ): number {

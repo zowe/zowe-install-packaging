@@ -133,17 +133,35 @@ Error ZWEL0326E: An error occurred while processing Zowe YAML config /test/dir/z
             "authLoadlib": "TEST.DATASET.PFX.SZWEAUTH",
             "authPluginLib": "TEST.DATASET.PFX.ZWESAPL"
           },
-          "certificate": {
-            "type": null,
-            "pkcs12": {
-              "directory": "/test/dir/pkcs12"
-            }
-          },
           "vsam": {
             "mode": "NONRLS",
             "volume": "TSTVOL",
             "storageClass": "",
             "name": "TEST.DATASET.PFX.VSAM"
+          },
+          "certificate": {
+            "type": null,
+            "pkcs12": {
+              "directory": "/var/zowe/keystore",
+              "name": "localhost",
+              "password": "password",
+              "caAlias": "local_ca",
+              "caPassword": "local_ca_password"
+            },
+            "validity": 3650
+          }
+        },
+        "certificate": {
+          "keystore": {
+            "type": "JCERACFKS",
+            "file": "safkeyring://<stc_username>/<keyring_name>",
+            "password": "password",
+            "alias": "localhost"
+          },
+          "truststore": {
+            "type": "JCERACFKS",
+            "file": "safkeyring://<stc_username>/<keyring_name>",
+            "password": "password"
           }
         },
         "runtimeDirectory": "/test/dir",
@@ -188,29 +206,16 @@ Error ZWEL0326E: An error occurred while processing Zowe YAML config /test/dir/z
           "ZWEL0001I",
           "ZWEL0002I",
           "ZWEAM000I",
+          "ZWEAM001I",
           "ZWED0031I",
           "ZWES1013I"
         ],
         "launchScript": {
           "logLevel": "info",
-          "onComponentConfigureFail": "warn"
-        },
-        "certificate": {
-          "keystore": {
-            "type": "PKCS12",
-            "file": "/global/zowe/keystore/localhost/localhost.keystore.p12",
-            "password": "password",
-            "alias": "localhost"
-          },
-          "truststore": {
-            "type": "PKCS12",
-            "file": "/global/zowe/keystore/localhost/localhost.truststore.p12",
-            "password": "password"
-          },
-          "pem": {
-            "key": "/global/zowe/keystore/localhost/localhost.key",
-            "certificate": "/global/zowe/keystore/localhost/localhost.cer",
-            "certificateAuthorities": "/global/zowe/keystore/local_ca/local_ca.cer"
+          "onComponentConfigureFail": "warn",
+          "startupChecks": {
+            "javaMax": "warn",
+            "nodeMax": "warn"
           }
         },
         "verifyCertificates": "STRICT"
@@ -308,13 +313,161 @@ Error ZWEL0326E: An error occurred while processing Zowe YAML config /test/dir/z
     validate status = 4
     Validity Exceptions:
     Validity Exceptions(s) with object at
-      Validity Exceptions(s) with object at /zowe
-        Validity Exceptions(s) with object at /zowe/setup
-          Schema at '/zowe/setup/certificate' invalid
-            not oneOf schemas at '/zowe/setup/certificate' are valid, 0 are
-              Validity Exceptions(s) with object at /zowe/setup/certificate
-                unequal constant value at /zowe/setup/certificate/type; expecting value 'PKCS12' of type 'integer'
-              Validity Exceptions(s) with object at /zowe/setup/certificate
-                missing required property 'keyring' at '/zowe/setup/certificate'
-                no matching enum value at /zowe/setup/certificate/type; expecting one of values '[JCEKS, JCECCAKS, JCERACFKS, JCECCARACFKS, JCEHYBRIDRACFKno matching enum value at /zowe/setup/certificate/type; expecting one of values '[]' of type 'integer'"
+      Validity Exceptions(s) with object at zowe
+        Validity Exceptions(s) with object at zowe.setup
+          Schema at 'zowe.setup.certificate' invalid
+            not oneOf schemas at 'zowe.setup.certificate' are valid, 0 are
+              Validity Exceptions(s) with object at zowe.setup.certificate
+                unequal constant value at zowe.setup.certificate.type; expecting value 'PKCS12' of type 'integer'
+              Validity Exceptions(s) with object at zowe.setup.certificate
+                missing required property 'keyring' at 'zowe.setup.certificate'
+                no matching enum value at zowe.setup.certificate.type; expecting one of values '[JCEKS, JCECCAKS, JCERACFKS, JCECCARACFKS, JCEHYBRIDRACFKS]' of type 'integer'"
+`;
+
+exports[`init-cert (SHORT) run each scenario 1`] = `
+"-------------------------------------------------------------------------------
+>> Generate certificate
+-------------------------------------------------------------------------------
+>> Creating certificate authority "local_ca"
+>>>> Generate PKCS12 format local CA with alias local_ca:
+>> Certificate authority local_ca is created successfully.
+-------------------------------------------------------------------------------
+>> Export keystore /test/dir/pkcs12/local_ca/local_ca.keystore.p12
+>>>> List content of keystore "/test/dir/pkcs12/local_ca/local_ca.keystore.p12":
+>>>> Export certificate "local_ca" to PEM format
+>> Keystore /test/dir/pkcs12/local_ca/local_ca.keystore.p12 is exported successfully.
+-------------------------------------------------------------------------------
+>> Creating certificate "localhost"
+>>>> Generate certificate "localhost" in the keystore localhost:
+>>>> Generate CSR for the certificate "localhost" in the keystore "localhost":
+>>>> Sign the CSR using the Certificate Authority "local_ca":
+>>>> Import the Certificate Authority "local_ca" to the keystore "localhost":
+>>>> Import the Certificate Authority "local_ca" to the truststore "localhost":
+>>>> Import the signed CSR to the keystore "localhost":
+>> Certificate localhost is created successfully.
+-------------------------------------------------------------------------------
+>> Trust z/OSMF "some.test.hostname:12321"
+>>>> Getting certificates from service host
+>>>> Import a certificate "zosmf00" to the truststore:
+>>>> Import a certificate "zosmf01" to the truststore:
+>> Certificate zosmf is added to truststore successfully.
+-------------------------------------------------------------------------------
+>> Export keystore /test/dir/pkcs12/localhost/localhost.keystore.p12
+>>>> List content of keystore "/test/dir/pkcs12/localhost/localhost.keystore.p12":
+>>>> Export certificate "localhost" to PEM format
+>>>> Export certificate "local_ca" to PEM format
+>>>> Certificate "/test/dir/pkcs12/localhost/local_ca.cer is in EBCDIC.
+>>>> Exporting certificate "localhost" private key
+>> Keystore /test/dir/pkcs12/localhost/localhost.keystore.p12 is exported successfully.
+-------------------------------------------------------------------------------
+>> Export keystore /test/dir/pkcs12/localhost/localhost.truststore.p12
+>>>> List content of keystore "/test/dir/pkcs12/localhost/localhost.truststore.p12":
+>>>> Export certificate "local_ca" to PEM format
+>>>> Certificate "/test/dir/pkcs12/localhost/local_ca.cer is in EBCDIC.
+>>>> Export certificate "zosmf00" to PEM format
+>>>> Certificate "/test/dir/pkcs12/localhost/zosmf00.cer is in EBCDIC.
+>>>> Export certificate "zosmf01" to PEM format
+>>>> Certificate "/test/dir/pkcs12/localhost/zosmf01.cer is in EBCDIC.
+>> Keystore /test/dir/pkcs12/localhost/localhost.truststore.p12 is exported successfully.
+-------------------------------------------------------------------------------
+>> Lock keystore directory /test/dir/pkcs12
+>> Keystore directory /test/dir/pkcs12 is locked.
+-------------------------------------------------------------------------------
+>> Update certificate configuration to /test/dir/zowe.test.yaml
+Please manually update to these values:
+zowe:
+  certificate:
+    keystore:
+      type: PKCS12
+      file: "/test/dir/pkcs12/localhost/localhost.keystore.p12"
+      password: "password"
+      alias: "localhost"
+    truststore:
+      type: PKCS12
+      file: "/test/dir/pkcs12/localhost/localhost.truststore.p12"
+      password: "password"
+    pem:
+      key: "/test/dir/pkcs12/localhost/localhost.key"
+      certificate: "/test/dir/pkcs12/localhost/localhost.cer"
+      certificateAuthorities: "/test/dir/pkcs12/local_ca/local_ca.cer"
+>> Zowe configuration requires manual updates.
+-------------------------------------------------------------------------------
+>> Verify certificate of "some.test.hostname:12321"
+>>>> Validate certificate of some.test.hostname:12321
+Error: some.test.hostname certificate doesn't have subject alternate name(s)
+Error ZWEL0171E: Failed to verify certificate (CN and SAN) of "some.test.hostname:12321"."
+`;
+
+exports[`init-cert (SHORT) run each scenario 2`] = `
+"-------------------------------------------------------------------------------
+>> Generate certificate
+-------------------------------------------------------------------------------
+>> Import certificate into keystore /test/dir/pkcs12_scen2/localhost/localhost.keystore.p12
+>>>> Import localhost from keystore "/test/dir/pkcs12/localhost/localhost.keystore.p12" to "/test/dir/pkcs12_scen2/localhost/localhost.keystore.p12" as localhost:
+>> Certificate is imported successfully.
+-------------------------------------------------------------------------------
+>> Trust z/OSMF "some.test.hostname:12321"
+>>>> Getting certificates from service host
+>>>> Import a certificate "zosmf00" to the truststore:
+>>>> Import a certificate "zosmf01" to the truststore:
+>> Certificate zosmf is added to truststore successfully.
+-------------------------------------------------------------------------------
+>> Export keystore /test/dir/pkcs12_scen2/localhost/localhost.keystore.p12
+>>>> List content of keystore "/test/dir/pkcs12_scen2/localhost/localhost.keystore.p12":
+>>>> Export certificate "localhost" to PEM format
+>>>> Exporting certificate "localhost" private key
+>> Keystore /test/dir/pkcs12_scen2/localhost/localhost.keystore.p12 is exported successfully.
+-------------------------------------------------------------------------------
+>> Export keystore /test/dir/pkcs12_scen2/localhost/localhost.truststore.p12
+>>>> List content of keystore "/test/dir/pkcs12_scen2/localhost/localhost.truststore.p12":
+>>>> Export certificate "zosmf00" to PEM format
+>>>> Certificate "/test/dir/pkcs12_scen2/localhost/zosmf00.cer is in EBCDIC.
+>>>> Export certificate "zosmf01" to PEM format
+>>>> Certificate "/test/dir/pkcs12_scen2/localhost/zosmf01.cer is in EBCDIC.
+>> Keystore /test/dir/pkcs12_scen2/localhost/localhost.truststore.p12 is exported successfully.
+-------------------------------------------------------------------------------
+>> Lock keystore directory /test/dir/pkcs12_scen2
+>> Keystore directory /test/dir/pkcs12_scen2 is locked.
+-------------------------------------------------------------------------------
+>> Update certificate configuration to /test/dir/zowe.test.yaml
+Please manually update to these values:
+zowe:
+  certificate:
+    keystore:
+      type: PKCS12
+      file: "/test/dir/pkcs12_scen2/localhost/localhost.keystore.p12"
+      password: "password"
+      alias: "localhost"
+    truststore:
+      type: PKCS12
+      file: "/test/dir/pkcs12_scen2/localhost/localhost.truststore.p12"
+      password: "password"
+    pem:
+      key: "/test/dir/pkcs12_scen2/localhost/localhost.key"
+      certificate: "/test/dir/pkcs12_scen2/localhost/localhost.cer"
+      certificateAuthorities: ""
+>> Zowe configuration requires manual updates.
+-------------------------------------------------------------------------------
+>> Verify certificate of "some.test.hostname:12321"
+>>>> Validate certificate of some.test.hostname:12321
+Error: some.test.hostname certificate doesn't have subject alternate name(s)
+Error ZWEL0171E: Failed to verify certificate (CN and SAN) of "some.test.hostname:12321"."
+`;
+
+exports[`init-cert (SHORT) run each scenario 3`] = `
+"-------------------------------------------------------------------------------
+>> Generate certificate
+Error ZWEL0173E: Please enter an IP address in either the subject alternative name (zowe.setup.certificate.san) or external domain (zowe.externalDomains) in the Zowe YAML configuration file."
+`;
+
+exports[`init-cert (SHORT) run each scenario 4`] = `
+"-------------------------------------------------------------------------------
+>> Generate certificate
+Error ZWEL0173E: Please enter an IP address in either the subject alternative name (zowe.setup.certificate.san) or external domain (zowe.externalDomains) in the Zowe YAML configuration file."
+`;
+
+exports[`init-cert (SHORT) run each scenario 5`] = `
+"-------------------------------------------------------------------------------
+>> Generate certificate
+Error ZWEL0173E: Please enter an IP address in either the subject alternative name (zowe.setup.certificate.san) or external domain (zowe.externalDomains) in the Zowe YAML configuration file."
 `;
