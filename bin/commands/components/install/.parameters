@@ -1,0 +1,1 @@
+dry-run|d|boolean|||||Whether or not to perform the upgrade versus just checking if an upgrade is available

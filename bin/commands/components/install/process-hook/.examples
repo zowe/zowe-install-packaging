@@ -1,1 +1,3 @@
 zwe components install process-hook -c /path/to/zowe.yaml -n component-name
+
+zwe components install process-hook -c /path/to/zowe.yaml -n component-name --dry-run

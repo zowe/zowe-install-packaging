@@ -11,4 +11,4 @@
 
 import * as std from 'cm_std';
 import * as index from './index';
-index.execute(std.getenv('ZWE_CLI_PARAMETER_COMPONENT_FILE'), std.getenv('ZWE_CLI_PARAMETER_AUTO_ENCODING'));
+index.execute(std.getenv('ZWE_CLI_PARAMETER_COMPONENT_FILE'), std.getenv('ZWE_CLI_PARAMETER_AUTO_ENCODING'), false, (std.getenv('ZWE_CLI_PARAMETER_DRY_RUN') === 'true'));

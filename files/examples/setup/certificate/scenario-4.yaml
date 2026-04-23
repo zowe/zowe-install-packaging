@@ -1,0 +1,38 @@
+################################################################################
+# This program and the accompanying materials are made available under the terms of the
+# Eclipse Public License v2.0 which accompanies this distribution, and is available at
+# https://www.eclipse.org/legal/epl-v20.html
+#
+# SPDX-License-Identifier: EPL-2.0
+#
+# Copyright Contributors to the Zowe Project.
+################################################################################
+
+# >>>> Certificate setup scenario 4
+# Zowe generated z/OS Keyring and connect to existing certificate
+#
+# Pre-requisite: your main zowe.yaml file is configured.
+#
+# To use this example, complete the configuration below and run
+# `zwe init --create-certificate` or `zwe init certificate`
+# with following configuration parameter, quotes included:
+# -c "FILE(/path/to/this/scenario-4.yaml):FILE(/path/to/zowe.yaml)"
+####
+
+zowe:
+  setup:
+    certificate:
+      type: JCERACFKS
+      keyring:
+        name: ZoweKeyring
+        connect:
+          # Current owner of the existing certificate, can be SITE or an user ID.
+          user: IBMUSER
+          # Label of the existing certificate will be connected to Zowe keyring.
+          label: ""
+      # If you have other certificate authorities want to be trusted in Zowe keyring,
+      # list the certificate labels here.
+      # **NOTE**, due to the limitation of RACDCERT command, this field should
+      #           contain maximum 2 entries.
+      importCertificateAuthorities:
+        - ""

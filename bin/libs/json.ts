@@ -10,14 +10,10 @@
 */
 
 import * as std from 'cm_std';
-import * as os from 'cm_os';
-import * as zos from 'zos';
 import * as common from './common';
-import * as stringlib from './string';
 import * as shell from './shell';
 import * as fakejq from './fakejq';
 import * as config from './config';
-import * as zosfs from './zos-fs';
 
 // Read JSON configuration from shell script
 //
@@ -131,9 +127,35 @@ export function updateZoweYamlFileOnly(file: string, key: string, val: any, vali
   }
   let [ success, updateObj ] = fakejq.jqset(mergeObj, key, val);
   if (success) {
-    common.printMessage(`  * Success`);
+    common.printMessage(`  * jqset success`);
     const updateResult = config.updateZoweCfgFile(file, updateObj, 4, validate);
     return updateResult[0];
+  } else {
+    common.printError(`  * jqset error`); 
+    return -1;
+  }
+}
+
+/**
+ * Updates the YAML key in the zowe.yaml passed by the caller with val, AND updates the zowe.yaml which can be found via ZOWE_CONFIG_PATH. 
+ * This can result in multiple zowe.yaml file updates, typically in both a private merged file and the original zowe.yaml.
+ * 
+ * Example: `updateZoweYaml('/path/to/zowe.merged.yaml', 'components.zss.enabled', true);
+ *   --> This will update both zowe.merged.yaml, and whatever YAML was passed to the calling program via ("-c my.zowe.yaml").
+ * 
+ * @param file 
+ * @param key 
+ * @param val 
+ * @returns 
+ */
+export function updateZoweYaml(file: string, key: string, val: any) {
+  common.printMessage(`- update zowe config ${file}, key: "${key}" with value: ${val}`);
+  let [ success, updateObj ] = fakejq.jqset({}, key, val);
+  
+  if (success) {
+    common.printMessage(`  * Success`);
+    config.updateZoweConfig(updateObj, true, 1); //TODO externalize array merge strategy = 1
+    return 0;
   } else {
     common.printError(`  * Error`); 
     return -1;

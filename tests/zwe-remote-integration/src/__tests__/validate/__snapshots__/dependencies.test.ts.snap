@@ -1,0 +1,183 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`zwe-validate-dependencies (SHORT) _(JAVA) fail to validate java dependency 1`] = `
+"Temporary directory '/tmp/.zweenv-0000' created.
+Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
+ TESTUSR0 INFO (zwe-validate-dependencies-java) Validating Java dependency (required: >= 17, <= 21)...
+ERROR: JAVA_HOME: /invalid/path/bin does not point to a valid install of Java.
+ERROR: JAVA_HOME: /invalid/path/bin does not point to a valid install of Java.
+ERROR:  TESTUSR0 ERROR (zwe-validate-dependencies-java) ZWEL0360E: Java version validation failed. Ensure Java >= 17 and <= 21 is used with Zowe. Java is required for the following enabled component(s): apiml, gateway, discovery, zaas, api-catalog, caching-service."
+`;
+
+exports[`zwe-validate-dependencies (SHORT) _(JAVA) fail to validate java dependency 2`] = `
+"Temporary directory '/tmp/.zweenv-0000' created.
+Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
+ TESTUSR0 INFO (zwe-validate-dependencies-java) Validating Java dependency (required: >= 17, <= 21)...
+ TESTUSR0 INFO (validateJavaHome) Java version: v0.0.0
+ERROR: Java 1.1.2 2024-01-16 is less than the minimum level required of Java 17. This check can be set to a warning via zowe.launchScript.startupChecks.javaMin
+ TESTUSR0 INFO (validateJavaHome) Java version: v0.0.0
+ERROR: Java 1.1.2 2024-01-16 is less than the minimum level required of Java 17. This check can be set to a warning via zowe.launchScript.startupChecks.javaMin
+ERROR:  TESTUSR0 ERROR (zwe-validate-dependencies-java) ZWEL0360E: Java version validation failed. Ensure Java >= 17 and <= 21 is used with Zowe. Java is required for the following enabled component(s): apiml, gateway, discovery, zaas, api-catalog, caching-service."
+`;
+
+exports[`zwe-validate-dependencies (SHORT) _(JAVA) fail to validate java dependency 3`] = `
+"Temporary directory '/tmp/.zweenv-0000' created.
+Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
+ TESTUSR0 INFO (zwe-validate-dependencies-java) Validating Java dependency (required: >= 17, <= 21)...
+ TESTUSR0 INFO (validateJavaHome) Java version: v0.0.0
+ERROR: Java 99.1.2 2024-01-16 is greater than the maximum supported version of Java 21.
+ TESTUSR0 INFO (validateJavaHome) Java version: v0.0.0
+ERROR: Java 99.1.2 2024-01-16 is greater than the maximum supported version of Java 21. This check can be set to a warning via zowe.launchScript.startupChecks.javaMax
+ERROR:  TESTUSR0 ERROR (zwe-validate-dependencies-java) ZWEL0360E: Java version validation failed. Ensure Java >= 17 and <= 21 is used with Zowe. Java is required for the following enabled component(s): apiml, gateway, discovery, zaas, api-catalog, caching-service."
+`;
+
+exports[`zwe-validate-dependencies (SHORT) _(JAVA) validate java version with apiml 1`] = `
+"Temporary directory '/tmp/.zweenv-0000' created.
+Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
+ TESTUSR0 INFO (zwe-validate-dependencies-java) Validating Java dependency (required: >= 17, <= 21)...
+ TESTUSR0 INFO (validateJavaHome) Java version: v0.0.0
+ TESTUSR0 INFO (validateJavaHome) Java version: v0.0.0
+ TESTUSR0 INFO (zwe-validate-dependencies-java) Java dependency check passed. Required by enabled component(s): apiml, gateway, discovery, zaas, api-catalog, caching-service."
+`;
+
+exports[`zwe-validate-dependencies (SHORT) _(JAVA) validate java version without apiml 1`] = `
+"Temporary directory '/tmp/.zweenv-0000' created.
+Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
+ TESTUSR0 INFO (zwe-validate-dependencies-java) Validating Java dependency (required: >= 17, <= 21)...
+ TESTUSR0 INFO (validateJavaHome) Java version: v0.0.0
+ TESTUSR0 INFO (validateJavaHome) Java version: v0.0.0
+ TESTUSR0 INFO (zwe-validate-dependencies-java) Java dependency check passed."
+`;
+
+exports[`zwe-validate-dependencies (SHORT) _(NODE) fail to validate node dependency 1`] = `
+"Temporary directory '/tmp/.zweenv-0000' created.
+Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
+ TESTUSR0 INFO (zwe-validate-dependencies-node) Validating Node.js dependency (required: >= 18, <= 24)...
+ERROR: NODE_HOME: /invalid/path/bin does not point to a valid install of Node.
+ERROR: Error ZWEL0121E: Cannot find node. Set the node.home value in the Zowe YAML, or include node in the PATH environment variable of any accounts that start or manage Zowe"
+`;
+
+exports[`zwe-validate-dependencies (SHORT) _(NODE) fail to validate node dependency 2`] = `
+"Temporary directory '/tmp/.zweenv-0000' created.
+Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
+ TESTUSR0 INFO (zwe-validate-dependencies-node) Validating Node.js dependency (required: >= 18, <= 24)...
+ERROR: Error ZWEL0121E: Cannot find node. Set the node.home value in the Zowe YAML, or include node in the PATH environment variable of any accounts that start or manage Zowe"
+`;
+
+exports[`zwe-validate-dependencies (SHORT) _(NODE) fail to validate node dependency 3`] = `
+"Temporary directory '/tmp/.zweenv-0000' created.
+Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
+ TESTUSR0 INFO (zwe-validate-dependencies-node) Validating Node.js dependency (required: >= 18, <= 24)...
+ TESTUSR0 INFO (validateNodeHome) NodeJS version: v0.0.0
+ERROR: Node v1.1.2 is less than the minimum level required of v18. This check can be set to a warning via zowe.launchScript.startupChecks.nodeMin
+ERROR: Error ZWEL0121E: Cannot find node. Set the node.home value in the Zowe YAML, or include node in the PATH environment variable of any accounts that start or manage Zowe"
+`;
+
+exports[`zwe-validate-dependencies (SHORT) _(NODE) fail to validate node dependency 4`] = `
+"Temporary directory '/tmp/.zweenv-0000' created.
+Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
+ TESTUSR0 INFO (zwe-validate-dependencies-node) Validating Node.js dependency (required: >= 18, <= 24)...
+ TESTUSR0 INFO (validateNodeHome) NodeJS version: v0.0.0
+ERROR: Node v99.1.2 is greater than the maximum supported version of v24.
+ TESTUSR0 INFO (validateNodeHome) NodeJS version: v0.0.0
+ERROR: Node v99.1.2 is greater than the maximum supported version of v24. This check can be set to a warning via zowe.launchScript.startupChecks.nodeMax
+ERROR:  TESTUSR0 ERROR (zwe-validate-dependencies-node) ZWEL0361E: Node.js version validation failed. Ensure Node.js >= 18 and <= 24 is used wth Zowe. Node.js is required for app-server functionality."
+`;
+
+exports[`zwe-validate-dependencies (SHORT) _(NODE) validate node version with app-server 1`] = `
+"Temporary directory '/tmp/.zweenv-0000' created.
+Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
+ TESTUSR0 INFO (zwe-validate-dependencies-node) Validating Node.js dependency (required: >= 18, <= 24)...
+ TESTUSR0 INFO (validateNodeHome) NodeJS version: v0.0.0
+ TESTUSR0 INFO (validateNodeHome) NodeJS version: v0.0.0
+ TESTUSR0 INFO (zwe-validate-dependencies-node) Node.js dependency check passed."
+`;
+
+exports[`zwe-validate-dependencies (SHORT) _(NODE) validate node version without app-server 1`] = `
+"Temporary directory '/tmp/.zweenv-0000' created.
+Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
+ TESTUSR0 INFO (zwe-validate-dependencies-node) Validating Node.js dependency (required: >= 18, <= 24)...
+ TESTUSR0 INFO (validateNodeHome) NodeJS version: v0.0.0
+ TESTUSR0 INFO (validateNodeHome) NodeJS version: v0.0.0
+ TESTUSR0 INFO (zwe-validate-dependencies-node) Node.js dependency check passed."
+`;
+
+exports[`zwe-validate-dependencies (SHORT) fail to validate one dependency - max version too high 1`] = `
+" TESTUSR0 INFO (zwe-validate-dependencies) Validating runtime dependencies...
+Temporary directory '/tmp/.zweenv-0000' created.
+Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
+ TESTUSR0 INFO (zwe-validate-dependencies-java) Validating Java dependency (required: >= 17, <= 21)...
+ TESTUSR0 INFO (validateJavaHome) Java version: v0.0.0
+ TESTUSR0 INFO (validateJavaHome) Java version: v0.0.0
+ TESTUSR0 INFO (zwe-validate-dependencies-java) Java dependency check passed. Required by enabled component(s): apiml, gateway, discovery, zaas, api-catalog, caching-service.
+ TESTUSR0 INFO (zwe-validate-dependencies-node) Validating Node.js dependency (required: >= 18, <= 24)...
+ TESTUSR0 INFO (validateNodeHome) NodeJS version: v0.0.0
+ERROR: Node v999.1.2 is greater than the maximum supported version of v24.
+ TESTUSR0 INFO (validateNodeHome) NodeJS version: v0.0.0
+ERROR: Node v999.1.2 is greater than the maximum supported version of v24. This check can be set to a warning via zowe.launchScript.startupChecks.nodeMax
+ERROR:  TESTUSR0 ERROR (zwe-validate-dependencies-node) ZWEL0361E: Node.js version validation failed. Ensure Node.js >= 18 and <= 24 is used wth Zowe. Node.js is required for app-server functionality.
+ TESTUSR0 INFO (zwe-validate-dependencies) Runtime dependency validation complete."
+`;
+
+exports[`zwe-validate-dependencies (SHORT) fail to validate one dependency - max version too high 2`] = `
+" TESTUSR0 INFO (zwe-validate-dependencies) Validating runtime dependencies...
+Temporary directory '/tmp/.zweenv-0000' created.
+Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
+ TESTUSR0 INFO (zwe-validate-dependencies-java) Validating Java dependency (required: >= 17, <= 21)...
+ TESTUSR0 INFO (validateJavaHome) Java version: v0.0.0
+ERROR: Java 999.1.2 2024-01-16 is greater than the maximum supported version of Java 21.
+ TESTUSR0 INFO (validateJavaHome) Java version: v0.0.0
+ERROR: Java 999.1.2 2024-01-16 is greater than the maximum supported version of Java 21. This check can be set to a warning via zowe.launchScript.startupChecks.javaMax
+ERROR:  TESTUSR0 ERROR (zwe-validate-dependencies-java) ZWEL0360E: Java version validation failed. Ensure Java >= 17 and <= 21 is used with Zowe. Java is required for the following enabled component(s): apiml, gateway, discovery, zaas, api-catalog, caching-service.
+ TESTUSR0 INFO (zwe-validate-dependencies-node) Validating Node.js dependency (required: >= 18, <= 24)...
+ TESTUSR0 INFO (validateNodeHome) NodeJS version: v0.0.0
+ TESTUSR0 INFO (validateNodeHome) NodeJS version: v0.0.0
+ TESTUSR0 INFO (zwe-validate-dependencies-node) Node.js dependency check passed.
+ TESTUSR0 INFO (zwe-validate-dependencies) Runtime dependency validation complete."
+`;
+
+exports[`zwe-validate-dependencies (SHORT) fail to validate one dependency - min version too low 1`] = `
+" TESTUSR0 INFO (zwe-validate-dependencies) Validating runtime dependencies...
+Temporary directory '/tmp/.zweenv-0000' created.
+Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
+ TESTUSR0 INFO (zwe-validate-dependencies-java) Validating Java dependency (required: >= 17, <= 21)...
+ TESTUSR0 INFO (validateJavaHome) Java version: v0.0.0
+ TESTUSR0 INFO (validateJavaHome) Java version: v0.0.0
+ TESTUSR0 INFO (zwe-validate-dependencies-java) Java dependency check passed. Required by enabled component(s): apiml, gateway, discovery, zaas, api-catalog, caching-service.
+ TESTUSR0 INFO (zwe-validate-dependencies-node) Validating Node.js dependency (required: >= 18, <= 24)...
+ TESTUSR0 INFO (validateNodeHome) NodeJS version: v0.0.0
+ERROR: Node v1.1.2 is less than the minimum level required of v18. This check can be set to a warning via zowe.launchScript.startupChecks.nodeMin
+ERROR: Error ZWEL0121E: Cannot find node. Set the node.home value in the Zowe YAML, or include node in the PATH environment variable of any accounts that start or manage Zowe"
+`;
+
+exports[`zwe-validate-dependencies (SHORT) fail to validate one dependency - min version too low 2`] = `
+" TESTUSR0 INFO (zwe-validate-dependencies) Validating runtime dependencies...
+Temporary directory '/tmp/.zweenv-0000' created.
+Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
+ TESTUSR0 INFO (zwe-validate-dependencies-java) Validating Java dependency (required: >= 17, <= 21)...
+ TESTUSR0 INFO (validateJavaHome) Java version: v0.0.0
+ERROR: Java 1.1.2 2024-01-16 is less than the minimum level required of Java 17. This check can be set to a warning via zowe.launchScript.startupChecks.javaMin
+ TESTUSR0 INFO (validateJavaHome) Java version: v0.0.0
+ERROR: Java 1.1.2 2024-01-16 is less than the minimum level required of Java 17. This check can be set to a warning via zowe.launchScript.startupChecks.javaMin
+ERROR:  TESTUSR0 ERROR (zwe-validate-dependencies-java) ZWEL0360E: Java version validation failed. Ensure Java >= 17 and <= 21 is used with Zowe. Java is required for the following enabled component(s): apiml, gateway, discovery, zaas, api-catalog, caching-service.
+ TESTUSR0 INFO (zwe-validate-dependencies-node) Validating Node.js dependency (required: >= 18, <= 24)...
+ TESTUSR0 INFO (validateNodeHome) NodeJS version: v0.0.0
+ TESTUSR0 INFO (validateNodeHome) NodeJS version: v0.0.0
+ TESTUSR0 INFO (zwe-validate-dependencies-node) Node.js dependency check passed.
+ TESTUSR0 INFO (zwe-validate-dependencies) Runtime dependency validation complete."
+`;
+
+exports[`zwe-validate-dependencies (SHORT) validate dependencies 1`] = `
+" TESTUSR0 INFO (zwe-validate-dependencies) Validating runtime dependencies...
+Temporary directory '/tmp/.zweenv-0000' created.
+Zowe will remove it on success, but if zwe exits with a non-zero code manual cleanup would be needed.
+ TESTUSR0 INFO (zwe-validate-dependencies-java) Validating Java dependency (required: >= 17, <= 21)...
+ TESTUSR0 INFO (validateJavaHome) Java version: v0.0.0
+ TESTUSR0 INFO (validateJavaHome) Java version: v0.0.0
+ TESTUSR0 INFO (zwe-validate-dependencies-java) Java dependency check passed. Required by enabled component(s): apiml, gateway, discovery, zaas, api-catalog, caching-service.
+ TESTUSR0 INFO (zwe-validate-dependencies-node) Validating Node.js dependency (required: >= 18, <= 24)...
+ TESTUSR0 INFO (validateNodeHome) NodeJS version: v0.0.0
+ TESTUSR0 INFO (validateNodeHome) NodeJS version: v0.0.0
+ TESTUSR0 INFO (zwe-validate-dependencies-node) Node.js dependency check passed.
+ TESTUSR0 INFO (zwe-validate-dependencies) Runtime dependency validation complete."
+`;

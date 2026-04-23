@@ -111,6 +111,17 @@ else
   ########################################################
   # Global validations
   global_validate() {
+    # print hard and soft system limits using ulimit with -Ha and -a options. This is to assist in troubleshooting and see important system properties such as 'open files'.
+    print_debug "Checking hard system limits (ulimit -Ha):"
+    if ulimit -Ha >/dev/null 2>&1; then
+      print_debug "$(ulimit -Ha)"
+    fi
+
+    print_debug "Checking soft system limits (ulimit -a):"
+    if ulimit -a >/dev/null 2>&1; then
+      print_debug "$(ulimit -a)"
+    fi
+
     print_formatted_info "ZWELS" "zwe-internal-start-prepare,global_validate:${LINENO}" "process global validations ..."
 
     # validate_runtime_user
@@ -345,6 +356,11 @@ else
 
   ###############################
   # Few early steps even before initialization
+
+  # Check if user is UID 0, this is not recommended
+  if [ "$(id -u)" = "0" ]; then
+    print_formatted_error "ZWELS" "zwe-internal-start-prepare:${LINENO}" "Running as UID 0. Such a setting is strongly discouraged."
+  fi
 
   # init ZWE_RUN_IN_CONTAINER variable
   ZWE_zowe_workspaceDirectory=$(shell_read_yaml_config "${ZWE_CLI_PARAMETER_CONFIG}" 'zowe' 'workspaceDirectory')

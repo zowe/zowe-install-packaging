@@ -10,5 +10,5 @@
 */
 
 import * as std from 'cm_std';
-import * as index from './index';
-index.execute(std.getenv('ZWE_CLI_PARAMETER_COMPONENT_NAME'));
+import * as index from '../component-script/index';
+index.execute(std.getenv('ZWE_CLI_PARAMETER_COMPONENT_NAME'), (std.getenv('ZWE_CLI_PARAMETER_DRY_RUN') === 'true'));

@@ -66,6 +66,14 @@ const serverCommonSchema = serverYamlSchema as {
       minLength: 1;
       maxLength: 8;
     };
+    datasetZISMember: {
+      $anchor: 'zoweDatasetZISMember';
+      type: 'string';
+      description: "A 'ZWESIP' prefix followed by 2 characters";
+      pattern: '^ZWESIP([0-9A-Z\\$\\#\\@]){2}$';
+      minLength: 8;
+      maxLength: 8;
+    };
     jobname: {
       $anchor: 'zoweJobname';
       type: 'string';
@@ -129,6 +137,11 @@ const serverCommonSchema = serverYamlSchema as {
       deprecated: true;
       minimum: 1;
       maximum: 1023;
+    };
+    startupCheck: {
+      $anchor: 'startupCheck';
+      type: 'string';
+      enum: ['exit', 'warn', 'disabled'];
     };
   };
 };
@@ -850,15 +863,57 @@ const zoweSchema = zoweYamlSchema as {
               description: 'Startup check configuration options';
               properties: {
                 default: {
-                  type: 'string';
+                  $ref: '/schemas/v2/server-common#startupCheck';
                   default: 'exit';
                   description: 'Sets the default runtime behavior for all startup checks';
-                  enum: ['exit', 'warn', 'disabled'];
                 };
                 ports: {
-                  type: 'string';
+                  $ref: '/schemas/v2/server-common#startupCheck';
                   default: 'exit';
                   description: 'Checks the port for each enabled component to ensure Zowe can bind to it and that it is not already occupied by some other program';
+                };
+                certificate: {
+                  $ref: '/schemas/v2/server-common#startupCheck';
+                  default: 'exit';
+                  description: 'Checks properties of certificates to verify that they are valid for use by Zowe';
+                };
+                zosmf: {
+                  $ref: '/schemas/v2/server-common#startupCheck';
+                  default: 'exit';
+                  description: "Checks z/OSMF to see if it is running and meet's Zowe's requirements";
+                };
+                user: {
+                  $ref: '/schemas/v2/server-common#startupCheck';
+                  default: 'exit';
+                  description: 'Checks if zowe.setup.security.users.zowe (ZWESVUSR) is configured as a superuser (UID 0). Such a setting is strongly discouraged.';
+                };
+                components: {
+                  $ref: '/schemas/v2/server-common#startupCheck';
+                  default: 'warn';
+                  description: "Checks that every component listed under 'components' in zowe.yaml has a valid manifest file (manifest.yaml, manifest.yml, or manifest.json). Components missing a manifest cannot be started.";
+                };
+                javaMin: {
+                  type: 'string';
+                  default: 'exit';
+                  description: "Checks that the Java runtime version meets the minimum required version. Defaults to zowe.launchScript.startupChecks.default, or 'exit' if unset.";
+                  enum: ['exit', 'warn', 'disabled'];
+                };
+                javaMax: {
+                  type: 'string';
+                  default: 'warn';
+                  description: "Checks that the Java runtime version does not exceed the maximum supported version. Defaults to zowe.launchScript.startupChecks.default, or 'warn' if unset.";
+                  enum: ['exit', 'warn', 'disabled'];
+                };
+                nodeMin: {
+                  type: 'string';
+                  default: 'exit';
+                  description: "Checks that the Node runtime version meets the minimum required version. Defaults to zowe.launchScript.startupChecks.default, or 'exit' if unset.";
+                  enum: ['exit', 'warn', 'disabled'];
+                };
+                nodeMax: {
+                  type: 'string';
+                  default: 'warn';
+                  description: "Checks that the Node runtime version does not exceed the maximum supported version. Defaults to zowe.launchScript.startupChecks.default, or 'warn' if unset.";
                   enum: ['exit', 'warn', 'disabled'];
                 };
                 zosmf: {
@@ -921,7 +976,7 @@ const zoweSchema = zoweYamlSchema as {
       properties: {
         home: {
           $ref: '/schemas/v2/server-common#zoweOptionalPath';
-          description: "Path to Java home directory. If java is at '/java/home/bin/java', than this would be '/java/home'";
+          description: "Path to Java home directory. If java is at '/java/home/bin/java', then this would be '/java/home'";
         };
       };
     };
@@ -930,7 +985,7 @@ const zoweSchema = zoweYamlSchema as {
       properties: {
         home: {
           $ref: '/schemas/v2/server-common#zoweOptionalPath';
-          description: "Path to node.js home directory. If node is at '/node/home/bin/node', than this would be '/node/home'";
+          description: "Path to node.js home directory. If node is at '/node/home/bin/node', then this would be '/node/home'";
         };
       };
     };
@@ -1045,6 +1100,10 @@ const zoweSchema = zoweYamlSchema as {
               type: 'string';
               description: 'Certificate alias name of defined in your PKCS#12 keystore';
             };
+            clientCertificateAlias: {
+              type: 'string';
+              description: 'Client certificate alias name of defined in your PKCS#12 keystore';
+            };
           };
         };
         truststore: {
@@ -1081,6 +1140,14 @@ const zoweSchema = zoweYamlSchema as {
             certificate: {
               $ref: '/schemas/v2/server-common#zowePath';
               description: 'Path to the certificate stored in PEM format.';
+            };
+            clientKey: {
+              type: ['string', 'null'];
+              description: 'Path to the client certificate private key stored in PEM format.';
+            };
+            clientCertificate: {
+              type: ['string', 'null'];
+              description: 'Path to the client certificate stored in PEM format.';
             };
             certificateAuthorities: {
               description: 'List of paths to the certificate authorities stored in PEM format.';
@@ -1132,6 +1199,10 @@ const zoweSchema = zoweYamlSchema as {
               type: 'string';
               description: 'Certificate label of z/OS keyring. Case sensitivity and spaces matter.';
             };
+            clientCertificateAlias: {
+              type: 'string';
+              description: 'Client certificate label of z/OS keyring. Case sensitivity and spaces matter.';
+            };
           };
         };
         truststore: {
@@ -1169,6 +1240,14 @@ const zoweSchema = zoweYamlSchema as {
             certificate: {
               type: ['string', 'null'];
               description: 'Path to the certificate stored in PEM format.';
+            };
+            clientKey: {
+              type: ['string', 'null'];
+              description: 'Path to the client certificate private key stored in PEM format.';
+            };
+            clientCertificate: {
+              type: ['string', 'null'];
+              description: 'Path to the client certificate stored in PEM format.';
             };
             certificateAuthorities: {
               description: 'List of paths to the certificate authorities stored in PEM format.';
