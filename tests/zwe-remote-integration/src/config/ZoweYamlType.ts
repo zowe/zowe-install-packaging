@@ -916,12 +916,6 @@ const zoweSchema = zoweYamlSchema as {
                   description: "Checks that the Node runtime version does not exceed the maximum supported version. Defaults to zowe.launchScript.startupChecks.default, or 'warn' if unset.";
                   enum: ['exit', 'warn', 'disabled'];
                 };
-                zosmf: {
-                  type: 'string';
-                  default: 'exit';
-                  description: "Checks z/OSMF to see if it is running and meet's Zowe's requirements";
-                  enum: ['exit', 'warn', 'disabled'];
-                };
               };
             };
           };
