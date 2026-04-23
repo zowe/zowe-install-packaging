@@ -381,7 +381,7 @@
       "componentGroup": "Zowe Desktop IP Explorer Plug-in",
       "entries": [{
         "repository": "explorer-ip",
-        "tag": "v3.0.4",
+        "tag": "v3.0.5",
         "destinations": ["Zowe PAX"]
       }]
     },
