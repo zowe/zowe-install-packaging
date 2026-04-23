@@ -29,6 +29,7 @@ import * as node from '../../../../libs/node';
 import * as zosmf from '../../../../libs/zosmf';
 import * as zoslib from '../../../../libs/zos';
 import * as validateBind from '../../../validate/port/bind/index';
+import * as attls from '../../../../libs/attls';
 import * as validateComponentManifests from '../../../validate/components/index';
 import * as validateCertificate from '../../../validate/certificate/index';
 
@@ -126,6 +127,21 @@ function prepareWorkspaceDirectory() {
 // Global validations
 function globalValidate(enabledComponents:string[]): void {
   common.printFormattedInfo("ZWELS", "zwe-internal-start-prepare,global_validate", "process global validations ...");
+
+  // if debug is true, exec both ulimit -Ha (hard system limits) and ulimit -a (soft system limits) and print the output
+  const logLevel = std.getenv("ZWE_PRIVATE_LOG_LEVEL_ZWELS");
+  const isDebug = (logLevel == "DEBUG" || logLevel == "TRACE");
+  if (isDebug) {
+    const hardUlimitResult = shell.execOutSync('ulimit', '-Ha');
+    const softUlimitResult = shell.execOutSync('ulimit', '-a');
+
+    if (hardUlimitResult.rc == 0) {
+      common.printFormattedDebug("ZWELS", "zwe-internal-start-prepare,global_validate", `ulimit -Ha output:\n ${hardUlimitResult.out}`);
+    }
+    if (softUlimitResult.rc == 0) {
+      common.printFormattedDebug("ZWELS", "zwe-internal-start-prepare,global_validate", `ulimit -a output:\n ${softUlimitResult.out}`);
+    }
+  }
 
   // validate_runtime_user
   if (user == "IZUSVR") {
@@ -227,6 +243,12 @@ function validateComponents(enabledComponents:string[]): any {
   const validateBindAction = config.getStartupCheckMode('ports');
   if (validateBindAction.doCheck) {
     validateBind.execute(!validateBindAction.warnOnly);
+  }
+
+  // global setting for AT-TLS validation
+  const attlsValidationAction = getStartupCheckMode('attls');
+  if (attlsValidationAction.doCheck) {
+    attls.validateAttlsPorts(!attlsValidationAction.warnOnly);
   }
   
   const componentEnvironments = {};

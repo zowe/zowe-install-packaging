@@ -35,9 +35,12 @@ describe(`${testSuiteName}`, () => {
 
   describe('(SHORT)', () => {
     it('run all unit tests', async () => {
+      cfgYaml.zowe.launchScript.startupChecks.certificate = 'disabled';
+      cfgYaml.zowe.launchScript.startupChecks.user = 'disabled';
       const results = await testRunner.runUnitTests(cfgYaml, configMgrResourceDir);
       for (const result of results) {
         // result.cleanedStdout
+        expect(result.cleanedStdout).toMatchSnapshot();
         expect(result.rc).toBe(0); // debugging currently hard, manually find output
       }
     });

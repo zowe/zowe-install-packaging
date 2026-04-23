@@ -66,3 +66,7 @@ ZWEL0331W||The following requested component(s) are not defined in zowe.yaml: %s
 ZWEL0332E|332|Zowe YAML property zowe.runtimeDirectory is not defined. Zowe cannot validate component existence without knowing the runtime location.
 ZWEL0332W||Zowe YAML property zowe.runtimeDirectory is not defined. Zowe cannot validate component existence without knowing the runtime location.
 ZWEL0333E|333|Component '%s' is missing a valid manifest file (manifest.yaml, manifest.yml, or manifest.json) in %s.
+ZWEL0334W||%d Zowe port ATTLS validation(s) failed, review output for action items.
+ZWEL0334E||%d Zowe port ATTLS validation(s) failed, review output for action items before running Zowe.
+ZWEL0335W||%s: No AT-TLS rule identified at %s:%d for jobname %s
+ZWEL0336W||%s: AT-TLS rule found but ATTLS not requested at %s:%d for jobname %s
