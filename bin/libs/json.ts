@@ -155,8 +155,10 @@ export function updateZoweYaml(file: string, key: string, val: any) {
   if (success) {
     common.printMessage(`  * Success`);
     config.updateZoweConfig(updateObj, true, 1); //TODO externalize array merge strategy = 1
+    return 0;
   } else {
     common.printError(`  * Error`); 
+    return -1;
   }
 }
 
