@@ -155,32 +155,6 @@ export function updateZoweYaml(file: string, key: string, val: any) {
   if (success) {
     common.printMessage(`  * Success`);
     config.updateZoweConfig(updateObj, true, 1); //TODO externalize array merge strategy = 1
-    return 0;
-  } else {
-    common.printError(`  * Error`); 
-    return -1;
-  }
-}
-
-/**
- * Updates the YAML key in the zowe.yaml passed by the caller with val, AND updates the zowe.yaml which can be found via ZOWE_CONFIG_PATH. 
- * This can result in multiple zowe.yaml file updates, typically in both a private merged file and the original zowe.yaml.
- * 
- * Example: `updateZoweYaml('/path/to/zowe.merged.yaml', 'components.zss.enabled', true);
- *   --> This will update both zowe.merged.yaml, and whatever YAML was passed to the calling program via ("-c my.zowe.yaml").
- * 
- * @param file 
- * @param key 
- * @param val 
- * @returns 
- */
-export function updateZoweYaml(file: string, key: string, val: any) {
-  common.printMessage(`- update zowe config ${file}, key: "${key}" with value: ${val}`);
-  let [ success, updateObj ] = fakejq.jqset({}, key, val);
-  
-  if (success) {
-    common.printMessage(`  * Success`);
-    config.updateZoweConfig(updateObj, true, 1); //TODO externalize array merge strategy = 1
   } else {
     common.printError(`  * Error`); 
   }
