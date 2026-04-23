@@ -29,7 +29,7 @@ describe(`${testSuiteName}`, () => {
     testRunner = new RemoteTestRunner(testSuiteName);
     cfgYaml = ZoweConfig.getZoweYaml();
     const cleanSecurityManager = (input: string) => {
-      return input.replaceAll(/TSS|ACF2|RACF/gi, 'ESMT'); // ESM TEST
+      return input.replaceAll(/(?<!JCE)(TSS|ACF2|RACF)/gi, 'ESMT'); // ESM TEST
     };
     testRunner.addCleanFn(cleanSecurityManager);
   });
@@ -38,6 +38,9 @@ describe(`${testSuiteName}`, () => {
     cfgYaml = ZoweConfig.getZoweYaml();
     _.set(cfgYaml, 'node.home', REMOTE_SYSTEM_INFO.zosNodeHome);
     _.set(cfgYaml, 'zowe.launchScript.startupChecks.ports', 'disabled');
+    _.set(cfgYaml, 'zowe.launchScript.startupChecks.user', 'disabled'); // some test runners may be uid(0)
+    _.set(cfgYaml, 'zowe.launchScript.startupChecks.certificate', 'disabled'); // always fails in CI
+
     defaultCfgYaml = ZoweConfig.getDefaultsYaml();
     const workspaceEnv: TestFile = {
       name: `${cfgYaml.zowe.workspaceDirectory}/.env`,
@@ -71,6 +74,20 @@ describe(`${testSuiteName}`, () => {
         expect(fs.readFileSync(envFile, 'utf8')).toMatchSnapshot();
       }
     }
+
+    it('env with HA instances', async () => {
+      const zoweYaml = ZoweConfig.loadAndOverlay(cfgYaml, resourceDir, 'ha_instances.yaml');
+      zoweYaml.zowe.environments = { ZWE_PRIVATE_LOG_LEVEL_ZWELS: 'TRACE' };
+      const result = await testRunner.runZweTest(zoweYaml, 'internal start prepare');
+      snapEnvFiles(zoweYaml);
+      expect(result.rc).toBe(0);
+      // Get ZWE_PRIVATE_HA_LIST and ZWE_PRIVATE_HA_LIST_SANITIZED from cleanedStdout. Do not capture all of cleanedStdout,
+      //   since the trace logs dump connection-specific settings that are hard to mask
+      const haList = /"ZWE_PRIVATE_HA_LIST":".*?"/gim.exec(result.cleanedStdout)[0];
+      const sanitizedHaList = /"ZWE_PRIVATE_HA_LIST_SANITIZED":".*?"/gim.exec(result.cleanedStdout)[0];
+      expect(haList).toMatchSnapshot();
+      expect(sanitizedHaList).toMatchSnapshot();
+    });
 
     it('env with null values', async () => {
       const testFiles = ['setup_cert_keyring.yaml'];

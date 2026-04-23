@@ -54,6 +54,21 @@ const ZOWE_SCHEMA_SET=`${ZOWE_SCHEMA}:${COMMON_SCHEMA}`;
 let ZOWE_CONFIG;
 let HA_CONFIGS = {};
 
+export function getFirstConfigFile() {
+  let configPath = std.getenv('ZWE_PRIVATE_CONFIG_ORIG');
+  if (!configPath) {
+    configPath = std.getenv('ZWE_PRIVATE_CONFIG');
+  }
+  let configFile = configPath;
+  if (!configFile.startsWith('/')) {
+    configFile = configPath.split(':')[0];
+  } else {
+    configFile = 'FILE('+configFile+')';
+  }
+
+  return configFile;
+}
+
 export function getZoweConfig() {
   if (ZOWE_CONFIG == null) {
     ZOWE_CONFIG = loadZoweConfig();

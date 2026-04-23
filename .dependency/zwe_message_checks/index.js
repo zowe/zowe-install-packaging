@@ -66,9 +66,10 @@ for(const msgSpec of discoveredMsgs) {
   }
 }
 console.log('')
+const messageIdsToIgnore = ['ZWEL0103E', 'ZWEL0328E', 'ZWEL0328W', 'ZWEL0331E', 'ZWEL0331W']; // ZWEL0103E is in 'zwe', which isn't scanned. Rest are not captured correctly in this automation.
 console.log('---- Unused Messages defined across any .errors ----');
 for(const msgId of Object.keys(globalMsgTally)) {
-  if (globalMsgTally[msgId].count === 0 && msgId !== 'ZWEL0103E') { // ZWEL0103E is in 'zwe', which isn't scanned
+  if (globalMsgTally[msgId].count === 0 && !messageIdsToIgnore.includes(msgId)) { 
     const definition = collectedMsgs.find((it) => it.id === msgId);
     console.log(`Unused message: ${msgId} [${definition.source}]`);
     statusFailed = true;

@@ -292,6 +292,13 @@ pax -ppx -rf "${bind_test}"
 rm "${bind_test}"
 cd "${BASE_DIR}"
 
+attls_test=$(find "${ZOWE_ROOT_DIR}/files" -type f \( -name "attls-test*.pax" \) | head -n 1)
+echo "[$SCRIPT_NAME] extract attls-test $attls_test"
+cd "${ZOWE_ROOT_DIR}/bin/utils"
+pax -ppx -rf "${attls_test}"
+rm "${attls_test}"
+cd "${BASE_DIR}"
+
 zis_test=$(find "${ZOWE_ROOT_DIR}/files" -type f \( -name "zis-test*.pax" \) | head -n 1)
 echo "[$SCRIPT_NAME] extract zis-test $zis_test"
 cd "${ZOWE_ROOT_DIR}/bin/utils"
@@ -440,7 +447,7 @@ find . -name ./SMPE -prune \
   -o -name "./ZWE*" -prune \
   -o -name ./fingerprint -prune \
   -o -type f -print >"${BASE_DIR}/fingerprints/files.in"
-java -cp "${ZOWE_ROOT_DIR}/bin/utils" HashFiles "${BASE_DIR}/fingerprints/files.in" | sort >"${ZOWE_ROOT_DIR}/fingerprint/RefRuntimeHash-${ZOWE_VERSION}.txt"
+_BPXK_AUTOCVT=OFF java -Dfile.encoding=COMPAT -cp "${ZOWE_ROOT_DIR}/bin/utils" HashFiles "${BASE_DIR}/fingerprints/files.in" | sort >"${ZOWE_ROOT_DIR}/fingerprint/RefRuntimeHash-${ZOWE_VERSION}.txt"
 echo "[$SCRIPT_NAME] cleanup fingerprints code"
 rm -fr "${BASE_DIR}/fingerprints"
 

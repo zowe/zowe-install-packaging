@@ -10,6 +10,7 @@ Table of contents
 * Remove product member from build
 * Remove SMPE-only member/file from build
 * Mark a PTF as PE
+* Mark an APAR as HIPER
 * Flow for SMP/E packaging build
 * Additional tools
 * FMID (base) build
@@ -25,7 +26,7 @@ New FMID
    requires a specific format, which might have changed since the last
    update.
 Note: The program directory holds allocation and FTP file sizes, so the
-      final update should happend just before code freeze to ensure we
+      final update should happen just before code freeze to ensure we
       have the correct sizes.
 2. Add previous FMID to SUP and DELETE statements in smpe/bld/SMPMCS.txt
 Note: SUP should only be updated if most products depending on the
@@ -51,8 +52,8 @@ Add product data set to build
 -----------------------------
 Note: Build currently does not support empty data sets, so one or more
       members must be added also
-1. Update community build to create dat set during install.
-2. Add SZWExxxx data set alloction to ALLOCT PROC in
+1. Update community build to create data set during install.
+2. Add SZWExxxx data set allocation to ALLOCT PROC in
    workflows/templates/smpe-install/ZWE3ALOC.vtl (alphabetical order)
    Note: Allocation details must match those from community install
          see bin/commands/install/index.sh
@@ -215,13 +216,13 @@ Actual removal:
 1. Ensure this is NOT the last member of a data set. If it is, replace
    member content with a note saying it is obsolete, and then let it be
    for this FMID. Remove in next FMID.
-2. Add DELETE keyword to member definiton in smpe/bld/SMPMCS.txt
+2. Add DELETE keyword to member definition in smpe/bld/SMPMCS.txt
 +SAMP(ZWENOSSO) SYSLIB(SZWESAMP) DISTLIB(AZWESAMP) RELFILE(2) DELETE .
 3. Notify an IBM-employed build engineer to update the IBM processes
 4. WAIT UNTIL AFTER THE PTF WITH THIS UPDATE SHIPPED
 5. Remove member from files/...
 6. Update community build to remove member from install
-7. Remove member definiton from smpe/bld/SMPMCS.txt
+7. Remove member definition from smpe/bld/SMPMCS.txt
 8. Notify an IBM-employed build engineer to update the IBM processes
 
 Remove SMPE-only member/file from build
@@ -230,7 +231,9 @@ TODO
 
 Mark a PTF as PE
 ----------------
-Note: Can ONLY be done by a community build engineer working for IBM
+Note:
+- Can ONLY be done by a community build engineer working for IBM
+- More details in PDR512 (Process Documentation Reference, IBM internal)
 PTFs are marked as PE (Program in Error) by creating an APAR that marks
 the PTF PE. Zowe uses APARs and PTFs that are pre-created by IBM, which
 implies we must update an existing APAR instead of creating a new one.
@@ -244,6 +247,28 @@ the PE field in the Closing Information tab of the APAR.
 4. Save
 Other companies that provide Zowe PTFs through their own store-front
 must do something similar to have the Zowe PTFs in error marked as PE.
+
+Mark an APAR as HIPER
+---------------------
+Note:
+- Can ONLY be done by a community build engineer working for IBM
+- More details in PDR513 (Process Documentation Reference, IBM internal)
+APARs are marked as HIPER (High Impact/PERvasive) to mark them as high
+priority fix, or as a fix with big impact (e.g. IPL required). Both
+open and closed APARs can be marked HIPER.
+A community build engineer working for IBM will use zService to update
+the HIPER field in the Closing Information tab of the APAR.
+1. Check HIPER check box
+2. Uncheck Draft check box
+3. Select the applicable HIPER relief (not for closed APAR):
+   BYPASS, CIRCUMVE, FIX, NONE, PACKAGE, or ZAP
+4. Check the applicable symptom code(s):
+   System Outage, Data Loss, Function Loss, Performance, or XSYSTEM
+5. Optionally check additional flag(s):
+   Pervasive, MSYSPLEX, or XSYSTEM HIPER Symptom
+6. Save
+Other companies that provide Zowe PTFs through their own store-front
+must do something similar to have the Zowe APARs marked as HIPER.
 
 Flow for SMP/E packaging build
 ------------------------------

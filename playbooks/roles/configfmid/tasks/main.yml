@@ -102,6 +102,7 @@
       "zowe.externalDomains[0]": "{{ zowe_external_domain_name }}"
       "zowe.externalPort": "{{ zowe_apiml_gateway_port }}"
       "zowe.launchScript.logLevel": "{{ zowe_launch_scripts_loglevel }}"
+      "zowe.launchScript.startupChecks.certificate": "{{ zowe_launch_script_startup_checks_certificate }}"
       "java.home": "{{ zos_java_home }}"
       "node.home": "{{ zos_node_home }}"
       "zOSMF.host": "{{ zos_zosmf_host }}"
@@ -275,6 +276,7 @@
   vars:
     configs:
       "zowe.runtimeDirectory": "{{ zowe_root_dir }}"
+      "zowe.setup.jcl.enable": "{{ zowe_setup_jcl_enable|string|lower }}"
       "zowe.logDirectory": "{{ zowe_instance_dir }}/logs"
       "zowe.workspaceDirectory": "{{ zowe_instance_dir }}/workspace"
       "zowe.extensionDirectory": "{{ zowe_extension_dir }}"
@@ -284,6 +286,7 @@
       "zowe.externalDomains[0]": "{{ zowe_external_domain_name }}"
       "zowe.externalPort": "{{ zowe_apiml_gateway_port }}"
       "zowe.launchScript.logLevel": "{{ zowe_launch_scripts_loglevel }}"
+      "zowe.launchScript.startupChecks.certificate": "{{ zowe_launch_script_startup_checks_certificate }}"
       "java.home": "{{ zos_java_home }}"
       "node.home": "{{ zos_node_home }}"
       "zOSMF.host": "{{ zos_zosmf_host }}"
