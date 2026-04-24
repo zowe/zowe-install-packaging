@@ -1,1 +1,14 @@
-""
+{
+  "name": "zowe-install-test-zzow11",
+  "version": "1.0.0",
+  "lockfileVersion": 3,
+  "requires": true,
+  "packages": {
+    "": {
+      "name": "zowe-install-test-zzow11",
+      "version": "1.0.0",
+      "lockfileVersion": 3,
+      "requires": true
+    }
+  }
+}
