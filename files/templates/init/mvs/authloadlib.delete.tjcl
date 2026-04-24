@@ -3,7 +3,7 @@
 //* Delete the data set members from authorized load library
 //*
 //*********************************************************************
-//AUTHCOPY EXEC PGM=IKJEFT01                          
+//AUTHDEL  EXEC PGM=IKJEFT01                          
 //SYSTSPRT DD SYSOUT=A                              
 //SYSTSIN  DD * 
 DELETE '${this.zowe.setup.dataset.authLoadlib}(ZWELNCH)'
