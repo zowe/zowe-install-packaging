@@ -3,13 +3,14 @@
 //* Copy the data set members to authorized load library
 //*
 //*********************************************************************
-//AUTHCOPY EXEC PGM=IEBCOPY
-//SYSPRINT DD SYSOUT=A
-//SYSUT1   DD DSN=${this.zowe.setup.dataset.prefix}.SZWEAUTH,
-//            DISP=SHR
-//SYSUT2   DD DSN=${this.zowe.setup.dataset.authLoadlib},
-//            DISP=SHR
-//SYSIN  DD *
-  COPY OUTDD=SYSUT2,INDD=((SYSUT1,R))
-  SELECT MEMBER=(ZWELNCH,ZWESAUX,ZWESISDL,ZWESIS01)
+//AUTHCOPY EXEC PGM=BPXBATCH
+//STDOUT   DD SYSOUT=*
+//STDERR   DD SYSOUT=*
+//STDPARM  DD *
+SRC="${this.zowe.setup.dataset.prefix}.SZWEAUTH"
+TGT="${this.zowe.setup.dataset.authLoadlib}"
+cp -X "//'$SRC(ZWELNCH)'"  "//'$TGT(ZWELNCH)'"  &&
+cp -X "//'$SRC(ZWESAUX)'"  "//'$TGT(ZWESAUX)'"  &&
+cp -X "//'$SRC(ZWESISDL)'" "//'$TGT(ZWESISDL)'" &&
+cp -X "//'$SRC(ZWESIS01)'" "//'$TGT(ZWESIS01)'"
 /*
