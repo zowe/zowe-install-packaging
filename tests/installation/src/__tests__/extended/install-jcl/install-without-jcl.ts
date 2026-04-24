@@ -32,7 +32,7 @@ describe(testSuiteName, () => {
       {
         'zowe_build_local': process.env['ZOWE_BUILD_LOCAL'],
         'zowe_custom_for_test': 'true',
-        'zowe_setup_jcl_enable': 'true',
+        'zowe_setup_jcl_enable': 'false',
         'zowe_lock_keystore': 'false',
       }
     );
