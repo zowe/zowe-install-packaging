@@ -1,1 +1,15 @@
-""
+{
+  "lockAcquiredTime": "Fri Apr 24 2026 19:48:37 GMT+0000 (Coordinated Universal Time)",
+  "uid": "1777060117146341554",
+  "repository": {
+    "owner": "zowe",
+    "repo": "zowe-install-packaging"
+  },
+  "branch": "user/markackert/fix-initmvs",
+  "workflow": "Zowe CICD Integration Tests",
+  "job": "cicd-test",
+  "actor": "zowe-robot",
+  "runId": 24908674964,
+  "runNumber": 8565,
+  "link": "https://github.com/zowe/zowe-install-packaging/actions/runs/24908674964"
+}
