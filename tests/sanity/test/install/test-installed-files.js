@@ -48,7 +48,7 @@ describe('verify installed files', function() {
     if (process.env.ZOWE_JAVA_HOME) {
       OPTIONAL_JAVA_HOME = `JAVA_HOME=${process.env.ZOWE_JAVA_HOME} `;
     }
-    const fingerprintStdout = await sshHelper.executeCommandWithNoError(`touch ~/.profile && . ~/.profile && ${OPTIONAL_JAVA_HOME} ${process.env.ZOWE_ROOT_DIR}/bin/zwe support verify-fingerprints`);
+    const fingerprintStdout = await sshHelper.executeCommandWithNoError(`touch ~/.profile && . ~/.profile && ${OPTIONAL_JAVA_HOME} ${process.env.ZOWE_ROOT_DIR}/bin/zwe support verify-fingerprints --verbose`);
     debug('fingerprint show result:', fingerprintStdout);
     addContext(this, {
       title: 'fingerprint show result',
