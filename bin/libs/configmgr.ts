@@ -587,9 +587,103 @@ function makeHaConfig(haInstance: string): any {
     let mergedConfig = merger.merge(config.haInstances[haInstance], config);
     INSTANCE_KEYS_NOT_IN_BASE.forEach((key) => delete mergedConfig[key]);
     HA_CONFIGS[haInstance] = mergedConfig;
+    writeHaMergedConfig(haInstance);
     return mergedConfig;
   }
   return config;
+}
+
+/**
+ * Writes a per-HA-instance merged YAML file to the workspace .env directory.
+ * The result is a fully-resolved config for the given HA instance, with:
+ *   - haInstance component/zowe overrides applied on top of the global config
+ *   - the entire `haInstances` block removed (so consumers see a flat, instance-specific config)
+ *
+ * Output: <workspaceDirectory>/.env/.zowe-<haInstance>-merged.yaml
+ */
+export function writeHaMergedConfig(haInstance: string): number {
+  const config = getConfig(ZOWE_CONFIG_NAME, ZOWE_CONFIG_PATH, ZOWE_SCHEMA_SET);
+  if (!config.haInstances || !config.haInstances[haInstance]) {
+    return 0; // no HA overrides for this instance, nothing to do
+  }
+
+  // Resolve the output directory (same logic as writeMergedConfig)
+  let zwePrivateWorkspaceEnvDir: string;
+  let dirResult = getTempMergedYamlDir();
+  if (typeof dirResult == 'string') {
+    zwePrivateWorkspaceEnvDir = dirResult;
+  } else if (dirResult === 0) {
+    zwePrivateWorkspaceEnvDir = std.getenv('ZWE_PRIVATE_WORKSPACE_ENV_DIR');
+    if (!zwePrivateWorkspaceEnvDir) {
+      zwePrivateWorkspaceEnvDir = `${config.zowe.workspaceDirectory}/.env`;
+      std.setenv('ZWE_PRIVATE_WORKSPACE_ENV_DIR', zwePrivateWorkspaceEnvDir);
+    }
+    fs.mkdirp(config.zowe.workspaceDirectory, 0o770);
+    const mkdirrc = fs.mkdirp(zwePrivateWorkspaceEnvDir, 0o700);
+    if (mkdirrc) { return mkdirrc; }
+  } else {
+    return dirResult as number;
+  }
+
+  // Build the override object from the haInstance entry, skipping instance-only keys
+  // (hostname, sysname) since those don't belong at the root config level.
+  const haInstanceData = config.haInstances[haInstance];
+  const overrideObj: any = {};
+  Object.keys(haInstanceData).forEach((key) => {
+    if (!INSTANCE_KEYS_NOT_IN_BASE.includes(key)) {
+      overrideObj[key] = haInstanceData[key];
+    }
+  });
+
+  // Apply HA overrides on top of the base config via ConfigManager so we get a
+  // properly-serialisable config revision (no schema validation needed here –
+  // makeHaConfig already validated the merged result in memory).
+  //
+  // Use incrementing revision numbers (same pattern as updateConfig / deleteConfig) so that
+  // repeated calls – e.g. after updateZoweConfig resets HA_CONFIGS – always allocate fresh
+  // revision names and never try to re-create an already-registered ConfigManager revision.
+  const haConfigName = `zowe-ha-${haInstance}`;
+  const baseRevName  = getConfigRevisionName(ZOWE_CONFIG_NAME);
+
+  // Initialise revision counter for this HA config name on first use.
+  if (!Number.isInteger(CONFIG_REVISIONS[haConfigName])) {
+    CONFIG_REVISIONS[haConfigName] = -1;
+  }
+
+  CONFIG_REVISIONS[haConfigName]++;
+  const haOverrideRevName = getConfigRevisionName(haConfigName); // e.g. zowe-ha-lpar1_rev0, _rev2, ...
+
+  let status = CONFIG_MGR.makeModifiedConfiguration(baseRevName, haOverrideRevName, overrideObj, 1);
+  if (status != 0) {
+    console.log(`Error: Could not apply HA instance overrides for '${haInstance}', rc=${status}`);
+    return status;
+  }
+
+  // Remove the haInstances block so the written YAML is a clean, flat, instance-specific config.
+  CONFIG_REVISIONS[haConfigName]++;
+  const haDeleteRevName = getConfigRevisionName(haConfigName); // e.g. zowe-ha-lpar1_rev1, _rev3, ...
+  const deleteStatus = CONFIG_MGR.copyConfigurationAndDeleteKey(haOverrideRevName, haDeleteRevName, 'haInstances');
+  const writeRevName = (deleteStatus == 0) ? haDeleteRevName : haOverrideRevName;
+  if (deleteStatus != 0) {
+    console.log(`Warn: Could not strip 'haInstances' from HA merged config for '${haInstance}', writing as-is`);
+  }
+
+  let [yamlStatus, textOrNull] = CONFIG_MGR.writeYAML(writeRevName);
+  if (yamlStatus == 0) {
+    const destination = `${zwePrivateWorkspaceEnvDir}/.zowe-${haInstance}-merged.yaml`;
+    const rc = xplatform.storeFileUTF8(destination, xplatform.AUTO_DETECT, textOrNull);
+    if (rc == 0) {
+      console.log(`Debug: HA merged config for instance '${haInstance}' written to ${destination}`);
+      // Expose the path so ZSS and other external consumers can locate the
+      // instance-specific config without reconstructing the workspace path themselves.
+      // Mirrors how writeMergedConfig sets ZWE_CLI_PARAMETER_CONFIG for the global config.
+      std.setenv('ZWE_PRIVATE_HA_INSTANCE_CONFIG', destination);
+    } else {
+      console.log(`Error: Could not write HA merged config to ${destination}, rc=${rc}`);
+    }
+    return rc;
+  }
+  return yamlStatus;
 }
 
 export function loadZoweConfig(haInstance?: string): any {
@@ -619,7 +713,7 @@ const INSTANCE_KEYS_NOT_IN_BASE = [
 
 const keyNameRegex = /[^a-zA-Z0-9]/g;
 export function getZoweConfigEnv(haInstance: string): any {
-  let config = loadZoweConfig();
+  let config = loadZoweConfig(haInstance);  // pass haInstance so makeHaConfig/writeHaMergedConfig is triggered
   let flattener = new objUtils.Flattener();
   flattener.setSeparator('_');
   flattener.setPrefix('ZWE_');
@@ -679,6 +773,15 @@ export function getZoweConfigEnv(haInstance: string): any {
   }
 
   envs['ZWE_haInstance_id'] = haInstance;
-  
+
+  // Propagate the HA instance merged config path to child processes (e.g. ZSS)
+  // so they can locate the fully-resolved, instance-specific YAML without
+  // reconstructing the workspace path themselves.
+  const haInstanceConfig = std.getenv('ZWE_PRIVATE_HA_INSTANCE_CONFIG');
+  if (haInstanceConfig) {
+    envs['ZWE_PRIVATE_HA_INSTANCE_CONFIG'] = haInstanceConfig;
+    console.log(`Info: HA instance merged config for '${haInstance}' is available at: ${haInstanceConfig}`);
+  }
+
   return envs;
 }

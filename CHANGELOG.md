@@ -2,6 +2,10 @@
 
 All notable changes to the Zowe Installer will be documented in this file.
 
+## `3.6.0`
+
+- Enhancement: When running in HA mode, `zwe internal start prepare` now writes a per-HA-instance merged YAML config file (`.zowe-<haInstance>-merged.yaml`) to the workspace `.env` directory. This file contains the fully-resolved configuration for that instance with all `haInstances` overrides applied and the `haInstances` block removed, making it suitable for direct consumption by components such as ZSS that need instance-specific configuration. The path to this file is exposed via the environment variable `ZWE_PRIVATE_HA_INSTANCE_CONFIG` which is propagated to all child processes started for the instance.
+
 ## `3.5.0`
 
 - Bugfix: `zwe init mvs` could try to delete entire PARM library. [#4695](https://github.com/zowe/zowe-install-packaging/pull/4695)
