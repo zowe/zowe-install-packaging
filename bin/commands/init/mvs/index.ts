@@ -92,7 +92,6 @@ export function execute(allowOverwrite?: boolean) {
         mvsJclAuthLoadlib += template.resolveFile(`${pathTemplatesMvs}/authloadlib.copy.tjcl`, ZOWE_CONFIG);
       } else {
         if (allowOverwrite) {
-          mvsJclAuthLoadlib += template.resolveFile(`${pathTemplatesMvs}/authloadlib.delete.tjcl`, ZOWE_CONFIG);
           mvsJclAuthLoadlib += template.resolveFile(`${pathTemplatesMvs}/authloadlib.copy.tjcl`, ZOWE_CONFIG);
           common.printMessage(`Warning ZWEL0300W: ${authLoadlib} already exists. Members in this data set will be overwritten.`);
         } else {
