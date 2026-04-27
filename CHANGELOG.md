@@ -5,7 +5,7 @@ All notable changes to the Zowe Installer will be documented in this file.
 ## `3.5.0`
 
 - Bugfix: `zwe init mvs` could try to delete entire PARM library. [#4695](https://github.com/zowe/zowe-install-packaging/pull/4695)
-- Bugfix: `zwe init mvs` authloadlib copy now uses IEBCOPY instead of IDCAMS REPRO, which corrupted load modules and caused S806 ABENDs at runtime.
+- Bugfix: `zwe init mvs` authloadlib copy now uses IEBCOPY instead of TSO REPRO, which corrupted load modules and caused S806 ABENDs at runtime.
 - Enhancement: Startup now checks each Zowe server for if ATTLS rules are defined and warns if any misconfiguration is identified to assist with TLS configuration. [#4741](https://github.com/zowe/zowe-install-packaging/pull/4741)
 - Enhancement: Allow users to specify client certificates within `zowe.certificate`. [#4687](https://github.com/zowe/zowe-install-packaging/pull/4687)
 - Enhancement: `zwe init` no longer creates certificates by default. Use `zwe init --create-certificate` or `zwe init certificate` after defining the "zowe.setup.certificate" section of the YAML. You can use the examples provided within zowe/files/examples/setup/certificate. [#4238](https://github.com/zowe/zowe-install-packaging/pull/4238)
