@@ -126,6 +126,10 @@
       "version": "^3.4.0-V3.X-STAGING",
       "artifact": "*.pax"
     },
+    "org.zowe.attls-test": {
+      "version": "^3.4.0-V3.X-STAGING",
+      "artifact": "*.pax"
+    },
     "org.zowe.zis-test": {
       "version": "3.4.0-V3.X-RC",
       "artifact": "zis-test-3.4.0-2026042210.pax"
@@ -145,7 +149,7 @@
       "artifact": "*.pax"
     },
     "org.zowe.keyring-utilities": {
-      "version": "3.1.0",
+      "version": "3.2.0",
       "artifact": "*.pax"
     },
     "org.zopencommunity.curl": {
@@ -361,7 +365,7 @@
       "componentGroup": "Utilities",
       "entries": [{
         "repository": "keyring-utilities",
-        "tag": "v1.1.0",
+        "tag": "v3.1.0",
         "destinations": ["Zowe PAX"]
       }, {
         "repository": "zowe-install-packaging-tools",
