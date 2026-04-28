@@ -136,10 +136,10 @@ function globalValidate(enabledComponents:string[]): void {
     const softUlimitResult = shell.execOutSync('ulimit', '-a');
 
     if (hardUlimitResult.rc == 0) {
-      common.printFormattedDebug("ZWELS", "zwe-internal-start-prepare,global_validate", `ulimit -Ha output:\n ${hardUlimitResult.out}`);
+      common.printFormattedDebug("ZWELS", "zwe-internal-start-prepare,global_validate", `ulimit -Ha output:\n${hardUlimitResult.out}`);
     }
     if (softUlimitResult.rc == 0) {
-      common.printFormattedDebug("ZWELS", "zwe-internal-start-prepare,global_validate", `ulimit -a output:\n ${softUlimitResult.out}`);
+      common.printFormattedDebug("ZWELS", "zwe-internal-start-prepare,global_validate", `ulimit -a output:\n${softUlimitResult.out}`);
     }
   }
 
