@@ -317,27 +317,37 @@ export function cleanupTempDir() {
   }
 }
 
-function writeMergedConfig(config: any): number {
-  const workspace = config.zowe.workspaceDirectory;
-
-  let zwePrivateWorkspaceEnvDir: string;
-  let dirResult = getTempMergedYamlDir();
+/**
+ * Resolves the workspace .env directory used to write merged YAML files.
+ * Returns the resolved directory path (string) on success, or a non-zero
+ * numeric error code on failure.
+ */
+function resolveWorkspaceEnvDir(workspace: string): string | number {
+  const dirResult = getTempMergedYamlDir();
   if (typeof dirResult == 'string') {
-    zwePrivateWorkspaceEnvDir = dirResult;
+    return dirResult;
   } else if (dirResult === 0) {
-    zwePrivateWorkspaceEnvDir = std.getenv('ZWE_PRIVATE_WORKSPACE_ENV_DIR');
+    let zwePrivateWorkspaceEnvDir = std.getenv('ZWE_PRIVATE_WORKSPACE_ENV_DIR');
     if (!zwePrivateWorkspaceEnvDir) {
-      zwePrivateWorkspaceEnvDir=`${workspace}/.env`;
+      zwePrivateWorkspaceEnvDir = `${workspace}/.env`;
       std.setenv('ZWE_PRIVATE_WORKSPACE_ENV_DIR', zwePrivateWorkspaceEnvDir);
     }
     fs.mkdirp(workspace, 0o770);
     const mkdirrc = fs.mkdirp(zwePrivateWorkspaceEnvDir, 0o700);
     if (mkdirrc) { return mkdirrc; }
+    return zwePrivateWorkspaceEnvDir;
   } else {
     return dirResult;
   }
-  
-  const destination = `${zwePrivateWorkspaceEnvDir}/.zowe-merged.yaml`;
+}
+
+function writeMergedConfig(config: any): number {
+  const workspace = config.zowe.workspaceDirectory;
+
+  const dirOrErr = resolveWorkspaceEnvDir(workspace);
+  if (typeof dirOrErr !== 'string') { return dirOrErr; }
+
+  const destination = `${dirOrErr}/.zowe-merged.yaml`;
   /* We don't write it in JSON, but we could!
   const jsonDestination = `${zwePrivateWorkspaceEnvDir}/.zowe.json`;
   const jsonRC = xplatform.storeFileUTF8(jsonDestination, xplatform.AUTO_DETECT, JSON.stringify(ZOWE_CONFIG, null, 2));
@@ -597,7 +607,8 @@ function makeHaConfig(haInstance: string): any {
  * Writes a per-HA-instance merged YAML file to the workspace .env directory.
  * The result is a fully-resolved config for the given HA instance, with:
  *   - haInstance component/zowe overrides applied on top of the global config
- *   - the entire `haInstances` block removed (so consumers see a flat, instance-specific config)
+ *   - the `haInstances` block is preserved so consumers (e.g. ZSS) can still
+ *     inspect it (e.g. to count instances for cookie-name disambiguation).
  *
  * Output: <workspaceDirectory>/.env/.zowe-<haInstance>-merged.yaml
  */
@@ -607,23 +618,10 @@ export function writeHaMergedConfig(haInstance: string): number {
     return 0; // no HA overrides for this instance, nothing to do
   }
 
-  // Resolve the output directory (same logic as writeMergedConfig)
-  let zwePrivateWorkspaceEnvDir: string;
-  let dirResult = getTempMergedYamlDir();
-  if (typeof dirResult == 'string') {
-    zwePrivateWorkspaceEnvDir = dirResult;
-  } else if (dirResult === 0) {
-    zwePrivateWorkspaceEnvDir = std.getenv('ZWE_PRIVATE_WORKSPACE_ENV_DIR');
-    if (!zwePrivateWorkspaceEnvDir) {
-      zwePrivateWorkspaceEnvDir = `${config.zowe.workspaceDirectory}/.env`;
-      std.setenv('ZWE_PRIVATE_WORKSPACE_ENV_DIR', zwePrivateWorkspaceEnvDir);
-    }
-    fs.mkdirp(config.zowe.workspaceDirectory, 0o770);
-    const mkdirrc = fs.mkdirp(zwePrivateWorkspaceEnvDir, 0o700);
-    if (mkdirrc) { return mkdirrc; }
-  } else {
-    return dirResult as number;
-  }
+  // Resolve the output directory (shared with writeMergedConfig via resolveWorkspaceEnvDir)
+  const dirOrErr = resolveWorkspaceEnvDir(config.zowe.workspaceDirectory);
+  if (typeof dirOrErr !== 'string') { return dirOrErr as number; }
+  const zwePrivateWorkspaceEnvDir = dirOrErr;
 
   // Build the override object from the haInstance entry, skipping instance-only keys
   // (hostname, sysname) since those don't belong at the root config level.
@@ -659,16 +657,9 @@ export function writeHaMergedConfig(haInstance: string): number {
     return status;
   }
 
-  // Remove the haInstances block so the written YAML is a clean, flat, instance-specific config.
-  CONFIG_REVISIONS[haConfigName]++;
-  const haDeleteRevName = getConfigRevisionName(haConfigName); // e.g. zowe-ha-lpar1_rev1, _rev3, ...
-  const deleteStatus = CONFIG_MGR.copyConfigurationAndDeleteKey(haOverrideRevName, haDeleteRevName, 'haInstances');
-  const writeRevName = (deleteStatus == 0) ? haDeleteRevName : haOverrideRevName;
-  if (deleteStatus != 0) {
-    console.log(`Warn: Could not strip 'haInstances' from HA merged config for '${haInstance}', writing as-is`);
-  }
-
-  let [yamlStatus, textOrNull] = CONFIG_MGR.writeYAML(writeRevName);
+  // Write the overrides revision directly – haInstances is intentionally kept
+  // so that consumers (e.g. ZSS generateCookieNameV2) can still count instances.
+  let [yamlStatus, textOrNull] = CONFIG_MGR.writeYAML(haOverrideRevName);
   if (yamlStatus == 0) {
     const destination = `${zwePrivateWorkspaceEnvDir}/.zowe-${haInstance}-merged.yaml`;
     const rc = xplatform.storeFileUTF8(destination, xplatform.AUTO_DETECT, textOrNull);
