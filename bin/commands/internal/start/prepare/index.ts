@@ -29,6 +29,8 @@ import * as node from '../../../../libs/node';
 import * as zosmf from '../../../../libs/zosmf';
 import * as zoslib from '../../../../libs/zos';
 import * as validateBind from '../../../validate/port/bind/index';
+import * as attls from '../../../../libs/attls';
+import * as validateComponentManifests from '../../../validate/components/index';
 import * as validateCertificate from '../../../validate/certificate/index';
 
 //# This command prepares everything needed to start Zowe.
@@ -126,6 +128,21 @@ function prepareWorkspaceDirectory() {
 function globalValidate(enabledComponents:string[]): void {
   common.printFormattedInfo("ZWELS", "zwe-internal-start-prepare,global_validate", "process global validations ...");
 
+  // if debug is true, exec both ulimit -Ha (hard system limits) and ulimit -a (soft system limits) and print the output
+  const logLevel = std.getenv("ZWE_PRIVATE_LOG_LEVEL_ZWELS");
+  const isDebug = (logLevel == "DEBUG" || logLevel == "TRACE");
+  if (isDebug) {
+    const hardUlimitResult = shell.execOutSync('sh', '-c', 'ulimit -Ha');
+    const softUlimitResult = shell.execOutSync('sh', '-c', 'ulimit -Ha');
+
+    if (hardUlimitResult.rc == 0) {
+      common.printFormattedDebug("ZWELS", "zwe-internal-start-prepare,global_validate", `ulimit -Ha output:\n${hardUlimitResult.out}`);
+    }
+    if (softUlimitResult.rc == 0) {
+      common.printFormattedDebug("ZWELS", "zwe-internal-start-prepare,global_validate", `ulimit -a output:\n${softUlimitResult.out}`);
+    }
+  }
+
   // validate_runtime_user
   if (user == "IZUSVR") {
     common.printFormattedWarn("ZWELS", "zwe-internal-start-prepare,global_validate", "ZWEL0302W: You are running the Zowe process under user id IZUSVR. This is not recommended and may impact your z/OS MF server negatively.");
@@ -139,6 +156,12 @@ function globalValidate(enabledComponents:string[]): void {
   if (!writable) {
     privateErrors++;
     common.printFormattedError('ZWELS', "zwe-internal-start-prepare,global_validate", `Workspace directory ${workspaceDirectory} is not writable`);
+  }
+
+  // validate component manifests before proceeding with component validation
+  const manifestCheckAction = getStartupCheckMode('components');
+  if (manifestCheckAction.doCheck) {
+    validateComponentManifests.execute(!manifestCheckAction.warnOnly);
   }
 
   if (runInContainer != 'true') {
@@ -220,6 +243,12 @@ function validateComponents(enabledComponents:string[]): any {
   const validateBindAction = config.getStartupCheckMode('ports');
   if (validateBindAction.doCheck) {
     validateBind.execute(!validateBindAction.warnOnly);
+  }
+
+  // global setting for AT-TLS validation
+  const attlsValidationAction = getStartupCheckMode('attls');
+  if (attlsValidationAction.doCheck) {
+    attls.validateAttlsPorts(!attlsValidationAction.warnOnly);
   }
   
   const componentEnvironments = {};

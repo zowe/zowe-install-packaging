@@ -3,4 +3,5 @@ skip-security-setup||boolean|||||Whether to skip security related setup.
 security-dry-run,dry-run||boolean|||||Generates JCL or displays actions to be taken on the system without modifying the system.
 ignore-security-failures||boolean|||||Whether to ignore security setup job failures.
 update-config||boolean|||||Whether to update YAML configuration file with initialization result.
+create-certificate||boolean|||||Whether to use the contents of zowe.setup.certificate to create Zowe's TLS certificates.
 jcl||boolean|||||Generates and submits JCL to drive the init command, rather than using USS utilities.

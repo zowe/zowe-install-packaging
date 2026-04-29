@@ -123,7 +123,18 @@ export function execute(allowOverwrite?: boolean, dryRun?: boolean, ignoreSecuri
     initSecurity.execute(dryRun, ignoreSecurityFailures);
   }
   // TODO: init certificate remains shell code for now due to complexity.
-  let result = shell.execSync('sh', '-c', `ZWE_PRIVATE_CLI_LIBRARY_LOADED= ${std.getenv('ZWE_zowe_runtimeDirectory')}/bin/zwe init certificate ${dryRun?'--dry-run':''} ${updateConfig?'--update-config':''} ${allowOverwrite?'--allow-overwrite':''} ${ignoreSecurityFailures?'--ignore-security-failures':''} -c "${std.getenv('ZWE_CLI_PARAMETER_CONFIG')}"`);
+  if (std.getenv("ZWE_CLI_PARAMETER_CREATE_CERTIFICATE") == 'true') {
+    let result = shell.execSync('sh', '-c', `ZWE_PRIVATE_CLI_LIBRARY_LOADED= ${std.getenv('ZWE_zowe_runtimeDirectory')}/bin/zwe init certificate ${dryRun?'--dry-run':''} ${updateConfig?'--update-config':''} ${allowOverwrite?'--allow-overwrite':''} ${ignoreSecurityFailures?'--ignore-security-failures':''} -c "${std.getenv('ZWE_CLI_PARAMETER_CONFIG')}"`);
+  } else if (!zoweConfig.zowe.certificate.keystore || (zoweConfig.zowe.certificate.keystore.file == 'safkeyring://<stc_username>/<keyring_name>')) {
+    common.printMessage(`Zowe appears to be missing certificate setup. Complete zowe.certificate in your Zowe YAML before starting Zowe.`);
+    common.printMessage(`Zowe does not create certificates, keystores, or truststores by default, so verify that zowe.certificate in your Zowe YAML is valid.`);
+    common.printMessage(`You can review Zowe certificate requirements at https://docs.zowe.org/stable/user-guide/configure-certificates#zowe-certificate-requirements`);
+    common.printMessage(`---------`);
+    common.printMessage(`If you want Zowe to assist in certificate creation, the command "zwe init certificate" can be run with YAML properties from "zowe.setup.certificate"`);
+    common.printMessage(` Examples of "zowe.setup.certificate" are included in "${std.getenv('ZWE_zowe_runtimeDirectory')}/files/examples/setup/certificate"`);
+    common.printMessage(` After reviewing the included examples and selecting one, append the contents of the example file into your Zowe YAML and run "zwe init certificate".`);
+    common.printMessage(`---------`);
+  }
   initStc.execute(allowOverwrite);
 
   common.printLevel1Message(`Zowe is configured successfully.`);

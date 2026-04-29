@@ -887,6 +887,11 @@ const zoweSchema = zoweYamlSchema as {
                   default: 'exit';
                   description: 'Checks if zowe.setup.security.users.zowe (ZWESVUSR) is configured as a superuser (UID 0). Such a setting is strongly discouraged.';
                 };
+                components: {
+                  $ref: '/schemas/v2/server-common#startupCheck';
+                  default: 'warn';
+                  description: "Checks that every component listed under 'components' in zowe.yaml has a valid manifest file (manifest.yaml, manifest.yml, or manifest.json). Components missing a manifest cannot be started.";
+                };
                 javaMin: {
                   type: 'string';
                   default: 'exit';
@@ -1089,6 +1094,10 @@ const zoweSchema = zoweYamlSchema as {
               type: 'string';
               description: 'Certificate alias name of defined in your PKCS#12 keystore';
             };
+            clientCertificateAlias: {
+              type: 'string';
+              description: 'Client certificate alias name of defined in your PKCS#12 keystore';
+            };
           };
         };
         truststore: {
@@ -1125,6 +1134,14 @@ const zoweSchema = zoweYamlSchema as {
             certificate: {
               $ref: '/schemas/v2/server-common#zowePath';
               description: 'Path to the certificate stored in PEM format.';
+            };
+            clientKey: {
+              type: ['string', 'null'];
+              description: 'Path to the client certificate private key stored in PEM format.';
+            };
+            clientCertificate: {
+              type: ['string', 'null'];
+              description: 'Path to the client certificate stored in PEM format.';
             };
             certificateAuthorities: {
               description: 'List of paths to the certificate authorities stored in PEM format.';
@@ -1176,6 +1193,10 @@ const zoweSchema = zoweYamlSchema as {
               type: 'string';
               description: 'Certificate label of z/OS keyring. Case sensitivity and spaces matter.';
             };
+            clientCertificateAlias: {
+              type: 'string';
+              description: 'Client certificate label of z/OS keyring. Case sensitivity and spaces matter.';
+            };
           };
         };
         truststore: {
@@ -1213,6 +1234,14 @@ const zoweSchema = zoweYamlSchema as {
             certificate: {
               type: ['string', 'null'];
               description: 'Path to the certificate stored in PEM format.';
+            };
+            clientKey: {
+              type: ['string', 'null'];
+              description: 'Path to the client certificate private key stored in PEM format.';
+            };
+            clientCertificate: {
+              type: ['string', 'null'];
+              description: 'Path to the client certificate stored in PEM format.';
             };
             certificateAuthorities: {
               description: 'List of paths to the certificate authorities stored in PEM format.';

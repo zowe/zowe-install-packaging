@@ -4,4 +4,6 @@ zwe init apfauth -v -c /path/to/zowe.yaml
 
 zwe init certificate -v -c /path/to/zowe.yaml
 
+zwe init --config /path/to/zowe.yaml --create-certificate
+
 zwe init --config "PARMLIB(ZOWE.PARMS(MAIN)):PARMLIB(ZOWE.PARMS(DEBUGMOD))" --jcl
