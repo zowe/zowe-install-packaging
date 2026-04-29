@@ -4,7 +4,7 @@ All notable changes to the Zowe Installer will be documented in this file.
 
 ## `3.6.0`
 
-- Enhancement: When running in HA mode, `zwe internal start prepare` now writes a per-HA-instance merged YAML config file (`.zowe-<haInstance>-merged.yaml`) to the workspace `.env` directory. This file contains the fully-resolved configuration for that instance with all `haInstances` overrides applied at the root level. The `haInstances` block is preserved in the written file so that consumers such as ZSS can still inspect it (e.g. to count instances for cookie-name disambiguation). The path to this file is exposed via the environment variable `ZWE_PRIVATE_HA_INSTANCE_CONFIG` which is propagated to all child processes started for the instance.
+- Enhancement: When running in HA mode, `zwe internal start prepare` now writes a per-HA-instance merged YAML config file (`.zowe-<haInstance>-merged.yaml`) to the workspace `.env` directory. This file contains the fully-resolved configuration for that instance with all `haInstances` overrides applied at the root level. The `haInstances` block is preserved in the written file so that consumers such as ZSS can still inspect it (e.g. to count instances for cookie-name disambiguation). The path to this file is exposed via the environment variable `ZWE_PRIVATE_HA_INSTANCE_CONFIG` which is propagated to all child processes started for the instance. (https://github.com/zowe/zowe-install-packaging/pull/4759)
 
 ## `3.5.0`
 
