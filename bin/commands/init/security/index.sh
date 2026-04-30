@@ -50,6 +50,14 @@ security_product=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.security
 if [ -z "${security_product}" ]; then
   security_product=RACF
 fi
+# If ACF2, check prefix for HLQ and rest
+acf2_rest=
+if [ "${security_product}" = 'ACF2' ]; then
+  acf2_hlq=$(echo "${prefix}" | cut -d. -f1)
+  if [ "${hlq}" != "${prefix}" ]; then
+    acf2_rest=$(echo "${prefix}" | cut -d. -f2-)
+  fi
+fi
 security_groups_admin=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.security.groups.admin")
 if [ -z "${security_groups_admin}" ]; then
   security_groups_admin=${ZWE_PRIVATE_DEFAULT_ADMIN_GROUP}
@@ -102,6 +110,12 @@ result=$(cat "//'${prefix}.${ZWE_PRIVATE_DS_SZWESAMP}(ZWESECUR)'" | \
         sed   "s/^\/\/ \+SET \+AUXSTC=.*\$/\/\/         SET  AUXSTC=${security_stcs_aux}/" | \
         sed      "s/^\/\/ \+SET \+HLQ=.*\$/\/\/         SET  HLQ=${prefix}/" | \
         sed  "s/^\/\/ \+SET \+SYSPROG=.*\$/\/\/         SET  SYSPROG=${security_groups_sysProg}/")
+if [ ! -z "${acf2_rest}" ]; then
+  result=$(echo "${result}" | \
+        sed "s/^LIST &HLQ\./LIST ${acf2_hlq}/" | \
+        sed "s/^RECKEY &HLQ\. ADD(- +/RECKEY ${acf2_hlq} ADD(${acf2_rest}.- +/"
+        )
+fi
 if [ -n "${result}" ]; then
   echo "${result}" > "${tmpfile}"
   code=$?
