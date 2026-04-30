@@ -96,12 +96,22 @@ export function execute(dryRun?: boolean, ignoreSecurityFailures?: boolean) {
       ACF2_ZOWE_CONFIG.zowe.setup.security.groups.stc = std.getenv('ZWE_PRIVATE_DEFAULT_ADMIN_GROUP');
     }
     const acf2DatasetProtection = template.resolveFile(`${pathTemplatesSecurity}`, ACF2_ZOWE_CONFIG);
-    const zweiacf = zosDataset.readMember(`//'${jcllib}(ZWEIACF)'`);
+    const zweiacf = zosDataset.readMember(`${jcllib}(ZWEIACF)`);
     if (!zweiacf) {
       common.printErrorAndExit(`Error ZWEL0327E: Failed to read ${jcllib}(ZWEIACF) - no content`, undefined, 327);
     } else {
       const updatedZweiacf = zweiacf.replace(/\* <acf2\.dataset\.protection>\n[\s\S]*?\n\* <acf2\.dataset\.protection>/, acf2DatasetProtection);
-      zosDataset.updateMember(`//'${jcllib}(ZWEIACF)'`, updatedZweiacf);
+      if (zweiacf === updatedZweiacf) {
+        common.printMessage(`WARNING: ${jcllib}(ZWEIACF) was already modified.`);
+        common.printMessage(`         To ensure the latest configuration is applied:`);
+        common.printMessage(`           - Run this command with --generate option`);
+        common.printMessage(`           - Or run 'zwe init generate' command`);
+      } else {
+        const updateRc = zosDataset.updateMember(`${jcllib}(ZWEIACF)`, updatedZweiacf);
+        if (updateRc != 0) {
+          common.printErrorAndExit(`Error ZWEL0160E: Failed to write to ${jcllib}(ZWEIACF). Please check if target data set is opened by others.`, undefined, 160);
+        }
+      }
     }
   }
   zosJes.printAndHandleJcl(`//'${jcllib}(ZWEI${securityPrefix})'`, `ZWEI${securityPrefix}`, jcllib, prefix, false, ignoreSecurityFailures);
