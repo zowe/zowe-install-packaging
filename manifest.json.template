@@ -53,7 +53,7 @@
     "org.zowe.zss": {
       "version": "3.5.0-RC",
       "repository": "libs-snapshot-local",
-      "artifact": "zss-3.5.0-rc-1450-20260422133946.pax"
+      "artifact": "zss-3.5.0-rc-1460-20260501122003.pax"
     },
     "org.zowe.explorer-jes": {
       "version": "3.0.5"
@@ -235,7 +235,7 @@
         },
         {
           "repository": "zss",
-          "tag": "v3.5.0-RC1",
+          "tag": "v3.5.0-RC2",
           "destinations": ["Zowe PAX"]
         },
         {
