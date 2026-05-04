@@ -54,7 +54,7 @@ fi
 acf2_rest=
 if [ "${security_product}" = 'ACF2' ]; then
   acf2_hlq=$(echo "${prefix}" | cut -d. -f1)
-  if [ "${hlq}" != "${prefix}" ]; then
+  if [ "${acf2_hlq}" != "${prefix}" ]; then
     acf2_rest=$(echo "${prefix}" | cut -d. -f2-)
   fi
 fi
