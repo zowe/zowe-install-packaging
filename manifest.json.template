@@ -17,7 +17,7 @@
     },
     "org.zowe.zlux.zlux-core": {
       "version": "3.5.0-1619-v3.x-staging-zlux-build",
-      "artifact": "zlux-core-3.5.0-20260505.052132.pax"
+      "artifact": "*.pax"
     },
     "org.zowe.zlux.sample-angular-app": {
       "version": "^3.0.0-V3.X-STAGING",
