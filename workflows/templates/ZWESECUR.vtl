@@ -609,9 +609,10 @@ F ACF2,REBUILD(FAC)
 SET RULE
 *  general data set protection
 LIST &HLQ.
-RECKEY &HLQ. ADD(- UID(-) READ(A) EXEC(P))
-RECKEY &HLQ. +
-ADD(- UID(&SYSPROG.) READ(A) EXEC(A) ALLOC(A) WRITE(A))
+RECKEY &HLQ. ADD(- +
+  ROLE(-) READ(A) EXEC(P))
+RECKEY &HLQ. ADD(- +
+  ROLE(&STCGRP.) READ(A) EXEC(A) ALLOC(A) WRITE(A))
 *
 *  show results
 LIST &HLQ.

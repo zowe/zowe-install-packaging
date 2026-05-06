@@ -4,6 +4,7 @@ All notable changes to the Zowe Installer will be documented in this file.
 
 ## `3.5.0`
 
+- Bugfix: ACF2 data set protection statement is not correct. [#4769](https://github.com/zowe/zowe-install-packaging/pull/4769)
 - Bugfix: `zwe init mvs` could try to delete entire PARM library. [#4695](https://github.com/zowe/zowe-install-packaging/pull/4695)
 - Bugfix: `zwe init mvs` authloadlib copy now uses IEBCOPY instead of TSO REPRO, which corrupted load modules and caused S806 ABENDs at runtime. [#4757](https://github.com/zowe/zowe-install-packaging/pull/4757)
 - Enhancement: Startup now checks each Zowe server for if ATTLS rules are defined and warns if any misconfiguration is identified to assist with TLS configuration. [#4741](https://github.com/zowe/zowe-install-packaging/pull/4741)
