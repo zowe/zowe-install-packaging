@@ -80,7 +80,7 @@ export function execute(doNotExit: Boolean, javaHome: string): void {
 
   common.printMessage('- Create Zowe directory file list');
   const allFiles = fs.createTmpFile(tmpFilePrefix);
-  shell.execOutSync('sh', '-c', `cd '${zoweRuntime}' && find . -name ./SMPE -prune -o -name "./ZWE*" -prune -o -name ./fingerprint -prune -o -name ./.sh_history -prune -o -type f -print > "${allFiles}"`);
+  shell.execOutSync('sh', '-c', `cd '${zoweRuntime}' && find . -name ./SMPE -prune -o -name "./ZWE*" -prune -o -name ./fingerprint -prune -o -type f -print > "${allFiles}"`);
   if (!fs.fileExists(allFiles)) {
     common.printErrorAndExit(`Error ZWEL0151E: Failed to create temporary file ${allFiles}. Please check permission or volume free space.`, undefined, 151);
   }

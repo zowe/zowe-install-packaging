@@ -24,7 +24,7 @@ zowe_apiml_modulith_mode: true
 zowe_apiml_security_oidc_enabled: true
 
 # use new jcl path for install
-zowe_setup_jcl_enable: false
+zowe_setup_jcl_enable: true
 zowe_jcllib: ZOWEAD3.ZWE.JCLLIB
 zowe_xmem_proclib: VENDOR.PROCLIB
 zowe_xmem_loadlib: ZOWEAD3.ZWE.LOADLIB

@@ -16,7 +16,7 @@ import {
 import { TEST_TIMEOUT_CONVENIENCE_BUILD } from '../../../constants';
 
 const testServer = process.env.TEST_SERVER;
-const testSuiteName = 'Test convenience build installation using JCL';
+const testSuiteName = 'Test convenience build installation without using JCL';
 describe(testSuiteName, () => {
   beforeAll(() => {
     // validate variables
@@ -32,7 +32,7 @@ describe(testSuiteName, () => {
       {
         'zowe_build_local': process.env['ZOWE_BUILD_LOCAL'],
         'zowe_custom_for_test': 'true',
-        'zowe_setup_jcl_enable': 'true',
+        'zowe_setup_jcl_enable': 'false',
         'zowe_lock_keystore': 'false',
       }
     );

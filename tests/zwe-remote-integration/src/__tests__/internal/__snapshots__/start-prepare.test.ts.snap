@@ -53,12 +53,19 @@ Successfully checked z/OSMF is available on 'https://some.test.hostname:12321/zo
  TESTUSR0 INFO (zwe-internal-start-prepare,validate_components) process component validations ...
  TESTUSR0 INFO (zwe-validate-port-available) Checking ports of 11 enabled components
  TESTUSR0 INFO (zwe-validate-port-available) Zowe port bind validation passed.
- TESTUSR0 INFO (validateAttlsPorts) Checking ATTLS state of 7 enabled components with ports
- TESTUSR0 INFO (validateAttlsPorts) Zowe port ATTLS validation passed.
 ERROR:  TESTUSR0 ERROR (zwe-internal-start-prepare,validate_components) Error ZWEL0172E: Component zss has commands.validate defined but the file is missing.
  TESTUSR0 INFO (zwe-internal-start-prepare,configure_components) process component configurations ...
  TESTUSR0 INFO (zwe-internal-start-prepare,configure_components) - commands.configure output from zss is:
  TESTUSR0 INFO (zwe-internal-start-prepare) Zowe runtime environment prepared"
+`;
+
+exports[`start-prepare-tests (SHORT) invalid startupChecks value 1`] = `
+"Error: Validation of FILE(/test/dir/zowe.test.yaml):FILE(/test/dir/files/defaults.yaml) against schema /test/dir/schemas/zowe-yaml-schema.json:/test/dir/schemas/server-common.json found invalid JSON Schema data
+Validity Exceptions(s) with object at
+  Validity Exceptions(s) with object at zowe
+    Validity Exceptions(s) with object at zowe.launchScript
+      Validity Exceptions(s) with object at zowe.launchScript.startupChecks
+        no matching enum value at zowe.launchScript.startupChecks.user; expecting one of values '[exit, warn, disabled]' of type 'string'"
 `;
 
 exports[`start-prepare-tests (SHORT) modulith disabled 1`] = `

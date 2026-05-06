@@ -132,14 +132,14 @@ function globalValidate(enabledComponents:string[]): void {
   const logLevel = std.getenv("ZWE_PRIVATE_LOG_LEVEL_ZWELS");
   const isDebug = (logLevel == "DEBUG" || logLevel == "TRACE");
   if (isDebug) {
-    const hardUlimitResult = shell.execOutSync('ulimit', '-Ha');
-    const softUlimitResult = shell.execOutSync('ulimit', '-a');
+    const hardUlimitResult = shell.execOutSync('sh', '-c', 'ulimit -Ha');
+    const softUlimitResult = shell.execOutSync('sh', '-c', 'ulimit -Ha');
 
     if (hardUlimitResult.rc == 0) {
-      common.printFormattedDebug("ZWELS", "zwe-internal-start-prepare,global_validate", `ulimit -Ha output:\n ${hardUlimitResult.out}`);
+      common.printFormattedDebug("ZWELS", "zwe-internal-start-prepare,global_validate", `ulimit -Ha output:\n${hardUlimitResult.out}`);
     }
     if (softUlimitResult.rc == 0) {
-      common.printFormattedDebug("ZWELS", "zwe-internal-start-prepare,global_validate", `ulimit -a output:\n ${softUlimitResult.out}`);
+      common.printFormattedDebug("ZWELS", "zwe-internal-start-prepare,global_validate", `ulimit -a output:\n${softUlimitResult.out}`);
     }
   }
 

@@ -21,24 +21,24 @@ If you are looking for a Zowe server installation guide, check out [docs.zowe.or
 
 - From `master` branch, you can find the most recent **stable** build. It matches to the most recent official Zowe release.
 - `rc` branch means release candidate and is mainly for release usage. It's an intermediate state where we hold the code to prepare for the coming release. This branch is merged from `staging` and eventually if Release Candidate builds are tested passed, this branch will be merged into `master` to announce a formal release.
-- `staging` branch is targeted to the next release and holds the most recent development progress. Normally a development changes may result in a Pull Request against this branch.
+- `staging` branch is targeted to the next release and holds the most recent development progress. Normally a development change may result in a Pull Request against this branch.
 - `v?.x/*` branches are for past and future purpose. It may also have `v?.x/master` and `v?.x/staging`, etc.
 
 Pull Request is required to merge changes to `staging`, `rc`. Generally `master` doesn't accept Pull Request to make feature changes or bug fixes.
 
 ## Manifest File
 
-Zowe include several components. `manifest.json.template` defines general information of Zowe and how components are included into official build.
+Zowe includes several components. `manifest.json.template` defines general information of Zowe and how components are included into official build.
 
 The manifest file include these sections:
 
 ### General information
 
-These information are represented in these properties: `name`, `version`, `description`, `license` and `homepage`.
+This information is represented in these properties: `name`, `version`, `description`, `license` and `homepage`.
 
 ### Build information
 
-These information includes details when building the Zowe artifact. During build process, `manifest.json.template` will be converted to `manifest.json` and the template variables like `{BUILD_COMMIT_HASH}` will be filled in with real value. The modified `manifest.json` will be placed into root folder of Zowe build.
+This information includes details when building the Zowe artifact. During build process, `manifest.json.template` will be converted to `manifest.json` and the template variables like `{BUILD_COMMIT_HASH}` will be filled in with real value. The modified `manifest.json` will be placed into root folder of Zowe build.
 
 Here is an example of build information after build, you can find it in the `manifest.json` file from every Zowe build:
 
@@ -55,7 +55,7 @@ The above build information means this Zowe build is from `staging` branch build
 
 ### Binary Dependencies
 
-`binaryDependencies` section defines how many components will be included into the binary build. Each component has an unique ID, which hints where the pipeline should pick up the component artifact. Also for each the component, it defines which version will be included into the build.
+`binaryDependencies` section defines how many components will be included into the binary build. Each component has a unique ID, which hints where the pipeline should pick up the component artifact. Also for each component, it defines which version will be included into the build.
 
 Here is an example of component definition:
 
@@ -66,7 +66,7 @@ Here is an example of component definition:
     }
 ```
 
-`org.zowe.explorer.jobs` is the component ID, which also tell the pipeline to pick the component from Artifactory path `<repo>/org/zowe/explorer/jobs/`. `version` defines which version we should pick. In this case, we should pick the max version matches `0.2.*-STAGING` and `>= 0.2.8-STAGING`. So version `0.2.10-STAGING` is a good match if it exists.
+`org.zowe.explorer.jobs` is the component ID, which also tells the pipeline to pick the component from Artifactory path `<repo>/org/zowe/explorer/jobs/`. `version` defines which version we should pick. In this case, we should pick the max version matches `0.2.*-STAGING` and `>= 0.2.8-STAGING`. So version `0.2.10-STAGING` is a good match if it exists.
 
 For details of **how to define a component**, please check examples and explanations from https://zowe.github.io/jenkins-library/jenkins_shared_library/artifact/JFrogArtifactory.html#interpretArtifactDefinition(java.lang.String,%20java.util.Map,%20java.util.Map).
 
@@ -165,7 +165,7 @@ For each Zowe component, we have point of contact(s) in case if we want to confi
 
 ## Build Pipeline
 
-Zowe build pipeline has hooked into github repository. Every branch, commit and PR has potential to kick off a new Zowe build. If the build is not automatically started, you can go to Jenkins and start a build job on the appropriated branch or pull request.
+Zowe build pipeline has hooked into github repository. Every branch, commit and PR has potential to kick off a new Zowe build. If the build is not automatically started, you can go to Jenkins and start a build job on the appropriate branch or pull request.
 
 ### Generate Customized Zowe Build
 
