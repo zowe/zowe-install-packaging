@@ -748,28 +748,24 @@
                   "description": "Checks that every component listed under 'components' in zowe.yaml has a valid manifest file (manifest.yaml, manifest.yml, or manifest.json). Components missing a manifest cannot be started."
                 },
                 "javaMin": {
-                  "type": "string",
+                  "$ref": "/schemas/v2/server-common#startupCheck",
                   "default": "exit",
                   "description": "Checks that the Java runtime version meets the minimum required version. Defaults to zowe.launchScript.startupChecks.default, or 'exit' if unset.",
-                  "enum": ["exit", "warn", "disabled"]
                 },
                 "javaMax": {
-                  "type": "string",
+                  "$ref": "/schemas/v2/server-common#startupCheck",
                   "default": "warn",
                   "description": "Checks that the Java runtime version does not exceed the maximum supported version. Defaults to zowe.launchScript.startupChecks.default, or 'warn' if unset.",
-                  "enum": ["exit", "warn", "disabled"]
                 },
                 "nodeMin": {
-                  "type": "string",
+                  "$ref": "/schemas/v2/server-common#startupCheck",
                   "default": "exit",
                   "description": "Checks that the Node runtime version meets the minimum required version. Defaults to zowe.launchScript.startupChecks.default, or 'exit' if unset.",
-                  "enum": ["exit", "warn", "disabled"]
                 },
                 "nodeMax": {
-                  "type": "string",
+                  "$ref": "/schemas/v2/server-common#startupCheck",
                   "default": "warn",
                   "description": "Checks that the Node runtime version does not exceed the maximum supported version. Defaults to zowe.launchScript.startupChecks.default, or 'warn' if unset.",
-                  "enum": ["exit", "warn", "disabled"]
                 }
               },
               "patternProperties": {
