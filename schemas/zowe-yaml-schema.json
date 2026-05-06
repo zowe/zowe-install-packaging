@@ -750,22 +750,22 @@
                 "javaMin": {
                   "$ref": "/schemas/v2/server-common#startupCheck",
                   "default": "exit",
-                  "description": "Checks that the Java runtime version meets the minimum required version. Defaults to zowe.launchScript.startupChecks.default, or 'exit' if unset.",
+                  "description": "Checks that the Java runtime version meets the minimum required version. Defaults to zowe.launchScript.startupChecks.default, or 'exit' if unset."
                 },
                 "javaMax": {
                   "$ref": "/schemas/v2/server-common#startupCheck",
                   "default": "warn",
-                  "description": "Checks that the Java runtime version does not exceed the maximum supported version. Defaults to zowe.launchScript.startupChecks.default, or 'warn' if unset.",
+                  "description": "Checks that the Java runtime version does not exceed the maximum supported version. Defaults to zowe.launchScript.startupChecks.default, or 'warn' if unset."
                 },
                 "nodeMin": {
                   "$ref": "/schemas/v2/server-common#startupCheck",
                   "default": "exit",
-                  "description": "Checks that the Node runtime version meets the minimum required version. Defaults to zowe.launchScript.startupChecks.default, or 'exit' if unset.",
+                  "description": "Checks that the Node runtime version meets the minimum required version. Defaults to zowe.launchScript.startupChecks.default, or 'exit' if unset."
                 },
                 "nodeMax": {
                   "$ref": "/schemas/v2/server-common#startupCheck",
                   "default": "warn",
-                  "description": "Checks that the Node runtime version does not exceed the maximum supported version. Defaults to zowe.launchScript.startupChecks.default, or 'warn' if unset.",
+                  "description": "Checks that the Node runtime version does not exceed the maximum supported version. Defaults to zowe.launchScript.startupChecks.default, or 'warn' if unset."
                 }
               },
               "patternProperties": {
