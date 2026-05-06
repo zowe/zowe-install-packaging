@@ -2,7 +2,9 @@
 
 exports[`unit-test-suite (SHORT) run all unit tests 1`] = `"Starting "getStartupCheckMode" test cases."`;
 
-exports[`unit-test-suite (SHORT) run all unit tests 2`] = `
+exports[`unit-test-suite (SHORT) run all unit tests 2`] = `"Starting "bin/libs/template: resolveString" test cases."`;
+
+exports[`unit-test-suite (SHORT) run all unit tests 3`] = `
 "Starting "processCertificateAnalyserNonZeroOutput" test cases.
  TESTUSR0 WARN (zwe-validate-certificate) Java is unable to read either keystore or truststore due to type.
  TESTUSR0 WARN (zwe-validate-certificate) Review Zowe YAML properties:

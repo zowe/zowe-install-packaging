@@ -1,0 +1,17 @@
+//*********************************************************************
+//*
+//* Copy the data set members to authorized load library
+//*
+//*********************************************************************
+//AUTHCOPY EXEC PGM=IEBCOPY
+//SYSPRINT DD SYSOUT=A
+//SYSUT3   DD UNIT=SYSDA,SPACE=(TRK,(5,5))
+//SYSUT4   DD UNIT=SYSDA,SPACE=(TRK,(5,5))
+//INDD1    DD DISP=SHR,
+//            DSN=${this.zowe.setup.dataset.prefix}.SZWEAUTH
+//OUTDD1   DD DISP=SHR,
+//            DSN=${this.zowe.setup.dataset.authLoadlib}
+//SYSIN    DD *
+  COPY OUTDD=OUTDD1,INDD=((INDD1,R))
+  SELECT MEMBER=(ZWELNCH,ZWESAUX,ZWESISDL,ZWESIS01)
+/*

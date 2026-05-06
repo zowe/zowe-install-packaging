@@ -53,8 +53,6 @@ Successfully checked z/OSMF is available on 'https://some.test.hostname:12321/zo
  TESTUSR0 INFO (zwe-internal-start-prepare,validate_components) process component validations ...
  TESTUSR0 INFO (zwe-validate-port-available) Checking ports of 11 enabled components
  TESTUSR0 INFO (zwe-validate-port-available) Zowe port bind validation passed.
- TESTUSR0 INFO (validateAttlsPorts) Checking ATTLS state of 7 enabled components with ports
- TESTUSR0 INFO (validateAttlsPorts) Zowe port ATTLS validation passed.
 ERROR:  TESTUSR0 ERROR (zwe-internal-start-prepare,validate_components) Error ZWEL0172E: Component zss has commands.validate defined but the file is missing.
  TESTUSR0 INFO (zwe-internal-start-prepare,configure_components) process component configurations ...
  TESTUSR0 INFO (zwe-internal-start-prepare,configure_components) - commands.configure output from zss is:
