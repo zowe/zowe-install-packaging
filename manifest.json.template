@@ -41,7 +41,7 @@
     },
     "org.zowe.zlux.zlux-editor": {
       "version": "3.5.0-PR-388",
-      "artifact": "zlux-editor-3.5.0-20260506.145347.pax"
+      "artifact": "zlux-editor-3.5.0-20260506.153024.pax"
     },
     "org.zowe.zss": {
       "version": "^3.0.0-STAGING",
