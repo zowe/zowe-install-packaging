@@ -74,6 +74,14 @@ describe(`${testSuiteName}`, () => {
   });
 
   describe('(SHORT)', () => {
+    it('invalid startupChecks value', async () => {
+      _.set(cfgYaml, 'zowe.launchScript.startupChecks.user', 'invalid-entry');
+      _.set(cfgYaml, 'zowe.launchScript.startupChecks.certificate', 'disabled');
+      const result = await testRunner.runZweTest(cfgYaml, 'internal start prepare');
+      expect(result.cleanedStdout).toMatchSnapshot();
+      expect(result.rc).toBe(1);
+    });
+
     it('test startup user if uid=0', async () => {
       const uid = await testRunner.runRaw('id -u');
       // only run test if we're uid 0

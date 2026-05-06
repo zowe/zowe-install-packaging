@@ -917,6 +917,11 @@ const zoweSchema = zoweYamlSchema as {
                   enum: ['exit', 'warn', 'disabled'];
                 };
               };
+              patternProperties: {
+                '^.*$': {
+                  $ref: '/schemas/v2/server-common#startupCheck';
+                };
+              };
             };
           };
         };

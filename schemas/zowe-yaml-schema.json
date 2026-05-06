@@ -771,6 +771,11 @@
                   "description": "Checks that the Node runtime version does not exceed the maximum supported version. Defaults to zowe.launchScript.startupChecks.default, or 'warn' if unset.",
                   "enum": ["exit", "warn", "disabled"]
                 }
+              },
+              "patternProperties": {
+                "^.*$": {
+                  "$ref": "/schemas/v2/server-common#startupCheck"
+                }
               }
             }
           }
