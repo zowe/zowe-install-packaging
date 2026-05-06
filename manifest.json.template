@@ -69,27 +69,27 @@
       "artifact": "explorer-ip*.pax"
     },
      "org.zowe.apiml.apiml-package": {
-       "version": "3.5.15",
+       "version": "3.5.17",
        "artifact": "apiml-*.zip"
      },
     "org.zowe.apiml.api-catalog-package": {
-      "version": "3.5.15",
+      "version": "3.5.17",
       "artifact": "api-catalog-*.zip"
     },
     "org.zowe.apiml.discovery-package": {
-      "version": "3.5.15",
+      "version": "3.5.17",
       "artifact": "discovery-*.zip"
     },
     "org.zowe.apiml.gateway-package": {
-      "version": "3.5.15",
+      "version": "3.5.17",
       "artifact": "gateway-*.zip"
     },
     "org.zowe.apiml.caching-service-package": {
-      "version": "3.5.15",
+      "version": "3.5.17",
       "artifact": "caching-service-*.zip"
     },
     "org.zowe.apiml.apiml-common-lib-package": {
-      "version": "3.5.15",
+      "version": "3.5.17",
       "artifact": "apiml-common-lib-*.zip"
     },
     "org.zowe.apiml.sdk.common-java-lib-package": {
@@ -97,11 +97,11 @@
       "artifact": "common-java-lib-*.zip"
     },
     "org.zowe.apiml.sdk.apiml-sample-extension-package": {
-      "version": "3.5.15",
+      "version": "3.5.17",
       "artifact": "apiml-sample-extension-*.zip"
     },
     "org.zowe.apiml.zaas-package": {
-      "version": "3.5.15",
+      "version": "3.5.17",
       "artifact": "zaas-package-*.zip"
 	},
 	"org.zowe.getesm": {
@@ -176,7 +176,7 @@
       "componentGroup": "Zowe API Mediation Layer",
       "entries": [{
         "repository": "api-layer",
-        "tag": "v3.5.15",
+        "tag": "v3.5.17",
         "destinations": ["Zowe PAX"]
       }]
     }, {
@@ -419,28 +419,28 @@
     "api-catalog": {
       "registry": "zowe-docker-release.jfrog.io",
       "name": "ompzowe/api-catalog-services",
-      "tag" : "3.5.15-ubuntu"
+      "tag" : "3.5.17-ubuntu"
     },
 	  "gateway": {
       "registry": "zowe-docker-release.jfrog.io",
       "name": "ompzowe/gateway-service",
-      "tag" : "3.5.15-ubuntu"
+      "tag" : "3.5.17-ubuntu"
     },
     "caching": {
       "registry": "zowe-docker-release.jfrog.io",
       "name": "ompzowe/caching-service",
-      "tag" : "3.5.15-ubuntu"
+      "tag" : "3.5.17-ubuntu"
     },
     "discovery": {
       "kind": "statefulset",
       "registry": "zowe-docker-release.jfrog.io",
       "name": "ompzowe/discovery-service",
-      "tag" : "3.5.15-ubuntu"
+      "tag" : "3.5.17-ubuntu"
     },
     "zaas": {
         "registry": "zowe-docker-release.jfrog.io",
         "name": "ompzowe/zaas-service",
-        "tag" : "3.5.15-ubuntu"
+        "tag" : "3.5.17-ubuntu"
     },
     "app-server": {
       "registry": "zowe-docker-release.jfrog.io",
