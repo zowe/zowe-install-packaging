@@ -4,8 +4,14 @@ All notable changes to the Zowe Installer will be documented in this file.
 
 ## `3.5.0`
 
+- Bugfix: ACF2 data set protection statement is not correct. [#4769](https://github.com/zowe/zowe-install-packaging/pull/4769)
+- Bugfix: `zwe init mvs` could try to delete entire PARM library. [#4695](https://github.com/zowe/zowe-install-packaging/pull/4695)
+- Bugfix: `zwe init mvs` authloadlib copy now uses IEBCOPY instead of TSO REPRO, which corrupted load modules and caused S806 ABENDs at runtime. [#4757](https://github.com/zowe/zowe-install-packaging/pull/4757)
+- Enhancement: Startup now checks each Zowe server for if ATTLS rules are defined and warns if any misconfiguration is identified to assist with TLS configuration. [#4741](https://github.com/zowe/zowe-install-packaging/pull/4741)
+- Enhancement: Allow users to specify client certificates within `zowe.certificate`. [#4687](https://github.com/zowe/zowe-install-packaging/pull/4687)
+- Enhancement: `zwe init` no longer creates certificates by default. Use `zwe init --create-certificate` or `zwe init certificate` after defining the "zowe.setup.certificate" section of the YAML. You can use the examples provided within zowe/files/examples/setup/certificate. [#4238](https://github.com/zowe/zowe-install-packaging/pull/4238)
 - Enhancement: Split `zwe components install` into subcommands with dry-run options to help you with each step of component installation. [#4582](https://github.com/zowe/zowe-install-packaging/pull/4582)
-- Enhancement: Added command `zwe vadlidate certificate` which checks Zowe's keystore and truststore and reports action items to resolve any issues found. This is run automatically every Zowe setup but that can be changed via the parameter `zowe.launchScript.startupChecks.certificate`, which can be changed to "warn" to warn only, or "disabled" to bypass the check. [#4554](https://github.com/zowe/zowe-install-packaging/pull/4554)
+- Enhancement: Added command `zwe validate certificate` which checks Zowe's keystore and truststore and reports action items to resolve any issues found. This is run automatically every Zowe setup but that can be changed via the parameter `zowe.launchScript.startupChecks.certificate`, which can be changed to "warn" to warn only, or "disabled" to bypass the check. [#4554](https://github.com/zowe/zowe-install-packaging/pull/4554)
 - Enhancement: `zwe version` supports displaying Zowe version defined in the configuration. [#4322](https://github.com/zowe/zowe-install-packaging/pull/4322)
 - Enhancement: Superuser (UID=0) check of `ZWESVUSR` added. [#4693](https://github.com/zowe/zowe-install-packaging/pull/4693)
 - Enhancement: Utility to toggle comments in provided YAML examples. [#4689](https://github.com/zowe/zowe-install-packaging/pull/4689)
@@ -13,8 +19,11 @@ All notable changes to the Zowe Installer will be documented in this file.
 - Bugfix: `zwe config get` HA instance lookup is case insensitive. [#4609](https://github.com/zowe/zowe-install-packaging/pull/4609)
 - Bugfix: Fixed error preventing startup which reported that z/OSMF gateway configuration was invalid despite the gateway being disabled [#4718](https://github.com/zowe/zowe-install-packaging/pull/4718)
 - Enhancement: `zwe config get` command uses new `--format` option to format the output. [#4591](https://github.com/zowe/zowe-install-packaging/pull/4591)
+- Enhancement: Added command `zwe validate components` which can be used to check if a component in the YAML exists. [#4700](https://github.com/zowe/zowe-install-packaging/pull/4700)
+- Enhancement: Added command `zwe validate dependencies` which can be used to validate that Zowe is using supported versions of dependencies such as node and java. The behavior of these checks can be customized via YAML properties `zowe.launchScript.startupChecks.java` and `zowe.launchScript.startupChecks.node`. [#4713](https://github.com/zowe/zowe-install-packaging/pull/4713)
 - Bugfix: The `components.apiml.debug` debug property for the APIML Single-Service deployment mode (Modulith) was not working. [#4540](https://github.com/zowe/api-layer/pull/4540)
 - Bugfix: `zwe support verify-fingerprints` now produces consistent hashes across Java 17 and Java 21 by hashing raw bytes instead of charset-dependent strings. [#4726](https://github.com/zowe/zowe-install-packaging/pull/4726)
+- Enhancement: When debug for service `ZWELS` is enabled, `zwe internal start prepare` will print the output of `ulimit -Ha` and `ulimit -a`. [#4730](https://github.com/zowe/zowe-install-packaging/pull/4730)
 
 ## `3.4.1`
 - Bugfix: Running z/OSMF is returning 401, if RSU2512 was applied. [#4657](https://github.com/zowe/zowe-install-packaging/pull/4657)
@@ -22,7 +31,7 @@ All notable changes to the Zowe Installer will be documented in this file.
 ## `3.4.0`
 
 - Enhancement: Added manifest property `apimlServices.static.once` which restricts APIML static definition files to exist only once per HA setup [#4587](https://github.com/zowe/zowe-install-packaging/pull/4587)
-- Enhancement: API ML now uses `saf` as it's default authentication provider for new installations of Zowe. [#4573](https://github.com/zowe/zowe-install-packaging/pull/4573)
+- Enhancement: API ML now uses `saf` as its default authentication provider for new installations of Zowe. [#4573](https://github.com/zowe/zowe-install-packaging/pull/4573)
 - Enhancement: Configure z/OSMF static API definition based on authentication provider [#4563](https://github.com/zowe/zowe-install-packaging/pull/4563)
 - Enhancement: Command `zwe validate config` command has been added as an alias of `zwe config validate`, for naming consistency with future `zwe validate` commands. [#4447](https://github.com/zowe/zowe-install-packaging/pull/4447)
 - Enhancement: Command `zwe validate port bind` command has been added. It can be used to validate if a zowe component is likely to succeed at binding to a TCP socket, and is used at startup to reduce likelihood of misconfiguration. [#4447](https://github.com/zowe/zowe-install-packaging/pull/4447)
@@ -104,7 +113,7 @@ All notable changes to the Zowe Installer will be documented in this file.
 ## New features and enhancements
 
 ## Minor enhancements/defect fixes
-- Bugfix: `zwe diagnose` running under comfigmgr and output formatted. Fixes #[3627](https://github.com/zowe/zowe-install-packaging/issues/3627).
+- Bugfix: `zwe diagnose` running under configmgr and output formatted. Fixes #[3627](https://github.com/zowe/zowe-install-packaging/issues/3627).
 
 ## `2.14.0`
 
@@ -149,7 +158,7 @@ All notable changes to the Zowe Installer will be documented in this file.
 ## `2.9.0`
 
 ### New features and enhancements
-- Users who have not set the value of "zowe.useConfimgr" will have the behavior now set to "true" rather than the previous "false". If you wish to use false still, just set "zowe.useConfigmgr=false" explicitly.
+- Users who have not set the value of "zowe.useConfigmgr" will have the behavior now set to "true" rather than the previous "false". If you wish to use false still, just set "zowe.useConfigmgr=false" explicitly.
 
 ## `2.8.0`
 
@@ -158,7 +167,7 @@ All notable changes to the Zowe Installer will be documented in this file.
 
 #### Minor enhancements/defect fixes
 - Bugfix: Component environment variables would not be aliased to the "_configs_" shorthand when the component had a configure script, but not a validate script, and zowe.useConfigmgr was enabled.
-- Buffix: When zowe.useConfigmgr=true, component installation would not run the installation script from the component root directory, but instead from the place zwe was executed, causing relative path differences versus zowe.useConfigmgr=false.
+- Bugfix: When zowe.useConfigmgr=true, component installation would not run the installation script from the component root directory, but instead from the place zwe was executed, causing relative path differences versus zowe.useConfigmgr=false.
 
 ## `2.7.0`
 
@@ -172,7 +181,7 @@ All notable changes to the Zowe Installer will be documented in this file.
 - Fixed that zwe would fail to recursively make missing directories if the root directory was not readable by the user.
 - zwe detects and warns against nodejs lower than version 14 (Due to end of life of v12)
 - Tracing and writing to log files would not work for component scripts when zowe.useConfigmgr=true
-- Node v18 was installed on marist system and test were made to run with node v18.
+- Node v18 was installed on marist system and tests were made to run with node v18.
 
 
 ## `2.6.0`

@@ -1,0 +1,15 @@
+#!/bin/sh
+# Minimal node shim for tests: --version reports a fixed or env-driven version; -e runs the sanity check path.
+case "$1" in
+  --version)
+    VERSION="${NODE_TESTENV_VERSION:-20.0.0}"
+    echo "v${VERSION}"
+    ;;
+  -e)
+    echo ok
+    ;;
+  *)
+    echo "fakenode: unsupported invocation" >&2
+    exit 1
+    ;;
+esac

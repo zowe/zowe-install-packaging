@@ -1,0 +1,7 @@
+Validates that components listed in the zowe.yaml components section have a valid manifest file (manifest.yaml, manifest.yml, or manifest.json).
+
+This command checks for the presence of a manifest file for each component defined under the "components" key in zowe.yaml. If any component is missing a manifest, the command exits with a non-zero code and lists all invalid components. An error is also raised if a component directory cannot be found.
+
+By default all components defined in zowe.yaml are checked. You may pass a comma-separated list of component IDs via --components (-o) to limit the check to those components only. Requesting a component that is not defined in zowe.yaml is itself an error.
+
+This check is also run automatically during Zowe startup as part of "zwe internal start prepare". It can be disabled by setting "zowe.launchScript.startupChecks.components" to "disabled" in zowe.yaml, or set to "warn" to log a warning without stopping startup.

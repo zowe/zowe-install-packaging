@@ -29,6 +29,8 @@ import * as node from '../../../../libs/node';
 import * as zosmf from '../../../../libs/zosmf';
 import * as zoslib from '../../../../libs/zos';
 import * as validateBind from '../../../validate/port/bind/index';
+import * as attls from '../../../../libs/attls';
+import * as validateComponentManifests from '../../../validate/components/index';
 import * as validateCertificate from '../../../validate/certificate/index';
 
 //# This command prepares everything needed to start Zowe.
@@ -44,35 +46,10 @@ const user = common.getUserId();
 
 const ZOWE_CONFIG=config.getZoweConfig();
 
-function getStartupCheckMode(property: string): {doCheck: boolean, warnOnly: boolean} {
-  let doCheck = true;
-  let warnOnly = false;
-
-  // set defaults
-  if (ZOWE_CONFIG.zowe.launchScript?.startupChecks?.default) {
-    let value = ZOWE_CONFIG.zowe.launchScript?.startupChecks.default;
-    if (value == 'disabled') {
-      doCheck = false;
-    } 
-    if (value == 'warn') {
-      warnOnly = true;
-    }
-  }
-
-  // per-startup-check override
-  if (ZOWE_CONFIG.zowe.launchScript?.startupChecks) {
-    let value = ZOWE_CONFIG.zowe.launchScript?.startupChecks[property];
-    if (value != null) {
-      doCheck = value != 'disabled';
-      warnOnly = value == 'warn';
-    }
-  }
-
-  return {doCheck, warnOnly};
-}
-
 const zosmfHost = ZOWE_CONFIG.zOSMF?.host;
 const zosmfPort = ZOWE_CONFIG.zOSMF?.port;
+
+let getStartupCheckMode = config.getStartupCheckMode;
 
 // Extra preparations for running in container
 // - link component runtime under zowe <runtime>/components
@@ -151,6 +128,21 @@ function prepareWorkspaceDirectory() {
 function globalValidate(enabledComponents:string[]): void {
   common.printFormattedInfo("ZWELS", "zwe-internal-start-prepare,global_validate", "process global validations ...");
 
+  // if debug is true, exec both ulimit -Ha (hard system limits) and ulimit -a (soft system limits) and print the output
+  const logLevel = std.getenv("ZWE_PRIVATE_LOG_LEVEL_ZWELS");
+  const isDebug = (logLevel == "DEBUG" || logLevel == "TRACE");
+  if (isDebug) {
+    const hardUlimitResult = shell.execOutSync('sh', '-c', 'ulimit -Ha');
+    const softUlimitResult = shell.execOutSync('sh', '-c', 'ulimit -Ha');
+
+    if (hardUlimitResult.rc == 0) {
+      common.printFormattedDebug("ZWELS", "zwe-internal-start-prepare,global_validate", `ulimit -Ha output:\n${hardUlimitResult.out}`);
+    }
+    if (softUlimitResult.rc == 0) {
+      common.printFormattedDebug("ZWELS", "zwe-internal-start-prepare,global_validate", `ulimit -a output:\n${softUlimitResult.out}`);
+    }
+  }
+
   // validate_runtime_user
   if (user == "IZUSVR") {
     common.printFormattedWarn("ZWELS", "zwe-internal-start-prepare,global_validate", "ZWEL0302W: You are running the Zowe process under user id IZUSVR. This is not recommended and may impact your z/OS MF server negatively.");
@@ -166,24 +158,38 @@ function globalValidate(enabledComponents:string[]): void {
     common.printFormattedError('ZWELS', "zwe-internal-start-prepare,global_validate", `Workspace directory ${workspaceDirectory} is not writable`);
   }
 
+  // validate component manifests before proceeding with component validation
+  const manifestCheckAction = getStartupCheckMode('components');
+  if (manifestCheckAction.doCheck) {
+    validateComponentManifests.execute(!manifestCheckAction.warnOnly);
+  }
+
   if (runInContainer != 'true') {
     // only do these check when it's not running in container
 
     if (enabledComponents.includes('app-server')) {
-      let nodeOk = node.validateNodeHome();
-      if (!nodeOk) {
-        privateErrors++;
-        common.printFormattedError('ZWELS', "zwe-internal-start-prepare,global_validate", `Could not validate node home`);
+      let nodeCheckMin = config.getStartupCheckMode('nodeMin');
+      let nodeCheckMax = config.getStartupCheckMode('nodeMax');
+      if (nodeCheckMin.doCheck || nodeCheckMax.doCheck) {
+        let nodeOk = node.validateNodeHome(undefined, nodeCheckMin.warnOnly || !nodeCheckMin.doCheck, nodeCheckMax.warnOnly || !nodeCheckMax.doCheck);
+        if (!nodeOk) {
+          privateErrors++;
+          common.printFormattedError('ZWELS', "zwe-internal-start-prepare,global_validate", `Could not validate node home`);
+        }
       }
     }
 
     // validate java for some core components
     //TODO this should be a manifest parameter that you require java, not a hardcoded list. What if extensions require it?
     if (enabledComponents.includes('apiml') || enabledComponents.includes('gateway') || enabledComponents.includes('zaas') || enabledComponents.includes('discovery') || enabledComponents.includes('api-catalog') || enabledComponents.includes('caching-service')) {
-      let javaOk = javaCI.validateJavaHome();
-      if (!javaOk) {
-        privateErrors++;
-        common.printFormattedError('ZWELS', "zwe-internal-start-prepare,global_validate", `Could not validate java home`);
+      let javaCheckMin = config.getStartupCheckMode('javaMin');
+      let javaCheckMax = config.getStartupCheckMode('javaMax');
+      if (javaCheckMin.doCheck || javaCheckMax.doCheck) {
+        let javaOk = javaCI.validateJavaHome(undefined, javaCheckMin.warnOnly || !javaCheckMin.doCheck, javaCheckMax.warnOnly || !javaCheckMax.doCheck);
+        if (!javaOk) {
+          privateErrors++;
+          common.printFormattedError('ZWELS', "zwe-internal-start-prepare,global_validate", `Could not validate java home`);
+        }
       }
     }
   } else {
@@ -234,9 +240,15 @@ function globalValidate(enabledComponents:string[]): void {
 function validateComponents(enabledComponents:string[]): any {
   common.printFormattedInfo("ZWELS", "zwe-internal-start-prepare,validate_components", "process component validations ...");
 
-  const validateBindAction = getStartupCheckMode('ports');
+  const validateBindAction = config.getStartupCheckMode('ports');
   if (validateBindAction.doCheck) {
     validateBind.execute(!validateBindAction.warnOnly);
+  }
+
+  // global setting for AT-TLS validation
+  const attlsValidationAction = getStartupCheckMode('attls');
+  if (attlsValidationAction.doCheck) {
+    attls.validateAttlsPorts(!attlsValidationAction.warnOnly);
   }
   
   const componentEnvironments = {};
@@ -577,6 +589,7 @@ export function execute() {
   // display instance prepared info
   common.printFormattedInfo("ZWELS", "zwe-internal-start-prepare", "Zowe runtime environment prepared");
 }
+
 
 export const _unit_test = {
   getStartupCheckMode
