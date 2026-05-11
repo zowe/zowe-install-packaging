@@ -1,15 +1,1 @@
-{
-  "lockAcquiredTime": "Mon May 11 2026 14:31:27 GMT+0000 (Coordinated Universal Time)",
-  "uid": "1778509887008397493",
-  "repository": {
-    "owner": "zowe",
-    "repo": "zowe-install-packaging"
-  },
-  "branch": "hrishikesh-nalawade/GH4419/console-encoding-2",
-  "workflow": "Zowe CICD Integration Tests",
-  "job": "cicd-test",
-  "actor": "zowe-robot",
-  "runId": 25676291878,
-  "runNumber": 8658,
-  "link": "https://github.com/zowe/zowe-install-packaging/actions/runs/25676291878"
-}
+""
