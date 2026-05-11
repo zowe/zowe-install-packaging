@@ -50,8 +50,8 @@ while read -r line; do
   fi
   # check existence
   ds_existence=$(is_data_set_exists "${ds}")
-  any_existence="true"
   if [ "${ds_existence}" = "true" ]; then
+    any_existence="true"
     if [ "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITE}" = "true" ]; then
       # warning
       print_message "Warning ZWEL0300W: ${ds} already exists. Members in this data set will be overwritten."
