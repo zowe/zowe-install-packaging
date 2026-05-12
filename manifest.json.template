@@ -81,7 +81,7 @@
       "artifact": "caching-service-*.zip"
     },
     "org.zowe.apiml.apiml-common-lib-package": {
-      "version": "^3.5.13-PR-2-fixed-Preflight-SNAPSHOT",
+      "version": "^3.5.13-PR-fixed-Preflight-SNAPSHOT",
       "artifact": "apiml-common-lib-*.zip"
     },
     "org.zowe.apiml.sdk.common-java-lib-package": {
