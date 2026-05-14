@@ -286,7 +286,7 @@ zowe:
     onComponentConfigureFail: "warn"
     # Startup checks which run as part of the Zowe STC, prior to Zowe component startup.
     # This section is optional. If not specified, the default values will be used.
-    startupChecks:
+    # startupChecks:
       # # Default check behavior may be one of "exit", "warn", or "disabled"
       # default: "exit"
       # # Individual startup checks will override the default behavior
@@ -302,10 +302,10 @@ zowe:
       # certificate: exit
       # # Java runtime version checks - max version is set to warn by default to allow for future Java versions to be supported.
       # javaMin: exit
-      javaMax: warn
+      # javaMax: warn
       # # Node runtime version checks - max version is set to warn by default to allow for future Node versions to be supported.
       # nodeMin: exit
-      nodeMax: warn
+      # nodeMax: warn
       # # ATTLS (Application Transparent Transport Layer Security) port check - defaults to "warn"
       # attls: "warn"
 

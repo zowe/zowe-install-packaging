@@ -939,11 +939,7 @@ exports[`init-stc (SHORT) invalid stc configurations 3`] = `
         ],
         "launchScript": {
           "logLevel": "info",
-          "onComponentConfigureFail": "warn",
-          "startupChecks": {
-            "javaMax": "warn",
-            "nodeMax": "warn"
-          }
+          "onComponentConfigureFail": "warn"
         },
         "verifyCertificates": "STRICT"
       },
@@ -1149,11 +1145,7 @@ exports[`init-stc (SHORT) invalid stc configurations 4`] = `
         ],
         "launchScript": {
           "logLevel": "info",
-          "onComponentConfigureFail": "warn",
-          "startupChecks": {
-            "javaMax": "warn",
-            "nodeMax": "warn"
-          }
+          "onComponentConfigureFail": "warn"
         },
         "verifyCertificates": "STRICT"
       },
@@ -1359,11 +1351,7 @@ exports[`init-stc (SHORT) invalid stc configurations 5`] = `
         ],
         "launchScript": {
           "logLevel": "info",
-          "onComponentConfigureFail": "warn",
-          "startupChecks": {
-            "javaMax": "warn",
-            "nodeMax": "warn"
-          }
+          "onComponentConfigureFail": "warn"
         },
         "verifyCertificates": "STRICT"
       },
@@ -1570,11 +1558,7 @@ exports[`init-stc (SHORT) invalid stc configurations 6`] = `
         ],
         "launchScript": {
           "logLevel": "info",
-          "onComponentConfigureFail": "warn",
-          "startupChecks": {
-            "javaMax": "warn",
-            "nodeMax": "warn"
-          }
+          "onComponentConfigureFail": "warn"
         },
         "verifyCertificates": "STRICT"
       },
@@ -1781,11 +1765,7 @@ exports[`init-stc (SHORT) invalid stc configurations 7`] = `
         ],
         "launchScript": {
           "logLevel": "info",
-          "onComponentConfigureFail": "warn",
-          "startupChecks": {
-            "javaMax": "warn",
-            "nodeMax": "warn"
-          }
+          "onComponentConfigureFail": "warn"
         },
         "verifyCertificates": "STRICT"
       },
@@ -2095,11 +2075,7 @@ exports[`init-stc (SHORT) wrong proclib 3`] = `
         ],
         "launchScript": {
           "logLevel": "info",
-          "onComponentConfigureFail": "warn",
-          "startupChecks": {
-            "javaMax": "warn",
-            "nodeMax": "warn"
-          }
+          "onComponentConfigureFail": "warn"
         },
         "verifyCertificates": "STRICT"
       },
