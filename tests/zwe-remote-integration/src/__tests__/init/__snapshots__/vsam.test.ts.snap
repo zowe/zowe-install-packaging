@@ -521,11 +521,7 @@ exports[`init-vsam (SHORT) skip undefined caching service 1`] = `
         ],
         "launchScript": {
           "logLevel": "info",
-          "onComponentConfigureFail": "warn",
-          "startupChecks": {
-            "javaMax": "warn",
-            "nodeMax": "warn"
-          }
+          "onComponentConfigureFail": "warn"
         },
         "verifyCertificates": "STRICT"
       },
@@ -667,11 +663,7 @@ exports[`init-vsam (SHORT) unset vsam mode 1`] = `
         ],
         "launchScript": {
           "logLevel": "info",
-          "onComponentConfigureFail": "warn",
-          "startupChecks": {
-            "javaMax": "warn",
-            "nodeMax": "warn"
-          }
+          "onComponentConfigureFail": "warn"
         },
         "verifyCertificates": "STRICT"
       },
@@ -864,11 +856,7 @@ exports[`init-vsam (SHORT) unset vsam mode 2`] = `
         ],
         "launchScript": {
           "logLevel": "info",
-          "onComponentConfigureFail": "warn",
-          "startupChecks": {
-            "javaMax": "warn",
-            "nodeMax": "warn"
-          }
+          "onComponentConfigureFail": "warn"
         },
         "verifyCertificates": "STRICT"
       },

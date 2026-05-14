@@ -1936,11 +1936,7 @@ exports[`zwe-install (SHORT) zwe install invalid dataset name 1`] = `
         ],
         "launchScript": {
           "logLevel": "info",
-          "onComponentConfigureFail": "warn",
-          "startupChecks": {
-            "javaMax": "warn",
-            "nodeMax": "warn"
-          }
+          "onComponentConfigureFail": "warn"
         },
         "verifyCertificates": "STRICT"
       },
