@@ -16,11 +16,11 @@
       "artifact": "zowe-server-*.pax.Z"
     },
     "org.zowe.zlux.zlux-core": {
-      "version": "^3.0.0-V3.X-STAGING-ZLUX-CORE",
+      "version": "^3.5.0-zlux-build-PR-166",
       "artifact": "*.pax"
     },
     "org.zowe.zlux.sample-angular-app": {
-      "version": "^3.0.0-V3.X-STAGING",
+      "version": "^3.0.0-PR-133",
       "artifact": "*.pax"
     },
     "org.zowe.zlux.sample-iframe-app": {
@@ -32,11 +32,11 @@
       "artifact": "*.pax"
     },
     "org.zowe.zlux.tn3270-ng2": {
-      "version": "^3.0.0-V3.X-STAGING",
+      "version": "^3.5.0-PR-106",
       "artifact": "*.pax"
     },
     "org.zowe.zlux.vt-ng2": {
-      "version": "^3.0.0-V3.X-STAGING",
+      "version": "^3.5.0-PR-82",
       "artifact": "*.pax"
     },
     "org.zowe.zlux.zlux-editor": {
@@ -57,7 +57,7 @@
       "version": "^3.0.0-SNAPSHOT"
     },
     "org.zowe.explorer-ip": {
-      "version": "^3.0.0-SNAPSHOT",
+      "version": "^3.0.6-PR-53",
       "artifact": "*.pax"
     },
     "org.zowe.apiml.apiml-package": {
