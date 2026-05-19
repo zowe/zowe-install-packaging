@@ -49,7 +49,7 @@
     },
     "org.zowe.explorer-jes": {
       "version": "3.0.6-PR-406",
-      "artifact": "explorer-jes-3.0.6-pr-406-848-20260519183101.pax"
+      "artifact": "explorer-jes-3.0.6-pr-406-849-20260519193900.pax"
     },
     "org.zowe.explorer-mvs": {
       "version": "^3.0.0-SNAPSHOT"
