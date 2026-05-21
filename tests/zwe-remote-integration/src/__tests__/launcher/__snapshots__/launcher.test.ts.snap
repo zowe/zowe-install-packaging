@@ -77,12 +77,12 @@ zowe:
     startupChecks:
       default: "exit"
       components: "warn"
+      certificate: "disabled"
       javaMax: "warn"
       nodeMax: "warn"
       attls: "warn"
       ports: "disabled"
       user: "disabled"
-      certificate: "disabled"
   verifyCertificates: "STRICT"
   sysMessageTrim: false
   certificate:
@@ -266,12 +266,12 @@ zowe:
     startupChecks:
       default: "exit"
       components: "warn"
+      certificate: "disabled"
       javaMax: "warn"
       nodeMax: "warn"
       attls: "warn"
       ports: "disabled"
       user: "disabled"
-      certificate: "disabled"
   verifyCertificates: "STRICT"
   sysMessageTrim: false
   certificate:

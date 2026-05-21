@@ -498,7 +498,7 @@ module.exports = async () => {
 
     console.log(`Compiling Java utilities in bin/utils using ${REMOTE_SYSTEM_INFO.zosJavaHome}...`);
     const ignoreList = ['ExportPrivateKeyTest.java'];
-    for (const file of fs.readdirSync(binUtils)) {
+    for (const file of fs.readdirSync(path.resolve(REPO_ROOT_DIR, 'bin', 'utils'))) {
       if (file.endsWith('.java') && !ignoreList.includes(file)) {
         console.log(`Compiling ${file}...`);
         const rc = await uss.runCommand(`${REMOTE_SYSTEM_INFO.zosJavaHome}/bin/javac ${file}`, binUtils);
