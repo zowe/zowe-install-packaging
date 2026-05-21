@@ -151,10 +151,10 @@ export function execute(quitOnError?: boolean): number {
   }
 
   if (result.out) {
-    common.printFormattedDebug(common.MSG_KEY, COMMAND_NAME, result.out);
+    common.printFormattedInfo(common.MSG_KEY, COMMAND_NAME, result.out);
   }
   if (result.err) {
-    common.printFormattedDebug(common.MSG_KEY, COMMAND_NAME, result.err);
+    common.printFormattedInfo(common.MSG_KEY, COMMAND_NAME, result.err);
   }
   common.printFormattedInfo(
     common.MSG_KEY,
