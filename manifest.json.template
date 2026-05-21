@@ -168,7 +168,7 @@
     {
      "componentGroup": "Zowex Native Tools",
      "entries": [{
-        "repository": "zowe-native-proto",
+        "repository": "zowex",
         "tag": "v0.1.4",
         "destinations": ["Zowe PAX"]
      }]
