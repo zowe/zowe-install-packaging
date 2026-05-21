@@ -141,7 +141,12 @@ zowe:
       # "password" should either be the value you set when PKCS12, or literally "password" for keyrings.
       password: password
       # alias is the name of your key/cert. When using keyrings, get the Case Sensitive, Space Sensitive value in a TSO list ring.
+      # When specified without clientCertificateAlias, Zowe expects the certificate to be usable for both server and client duty.
+      # When clientCertificateAlias is present, this certificate is only used for server duty.
       alias: localhost
+      # clientCertificateAlias is the name of a certificate used by Zowe-to-Zowe client requests.
+      # If it is not specified, alias will be used instead for both server and client duty.
+      # clientCertificateAlias: clientAlias
     truststore:
       # Truststore usually has same values as keystore (minus alias), but can be different if desired.
       # In this example, we link the truststore values to match the keystore values.
@@ -299,7 +304,7 @@ zowe:
       # # Superuser startup check - defaults to zowe.launchScript.startupChecks.default, or "exit" if this is unset
       # user: exit
       # # Certificate check - defaults to zowe.launchScript.startupChecks.default, or "exit" if this is unset
-      # certificate: exit
+      # certificate: warn
       # # Java runtime version checks - max version is set to warn by default to allow for future Java versions to be supported.
       # javaMin: exit
       # javaMax: warn

@@ -50,7 +50,7 @@
 <       file: safkeyring://<stc_username>/<keyring_name>
 ---
 >       file: safkeyring://OWNER/KEYRING
-148,150c148,150
+153,155c153,155
 <       type: "${{ zowe.certificate.keystore.type }}"
 <       file: "${{ zowe.certificate.keystore.file }}"
 <       password: "${{ zowe.certificate.keystore.password }}"
@@ -58,50 +58,50 @@
 >       type: JCERACFKS
 >       file: safkeyring://OWNER/KEYRING
 >       password: password
-165c165
+170c170
 <   runtimeDirectory: ""
 ---
 >   runtimeDirectory: "/tmp"
-171c171
+176c176
 <   workspaceDirectory: /global/zowe/workspace
 ---
 >   workspaceDirectory: /tmp
-179c179
+184c184
 <     validation: "STRICT"
 ---
 >     validation: "COMPONENT-COMPAT"
-337c337
+342c342
 <   home: ""
 ---
 >   home: "#delete_me#"
-353c353
+358c358
 <   home: ""
 ---
 >   home: "#delete_me#"
-415c415
+420c420
 <           enabled: false
 ---
 >           enabled: true
-462c462
+467c467
 <     enabled: true
 ---
 >     enabled: false
-476c476
+481c481
 <     enabled: true
 ---
 >     enabled: false
-479a480,481
+484a485,486
 >       jwt:
 >         fallback: true
-487c489
+492c494
 <     enabled: true
 ---
 >     enabled: false
-494c496
+499c501
 <     enabled: true
 ---
 >     enabled: false
-501c503
+506c508
 <     enabled: true
 ---
 >     enabled: false

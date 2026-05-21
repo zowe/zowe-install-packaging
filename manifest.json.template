@@ -145,7 +145,7 @@
       "artifact": "configmgr-rexx-3.5.0-2026042210.pax"
     },
     "org.zowe.launcher": {
-      "version": "3.6.0",
+      "version": "3.5.0",
       "artifact": "*.pax"
     },
     "org.zowe.keyring-utilities": {

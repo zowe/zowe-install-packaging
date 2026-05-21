@@ -50,7 +50,7 @@
 <       file: safkeyring://<stc_username>/<keyring_name>
 ---
 >       file: safkeyring://OWNER/KEYRING
-148,150c148,150
+153,155c153,155
 <       type: "${{ zowe.certificate.keystore.type }}"
 <       file: "${{ zowe.certificate.keystore.file }}"
 <       password: "${{ zowe.certificate.keystore.password }}"
@@ -58,19 +58,19 @@
 >       type: JCERACFKS
 >       file: safkeyring://OWNER/KEYRING
 >       password: password
-165c165
+170c170
 <   runtimeDirectory: ""
 ---
 >   runtimeDirectory: "/tmp"
-171c171
+176c176
 <   workspaceDirectory: /global/zowe/workspace
 ---
 >   workspaceDirectory: /tmp
-337c337
+342c342
 <   home: ""
 ---
 >   home: "#delete_me#"
-353c353
+358c358
 <   home: ""
 ---
 >   home: "#delete_me#"
