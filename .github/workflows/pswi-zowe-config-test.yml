@@ -66,3 +66,25 @@ jobs:
             pswi/zowe_.yaml
             pswi/ZWECONF1/**
             pswi/logs/**
+
+      - name: 'Test ZWEAMLCF workflow'
+        id: zweamlcf
+        timeout-minutes: 30
+        run: |
+          cd pswi
+          ./ZWEAMLCF_test.sh
+        env:
+          ZOSMF_USER: ${{ secrets.ZOWE_PSWI_BUILD_USR }}
+          ZOSMF_PASS: ${{ secrets.ZOWE_PSWI_BUILD_PASSWD }}
+          ZZOW_SSH_PORT: ${{ secrets.SSH_MARIST_ALLSYS_PORT }}
+
+      - name: Store test output for ZWEAMLCF
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        if: steps.zweamlcf.outcome != '' && failure()
+        with:
+          name: zweamlcf_report
+          path: |
+            pswi/**.txt
+            pswi/zowe_.yaml
+            pswi/ZWECONF1/**
+            pswi/logs/**

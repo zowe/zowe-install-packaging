@@ -25,6 +25,7 @@ import * as zosfs from './zos-fs';
 import * as sys from './sys';
 import * as container from './container';
 import * as objUtils from '../utils/ObjUtils';
+import * as fakejq from './fakejq';
 
 const cliParameterConfig: string = function () {
   let value = std.getenv('ZWE_CLI_PARAMETER_CONFIG');
@@ -44,6 +45,42 @@ export function getZoweConfig(): any {
   common.requireZoweYaml();
 
   return configmgr.getZoweConfig();
+}
+
+export function getStartupCheckMode(property: string): {doCheck: boolean, warnOnly: boolean} {
+  const zoweConfig = getZoweConfig();
+  let doCheck = true;
+  let warnOnly = false;
+
+  // set defaults
+  if (zoweConfig.zowe.launchScript?.startupChecks?.default) {
+    let value = zoweConfig.zowe.launchScript?.startupChecks.default;
+    if (value == 'disabled') {
+      doCheck = false;
+    } 
+    if (value == 'warn') {
+      warnOnly = true;
+    }
+  }
+
+  // per-startup-check override
+  if (zoweConfig.zowe.launchScript?.startupChecks) {
+    let value = zoweConfig.zowe.launchScript?.startupChecks[property];
+    if (value != null) {
+      doCheck = value != 'disabled';
+      warnOnly = value == 'warn';
+    }
+  }
+
+  return {doCheck, warnOnly};
+}
+
+export function ensureProperty(jqKey: string): any {
+  const ZOWE_CONFIG = getZoweConfig();
+  // read extensionDirectory
+  if (!fakejq.jqget(ZOWE_CONFIG, jqKey)) {
+    common.printErrorAndExit(`Error ZWEL0180E: Zowe property ${jqKey.substring(1)} is not defined in Zowe YAML configuration file.`, undefined, 180);
+  }
 }
 
 export function deleteFromZoweCfgFile(file: string, deleteKey: string, shouldValidate: boolean = true): any {
@@ -357,6 +394,19 @@ export function loadEnvironmentVariables(componentId?: string) {
     environmentKeys.forEach((key) => {
       std.setenv(key, configmgr.getZoweConfig().zowe.environments[key]);
     });
+  }
+
+  if (getZoweConfig().haInstances) {
+    let haList = '';
+    let haSanitizedList = '';
+    for (let haId in getZoweConfig().haInstances) {
+      haList += haId + ',';
+      haSanitizedList += sanitizeHaInstanceId(haId) + ',';
+    }
+    haList = haList.slice(0, -1);
+    haSanitizedList = haSanitizedList.slice(0, -1);
+    std.setenv('ZWE_PRIVATE_HA_LIST', haList);
+    std.setenv('ZWE_PRIVATE_HA_LIST_SANITIZED', haSanitizedList);
   }
 
   return std.getenviron();

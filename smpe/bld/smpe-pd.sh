@@ -20,7 +20,7 @@
 
 # B2H - Convert BookMaster, GML, Script/VS and "flat" files to HTML
 # Gary L. Richtmeyer - Copyright 2001-2002 AT&T
-# http://www.vm.ibm.com/download/packages/descript.cgi?b2h
+# https://www.ibm.com/support/pages/zvm/download/packages/b2h.descript
 
 # require $JAVA_HOME                Java home directory
 # removes $ship/$pax                FMID pax

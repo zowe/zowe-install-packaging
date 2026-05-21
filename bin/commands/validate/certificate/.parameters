@@ -1,0 +1,1 @@
+level|e|string|||||The level of certificate verification to perform. Can be 'STRICT', 'NONSTRICT', or 'DISABLED'. Keystore access is still validated in all cases.

@@ -30,7 +30,7 @@ zowe:
     certificate:
       type: "PKCS12"
       pkcs12:
-        directory: "/test/dir/pkcs12"
+        directory: "/var/zowe/keystore"
         lock: true
         name: "localhost"
         password: "password"
@@ -76,9 +76,25 @@ zowe:
     onComponentConfigureFail: "warn"
     startupChecks:
       default: "exit"
+      components: "warn"
+      certificate: "disabled"
+      javaMax: "warn"
+      nodeMax: "warn"
+      attls: "warn"
       ports: "disabled"
+      user: "disabled"
   verifyCertificates: "STRICT"
   sysMessageTrim: false
+  certificate:
+    keystore:
+      type: "JCERACFKS"
+      file: "safkeyring://<stc_username>/<keyring_name>"
+      password: "password"
+      alias: "localhost"
+    truststore:
+      type: "JCERACFKS"
+      file: "safkeyring://<stc_username>/<keyring_name>"
+      password: "password"
   runtimeDirectory: "/test/dir"
   logDirectory: "/test/dir/logs"
   workspaceDirectory: "/test/dir/workspace"
@@ -95,22 +111,9 @@ zowe:
   - "ZWEL0001I"
   - "ZWEL0002I"
   - "ZWEAM000I"
+  - "ZWEAM001I"
   - "ZWED0031I"
   - "ZWES1013I"
-  certificate:
-    keystore:
-      type: "PKCS12"
-      file: "/global/zowe/keystore/localhost/localhost.keystore.p12"
-      password: "password"
-      alias: "localhost"
-    truststore:
-      type: "PKCS12"
-      file: "/global/zowe/keystore/localhost/localhost.truststore.p12"
-      password: "password"
-    pem:
-      key: "/global/zowe/keystore/localhost/localhost.key"
-      certificate: "/global/zowe/keystore/localhost/localhost.cer"
-      certificateAuthorities: "/global/zowe/keystore/local_ca/local_ca.cer"
 components:
   apiml:
     enabled: true
@@ -216,7 +219,7 @@ zowe:
     certificate:
       type: "PKCS12"
       pkcs12:
-        directory: "/test/dir/pkcs12"
+        directory: "/var/zowe/keystore"
         lock: true
         name: "localhost"
         password: "password"
@@ -262,9 +265,25 @@ zowe:
     onComponentConfigureFail: "warn"
     startupChecks:
       default: "exit"
+      components: "warn"
+      certificate: "disabled"
+      javaMax: "warn"
+      nodeMax: "warn"
+      attls: "warn"
       ports: "disabled"
+      user: "disabled"
   verifyCertificates: "STRICT"
   sysMessageTrim: false
+  certificate:
+    keystore:
+      type: "JCERACFKS"
+      file: "safkeyring://<stc_username>/<keyring_name>"
+      password: "password"
+      alias: "localhost"
+    truststore:
+      type: "JCERACFKS"
+      file: "safkeyring://<stc_username>/<keyring_name>"
+      password: "password"
   runtimeDirectory: "/test/dir"
   logDirectory: "/test/dir/logs"
   workspaceDirectory: "/test/dir/workspace"
@@ -281,22 +300,9 @@ zowe:
   - "ZWEL0001I"
   - "ZWEL0002I"
   - "ZWEAM000I"
+  - "ZWEAM001I"
   - "ZWED0031I"
   - "ZWES1013I"
-  certificate:
-    keystore:
-      type: "PKCS12"
-      file: "/global/zowe/keystore/localhost/localhost.keystore.p12"
-      password: "password"
-      alias: "localhost"
-    truststore:
-      type: "PKCS12"
-      file: "/global/zowe/keystore/localhost/localhost.truststore.p12"
-      password: "password"
-    pem:
-      key: "/global/zowe/keystore/localhost/localhost.key"
-      certificate: "/global/zowe/keystore/localhost/localhost.cer"
-      certificateAuthorities: "/global/zowe/keystore/local_ca/local_ca.cer"
 components:
   apiml:
     enabled: true
