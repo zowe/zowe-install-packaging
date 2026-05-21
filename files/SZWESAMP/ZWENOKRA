@@ -52,7 +52,7 @@ ACF
   SET RESOURCE(FAC)
   RECKEY IRR DEL(DIGTCERT.GENCERT +
   ROLE({zowe.setup.security.groups.stc}) +
-  SERVICE(CONTROL) ALLOW)
+  SERVICE(UPDATE) ALLOW)
 
 * Remove permit to read keyring ....................................*/
   RECKEY IRR DEL(DIGTCERT.LISTRING +

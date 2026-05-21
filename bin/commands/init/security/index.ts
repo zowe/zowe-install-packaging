@@ -17,6 +17,21 @@ import * as json from '../../../libs/json';
 import * as zoslib from '../../../libs/zos';
 import * as zosJes from '../../../libs/zos-jes';
 import * as initGenerate from '../generate/index';
+import * as template from '../../../libs/template';
+import * as zosDataset from '../../../libs/zos-dataset';
+
+function splitByHlqAndRest(datasetName: string): { hlq: string, rest: string } {
+  const idx = datasetName.indexOf('.');
+
+  if (idx === -1) {
+    return { hlq: datasetName, rest: '' };
+  }
+
+  return {
+    hlq: datasetName.slice(0, idx),
+    rest: datasetName.slice(idx + 1)
+  };
+}
 
 export function execute(dryRun?: boolean, ignoreSecurityFailures?: boolean) {
   common.printLevel1Message(`Run Zowe security configurations`);
@@ -62,7 +77,43 @@ export function execute(dryRun?: boolean, ignoreSecurityFailures?: boolean) {
   if (zos.getZosVersion() < 0x1020500) {
     zosJes.printAndHandleJcl(`//'${jcllib}(ZWEI${securityPrefix}Z)'`, `ZWEI${securityPrefix}Z`, jcllib, prefix, false, ignoreSecurityFailures);
   }
-
+  // For ACF2:
+  //  - orignal JCL handles only standalone HLQ (like ZOWE)
+  //  - for prefix with more segments (like ZOWE.V3R5M0), we need to run an additional update
+  if (securityProduct == 'ACF2' && prefix.indexOf('.') != -1) {
+    const runtime = std.getenv('ZWE_zowe_runtimeDirectory');
+    const pathTemplatesSecurity = `${runtime}/files/templates/init/security/acf2.dataset.protection.tjcl`;
+    // We need extra data, join it with ZOWE_CONFIG to make it available for template resolution
+    const ACF2_ZOWE_CONFIG = {
+      ...ZOWE_CONFIG,
+      acf2Data: {
+        hlq: splitByHlqAndRest(prefix).hlq,
+        rest: splitByHlqAndRest(prefix).rest
+      }
+    };
+    // It is possible to define empty/null value for zowe.setup.security.groups.stc
+    if (ACF2_ZOWE_CONFIG.zowe.setup.security.groups.stc == null || ACF2_ZOWE_CONFIG.zowe.setup.security.groups.stc == '') {
+      ACF2_ZOWE_CONFIG.zowe.setup.security.groups.stc = std.getenv('ZWE_PRIVATE_DEFAULT_ADMIN_GROUP');
+    }
+    const acf2DatasetProtection = template.resolveFile(`${pathTemplatesSecurity}`, ACF2_ZOWE_CONFIG);
+    const zweiacf = zosDataset.readMember(`${jcllib}(ZWEIACF)`);
+    if (!zweiacf) {
+      common.printErrorAndExit(`Error ZWEL0327E: Failed to read ${jcllib}(ZWEIACF) - no content`, undefined, 327);
+    } else {
+      const updatedZweiacf = zweiacf.replace(/\* <acf2\.dataset\.protection>\n[\s\S]*?\n\* <acf2\.dataset\.protection>/, acf2DatasetProtection);
+      if (zweiacf === updatedZweiacf) {
+        common.printMessage(`WARNING: ${jcllib}(ZWEIACF) was already modified.`);
+        common.printMessage(`         To ensure the latest configuration is applied:`);
+        common.printMessage(`           - Run this command with --generate option`);
+        common.printMessage(`           - Or run 'zwe init generate' command`);
+      } else {
+        const updateRc = zosDataset.updateMember(`${jcllib}(ZWEIACF)`, updatedZweiacf);
+        if (updateRc != 0) {
+          common.printErrorAndExit(`Error ZWEL0160E: Failed to write to ${jcllib}(ZWEIACF). Please check if target data set is opened by others.`, undefined, 160);
+        }
+      }
+    }
+  }
   zosJes.printAndHandleJcl(`//'${jcllib}(ZWEI${securityPrefix})'`, `ZWEI${securityPrefix}`, jcllib, prefix, false, ignoreSecurityFailures);
   common.printMessage(``);
   common.printMessage(`WARNING: Due to the limitation of the ZWEI${securityPrefix} job, exit with 0 does not mean`);

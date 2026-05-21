@@ -1,0 +1,12 @@
+#!/bin/sh
+# Minimal java shim for tests: -version reports a fixed or env-driven version on stderr (like real java).
+case "$1" in
+  -version)
+    _ver="${JAVA_TESTENV_VERSION:-17.0.10}"
+    echo "java version \"${_ver}\" 2024-01-16" >&2
+    ;;
+  *)
+    echo "fakejava: unsupported invocation" >&2
+    exit 1
+    ;;
+esac

@@ -1,5 +1,5 @@
 {
-  "version": "3.3.0",
+  "version": "3.5.0",
   "rules": [
     {
       "description": "Caching service and Infinispan variables are present in the workflow and not present by default in example-zowe.yaml. These are valid variables. The default is infinispan.",
@@ -35,7 +35,15 @@
       "rule_entry": [
         "zowe_launchScript_startupChecks_default",
         "zowe_launchScript_startupChecks_ports",
-        "zowe_launchScript_startupChecks_zosmf"
+        "zowe_launchScript_startupChecks_zosmf",
+        "zowe_launchScript_startupChecks_components",
+        "zowe_launchScript_startupChecks_certificate",
+        "zowe_launchScript_startupChecks_user",
+        "zowe_launchScript_startupChecks_javaMin",
+        "zowe_launchScript_startupChecks_javaMax",
+        "zowe_launchScript_startupChecks_nodeMin",
+        "zowe_launchScript_startupChecks_nodeMax",
+        "zowe_launchScript_startupChecks_attls"
       ]
     },
     {

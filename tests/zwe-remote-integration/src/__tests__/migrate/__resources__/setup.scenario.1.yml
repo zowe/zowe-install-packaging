@@ -15,7 +15,7 @@ zowe:
       validity: 3650
       # san:
       #  # sample domain name
-      #  - dvipa.my-company.com
+      #  - dvipa.example.com
       #  # sample IP address
       #  - 12.34.56.78
   certificate:

@@ -11,11 +11,11 @@ exports[`unit-updateyaml (SHORT) update_yaml different config syntaxes 4`] = `
   * Exit code: 1
   * Output:
     - update zowe config PARMLIB(TEST.DATASET.PFX.PRMTST(ZWECONF)), key: "zowe.notexist" with value: /a/b/c, and validate: true
-      * Success
+      * jqset success
     Error: Validation of update to zowe-update-yaml found invalid JSON Schema data
     Validity Exceptions(s) with object at 
-      Validity Exceptions(s) with object at /zowe
-        unspecified additional property not allowed: 'notexist' at '/zowe/notexist'
+      Validity Exceptions(s) with object at zowe
+        unspecified additional property not allowed: 'notexist' at 'zowe.notexist'
 Error ZWEL0138E: Failed to update key zowe.notexist of file PARMLIB(TEST.DATASET.PFX.PRMTST(ZWECONF))."
 `;
 
@@ -24,13 +24,13 @@ exports[`unit-updateyaml (SHORT) update_yaml different config syntaxes 5`] = `
   * Exit code: 1
   * Output:
     - update zowe config PARMLIB(TEST.DATASET.PFX.PRMTST(ZWECONF)), key: "zowe.setup.jcl.enable" with value: badvalue, and validate: true
-      * Success
+      * jqset success
     Error: Validation of update to zowe-update-yaml found invalid JSON Schema data
     Validity Exceptions(s) with object at 
-      Validity Exceptions(s) with object at /zowe
-        Validity Exceptions(s) with object at /zowe/setup
-          Validity Exceptions(s) with object at /zowe/setup/jcl
-            type 'string' not permitted at /zowe/setup/jcl/enable; expecting type 'boolean'
+      Validity Exceptions(s) with object at zowe
+        Validity Exceptions(s) with object at zowe.setup
+          Validity Exceptions(s) with object at zowe.setup.jcl
+            type 'string' not permitted at zowe.setup.jcl.enable; expecting type 'boolean'
 Error ZWEL0138E: Failed to update key zowe.setup.jcl.enable of file PARMLIB(TEST.DATASET.PFX.PRMTST(ZWECONF))."
 `;
 
@@ -45,11 +45,11 @@ exports[`unit-updateyaml (SHORT) update_yaml different config syntaxes 9`] = `
   * Exit code: 1
   * Output:
     - update zowe config FILE(/test/dir/zowe.test.yaml), key: "zowe.notexist" with value: /a/b/c, and validate: true
-      * Success
+      * jqset success
     Error: Validation of update to zowe-update-yaml found invalid JSON Schema data
     Validity Exceptions(s) with object at 
-      Validity Exceptions(s) with object at /zowe
-        unspecified additional property not allowed: 'notexist' at '/zowe/notexist'
+      Validity Exceptions(s) with object at zowe
+        unspecified additional property not allowed: 'notexist' at 'zowe.notexist'
 Error ZWEL0138E: Failed to update key zowe.notexist of file FILE(/test/dir/zowe.test.yaml)."
 `;
 
@@ -58,13 +58,13 @@ exports[`unit-updateyaml (SHORT) update_yaml different config syntaxes 10`] = `
   * Exit code: 1
   * Output:
     - update zowe config FILE(/test/dir/zowe.test.yaml), key: "zowe.setup.jcl.enable" with value: badvalue, and validate: true
-      * Success
+      * jqset success
     Error: Validation of update to zowe-update-yaml found invalid JSON Schema data
     Validity Exceptions(s) with object at 
-      Validity Exceptions(s) with object at /zowe
-        Validity Exceptions(s) with object at /zowe/setup
-          Validity Exceptions(s) with object at /zowe/setup/jcl
-            type 'string' not permitted at /zowe/setup/jcl/enable; expecting type 'boolean'
+      Validity Exceptions(s) with object at zowe
+        Validity Exceptions(s) with object at zowe.setup
+          Validity Exceptions(s) with object at zowe.setup.jcl
+            type 'string' not permitted at zowe.setup.jcl.enable; expecting type 'boolean'
 Error ZWEL0138E: Failed to update key zowe.setup.jcl.enable of file FILE(/test/dir/zowe.test.yaml)."
 `;
 
@@ -79,11 +79,11 @@ exports[`unit-updateyaml (SHORT) update_yaml different config syntaxes 14`] = `
   * Exit code: 1
   * Output:
     - update zowe config /test/dir/zowe.test.yaml, key: "zowe.notexist" with value: /a/b/c, and validate: true
-      * Success
+      * jqset success
     Error: Validation of update to zowe-update-yaml found invalid JSON Schema data
     Validity Exceptions(s) with object at 
-      Validity Exceptions(s) with object at /zowe
-        unspecified additional property not allowed: 'notexist' at '/zowe/notexist'
+      Validity Exceptions(s) with object at zowe
+        unspecified additional property not allowed: 'notexist' at 'zowe.notexist'
 Error ZWEL0138E: Failed to update key zowe.notexist of file /test/dir/zowe.test.yaml."
 `;
 
@@ -92,12 +92,12 @@ exports[`unit-updateyaml (SHORT) update_yaml different config syntaxes 15`] = `
   * Exit code: 1
   * Output:
     - update zowe config /test/dir/zowe.test.yaml, key: "zowe.setup.jcl.enable" with value: badvalue, and validate: true
-      * Success
+      * jqset success
     Error: Validation of update to zowe-update-yaml found invalid JSON Schema data
     Validity Exceptions(s) with object at 
-      Validity Exceptions(s) with object at /zowe
-        Validity Exceptions(s) with object at /zowe/setup
-          Validity Exceptions(s) with object at /zowe/setup/jcl
-            type 'string' not permitted at /zowe/setup/jcl/enable; expecting type 'boolean'
+      Validity Exceptions(s) with object at zowe
+        Validity Exceptions(s) with object at zowe.setup
+          Validity Exceptions(s) with object at zowe.setup.jcl
+            type 'string' not permitted at zowe.setup.jcl.enable; expecting type 'boolean'
 Error ZWEL0138E: Failed to update key zowe.setup.jcl.enable of file /test/dir/zowe.test.yaml."
 `;
