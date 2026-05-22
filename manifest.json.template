@@ -114,27 +114,27 @@
       "artifact": "*.pax"
     },
     "org.zowe.bind-test": {
-      "version": "^3.0.0-V3.X-STAGING",
+      "version": "^3.4.0-FEATURE-V3-CONFIGMGR-LINUX-CLANG",
       "artifact": "*.pax"
     },
     "org.zowe.attls-test": {
-      "version": "^3.4.0-V3.X-STAGING",
+      "version": "^3.4.0-FEATURE-V3-CONFIGMGR-LINUX-CLANG",
       "artifact": "*.pax"
     },
     "org.zowe.zis-test": {
-      "version": "^3.0.0-V3.X-STAGING",
+      "version": "^3.4.0-FEATURE-V3-CONFIGMGR-LINUX-CLANG",
       "artifact": "*.pax"
     },
     "org.zowe.configmgr": {
-      "version": "^3.0.0-V3.X-STAGING",
+      "version": "^3.5.0-FEATURE-V3-CONFIGMGR-LINUX-CLANG",
       "artifact": "*.pax"
     },
     "org.zowe.configmgr-rexx": {
-      "version": "^3.0.0-V3.X-STAGING",
+      "version": "^3.5.0-FEATURE-V3-CONFIGMGR-LINUX-CLANG",
       "artifact": "*.pax"
     },
     "org.zowe.launcher": {
-      "version": "^3.0.0-STAGING",
+      "version": "^3.6.0-PR-197",
       "artifact": "*.pax"
     },
     "org.zowe.keyring-utilities": {
