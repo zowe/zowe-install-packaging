@@ -88,7 +88,7 @@ export function execute(quitOnError?: boolean): number {
 
   const result = shell.execOutErrSync(
     javaExec,
-    '-Djava.protocol.handler.pkgs=com.ibm.crypto.provider',
+    '--add-modules', 'ibm.crypto.zsecurity,ibm.crypto.hdwrcca',
     '-jar', jarPath,
     '--zosmf-host', zosmfHost,
     '--zosmf-port', String(zosmfPort),
