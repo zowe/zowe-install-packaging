@@ -124,7 +124,7 @@ These Zowe environment variables are created globally. Any Zowe components, exte
 - `ZWE_PRIVATE_LOG_FILE` holds the value of log file if `--log-dir|--log|-l` is defined.
 - `ZWE_PRIVATE_LOG_LEVEL_ZWELS`, calculated log level based on `--debug|-v|--verbose|--trace|-vv` `zwe` command parameters. Default value is `INFO`. Other possible values are: `DEBUG` or `TRACE`. In Zowe runtime, value of `zowe.launchScript.logLevel` defined in Zowe YAML configuration file will overwrite this value.
 - `ZWE_PRIVATE_WORKSPACE_ENV_DIR` is where Zowe stores calculated environment
-- `ZWE_PRIVATE_HA_INSTANCE_CONFIG` is the path to the fully-resolved, per-HA-instance merged YAML config file (e.g. `.zowe-lpar1-merged.yaml`). Set during `zwe internal start prepare` when an HA instance is active. Components such as ZSS can read this to get the instance-specific configuration with all `haInstances` overrides already applied at the top level. The `haInstances` block is intentionally retained in the file so that consumers (e.g. ZSS cookie-name logic) can still inspect the full set of HA instances.
+- `ZWE_HA_INSTANCE_CONFIG` is the path to the fully-resolved, per-HA-instance merged YAML config file (e.g. `.zowe-lpar1-merged.yaml`). Set during `zwe internal start prepare` when an HA instance is active. Components such as ZSS can read this to get the instance-specific configuration with all `haInstances` overrides already applied at the top level. The `haInstances` block is intentionally retained in the file so that consumers (e.g. ZSS cookie-name logic) can still inspect the full set of HA instances.
 
 ### Generated environment variables from Zowe YAML configuration
 

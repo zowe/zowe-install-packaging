@@ -319,10 +319,9 @@ export function cleanupTempDir() {
 
 /**
  * Resolves the workspace .env directory used to write merged YAML files.
- * Returns the resolved directory path (string) on success, or a non-zero
- * numeric error code on failure.
+ * Returns the resolved directory path on success, or undefined on failure.
  */
-function resolveWorkspaceEnvDir(workspace: string): string | number {
+function resolveWorkspaceEnvDir(workspace: string): string | undefined {
   const dirResult = getTempMergedYamlDir();
   if (typeof dirResult == 'string') {
     return dirResult;
@@ -334,28 +333,15 @@ function resolveWorkspaceEnvDir(workspace: string): string | number {
     }
     fs.mkdirp(workspace, 0o770);
     const mkdirrc = fs.mkdirp(zwePrivateWorkspaceEnvDir, 0o700);
-    if (mkdirrc) { return mkdirrc; }
+    if (mkdirrc) { return undefined; }
     return zwePrivateWorkspaceEnvDir;
   } else {
-    return dirResult;
+    return undefined;
   }
 }
 
-function writeMergedConfig(config: any): number {
-  const workspace = config.zowe.workspaceDirectory;
-
-  const dirOrErr = resolveWorkspaceEnvDir(workspace);
-  if (typeof dirOrErr !== 'string') { return dirOrErr; }
-
-  const destination = `${dirOrErr}/.zowe-merged.yaml`;
-  /* We don't write it in JSON, but we could!
-  const jsonDestination = `${zwePrivateWorkspaceEnvDir}/.zowe.json`;
-  const jsonRC = xplatform.storeFileUTF8(jsonDestination, xplatform.AUTO_DETECT, JSON.stringify(ZOWE_CONFIG, null, 2));
-  if (jsonRC) {
-    console.log(`Error: Could not write json ${jsonDestination}, rc=${jsonRC}`);
-  }
-  */
-  //const yamlReturn = CONFIG_MGR.writeYAML(getConfigRevisionName(ZOWE_CONFIG_NAME), destination);
+function writeMergedConfig(config: any, envDir: string): number {
+  const destination = `${envDir}/.zowe-merged.yaml`;
   let [ yamlStatus, textOrNull ] = CONFIG_MGR.writeYAML(getConfigRevisionName(ZOWE_CONFIG_NAME));
   if (yamlStatus == 0){
     const rc = xplatform.storeFileUTF8(destination, xplatform.AUTO_DETECT, textOrNull);
@@ -505,7 +491,10 @@ export function updateZoweConfig(updateObj: any, writeUpdate: boolean, arrayMerg
     HA_CONFIGS = {}; //reset
     if (writeUpdate) {
       writeZoweConfigUpdate(updateObj, arrayMergeStrategy, shouldValidate);
-      writeMergedConfig(ZOWE_CONFIG);
+      const dirOrErr = resolveWorkspaceEnvDir(ZOWE_CONFIG.zowe.workspaceDirectory);
+      if (dirOrErr !== undefined) {
+        writeMergedConfig(ZOWE_CONFIG, dirOrErr);
+      }
     }
   }
   return [ rc, ZOWE_CONFIG ];
@@ -589,7 +578,7 @@ function getConfig(configName: string, configPath: string, schemas: string, shou
   }
 }
 
-function makeHaConfig(haInstance: string): any {
+function makeHaConfig(haInstance: string, envDir: string): any {
   let config = getConfig(ZOWE_CONFIG_NAME, ZOWE_CONFIG_PATH, ZOWE_SCHEMA_SET);
   if (config.haInstances && config.haInstances[haInstance]) {
     let merger = new objUtils.Merger();
@@ -597,7 +586,7 @@ function makeHaConfig(haInstance: string): any {
     let mergedConfig = merger.merge(config.haInstances[haInstance], config);
     INSTANCE_KEYS_NOT_IN_BASE.forEach((key) => delete mergedConfig[key]);
     HA_CONFIGS[haInstance] = mergedConfig;
-    writeHaMergedConfig(haInstance);
+    writeHaMergedConfig(haInstance, envDir);
     return mergedConfig;
   }
   return config;
@@ -611,17 +600,18 @@ function makeHaConfig(haInstance: string): any {
  *     inspect it (e.g. to count instances for cookie-name disambiguation).
  *
  * Output: <workspaceDirectory>/.env/.zowe-<haInstance>-merged.yaml
+ *
+ * @param haInstance  The HA instance name (e.g. "lpar1").
+ * @param envDir      The already-resolved workspace .env directory (from resolveWorkspaceEnvDir),
+ *                    passed in by the caller to avoid resolving it a second time.
  */
-export function writeHaMergedConfig(haInstance: string): number {
+function writeHaMergedConfig(haInstance: string, envDir: string): number {
   const config = getConfig(ZOWE_CONFIG_NAME, ZOWE_CONFIG_PATH, ZOWE_SCHEMA_SET);
   if (!config.haInstances || !config.haInstances[haInstance]) {
     return 0; // no HA overrides for this instance, nothing to do
   }
 
-  // Resolve the output directory (shared with writeMergedConfig via resolveWorkspaceEnvDir)
-  const dirOrErr = resolveWorkspaceEnvDir(config.zowe.workspaceDirectory);
-  if (typeof dirOrErr !== 'string') { return dirOrErr as number; }
-  const zwePrivateWorkspaceEnvDir = dirOrErr;
+  const zwePrivateWorkspaceEnvDir = envDir;
 
   // Build the override object from the haInstance entry, skipping instance-only keys
   // (hostname, sysname) since those don't belong at the root config level.
@@ -668,7 +658,7 @@ export function writeHaMergedConfig(haInstance: string): number {
       // Expose the path so ZSS and other external consumers can locate the
       // instance-specific config without reconstructing the workspace path themselves.
       // Mirrors how writeMergedConfig sets ZWE_CLI_PARAMETER_CONFIG for the global config.
-      std.setenv('ZWE_PRIVATE_HA_INSTANCE_CONFIG', destination);
+      std.setenv('ZWE_HA_INSTANCE_CONFIG', destination);
     } else {
       console.log(`Error: Could not write HA merged config to ${destination}, rc=${rc}`);
     }
@@ -681,12 +671,21 @@ export function loadZoweConfig(haInstance?: string): any {
   if (configLoaded && !haInstance) {
     return getConfig(ZOWE_CONFIG_NAME, ZOWE_CONFIG_PATH, ZOWE_SCHEMA_SET);
   } else if (configLoaded) {
-    return HA_CONFIGS[haInstance] || makeHaConfig(haInstance);
+    const config = getConfig(ZOWE_CONFIG_NAME, ZOWE_CONFIG_PATH, ZOWE_SCHEMA_SET);
+    const dirOrErr = resolveWorkspaceEnvDir(config.zowe.workspaceDirectory);
+    if (dirOrErr === undefined) { return HA_CONFIGS[haInstance] || config; }
+    return HA_CONFIGS[haInstance] || makeHaConfig(haInstance, dirOrErr);
   } else {
     let config = getConfig(ZOWE_CONFIG_NAME, ZOWE_CONFIG_PATH, ZOWE_SCHEMA_SET);
     configLoaded = true;
-    const writeResult = writeMergedConfig(config);
-    return haInstance ? makeHaConfig(haInstance) : config;
+    const dirOrErr = resolveWorkspaceEnvDir(config.zowe.workspaceDirectory);
+    if (dirOrErr === undefined) {
+      console.log(`Error: Could not resolve workspace env dir`);
+      std.exit(1);
+    }
+    const envDir = dirOrErr as string;
+    writeMergedConfig(config, envDir);
+    return haInstance ? makeHaConfig(haInstance, envDir) : config;
   }
 }
 
@@ -768,9 +767,9 @@ export function getZoweConfigEnv(haInstance: string): any {
   // Propagate the HA instance merged config path to child processes (e.g. ZSS)
   // so they can locate the fully-resolved, instance-specific YAML without
   // reconstructing the workspace path themselves.
-  const haInstanceConfig = std.getenv('ZWE_PRIVATE_HA_INSTANCE_CONFIG');
+  const haInstanceConfig = std.getenv('ZWE_HA_INSTANCE_CONFIG');
   if (haInstanceConfig) {
-    envs['ZWE_PRIVATE_HA_INSTANCE_CONFIG'] = haInstanceConfig;
+    envs['ZWE_HA_INSTANCE_CONFIG'] = haInstanceConfig;
     console.log(`Info: HA instance merged config for '${haInstance}' is available at: ${haInstanceConfig}`);
   }
 
