@@ -16,8 +16,8 @@
       "artifact": "zowe-server-*.pax.Z"
     },
     "org.zowe.zlux.zlux-core": {
-      "version": "3.5.0-1668-v3.x-staging-zlux-build",
-      "artifact": "zlux-core-3.5.0-20260518.141723.pax"
+      "version": "3.5.0-1686-v3.x-staging-zlux-build",
+      "artifact": "zlux-core-3.5.0-20260526.054834.pax"
     },
     "org.zowe.zlux.sample-angular-app": {
       "version": "^3.0.0-V3.X-STAGING",
@@ -40,15 +40,16 @@
       "artifact": "*.pax"
     },
     "org.zowe.zlux.zlux-editor": {
-      "version": "^3.0.0-V3.X-STAGING",
-      "artifact": "*.pax"
+      "version": "3.5.0-V3.X-STAGING",
+      "artifact": "zlux-editor-3.5.0-20260526.055607.pax"
     },
     "org.zowe.zss": {
       "version": "^3.0.0-STAGING",
       "artifact": "*.pax"
     },
     "org.zowe.explorer-jes": {
-      "version": "^3.0.0-SNAPSHOT"
+      "version": "3.0.6-PR-406",
+      "artifact": "explorer-jes-3.0.6-pr-406-861-20260521130303.pax"
     },
     "org.zowe.explorer-mvs": {
       "version": "^3.0.0-SNAPSHOT"
