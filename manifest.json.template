@@ -41,7 +41,7 @@
     },
     "org.zowe.zlux.zlux-editor": {
       "version": "3.5.0-MVD-6036",
-      "artifact": "zlux-editor-3.5.0-20260526.074741.pax"
+      "artifact": "zlux-editor-3.5.0-20260526.085743.pax"
     },
     "org.zowe.zss": {
       "version": "^3.0.0-STAGING",
@@ -49,7 +49,7 @@
     },
     "org.zowe.explorer-jes": {
       "version": "3.0.6-PR-406",
-      "artifact": "explorer-jes-3.0.6-pr-406-863-20260526065857.pax"
+      "artifact": "explorer-jes-3.0.6-pr-406-864-20260526082049.pax"
     },
     "org.zowe.explorer-mvs": {
       "version": "^3.0.0-SNAPSHOT"
