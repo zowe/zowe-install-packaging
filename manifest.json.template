@@ -48,13 +48,13 @@
       "artifact": "*.pax"
     },
     "org.zowe.explorer-jes": {
-      "version": "^3.0.0-SNAPSHOT"
+      "version": "^3.0.6-PR-408"
     },
     "org.zowe.explorer-mvs": {
-      "version": "^3.0.0-SNAPSHOT"
+      "version": "^3.0.6-PR-285"
     },
     "org.zowe.explorer-uss": {
-      "version": "^3.0.0-SNAPSHOT"
+      "version": "^3.0.6-PR-216"
     },
     "org.zowe.explorer-ip": {
       "version": "^3.0.0-SNAPSHOT",
