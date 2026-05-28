@@ -72,7 +72,7 @@ export function execute(quitOnError?: boolean): number {
   const javaExec = `${javaHome}/bin/java`;
 
   const runtimeDir = std.getenv('ZWE_zowe_runtimeDirectory');
-  const jarPath = `${runtimeDir}/bin/utils/zosmf-jwt-check.jar`;
+  const jarPath = `${runtimeDir}/bin/utils/certificate-analyser.jar`;
 
   // Collect truststore parameters from the Zowe YAML.
   const verifyCertificates = ZOWE_CONFIG.zowe?.verifyCertificates || 'STRICT';
@@ -90,6 +90,7 @@ export function execute(quitOnError?: boolean): number {
     javaExec,
     '--add-modules', 'ibm.crypto.zsecurity,ibm.crypto.hdwrcca',
     '-jar', jarPath,
+    '--zosmf-jwt-check',
     '--zosmf-host', zosmfHost,
     '--zosmf-port', String(zosmfPort),
     '--verify-certificates', verifyCertificates,

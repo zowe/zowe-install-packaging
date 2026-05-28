@@ -101,10 +101,6 @@
       "version": "^3.5.21-PR-tested-preflight-fix-SNAPSHOT",
       "artifact": "certificate-analyser-*.jar"
     },
-    "org.zowe.apiml.sdk.zosmf-jwt-check": {
-      "version": "^3.5.21-PR-tested-preflight-fix-SNAPSHOT",
-      "artifact": "zosmf-jwt-check-*.jar"
-    },
     "org.zowe.getesm": {
       "version": "^3.0.0-V3.X-STAGING",
       "artifact": "*.pax"

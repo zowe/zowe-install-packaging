@@ -2,7 +2,8 @@ Checks whether z/OSMF JWT support is correctly configured and operational when Z
 to use z/OSMF as the authentication provider with JWT autoconfiguration.
 
 This command reads the Zowe YAML configuration to determine whether the check is applicable,
-then invokes the zosmf-jwt-check.jar utility to probe z/OSMF for JWT support.
+then invokes the certificate-analyser.jar utility with the --zosmf-jwt-check flag to probe
+z/OSMF for JWT support.
 
 If Zowe is not configured to use z/OSMF as the authentication provider, the check succeeds
 immediately with an informational message.
