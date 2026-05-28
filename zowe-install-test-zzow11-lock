@@ -1,1 +1,15 @@
-""
+{
+  "lockAcquiredTime": "Thu May 28 2026 11:14:13 GMT+0000 (Coordinated Universal Time)",
+  "uid": "1779966853531555991",
+  "repository": {
+    "owner": "zowe",
+    "repo": "zowe-install-packaging"
+  },
+  "branch": "hrishikesh-nalawade/GH4592/certificate-analyzer-bug",
+  "workflow": "Zowe CICD Integration Tests",
+  "job": "cicd-test",
+  "actor": "zowe-robot",
+  "runId": 26571195491,
+  "runNumber": 8683,
+  "link": "https://github.com/zowe/zowe-install-packaging/actions/runs/26571195491"
+}
