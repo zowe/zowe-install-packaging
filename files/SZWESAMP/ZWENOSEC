@@ -317,7 +317,7 @@ SET RESOURCE(FAC)
 RECKEY IRR DEL(RAUDITX ROLE(&STCGRP.) SERVICE(READ) ALLOW)
 F ACF2,REBUILD(FAC)
 
-*  Remove  data set protection
+* Remove data set protection
 SET RULE
 LIST &HLQ.
 DELETE &HLQ.

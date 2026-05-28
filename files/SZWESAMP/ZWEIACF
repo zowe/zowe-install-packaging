@@ -217,22 +217,42 @@ RECKEY IRR ADD(RAUDITX ROLE({zowe.setup.security.groups.stc}) +
 F ACF2,REBUILD(FAC)
 
 *
-* DEFINE ZOWE DATA SET PROTECTION .................................
+* DEFINE ZOWE DATA SET PROTECTION - HLQ ONLY ......................
 *
-* - HLQ..SZWEAUTH is an APF authorized data set. It is strongly
+* - HLQ.SZWEAUTH is an APF authorized data set. It is strongly
 *   advised to protect it against updates.
 *
 *  HLQ stub
 SET RULE
 *  general data set protection
 LIST {zowe.setup.dataset.prefix}
-RECKEY {zowe.setup.dataset.prefix} ADD(- UID(-) READ(A) EXEC(P))
 RECKEY {zowe.setup.dataset.prefix} +
-ADD(- UID({zowe.setup.security.groups.sysProg}) +
+  ADD(- ROLE(-) READ(A) EXEC(P))
+RECKEY {zowe.setup.dataset.prefix} +
+  ADD(- ROLE({zowe.setup.security.groups.stc}) +
   READ(A) EXEC(A) ALLOC(A) WRITE(A))
 *
 *  show results
 LIST {zowe.setup.dataset.prefix}
+*
+
+* DEFINE ZOWE DATA SET PROTECTION - COMPOUND DATA SET..............
+* PREFIX_HLQ is the High-Level Qualifier only
+* PREFIX_REST is the rest after the HLQ
+* Example: zowe.setup.dataset.prefix = ZOWE.V2.DEV
+*  -> PREFIX_HLQ = ZOWE
+*  -> PREFIX_REST = V2.DEV
+* SET RULE
+*  general data set protection
+* LIST PREFIX_HLQ
+* RECKEY PREFIX_HLQ +
+*   ADD(PREFIX_REST.- ROLE(-) READ(A) EXEC(P))
+* RECKEY PREFIX_HLQ +
+*   ADD(PREFIX_REST.- ROLE({zowe.setup.security.groups.stc}) +
+*   READ(A) EXEC(A) ALLOC(A) WRITE(A))
+*
+*  show results
+* LIST PREFIX_HLQ
 *
 
 *
