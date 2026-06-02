@@ -119,6 +119,7 @@ function getJobStatus(jobId: string): { status: string, cc: string, name: string
         TSU83841,ABEND 522,JOHN1234,OUTPUT,T0083841NODELPARE146573E.......:,AWAITING OUTPUT
         JOB60356,SEC ERROR,ZWESECUR,OUTPUT,J0060356NODELPARE1462840.......:,AWAITING OUTPUT
         JOB33252,CC 0000,ZWEINSTL,OUTPUT,J0033252NODELPARE1497477.......:,AWAITING OUTPUT
+        JOB12345,,ZWEGENER,SPIN,J0012345NODELPARE1897477.......:,SPIN
         */
         const columns = line.split(','); //TODO: commas should be safe, not legal jobname/correlator? how about user id?
         compCode = columns[1];

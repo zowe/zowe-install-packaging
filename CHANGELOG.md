@@ -5,6 +5,7 @@ All notable changes to the Zowe Installer will be documented in this file.
 ## `3.6.0`
 
 - Bugfix: Fixed `MalformedURLException: unknown protocol: safkeyring` on IBM Java 17/21 for `zwe validate certificate` command by replacing `-Djava.protocol.handler.pkgs=com.ibm.crypto.provider` with `--add-modules ibm.crypto.zsecurity,ibm.crypto.hdwrcca` to resolve the SAF keyring URL protocol handler. [#4795](https://github.com/zowe/zowe-install-packaging/pull/4795)
+- Bugfix: JCL status `SPIN` was not recognized. [#4798](https://github.com/zowe/zowe-install-packaging/pull/4798)
 
 ## `3.5.0`
 
