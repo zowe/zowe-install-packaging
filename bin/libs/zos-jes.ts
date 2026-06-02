@@ -156,6 +156,10 @@ export function waitForJob(jobid: string): { jobcccode?: string, jobid?: string,
         // job have CC state
         break;
       }
+      // No CC, but the status is SPIN -> job ended
+      if (jobcccode == '' && jobstatus.toUpperCase() == 'SPIN') {
+        break;
+      }
 
     } catch (e) {
       common.printTrace(`. * Error trying to get job status: ${e}`);
