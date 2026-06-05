@@ -1716,7 +1716,7 @@ echo '    # Allowed domains is a list of domains (supporting wildcards) that can
 echo '    # Defaults to the external domains + lpar hostnames if defined in haInstances' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
 echo '    allowedDomains:' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
 #foreach($allowedDomain in ${instance-zowe_network_allowedDomains.split("\n")})
-echo '    - ${allowedDomain}' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
+echo '      - ${allowedDomain}' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
 #end
 echo '    server:' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
 echo '      tls:' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
