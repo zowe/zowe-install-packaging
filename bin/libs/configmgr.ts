@@ -211,6 +211,48 @@ function getDiscoveryServiceUrl(config) {
   return getDiscoveryServiceUrlNonHa(config);
 }
 
+function getDefaultAllowedDomains(config) {
+// build the list of allowed domains from the external domain + lpar hostnames if defined
+
+// add defaults 
+  const list: string[] = [];
+
+  const haInstanceKeys = Object.keys(config.haInstances);
+  const externalDomains = config.zowe.externalDomains;
+  const defaultsFromYaml = config.zowe.network.allowedDomainsDefaults;
+  
+  if (config.haInstances) {
+    for (const haInstanceKey of haInstanceKeys) {
+      const haInstance = config.haInstances[haInstanceKey];
+  
+      if (!haInstance.hostname) {
+        console.log(`Error: 'hostname' value is missing for haInstance '${haInstanceKey}'`);
+
+        std.exit(1);
+      }
+      list.push(haInstance.hostname);
+    }
+  }
+
+  return Array.from(new Set([
+    ...list,
+    ...(externalDomains || []),
+    ...(defaultsFromYaml || [])
+  ]));
+}
+
+function getAllowedDomains(config) {
+  const defaults = getDefaultAllowedDomains(config);
+
+  let allowedDomains = config.zowe.network.allowedDomains;
+  
+  return Array.from(new Set([
+    ...(defaults || []),
+    ...allowedDomains || []
+  ]));
+  
+}
+
 function writeZoweConfigUpdate(updateObj: any, arrayMergeStrategy: number, shouldValidate: boolean=true): number {
   let firstConfigPath = ZOWE_CONFIG_PATH.split(':')[0];
 
@@ -676,6 +718,12 @@ export function getZoweConfigEnv(haInstance: string): any {
   if (!envs['ZWE_DISCOVERY_SERVICES_LIST']) {
     let list = getDiscoveryServiceUrl(config);
     envs['ZWE_DISCOVERY_SERVICES_LIST'] = list.join(',');
+  }
+
+  envs['ZWE_ALLOWED_DOMAINS'] = std.getenv('ZWE_ALLOWED_DOMAINS');
+  if (!envs['ZWE_ALLOWED_DOMAINS']) {
+    let list = getAllowedDomains(config);
+    envs['ZWE_ALLOWED_DOMAINS'] = list.join(',');
   }
 
   envs['ZWE_haInstance_id'] = haInstance;
