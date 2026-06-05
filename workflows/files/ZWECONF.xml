@@ -330,7 +330,7 @@ some use cases, like containerization, this port could be different.</descriptio
         <string valueMustBeChoice="false" multiLine="true">
             <!-- Put validation here -->
             <!-- Specify choices here -->
-            <default>example.com</default>
+            <default>www.example.com</default>
         </string>
     </variable>
     <variable name="zowe_certificate_keystore_type" scope="instance" visibility="public">
@@ -1715,7 +1715,9 @@ echo '  network:' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
 echo '    # Allowed domains is a list of domains (supporting wildcards) that can be used in services that register to the API ML Discovery Service' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
 echo '    # Defaults to the external domains + lpar hostnames if defined in haInstances' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
 echo '    allowedDomains:' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
-echo '      - "www.example.com"' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
+#foreach($allowedDomain in ${instance-zowe_network_allowedDomains.split("\n")})
+echo '    - ${allowedDomain}' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
+#end
 echo '    server:' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
 echo '      tls:' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
 echo '        attls: ${instance-zowe_network_server_tls_attls}' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
