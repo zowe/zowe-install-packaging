@@ -1075,8 +1075,6 @@ echo '  #              is validate. This is recommended for the best security.' 
 echo '  # - NONSTRICT: will validate if the certificate is trusted in our trust store.' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '  #              This mode does not validate certificate Common Name and Subject' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '  #              Alternative Name (SAN).' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '  # - DISABLED:  disable certificate validation. This is NOT recommended for' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '  #              security.' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '  verifyCertificates: STRICT' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"

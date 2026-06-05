@@ -136,8 +136,6 @@ zowe:
   # - NONSTRICT: will validate if the certificate is trusted in our trust store.
   #              This mode does not validate certificate Common Name and Subject
   #              Alternative Name (SAN).
-  # - DISABLED:  disable certificate validation. This is NOT recommended for
-  #              security. 
   verifyCertificates: STRICT
 
 #-------------------------------------------------------------------------------

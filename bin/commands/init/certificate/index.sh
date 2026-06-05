@@ -119,9 +119,7 @@ verify_certificates=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.verifyCerti
 if [ "${verify_certificates}" = "STRICT" -o "${verify_certificates}" = "NONSTRICT" ]; then
   keyring_trust_zosmf="--trust-zosmf"
 else
-  # no need to trust z/OSMF service
-  zosmf_host=
-  zosmf_port=
+  print_error_and_exit "Error ZWEL0164E: Value of verify certificates (zowe.verifyCertificates) defined in Zowe YAML configuration file is invalid. Valid values are STRICT, or NONSTRICT." "" 164
 fi
 
 

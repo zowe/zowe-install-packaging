@@ -206,15 +206,6 @@
       "zowe.verifyCertificates": "NONSTRICT"
   when: not zowe_apiml_verify_certficates_of_services and zowe_apiml_nonstrict_verify_certficates_of_services
 
-- name: Update zowe.yaml zowe.verifyCertificates to DISABLED
-  import_role:
-    name: zos
-    tasks_from: update_zowe_yaml
-  vars:
-    configs:
-      "zowe.verifyCertificates": "DISABLED"
-  when: not zowe_apiml_verify_certficates_of_services and not zowe_apiml_nonstrict_verify_certficates_of_services
-
 - name: Update zowe.yaml zowe.setup.vsam
   import_role:
     name: zos
