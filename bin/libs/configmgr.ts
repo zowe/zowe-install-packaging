@@ -212,9 +212,6 @@ function getDiscoveryServiceUrl(config) {
 }
 
 function getDefaultAllowedDomains(config) {
-// build the list of allowed domains from the external domain + lpar hostnames if defined
-
-// add defaults 
   const list: string[] = [];
 
   const haInstanceKeys = Object.keys(config.haInstances);

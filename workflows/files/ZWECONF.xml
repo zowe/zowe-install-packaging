@@ -322,6 +322,17 @@ some use cases, like containerization, this port could be different.</descriptio
             <default>TLSv1.3</default>
         </string>
     </variable>
+    <variable name="zowe_network_allowedDomains" scope="instance" visibility="public">
+        <label>Zowe allowed domains</label>
+        <abstract>The list of allowed domains in services that register to the API ML Discovery Service</abstract>
+        <description>Defines a list of domains that can be used by the Zowe instance.</description>
+        <category>network</category>
+        <string valueMustBeChoice="false" multiLine="true">
+            <!-- Put validation here -->
+            <!-- Specify choices here -->
+            <default>example.com</default>
+        </string>
+    </variable>
     <variable name="zowe_certificate_keystore_type" scope="instance" visibility="public">
         <label>Zowe certificate keystore type</label>
         <abstract>Certificate keystore type (PKCS12, JCEKS, JCECCAKS, JCERACFKS, JCECCARACFKS, or JCEHYBRIDRACFKS)</abstract>
@@ -1112,6 +1123,8 @@ How we want to verify SSL certificates of services. Valid values are:
             <variableValue name="zowe_network_server_tls_minTls" scope="instance" noPromptIfSet="false" required="false"/>
             <variableValue name="zowe_network_server_tls_maxTls" scope="instance" noPromptIfSet="false" required="false"/>
             <variableValue name="zowe_network_client_tls_attls" scope="instance" noPromptIfSet="false" required="false"/>
+            <variableValue name="zowe_network_allowedDomains" scope="instance" noPromptIfSet="false" required="false"/>
+            <variableValue name="zowe_network_allowedDomainsDefaults" scope="instance" noPromptIfSet="false" required="false"/>
             <variableValue name="zowe_launchScript_logLevel" scope="instance" noPromptIfSet="false" required="false"/>
             <variableValue name="zowe_launchScript_onComponentConfigureFail" scope="instance" noPromptIfSet="false" required="false"/>
             <variableValue name="zowe_certificate_keystore_type" scope="instance" noPromptIfSet="false" required="true"/>
