@@ -1392,6 +1392,20 @@ const zoweSchema = zoweYamlSchema as {
           type: 'string';
           description: "This is a variable derived from gateway's ATTLS state to be used by servers proxied through it in eureka or static definitions";
         };
+        allowedDomains: {
+          type: 'array';
+          description: 'List of domains (supporting wildcards) that are allowed to register with the API ML Discovery Service.';
+          items: {
+            type: 'string';
+          };
+        };
+        allowedDomainsDefaults: {
+          type: 'array';
+          description: 'List of domains (supporting wildcards) that are allowed to register with the API ML Discovery Service.';
+          items: {
+            type: 'string';
+          };
+        };
         server: {
           type: 'object';
           description: 'Optional, advanced network configuration parameters for Zowe servers';
