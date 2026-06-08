@@ -214,11 +214,11 @@ function getDiscoveryServiceUrl(config) {
 function getDefaultAllowedDomains(config) {
   const list: string[] = [];
 
-  const haInstanceKeys = Object.keys(config.haInstances);
   const externalDomains = config.zowe.externalDomains;
   const defaultsFromYaml = config.zowe.network.allowedDomainsDefaults;
   
   if (config.haInstances) {
+    const haInstanceKeys = Object.keys(config.haInstances);
     for (const haInstanceKey of haInstanceKeys) {
       const haInstance = config.haInstances[haInstanceKey];
   
