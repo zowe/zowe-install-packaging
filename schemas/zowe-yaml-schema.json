@@ -1253,7 +1253,7 @@
         },
         "allowedDomains": {
           "type": "array",
-          "description": "List of domains (supporting wildcards) that are allowed to register with the API ML Discovery Service.",
+          "description": "List of domains (supporting wildcards for subdomains) that are allowed to register with the API ML Discovery Service.",
           "items": {
             "type": "string"
           }
