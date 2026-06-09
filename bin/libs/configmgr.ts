@@ -178,6 +178,27 @@ function getDiscoveryServiceUrlHa(config) {
   return list;
 }
 
+function getInfinispanInitialHosts(config: any): string | null {
+  if (!config.haInstances) return null;
+  
+  const port = config.components?.['caching-service']?.storage?.infinispan?.jgroups?.port || 7600;
+  const hosts: string[] = [];
+  
+  for (const haInstanceKey of Object.keys(config.haInstances)) {
+    const haInstance = config.haInstances[haInstanceKey];
+    if (!haInstance.hostname) {
+      console.log(`Error: 'hostname' value is missing for haInstance '${haInstanceKey}'`);
+      continue;
+    }
+    const host = `${haInstance.hostname}[${port}]`;
+    if (!hosts.includes(host)) {
+      hosts.push(host);
+    }
+  }
+  
+  return hosts.join(',');
+}
+
 function getDiscoveryServiceUrlNonHa(config) {
   const list = [];
   if (config.components?.discovery?.enabled !== true) {
@@ -635,6 +656,13 @@ export function getZoweConfigEnv(haInstance: string): any {
     overrides = haFlattener.flatten(config.haInstances[haInstance]);
   } else {
     envs['ZWE_haInstance_hostname'] = config.zowe.externalDomains[0];
+  }
+
+  if (config.haInstances) {
+    const initialHosts = getInfinispanInitialHosts(config);
+    if (initialHosts) {
+      envs['ZWE_configs_storage_infinispan_initialHosts'] = initialHosts;
+    }
   }
 
   
