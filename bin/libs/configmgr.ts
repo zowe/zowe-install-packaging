@@ -710,3 +710,7 @@ export function getZoweConfigEnv(haInstance: string): any {
   
   return envs;
 }
+
+export const _unit_test = {
+  getInfinispanInitialHosts
+};
