@@ -94,14 +94,6 @@
       ]
     },
     {
-      "description": "zowe_network_alloedDomainsDefaults is an internal setting derived in defaults.yaml",
-      "rule_target": "all",
-      "rule_type": "wf_missing_vars",
-      "rule_entry": [
-        "zowe_network_allowedDomainsDefaults"
-      ]
-    },
-    {
       "description": "many component settings for the APIML-only workflow are set by default within the workflow",
       "rule_target": "ZWEAMLCF",
       "rule_type": "wf_missing_vars",

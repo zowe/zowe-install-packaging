@@ -91,10 +91,6 @@ zowe:
   network:
     # This is a variable derived from gateway's ATTLS state to be used by servers proxied through it in eureka or static definitions.
     proxyType: "${{ components.gateway?.zowe?.network?.server?.tls?.attls == true ? 'http' : zowe.network?.server?.tls?.attls == true ? 'http' : 'https' }}"
-    allowedDomainsDefaults:
-      - "www.ibm.com"
-      - "zowe.github.io"
-      - "www.zowe.org"
 
   configmgr:
     # STRICT=quit on any error, including missing schema

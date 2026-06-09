@@ -215,7 +215,6 @@ function getDefaultAllowedDomains(config) {
   const list: string[] = [];
 
   const externalDomains = config.zowe.externalDomains;
-  const defaultsFromYaml = config.zowe.network.allowedDomainsDefaults;
   
   if (config.haInstances) {
     const haInstanceKeys = Object.keys(config.haInstances);
@@ -234,7 +233,6 @@ function getDefaultAllowedDomains(config) {
   return Array.from(new Set([
     ...list,
     ...(externalDomains || []),
-    ...(defaultsFromYaml || [])
   ]));
 }
 

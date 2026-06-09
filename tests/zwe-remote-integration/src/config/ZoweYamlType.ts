@@ -1399,13 +1399,6 @@ const zoweSchema = zoweYamlSchema as {
             type: 'string';
           };
         };
-        allowedDomainsDefaults: {
-          type: 'array';
-          description: 'List of domains (supporting wildcards) that are allowed to register with the API ML Discovery Service.';
-          items: {
-            type: 'string';
-          };
-        };
         server: {
           type: 'object';
           description: 'Optional, advanced network configuration parameters for Zowe servers';

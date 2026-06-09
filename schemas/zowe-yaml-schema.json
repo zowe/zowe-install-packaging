@@ -1263,18 +1263,6 @@
             }
           }
         },
-        "allowedDomainsDefaults": {
-          "type": "array",
-          "description": "List of domains (supporting wildcards) that are allowed to register with the API ML Discovery Service.",
-          "uniqueItems": true,
-          "items": {
-            "type": "string",
-            "minLength": 1,
-            "not": {
-              "type": "null"
-            }
-          }
-        },
         "server": {
           "type": "object",
           "description": "Optional, advanced network configuration parameters for Zowe servers",
