@@ -25,7 +25,7 @@ export function execute(quitOnError?: boolean): number {
   const zosmfHost = ZOWE_CONFIG.zOSMF?.host;
   const zosmfPort = ZOWE_CONFIG.zOSMF?.port;
   if (!zosmfHost || !zosmfPort) {
-    const msg = `ZWEL0359E: z/OSMF host (zosmf.host) or port (zosmf.port) is not configured in the Zowe YAML.` +
+    const msg = `ZWEL0337E: z/OSMF host (zosmf.host) or port (zosmf.port) is not configured in the Zowe YAML.` +
       ` Cannot validate z/OSMF JWT support without a z/OSMF destination.`;
     if (quitOnError) {
       common.printErrorAndExit(msg, undefined, 359);
@@ -39,7 +39,7 @@ export function execute(quitOnError?: boolean): number {
   const discoveryEnabled = ZOWE_CONFIG.components?.discovery?.enabled === true;
   const apimlEnabled = ZOWE_CONFIG.components?.apiml?.enabled === true;
   if (!discoveryEnabled && !apimlEnabled) {
-    const msg = `ZWEL0360E: Neither components.discovery.enabled nor components.apiml.enabled is set to true.` +
+    const msg = `ZWEL0338E: Neither components.discovery.enabled nor components.apiml.enabled is set to true.` +
       ` The required APIML servers are not enabled for z/OSMF access.`;
     if (quitOnError) {
       common.printErrorAndExit(msg, undefined, 360);
@@ -105,7 +105,7 @@ export function execute(quitOnError?: boolean): number {
       common.printFormattedWarn(
         common.MSG_KEY,
         COMMAND_NAME,
-        `ZWEL0361W: z/OSMF JWT check failed (rc=${result.rc}) but jwtAutoconfiguration is 'ltpa',` +
+        `ZWEL0339W: z/OSMF JWT check failed (rc=${result.rc}) but jwtAutoconfiguration is 'ltpa',` +
           ` so JWT support is not required for this Zowe configuration.` +
           ` z/OSMF JWT support may not be available.`
       );
@@ -121,7 +121,7 @@ export function execute(quitOnError?: boolean): number {
     // JWT mode requires z/OSMF JWT support - this is an error.
     const jarOutput = [result.out, result.err].filter(Boolean).join('\n');
     const errorMsg =
-      `ZWEL0362E: z/OSMF JWT check failed (rc=${result.rc}).` +
+      `ZWEL0340E: z/OSMF JWT check failed (rc=${result.rc}).` +
       ` Zowe requires z/OSMF JWT support (jwtAutoconfiguration is '${jwtAutoconfigRaw}') but it is not working.\n` +
       `\nJar output:\n${jarOutput}\n` +
       `\nZowe YAML parameters that led to this result:` +
