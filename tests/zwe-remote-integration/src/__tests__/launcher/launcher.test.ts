@@ -33,7 +33,7 @@ describe(`${testSuiteName}`, () => {
       type: FileType.USS_DIR,
     };
     const cleanSecurityManager = (input: string) => {
-      return input.replaceAll(/TSS|ACF2|RACF/gi, 'ESMT'); // ESM TEST
+      return input.replaceAll(/(?<!JCE)(TSS|ACF2|RACF)/gi, 'ESMT'); // ESM TEST
     };
     testRunner.addCleanFn(cleanSecurityManager);
   });
