@@ -4,7 +4,12 @@ All notable changes to the Zowe Installer will be documented in this file.
 
 ## `3.6.0`
 
+### Breaking Changes
+-	The Zowe YAML parameter `zowe.verifyCertificates` has changed. The value “DISABLED” is no longer allowed, and you must choose either the default of “STRICT” or “NONSTRICT” depending on if the certificate Command Name and Subject Alternative Name (SAN) is validated. See example-zowe.yaml for new values. For more information on this change, please see the API Mediation Layer's 3.0.0 Breaking Changes.
+
+### New features and enhancements
 - Bugfix: Fixed `MalformedURLException: unknown protocol: safkeyring` on IBM Java 17/21 for `zwe validate certificate` command by replacing `-Djava.protocol.handler.pkgs=com.ibm.crypto.provider` with `--add-modules ibm.crypto.zsecurity,ibm.crypto.hdwrcca` to resolve the SAF keyring URL protocol handler. [#4795](https://github.com/zowe/zowe-install-packaging/pull/4795)
+- Enhancement: Remove option to disable SSL certificate verification from zowe.verifyCertificates in zowe.yaml.
 
 ## `3.5.0`
 
