@@ -28,11 +28,11 @@ export function execute(quitOnError?: boolean): number {
     const msg = `ZWEL0337E: z/OSMF host (zosmf.host) or port (zosmf.port) is not configured in the Zowe YAML.` +
       ` Cannot validate z/OSMF JWT support without a z/OSMF destination.`;
     if (quitOnError) {
-      common.printErrorAndExit(msg, undefined, 359);
+      common.printErrorAndExit(msg, undefined, 337);
     } else {
       common.printFormattedError(common.MSG_KEY, COMMAND_NAME, msg);
     }
-    return 359;
+    return 337;
   }
 
   // Verify that at least one of the required APIML servers is enabled.
@@ -42,11 +42,11 @@ export function execute(quitOnError?: boolean): number {
     const msg = `ZWEL0338E: Neither components.discovery.enabled nor components.apiml.enabled is set to true.` +
       ` The required APIML servers are not enabled for z/OSMF access.`;
     if (quitOnError) {
-      common.printErrorAndExit(msg, undefined, 360);
+      common.printErrorAndExit(msg, undefined, 338);
     } else {
       common.printFormattedError(common.MSG_KEY, COMMAND_NAME, msg);
     }
-    return 360;
+    return 338;
   }
 
   // Check whether the gateway is configured to use z/OSMF as the authentication provider.
@@ -144,7 +144,7 @@ export function execute(quitOnError?: boolean): number {
       `\n  zowe.launchScript.startupChecks.zosmfjwt: disabled (skip this check entirely)`;
 
     if (quitOnError) {
-      common.printErrorAndExit(errorMsg, undefined, 362);
+      common.printErrorAndExit(errorMsg, undefined, 340);
     } else {
       common.printFormattedError(common.MSG_KEY, COMMAND_NAME, errorMsg);
     }
