@@ -296,11 +296,15 @@ RECKEY IRR DEL(RAUDITX ROLE({zowe.setup.security.groups.stc}) +
        SERVICE(READ) ALLOW)
 F ACF2,REBUILD(FAC)
 
-*  Remove  data set protection
+*  Remove  data set protection - HLQ only
 SET RULE
-LIST {zowe.setup.dataset.prefix}.
-DELETE {zowe.setup.dataset.prefix}.
+LIST {zowe.setup.dataset.prefix}
+DELETE {zowe.setup.dataset.prefix}
 *
+*  Remove  data set protection - HLQ + additional qualifiers
+* SET RULE
+* LIST <hlq part of zowe.setup.dataset.prefix>
+* DELETE <hlq part of zowe.setup.dataset.prefix>
 
 * Remove ZOWE resource class
 

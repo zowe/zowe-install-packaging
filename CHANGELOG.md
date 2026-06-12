@@ -4,11 +4,14 @@ All notable changes to the Zowe Installer will be documented in this file.
 
 ## `3.6.0`
 
-- Enhancement: When running in HA mode, `zwe internal start prepare` now writes a per-HA-instance merged YAML config file (`.zowe-<haInstance>-merged.yaml`) to the workspace `.env` directory. This file contains the fully-resolved configuration for that instance with all `haInstances` overrides applied at the root level. The `haInstances` block is preserved in the written file so that consumers such as ZSS can still inspect it (e.g. to count instances for cookie-name disambiguation). The path to this file is exposed via the environment variable `ZWE_HA_INSTANCE_CONFIG` which is propagated to all child processes started for the instance. (https://github.com/zowe/zowe-install-packaging/pull/4759)
+- Enhancement: When running in HA mode, Zowe now creates a per-HA-instance merged YAML config file (`.zowe-<haInstance>-merged.yaml`) to the workspace `.env` directory. This file contains the fully-resolved configuration for that instance with all `haInstances` overrides applied at the root level. The `haInstances` block is preserved. The location of this file is recorded in environment variable `ZWE_HA_INSTANCE_CONFIG`. (https://github.com/zowe/zowe-install-packaging/pull/4759)
+- Bugfix: Fixed `MalformedURLException: unknown protocol: safkeyring` on IBM Java 17/21 for `zwe validate certificate` command by replacing `-Djava.protocol.handler.pkgs=com.ibm.crypto.provider` with `--add-modules ibm.crypto.zsecurity,ibm.crypto.hdwrcca` to resolve the SAF keyring URL protocol handler. [#4795](https://github.com/zowe/zowe-install-packaging/pull/4795)
 
 ## `3.5.0`
 
+- Bugfix: ACF2 data set protection statement is not correct. [#4769](https://github.com/zowe/zowe-install-packaging/pull/4769)
 - Bugfix: `zwe init mvs` could try to delete entire PARM library. [#4695](https://github.com/zowe/zowe-install-packaging/pull/4695)
+- Bugfix: `zwe init mvs` authloadlib copy now uses IEBCOPY instead of TSO REPRO, which corrupted load modules and caused S806 ABENDs at runtime. [#4757](https://github.com/zowe/zowe-install-packaging/pull/4757)
 - Enhancement: Startup now checks each Zowe server for if ATTLS rules are defined and warns if any misconfiguration is identified to assist with TLS configuration. [#4741](https://github.com/zowe/zowe-install-packaging/pull/4741)
 - Enhancement: Allow users to specify client certificates within `zowe.certificate`. [#4687](https://github.com/zowe/zowe-install-packaging/pull/4687)
 - Enhancement: `zwe init` no longer creates certificates by default. Use `zwe init --create-certificate` or `zwe init certificate` after defining the "zowe.setup.certificate" section of the YAML. You can use the examples provided within zowe/files/examples/setup/certificate. [#4238](https://github.com/zowe/zowe-install-packaging/pull/4238)

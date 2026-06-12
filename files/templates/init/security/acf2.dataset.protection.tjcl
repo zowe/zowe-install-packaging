@@ -1,0 +1,10 @@
+LIST ${this.acf2Data.hlq}
+RECKEY ${this.acf2Data.hlq} +
+  ADD(${this.acf2Data.rest}.- ROLE(-) +
+  READ(A) EXEC(P))
+RECKEY ${this.acf2Data.hlq} +
+  ADD(${this.acf2Data.rest}.- ROLE(${this.zowe.setup.security.groups.stc}) +
+  READ(A) EXEC(A) ALLOC(A) WRITE(A))
+*
+*  show results
+LIST ${this.acf2Data.hlq}
