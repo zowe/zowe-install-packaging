@@ -82,7 +82,7 @@
   when: zowe_zos_host == zowe_external_domain_name and (zowe_launch_components is none or zowe_launch_components == "" or "api-catalog" in zowe_launch_components)
   delegate_to: localhost
   # hide log to avoid exposing zowe_test_user and zowe_test_password
-  no_log: False
+  no_log: True
 
 - name: Wait for Jobs API port {{ zowe_jobs_api_port }} to be available
   uri:
