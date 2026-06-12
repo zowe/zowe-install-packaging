@@ -202,36 +202,25 @@ function processCertificateAnalyserNonZeroOutput(
   // From cert-analyser codebase
   if (output.includes("Certificate can't be used for client authentication")) {
     common.printFormattedWarn(common.MSG_KEY, COMMAND_NAME, `Certificate EKU missing Client Auth 1.3.6.1.5.5.7.3.2 attribute.`);
-    if (verifyCertificates == 'DISABLED') {
-      common.printFormattedWarn(common.MSG_KEY, COMMAND_NAME, `Certificate will fail verification when zowe.verifyCertificates is not DISABLED`);
-      certificateInvalid = VALIDATION_WARN;
-    } else {
-      certificateInvalid = VALIDATION_ERROR;
+    certificateInvalid = VALIDATION_ERROR;
 
-      common.printFormattedError(common.MSG_KEY, COMMAND_NAME, `Certificate does not meet Zowe's requirements.`);
-      common.printFormattedError(common.MSG_KEY, COMMAND_NAME, `Create a new certificate that meets the EKU requirements of Zowe before using Zowe.`);
-      common.printFormattedError(common.MSG_KEY, COMMAND_NAME, `See https://docs.zowe.org/stable/user-guide/configure-certificates#extended-key-usage`);
-      common.printFormattedError(common.MSG_KEY, COMMAND_NAME, `Review Zowe YAML properties:`);
-      common.printFormattedError(common.MSG_KEY, COMMAND_NAME, `  zowe.certificate.keystore.file: ${zoweConfig.zowe.certificate.keystore.file}`);
-      common.printFormattedError(common.MSG_KEY, COMMAND_NAME, `  zowe.certificate.keystore.alias: ${zoweConfig.zowe.certificate.keystore.alias}`);
-    }
+    common.printFormattedError(common.MSG_KEY, COMMAND_NAME, `Certificate does not meet Zowe's requirements.`);
+    common.printFormattedError(common.MSG_KEY, COMMAND_NAME, `Create a new certificate that meets the EKU requirements of Zowe before using Zowe.`);
+    common.printFormattedError(common.MSG_KEY, COMMAND_NAME, `See https://docs.zowe.org/stable/user-guide/configure-certificates#extended-key-usage`);
+    common.printFormattedError(common.MSG_KEY, COMMAND_NAME, `Review Zowe YAML properties:`);
+    common.printFormattedError(common.MSG_KEY, COMMAND_NAME, `  zowe.certificate.keystore.file: ${zoweConfig.zowe.certificate.keystore.file}`);
+    common.printFormattedError(common.MSG_KEY, COMMAND_NAME, `  zowe.certificate.keystore.alias: ${zoweConfig.zowe.certificate.keystore.alias}`);
   }
   // From cert-analyser codebase
   if (output.includes("Certificate can't be used for web server")) {
     common.printFormattedWarn(common.MSG_KEY, COMMAND_NAME, `Certificate EKU missing Server Auth 1.3.6.1.5.5.7.3.1 attribute.`);
-    if (verifyCertificates == 'DISABLED') {
-      common.printFormattedWarn(common.MSG_KEY, COMMAND_NAME, `Certificate will fail verification when zowe.verifyCertificates is not DISABLED`);
-      certificateInvalid = VALIDATION_WARN;
-    } else {
-      certificateInvalid = VALIDATION_ERROR;
-
-      common.printFormattedError(common.MSG_KEY, COMMAND_NAME, `Certificate does not meet Zowe's requirements.`);
-      common.printFormattedError(common.MSG_KEY, COMMAND_NAME, `Create a new certificate that meets the EKU requirements of Zowe before using Zowe.`);
-      common.printFormattedError(common.MSG_KEY, COMMAND_NAME, `See https://docs.zowe.org/stable/user-guide/configure-certificates#extended-key-usage`);
-      common.printFormattedError(common.MSG_KEY, COMMAND_NAME, `Review Zowe YAML properties:`);
-      common.printFormattedError(common.MSG_KEY, COMMAND_NAME, `  zowe.certificate.keystore.file: ${zoweConfig.zowe.certificate.keystore.file}`);
-      common.printFormattedError(common.MSG_KEY, COMMAND_NAME, `  zowe.certificate.keystore.alias: ${zoweConfig.zowe.certificate.keystore.alias}`);
-    }
+    certificateInvalid = VALIDATION_ERROR;
+    common.printFormattedError(common.MSG_KEY, COMMAND_NAME, `Certificate does not meet Zowe's requirements.`);
+    common.printFormattedError(common.MSG_KEY, COMMAND_NAME, `Create a new certificate that meets the EKU requirements of Zowe before using Zowe.`);
+    common.printFormattedError(common.MSG_KEY, COMMAND_NAME, `See https://docs.zowe.org/stable/user-guide/configure-certificates#extended-key-usage`);
+    common.printFormattedError(common.MSG_KEY, COMMAND_NAME, `Review Zowe YAML properties:`);
+    common.printFormattedError(common.MSG_KEY, COMMAND_NAME, `  zowe.certificate.keystore.file: ${zoweConfig.zowe.certificate.keystore.file}`);
+    common.printFormattedError(common.MSG_KEY, COMMAND_NAME, `  zowe.certificate.keystore.alias: ${zoweConfig.zowe.certificate.keystore.alias}`);
   }
 
   // From cert-analyser codebase
@@ -281,29 +270,25 @@ function processCertificateAnalyserNonZeroOutput(
 
   // From cert-analyser codebase
   if (output.includes("No trusted certificate found. Add ")) {
-    common.printFormattedWarn(common.MSG_KEY, COMMAND_NAME, `Certificate will fail verification  when zowe.verifyCertificates not DISABLED`);
-    if (verifyCertificates == 'DISABLED') {
-      configInvalid = VALIDATION_WARN;
-    } else {
-      configInvalid = VALIDATION_ERROR;
+    common.printFormattedError(common.MSG_KEY, COMMAND_NAME, `Certificate will fail verification.`);
+    configInvalid = VALIDATION_ERROR;
 
-      // Extracts 'Add ... certificate authority to the trust store'
-      let addMsg;
-      try {
-        addMsg = configLines.filter((line)=> line.includes('No trusted certificate found. Add '))[0].split('. ')[0];
-      } catch (e) {
-        common.printDebug(`Error parsing the 'no trusted certificate line'`);
-      }
-
-      common.printFormattedError(common.MSG_KEY, COMMAND_NAME, `Zowe's truststore is missing Certificate Authorities needed to verify Zowe's certificate.`);
-      common.printFormattedError(common.MSG_KEY, COMMAND_NAME, `Review the certificate and add all authorities in the chain into the truststore before using Zowe.`);
-      common.printFormattedError(common.MSG_KEY, COMMAND_NAME, addMsg);
-      common.printFormattedError(common.MSG_KEY, COMMAND_NAME, `Other certificate authorities in the chain may also be missing.`);
-      common.printFormattedError(common.MSG_KEY, COMMAND_NAME, `Review Zowe YAML properties:`);
-      common.printFormattedError(common.MSG_KEY, COMMAND_NAME, `  zowe.certificate.keystore.file: ${zoweConfig.zowe.certificate.keystore.file}`);
-      common.printFormattedError(common.MSG_KEY, COMMAND_NAME, `  zowe.certificate.keystore.alias: ${zoweConfig.zowe.certificate.keystore.alias}`);
-      common.printFormattedError(common.MSG_KEY, COMMAND_NAME, `  zowe.certificate.truststore.file: ${zoweConfig.zowe.certificate.truststore.file}`);
+    // Extracts 'Add ... certificate authority to the trust store'
+    let addMsg;
+    try {
+      addMsg = configLines.filter((line) => line.includes('No trusted certificate found. Add '))[0].split('. ')[0];
+    } catch (e) {
+      common.printDebug(`Error parsing the 'no trusted certificate line'`);
     }
+
+    common.printFormattedError(common.MSG_KEY, COMMAND_NAME, `Zowe's truststore is missing Certificate Authorities needed to verify Zowe's certificate.`);
+    common.printFormattedError(common.MSG_KEY, COMMAND_NAME, `Review the certificate and add all authorities in the chain into the truststore before using Zowe.`);
+    common.printFormattedError(common.MSG_KEY, COMMAND_NAME, addMsg);
+    common.printFormattedError(common.MSG_KEY, COMMAND_NAME, `Other certificate authorities in the chain may also be missing.`);
+    common.printFormattedError(common.MSG_KEY, COMMAND_NAME, `Review Zowe YAML properties:`);
+    common.printFormattedError(common.MSG_KEY, COMMAND_NAME, `  zowe.certificate.keystore.file: ${zoweConfig.zowe.certificate.keystore.file}`);
+    common.printFormattedError(common.MSG_KEY, COMMAND_NAME, `  zowe.certificate.keystore.alias: ${zoweConfig.zowe.certificate.keystore.alias}`);
+    common.printFormattedError(common.MSG_KEY, COMMAND_NAME, `  zowe.certificate.truststore.file: ${zoweConfig.zowe.certificate.truststore.file}`);
   }
 
 
@@ -337,7 +322,7 @@ export function execute(quitOnError?: boolean, level?: string): number {
   if (verifyCertificates) {
     verifyCertificates.toUpperCase();
   }
-  if (verifyCertificates != 'NONSTRICT' && verifyCertificates != 'STRICT' && verifyCertificates != 'DISABLED') {
+  if (verifyCertificates != 'NONSTRICT' && verifyCertificates != 'STRICT') {
     verifyCertificates = ZOWE_CONFIG.zowe.verifyCertificates;
   }
 

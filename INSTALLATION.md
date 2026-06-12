@@ -122,7 +122,7 @@ When the JCL is prepared, the following jobs can be submitted to perform the fol
 
 **Certificate requirements**: Zowe's keyring must have the following
 * **Private key & certificate pair**: The Zowe Servers will use this certificate, and it must either not have the "Extended Key Usage" attribute, or have it with both "Server Authorization" and "Client Authorization" values.
-* **Certificate Authorities**: Every intermediate and root Certificate Authority (CA) Zowe interacts with must be within the Keyring, unless the YAML value `zowe.verifyCertificates` is set to `DISABLED`. CAs that must be within the keyring include z/OSMF's CAs if using z/OSMF, and Zowe's own certificate's CAs as Zowe servers must be able to verify each other.
+* **Certificate Authorities**: Every intermediate and root Certificate Authority (CA) Zowe interacts with must be within the Keyring. CAs that must be within the keyring include z/OSMF's CAs if using z/OSMF, and Zowe's own certificate's CAs as Zowe servers must be able to verify each other.
 
 There are 4 options for setting up keyrings: Three scenarios covered by JCL samples where a keyring is created for you, or a fourth where you can bring your own keyring.
 
@@ -202,7 +202,7 @@ The following commands can be run to set up a Zowe Instance via `zwe`
 
 **Certificate requirements**: Zowe's keystore or keyring must have the following
 * **Private key & certificate pair**: The Zowe Servers will use this certificate, and it must either not have the "Extended Key Usage" attribute, or have it with both "Server Authorization" and "Client Authorization" values.
-* **Certificate Authorities**: Every intermediate and root Certificate Authority (CA) Zowe interacts with must be within the Keyring, unless the YAML value `zowe.verifyCertificates` is set to `DISABLED`. CAs that must be within the keyring include z/OSMF's CAs if using z/OSMF, and Zowe's own certificate's CAs as Zowe servers must be able to verify each other.
+* **Certificate Authorities**: Every intermediate and root Certificate Authority (CA) Zowe interacts with must be within the Keyring. CAs that must be within the keyring include z/OSMF's CAs if using z/OSMF, and Zowe's own certificate's CAs as Zowe servers must be able to verify each other.
 
 There are 6 scenarios for setting up certificates for Zowe to use. There are five scenarios in the YAML to have Zowe create a ZFS PKCS12 keystore, or z/OS keyring, and an additional sixth option to bring your own keyring.
 

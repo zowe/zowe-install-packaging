@@ -40,7 +40,7 @@
 //*     Zowe certificate. It is only applicable if Zowe certificate
 //*     signed by a recognized certificate authority (CA).
 //*
-//* 6) If you set zowe.verifyCertificates to
+//* 6) When you set zowe.verifyCertificates to
 //*     STRICT or NONSTRICT, then set IFROZFCA to 1
 //*     to connect z/OSMF certificate authority to Zowe keyring.
 //*
@@ -77,7 +77,7 @@
 //         SET ROOTZFCA='{zowe.setup.certificate.keyring.zOSMF.ca}'
 //*      * Label of the root CA of the Zowe certificate if applicable
 //         SET ROOTZWCA=''
-//*      * If you enable VERIFY_CERTIFICATES or
+//*      * When you enable VERIFY_CERTIFICATES or
 //*      * NONSTRICT_VERIFY_CERTIFICATES and define ROOTZFCA, set
 //*      * IFROZFCA to 1 to connect z/OSMF certificate authority to
 //*      * Zowe keyring. Otherwise set to 0.

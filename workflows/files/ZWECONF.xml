@@ -421,8 +421,6 @@ How we want to verify SSL certificates of services. Valid values are:
 - NONSTRICT: will validate if the certificate is trusted in our trust store.
              This mode does not validate certificate Common Name and Subject
              Alternative Name (SAN).
-- DISABLED:  disable certificate validation. This is NOT recommended for
-             security
         ]]>        </description>
         <category>certificates</category>
         <string valueMustBeChoice="true" multiLine="false">
@@ -430,7 +428,6 @@ How we want to verify SSL certificates of services. Valid values are:
             <!-- Specify choices here -->
             <choice>STRICT</choice>
             <choice>NONSTRICT</choice>
-            <choice>DISABLED</choice>
             <default>STRICT</default>
         </string>
     </variable>
@@ -1795,8 +1792,6 @@ echo '  #              is validate. This is recommended for the best security.' 
 echo '  # - NONSTRICT: will validate if the certificate is trusted in our trust store.' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
 echo '  #              This mode does not validate certificate Common Name and Subject' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
 echo '  #              Alternative Name (SAN).' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
-echo '  # - DISABLED:  disable certificate validation. This is NOT recommended for' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
-echo '  #              security.' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
 echo '  verifyCertificates: $!{instance-zowe_verifyCertificates}' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
 echo '' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
 echo '' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"

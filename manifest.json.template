@@ -61,34 +61,28 @@
       "artifact": "*.pax"
     },
     "org.zowe.apiml.apiml-package": {
-      "version": "^3.0.3-SNAPSHOT",
-      "artifact": "apiml-*.zip",
-      "exclusions": ["*PR*.zip"]
+      "version": "^3.5.22-PR-4709-SNAPSHOT",
+      "artifact": "apiml-*.zip"
     },
     "org.zowe.apiml.api-catalog-package": {
-      "version": "^3.0.3-SNAPSHOT",
-      "artifact": "api-catalog-*.zip",
-      "exclusions": ["*PR*.zip"]
+      "version": "^3.5.22-PR-4709-SNAPSHOT",
+      "artifact": "api-catalog-*.zip"
     },
     "org.zowe.apiml.discovery-package": {
-      "version": "^3.0.3-SNAPSHOT",
-      "artifact": "discovery-*.zip",
-      "exclusions": ["*PR*.zip"]
+      "version": "^3.5.22-PR-4709-SNAPSHOT",
+      "artifact": "discovery-*.zip"
     },
     "org.zowe.apiml.gateway-package": {
-      "version": "^3.0.3-SNAPSHOT",
-      "artifact": "gateway-*.zip",
-      "exclusions": ["*PR*.zip"]
+      "version": "^3.5.22-PR-4709-SNAPSHOT",
+      "artifact": "gateway-*.zip"
     },
     "org.zowe.apiml.caching-service-package": {
-      "version": "^3.0.3-SNAPSHOT",
-      "artifact": "caching-service-*.zip",
-      "exclusions": ["*PR*.zip"]
+      "version": "^3.5.22-PR-4709-SNAPSHOT",
+      "artifact": "caching-service-*.zip"
     },
     "org.zowe.apiml.apiml-common-lib-package": {
-      "version": "^3.0.3-SNAPSHOT",
-      "artifact": "apiml-common-lib-*.zip",
-      "exclusions": ["*PR*.zip"]
+      "version": "^3.5.22-PR-4709-SNAPSHOT",
+      "artifact": "apiml-common-lib-*.zip"
     },
     "org.zowe.apiml.sdk.common-java-lib-package": {
       "version": "^2.0.0-SNAPSHOT",
@@ -96,18 +90,16 @@
       "exclusions": ["*PR*.zip"]
     },
     "org.zowe.apiml.sdk.apiml-sample-extension-package": {
-      "version": "^3.0.3-SNAPSHOT",
+      "version": "^3.5.22-PR-4709-SNAPSHOT",
       "artifact": "apiml-sample-extension-*.zip"
     },
     "org.zowe.apiml.zaas-package": {
-      "version": "^3.0.3-SNAPSHOT",
-      "artifact": "zaas-package-*.zip",
-      "exclusions": ["*PR*.zip"]
+      "version": "^3.5.22-PR-4709-SNAPSHOT",
+      "artifact": "zaas-package-*.zip"
     },
     "org.zowe.apiml.sdk.certificate-analyser": {
-      "version": "^3.0.3-SNAPSHOT",
-      "artifact": "certificate-analyser-*.jar",
-      "exclusions": ["*PR*.jar"]
+      "version": "^3.5.22-PR-4709-SNAPSHOT",
+      "artifact": "certificate-analyser-*.jar"
     },
     "org.zowe.getesm": {
       "version": "^3.0.0-V3.X-STAGING",

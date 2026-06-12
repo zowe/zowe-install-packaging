@@ -928,7 +928,7 @@ const zoweSchema = zoweYamlSchema as {
         verifyCertificates: {
           type: 'string';
           description: 'Customize how Zowe should validate certificates used by components or other services.';
-          enum: ['STRICT', 'NONSTRICT', 'DISABLED'];
+          enum: ['STRICT', 'NONSTRICT'];
         };
         sysMessages: {
           type: 'array';
