@@ -123,7 +123,7 @@ export function execute(quitOnError?: boolean): number {
     const errorMsg =
       `ZWEL0340E: z/OSMF JWT check failed (rc=${result.rc}).` +
       ` Zowe requires z/OSMF JWT support (jwtAutoconfiguration is '${jwtAutoconfigRaw}') but it is not working.\n` +
-      `\nJar output:\n${jarOutput}\n` +
+      `\nCertificate-analyzer output:\n${jarOutput}\n` +
       `\nZowe YAML parameters that led to this result:` +
       `\n  zosmf.host=${zosmfHost}` +
       `\n  zosmf.port=${zosmfPort}` +
