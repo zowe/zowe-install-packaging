@@ -29,6 +29,7 @@ import * as node from '../../../../libs/node';
 import * as zosmf from '../../../../libs/zosmf';
 import * as zoslib from '../../../../libs/zos';
 import * as validateBind from '../../../validate/port/bind/index';
+import * as validateZosmfJwt from '../../../validate/zosmf/jwt/index';
 import * as attls from '../../../../libs/attls';
 import * as validateComponentManifests from '../../../validate/components/index';
 import * as validateCertificate from '../../../validate/certificate/index';
@@ -222,6 +223,14 @@ function globalValidate(enabledComponents:string[]): void {
       if (!zosmfOk) {
         privateErrors++;
         common.printFormattedError('ZWELS', "zwe-internal-start-prepare,global_validate", "Zosmf validation failed");
+      }
+      const validateZosmfJwtAction = getStartupCheckMode('zosmfjwt');
+      if (validateZosmfJwtAction.doCheck) {
+        const jwtRc = validateZosmfJwt.execute(!validateZosmfJwtAction.warnOnly);
+        if (jwtRc !== 0) {
+          privateErrors++;
+          common.printFormattedError('ZWELS', "zwe-internal-start-prepare,global_validate", "Zosmf JWT validation failed");
+        }
       }
     } else if (enabledComponents.includes('gateway') && std.getenv('ZWE_components_gateway_apiml_security_auth_provider') == "zosmf") {
         privateErrors++;
