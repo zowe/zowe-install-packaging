@@ -393,7 +393,7 @@ export function execute(quitOnError?: boolean, level?: string): number {
   } else if (truststoreType != 'PKCS12') {
     common.printFormattedWarn(common.MSG_KEY, COMMAND_NAME, `Truststore unknown type ${truststoreType}`);
   }
-  
+
   const argsString = [
     '--add-modules', 'ibm.crypto.zsecurity,ibm.crypto.hdwrcca',
     '-jar', `${std.getenv('ZWE_zowe_runtimeDirectory')}/bin/utils/certificate-analyser.jar`,

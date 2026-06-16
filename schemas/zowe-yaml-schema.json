@@ -742,6 +742,11 @@
                   "default": "exit",
                   "description": "Checks if zowe.setup.security.users.zowe (ZWESVUSR) is configured as a superuser (UID 0). Such a setting is strongly discouraged."
                 },
+                "zosmfjwt": {
+                  "$ref": "/schemas/v2/server-common#startupCheck",
+                  "default": "exit",
+                  "description": "Checks whether z/OSMF JWT support is correctly configured when Zowe is set to use z/OSMF as the authentication provider with JWT autoconfiguration. Can be set to 'exit', 'warn', or 'disabled'."
+                },
                 "components": {
                   "$ref": "/schemas/v2/server-common#startupCheck",
                   "default": "warn",
