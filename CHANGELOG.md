@@ -8,8 +8,6 @@ All notable changes to the Zowe Installer will be documented in this file.
 - Enhancement: New property `zowe.network.allowedDomains`. Defaults to external domains and LPAR hostnames for HA scenarios. Domains not included in this list will not be allowed to be onboarded on Discovery Service.
 - Enhancement: Added command `zwe validate zosmf jwt` which checks whether a Zowe configured to use z/OSMF is able to use z/OSMF's JWT authentication method or not. This command runs every startup if the conditions are met, but can be disabled or turned into only a warning via YAML property `zowe.launchScript.startupChecks.zosmfjwt` being set to "warn" or "disabled". [#4727](https://github.com/zowe/zowe-install-packaging/pull/4727)
 
->>>>>>> origin/v3.x/staging
-
 ## `3.5.0`
 
 - Bugfix: ACF2 data set protection statement is not correct. [#4769](https://github.com/zowe/zowe-install-packaging/pull/4769)

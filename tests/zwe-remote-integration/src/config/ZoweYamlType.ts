@@ -890,7 +890,7 @@ const zoweSchema = zoweYamlSchema as {
                 zosmfjwt: {
                   $ref: '/schemas/v2/server-common#startupCheck';
                   default: 'exit';
-                  description: 'Checks whether z/OSMF JWT support is correctly configured when Zowe is set to use z/OSMF as the authentication provider with JWT autoconfiguration. Can be set to \'exit\', \'warn\', or \'disabled\'.;
+                  description: "Checks whether z/OSMF JWT support is correctly configured when Zowe is set to use z/OSMF as the authentication provider with JWT autoconfiguration. Can be set to 'exit', 'warn', or 'disabled'.";
                 };
                 components: {
                   $ref: '/schemas/v2/server-common#startupCheck';
@@ -1399,9 +1399,14 @@ const zoweSchema = zoweYamlSchema as {
         };
         allowedDomains: {
           type: 'array';
-          description: 'List of domains (supporting wildcards) that are allowed to register with the API ML Discovery Service.';
+          description: 'List of domains (supporting wildcards for subdomains) that are allowed to register with the API ML Discovery Service.';
+          uniqueItems: true;
           items: {
             type: 'string';
+            minLength: 1;
+            not: {
+              type: 'null';
+            };
           };
         };
         server: {
