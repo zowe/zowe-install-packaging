@@ -245,10 +245,22 @@ function getAllowedDomains(config) {
 
   let allowedDomains = config.zowe.network.allowedDomains;
   
-  return Array.from(new Set([
+  const combined = [
     ...(defaults || []),
     ...allowedDomains || []
-  ]));
+  ];
+
+  return Array.from(new Set(
+    combined
+      .map(entry => entry.trim())
+      .filter(entry => {
+        if (entry.startsWith(',') || !entry.endsWith(',')) {
+          console.log(`Debug: Invalid domain: ${entry}`);
+          return false;
+        }
+        return entry.length > 0;
+      })
+  ));
   
 }
 
