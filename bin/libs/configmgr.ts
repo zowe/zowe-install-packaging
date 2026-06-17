@@ -254,7 +254,7 @@ function getAllowedDomains(config) {
     combined
       .map(entry => entry.trim())
       .filter(entry => {
-        if (entry.startsWith(',') || !entry.endsWith(',')) {
+        if (entry.startsWith(',') || entry.endsWith(',')) {
           console.log(`Debug: Invalid domain: ${entry}`);
           return false;
         }

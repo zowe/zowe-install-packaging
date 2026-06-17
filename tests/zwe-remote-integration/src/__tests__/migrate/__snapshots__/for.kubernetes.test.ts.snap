@@ -152,6 +152,8 @@ data:
       cookieIdentifier: "1"
       externalPort: 7554
       network:
+        allowedDomains:
+        - "www.example.com"
         server:
           tls:
             attls: false
