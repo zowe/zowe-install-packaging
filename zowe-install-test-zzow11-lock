@@ -1,1 +1,15 @@
-""
+{
+  "lockAcquiredTime": "Wed Jun 17 2026 15:59:26 GMT+0000 (Coordinated Universal Time)",
+  "uid": "1781711966811427020",
+  "repository": {
+    "owner": "zowe",
+    "repo": "zowe-install-packaging"
+  },
+  "branch": "chore/v3/bump-js-yaml",
+  "workflow": "Zowe CICD Integration Tests",
+  "job": "cicd-test",
+  "actor": "zowe-robot",
+  "runId": 27702122671,
+  "runNumber": 8750,
+  "link": "https://github.com/zowe/zowe-install-packaging/actions/runs/27702122671"
+}
