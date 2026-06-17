@@ -4,6 +4,7 @@ All notable changes to the Zowe Installer will be documented in this file.
 <!--Add the PR or issue number to the entry if available.-->
 
 ## `2.18.5`
+- Bugfix: `zwe init mvs` skips copying of `ZWESIP00` member if target is identical to source data set. `zwe init security` was using incorrect ACF2 data set protection statement. [#4776](https://github.com/zowe/zowe-install-packaging/pull/4776)
 - Bugfix: Incorrect keyword was used for ACF2 key ring statement. [#4680](https://github.com/zowe/zowe-install-packaging/pull/4680)
 - Bugfix: `cleanup-ipc.mq.sh` script updated to reflect changes in `ipcs` command output. [#4690](https://github.com/zowe/zowe-install-packaging/pull/4690)
 
