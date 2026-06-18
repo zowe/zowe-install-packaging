@@ -143,6 +143,8 @@ zowe:
       components: "warn"
       # # Superuser startup check - defaults to zowe.launchScript.startupChecks.default, or "exit" if this is unset
       # user: exit
+      # z/OSMF JWT support check - checks whether z/OSMF JWT support is usable when Zowe is configured to use it
+      # zosmfjwt: exit
       # # Certificate (zowe.certificate) validation check - defaults to zowe.launchScript.startupChecks.default, or "exit" if this is unset
       # certificate: exit
       # # Java runtime version checks - max version is set to warn by default to allow for future Java versions to be supported.
