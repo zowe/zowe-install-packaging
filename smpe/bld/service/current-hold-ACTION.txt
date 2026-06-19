@@ -7,6 +7,9 @@
 ****************************************************************
 * Part: zowe.yaml                                              *
 ****************************************************************
+This HOLDDATA is optional but highly recommended for
+improving network security.
+
 Review zowe.yaml and add the new property
 "zowe.network.allowedDomains" if necessary.
 
