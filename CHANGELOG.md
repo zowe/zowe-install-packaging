@@ -8,6 +8,7 @@ All notable changes to the Zowe Installer will be documented in this file.
 - Bugfix: `zwe init mvs` skips copying of `ZWESIP00` member if target is identical to source data set. `zwe init security` was using incorrect ACF2 data set protection statement. [#4776](https://github.com/zowe/zowe-install-packaging/pull/4776)
 - Bugfix: Incorrect keyword was used for ACF2 key ring statement. [#4680](https://github.com/zowe/zowe-install-packaging/pull/4680)
 - Bugfix: `cleanup-ipc.mq.sh` script updated to reflect changes in `ipcs` command output. [#4690](https://github.com/zowe/zowe-install-packaging/pull/4690)
+- Enhancement: New property `zowe.network.allowedDomains`. Defaults to external domains and LPAR hostnames for HA scenarios. Domains not included in this list will not be allowed to be onboarded on Discovery Service. [#4813](https://github.com/zowe/zowe-install-packaging/pull/4813)
 
 ## `2.18.4`
 - Bugfix: Running z/OSMF is returning 401, if RSU2512 was applied. [#4658](https://github.com/zowe/zowe-install-packaging/pull/4658)
