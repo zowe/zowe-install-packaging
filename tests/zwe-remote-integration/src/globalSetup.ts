@@ -497,8 +497,11 @@ module.exports = async () => {
     await uss.runCommand(`cp ${ussWorkDir}/ZWESECUR.jcl "//'${REMOTE_SYSTEM_INFO.szwesamp}(ZWESECUR)'"`);
 
     console.log(`Compiling Java utilities in bin/utils using ${REMOTE_SYSTEM_INFO.zosJavaHome}...`);
-    await uss.runCommand(`${REMOTE_SYSTEM_INFO.zosJavaHome}/bin/javac *.java`, binUtils);
 
+    const compiledJavaFiles = ['ExportPrivateKeyZos.java', 'HashFiles.java'];
+    for (const file of compiledJavaFiles) {
+      await uss.runCommand(`${REMOTE_SYSTEM_INFO.zosJavaHome}/bin/javac ${file}`, binUtils);
+    }
     const pdsUploads: Array<[string, string]> = [
       ['SZWESAMP', REMOTE_SYSTEM_INFO.szwesamp],
       ['SZWEEXEC', REMOTE_SYSTEM_INFO.szweexec],
