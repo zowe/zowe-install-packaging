@@ -2,6 +2,14 @@
 
 All notable changes to the Zowe Installer will be documented in this file.
 <!--Add the PR or issue number to the entry if available.-->
+
+## `2.18.4`
+- Bugfix: Running z/OSMF is returning 401, if RSU2512 was applied. [#4658](https://github.com/zowe/zowe-install-packaging/pull/4658)
+
+## `2.18.3`
+- Bugfix: internal routine `copy_to_data_set` did not correctly check if data set exists. [#4489](https://github.com/zowe/zowe-install-packaging/pull/4489)
+- Bugfix: `--update-config` might fail if the specified config file is a symbolic link. [#4493](https://github.com/zowe/zowe-install-packaging/pull/4493)
+
 ## `2.18.2`
 - Bugfix: JCL sample `ZWEINSTL` did not include the `ZWESLSTC`. [#4382](https://github.com/zowe/zowe-install-packaging/pull/4382)
 - Bugfix: YAML lookup for HA instances within "haInstances" was not working when HA instance names were uppercase. Now, the lookup is case insensitive to allow for any casing of HA instance names. [#4378](https://github.com/zowe/zowe-install-packaging/pull/4378)
