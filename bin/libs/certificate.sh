@@ -1069,6 +1069,7 @@ keyring_export_to_pkcs12() {
   uss_temp_target=$(create_tmp_file "keyring-export-to-pkcs12" "${uss_temp_dir}")
 
   # remove temp files if they exists
+  rm -f "${uss_temp_target}"
   rm -f "${uss_temp_target}.cer"
   rm -f "${uss_temp_target}.key"
   rm -f "${uss_temp_target}.p12"

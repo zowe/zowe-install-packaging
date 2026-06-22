@@ -77,31 +77,51 @@ create_tmp_file() {
     tmpdir=$(get_tmp_dir)
   fi
   print_trace "  > create_tmp_file on ${tmpdir}"
-  last_rnd=
   idx_retry=0
   max_retry=100
   while true ; do
     if [ ${idx_retry} -gt ${max_retry} ]; then
       print_error "    - Error ZWEL0114E: Reached max retries on allocating random number."
       exit 114
-      break
     fi
 
-    rnd=$(echo "${RANDOM}")
-    if [ "${rnd}" = "${last_rnd}" ]; then
-      # reset random
-      RANDOM=$(date '+1%H%M%S')
-    fi
+    # Combine PID + RANDOM for a larger namespace
+    file="${tmpdir}/${prefix}-${$}-${RANDOM}"
+    print_trace "    - try ${file}"
 
-    file="${tmpdir}/${prefix}-${rnd}"
-    print_trace "    - test ${file}"
-    if [ ! -e "${file}" ]; then
+    if ( umask 077; set -C; : > "${file}" ) 2>/dev/null; then
       print_trace "    - good"
       echo "${file}"
       break
     fi
 
-    last_rnd="${rnd}"
+    idx_retry=$((idx_retry + 1))
+  done
+}
+
+create_tmp_dir() {
+  prefix=${1:-zwe}
+  tmpdir=${2:-}
+
+  if [ -z "${tmpdir}" ]; then
+    tmpdir=$(get_tmp_dir)
+  fi
+  idx_retry=0
+  max_retry=100
+  while true; do
+    if [ ${idx_retry} -gt ${max_retry} ]; then
+      print_error "    - Error ZWEL0114E: Reached max retries on allocating random number."
+      exit 114
+    fi
+
+    dir="${tmpdir}/${prefix}-${$}-${RANDOM}"
+    print_trace "    - try ${dir}"
+
+    if ( umask 077; mkdir "${dir}" ) 2>/dev/null; then
+      print_trace "    - good ${dir}"
+      echo "${dir}"
+      break
+    fi
     idx_retry=`expr $idx_retry + 1`
   done
 }
