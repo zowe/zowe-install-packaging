@@ -48,8 +48,8 @@
       "artifact": "*.pax"
     },
     "org.zowe.explorer-jes": {
-      "version": "3.0.6-PR-408",
-      "artifact": "explorer-jes-3.0.6-pr-408-871-20260527124240.pax"
+      "version": "3.0.6-PR-412",
+      "artifact": "explorer-jes-3.0.6-pr-412-885-20260623200232.pax"
     },
     "org.zowe.explorer-mvs": {
       "version": "^3.0.0-SNAPSHOT"
