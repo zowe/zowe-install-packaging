@@ -300,14 +300,15 @@ process_component_apiml_static_definitions() {
         parsed_def=$(envsubst < "${one_def}" 2>&1)
       else
         # Node.js fallback for z/OS environments without GNU gettext
+        # Pass the path as an argument (process.argv[2]) to avoid shell injection.
         parsed_def=$(node -e "
           const fs = require('fs');
-          const text = fs.readFileSync('${one_def}', 'utf8');
+          const text = fs.readFileSync(process.argv[2], 'utf8');
           const result = text.replace(
             /\\\$\{([A-Za-z_][A-Za-z0-9_]*)\}|\\\$([A-Za-z_][A-Za-z0-9_]*)/g,
-            (m, a, b) => process.env[a || b] !== undefined ? process.env[a || b] : m);
+            (m, a, b) => process.env[a || b] !== undefined ? process.env[a || b] : '');
           process.stdout.write(result);
-        " 2>&1)
+        " -- "${one_def}" 2>&1)
       fi
       retval=$?
       if [ "${retval}" != "0" ]; then
