@@ -380,7 +380,7 @@
       "componentGroup": "Zowe Desktop IP Explorer Plug-in",
       "entries": [{
         "repository": "explorer-ip",
-        "tag": "v2.0.1",
+        "tag": "v2.0.2",
         "destinations": ["Zowe PAX"]
       }]
     },
