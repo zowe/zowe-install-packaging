@@ -40,8 +40,8 @@
       "artifact": "*.pax"
     },
     "org.zowe.zlux.zlux-editor": {
-      "version": "3.5.0-MVD-6036",
-      "artifact": "zlux-editor-3.5.0-20260613.194002.pax"
+      "version": "3.5.0-MVD6036T",
+      "artifact": "zlux-editor-3.5.0-20260623.062628.pax"
     },
     "org.zowe.zss": {
       "version": "^3.0.0-STAGING",
