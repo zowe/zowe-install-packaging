@@ -20,10 +20,12 @@
 //*  then you must also run "ZWERMVS2".
 //*
 //*********************************************************************
+//  EXPORT SYMLIST=ZISMEMBR
+//  SET ZISMBR={zowe.setup.dataset.parmlibMembers.zis}
 //RMPDSE EXEC PGM=IKJEFT01
 //SYSTSPRT DD SYSOUT=A
-//SYSTSIN DD *
-DELETE ('{zowe.setup.dataset.parmlib}', +
-        '{zowe.setup.dataset.authPluginLib}') +
+//SYSTSIN DD *,SYMBOLS=JCLONLY
+DELETE ('{zowe.setup.dataset.authPluginLib}') +
        SCRATCH NONVSAM
+DELETE '{zowe.setup.dataset.parmlib}(&ZISMEMBR)'
 //*

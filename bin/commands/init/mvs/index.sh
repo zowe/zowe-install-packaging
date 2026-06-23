@@ -50,8 +50,8 @@ while read -r line; do
   fi
   # check existence
   ds_existence=$(is_data_set_exists "${ds}")
-  any_existence="true"
   if [ "${ds_existence}" = "true" ]; then
+    any_existence="true"
     if [ "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITE}" = "true" ]; then
       # warning
       print_message "Warning ZWEL0300W: ${ds} already exists. Members in this data set will be overwritten."
@@ -78,13 +78,21 @@ else
   ###############################
   # copy sample lib members
   parmlib=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.dataset.parmlib")
-  for ds in ZWESIP00; do
-    print_message "Copy ${prefix}.${ZWE_PRIVATE_DS_SZWESAMP}(${ds}) to ${parmlib}(${ds})"
-    data_set_copy_to_data_set "${prefix}" "${prefix}.${ZWE_PRIVATE_DS_SZWESAMP}(${ds})" "${parmlib}(${ds})" "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITE}"
-    if [ $? -ne 0 ]; then
-      print_error_and_exit "Error ZWEL0111E: Command aborts with error." "" 111
+  parmMember=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.dataset.parmlibMembers.zis")
+  if [ -z "${parmMember}" ]; then
+    parmMember='ZWESIP00'
+  fi
+  if [ "${prefix}.${ZWE_PRIVATE_DS_SZWESAMP}(ZWESIP00)" != "${parmlib}(${parmMember})" ]; then
+    print_message "Copy ${prefix}.${ZWE_PRIVATE_DS_SZWESAMP}(ZWESIP00) to ${parmlib}(${parmMember})"
+    if [ -z "${DRY_RUN}" ]; then
+      data_set_copy_to_data_set "${prefix}" "${prefix}.${ZWE_PRIVATE_DS_SZWESAMP}(ZWESIP00)" "${parmlib}(${parmMember})" "${ZWE_CLI_PARAMETER_ALLOW_OVERWRITE}"
+      if [ $? -ne 0 ]; then
+        print_error_and_exit "Error ZWEL0111E: Command aborts with error." "" 111
+      fi
+    else
+      print_message "Skipping copy operation due to --dry-run parameter."
     fi
-  done
+  fi
 
   ###############################
   # copy auth lib members

@@ -188,6 +188,59 @@ function getDiscoveryServiceUrl(config) {
   return getDiscoveryServiceUrlNonHa(config);
 }
 
+function getDefaultAllowedDomains(config) {
+  const list: string[] = [];
+
+  const externalDomains = config.zowe.externalDomains;
+  const zosmfHost = config.zosmf?.host;
+  const listenAddresses = config.zowe.network?.server?.listenAddresses;
+  
+  if (config.haInstances) {
+    const haInstanceKeys = Object.keys(config.haInstances);
+    for (const haInstanceKey of haInstanceKeys) {
+      const haInstance = config.haInstances[haInstanceKey];
+  
+      if (!haInstance.hostname) {
+        console.log(`Error: 'hostname' value is missing for haInstance '${haInstanceKey}'`);
+
+        std.exit(1);
+      }
+      list.push(haInstance.hostname);
+    }
+  }
+
+  return Array.from(new Set([
+    ...list,
+    ...(externalDomains || []),
+    ...(zosmfHost ? [zosmfHost] : []),
+    ...(listenAddresses || []),
+  ]));
+}
+
+function getAllowedDomains(config) {
+  const defaults = getDefaultAllowedDomains(config);
+
+  let allowedDomains = config.zowe.network.allowedDomains;
+  
+  const combined = [
+    ...(defaults || []),
+    ...allowedDomains || []
+  ];
+
+  return Array.from(new Set(
+    combined
+      .map(entry => entry.trim())
+      .filter(entry => {
+        if (entry.startsWith(',') || entry.endsWith(',')) {
+          console.log(`Debug: Invalid domain: ${entry}`);
+          return false;
+        }
+        return entry.length > 0;
+      })
+  ));
+  
+}
+
 function writeZoweConfigUpdate(updateObj: any, arrayMergeStrategy: number): number {
   let firstConfigPath = ZOWE_CONFIG_PATH.split(':')[0];
 
@@ -591,6 +644,12 @@ export function getZoweConfigEnv(haInstance: string): any {
   if (!envs['ZWE_DISCOVERY_SERVICES_LIST']) {
     let list = getDiscoveryServiceUrl(config);
     envs['ZWE_DISCOVERY_SERVICES_LIST'] = list.join(',');
+  }
+
+  envs['ZWE_ALLOWED_DOMAINS'] = std.getenv('ZWE_ALLOWED_DOMAINS');
+  if (!envs['ZWE_ALLOWED_DOMAINS']) {
+    let list = getAllowedDomains(config);
+    envs['ZWE_ALLOWED_DOMAINS'] = list.join(',');
   }
 
   envs['ZWE_haInstance_id'] = haInstance;
