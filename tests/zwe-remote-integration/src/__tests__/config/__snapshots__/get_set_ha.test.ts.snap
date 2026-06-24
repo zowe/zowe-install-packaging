@@ -109,6 +109,8 @@ exports[`internal-config-get-and-set (SHORT) config set operations 2`] = `
     - example.com
   externalPort: 7554
   network:
+    allowedDomains:
+      - www.example.com
     server:
       tls:
         attls: false
@@ -276,6 +278,8 @@ zowe:
   - "example.com"
   externalPort: 7554
   network:
+    allowedDomains:
+    - "www.example.com"
     server:
       tls:
         attls: false
@@ -444,6 +448,8 @@ zowe:
   - "example.com"
   externalPort: 7554
   network:
+    allowedDomains:
+    - "www.example.com"
     server:
       tls:
         attls: false
