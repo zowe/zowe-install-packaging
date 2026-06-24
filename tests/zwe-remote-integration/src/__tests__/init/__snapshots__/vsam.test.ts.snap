@@ -491,6 +491,9 @@ exports[`init-vsam (SHORT) skip undefined caching service 1`] = `
         ],
         "externalPort": 7554,
         "network": {
+          "allowedDomains": [
+            "www.example.com"
+          ],
           "server": {
             "tls": {
               "attls": false,
@@ -637,6 +640,9 @@ exports[`init-vsam (SHORT) unset vsam mode 1`] = `
         ],
         "externalPort": 7554,
         "network": {
+          "allowedDomains": [
+            "www.example.com"
+          ],
           "server": {
             "tls": {
               "attls": false,
@@ -834,6 +840,9 @@ exports[`init-vsam (SHORT) unset vsam mode 2`] = `
         ],
         "externalPort": 7554,
         "network": {
+          "allowedDomains": [
+            "www.example.com"
+          ],
           "server": {
             "tls": {
               "attls": false,
