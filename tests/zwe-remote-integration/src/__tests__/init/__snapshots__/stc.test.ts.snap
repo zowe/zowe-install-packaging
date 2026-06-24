@@ -909,6 +909,9 @@ exports[`init-stc (SHORT) invalid stc configurations 3`] = `
         ],
         "externalPort": 7554,
         "network": {
+          "allowedDomains": [
+            "www.example.com"
+          ],
           "server": {
             "tls": {
               "attls": false,
@@ -1119,6 +1122,9 @@ exports[`init-stc (SHORT) invalid stc configurations 4`] = `
         ],
         "externalPort": 7554,
         "network": {
+          "allowedDomains": [
+            "www.example.com"
+          ],
           "server": {
             "tls": {
               "attls": false,
@@ -1329,6 +1335,9 @@ exports[`init-stc (SHORT) invalid stc configurations 5`] = `
         ],
         "externalPort": 7554,
         "network": {
+          "allowedDomains": [
+            "www.example.com"
+          ],
           "server": {
             "tls": {
               "attls": false,
@@ -1540,6 +1549,9 @@ exports[`init-stc (SHORT) invalid stc configurations 6`] = `
         ],
         "externalPort": 7554,
         "network": {
+          "allowedDomains": [
+            "www.example.com"
+          ],
           "server": {
             "tls": {
               "attls": false,
@@ -1751,6 +1763,9 @@ exports[`init-stc (SHORT) invalid stc configurations 7`] = `
         ],
         "externalPort": 7554,
         "network": {
+          "allowedDomains": [
+            "www.example.com"
+          ],
           "server": {
             "tls": {
               "attls": false,
@@ -2065,6 +2080,9 @@ exports[`init-stc (SHORT) wrong proclib 3`] = `
         ],
         "externalPort": 7554,
         "network": {
+          "allowedDomains": [
+            "www.example.com"
+          ],
           "server": {
             "tls": {
               "attls": false,

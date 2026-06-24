@@ -1256,6 +1256,18 @@
           "type": "string",
           "description": "This is a variable derived from gateway's ATTLS state to be used by servers proxied through it in eureka or static definitions"
         },
+        "allowedDomains": {
+          "type": "array",
+          "description": "List of domains (supporting wildcards for subdomains) that are allowed to register with the API ML Discovery Service.",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "not": {
+              "type": "null"
+            }
+          }
+        },
         "server": {
           "type": "object",
           "description": "Optional, advanced network configuration parameters for Zowe servers",
