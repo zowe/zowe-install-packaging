@@ -1,15 +1,1 @@
-{
-  "lockAcquiredTime": "Thu Jun 25 2026 10:23:14 GMT+0000 (Coordinated Universal Time)",
-  "uid": "1782382994169381717",
-  "repository": {
-    "owner": "zowe",
-    "repo": "zowe-install-packaging"
-  },
-  "branch": "janan07/update-allowedDomains-feature-desc-in-changelog",
-  "workflow": "Zowe CICD Integration Tests",
-  "job": "cicd-test",
-  "actor": "zowe-robot",
-  "runId": 28163422674,
-  "runNumber": 8779,
-  "link": "https://github.com/zowe/zowe-install-packaging/actions/runs/28163422674"
-}
+""
