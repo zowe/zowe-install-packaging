@@ -1,1 +1,15 @@
-""
+{
+  "lockAcquiredTime": "Thu Jun 25 2026 11:08:03 GMT+0000 (Coordinated Universal Time)",
+  "uid": "1782385683011801203",
+  "repository": {
+    "owner": "zowe",
+    "repo": "zowe-install-packaging"
+  },
+  "branch": "balhar-jakub/rc2-2.18.5",
+  "workflow": "Zowe CICD Integration Tests",
+  "job": "cicd-test",
+  "actor": "zowe-robot",
+  "runId": 28165725038,
+  "runNumber": 8780,
+  "link": "https://github.com/zowe/zowe-install-packaging/actions/runs/28165725038"
+}
