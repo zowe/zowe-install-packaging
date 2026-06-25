@@ -69,6 +69,18 @@ get_tmp_dir() {
   fi
 }
 
+# Emit 8 random hex characters.  Reads 4 bytes from /dev/urandom when
+# available; falls back to PID+RANDOM if the device is absent or unreadable.
+_tmp_rand() {
+  if [ -r /dev/urandom ]; then
+    _r=$(od -A n -t x4 -N 4 /dev/urandom 2>/dev/null | tr -d ' \n')
+    [ -n "${_r}" ] && { printf '%s' "${_r}"; return 0; }
+  fi
+  # fallback: not cryptographically secure, but collision-resistant enough
+  # when combined with O_EXCL / noclobber creation
+  printf '%x%x' "${$}" "${RANDOM}"
+}
+
 create_tmp_file() {
   prefix=${1:-zwe}
   tmpdir=${2:-}
@@ -85,8 +97,7 @@ create_tmp_file() {
       exit 114
     fi
 
-    # Combine PID + RANDOM for a larger namespace
-    file="${tmpdir}/${prefix}-${$}-${RANDOM}"
+    file="${tmpdir}/${prefix}-$(_tmp_rand)"
     print_trace "    - try ${file}"
 
     if ( umask 077; set -C; : > "${file}" ) 2>/dev/null; then
@@ -114,7 +125,7 @@ create_tmp_dir() {
       exit 114
     fi
 
-    dir="${tmpdir}/${prefix}-${$}-${RANDOM}"
+    dir="${tmpdir}/${prefix}-$(_tmp_rand)"
     print_trace "    - try ${dir}"
 
     if ( umask 077; mkdir "${dir}" ) 2>/dev/null; then

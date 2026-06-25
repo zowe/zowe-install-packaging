@@ -272,13 +272,35 @@ export function getTmpDir(): string {
   return tmp;
 }
 
+// Returns 8 random hex characters sourced from /dev/urandom.
+// Falls back to Math.random() when the device is absent or unreadable.
+function getTmpRand(): string {
+  const fd = os.open('/dev/urandom', os.O_RDONLY);
+  if (fd >= 0) {
+    const buf = new ArrayBuffer(4);
+    const n = os.read(fd, buf, 0, 4);
+    os.close(fd);
+    if (n === 4) {
+      const bytes = new Uint8Array(buf);
+      let hex = '';
+      for (let i = 0; i < 4; i++) {
+        hex += bytes[i].toString(16).padStart(2, '0');
+      }
+      return hex;
+    }
+  }
+  // /dev/urandom unavailable; not cryptographically secure, but collision-
+  // resistance still holds because creation uses O_CREAT|O_EXCL
+  return Math.floor(Math.random() * 0x100000000).toString(16).padStart(8, '0');
+}
+
 export function createTmpFile(prefix: string = 'zwe', tmpdir?: string): string|undefined {
   if (!tmpdir) {
     tmpdir = getTmpDir();
   }
   common.printTrace(`  > create_tmp_file on ${tmpdir}`);
   for (let attempt = 0; attempt < 100; attempt++) {
-    const file = `${tmpdir}/${prefix}-${Math.floor(Math.random() * 1000000)}`;
+    const file = `${tmpdir}/${prefix}-${getTmpRand()}`;
     common.printTrace(`    - test ${file}`);
     // open(O_CREAT|O_EXCL) is atomic: it creates the file and refuses to follow
     // any symlink (even dangling). Returns fd >= 0 on success, negative errno on failure.
@@ -303,7 +325,7 @@ export function createTmpDir(prefix: string = 'zwe', tmpdir?: string): string|un
     tmpdir = getTmpDir();
   }
   for (let attempt = 0; attempt < 100; attempt++) {
-    const dir = `${tmpdir}/${prefix}-${Math.floor(Math.random() * 1000000)}`;
+    const dir = `${tmpdir}/${prefix}-${getTmpRand()}`;
     common.printTrace(`    - test ${dir}`);
     const rc = os.mkdir(dir, 0o700);
     if (rc === 0) {
