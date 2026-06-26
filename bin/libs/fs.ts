@@ -302,9 +302,10 @@ export function createTmpFile(prefix: string = 'zwe', tmpdir?: string): string|u
     common.printTrace(`    - test ${file}`);
     // open(O_CREAT|O_EXCL) is atomic: it creates the file and refuses to follow
     // any symlink (even dangling). Returns fd >= 0 on success, negative errno on failure.
-    const fd = os.open(file, os.O_CREAT | os.O_EXCL | os.O_WRONLY, 0o600);
+    const fd = os.open(file, os.O_CREAT | os.O_EXCL | os.O_WRONLY);
     if (fd >= 0) {
       os.close(fd);
+      shell.execSync('chmod', '600', fd);
       common.printTrace(`    - good`);
       return file;
     }
