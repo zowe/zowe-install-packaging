@@ -38,7 +38,7 @@ export var SIGILL: number;
 export var SIGSEGV: number;
 export var SIGTERM: number;
 
-export function open(filename:string, flags:number):number;
+export function open(filename:string, flags:number, mode?:number):number;
 export function close(fd:number):number;
 export function read(fd:number, buffer:ArrayBuffer, offset:number, length:number):number;
 export function write(fd:number, buffer:ArrayBuffer, offset:number, length:number):number;
