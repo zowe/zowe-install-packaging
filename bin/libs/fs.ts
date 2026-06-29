@@ -307,7 +307,7 @@ export function createTmpFile(prefix: string = 'zwe', tmpdir?: string): string|u
     const fd = os.open(file, os.O_CREAT | os.O_EXCL | os.O_WRONLY);
     if (fd >= 0) {
       os.close(fd);
-      shell.execSync('chmod', '600', fd);
+      shell.execSync('chmod', '600', file);
       common.printTrace(`    - good`);
       return file;
     }
