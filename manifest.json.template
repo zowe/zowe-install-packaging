@@ -21,7 +21,7 @@
     },
     "org.zowe.zlux.sample-angular-app": {
       "version": "3.0.0-SYSTEMINFO",
-      "artifact": "sample-angular-app-3.0.0-20260629.001008.pax"
+      "artifact": "sample-angular-app-3.0.0-20260629.010632.pax"
     },
     "org.zowe.zlux.sample-iframe-app": {
       "version": "^3.0.0-V3.X-STAGING",
