@@ -34,6 +34,7 @@ else
 fi
 tmp_file_prefix=zwe-support
 tmp_pax="${target_dir}/${tmp_file_prefix}.${DATE}.pax"
+( umask 177; set -C; : > "${tmp_pax}" )
 tmp_dir=$(create_tmp_dir "${tmp_file_prefix}" "${target_dir}")
 
 ###############################
