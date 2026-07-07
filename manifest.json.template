@@ -217,7 +217,7 @@
       "componentGroup": "Zowe CLI",
       "entries": [{
         "repository": "zowe-cli",
-        "tag": "v7.29.27",
+        "tag": "v7.29.28",
         "destinations": ["Zowe CLI Package"]
       }]
     }, {
