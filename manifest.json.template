@@ -49,7 +49,7 @@
     "org.zowe.zss": {
       "version": "2.18.5-RC",
       "repository": "libs-snapshot-local",
-      "artifact": "zss-2.18.5-rc-1491-20260622142212.pax"
+      "artifact": "zss-2.18.5-rc-1526-20260707140207.pax"
     },
     "org.zowe.explorer.jobs.jobs-api-package": {
       "version": "2.0.43",
@@ -204,7 +204,7 @@
         },
         {
           "repository": "zss",
-          "tag": "v2.18.5-RC1",
+          "tag": "v2.18.5-RC2",
           "destinations": ["Zowe PAX"]
         },
         {
