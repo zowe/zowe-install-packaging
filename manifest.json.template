@@ -238,7 +238,7 @@
       "componentGroup": "IBM&reg MQ Plug-in for Zowe CLI",
       "entries": [{
         "repository": "zowe-cli-mq-plugin",
-        "tag": "v3.0.1",
+        "tag": "v3.0.2",
         "destinations": ["Zowe CLI Package"]
       }]
     }, {
