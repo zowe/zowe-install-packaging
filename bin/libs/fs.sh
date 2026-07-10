@@ -71,7 +71,7 @@ get_tmp_dir() {
 
 # Emit 8 random hex characters.  Reads 4 bytes from /dev/urandom when
 # available; falls back to PID+RANDOM if the device is absent or unreadable.
-_tmp_rand() {
+get_tmp_rand() {
   if [ -r /dev/urandom ]; then
     _r=$(od -A n -t x4 -N 4 /dev/urandom 2>/dev/null | tr -d ' \n')
     [ -n "${_r}" ] && { printf '%s' "${_r}"; return 0; }
@@ -97,7 +97,7 @@ create_tmp_file() {
       exit 114
     fi
 
-    file="${tmpdir}/${prefix}-$(_tmp_rand)"
+    file="${tmpdir}/${prefix}-$(get_tmp_rand)"
     print_trace "    - try ${file}"
 
     if ( umask 077; set -C; : > "${file}" ) 2>/dev/null; then
@@ -125,7 +125,7 @@ create_tmp_dir() {
       exit 114
     fi
 
-    dir="${tmpdir}/${prefix}-$(_tmp_rand)"
+    dir="${tmpdir}/${prefix}-$(get_tmp_rand)"
     print_trace "    - try ${dir}"
 
     if ( umask 077; mkdir "${dir}" ) 2>/dev/null; then
