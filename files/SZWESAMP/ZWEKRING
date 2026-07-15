@@ -555,7 +555,7 @@ ACF
 *
 * Uncomment this command if SITE acid owns the Zowe certificate ... */
 *  RECKEY IRR ADD(DIGTCERT.GENCERT ROLE(&STCGRP) -
-*  SERVICE(CONTROL) ALLOW)
+*  SERVICE(UPDATE) ALLOW)
 *
   F ACF2,REBUILD(FAC)
 *
@@ -709,7 +709,7 @@ $$
   TSS PERMIT(&ZOWEUSER.) IBMFAC(IRR.DIGTCERT.LISTRING) ACCESS(READ)
 
 /* Uncomment this command if SITE acid owns the Zowe certificate ... */
-/* TSS PERMIT(&ZOWEUSER.) IBMFAC(IRR.DIGTCERT.GENCERT) ACCESS(CONTROL)
+/* TSS PERMIT(&ZOWEUSER.) IBMFAC(IRR.DIGTCERT.GENCERT) ACCESS(UPDATE)
 
 /* List the keyring ................................................ */
   TSS LIST(&ZOWEUSER.) KEYRING(ZOWERING) LABLRING(&ZOWERING.)
