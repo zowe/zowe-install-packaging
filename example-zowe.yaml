@@ -355,6 +355,10 @@ zowe:
   # This section can be overridden per-component by placing it
   # Under a "zowe" subsection of a component, as in "components.zss.zowe.network"
   network:
+    # Allowed domains is a list of domains (supporting wildcards) that can be used in services that register to the API ML Discovery Service.
+    # Defaults to the external domains + lpar hostnames if defined in haInstances
+    allowedDomains:
+      - www.example.com
     server:
       tls:
         attls: false
@@ -396,8 +400,10 @@ zowe:
     - "ZWEL0001I"
   #   # Zowe components stopped
     - "ZWEL0002I"
-  #   # API ML components ready
+  #   # API ML components started
     - "ZWEAM000I"
+  #   # API ML components ready
+    - "ZWEAM001I"
   #   # App server ready
     - "ZWED0031I"
   #   # ZSS ready

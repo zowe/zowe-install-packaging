@@ -63,7 +63,7 @@ export function getManifestPath(componentDir: string): string|undefined {
     return `${componentDir}/manifest.yaml`;
   } else if (fs.fileExists(`${componentDir}/manifest.yml`)) {
     return `${componentDir}/manifest.yml`;
-  } else if (fs.fileExists(`${componentDir}/manifest.yaml`)) {
+  } else if (fs.fileExists(`${componentDir}/manifest.json`)) {
     return `${componentDir}/manifest.json`;
   }
   return undefined;

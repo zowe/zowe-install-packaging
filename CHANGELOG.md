@@ -3,8 +3,16 @@
 All notable changes to the Zowe Installer will be documented in this file.
 <!--Add the PR or issue number to the entry if available.-->
 
+## `2.18.5`
+- Bugfix: Restricted read/write permissions for log files created by the `zwe` command. [#4812](https://github.com/zowe/zowe-install-packaging/pull/4812)
+- Bugfix: `zwe init mvs` skips copying of `ZWESIP00` member if target is identical to source data set. `zwe init security` was using incorrect ACF2 data set protection statement. [#4776](https://github.com/zowe/zowe-install-packaging/pull/4776)
+- Bugfix: Incorrect keyword was used for ACF2 key ring statement. [#4680](https://github.com/zowe/zowe-install-packaging/pull/4680)
+- Bugfix: `cleanup-ipc.mq.sh` script updated to reflect changes in `ipcs` command output. [#4690](https://github.com/zowe/zowe-install-packaging/pull/4690)
+- Enhancement: Implemented the `zowe.network.allowedDomains` allowlist property for URL domains. This feature validates all service registration metadata against a trusted domain allowlist. For details, see the `zowe.network.allowedDomains` feature in Zowe API Mediation Layer. [#4813](https://github.com/zowe/zowe-install-packaging/pull/4813)
+
 ## `2.18.4`
 - Bugfix: Running z/OSMF is returning 401, if RSU2512 was applied. [#4658](https://github.com/zowe/zowe-install-packaging/pull/4658)
+- Bugfix: `detect_java_home` and `detect_node_home` routines used incorrect shell command [#4572](https://github.com/zowe/zowe-install-packaging/pull/4572)
 
 ## `2.18.3`
 - Bugfix: internal routine `copy_to_data_set` did not correctly check if data set exists. [#4489](https://github.com/zowe/zowe-install-packaging/pull/4489)
