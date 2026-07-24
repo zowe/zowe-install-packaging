@@ -184,14 +184,6 @@ export function execute(): void {
     fs.cp(`${workspaceDirectory}/api-mediation/api-defs`, `${tmpDir}/workspace/api-mediation`);
   }
 
-  const pkcs12Directory = ZOWE_CONFIG.zowe.setup?.certificate?.pkcs12?.directory;
-  if (fs.directoryExists(pkcs12Directory)) {
-    common.printMessage(`- zowe.setup.certificate.pkcs12.directory: ${pkcs12Directory}`)
-    fs.mkdirp(`${tmpDir}/keystore`);
-    fs.cp(`${pkcs12Directory}`, `${tmpDir}/keystore`);
-  }
-  common.printMessage("");
-
   common.printLevel1Message("Collecting Zowe file fingerprints");
   const verifyFingerprintsFile = `${tmpDir}/verify-fingerprints.log`;
   const supportLogFile = std.getenv('ZWE_PRIVATE_LOG_FILE');
