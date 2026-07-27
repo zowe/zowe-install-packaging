@@ -242,7 +242,7 @@ export function execute(): void {
   common.printMessage("");
 
   common.printLevel1Message('Create support package and clean up');
-  shell.execOutSync('sh', '-c', `cd "${tmpDir}" && pax -w -v -o saveext -f "${tmpPax}" . && compress ${tmpPax} && chmod 700 "${tmpPax}.Z"`);
+  shell.execOutSync('sh', '-c', `cd "${tmpDir}" && (set -C; umask 077; : > "${tmpPax}") && pax -w -v -o saveext -f "${tmpPax}" . && compress -f "${tmpPax}"`);
   fs.rmrf(tmpDir);
   common.printMessage("");
 
