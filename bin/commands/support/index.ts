@@ -43,6 +43,29 @@ function zssCheck(zssBinary: string): string {
   }
 }
 
+const PASSWORD_KEY_PATTERN = /capassword|password$/i;
+function buildPasswordMaskConfig(source: any): any {
+  if (!source || typeof source !== 'object' || Array.isArray(source)) {
+    return undefined;
+  }
+  const result: any = {};
+  let hasMasked = false;
+  for (const key of Object.keys(source)) {
+    const value = source[key];
+    if (PASSWORD_KEY_PATTERN.test(key) && typeof value === 'string' && value.length > 0) {
+      result[key] = '***';
+      hasMasked = true;
+    } else if (value && typeof value === 'object') {
+      const nested = buildPasswordMaskConfig(value);
+      if (nested !== undefined) {
+        result[key] = nested;
+        hasMasked = true;
+      }
+    }
+  }
+  return hasMasked ? result : undefined;
+}
+
 export function execute(): void {
 
   common.printLevel0Message('Collect information for Zowe support');
@@ -170,10 +193,12 @@ export function execute(): void {
 
   const workspaceDirectory = ZOWE_CONFIG.zowe.workspaceDirectory;
 
-  common.printMessage(`- configuration: ${workspaceDirectory}/.env/.zowe-merged.yaml`);
-
-  // workspace directory must exists, otherwise the merging of configs already failed
-  fs.cp(`${workspaceDirectory}/.env/.zowe-merged.yaml`, `${tmpDir}/zowe-merged.yaml`);
+  // mask password-like values in the copied merged YAML before it goes into the support bundle
+  const maskObj = buildPasswordMaskConfig(ZOWE_CONFIG);
+  if (maskObj) {
+    common.printMessage(`- configuration: copy of ${workspaceDirectory}/.env/.zowe-merged.yaml, passwords masked out`);
+    config.updateZoweCfgFile(`${tmpDir}/zowe-merged.yaml`, maskObj, 1, false);
+  }
 
   common.printMessage(`- zowe.workspaceDirectory: ${workspaceDirectory}/.env`);
   fs.mkdirp(`${tmpDir}/workspace`);
