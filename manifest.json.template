@@ -44,8 +44,8 @@
       "artifact": "*.pax"
     },
     "org.zowe.zss": {
-      "version": "^3.0.0-STAGING",
-      "artifact": "*.pax"
+      "version": "3.6.0-PR-858",
+      "artifact": "zss-3.6.0-pr-858-1557-20260728172011.pax"
     },
     "org.zowe.explorer-jes": {
       "version": "^3.0.0-SNAPSHOT"
