@@ -98,11 +98,11 @@ else
     cp ${ZWE_zowe_runtimeDirectory}/manifest.json ${ZWE_zowe_workspaceDirectory}
 
     # prepare .env directory
-    mkdir -m 700 -p "${ZWE_PRIVATE_WORKSPACE_ENV_DIR}"
+    umask 0077
+    mkdir "${ZWE_PRIVATE_WORKSPACE_ENV_DIR}" || chmod -R 700 "${ZWE_PRIVATE_WORKSPACE_ENV_DIR}"
 
     print_formatted_debug "ZWELS" "zwe-internal-start-prepare,prepare_workspace_directory:${LINENO}" "initialize .instance-${ZWE_CLI_PARAMETER_HA_INSTANCE}.env(s)"
 
-    umask 0077
     generate_instance_env_from_yaml_config "${ZWE_CLI_PARAMETER_HA_INSTANCE}"
   }
 
