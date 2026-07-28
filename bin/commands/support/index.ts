@@ -193,11 +193,14 @@ export function execute(): void {
 
   const workspaceDirectory = ZOWE_CONFIG.zowe.workspaceDirectory;
 
-  // mask password-like values in the copied merged YAML before it goes into the support bundle
+  common.printMessage(`- configuration: ${workspaceDirectory}/.env/.zowe-merged.yaml`);
+  fs.cp(`${workspaceDirectory}/.env/.zowe-merged.yaml`, `${tmpDir}/zowe-support.yaml`);
   const maskObj = buildPasswordMaskConfig(ZOWE_CONFIG);
   if (maskObj) {
-    common.printMessage(`- configuration: copy of ${workspaceDirectory}/.env/.zowe-merged.yaml, passwords masked out`);
-    config.updateZoweCfgFile(`${tmpDir}/zowe-merged.yaml`, maskObj, 1, false);
+    // Update copy of config and DO NOT validate (last parameter is false)
+    // buildPasswordMaskConfig changes all password keys to '***'
+    // which is not valid for key ring password (if used).
+    config.updateZoweCfgFile(`${tmpDir}/zowe-support.yaml`, maskObj, 1, false);
   }
 
   common.printMessage(`- zowe.workspaceDirectory: ${workspaceDirectory}/.env`);
