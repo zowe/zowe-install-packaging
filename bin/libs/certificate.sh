@@ -66,10 +66,29 @@ JAVA_KEYTOOL_ENCODING=" -J-Dfile.encoding=COMPAT "
 # RLIST  FACILITY IRR.DIGTCERT.LISTRING  ALL
 #######################################################################
 
+maskargs() {
+  args=$@
+  maskedargs=""
+  printitem=1
+
+  for item in $args; do
+    if [ $printitem -eq 1 ]; then
+      maskedargs="${maskedargs}$item "
+    else
+      maskedargs="${maskedargs}... "
+      printitem=1
+    fi
+    if [ "${item}" = "-storepass" ]; then
+      printitem=0
+    fi
+  done
+}
+
+
 pkeytool() {
   args=$@
-
-  print_debug "- Calling keytool ${args}"
+  maskargs ${args}
+  print_debug "- Calling keytool ${maskedargs}"
   result=$(keytool "$@" 2>&1)
   code=$?
 

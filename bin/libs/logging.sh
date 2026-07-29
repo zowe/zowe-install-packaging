@@ -25,7 +25,8 @@ prepare_log_file() {
   ZWE_PRIVATE_LOG_FILE="${log_dir}/${log_file_prefix}-$(date +%Y%m%dT%H%M%S).log"
   if [ ! -f "${ZWE_PRIVATE_LOG_FILE}" ]; then
     # create and echo message if log file doesn't exist
-    mkdir -p "${log_dir}"
+    umask 0007
+    mkdir "${log_dir}" || chmod 770 -R "${log_dir}"
     if [ ! -w "${log_dir}" ]; then
       print_error_and_exit "Error ZWEL0110E: Doesn't have write permission on ${1} directory." "" 110
     fi
