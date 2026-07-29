@@ -8,6 +8,7 @@ All notable changes to the Zowe Installer will be documented in this file.
 - Enhancement: New property `zowe.network.allowedDomains`. Defaults to external domains and LPAR hostnames for HA scenarios. Domains not included in this list will not be allowed to be onboarded on Discovery Service. [#4801](https://github.com/zowe/zowe-install-packaging/pull/4801)
 - Enhancement: Added command `zwe validate zosmf jwt` which checks whether a Zowe configured to use z/OSMF is able to use z/OSMF's JWT authentication method or not. This command runs every startup if the conditions are met, but can be disabled or turned into only a warning via YAML property `zowe.launchScript.startupChecks.zosmfjwt` being set to "warn" or "disabled". [#4727](https://github.com/zowe/zowe-install-packaging/pull/4727)
 - Enhancement: APIML logging level configuration added to the `example-zowe.yaml`. [#4827](https://github.com/zowe/zowe-install-packaging/pull/4827)
+- Enhancement: Improved temporary files and directories handling. [#4820](https://github.com/zowe/zowe-install-packaging/pull/4820)
 
 ## `3.5.0`
 
