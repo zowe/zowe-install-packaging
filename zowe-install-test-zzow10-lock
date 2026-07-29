@@ -1,1 +1,15 @@
-""
+{
+  "lockAcquiredTime": "Wed Jul 29 2026 19:18:20 GMT+0000 (Coordinated Universal Time)",
+  "uid": "1785352700432839773",
+  "repository": {
+    "owner": "zowe",
+    "repo": "zowe-install-packaging"
+  },
+  "branch": "user/skurnevich/tmp-files-naming-v2",
+  "workflow": "Zowe CICD Integration Tests",
+  "job": "cicd-test",
+  "actor": "zowe-robot",
+  "runId": 30483577726,
+  "runNumber": 8867,
+  "link": "https://github.com/zowe/zowe-install-packaging/actions/runs/30483577726"
+}
