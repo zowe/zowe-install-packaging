@@ -272,22 +272,73 @@ export function getTmpDir(): string {
   return tmp;
 }
 
-/*
-  NOTE: Contrary to function name, this does not create a temp file. It just checks if it exists (safe to create)
-*/
+// Returns 8 random hex characters sourced from /dev/urandom.
+// Falls back to Math.random() when the device is absent or unreadable.
+function getTmpRand(): string {
+  const fd = os.open('/dev/urandom', os.O_RDONLY);
+  if (fd >= 0) {
+    const buf = new ArrayBuffer(4);
+    const n = os.read(fd, buf, 0, 4);
+    os.close(fd);
+    if (n === 4) {
+      const bytes = new Uint8Array(buf);
+      let hex = '';
+      for (let i = 0; i < 4; i++) {
+        hex += bytes[i].toString(16).padStart(2, '0');
+      }
+      return hex;
+    }
+  }
+  // /dev/urandom unavailable; not cryptographically secure, but collision-
+  // resistance still holds because creation uses O_CREAT|O_EXCL
+  return Math.floor(Math.random() * 0x100000000).toString(16).padStart(8, '0');
+}
+
 export function createTmpFile(prefix: string = 'zwe', tmpdir?: string): string|undefined {
   if (!tmpdir) {
     tmpdir = getTmpDir();
   }
   common.printTrace(`  > create_tmp_file on ${tmpdir}`);
-  while (true) {
-    let file = `${tmpdir}/${prefix}-${Math.floor(Math.random()*10000)}`;
+  for (let attempt = 0; attempt < 100; attempt++) {
+    const file = `${tmpdir}/${prefix}-${getTmpRand()}`;
     common.printTrace(`    - test ${file}`);
-    if (!pathExists(file)) {
+    // open(O_CREAT|O_EXCL) is atomic: it creates the file and refuses to follow
+    // any symlink (even dangling). Returns fd >= 0 on success, negative errno on failure.
+    const fd = os.open(file, os.O_CREAT | os.O_EXCL | os.O_WRONLY, 0o600);
+    if (fd >= 0) {
+      os.close(fd);
       common.printTrace(`    - good`);
       return file;
     }
+    // Any error other than EEXIST (name collision) is unexpected
+    if (fd !== -(std.Error.EEXIST)) {
+      common.printError(`createTmpFile: open failed with errno ${-fd} for ${file}`);
+      return undefined;
+    }
   }
+  common.printError(`createTmpFile: could not allocate temp file after 100 attempts`);
+  return undefined;
+}
+
+export function createTmpDir(prefix: string = 'zwe', tmpdir?: string): string|undefined {
+  if (!tmpdir) {
+    tmpdir = getTmpDir();
+  }
+  for (let attempt = 0; attempt < 100; attempt++) {
+    const dir = `${tmpdir}/${prefix}-${getTmpRand()}`;
+    common.printTrace(`    - test ${dir}`);
+    const rc = os.mkdir(dir, 0o700);
+    if (rc === 0) {
+      common.printTrace(`    - good`);
+      return dir;
+    }
+    if (rc !== -(std.Error.EEXIST)) {
+      common.printError(`createTmpDir: mkdir failed with errno ${-rc} for ${dir}`);
+      return undefined;
+    }
+  }
+  common.printError(`createTmpDir: could not allocate temp dir after 100 attempts`);
+  return undefined;
 }
 
 export function isFileAccessible(file: string): boolean {

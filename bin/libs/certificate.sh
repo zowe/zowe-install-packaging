@@ -1085,12 +1085,10 @@ keyring_export_to_pkcs12() {
 
   dummy_cert=keyring-export-to-pkcs12-dummy
   dummy_cert_created=
-  uss_temp_target=$(create_tmp_file "keyring-export-to-pkcs12" "${uss_temp_dir}")
-
-  # remove temp files if they exists
-  rm -f "${uss_temp_target}.cer"
-  rm -f "${uss_temp_target}.key"
-  rm -f "${uss_temp_target}.p12"
+  # Use a private 700 directory so .cer/.key/.p12 are created inside an
+  # owner-only namespace; no other OMVS user can plant a symlink there.
+  uss_temp_subdir=$(create_tmp_dir "keyring-export-to-pkcs12" "${uss_temp_dir}")
+  uss_temp_target="${uss_temp_subdir}/keyring"
 
   print_debug ">>>> Export certificate \"${label}\" from safkeyring:////${keyring_owner}/${keyring_name} to PKCS#12 keystore ${keystore_file}"
 

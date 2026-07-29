@@ -28,8 +28,7 @@ fi
 
 USE_JCL=$(check_jcl_enabled)
 
-export ZWE_PRIVATE_TMP_MERGED_YAML_DIR=$(create_tmp_file)
-mkdir -p ${ZWE_PRIVATE_TMP_MERGED_YAML_DIR}
+export ZWE_PRIVATE_TMP_MERGED_YAML_DIR=$(create_tmp_dir)
 _CEE_RUNOPTS="XPLINK(ON),HEAPPOOLS(OFF),HEAPPOOLS64(OFF)" ${ZWE_zowe_runtimeDirectory}/bin/utils/configmgr -script "${ZWE_zowe_runtimeDirectory}/bin/commands/internal/config/output/cli.js"
 if [ $? -eq 0 -a -f "${ZWE_PRIVATE_TMP_MERGED_YAML_DIR}/.zowe-merged.yaml" ]; then
   # use the yaml configmgr returns because it will contain defaults for the version we are using.
