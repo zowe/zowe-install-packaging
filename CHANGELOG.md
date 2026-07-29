@@ -6,8 +6,10 @@ All notable changes to the Zowe Installer will be documented in this file.
 
 - Enhancement: When running in HA mode, Zowe now creates a per-HA-instance merged YAML config file (`.zowe-<haInstance>-merged.yaml`) to the workspace `.env` directory. This file contains the fully-resolved configuration for that instance with all `haInstances` overrides applied at the root level. The `haInstances` block is preserved. The location of this file is recorded in environment variable `ZWE_HA_INSTANCE_CONFIG`. (https://github.com/zowe/zowe-install-packaging/pull/4759)
 - Bugfix: Fixed `MalformedURLException: unknown protocol: safkeyring` on IBM Java 17/21 for `zwe validate certificate` command by replacing `-Djava.protocol.handler.pkgs=com.ibm.crypto.provider` with `--add-modules ibm.crypto.zsecurity,ibm.crypto.hdwrcca` to resolve the SAF keyring URL protocol handler. [#4795](https://github.com/zowe/zowe-install-packaging/pull/4795)
+- Enhancement: New property `zowe.network.allowedDomains`. Defaults to external domains and LPAR hostnames for HA scenarios. Domains not included in this list will not be allowed to be onboarded on Discovery Service. [#4801](https://github.com/zowe/zowe-install-packaging/pull/4801)
 - Enhancement: Added command `zwe validate zosmf jwt` which checks whether a Zowe configured to use z/OSMF is able to use z/OSMF's JWT authentication method or not. This command runs every startup if the conditions are met, but can be disabled or turned into only a warning via YAML property `zowe.launchScript.startupChecks.zosmfjwt` being set to "warn" or "disabled". [#4727](https://github.com/zowe/zowe-install-packaging/pull/4727)
-
+- Enhancement: APIML logging level configuration added to the `example-zowe.yaml`. [#4827](https://github.com/zowe/zowe-install-packaging/pull/4827)
+- Enhancement: Improved temporary files and directories handling. [#4820](https://github.com/zowe/zowe-install-packaging/pull/4820)
 
 ## `3.5.0`
 
