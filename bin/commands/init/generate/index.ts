@@ -13,6 +13,7 @@ import * as std from 'cm_std';
 import * as os from "cm_os";
 import * as xplatform from "xplatform";
 import * as fs from '../../../libs/fs';
+import * as shell from '../../../libs/shell';
 import * as config from '../../../libs/config';
 import * as common from '../../../libs/common';
 import * as stringLib from '../../../libs/string';
@@ -62,6 +63,8 @@ export function execute(dryRun?: boolean) {
   if (zosFs.copyMvsToUss(ZOWE_CONFIG.zowe.setup.dataset.prefix + '.SZWESAMP(ZWEGENER)', tempFile) !== 0) {
     common.printErrorAndExit(`ZWEL0143E Cannot find data set member '${ZOWE_CONFIG.zowe.setup.dataset.prefix + '.SZWESAMP(ZWEGENER)'}'. You may need to re-run zwe install.`, undefined, 143);
   }
+  // cp from an MVS dataset may recreate the USS file under the process umask; restore 0600.
+  shell.execSync('chmod', '600', tempFile);
   let jclContents = xplatform.loadFileUTF8(tempFile, xplatform.AUTO_DETECT);
 
   // Replace is using special replacement patterns, by doubling '$' we will avoid that

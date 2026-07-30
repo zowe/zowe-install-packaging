@@ -84,14 +84,12 @@ export function execute(): void {
 
   const tmpFilePrefix = 'zwe-support';
   const tmpPax = `${targetDirectory}/${tmpFilePrefix}.${isoDate}.pax`;
-  const tmpDir = fs.createTmpFile(tmpFilePrefix, targetDirectory);
+  const tmpDir = fs.createTmpDir(tmpFilePrefix, targetDirectory);
 
   common.requireZoweYaml();
   const ZOWE_CONFIG=config.getZoweConfig();
 
   common.printMessage(`Started at ${isoDate}`);
-  fs.mkdirp(tmpDir, 0o700);
-  common.printDebug(`Temporary directory created: ${tmpDir}`);
 
   common.printLevel1Message('Collecting various environment information');
   const environmentFile =`${tmpDir}/environment.json`;
