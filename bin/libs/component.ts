@@ -660,6 +660,8 @@ export function zisPluginInstall(pluginPath: string, zisPluginlib: string, zisPa
   const parmlibMemberAsUnixFile=fs.createTmpFile(zisParmlibMember);
 
   zosfs.copyMvsToUss(`${zisParmlib}(${zisParmlibMember})`, parmlibMemberAsUnixFile);
+  // cp from an MVS dataset may recreate the USS file under the process umask; restore 0600.
+  shell.execSync('chmod', '600', parmlibMemberAsUnixFile);
   let parmlibContents = xplatform.loadFileUTF8(parmlibMemberAsUnixFile, xplatform.AUTO_DETECT);
   common.printDebug(`Parmlib starts as \n${parmlibContents}`);
   let parmlibLines = parmlibContents.split('\n');

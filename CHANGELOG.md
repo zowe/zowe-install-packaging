@@ -9,6 +9,7 @@ All notable changes to the Zowe Installer will be documented in this file.
 - Bugfix: Incorrect keyword was used for ACF2 key ring statement. [#4680](https://github.com/zowe/zowe-install-packaging/pull/4680)
 - Bugfix: `cleanup-ipc.mq.sh` script updated to reflect changes in `ipcs` command output. [#4690](https://github.com/zowe/zowe-install-packaging/pull/4690)
 - Enhancement: Implemented the `zowe.network.allowedDomains` allowlist property for URL domains. This feature validates all service registration metadata against a trusted domain allowlist. For details, see the `zowe.network.allowedDomains` feature in Zowe API Mediation Layer. [#4813](https://github.com/zowe/zowe-install-packaging/pull/4813)
+- Enhancement: Improved temporary files and directories handling. [#4825](https://github.com/zowe/zowe-install-packaging/pull/4825)
 
 ## `2.18.4`
 - Bugfix: Running z/OSMF is returning 401, if RSU2512 was applied. [#4658](https://github.com/zowe/zowe-install-packaging/pull/4658)

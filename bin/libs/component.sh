@@ -515,8 +515,10 @@ zis_plugin_install() {
   component_dir="${6}"
   zwes_zis_parmlib_keys="${7}"
   parmlib_member_as_unix_file=$(create_tmp_file "${zwes_zis_parmlib_member}")
-  
+
   copy_mvs_to_uss "${zwes_zis_parmlib}(${zwes_zis_parmlib_member})" "${parmlib_member_as_unix_file}"
+  # cp from an MVS dataset may recreate the USS file under the process umask; restore 600.
+  chmod 600 "${parmlib_member_as_unix_file}"
 
   changed=0
   
