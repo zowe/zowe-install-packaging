@@ -79,7 +79,7 @@ maskargs() {
       printitem=1
     fi
     case "${item}" in
-      -storepass|-keypass|-destkeypass|-srcstorepass)
+      -storepass|-keypass|-deststorepass|-destkeypass|-srcstorepass|-srckeypass)
         printitem=0
       ;;
     esac
