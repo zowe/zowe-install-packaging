@@ -78,9 +78,11 @@ maskargs() {
       maskedargs="${maskedargs}... "
       printitem=1
     fi
-    if [ "${item}" = "-storepass" ]; then
-      printitem=0
-    fi
+    case "${item}" in
+      -storepass|-keypass|-destkeypass|-srcstorepass)
+        printitem=0
+      ;;
+    esac
   done
 }
 
