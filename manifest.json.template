@@ -54,7 +54,8 @@
       "version": "^3.0.0-SNAPSHOT"
     },
     "org.zowe.explorer-uss": {
-      "version": "^3.0.0-SNAPSHOT"
+      "version": "3.0.6-PR-216",
+      "artifact": "explorer-uss-3.0.6-pr-216-273-20260527124641.pax"
     },
     "org.zowe.explorer-ip": {
       "version": "^3.0.0-SNAPSHOT",
