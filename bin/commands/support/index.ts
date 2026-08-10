@@ -43,7 +43,7 @@ function zssCheck(zssBinary: string): string {
   }
 }
 
-const PASSWORD_KEY_PATTERN = /capassword|password$/i;
+const PASSWORD_KEY_PATTERN = /secret|password/i;
 function buildPasswordMaskConfig(source: any): any {
   if (!source || typeof source !== 'object' || Array.isArray(source)) {
     return undefined;
