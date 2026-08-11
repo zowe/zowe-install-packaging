@@ -25,6 +25,9 @@ if [ -z "${ZWE_zowe_runtimeDirectory}" ]; then
 fi
 export ZWE_zowe_runtimeDirectory
 
+# Used to change from UTC time if needed
+export ZWE_PRIVATE_TIMEZONE_DIFF=$(date '+%z')
+
 #######################################################################
 # import all shared libraries
 if [ -z "${ZWE_PRIVATE_CLI_LIBRARY_LOADED}" ]; then

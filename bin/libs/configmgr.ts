@@ -72,6 +72,9 @@ export function getFirstConfigFile() {
 export function getZoweConfig() {
   if (ZOWE_CONFIG == null) {
     ZOWE_CONFIG = loadZoweConfig();
+    if (ZOWE_CONFIG.zowe.logging?.timezone) {
+      std.setenv("ZWE_zowe_logging_timezone", ZOWE_CONFIG.zowe.logging.timezone);
+    }
   }
   return ZOWE_CONFIG
 }

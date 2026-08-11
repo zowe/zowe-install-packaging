@@ -329,7 +329,11 @@ print_formatted_message() {
     return 0
   fi
 
-  log_line_prefix="$(date -u '+%Y-%m-%d %T') <${service}:$$> $(get_user_id) ${level} (${logger})"
+  if [ "${ZWE_zowe_logging_timezone}" = "LOCAL" -o "${ZWE_zowe_logging_timezone}" = "local" ]; then
+    log_line_prefix="$(date '+%Y-%m-%d %T') <${service}:$$> $(get_user_id) ${level} (${logger})"
+  else
+    log_line_prefix="$(date -u '+%Y-%m-%d %T') <${service}:$$> $(get_user_id) ${level} (${logger})"
+  fi
   while read -r line; do
     has_prefix=$(echo "$line" | awk '/^[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}/')
     if [ -z "${has_prefix}" ]; then

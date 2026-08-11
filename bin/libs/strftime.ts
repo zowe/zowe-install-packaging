@@ -34,8 +34,33 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
+
+import * as std from 'cm_std';
+
+const MINUTE_MULTIPLIER = 60*1000;
+const HOUR_MULTIPLIER = 60*60*1000;
+
 export function strftime(sFormat:string, dateArg?:Date): string {
   let date:Date = (dateArg instanceof Date) ? dateArg : new Date();
+  let tzenv = std.getenv("ZWE_PRIVATE_TIMEZONE_DIFF");
+  let timezonePreference = std.getenv("ZWE_zowe_logging_timezone") || '';
+  let useLocalTime = timezonePreference.toLowerCase() == 'local';
+  if (useLocalTime && tzenv && (tzenv.length == 5) && (tzenv != '+0000')) {
+    let operator = tzenv[0];
+    if (operator == '+' || operator == '-') {
+      let hourDiff = Number(tzenv.substring(1, 3));
+      let minuteDiff = Number(tzenv.substring(3, 5));
+      if (!isNaN(hourDiff) && !isNaN(minuteDiff)) {
+        let newTime = date.getTime();
+        let unixDiff = ((minuteDiff * MINUTE_MULTIPLIER) + (hourDiff * HOUR_MULTIPLIER));
+        if (operator == '+') {
+          date = new Date(newTime + unixDiff);
+        } else {
+          date = new Date(newTime - unixDiff);
+        }
+      }
+    }
+  }
   const nDay = date.getDay();
   const nDate = date.getDate();
   const nMonth = date.getMonth();

@@ -790,6 +790,18 @@
           "description": "Customize how Zowe should validate certificates used by components or other services.",
           "enum": ["STRICT", "NONSTRICT", "DISABLED"]
         },
+        "logging": {
+          "type": "object",
+          "description": "Properties that instruct Zowe components and utilties when, how, and where log messages should be made.",
+          "additionalProperties": false,
+          "properties": {
+            "timezone": {
+              "type": "string",
+              "description": "Instructs messages to use either UTC, or the local timezone according to the TZ environment variable",
+              "enum": [ "LOCAL", "UTC" ]
+            }
+          }
+        },
         "sysMessages": {
           "type": "array",
           "description": "List of Zowe message portions when matched will be additionally logged into the system's log (such as syslog on z/OS). Note: Some messages extremely early in the Zowe lifecycle may not be added to the system's log",
