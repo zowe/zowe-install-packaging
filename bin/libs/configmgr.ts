@@ -192,7 +192,7 @@ function getDefaultAllowedDomains(config) {
   const list: string[] = [];
 
   const externalDomains = config.zowe.externalDomains;
-  const zosmfHost = config.zosmf?.host;
+  const zosmfHost = config.zOSMF?.host;
   const listenAddresses = config.zowe.network?.server?.listenAddresses;
   
   if (config.haInstances) {

@@ -1,3 +1,63 @@
+++HOLD(UO06703) SYSTEM FMID(AZWE002) REASON(ACTION) DATE(26196)
+  COMMENT(
+  ****************************************************************
+  * Affected function: Zowe Configuration                        *
+  ****************************************************************
+  * Description: update zowe.yaml                                *
+  ****************************************************************
+  * Timing: post-APPLY                                           *
+  ****************************************************************
+  * Part: zowe.yaml                                              *
+  ****************************************************************
+  This HOLDDATA is optional but highly recommended for
+  improving network security.
+  
+  Review zowe.yaml and add the new property
+  "zowe.network.allowedDomains" if necessary.
+  
+  This property is an array of domains that are permitted in
+  the metadata of services registering to the API ML Discovery
+  Service.
+  
+  Subdomains are supported using an asterisk wildcard (e.g.,
+  "*.example.com"). Without a wildcard, the domain must be a
+  strict match.
+  
+  By default, this list includes the "externalDomains" already
+  listed in zowe.yaml and the hostnames in the optional high
+  availability configuration. You do not need to add these
+  default values manually.
+  
+  Example:
+  zowe:
+    network:
+      allowedDomains:
+        - "example.com"
+        - "*.another-domain.com"
+  
+  ****************************************************************
+  * Affected function: Zowe servers                              *
+  ****************************************************************
+  * Description: stop servers                                    *
+  ****************************************************************
+  * Timing: pre-APPLY                                            *
+  ****************************************************************
+  * Part: ZWESLSTC and ZWESISTC                                  *
+  ****************************************************************
+  Stop the Zowe servers before installing this update.
+  
+  ****************************************************************
+  * Affected function: Zowe servers                              *
+  ****************************************************************
+  * Description: start servers                                   *
+  ****************************************************************
+  * Timing: post-APPLY                                           *
+  ****************************************************************
+  * Part: ZWESLSTC and ZWESISTC                                  *
+  ****************************************************************
+  Start the Zowe servers after installing this update.
+  
+  ).
 ++HOLD(UO03613) SYSTEM FMID(AZWE002) REASON(ACTION) DATE(26029)
   COMMENT(
   ****************************************************************

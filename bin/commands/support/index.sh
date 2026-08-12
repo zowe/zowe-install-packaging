@@ -34,7 +34,8 @@ else
 fi
 tmp_file_prefix=zwe-support
 tmp_pax="${target_dir}/${tmp_file_prefix}.${DATE}.pax"
-tmp_dir=$(create_tmp_file "${tmp_file_prefix}" "${target_dir}")
+( umask 177; set -C; : > "${tmp_pax}" )
+tmp_dir=$(create_tmp_dir "${tmp_file_prefix}" "${target_dir}")
 
 ###############################
 # validate
@@ -44,8 +45,6 @@ require_zowe_yaml
 
 ###############################
 print_message "Started at ${DATE}"
-mkdir "${tmp_dir}"
-chmod 700 "${tmp_dir}"
 print_debug "Temporary directory created: ${tmp_dir}"
 print_message
 
