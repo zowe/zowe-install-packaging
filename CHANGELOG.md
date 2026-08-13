@@ -10,6 +10,7 @@ All notable changes to the Zowe Installer will be documented in this file.
 - Enhancement: Added command `zwe validate zosmf jwt` which checks whether a Zowe configured to use z/OSMF is able to use z/OSMF's JWT authentication method or not. This command runs every startup if the conditions are met, but can be disabled or turned into only a warning via YAML property `zowe.launchScript.startupChecks.zosmfjwt` being set to "warn" or "disabled". [#4727](https://github.com/zowe/zowe-install-packaging/pull/4727)
 - Enhancement: APIML logging level configuration added to the `example-zowe.yaml`. [#4827](https://github.com/zowe/zowe-install-packaging/pull/4827)
 - Enhancement: Improved temporary files and directories handling. [#4820](https://github.com/zowe/zowe-install-packaging/pull/4820)
+- Enhancement: Updated the sequence of workflows in PSWI.[#4854](https://github.com/zowe/zowe-install-packaging/pull/4854)
 
 ## `3.5.0`
 
