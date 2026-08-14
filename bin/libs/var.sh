@@ -46,6 +46,15 @@ get_var_value() {
 }
 
 ###############################
+# safely assign a value to a variable whose name is held in another variable
+#
+# @param string   variable name
+# @param string   value to assign
+set_var_value() {
+  eval "${1}=\"\${2}\""
+}
+
+###############################
 # get all environment variable exports line by line
 get_environment_exports() {
   export -p | \
