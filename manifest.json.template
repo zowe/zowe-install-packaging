@@ -16,7 +16,7 @@
       "artifact": "zowe-server-*.pax.Z"
     },
     "org.zowe.zlux.zlux-core": {
-      "version": "^3.0.0-V3.X-STAGING-ZLUX-CORE",
+      "version": "^3.5.0-CUSTOM-zlux-build-1813",
       "artifact": "*.pax"
     },
     "org.zowe.zlux.sample-angular-app": {
@@ -32,11 +32,11 @@
       "artifact": "*.pax"
     },
     "org.zowe.zlux.tn3270-ng2": {
-      "version": "^3.0.0-V3.X-STAGING",
+      "version": "^3.5.0-PR-113",
       "artifact": "*.pax"
     },
     "org.zowe.zlux.vt-ng2": {
-      "version": "^3.0.0-V3.X-STAGING",
+      "version": "^3.5.0-PR-83",
       "artifact": "*.pax"
     },
     "org.zowe.zlux.zlux-editor": {
