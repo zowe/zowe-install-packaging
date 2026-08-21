@@ -1,3 +1,51 @@
+    IO29516 -
+      PROBLEM SUMMARY:
+      ****************************************************************
+      * USERS AFFECTED: All Zowe users                               *
+      ****************************************************************
+      * PROBLEM DESCRIPTION: Update Zowe FMID AZWE002 to match the   *
+      *                      community release                       *
+      ****************************************************************
+      * RECOMMENDATION: Apply provided service                       *
+      ****************************************************************
+      The Zowe community version was updated to 2.18.6.
+      This PTF provides the community changes in SMP/E format.
+      Follow this link for more details on the community changes:
+      https://docs.zowe.org/stable/
+      FIXCAT: ZOS0302T/K
+
+    IO29517 -
+      PROBLEM SUMMARY:
+      ****************************************************************
+      * USERS AFFECTED: All Zowe users                               *
+      ****************************************************************
+      * PROBLEM DESCRIPTION: Update Zowe FMID AZWE002 to match the   *
+      *                      community release                       *
+      ****************************************************************
+      * RECOMMENDATION: Apply provided service                       *
+      ****************************************************************
+      The Zowe community version was updated to 2.18.6.
+      This PTF provides the community changes in SMP/E format.
+      Follow this link for more details on the community changes:
+      https://docs.zowe.org/stable/
+      FIXCAT: ZOS0302T/K
+
+    IO29518 -
+      PROBLEM SUMMARY:
+      ****************************************************************
+      * USERS AFFECTED: All Zowe users                               *
+      ****************************************************************
+      * PROBLEM DESCRIPTION: Update Zowe FMID AZWE002 to match the   *
+      *                      community release                       *
+      ****************************************************************
+      * RECOMMENDATION: Apply provided service                       *
+      ****************************************************************
+      The Zowe community version was updated to 2.18.6.
+      This PTF provides the community changes in SMP/E format.
+      Follow this link for more details on the community changes:
+      https://docs.zowe.org/stable/
+      FIXCAT: ZOS0302T/K
+
     IO29513 -
       PROBLEM SUMMARY:
       ****************************************************************
