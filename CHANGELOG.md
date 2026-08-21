@@ -2,6 +2,8 @@
 
 All notable changes to the Zowe Installer will be documented in this file.
 <!--Add the PR or issue number to the entry if available.-->
+## `2.18.7`
+- Enhancement: Updated the sequence of workflows in PSWI.[#4855](https://github.com/zowe/zowe-install-packaging/pull/4855)
 
 ## `2.18.5`
 - Bugfix: Restricted read/write permissions for log files created by the `zwe` command. [#4812](https://github.com/zowe/zowe-install-packaging/pull/4812)
@@ -10,7 +12,6 @@ All notable changes to the Zowe Installer will be documented in this file.
 - Bugfix: `cleanup-ipc.mq.sh` script updated to reflect changes in `ipcs` command output. [#4690](https://github.com/zowe/zowe-install-packaging/pull/4690)
 - Enhancement: Implemented the `zowe.network.allowedDomains` allowlist property for URL domains. This feature validates all service registration metadata against a trusted domain allowlist. For details, see the `zowe.network.allowedDomains` feature in Zowe API Mediation Layer. [#4813](https://github.com/zowe/zowe-install-packaging/pull/4813)
 - Enhancement: Improved temporary files and directories handling. [#4825](https://github.com/zowe/zowe-install-packaging/pull/4825)
-- Enhancement: Updated the sequence of workflows in PSWI.[#4855](https://github.com/zowe/zowe-install-packaging/pull/4855)
 
 ## `2.18.4`
 - Bugfix: Running z/OSMF is returning 401, if RSU2512 was applied. [#4658](https://github.com/zowe/zowe-install-packaging/pull/4658)
