@@ -94,6 +94,13 @@ if [ "${cert_type}" = "PKCS12" ]; then
     var_val=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.certificate.pkcs12.${item}")
     eval "${var_name}=\"${var_val}\""
   done
+  # replace the well-known schema default so a stock init doesn't ship a guessable keystore password
+  pkcs12_password_generated=false
+  if [ "${pkcs12_password}" = "password" ]; then
+    pkcs12_password="$(get_tmp_rand)$(get_tmp_rand)"
+    pkcs12_password_generated=true
+    print_message "zowe.setup.certificate.pkcs12.password was left as the default value, generated a random password instead"
+  fi
   if [ -z "${pkcs12_directory}" ]; then
     print_error_and_exit "Error ZWEL0157E: Keystore directory (zowe.setup.certificate.pkcs12.directory) is not defined in Zowe YAML configuration file." "" 157
   fi
@@ -279,6 +286,11 @@ if [ "${cert_type}" = "PKCS12" ]; then
     cert_validity=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.certificate.validity")
 
     pkcs12_caPassword=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.certificate.pkcs12.caPassword")
+    # replace the well-known schema default so a stock init doesn't ship a guessable CA password
+    if [ "${pkcs12_caPassword}" = "local_ca_password" ]; then
+      pkcs12_caPassword="$(get_tmp_rand)$(get_tmp_rand)"
+      print_message "zowe.setup.certificate.pkcs12.caPassword was left as the default value, generated a random password instead"
+    fi
     pkcs12_caAlias=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.certificate.pkcs12.caAlias")
     pkcs12_caAlias_lc=$(echo "${pkcs12_caAlias}" | lower_case)
 
@@ -439,6 +451,9 @@ if [ "${cert_type}" = "PKCS12" ]; then
     print_message "      certificate: \"${pkcs12_directory}/${pkcs12_name}/${pkcs12_name_lc}.cer\""
     print_message "      certificateAuthorities: \"${yaml_pem_cas}\""
     print_message ""
+    if [ "${pkcs12_password_generated}" = "true" ]; then
+      print_message "Warning ZWEL0362W: the keystore password above was randomly generated and is not stored anywhere else. Save it now, since without --update-config it will not be written to zowe.yaml and cannot be recovered later."
+    fi
     print_level2_message "Zowe configuration requires manual updates."
   fi
 ###############################

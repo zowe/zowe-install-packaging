@@ -3,6 +3,8 @@
 exports[`init-cert (LONG) cert bad hostname 1`] = `
 "-------------------------------------------------------------------------------
 >> Generate certificate
+zowe.setup.certificate.pkcs12.password was left as the default value, generated a random password instead
+zowe.setup.certificate.pkcs12.caPassword was left as the default value, generated a random password instead
 -------------------------------------------------------------------------------
 >> Creating certificate authority "local_ca"
 >>>> Generate PKCS12 format local CA with alias local_ca:
@@ -31,6 +33,8 @@ Error ZWEL0170E: Failed to trust z/OSMF "doesnt-exist.anywhere.cloud:12321"."
 exports[`init-cert (LONG) passing init 1`] = `
 "-------------------------------------------------------------------------------
 >> Generate certificate
+zowe.setup.certificate.pkcs12.password was left as the default value, generated a random password instead
+zowe.setup.certificate.pkcs12.caPassword was left as the default value, generated a random password instead
 -------------------------------------------------------------------------------
 >> Creating certificate authority "local_ca"
 >>>> Generate PKCS12 format local CA with alias local_ca:
@@ -84,16 +88,17 @@ zowe:
     keystore:
       type: PKCS12
       file: "/test/dir/pkcs12/localhost/localhost.keystore.p12"
-      password: "password"
+      password: "0000000000000000"
       alias: "localhost"
     truststore:
       type: PKCS12
       file: "/test/dir/pkcs12/localhost/localhost.truststore.p12"
-      password: "password"
+      password: "0000000000000000"
     pem:
       key: "/test/dir/pkcs12/localhost/localhost.key"
       certificate: "/test/dir/pkcs12/localhost/localhost.cer"
       certificateAuthorities: "/test/dir/pkcs12/local_ca/local_ca.cer"
+Warning ZWEL0362W: the keystore password above was randomly generated and is not stored anywhere else. Save it now, since without --update-config it will not be written to zowe.yaml and cannot be recovered later.
 >> Zowe configuration requires manual updates."
 `;
 
@@ -330,6 +335,8 @@ Error ZWEL0326E: An error occurred while processing Zowe YAML config /test/dir/z
 exports[`init-cert (SHORT) run each scenario 1`] = `
 "-------------------------------------------------------------------------------
 >> Generate certificate
+zowe.setup.certificate.pkcs12.password was left as the default value, generated a random password instead
+zowe.setup.certificate.pkcs12.caPassword was left as the default value, generated a random password instead
 -------------------------------------------------------------------------------
 >> Creating certificate authority "local_ca"
 >>>> Generate PKCS12 format local CA with alias local_ca:
@@ -383,16 +390,17 @@ zowe:
     keystore:
       type: PKCS12
       file: "/test/dir/pkcs12/localhost/localhost.keystore.p12"
-      password: "password"
+      password: "0000000000000000"
       alias: "localhost"
     truststore:
       type: PKCS12
       file: "/test/dir/pkcs12/localhost/localhost.truststore.p12"
-      password: "password"
+      password: "0000000000000000"
     pem:
       key: "/test/dir/pkcs12/localhost/localhost.key"
       certificate: "/test/dir/pkcs12/localhost/localhost.cer"
       certificateAuthorities: "/test/dir/pkcs12/local_ca/local_ca.cer"
+Warning ZWEL0362W: the keystore password above was randomly generated and is not stored anywhere else. Save it now, since without --update-config it will not be written to zowe.yaml and cannot be recovered later.
 >> Zowe configuration requires manual updates.
 -------------------------------------------------------------------------------
 >> Verify certificate of "some.test.hostname:12321"
@@ -404,6 +412,7 @@ Error ZWEL0171E: Failed to verify certificate (CN and SAN) of "some.test.hostnam
 exports[`init-cert (SHORT) run each scenario 2`] = `
 "-------------------------------------------------------------------------------
 >> Generate certificate
+zowe.setup.certificate.pkcs12.password was left as the default value, generated a random password instead
 -------------------------------------------------------------------------------
 >> Import certificate into keystore /test/dir/pkcs12_scen2/localhost/localhost.keystore.p12
 >>>> Import localhost from keystore "/test/dir/pkcs12/localhost/localhost.keystore.p12" to "/test/dir/pkcs12_scen2/localhost/localhost.keystore.p12" as localhost:
@@ -439,16 +448,17 @@ zowe:
     keystore:
       type: PKCS12
       file: "/test/dir/pkcs12_scen2/localhost/localhost.keystore.p12"
-      password: "password"
+      password: "0000000000000000"
       alias: "localhost"
     truststore:
       type: PKCS12
       file: "/test/dir/pkcs12_scen2/localhost/localhost.truststore.p12"
-      password: "password"
+      password: "0000000000000000"
     pem:
       key: "/test/dir/pkcs12_scen2/localhost/localhost.key"
       certificate: "/test/dir/pkcs12_scen2/localhost/localhost.cer"
       certificateAuthorities: ""
+Warning ZWEL0362W: the keystore password above was randomly generated and is not stored anywhere else. Save it now, since without --update-config it will not be written to zowe.yaml and cannot be recovered later.
 >> Zowe configuration requires manual updates.
 -------------------------------------------------------------------------------
 >> Verify certificate of "some.test.hostname:12321"

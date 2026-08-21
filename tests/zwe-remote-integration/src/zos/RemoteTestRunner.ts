@@ -437,6 +437,8 @@ export class RemoteTestRunner {
       .replace(/\/tmp\/\.zweenv-[0-9a-f]+/g, '/tmp/.zweenv-0000')
       .replace(/\/tmp\/zwe-[0-9a-f]+/g, '/tmp/zwe-0000')
       .replace(/\/tmp\/zowe-convert-for-k8s-[0-9a-f]+/g, '/tmp/zowe-convert-for-k8s-0000')
+      // zwe init certificate generates a random password when the default keystore/CA password is left unset
+      .replace(/password: "[0-9a-f]{16}"/g, 'password: "0000000000000000"')
       .replaceAll(REMOTE_SYSTEM_INFO.volume, 'TSTVOL')
       .replaceAll(REMOTE_SYSTEM_INFO.hostname, this.dummyHostname)
       .replaceAll(REMOTE_SYSTEM_INFO.zosmfPort, this.dummyPort)
