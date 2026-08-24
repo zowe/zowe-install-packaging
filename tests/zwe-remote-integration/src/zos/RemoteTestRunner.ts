@@ -427,27 +427,29 @@ export class RemoteTestRunner {
       cleanedOutput = cleanedOutput.replaceAll(HEADER_REMOVAL_PATTERN, replacePattern);
     }
     // built-in
-    return cleanedOutput
-      .replace(/(JOB[0-9]{5})/gim, 'JOB00000')
-      .replaceAll(REMOTE_SYSTEM_INFO.zosJavaHome, '/test/java/home')
-      .replaceAll(REMOTE_SYSTEM_INFO.zosNodeHome, '/test/node/home')
-      .replaceAll(REMOTE_SYSTEM_INFO.ussTestDir, '/test/dir')
-      .replaceAll(`${REMOTE_SYSTEM_INFO.prefix}`, 'TEST.DATASET.PFX')
-      .replaceAll(`${this.session.ISession.user}`, 'TESTUSR0')
-      .replace(/\/tmp\/\.zweenv-[0-9a-f]+/g, '/tmp/.zweenv-0000')
-      .replace(/\/tmp\/zwe-[0-9a-f]+/g, '/tmp/zwe-0000')
-      .replace(/\/tmp\/zowe-convert-for-k8s-[0-9a-f]+/g, '/tmp/zowe-convert-for-k8s-0000')
-      // zwe init certificate generates a random password when the default keystore/CA password is left unset
-      .replace(/password: "[0-9a-f]{16}"/g, 'password: "0000000000000000"')
-      .replaceAll(REMOTE_SYSTEM_INFO.volume, 'TSTVOL')
-      .replaceAll(REMOTE_SYSTEM_INFO.hostname, this.dummyHostname)
-      .replaceAll(REMOTE_SYSTEM_INFO.zosmfPort, this.dummyPort)
-      .replaceAll(new RegExp(`Zowe version: v${getZoweVersion()}`, 'g'), 'Zowe version: v0.0.0')
-      .replaceAll(new RegExp(`Zowe v${getZoweVersion()}`, 'g'), 'Zowe v0.0.0')
-      .replaceAll(/\d{4}-\d{2}-\d{2}.+?<.+?>/g, '')
-      .replaceAll(/z\/OS Version: \d\.\d/g, 'z/OS Version: 0.0')
-      .replaceAll(/NodeJS version: v.*?$/gm, 'NodeJS version: v0.0.0')
-      .replaceAll(/Java version: .*?$/gm, 'Java version: v0.0.0');
+    return (
+      cleanedOutput
+        .replace(/(JOB[0-9]{5})/gim, 'JOB00000')
+        .replaceAll(REMOTE_SYSTEM_INFO.zosJavaHome, '/test/java/home')
+        .replaceAll(REMOTE_SYSTEM_INFO.zosNodeHome, '/test/node/home')
+        .replaceAll(REMOTE_SYSTEM_INFO.ussTestDir, '/test/dir')
+        .replaceAll(`${REMOTE_SYSTEM_INFO.prefix}`, 'TEST.DATASET.PFX')
+        .replaceAll(`${this.session.ISession.user}`, 'TESTUSR0')
+        .replace(/\/tmp\/\.zweenv-[0-9a-f]+/g, '/tmp/.zweenv-0000')
+        .replace(/\/tmp\/zwe-[0-9a-f]+/g, '/tmp/zwe-0000')
+        .replace(/\/tmp\/zowe-convert-for-k8s-[0-9a-f]+/g, '/tmp/zowe-convert-for-k8s-0000')
+        // zwe init certificate generates a random password when the default keystore/CA password is left unset
+        .replace(/password: "[0-9a-f]{16}"/g, 'password: "0000000000000000"')
+        .replaceAll(REMOTE_SYSTEM_INFO.volume, 'TSTVOL')
+        .replaceAll(REMOTE_SYSTEM_INFO.hostname, this.dummyHostname)
+        .replaceAll(REMOTE_SYSTEM_INFO.zosmfPort, this.dummyPort)
+        .replaceAll(new RegExp(`Zowe version: v${getZoweVersion()}`, 'g'), 'Zowe version: v0.0.0')
+        .replaceAll(new RegExp(`Zowe v${getZoweVersion()}`, 'g'), 'Zowe v0.0.0')
+        .replaceAll(/\d{4}-\d{2}-\d{2}.+?<.+?>/g, '')
+        .replaceAll(/z\/OS Version: \d\.\d/g, 'z/OS Version: 0.0')
+        .replaceAll(/NodeJS version: v.*?$/gm, 'NodeJS version: v0.0.0')
+        .replaceAll(/Java version: .*?$/gm, 'Java version: v0.0.0')
+    );
   }
 
   public getMask(maskType: string): string {
