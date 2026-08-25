@@ -23,8 +23,8 @@
         </boolean>
     </variable>
     <variable name="zowe_setup_jcl_header" scope="global" visibility="public">
-      <label>JOB statement positional parameters and keywords used by Zowe during installation and configuration.</label>
-      <abstract>JOB statement positional parameters and keywords used by Zowe during installation and configuration.</abstract>
+      <label>JCL Configuration Positional JOB Parameters and Keywords</label>
+      <abstract>Optional JOB statement parameters used only for Zowe configuration by JCL samples.</abstract>
       <description>These parameters and keywords are optional, and by default empty. These are used separately from z/OSMF defined JOB cards. Each line should be less than 70 characters, omit start-of-line identifier statements such as "//", "/*", and include commas for end-of-line continuation.</description>
       <category>zowe</category>
       <string multiLine="true" valueMustBeChoice="false">
