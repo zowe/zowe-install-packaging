@@ -2206,7 +2206,7 @@ echo '#         enabled: false' >> "${instance-zowe_workspaceDirectory}/zowe.yam
                 </targetStateSet>
             </condition>       
         <!--variableValues-->
-        <instructions substitution="true"><![CDATA[Run this step to update JCL samples for configuration for the Zowe (API ML).<br/> 
+        <instructions substitution="true"><![CDATA[Run this step to update JCL samples for configuration for the Zowe.<br/> 
         Setup is done via generated JCL samples.<br/>       
 ]]></instructions>
         <weight>1</weight>
