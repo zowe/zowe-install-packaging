@@ -13,8 +13,19 @@
     <!--variables-->
     <variable name="zowe_setup_jcl_enable" scope="instance" visibility="public"> 
       <label>Enable JCL Samples for Zowe Setup</label>
-      <abstract>Enable setup via generated JCL samples, or disable to automate via the legacy zwe Unix CLI.</abstract>
-      <description>Set this to true to have the workflow automatically generate and use JCL samples for the configuration steps. If set to false, the workflow will instead automate setup directly using legacy `zwe` operations (the Unix CLI tool). Note: If you set this to false, you do not need to fill out the JCL header information in the next field.</description>
+      <abstract>Enable setup via JCL samples.</abstract>
+      <description>Set this flag to true to have the workflow indicate in the YAML file that JCL samples are being used for configuration. If set to false, the workflow will instead automate setup directly using legacy `zwe` operations (the Unix CLI tool). Note: If you set this to false, you do not need to fill out the JCL header information in the next field.</description>
+      <category>zowe</category>
+        <boolean>
+            <!-- Put validation here -->
+            <!-- Specify choices here -->
+            <default>true</default>
+        </boolean>
+    </variable>
+    <variable name="zowe_setup_jcl_generate" scope="instance" visibility="public"> 
+      <label>Automatically Regenerate JCL Samples for Zowe Setup</label>
+      <abstract>Enable to regenerate JCL samples based on yaml (for JCL samples method).</abstract>
+      <description>Set this to true to have the workflow automatically generate JCL samples for the configuration steps.</description>
       <category>zowe</category>
         <boolean>
             <!-- Put validation here -->
@@ -1102,6 +1113,7 @@ How we want to verify SSL certificates of services. Valid values are:
             <!-- condition -->
             <!--variableValues-->
             <variableValue name="zowe_setup_jcl_enable" scope="instance" noPromptIfSet="false" required="false" />
+            <variableValue name="zowe_setup_jcl_generate" scope="instance" noPromptIfSet="false" required="false" />
             <variableValue name="zowe_setup_jcl_header" scope="global" noPromptIfSet="false" required="false" />
             <variableValue name="zowe_setup_dataset_prefix" scope="instance" noPromptIfSet="false" required="true"/>
             <variableValue name="zowe_setup_dataset_proclib" scope="instance" noPromptIfSet="false" required="true"/>
@@ -2174,14 +2186,44 @@ echo '#       zss:' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
 echo '#         port: 28542' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
 echo '#       caching-service:' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
 echo '#         enabled: false' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
-#if (${instance-zowe_setup_jcl_enable} == "true" )
+]]></inlineTemplate>
+            <submitAs maxRc="0">shell-JCL</submitAs>
+            <maxLrecl>1024</maxLrecl>
+            <!-- zosmfOutput -->
+        </template>
+    </step>
+    <step name="updateJclSamples" optional="false">
+        <title>Update JCL samples (setup via generated JCL samples)</title>
+        <description>Update JCL samples for configuration for the Zowe (API ML)</description>
+        <prereqStep name="define_variables"/>
+        <prereqStep name="configure"/>
+        <condition>
+                <expression>"1"=="1"</expression>
+                <description/>
+                <targetStateSet>
+                    <stateExpression state="skipped">${instance-zowe_setup_jcl_enable}==false</stateExpression>
+                    <stateExpression state="skipped">${instance-zowe_setup_jcl_generate}==false</stateExpression>
+                </targetStateSet>
+            </condition>       
+        <!--variableValues-->
+        <instructions substitution="true"><![CDATA[Run this step to update JCL samples for configuration for the Zowe (API ML).<br/> 
+        Setup is done via generated JCL samples.<br/>       
+]]></instructions>
+        <weight>1</weight>
+        <skills>z/OS System Programmer</skills>
+        <autoEnable>false</autoEnable>
+        <canMarkAsFailed>false</canMarkAsFailed>
+        <template>
+            <inlineTemplate substitution="true"><![CDATA[
+set -e
+set -x
 
 export JAVA_HOME='${instance-java_home}'
 export NODE_HOME='${instance-node_home}'
 export PATH=$PATH:'${instance-zowe_runtimeDirectory}/bin'
 
 zwe init generate --allow-overwrite -c '${instance-zowe_workspaceDirectory}/zowe.yaml'
-#end
+
 ]]></inlineTemplate>
             <submitAs maxRc="0">shell-JCL</submitAs>
             <maxLrecl>1024</maxLrecl>
@@ -2196,6 +2238,7 @@ zwe init generate --allow-overwrite -c '${instance-zowe_workspaceDirectory}/zowe
             <description>Configure Zowe.</description>
             <prereqStep name="main_variables"/>
             <prereqStep name="configure"/>
+            <prereqStep name="updateJclSamples"/>
             <!-- condition -->
             <!--variableValues-->
             <instructions substitution="true"><![CDATA[
