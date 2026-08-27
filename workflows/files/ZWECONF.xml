@@ -22,6 +22,17 @@
             <default>true</default>
         </boolean>
     </variable>
+    <variable name="zowe_setup_jcl_generate" scope="instance" visibility="public"> 
+      <label>Automatically Regenerate JCL Samples for Zowe Setup</label>
+      <abstract>Enable to regenerate JCL samples based on yaml (for JCL samples method).</abstract>
+      <description>Set this to true to have the workflow automatically generate JCL samples for the configuration steps.</description>
+      <category>zowe</category>
+        <boolean>
+            <!-- Put validation here -->
+            <!-- Specify choices here -->
+            <default>true</default>
+        </boolean>
+    </variable>
     <variable name="zowe_setup_jcl_header" scope="global" visibility="public">
       <label>JOB statement positional parameters and keywords used by Zowe during installation and configuration.</label>
       <abstract>JOB statement positional parameters and keywords used by Zowe during installation and configuration.</abstract>
@@ -1102,6 +1113,7 @@ How we want to verify SSL certificates of services. Valid values are:
             <!-- condition -->
             <!--variableValues-->
             <variableValue name="zowe_setup_jcl_enable" scope="instance" noPromptIfSet="false" required="false" />
+            <variableValue name="zowe_setup_jcl_generate" scope="instance" noPromptIfSet="false" required="false" />
             <variableValue name="zowe_setup_jcl_header" scope="global" noPromptIfSet="false" required="false" />
             <variableValue name="zowe_setup_dataset_prefix" scope="instance" noPromptIfSet="false" required="true"/>
             <variableValue name="zowe_setup_dataset_proclib" scope="instance" noPromptIfSet="false" required="true"/>
@@ -2174,7 +2186,7 @@ echo '#       zss:' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
 echo '#         port: 28542' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
 echo '#       caching-service:' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
 echo '#         enabled: false' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
-#if (${instance-zowe_setup_jcl_enable} == "true" )
+#if (${instance-zowe_setup_jcl_generate} == "true" )
 
 export JAVA_HOME='${instance-java_home}'
 export NODE_HOME='${instance-node_home}'
