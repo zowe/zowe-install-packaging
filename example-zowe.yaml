@@ -41,6 +41,10 @@ zowe:
       # instead of shell commands. A `--dry-run` option is also enabled
       # which allows you to see jobs instead of submitting.
       enable: true
+      # When generate enabled and mode JCL samples is set (enabled),
+      # workflow step for Regenerate JCL Samples for Zowe Setup
+      # is not skipped (command zwe init generate is executed).      
+      generate: true
       # Edit to set a header for job cards. Some systems need this, but not all.
       # See `zwe init generate --help` for examples.
       header: ""
