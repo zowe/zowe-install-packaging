@@ -30,7 +30,7 @@
         <boolean>
             <!-- Put validation here -->
             <!-- Specify choices here -->
-            <default>false</default>
+            <default>true</default>
         </boolean>
     </variable>
     <variable name="zowe_setup_jcl_header" scope="global" visibility="public">
@@ -1403,16 +1403,15 @@ echo '#         enabled: false' >> "${instance-zowe_workspaceDirectory}/zowe.yam
         <autoEnable>false</autoEnable>
         <canMarkAsFailed>false</canMarkAsFailed>
         <template>
-            <inlineTemplate substitution="true"><![CDATA[
-set -e
+            <inlineTemplate substitution="true">set -e
 set -x
 
 export JAVA_HOME='${instance-java_home}'
+export NODE_HOME='${instance-node_home}'
+
 export PATH=$PATH:'${instance-zowe_runtimeDirectory}/bin'
 
-zwe init generate --allow-overwrite -c '${instance-zowe_workspaceDirectory}/zowe.yaml'
-
-]]></inlineTemplate>
+zwe init generate -c '${instance-zowe_workspaceDirectory}/zowe.yaml' --allow-overwrite</inlineTemplate>
             <submitAs maxRc="0">shell-JCL</submitAs>
             <maxLrecl>1024</maxLrecl>
             <!-- zosmfOutput -->
