@@ -40,7 +40,7 @@ zowe:
       # When enabled, "zwe install & init" will use job submission for system changes
       # instead of shell commands. A `--dry-run` option is also enabled
       # which allows you to see jobs instead of submitting.
-      enable: true      
+      enable: true
       # Regenerate JCL Samples for Zowe Setup
       # is not skipped (command zwe init generate is executed).
       generate: true
