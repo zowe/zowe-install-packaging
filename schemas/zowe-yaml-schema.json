@@ -570,6 +570,10 @@
                   "type": "boolean",
                   "description": "Controls whether zwe install and zwe init commands and subcommands will utilize jobs for executing system changes instead of shell commands."                
                 },
+                "generate": {
+                  "type": "boolean",
+                  "description": "Controls whether zwe regenerate jcls."                
+                },
                 "header": {
                   "type": "string",
                   "not": {
