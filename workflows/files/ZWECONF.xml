@@ -30,7 +30,7 @@
         <boolean>
             <!-- Put validation here -->
             <!-- Specify choices here -->
-            <default>true</default>
+            <default>false</default>
         </boolean>
     </variable>
     <variable name="zowe_setup_jcl_header" scope="global" visibility="public">
