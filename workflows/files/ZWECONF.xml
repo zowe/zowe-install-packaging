@@ -1522,6 +1522,9 @@ echo '      # When enabled, "zwe install & init" will use job submission for sys
 echo '      # instead of shell commands. A `--dry-run` option is also enabled' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
 echo '      # which allows you to see jobs instead of submitting.' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
 echo '      enable: ${instance-zowe_setup_jcl_enable}' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
+echo '      # Regenerate JCL Samples for Zowe Setup' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
+echo '      # is not skipped (command zwe init generate is executed).' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
+echo '      generate: ${instance-zowe_setup_jcl_generate}' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
 echo '      # Edit to set a header for job cards. Some systems need this, but not all.' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
 echo '      # See `zwe init generate --help` for examples.' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
 #if (${global-zowe_setup_jcl_header.trim().length()} > 0 )
