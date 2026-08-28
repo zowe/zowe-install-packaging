@@ -2,6 +2,8 @@
 
 All notable changes to the Zowe Installer will be documented in this file.
 <!--Add the PR or issue number to the entry if available.-->
+## `2.18.7`
+- Enhancement: Updated the sequence of workflows in PSWI.[#4855](https://github.com/zowe/zowe-install-packaging/pull/4855)
 
 ## `2.18.5`
 - Bugfix: Restricted read/write permissions for log files created by the `zwe` command. [#4812](https://github.com/zowe/zowe-install-packaging/pull/4812)
