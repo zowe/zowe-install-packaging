@@ -12,9 +12,9 @@
     </workflowInfo>
     <!--variables-->
     <variable name="zowe_setup_dataset_prefix" scope="instance" visibility="public">
-        <label>Prefix of Zowe setup MVS datasets</label>
-        <abstract>Prefix of datasets where remaining runtime datasets will be created</abstract>
-        <description>Prefix of datasets where remaining runtime libraries will be created within execution of Zowe install step (SZWEAUTH, SZWESAMP, SZWEEXEC, SZWELOAD)</description>
+        <label>Target Zone Prefix of Zowe setup MVS datasets</label>
+        <abstract>MVS dataset prefix for Zowe runtime libraries used during installation and initialization.</abstract>
+        <description>The Target Zone Prefix for MVS datasets where Zowe runtime libraries (SZWEAUTH, SZWESAMP, SZWEEXEC, and SZWELOAD) are created during the install step. Zowe also relies on this prefix to locate ZWEGENER and sample libraries when executing `zwe init` commands with JCL.</description>
         <category>zowe</category>
         <string valueMustBeChoice="false" multiLine="false">
             <!-- Put validation here -->
