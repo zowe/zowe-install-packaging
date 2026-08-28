@@ -390,6 +390,11 @@ components:
   apiml:
     enabled: true
     debug: false
+    # # Enable quiet logging when only errors and selected APIML messages are printed.
+    # # Can be "quiet", "info" or "debug". "debug" is equivalent to "components.apiml.debug: true". Default value is "info".
+    # # Supported also for individual APIML components.
+    # logging:
+    #   level: quiet
 
   # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   gateway:

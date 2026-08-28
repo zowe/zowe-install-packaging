@@ -1883,6 +1883,11 @@ echo '  # Set apiml.enabled to "true", to enable single-service API ML deploymen
 echo '  apiml:' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
 echo '    enabled: ${instance-components_apiml_enabled}' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
 echo '    debug: ${instance-components_apiml_debug}' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
+echo '    # # Enable quiet logging when only errors and selected APIML messages are printed.' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
+echo '    # # Can be "quiet", "info" or "debug". "debug" is equivalent to "components.apiml.debug: true". Default value is "info".' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
+echo '    # # Supported also for individual APIML components.' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
+echo '    # logging:' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
+echo '    #   level: quiet' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
 #end
 #if (${instance-components_apiml_enabled} == "false" )
 echo '  apiml:' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"

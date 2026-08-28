@@ -434,9 +434,9 @@ export class RemoteTestRunner {
       .replaceAll(REMOTE_SYSTEM_INFO.ussTestDir, '/test/dir')
       .replaceAll(`${REMOTE_SYSTEM_INFO.prefix}`, 'TEST.DATASET.PFX')
       .replaceAll(`${this.session.ISession.user}`, 'TESTUSR0')
-      .replace(/\/tmp\/\.zweenv-\d{1,5}/g, '/tmp/.zweenv-0000')
-      .replace(/\/tmp\/zwe-\d{1,5}/g, '/tmp/zwe-0000')
-      .replace(/\/tmp\/zowe-convert-for-k8s-\d{1,5}/g, '/tmp/zowe-convert-for-k8s-0000')
+      .replace(/\/tmp\/\.zweenv-[0-9a-f]+/g, '/tmp/.zweenv-0000')
+      .replace(/\/tmp\/zwe-[0-9a-f]+/g, '/tmp/zwe-0000')
+      .replace(/\/tmp\/zowe-convert-for-k8s-[0-9a-f]+/g, '/tmp/zowe-convert-for-k8s-0000')
       .replaceAll(REMOTE_SYSTEM_INFO.volume, 'TSTVOL')
       .replaceAll(REMOTE_SYSTEM_INFO.hostname, this.dummyHostname)
       .replaceAll(REMOTE_SYSTEM_INFO.zosmfPort, this.dummyPort)
@@ -479,6 +479,7 @@ export class RemoteTestRunner {
     while (fs.existsSync(tgtFile) && iter < 1000) {
       tgtFile = `${filePath}.${iter++}`;
     }
+    fs.mkdirpSync(path.dirname(tgtFile));
     fs.writeFileSync(tgtFile, content);
     return tgtFile;
   }
