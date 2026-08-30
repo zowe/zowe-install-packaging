@@ -635,7 +635,7 @@
           "description": "Port number of your z/OSMF instance."
         },
         "scheme": {
-          "$ref" : "#/$defs/scheme",
+          "$ref": "#/$defs/scheme",
           "description": "Scheme used to connect to z/OSMF instance. Optional for outbout AT-TLS, defaults to https"
         },
         "applId": {

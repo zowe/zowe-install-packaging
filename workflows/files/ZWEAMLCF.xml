@@ -44,7 +44,7 @@
             <default>IBMUSER.ZWEV2.CUST.PARMLIB</default>
         </string>
     </variable>
-    <variable name="zowe_setup_dataset_libzis" scope="instance" visibility="public">
+    <variable name="zowe_setup_dataset_parmlibMembers_zis" scope="instance" visibility="public">
       <label>Zowe setup PARMLIB members for ZIS plugins</label>
       <abstract>Zowe ZIS plugins PARMLIB</abstract>
       <description>Holds PARMLIB members for ZIS plugins</description>
@@ -66,7 +66,7 @@
             <default>IBMUSER.ZWEV2.CUST.JCLLIB</default>
         </string>
     </variable>
-    <variable name="zowe_setup_dataset_loadlibPlugin" scope="instance" visibility="public">
+    <variable name="zowe_setup_dataset_loadlib" scope="instance" visibility="public">
         <label>Zowe setup Utilities and extensions library</label>
         <abstract>Load library where Zowe stores libraries for Utilities for use by Zowe and extensions</abstract>
         <description>Load library for Utilities for use by Zowe and extensions</description>
@@ -204,7 +204,7 @@ some use cases, like containerization, this port could be different.</descriptio
             <default>info</default>
         </string>
     </variable>
-    <variable name="zowe_launchScript_CompConf" scope="instance" visibility="public">
+    <variable name="zowe_launchScript_onComponentConfigureFail" scope="instance" visibility="public">
         <label>Zowe launch script component configuration</label>
         <abstract>Set to "exit" or "warn" if any component has an error</abstract>
         <description>Set to "exit" if you want startup to exit if any component has an error in the configuration stage, otherwise zwe will issue a warning but continue running.</description>
@@ -404,7 +404,7 @@ some use cases, like containerization, this port could be different.</descriptio
             <default>7559</default>
         </string>
     </variable>    
-    <variable name="zowe_rbacProfileId" scope="instance" visibility="public">
+    <variable name="zowe_rbacProfileIdentifier" scope="instance" visibility="public">
         <label>Zowe Profile Identifier</label>
         <abstract>ID you use to separate multiple Zowe installs</abstract>
         <description>ID when determining resource names used in RBAC authorization checks such as dataservices with RBAC expects this ID in SAF resources</description>
@@ -415,7 +415,7 @@ some use cases, like containerization, this port could be different.</descriptio
             <default>1</default>
         </string>
     </variable>
-    <variable name="zowe_cookieId" scope="instance" visibility="public">
+    <variable name="zowe_cookieIdentifier" scope="instance" visibility="public">
         <label>Zowe Cookie Identifier</label>
         <abstract>ID that can be used by servers to distinguish their cookies from unrelated Zowe installs</abstract>
         <description>ID which allows multiple copies of Zowe to be used within the same client</description>
@@ -552,9 +552,9 @@ some use cases, like containerization, this port could be different.</descriptio
             <variableValue name="zowe_setup_dataset_prefix" scope="instance" noPromptIfSet="false" required="true"/>
             <variableValue name="zowe_setup_dataset_proclib" scope="instance" noPromptIfSet="false" required="true"/>
             <variableValue name="zowe_setup_dataset_parmlib" scope="instance" noPromptIfSet="false" required="true"/>
-            <variableValue name="zowe_setup_dataset_libzis" scope="instance" noPromptIfSet="false" required="true"/>
+            <variableValue name="zowe_setup_dataset_parmlibMembers_zis" scope="instance" noPromptIfSet="false" required="true"/>
             <variableValue name="zowe_setup_dataset_jcllib" scope="instance" noPromptIfSet="false" required="true"/>
-            <variableValue name="zowe_setup_dataset_loadlibPlugin" scope="instance" noPromptIfSet="false" required="true"/>
+            <variableValue name="zowe_setup_dataset_loadlib" scope="instance" noPromptIfSet="false" required="true"/>
             <variableValue name="zowe_setup_dataset_authLoadlib" scope="instance" noPromptIfSet="false" required="false"/>
             <variableValue name="zowe_setup_dataset_authPluginLib" scope="instance" noPromptIfSet="false" required="true"/>
             <variableValue name="zowe_runtimeDirectory" scope="instance" noPromptIfSet="false" required="true"/>
@@ -566,7 +566,7 @@ some use cases, like containerization, this port could be different.</descriptio
             <variableValue name="zowe_externalDomains" scope="instance" noPromptIfSet="false" required="true"/>
             <variableValue name="zowe_externalPort" scope="instance" noPromptIfSet="false" required="true"/>
             <variableValue name="zowe_launchScript_logLevel" scope="instance" noPromptIfSet="false" required="false"/>
-            <variableValue name="zowe_launchScript_CompConf" scope="instance" noPromptIfSet="false" required="false"/>
+            <variableValue name="zowe_launchScript_onComponentConfigureFail" scope="instance" noPromptIfSet="false" required="false"/>
             <variableValue name="zowe_certificate_keystore_type" scope="instance" noPromptIfSet="false" required="true"/>
             <variableValue name="zowe_certificate_keystore_file" scope="instance" noPromptIfSet="false" required="true"/>
             <variableValue name="zowe_certificate_keystore_password" scope="instance" noPromptIfSet="false" required="true"/>
@@ -574,8 +574,8 @@ some use cases, like containerization, this port could be different.</descriptio
             <variableValue name="zowe_certificate_truststore_type" scope="instance" noPromptIfSet="false" required="true"/>
             <variableValue name="zowe_certificate_truststore_file" scope="instance" noPromptIfSet="false" required="true"/>
             <variableValue name="zowe_certificate_truststore_password" scope="instance" noPromptIfSet="false" required="true"/>            
-            <variableValue name="zowe_rbacProfileId" scope="instance" noPromptIfSet="false" required="true"/>
-            <variableValue name="zowe_cookieId" scope="instance" noPromptIfSet="false" required="true"/>
+            <variableValue name="zowe_rbacProfileIdentifier" scope="instance" noPromptIfSet="false" required="true"/>
+            <variableValue name="zowe_cookieIdentifier" scope="instance" noPromptIfSet="false" required="true"/>
             <variableValue name="java_home" scope="instance" noPromptIfSet="false" required="true"/>
             <variableValue name="node_home" scope="instance" noPromptIfSet="false" required="true"/>
             <variableValue name="zOSMF_host" scope="instance" noPromptIfSet="false" required="true"/>
@@ -696,12 +696,12 @@ echo '      parmlib: $!{instance-zowe_setup_dataset_parmlib}' >> "${instance-zow
 echo '      # Holds Zowe PARMLIB members for plugins' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '      parmlibMembers:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '        # For ZIS plugins' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '        zis: $!{instance-zowe_setup_dataset_libzis}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '        zis: $!{instance-zowe_setup_dataset_parmlibMembers_zis}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '      # **COMMONLY_CUSTOMIZED**' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '      # JCL library where Zowe will store temporary JCLs during initialization' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '      jcllib: $!{instance-zowe_setup_dataset_jcllib}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '      # Utilities for use by Zowe and extensions' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '      loadlib: $!{instance-zowe_setup_dataset_loadlibPlugin}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '      loadlib: $!{instance-zowe_setup_dataset_loadlib}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '      # APF authorized LOADLIB for Zowe' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '      authLoadlib: $!{instance-zowe_setup_dataset_authLoadlib}' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '      # **COMMONLY_CUSTOMIZED**' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
@@ -1039,7 +1039,7 @@ echo '  launchScript:' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '    # Set to "debug" or "trace" to display extra debug information' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '    logLevel: "$!{instance-zowe_launchScript_logLevel}"' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '    # Set to "exit" if you'\''d like startup to exit if any component has an error in the configure stage, otherwise zwe will warn but continue.' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
-echo '    onComponentConfigureFail: "$!{instance-zowe_launchScript_CompConf}"' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
+echo '    onComponentConfigureFail: "$!{instance-zowe_launchScript_onComponentConfigureFail}"' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '  # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
 echo '  # Default Zowe certificate' >> "${instance-zowe_runtimeDirectory}/zowe.yaml"
