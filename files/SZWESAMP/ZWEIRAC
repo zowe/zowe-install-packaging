@@ -264,6 +264,8 @@
     DATA('Zowe')
   PERMIT '{zowe.setup.dataset.prefix}.*.**' CLASS(DATASET) -
     ACCESS(ALTER) ID({zowe.setup.security.groups.sysProg})
+  PERMIT '{zowe.setup.dataset.prefix}.*.**' CLASS(DATASET) -
+    ACCESS(READ) ID({zowe.setup.security.groups.stc})  
 
   SETROPTS GENERIC(DATASET) REFRESH
 
