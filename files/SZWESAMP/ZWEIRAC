@@ -260,7 +260,7 @@
 
 /* general data set protection                                       */
   LISTDSD PREFIX({zowe.setup.dataset.prefix}) ALL
-  ADDSD  '{zowe.setup.dataset.prefix}.*.**' UACC(READ) -
+  ADDSD  '{zowe.setup.dataset.prefix}.*.**' UACC(NONE) -
     DATA('Zowe')
   PERMIT '{zowe.setup.dataset.prefix}.*.**' CLASS(DATASET) -
     ACCESS(ALTER) ID({zowe.setup.security.groups.sysProg})
