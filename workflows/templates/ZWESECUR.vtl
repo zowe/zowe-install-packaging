@@ -807,10 +807,13 @@ TSS PERMIT(&ZOWEUSER.) APPL(OMVSAPPL)
 /* HLQ stub                                                          */
   TSS ADD(&ADMINDEP.) DATASET(&HLQ..)
 
-/* general data set protection                                       */
-  TSS WHOHAS DATASET(&HLQ.)
-  TSS PER(ALL) DATASET(&HLQ..) ACCESS(READ)
+/* General data set protection                                       */
+/* Grant full access (ALL) only to Sysprogs, ie. alter               */
+/* Grant READ only to the Zowe Started Task Group and Zowe Admins    */
+  TSS WHOHAS DATASET(&HLQ.)  
   TSS PER(&SYSPROG)  DATASET(&HLQ..) ACCESS(ALL)
+  TSS PER(&ADMINGRP)  DATASET(&HLQ..) ACCESS(READ)
+  TSS PER(&STCGRP)  DATASET(&HLQ..) ACCESS(READ)
 
 /* show results                                                      */
   TSS WHOHAS DATASET(&HLQ.)
