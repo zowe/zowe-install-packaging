@@ -393,11 +393,16 @@
   LISTGRP  &HLQ.
   ADDGROUP &HLQ. DATA('Zowe - HLQ STUB')
 
-/* general data set protection                                       */
+/* General data set protection                                       */
+/* Default to NONE for the entire HLQ                                */
+/* Grant ALTER to Sysprogs                                           */
+/* Grant READ to the Zowe Started Task Group and Zowe Admins         */
   LISTDSD PREFIX(&HLQ.) ALL
-  ADDSD  '&HLQ..*.**' UACC(READ) -
+  ADDSD  '&HLQ..*.**' UACC(NONE) -
     DATA('Zowe')
   PERMIT '&HLQ..*.**' CLASS(DATASET) ACCESS(ALTER) ID(&SYSPROG.)
+  PERMIT '&HLQ..*.**' CLASS(DATASET) ACCESS(READ) ID(&ADMINGRP.)
+  PERMIT '&HLQ..*.**' CLASS(DATASET) ACCESS(READ) ID(&STCGRP.)
 
   SETROPTS GENERIC(DATASET) REFRESH
 
