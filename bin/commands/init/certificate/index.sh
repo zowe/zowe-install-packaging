@@ -83,7 +83,7 @@ security_groups_admin=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.sec
 for item in caCommonName commonName orgUnit org locality state country; do
   var_name="dname_${item}"
   var_val=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.certificate.dname.${item}")
-  eval "${var_name}=\"${var_val}\""
+  set_var_value "${var_name}" "${var_val}"
 done
 # read cert validity
 cert_validity=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.certificate.validity")
@@ -92,7 +92,7 @@ if [ "${cert_type}" = "PKCS12" ]; then
   for item in directory lock name password; do
     var_name="pkcs12_${item}"
     var_val=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.certificate.pkcs12.${item}")
-    eval "${var_name}=\"${var_val}\""
+    set_var_value "${var_name}" "${var_val}"
   done
   # replace the well-known schema default so a stock init doesn't ship a guessable keystore password
   pkcs12_password_generated=false
@@ -114,7 +114,7 @@ else # JCE* content
   for item in name label caLabel; do
     var_name="keyring_${item}"
     var_val=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.certificate.keyring.${item}")
-    eval "${var_name}=\"${var_val}\""
+    set_var_value "${var_name}" "${var_val}"
   done
   # FIXME: currently ZWEKRING jcl will import the cert and chain, CA will also be added to CERTAUTH, but the CA will not be connected to keyring.
   #        the CA imported could have label like LABEL00000001.
@@ -155,13 +155,6 @@ else # JCE* content
     fi
 
   fi
-
-  # read keyring-specific z/OSMF info
-  for item in user ca; do
-    var_name="zosmf_${item}"
-    var_val=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.certificate.keyring.zOSMF.${item}")
-    eval "${var_name}=\"${var_val}\""
-  done
 fi
 
 # read keystore CAs
@@ -175,12 +168,12 @@ fi
 for item in user ca; do
   var_name="zosmf_${item}"
   var_val=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.certificate.keyring.zOSMF.${item}")
-  eval "${var_name}=\"${var_val}\""
+  set_var_value "${var_name}" "${var_val}"
 done
 for item in host port; do
   var_name="zosmf_${item}"
   var_val=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zOSMF.${item}")
-  eval "${var_name}=\"${var_val}\""
+  set_var_value "${var_name}" "${var_val}"
 done
 keyring_trust_zosmf=0
 verify_certificates=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.verifyCertificates" | upper_case)
@@ -280,7 +273,7 @@ if [ "${cert_type}" = "PKCS12" ]; then
     for item in caCommonName commonName orgUnit org locality state country; do
       var_name="dname_${item}"
       var_val=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.certificate.dname.${item}")
-      eval "${var_name}=\"${var_val}\""
+      set_var_value "${var_name}" "${var_val}"
     done
     # read cert validity
     cert_validity=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.certificate.validity")
