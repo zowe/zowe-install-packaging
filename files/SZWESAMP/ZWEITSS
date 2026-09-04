@@ -205,8 +205,7 @@ TSS PERMIT({zowe.setup.security.users.zowe}) APPL(OMVSAPPL)
   TSS ADD(&ADMINDEP.) DATASET({zowe.setup.dataset.prefix})
 
 /* general data set protection                                       */
-  TSS WHOHAS DATASET({zowe.setup.dataset.prefix})
-  TSS PER(ALL) DATASET({zowe.setup.dataset.prefix}) ACCESS(READ)
+  TSS WHOHAS DATASET({zowe.setup.dataset.prefix})  
   TSS PER({zowe.setup.security.groups.sysProg})  +
     DATASET({zowe.setup.dataset.prefix}) ACCESS(ALL)
   TSS PER({zowe.setup.security.groups.stc})  +
