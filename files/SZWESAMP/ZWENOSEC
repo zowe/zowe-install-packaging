@@ -345,9 +345,10 @@ $$
 /* REMOVE ZOWE DATA SET PROTECTION ................................. */
 /* removE general data set protection                                */
 TSS WHOHAS DATASET(&HLQ)
-TSS REVOKE(ALL) DATASET(&HLQ..)
 TSS REVOKE(&SYSPROG) DATASET(&HLQ..)
 TSS REMOVE(&ADMINDEP) DATASET(&HLQ..)
+TSS REMOVE(&ADMINGRP) DATASET(&HLQ..)
+TSS REMOVE(&STCGRP) DATASET(&HLQ..)
 
 /* REMOVE ZOWE SERVER PERMISIONS ................................... */
 
