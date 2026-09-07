@@ -445,7 +445,7 @@ if [ "${cert_type}" = "PKCS12" ]; then
     print_message "      certificateAuthorities: \"${yaml_pem_cas}\""
     print_message ""
     if [ "${pkcs12_password_generated}" = "true" ]; then
-      print_message "Warning ZWEL0362W: the keystore password above was randomly generated and is not stored anywhere else. Save it now, since without --update-config it will not be written to zowe.yaml and cannot be recovered later."
+      print_message "Warning ZWEL0362W: The keystore password above was randomly generated and is not stored anywhere else. Save it now, since without --update-config it will not be written to zowe.yaml and cannot be recovered later."
     fi
     print_level2_message "Zowe configuration requires manual updates."
   fi

@@ -98,7 +98,7 @@ zowe:
       key: "/test/dir/pkcs12/localhost/localhost.key"
       certificate: "/test/dir/pkcs12/localhost/localhost.cer"
       certificateAuthorities: "/test/dir/pkcs12/local_ca/local_ca.cer"
-Warning ZWEL0362W: the keystore password above was randomly generated and is not stored anywhere else. Save it now, since without --update-config it will not be written to zowe.yaml and cannot be recovered later.
+Warning ZWEL0362W: The keystore password above was randomly generated and is not stored anywhere else. Save it now, since without --update-config it will not be written to zowe.yaml and cannot be recovered later.
 >> Zowe configuration requires manual updates."
 `;
 
@@ -400,7 +400,7 @@ zowe:
       key: "/test/dir/pkcs12/localhost/localhost.key"
       certificate: "/test/dir/pkcs12/localhost/localhost.cer"
       certificateAuthorities: "/test/dir/pkcs12/local_ca/local_ca.cer"
-Warning ZWEL0362W: the keystore password above was randomly generated and is not stored anywhere else. Save it now, since without --update-config it will not be written to zowe.yaml and cannot be recovered later.
+Warning ZWEL0362W: The keystore password above was randomly generated and is not stored anywhere else. Save it now, since without --update-config it will not be written to zowe.yaml and cannot be recovered later.
 >> Zowe configuration requires manual updates.
 -------------------------------------------------------------------------------
 >> Verify certificate of "some.test.hostname:12321"
@@ -458,7 +458,7 @@ zowe:
       key: "/test/dir/pkcs12_scen2/localhost/localhost.key"
       certificate: "/test/dir/pkcs12_scen2/localhost/localhost.cer"
       certificateAuthorities: ""
-Warning ZWEL0362W: the keystore password above was randomly generated and is not stored anywhere else. Save it now, since without --update-config it will not be written to zowe.yaml and cannot be recovered later.
+Warning ZWEL0362W: The keystore password above was randomly generated and is not stored anywhere else. Save it now, since without --update-config it will not be written to zowe.yaml and cannot be recovered later.
 >> Zowe configuration requires manual updates.
 -------------------------------------------------------------------------------
 >> Verify certificate of "some.test.hostname:12321"
