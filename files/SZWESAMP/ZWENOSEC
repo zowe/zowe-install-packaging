@@ -331,6 +331,10 @@ TSS WHOHAS DATASET({zowe.setup.dataset.prefix})
 TSS REVOKE(ALL) DATASET({zowe.setup.dataset.prefix})
 TSS REVOKE({zowe.setup.security.groups.sysProg}) +
     DATASET({zowe.setup.dataset.prefix})
+TSS REVOKE({zowe.setup.security.groups.stc}) +
+    DATASET({zowe.setup.dataset.prefix})
+TSS REVOKE({zowe.setup.security.groups.admin}) +
+    DATASET({zowe.setup.dataset.prefix})    
 TSS REMOVE(&ADMINDEP) DATASET({zowe.setup.dataset.prefix})
 
 /* REMOVE ZOWE SERVER PERMISIONS ................................... */
