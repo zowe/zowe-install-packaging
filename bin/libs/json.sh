@@ -154,7 +154,15 @@ update_yaml_configmgr() {
   configmgr="${ZWE_zowe_runtimeDirectory}/bin/utils/configmgr"
   updateYaml="${ZWE_zowe_runtimeDirectory}/bin/utils/ModifyZoweYaml.js"
 
-  print_message "- update \"${key}\" with value: ${val}"
+  # this runs at info level, so a password would land on the console and in the log
+  case "${key}" in
+    *password*|*Password*)
+      print_message "- update \"${key}\" with value: ****"
+      ;;
+    *)
+      print_message "- update \"${key}\" with value: ${val}"
+      ;;
+  esac
   result=$(_CEE_RUNOPTS="XPLINK(ON)" "${configmgr}" -script "$updateYaml" update "$file" "$key" "$val" "$validate" 2>&1)
   code=$?
   if [ ${code} -eq 0 ]; then

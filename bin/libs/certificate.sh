@@ -66,7 +66,62 @@ JAVA_KEYTOOL_ENCODING=" -J-Dfile.encoding=COMPAT "
 # RLIST  FACILITY IRR.DIGTCERT.LISTRING  ALL
 #######################################################################
 
+# Passwords must never reach keytool's argument list: on z/OS a user holding
+# SUPERUSER.PROCESS.GETPSENT can read another process's arguments with ps -ef.
+# Every password option is rewritten to its "<option>:env <variable>" form and
+# the value is handed over in the environment instead, which also keeps the
+# secrets out of the debug message below.
 pkeytool() {
+  keytool_argc=$#
+  keytool_argi=0
+  while [ ${keytool_argi} -lt ${keytool_argc} ]; do
+    keytool_arg="${1}"
+    shift
+    keytool_argi=$((keytool_argi + 1))
+    case "${keytool_arg}" in
+      -storepass|-keypass|-srcstorepass|-srckeypass|-deststorepass|-destkeypass)
+        keytool_pass=
+        if [ ${keytool_argi} -lt ${keytool_argc} ]; then
+          keytool_pass="${1}"
+          shift
+          keytool_argi=$((keytool_argi + 1))
+        fi
+        case "${keytool_arg}" in
+          -storepass)
+            ZWE_PRIVATE_KEYTOOL_STOREPASS="${keytool_pass}"
+            keytool_pass_var=ZWE_PRIVATE_KEYTOOL_STOREPASS
+            ;;
+          -keypass)
+            ZWE_PRIVATE_KEYTOOL_KEYPASS="${keytool_pass}"
+            keytool_pass_var=ZWE_PRIVATE_KEYTOOL_KEYPASS
+            ;;
+          -srcstorepass)
+            ZWE_PRIVATE_KEYTOOL_SRCSTOREPASS="${keytool_pass}"
+            keytool_pass_var=ZWE_PRIVATE_KEYTOOL_SRCSTOREPASS
+            ;;
+          -srckeypass)
+            ZWE_PRIVATE_KEYTOOL_SRCKEYPASS="${keytool_pass}"
+            keytool_pass_var=ZWE_PRIVATE_KEYTOOL_SRCKEYPASS
+            ;;
+          -deststorepass)
+            ZWE_PRIVATE_KEYTOOL_DESTSTOREPASS="${keytool_pass}"
+            keytool_pass_var=ZWE_PRIVATE_KEYTOOL_DESTSTOREPASS
+            ;;
+          -destkeypass)
+            ZWE_PRIVATE_KEYTOOL_DESTKEYPASS="${keytool_pass}"
+            keytool_pass_var=ZWE_PRIVATE_KEYTOOL_DESTKEYPASS
+            ;;
+        esac
+        keytool_pass=
+        export "${keytool_pass_var}"
+        set -- "$@" "${keytool_arg}:env" "${keytool_pass_var}"
+        ;;
+      *)
+        set -- "$@" "${keytool_arg}"
+        ;;
+    esac
+  done
+
   args=$@
 
   print_debug "- Calling keytool ${args}"
@@ -83,12 +138,21 @@ pkeytool() {
     fi
   else
     print_debug "  * keytool failed"
-    print_error "  * Exit code: ${code}"
-    print_error "  * Output:"
-    if [ -n "${result}" ]; then
-      print_error "$(padding_left "${result}" "    ")"
+    # callers probing whether an alias exists set ZWE_PRIVATE_KEYTOOL_QUIET,
+    # because for them a non-zero exit code is an expected outcome
+    if [ "${ZWE_PRIVATE_KEYTOOL_QUIET}" != "true" ]; then
+      print_error "  * Exit code: ${code}"
+      print_error "  * Output:"
+      if [ -n "${result}" ]; then
+        print_error "$(padding_left "${result}" "    ")"
+      fi
     fi
   fi
+
+  unset ZWE_PRIVATE_KEYTOOL_STOREPASS ZWE_PRIVATE_KEYTOOL_KEYPASS \
+    ZWE_PRIVATE_KEYTOOL_SRCSTOREPASS ZWE_PRIVATE_KEYTOOL_SRCKEYPASS \
+    ZWE_PRIVATE_KEYTOOL_DESTSTOREPASS ZWE_PRIVATE_KEYTOOL_DESTKEYPASS \
+    ZWE_PRIVATE_KEYTOOL_QUIET
 
   return ${code}
 }
@@ -317,8 +381,10 @@ pkcs12_create_certificate_and_sign() {
     return 1
   fi
 
-  # test if we need to import CA into keystore
-  keytool -list -v -noprompt \
+  # test if we need to import CA into keystore; a non-zero exit code just means
+  # the CA is not in there yet, so keep it out of the error stream
+  ZWE_PRIVATE_KEYTOOL_QUIET=true
+  pkeytool -list -v -noprompt \
     -alias "${ca_alias}" \
     -keystore "${keystore_dir}/${keystore_name}/${keystore_name}.keystore.p12" \
     -storepass "${password}" \
@@ -336,8 +402,10 @@ pkcs12_create_certificate_and_sign() {
       -storetype "PKCS12")
   fi
 
-  # test if we need to import CA into truststore
-  keytool -list -v -noprompt \
+  # test if we need to import CA into truststore; a non-zero exit code just means
+  # the CA is not in there yet, so keep it out of the error stream
+  ZWE_PRIVATE_KEYTOOL_QUIET=true
+  pkeytool -list -v -noprompt \
     -alias "${ca_alias}" \
     -keystore "${keystore_dir}/${keystore_name}/${keystore_name}.truststore.p12" \
     -storepass "${password}" \

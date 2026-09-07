@@ -11,6 +11,7 @@ All notable changes to the Zowe Installer will be documented in this file.
 - Enhancement: APIML logging level configuration added to the `example-zowe.yaml`. [#4827](https://github.com/zowe/zowe-install-packaging/pull/4827)
 - Enhancement: Improved temporary files and directories handling. [#4820](https://github.com/zowe/zowe-install-packaging/pull/4820)
 - Enhancement: Updated the sequence of workflows in PSWI.[#4854](https://github.com/zowe/zowe-install-packaging/pull/4854)
+- Bugfix: Keystore passwords are no longer exposed by the `zwe` certificate commands. [#4883](https://github.com/zowe/zowe-install-packaging/pull/4883)
 
 ## `3.5.0`
 

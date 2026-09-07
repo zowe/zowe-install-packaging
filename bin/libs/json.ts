@@ -118,8 +118,13 @@ function buildUpdateObjWithArrays(zoweConfig: any, key: string): any {
  * @param val 
  * @returns 
  */
+// a password must not reach the console or the log, so report it as masked
+function printableValue(key: string, val: any): string {
+  return /password/i.test(key) ? '****' : `${val}`;
+}
+
 export function updateZoweYamlFileOnly(file: string, key: string, val: any, validate: boolean=true): number {
-  common.printMessage(`- update zowe config ${file}, key: "${key}" with value: ${val}, and validate: ${validate}`);
+  common.printMessage(`- update zowe config ${file}, key: "${key}" with value: ${printableValue(key, val)}, and validate: ${validate}`);
   let mergeObj = {};
   if (/\[\d+\]/.test(key)) {
     const zoweConfig = config.getZoweConfigFromFile(file, validate);
@@ -149,7 +154,7 @@ export function updateZoweYamlFileOnly(file: string, key: string, val: any, vali
  * @returns 
  */
 export function updateZoweYaml(file: string, key: string, val: any) {
-  common.printMessage(`- update zowe config ${file}, key: "${key}" with value: ${val}`);
+  common.printMessage(`- update zowe config ${file}, key: "${key}" with value: ${printableValue(key, val)}`);
   let [ success, updateObj ] = fakejq.jqset({}, key, val);
   
   if (success) {
