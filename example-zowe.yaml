@@ -224,8 +224,7 @@ zowe:
   network:
     # Allowed domains is a list of domains (supporting wildcards) that can be used in services that register to the API ML Discovery Service.
     # Defaults to the external domains + lpar hostnames if defined in haInstances
-    allowedDomains:
-      - www.example.com
+    allowedDomains: "${{ zowe.externalDomains }}"
     server:
       tls:
         attls: false
