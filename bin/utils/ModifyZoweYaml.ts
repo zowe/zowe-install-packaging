@@ -22,12 +22,16 @@ const MOD_TYPES = {
   update: 'update'
 }
 
+// libs/json.sh passes the new value in this variable instead of on the command line,
+// so that a secret is not readable from this process's arguments
+const VALUE_ENV_VAR = 'ZWE_PRIVATE_YAML_UPDATE_VALUE';
+
 
 // scriptArgs is a quickJS global equivalent to node's process.argv
 const pgmArgs = scriptArgs.slice(3);
 
 if (!scriptArgs[0].includes('configmgr') || !scriptArgs[1].includes('-script') || pgmArgs.length < 3) { 
-  common.printErrorAndExit('UpdateYaml script was not invoked with the correct number of arguments. Usage: ./configmgr -script <this_script> update <file> <key> <value> <validate> OR ./configmgr -script <this_script> delete <file> <key> <validate>');
+  common.printErrorAndExit(`UpdateYaml script was not invoked with the correct number of arguments. Usage: ./configmgr -script <this_script> update <file> <key> <validate> with the new value in ${VALUE_ENV_VAR} OR ./configmgr -script <this_script> delete <file> <key> <validate>`);
 }
 
 const modType = pgmArgs[0];
@@ -37,10 +41,11 @@ let rc = 0;
 
 if (modType == MOD_TYPES.update) {
   // the final type of newValue changes based on parsing logic, and dynamic typing is used to distinguish "true" and true in the updated YAML.
-  let newValue: any = pgmArgs[3]; // always comes wrapped in quotes.
-  const validate: boolean = setValidate(pgmArgs[4]); 
+  const rawValue = std.getenv(VALUE_ENV_VAR);
+  let newValue: any = rawValue == null ? '' : rawValue;
+  const validate: boolean = setValidate(pgmArgs[3]); 
 
-  // check for NaN first - all values from pgmArgs[3] are strings
+  // check for NaN first - the value always arrives from the environment as a string
   if (newValue.trim().length > 0 && !isNaN(newValue)) {
     newValue = parseInt(newValue);
   }
@@ -55,7 +60,7 @@ if (modType == MOD_TYPES.update) {
     newValue = ''; // keep the empty string empty; using quotes like '""' will cause them to be escaped by configmgr's yaml rendering
   } 
 
-  common.printTrace(`Updating: ${file}, ${key}, ${newValue}, ${validate}`)
+  common.printTrace(`Updating: ${file}, ${key}, ${jsonlib.printableValue(key, newValue)}, ${validate}`)
 
   rc = jsonlib.updateZoweYamlFileOnly(file, key, newValue, validate);
 } else if (modType == MOD_TYPES.delete) {

@@ -74,11 +74,16 @@ JAVA_KEYTOOL_ENCODING=" -J-Dfile.encoding=COMPAT "
 pkeytool() {
   keytool_argc=$#
   keytool_argi=0
+  keytool_quiet=false
   while [ ${keytool_argi} -lt ${keytool_argc} ]; do
     keytool_arg="${1}"
     shift
     keytool_argi=$((keytool_argi + 1))
     case "${keytool_arg}" in
+      --quiet)
+        # consumed here, keytool never sees it, and it cannot outlive this call
+        keytool_quiet=true
+        ;;
       -storepass|-keypass|-srcstorepass|-srckeypass|-deststorepass|-destkeypass)
         keytool_pass=
         if [ ${keytool_argi} -lt ${keytool_argc} ]; then
@@ -138,9 +143,9 @@ pkeytool() {
     fi
   else
     print_debug "  * keytool failed"
-    # callers probing whether an alias exists set ZWE_PRIVATE_KEYTOOL_QUIET,
-    # because for them a non-zero exit code is an expected outcome
-    if [ "${ZWE_PRIVATE_KEYTOOL_QUIET}" != "true" ]; then
+    # callers probing whether an alias exists pass --quiet, because for them a
+    # non-zero exit code is an expected outcome
+    if [ "${keytool_quiet}" != "true" ]; then
       print_error "  * Exit code: ${code}"
       print_error "  * Output:"
       if [ -n "${result}" ]; then
@@ -151,8 +156,7 @@ pkeytool() {
 
   unset ZWE_PRIVATE_KEYTOOL_STOREPASS ZWE_PRIVATE_KEYTOOL_KEYPASS \
     ZWE_PRIVATE_KEYTOOL_SRCSTOREPASS ZWE_PRIVATE_KEYTOOL_SRCKEYPASS \
-    ZWE_PRIVATE_KEYTOOL_DESTSTOREPASS ZWE_PRIVATE_KEYTOOL_DESTKEYPASS \
-    ZWE_PRIVATE_KEYTOOL_QUIET
+    ZWE_PRIVATE_KEYTOOL_DESTSTOREPASS ZWE_PRIVATE_KEYTOOL_DESTKEYPASS
 
   return ${code}
 }
@@ -383,8 +387,7 @@ pkcs12_create_certificate_and_sign() {
 
   # test if we need to import CA into keystore; a non-zero exit code just means
   # the CA is not in there yet, so keep it out of the error stream
-  ZWE_PRIVATE_KEYTOOL_QUIET=true
-  pkeytool -list -v -noprompt \
+  pkeytool --quiet -list -v -noprompt \
     -alias "${ca_alias}" \
     -keystore "${keystore_dir}/${keystore_name}/${keystore_name}.keystore.p12" \
     -storepass "${password}" \
@@ -404,8 +407,7 @@ pkcs12_create_certificate_and_sign() {
 
   # test if we need to import CA into truststore; a non-zero exit code just means
   # the CA is not in there yet, so keep it out of the error stream
-  ZWE_PRIVATE_KEYTOOL_QUIET=true
-  pkeytool -list -v -noprompt \
+  pkeytool --quiet -list -v -noprompt \
     -alias "${ca_alias}" \
     -keystore "${keystore_dir}/${keystore_name}/${keystore_name}.truststore.p12" \
     -storepass "${password}" \

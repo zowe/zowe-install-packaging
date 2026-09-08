@@ -108,6 +108,14 @@ function buildUpdateObjWithArrays(zoweConfig: any, key: string): any {
 }
 
 /**
+ * Renders a value for a message. A password must not reach the console or the log,
+ * so it is reported as masked.
+ */
+export function printableValue(key: string, val: any): string {
+  return /password/i.test(key) ? '****' : `${val}`;
+}
+
+/**
  * Updates the provided zowe.yaml file ONLY with the YAML key and value passed by the caller. Always overwrites on-disk. 
  * Schema validation after update is optional, and defaults to true.
  * 
@@ -118,11 +126,6 @@ function buildUpdateObjWithArrays(zoweConfig: any, key: string): any {
  * @param val 
  * @returns 
  */
-// a password must not reach the console or the log, so report it as masked
-function printableValue(key: string, val: any): string {
-  return /password/i.test(key) ? '****' : `${val}`;
-}
-
 export function updateZoweYamlFileOnly(file: string, key: string, val: any, validate: boolean=true): number {
   common.printMessage(`- update zowe config ${file}, key: "${key}" with value: ${printableValue(key, val)}, and validate: ${validate}`);
   let mergeObj = {};
