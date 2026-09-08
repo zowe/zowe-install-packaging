@@ -29,8 +29,11 @@ prepare_log_file() {
     if [ ! -w "${log_dir}" ]; then
       print_error_and_exit "Error ZWEL0110E: Doesn't have write permission on ${1} directory." "" 110
     fi
-    touch ${ZWE_PRIVATE_LOG_FILE}
+    # 0666 & ~0137 = 0640 -> rw- r-- ---
+    (
+      umask 0137
+      touch "${ZWE_PRIVATE_LOG_FILE}"
+    )
     print_debug "Log file created: ${ZWE_PRIVATE_LOG_FILE}" "console"
   fi
-  chmod a+rw ${ZWE_PRIVATE_LOG_FILE}
 }

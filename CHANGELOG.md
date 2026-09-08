@@ -4,6 +4,7 @@ All notable changes to the Zowe Installer will be documented in this file.
 
 ## `3.6.0`
 
+- Bugfix: Restricted read/write permissions for log files created by the `zwe` command. [#4807](https://github.com/zowe/zowe-install-packaging/pull/4807)
 - Enhancement: When running in HA mode, Zowe now creates a per-HA-instance merged YAML config file (`.zowe-<haInstance>-merged.yaml`) to the workspace `.env` directory. This file contains the fully-resolved configuration for that instance with all `haInstances` overrides applied at the root level. The `haInstances` block is preserved. The location of this file is recorded in environment variable `ZWE_HA_INSTANCE_CONFIG`. (https://github.com/zowe/zowe-install-packaging/pull/4759)
 - Bugfix: Fixed `MalformedURLException: unknown protocol: safkeyring` on IBM Java 17/21 for `zwe validate certificate` command by replacing `-Djava.protocol.handler.pkgs=com.ibm.crypto.provider` with `--add-modules ibm.crypto.zsecurity,ibm.crypto.hdwrcca` to resolve the SAF keyring URL protocol handler. [#4795](https://github.com/zowe/zowe-install-packaging/pull/4795)
 - Enhancement: New property `zowe.network.allowedDomains`. Defaults to external domains and LPAR hostnames for HA scenarios. Domains not included in this list will not be allowed to be onboarded on Discovery Service. [#4801](https://github.com/zowe/zowe-install-packaging/pull/4801)
