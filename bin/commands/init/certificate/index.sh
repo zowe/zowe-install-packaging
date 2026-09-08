@@ -94,10 +94,14 @@ if [ "${cert_type}" = "PKCS12" ]; then
     var_val=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.certificate.pkcs12.${item}")
     set_var_value "${var_name}" "${var_val}"
   done
-  # replace the well-known schema default so a stock init doesn't ship a guessable keystore password
+  # replace the well-known schema default so a stock init doesn't ship a guessable keystore
+  # password. 
+  # The leading letter keeps the value from looking numeric, which update_zowe_yaml
+  # would otherwise coerce with parseInt and corrupt. FIXME: A user set pure numeric password may also get corrupted by --update-config
   pkcs12_password_generated=false
+  pkcs12_caPassword_generated=false
   if [ "${pkcs12_password}" = "password" ]; then
-    pkcs12_password="$(get_tmp_rand)$(get_tmp_rand)"
+    pkcs12_password="a$(get_tmp_rand)$(get_tmp_rand)"
     pkcs12_password_generated=true
     print_message "zowe.setup.certificate.pkcs12.password was left as the default value, generated a random password instead"
   fi
@@ -281,7 +285,8 @@ if [ "${cert_type}" = "PKCS12" ]; then
     pkcs12_caPassword=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.certificate.pkcs12.caPassword")
     # replace the well-known schema default so a stock init doesn't ship a guessable CA password
     if [ "${pkcs12_caPassword}" = "local_ca_password" ]; then
-      pkcs12_caPassword="$(get_tmp_rand)$(get_tmp_rand)"
+      pkcs12_caPassword="a$(get_tmp_rand)$(get_tmp_rand)"
+      pkcs12_caPassword_generated=true
       print_message "zowe.setup.certificate.pkcs12.caPassword was left as the default value, generated a random password instead"
     fi
     pkcs12_caAlias=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.certificate.pkcs12.caAlias")
@@ -408,6 +413,14 @@ if [ "${cert_type}" = "PKCS12" ]; then
     if [ ! -z "${security_update}" ]; then
       update_zowe_yaml "${ZWE_CLI_PARAMETER_CONFIG}" $security_update false
     fi
+    # a generated password must be persisted here too, otherwise the keystore and the local
+    # certificate authority are left with a password that is recorded nowhere
+    if [ "${pkcs12_password_generated}" = "true" ]; then
+      update_zowe_yaml "${ZWE_CLI_PARAMETER_CONFIG}" "zowe.setup.certificate.pkcs12.password" "${pkcs12_password}" false
+    fi
+    if [ "${pkcs12_caPassword_generated}" = "true" ]; then
+      update_zowe_yaml "${ZWE_CLI_PARAMETER_CONFIG}" "zowe.setup.certificate.pkcs12.caPassword" "${pkcs12_caPassword}" false
+    fi
     update_zowe_yaml "${ZWE_CLI_PARAMETER_CONFIG}" "zowe.certificate.keystore.type" "PKCS12" false
     update_zowe_yaml "${ZWE_CLI_PARAMETER_CONFIG}" "zowe.certificate.keystore.file" "${pkcs12_directory}/${pkcs12_name}/${pkcs12_name}.keystore.p12" false
     update_zowe_yaml "${ZWE_CLI_PARAMETER_CONFIG}" "zowe.certificate.keystore.password" "${pkcs12_password}" false
@@ -424,10 +437,22 @@ if [ "${cert_type}" = "PKCS12" ]; then
     print_message "Please manually update to these values:"
     print_message ""
     print_message "zowe:"
-    if [ ! -z "${security_update}" ]; then
+    if [ ! -z "${security_update}" -o "${pkcs12_password_generated}" = "true" -o "${pkcs12_caPassword_generated}" = "true" ]; then
       print_message "  setup:"
+    fi
+    if [ ! -z "${security_update}" ]; then
       print_message "    security:"
       print_message "      product: ${security_product}"
+    fi
+    if [ "${pkcs12_password_generated}" = "true" -o "${pkcs12_caPassword_generated}" = "true" ]; then
+      print_message "    certificate:"
+      print_message "      pkcs12:"
+      if [ "${pkcs12_password_generated}" = "true" ]; then
+        print_message "        password: \"${pkcs12_password}\""
+      fi
+      if [ "${pkcs12_caPassword_generated}" = "true" ]; then
+        print_message "        caPassword: \"${pkcs12_caPassword}\""
+      fi
     fi
     print_message "  certificate:"
     print_message "    keystore:"
@@ -444,8 +469,22 @@ if [ "${cert_type}" = "PKCS12" ]; then
     print_message "      certificate: \"${pkcs12_directory}/${pkcs12_name}/${pkcs12_name_lc}.cer\""
     print_message "      certificateAuthorities: \"${yaml_pem_cas}\""
     print_message ""
+    # only report the passwords that were actually generated, the other ones are already known
+    generated_keys=
     if [ "${pkcs12_password_generated}" = "true" ]; then
-      print_message "Warning ZWEL0362W: The keystore password above was randomly generated and is not stored anywhere else. Save it now, since without --update-config it will not be written to zowe.yaml and cannot be recovered later."
+      generated_keys="zowe.setup.certificate.pkcs12.password"
+    fi
+    if [ "${pkcs12_caPassword_generated}" = "true" ]; then
+      if [ -n "${generated_keys}" ]; then
+        generated_keys="${generated_keys} and "
+      fi
+      generated_keys="${generated_keys}zowe.setup.certificate.pkcs12.caPassword"
+    fi
+    if [ -n "${generated_keys}" ]; then
+      print_message "Warning ZWEL0362W: A random password was generated for the following settings and is shown above: ${generated_keys}. Save these values now, since without --update-config they are not written to zowe.yaml and the keystore they protect cannot be opened later."
+      if [ "${pkcs12_caPassword_generated}" = "true" ]; then
+        print_message "Without the certificate authority password the local certificate authority cannot sign additional certificates."
+      fi
     fi
     print_level2_message "Zowe configuration requires manual updates."
   fi
