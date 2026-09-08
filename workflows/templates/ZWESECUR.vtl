@@ -611,8 +611,8 @@ SET RULE
 *  Full access (ALL) only to STC group (as was in original script)
 *  Grant READ only to Zowe Admins
 LIST &HLQ.
-RECKEY &HLQ. ADD(- +
-  ROLE(-) READ(A) EXEC(P))
+* RECKEY &HLQ. ADD(- +
+*   ROLE(-) READ(A) EXEC(P))
 RECKEY &HLQ. ADD(- +
   ROLE(&STCGRP.) READ(A) EXEC(A) ALLOC(A) WRITE(A))
 RECKEY &HLQ. ADD(- +
