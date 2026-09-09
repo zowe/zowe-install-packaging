@@ -231,11 +231,11 @@ LIST {zowe.setup.dataset.prefix}
 *  RECKEY {zowe.setup.dataset.prefix} +
 *    ADD(- ROLE(-) READ(A) EXEC(P))
 RECKEY {zowe.setup.dataset.prefix} +
-  ADD(- ROLE({zowe.setup.security.groups.stc}) +
-  READ(A) EXEC(A) ALLOC(A) WRITE(A))
-RECKEY {zowe.setup.dataset.prefix} +
   ADD(- ROLE({zowe.setup.security.groups.admin}) +
   READ(A) EXEC(A))
+RECKEY {zowe.setup.dataset.prefix} +
+  ADD(- ROLE({zowe.setup.security.groups.stc}) +
+  READ(A) EXEC(A) ALLOC(A) WRITE(A))
 *
 *  show results
 LIST {zowe.setup.dataset.prefix}
