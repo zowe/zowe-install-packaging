@@ -50,9 +50,9 @@ if (modType == MOD_TYPES.update) {
   let newValue: any = rawValue;
   const validate: boolean = setValidate(pgmArgs[3]); 
 
-  // check for NaN first - the value always arrives from the environment as a string
-  const wasCoercedToNumber = newValue.trim().length > 0 && !isNaN(newValue);
-  if (wasCoercedToNumber) {
+  // check for NaN first - the value always arrives from the environment as a string.
+  // a secret must never be coerced even if it happens to look numeric
+  if (!jsonlib.SECRET_KEY_RE.test(key) && newValue.trim().length > 0 && !isNaN(newValue)) {
     newValue = parseInt(newValue);
   }
 
@@ -66,9 +66,7 @@ if (modType == MOD_TYPES.update) {
     newValue = ''; // keep the empty string empty; using quotes like '""' will cause them to be escaped by configmgr's yaml rendering
   } 
 
-  // masked the same way printableValue would mask it, but a coercion is still worth
-  // flagging even when the value itself must stay hidden
-  common.printTrace(`Updating: ${file}, ${key}, ${jsonlib.printableValue(key, newValue)}${wasCoercedToNumber ? ' (parsed as a number)' : ''}, ${validate}`)
+  common.printTrace(`Updating: ${file}, ${key}, ${jsonlib.printableValue(key, newValue)}, ${validate}`)
 
   rc = jsonlib.updateZoweYamlFileOnly(file, key, newValue, validate);
 } else if (modType == MOD_TYPES.delete) {

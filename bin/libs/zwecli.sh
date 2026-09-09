@@ -169,14 +169,7 @@ zwecli_process_logfile() {
     print_message "- parameters:" "log"
     for param in ${ZWE_CLI_PARAMETERS_LIST}; do
       # a --password value must not land in the log unconditionally, regardless of log level
-      case "$(echo "${param}" | lower_case)" in
-        *password*)
-          print_message "  * ${param}: ****" "log"
-          ;;
-        *)
-          print_message "  * ${param}: $(zwecli_get_parameter_value "${param}")" "log"
-          ;;
-      esac
+      print_message "  * ${param}: $(mask_secret_value "${param}" "$(zwecli_get_parameter_value "${param}")")" "log"
     done
     print_message "" "log"
   fi

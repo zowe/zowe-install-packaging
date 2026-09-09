@@ -108,11 +108,16 @@ function buildUpdateObjWithArrays(zoweConfig: any, key: string): any {
 }
 
 /**
+ * Matches a config key that holds a secret.
+ */
+export const SECRET_KEY_RE = /password/i;
+
+/**
  * Renders a value for a message. A password must not reach the console or the log,
  * so it is reported as masked.
  */
 export function printableValue(key: string, val: any): string {
-  return /password/i.test(key) ? '****' : `${val}`;
+  return SECRET_KEY_RE.test(key) ? '****' : `${val}`;
 }
 
 /**
@@ -126,7 +131,7 @@ function redactPasswords(obj: any): any {
   if (obj !== null && typeof obj === 'object') {
     const result: any = {};
     for (const key of Object.keys(obj)) {
-      result[key] = /password/i.test(key) ? '****' : redactPasswords(obj[key]);
+      result[key] = SECRET_KEY_RE.test(key) ? '****' : redactPasswords(obj[key]);
     }
     return result;
   }

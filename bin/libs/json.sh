@@ -154,15 +154,8 @@ update_yaml_configmgr() {
   configmgr="${ZWE_zowe_runtimeDirectory}/bin/utils/configmgr"
   updateYaml="${ZWE_zowe_runtimeDirectory}/bin/utils/ModifyZoweYaml.js"
 
-  # this runs at info level, so a password would land on the console and in the log;
-  case "$(echo "${key}" | lower_case)" in
-    *password*)
-      print_message "- update \"${key}\" with value: ****"
-      ;;
-    *)
-      print_message "- update \"${key}\" with value: ${val}"
-      ;;
-  esac
+  # this runs at info level, so a password would land on the console and in the log
+  print_message "- update \"${key}\" with value: $(mask_secret_value "${key}" "${val}")"
   # the value is handed over in the environment rather than as an argument, because an
   # argv element is readable from another process, the same exposure pkeytool avoids
   ZWE_PRIVATE_YAML_UPDATE_VALUE="${val}"

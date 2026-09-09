@@ -1196,12 +1196,14 @@ keyring_export_to_pkcs12() {
     keyring_temp_password="$(get_tmp_rand)$(get_tmp_rand)"
     result=$(keyring_util EXPORT "${keyring_owner}" "${keyring_name}" -l "${label}" -k -f "${uss_temp_target}.p12" -p "${keyring_temp_password}")
     if [ $? -ne 0 ]; then
+      keyring_temp_password=
       return 1
     fi
     chmod 700 "${uss_temp_target}.p12"
 
     pkcs12_ensure_binary_tag "${uss_temp_target}.p12"
     if [ $? -ne 0 ]; then
+      keyring_temp_password=
       return 1
     fi
 
@@ -1214,8 +1216,10 @@ keyring_export_to_pkcs12() {
       "${keyring_temp_password}" \
       "${label}"
     if [ $? -ne 0 ]; then
+      keyring_temp_password=
       return 1
     fi
+    keyring_temp_password=
   fi
 
   if [ "${dummy_cert_created}" = "true" ]; then

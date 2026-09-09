@@ -448,7 +448,7 @@ else # JCE* content
     else
       keyring_run_zwenokyr_jcl_legacy_mode "${prefix}" "${jcllib}" "${keyring_owner}" "${keyring_name}" "${keyring_label}" "${keyring_caLabel}" "${security_product}"
     fi
-  else
+  # else # empty else block breaks some shells
     # error
     # print_error_and_exit "Error 158: Keyring \"safkeyring://${keyring_owner}/${keyring_name}\" already exists." "" 158
   fi
