@@ -72,6 +72,10 @@
   LISTDSD PREFIX({zowe.setup.dataset.prefix}) ALL
   PERMIT '{zowe.setup.dataset.prefix}.*.**' CLASS(DATASET) +
          DELETE ID({zowe.setup.security.groups.sysProg})
+  PERMIT '{zowe.setup.dataset.prefix}.*.**' CLASS(DATASET) +
+         DELETE ID({zowe.setup.security.groups.stc})
+  PERMIT '{zowe.setup.dataset.prefix}.*.**' CLASS(DATASET) +
+         DELETE ID({zowe.setup.security.groups.admin})
   DELDSD '{zowe.setup.dataset.prefix}.*.**'
 
 /* remove HLQ stub                                                   */
