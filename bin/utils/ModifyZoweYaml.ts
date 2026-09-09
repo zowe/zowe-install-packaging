@@ -42,11 +42,17 @@ let rc = 0;
 if (modType == MOD_TYPES.update) {
   // the final type of newValue changes based on parsing logic, and dynamic typing is used to distinguish "true" and true in the updated YAML.
   const rawValue = std.getenv(VALUE_ENV_VAR);
-  let newValue: any = rawValue == null ? '' : rawValue;
+  if (rawValue == null) {
+    // an unset variable means the caller never exported the new value - an intentionally
+    // empty value is still exported as "", so this is always a caller error, not real data
+    common.printErrorAndExit(`UpdateYaml script's ${VALUE_ENV_VAR} environment variable is not set. The caller must export the new value, even an empty one, before invoking this script.`);
+  }
+  let newValue: any = rawValue;
   const validate: boolean = setValidate(pgmArgs[3]); 
 
   // check for NaN first - the value always arrives from the environment as a string
-  if (newValue.trim().length > 0 && !isNaN(newValue)) {
+  const wasCoercedToNumber = newValue.trim().length > 0 && !isNaN(newValue);
+  if (wasCoercedToNumber) {
     newValue = parseInt(newValue);
   }
 
@@ -60,7 +66,9 @@ if (modType == MOD_TYPES.update) {
     newValue = ''; // keep the empty string empty; using quotes like '""' will cause them to be escaped by configmgr's yaml rendering
   } 
 
-  common.printTrace(`Updating: ${file}, ${key}, ${jsonlib.printableValue(key, newValue)}, ${validate}`)
+  // masked the same way printableValue would mask it, but a coercion is still worth
+  // flagging even when the value itself must stay hidden
+  common.printTrace(`Updating: ${file}, ${key}, ${jsonlib.printableValue(key, newValue)}${wasCoercedToNumber ? ' (parsed as a number)' : ''}, ${validate}`)
 
   rc = jsonlib.updateZoweYamlFileOnly(file, key, newValue, validate);
 } else if (modType == MOD_TYPES.delete) {

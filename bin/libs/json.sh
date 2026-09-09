@@ -154,9 +154,9 @@ update_yaml_configmgr() {
   configmgr="${ZWE_zowe_runtimeDirectory}/bin/utils/configmgr"
   updateYaml="${ZWE_zowe_runtimeDirectory}/bin/utils/ModifyZoweYaml.js"
 
-  # this runs at info level, so a password would land on the console and in the log
-  case "${key}" in
-    *password*|*Password*)
+  # this runs at info level, so a password would land on the console and in the log;
+  case "$(echo "${key}" | lower_case)" in
+    *password*)
       print_message "- update \"${key}\" with value: ****"
       ;;
     *)

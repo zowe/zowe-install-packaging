@@ -421,12 +421,14 @@ if [ "${cert_type}" = "PKCS12" ]; then
     print_message "    keystore:"
     print_message "      type: PKCS12"
     print_message "      file: \"${pkcs12_directory}/${pkcs12_name}/${pkcs12_name}.keystore.p12\""
-    print_message "      password: \"<value of zowe.setup.certificate.pkcs12.password>\""
+    # this line is meant to be pasted as-is: it self-references the password already
+    # in zowe.setup.certificate.pkcs12.password rather than repeating the secret in cleartext
+    print_message "      password: \"\${{ zowe.setup.certificate.pkcs12.password }}\""
     print_message "      alias: \"${pkcs12_name_lc}\""
     print_message "    truststore:"
     print_message "      type: PKCS12"
     print_message "      file: \"${pkcs12_directory}/${pkcs12_name}/${pkcs12_name}.truststore.p12\""
-    print_message "      password: \"<value of zowe.setup.certificate.pkcs12.password>\""
+    print_message "      password: \"\${{ zowe.setup.certificate.pkcs12.password }}\""
     print_message "    pem:"
     print_message "      key: \"${pkcs12_directory}/${pkcs12_name}/${pkcs12_name_lc}.key\""
     print_message "      certificate: \"${pkcs12_directory}/${pkcs12_name}/${pkcs12_name_lc}.cer\""

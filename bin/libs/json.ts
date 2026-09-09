@@ -116,6 +116,24 @@ export function printableValue(key: string, val: any): string {
 }
 
 /**
+ * Deep-clones an update object, masking any leaf whose key looks like a password,
+ * so the object can be logged without exposing secrets it may carry.
+ */
+function redactPasswords(obj: any): any {
+  if (Array.isArray(obj)) {
+    return obj.map(redactPasswords);
+  }
+  if (obj !== null && typeof obj === 'object') {
+    const result: any = {};
+    for (const key of Object.keys(obj)) {
+      result[key] = /password/i.test(key) ? '****' : redactPasswords(obj[key]);
+    }
+    return result;
+  }
+  return obj;
+}
+
+/**
  * Updates the provided zowe.yaml file ONLY with the YAML key and value passed by the caller. Always overwrites on-disk. 
  * Schema validation after update is optional, and defaults to true.
  * 
@@ -176,6 +194,6 @@ export function updateZoweYaml(file: string, key: string, val: any) {
  * @param updateObj 
  */
 export function updateZoweYamlFromObj(updateObj: any) {
-  common.printMessage(`- update zowe config ${std.getenv('ZWE_CLI_PARAMETER_CONFIG')} with obj=${JSON.stringify(updateObj, null, 2)}`);
+  common.printMessage(`- update zowe config ${std.getenv('ZWE_CLI_PARAMETER_CONFIG')} with obj=${JSON.stringify(redactPasswords(updateObj), null, 2)}`);
   config.updateZoweConfig(updateObj, true, 1); //TODO externalize array merge strategy = 1
 }
