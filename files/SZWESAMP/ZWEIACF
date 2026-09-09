@@ -224,7 +224,9 @@ F ACF2,REBUILD(FAC)
 *
 *  HLQ stub
 SET RULE
-*  general data set protection
+*  General data set protection
+*  Full access (ALL) only to STC group (as was in original script)
+*  Grant READ only to Zowe Admins
 LIST {zowe.setup.dataset.prefix}
 *  RECKEY {zowe.setup.dataset.prefix} +
 *    ADD(- ROLE(-) READ(A) EXEC(P))
