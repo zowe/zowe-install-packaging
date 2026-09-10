@@ -135,8 +135,6 @@ pkeytool() {
     fi
   fi
 
-  # only clear the variables this call actually set, so an unrelated caller-set
-  # value with the same name (however unlikely) is never clobbered
   if [ -n "${keytool_pass_vars}" ]; then
     unset ${keytool_pass_vars}
   fi
@@ -1190,9 +1188,7 @@ keyring_export_to_pkcs12() {
     # keyring-util is an external compiled tool with no equivalent to keytool's
     # ":env" password modifier. A caller-script failure can leave this temp file
     # on disk past this function's return (see the caller's cleanup), so this
-    # value protects it instead of the real keystore password; get_tmp_rand's
-    # own fallback is not cryptographically strong, but even then this is not
-    # the secret that matters
+    # value protects it instead of the real keystore password.
     keyring_temp_password="$(get_tmp_rand)$(get_tmp_rand)"
     result=$(keyring_util EXPORT "${keyring_owner}" "${keyring_name}" -l "${label}" -k -f "${uss_temp_target}.p12" -p "${keyring_temp_password}")
     if [ $? -ne 0 ]; then
