@@ -421,12 +421,14 @@ if [ "${cert_type}" = "PKCS12" ]; then
     print_message "    keystore:"
     print_message "      type: PKCS12"
     print_message "      file: \"${pkcs12_directory}/${pkcs12_name}/${pkcs12_name}.keystore.p12\""
-    print_message "      password: \"${pkcs12_password}\""
+    # this line is meant to be pasted as-is: it self-references the password already
+    # in zowe.setup.certificate.pkcs12.password rather than repeating the secret in cleartext
+    print_message "      password: \"\${{ zowe.setup.certificate.pkcs12.password }}\""
     print_message "      alias: \"${pkcs12_name_lc}\""
     print_message "    truststore:"
     print_message "      type: PKCS12"
     print_message "      file: \"${pkcs12_directory}/${pkcs12_name}/${pkcs12_name}.truststore.p12\""
-    print_message "      password: \"${pkcs12_password}\""
+    print_message "      password: \"\${{ zowe.setup.certificate.pkcs12.password }}\""
     print_message "    pem:"
     print_message "      key: \"${pkcs12_directory}/${pkcs12_name}/${pkcs12_name_lc}.key\""
     print_message "      certificate: \"${pkcs12_directory}/${pkcs12_name}/${pkcs12_name_lc}.cer\""
@@ -446,7 +448,7 @@ else # JCE* content
     else
       keyring_run_zwenokyr_jcl_legacy_mode "${prefix}" "${jcllib}" "${keyring_owner}" "${keyring_name}" "${keyring_label}" "${keyring_caLabel}" "${security_product}"
     fi
-  else
+  # else # empty else block breaks some shells
     # error
     # print_error_and_exit "Error 158: Keyring \"safkeyring://${keyring_owner}/${keyring_name}\" already exists." "" 158
   fi

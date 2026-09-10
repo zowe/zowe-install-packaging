@@ -107,6 +107,26 @@ lower_case() {
 }
 
 ###############################
+# Mask a value if its key looks like it holds a secret (case-insensitive
+# substring match on "password").
+#
+# @param key    configuration key name
+# @param value  the value to mask if the key looks secret
+mask_secret_value() {
+  key="${1}"
+  value="${2}"
+
+  case "$(echo "${key}" | lower_case)" in
+    *password*)
+      printf '%s\n' "****"
+      ;;
+    *)
+      printf '%s\n' "${value}"
+      ;;
+  esac
+}
+
+###############################
 # Convert string to upper case
 #
 # @param string   optional string
