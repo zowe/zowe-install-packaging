@@ -43,6 +43,29 @@ function zssCheck(zssBinary: string): string {
   }
 }
 
+const PASSWORD_KEY_PATTERN = /secret|password/i;
+function buildPasswordMaskConfig(source: any): any {
+  if (!source || typeof source !== 'object' || Array.isArray(source)) {
+    return undefined;
+  }
+  const result: any = {};
+  let hasMasked = false;
+  for (const key of Object.keys(source)) {
+    const value = source[key];
+    if (PASSWORD_KEY_PATTERN.test(key) && typeof value === 'string' && value.length > 0) {
+      result[key] = '***';
+      hasMasked = true;
+    } else if (value && typeof value === 'object') {
+      const nested = buildPasswordMaskConfig(value);
+      if (nested !== undefined) {
+        result[key] = nested;
+        hasMasked = true;
+      }
+    }
+  }
+  return hasMasked ? result : undefined;
+}
+
 export function execute(): void {
 
   common.printLevel0Message('Collect information for Zowe support');
@@ -169,9 +192,14 @@ export function execute(): void {
   const workspaceDirectory = ZOWE_CONFIG.zowe.workspaceDirectory;
 
   common.printMessage(`- configuration: ${workspaceDirectory}/.env/.zowe-merged.yaml`);
-
-  // workspace directory must exists, otherwise the merging of configs already failed
-  fs.cp(`${workspaceDirectory}/.env/.zowe-merged.yaml`, `${tmpDir}/zowe-merged.yaml`);
+  fs.cp(`${workspaceDirectory}/.env/.zowe-merged.yaml`, `${tmpDir}/zowe-support.yaml`);
+  const maskObj = buildPasswordMaskConfig(ZOWE_CONFIG);
+  if (maskObj) {
+    // Update copy of config and DO NOT validate (last parameter is false)
+    // buildPasswordMaskConfig changes all password keys to '***'
+    // which is not valid for key ring password (if used).
+    config.updateZoweCfgFile(`${tmpDir}/zowe-support.yaml`, maskObj, 1, false);
+  }
 
   common.printMessage(`- zowe.workspaceDirectory: ${workspaceDirectory}/.env`);
   fs.mkdirp(`${tmpDir}/workspace`);
@@ -181,14 +209,6 @@ export function execute(): void {
     common.printMessage(`- zowe.workspaceDirectory: ${workspaceDirectory}/api-mediation/api-defs`);
     fs.cp(`${workspaceDirectory}/api-mediation/api-defs`, `${tmpDir}/workspace/api-mediation`);
   }
-
-  const pkcs12Directory = ZOWE_CONFIG.zowe.setup?.certificate?.pkcs12?.directory;
-  if (fs.directoryExists(pkcs12Directory)) {
-    common.printMessage(`- zowe.setup.certificate.pkcs12.directory: ${pkcs12Directory}`)
-    fs.mkdirp(`${tmpDir}/keystore`);
-    fs.cp(`${pkcs12Directory}`, `${tmpDir}/keystore`);
-  }
-  common.printMessage("");
 
   common.printLevel1Message("Collecting Zowe file fingerprints");
   const verifyFingerprintsFile = `${tmpDir}/verify-fingerprints.log`;
@@ -248,7 +268,7 @@ export function execute(): void {
   common.printMessage("");
 
   common.printLevel1Message('Create support package and clean up');
-  shell.execOutSync('sh', '-c', `cd "${tmpDir}" && pax -w -v -o saveext -f "${tmpPax}" . && compress ${tmpPax} && chmod 700 "${tmpPax}.Z"`);
+  shell.execOutSync('sh', '-c', `cd "${tmpDir}" && (set -C; umask 077; : > "${tmpPax}") && pax -w -v -o saveext -f "${tmpPax}" . && compress -f "${tmpPax}"`);
   fs.rmrf(tmpDir);
   common.printMessage("");
 
