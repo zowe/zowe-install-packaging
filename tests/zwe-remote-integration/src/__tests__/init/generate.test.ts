@@ -297,6 +297,7 @@ describe(`${testSuiteName}`, () => {
       delete dupCfg.zowe.setup.jcl; // avoid problems with arrays being duplicated through cfgYaml
       delete dupCfg.zowe.sysMessages;
       delete dupCfg.zowe.externalDomains;
+      delete dupCfg.zowe.network?.allowedDomains;
       await testRunner.uploadToDatasetForTest(ZoweConfig.render(dupCfg), parmMemberOne);
       await testRunner.uploadToDatasetForTest(ZoweConfig.render(dupCfg), parmMemberTwo);
 

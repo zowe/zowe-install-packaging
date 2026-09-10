@@ -479,6 +479,7 @@ export class RemoteTestRunner {
     while (fs.existsSync(tgtFile) && iter < 1000) {
       tgtFile = `${filePath}.${iter++}`;
     }
+    fs.mkdirpSync(path.dirname(tgtFile));
     fs.writeFileSync(tgtFile, content);
     return tgtFile;
   }

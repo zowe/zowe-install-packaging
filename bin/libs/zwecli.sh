@@ -120,7 +120,9 @@ zwecli_set_parameter_value() {
   param_id="${1}"
   value="${2}"
 
-  eval "export $(zwecli_get_parameter_variable "${param_id}")=\"${value}\""
+  var_name=$(zwecli_get_parameter_variable "${param_id}")
+  set_var_value "${var_name}" "${value}"
+  export "${var_name}"
 }
 
 zwecli_load_parameters_default_value() {

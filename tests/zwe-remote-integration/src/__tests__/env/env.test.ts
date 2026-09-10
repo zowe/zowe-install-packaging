@@ -79,7 +79,7 @@ describe(`${testSuiteName}`, () => {
       const zoweYaml = ZoweConfig.loadAndOverlay(cfgYaml, resourceDir, 'ha_instances.yaml');
       zoweYaml.zowe.environments = { ZWE_PRIVATE_LOG_LEVEL_ZWELS: 'TRACE' };
       const result = await testRunner.runZweTest(zoweYaml, 'internal start prepare');
-      snapEnvFiles(zoweYaml);
+      await snapEnvFiles(zoweYaml);
       expect(result.rc).toBe(0);
       // Get ZWE_PRIVATE_HA_LIST and ZWE_PRIVATE_HA_LIST_SANITIZED from cleanedStdout. Do not capture all of cleanedStdout,
       //   since the trace logs dump connection-specific settings that are hard to mask
@@ -94,7 +94,7 @@ describe(`${testSuiteName}`, () => {
       for (const file of testFiles) {
         const zoweYaml = ZoweConfig.loadZoweYaml(resourceDir, file, true);
         const result = await testRunner.runZweTest(zoweYaml, `internal start prepare`);
-        snapEnvFiles(zoweYaml);
+        await snapEnvFiles(zoweYaml);
         expect(result.rc).toBe(0);
       }
     });
@@ -106,13 +106,13 @@ describe(`${testSuiteName}`, () => {
       cfgYaml.components['app-server'].enabled = false;
       result = await testRunner.runZweTest(cfgYaml, 'internal start prepare');
       expect(result.rc).toBe(0);
-      snapEnvFiles(cfgYaml);
+      await snapEnvFiles(cfgYaml);
     });
 
     it('env defaults', async () => {
       const result = await testRunner.runZweTest(cfgYaml, 'internal start prepare');
       expect(result.rc).toBe(0);
-      snapEnvFiles(cfgYaml);
+      await snapEnvFiles(cfgYaml);
     });
 
     it('env zowe yaml override default', async () => {
@@ -123,7 +123,7 @@ describe(`${testSuiteName}`, () => {
 
       const result = await testRunner.runZweTestWithDefaults(cfgYaml, defaultCfgYaml, 'internal start prepare');
       expect(result.rc).toBe(0);
-      snapEnvFiles(cfgYaml);
+      await snapEnvFiles(cfgYaml);
     });
 
     it('env default override', async () => {
@@ -134,7 +134,7 @@ describe(`${testSuiteName}`, () => {
       defaultCfgYaml.zowe.setup.dataset.authPluginLib = 'DFLT.OVERRIDE.DOES.NOT.EXIST';
       const result = await testRunner.runZweTestWithDefaults(cfgYaml, defaultCfgYaml, 'internal start prepare');
       expect(result.rc).toBe(0);
-      snapEnvFiles(cfgYaml);
+      await snapEnvFiles(cfgYaml);
     });
   });
 });
