@@ -381,7 +381,7 @@
       "componentGroup": "Zowe Visual Studio Code Extension",
       "entries": [{
         "repository": "zowe-explorer-vscode",
-        "tag": "443880ccec841f95c5b8d8631f318bf051a163b5",
+        "tag": "cdb61fb31e122aeb5151fa052be3e253018ce399",
         "destinations": ["Visual Studio Code Marketplace"]
       }]
     },
