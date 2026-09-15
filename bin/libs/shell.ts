@@ -3,9 +3,9 @@
   under the terms of the Eclipse Public License v2.0 which
   accompanies this distribution, and is available at
   https://www.eclipse.org/legal/epl-v20.html
- 
+
   SPDX-License-Identifier: EPL-2.0
- 
+
   Copyright Contributors to the Zowe Project.
 */
 
@@ -47,15 +47,20 @@ export function execSync(command: string, ...args: string[]): ExecReturn {
   };
 }
 
+// Read fd to end of file. A read shorter than the buffer is not the end: on
+// a pipe with a live writer short reads are normal, so keep going until
+// read() returns 0 (EOF) or an error (negative).
 function readStreamFully(fd:number):string{
   let readBuffer = new Uint8Array(BUFFER_SIZE);
   let fileBuffer = new bufferlib.ExpandableBuffer(BUFFER_SIZE);
-  
-  let bytesRead = 0;
-  do {
-    bytesRead = os.read(fd, readBuffer.buffer, 0, BUFFER_SIZE);
+
+  for (;;) {
+    const bytesRead = os.read(fd, readBuffer.buffer, 0, BUFFER_SIZE);
+    if (bytesRead <= 0) {
+      break;
+    }
     fileBuffer.append(readBuffer,0,bytesRead);
-  } while (bytesRead == BUFFER_SIZE);
+  }
   // let hex = fileBuffer.dump(fileBuffer.pos);
   // console.log("out "+hex);
   let result = fileBuffer.getString();
@@ -66,17 +71,51 @@ function readStreamFully(fd:number):string{
   }
 }
 
+// Decode a waitpid() status the way the C side does: the exit code when the
+// child exited, minus the signal number when it was killed. Same layout on
+// z/OS as on Linux.
+function exitCodeFromStatus(status: number): number {
+  return (status & 0x7f) === 0 ? (status >> 8) & 0xff : -(status & 0x7f);
+}
+
+// Wait for the child started with block:false. waitpid() returns -errno
+// when interrupted; retry a bounded number of times rather than spin.
+function waitForChild(pid: number): number {
+  for (let attempt = 0; attempt < 100; attempt++) {
+    const [ret, status] = os.waitpid(pid, 0);
+    if (ret === pid) {
+      return exitCodeFromStatus(status);
+    }
+    if (ret >= 0) {
+      break;
+    }
+  }
+  return -1;
+}
+
+// The capturing helpers below start the child WITHOUT blocking, drain its
+// output to EOF, and only then wait for it. os.exec(..., {block: true}) waits
+// for the child to exit before anyone reads the pipe, and a pipe holds about
+// 64 KiB: a child that writes more blocks in write() while the parent blocks
+// in waitpid(), and neither moves (zowe/zowe-common-c#672, `ls -TREal` on a
+// runtime tree was enough).
+
 export function execOutSync(command: string, ...args: string[]): ExecReturn {
   guaranteePath();
   let pipeArray = os.pipe();
   if (!pipeArray){
     return { rc: -1 };
   }
-  const rc = os.exec([command, ...args], { block: true, usePath: true, stdout: pipeArray[1]});
+  const pid = os.exec([command, ...args], { block: false, usePath: true, stdout: pipeArray[1]});
   os.close(pipeArray[1]);
-  
+  if (pid < 0) {
+    os.close(pipeArray[0]);
+    return { rc: pid };
+  }
+
   let out = readStreamFully(pipeArray[0]);
   os.close(pipeArray[0]);
+  const rc = waitForChild(pid);
 
   return {
     rc, out
@@ -94,11 +133,16 @@ export function execErrSync(command: string, ...args: string[]): ExecReturn {
   if (!pipeArray){
     return { rc: -1 };
   }
-  const rc = os.exec([command, ...args], { block: true, usePath: true, stderr: pipeArray[1]}); 
-  os.close(pipeArray[1]);  
+  const pid = os.exec([command, ...args], { block: false, usePath: true, stderr: pipeArray[1]});
+  os.close(pipeArray[1]);
+  if (pid < 0) {
+    os.close(pipeArray[0]);
+    return { rc: pid };
+  }
 
   let err = readStreamFully(pipeArray[0]);
   os.close(pipeArray[0]);
+  const rc = waitForChild(pid);
 
   return {
     rc, err
@@ -112,22 +156,36 @@ export function execOutErrSync(command: string, ...args: string[]): ExecReturn {
   if (!pipeArray){
     return { rc: -1 };
   }
-  let errArray = os.pipe();
-  if (!errArray){
+  // Two pipes cannot both be drained one after the other without the same
+  // deadlock in the other direction, so stderr goes to a temporary file,
+  // which has no buffer limit, and is read back after the child exits.
+  const errFile = std.tmpfile();
+  if (!errFile){
+    os.close(pipeArray[0]);
+    os.close(pipeArray[1]);
     return { rc: -1 };
   }
-  const rc = os.exec([command, ...args], { block: true, usePath: true, stdout: pipeArray[1], stderr: errArray[1]});
+  const pid = os.exec([command, ...args], { block: false, usePath: true, stdout: pipeArray[1], stderr: errFile.fileno()});
   os.close(pipeArray[1]);
-  os.close(errArray[1]);
+  if (pid < 0) {
+    os.close(pipeArray[0]);
+    errFile.close();
+    return { rc: pid };
+  }
 
   let out = readStreamFully(pipeArray[0]);
   os.close(pipeArray[0]);
-  
-  let err = readStreamFully(errArray[0]);
-  os.close(errArray[0]);
-  
+  const rc = waitForChild(pid);
+
+  errFile.seek(0, std.SEEK_SET);
+  let err = errFile.readAsString();
+  errFile.close();
+  if (err.endsWith('\n')) {
+    err = err.substring(0, err.length-1);
+  }
+
   return {
-    rc, out, err 
+    rc, out, err
   };
 }
 
