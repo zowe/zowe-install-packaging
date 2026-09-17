@@ -108,6 +108,37 @@ function buildUpdateObjWithArrays(zoweConfig: any, key: string): any {
 }
 
 /**
+ * Matches a config key that holds a secret.
+ */
+export const SECRET_KEY_RE = /password/i;
+
+/**
+ * Renders a value for a message. A password must not reach the console or the log,
+ * so it is reported as masked.
+ */
+export function printableValue(key: string, val: any): string {
+  return SECRET_KEY_RE.test(key) ? '****' : `${val}`;
+}
+
+/**
+ * Deep-clones an update object, masking any leaf whose key looks like a password,
+ * so the object can be logged without exposing secrets it may carry.
+ */
+function redactPasswords(obj: any): any {
+  if (Array.isArray(obj)) {
+    return obj.map(redactPasswords);
+  }
+  if (obj !== null && typeof obj === 'object') {
+    const result: any = {};
+    for (const key of Object.keys(obj)) {
+      result[key] = SECRET_KEY_RE.test(key) ? '****' : redactPasswords(obj[key]);
+    }
+    return result;
+  }
+  return obj;
+}
+
+/**
  * Updates the provided zowe.yaml file ONLY with the YAML key and value passed by the caller. Always overwrites on-disk. 
  * Schema validation after update is optional, and defaults to true.
  * 
@@ -119,7 +150,7 @@ function buildUpdateObjWithArrays(zoweConfig: any, key: string): any {
  * @returns 
  */
 export function updateZoweYamlFileOnly(file: string, key: string, val: any, validate: boolean=true): number {
-  common.printMessage(`- update zowe config ${file}, key: "${key}" with value: ${val}, and validate: ${validate}`);
+  common.printMessage(`- update zowe config ${file}, key: "${key}" with value: ${printableValue(key, val)}, and validate: ${validate}`);
   let mergeObj = {};
   if (/\[\d+\]/.test(key)) {
     const zoweConfig = config.getZoweConfigFromFile(file, validate);
@@ -149,7 +180,7 @@ export function updateZoweYamlFileOnly(file: string, key: string, val: any, vali
  * @returns 
  */
 export function updateZoweYaml(file: string, key: string, val: any) {
-  common.printMessage(`- update zowe config ${file}, key: "${key}" with value: ${val}`);
+  common.printMessage(`- update zowe config ${file}, key: "${key}" with value: ${printableValue(key, val)}`);
   let [ success, updateObj ] = fakejq.jqset({}, key, val);
   
   if (success) {
@@ -168,6 +199,6 @@ export function updateZoweYaml(file: string, key: string, val: any) {
  * @param updateObj 
  */
 export function updateZoweYamlFromObj(updateObj: any) {
-  common.printMessage(`- update zowe config ${std.getenv('ZWE_CLI_PARAMETER_CONFIG')} with obj=${JSON.stringify(updateObj, null, 2)}`);
+  common.printMessage(`- update zowe config ${std.getenv('ZWE_CLI_PARAMETER_CONFIG')} with obj=${JSON.stringify(redactPasswords(updateObj), null, 2)}`);
   config.updateZoweConfig(updateObj, true, 1); //TODO externalize array merge strategy = 1
 }

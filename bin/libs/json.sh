@@ -154,9 +154,15 @@ update_yaml_configmgr() {
   configmgr="${ZWE_zowe_runtimeDirectory}/bin/utils/configmgr"
   updateYaml="${ZWE_zowe_runtimeDirectory}/bin/utils/ModifyZoweYaml.js"
 
-  print_message "- update \"${key}\" with value: ${val}"
-  result=$(_CEE_RUNOPTS="XPLINK(ON)" "${configmgr}" -script "$updateYaml" update "$file" "$key" "$val" "$validate" 2>&1)
+  # this runs at info level, so a password would land on the console and in the log
+  print_message "- update \"${key}\" with value: $(mask_secret_value "${key}" "${val}")"
+  # the value is handed over in the environment rather than as an argument, because an
+  # argv element is readable from another process, the same exposure pkeytool avoids
+  ZWE_PRIVATE_YAML_UPDATE_VALUE="${val}"
+  export ZWE_PRIVATE_YAML_UPDATE_VALUE
+  result=$(_CEE_RUNOPTS="XPLINK(ON)" "${configmgr}" -script "$updateYaml" update "$file" "$key" "$validate" 2>&1)
   code=$?
+  unset ZWE_PRIVATE_YAML_UPDATE_VALUE
   if [ ${code} -eq 0 ]; then
     print_trace "  * Exit code: ${code}"
     print_trace "  * Output:"
