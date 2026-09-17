@@ -273,7 +273,9 @@ read_json_string() {
 update_zowe_yaml() {
   validate="${4:-true}"
   if [ "${ZWE_RUN_IN_CONTAINER}" = "true" ]; then
-    yq -i "'.${2} = \"${3}\"'" "${1}"
+    # pass value as temp environment variable to safely escape it
+    # strenv() reads the env var and automatically handles quotes/special characters
+    TYQ_VAL="${3}" yq -i ".${2} = strenv(TYQ_VAL)" "${1}"    
     if [ "${$?}" -ne 0 ]; then
       print_error_and_exit "Error ZWEL0138E: Failed to update key ${2} of file ${1}." "" 138
     fi
