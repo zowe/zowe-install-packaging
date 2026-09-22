@@ -168,7 +168,8 @@ zwecli_process_logfile() {
     print_message "- timestamp: $(date +"%Y-%m-%d %H:%M:%S")" "log"
     print_message "- parameters:" "log"
     for param in ${ZWE_CLI_PARAMETERS_LIST}; do
-      print_message "  * ${param}: $(zwecli_get_parameter_value "${param}")" "log"
+      # a --password value must not land in the log unconditionally, regardless of log level
+      print_message "  * ${param}: $(mask_secret_value "${param}" "$(zwecli_get_parameter_value "${param}")")" "log"
     done
     print_message "" "log"
   fi

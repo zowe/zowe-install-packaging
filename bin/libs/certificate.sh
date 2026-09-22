@@ -66,7 +66,48 @@ JAVA_KEYTOOL_ENCODING=" -J-Dfile.encoding=COMPAT "
 # RLIST  FACILITY IRR.DIGTCERT.LISTRING  ALL
 #######################################################################
 
+# Passwords must never reach keytool's argument list: on z/OS a user holding
+# SUPERUSER.PROCESS.GETPSENT can read another process's arguments with ps -ef.
+# Every password option is rewritten to its "<option>:env <variable>" form and
+# the value is handed over in the environment instead, which also keeps the
+# secrets out of the debug message below.
 pkeytool() {
+  keytool_argc=$#
+  keytool_argi=0
+  keytool_quiet=false
+  keytool_pass_vars=
+  while [ ${keytool_argi} -lt ${keytool_argc} ]; do
+    keytool_arg="${1}"
+    shift
+    keytool_argi=$((keytool_argi + 1))
+    case "${keytool_arg}" in
+      --quiet)
+        # consumed here, keytool never sees it, and it cannot outlive this call
+        keytool_quiet=true
+        ;;
+      -storepass|-keypass|-srcstorepass|-srckeypass|-deststorepass|-destkeypass)
+        if [ ${keytool_argi} -ge ${keytool_argc} ]; then
+          # no value follows; let keytool's own parser report the missing argument
+          # instead of rewriting this into a misleading empty password
+          set -- "$@" "${keytool_arg}"
+        else
+          keytool_pass="${1}"
+          shift
+          keytool_argi=$((keytool_argi + 1))
+          keytool_pass_var="ZWE_PRIVATE_KEYTOOL_$(upper_case "${keytool_arg#-}")"
+          set_var_value "${keytool_pass_var}" "${keytool_pass}"
+          keytool_pass=
+          export "${keytool_pass_var}"
+          keytool_pass_vars="${keytool_pass_vars} ${keytool_pass_var}"
+          set -- "$@" "${keytool_arg}:env" "${keytool_pass_var}"
+        fi
+        ;;
+      *)
+        set -- "$@" "${keytool_arg}"
+        ;;
+    esac
+  done
+
   args=$@
 
   print_debug "- Calling keytool ${args}"
@@ -83,11 +124,19 @@ pkeytool() {
     fi
   else
     print_debug "  * keytool failed"
-    print_error "  * Exit code: ${code}"
-    print_error "  * Output:"
-    if [ -n "${result}" ]; then
-      print_error "$(padding_left "${result}" "    ")"
+    # callers probing whether an alias exists pass --quiet, because for them a
+    # non-zero exit code is an expected outcome
+    if [ "${keytool_quiet}" != "true" ]; then
+      print_error "  * Exit code: ${code}"
+      print_error "  * Output:"
+      if [ -n "${result}" ]; then
+        print_error "$(padding_left "${result}" "    ")"
+      fi
     fi
+  fi
+
+  if [ -n "${keytool_pass_vars}" ]; then
+    unset ${keytool_pass_vars}
   fi
 
   return ${code}
@@ -317,8 +366,8 @@ pkcs12_create_certificate_and_sign() {
     return 1
   fi
 
-  # test if we need to import CA into keystore
-  keytool -list -v -noprompt \
+  # a non-zero exit code just means the CA is not in the keystore yet
+  pkeytool --quiet -list -v -noprompt \
     -alias "${ca_alias}" \
     -keystore "${keystore_dir}/${keystore_name}/${keystore_name}.keystore.p12" \
     -storepass "${password}" \
@@ -336,8 +385,8 @@ pkcs12_create_certificate_and_sign() {
       -storetype "PKCS12")
   fi
 
-  # test if we need to import CA into truststore
-  keytool -list -v -noprompt \
+  # same check, against the truststore
+  pkeytool --quiet -list -v -noprompt \
     -alias "${ca_alias}" \
     -keystore "${keystore_dir}/${keystore_name}/${keystore_name}.truststore.p12" \
     -storepass "${password}" \
@@ -484,6 +533,9 @@ pkcs12_trust_service() {
 
   tmp_file=$(create_tmp_file "service-cert" "${keystore_dir}/${keystore_name}")
   print_debug "> Temporary certificate file is ${tmp_file}"
+  # deliberately the raw keytool, not pkeytool: this call carries no password, and
+  # pkeytool folds keytool's stderr into what it writes to stdout, which would
+  # corrupt this file (it is parsed as PEM by csplit right after)
   keytool ${print_cert_cmd} -rfc > "${tmp_file}"
   code=$?
   chmod 700 "${tmp_file}"
@@ -597,16 +649,19 @@ EOF
       alias_lc=$(echo "${alias}" | lower_case)
 
       print_message ">>>> Exporting certificate \"${alias}\" private key"
+      # handed to the java child process through the environment, not argv, for the
+      # same reason pkeytool avoids keytool's argument list
+      export ZWE_PRIVATE_EXPORTPRIVATEKEY_PASSWORD="${password}"
       if [ "${ZWE_RUN_ON_ZOS}" = "true" ]; then
         java -cp "${ZWE_zowe_runtimeDirectory}/bin/utils" \
           ExportPrivateKeyZos \
           "${keystore_file}" \
           PKCS12 \
-          "${password}" \
           "${alias}" \
-          "${password}" \
           "${keystore_dir}/${alias_lc}.key"
-        if [ $? -ne 0 ]; then
+        export_rc=$?
+        unset ZWE_PRIVATE_EXPORTPRIVATEKEY_PASSWORD
+        if [ ${export_rc} -ne 0 ]; then
           return 1
         fi
 
@@ -617,11 +672,11 @@ EOF
           ExportPrivateKeyLinux \
           "${keystore_file}" \
           PKCS12 \
-          "${password}" \
           "${alias}" \
-          "${password}" \
           "${keystore_dir}/${alias_lc}.key"
-        if [ $? -ne 0 ]; then
+        export_rc=$?
+        unset ZWE_PRIVATE_EXPORTPRIVATEKEY_PASSWORD
+        if [ ${export_rc} -ne 0 ]; then
           return 1
         fi
       fi
@@ -1130,14 +1185,21 @@ keyring_export_to_pkcs12() {
 
     # export private key
     print_debug "- Export private key of \"${label}\" in PEM format"
-    result=$(keyring_util EXPORT "${keyring_owner}" "${keyring_name}" -l "${label}" -k -f "${uss_temp_target}.p12" -p "${keystore_password}")
+    # keyring-util is an external compiled tool with no equivalent to keytool's
+    # ":env" password modifier. A caller-script failure can leave this temp file
+    # on disk past this function's return (see the caller's cleanup), so this
+    # value protects it instead of the real keystore password.
+    keyring_temp_password="$(get_tmp_rand)$(get_tmp_rand)"
+    result=$(keyring_util EXPORT "${keyring_owner}" "${keyring_name}" -l "${label}" -k -f "${uss_temp_target}.p12" -p "${keyring_temp_password}")
     if [ $? -ne 0 ]; then
+      keyring_temp_password=
       return 1
     fi
     chmod 700 "${uss_temp_target}.p12"
 
     pkcs12_ensure_binary_tag "${uss_temp_target}.p12"
     if [ $? -ne 0 ]; then
+      keyring_temp_password=
       return 1
     fi
 
@@ -1147,11 +1209,13 @@ keyring_export_to_pkcs12() {
       "${keystore_password}" \
       "${label}" \
       "${uss_temp_target}.p12" \
-      "${keystore_password}" \
+      "${keyring_temp_password}" \
       "${label}"
     if [ $? -ne 0 ]; then
+      keyring_temp_password=
       return 1
     fi
+    keyring_temp_password=
   fi
 
   if [ "${dummy_cert_created}" = "true" ]; then

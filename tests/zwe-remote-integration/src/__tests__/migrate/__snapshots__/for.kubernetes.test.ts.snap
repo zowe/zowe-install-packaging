@@ -72,9 +72,9 @@ You can customize domains by passing --domains option to this command.
 - update "zowe.certificate.pem.key" with value: /home/zowe/keystore/keystore.key
 - update "zowe.certificate.pem.certificate" with value: /home/zowe/keystore/keystore.cer
 - update "zowe.certificate.keystore.alias" with value: localhost
-- update "zowe.certificate.keystore.password" with value: password
+- update "zowe.certificate.keystore.password" with value: ****
 - update "zowe.certificate.keystore.type" with value: PKCS12
-- update "zowe.certificate.truststore.password" with value: password
+- update "zowe.certificate.truststore.password" with value: ****
 - update "zowe.certificate.truststore.type" with value: PKCS12
 -------------------------------------------------------------------------------
 >> Output Kubernetes ConfigMap and Secret manifests
