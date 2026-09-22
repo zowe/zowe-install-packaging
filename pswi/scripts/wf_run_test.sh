@@ -53,7 +53,7 @@ echo "Get workflowKey for the workflow if it exists."
 # temporarily disable shell tracing
 trace_off
 
-#format credentials securely
+#format credentials securely via printf into curl
 RESP=$(printf 'user = "%s:%s"\n' "${ZOSMF_USER}" "${ZOSMF_PASS}" | curl -s $WF_LIST_URL -k -X "GET" -H "Content-Type: application/json" -H "X-CSRF-ZOSMF-HEADER: A" -K -)
 # re-enable shell tracing
 trace_on
@@ -63,8 +63,13 @@ if [ -n "$WFKEY" ]; then
   WORKFLOW_URL="${CREATE_WF_URL}/${WFKEY}"
 
   echo "Deleting the workflow."
-  RESP=$(curl -s $WORKFLOW_URL -k -X "DELETE" -H "Content-Type: application/json" -H "X-CSRF-ZOSMF-HEADER: A" --user $ZOSMF_USER:$ZOSMF_PASS)
+  # temporarily disable shell tracing
+  trace_off
+  #format credentials securely via printf into curl
+  RESP=$(printf 'user = "%s:%s"\n' "${ZOSMF_USER}" "${ZOSMF_PASS}" | curl -s $WORKFLOW_URL -k -X "DELETE" -H "Content-Type: application/json" -H "X-CSRF-ZOSMF-HEADER: A" -K -)
   sh scripts/check_response.sh "${RESP}" $?
+  # re-enable shell tracing
+  trace_on
 fi
 
 # Create workflow with REST API
