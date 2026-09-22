@@ -67,9 +67,10 @@ if [ -n "$WFKEY" ]; then
   trace_off
   #format credentials securely via printf into curl
   RESP=$(printf 'user = "%s:%s"\n' "${ZOSMF_USER}" "${ZOSMF_PASS}" | curl -s $WORKFLOW_URL -k -X "DELETE" -H "Content-Type: application/json" -H "X-CSRF-ZOSMF-HEADER: A" -K -)
-  sh scripts/check_response.sh "${RESP}" $?
+  RC_DELETE=$?
   # re-enable shell tracing
   trace_on
+  sh scripts/check_response.sh "${RESP}" $RC_DELETE  
 fi
 
 # Create workflow with REST API
@@ -100,9 +101,14 @@ if [ "$run" = "run" ]; then
   until [ "$STATUS" = "FINISHED" ]; do
     sleep 20
 
+    # temporarily disable shell tracing
+    trace_off
     # Get the result of the workflow
-    RESP=$(curl -s ${WORKFLOW_URL} -k -X "GET" -H "Content-Type: application/json" -H "X-CSRF-ZOSMF-HEADER: A" --user $ZOSMF_USER:$ZOSMF_PASS)
-    if [ $? -gt 0 ]; then exit -1; fi
+    RESP=$(printf 'user = "%s:%s"\n' "${ZOSMF_USER}" "${ZOSMF_PASS}" | curl -s ${WORKFLOW_URL} -k -X "GET" -H "Content-Type: application/json" -H "X-CSRF-ZOSMF-HEADER: A" -K -)
+    RC_RESULTS=$?
+    # re-enable shell tracing
+    trace_on
+    if [ $RC_RESULTS -gt 0 ]; then exit -1; fi    
     STATUS_NAME=$(echo $RESP | grep -o '"statusName":".*"' | cut -f4 -d\")
 
     if [ "$STATUS_NAME" = "in-progress" ]; then
