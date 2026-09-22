@@ -137,5 +137,10 @@ if [ "$run" = "run" ]; then
 fi
 
 echo "Deleting the workflow."
-RESP=$(curl -s $WORKFLOW_URL -k -X "DELETE" -H "Content-Type: application/json" -H "X-CSRF-ZOSMF-HEADER: A" --user $ZOSMF_USER:$ZOSMF_PASS)
-sh scripts/check_response.sh "${RESP}" $?
+# temporarily disable shell tracing
+trace_off
+RESP=$(printf 'user = "%s:%s"\n' "${ZOSMF_USER}" "${ZOSMF_PASS}" | curl -s $WORKFLOW_URL -k -X "DELETE" -H "Content-Type: application/json" -H "X-CSRF-ZOSMF-HEADER: A" -K -)
+RC_WFDELETE=$?
+# re-enable shell tracing
+trace_on
+sh scripts/check_response.sh "${RESP}" $RC_WFDELETE
