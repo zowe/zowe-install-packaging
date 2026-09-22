@@ -1,6 +1,17 @@
 #!/bin/sh
 #version=1.0
 
+# ==============================================================================
+# FUNCTION DEFINITIONS
+# ==============================================================================
+
+trace_off() { { set +x; } 2>/dev/null; }
+trace_on()  { set -x; }
+
+# ==============================================================================
+# MAIN SCRIPT
+# ==============================================================================
+
 export BASE_URL="${ZOSMF_URL}:${ZOSMF_PORT}"
 WF_DEF_FILE=$1
 run=$2
@@ -37,14 +48,15 @@ else
 "assignToOwner" :true}'
 fi
 
-# temporarily disable shell tracing
-{ set +x; } 2>/dev/null
 # Get workflowKey for the workflow owned by user
 echo "Get workflowKey for the workflow if it exists."
+# temporarily disable shell tracing
+trace_off
 
-RESP=$(curl -s $WF_LIST_URL -k -X "GET" -H "Content-Type: application/json" -H "X-CSRF-ZOSMF-HEADER: A" --user $ZOSMF_USER:$ZOSMF_PASS)
+#format credentials securely
+RESP=$(printf 'user = "%s:%s"\n' "${ZOSMF_USER}" "${ZOSMF_PASS}" | curl -s $WF_LIST_URL -k -X "GET" -H "Content-Type: application/json" -H "X-CSRF-ZOSMF-HEADER: A" -K -)
 # re-enable shell tracing
-set -x
+trace_on
 WFKEY=$(echo $RESP | grep -o '"workflowKey":".*"' | cut -f4 -d\")
 
 if [ -n "$WFKEY" ]; then
