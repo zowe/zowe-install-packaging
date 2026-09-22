@@ -88,9 +88,13 @@ WORKFLOW_URL="${CREATE_WF_URL}/${WFKEY}"
 if [ "$run" = "run" ]; then
   # Run workflow
   echo "Invoking REST API to start the workflow."
-
-  RESP=$(curl -s ${WORKFLOW_URL}/operations/start -k -X "PUT" -d "{}" -H "Content-Type: application/json" -H "X-CSRF-ZOSMF-HEADER: A" --user $ZOSMF_USER:$ZOSMF_PASS)
-  sh scripts/check_response.sh "${RESP}" $?
+  # temporarily disable shell tracing
+  trace_off
+  RESP=$(printf 'user = "%s:%s"\n' "${ZOSMF_USER}" "${ZOSMF_PASS}" | curl -s ${WORKFLOW_URL}/operations/start -k -X "PUT" -d "{}" -H "Content-Type: application/json" -H "X-CSRF-ZOSMF-HEADER: A" -K -)
+  RC_START=$?
+  # re-enable shell tracing
+  trace_on
+  sh scripts/check_response.sh "${RESP}" $RC_START
   if [ $? -gt 0 ]; then exit -1; fi
   STATUS=""
   until [ "$STATUS" = "FINISHED" ]; do
