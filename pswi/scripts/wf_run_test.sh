@@ -37,11 +37,14 @@ else
 "assignToOwner" :true}'
 fi
 
-set -x
+# temporarily disable shell tracing
+{ set +x; } 2>/dev/null
 # Get workflowKey for the workflow owned by user
 echo "Get workflowKey for the workflow if it exists."
 
 RESP=$(curl -s $WF_LIST_URL -k -X "GET" -H "Content-Type: application/json" -H "X-CSRF-ZOSMF-HEADER: A" --user $ZOSMF_USER:$ZOSMF_PASS)
+# re-enable shell tracing
+set -x
 WFKEY=$(echo $RESP | grep -o '"workflowKey":".*"' | cut -f4 -d\")
 
 if [ -n "$WFKEY" ]; then
