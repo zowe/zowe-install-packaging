@@ -95,7 +95,9 @@ zowe_external_certficate:
 zowe_external_certficate_alias:
 zowe_external_certficate_authorities:
 zowe_keystore_dir: ~/.zowe/keystore
-zowe_keystore_password: password
+# NOTE: must not be the schema default "password" - zwe init certificate replaces that with a
+# random value, which would no longer match the keytool -storepass calls in custom_for_test.
+zowe_keystore_password: zowetestpw
 zowe_keyring_alias: ZoweKeyring
 zowe_keyring_certname: ZoweCert
 zowe_keyring_external_intermediate_ca:

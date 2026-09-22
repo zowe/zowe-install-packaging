@@ -9,9 +9,12 @@ zowe:
         directory: {@ ussTestDir @}/pkcs12
         # Certificate alias name. Optional, default value is localhost.
         name: localhost
-        password: password
+        # NOTE: intentionally not the schema default "password" - zwe init certificate now
+        # generates a random keystore password when the default is left in place, which
+        # would no longer match the "zowe.certificate.keystore.password" below.
+        password: keystoretestpw
         caAlias: local_ca
-        caPassword: local_ca_password
+        caPassword: catestpw
       validity: 3650
       # san:
       #  # sample domain name
@@ -22,12 +25,12 @@ zowe:
     keystore:
       type: PKCS12
       file: {@ ussTestDir @}/pkcs12/localhost/localhost.keystore.p12
-      password: password
+      password: keystoretestpw
       alias: localhost
     truststore:
       type: PKCS12
       file: {@ ussTestDir @}/pkcs12/localhost/localhost.truststore.p12
-      password: password
+      password: keystoretestpw
     pem:
       key: {@ ussTestDir @}/pkcs12/localhost/localhost.key
       certificate: {@ ussTestDir @}/pkcs12/localhost/localhost.cer

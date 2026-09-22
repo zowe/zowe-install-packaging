@@ -303,7 +303,7 @@
                         },
                         "password": {
                           "type": [ "string", "null" ],
-                          "description": "Keystore password",
+                          "description": "Keystore password. If left at the default value, `zwe init certificate` generates a random password instead.",
                           "default": "password"
                         },
                         "caAlias": {
@@ -313,7 +313,7 @@
                         },
                         "caPassword": {
                           "type": [ "string", "null" ],
-                          "description": "Password of keystore stored self-signed certificate authority.",
+                          "description": "Password of keystore stored self-signed certificate authority. If left at the default value, `zwe init certificate` generates a random password instead.",
                           "default": "local_ca_password"
                         },
                         "lock": {
