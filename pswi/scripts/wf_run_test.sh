@@ -74,9 +74,13 @@ fi
 
 # Create workflow with REST API
 echo 'Invoking REST API to create the workflow.'
-
-RESP=$(curl -s $CREATE_WF_URL -k -X "POST" -d "$ADD_WORKFLOW_JSON" -H "Content-Type: application/json" -H "X-CSRF-ZOSMF-HEADER: A" --user $ZOSMF_USER:$ZOSMF_PASS)
-sh scripts/check_response.sh "${RESP}" $?
+# temporarily disable shell tracing
+trace_off
+RESP=$(printf 'user = "%s:%s"\n' "${ZOSMF_USER}" "${ZOSMF_PASS}" | curl -s $CREATE_WF_URL -k -X "POST" -d "$ADD_WORKFLOW_JSON" -H "Content-Type: application/json" -H "X-CSRF-ZOSMF-HEADER: A" -K -)
+RC_CREATE=$?
+# re-enable shell tracing
+trace_on
+sh scripts/check_response.sh "${RESP}" $RC_CREATE
 if [ $? -gt 0 ]; then exit -1; fi
 WFKEY=$(echo $RESP | grep -o '"workflowKey":".*"' | cut -f4 -d\")
 WORKFLOW_URL="${CREATE_WF_URL}/${WFKEY}"
