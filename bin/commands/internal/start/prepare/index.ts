@@ -134,7 +134,7 @@ function globalValidate(enabledComponents:string[]): void {
   const isDebug = (logLevel == "DEBUG" || logLevel == "TRACE");
   if (isDebug) {
     const hardUlimitResult = shell.execOutSync('sh', '-c', 'ulimit -Ha');
-    const softUlimitResult = shell.execOutSync('sh', '-c', 'ulimit -Ha');
+    const softUlimitResult = shell.execOutSync('sh', '-c', 'ulimit -a');
 
     if (hardUlimitResult.rc == 0) {
       common.printFormattedDebug("ZWELS", "zwe-internal-start-prepare,global_validate", `ulimit -Ha output:\n${hardUlimitResult.out}`);
