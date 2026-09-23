@@ -297,6 +297,8 @@ RECKEY IRR DEL(RAUDITX ROLE({zowe.setup.security.groups.stc}) +
 F ACF2,REBUILD(FAC)
 
 *  Remove  data set protection - HLQ only
+*  No need for extra command for stc and admin group
+*  under HLQ prefix
 SET RULE
 LIST {zowe.setup.dataset.prefix}
 DELETE {zowe.setup.dataset.prefix}
