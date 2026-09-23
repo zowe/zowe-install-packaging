@@ -34,11 +34,18 @@ export interface File {
     clearerr():void;
     read(buffer:ArrayBuffer, position:number, length:number):number;
     write(buffer:ArrayBuffer, position:number, length:number):number;
+    seek(offset:number, whence:number):number;
+    fileno():number;
+    readAsString(maxSize?:number):string;
 }
 
 export function fdopen(fd:number, fopenMode:string, errorObj?:any):File|null;
 export function open(command:string, fopenMode:string, errorObj?:any):File|null;
 export function popen(command:string, fopenMode:string, errorObj?:any):File|null;
+export function tmpfile(errorObj?:any):File|null;
+export const SEEK_SET:number;
+export const SEEK_CUR:number;
+export const SEEK_END:number;
 
 /* STDOUT convenience functions */
 export function puts(s:string):void;
