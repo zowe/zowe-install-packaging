@@ -52,8 +52,7 @@ fi
 echo "Get workflowKey for the workflow if it exists."
 # temporarily disable shell tracing
 trace_off
-
-#format credentials securely via printf into curl
+# format credentials securely via printf into curl
 RESP=$(printf 'user = "%s:%s"\n' "${ZOSMF_USER}" "${ZOSMF_PASS}" | curl -s $WF_LIST_URL -k -X "GET" -H "Content-Type: application/json" -H "X-CSRF-ZOSMF-HEADER: A" -K -)
 # re-enable shell tracing
 trace_on
@@ -65,7 +64,7 @@ if [ -n "$WFKEY" ]; then
   echo "Deleting the workflow."
   # temporarily disable shell tracing
   trace_off
-  #format credentials securely via printf into curl
+  # format credentials securely via printf into curl
   RESP=$(printf 'user = "%s:%s"\n' "${ZOSMF_USER}" "${ZOSMF_PASS}" | curl -s $WORKFLOW_URL -k -X "DELETE" -H "Content-Type: application/json" -H "X-CSRF-ZOSMF-HEADER: A" -K -)
   RC_DELETE=$?
   # re-enable shell tracing
@@ -77,6 +76,7 @@ fi
 echo 'Invoking REST API to create the workflow.'
 # temporarily disable shell tracing
 trace_off
+# format credentials securely via printf into curl
 RESP=$(printf 'user = "%s:%s"\n' "${ZOSMF_USER}" "${ZOSMF_PASS}" | curl -s $CREATE_WF_URL -k -X "POST" -d "$ADD_WORKFLOW_JSON" -H "Content-Type: application/json" -H "X-CSRF-ZOSMF-HEADER: A" -K -)
 RC_CREATE=$?
 # re-enable shell tracing
@@ -91,6 +91,7 @@ if [ "$run" = "run" ]; then
   echo "Invoking REST API to start the workflow."
   # temporarily disable shell tracing
   trace_off
+  # format credentials securely via printf into curl
   RESP=$(printf 'user = "%s:%s"\n' "${ZOSMF_USER}" "${ZOSMF_PASS}" | curl -s ${WORKFLOW_URL}/operations/start -k -X "PUT" -d "{}" -H "Content-Type: application/json" -H "X-CSRF-ZOSMF-HEADER: A" -K -)
   RC_START=$?
   # re-enable shell tracing
@@ -104,6 +105,7 @@ if [ "$run" = "run" ]; then
     # temporarily disable shell tracing
     trace_off
     # Get the result of the workflow
+    # format credentials securely via printf into curl
     RESP=$(printf 'user = "%s:%s"\n' "${ZOSMF_USER}" "${ZOSMF_PASS}" | curl -s ${WORKFLOW_URL} -k -X "GET" -H "Content-Type: application/json" -H "X-CSRF-ZOSMF-HEADER: A" -K -)
     RC_RESULTS=$?
     # re-enable shell tracing
@@ -139,6 +141,7 @@ fi
 echo "Deleting the workflow."
 # temporarily disable shell tracing
 trace_off
+# format credentials securely via printf into curl
 RESP=$(printf 'user = "%s:%s"\n' "${ZOSMF_USER}" "${ZOSMF_PASS}" | curl -s $WORKFLOW_URL -k -X "DELETE" -H "Content-Type: application/json" -H "X-CSRF-ZOSMF-HEADER: A" -K -)
 RC_WFDELETE=$?
 # re-enable shell tracing
