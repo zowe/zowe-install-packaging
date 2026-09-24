@@ -402,8 +402,16 @@ export function execute(quitOnError?: boolean, level?: string): number {
     '-d', `${ZOWE_CONFIG.zowe.externalDomains.join(',')}`
   ];
 
+  const maskedArgsString = argsString.map((arg, index) => {
+    const previousArg = argsString[index - 1];
+    if (previousArg === '-kp' || previousArg === '-tp') {
+      return '******';
+    }
+    return arg;
+  });
+
   common.printTrace('Certificate-analyser command:');
-  common.printTrace('java ' + argsString.join(' '));
+  common.printTrace('java ' + maskedArgsString.join(' '));
 
   const result = shell.execOutErrSync('java', ...argsString);
   const rc = result.rc;
