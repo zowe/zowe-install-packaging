@@ -16,7 +16,6 @@ This command will collect these information:
   * Zowe manifest.json
   * Zowe configuration file
   * Zowe installation logs
-  * Zowe PKCS#12 keystore if used
   * Zowe temporary configuration files under "`zowe.workspaceDirectory`/.env"
   * Zowe APIML static registration files under "`zowe.workspaceDirectory`/api-mediation/api-defs"
 - Zowe runtime
