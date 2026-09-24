@@ -413,7 +413,7 @@
                         },
                         "name": {
                           "type": "string",
-                          "description": "keyring name"
+                          "description": "keyring with private key name"
                         },
                         "label": {
                           "type": "string",
@@ -424,6 +424,17 @@
                           "type": "string",
                           "description": "label of Zowe CA certificate.",
                           "default": "localca"
+                        },
+                        "truststore": {
+                          "type": "object",
+                          "additionalProperties": false,
+                          "description": "Configure this section to set up a separate truststore keyring that has trusted CAs connected, separated from the keyring with private key",
+                          "properties": {
+                            "name": {
+                              "type": "string",
+                              "description": "Truststore keyring name, it will not contain private keys"
+                            }
+                          }
                         },
                         "connect": {
                           "type": "object",
