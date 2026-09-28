@@ -346,7 +346,7 @@
       }]
     },
     {
-      "componentGroup": "Zowe Desktop VT Emulator Plugin-in",
+      "componentGroup": "Zowe Desktop VT Emulator Plug-in",
       "entries": [{
         "repository": "vt-ng2",
         "tag": "v3.5.0-RC1",
@@ -354,7 +354,7 @@
       }]
     },
     {
-      "componentGroup": "Zowe Desktop Editor Plugin-in",
+      "componentGroup": "Zowe Desktop Editor Plug-in",
       "entries": [{
         "repository": "zlux-editor",
         "tag": "v3.5.0-RC1",
