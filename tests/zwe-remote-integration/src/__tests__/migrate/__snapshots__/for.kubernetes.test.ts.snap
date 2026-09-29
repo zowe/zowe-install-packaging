@@ -121,20 +121,20 @@ data:
           pkcs12:
             directory: "/test/dir/pkcs12"
             name: "localhost"
-            password: "password"
+            password: "keystoretestpw"
             caAlias: "local_ca"
-            caPassword: "local_ca_password"
+            caPassword: "catestpw"
           validity: 3650
       certificate:
         keystore:
           type: "PKCS12"
           file: "/home/zowe/keystore/keystore.p12"
-          password: "password"
+          password: "keystoretestpw"
           alias: "localhost"
         truststore:
           type: "PKCS12"
           file: "/home/zowe/keystore/truststore.p12"
-          password: "password"
+          password: "keystoretestpw"
         pem:
           key: "/home/zowe/keystore/keystore.key"
           certificate: "/home/zowe/keystore/keystore.cer"
