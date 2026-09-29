@@ -93,12 +93,12 @@ zowe:
     keystore:
       type: PKCS12
       file: "/test/dir/pkcs12/localhost/localhost.keystore.p12"
-      password: "0000000000000000"
+      password: "${{ zowe.setup.certificate.pkcs12.password }}"
       alias: "localhost"
     truststore:
       type: PKCS12
       file: "/test/dir/pkcs12/localhost/localhost.truststore.p12"
-      password: "0000000000000000"
+      password: "${{ zowe.setup.certificate.pkcs12.password }}"
     pem:
       key: "/test/dir/pkcs12/localhost/localhost.key"
       certificate: "/test/dir/pkcs12/localhost/localhost.cer"
@@ -394,12 +394,12 @@ zowe:
     keystore:
       type: PKCS12
       file: "/test/dir/pkcs12/localhost/localhost.keystore.p12"
-      password: "keystoretestpw"
+      password: "${{ zowe.setup.certificate.pkcs12.password }}"
       alias: "localhost"
     truststore:
       type: PKCS12
       file: "/test/dir/pkcs12/localhost/localhost.truststore.p12"
-      password: "keystoretestpw"
+      password: "${{ zowe.setup.certificate.pkcs12.password }}"
     pem:
       key: "/test/dir/pkcs12/localhost/localhost.key"
       certificate: "/test/dir/pkcs12/localhost/localhost.cer"
@@ -450,12 +450,12 @@ zowe:
     keystore:
       type: PKCS12
       file: "/test/dir/pkcs12_scen2/localhost/localhost.keystore.p12"
-      password: "keystoretestpw"
+      password: "${{ zowe.setup.certificate.pkcs12.password }}"
       alias: "localhost"
     truststore:
       type: PKCS12
       file: "/test/dir/pkcs12_scen2/localhost/localhost.truststore.p12"
-      password: "keystoretestpw"
+      password: "${{ zowe.setup.certificate.pkcs12.password }}"
     pem:
       key: "/test/dir/pkcs12_scen2/localhost/localhost.key"
       certificate: "/test/dir/pkcs12_scen2/localhost/localhost.cer"
