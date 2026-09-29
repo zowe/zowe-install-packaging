@@ -12,7 +12,7 @@
   },
   "binaryDependencies": {
     "org.zowe.zowex": {
-      "version": "1.0.0",
+      "version": "0.1.4",
       "artifact": "zowe-server-*.pax.Z"
     },
     "org.zowe.zlux.zlux-core": {
