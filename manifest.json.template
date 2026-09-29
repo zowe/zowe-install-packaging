@@ -11,7 +11,7 @@
     "timestamp": "{BUILD_TIMESTAMP}"
   },
   "binaryDependencies": {
-    "org.zowe.zowex": {
+    "org.zowe.zowe-native-proto": {
       "version": "0.1.4",
       "artifact": "zowe-server-*.pax.Z"
     },
