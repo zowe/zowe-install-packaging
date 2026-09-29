@@ -168,8 +168,8 @@
     {
      "componentGroup": "Zowex Native Tools",
      "entries": [{
-        "repository": "zowe-native-proto",
-        "tag": "v0.1.4",
+        "repository": "zowex",
+        "tag": "v1.0.0",
         "destinations": ["Zowe PAX"]
      }]
     }, {
@@ -262,7 +262,7 @@
       "componentGroup": "IBM&reg Db2&reg Plug-in for Zowe CLI",
       "entries": [{
         "repository": "zowe-cli-db2-plugin",
-        "tag": "v6.1.17",
+        "tag": "fcfb6ce6410b485a6dac641ee8b1e1c465b24fa6",
         "destinations": ["Zowe CLI Package"]
       }]
     }, {
@@ -346,7 +346,7 @@
       }]
     },
     {
-      "componentGroup": "Zowe Desktop VT Emulator Plugin-in",
+      "componentGroup": "Zowe Desktop VT Emulator Plug-in",
       "entries": [{
         "repository": "vt-ng2",
         "tag": "v3.5.0-RC1",
@@ -354,7 +354,7 @@
       }]
     },
     {
-      "componentGroup": "Zowe Desktop Editor Plugin-in",
+      "componentGroup": "Zowe Desktop Editor Plug-in",
       "entries": [{
         "repository": "zlux-editor",
         "tag": "v3.5.0-RC1",
@@ -405,7 +405,7 @@
       "entries": [{
         "repository": "zowe-client-python-sdk",
         "core": false,
-        "tag": "v1.0.0-dev24",
+        "tag": "v1.0.0-dev26",
         "destinations": ["Zowe Client Python SDK"]
       }]
     }
