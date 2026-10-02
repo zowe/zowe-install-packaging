@@ -1,1 +1,15 @@
-""
+{
+  "lockAcquiredTime": "Fri Oct 02 2026 12:44:34 GMT+0000 (Coordinated Universal Time)",
+  "uid": "1790945074816122711",
+  "repository": {
+    "owner": "zowe",
+    "repo": "zowe-install-packaging"
+  },
+  "branch": "user/skurnevich/trace-masking",
+  "workflow": "Zowe CICD Integration Tests",
+  "job": "cicd-test",
+  "actor": "zowe-robot",
+  "runId": 37008339265,
+  "runNumber": 9080,
+  "link": "https://github.com/zowe/zowe-install-packaging/actions/runs/37008339265"
+}
