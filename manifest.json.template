@@ -17,7 +17,7 @@
     },
     "org.zowe.zlux.zlux-core": {
       "version": "3.6.0-zlux-app-manager-PR-737",
-      "artifact": "zlux-core-3.6.0-20261005.215044.pax"
+      "artifact": "zlux-core-3.6.0-20261005.224530.pax"
     },
     "org.zowe.zlux.sample-angular-app": {
       "version": "^3.0.0-V3.X-STAGING",
