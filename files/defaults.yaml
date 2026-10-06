@@ -213,12 +213,21 @@ components:
     enabled: true
     port: 7552
     debug: false
+    apiml:
+      security:
+        domains:
+          portValidationDisabled: true
+          allowAnySwagger: true
 
   # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   discovery:
     enabled: true
     port: 7553
     debug: false
+    apiml:
+      security:
+        domains:
+          portValidationDisabled: true
 
   # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   caching-service:
