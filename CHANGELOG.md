@@ -14,6 +14,7 @@ All notable changes to the Zowe Installer will be documented in this file.
 - Enhancement: Updated the sequence of workflows in PSWI.[#4854](https://github.com/zowe/zowe-install-packaging/pull/4854)
 - Bugfix: Passwords are no longer exposed via process arguments or console/log output by `zwe` certificate, migrate, and configuration commands. [#4883](https://github.com/zowe/zowe-install-packaging/pull/4883)
 - Enhancement: `zwe init certificate` generates a random password instead of "password" when `password` or `caPassword` is left at its default value. Applicable to keystores only, keyring scenarios are unaffected. [#4866](https://github.com/zowe/zowe-install-packaging/pull/4866)
+- Bugfix: Improved RACF sample job security permissions. [#4879](https://github.com/zowe/zowe-install-packaging/pull/4879)
 
 ## `3.5.0`
 
