@@ -258,12 +258,19 @@
   LISTGRP  {zowe.setup.dataset.prefix}
   ADDGROUP {zowe.setup.dataset.prefix} DATA('Zowe - HLQ STUB')
 
-/* general data set protection                                       */
+/* General data set protection                                       */
+/* Default to NONE for the entire HLQ                                */
+/* Grant ALTER to Sysprogs                                           */
+/* Grant READ to the Zowe Started Task Group and Zowe Admins         */
   LISTDSD PREFIX({zowe.setup.dataset.prefix}) ALL
-  ADDSD  '{zowe.setup.dataset.prefix}.*.**' UACC(READ) -
+  ADDSD  '{zowe.setup.dataset.prefix}.*.**' UACC(NONE) -
     DATA('Zowe')
   PERMIT '{zowe.setup.dataset.prefix}.*.**' CLASS(DATASET) -
     ACCESS(ALTER) ID({zowe.setup.security.groups.sysProg})
+  PERMIT '{zowe.setup.dataset.prefix}.*.**' CLASS(DATASET) -
+    ACCESS(READ) ID({zowe.setup.security.groups.stc})
+  PERMIT '{zowe.setup.dataset.prefix}.*.**' CLASS(DATASET) -
+    ACCESS(READ) ID({zowe.setup.security.groups.admin})  
 
   SETROPTS GENERIC(DATASET) REFRESH
 

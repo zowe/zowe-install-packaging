@@ -114,6 +114,8 @@
 /* remove general data set protection                                */
   LISTDSD PREFIX(&HLQ.) ALL
   PERMIT '&HLQ..*.**' CLASS(DATASET) DELETE ID(&SYSPROG.)
+  PERMIT '&HLQ..*.**' CLASS(DATASET) DELETE ID(&ADMINGRP.)
+  PERMIT '&HLQ..*.**' CLASS(DATASET) DELETE ID(&STCGRP.)
   DELDSD '&HLQ..*.**'
 
 /* remove HLQ stub                                                   */
