@@ -1,6 +1,6 @@
 {
   "name": "Zowe",
-  "version": "3.5.0",
+  "version": "3.6.0",
   "description": "Zowe is an open source project created to host technologies that benefit the Z platform from all members of the Z community (Integrated Software Vendors, System Integrators and z/OS consumers). Zowe, like Mac or Windows, comes with a set of APIs and OS capabilities that applications build on and also includes some applications out of the box. Zowe offers modern interfaces to interact with z/OS and allows you to work with z/OS in a way that is similar to what you experience on cloud platforms today. You can use these interfaces as delivered or through plug-ins and extensions that are created by clients or third-party vendors.",
   "license": "EPL-2.0",
   "homepage": "https://zowe.org",
@@ -16,19 +16,19 @@
       "artifact": "zowe-server-*.pax.Z"
     },
     "org.zowe.zlux.zlux-core": {
-      "version": "3.5.0-RC",
+      "version": "3.6.0-RC",
       "repository": "libs-snapshot-local",
-      "artifact": "zlux-core-3.5.0-20260422.140153.pax"
+      "artifact": "zlux-core-3.6.0-20261007.180836.pax"
     },
     "org.zowe.zlux.sample-angular-app": {
-      "version": "2.18.3-V2.X-RC",
+      "version": "3.6.0-V3.X-RC",
       "repository": "libs-snapshot-local",
-      "artifact": "sample-angular-app-2.18.3-20250912.152931.pax"
+      "artifact": "sample-angular-app-3.6.0-20261007.171618.pax"
     },
     "org.zowe.zlux.sample-iframe-app": {
-      "version": "2.18.3-V2.X-RC",
+      "version": "3.6.0-V3.X-RC",
       "repository": "libs-snapshot-local",
-      "artifact": "sample-iframe-app-2.18.3-20250912.152827.pax"
+      "artifact": "sample-iframe-app-3.6.0-20261007.171535.pax"
     },
     "org.zowe.zlux.sample-react-app": {
       "version": "2.18.3-V2.X-RC",
@@ -36,36 +36,36 @@
       "artifact": "sample-react-app-2.18.3-20250912.152933.pax"
     },
     "org.zowe.zlux.tn3270-ng2": {
-      "version": "3.5.0-V3.X-RC",
+      "version": "3.6.0-V3.X-RC",
       "repository": "libs-snapshot-local",
-      "artifact": "tn3270-ng2-3.5.0-20260422.133543.pax"
+      "artifact": "tn3270-ng2-3.6.0-20261007.182841.pax"
     },
     "org.zowe.zlux.vt-ng2": {
-      "version": "3.5.0-V3.X-RC",
+      "version": "3.6.0-V3.X-RC",
       "repository": "libs-snapshot-local",
-      "artifact": "vt-ng2-3.5.0-20260422.133619.pax"
+      "artifact": "vt-ng2-3.6.0-20261007.182754.pax"
     },
     "org.zowe.zlux.zlux-editor": {
-      "version": "3.5.0-V3.X-RC",
+      "version": "3.6.0-V3.X-RC",
       "repository": "libs-snapshot-local",
-      "artifact": "zlux-editor-3.5.0-20260422.133729.pax"
+      "artifact": "zlux-editor-3.6.0-20261007.183015.pax"
     },
     "org.zowe.zss": {
-      "version": "3.5.0-RC",
+      "version": "3.6.0-RC",
       "repository": "libs-snapshot-local",
-      "artifact": "zss-3.5.0-rc-1460-20260501122003.pax"
+      "artifact": "zss-3.6.0-rc-1677-20261007171902.pax"
     },
     "org.zowe.explorer-jes": {
-      "version": "3.0.5"
+      "version": "3.0.6"
     },
     "org.zowe.explorer-mvs": {
-      "version": "3.0.5"
+      "version": "3.0.6"
     },
     "org.zowe.explorer-uss": {
-      "version": "3.0.5"
+      "version": "3.0.6"
     },
     "org.zowe.explorer-ip": {
-      "version": "3.0.5",
+      "version": "3.0.6",
       "artifact": "explorer-ip*.pax"
     },
      "org.zowe.apiml.apiml-package": {
@@ -105,9 +105,9 @@
       "artifact": "zaas-package-*.zip"
 	},
 	"org.zowe.getesm": {
-      "version": "3.5.0-V3.X-RC",
+      "version": "3.6.0-V3.X-RC",
       "repository": "libs-snapshot-local",
-      "artifact": "getesm-3.5.0-2026042212.pax"
+      "artifact": "getesm-3.6.0-2026100714.pax"
     },
     "org.zowe.apiml.sdk.certificate-analyser": {
       "version": "^3.4.0",
@@ -115,37 +115,29 @@
       "exclusions": ["*PR*.jar"]
     },
     "org.zowe.bind-test": {
-      "version": "3.4.0-V3.X-RC",
-      "artifact": "bind-test-3.4.0-2026042214.pax"
+      "version": "3.5.0-V3.X-RC",
+      "artifact": "bind-test-3.5.0-2026100703.pax"
     },
 	"org.zowe.attls-test": {
-      "version": "3.4.0-V3.X-RC",
-      "artifact": "attls-test-3.4.0-2026042211.pax"
-    },
-    "org.zowe.attls-test": {
-      "version": "^3.4.0-V3.X-STAGING",
-      "artifact": "*.pax"
-    },
-    "org.zowe.attls-test": {
-      "version": "^3.4.0-V3.X-STAGING",
-      "artifact": "*.pax"
+      "version": "3.5.0-V3.X-RC",
+      "artifact": "attls-test-3.5.0-2026100712.pax"
     },
     "org.zowe.zis-test": {
-      "version": "3.4.0-V3.X-RC",
-      "artifact": "zis-test-3.4.0-2026042210.pax"
+      "version": "3.5.0-V3.X-RC",
+      "artifact": "zis-test-3.5.0-2026100706.pax"
     },
     "org.zowe.configmgr": {
-      "version": "3.5.0-V3.X-RC",
+      "version": "3.6.0-V3.X-RC",
 	  "repository": "libs-snapshot-local",
-      "artifact": "configmgr-3.5.0-2026042210.pax"
+      "artifact": "configmgr-3.6.0-2026100715.pax"
     },
     "org.zowe.configmgr-rexx": {
-      "version": "3.5.0-V3.X-RC",
+      "version": "3.6.0-V3.X-RC",
       "repository": "libs-snapshot-local",
-      "artifact": "configmgr-rexx-3.5.0-2026042210.pax"
+      "artifact": "configmgr-rexx-3.6.0-2026100716.pax"
     },
     "org.zowe.launcher": {
-      "version": "3.5.0",
+      "version": "3.6.0",
       "artifact": "*.pax"
     },
     "org.zowe.keyring-utilities": {
@@ -190,12 +182,12 @@
       "componentGroup": "Zowe Application Framework",
       "entries": [{
           "repository": "zlux-app-manager",
-          "tag": "v3.5.0-RC1",
+          "tag": "v3.6.0-RC1",
           "destinations": ["Zowe PAX"]
         },
         {
           "repository": "zlux-app-server",
-          "tag": "v3.5.0-RC1",
+          "tag": "v3.6.0-RC1",
           "destinations": ["Zowe PAX"]
         },
         {
@@ -210,17 +202,17 @@
         },
         {
           "repository": "zlux-platform",
-          "tag": "v3.5.0-RC1",
+          "tag": "v3.6.0-RC1",
           "destinations": ["Zowe PAX"]
         },
         {
           "repository": "zlux-server-framework",
-          "tag": "v3.5.0-RC1",
+          "tag": "v3.6.0-RC1",
           "destinations": ["Zowe PAX"]
         },
         {
           "repository": "zlux-shared",
-          "tag": "v3.5.0-RC1",
+          "tag": "v3.6.0-RC1",
           "destinations": ["Zowe PAX"]
         },
         {
@@ -230,17 +222,17 @@
         },
         {
           "repository": "zlux-build",
-          "tag": "v3.5.0-RC1",
+          "tag": "v3.6.0-RC1",
           "destinations": ["Zowe PAX"]
         },
         {
           "repository": "zss",
-          "tag": "v3.5.0-RC2",
+          "tag": "v3.6.0-RC1",
           "destinations": ["Zowe PAX"]
         },
         {
           "repository": "zowe-common-c",
-          "tag": "zss-v3.5.0-RC1",
+          "tag": "zss-v3.6.0-RC1",
           "destinations": ["Zowe PAX"]
         }
       ]
@@ -297,35 +289,35 @@
       "componentGroup": "Zowe Desktop Data Sets UI Plugin",
       "entries": [{
         "repository": "explorer-mvs",
-        "tag": "v3.0.5",
+        "tag": "v3.0.6",
         "destinations": ["Zowe PAX"]
       }]
     }, {
       "componentGroup": "Zowe Desktop JES UI Plugin",
       "entries": [{
         "repository": "explorer-jes",
-        "tag": "v3.0.5",
+        "tag": "v3.0.6",
         "destinations": ["Zowe PAX"]
       }]
     }, {
       "componentGroup": "Zowe Desktop z/OS Unix Files UI Plugin",
       "entries": [{
         "repository": "explorer-uss",
-        "tag": "v3.0.5",
+        "tag": "v3.0.6",
         "destinations": ["Zowe PAX"]
       }]
     }, {
       "componentGroup": "Zowe Desktop TN3270 Emulator Plug-in",
       "entries": [{
         "repository": "tn3270-ng2",
-        "tag": "v3.5.0-RC1",
+        "tag": "v3.6.0-RC1",
         "destinations": ["Zowe PAX"]
       }]
     }, {
       "componentGroup": "Zowe Desktop Sample Angular Application",
       "entries": [{
         "repository": "sample-angular-app",
-        "tag": "v2.18.3-RC1",
+        "tag": "v3.6.0-RC1",
         "destinations": ["Zowe PAX"]
       }]
     },
@@ -333,7 +325,7 @@
       "componentGroup": "Zowe Desktop Sample iFrame Application",
       "entries": [{
         "repository": "sample-iframe-app",
-        "tag": "v2.18.3-RC1",
+        "tag": "v3.6.0-RC1",
         "destinations": ["Zowe PAX"]
       }]
     },
@@ -349,7 +341,7 @@
       "componentGroup": "Zowe Desktop VT Emulator Plug-in",
       "entries": [{
         "repository": "vt-ng2",
-        "tag": "v3.5.0-RC1",
+        "tag": "v3.6.0-RC1",
 		    "destinations": ["Zowe PAX"]
       }]
     },
@@ -357,7 +349,7 @@
       "componentGroup": "Zowe Desktop Editor Plug-in",
       "entries": [{
         "repository": "zlux-editor",
-        "tag": "v3.5.0-RC1",
+        "tag": "v3.6.0-RC1",
         "destinations": ["Zowe PAX"]
       }]
     },
@@ -373,7 +365,7 @@
         "destinations": ["Zowe PAX"]
       }, {
         "repository": "launcher",
-        "tag": "v3.5.0",
+        "tag": "v3.6.0",
         "destinations": ["Zowe PAX"]
       }]
     },
@@ -389,7 +381,7 @@
       "componentGroup": "Zowe Desktop IP Explorer Plug-in",
       "entries": [{
         "repository": "explorer-ip",
-        "tag": "v3.0.5",
+        "tag": "v3.0.6",
         "destinations": ["Zowe PAX"]
       }]
     },
@@ -397,7 +389,7 @@
       "componentGroup": "Configmgr",
       "entries": [{
         "repository": "zowe-common-c",
-        "tag": "configmgr-v3.5.0-RC1",
+        "tag": "configmgr-v3.6.0-RC1",
         "destinations": ["Zowe PAX"]
       }]
     }, {
@@ -445,7 +437,7 @@
     "app-server": {
       "registry": "zowe-docker-release.jfrog.io",
       "name": "ompzowe/app-server",
-      "tag" : "3.5.0-ubuntu"
+      "tag" : "3.6.0-ubuntu"
     },
     "explorer-ip": {
       "kind": "job",
