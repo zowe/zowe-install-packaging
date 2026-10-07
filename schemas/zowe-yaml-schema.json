@@ -303,7 +303,7 @@
                         },
                         "password": {
                           "type": [ "string", "null" ],
-                          "description": "Keystore password",
+                          "description": "Keystore password. If left at the default value, `zwe init certificate` generates a random password instead.",
                           "default": "password"
                         },
                         "caAlias": {
@@ -313,7 +313,7 @@
                         },
                         "caPassword": {
                           "type": [ "string", "null" ],
-                          "description": "Password of keystore stored self-signed certificate authority.",
+                          "description": "Password of keystore stored self-signed certificate authority. If left at the default value, `zwe init certificate` generates a random password instead.",
                           "default": "local_ca_password"
                         },
                         "lock": {
@@ -741,6 +741,11 @@
                   "$ref": "/schemas/v2/server-common#startupCheck",
                   "default": "exit",
                   "description": "Checks if zowe.setup.security.users.zowe (ZWESVUSR) is configured as a superuser (UID 0). Such a setting is strongly discouraged."
+                },
+                "zosmfjwt": {
+                  "$ref": "/schemas/v2/server-common#startupCheck",
+                  "default": "exit",
+                  "description": "Checks whether z/OSMF JWT support is correctly configured when Zowe is set to use z/OSMF as the authentication provider with JWT autoconfiguration. Can be set to 'exit', 'warn', or 'disabled'."
                 },
                 "components": {
                   "$ref": "/schemas/v2/server-common#startupCheck",
@@ -1250,6 +1255,18 @@
         "proxyType": {
           "type": "string",
           "description": "This is a variable derived from gateway's ATTLS state to be used by servers proxied through it in eureka or static definitions"
+        },
+        "allowedDomains": {
+          "type": "array",
+          "description": "List of domains (supporting wildcards for subdomains) that are allowed to register with the API ML Discovery Service.",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "not": {
+              "type": "null"
+            }
+          }
         },
         "server": {
           "type": "object",
