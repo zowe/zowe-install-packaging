@@ -70,38 +70,38 @@
 <     validation: "STRICT"
 ---
 >     validation: "COMPONENT-COMPAT"
-341c341
+346c346
 <   home: ""
 ---
 >   home: "#delete_me#"
-357c357
+362c362
 <   home: ""
 ---
 >   home: "#delete_me#"
-424c424
+429c429
 <           enabled: false
 ---
 >           enabled: true
-471c471
+476c476
 <     enabled: true
 ---
 >     enabled: false
-485c485
+490c490
 <     enabled: true
 ---
 >     enabled: false
-488a489,490
+493a494,495
 >       jwt:
 >         fallback: true
-496c498
+501c503
 <     enabled: true
 ---
 >     enabled: false
-503c505
+508c510
 <     enabled: true
 ---
 >     enabled: false
-510c512
+515c517
 <     enabled: true
 ---
 >     enabled: false
