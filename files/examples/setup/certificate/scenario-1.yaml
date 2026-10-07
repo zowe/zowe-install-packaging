@@ -30,12 +30,14 @@ zowe:
         # Certificate alias name. Optional, default value is localhost.
         # Note: please use all lower cases as alias.
         name: localhost
-        # Keystore password. Optional, default value is password.
+        # Keystore password. Optional. If left as "password", a random
+        # password is generated instead and shown in the command output.
         password: password
         # Alias name of self-signed certificate authority. Optional, default value is local_ca.
         # Note: please use all lower cases as alias.
         caAlias: local_ca
-        # Password of keystore stored self-signed certificate authority. Optional, default value is local_ca_password.
+        # Password of keystore stored self-signed certificate authority. Optional.
+        # If left as "local_ca_password", a random password is generated instead.
         caPassword: local_ca_password
       validity: 3650
       # # Distinguished name for Zowe generated certificates. All optional.
