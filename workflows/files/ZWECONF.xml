@@ -23,17 +23,17 @@
         </boolean>
     </variable>
     <variable name="zowe_setup_jcl_header" scope="global" visibility="public">
-      <label>JOB statement positional parameters and keywords used by Zowe during installation and configuration.</label>
-      <abstract>JOB statement positional parameters and keywords used by Zowe during installation and configuration.</abstract>
+      <label>JCL Configuration Positional JOB Parameters and Keywords</label>
+      <abstract>Optional JOB statement parameters used only for Zowe configuration by JCL samples.</abstract>
       <description>These parameters and keywords are optional, and by default empty. These are used separately from z/OSMF defined JOB cards. Each line should be less than 70 characters, omit start-of-line identifier statements such as "//", "/*", and include commas for end-of-line continuation.</description>
       <category>zowe</category>
       <string multiLine="true" valueMustBeChoice="false">
       </string>
     </variable>
     <variable name="zowe_setup_dataset_prefix" scope="instance" visibility="public">
-        <label>Prefix of Zowe setup MVS datasets</label>
-        <abstract>Prefix of datasets where remaining runtime datasets will be created</abstract>
-        <description>Prefix of datasets where remaining runtime libraries will be created within execution of Zowe install step (SZWEAUTH, SZWESAMP, SZWEEXEC, SZWELOAD)</description>
+        <label>Target Zone Prefix of Zowe setup MVS datasets</label>
+        <abstract>MVS dataset prefix for Zowe runtime libraries used during installation and initialization.</abstract>
+        <description>The Target Zone Prefix for MVS datasets where Zowe runtime libraries (SZWEAUTH, SZWESAMP, SZWEEXEC, and SZWELOAD) are created during the install step. Zowe also relies on this prefix to locate ZWEGENER and sample libraries when executing `zwe init` commands with JCL.</description>
         <category>zowe</category>
         <string valueMustBeChoice="false" multiLine="false">
             <!-- Put validation here -->
@@ -320,6 +320,17 @@ some use cases, like containerization, this port could be different.</descriptio
             <choice>TLSv1.2</choice>
             <choice>TLSv1.3</choice>
             <default>TLSv1.3</default>
+        </string>
+    </variable>
+    <variable name="zowe_network_allowedDomains" scope="instance" visibility="public">
+        <label>Zowe allowed domains</label>
+        <abstract>The list of allowed domains in services that register to the API ML Discovery Service</abstract>
+        <description>Defines a list of domains that can be used by the Zowe instance.</description>
+        <category>network</category>
+        <string valueMustBeChoice="false" multiLine="true">
+            <!-- Put validation here -->
+            <!-- Specify choices here -->
+            <default>www.example.com</default>
         </string>
     </variable>
     <variable name="zowe_certificate_keystore_type" scope="instance" visibility="public">
@@ -1112,6 +1123,7 @@ How we want to verify SSL certificates of services. Valid values are:
             <variableValue name="zowe_network_server_tls_minTls" scope="instance" noPromptIfSet="false" required="false"/>
             <variableValue name="zowe_network_server_tls_maxTls" scope="instance" noPromptIfSet="false" required="false"/>
             <variableValue name="zowe_network_client_tls_attls" scope="instance" noPromptIfSet="false" required="false"/>
+            <variableValue name="zowe_network_allowedDomains" scope="instance" noPromptIfSet="false" required="false"/>
             <variableValue name="zowe_launchScript_logLevel" scope="instance" noPromptIfSet="false" required="false"/>
             <variableValue name="zowe_launchScript_onComponentConfigureFail" scope="instance" noPromptIfSet="false" required="false"/>
             <variableValue name="zowe_certificate_keystore_type" scope="instance" noPromptIfSet="false" required="true"/>
@@ -1705,6 +1717,12 @@ echo '  #' >> "${instance-zowe_workspaceDirectory}/zowe.yaml" >> "${instance-zow
 echo '  # This section can be overridden per-component by placing it' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
 echo '  # Under a "zowe" subsection of a component, as in "components.zss.zowe.network"' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
 echo '  network:' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
+echo '    # Allowed domains is a list of domains (supporting wildcards) that can be used in services that register to the API ML Discovery Service.' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
+echo '    # Defaults to the external domains + lpar hostnames if defined in haInstances' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
+echo '    allowedDomains:' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
+#foreach($allowedDomain in ${instance-zowe_network_allowedDomains.split("\n")})
+echo '      - ${allowedDomain}' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
+#end
 echo '    server:' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
 echo '      tls:' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
 echo '        attls: ${instance-zowe_network_server_tls_attls}' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
@@ -1870,6 +1888,11 @@ echo '  # Set apiml.enabled to "true", to enable single-service API ML deploymen
 echo '  apiml:' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
 echo '    enabled: ${instance-components_apiml_enabled}' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
 echo '    debug: ${instance-components_apiml_debug}' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
+echo '    # # Enable quiet logging when only errors and selected APIML messages are printed.' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
+echo '    # # Can be "quiet", "info" or "debug". "debug" is equivalent to "components.apiml.debug: true". Default value is "info".' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
+echo '    # # Supported also for individual APIML components.' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
+echo '    # logging:' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
+echo '    #   level: quiet' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
 #end
 #if (${instance-components_apiml_enabled} == "false" )
 echo '  apiml:' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"

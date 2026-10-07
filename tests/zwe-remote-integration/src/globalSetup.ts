@@ -508,6 +508,10 @@ module.exports = async () => {
       }
     }
 
+    const compiledJavaFiles = ['ExportPrivateKeyZos.java', 'HashFiles.java'];
+    for (const file of compiledJavaFiles) {
+      await uss.runCommand(`${REMOTE_SYSTEM_INFO.zosJavaHome}/bin/javac ${file}`, binUtils);
+    }
     const pdsUploads: Array<[string, string]> = [
       ['SZWESAMP', REMOTE_SYSTEM_INFO.szwesamp],
       ['SZWEEXEC', REMOTE_SYSTEM_INFO.szweexec],
