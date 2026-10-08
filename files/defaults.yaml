@@ -217,7 +217,7 @@ components:
       security:
         domains:
           portValidationDisabled: true
-          allowAnySwagger: true
+          allowAnyApiDocUrl: true
 
   # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   discovery:
