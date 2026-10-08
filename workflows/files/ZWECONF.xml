@@ -1976,11 +1976,6 @@ echo '  discovery:' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
 echo '    enabled: ${instance-components_discovery_enabled}' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
 echo '    port: ${instance-components_discovery_port}' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
 echo '    debug: ${instance-components_discovery_debug}' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
-echo '    debug: ${instance-components_discovery_debug}' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
-echo '    apiml:' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
-echo '      security:' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
-echo '        domains:' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
-echo '          portValidationDisabled: true' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
 #end
 #if (${instance-components_discovery_enabled} == "false" )
 echo '  discovery:' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
@@ -1988,6 +1983,10 @@ echo '    enabled: ${instance-components_discovery_enabled}' >> "${instance-zowe
 echo '    port: 7553' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
 echo '    debug: false' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
 #end
+echo '    apiml:' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
+echo '      security:' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
+echo '        domains:' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
+echo '          portValidationDisabled: true' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
 echo '    # Define this value to match your number of Discovery StatefulSet if you are running containerized Zowe' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
 echo '    # replicas: 1' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
 echo '' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
