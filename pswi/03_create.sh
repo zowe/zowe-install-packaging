@@ -162,7 +162,7 @@ echo "//STDOUT DD SYSOUT=*" >>JCL
 echo "//STDERR DD SYSOUT=*" >>JCL
 echo "//STDPARM  DD *" >>JCL
 echo "SH set -x;set -e;" >>JCL
-echo "chmod -R 777 ${ZOWE_MOUNT};" >>JCL
+echo "chmod -R 755 ${ZOWE_MOUNT};" >>JCL
 echo "/*" >>JCL
 
 sh scripts/submit_jcl.sh "$(cat JCL)"
