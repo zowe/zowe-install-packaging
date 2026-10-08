@@ -390,11 +390,29 @@ components:
   apiml:
     enabled: true
     debug: false
+    # Extended logging configuration
+    # logging:
     # # Enable quiet logging when only errors and selected APIML messages are printed.
     # # Can be "quiet", "info" or "debug". "debug" is equivalent to "components.apiml.debug: true". Default value is "info".
     # # Supported also for individual APIML components.
-    # logging:
     #   level: quiet
+    # # Enable debug scoped to specific APIML feature. Requires components.apiml.debug: false.
+    #   debug:
+    #     # Request processing and routing
+    #     gateway: true
+    #     # Security and authentication
+    #     authentication: true
+    #      # Service onboarding
+    #     discovery: true
+    #     # APIML caches incl. security caches
+    #     caching: true
+    #     # Api catalog and spring doc
+    #     catalog: true
+    #   toFile:
+    #     # Enable logging to file, enabled automatically when components.apiml.debug: true or any of components.apiml.logging.debug.*: true.
+    #     enabled: true
+    #     # DEBUG and TRACE level messages are logged to log file only. Reduces messages produced to sdtout/spool.
+    #     debugOnly: true
 
   # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   gateway:
