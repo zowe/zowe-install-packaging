@@ -1454,7 +1454,15 @@ How we want to verify SSL certificates of services. Valid values are:
         and change the folder UID to the ID of the user who executes this workflow.<br/>
         Issue the following command: <br/>
         <code>chown ${_workflow-workflowOwner} ${instance-zowe_workspaceDirectory} </code><br/>
-        Re-run the step.
+        Re-run the step.<br/><br/>
+        <b>NOTE:</b> If you are modifying the workflow variables and re-running this step,<br/>
+        you might encounter an error (ERROR: ZWEL0143E Cannot find data set member...)<br/>
+        where it fails due to no MVS datasets being created by the Create Configuration step.<br/>
+        To resolve this, in Review JCL step phase,<br/>
+        manually remove the zwe init generate command from the step:<br/>
+        click Edit JCL, delete the zwe init generate line,<br/>
+        <code>zwe init generate --allow-overwrite -c '${instance-zowe_workspaceDirectory}/zowe.yaml'</code><br/>
+        click SAVE and submit the step.
 ]]></instructions>
         <weight>1</weight>
         <skills>z/OS System Programmer</skills>
