@@ -164,6 +164,16 @@
       "rule_entry": [
         "zowe_verifyCertificates"
       ]
+    },
+    {
+      "description": "Defaults for API ML domain validation, to make it more lax in the initial version",
+      "rule_target": "all",
+      "rule_type": "wf_missing_vars",
+      "rule_entry": [
+        "components_api_catalog_apiml_security_domains_portValidationDisabled",
+        "components_api_catalog_apiml_security_domains_allowAnyApiDocUrl",
+        "components_discovery_apiml_security_domains_portValidationDisabled"
+      ]
     }
   ]
 }
