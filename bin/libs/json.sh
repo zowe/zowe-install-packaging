@@ -282,7 +282,7 @@ update_zowe_yaml() {
     # pass value as temp environment variable to safely escape it
     # strenv() reads the env var and automatically handles quotes/special characters
     TYQ_VAL="${3}" yq -i ".${2} = strenv(TYQ_VAL)" "${1}"    
-    if [ "${$?}" -ne 0 ]; then
+    if [ "${?}" -ne 0 ]; then
       print_error_and_exit "Error ZWEL0138E: Failed to update key ${2} of file ${1}." "" 138
     fi
   else
@@ -328,7 +328,7 @@ delete_zowe_yaml() {
   validate="${3:-true}"
   if [ "${ZWE_RUN_IN_CONTAINER}" = "true" ]; then
     yq -i "'del(.${2})'" "${1}"
-    if [ "${$?}" -ne 0 ]; then
+    if [ "${?}" -ne 0 ]; then
       print_error_and_exit "Error ZWEL0138E: Failed to delete key ${2} of file ${1}." "" 138
     fi
   else
