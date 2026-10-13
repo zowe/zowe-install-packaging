@@ -402,7 +402,7 @@ components:
     #     gateway: true
     #     # Security and authentication
     #     authentication: true
-    #      # Service onboarding
+    #     # Service onboarding
     #     discovery: true
     #     # APIML caches incl. security caches
     #     caching: true
