@@ -1895,7 +1895,7 @@ echo '    #     # Request processing and routing' >> "${instance-zowe_workspaceD
 echo '    #     gateway: true' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
 echo '    #     # Security and authentication' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
 echo '    #     authentication: true' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
-echo '    #      # Service onboarding' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
+echo '    #     # Service onboarding' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
 echo '    #     discovery: true' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
 echo '    #     # APIML caches incl. security caches' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
 echo '    #     caching: true' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
