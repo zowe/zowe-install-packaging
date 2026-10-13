@@ -272,17 +272,3 @@ components:
   # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   explorer-uss:
     enabled: true
-
-  # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-  tn3270-ng2:
-    allowList: "${{ () => {
-      const externalHosts = zowe.externalDomains || [];
-      const haHosts = typeof haInstances !== 'undefined' && haInstances
-        ? Object.values(haInstances).map(instance => instance.hostname).filter(Boolean)
-        : [];
-      return [...new Set([...externalHosts, ...haHosts])];
-    } () }}"
-
-  # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-  vt-ng2:
-    allowList: "${{ components['tn3270-ng2'].allowList }}"
