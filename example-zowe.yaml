@@ -152,7 +152,7 @@ zowe:
   # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   # Zowe runtime (root) directory
   #
-  # **NOTE**: 
+  # **NOTE**:
   # 1. if it is not specified and you passed "--update-config" argument
   # when you ran "zwe init" command, this value will be updated with the Zowe
   # runtime where the "zwe" command is located.
@@ -193,7 +193,7 @@ zowe:
   rbacProfileIdentifier: "1"
 
   # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-  # This is an ID that can be used by servers that distinguish their cookies from unrelated Zowe installs, 
+  # This is an ID that can be used by servers that distinguish their cookies from unrelated Zowe installs,
   # for purposes such as to allow multiple copies of Zowe to be used within the same client
   cookieIdentifier: "1"
 
@@ -508,6 +508,47 @@ components:
   # Or that the provider is set to "zosmf"
   explorer-uss:
     enabled: true
+
+  # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+  # Terminal 3270 emulator
+  # Use allowList and allowPorts to restrict possible connections
+  # tn3270-ng2:
+  #   allowList:
+  #     # Any hostname
+  #     - "*"
+  #     # Specific hostname (case-insensitive)
+  #     - zos.example.com
+  #     - lpar1.sys.example.com
+  #     # Wildcard hostname: any host ending in ".example.com", at any depth
+  #     #  (matches a.example.com and a.b.example.com, but NOT example.com itself)
+  #     - "*.example.com"
+  #     # The bare domain, which the wildcard does not cover
+  #     - example.com
+  #     # Wildcard limited to a sub-domain
+  #     - "*.mainframe.example.com"
+  #     # Specific IP addresses (IPv4 and IPv6)
+  #     - 192.0.2.10
+  #     - 2001:db8::10
+  #     # CIDR subnets (IPv4 and IPv6)
+  #     - 198.51.100.0/24
+  #     - 2001:db8:abcd::/48
+  #     # Loopback is blocked unless it is listed
+  #     - 127.0.0.0/8
+  #   allowPorts:
+  #     # Single ports
+  #     - 23
+  #     - 992
+  #     # Inclusive range
+  #     - "2000-2100"
+
+  # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+  # VT emulator
+  # Use allowList and allowPorts to restrict possible connections, same rules as for tn3270-ng2
+  # vt-ng2:
+  #   allowList:
+  #     - test.example.com
+  #   allowPorts:
+  #     - 22
 
   # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   # Each extension can have dedicated definition similar to core components.
