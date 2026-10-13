@@ -390,7 +390,7 @@ components:
   apiml:
     enabled: true
     debug: false
-    # Extended logging configuration
+    # # Extended logging configuration
     # logging:
     # # Enable quiet logging when only errors and selected APIML messages are printed.
     # # Can be "quiet", "info" or "debug". "debug" is equivalent to "components.apiml.debug: true". Default value is "info".
