@@ -13,15 +13,18 @@
 
 ###############################
 # constants / variables
-rnd=$(echo $RANDOM)
 user_id=$(get_user_id | upper_case)
-temp_dir="$(get_tmp_dir)/zowe-convert-for-k8s-$(echo ${rnd})"
 
 ###############################
 # validation
 require_java
 require_node
 require_zowe_yaml
+
+###############################
+# prepare temp work directory, it will contain private keys
+umask 077
+temp_dir=$(create_tmp_dir "zowe-convert-for-k8s")
 
 ###############################
 # opening message
@@ -39,9 +42,6 @@ print_message "                  for security purposes."
 print_message
 
 ###############################
-# prepare temp work directory
-rm -fr "${temp_dir}"
-mkdir -p "${temp_dir}"
 # prepare env files based on zowe.yaml
 ZWE_PRIVATE_WORKSPACE_ENV_DIR="${temp_dir}/.env"
 mkdir -p "${ZWE_PRIVATE_WORKSPACE_ENV_DIR}"
