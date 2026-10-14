@@ -396,13 +396,15 @@
 /* General data set protection                                       */
 /* Default to NONE for the entire HLQ                                */
 /* Grant ALTER to Sysprogs                                           */
-/* Grant READ to the Zowe Started Task Group and Zowe Admins         */
+/* Grant ALTER to the Zowe Started Task Group                        */
+/* to allow dynamic zFS expansion                                    */
+/* Grant READ to the Zowe Admins Group                               */
   LISTDSD PREFIX(&HLQ.) ALL
   ADDSD  '&HLQ..*.**' UACC(NONE) -
     DATA('Zowe')
   PERMIT '&HLQ..*.**' CLASS(DATASET) ACCESS(ALTER) ID(&SYSPROG.)
+  PERMIT '&HLQ..*.**' CLASS(DATASET) ACCESS(ALTER) ID(&STCGRP.)
   PERMIT '&HLQ..*.**' CLASS(DATASET) ACCESS(READ) ID(&ADMINGRP.)
-  PERMIT '&HLQ..*.**' CLASS(DATASET) ACCESS(READ) ID(&STCGRP.)
 
   SETROPTS GENERIC(DATASET) REFRESH
 
