@@ -520,7 +520,7 @@ components:
   #     - 23
   #     - 992
   #   allowList:
-  #   # Specific ipv4 / ipv6 and masking is permitted
+  #   # IPv4/IPv6 addresses and CIDR masks are permitted
   #   - "10.0.0.0/8"
   #   - "172.16.0.0/12"
   #   - "192.168.0.0/16"
@@ -534,7 +534,7 @@ components:
   # vt-ng2:
   #   allowPorts:
   #     - 22
-  #   # These assignment links this app's config to the other terminal
+  #   # This assignment reuses the allowList of tn3270-ng2 for vt-ng2
   #   allowList: "${{ components['tn3270-ng2'].allowList }}"
 
   # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
