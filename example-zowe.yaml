@@ -510,52 +510,32 @@ components:
     enabled: true
 
   # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-  # Terminal 3270 emulator
-  # Use allowList and allowPorts to restrict possible connections, see examples.
-  # If allowList or allowPorts is not set, any host or any port is permitted.
+  # Zowe Desktop Terminal Apps
   #
-  # **NOTE**: this is not a standalone component: do not set "enabled" here.
+  # 'allowList' and 'allowPorts' sections can be used to restrict connections
+  # See files/examples/components/terminals.yaml for more examples.
   #
   # tn3270-ng2:
-  #   allowList:
-  #     # "*" allows any host, same as not setting allowList. Do not combine it with other entries.
-  #     # - "*"
-  #     # Specific hostname (case-insensitive)
-  #     - zos.example.com
-  #     - lpar1.sys.example.com
-  #     # Wildcard hostname: any host ending in ".example.com", at any depth
-  #     #  (matches a.example.com and a.b.example.com, but NOT example.com itself)
-  #     - "*.example.com"
-  #     # The bare domain, which the wildcard does not cover
-  #     - example.com
-  #     # Wildcard limited to a sub-domain
-  #     - "*.mainframe.example.com"
-  #     # Specific IP addresses (IPv4 and IPv6)
-  #     - 192.0.2.10
-  #     - 2001:db8::10
-  #     # CIDR subnets (IPv4 and IPv6)
-  #     - 198.51.100.0/24
-  #     - 2001:db8:abcd::/48
-  #     # Anything not listed is refused, including loopback (127.0.0.1); list it if needed
-  #     - 127.0.0.0/8
   #   allowPorts:
-  #     # Single ports
   #     - 23
   #     - 992
-  #     # Inclusive range
-  #     - "2000-2100"
-
-  # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-  # VT emulator
-  # Use allowList and allowPorts to restrict possible connections, same rules as for tn3270-ng2
-  #
-  # **NOTE**: this is not a standalone component: do not set "enabled" here.
-  #
-  # vt-ng2:
   #   allowList:
-  #     - test.example.com
+  #   # Specific ipv4 / ipv6 and masking is permitted
+  #   - "10.0.0.0/8"
+  #   - "172.16.0.0/12"
+  #   - "192.168.0.0/16"
+  #   #
+  #   # templates can be used to derive strings
+  #   - "${{ zos.resolveSymbol('&SYSNAME') }}"
+  #   #
+  #   # '*' is allowed for pattern matching
+  #   - "*.example.com"
+
+  # vt-ng2:
   #   allowPorts:
   #     - 22
+  #   # These assignment links this app's config to the other terminal
+  #   allowList: "${{ components['tn3270-ng2'].allowList }}"
 
   # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   # Each extension can have dedicated definition similar to core components.
