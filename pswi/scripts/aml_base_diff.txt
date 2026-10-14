@@ -78,30 +78,30 @@
 <   home: ""
 ---
 >   home: "#delete_me#"
-424c424
+442c442
 <           enabled: false
 ---
 >           enabled: true
-471c471
+489c489
 <     enabled: true
 ---
 >     enabled: false
-485c485
+503c503
 <     enabled: true
 ---
 >     enabled: false
-488a489,490
+506a507,508
 >       jwt:
 >         fallback: true
-496c498
+514c516
 <     enabled: true
 ---
 >     enabled: false
-503c505
+521c523
 <     enabled: true
 ---
 >     enabled: false
-510c512
+528c530
 <     enabled: true
 ---
 >     enabled: false
