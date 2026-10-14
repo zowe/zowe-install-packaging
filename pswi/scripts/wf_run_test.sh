@@ -1,6 +1,17 @@
 #!/bin/sh
 #version=1.0
 
+# ==============================================================================
+# FUNCTION DEFINITIONS
+# ==============================================================================
+
+trace_off() { { set +x; } 2>/dev/null; }
+trace_on()  { set -x; }
+
+# ==============================================================================
+# MAIN SCRIPT
+# ==============================================================================
+
 export BASE_URL="${ZOSMF_URL}:${ZOSMF_PORT}"
 WF_DEF_FILE=$1
 run=$2
@@ -37,26 +48,40 @@ else
 "assignToOwner" :true}'
 fi
 
-set -x
 # Get workflowKey for the workflow owned by user
 echo "Get workflowKey for the workflow if it exists."
-
-RESP=$(curl -s $WF_LIST_URL -k -X "GET" -H "Content-Type: application/json" -H "X-CSRF-ZOSMF-HEADER: A" --user $ZOSMF_USER:$ZOSMF_PASS)
+# temporarily disable shell tracing
+trace_off
+# format credentials securely via printf into curl
+RESP=$(printf 'user = "%s:%s"\n' "${ZOSMF_USER}" "${ZOSMF_PASS}" | curl -s $WF_LIST_URL -k -X "GET" -H "Content-Type: application/json" -H "X-CSRF-ZOSMF-HEADER: A" -K -)
+# re-enable shell tracing
+trace_on
 WFKEY=$(echo $RESP | grep -o '"workflowKey":".*"' | cut -f4 -d\")
 
 if [ -n "$WFKEY" ]; then
   WORKFLOW_URL="${CREATE_WF_URL}/${WFKEY}"
 
   echo "Deleting the workflow."
-  RESP=$(curl -s $WORKFLOW_URL -k -X "DELETE" -H "Content-Type: application/json" -H "X-CSRF-ZOSMF-HEADER: A" --user $ZOSMF_USER:$ZOSMF_PASS)
-  sh scripts/check_response.sh "${RESP}" $?
+  # temporarily disable shell tracing
+  trace_off
+  # format credentials securely via printf into curl
+  RESP=$(printf 'user = "%s:%s"\n' "${ZOSMF_USER}" "${ZOSMF_PASS}" | curl -s $WORKFLOW_URL -k -X "DELETE" -H "Content-Type: application/json" -H "X-CSRF-ZOSMF-HEADER: A" -K -)
+  RC_DELETE=$?
+  # re-enable shell tracing
+  trace_on
+  sh scripts/check_response.sh "${RESP}" $RC_DELETE  
 fi
 
 # Create workflow with REST API
 echo 'Invoking REST API to create the workflow.'
-
-RESP=$(curl -s $CREATE_WF_URL -k -X "POST" -d "$ADD_WORKFLOW_JSON" -H "Content-Type: application/json" -H "X-CSRF-ZOSMF-HEADER: A" --user $ZOSMF_USER:$ZOSMF_PASS)
-sh scripts/check_response.sh "${RESP}" $?
+# temporarily disable shell tracing
+trace_off
+# format credentials securely via printf into curl
+RESP=$(printf 'user = "%s:%s"\n' "${ZOSMF_USER}" "${ZOSMF_PASS}" | curl -s $CREATE_WF_URL -k -X "POST" -d "$ADD_WORKFLOW_JSON" -H "Content-Type: application/json" -H "X-CSRF-ZOSMF-HEADER: A" -K -)
+RC_CREATE=$?
+# re-enable shell tracing
+trace_on
+sh scripts/check_response.sh "${RESP}" $RC_CREATE
 if [ $? -gt 0 ]; then exit -1; fi
 WFKEY=$(echo $RESP | grep -o '"workflowKey":".*"' | cut -f4 -d\")
 WORKFLOW_URL="${CREATE_WF_URL}/${WFKEY}"
@@ -64,17 +89,28 @@ WORKFLOW_URL="${CREATE_WF_URL}/${WFKEY}"
 if [ "$run" = "run" ]; then
   # Run workflow
   echo "Invoking REST API to start the workflow."
-
-  RESP=$(curl -s ${WORKFLOW_URL}/operations/start -k -X "PUT" -d "{}" -H "Content-Type: application/json" -H "X-CSRF-ZOSMF-HEADER: A" --user $ZOSMF_USER:$ZOSMF_PASS)
-  sh scripts/check_response.sh "${RESP}" $?
+  # temporarily disable shell tracing
+  trace_off
+  # format credentials securely via printf into curl
+  RESP=$(printf 'user = "%s:%s"\n' "${ZOSMF_USER}" "${ZOSMF_PASS}" | curl -s ${WORKFLOW_URL}/operations/start -k -X "PUT" -d "{}" -H "Content-Type: application/json" -H "X-CSRF-ZOSMF-HEADER: A" -K -)
+  RC_START=$?
+  # re-enable shell tracing
+  trace_on
+  sh scripts/check_response.sh "${RESP}" $RC_START
   if [ $? -gt 0 ]; then exit -1; fi
   STATUS=""
   until [ "$STATUS" = "FINISHED" ]; do
     sleep 20
 
+    # temporarily disable shell tracing
+    trace_off
     # Get the result of the workflow
-    RESP=$(curl -s ${WORKFLOW_URL} -k -X "GET" -H "Content-Type: application/json" -H "X-CSRF-ZOSMF-HEADER: A" --user $ZOSMF_USER:$ZOSMF_PASS)
-    if [ $? -gt 0 ]; then exit -1; fi
+    # format credentials securely via printf into curl
+    RESP=$(printf 'user = "%s:%s"\n' "${ZOSMF_USER}" "${ZOSMF_PASS}" | curl -s ${WORKFLOW_URL} -k -X "GET" -H "Content-Type: application/json" -H "X-CSRF-ZOSMF-HEADER: A" -K -)
+    RC_RESULTS=$?
+    # re-enable shell tracing
+    trace_on
+    if [ $RC_RESULTS -gt 0 ]; then exit -1; fi    
     STATUS_NAME=$(echo $RESP | grep -o '"statusName":".*"' | cut -f4 -d\")
 
     if [ "$STATUS_NAME" = "in-progress" ]; then
@@ -103,5 +139,11 @@ if [ "$run" = "run" ]; then
 fi
 
 echo "Deleting the workflow."
-RESP=$(curl -s $WORKFLOW_URL -k -X "DELETE" -H "Content-Type: application/json" -H "X-CSRF-ZOSMF-HEADER: A" --user $ZOSMF_USER:$ZOSMF_PASS)
-sh scripts/check_response.sh "${RESP}" $?
+# temporarily disable shell tracing
+trace_off
+# format credentials securely via printf into curl
+RESP=$(printf 'user = "%s:%s"\n' "${ZOSMF_USER}" "${ZOSMF_PASS}" | curl -s $WORKFLOW_URL -k -X "DELETE" -H "Content-Type: application/json" -H "X-CSRF-ZOSMF-HEADER: A" -K -)
+RC_WFDELETE=$?
+# re-enable shell tracing
+trace_on
+sh scripts/check_response.sh "${RESP}" $RC_WFDELETE
