@@ -191,21 +191,24 @@ export function execute(): void {
 
   const workspaceDirectory = ZOWE_CONFIG.zowe.workspaceDirectory;
 
-  common.printMessage(`- configuration: ${workspaceDirectory}/.env/.zowe-merged.yaml`);
-  fs.cp(`${workspaceDirectory}/.env/.zowe-merged.yaml`, `${tmpDir}/zowe-support.yaml`);
-  const maskObj = buildPasswordMaskConfig(ZOWE_CONFIG);
-  if (maskObj) {
-    // Update copy of config and DO NOT validate (last parameter is false)
-    // buildPasswordMaskConfig changes all password keys to '***'
-    // which is not valid for key ring password (if used).
-    config.updateZoweCfgFile(`${tmpDir}/zowe-support.yaml`, maskObj, 1, false);
+  // Only the merged configuration is collected (with passwords masked).
+  const mergedConfigFile = `${workspaceDirectory}/.env/.zowe-merged.yaml`;
+  if (fs.fileExists(mergedConfigFile)) {
+    common.printMessage(`- configuration: ${mergedConfigFile}`);
+    fs.cp(mergedConfigFile, `${tmpDir}/zowe-support.yaml`);
+    const maskObj = buildPasswordMaskConfig(ZOWE_CONFIG);
+    if (maskObj) {
+      // Update copy of config and DO NOT validate (last parameter is false)
+      // buildPasswordMaskConfig changes all password keys to '***'
+      // which is not valid for key ring password (if used).
+      config.updateZoweCfgFile(`${tmpDir}/zowe-support.yaml`, maskObj, 1, false);
+    }
+  } else {
+    common.printMessage(`- configuration: ${mergedConfigFile} not found, skipping`);
   }
 
-  common.printMessage(`- zowe.workspaceDirectory: ${workspaceDirectory}/.env`);
-  fs.mkdirp(`${tmpDir}/workspace`);
-  fs.cp(`${workspaceDirectory}/.env`, `${tmpDir}/workspace`)
-
   if (fs.directoryExists(`${workspaceDirectory}/api-mediation/api-defs`)) {
+    fs.mkdirp(`${tmpDir}/workspace`);
     common.printMessage(`- zowe.workspaceDirectory: ${workspaceDirectory}/api-mediation/api-defs`);
     fs.cp(`${workspaceDirectory}/api-mediation/api-defs`, `${tmpDir}/workspace/api-mediation`);
   }
@@ -268,7 +271,7 @@ export function execute(): void {
   common.printMessage("");
 
   common.printLevel1Message('Create support package and clean up');
-  shell.execOutSync('sh', '-c', `cd "${tmpDir}" && (set -C; umask 077; : > "${tmpPax}") && pax -w -v -o saveext -f "${tmpPax}" . && compress -f "${tmpPax}"`);
+  shell.execOutSync('sh', '-c', `cd "${tmpDir}" && umask 077 && (set -C; : > "${tmpPax}") && pax -w -v -o saveext -f "${tmpPax}" . && compress -f "${tmpPax}"`);
   fs.rmrf(tmpDir);
   common.printMessage("");
 
