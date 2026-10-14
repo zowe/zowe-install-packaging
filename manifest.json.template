@@ -32,12 +32,12 @@
       "artifact": "*.pax"
     },
     "org.zowe.zlux.tn3270-ng2": {
-      "version": "3.6.0-PR-118",
-      "artifact": "tn3270-ng2-3.6.0-20261012.095359.pax"
+      "version": "3.6.0-PR-119",
+      "artifact": "tn3270-ng2-3.6.0-20261012.140729.pax"
     },
     "org.zowe.zlux.vt-ng2": {
-      "version": "3.6.0-PR-89",
-      "artifact": "vt-ng2-3.6.0-20261012.094642.pax"
+      "version": "3.6.0-PR-90",
+      "artifact": "vt-ng2-3.6.0-20261012.124232.pax"
     },
     "org.zowe.zlux.zlux-editor": {
       "version": "^3.0.0-V3.X-STAGING",
