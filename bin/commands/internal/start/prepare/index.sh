@@ -77,9 +77,8 @@ else
     fi
 
     # set workspace dir permission
-    # FIXME: 771 is inherited from v1, we should consider disable read permission for `other`
     umask 0002
-    result=$(chmod -R 771 "${ZWE_zowe_workspaceDirectory}" 2>&1)
+    result=$(chmod -R 770 "${ZWE_zowe_workspaceDirectory}" 2>&1)
     code=$?
     if [ ${code} -ne 0 ]; then
       print_formatted_error "ZWELS" "zwe-internal-start-prepare,prepare_workspace_directory:${LINENO}" "WARNING: Failed to set permission of some existing files or directories in ${ZWE_zowe_workspaceDirectory}:"
@@ -99,13 +98,12 @@ else
     cp ${ZWE_zowe_runtimeDirectory}/manifest.json ${ZWE_zowe_workspaceDirectory}
 
     # prepare .env directory
-    mkdir -p "${ZWE_PRIVATE_WORKSPACE_ENV_DIR}"
+    umask 0077
+    mkdir "${ZWE_PRIVATE_WORKSPACE_ENV_DIR}" || chmod -R 700 "${ZWE_PRIVATE_WORKSPACE_ENV_DIR}"
 
     print_formatted_debug "ZWELS" "zwe-internal-start-prepare,prepare_workspace_directory:${LINENO}" "initialize .instance-${ZWE_CLI_PARAMETER_HA_INSTANCE}.env(s)"
-    generate_instance_env_from_yaml_config "${ZWE_CLI_PARAMETER_HA_INSTANCE}"
 
-    # we lock this folder only for zowe runtime user
-    chmod -R 700 "${ZWE_PRIVATE_WORKSPACE_ENV_DIR}"
+    generate_instance_env_from_yaml_config "${ZWE_CLI_PARAMETER_HA_INSTANCE}"
   }
 
   ########################################################

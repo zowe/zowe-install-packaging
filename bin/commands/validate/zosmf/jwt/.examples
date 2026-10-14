@@ -1,0 +1,3 @@
+zwe validate zosmf jwt -c /path/to/zowe.yaml
+zwe validate zosmf jwt -c 'FILE(/customizations/zowe.yaml):FILE(/defaults/zowe.yaml)'
+zwe validate zosmf jwt -c 'FILE(/path/to/zowe.yaml):PARMLIB(ZOWE.PARMLIB(YAML))'

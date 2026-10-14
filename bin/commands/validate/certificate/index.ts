@@ -393,16 +393,25 @@ export function execute(quitOnError?: boolean, level?: string): number {
   } else if (truststoreType != 'PKCS12') {
     common.printFormattedWarn(common.MSG_KEY, COMMAND_NAME, `Truststore unknown type ${truststoreType}`);
   }
-  
+
   const argsString = [
-    '-Djava.protocol.handler.pkgs=com.ibm.crypto.provider', '-jar', `${std.getenv('ZWE_zowe_runtimeDirectory')}/bin/utils/certificate-analyser.jar`,
+    '--add-modules', 'ibm.crypto.zsecurity,ibm.crypto.hdwrcca',
+    '-jar', `${std.getenv('ZWE_zowe_runtimeDirectory')}/bin/utils/certificate-analyser.jar`,
     '-k', `${keystoreLocation}`, '-kt', `${keystoreType}`, '-kp', `${keystorePass}`, '-a', `${keystoreAlias}`,
     '-t', `${truststoreLocation}`, '-tt', `${truststoreType}`, '-tp', `${truststorePass}`,
     '-d', `${ZOWE_CONFIG.zowe.externalDomains.join(',')}`
   ];
 
+  const maskedArgsString = argsString.map((arg, index) => {
+    const previousArg = argsString[index - 1];
+    if (previousArg === '-kp' || previousArg === '-tp') {
+      return '******';
+    }
+    return arg;
+  });
+
   common.printTrace('Certificate-analyser command:');
-  common.printTrace('java ' + argsString.join(' '));
+  common.printTrace('java ' + maskedArgsString.join(' '));
 
   const result = shell.execOutErrSync('java', ...argsString);
   const rc = result.rc;

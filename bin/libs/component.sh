@@ -295,13 +295,24 @@ process_component_apiml_static_definitions() {
       sanitized_def_name=$(echo "${one_def_trimmed}" | sed 's/[^a-zA-Z0-9]/_/g')
       # FIXME: we may change the static definitions files to real template in the future.
       #        currently we support to use environment variables in the static definition template
-      parsed_def=$( ( echo "cat <<EOF" ; cat "${one_def}" ; echo ; echo EOF ) | sh 2>&1)
+      # Use envsubst to expand only $VAR / ${VAR} references; no subshell is spawned.
+      if command -v envsubst >/dev/null 2>&1; then
+        parsed_def=$(envsubst < "${one_def}" 2>&1)
+      else
+        # Node.js fallback for z/OS environments without GNU gettext
+        # Pass the path as an argument (process.argv[2]) to avoid shell injection.
+        parsed_def=$(node -e "
+          const fs = require('fs');
+          const text = fs.readFileSync(process.argv[2], 'utf8');
+          const result = text.replace(
+            /\\\$\{([A-Za-z_][A-Za-z0-9_]*)\}|\\\$([A-Za-z_][A-Za-z0-9_]*)/g,
+            (m, a, b) => process.env[a || b] !== undefined ? process.env[a || b] : '');
+          process.stdout.write(result);
+        " -- "${one_def}" 2>&1)
+      fi
       retval=$?
       if [ "${retval}" != "0" ]; then
         print_error "failed to parse ${component_name} API Mediation Layer static definition file ${one_def}: ${parsed_def}"
-        if [[ "${parsed_def}" == *unclosed* ]]; then
-          print_error "this is very likely an encoding issue that file is not tagged properly"
-        fi
         all_succeed=false
         break
       fi

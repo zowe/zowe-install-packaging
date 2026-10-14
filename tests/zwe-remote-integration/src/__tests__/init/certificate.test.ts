@@ -60,14 +60,21 @@ describe(`${testSuiteName}`, () => {
     it('run each scenario', async () => {
       const keyringScenarios = scenarioYamls.slice(2);
       const scenarioSettings = {
+        // NOTE: these scenarios are chained - scenario 2 imports the keystore scenario 1 creates,
+        // so both must use explicit passwords. Left at the schema defaults, zwe init certificate
+        // generates a random password and scenario 2 could not open the source keystore.
+        // The default-password path is covered by the (LONG) tests below.
         'scenario-1.yaml': {
           'zowe.setup.certificate.pkcs12.directory': remotePkcs12Dir,
+          'zowe.setup.certificate.pkcs12.password': 'keystoretestpw',
+          'zowe.setup.certificate.pkcs12.caPassword': 'catestpw',
         },
         'scenario-2.yaml': {
           'zowe.setup.certificate.pkcs12.directory': remotePkcs12Dir + '_scen2',
+          'zowe.setup.certificate.pkcs12.password': 'keystoretestpw',
           // generated in step 1
           'zowe.setup.certificate.pkcs12.import.keystore': remotePkcs12Dir + '/localhost/localhost.keystore.p12',
-          'zowe.setup.certificate.pkcs12.import.password': 'password',
+          'zowe.setup.certificate.pkcs12.import.password': 'keystoretestpw',
           'zowe.setup.certificate.pkcs12.import.alias': 'localhost',
         },
         'scenario-3.yaml': {},
