@@ -2333,7 +2333,7 @@ zwe init vsam -c '${instance-zowe_workspaceDirectory}/zowe.yaml' --allow-overwri
             Each <b>zwe init</b> sub-command defines a configuration.
 <ul>
 <li><b>security:</b> Create the user IDs and security manager settings.</li>
-<li><b>apfauth:</b> APF authorize the LOADLIB containing the modules that need to perform z/OS priviledged security calls.</li>
+<li><b>apfauth:</b> APF authorize the LOADLIB containing the modules that need to perform z/OS privileged security calls.</li>
 </ul>
             ]]></instructions>
             <weight>1</weight>
