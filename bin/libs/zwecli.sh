@@ -168,7 +168,8 @@ zwecli_process_logfile() {
     print_message "- timestamp: $(date +"%Y-%m-%d %H:%M:%S")" "log"
     print_message "- parameters:" "log"
     for param in ${ZWE_CLI_PARAMETERS_LIST}; do
-      print_message "  * ${param}: $(zwecli_get_parameter_value "${param}")" "log"
+      # a --password value must not land in the log unconditionally, regardless of log level
+      print_message "  * ${param}: $(mask_secret_value "${param}" "$(zwecli_get_parameter_value "${param}")")" "log"
     done
     print_message "" "log"
   fi
@@ -379,7 +380,22 @@ zwecli_inline_execute_command() {
   export ZWE_PRIVATE_CLI_IS_TOP_LEVEL_COMMAND=false
 
   print_trace "- zwecli_inline_execute_command"
-  print_trace "  * ${*}"
+  if [ "${ZWE_PRIVATE_LOG_LEVEL_ZWELS}" = "TRACE" ]; then
+    # an argument is masked when the flag before it is a secret, e.g. --password.
+    traced_args=
+    previous_arg=
+    for inline_arg in "$@"; do
+      traced_arg=$(mask_secret_value "${previous_arg}" "${inline_arg}")
+      traced_args="${traced_args} ${traced_arg}"
+      previous_arg=
+      if [ "${traced_arg}" = "${inline_arg}" ]; then
+        case "${inline_arg}" in
+          -*) previous_arg="${inline_arg}" ;;
+        esac
+      fi
+    done
+    print_trace "  *${traced_args}"
+  fi
 
   # process new command
   . "${ZWE_zowe_runtimeDirectory}/bin/zwe"

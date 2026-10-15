@@ -4,6 +4,7 @@ All notable changes to the Zowe Installer will be documented in this file.
 
 ## `3.6.0`
 
+- Enhancement: APIML modulith debug logging configuration added to the `example-zowe.yaml`. [#4913](https://github.com/zowe/zowe-install-packaging/pull/4913)
 - Bugfix: Restricted read/write permissions for log files created by the `zwe` command. [#4807](https://github.com/zowe/zowe-install-packaging/pull/4807)
 - Enhancement: When running in HA mode, Zowe now creates a per-HA-instance merged YAML config file (`.zowe-<haInstance>-merged.yaml`) to the workspace `.env` directory. This file contains the fully-resolved configuration for that instance with all `haInstances` overrides applied at the root level. The `haInstances` block is preserved. The location of this file is recorded in environment variable `ZWE_HA_INSTANCE_CONFIG`. (https://github.com/zowe/zowe-install-packaging/pull/4759)
 - Bugfix: Fixed `MalformedURLException: unknown protocol: safkeyring` on IBM Java 17/21 for `zwe validate certificate` command by replacing `-Djava.protocol.handler.pkgs=com.ibm.crypto.provider` with `--add-modules ibm.crypto.zsecurity,ibm.crypto.hdwrcca` to resolve the SAF keyring URL protocol handler. [#4795](https://github.com/zowe/zowe-install-packaging/pull/4795)
@@ -12,6 +13,9 @@ All notable changes to the Zowe Installer will be documented in this file.
 - Enhancement: APIML logging level configuration added to the `example-zowe.yaml`. [#4827](https://github.com/zowe/zowe-install-packaging/pull/4827)
 - Enhancement: Improved temporary files and directories handling. [#4820](https://github.com/zowe/zowe-install-packaging/pull/4820)
 - Enhancement: Updated the sequence of workflows in PSWI.[#4854](https://github.com/zowe/zowe-install-packaging/pull/4854)
+- Bugfix: Passwords are no longer exposed via process arguments or console/log output by `zwe` certificate, migrate, and configuration commands. [#4883](https://github.com/zowe/zowe-install-packaging/pull/4883)
+- Enhancement: `zwe init certificate` generates a random password instead of "password" when `password` or `caPassword` is left at its default value. Applicable to keystores only, keyring scenarios are unaffected. [#4866](https://github.com/zowe/zowe-install-packaging/pull/4866)
+- Bugfix: Improved RACF sample job security permissions. [#4879](https://github.com/zowe/zowe-install-packaging/pull/4879)
 
 ## `3.5.0`
 
