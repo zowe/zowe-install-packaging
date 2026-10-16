@@ -204,11 +204,18 @@ TSS PERMIT({zowe.setup.security.users.zowe}) APPL(OMVSAPPL)
 /* HLQ stub                                                          */
   TSS ADD(&ADMINDEP.) DATASET({zowe.setup.dataset.prefix})
 
-/* general data set protection                                       */
+/* General data set protection                                       */
+/* Grant full access (ALL) to Sysprogs, ie. alter                    */
+/* Grant modify access (UPDATE) to Zowe Started Task Group,          */
+/* to allow dynamic zFS expansion                                    */
+/* Grant READ only to the Zowe Admins                                */
   TSS WHOHAS DATASET({zowe.setup.dataset.prefix})
-  TSS PER(ALL) DATASET({zowe.setup.dataset.prefix}) ACCESS(READ)
   TSS PER({zowe.setup.security.groups.sysProg})  +
     DATASET({zowe.setup.dataset.prefix}) ACCESS(ALL)
+  TSS PER({zowe.setup.security.groups.stc})  +
+    DATASET({zowe.setup.dataset.prefix}) ACCESS(UPDATE)
+  TSS PER({zowe.setup.security.groups.admin})  +
+    DATASET({zowe.setup.dataset.prefix}) ACCESS(READ)
 
 /* show results                                                      */
   TSS WHOHAS DATASET({zowe.setup.dataset.prefix})
