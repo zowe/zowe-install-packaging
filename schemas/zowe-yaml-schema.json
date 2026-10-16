@@ -1202,6 +1202,7 @@
       "description": "Configuration shared by the terminal components (tn3270-ng2 and vt-ng2).",
       "properties": {
         "allowList": {
+          "uniqueItems": true,
           "type": "array",
           "description": "Host names the terminal is allowed to connect to, for example 'host.example.com' or '*.example.com'. Entries must not be empty and must not contain whitespace.",
           "items": {
@@ -1211,6 +1212,7 @@
         },
         "allowPorts": {
           "type": "array",
+          "uniqueItems": true,
           "description": "Ports the terminal is allowed to connect to. Each entry is either a single port number, for example 23, or a range of ports as a string, for example '2000-2010'.",
           "items": {
             "oneOf": [
