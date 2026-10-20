@@ -10,7 +10,7 @@
 components:
   # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   # Terminal 3270 emulator
-  # Use allowList and allowPorts to restrict possible connections, see examples.
+  # Use allowList and allowPorts to restrict outbound connections, see examples.
   # If allowList or allowPorts is not set, any host or any port is permitted.
   #
   # **NOTE**: this is not a standalone component: do not set "enabled" here.
