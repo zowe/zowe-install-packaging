@@ -261,14 +261,16 @@
 /* General data set protection                                       */
 /* Default to NONE for the entire HLQ                                */
 /* Grant ALTER to Sysprogs                                           */
-/* Grant READ to the Zowe Started Task Group and Zowe Admins         */
+/* Grant UPDATE to the Zowe Started Task Group                       */
+/* to allow dynamic zFS expansion                                    */
+/* Grant READ to the Zowe Admins Group                               */
   LISTDSD PREFIX({zowe.setup.dataset.prefix}) ALL
   ADDSD  '{zowe.setup.dataset.prefix}.*.**' UACC(NONE) -
     DATA('Zowe')
   PERMIT '{zowe.setup.dataset.prefix}.*.**' CLASS(DATASET) -
     ACCESS(ALTER) ID({zowe.setup.security.groups.sysProg})
   PERMIT '{zowe.setup.dataset.prefix}.*.**' CLASS(DATASET) -
-    ACCESS(READ) ID({zowe.setup.security.groups.stc})
+    ACCESS(UPDATE) ID({zowe.setup.security.groups.stc})
   PERMIT '{zowe.setup.dataset.prefix}.*.**' CLASS(DATASET) -
     ACCESS(READ) ID({zowe.setup.security.groups.admin})
 
