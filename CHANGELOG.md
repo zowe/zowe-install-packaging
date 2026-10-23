@@ -18,6 +18,7 @@ All notable changes to the Zowe Installer will be documented in this file.
 - Bugfix: Improved RACF sample job security permissions. [#4879](https://github.com/zowe/zowe-install-packaging/pull/4879)
 - Bugfix: Allow dynamic zFS expansion for STC group in RACF. [#4916](https://github.com/zowe/zowe-install-packaging/pull/4916)
 - Bugfix: Allow dynamic zFS expansion for STC group in TSS. [#4882](https://github.com/zowe/zowe-install-packaging/pull/4882)
+- Bugfix: Allow dynamic zFS expansion for STC group in ACF2. [#4886](https://github.com/zowe/zowe-install-packaging/pull/4886)
 
 ## `3.5.0`
 
