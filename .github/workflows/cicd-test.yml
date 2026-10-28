@@ -76,7 +76,8 @@ env:
 
   # below block can be overwritten, adjusted by DevOps only
   # ZOS_NODE_VERSION more to choose from: v18.16.0, v20.11.0
-  ZOS_NODE_VERSION: v18.16.0
+  # app-server needs v20.19+ (swagger-parser 13 in zlux-server-framework)
+  ZOS_NODE_VERSION: v20.19.2
   CLIENT_NODE_VERSION: v12.18.3
   INSTALL_TEST_DEBUG_INFORMATION: zowe-install-test:*
   SANITY_TEST_DEBUG_INFORMATION: zowe-sanity-test:*
