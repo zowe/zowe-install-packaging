@@ -54,7 +54,7 @@
       "version": "^3.0.0-SNAPSHOT"
     },
     "org.zowe.explorer-uss": {
-      "version": "3.0.7-PR-221"
+      "version": "^3.0.7-PR-221"
     },
     "org.zowe.explorer-ip": {
       "version": "^3.0.0-SNAPSHOT",
