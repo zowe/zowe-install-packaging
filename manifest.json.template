@@ -120,7 +120,7 @@
     },
 	"org.zowe.attls-test": {
       "version": "3.5.0-V3.X-RC",
-      "artifact": "zis-test-3.5.0-2026103037.pax"
+      "artifact": "attls-test-3.5.0-2026103035.pax"
     },
     "org.zowe.zis-test": {
       "version": "3.5.0-V3.X-RC",
