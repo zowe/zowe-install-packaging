@@ -65,7 +65,7 @@ if [ $? -gt 0 ]; then exit -1; fi
 
 # Check if ZOWE zFS is mounted
 echo "Checking if file system ${ZOWE_ZFS} is mounted."
-RESP=$(curl -s $GET_ZOWE_ZFS_URL -k -X "GET" -H "Content-Type: application/json" -H "X-CSRF-ZOSMF-HEADER: A" --user $ZOSMF_USER:$ZOSMF_PASS)
+RESP=$(curl -s $GET_ZOWE_ZFS_URL -X "GET" -H "Content-Type: application/json" -H "X-CSRF-ZOSMF-HEADER: A" --user $ZOSMF_USER:$ZOSMF_PASS --cacert ~/.marist/pubcert.crt --ciphers DEFAULT@SECLEVEL=1)
 MOUNTZ=$(echo $RESP | grep -o '"mountpoint":".*"' | cut -f4 -d\")
 
 if [ -n "$MOUNTZ" ]; then
@@ -79,7 +79,7 @@ if [ -n "$MOUNTZ" ]; then
   fi
 else
   echo "${ZOWE_ZFS} is not mounted anywhere. Checking if ${ZOWE_MOUNT} has any zFS mounted."
-  RESP=$(curl -s $GET_ZOWE_PATH_URL -k -X "GET" -H "Content-Type: application/json" -H "X-CSRF-ZOSMF-HEADER: A" --user $ZOSMF_USER:$ZOSMF_PASS)
+  RESP=$(curl -s $GET_ZOWE_PATH_URL -X "GET" -H "Content-Type: application/json" -H "X-CSRF-ZOSMF-HEADER: A" --user $ZOSMF_USER:$ZOSMF_PASS --cacert ~/.marist/pubcert.crt --ciphers DEFAULT@SECLEVEL=1)
   MOUNTZFS=$(echo $RESP | grep -o "name":".*" | cut -f4 -d\")
   if [ -n "$MOUNTZFS" ]; then
     # If ZFS is not mounted to the mountpoint then this ZOWE mountpoint has different zFS
@@ -88,7 +88,7 @@ else
   else
     # Mount zFS to Zowe mountpoint
     echo "Mounting zFS ${ZOWE_ZFS} to ${ZOWE_MOUNT} mount point."
-    RESP=$(curl -s $ACTION_ZOWE_ZFS_URL -k -X "PUT" -d "$MOUNT_ZOWE_ZFS_JSON" -H "Content-Type: application/json" -H "X-CSRF-ZOSMF-HEADER: A" --user $ZOSMF_USER:$ZOSMF_PASS)
+    RESP=$(curl -s $ACTION_ZOWE_ZFS_URL -X "PUT" -d "$MOUNT_ZOWE_ZFS_JSON" -H "Content-Type: application/json" -H "X-CSRF-ZOSMF-HEADER: A" --user $ZOSMF_USER:$ZOSMF_PASS --cacert ~/.marist/pubcert.crt --ciphers DEFAULT@SECLEVEL=1)
     sh scripts/check_response.sh "${RESP}" $?
     if [ $? -gt 0 ]; then exit -1; fi
   fi
@@ -97,14 +97,14 @@ fi
 # Add workflow to ZOWE data sets
 echo "Checking if WORKFLOW data set already exists."
 
-RESP=$(curl -s $CHECK_WORKFLOW_DSN_URL -k -X "GET" -H "Content-Type: application/json" -H "X-CSRF-ZOSMF-HEADER: A" --user $ZOSMF_USER:$ZOSMF_PASS)
+RESP=$(curl -s $CHECK_WORKFLOW_DSN_URL -X "GET" -H "Content-Type: application/json" -H "X-CSRF-ZOSMF-HEADER: A" --user $ZOSMF_USER:$ZOSMF_PASS --cacert ~/.marist/pubcert.crt --ciphers DEFAULT@SECLEVEL=1)
 DS_COUNT=$(echo $RESP | grep -o '"returnedRows":[0-9]*' | cut -f2 -d:)
 if [ $DS_COUNT -ne 0 ]; then
   echo "The ${WORKFLOW_DSN} already exist. Because there is a possibility that it contains something unwanted the script does not continue." >>$LOG_DIR/report.txt
   exit -1
 else
   echo "Creating a data set where the post-Deployment workflow will be stored."
-  RESP=$(curl -s $WORKFLOW_DSN_URL -k -X "POST" -d "$ADD_WORKFLOW_DSN_JSON" -H "Content-Type: application/json" -H "X-CSRF-ZOSMF-HEADER: A" --user $ZOSMF_USER:$ZOSMF_PASS)
+  RESP=$(curl -s $WORKFLOW_DSN_URL -X "POST" -d "$ADD_WORKFLOW_DSN_JSON" -H "Content-Type: application/json" -H "X-CSRF-ZOSMF-HEADER: A" --user $ZOSMF_USER:$ZOSMF_PASS --cacert ~/.marist/pubcert.crt --ciphers DEFAULT@SECLEVEL=1)
   if [ -n "$RESP" ]; then
     echo "The creation of the ${WORKFLOW_DSN} was not successful. Error message: ${RESP}" >>$LOG_DIR/report.txt
     exit -1
@@ -172,14 +172,14 @@ rm JCL
 # Add data set for export jobs
 echo "Checking if the data set for export jobs already exists."
 
-RESP=$(curl -s $CHECK_EXPORT_DSN_URL -k -X "GET" -H "Content-Type: application/json" -H "X-CSRF-ZOSMF-HEADER: A" --user $ZOSMF_USER:$ZOSMF_PASS)
+RESP=$(curl -s $CHECK_EXPORT_DSN_URL -X "GET" -H "Content-Type: application/json" -H "X-CSRF-ZOSMF-HEADER: A" --user $ZOSMF_USER:$ZOSMF_PASS --cacert ~/.marist/pubcert.crt --ciphers DEFAULT@SECLEVEL=1)
 DSN_COUNT=$(echo $RESP | grep -o '"returnedRows":[0-9]*' | cut -f2 -d:)
 if [ $DSN_COUNT -ne 0 ]; then
   echo "The ${EXPORT_DSN} already exist. Because there is a possibility that it contains something unwanted the script does not continue." >>$LOG_DIR/report.txt
   exit -1
 else
   echo "Creating a data set where the export jobs will be stored."
-  RESP=$(curl -s $EXPORT_DSN_URL -k -X "POST" -d "$ADD_EXPORT_DSN_JSON" -H "Content-Type: application/json" -H "X-CSRF-ZOSMF-HEADER: A" --user $ZOSMF_USER:$ZOSMF_PASS)
+  RESP=$(curl -s $EXPORT_DSN_URL -X "POST" -d "$ADD_EXPORT_DSN_JSON" -H "Content-Type: application/json" -H "X-CSRF-ZOSMF-HEADER: A" --user $ZOSMF_USER:$ZOSMF_PASS --cacert ~/.marist/pubcert.crt --ciphers DEFAULT@SECLEVEL=1)
   if [ -n "$RESP" ]; then
     echo "The creation of the ${EXPORT_DSN} was not successful. Error message: ${RESP}"
   fi
@@ -189,12 +189,12 @@ fi
 # No check of return code because if it does not exist the script would fail (return code 404)
 echo 'Invoking REST API to delete the software instance if the previous test did not delete it.'
 
-curl -s $DELETE_SWI_URL -k -X "DELETE" -H "Content-Type: application/json" -H "X-CSRF-ZOSMF-HEADER: A" --user $ZOSMF_USER:$ZOSMF_PASS
+curl -s $DELETE_SWI_URL -X "DELETE" -H "Content-Type: application/json" -H "X-CSRF-ZOSMF-HEADER: A" --user $ZOSMF_USER:$ZOSMF_PASS --cacert ~/.marist/pubcert.crt --ciphers DEFAULT@SECLEVEL=1
 
 # Add Software Instance
 echo 'Invoking REST API to add a Software Instance.'
 
-RESP=$(curl -s $ADD_SWI_URL -k -X "POST" -d "$ADD_SWI_JSON" -H "Content-Type: application/json" -H "X-CSRF-ZOSMF-HEADER: A" --user $ZOSMF_USER:$ZOSMF_PASS)
+RESP=$(curl -s $ADD_SWI_URL -X "POST" -d "$ADD_SWI_JSON" -H "Content-Type: application/json" -H "X-CSRF-ZOSMF-HEADER: A" --user $ZOSMF_USER:$ZOSMF_PASS --cacert ~/.marist/pubcert.crt --ciphers DEFAULT@SECLEVEL=1)
 sh scripts/check_response.sh "${RESP}" $?
 if [ $? -gt 0 ]; then exit -1; fi
 
@@ -203,7 +203,7 @@ if [ $? -gt 0 ]; then exit -1; fi
 # On statusurl can be checked actual status of loading the products, features, and FMIDs
 echo 'Invoking REST API to load SMP/E managed products from the SMP/E CSI.'
 
-RESP=$(curl -s $LOAD_PRODUCTS_URL -k -X "PUT" -H "Content-Type: application/json" -H "X-CSRF-ZOSMF-HEADER: A" --user $ZOSMF_USER:$ZOSMF_PASS)
+RESP=$(curl -s $LOAD_PRODUCTS_URL -X "PUT" -H "Content-Type: application/json" -H "X-CSRF-ZOSMF-HEADER: A" --user $ZOSMF_USER:$ZOSMF_PASS --cacert ~/.marist/pubcert.crt --ciphers DEFAULT@SECLEVEL=1)
 sh scripts/check_response.sh "${RESP}" $?
 if [ $? -gt 0 ]; then exit -1; fi
 
@@ -218,7 +218,7 @@ echo 'Invoking REST API to check if load products has finished.'
 
 STATUS=""
 until [ "$STATUS" = "complete" ]; do
-  RESP=$(curl -s $LOAD_STATUS_URL -k -X "GET" -H "Content-Type: application/json" -H "X-CSRF-ZOSMF-HEADER: A" --user $ZOSMF_USER:$ZOSMF_PASS)
+  RESP=$(curl -s $LOAD_STATUS_URL -X "GET" -H "Content-Type: application/json" -H "X-CSRF-ZOSMF-HEADER: A" --user $ZOSMF_USER:$ZOSMF_PASS --cacert ~/.marist/pubcert.crt --ciphers DEFAULT@SECLEVEL=1)
   sh scripts/check_response.sh "${RESP}" $?
   if [ $? -gt 0 ]; then exit -1; fi
   STATUS=$(echo $RESP | grep -o '"status":".*"' | cut -f4 -d\")
@@ -231,7 +231,7 @@ echo "Load Products finished successfully."
 # The response is in format "statusurl":"https:\/\/:ZOSMF_URL:post\/restofurl"
 echo 'Invoking REST API to export the software instance.'
 
-RESP=$(curl -s $EXPORT_JCL_URL -k -X "POST" -d "$EXPORT_JCL_JSON" -H "Content-Type: application/json" -H "X-CSRF-ZOSMF-HEADER: A" --user $ZOSMF_USER:$ZOSMF_PASS)
+RESP=$(curl -s $EXPORT_JCL_URL -X "POST" -d "$EXPORT_JCL_JSON" -H "Content-Type: application/json" -H "X-CSRF-ZOSMF-HEADER: A" --user $ZOSMF_USER:$ZOSMF_PASS --cacert ~/.marist/pubcert.crt --ciphers DEFAULT@SECLEVEL=1)
 sh scripts/check_response.sh "${RESP}" $?
 if [ $? -gt 0 ]; then exit -1; fi
 EXPORT_STATUS_URL=$(echo $RESP | grep -o '"statusurl":".*"' | cut -f4 -d\" | tr -d '\' 2>/dev/null)
@@ -246,7 +246,7 @@ echo 'Invoking REST API to check if export has finished.'
 STATUS=""
 until [ "$STATUS" = "complete" ]; do
   # Status is not shown until the recentage is not 100
-  RESP=$(curl -s $EXPORT_STATUS_URL -k -X "GET" -H "Content-Type: application/json" -H "X-CSRF-ZOSMF-HEADER: A" --user $ZOSMF_USER:$ZOSMF_PASS)
+  RESP=$(curl -s $EXPORT_STATUS_URL -X "GET" -H "Content-Type: application/json" -H "X-CSRF-ZOSMF-HEADER: A" --user $ZOSMF_USER:$ZOSMF_PASS --cacert ~/.marist/pubcert.crt --ciphers DEFAULT@SECLEVEL=1)
   sh scripts/check_response.sh "${RESP}" $?
   if [ $? -gt 0 ]; then exit -1; fi
   PERCENTAGE=$(echo ${RESP} | grep -o '"percentcomplete":".*"' | cut -f4 -d\")
@@ -273,7 +273,7 @@ if [ -z "$DSN" ]; then
 fi
 
 echo "Downloading export JCL"
-curl -s ${BASE_URL}/zosmf/restfiles/ds/${DSN} -k -X "GET" -H "Content-Type: application/json" -H "X-CSRF-ZOSMF-HEADER: A" --user $ZOSMF_USER:$ZOSMF_PASS >EXPORT
+curl -s ${BASE_URL}/zosmf/restfiles/ds/${DSN} -X "GET" -H "Content-Type: application/json" -H "X-CSRF-ZOSMF-HEADER: A" --user $ZOSMF_USER:$ZOSMF_PASS --cacert ~/.marist/pubcert.crt --ciphers DEFAULT@SECLEVEL=1 >EXPORT
 
 echo "Showing EXPORT JCL how it looks before the change"
 #if [ "$ZOSMF_V" = "2.3" ]
