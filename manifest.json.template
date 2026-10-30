@@ -16,8 +16,8 @@
       "artifact": "zowe-server-*.pax.Z"
     },
     "org.zowe.zlux.zlux-core": {
-      "version": "^3.0.0-V3.X-STAGING",
-      "artifact": "*.pax"
+      "version": "^3.6.0-zlux-shared-PR-62",
+      "artifact": "zlux-core-3.6.0-20261030.132328.pax"
     },
     "org.zowe.zlux.sample-angular-app": {
       "version": "^3.0.0-V3.X-STAGING",
@@ -54,7 +54,7 @@
       "version": "^3.0.0-SNAPSHOT"
     },
     "org.zowe.explorer-uss": {
-      "version": "^3.0.0-SNAPSHOT"
+      "version": "^3.0.7-PR-221"
     },
     "org.zowe.explorer-ip": {
       "version": "^3.0.0-SNAPSHOT",
