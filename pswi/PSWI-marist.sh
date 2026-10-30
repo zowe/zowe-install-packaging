@@ -17,6 +17,18 @@ mkdir -p $LOG_DIR
 export TZONE="TZONE"
 export DZONE="DZONE"
 
+# set Marist as a known host
+mkdir -p ~/.ssh
+chmod 700 ~/.ssh
+echo "${MARIST_PUBKEY}" >> ~/.ssh/known_hosts
+chmod 644 ~/.ssh/known_hosts
+
+# Store the public certificate for Marist's z/OSMF server
+mkdir -p ~/.marist
+chmod 700 ~/.marist
+echo "${MARIST_PUBCERT}" > ~/.marist/pubcert.crt
+chmod 644 ~/.marist/pubcert.crt
+
 export JOBNAME="ZWEPSWI1"
 if [ -n "$ACCOUNT" ]; then
   export JOBST1="//"${JOBNAME}" JOB ("${ACCOUNT}"),'PSWI',MSGCLASS=A,REGION=0M"

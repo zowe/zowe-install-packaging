@@ -38,7 +38,7 @@ ADD_WORKFLOW_JSON='{"workflowName":"'$PTF_WF_NAME'",
 
 cd workflows
 
-sshpass -p${ZOSMF_PASS} sftp -o HostKeyAlgorithms=+ssh-rsa -o BatchMode=no -o StrictHostKeyChecking=no -o PubkeyAuthentication=no -b - -P ${ZZOW_SSH_PORT} ${ZOSMF_USER}@${HOST} <<EOF
+sshpass -e sftp -o HostKeyAlgorithms=+ssh-rsa -o BatchMode=no -o StrictHostKeyChecking=yes -o PubkeyAuthentication=no -b - -P ${ZZOW_SSH_PORT} ${ZOSMF_USER}@${HOST} <<EOF
 cd ${DIR}
 put WFPTF
 EOF
@@ -47,21 +47,21 @@ cd ..
 # Get workflowKey for PTF workflow owned by user
 echo "Get workflowKey for PTF workflow if it exists."
 
-RESP=$(curl -s $PTF_WF_LIST_URL -k -X "GET" -H "Content-Type: application/json" -H "X-CSRF-ZOSMF-HEADER: A" --user $ZOSMF_USER:$ZOSMF_PASS)
+RESP=$(curl -s $PTF_WF_LIST_URL -X "GET" -H "Content-Type: application/json" -H "X-CSRF-ZOSMF-HEADER: A" --user $ZOSMF_USER:$ZOSMF_PASS --cacert ~/.marist/pubcert.crt --ciphers DEFAULT@SECLEVEL=1)
 WFKEY=$(echo $RESP | grep -o '"workflowKey":".*"' | cut -f4 -d\")
 
 if [ -n "$WFKEY" ]; then
   PTF_WORKFLOW_URL="${CREATE_PTF_WF_URL}/${WFKEY}"
 
   echo "Deleting a PTF workflow."
-  RESP=$(curl -s $PTF_WORKFLOW_URL -k -X "DELETE" -H "Content-Type: application/json" -H "X-CSRF-ZOSMF-HEADER: A" --user $ZOSMF_USER:$ZOSMF_PASS)
+  RESP=$(curl -s $PTF_WORKFLOW_URL -X "DELETE" -H "Content-Type: application/json" -H "X-CSRF-ZOSMF-HEADER: A" --user $ZOSMF_USER:$ZOSMF_PASS --cacert ~/.marist/pubcert.crt --ciphers DEFAULT@SECLEVEL=1)
   sh scripts/check_response.sh "${RESP}" $?
 fi
 
 # Create workflow with REST API
 echo 'Invoking REST API to create ptf workflow.'
 
-RESP=$(curl -s $CREATE_PTF_WF_URL -k -X "POST" -d "$ADD_WORKFLOW_JSON" -H "Content-Type: application/json" -H "X-CSRF-ZOSMF-HEADER: A" --user $ZOSMF_USER:$ZOSMF_PASS)
+RESP=$(curl -s $CREATE_PTF_WF_URL -X "POST" -d "$ADD_WORKFLOW_JSON" -H "Content-Type: application/json" -H "X-CSRF-ZOSMF-HEADER: A" --user $ZOSMF_USER:$ZOSMF_PASS --cacert ~/.marist/pubcert.crt --ciphers DEFAULT@SECLEVEL=1)
 sh scripts/check_response.sh "${RESP}" $?
 if [ $? -gt 0 ]; then exit -1; fi
 WFKEY=$(echo $RESP | grep -o '"workflowKey":".*"' | cut -f4 -d\")
@@ -70,7 +70,7 @@ WORKFLOW_URL="${CREATE_PTF_WF_URL}/${WFKEY}"
 # Run workflow
 echo "Invoking REST API to start a PTF apply workflow."
 
-RESP=$(curl -s ${WORKFLOW_URL}/operations/start -k -X "PUT" -d "{}" -H "Content-Type: application/json" -H "X-CSRF-ZOSMF-HEADER: A" --user $ZOSMF_USER:$ZOSMF_PASS)
+RESP=$(curl -s ${WORKFLOW_URL}/operations/start -X "PUT" -d "{}" -H "Content-Type: application/json" -H "X-CSRF-ZOSMF-HEADER: A" --user $ZOSMF_USER:$ZOSMF_PASS --cacert ~/.marist/pubcert.crt --ciphers DEFAULT@SECLEVEL=1)
 sh scripts/check_response.sh "${RESP}" $?
 if [ $? -gt 0 ]; then exit -1; fi
 STATUS=""
@@ -78,7 +78,7 @@ until [ "$STATUS" = "FINISHED" ]; do
   sleep 20
 
   # Get the result of the workflow
-  RESP=$(curl -s ${WORKFLOW_URL} -k -X "GET" -H "Content-Type: application/json" -H "X-CSRF-ZOSMF-HEADER: A" --user $ZOSMF_USER:$ZOSMF_PASS)
+  RESP=$(curl -s ${WORKFLOW_URL} -X "GET" -H "Content-Type: application/json" -H "X-CSRF-ZOSMF-HEADER: A" --user $ZOSMF_USER:$ZOSMF_PASS --cacert ~/.marist/pubcert.crt --ciphers DEFAULT@SECLEVEL=1)
   if [ $? -gt 0 ]; then exit -1; fi
 
   STATUS_NAME=$(echo $RESP | grep -o '"statusName":".*"' | cut -f4 -d\")
