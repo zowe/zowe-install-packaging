@@ -47,10 +47,11 @@ restricts it.
 zowe.setup.security.groups.stc / .admin
 
 Why <stc> gets UPDATE to the dataset profile: the zFS is a
-VSAM data set. z/OS requires UPDATE access to extend the zFS when
-it needs more disk space (for example, when log files grow).
-With READ only, Zowe cannot grow the filesystem, and you will see
-"file system full" errors when the zFS is out of space.
+VSAM data set. z/OS requires UPDATE access to extend the zFS
+when it needs more disk space (for example, when log files
+grow). With READ only, Zowe cannot grow the filesystem, 
+and you will see "file system full" errors when the 
+zFS is out of space.
 
 RACF:
 1. PERMIT '<prefix>.*.**' CLASS(DATASET) GENERIC +
