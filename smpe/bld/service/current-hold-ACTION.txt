@@ -95,3 +95,19 @@ does not change existing directories.
 2. Reset the permissions:
    chmod -R 755 .
    This is the permission the PTF now sets for new installs.
+
+****************************************************************
+* Affected function: Zowe Configuration.                       *
+****************************************************************
+* Description: review community breaking changes               *
+****************************************************************
+* Timing: post-APPLY                                           *
+****************************************************************
+* Part: zowe.yaml.                                             *
+****************************************************************
+
+There may be other breaking changes you should be aware of 
+depending on your environment and configuration. 
+To see the latest list of breaking changes, visit 
+https://docs.zowe.org/stable/whats-new/zowe-announcements 
+and view the 3.6.0 release notes.
