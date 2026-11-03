@@ -29,3 +29,68 @@ zowe:
     allowedDomains:
       - "example.com"
       - "*.another-domain.com"
+
+****************************************************************
+* Affected function: Zowe data set security                    *
+****************************************************************
+* Description: restrict public access to Zowe data sets        *
+****************************************************************
+* Timing: post-APPLY                                           *
+****************************************************************
+* Part: not applicable                                         *
+****************************************************************
+The PTF fixes new installs only. Existing installs keep public
+access to all Zowe data sets until a security administrator
+restricts it.
+
+<prefix>, <stc>, <admin>: zowe.setup.dataset.prefix and
+zowe.setup.security.groups.stc / .admin
+
+Why <stc> gets UPDATE to the dataset profile: the zFS is a
+VSAM data set. z/OS requires UPDATE access to extend the zFS when
+it needs more disk space (for example, when log files grow).
+With READ only, Zowe cannot grow the filesystem, and you will see
+"file system full" errors when the zFS is out of space.
+
+RACF:
+1. PERMIT '<prefix>.*.**' CLASS(DATASET) GENERIC +
+     ID(<stc>) ACCESS(UPDATE)
+2. PERMIT '<prefix>.*.**' CLASS(DATASET) GENERIC +
+     ID(<admin>) ACCESS(READ)
+3. ALTDSD '<prefix>.*.**' GENERIC UACC(NONE)
+4. SETROPTS GENERIC(DATASET) REFRESH
+5. LISTDSD DATASET('<prefix>.*.**') GENERIC ALL
+
+Top Secret:
+1. TSS PERMIT(<stc>) DATASET(<prefix>) ACCESS(UPDATE)
+2. TSS PERMIT(<admin>) DATASET(<prefix>) ACCESS(READ)
+3. TSS REVOKE(ALL) DATASET(<prefix>)
+4. TSS WHOHAS DATASET(<prefix>)
+
+ACF2:
+1. ACF
+2. SET RULE
+3. LIST <prefix>
+4. RECKEY <prefix> DEL(- ROLE(-) READ(A) EXEC(A))
+   Copy the public entry exactly as listed. For a prefix
+   with several qualifiers, key = first qualifier,
+   entry = <rest>.-
+5. LIST <prefix>
+
+****************************************************************
+* Affected function: Zowe USS permissions                      *
+****************************************************************
+* Description: reset permissions (z/OSMF PSWI installs)        *
+****************************************************************
+* Timing: post-APPLY                                           *
+****************************************************************
+* Part: Zowe runtime directory                                 *
+****************************************************************
+Applies only if Zowe was installed with z/OSMF PSWI. The PTF
+does not change existing directories.
+
+1. In a z/OS UNIX shell, go to your Zowe runtime directory:
+   cd /path/to/zowe
+2. Reset the permissions:
+   chmod -R 755 .
+   This is the permission the PTF now sets for new installs.
