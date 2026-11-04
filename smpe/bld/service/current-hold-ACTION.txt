@@ -28,7 +28,7 @@ zowe:
   network:
     allowedDomains:
       - "example.com"
-      - "*.another-domain.com"
+      - "*.example.org"
 
 ****************************************************************
 * Affected function: Zowe data set security                    *
@@ -74,8 +74,8 @@ ACF2:
 3. LIST <prefix>
 4. RECKEY <prefix> DEL(- ROLE(-) READ(A) EXEC(A))
    Copy the public entry exactly as listed. For a prefix
-   with several qualifiers, key = first qualifier,
-   entry = <rest>.-
+   with several qualifiers, such as MYHLQ.ZWE.PREFIX,
+   key = <hlq>, entry = <rest>.-
 5. LIST <prefix>
 
 ****************************************************************
