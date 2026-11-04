@@ -103,7 +103,7 @@ does not change existing directories.
 ****************************************************************
 * Timing: post-APPLY                                           *
 ****************************************************************
-* Part: zowe.yaml.                                             *
+* Part: zowe.yaml                                              *
 ****************************************************************
 
 There may be other breaking changes you should be aware of 
