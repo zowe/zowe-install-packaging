@@ -15,7 +15,7 @@ the metadata of services registering to the API ML Discovery
 Service.
 
 Subdomains are supported using an asterisk wildcard (e.g.,
-"*.example.com"). Without a wildcard, the domain must be a
+"*.example.org"). Without a wildcard, the domain must be a
 strict match.
 
 By default, this list includes the "externalDomains" already
