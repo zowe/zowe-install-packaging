@@ -329,10 +329,8 @@ some use cases, like containerization, this port could be different.</descriptio
         <abstract>Certificate keystore password.</abstract>
         <description>Certificate keystore password.</description>
         <category>certificates</category>
-        <string valueMustBeChoice="false" multiLine="false">
-            <!-- Put validation here -->
-            <default>password</default>
-        </string>
+        <password>
+        </password>
     </variable>
     <variable name="zowe_certificate_keystore_alias" scope="instance" visibility="public">
         <label>Zowe certificate keystore alias</label>
@@ -374,11 +372,8 @@ some use cases, like containerization, this port could be different.</descriptio
         <abstract>Password for the certificate truststore</abstract>
         <description>Password for the certificate truststore</description>
         <category>certificates</category>
-        <string valueMustBeChoice="false" multiLine="false">
-            <!-- Put validation here -->
-            <!-- Specify choices here -->
-            <default>password</default>
-        </string>
+        <password>
+        </password>
     </variable>
     <variable name="java_home" scope="instance" visibility="public">
         <label>JAVA home</label>
