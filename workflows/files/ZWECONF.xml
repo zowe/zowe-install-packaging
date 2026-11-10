@@ -1457,6 +1457,14 @@ How we want to verify SSL certificates of services. Valid values are:
         <canMarkAsFailed>false</canMarkAsFailed>
         <template>
             <inlineTemplate substitution="true"><![CDATA[
+# ==============================================================================
+# FUNCTION DEFINITIONS
+# ==============================================================================
+trace_off() { { set +x; } 2>/dev/null; }
+trace_on()  { set -x; }
+# ==============================================================================
+# MAIN SCRIPT
+# ==============================================================================
 set -e
 set -x
 
