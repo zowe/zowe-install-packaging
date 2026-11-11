@@ -68,6 +68,7 @@ export const STARTUP_CHECK_BUILTIN_ACTIONS: { [check: string]: StartupCheckActio
   javaMax: 'warn',
   nodeMax: 'warn',
   attls: 'warn',
+  zosmfjwt: 'warn'
 };
 
 /** Every startup check known to zwe, used to report the effective startup check configuration. */
