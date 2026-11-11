@@ -2,6 +2,9 @@
 
 All notable changes to the Zowe Installer will be documented in this file.
 
+## `3.7.0`
+- Bugfix: Zowe startup now continues when the z/OSMF JWT validation fails and `zowe.launchScript.startupChecks.zosmfjwt` is set to `warn`. [#4???](https://github.com/zowe/zowe-install-packaging/pull/4???)
+
 ## `3.6.0`
 
 - Enhancement: APIML modulith debug logging configuration added to the `example-zowe.yaml`. [#4913](https://github.com/zowe/zowe-install-packaging/pull/4913)
