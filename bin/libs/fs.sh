@@ -81,6 +81,17 @@ get_tmp_rand() {
   printf '%x%x' "${$}" "${RANDOM}"
 }
 
+# Emit 8 random hex characters.  Reads 4 bytes from /dev/urandom when
+# available; fails otherwise.
+get_sec_rand() {
+  if [ -r /dev/urandom ]; then
+    _r=$(od -A n -t x8 -N 8 /dev/urandom 2>/dev/null | tr -d ' \n')
+    [ -n "${_r}" ] && { printf '%s' "${_r}"; return 0; }
+  fi
+  print_error "    - Error: /dev/urandom is not available."
+  exit 114
+}
+
 create_tmp_file() {
   prefix=${1:-zwe}
   tmpdir=${2:-}
