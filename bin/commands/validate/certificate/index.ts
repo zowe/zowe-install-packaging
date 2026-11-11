@@ -362,7 +362,6 @@ export function execute(quitOnError?: boolean, level?: string): number {
 
   let keyringUser;
   if (keystoreType.startsWith('JCE') && keystoreType.endsWith('RACFKS')) {
-    keystoreLocation = keystoreLocation.replace('safkeyring', 'safkeyring'+keystoreType.toLowerCase().substring(0, keystoreType.length - 'RACFKS'.length));
     try {
       keyringUser = keystoreLocation.split('://')[1].split('/')[0];
     } catch (e) {
@@ -377,7 +376,6 @@ export function execute(quitOnError?: boolean, level?: string): number {
     common.printFormattedWarn(common.MSG_KEY, COMMAND_NAME, `Keystore unknown type ${keystoreType}`);
   }
   if (truststoreType.startsWith('JCE') && truststoreType.endsWith('RACFKS')) {
-    truststoreLocation = truststoreLocation.replace('safkeyring', 'safkeyring'+truststoreType.toLowerCase().substring(0, truststoreType.length - 'RACFKS'.length));
     if (!keyringUser) {
       try {
         keyringUser = truststoreLocation.split('://')[1].split('/')[0];
