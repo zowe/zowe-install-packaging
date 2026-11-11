@@ -73,7 +73,7 @@ export function execute(quitOnError?: boolean): number {
 
   const runtimeDir = std.getenv('ZWE_zowe_runtimeDirectory');
   const jarPath = `${runtimeDir}/bin/utils/certificate-analyser.jar`;
-  const jvmSecPropsPath = `${runtimeDir}/components/apiml-common-lib/bin/jvm.security.override.properties`
+  const jvmSecPropsPath = `${runtimeDir}/components/apiml-common-lib/bin/jvm.security.override.properties`;
 
 
   // Collect truststore parameters from the Zowe YAML.
