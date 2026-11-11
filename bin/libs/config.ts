@@ -47,32 +47,80 @@ export function getZoweConfig(): any {
   return configmgr.getZoweConfig();
 }
 
+export type StartupCheckAction = 'exit' | 'warn' | 'disabled';
+export type StartupCheckSource = 'check' | 'default' | 'builtin';
+
+/**
+ * Built-in behavior for startup checks when the user has not configured either
+ * zowe.launchScript.startupChecks.<check> or zowe.launchScript.startupChecks.default.
+ *
+ * Checks which are new, or which may be unreliable in some environments, are set to "warn" here so
+ * that adding them does not prevent a Zowe instance which previously started from starting.
+ * Checks not listed here fall back to "exit". To promote a check to "exit", remove it from this list.
+ *
+ * Do NOT set these values in files/defaults.yaml: the merged config cannot distinguish values set by
+ * defaults.yaml from values set by the user, and any per-check value there overrides the user's
+ * startupChecks.default.
+ */
+export const STARTUP_CHECK_BUILTIN_ACTIONS: { [check: string]: StartupCheckAction } = {
+  certificate: 'warn',
+  components: 'warn',
+  javaMax: 'warn',
+  nodeMax: 'warn',
+  attls: 'warn',
+};
+
+/** Every startup check known to zwe, used to report the effective startup check configuration. */
+export const STARTUP_CHECKS: string[] = [
+  'user', 'ports', 'zosmf', 'zosmfjwt', 'certificate', 'components', 'javaMin', 'javaMax', 'nodeMin', 'nodeMax', 'attls'
+];
+
+const STARTUP_CHECK_ACTIONS: string[] = ['exit', 'warn', 'disabled'];
+
+/**
+ * Resolves the action for a startup check. Precedence:
+ *   1. zowe.launchScript.startupChecks.<check>
+ *   2. zowe.launchScript.startupChecks.default
+ *   3. STARTUP_CHECK_BUILTIN_ACTIONS[<check>]
+ *   4. "exit"
+ */
+export function getStartupCheckAction(property: string): { action: StartupCheckAction, source: StartupCheckSource } {
+  const startupChecks = getZoweConfig().zowe.launchScript?.startupChecks;
+
+  const checkValue = startupChecks?.[property];
+  if (checkValue != null && STARTUP_CHECK_ACTIONS.includes(checkValue)) {
+    return { action: checkValue, source: 'check' };
+  }
+  const defaultValue = startupChecks?.default;
+  if (defaultValue != null && STARTUP_CHECK_ACTIONS.includes(defaultValue)) {
+    return { action: defaultValue, source: 'default' };
+  }
+  return { action: STARTUP_CHECK_BUILTIN_ACTIONS[property] || 'exit', source: 'builtin' };
+}
+
 export function getStartupCheckMode(property: string): {doCheck: boolean, warnOnly: boolean} {
-  const zoweConfig = getZoweConfig();
-  let doCheck = true;
-  let warnOnly = false;
+  const { action } = getStartupCheckAction(property);
+  return { doCheck: action != 'disabled', warnOnly: action == 'warn' };
+}
 
-  // set defaults
-  if (zoweConfig.zowe.launchScript?.startupChecks?.default) {
-    let value = zoweConfig.zowe.launchScript?.startupChecks.default;
-    if (value == 'disabled') {
-      doCheck = false;
-    } 
-    if (value == 'warn') {
-      warnOnly = true;
+/**
+ * Logs the effective action of every startup check and where the action came from, so users can see
+ * the behavior of checks they have not configured.
+ */
+export function printStartupCheckModes(logger: string): void {
+  const lines = STARTUP_CHECKS.map((check) => {
+    const { action, source } = getStartupCheckAction(check);
+    let origin: string;
+    if (source == 'check') {
+      origin = `set by zowe.launchScript.startupChecks.${check}`;
+    } else if (source == 'default') {
+      origin = 'set by zowe.launchScript.startupChecks.default';
+    } else {
+      origin = `built-in default, override with zowe.launchScript.startupChecks.${check} or zowe.launchScript.startupChecks.default`;
     }
-  }
-
-  // per-startup-check override
-  if (zoweConfig.zowe.launchScript?.startupChecks) {
-    let value = zoweConfig.zowe.launchScript?.startupChecks[property];
-    if (value != null) {
-      doCheck = value != 'disabled';
-      warnOnly = value == 'warn';
-    }
-  }
-
-  return {doCheck, warnOnly};
+    return `  ${check}: ${action} (${origin})`;
+  });
+  common.printFormattedInfo('ZWELS', logger, `Startup check configuration:\n${lines.join('\n')}`);
 }
 
 export function ensureProperty(jqKey: string): any {

@@ -307,7 +307,7 @@ zowe:
       # components: "warn"
       # # Superuser startup check - defaults to zowe.launchScript.startupChecks.default, or "exit" if this is unset
       # user: exit
-      # # Certificate check - defaults to zowe.launchScript.startupChecks.default, or "exit" if this is unset
+      # # Certificate check - defaults to zowe.launchScript.startupChecks.default, or "warn" if this is unset
       # certificate: warn
       # # Java runtime version checks - max version is set to warn by default to allow for future Java versions to be supported.
       # javaMin: exit
