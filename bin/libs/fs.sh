@@ -85,7 +85,7 @@ get_tmp_rand() {
 # available; fails otherwise.
 get_sec_rand() {
   if [ -r /dev/urandom ]; then
-    _r=$(od -A n -t x4 -N 4 /dev/urandom 2>/dev/null | tr -d ' \n')
+    _r=$(od -A n -t x8 -N 8 /dev/urandom 2>/dev/null | tr -d ' \n')
     [ -n "${_r}" ] && { printf '%s' "${_r}"; return 0; }
   fi
   print_error "    - Error: /dev/urandom is not available."

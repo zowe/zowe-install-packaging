@@ -1189,7 +1189,7 @@ keyring_export_to_pkcs12() {
     # ":env" password modifier. A caller-script failure can leave this temp file
     # on disk past this function's return (see the caller's cleanup), so this
     # value protects it instead of the real keystore password.
-    keyring_temp_password="$(get_sec_rand)$(get_sec_rand)"
+    keyring_temp_password="$(get_sec_rand)"
     if [ $? -ne 0 ]; then
       keyring_temp_password=
       return 114

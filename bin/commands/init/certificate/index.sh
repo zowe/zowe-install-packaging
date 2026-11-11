@@ -101,7 +101,7 @@ if [ "${cert_type}" = "PKCS12" ]; then
   pkcs12_password_generated=false
   pkcs12_caPassword_generated=false
   if [ "${pkcs12_password}" = "password" ]; then
-    pkcs12_password="a$(get_sec_rand)$(get_sec_rand)"
+    pkcs12_password="a$(get_sec_rand)"
     if [ $? -ne 0 ]; then
       exit 114
     fi
@@ -288,7 +288,7 @@ if [ "${cert_type}" = "PKCS12" ]; then
     pkcs12_caPassword=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.setup.certificate.pkcs12.caPassword")
     # replace the well-known schema default so a stock init doesn't ship a guessable CA password
     if [ "${pkcs12_caPassword}" = "local_ca_password" ]; then
-      pkcs12_caPassword="a$(get_sec_rand)$(get_sec_rand)"
+      pkcs12_caPassword="a$(get_sec_rand)"
       if [ $? -ne 0 ]; then
         exit 114
       fi
