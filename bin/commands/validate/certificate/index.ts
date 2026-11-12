@@ -357,8 +357,8 @@ export function execute(quitOnError?: boolean, level?: string): number {
   const keystorePass = ZOWE_CONFIG.zowe.certificate.keystore.password;
   const truststoreType = ZOWE_CONFIG.zowe.certificate.truststore.type;
   const truststorePass = ZOWE_CONFIG.zowe.certificate.truststore.password;
-  let keystoreLocation = ZOWE_CONFIG.zowe.certificate.keystore.file;
-  let truststoreLocation = ZOWE_CONFIG.zowe.certificate.truststore.file;
+  const keystoreLocation = ZOWE_CONFIG.zowe.certificate.keystore.file;
+  const truststoreLocation = ZOWE_CONFIG.zowe.certificate.truststore.file;
 
   let keyringUser;
   if (keystoreType.startsWith('JCE') && keystoreType.endsWith('RACFKS')) {
