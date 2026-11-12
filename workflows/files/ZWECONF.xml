@@ -1799,7 +1799,7 @@ echo '      # # Component manifest check - validates that each component defined
 echo '      # components: "warn"' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
 echo '      # # Superuser startup check - defaults to zowe.launchScript.startupChecks.default, or "exit" if this is unset' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
 echo '      # user: exit' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
-echo '      # # Certificate check - defaults to zowe.launchScript.startupChecks.default, or "exit" if this is unset' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
+echo '      # # Certificate check - defaults to zowe.launchScript.startupChecks.default, or "warn" if this is unset' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
 echo '      # certificate: warn' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
 echo '      # # Java runtime version checks - max version is set to warn by default to allow for future Java versions to be supported.'>> "${instance-zowe_workspaceDirectory}/zowe.yaml"
 echo '      # javaMin: exit' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"

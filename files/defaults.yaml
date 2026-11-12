@@ -130,31 +130,6 @@ zowe:
     logLevel: "info"
     # Set to "exit" if you'd like startup to exit if any component has an error in the configure stage, otherwise zwe will warn but continue.
     onComponentConfigureFail: "warn"
-    # Startup checks which run as part of the Zowe STC, prior to Zowe component startup.
-    startupChecks:
-      # Default check behavior may be one of "exit", "warn", or "disabled"
-      default: "exit"
-      # # Individual startup checks will override the default behavior
-      # # Port check - defaults to zowe.launchScript.startupChecks.default, or "exit" if this is unset
-      # ports: exit
-      # # z/OSMF startup check - defaults to zowe.launchScript.startupChecks.default, or "exit" if this is unset
-      # zosmf: exit
-      # Component manifest check - validates that each component defined in zowe.yaml has a manifest file.
-      components: "warn"
-      # # Superuser startup check - defaults to zowe.launchScript.startupChecks.default, or "exit" if this is unset
-      # user: exit
-      # z/OSMF JWT support check - checks whether z/OSMF JWT support is usable when Zowe is configured to use it
-      # zosmfjwt: exit
-      # # Certificate (zowe.certificate) validation check - defaults to zowe.launchScript.startupChecks.default, or "exit" if this is unset
-      # certificate: exit
-      # # Java runtime version checks - max version is set to warn by default to allow for future Java versions to be supported.
-      # javaMin: exit
-      # javaMax: warn
-      # # Node runtime version checks - max version is set to warn by default to allow for future Node versions to be supported.
-      # nodeMin: exit
-      # nodeMax: warn
-      # # ATTLS (Application Transparent Transport Layer Security) port check - defaults to "warn"
-      attls: "warn"
 
   # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   # How we want to verify SSL certificates of services. Valid values are:
