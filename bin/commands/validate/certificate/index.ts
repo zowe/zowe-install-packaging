@@ -60,17 +60,11 @@ function processCertificateAnalyserNonZeroOutput(
 
   if (output.includes('unknown protocol: ')) {
     configInvalid = VALIDATION_ERROR;
-    const protocolLine = configLines.filter((line) => line.includes('IRRSDL00'))[0];
-    
+    const protocolLine = configLines.filter((line) => line.includes('unknown protocol:'))[0];
     common.printFormattedError(common.MSG_KEY, COMMAND_NAME, protocolLine);
-    let matchesTruststore = protocolLine.indexOf('safkeyring'+truststoreType.toLowerCase().substring(0, truststoreType.length - 'RACFKS'.length)) != -1;
-    let matchesKeystore = protocolLine.indexOf('safkeyring'+keystoreType.toLowerCase().substring(0, keystoreType.length - 'RACFKS'.length)) != -1;
-    if (matchesTruststore) {
-      common.printFormattedError(common.MSG_KEY, COMMAND_NAME, `Verify support for Zowe YAML zowe.certificate.truststore.type: ${zoweConfig.zowe.certificate.truststore.type}`);
-    }
-    if (matchesKeystore) {
-      common.printFormattedError(common.MSG_KEY, COMMAND_NAME, `Verify support for Zowe YAML zowe.certificate.keystore.type: ${zoweConfig.zowe.certificate.keystore.type}`);
-    }
+    common.printFormattedError(common.MSG_KEY, COMMAND_NAME, `Review Zowe YAML properties:`);
+    common.printFormattedError(common.MSG_KEY, COMMAND_NAME, `  zowe.certificate.keystore.file: ${zoweConfig.zowe.certificate.keystore.file}`);
+    common.printFormattedError(common.MSG_KEY, COMMAND_NAME, `  zowe.certificate.truststore.file: ${zoweConfig.zowe.certificate.truststore.file}`);
   }
 
   // From cert-analyser codebase
