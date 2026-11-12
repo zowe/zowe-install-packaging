@@ -329,10 +329,8 @@ some use cases, like containerization, this port could be different.</descriptio
         <abstract>Certificate keystore password.</abstract>
         <description>Certificate keystore password.</description>
         <category>certificates</category>
-        <string valueMustBeChoice="false" multiLine="false">
-            <!-- Put validation here -->
-            <default>password</default>
-        </string>
+        <password>
+        </password>
     </variable>
     <variable name="zowe_certificate_keystore_alias" scope="instance" visibility="public">
         <label>Zowe certificate keystore alias</label>
@@ -374,11 +372,8 @@ some use cases, like containerization, this port could be different.</descriptio
         <abstract>Password for the certificate truststore</abstract>
         <description>Password for the certificate truststore</description>
         <category>certificates</category>
-        <string valueMustBeChoice="false" multiLine="false">
-            <!-- Put validation here -->
-            <!-- Specify choices here -->
-            <default>password</default>
-        </string>
+        <password>
+        </password>
     </variable>
     <variable name="java_home" scope="instance" visibility="public">
         <label>JAVA home</label>
@@ -755,8 +750,18 @@ some use cases, like containerization, this port could be different.</descriptio
         <canMarkAsFailed>false</canMarkAsFailed>
         <template>
             <inlineTemplate substitution="true"><![CDATA[
+# ==============================================================================
+# FUNCTION DEFINITIONS
+# ==============================================================================
+
+trace_off() { { set +x; } 2>/dev/null; }
+trace_on()  { set -x; }
+
+# ==============================================================================
+# MAIN SCRIPT
+# ==============================================================================
 set -e
-set -x
+trace_on
 
 mkdir -p "$!{instance-zowe_workspaceDirectory}"
 
@@ -916,7 +921,9 @@ echo '      # if keyrings, the format is safkeyring://stcusername/KeyName' >> "$
 echo '      # for PKCS12, it is instead the path to the PKCS12 file.' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
 echo '      file: $!{instance-zowe_certificate_keystore_file}' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
 echo '      # "password" should either be the value you set when PKCS12, or literally "password" for keyrings.' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
+trace_off
 echo '      password: $!{instance-zowe_certificate_keystore_password}' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
+trace_on
 echo '      # alias is the name of your key/cert. When using keyrings, get the Case Sensitive, Space Sensitive value in a TSO list ring.' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
 echo '      alias: $!{instance-zowe_certificate_keystore_alias}' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
 echo '    truststore:' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
@@ -924,7 +931,9 @@ echo '      # Truststore usually has same values as keystore (minus alias), but 
 echo '      # In this example, we link the truststore values to match the keystore values.' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
 echo '      type: $!{instance-zowe_certificate_truststore_type}' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
 echo '      file: $!{instance-zowe_certificate_truststore_file}' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
+trace_off
 echo '      password: $!{instance-zowe_certificate_truststore_password}' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
+trace_on
 echo '' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
 echo '  # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
 echo '  # Zowe runtime (root) directory' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
