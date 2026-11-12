@@ -228,8 +228,12 @@ function globalValidate(enabledComponents:string[]): void {
       if (validateZosmfJwtAction.doCheck) {
         const jwtRc = validateZosmfJwt.execute(!validateZosmfJwtAction.warnOnly);
         if (jwtRc !== 0) {
-          privateErrors++;
-          common.printFormattedError('ZWELS', "zwe-internal-start-prepare,global_validate", "Zosmf JWT validation failed");
+          if (validateZosmfJwtAction.warnOnly) {
+            common.printFormattedWarn('ZWELS', 'zwe-internal-start-prepare,global_validate', 'Zosmf JWT validation failed. Zowe startup will continue.');
+          } else {
+            privateErrors++;
+            common.printFormattedError('ZWELS', 'zwe-internal-start-prepare,global_validate', 'Zosmf JWT validation failed');
+          }
         }
       }
     } else if (enabledComponents.includes('gateway') && std.getenv('ZWE_components_gateway_apiml_security_auth_provider') == "zosmf") {
