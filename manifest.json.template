@@ -193,11 +193,6 @@
           "destinations": ["Zowe PAX"]
         },
         {
-          "repository": "zlux-grid",
-          "tag": "v1.x/master",
-          "destinations": ["Zowe PAX"]
-        },
-        {
           "repository": "zlux-platform",
           "tag": "v3.x/staging",
           "destinations": ["Zowe PAX"]
