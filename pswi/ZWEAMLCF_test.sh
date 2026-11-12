@@ -9,6 +9,12 @@ export LOG_DIR="logs/$CURR_TIME"
 mkdir -p $LOG_DIR
 WORK_MOUNT="/tmp"
 
+# set Marist as a known host
+mkdir -p ~/.ssh
+chmod 700 ~/.ssh
+echo "${MARIST_PUBKEY}" >> ~/.ssh/known_hosts
+chmod 644 ~/.ssh/known_hosts
+
 echo "Changing runtime path in ZWECONF.properties, and renaming ZWEAMLCF.properties."
 
 cp ../workflows/files/ZWECONF.properties ./ZWEAMLCF.properties
@@ -22,7 +28,7 @@ echo "Changing the configuration workflow to be fully automated."
 cp ../workflows/files/ZWEAMLCF.xml ./ZWEAMLCF.xml
 sed "s|<autoEnable>false|<autoEnable>true|g" ./ZWEAMLCF.xml >ZWEAMLCFX
 
-sshpass -p${ZOSMF_PASS} sftp -o HostKeyAlgorithms=+ssh-rsa -o BatchMode=no -o StrictHostKeyChecking=no -o PubkeyAuthentication=no -b - -P ${ZZOW_SSH_PORT} ${ZOSMF_USER}@${HOST} <<EOF
+sshpass -e sftp -o HostKeyAlgorithms=+ssh-rsa -o BatchMode=no -o StrictHostKeyChecking=yes -o PubkeyAuthentication=no -b - -P ${ZZOW_SSH_PORT} ${ZOSMF_USER}@${HOST} <<EOF
 cd ${WORK_MOUNT}
 put _ZWEAMLCF
 put ZWEAMLCFX
@@ -49,7 +55,7 @@ sh scripts/submit_jcl.sh "$(cat JCL)"
 if [ $? -gt 0 ]; then exit -1; fi
 rm JCL
 
-sshpass -p${ZOSMF_PASS} sftp -o HostKeyAlgorithms=+ssh-rsa -o BatchMode=no -o StrictHostKeyChecking=no -o PubkeyAuthentication=no -b - -P ${ZZOW_SSH_PORT} ${ZOSMF_USER}@${HOST} <<EOF
+sshpass -e sftp -o HostKeyAlgorithms=+ssh-rsa -o BatchMode=no -o StrictHostKeyChecking=yes -o PubkeyAuthentication=no -b - -P ${ZZOW_SSH_PORT} ${ZOSMF_USER}@${HOST} <<EOF
 cd ${WORK_MOUNT}
 get zowe_.yaml
 rm zowe_.yaml
