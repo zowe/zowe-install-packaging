@@ -42,7 +42,7 @@ enum LOG_LEVEL {
 };
 
 function getLogLevel(name:string, defaultLevel:LOG_LEVEL):LOG_LEVEL {
-    switch (name.toUpperCase()){
+    switch (name?.toUpperCase()){
         case "ERROR": return LOG_LEVEL.ERROR;
         case "WARN": return LOG_LEVEL.WARN;
         case "INFO": return LOG_LEVEL.INFO;
@@ -132,39 +132,52 @@ export function date(...args: string[]): string|undefined {
 
 let logExists = false;
 let logFile:std.File|null = null;
+let writingLog = false;
 export function finishLogFile() {
   if (logFile) {
     logFile.close();
+    logFile = null;
     zos.changeTag(std.getenv('ZWE_PRIVATE_LOG_FILE'), 819);
   }
 }
 
 function writeLog(message: string): boolean {
   const filename = std.getenv('ZWE_PRIVATE_LOG_FILE');
-  if (!filename) {
+  if (!filename || writingLog) {
       return false;
   }
-  logExists = fs.fileExists(filename);
-  if (!logExists) {
-      fs.createFile(filename, 0o640, message);
+  // File helpers report errors through printError, which also writes to this log.
+  writingLog = true;
+  try {
+    logExists = fs.fileExists(filename);
+    if (!logExists) {
+      if (!fs.createFile(filename, 0o640, message)) {
+        return false;
+      }
       logExists = fs.fileExists(filename);
       let errObj = {errno:undefined};
-      logFile = std.open(filename, 'w', errObj);
-      if (errObj.errno) {
-        printError(`Error opening file ${filename}, errno=${errObj.errno}`);
+      logFile = std.open(filename, 'a', errObj);
+      if (errObj.errno || !logFile) {
+        printError(`Error opening file ${filename}, errno=${errObj.errno}`, ['console']);
         logFile=null;
         logExists=false;
         return false;
       }
-  } else {
+    } else {
       xplatform.appendFileUTF8(filename, xplatform.AUTO_DETECT, message);
       return true;
+    }
+    return logExists;
+  } finally {
+    writingLog = false;
   }
-  return logExists;
 }
 
 
 export function printRawMessage(message: string, isError: boolean, writeTo:string[]=['console','log']): boolean {
+  if (message == null) {
+    return false;
+  }
   if (writeTo.includes('console')) {
     if (isError) {
       //TODO this prints junk
@@ -176,7 +189,7 @@ export function printRawMessage(message: string, isError: boolean, writeTo:strin
     }
   }
   if (writeTo.includes('log')) {
-    writeLog(message);
+    writeLog(message + '\n');
   }
   return true;
 }
@@ -191,16 +204,16 @@ export function printError(message: string, writeTo?:string[]): boolean {
 }
 
 export function printDebug(message: string, writeTo?:string[]): boolean {
-  const level = std.getenv('ZWE_PRIVATE_LOG_LEVEL_ZWELS');
-  if (level == 'DEBUG' || level == 'TRACE') {
+  const level = getLogLevel(std.getenv('ZWE_PRIVATE_LOG_LEVEL_ZWELS'), LOG_LEVEL.INFO);
+  if (level >= LOG_LEVEL.DEBUG) {
     return printRawMessage(message, false, writeTo);
   }
   return false;
 }
 
 export function printTrace(message: string, writeTo?:string[]): boolean {
-  const level = std.getenv('ZWE_PRIVATE_LOG_LEVEL_ZWELS');
-  if (level == 'TRACE') {
+  const level = getLogLevel(std.getenv('ZWE_PRIVATE_LOG_LEVEL_ZWELS'), LOG_LEVEL.INFO);
+  if (level >= LOG_LEVEL.TRACE) {
     return printRawMessage(message, false, writeTo);
   }
   return false;
@@ -299,11 +312,11 @@ export function printLevel2Trace(message?: string, writeTo?:string[]): boolean {
 const FORMATTING_TEST = /^[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}/;
 // runtime logging functions, follow zowe service logging standard
 export function printFormattedMessage(service: string, logger: string, levelName: string, message: string): boolean {
+  if (message == null) {
+    return false;
+  }
   if (message == '-') {
     //TODO readmessage
-    if (!message) {
-      return false;
-    }
   }
 
   const level:LOG_LEVEL = getLogLevel(levelName,LOG_LEVEL.INFO);
@@ -315,7 +328,8 @@ export function printFormattedMessage(service: string, logger: string, levelName
     return false;
   }
 
-  const logLinePrefix=`${date("-u", "'+%Y-%m-%d %T'")} <${service}:${xplatform.getpid()}> ${getUserId()} ${canonicalLevelName} (${logger})`;
+  const timestamp = new Date().toISOString().slice(0, 19).replace('T', ' ');
+  const logLinePrefix=`${timestamp} <${service}:${xplatform.getpid()}> ${getUserId()} ${canonicalLevelName} (${logger})`;
   let lines = message.split('\n');
   lines.forEach((line: string)=> {
     if (!FORMATTING_TEST.test(line)) {
