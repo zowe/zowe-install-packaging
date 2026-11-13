@@ -110,7 +110,7 @@
       "artifact": "getesm-3.6.0-2026103038.pax"
     },
     "org.zowe.apiml.sdk.certificate-analyser": {
-      "version": "^3.4.0",
+      "version": "^3.6.8",
       "artifact": "certificate-analyser-*.jar",
       "exclusions": ["*PR*.jar"]
     },
