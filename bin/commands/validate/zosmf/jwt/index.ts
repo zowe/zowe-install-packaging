@@ -90,7 +90,7 @@ export function execute(quitOnError?: boolean): number {
 
   const result = shell.execOutErrSync(
     javaExec,
-    '--add-modules', 'ibm.crypto.zsecurity,ibm.crypto.hdwrcca',
+    '-Djava.protocol.handler.pkgs=com.ibm.crypto.provider',
     `-Djava.security.properties=${jvmSecPropsPath}`,
     '-jar', jarPath,
     '--zosmf-jwt-check',

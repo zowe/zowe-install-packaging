@@ -389,7 +389,7 @@ export function execute(quitOnError?: boolean, level?: string): number {
   }
 
   const argsString = [
-    '--add-modules', 'ibm.crypto.zsecurity,ibm.crypto.hdwrcca',
+    '-Djava.protocol.handler.pkgs=com.ibm.crypto.provider',
     `-Djava.security.properties=${std.getenv('ZWE_zowe_runtimeDirectory')}/components/apiml-common-lib/bin/jvm.security.override.properties`,
     '-jar', `${std.getenv('ZWE_zowe_runtimeDirectory')}/bin/utils/certificate-analyser.jar`,
     '-k', `${keystoreLocation}`, '-kt', `${keystoreType}`, '-kp', `${keystorePass}`, '-a', `${keystoreAlias}`,
