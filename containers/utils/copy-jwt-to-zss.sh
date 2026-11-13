@@ -31,12 +31,6 @@ function usage {
     echo ""
 }
 
-FULL_LOCAL_OUT_PATH="${TEMP_DIR}/${OUT_FILE_NAME}"
-
-function cleanLocalCopy() {
-  rm -f "${FULL_LOCAL_OUT_PATH}"
-}
-
 while [ "$1" != "" ]; do
   case $1 in
     -c | --container )    shift
@@ -79,6 +73,12 @@ if ! mkdir -m 700 -p "${TEMP_DIR}"; then
   echo "Couldn't create the local directory ${TEMP_DIR}"
   exit 1
 fi
+
+FULL_LOCAL_OUT_PATH="${TEMP_DIR}/${OUT_FILE_NAME}"
+
+function cleanLocalCopy() {
+  rm -f "${FULL_LOCAL_OUT_PATH}"
+}
 
 # Automatic deletion of the local copy on exit
 trap cleanLocalCopy EXIT
