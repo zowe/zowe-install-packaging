@@ -152,7 +152,7 @@ zowe:
   # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   # Zowe runtime (root) directory
   #
-  # **NOTE**: 
+  # **NOTE**:
   # 1. if it is not specified and you passed "--update-config" argument
   # when you ran "zwe init" command, this value will be updated with the Zowe
   # runtime where the "zwe" command is located.
@@ -193,7 +193,7 @@ zowe:
   rbacProfileIdentifier: "1"
 
   # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-  # This is an ID that can be used by servers that distinguish their cookies from unrelated Zowe installs, 
+  # This is an ID that can be used by servers that distinguish their cookies from unrelated Zowe installs,
   # for purposes such as to allow multiple copies of Zowe to be used within the same client
   cookieIdentifier: "1"
 
@@ -526,6 +526,34 @@ components:
   # Or that the provider is set to "zosmf"
   explorer-uss:
     enabled: true
+
+  # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+  # Zowe Desktop Terminal Apps
+  #
+  # 'allowList' and 'allowPorts' sections can be used to restrict connections
+  # See files/examples/components/terminals.yaml for more examples.
+  #
+  # tn3270-ng2:
+  #   allowPorts:
+  #     - 23
+  #     - 992
+  #   allowList:
+  #   # IPv4/IPv6 addresses and CIDR masks are permitted
+  #   - "10.0.0.0/8"
+  #   - "172.16.0.0/12"
+  #   - "192.168.0.0/16"
+  #   #
+  #   # templates can be used to derive strings
+  #   - "${{ zos.resolveSymbol('&SYSNAME') }}"
+  #   #
+  #   # '*' is allowed for pattern matching
+  #   - "*.example.com"
+
+  # vt-ng2:
+  #   allowPorts:
+  #     - 22
+  #   # This assignment reuses the allowList of tn3270-ng2 for vt-ng2
+  #   allowList: "${{ components['tn3270-ng2'].allowList }}"
 
   # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   # Each extension can have dedicated definition similar to core components.
