@@ -302,7 +302,7 @@ export function printFormattedMessage(service: string, logger: string, levelName
   if (message == null) {
     return false;
   }
-
+  message = message.toString();
   const level:LOG_LEVEL = getLogLevel(levelName,LOG_LEVEL.INFO);
   const canonicalLevelName = LOG_LEVEL[level];
   const envLogValue = std.getenv(`ZWE_PRIVATE_LOG_LEVEL_${service}`);
