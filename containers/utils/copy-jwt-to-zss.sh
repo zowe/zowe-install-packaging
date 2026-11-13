@@ -31,6 +31,8 @@ function usage {
     echo ""
 }
 
+FULL_LOCAL_OUT_PATH="${TEMP_DIR}/${OUT_FILE_NAME}"
+
 function cleanLocalCopy() {
   rm -f "${FULL_LOCAL_OUT_PATH}"
 }
@@ -81,7 +83,6 @@ fi
 # Automatic deletion of the local copy on exit
 trap cleanLocalCopy EXIT
 
-FULL_LOCAL_OUT_PATH="${TEMP_DIR}/${OUT_FILE_NAME}"
 echo "OUT PATH=${FULL_LOCAL_OUT_PATH}"
 docker cp $CONTAINER_NAME:/global/zowe/keystore/localhost/localhost.keystore.jwtsecret.p12 $FULL_LOCAL_OUT_PATH || {
   echo "Unable to copy the jwtsecret to the localhost";
