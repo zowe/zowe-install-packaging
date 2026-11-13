@@ -63,7 +63,9 @@ function processCertificateAnalyserNonZeroOutput(
     const protocolLine = configLines.filter((line) => line.includes('unknown protocol:'))[0];
     common.printFormattedError(common.MSG_KEY, COMMAND_NAME, protocolLine);
     common.printFormattedError(common.MSG_KEY, COMMAND_NAME, `Review Zowe YAML properties:`);
+    common.printFormattedError(common.MSG_KEY, COMMAND_NAME, `  zowe.certificate.keystore.type: ${zoweConfig.zowe.certificate.keystore.type}`);
     common.printFormattedError(common.MSG_KEY, COMMAND_NAME, `  zowe.certificate.keystore.file: ${zoweConfig.zowe.certificate.keystore.file}`);
+    common.printFormattedError(common.MSG_KEY, COMMAND_NAME, `  zowe.certificate.truststore.type: ${zoweConfig.zowe.certificate.truststore.type}`);
     common.printFormattedError(common.MSG_KEY, COMMAND_NAME, `  zowe.certificate.truststore.file: ${zoweConfig.zowe.certificate.truststore.file}`);
   }
 
