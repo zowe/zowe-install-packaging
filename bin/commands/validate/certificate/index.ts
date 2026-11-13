@@ -60,17 +60,13 @@ function processCertificateAnalyserNonZeroOutput(
 
   if (output.includes('unknown protocol: ')) {
     configInvalid = VALIDATION_ERROR;
-    const protocolLine = configLines.filter((line) => line.includes('IRRSDL00'))[0];
-    
+    const protocolLine = configLines.filter((line) => line.includes('unknown protocol:'))[0];
     common.printFormattedError(common.MSG_KEY, COMMAND_NAME, protocolLine);
-    let matchesTruststore = protocolLine.indexOf('safkeyring'+truststoreType.toLowerCase().substring(0, truststoreType.length - 'RACFKS'.length)) != -1;
-    let matchesKeystore = protocolLine.indexOf('safkeyring'+keystoreType.toLowerCase().substring(0, keystoreType.length - 'RACFKS'.length)) != -1;
-    if (matchesTruststore) {
-      common.printFormattedError(common.MSG_KEY, COMMAND_NAME, `Verify support for Zowe YAML zowe.certificate.truststore.type: ${zoweConfig.zowe.certificate.truststore.type}`);
-    }
-    if (matchesKeystore) {
-      common.printFormattedError(common.MSG_KEY, COMMAND_NAME, `Verify support for Zowe YAML zowe.certificate.keystore.type: ${zoweConfig.zowe.certificate.keystore.type}`);
-    }
+    common.printFormattedError(common.MSG_KEY, COMMAND_NAME, `Review Zowe YAML properties:`);
+    common.printFormattedError(common.MSG_KEY, COMMAND_NAME, `  zowe.certificate.keystore.type: ${zoweConfig.zowe.certificate.keystore.type}`);
+    common.printFormattedError(common.MSG_KEY, COMMAND_NAME, `  zowe.certificate.keystore.file: ${zoweConfig.zowe.certificate.keystore.file}`);
+    common.printFormattedError(common.MSG_KEY, COMMAND_NAME, `  zowe.certificate.truststore.type: ${zoweConfig.zowe.certificate.truststore.type}`);
+    common.printFormattedError(common.MSG_KEY, COMMAND_NAME, `  zowe.certificate.truststore.file: ${zoweConfig.zowe.certificate.truststore.file}`);
   }
 
   // From cert-analyser codebase
@@ -357,12 +353,11 @@ export function execute(quitOnError?: boolean, level?: string): number {
   const keystorePass = ZOWE_CONFIG.zowe.certificate.keystore.password;
   const truststoreType = ZOWE_CONFIG.zowe.certificate.truststore.type;
   const truststorePass = ZOWE_CONFIG.zowe.certificate.truststore.password;
-  let keystoreLocation = ZOWE_CONFIG.zowe.certificate.keystore.file;
-  let truststoreLocation = ZOWE_CONFIG.zowe.certificate.truststore.file;
+  const keystoreLocation = ZOWE_CONFIG.zowe.certificate.keystore.file;
+  const truststoreLocation = ZOWE_CONFIG.zowe.certificate.truststore.file;
 
   let keyringUser;
   if (keystoreType.startsWith('JCE') && keystoreType.endsWith('RACFKS')) {
-    keystoreLocation = keystoreLocation.replace('safkeyring', 'safkeyring'+keystoreType.toLowerCase().substring(0, keystoreType.length - 'RACFKS'.length));
     try {
       keyringUser = keystoreLocation.split('://')[1].split('/')[0];
     } catch (e) {
@@ -377,7 +372,6 @@ export function execute(quitOnError?: boolean, level?: string): number {
     common.printFormattedWarn(common.MSG_KEY, COMMAND_NAME, `Keystore unknown type ${keystoreType}`);
   }
   if (truststoreType.startsWith('JCE') && truststoreType.endsWith('RACFKS')) {
-    truststoreLocation = truststoreLocation.replace('safkeyring', 'safkeyring'+truststoreType.toLowerCase().substring(0, truststoreType.length - 'RACFKS'.length));
     if (!keyringUser) {
       try {
         keyringUser = truststoreLocation.split('://')[1].split('/')[0];
@@ -395,7 +389,8 @@ export function execute(quitOnError?: boolean, level?: string): number {
   }
 
   const argsString = [
-    '--add-modules', 'ibm.crypto.zsecurity,ibm.crypto.hdwrcca',
+    '-Djava.protocol.handler.pkgs=com.ibm.crypto.provider',
+    `-Djava.security.properties=${std.getenv('ZWE_zowe_runtimeDirectory')}/components/apiml-common-lib/bin/jvm.security.override.properties`,
     '-jar', `${std.getenv('ZWE_zowe_runtimeDirectory')}/bin/utils/certificate-analyser.jar`,
     '-k', `${keystoreLocation}`, '-kt', `${keystoreType}`, '-kp', `${keystorePass}`, '-a', `${keystoreAlias}`,
     '-t', `${truststoreLocation}`, '-tt', `${truststoreType}`, '-tp', `${truststorePass}`,
