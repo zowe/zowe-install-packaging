@@ -7,6 +7,15 @@ export BASE_URL="${ZOSMF_URL}:${ZOSMF_PORT}"
 CURR_TIME=$(date +%s)
 export LOG_DIR="logs/$CURR_TIME"
 mkdir -p $LOG_DIR
+
+# Keep the z/OSMF password out of argv (visible via ps -ef): curl reads credentials from this 0600 config (-K "$ZOSMF_CURL_CFG")
+# Child scripts inherit ZOSMF_CURL_CFG; when running a child script standalone, export it first.
+umask 077
+export ZOSMF_CURL_CFG=$(mktemp "${TMPDIR:-/tmp}/zosmf-curl.XXXXXX")
+ZOSMF_PASS_ESC=$(printf '%s' "${ZOSMF_PASS}" | sed -e 's/\\/\\\\/g' -e 's/"/\\"/g')
+printf 'user = "%s:%s"\n' "${ZOSMF_USER}" "${ZOSMF_PASS_ESC}" >"${ZOSMF_CURL_CFG}"
+unset ZOSMF_PASS_ESC
+trap 'rm -f "${ZOSMF_CURL_CFG}"' EXIT
 WORK_MOUNT="/tmp"
 
 echo "Changing runtime path in ZWECONF.properties."
@@ -22,7 +31,7 @@ echo "Changing the configuration workflow to be fully automated."
 cp ../workflows/files/ZWECONF.xml ./ZWECONF.xml
 sed "s|<autoEnable>false|<autoEnable>true|g" ./ZWECONF.xml >ZWECONFX
 
-sshpass -p${ZOSMF_PASS} sftp -o HostKeyAlgorithms=+ssh-rsa -o BatchMode=no -o StrictHostKeyChecking=no -o PubkeyAuthentication=no -b - -P ${ZZOW_SSH_PORT} ${ZOSMF_USER}@${HOST} <<EOF
+SSHPASS="${ZOSMF_PASS}" sshpass -e sftp -o HostKeyAlgorithms=+ssh-rsa -o BatchMode=no -o StrictHostKeyChecking=no -o PubkeyAuthentication=no -b - -P ${ZZOW_SSH_PORT} ${ZOSMF_USER}@${HOST} <<EOF
 cd ${WORK_MOUNT}
 put _ZWECONF
 put ZWECONFX
@@ -49,7 +58,7 @@ sh scripts/submit_jcl.sh "$(cat JCL)"
 if [ $? -gt 0 ]; then exit -1; fi
 rm JCL
 
-sshpass -p${ZOSMF_PASS} sftp -o HostKeyAlgorithms=+ssh-rsa -o BatchMode=no -o StrictHostKeyChecking=no -o PubkeyAuthentication=no -b - -P ${ZZOW_SSH_PORT} ${ZOSMF_USER}@${HOST} <<EOF
+SSHPASS="${ZOSMF_PASS}" sshpass -e sftp -o HostKeyAlgorithms=+ssh-rsa -o BatchMode=no -o StrictHostKeyChecking=no -o PubkeyAuthentication=no -b - -P ${ZZOW_SSH_PORT} ${ZOSMF_USER}@${HOST} <<EOF
 cd ${WORK_MOUNT}
 get zowe_.yaml
 rm zowe_.yaml
