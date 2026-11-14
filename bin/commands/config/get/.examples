@@ -2,4 +2,4 @@ zwe config get -p path-of-configuration -c /path/to/zowe.yaml
 zwe config get -p .zowe.certificate -c /path/to/zowe.yaml
 zwe config get -p .components[] -c /path/to/zowe.yaml --format
 zwe config get -p .components.gateway -c /path/to/zowe.yaml
-zwe config get --c 'PARMLIB(ZOWE.PARMS(YAML))' --path .components.gateway.enabled
+zwe config get --config 'PARMLIB(ZOWE.PARMS(YAML))' --path .components.gateway.enabled
