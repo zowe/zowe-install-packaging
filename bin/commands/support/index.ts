@@ -127,9 +127,9 @@ export function execute(): void {
     }
     // envs should overrule attls settings
     const finalScheme =  std.getenv('ZOSMF_SCHEME') || std.getenv('ZWE_zOSMF_scheme') || checkScheme;
-    const zosmfCheckAction = ZOWE_CONFIG.zowe.launchScript?.startupChecks?.zosmf || ZOWE_CONFIG.zowe.launchScript?.startupChecks?.default || 'exit';
+    const zosmfCheckMode = config.getStartupCheckMode('zosmf');
     //this checks with default tls and jobname settings, since this command is unlikely to be run under the STC account where ATTLS might be used
-    environment["zosmf_check"] = `'${checkScheme}://${zosmfHost}:${zosmfPort}/zosmf/info' => ${zosmf.validateZosmfHostAndPort(zosmfHost, zosmfPort,  finalScheme, gatewayJobname, (zosmfCheckAction == 'warn'))}`;
+    environment["zosmf_check"] = `'${checkScheme}://${zosmfHost}:${zosmfPort}/zosmf/info' => ${zosmf.validateZosmfHostAndPort(zosmfHost, zosmfPort,  finalScheme, gatewayJobname, zosmfCheckMode.warnOnly)}`;
   }
 
   java.requireJava();

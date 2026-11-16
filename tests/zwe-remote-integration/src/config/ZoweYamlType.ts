@@ -860,62 +860,66 @@ const zoweSchema = zoweYamlSchema as {
             };
             startupChecks: {
               type: 'object';
-              description: 'Startup check configuration options';
+              description: 'Startup check configuration options. Each check uses, in order of precedence: its own value, zowe.launchScript.startupChecks.default, then its built-in behavior.';
               properties: {
                 default: {
                   $ref: '/schemas/v2/server-common#startupCheck';
-                  default: 'exit';
-                  description: 'Sets the default runtime behavior for all startup checks';
+                  description: "Sets the behavior of every startup check that is not set individually. If unset, each check uses its own built-in behavior: 'exit' for most checks, 'warn' for newer checks.";
                 };
                 ports: {
                   $ref: '/schemas/v2/server-common#startupCheck';
                   default: 'exit';
-                  description: 'Checks the port for each enabled component to ensure Zowe can bind to it and that it is not already occupied by some other program';
+                  description: "Checks the port for each enabled component to ensure Zowe can bind to it and that it is not already occupied by some other program. If unset, uses zowe.launchScript.startupChecks.default, or 'exit' if that is also unset.";
                 };
                 certificate: {
                   $ref: '/schemas/v2/server-common#startupCheck';
-                  default: 'exit';
-                  description: 'Checks properties of certificates to verify that they are valid for use by Zowe';
+                  default: 'warn';
+                  description: "Checks properties of certificates to verify that they are valid for use by Zowe. If unset, uses zowe.launchScript.startupChecks.default, or 'warn' if that is also unset.";
                 };
                 zosmf: {
                   $ref: '/schemas/v2/server-common#startupCheck';
                   default: 'exit';
-                  description: "Checks z/OSMF to see if it is running and meet's Zowe's requirements";
+                  description: "Checks z/OSMF to see if it is running and meets Zowe's requirements. If unset, uses zowe.launchScript.startupChecks.default, or 'exit' if that is also unset.";
                 };
                 user: {
                   $ref: '/schemas/v2/server-common#startupCheck';
                   default: 'exit';
-                  description: 'Checks if zowe.setup.security.users.zowe (ZWESVUSR) is configured as a superuser (UID 0). Such a setting is strongly discouraged.';
+                  description: "Checks if zowe.setup.security.users.zowe (ZWESVUSR) is configured as a superuser (UID 0). Such a setting is strongly discouraged. If unset, uses zowe.launchScript.startupChecks.default, or 'exit' if that is also unset.";
                 };
                 zosmfjwt: {
                   $ref: '/schemas/v2/server-common#startupCheck';
                   default: 'exit';
-                  description: "Checks whether z/OSMF JWT support is correctly configured when Zowe is set to use z/OSMF as the authentication provider with JWT autoconfiguration. Can be set to 'exit', 'warn', or 'disabled'.";
+                  description: "Checks whether z/OSMF JWT support is correctly configured when Zowe is set to use z/OSMF as the authentication provider with JWT autoconfiguration. If unset, uses zowe.launchScript.startupChecks.default, or 'exit' if that is also unset.";
                 };
                 components: {
                   $ref: '/schemas/v2/server-common#startupCheck';
                   default: 'warn';
-                  description: "Checks that every component listed under 'components' in zowe.yaml has a valid manifest file (manifest.yaml, manifest.yml, or manifest.json). Components missing a manifest cannot be started.";
+                  description: "Checks that every component listed under 'components' in zowe.yaml has a valid manifest file (manifest.yaml, manifest.yml, or manifest.json). Components missing a manifest cannot be started. If unset, uses zowe.launchScript.startupChecks.default, or 'warn' if that is also unset.";
                 };
                 javaMin: {
                   $ref: '/schemas/v2/server-common#startupCheck';
                   default: 'exit';
-                  description: "Checks that the Java runtime version meets the minimum required version. Defaults to zowe.launchScript.startupChecks.default, or 'exit' if unset.";
+                  description: "Checks that the Java runtime version meets the minimum required version. If unset, uses zowe.launchScript.startupChecks.default, or 'exit' if that is also unset.";
                 };
                 javaMax: {
                   $ref: '/schemas/v2/server-common#startupCheck';
                   default: 'warn';
-                  description: "Checks that the Java runtime version does not exceed the maximum supported version. Defaults to zowe.launchScript.startupChecks.default, or 'warn' if unset.";
+                  description: "Checks that the Java runtime version does not exceed the maximum supported version. If unset, uses zowe.launchScript.startupChecks.default, or 'warn' if that is also unset.";
                 };
                 nodeMin: {
                   $ref: '/schemas/v2/server-common#startupCheck';
                   default: 'exit';
-                  description: "Checks that the Node runtime version meets the minimum required version. Defaults to zowe.launchScript.startupChecks.default, or 'exit' if unset.";
+                  description: "Checks that the Node runtime version meets the minimum required version. If unset, uses zowe.launchScript.startupChecks.default, or 'exit' if that is also unset.";
                 };
                 nodeMax: {
                   $ref: '/schemas/v2/server-common#startupCheck';
                   default: 'warn';
-                  description: "Checks that the Node runtime version does not exceed the maximum supported version. Defaults to zowe.launchScript.startupChecks.default, or 'warn' if unset.";
+                  description: "Checks that the Node runtime version does not exceed the maximum supported version. If unset, uses zowe.launchScript.startupChecks.default, or 'warn' if that is also unset.";
+                };
+                attls: {
+                  $ref: '/schemas/v2/server-common#startupCheck';
+                  default: 'warn';
+                  description: "Checks the AT-TLS (Application Transparent Transport Layer Security) configuration of the ports used by enabled Zowe components. If unset, uses zowe.launchScript.startupChecks.default, or 'warn' if that is also unset.";
                 };
               };
               patternProperties: {
