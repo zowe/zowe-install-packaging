@@ -20,6 +20,7 @@ All notable changes to the Zowe Installer will be documented in this file.
 - Bugfix: Allow dynamic zFS expansion for STC group in RACF. [#4916](https://github.com/zowe/zowe-install-packaging/pull/4916)
 - Bugfix: Allow dynamic zFS expansion for STC group in TSS. [#4882](https://github.com/zowe/zowe-install-packaging/pull/4882)
 - Bugfix: Allow dynamic zFS expansion for STC group in ACF2. [#4886](https://github.com/zowe/zowe-install-packaging/pull/4886)
+- Bugfix: `zowe.launchScript.startupChecks.default` now applies to every startup check that is not set individually. Previously, `files/defaults.yaml` set the `certificate`, `components`, `javaMax`, `nodeMax`, and `attls` checks to "warn", which overrode the user's `default`. New checks still default to "warn" and all others to "exit". The effective behavior of each startup check is now printed at startup. [#4945](https://github.com/zowe/zowe-install-packaging/pull/4945)
 
 ## `3.5.0`
 
@@ -46,7 +47,7 @@ All notable changes to the Zowe Installer will be documented in this file.
 
 ## `3.4.1`
 - Bugfix: Running z/OSMF is returning 401, if RSU2512 was applied. [#4657](https://github.com/zowe/zowe-install-packaging/pull/4657)
-  
+
 ## `3.4.0`
 
 - Enhancement: Added manifest property `apimlServices.static.once` which restricts APIML static definition files to exist only once per HA setup [#4587](https://github.com/zowe/zowe-install-packaging/pull/4587)

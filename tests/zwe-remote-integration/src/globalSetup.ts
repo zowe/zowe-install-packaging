@@ -497,6 +497,16 @@ module.exports = async () => {
     await uss.runCommand(`cp ${ussWorkDir}/ZWESECUR.jcl "//'${REMOTE_SYSTEM_INFO.szwesamp}(ZWESECUR)'"`);
 
     console.log(`Compiling Java utilities in bin/utils using ${REMOTE_SYSTEM_INFO.zosJavaHome}...`);
+    const ignoreList = ['ExportPrivateKeyTest.java'];
+    for (const file of fs.readdirSync(path.resolve(REPO_ROOT_DIR, 'bin', 'utils'))) {
+      if (file.endsWith('.java') && !ignoreList.includes(file)) {
+        console.log(`Compiling ${file}...`);
+        const rc = await uss.runCommand(`${REMOTE_SYSTEM_INFO.zosJavaHome}/bin/javac ${file}`, binUtils);
+        if (rc.rc !== 0) {
+          throw new Error(`Failed to compile ${file}`);
+        }
+      }
+    }
 
     const compiledJavaFiles = ['ExportPrivateKeyZos.java', 'HashFiles.java'];
     for (const file of compiledJavaFiles) {

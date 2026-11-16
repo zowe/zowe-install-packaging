@@ -29,7 +29,7 @@
       ]
     },
     {
-      "description": "startupChecks are hard-coded to defaults in defaults.yaml.",
+      "description": "startupChecks are not exposed in the workflow; when unset, each check uses its built-in behavior defined in bin/libs/config.ts.",
       "rule_target": "all",
       "rule_type": "wf_missing_vars",
       "rule_entry": [

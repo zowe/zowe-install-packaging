@@ -226,11 +226,7 @@ Error ZWEL0326E: An error occurred while processing Zowe YAML config /test/dir/z
         ],
         "launchScript": {
           "logLevel": "info",
-          "onComponentConfigureFail": "warn",
-          "startupChecks": {
-            "javaMax": "warn",
-            "nodeMax": "warn"
-          }
+          "onComponentConfigureFail": "warn"
         },
         "verifyCertificates": "STRICT"
       },
