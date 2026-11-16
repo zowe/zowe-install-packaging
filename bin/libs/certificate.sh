@@ -244,6 +244,7 @@ pkcs12_lock_keystore_directory() {
     print_message "WARNING: Unable to change the owner of the ${keystore_dir} directory to ${user}:${group}."
     print_message "         Please change the owner and group of the ${keystore_dir} manually so that keystores are protected correctly!"
     print_message "         Ideally, only ${user} should have read access to the ${keystore_dir}."
+    return 1
   fi
 }
 
