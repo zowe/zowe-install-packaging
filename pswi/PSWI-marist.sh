@@ -12,6 +12,15 @@ export ACCOUNT=1
 CURR_TIME=$(date +%s)
 export LOG_DIR="logs/$CURR_TIME"
 mkdir -p $LOG_DIR
+
+# Keep the z/OSMF password out of argv (visible via ps -ef): curl reads credentials from this 0600 config (-K "$ZOSMF_CURL_CFG")
+# Child scripts inherit ZOSMF_CURL_CFG; when running a child script standalone, export it first.
+umask 077
+export ZOSMF_CURL_CFG=$(mktemp "${TMPDIR:-/tmp}/zosmf-curl.XXXXXX")
+ZOSMF_PASS_ESC=$(printf '%s' "${ZOSMF_PASS}" | sed -e 's/\\/\\\\/g' -e 's/"/\\"/g')
+printf 'user = "%s:%s"\n' "${ZOSMF_USER}" "${ZOSMF_PASS_ESC}" >"${ZOSMF_CURL_CFG}"
+unset ZOSMF_PASS_ESC
+trap 'rm -f "${ZOSMF_CURL_CFG}"' EXIT
 # Variables for workflows
 # SMPE
 export TZONE="TZONE"
