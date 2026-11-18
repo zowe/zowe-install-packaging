@@ -31,7 +31,7 @@ touch $LOG_FILE
 # Delete the Software instance
 echo "Invoking REST API to delete the Software Instance created by deployment."
 
-RESP=$(curl -s $DELETE_DEPL_SWI_URL -k -X "DELETE" -H "Content-Type: application/json" -H "X-CSRF-ZOSMF-HEADER: A" --user $ZOSMF_USER:$ZOSMF_PASS)
+RESP=$(curl -s $DELETE_DEPL_SWI_URL -k -X "DELETE" -H "Content-Type: application/json" -H "X-CSRF-ZOSMF-HEADER: A" -K "$ZOSMF_CURL_CFG")
 sh scripts/check_response.sh "${RESP}" $?
 
 # Unmount and delete

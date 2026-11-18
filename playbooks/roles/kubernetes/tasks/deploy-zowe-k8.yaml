@@ -96,8 +96,16 @@
     when: k8s_service|lower == "nodeport"
   - name: Copy the created ConfigMap & Secret to local system 
     delegate_to: localhost
-    raw: >-
-      sshpass -p "{{ ansible_password }}" scp "{{ ansible_user }}"@"{{ ansible_ssh_host }}":{{ work_dir_remote }}/config_secret.yaml .
+    no_log: true
+    environment:
+      SSHPASS: "{{ ansible_password }}"
+    ansible.builtin.command:
+      argv:
+        - sshpass
+        - -e
+        - scp
+        - "{{ ansible_user }}@{{ ansible_ssh_host }}:{{ work_dir_remote }}/config_secret.yaml"
+        - .
   - name: Remove the ConfigMap & Secret file from the z/OS system 
     raw: rm -f {{ work_dir_remote }}/config_secret.yaml
   - name: Deploy the ConfigMaps and Secrets on Zowe K8s

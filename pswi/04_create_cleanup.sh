@@ -63,19 +63,19 @@ touch $LOG_FILE
 # Delete the Software instance
 echo 'Invoking REST API to delete the first Software Instance.'
 
-RESP=$(curl -s $DELETE_SWI_URL -k -X "DELETE" -H "Content-Type: application/json" -H "X-CSRF-ZOSMF-HEADER: A" --user $ZOSMF_USER:$ZOSMF_PASS)
+RESP=$(curl -s $DELETE_SWI_URL -k -X "DELETE" -H "Content-Type: application/json" -H "X-CSRF-ZOSMF-HEADER: A" -K "$ZOSMF_CURL_CFG")
 check_response "${RESP}" $?
 
 # Delete data set with export jobs
 echo "Invoking REST API to delete ${EXPORT_DSN} data set with export jobs."
 
-RESP=$(curl -s $EXPORT_DSN_URL -k -X "DELETE" -H "Content-Type: application/json" -H "X-CSRF-ZOSMF-HEADER: A" --user $ZOSMF_USER:$ZOSMF_PASS)
+RESP=$(curl -s $EXPORT_DSN_URL -k -X "DELETE" -H "Content-Type: application/json" -H "X-CSRF-ZOSMF-HEADER: A" -K "$ZOSMF_CURL_CFG")
 check_response "${RESP}" $?
 
 # Delete
 echo "Invoking REST API to delete ${WORKFLOW_DSN} data set."
 
-RESP=$(curl -s $WORKFLOW_DSN_URL -k -X "DELETE" -H "Content-Type: application/json" -H "X-CSRF-ZOSMF-HEADER: A" --user $ZOSMF_USER:$ZOSMF_PASS)
+RESP=$(curl -s $WORKFLOW_DSN_URL -k -X "DELETE" -H "Content-Type: application/json" -H "X-CSRF-ZOSMF-HEADER: A" -K "$ZOSMF_CURL_CFG")
 check_response "${RESP}" $?
 
 # Unmount and delete
@@ -124,5 +124,5 @@ rm JCL
 
 echo "Invoking REST API to unmount Zowe zFS ${ZOWE_ZFS} from its mountpoint."
 
-RESP=$(curl -s $ACTION_ZOWE_ZFS_URL -k -X "PUT" -d "$UNMOUNT_ZFS_JSON" -H "Content-Type: application/json" -H "X-CSRF-ZOSMF-HEADER: A" --user $ZOSMF_USER:$ZOSMF_PASS)
+RESP=$(curl -s $ACTION_ZOWE_ZFS_URL -k -X "PUT" -d "$UNMOUNT_ZFS_JSON" -H "Content-Type: application/json" -H "X-CSRF-ZOSMF-HEADER: A" -K "$ZOSMF_CURL_CFG")
 check_response "${RESP}" $?
