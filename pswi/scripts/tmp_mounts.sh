@@ -6,7 +6,7 @@ MOUNT=${2}
 MOUNTED=false
 
 echo "Checking if file system ${ZFS} is mounted."
-RESP=$(curl -s "${BASE_URL}/zosmf/restfiles/mfs?fsname=${ZFS}" -k -X "GET" -H "Content-Type: application/json" -H "X-CSRF-ZOSMF-HEADER: A" --user $ZOSMF_USER:$ZOSMF_PASS)
+RESP=$(curl -s "${BASE_URL}/zosmf/restfiles/mfs?fsname=${ZFS}" -k -X "GET" -H "Content-Type: application/json" -H "X-CSRF-ZOSMF-HEADER: A" -K "$ZOSMF_CURL_CFG")
 MOUNTP=$(echo $RESP | grep -o '"mountpoint":".*"' | cut -f4 -d\")
 
 NEW_ZFS_JSON='{"cylsPri":2000,"cylsSec": 140,"volumes":[ "'${VOLUME}'" ]}'
@@ -23,7 +23,7 @@ if [ -n "$MOUNTP" ]; then
   fi
 else
   echo "Temporary zFS isn't mounted. Now checking if mount point has any other zFS mounted."
-  RESP=$(curl -s "${BASE_URL}/zosmf/restfiles/mfs?path=${MOUNT}" -k -X "GET" -H "Content-Type: application/json" -H "X-CSRF-ZOSMF-HEADER: A" --user $ZOSMF_USER:$ZOSMF_PASS)
+  RESP=$(curl -s "${BASE_URL}/zosmf/restfiles/mfs?path=${MOUNT}" -k -X "GET" -H "Content-Type: application/json" -H "X-CSRF-ZOSMF-HEADER: A" -K "$ZOSMF_CURL_CFG")
   sh scripts/check_response.sh "${RESP}" $?
   if [ $? -gt 0 ]; then exit -1; fi
   MOUNTZFS=$(echo $RESP | grep -o "name":".*" | cut -f4 -d\")
@@ -39,7 +39,7 @@ fi
 if [ "$MOUNTED" = false ]; then
   # Check if data set exists
   echo "Checking if temporary zFS ${ZFS} exists."
-  RESP=$(curl -s "${BASE_URL}/zosmf/restfiles/ds?dslevel=${ZFS}" -k -X "GET" -H "Content-Type: application/json" -H "X-CSRF-ZOSMF-HEADER: A" --user $ZOSMF_USER:$ZOSMF_PASS)
+  RESP=$(curl -s "${BASE_URL}/zosmf/restfiles/ds?dslevel=${ZFS}" -k -X "GET" -H "Content-Type: application/json" -H "X-CSRF-ZOSMF-HEADER: A" -K "$ZOSMF_CURL_CFG")
   sh scripts/check_response.sh "${RESP}" $?
   if [ $? -gt 0 ]; then exit -1; fi
   ZFS_COUNT=$(echo $RESP | grep -o '"returnedRows":[0-9]*' | cut -f2 -d:)
@@ -47,7 +47,7 @@ if [ "$MOUNTED" = false ]; then
     # Create new zFS if not
     echo "${ZFS} does not exists."
     echo "Creating new zFS ${ZFS}."
-    RESP=$(curl -s "${BASE_URL}/zosmf/restfiles/mfs/zfs/${ZFS}" -k -X "POST" -d "$NEW_ZFS_JSON" -H "Content-Type: application/json" -H "X-CSRF-ZOSMF-HEADER: A" --user $ZOSMF_USER:$ZOSMF_PASS)
+    RESP=$(curl -s "${BASE_URL}/zosmf/restfiles/mfs/zfs/${ZFS}" -k -X "POST" -d "$NEW_ZFS_JSON" -H "Content-Type: application/json" -H "X-CSRF-ZOSMF-HEADER: A" -K "$ZOSMF_CURL_CFG")
     sh scripts/check_response.sh "${RESP}" $?
     if [ $? -gt 0 ]; then exit -1; fi
   else
