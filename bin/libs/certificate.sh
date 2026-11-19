@@ -652,7 +652,12 @@ EOF
       # handed to the java child process through the environment, not argv, for the
       # same reason pkeytool avoids keytool's argument list
       export ZWE_PRIVATE_EXPORTPRIVATEKEY_PASSWORD="${password}"
-      if [ "${ZWE_RUN_ON_ZOS}" = "true" ]; then
+      
+      # Pre-creating the .key file to set the default access permissions.
+      touch "${keystore_dir}/${alias_lc}.key"
+      chmod 600 "${keystore_dir}/${alias_lc}.key"
+      
+      if [ "${ZWE_RUN_ON_ZOS}" = "true" ]; 
         java -cp "${ZWE_zowe_runtimeDirectory}/bin/utils" \
           ExportPrivateKeyZos \
           "${keystore_file}" \
