@@ -597,7 +597,7 @@ pkcs12_export_pem() {
     if [ -n "${alias}" ]; then
       alias_lc=$(echo "${alias}" | lower_case)
       print_message ">>>> Export certificate \"${alias}\" to PEM format"
-      result=$(pkeytool ${JAVA_KEYTOOL_ENCODING} -exportcert -v \
+      result=$(umask 177; pkeytool ${JAVA_KEYTOOL_ENCODING} -exportcert -v \
         -alias "${alias}" \
         -keystore "${keystore_file}" \
         -storepass "${password}" \
@@ -617,7 +617,7 @@ EOF
     if [ -n "${alias}" ]; then
       alias_lc=$(echo "${alias}" | lower_case)
       print_message ">>>> Export certificate \"${alias}\" to PEM format"
-      result=$(pkeytool -exportcert -v \
+      result=$(umask 177; pkeytool -exportcert -v \
         -alias "${alias}" \
         -keystore "${keystore_file}" \
         -storepass "${password}" \
