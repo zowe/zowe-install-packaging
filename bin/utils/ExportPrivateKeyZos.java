@@ -18,7 +18,6 @@ import java.security.Key;
 import java.security.KeyStore;
 import java.util.Base64;
 import java.util.Set;
-
 import com.ibm.crypto.zsecurity.provider.RACFInputStream;
 
 public class ExportPrivateKeyZos {
