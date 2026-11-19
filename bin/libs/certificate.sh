@@ -254,8 +254,7 @@ pkcs12_create_certificate_authority() {
   common_name=${4:-${ZWE_PRIVATE_DEFAULT_CERTIFICATE_CA_COMMON_NAME}}
 
   print_message ">>>> Generate PKCS12 format local CA with alias ${alias}:"
-  mkdir -p "${keystore_dir}/${alias}"
-  chmod 700 "${keystore_dir}/${alias}"
+  mkdir -m 700 -p "${keystore_dir}/${alias}"
   result=$(pkeytool -genkeypair -v \
     -alias "${alias}" \
     -keyalg RSA -keysize 2048 \
@@ -290,8 +289,7 @@ pkcs12_create_certificate_and_sign() {
 
   print_message ">>>> Generate certificate \"${alias}\" in the keystore ${keystore_name}:"
 
-  mkdir -p "${keystore_dir}/${keystore_name}"
-  chmod 700 "${keystore_dir}/${keystore_name}"
+  mkdir -m 700 -p "${keystore_dir}/${keystore_name}"
   result=$(pkeytool -genkeypair -v \
     ${JAVA_KEYTOOL_FLAG} \
     -alias "${alias}" \
@@ -441,7 +439,7 @@ pkcs12_import_pkcs12_keystore() {
 
   # make sure directory exists
   print_trace "- Make sure keystore directory ${dest_keystore_dir} exists."
-  result=$(mkdir -p "${dest_keystore_dir}")
+  result=$(mkdir -m 700 -p "${dest_keystore_dir}")
   if [ ! -d "${dest_keystore_dir}" ]; then
     print_trace "  * Output:"
     if [ -n "${result}" ]; then
@@ -1243,7 +1241,7 @@ keyring_export_all_to_pkcs12() {
   keystore_name="${4:-localhost}"
   keystore_password="${5}"
 
-  mkdir -p "${uss_temp_dir}/keystore/${keystore_name}"
+  mkdir -m 700 -p "${uss_temp_dir}/keystore/${keystore_name}"
   temp_keystore_file="${uss_temp_dir}/keystore/${keystore_name}/${keystore_name}.keystore.p12"
   temp_truststore_file="${uss_temp_dir}/keystore/${keystore_name}/${keystore_name}.truststore.p12"
   labels_with_private_key=
