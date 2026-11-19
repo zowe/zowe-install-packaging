@@ -375,7 +375,7 @@ if [ "${cert_type}" = "PKCS12" ]; then
     certificate pkcs12 export \
     --keystore "${pkcs12_directory}/${pkcs12_name}/${pkcs12_name}.keystore.p12" \
     --password "${pkcs12_password}" \
-    --private-keys "${pkcs12_name}";
+    --private-keys "${pkcs12_name}"
   zwecli_inline_execute_command \
     certificate pkcs12 export \
     --keystore "${pkcs12_directory}/${pkcs12_name}/${pkcs12_name}.truststore.p12" \
