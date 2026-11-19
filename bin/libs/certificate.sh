@@ -254,7 +254,8 @@ pkcs12_create_certificate_authority() {
   common_name=${4:-${ZWE_PRIVATE_DEFAULT_CERTIFICATE_CA_COMMON_NAME}}
 
   print_message ">>>> Generate PKCS12 format local CA with alias ${alias}:"
-  mkdir -m 700 -p "${keystore_dir}/${alias}"
+  mkdir -p "${keystore_dir}/${alias}"
+  chmod 700 "${keystore_dir}/${alias}"
   result=$(pkeytool -genkeypair -v \
     -alias "${alias}" \
     -keyalg RSA -keysize 2048 \
@@ -289,7 +290,8 @@ pkcs12_create_certificate_and_sign() {
 
   print_message ">>>> Generate certificate \"${alias}\" in the keystore ${keystore_name}:"
 
-  mkdir -m 700 -p "${keystore_dir}/${keystore_name}"
+  mkdir -p "${keystore_dir}/${keystore_name}"
+  chmod 700 "${keystore_dir}/${keystore_name}"
   result=$(pkeytool -genkeypair -v \
     ${JAVA_KEYTOOL_FLAG} \
     -alias "${alias}" \
