@@ -597,7 +597,7 @@ pkcs12_export_pem() {
     if [ -n "${alias}" ]; then
       alias_lc=$(echo "${alias}" | lower_case)
       print_message ">>>> Export certificate \"${alias}\" to PEM format"
-      result=$(umask 177; pkeytool ${JAVA_KEYTOOL_ENCODING} -exportcert -v \
+      result=$(umask 137; pkeytool ${JAVA_KEYTOOL_ENCODING} -exportcert -v \
         -alias "${alias}" \
         -keystore "${keystore_file}" \
         -storepass "${password}" \
@@ -617,7 +617,7 @@ EOF
     if [ -n "${alias}" ]; then
       alias_lc=$(echo "${alias}" | lower_case)
       print_message ">>>> Export certificate \"${alias}\" to PEM format"
-      result=$(umask 177; pkeytool -exportcert -v \
+      result=$(umask 137; pkeytool -exportcert -v \
         -alias "${alias}" \
         -keystore "${keystore_file}" \
         -storepass "${password}" \
@@ -654,10 +654,9 @@ EOF
       export ZWE_PRIVATE_EXPORTPRIVATEKEY_PASSWORD="${password}"
       
       # Pre-creating the .key file to set the default access permissions.
-      touch "${keystore_dir}/${alias_lc}.key"
-      chmod 600 "${keystore_dir}/${alias_lc}.key"
+      (umask 177; touch "${keystore_dir}/${alias_lc}.key")
       
-      if [ "${ZWE_RUN_ON_ZOS}" = "true" ]; 
+      if [ "${ZWE_RUN_ON_ZOS}" = "true" ]; then
         java -cp "${ZWE_zowe_runtimeDirectory}/bin/utils" \
           ExportPrivateKeyZos \
           "${keystore_file}" \
