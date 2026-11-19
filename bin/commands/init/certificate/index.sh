@@ -371,16 +371,17 @@ if [ "${cert_type}" = "PKCS12" ]; then
   fi
 
   # export all certs in PEM format
+  (umask 177;
   zwecli_inline_execute_command \
     certificate pkcs12 export \
     --keystore "${pkcs12_directory}/${pkcs12_name}/${pkcs12_name}.keystore.p12" \
     --password "${pkcs12_password}" \
-    --private-keys "${pkcs12_name}"
+    --private-keys "${pkcs12_name}";
   zwecli_inline_execute_command \
     certificate pkcs12 export \
     --keystore "${pkcs12_directory}/${pkcs12_name}/${pkcs12_name}.truststore.p12" \
     --password "${pkcs12_password}" \
-    --private-keys ""
+    --private-keys "")
 
   # after we export truststore, the imported CAs will be exported as extca*.cer
   if [ -n "${cert_import_CAs}" ]; then
@@ -396,12 +397,12 @@ if [ "${cert_type}" = "PKCS12" ]; then
   # - group permission is none
   # NOTE: read_yaml returns empty for boolean false, so let's check true
   if [ "$(lower_case "${pkcs12_lock}")" = "true" ]; then
-    zwecli_inline_execute_command \
+    (umask 177; zwecli_inline_execute_command \
       certificate pkcs12 lock \
       --keystore-dir "${pkcs12_directory}" \
       --user "${security_users_zowe}" \
       --group "${security_groups_admin}" \
-      --group-permission none
+      --group-permission none)
   fi
 
   pkcs12_name_lc=$(echo "${pkcs12_name}" | lower_case)
