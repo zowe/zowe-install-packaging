@@ -255,7 +255,7 @@ pkcs12_create_certificate_authority() {
 
   print_message ">>>> Generate PKCS12 format local CA with alias ${alias}:"
   mkdir -m 700 -p "${keystore_dir}/${alias}"
-  result=$(pkeytool -genkeypair -v \
+  result=$(umask 177; pkeytool -genkeypair -v \
     -alias "${alias}" \
     -keyalg RSA -keysize 2048 \
     -dname "CN=${common_name}, OU=${ZWE_PRIVATE_CERTIFICATE_CA_ORG_UNIT:-${ZWE_PRIVATE_DEFAULT_CERTIFICATE_CA_ORG_UNIT}}, O=${ZWE_PRIVATE_CERTIFICATE_CA_ORG:-${ZWE_PRIVATE_DEFAULT_CERTIFICATE_CA_ORG}}, L=${ZWE_PRIVATE_CERTIFICATE_CA_LOCALITY:-${ZWE_PRIVATE_DEFAULT_CERTIFICATE_CA_LOCALITY}}, S=${ZWE_PRIVATE_CERTIFICATE_CA_STATE:-${ZWE_PRIVATE_DEFAULT_CERTIFICATE_CA_STATE}}, C=${ZWE_PRIVATE_CERTIFICATE_CA_COUNTRY:-${ZWE_PRIVATE_DEFAULT_CERTIFICATE_CA_COUNTRY}}" \
@@ -290,7 +290,7 @@ pkcs12_create_certificate_and_sign() {
   print_message ">>>> Generate certificate \"${alias}\" in the keystore ${keystore_name}:"
 
   mkdir -m 700 -p "${keystore_dir}/${keystore_name}"
-  result=$(pkeytool -genkeypair -v \
+  result=$(umask 177; pkeytool -genkeypair -v \
     ${JAVA_KEYTOOL_FLAG} \
     -alias "${alias}" \
     -keyalg RSA -keysize 2048 \
@@ -309,7 +309,7 @@ pkcs12_create_certificate_and_sign() {
   fi
 
   print_message ">>>> Generate CSR for the certificate \"${alias}\" in the keystore \"${keystore_name}\":"
-  result=$(pkeytool ${JAVA_KEYTOOL_FLAG} \
+  result=$(umask 137; pkeytool ${JAVA_KEYTOOL_FLAG} \
     -certreq -v \
     -alias "${alias}" \
     -keystore "${keystore_dir}/${keystore_name}/${keystore_name}.keystore.p12" \
@@ -338,7 +338,7 @@ pkcs12_create_certificate_and_sign() {
   san="${san}dns:localhost.localdomain,dns:localhost,ip:127.0.0.1"
 
   print_message ">>>> Sign the CSR using the Certificate Authority \"${ca_alias}\":"
-  result=$(pkeytool ${JAVA_KEYTOOL_FLAG} \
+  result=$(umask 137; pkeytool ${JAVA_KEYTOOL_FLAG} \
     -gencert -v \
     -infile "${keystore_dir}/${keystore_name}/${alias}.csr" \
     -outfile "${keystore_dir}/${keystore_name}/${alias}.signed.cer" \
@@ -454,7 +454,7 @@ pkcs12_import_pkcs12_keystore() {
     return 1
   fi
 
-  result=$(pkeytool ${JAVA_KEYTOOL_FLAG} \
+  result=$(umask 177; pkeytool ${JAVA_KEYTOOL_FLAG} \
     -importkeystore -v \
     -noprompt \
     -deststoretype "PKCS12" \
