@@ -136,7 +136,7 @@ ensure_file_encoding() {
     if [ "${file_encoding}" != "${expected_encoding}" ]; then
       print_trace "- Convert encoding of ${file} from ${file_encoding} to ${expected_encoding}."
 
-
+      cp -p "${file}" "${file}.tmp" # To copy the permissions and ownership, as well.
       iconv -f "${file_encoding}" -t "${expected_encoding}" "${file}" > "${file}.tmp"
       mv "${file}.tmp" "${file}"
     fi

@@ -633,6 +633,7 @@ EOF
           print_message ">>>> Certificate \"${keystore_dir}/${alias_lc}.cer is in EBCDIC."
         else
           print_message ">>>> Converting certificate \"${keystore_dir}/${alias_lc}.cer\" to EBCDIC."
+          cp -p "${keystore_dir}/${alias_lc}.cer">"${keystore_dir}/${alias_lc}.cer-ebcdic" # to preserve the permissions and ownership
           iconv -f ISO8859-1 -t IBM-1047 "${keystore_dir}/${alias_lc}.cer" >"${keystore_dir}/${alias_lc}.cer-ebcdic"
           mv "${keystore_dir}/${alias_lc}.cer-ebcdic" "${keystore_dir}/${alias_lc}.cer"
         fi
