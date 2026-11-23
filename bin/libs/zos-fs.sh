@@ -138,7 +138,7 @@ ensure_file_encoding() {
 
       cp -p "${file}" "${file}.tmp" # To copy the permissions and ownership, as well.
       if [ $? -ne 0 ];then
-        print_error "Error: Could'nt copy file ${file} to the temporary location ${file}.tmp"
+        print_error "Error: Couldn't copy file ${file} to the temporary location ${file}.tmp"
         exit 1
       fi
       iconv -f "${file_encoding}" -t "${expected_encoding}" "${file}" > "${file}.tmp"
