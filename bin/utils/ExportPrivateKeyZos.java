@@ -11,9 +11,13 @@
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileWriter;
+import java.nio.file.Files;
+import java.nio.file.attribute.PosixFilePermission;
+import java.nio.file.attribute.PosixFilePermissions;
 import java.security.Key;
 import java.security.KeyStore;
 import java.util.Base64;
+import java.util.Set;
 import com.ibm.crypto.zsecurity.provider.RACFInputStream;
 
 public class ExportPrivateKeyZos {
@@ -46,6 +50,8 @@ public class ExportPrivateKeyZos {
         fw.write("\n");
         fw.write("-----END PRIVATE KEY-----\n");
         fw.close();
+        Set<PosixFilePermission> posixFilePermissions = PosixFilePermissions.fromString("rw-------"); // chmod 600
+        Files.setPosixFilePermissions(exportedFile.toPath(), posixFilePermissions);
     }
 
     public static void main(String args[]) throws Exception {

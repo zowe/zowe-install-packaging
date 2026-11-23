@@ -254,8 +254,8 @@ pkcs12_create_certificate_authority() {
   common_name=${4:-${ZWE_PRIVATE_DEFAULT_CERTIFICATE_CA_COMMON_NAME}}
 
   print_message ">>>> Generate PKCS12 format local CA with alias ${alias}:"
-  mkdir -p "${keystore_dir}/${alias}"
-  result=$(pkeytool -genkeypair -v \
+  mkdir -m 700 -p "${keystore_dir}/${alias}"
+  result=$(umask 177; pkeytool -genkeypair -v \
     -alias "${alias}" \
     -keyalg RSA -keysize 2048 \
     -dname "CN=${common_name}, OU=${ZWE_PRIVATE_CERTIFICATE_CA_ORG_UNIT:-${ZWE_PRIVATE_DEFAULT_CERTIFICATE_CA_ORG_UNIT}}, O=${ZWE_PRIVATE_CERTIFICATE_CA_ORG:-${ZWE_PRIVATE_DEFAULT_CERTIFICATE_CA_ORG}}, L=${ZWE_PRIVATE_CERTIFICATE_CA_LOCALITY:-${ZWE_PRIVATE_DEFAULT_CERTIFICATE_CA_LOCALITY}}, S=${ZWE_PRIVATE_CERTIFICATE_CA_STATE:-${ZWE_PRIVATE_DEFAULT_CERTIFICATE_CA_STATE}}, C=${ZWE_PRIVATE_CERTIFICATE_CA_COUNTRY:-${ZWE_PRIVATE_DEFAULT_CERTIFICATE_CA_COUNTRY}}" \
@@ -289,8 +289,8 @@ pkcs12_create_certificate_and_sign() {
 
   print_message ">>>> Generate certificate \"${alias}\" in the keystore ${keystore_name}:"
 
-  mkdir -p "${keystore_dir}/${keystore_name}"
-  result=$(pkeytool -genkeypair -v \
+  mkdir -m 700 -p "${keystore_dir}/${keystore_name}"
+  result=$(umask 177; pkeytool -genkeypair -v \
     ${JAVA_KEYTOOL_FLAG} \
     -alias "${alias}" \
     -keyalg RSA -keysize 2048 \
@@ -309,7 +309,7 @@ pkcs12_create_certificate_and_sign() {
   fi
 
   print_message ">>>> Generate CSR for the certificate \"${alias}\" in the keystore \"${keystore_name}\":"
-  result=$(pkeytool ${JAVA_KEYTOOL_FLAG} \
+  result=$(umask 137; pkeytool ${JAVA_KEYTOOL_FLAG} \
     -certreq -v \
     -alias "${alias}" \
     -keystore "${keystore_dir}/${keystore_name}/${keystore_name}.keystore.p12" \
@@ -338,7 +338,7 @@ pkcs12_create_certificate_and_sign() {
   san="${san}dns:localhost.localdomain,dns:localhost,ip:127.0.0.1"
 
   print_message ">>>> Sign the CSR using the Certificate Authority \"${ca_alias}\":"
-  result=$(pkeytool ${JAVA_KEYTOOL_FLAG} \
+  result=$(umask 137; pkeytool ${JAVA_KEYTOOL_FLAG} \
     -gencert -v \
     -infile "${keystore_dir}/${keystore_name}/${alias}.csr" \
     -outfile "${keystore_dir}/${keystore_name}/${alias}.signed.cer" \
@@ -439,7 +439,7 @@ pkcs12_import_pkcs12_keystore() {
 
   # make sure directory exists
   print_trace "- Make sure keystore directory ${dest_keystore_dir} exists."
-  result=$(mkdir -p "${dest_keystore_dir}")
+  result=$(mkdir -m 700 -p "${dest_keystore_dir}")
   if [ ! -d "${dest_keystore_dir}" ]; then
     print_trace "  * Output:"
     if [ -n "${result}" ]; then
@@ -454,7 +454,7 @@ pkcs12_import_pkcs12_keystore() {
     return 1
   fi
 
-  result=$(pkeytool ${JAVA_KEYTOOL_FLAG} \
+  result=$(umask 177; pkeytool ${JAVA_KEYTOOL_FLAG} \
     -importkeystore -v \
     -noprompt \
     -deststoretype "PKCS12" \
@@ -597,7 +597,7 @@ pkcs12_export_pem() {
     if [ -n "${alias}" ]; then
       alias_lc=$(echo "${alias}" | lower_case)
       print_message ">>>> Export certificate \"${alias}\" to PEM format"
-      result=$(pkeytool ${JAVA_KEYTOOL_ENCODING} -exportcert -v \
+      result=$(umask 137; pkeytool ${JAVA_KEYTOOL_ENCODING} -exportcert -v \
         -alias "${alias}" \
         -keystore "${keystore_file}" \
         -storepass "${password}" \
@@ -617,7 +617,7 @@ EOF
     if [ -n "${alias}" ]; then
       alias_lc=$(echo "${alias}" | lower_case)
       print_message ">>>> Export certificate \"${alias}\" to PEM format"
-      result=$(pkeytool -exportcert -v \
+      result=$(umask 137; pkeytool -exportcert -v \
         -alias "${alias}" \
         -keystore "${keystore_file}" \
         -storepass "${password}" \
@@ -633,6 +633,11 @@ EOF
           print_message ">>>> Certificate \"${keystore_dir}/${alias_lc}.cer is in EBCDIC."
         else
           print_message ">>>> Converting certificate \"${keystore_dir}/${alias_lc}.cer\" to EBCDIC."
+          cp -p "${keystore_dir}/${alias_lc}.cer" "${keystore_dir}/${alias_lc}.cer-ebcdic" # to preserve the permissions and ownership
+          if [ $? -ne 0 ]; then
+            print_error "Error: Couldn't copy the certificate to the new location"
+            exit 1
+          fi
           iconv -f ISO8859-1 -t IBM-1047 "${keystore_dir}/${alias_lc}.cer" >"${keystore_dir}/${alias_lc}.cer-ebcdic"
           mv "${keystore_dir}/${alias_lc}.cer-ebcdic" "${keystore_dir}/${alias_lc}.cer"
         fi
@@ -652,6 +657,14 @@ EOF
       # handed to the java child process through the environment, not argv, for the
       # same reason pkeytool avoids keytool's argument list
       export ZWE_PRIVATE_EXPORTPRIVATEKEY_PASSWORD="${password}"
+
+      # Pre-creating the .key file to set the default access permissions.
+      (umask 177; touch "${keystore_dir}/${alias_lc}.key")
+      chmod 600 "${keystore_dir}/${alias_lc}.key" # extra chmod if the file already existed.
+      if [ $? -ne 0 ]; then
+        print_error "Error: Couldn't change permissions for file: ${keystore_dir}/${alias_lc}.key"
+        exit 1
+      fi
       if [ "${ZWE_RUN_ON_ZOS}" = "true" ]; then
         java -cp "${ZWE_zowe_runtimeDirectory}/bin/utils" \
           ExportPrivateKeyZos \
@@ -1237,7 +1250,7 @@ keyring_export_all_to_pkcs12() {
   keystore_name="${4:-localhost}"
   keystore_password="${5}"
 
-  mkdir -p "${uss_temp_dir}/keystore/${keystore_name}"
+  mkdir -m 700 -p "${uss_temp_dir}/keystore/${keystore_name}"
   temp_keystore_file="${uss_temp_dir}/keystore/${keystore_name}/${keystore_name}.keystore.p12"
   temp_truststore_file="${uss_temp_dir}/keystore/${keystore_name}/${keystore_name}.truststore.p12"
   labels_with_private_key=

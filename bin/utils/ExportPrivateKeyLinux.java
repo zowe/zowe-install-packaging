@@ -11,9 +11,13 @@
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileWriter;
+import java.nio.file.Files;
+import java.nio.file.attribute.PosixFilePermission;
+import java.nio.file.attribute.PosixFilePermissions;
 import java.security.Key;
 import java.security.KeyStore;
 import java.util.Base64;
+import java.util.Set;
 
 public class ExportPrivateKeyLinux {
     private File keystoreFile;
@@ -39,6 +43,8 @@ public class ExportPrivateKeyLinux {
         fw.write("\n");
         fw.write("-----END PRIVATE KEY-----\n");
         fw.close();
+        Set<PosixFilePermission> perm = PosixFilePermissions.fromString("rw-------"); // chmod 600
+        Files.setPosixFilePermissions(exportedFile.toPath(), perm);
     }
 
     public static void main(String args[]) throws Exception {
