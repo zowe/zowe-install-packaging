@@ -657,7 +657,10 @@ EOF
       # Pre-creating the .key file to set the default access permissions.
       (umask 177; touch "${keystore_dir}/${alias_lc}.key")
       chmod 600 "${keystore_dir}/${alias_lc}.key" # extra chmod if the file already existed.
-
+      if [ $? -ne 0 ]; then
+        print_error "Error: Couldn't change permissions for file: ${keystore_dir}/${alias_lc}.key"
+        exit 1
+      fi
       if [ "${ZWE_RUN_ON_ZOS}" = "true" ]; then
         java -cp "${ZWE_zowe_runtimeDirectory}/bin/utils" \
           ExportPrivateKeyZos \
