@@ -100,7 +100,7 @@ export function getUserId(): string|undefined {
       return user;
     }
     if (!std.getenv('PATH')) {
-      std.setenv('PATH','/bin:.:/usr/bin');
+      std.setenv('PATH','/bin:/usr/bin');
     }
     const rc = os.exec(['whoami'], { block: true, usePath: true, stdout: pipeArray[1]});
     

@@ -82,7 +82,7 @@ export function getZoweBaseSchemas(): string {
 
 function guaranteePath() {
   if (!std.getenv('PATH')) {
-    std.setenv('PATH','/bin:.:/usr/bin');
+    std.setenv('PATH','/bin:/usr/bin');
   }
 }
 
@@ -360,7 +360,7 @@ export function cleanupTempDir() {
   const tmpDir = std.getenv('ZWE_PRIVATE_TMP_MERGED_YAML_DIR');
   if (tmpDir) {
     if (!std.getenv('PATH')) {
-      std.setenv('PATH','/bin:.:/usr/bin');
+      std.setenv('PATH','/bin:/usr/bin');
     }
     const rc = os.exec(['rm', '-rf', tmpDir],
                        {block: true, usePath: true});
