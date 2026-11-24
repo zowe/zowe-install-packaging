@@ -299,13 +299,10 @@ export function printLevel2Trace(message?: string, writeTo?:string[]): boolean {
 const FORMATTING_TEST = /^[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}/;
 // runtime logging functions, follow zowe service logging standard
 export function printFormattedMessage(service: string, logger: string, levelName: string, message: string): boolean {
-  if (message == '-') {
-    //TODO readmessage
-    if (!message) {
-      return false;
-    }
+  if (message == null) {
+    return false;
   }
-
+  message = message.toString();
   const level:LOG_LEVEL = getLogLevel(levelName,LOG_LEVEL.INFO);
   const canonicalLevelName = LOG_LEVEL[level];
   const envLogValue = std.getenv(`ZWE_PRIVATE_LOG_LEVEL_${service}`);

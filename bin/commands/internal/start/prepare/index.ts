@@ -29,6 +29,7 @@ import * as node from '../../../../libs/node';
 import * as zosmf from '../../../../libs/zosmf';
 import * as zoslib from '../../../../libs/zos';
 import * as validateBind from '../../../validate/port/bind/index';
+import * as validateZosmfJwt from '../../../validate/zosmf/jwt/index';
 import * as attls from '../../../../libs/attls';
 import * as validateComponentManifests from '../../../validate/components/index';
 import * as validateCertificate from '../../../validate/certificate/index';
@@ -127,13 +128,14 @@ function prepareWorkspaceDirectory() {
 // Global validations
 function globalValidate(enabledComponents:string[]): void {
   common.printFormattedInfo("ZWELS", "zwe-internal-start-prepare,global_validate", "process global validations ...");
+  config.printStartupCheckModes("zwe-internal-start-prepare,global_validate");
 
   // if debug is true, exec both ulimit -Ha (hard system limits) and ulimit -a (soft system limits) and print the output
   const logLevel = std.getenv("ZWE_PRIVATE_LOG_LEVEL_ZWELS");
   const isDebug = (logLevel == "DEBUG" || logLevel == "TRACE");
   if (isDebug) {
     const hardUlimitResult = shell.execOutSync('sh', '-c', 'ulimit -Ha');
-    const softUlimitResult = shell.execOutSync('sh', '-c', 'ulimit -Ha');
+    const softUlimitResult = shell.execOutSync('sh', '-c', 'ulimit -a');
 
     if (hardUlimitResult.rc == 0) {
       common.printFormattedDebug("ZWELS", "zwe-internal-start-prepare,global_validate", `ulimit -Ha output:\n${hardUlimitResult.out}`);
@@ -203,8 +205,8 @@ function globalValidate(enabledComponents:string[]): void {
   }
 
   // validate z/OSMF for some core components
-  let zosmfCheckAction = ZOWE_CONFIG.zowe.launchScript?.startupChecks?.zosmf || ZOWE_CONFIG.zowe.launchScript?.startupChecks?.default || 'exit';
-  if (zosmfHost && zosmfPort && (zosmfCheckAction != 'disabled')) {
+  const zosmfCheckMode = getStartupCheckMode('zosmf');
+  if (zosmfHost && zosmfPort && zosmfCheckMode.doCheck) {
     if (enabledComponents.includes('discovery') || enabledComponents.includes('apiml')) {
       let jobSuffix = 'AG';
       if (enabledComponents.includes('zaas') && !enabledComponents.includes('apiml')) {
@@ -218,10 +220,22 @@ function globalValidate(enabledComponents:string[]): void {
       }
       // envs should overrule attls settings
       const finalScheme =  std.getenv('ZOSMF_SCHEME') || std.getenv('ZWE_zOSMF_scheme') || checkScheme;
-      let zosmfOk = zosmf.validateZosmfHostAndPort(zosmfHost, zosmfPort, finalScheme, gatewayJobname, (zosmfCheckAction == 'warn'));
+      let zosmfOk = zosmf.validateZosmfHostAndPort(zosmfHost, zosmfPort, finalScheme, gatewayJobname, zosmfCheckMode.warnOnly);
       if (!zosmfOk) {
         privateErrors++;
         common.printFormattedError('ZWELS', "zwe-internal-start-prepare,global_validate", "Zosmf validation failed");
+      }
+      const validateZosmfJwtAction = getStartupCheckMode('zosmfjwt');
+      if (validateZosmfJwtAction.doCheck) {
+        const jwtRc = validateZosmfJwt.execute(!validateZosmfJwtAction.warnOnly);
+        if (jwtRc !== 0) {
+          if (validateZosmfJwtAction.warnOnly) {
+            common.printFormattedWarn('ZWELS', 'zwe-internal-start-prepare,global_validate', 'Zosmf JWT validation failed. Zowe startup will continue.');
+          } else {
+            privateErrors++;
+            common.printFormattedError('ZWELS', 'zwe-internal-start-prepare,global_validate', 'Zosmf JWT validation failed');
+          }
+        }
       }
     } else if (enabledComponents.includes('gateway') && std.getenv('ZWE_components_gateway_apiml_security_auth_provider') == "zosmf") {
         privateErrors++;
@@ -291,7 +305,7 @@ function validateComponents(enabledComponents:string[]): any {
           //TODO verify that this returns things that we want, currently it just uses setenv
           const envVars = config.loadEnvironmentVariables(componentId);
           componentEnvironments[manifest.name] = envVars;
-          let result = shell.execSync('sh', '-c', `. ${runtimeDirectory}/bin/libs/configmgr-index.sh && cd ${componentDir} && . ${fullPath}`);
+          let result = shell.execOutSync('sh', '-c', `. ${runtimeDirectory}/bin/libs/configmgr-index.sh && cd ${componentDir} && . ${fullPath}`);
           privateErrors=prevErrors;
           if (result.rc) {
             privateErrors++;
@@ -478,12 +492,12 @@ function configureComponents(componentEnvironments?: any, enabledComponents?:str
 // Few early steps even before initialization
 
 // Check if user is UID 0, this is not recommended
-let userCheckAction = ZOWE_CONFIG.zowe.launchScript?.startupChecks?.user || ZOWE_CONFIG.zowe.launchScript?.startupChecks?.default || 'exit';
-if (userCheckAction != 'disabled') {
+const userCheckMode = getStartupCheckMode('user');
+if (userCheckMode.doCheck) {
   const userID = shell.execOutSync('sh', '-c', 'id -u');
   if (userID.rc == 0 && userID.out && userID.out == "0") {
     common.printFormattedError("ZWELS", "zwe-internal-start-prepare", 'Running as UID 0. Such a setting is strongly discouraged.');
-    if (userCheckAction == 'exit') {
+    if (!userCheckMode.warnOnly) {
       std.exit(1);
     }
   }

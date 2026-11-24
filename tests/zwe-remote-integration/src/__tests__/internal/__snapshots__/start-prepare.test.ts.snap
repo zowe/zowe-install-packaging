@@ -48,7 +48,8 @@ ERROR:  TESTUSR0 ERROR (zwe-validate-components) ZWEL0330E: Component 'explorer-
  TESTUSR0 WARN (zwe-validate-components) ZWEL0328W: The following component(s) are missing a valid manifest file and cannot be started: apiml, gateway, zaas, api-catalog, discovery, caching-service, app-server, explorer-jes, explorer-mvs, explorer-uss
  TESTUSR0 INFO (validateNodeHome) NodeJS version: v0.0.0
  TESTUSR0 INFO (validateJavaHome) Java version: v0.0.0
-Successfully checked z/OSMF is available on 'https://some.test.hostname:12321/zosmf/info' - 200
+Successfully checked z/OSMF is available on 'https://some.test.hostname:12321/zosmf/info' - 401
+ TESTUSR0 INFO (zwe-validate-zosmf-jwt) Zowe is not configured to use z/OSMF as the authentication provider (components.gateway.apiml.security.auth.provider=saf). No z/OSMF JWT check is required.
  TESTUSR0 INFO (zwe-internal-start-prepare,global_validate) global validations are successful
  TESTUSR0 INFO (zwe-internal-start-prepare,validate_components) process component validations ...
  TESTUSR0 INFO (zwe-validate-port-available) Checking ports of 11 enabled components
@@ -77,7 +78,8 @@ exports[`start-prepare-tests (SHORT) modulith disabled 1`] = `
  TESTUSR0 INFO (zwe-internal-start-prepare,global_validate) process global validations ...
  TESTUSR0 INFO (validateNodeHome) NodeJS version: v0.0.0
  TESTUSR0 INFO (validateJavaHome) Java version: v0.0.0
-Successfully checked z/OSMF is available on 'https://some.test.hostname:12321/zosmf/info' - 200
+Successfully checked z/OSMF is available on 'https://some.test.hostname:12321/zosmf/info' - 401
+ TESTUSR0 INFO (zwe-validate-zosmf-jwt) Zowe is not configured to use z/OSMF as the authentication provider (components.gateway.apiml.security.auth.provider=saf). No z/OSMF JWT check is required.
  TESTUSR0 INFO (zwe-internal-start-prepare,global_validate) global validations are successful
  TESTUSR0 INFO (zwe-internal-start-prepare,validate_components) process component validations ...
  TESTUSR0 INFO (zwe-validate-port-available) Checking ports of 10 enabled components
@@ -114,7 +116,8 @@ exports[`start-prepare-tests (SHORT) set startupChecks warn 1`] = `
  TESTUSR0 INFO (zwe-internal-start-prepare,global_validate) process global validations ...
  TESTUSR0 INFO (validateNodeHome) NodeJS version: v0.0.0
  TESTUSR0 INFO (validateJavaHome) Java version: v0.0.0
-Successfully checked z/OSMF is available on 'https://some.test.hostname:12321/zosmf/info' - 200
+Successfully checked z/OSMF is available on 'https://some.test.hostname:12321/zosmf/info' - 401
+ TESTUSR0 INFO (zwe-validate-zosmf-jwt) Zowe is not configured to use z/OSMF as the authentication provider (components.gateway.apiml.security.auth.provider=saf). No z/OSMF JWT check is required.
  TESTUSR0 INFO (zwe-internal-start-prepare,global_validate) global validations are successful
  TESTUSR0 INFO (zwe-internal-start-prepare,validate_components) process component validations ...
  TESTUSR0 INFO (zwe-validate-port-available) Checking ports of 11 enabled components
@@ -134,7 +137,8 @@ exports[`start-prepare-tests (SHORT) test combinations of startup default and po
  TESTUSR0 INFO (zwe-internal-start-prepare,global_validate) process global validations ...
  TESTUSR0 INFO (validateNodeHome) NodeJS version: v0.0.0
  TESTUSR0 INFO (validateJavaHome) Java version: v0.0.0
-Successfully checked z/OSMF is available on 'https://some.test.hostname:12321/zosmf/info' - 200
+Successfully checked z/OSMF is available on 'https://some.test.hostname:12321/zosmf/info' - 401
+ TESTUSR0 INFO (zwe-validate-zosmf-jwt) Zowe is not configured to use z/OSMF as the authentication provider (components.gateway.apiml.security.auth.provider=saf). No z/OSMF JWT check is required.
  TESTUSR0 INFO (zwe-internal-start-prepare,global_validate) global validations are successful
  TESTUSR0 INFO (zwe-internal-start-prepare,validate_components) process component validations ...
 ERROR:  TESTUSR0 ERROR (zwe-internal-start-prepare,validate_components) Error ZWEL0172E: Component zss has commands.validate defined but the file is missing.
@@ -152,7 +156,8 @@ exports[`start-prepare-tests (SHORT) test combinations of startup default and po
  TESTUSR0 INFO (zwe-internal-start-prepare,global_validate) process global validations ...
  TESTUSR0 INFO (validateNodeHome) NodeJS version: v0.0.0
  TESTUSR0 INFO (validateJavaHome) Java version: v0.0.0
-Successfully checked z/OSMF is available on 'https://some.test.hostname:12321/zosmf/info' - 200
+Successfully checked z/OSMF is available on 'https://some.test.hostname:12321/zosmf/info' - 401
+ TESTUSR0 INFO (zwe-validate-zosmf-jwt) Zowe is not configured to use z/OSMF as the authentication provider (components.gateway.apiml.security.auth.provider=saf). No z/OSMF JWT check is required.
  TESTUSR0 INFO (zwe-internal-start-prepare,global_validate) global validations are successful
  TESTUSR0 INFO (zwe-internal-start-prepare,validate_components) process component validations ...
 ERROR:  TESTUSR0 ERROR (zwe-internal-start-prepare,validate_components) Error ZWEL0172E: Component zss has commands.validate defined but the file is missing.
@@ -209,7 +214,8 @@ exports[`start-prepare-tests (SHORT) test startupChecks warn with node and java 
  TESTUSR0 INFO (validateNodeHome) NodeJS version: v0.0.0
  TESTUSR0 INFO (validateJavaHome) Java version: v0.0.0
 ERROR: Java 1.1.2 2024-01-16 is less than the minimum level required of Java 17.
-Successfully checked z/OSMF is available on 'https://some.test.hostname:12321/zosmf/info' - 200
+Successfully checked z/OSMF is available on 'https://some.test.hostname:12321/zosmf/info' - 401
+ TESTUSR0 INFO (zwe-validate-zosmf-jwt) Zowe is not configured to use z/OSMF as the authentication provider (components.gateway.apiml.security.auth.provider=saf). No z/OSMF JWT check is required.
  TESTUSR0 INFO (zwe-internal-start-prepare,global_validate) global validations are successful
  TESTUSR0 INFO (zwe-internal-start-prepare,validate_components) process component validations ...
  TESTUSR0 INFO (zwe-validate-port-available) Checking ports of 11 enabled components
@@ -231,7 +237,8 @@ exports[`start-prepare-tests (SHORT) test startupChecks warn with node and java 
  TESTUSR0 INFO (validateJavaHome) Java version: v0.0.0
 ERROR: Java 1.1.2 2024-01-16 is less than the minimum level required of Java 17. This check can be set to a warning via zowe.launchScript.startupChecks.javaMin
 ERROR:  TESTUSR0 ERROR (zwe-internal-start-prepare,global_validate) Could not validate java home
-Successfully checked z/OSMF is available on 'https://some.test.hostname:12321/zosmf/info' - 200
+Successfully checked z/OSMF is available on 'https://some.test.hostname:12321/zosmf/info' - 401
+ TESTUSR0 INFO (zwe-validate-zosmf-jwt) Zowe is not configured to use z/OSMF as the authentication provider (components.gateway.apiml.security.auth.provider=saf). No z/OSMF JWT check is required.
  TESTUSR0 WARN (zwe-internal-start-prepare,global_validate) 1 errors were found during validation, please check the message, correct any properties required in /test/dir/workspace/.env/.zowe-merged.yaml and re-launch Zowe."
 `;
 
@@ -245,7 +252,8 @@ exports[`start-prepare-tests (SHORT) test startupChecks warn with node and java 
  TESTUSR0 INFO (validateNodeHome) NodeJS version: v0.0.0
 ERROR: Node v1.1.2 is less than the minimum level required of v18.
  TESTUSR0 INFO (validateJavaHome) Java version: v0.0.0
-Successfully checked z/OSMF is available on 'https://some.test.hostname:12321/zosmf/info' - 200
+Successfully checked z/OSMF is available on 'https://some.test.hostname:12321/zosmf/info' - 401
+ TESTUSR0 INFO (zwe-validate-zosmf-jwt) Zowe is not configured to use z/OSMF as the authentication provider (components.gateway.apiml.security.auth.provider=saf). No z/OSMF JWT check is required.
  TESTUSR0 INFO (zwe-internal-start-prepare,global_validate) global validations are successful
  TESTUSR0 INFO (zwe-internal-start-prepare,validate_components) process component validations ...
  TESTUSR0 INFO (zwe-validate-port-available) Checking ports of 11 enabled components
@@ -267,7 +275,8 @@ exports[`start-prepare-tests (SHORT) test startupChecks warn with node and java 
 ERROR: Node v1.1.2 is less than the minimum level required of v18. This check can be set to a warning via zowe.launchScript.startupChecks.nodeMin
 ERROR:  TESTUSR0 ERROR (zwe-internal-start-prepare,global_validate) Could not validate node home
  TESTUSR0 INFO (validateJavaHome) Java version: v0.0.0
-Successfully checked z/OSMF is available on 'https://some.test.hostname:12321/zosmf/info' - 200
+Successfully checked z/OSMF is available on 'https://some.test.hostname:12321/zosmf/info' - 401
+ TESTUSR0 INFO (zwe-validate-zosmf-jwt) Zowe is not configured to use z/OSMF as the authentication provider (components.gateway.apiml.security.auth.provider=saf). No z/OSMF JWT check is required.
  TESTUSR0 WARN (zwe-internal-start-prepare,global_validate) 1 errors were found during validation, please check the message, correct any properties required in /test/dir/workspace/.env/.zowe-merged.yaml and re-launch Zowe."
 `;
 
@@ -281,7 +290,8 @@ exports[`start-prepare-tests (SHORT) test startupChecks warn with node and java 
  TESTUSR0 INFO (validateNodeHome) NodeJS version: v0.0.0
 ERROR: Node v99.1.2 is greater than the maximum supported version of v24.
  TESTUSR0 INFO (validateJavaHome) Java version: v0.0.0
-Successfully checked z/OSMF is available on 'https://some.test.hostname:12321/zosmf/info' - 200
+Successfully checked z/OSMF is available on 'https://some.test.hostname:12321/zosmf/info' - 401
+ TESTUSR0 INFO (zwe-validate-zosmf-jwt) Zowe is not configured to use z/OSMF as the authentication provider (components.gateway.apiml.security.auth.provider=saf). No z/OSMF JWT check is required.
  TESTUSR0 INFO (zwe-internal-start-prepare,global_validate) global validations are successful
  TESTUSR0 INFO (zwe-internal-start-prepare,validate_components) process component validations ...
  TESTUSR0 INFO (zwe-validate-port-available) Checking ports of 11 enabled components
@@ -303,7 +313,8 @@ exports[`start-prepare-tests (SHORT) test startupChecks warn with node and java 
 ERROR: Node v99.1.2 is greater than the maximum supported version of v24. This check can be set to a warning via zowe.launchScript.startupChecks.nodeMax
 ERROR:  TESTUSR0 ERROR (zwe-internal-start-prepare,global_validate) Could not validate node home
  TESTUSR0 INFO (validateJavaHome) Java version: v0.0.0
-Successfully checked z/OSMF is available on 'https://some.test.hostname:12321/zosmf/info' - 200
+Successfully checked z/OSMF is available on 'https://some.test.hostname:12321/zosmf/info' - 401
+ TESTUSR0 INFO (zwe-validate-zosmf-jwt) Zowe is not configured to use z/OSMF as the authentication provider (components.gateway.apiml.security.auth.provider=saf). No z/OSMF JWT check is required.
  TESTUSR0 WARN (zwe-internal-start-prepare,global_validate) 1 errors were found during validation, please check the message, correct any properties required in /test/dir/workspace/.env/.zowe-merged.yaml and re-launch Zowe."
 `;
 
@@ -317,7 +328,8 @@ exports[`start-prepare-tests (SHORT) test startupChecks warn with node and java 
  TESTUSR0 INFO (validateNodeHome) NodeJS version: v0.0.0
  TESTUSR0 INFO (validateJavaHome) Java version: v0.0.0
 ERROR: Java 99.1.2 2024-01-16 is greater than the maximum supported version of Java 21.
-Successfully checked z/OSMF is available on 'https://some.test.hostname:12321/zosmf/info' - 200
+Successfully checked z/OSMF is available on 'https://some.test.hostname:12321/zosmf/info' - 401
+ TESTUSR0 INFO (zwe-validate-zosmf-jwt) Zowe is not configured to use z/OSMF as the authentication provider (components.gateway.apiml.security.auth.provider=saf). No z/OSMF JWT check is required.
  TESTUSR0 INFO (zwe-internal-start-prepare,global_validate) global validations are successful
  TESTUSR0 INFO (zwe-internal-start-prepare,validate_components) process component validations ...
  TESTUSR0 INFO (zwe-validate-port-available) Checking ports of 11 enabled components
@@ -339,6 +351,7 @@ exports[`start-prepare-tests (SHORT) test startupChecks warn with node and java 
  TESTUSR0 INFO (validateJavaHome) Java version: v0.0.0
 ERROR: Java 99.1.2 2024-01-16 is greater than the maximum supported version of Java 21. This check can be set to a warning via zowe.launchScript.startupChecks.javaMax
 ERROR:  TESTUSR0 ERROR (zwe-internal-start-prepare,global_validate) Could not validate java home
-Successfully checked z/OSMF is available on 'https://some.test.hostname:12321/zosmf/info' - 200
+Successfully checked z/OSMF is available on 'https://some.test.hostname:12321/zosmf/info' - 401
+ TESTUSR0 INFO (zwe-validate-zosmf-jwt) Zowe is not configured to use z/OSMF as the authentication provider (components.gateway.apiml.security.auth.provider=saf). No z/OSMF JWT check is required.
  TESTUSR0 WARN (zwe-internal-start-prepare,global_validate) 1 errors were found during validation, please check the message, correct any properties required in /test/dir/workspace/.env/.zowe-merged.yaml and re-launch Zowe."
 `;

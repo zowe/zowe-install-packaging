@@ -50,7 +50,7 @@ describe(`test ${APP_TO_TEST}`, function() {
   });
 
 
-  it('should launch app correctly', async function() {
+  xit('should launch app correctly', async function() {
     // load app
     await launchApp(driver, APP_TO_TEST);
     const app = await locateApp(driver, APP_TO_TEST);

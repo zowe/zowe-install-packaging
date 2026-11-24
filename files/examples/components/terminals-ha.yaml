@@ -1,0 +1,53 @@
+################################################################################
+# This program and the accompanying materials are made available under the terms of the
+# Eclipse Public License v2.0 which accompanies this distribution, and is available at
+# https://www.eclipse.org/legal/epl-v20.html
+#
+# SPDX-License-Identifier: EPL-2.0
+#
+# Copyright Contributors to the Zowe Project.
+################################################################################
+#-------------------------------------------------------------------------------
+# Zowe high availability instances customizations
+#
+# This section includes the customizations for each Zowe high availability instance
+# and restricts outbound terminal connections for each HA instance.
+#
+# **NOTE**: Prefer one shared allowList and allowPorts under "components", see terminals.yaml. 
+#           Use the haInstances override only when the instances really differ, 
+#           for example when a target host is reachable only from some LPARs
+#           because of firewall or network zones.
+#-------------------------------------------------------------------------------
+haInstances:
+  lpar1:
+    hostname: lpar1.example.com
+    sysname: LPR1
+    components:
+      tn3270-ng2:
+        allowList:
+          - "*.example.com"
+        allowPorts:
+          - 23
+          - 992
+      vt-ng2:
+        allowList:
+          - "*.example.com"
+        allowPorts:
+          - 22
+  lpar2:
+    hostname: lpar2.example.com
+    sysname: LPR2
+    components:
+      tn3270-ng2:
+        allowList:
+          - "lpar1.example.com"
+          - "lpar2.example.com"
+          - "lpar3.example.com"
+        allowPorts:
+          - 23
+      vt-ng2:
+        allowList:
+          - "dev.example.com"
+          - "qa.example.com"
+        allowPorts:
+          - 22

@@ -112,8 +112,11 @@ zOSMF:
   be the default owner of keystore directory.
 - You can also define `name`, `password`, `caAlias` and `caPassword` under
   `zowe.setup.certificate.pkcs12` to customized keystore and truststore. These
-  configurations are optional, but it is recommended to update them from
-  default values.
+  configurations are optional. If `password` or `caPassword` is left at its
+  default value, a random password is generated for the keystore instead. With
+  `--update-config` the generated password is written to your Zowe YAML
+  configuration file; without it, the password is only shown in the command
+  output and must be saved manually.
 - Define `zowe.setup.certificate.pkcs12.import.keystore` if you already acquired
   certificate from other CA, stored them in PKCS12 format, and want to import
   into Zowe PKCS12 keystore.

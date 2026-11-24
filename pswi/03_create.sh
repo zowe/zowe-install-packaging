@@ -30,11 +30,11 @@ ADD_SWI_JSON='{"name":"'${SWI_NAME}'","system":"'${ZOSMF_SYSTEM}'","description"
 "globalzone":"'${GLOBAL_ZONE}'","targetzones":["'${TZONE}'"],"workflows":[{"name":"ZOWE Mount Workflow","description":"This workflow performs mount action of ZOWE zFS.",
 "location": {"dsname":"'${WORKFLOW_DSN}'(ZWEWRF02)"}},{"name":"Stand-alone Zowe API ML Configuration","description":"This workflow configures only API ML for Zowe 3.0.",
 "location": {"dsname":"'${WORKFLOW_DSN}'(ZWEAMLCF)"}},{"name":"Full Zowe server-side configuration for Zowe 3.0","description":"This workflow configures all Zowe server-side components for Zowe v3.0.",
-"location": {"dsname":"'${WORKFLOW_DSN}'(ZWECONF)"}},{"name":"ZOWE Creation of CSR request workflow","description":"This workflow creates a certificate sign request.",
+"location": {"dsname":"'${WORKFLOW_DSN}'(ZWECONF)"}},{"name":"ZOWE Define key ring and certificates","description":"This workflow defines key ring and certificates for Zowe.",
+"location": {"dsname":"'${WORKFLOW_DSN}'(ZWEKRING)"}},{"name":"ZOWE Creation of CSR request workflow","description":"This workflow creates a certificate sign request.",
 "location": {"dsname":"'${WORKFLOW_DSN}'(ZWECRECR)"}},{"name":"ZOWE Sign a CSR request","description":"This workflow signs the certificate sign request by a local CA.",
 "location": {"dsname":"'${WORKFLOW_DSN}'(ZWESIGNC)"}},{"name":"ZOWE Load Authentication Certificate into ESM","description":"This workflow loads a signed client authentication certificate to the ESM.",
-"location": {"dsname":"'${WORKFLOW_DSN}'(ZWELOADC)"}},{"name":"ZOWE Define key ring and certificates","description":"This workflow defines key ring and certificates for Zowe.",
-"location": {"dsname":"'${WORKFLOW_DSN}'(ZWEKRING)"}}],"products":[{"prodname":"ZOWE","release":"'${VERSION}'","vendor":"Open Mainframe Project","url":"https://www.zowe.org/"}]}'
+"location": {"dsname":"'${WORKFLOW_DSN}'(ZWELOADC)"}}],"products":[{"prodname":"ZOWE","release":"'${VERSION}'","vendor":"Open Mainframe Project","url":"https://www.zowe.org/"}]}'
 ADD_WORKFLOW_DSN_JSON='{"dirblk":5,"avgblk":25000,"dsorg":"PO","alcunit":"TRK","primary":80,"secondary":40,"recfm":"VB","blksize":26000,"lrecl":4096,"volser":"'${VOLUME}'"}'
 ADD_EXPORT_DSN_JSON='{"dsorg":"PO","alcunit":"TRK","primary":10,"secondary":5,"dirblk":10,"avgblk":500,"recfm":"FB","blksize":400,"lrecl":80}'
 EXPORT_JCL_JSON='{"packagedir":"'${EXPORT}'","jcldataset":"'${EXPORT_DSN}'","workvolume":"'${VOLUME}'"}'
@@ -162,7 +162,7 @@ echo "//STDOUT DD SYSOUT=*" >>JCL
 echo "//STDERR DD SYSOUT=*" >>JCL
 echo "//STDPARM  DD *" >>JCL
 echo "SH set -x;set -e;" >>JCL
-echo "chmod -R 777 ${ZOWE_MOUNT};" >>JCL
+echo "chmod -R 755 ${ZOWE_MOUNT};" >>JCL
 echo "/*" >>JCL
 
 sh scripts/submit_jcl.sh "$(cat JCL)"

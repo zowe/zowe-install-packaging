@@ -185,7 +185,13 @@ echo "[${SCRIPT_NAME}] move binary dependencies ..."
 mkdir -p "${CONTENT_DIR}/files/zlux"
 cd "${PAX_BINARY_DEPENDENCIES}"
 for zlux_dep in zlux-editor tn3270-ng2 vt-ng2 sample-react-app sample-iframe-app sample-angular-app explorer-ip; do
-  mv ${zlux_dep}-*.pax "${CONTENT_DIR}/files/zlux/${zlux_dep}.pax"
+  case "${zlux_dep}" in
+    sample-angular-app) target=angular-sample ;;
+    sample-react-app)   target=react-sample ;;
+    sample-iframe-app)  target=iframe-sample ;;
+    *)                  target="${zlux_dep}" ;;
+  esac
+  mv ${zlux_dep}-*.pax "${CONTENT_DIR}/files/zlux/${target}.pax"
 done
 mv *.pax.Z "${CONTENT_DIR}/files/"
 mv *.pax "${CONTENT_DIR}/files/"
