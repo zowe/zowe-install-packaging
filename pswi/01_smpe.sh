@@ -47,6 +47,12 @@ sshpass -e sftp -o HostKeyAlgorithms=+ssh-rsa -o BatchMode=no -o StrictHostKeyCh
 cd ${DIR}
 put SMPE20
 EOF
+
+if [ $? -ne 0 ]; then
+  echo "ERROR: Wasn't successful in uploading the workflow file SMPE20."
+  exit -1
+fi
+
 cd ..
 
 # Get workflowKey for SMPE workflow owned by user

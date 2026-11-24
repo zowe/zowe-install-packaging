@@ -10,7 +10,6 @@ fi
 if [ $RESPCODE -ne 0 ]; then
   echo "REST API call failed." >>$LOG_DIR/report.txt
   echo $RESP >>$LOG_DIR/report.txt
-  echo $RESP # FIXME Remove this once done.
   exit -1
 else
   echo "REST API call was successful."
