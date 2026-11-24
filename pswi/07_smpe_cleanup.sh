@@ -54,7 +54,7 @@ touch $LOG_FILE
 
 echo "Invoking REST API to unmount SMPE zFS ${ZOWE_ZFS} from its mountpoint."
 
-RESP=$(curl -s $ACTION_ZOWE_ZFS_URL -k -X "PUT" -d "$UNMOUNT_ZFS_JSON" -H "Content-Type: application/json" -H "X-CSRF-ZOSMF-HEADER: A" --user $ZOSMF_USER:$ZOSMF_PASS)
+RESP=$(curl -s $ACTION_ZOWE_ZFS_URL -X "PUT" -d "$UNMOUNT_ZFS_JSON" -H "Content-Type: application/json" -H "X-CSRF-ZOSMF-HEADER: A" --user $ZOSMF_USER:$ZOSMF_PASS --cacert ~/.marist/pubcert.crt --ciphers DEFAULT@SECLEVEL=1)
 check_response "${RESP}" $?
 
 # Delete SMPE datasets

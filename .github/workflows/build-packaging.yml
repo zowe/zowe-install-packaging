@@ -367,6 +367,9 @@ jobs:
         env:
           ZOSMF_USER: ${{ secrets.ZOWE_PSWI_BUILD_USR }}
           ZOSMF_PASS: ${{ secrets.ZOWE_PSWI_BUILD_PASSWD }}
+          SSHPASS: ${{ secrets.ZOWE_PSWI_BUILD_PASSWD }}
+          MARIST_PUBKEY: ${{ secrets.MARIST_PUB_KEY }}
+          MARIST_PUBCERT: ${{ secrets.MARIST_ZOSMF_PUB_CERT }}
           ZZOW_SSH_PORT: ${{ secrets.SSH_MARIST_ALLSYS_PORT }}
           VERSION: ${{ env.P_VERSION }}
 
