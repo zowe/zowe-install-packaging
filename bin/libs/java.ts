@@ -18,7 +18,7 @@ import * as shell from './shell';
 import * as config from './config';
 
 export function ensureJavaIsOnPath(): void {
-  let path=std.getenv('PATH') || '/bin:.:/usr/bin';
+  let path=std.getenv('PATH') || '/bin:/usr/bin';
   let javaHome=std.getenv('JAVA_HOME');
   if (!path.includes(`:${javaHome}/bin:`)) {
     std.setenv('PATH', `${javaHome}/bin:${path}`);

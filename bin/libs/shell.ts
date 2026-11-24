@@ -34,7 +34,7 @@ export type path = string;
 
 export function guaranteePath() {
   if (!std.getenv('PATH')) {
-    std.setenv('PATH','/bin:.:/usr/bin');
+    std.setenv('PATH','/bin:/usr/bin');
   }
 }
 

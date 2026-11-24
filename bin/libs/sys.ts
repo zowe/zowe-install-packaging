@@ -162,7 +162,7 @@ export function executeCommand(...args:string[]) {
     err=data;
   }
   if (!std.getenv('PATH')) {
-    std.setenv('PATH','/bin:.:/usr/bin');
+    std.setenv('PATH','/bin:/usr/bin');
   }
 
   const rc = os.exec(args,

@@ -18,7 +18,7 @@
 # Constants
 # PATH must be set before anything else
 if $(/bin/test -z "${PATH}" 2>/dev/null) ; then
-  export PATH=/bin:.:/usr/bin
+  export PATH=/bin:/usr/bin
 fi
 if [ -z "${ZWE_zowe_runtimeDirectory}" ]; then
   ZWE_zowe_runtimeDirectory="$(cd "$(dirname "$0")/../";pwd)"
