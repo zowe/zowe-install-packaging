@@ -154,9 +154,15 @@ update_yaml_configmgr() {
   configmgr="${ZWE_zowe_runtimeDirectory}/bin/utils/configmgr"
   updateYaml="${ZWE_zowe_runtimeDirectory}/bin/utils/ModifyZoweYaml.js"
 
-  print_message "- update \"${key}\" with value: ${val}"
-  result=$(_CEE_RUNOPTS="XPLINK(ON)" "${configmgr}" -script "$updateYaml" update "$file" "$key" "$val" "$validate" 2>&1)
+  # this runs at info level, so a password would land on the console and in the log
+  print_message "- update \"${key}\" with value: $(mask_secret_value "${key}" "${val}")"
+  # the value is handed over in the environment rather than as an argument, because an
+  # argv element is readable from another process, the same exposure pkeytool avoids
+  ZWE_PRIVATE_YAML_UPDATE_VALUE="${val}"
+  export ZWE_PRIVATE_YAML_UPDATE_VALUE
+  result=$(_CEE_RUNOPTS="XPLINK(ON)" "${configmgr}" -script "$updateYaml" update "$file" "$key" "$validate" 2>&1)
   code=$?
+  unset ZWE_PRIVATE_YAML_UPDATE_VALUE
   if [ ${code} -eq 0 ]; then
     print_trace "  * Exit code: ${code}"
     print_trace "  * Output:"
@@ -273,8 +279,10 @@ read_json_string() {
 update_zowe_yaml() {
   validate="${4:-true}"
   if [ "${ZWE_RUN_IN_CONTAINER}" = "true" ]; then
-    yq -i "'.${2} = \"${3}\"'" "${1}"
-    if [ "${$?}" -ne 0 ]; then
+    # pass value as temp environment variable to safely escape it
+    # strenv() reads the env var and automatically handles quotes/special characters
+    TYQ_VAL="${3}" yq -i ".${2} = strenv(TYQ_VAL)" "${1}"    
+    if [ $? -ne 0 ]; then
       print_error_and_exit "Error ZWEL0138E: Failed to update key ${2} of file ${1}." "" 138
     fi
   else
@@ -320,7 +328,7 @@ delete_zowe_yaml() {
   validate="${3:-true}"
   if [ "${ZWE_RUN_IN_CONTAINER}" = "true" ]; then
     yq -i "'del(.${2})'" "${1}"
-    if [ "${$?}" -ne 0 ]; then
+    if [ $? -ne 0 ]; then
       print_error_and_exit "Error ZWEL0138E: Failed to delete key ${2} of file ${1}." "" 138
     fi
   else

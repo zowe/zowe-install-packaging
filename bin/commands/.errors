@@ -70,3 +70,7 @@ ZWEL0334W||%d Zowe port ATTLS validation(s) failed, review output for action ite
 ZWEL0334E||%d Zowe port ATTLS validation(s) failed, review output for action items before running Zowe.
 ZWEL0335W||%s: No AT-TLS rule identified at %s:%d for jobname %s
 ZWEL0336W||%s: AT-TLS rule found but ATTLS not requested at %s:%d for jobname %s
+ZWEL0337E|337|z/OSMF host (zosmf.host) or port (zosmf.port) is not configured in the Zowe YAML. Cannot validate z/OSMF JWT support without a z/OSMF destination.
+ZWEL0338E|338|Neither components.discovery.enabled nor components.apiml.enabled is set to true. The required APIML servers are not enabled for z/OSMF access.
+ZWEL0339W||z/OSMF JWT check failed (rc=%s) but jwtAutoconfiguration is 'ltpa', so JWT support is not required for this Zowe configuration.
+ZWEL0340E|340|z/OSMF JWT check failed (rc=%s). Zowe requires z/OSMF JWT support (jwtAutoconfiguration is 'jwt') but it is not working.

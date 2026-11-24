@@ -23,17 +23,17 @@
         </boolean>
     </variable>
     <variable name="zowe_setup_jcl_header" scope="global" visibility="public">
-      <label>JOB statement positional parameters and keywords used by Zowe during installation and configuration.</label>
-      <abstract>JOB statement positional parameters and keywords used by Zowe during installation and configuration.</abstract>
+      <label>JCL Configuration Positional JOB Parameters and Keywords</label>
+      <abstract>Optional JOB statement parameters used only for Zowe configuration by JCL samples.</abstract>
       <description>These parameters and keywords are optional, and by default empty. These are used separately from z/OSMF defined JOB cards. Each line should be less than 70 characters, omit start-of-line identifier statements such as "//", "/*", and include commas for end-of-line continuation.</description>
       <category>zowe</category>
       <string multiLine="true" valueMustBeChoice="false">
       </string>
     </variable>
     <variable name="zowe_setup_dataset_prefix" scope="instance" visibility="public">
-        <label>Prefix of Zowe setup MVS datasets</label>
-        <abstract>Prefix of datasets where remaining runtime datasets will be created</abstract>
-        <description>Prefix of datasets where remaining runtime libraries will be created within execution of Zowe install step (SZWEAUTH, SZWESAMP, SZWEEXEC, SZWELOAD)</description>
+        <label>Target Zone Prefix of Zowe setup MVS datasets</label>
+        <abstract>MVS dataset prefix for Zowe runtime libraries used during installation and initialization.</abstract>
+        <description>The Target Zone Prefix for MVS datasets where Zowe runtime libraries (SZWEAUTH, SZWESAMP, SZWEEXEC, and SZWELOAD) are created during the install step. Zowe also relies on this prefix to locate ZWEGENER and sample libraries when executing `zwe init` commands with JCL.</description>
         <category>zowe</category>
         <string valueMustBeChoice="false" multiLine="false">
             <!-- Put validation here -->
@@ -287,6 +287,17 @@ some use cases, like containerization, this port could be different.</descriptio
             <choice>TLSv1.2</choice>
             <choice>TLSv1.3</choice>
             <default>TLSv1.3</default>
+        </string>
+    </variable>
+    <variable name="zowe_network_allowedDomains" scope="instance" visibility="public">
+        <label>Zowe allowed domains</label>
+        <abstract>The list of allowed domains in services that register to the API ML Discovery Service</abstract>
+        <description>Defines a list of domains that can be used by the Zowe instance.</description>
+        <category>network</category>
+        <string valueMustBeChoice="false" multiLine="true">
+            <!-- Put validation here -->
+            <!-- Specify choices here -->
+            <default>www.example.com</default>
         </string>
     </variable>
     <variable name="zowe_certificate_keystore_type" scope="instance" visibility="public">
@@ -666,6 +677,7 @@ some use cases, like containerization, this port could be different.</descriptio
             <variableValue name="zowe_network_server_tls_minTls" scope="instance" noPromptIfSet="false" required="false"/>
             <variableValue name="zowe_network_server_tls_maxTls" scope="instance" noPromptIfSet="false" required="false"/>
             <variableValue name="zowe_network_client_tls_attls" scope="instance" noPromptIfSet="false" required="false"/>
+            <variableValue name="zowe_network_allowedDomains" scope="instance" noPromptIfSet="false" required="false"/>
             <variableValue name="zowe_launchScript_logLevel" scope="instance" noPromptIfSet="false" required="false"/>
             <variableValue name="zowe_launchScript_onComponentConfigureFail" scope="instance" noPromptIfSet="false" required="false"/>
             <variableValue name="zowe_certificate_keystore_type" scope="instance" noPromptIfSet="false" required="true"/>
@@ -922,7 +934,7 @@ echo '' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
 echo '  # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
 echo '  # Zowe runtime (root) directory' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
 echo '  #' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
-echo '  # **NOTE**: ' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
+echo '  # **NOTE**:' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
 echo '  # 1. if it is not specified and you passed "--update-config" argument' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
 echo '  # when you ran "zwe init" command, this value will be updated with the Zowe' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
 echo '  # runtime where the "zwe" command is located.' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
@@ -963,7 +975,7 @@ echo '  # expects this ID in SAF resources' >> "${instance-zowe_workspaceDirecto
 echo '  rbacProfileIdentifier: "$!{instance-zowe_rbacProfileIdentifier}"' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
 echo '' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
 echo '  # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
-echo '  # This is an ID that can be used by servers that distinguish their cookies from unrelated Zowe installs, ' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
+echo '  # This is an ID that can be used by servers that distinguish their cookies from unrelated Zowe installs,' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
 echo '  # for purposes such as to allow multiple copies of Zowe to be used within the same client' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
 echo '  cookieIdentifier: "$!{instance-zowe_cookieIdentifier}"' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
 echo '' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
@@ -994,6 +1006,12 @@ echo '  #' >> "${instance-zowe_workspaceDirectory}/zowe.yaml" >> "${instance-zow
 echo '  # This section can be overridden per-component by placing it' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
 echo '  # Under a "zowe" subsection of a component, as in "components.zss.zowe.network"' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
 echo '  network:' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
+echo '    # Allowed domains is a list of domains (supporting wildcards) that can be used in services that register to the API ML Discovery Service.' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
+echo '    # Defaults to the external domains + lpar hostnames if defined in haInstances' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
+echo '    allowedDomains:' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
+#foreach($allowedDomain in ${instance-zowe_network_allowedDomains.split("\n")})
+echo '      - ${allowedDomain}' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
+#end
 echo '    server:' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
 echo '      tls:' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
 echo '        attls: ${instance-zowe_network_server_tls_attls}' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
@@ -1070,7 +1088,7 @@ echo '      # # Component manifest check - validates that each component defined
 echo '      # components: "warn"' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
 echo '      # # Superuser startup check - defaults to zowe.launchScript.startupChecks.default, or "exit" if this is unset' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
 echo '      # user: exit' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
-echo '      # # Certificate check - defaults to zowe.launchScript.startupChecks.default, or "exit" if this is unset' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
+echo '      # # Certificate check - defaults to zowe.launchScript.startupChecks.default, or "warn" if this is unset' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
 echo '      # certificate: warn' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
 echo '      # # Java runtime version checks - max version is set to warn by default to allow for future Java versions to be supported.'>> "${instance-zowe_workspaceDirectory}/zowe.yaml"
 echo '      # javaMin: exit' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
@@ -1158,6 +1176,29 @@ echo '  # Set apiml.enabled to "true", to enable single-service API ML deploymen
 echo '  apiml:' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
 echo '    enabled: true' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
 echo '    debug: false' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
+echo '    # # Extended logging configuration' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
+echo '    # logging:' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
+echo '    # # Enable quiet logging when only errors and selected APIML messages are printed.' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
+echo '    # # Can be "quiet", "info" or "debug". "debug" is equivalent to "components.apiml.debug: true". Default value is "info".' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
+echo '    # # Supported also for individual APIML components.' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
+echo '    #   level: quiet' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
+echo '    # # Enable debug scoped to specific APIML feature. Requires components.apiml.debug: false.' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
+echo '    #   debug:' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
+echo '    #     # Request processing and routing' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
+echo '    #     gateway: true' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
+echo '    #     # Security and authentication' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
+echo '    #     authentication: true' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
+echo '    #     # Service onboarding' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
+echo '    #     discovery: true' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
+echo '    #     # APIML caches incl. security caches' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
+echo '    #     caching: true' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
+echo '    #     # Api catalog and spring doc' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
+echo '    #     catalog: true' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
+echo '    #   toFile:' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
+echo '    #     # Enable logging to file, enabled automatically when components.apiml.debug: true or any of components.apiml.logging.debug.*: true.' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
+echo '    #     enabled: true' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
+echo '    #     # DEBUG and TRACE level messages are logged to log file only. Reduces messages produced to sdtout/spool.' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
+echo '    #     debugOnly: true' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
 echo '' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
 echo '  # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
 echo '  gateway:' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
@@ -1273,6 +1314,34 @@ echo '  # And ensure gateway auth provider is either "saf" with z/OSMF passticke
 echo '  # Or that the provider is set to "zosmf"' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
 echo '  explorer-uss:' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
 echo '    enabled: false' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
+echo '' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
+echo '  # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
+echo '  # Zowe Desktop Terminal Apps' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
+echo '  #' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
+echo '  # '\''allowList'\'' and '\''allowPorts'\'' sections can be used to restrict connections' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
+echo '  # See files/examples/components/terminals.yaml for more examples.' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
+echo '  #' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
+echo '  # tn3270-ng2:' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
+echo '  #   allowPorts:' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
+echo '  #     - 23' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
+echo '  #     - 992' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
+echo '  #   allowList:' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
+echo '  #   # IPv4/IPv6 addresses and CIDR masks are permitted' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
+echo '  #   - "10.0.0.0/8"' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
+echo '  #   - "172.16.0.0/12"' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
+echo '  #   - "192.168.0.0/16"' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
+echo '  #   #' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
+echo '  #   # templates can be used to derive strings' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
+echo '  #   - "#[[${{ zos.resolveSymbol('\''&SYSNAME'\'') }}]]#"' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
+echo '  #   #' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
+echo '  #   # '\''*'\'' is allowed for pattern matching' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
+echo '  #   - "*.example.com"' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
+echo '' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
+echo '  # vt-ng2:' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
+echo '  #   allowPorts:' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
+echo '  #     - 22' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
+echo '  #   # This assignment reuses the allowList of tn3270-ng2 for vt-ng2' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
+echo '  #   allowList: "#[[${{ components['\''tn3270-ng2'\''].allowList }}]]#"' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
 echo '' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
 echo '  # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
 echo '  # Each extension can have dedicated definition similar to core components.' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"

@@ -30,13 +30,28 @@ function_exists() {
 ###############################
 # if a string has any env variables, replace them with values
 parse_string_vars() {
-  eval "echo \"${1}\""
+  # replace newlines with | before grep so the newline character itself is visible to the pattern and also triggers rejection.
+  if printf '%s' "${1}" | tr '\n' '|' | grep -qE '[^A-Za-z0-9/._${} -]'; then
+    print_error "parse_string_vars: input contains characters outside the allowed set (alphanumerics, /, ., _, -, \$, {, }, space)"
+    return 1
+  else
+    eval "echo \"${1}\""
+  fi
 }
 
 ###############################
 # return value of the variable
 get_var_value() {
   eval "echo \"\${${1}}\""
+}
+
+###############################
+# safely assign a value to a variable whose name is held in another variable
+#
+# @param string   variable name
+# @param string   value to assign
+set_var_value() {
+  eval "${1}=\"\${2}\""
 }
 
 ###############################

@@ -2,6 +2,26 @@
 
 All notable changes to the Zowe Installer will be documented in this file.
 
+## `3.6.0`
+
+- Enhancement: APIML modulith debug logging configuration added to the `example-zowe.yaml`. [#4913](https://github.com/zowe/zowe-install-packaging/pull/4913)
+- Bugfix: Restricted read/write permissions for log files created by the `zwe` command. [#4807](https://github.com/zowe/zowe-install-packaging/pull/4807)
+- Enhancement: When running in HA mode, Zowe now creates a per-HA-instance merged YAML config file (`.zowe-<haInstance>-merged.yaml`) to the workspace `.env` directory. This file contains the fully-resolved configuration for that instance with all `haInstances` overrides applied at the root level. The `haInstances` block is preserved. The location of this file is recorded in environment variable `ZWE_HA_INSTANCE_CONFIG`. [#4759](https://github.com/zowe/zowe-install-packaging/pull/4759)
+- Bugfix: Fixed `MalformedURLException: unknown protocol: safkeyring` on IBM Java 17/21 for `zwe validate certificate` command by replacing `-Djava.protocol.handler.pkgs=com.ibm.crypto.provider` with `--add-modules ibm.crypto.zsecurity,ibm.crypto.hdwrcca` to resolve the SAF keyring URL protocol handler. [#4795](https://github.com/zowe/zowe-install-packaging/pull/4795)
+- Enhancement: New property `zowe.network.allowedDomains`. Defaults to external domains and LPAR hostnames for HA scenarios. Domains not included in this list will not be allowed to be onboarded on Discovery Service. [#4801](https://github.com/zowe/zowe-install-packaging/pull/4801)
+- Enhancement: Added command `zwe validate zosmf jwt` which checks whether a Zowe configured to use z/OSMF is able to use z/OSMF's JWT authentication method or not. This command runs every startup if the conditions are met, but can be disabled or turned into only a warning via YAML property `zowe.launchScript.startupChecks.zosmfjwt` being set to "warn" or "disabled". [#4727](https://github.com/zowe/zowe-install-packaging/pull/4727)
+- Enhancement: APIML logging level configuration added to the `example-zowe.yaml`. [#4827](https://github.com/zowe/zowe-install-packaging/pull/4827)
+- Enhancement: Improved temporary files and directories handling. [#4820](https://github.com/zowe/zowe-install-packaging/pull/4820)
+- Enhancement: Updated the sequence of workflows in PSWI.[#4854](https://github.com/zowe/zowe-install-packaging/pull/4854)
+- Bugfix: Passwords are no longer exposed via process arguments or console/log output by `zwe` certificate, migrate, and configuration commands. [#4883](https://github.com/zowe/zowe-install-packaging/pull/4883)
+- Enhancement: `zwe init certificate` generates a random password instead of "password" when `password` or `caPassword` is left at its default value. Applicable to keystores only, keyring scenarios are unaffected. [#4866](https://github.com/zowe/zowe-install-packaging/pull/4866)
+- Bugfix: Improved RACF sample job security permissions. [#4879](https://github.com/zowe/zowe-install-packaging/pull/4879)
+- Bugfix: Corrected the `cli.js` script path in the ZIS register `index.sh` files (`zis`, `zis/loadlib`, `zis/parmlib`) so each points to its own command directory instead of the non-existent `install/zis-plugin/cli.js`. [#4917](https://github.com/zowe/zowe-install-packaging/pull/4917)
+- Bugfix: Allow dynamic zFS expansion for STC group in RACF. [#4916](https://github.com/zowe/zowe-install-packaging/pull/4916)
+- Bugfix: Allow dynamic zFS expansion for STC group in TSS. [#4882](https://github.com/zowe/zowe-install-packaging/pull/4882)
+- Bugfix: Allow dynamic zFS expansion for STC group in ACF2. [#4886](https://github.com/zowe/zowe-install-packaging/pull/4886)
+- Bugfix: `zowe.launchScript.startupChecks.default` now applies to every startup check that is not set individually. Previously, `files/defaults.yaml` set the `certificate`, `components`, `javaMax`, `nodeMax`, and `attls` checks to "warn", which overrode the user's `default`. New checks still default to "warn" and all others to "exit". The effective behavior of each startup check is now printed at startup. [#4945](https://github.com/zowe/zowe-install-packaging/pull/4945)
+
 ## `3.5.0`
 
 - Bugfix: ACF2 data set protection statement is not correct. [#4769](https://github.com/zowe/zowe-install-packaging/pull/4769)

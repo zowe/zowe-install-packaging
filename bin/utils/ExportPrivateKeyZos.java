@@ -49,13 +49,20 @@ public class ExportPrivateKeyZos {
     }
 
     public static void main(String args[]) throws Exception {
+        // the password is read from the environment, not from args, so it is not
+        // readable from this process's arguments by another user inspecting processes
+        String password = System.getenv("ZWE_PRIVATE_EXPORTPRIVATEKEY_PASSWORD");
+        if (password == null) {
+            System.err.println("ZWE_PRIVATE_EXPORTPRIVATEKEY_PASSWORD is not set");
+            System.exit(1);
+        }
         ExportPrivateKeyZos export = new ExportPrivateKeyZos();
         export.keystoreName = args[0];
         export.keyStoreType = args[1];
-        export.keyStorePassword = args[2].toCharArray();
-        export.alias = args[3];
-        export.keyPassword = args[4].toCharArray();
-        export.exportedFile = new File(args[5]);
+        export.keyStorePassword = password.toCharArray();
+        export.alias = args[2];
+        export.keyPassword = password.toCharArray();
+        export.exportedFile = new File(args[3]);
         export.export();
     }
 }

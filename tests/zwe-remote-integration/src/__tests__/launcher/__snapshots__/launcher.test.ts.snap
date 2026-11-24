@@ -55,6 +55,8 @@ zowe:
       enable: true
   network:
     proxyType: "https"
+    allowedDomains:
+    - "www.example.com"
     server:
       tls:
         attls: false
@@ -244,6 +246,8 @@ zowe:
       enable: true
   network:
     proxyType: "https"
+    allowedDomains:
+    - "www.example.com"
     server:
       tls:
         attls: false

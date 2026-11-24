@@ -1,0 +1,18 @@
+Checks whether z/OSMF JWT support is correctly configured and operational when Zowe is set
+to use z/OSMF as the authentication provider with JWT autoconfiguration.
+
+This command reads the Zowe YAML configuration to determine whether the check is applicable,
+then invokes the certificate-analyser.jar utility with the --zosmf-jwt-check flag to probe
+z/OSMF for JWT support.
+
+If Zowe is not configured to use z/OSMF as the authentication provider, the check succeeds
+immediately with an informational message.
+
+If jwtAutoconfiguration is 'ltpa' and the check fails, a warning is issued but the command
+still exits successfully, because LTPA does not require z/OSMF JWT support.
+
+If jwtAutoconfiguration is 'jwt' and the check fails, the command exits with an error and
+provides detailed diagnostic information.
+
+The behavior of this check during Zowe startup can be controlled via:
+  zowe.launchScript.startupChecks.zosmfjwt: exit | warn | disabled

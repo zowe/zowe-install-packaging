@@ -70,7 +70,9 @@ zowe_keyring_external_intermediate_ca:
 zowe_keyring_external_root_ca: brcmso
 zowe_keystore_alias: localhost
 zowe_keystore_dir: ~/.zowe/keystore
-zowe_keystore_password: password
+# NOTE: must not be the schema default "password" - zwe init certificate replaces that with a
+# random value, which would no longer match the keytool -storepass calls in custom_for_test.
+zowe_keystore_password: zowetestpw
 zowe_launch_components:
 zowe_launch_scripts_loglevel:
 zowe_lock_keystore: true

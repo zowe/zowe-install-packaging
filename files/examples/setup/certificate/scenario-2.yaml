@@ -30,7 +30,8 @@ zowe:
         # Certificate alias name. Optional, default value is localhost.
         # Note: please use all lower cases as alias.
         name: localhost
-        # Keystore password. Optional, default value is password.
+        # Keystore password. Optional. If left as "password", a random
+        # password is generated instead and shown in the command output.
         password: password
         import:
           # Existing PKCS12 keystore which holds the certificate issued by external CA.
