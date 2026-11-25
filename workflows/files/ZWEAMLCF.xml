@@ -743,10 +743,16 @@ some use cases, like containerization, this port could be different.</descriptio
         <b>NOTE:</b> If you run this workflow outside of PSWI (SMP/E or convenience build), you might encounter a folder write permission issue.<br/>
         To solve the issue, run the following commands in USS:<br/>
         <code>mkdir -p ${instance-zowe_workspaceDirectory} </code><br/>
-        <code>chmod 775 ${instance-zowe_workspaceDirectory} </code><br/>
+        <code>chmod 750 ${instance-zowe_workspaceDirectory} </code><br/>
         and change the folder UID to the ID of the user who executes this workflow.<br/>
+        You can also change the GID to the controlled group of users.
+        Please refer to the documentation of your security system for more information.<br/>
         Issue the following command: <br/>
+        #if ("$!{instance-zowe_setup_security_groups_stc}" == "")
         <code>chown ${_workflow-workflowOwner} ${instance-zowe_workspaceDirectory} </code><br/>
+        #else
+        <code>chown ${_workflow-workflowOwner}:${instance-zowe_setup_security_groups_stc} ${instance-zowe_workspaceDirectory} </code><br/>
+        #end
         Re-run the step.
 ]]></instructions>
         <weight>1</weight>
@@ -758,8 +764,9 @@ some use cases, like containerization, this port could be different.</descriptio
 set -e
 set -x
 
-mkdir -p "$!{instance-zowe_workspaceDirectory}"
-
+mkdir -m 750 -p "$!{instance-zowe_workspaceDirectory}"
+(umask 127; touch "${instance-zowe_workspaceDirectory}/zowe.yaml")
+chmod 640 "${instance-zowe_workspaceDirectory}/zowe.yaml"
 echo '#[[################################################################################]]#' > "${instance-zowe_workspaceDirectory}/zowe.yaml"
 echo '# This program and the accompanying materials are made available under the terms of the' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
 echo '# Eclipse Public License v2.0 which accompanies this distribution, and is available at' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
@@ -916,7 +923,9 @@ echo '      # if keyrings, the format is safkeyring://stcusername/KeyName' >> "$
 echo '      # for PKCS12, it is instead the path to the PKCS12 file.' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
 echo '      file: $!{instance-zowe_certificate_keystore_file}' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
 echo '      # "password" should either be the value you set when PKCS12, or literally "password" for keyrings.' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
+set +x
 echo '      password: $!{instance-zowe_certificate_keystore_password}' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
+set -x
 echo '      # alias is the name of your key/cert. When using keyrings, get the Case Sensitive, Space Sensitive value in a TSO list ring.' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
 echo '      alias: $!{instance-zowe_certificate_keystore_alias}' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
 echo '    truststore:' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
@@ -924,7 +933,9 @@ echo '      # Truststore usually has same values as keystore (minus alias), but 
 echo '      # In this example, we link the truststore values to match the keystore values.' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
 echo '      type: $!{instance-zowe_certificate_truststore_type}' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
 echo '      file: $!{instance-zowe_certificate_truststore_file}' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
+set +x
 echo '      password: $!{instance-zowe_certificate_truststore_password}' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
+set -x
 echo '' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
 echo '  # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
 echo '  # Zowe runtime (root) directory' >> "${instance-zowe_workspaceDirectory}/zowe.yaml"
