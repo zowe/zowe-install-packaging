@@ -2,6 +2,10 @@
 
 All notable changes to the Zowe Installer will be documented in this file.
 
+## `Unreleased`
+
+- Minor enhancement: Updated directory permissions for the Zowe workspace directory and the *.yaml* file in the workflows
+
 ## `3.6.0`
 
 - Enhancement: APIML modulith debug logging configuration added to the `example-zowe.yaml`. [#4913](https://github.com/zowe/zowe-install-packaging/pull/4913)
