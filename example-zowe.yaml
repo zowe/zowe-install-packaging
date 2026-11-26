@@ -294,29 +294,34 @@ zowe:
     # Set to "exit" if you would like startup to exit if any component has an error in the configure stage, otherwise zwe will warn but continue.
     onComponentConfigureFail: "warn"
     # Startup checks which run as part of the Zowe STC, prior to Zowe component startup.
-    # This section is optional. If not specified, the default values will be used.
+    # This section is optional. Each check uses its explicit value, then startupChecks.default,
+    # then its built-in value shown below.
     # startupChecks:
-      # # Default check behavior may be one of "exit", "warn", or "disabled"
-      # default: "exit"
-      # # Individual startup checks will override the default behavior
-      # # Port check - defaults to zowe.launchScript.startupChecks.default, or "exit" if this is unset
-      # ports: exit
-      # # z/OSMF startup check - defaults to zowe.launchScript.startupChecks.default, or "exit" if this is unset
-      # zosmf: exit
-      # # Component manifest check - validates that each component defined in zowe.yaml has a manifest file.
-      # components: "warn"
-      # # Superuser startup check - defaults to zowe.launchScript.startupChecks.default, or "exit" if this is unset
-      # user: exit
-      # # Certificate check - defaults to zowe.launchScript.startupChecks.default, or "warn" if this is unset
-      # certificate: warn
-      # # Java runtime version checks - max version is set to warn by default to allow for future Java versions to be supported.
-      # javaMin: exit
-      # javaMax: warn
-      # # Node runtime version checks - max version is set to warn by default to allow for future Node versions to be supported.
-      # nodeMin: exit
-      # nodeMax: warn
-      # # ATTLS (Application Transparent Transport Layer Security) port check - defaults to "warn"
-      # attls: "warn"
+    #   # Check behavior may be "exit" (stop startup on failure), "warn" (continue), or "disabled" (skip).
+    #   # Leave default unset to use each check's built-in value.
+    #   # Setting default overrides the built-in value for every check without an explicit value.
+    #   default: "exit"
+    #   # Individual startup checks override default. Values below are the built-in values.
+    #   # Port check - verifies that enabled components can bind to their ports.
+    #   ports: "exit"
+    #   # z/OSMF startup check - verifies that z/OSMF is running and meets Zowe's requirements.
+    #   zosmf: "exit"
+    #   # z/OSMF JWT check - verifies JWT support when using z/OSMF authentication with JWT autoconfiguration.
+    #   zosmfjwt: "warn"
+    #   # Component manifest check - validates that each component defined in zowe.yaml has a manifest file.
+    #   components: "warn"
+    #   # Superuser startup check - checks whether the Zowe runtime user has UID 0.
+    #   user: "exit"
+    #   # Certificate check - verifies that certificates are valid for use by Zowe.
+    #   certificate: "warn"
+    #   # Java runtime version checks - enforce the minimum version and warn above the maximum supported version.
+    #   javaMin: "exit"
+    #   javaMax: "warn"
+    #   # Node runtime version checks - enforce the minimum version and warn above the maximum supported version.
+    #   nodeMin: "exit"
+    #   nodeMax: "warn"
+    #   # AT-TLS (Application Transparent Transport Layer Security) configuration check for component ports.
+    #   attls: "warn"
 
   # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   # How we want to verify SSL certificates of services. Valid values are:
