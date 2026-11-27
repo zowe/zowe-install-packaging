@@ -45,6 +45,10 @@ sanitize_ha_instance_id
 if [ -n "${ZWE_CLI_PARAMETER_HA_INSTANCE}" ]; then
   route_sysname=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".haInstances.${ZWE_CLI_PARAMETER_HA_INSTANCE}.sysname")
 fi
+msgclass=
+if [ -z "${msgclass}" ]; then
+  jobname=$(read_yaml "${ZWE_CLI_PARAMETER_CONFIG}" ".zowe.job.msgclass")
+fi
 
 ###############################
 # start job
@@ -57,6 +61,9 @@ if [ -n "${jobname}" ]; then
 fi
 if [ -n "${route_sysname}" ]; then
   cmd="RO ${route_sysname},${cmd}"
+fi
+if [ -n "${msgclass}" ]; then
+  cmd="${cmd},MSGCLASS=${msgclass}"
 fi
 result=$(operator_command "${cmd}")
 code=$?

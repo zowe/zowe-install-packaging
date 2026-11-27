@@ -31,6 +31,9 @@ export function execute() {
     securityStcsZowe=std.getenv('ZWE_PRIVATE_DEFAULT_ZOWE_STC');
   }
 
+  //Read job message class
+  const msgclass = zoweConfig.zowe.job?.msgclass;
+
   let routeSysname:string;
 
   config.sanitizeHaInstanceId();
@@ -49,6 +52,9 @@ export function execute() {
   }
   if (routeSysname) {
     cmd=`RO ${routeSysname},${cmd}`;
+  }
+  if (msgclass) {
+    cmd+=`,MSGCLASS=${msgclass}`;
   }
 
   const shellReturn = zoslib.operatorCommand(cmd);
